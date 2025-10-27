@@ -64,14 +64,12 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
     </context-group>
   </trans-unit>
   <trans-unit id="haveAccount" datatype="html">
-    <source>
-							¿Tienes una cuenta? <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
+    <source>¿Tienes una cuenta? <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
     <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>
 Ingresa ahora<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 </source>
-<target>
-							Have an account? <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
+<target> Have an account? <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
 <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>
 Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
@@ -88,10 +86,13 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
 <context context-type="linenumber">42</context>
 </context-group>
+<trans-unit id="logsManagement">
+  <source>Gestión de logs</source>
+  <target>Log management</target>
+</trans-unit>
 </trans-unit>
 <trans-unit id="sidebarUserManagement" datatype="html">
-<source>Gestión de
-                                    Usuarios</source>
+<source>Gestión de Usuarios</source>
 <target>Users management</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
@@ -99,8 +100,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="sidebarGroupManagement" datatype="html">
-<source>Gestión de
-                                    Grupos</source>
+<source>Gestión de Grupos</source>
 <target>Groups management</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
@@ -1914,6 +1914,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Gráfico de Barras Apliadas</source>
 <target>Stacked bar chart</target>
 </trans-unit>
+<trans-unit id="chartTypes19">
+<source>Gráfico de Barras Apiladas al 100%</source>
+<target>100% Stacked Bar Chart</target>
+</trans-unit>
 <trans-unit id="chartTypes7">
 <source>Gráfico de Barras Horizontales</source>
 <target>Horizontal bar chart</target>
@@ -2391,6 +2395,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="commonPanel">
 <source>Común</source>
 <target>Common</target>
+</trans-unit>
+<trans-unit id="publicPanel">
+<source>Publico</source>
+<target>Públic</target>
 </trans-unit>
 <trans-unit id="groupPanel">
 <source>Grupo</source>
@@ -3146,7 +3154,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Drag here the attributes you want to see in your pannel</target>
   </trans-unit>
 
-  <trans-unit id="dragFilters">
+  <trans-unit id="draggFilters">
     <source>Arrastre aquí los atributos sobre los que quiera filtrar</source>
     <target>Drag here the attributes you want to filter on</target>
   </trans-unit>
@@ -3449,8 +3457,24 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Percentages</target>
   </trans-unit>
   <trans-unit id="addStyles">
-    <source>Còdigo de color</source>
+    <source>Código de color</source>
     <target>Color code</target>
+  </trans-unit>
+  <trans-unit id="seeRepetitions">
+    <source>Ver/ocultar valores repetidos</source>
+    <target>Show/hide repeated values</target>
+  </trans-unit>
+  <trans-unit id="seeNegativeNumbers">
+    <source>Números negativos</source>
+    <target>Negative numbers</target>
+  </trans-unit>
+  <trans-unit id="withNegativeNumbers">
+    <source>Con números negativos</source>
+    <target>With negative numbers</target>
+  </trans-unit>
+  <trans-unit id="withoutNegativeNumbers">
+    <source>Sin números negativos</source>
+    <target>Without negative numbers</target>
   </trans-unit>
   <trans-unit id="tableTitleDialog">
     <source>Propiedades de la tabla</source>
@@ -3918,9 +3942,14 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Background color </target>
   </trans-unit> 
   
-     <trans-unit id="ChangePaneColor">
+  <trans-unit id="ChangePaneColor">
     <source>Color del panel</source>
     <target>Panel color</target>
+  </trans-unit> 
+
+  <trans-unit id="ChangeDefaultsColors">
+    <source>Color del los gráficos</source>
+    <target>Color dels grafics</target>
   </trans-unit> 
 
   <trans-unit id="opcionEditarEstilos">
@@ -4767,6 +4796,169 @@ Once configured you can invoke it whenever you want from the button.</target>
   <source>Muestra el valor porcentual de cada segmento</source>
   <target>Displays the percentage value of each segment</target>
 </trans-unit>
+
+
+<trans-unit id="chartLabelLinesOptionDescription">
+  <source>Muestra las líneas en los puntos</source>
+  <target>Mostra les línies en els punts</target>
+</trans-unit>
+
+<trans-unit id="panelOptions6">
+  <source>Pregunte a la IA</source>
+  <target>Pregunta a la IA</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP1">
+  <source>Una aplicación web de código libre que permite realizar informes gráficos e interactivos de forma sencilla.</source>
+  <target>Una aplicació web de codi lliure que permet fer informes gràfics i interactius de forma senzilla.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH1">
+  <source>Código Abierto</source>
+  <target>Codi obert</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP2">
+  <source>EDA es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión SaaS Edalitics.</source>
+  <target>EDA és una aplicació que es pot instal·lar als teus propis servidors o gaudir a la seva versió SaaS Edalitics.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaA1">
+  <source>Ver en Github</source>
+  <target>Veure a Github</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH2">
+  <source>Documentación</source>
+  <target>Documentació</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP3">
+  <source>Accede a nuestra documentación completa para aprender a sacar el máximo provecho de EDA.</source>
+  <target>Accediu a la nostra documentació completa per aprendre a treure el màxim profit d'EDA.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaA2">
+  <source>Ver Documentación</source>
+  <target>Veure Documentació</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH3">
+  <source>Comunidad</source>
+  <target>Comunitat</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP4">
+  <source>Únete a nuestra comunidad para compartir experiencias y obtener ayuda.</source>
+  <target>Uneix-te a la nostra comunitat per compartir experiències i obtenir ajuda.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaA3">
+  <source>Ir al Foro</source>
+  <target>Anar al Fòrum</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP5">
+  <source>Aprende a usar EDA con nuestros tutoriales paso a paso.</source>
+  <target>Aprèn a fer servir EDA amb els nostres tutorials pas a pas.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaB1">
+  <source>Crear Modelo de Datos</source>
+  <target>Crear Model de Dades</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaB2">
+  <source>Crear Informe</source>
+  <target>Crear informe</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH4">
+  <source>¿Quieres probar EDA en el cloud?</source>
+  <target>Vols provar EDA al cloud?</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP6">
+  <source>Edalitics te permitirá estar siempre a la última sin preocuparte por nada.</source>
+  <target>Edalitics et permetrà estar sempre a l'última sense preocupar-te de res.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH5">
+  <source>Tutoriales en video</source>
+  <target>Tutorials en vídeo</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaA4">
+  <source>Prueba Edalitics gratis </source>
+  <target>Prova Edalitics gratis </target>
+</trans-unit>
+
+<trans-unit id="aboutEdaA5">
+  <source>EDA ha sido desarrollado por</source>
+  <target>EDA ha estat desenvolupat per</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP7">
+  <source>Si necesita soporte empresarial o desea solicitar nuevas funcionalidades, no dude en contactar con nosotros.</source>
+  <target>Si necessiteu suport empresarial o voleu sol·licitar noves funcionalitats, no dubteu a contactar amb nosaltres.</target>
+</trans-unit>
+
+
+<trans-unit id="multiSelectDefaultLabel">
+  <source>Selecciona un grupo *</source>
+  <target>Selecciona un grup *</target>
+</trans-unit>
+
+<trans-unit id="allElementsConnected">
+  <source>Todos los elementos están conectados</source>
+  <target>Tots els elements estan connectats</target>
+</trans-unit>
+
+<trans-unit id="dashboardFiltersMin">
+  <source>Filtros del dashboard</source>
+  <target>Filtres del dashboard</target>
+</trans-unit>
+
+<trans-unit id="noConenction">
+  <source>No hay conexiones activas</source>
+  <target>No hi ha connexions actives</target>
+</trans-unit>
+
+<trans-unit id="select1to1">
+  <source>Selecciona un elemento del listado izquierdo y luego uno del listado derecho para crear una conexión 1:1.</source>
+  <target>Seleccioneu un element del llistat esquerre i després un del llistat dret per crear una connexió 1:1.</target>
+</trans-unit>
+
+<trans-unit id="connectDashboardPanel">
+  <source>Conecta los filtros entre el dashboard y el panel</source>
+  <target>Connecta els filtres entre el dashboard i el panell</target>
+</trans-unit>
+
+<trans-unit id="mapFilters">
+  <source>Mapear Filtros</source>
+  <target>Mapejar Filtres</target>
+</trans-unit>
+
+<trans-unit id="searcherInput">
+  <source>Buscador</source>
+  <target>Searcher</target>
+</trans-unit>
+
+<trans-unit id="selectPalette">
+  <source>-- Seleccione una paleta --</source>
+  <target>-- Select a palette --</target>
+</trans-unit>
+
+<trans-unit id="scenarios">
+  <source>Escenarios</source>
+  <target>Scenarios</target>
+</trans-unit>
+
+<trans-unit id="AdvanceOptions">
+  <source>Opciones avanzadas</source>
+  <target>Advance options</target>
+</trans-unit>
+
 
       <trans-unit id="panelOptions6">
         <source>Pregunte a la IA</source>

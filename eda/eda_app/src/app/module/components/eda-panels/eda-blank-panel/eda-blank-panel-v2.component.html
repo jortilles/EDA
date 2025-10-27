@@ -279,7 +279,7 @@
                 <div class="flex items-center gap-2">
                   <h3 class="cursor-pointer text-lg font-bold font-sans transition-colors duration-200"
                     [ngClass]="!display_v.advancedSetting ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
-                    (click)="display_v.advancedSetting = false">
+                    (click)="display_v.advancedSetting = false" i18n="@@yourQuerySQL">
                     Mi consulta SQL
                   </h3>
                   <span>
@@ -313,7 +313,7 @@
               <div class="mt-2">
                 <h3 class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-fit"
                   [ngClass]="display_v.advancedSetting ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
-                  (click)="display_v.advancedSetting = true">
+                  (click)="display_v.advancedSetting = true" i18n="@@AdvanceOptions">
                   Opciones avanzadas
                 </h3>
               </div>
@@ -385,7 +385,7 @@
               </div>
 
               <div class="col-span-2">
-                <h3 class="text-base font-bold inline"><span>Escenarios: </span></h3>
+                <h3 class="text-base font-bold inline"><span i18n="@@scenarios">Escenarios: </span></h3>
                 <button class="border px-3 py-2 rounded-lg font-bold hover:bg-gray-100" (click)="onWhatIfDialog()">
                   What If?
                 </button>

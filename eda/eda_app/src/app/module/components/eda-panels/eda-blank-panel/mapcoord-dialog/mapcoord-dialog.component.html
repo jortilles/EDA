@@ -19,7 +19,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm mb-6 md:col-span-2"
                             [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
-                            <option [ngValue]="null" disabled hidden>
+                            <option [ngValue]="null" disabled hidden i18n="@@selectPalette">
                                 -- Seleccione una paleta --
                             </option>
                             @for (palette of allPalettes; track $index) {
