@@ -8,7 +8,7 @@ const samlConfig: SamlConfig = {
   callbackUrl: process.env.SAML_ACS_URL || SAMLconfig.callbackUrl,
   entryPoint: SAMLconfig.entryPointValue,
   idpCert: SAMLconfig.idpCert,
-  logoutUrl: SAMLconfig.singleLogoutUrl,
+  logoutUrl: SAMLconfig.logoutUrl,
   identifierFormat: SAMLconfig.identifierFormat,
   wantAssertionsSigned: SAMLconfig.wantAssertionsSigned,
   wantAuthnResponseSigned: SAMLconfig.wantAuthnResponseSigned,
