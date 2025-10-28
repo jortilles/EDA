@@ -169,9 +169,9 @@
                  </div>
    
                  <div class="mt-4 flex items-center justify-between">
-                   <div class="text-sm text-slate-600">
-                     <span class="font-medium" i18n="@@vistaPrevia">Vista previa: </span>
-                     Cuando el valor KPI es <span class="font-mono">{{operand}}</span> que
+                   <div class="text-sm text-slate-600"> 
+                     <span class="font-medium" i18n="@@alertsPreview">Vista previa: </span>
+                      <span i18n="@@valueKPI">Cuando el valor KPI es</span><span class="font-mono">{{operand}}</span> que
                      <span class="font-mono">{{value || "X"}}</span>,
                      <span class="ml-1 font-medium" [style.color]="color" i18n="@@textChangeColor">
                        el texto cambiará a este color
@@ -215,7 +215,7 @@
                            <span class="font-mono bg-slate-100 px-2 py-1 rounded text-slate-700">
                              {{alert.operand}}
                            </span>
-                           <span i18n="@@">
+                           <span>
                              {{alert.operand === '<' ? 'Menor que' : 
                                alert.operand === '=' ? 'Igual a' : 'Mayor que'}}
                            </span>
@@ -237,7 +237,7 @@
                              <path d="M18 6 6 18"></path>
                              <path d="m6 6 12 12"></path>
                            </svg>
-                           <span class="sr-only">Eliminar</span>
+                           <span class="sr-only" i18n="@@deleteBtn">Eliminar</span>
                          </button>
                        </td>
                      </tr>
@@ -272,7 +272,7 @@
         <span i18n-label="@@cancelarBtn">Cancelar</span>
       </button>
       <button class="confirm-button" (click)="saveChartConfig()">
-        <i class="fa fa-check"></i> <span>Confirmar</span>
+        <i class="fa fa-check"></i> <span i18n="@@confirmBtn">Confirmar</span>
       </button>
     </div>
   </div>

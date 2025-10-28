@@ -114,26 +114,26 @@ export class DashboardSidebarComponent {
     this.sidebarItems = [
     {
       id: 'newPanel',
-      label: $localize`:@@dashboardNewPanel:Nuevo Panel`,
+      label: $localize`:@@dashboardSidebarNewPanel:Nuevo Panel`,
       icon: "pi pi-plus-circle",
       command: () => this.onAddWidget()
     },
     {
       id: 'newText',
-      label: "Nou text",
+      label: $localize`:@@dashboardSidebarNewText:Nuevo texto`,
       icon: "pi pi-file-edit",
       command: () => this.onAddTitle()
     },
     {
       id: 'newFilter',
-      label: "Nou filtre",
+      label: $localize`:@@dashboardSidebarNewFilter:Nuevo filtro`,
       icon: "pi pi-filter",
       command: () => this.onAddGlobalFilter()
       
     },
       {
         id: 'editFilters',
-        label: "Editar filtros",
+        label: $localize`:@@dashboardSidebarEditFilter:Editar filtros`,
         icon: "pi pi-filter",
         command: () => this.toggleGlobalFilter(),
         items: this.dashboard.globalFilter.globalFilters.map(f => ({
@@ -145,20 +145,20 @@ export class DashboardSidebarComponent {
       },
     {
       id: 'importPanel',
-      label: "Importar panell",
+      label: $localize`:@@dashboardSidebarImportPanel:Importar panel`,
       icon: "pi pi-plus-circle",
       command: () => this.onImportPanel()
       
     },
     {
       id: 'refreshDashboard',
-      label: "Recargar informe",
+      label: $localize`:@@dashboardSidebarRefreshDashboard: Recargar informe`,
       icon: "pi pi-refresh",
       command: () => this.cleanPanelsCache()
     },
     {
       id: 'dashboardPrivacity',
-      label: "Privacitat informe",
+      label:$localize`:@@dashboardSidebarDashboardPrivacity: Privacidad informe`,
       icon: "pi pi-lock",
       command: () => { 
         this.isVisibleModalVisible = true;
@@ -166,7 +166,7 @@ export class DashboardSidebarComponent {
       }
     },{
       id: 'addTag',
-      label: "Afegir etiqueta",
+      label: $localize`:@@dashboardSidebarAddTag: Añadir etiqueta`,
       icon: "pi pi-tag",
       command: () => {
         this.isTagModalVisible = true;
@@ -175,7 +175,8 @@ export class DashboardSidebarComponent {
     },
     {
       id: 'enableFilters',
-      label: this.clickFiltersEnabled ? "Click en filtros habilitado" : "Click en filtros deshabilitado",
+      label: this.clickFiltersEnabled ? $localize`:@@enableFilters: Click en filtros habilitado` 
+                                      : $localize`:@@disableFilters:Click en filtros deshabilitado`,
       icon: this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock",
       command: () => {
         this.toggleClickFilters();
@@ -183,7 +184,7 @@ export class DashboardSidebarComponent {
     },
     {
       id: 'liveDashboard',
-      label: "Live Dashboard",
+      label:  $localize`:@@dashboardSidebarLiveDashboard: Live Dashboard`,
       icon: "pi pi-desktop",
       items: [],
       command: () => {
@@ -191,13 +192,13 @@ export class DashboardSidebarComponent {
       },
     },{
       id: 'save',
-      label: "Guardar",
+      label: $localize`:@@dashboardSidebarSave: Guardar`,
       icon: "pi pi-save",
       command: () => this.saveDashboard()
     },
     {
       id: 'saveAs',
-      label: "Guardar com",
+      label: $localize`:@@dashboardSidebarSaveAs: Guardar como`,
       icon: "pi pi-copy",
       command: () => {
         this.isSaveAsDialogVisible = true;
@@ -206,15 +207,17 @@ export class DashboardSidebarComponent {
     },
     {
       id: 'deleteDashboard',
-      label: "Eliminar informe",
+      label: $localize`:@@dashboardSidebarDeleteDashboard: Eliminar informe`,
       icon: "pi pi-trash",
       command: () => this.removeDashboard()
     },
-      { id: 'moreOptions',
-        label: 'Más opciones'},
+    { 
+      id: 'moreOptions',
+      label: $localize`:@@dashboardSidebarMoreOptions: Más opciones`,
+    },
     {
       id: 'editStyles',
-      label: "Editar estils",
+      label: $localize`:@@dashboardSidebarEditStyles: Editar estilos`,
       icon: "pi pi-palette",
       command: () => {
         this.isEditStyleDialogVisible = true;
@@ -223,19 +226,19 @@ export class DashboardSidebarComponent {
     },
     {
       id: 'downloadPDF',
-      label: "Descargar PDF",
+      label: $localize`:@@dashboardSidebarDownloadPDF: Descargar PDF`,
       icon: "pi pi-file-pdf",
       command: () => this.exportAsPDF()
     },
     {
       id: 'downloadImage',
-      label: "Descargar imatge",
+      label: $localize`:@@dashboardSidebarDownloadImage:Descargar imagen`,
       icon: "pi pi-image",
       command: () => this.exportAsJPEG()
     },
     {
       id: 'sendEmail',
-      label: "Enviar per email",
+      label: $localize`:@@dashboardSidebarSendEmail: Enviar por email`,
       icon: "pi pi-envelope",
       command: () => { 
         this.isMailConfigDialogVisible = true;
@@ -244,7 +247,7 @@ export class DashboardSidebarComponent {
     },
     {
       id: 'customAction',
-      label: "Acció personalitzada",
+      label: $localize`:@@dashboardSidebarCustomAction: Acción personalizada`,
       icon: "pi pi-cog",
       command: () => {
         this.isCustomActionDialogVisible = true;

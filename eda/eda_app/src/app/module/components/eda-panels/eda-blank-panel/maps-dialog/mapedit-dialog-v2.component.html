@@ -41,7 +41,7 @@
         <!-- EscalaLogaritmica -->
         <div class="space-y-2">
           <div class="flex items-center justify-between">
-            <label for="logarithmic-switch" class="block text-sm font-medium">Escala logarítmica</label>
+            <label for="logarithmic-switch" class="block text-sm font-medium" i18n="@@logarithmicScale">Escala logarítmica</label>
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" [(ngModel)]="logarithmicScale" class="sr-only peer" (ngModelChange)="renderMap()">
               <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]"></div>
@@ -52,7 +52,7 @@
         <!-- Mouse -->
         <div class="space-y-2">
           <div class="flex items-center justify-between">
-            <label for="mouse-functions-switch" class="block text-sm font-medium">Activar funciones del ratón</label>
+            <label for="mouse-functions-switch" class="block text-sm font-medium" i18n="@@activeMouseFunctions">Activar funciones del ratón</label>
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" [(ngModel)]="draggable" (onChange)="nullMouseOptions()" class="sr-only peer">
               <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]"></div>
@@ -64,7 +64,7 @@
 
         <div class="space-y-2">
           <div class="flex items-center justify-between">
-            <label i18n="@@noBaseLayerH6"  class="block text-sm font-medium">Activar capa base</label>
+            <label i18n="@@noBaseLayerH6"  class="block text-sm font-medium" i18n="@@enableBaseLayer">Activar capa base</label>
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" [(ngModel)]="baseLayer" (ngModelChange)="modifyBaseLayer()" class="sr-only peer">
               <div
@@ -76,7 +76,7 @@
 
         <!-- LegendPosition -->
         <div class="space-y-4">
-          <label class="block text-sm font-medium">Posición de la leyenda</label>
+          <label class="block text-sm font-medium" i18n="@@legendPosition">Posición de la leyenda</label>
           <div class="grid grid-cols-2 gap-2">
             <div class="flex items-center space-x-2 border rounded-md p-2">
               <input 
@@ -87,7 +87,7 @@
                 [checked]="this.legendPosition === 'topleft' "
                 class="h-4 w-4 text-[#00BFB3]"
               />
-              <label for="topleft" class="text-sm">Superior izquierda</label>
+              <label for="topleft" class="text-sm" i18n="@@topleftPosition">Superior izquierda</label>
             </div>
             <div class="flex items-center space-x-2 border rounded-md p-2">
               <input 
@@ -98,7 +98,7 @@
                 [checked]="this.legendPosition === 'topright' "
                 class="h-4 w-4 text-[#00BFB3]"
               />
-              <label for="topright" class="text-sm">Superior derecha</label>
+              <label for="topright" class="text-sm" i18n="@@toprightPosition">Superior derecha</label>
             </div>
             <div class="flex items-center space-x-2 border rounded-md p-2">
               <input 
@@ -109,7 +109,7 @@
                 [checked]="this.legendPosition === 'bottomleft' "
                 class="h-4 w-4 text-[#00BFB3]"
               />
-              <label for="bottomleft" class="text-sm">Inferior izquierda</label>
+              <label for="bottomleft" class="text-sm" i18n="@@bottomleftPosition">Inferior izquierda</label>
             </div>
             <div class="flex items-center space-x-2 border rounded-md p-2">
               <input 
@@ -120,7 +120,7 @@
                 [checked]="this.legendPosition === 'bottomright' "
                 class="h-4 w-4 text-[#00BFB3]"
               />
-              <label for="bottomright" class="text-sm">Inferior derecha</label>
+              <label for="bottomright" class="text-sm" i18n="@@bottomrightPosition">Inferior derecha</label>
             </div>
           </div>
         </div>
@@ -136,7 +136,7 @@
         <span i18n-label="@@cancelarBtn">Cancelar</span>
       </button>
       <button class="confirm-button" (click)="saveChartConfig()">
-        <i class="fa fa-check"></i> <span>Confirmar</span>
+        <i class="fa fa-check"></i> <span i18n="confirmBtn">Confirmar</span>
       </button>
     </div>
   </div>

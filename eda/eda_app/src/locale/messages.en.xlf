@@ -1570,7 +1570,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="placeholderTargetColumns" datatype="html">
 <source>Columna destino </source>
-<target>destination column</target>
+<target>Destination column</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component.html</context>
 <context context-type="linenumber">19</context>
@@ -2023,11 +2023,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="dates5">
 <source>SEMANA</source>
-<target>SETMANA</target>
+<target>WEEK</target>
 </trans-unit>
 <trans-unit id="dates6">
 <source>DIA DE LA SEMANA</source>
-<target>DIA DE LA SETMANA</target>
+<target>DAY OF THE WEEK</target>
 </trans-unit>
 
 <trans-unit id="dates7">
@@ -2398,7 +2398,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="publicPanel">
 <source>Publico</source>
-<target>Públic</target>
+<target>Public</target>
 </trans-unit>
 <trans-unit id="groupPanel">
 <source>Grupo</source>
@@ -2732,6 +2732,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>User updated </target>
 </trans-unit>
 
+<trans-unit id="UpdatedUserError">
+<source>Error al actualizar el usuario </source>
+<target>Error updating user </target>
+</trans-unit>
+
 <trans-unit id="PasswordsNotEqual">
 <source>Las contraseñas no coinciden </source>
 <target>Passwords do not match</target>
@@ -2810,7 +2815,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
  registros</source>
 <target>
   <x id="INTERPOLATION" equiv-text="{{ table.value.length }}"/>
- registres</target>
+ records</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/components/eda-table/eda-table.component.html</context>
   <context context-type="linenumber">112</context>
@@ -3312,7 +3317,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="ModelSaved">
     <source> Modelo guardado correctamente </source>
-    <target> Model guardat correctament </target>
+    <target> Model saved successfully </target>
   </trans-unit>
 
   <trans-unit id="downloadModel">
@@ -3804,6 +3809,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Alerts configuration</target>
   </trans-unit> 
 
+  <trans-unit id="setNewAlert">
+    <source>Configurar nueva alerta</source>
+    <target>Set new alert</target>
+  </trans-unit> 
 
   <trans-unit id="inputFilter">
     <source>Filtros</source>
@@ -3949,7 +3958,17 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="ChangeDefaultsColors">
     <source>Color del los gráficos</source>
-    <target>Color dels grafics</target>
+    <target>Chart color</target>
+  </trans-unit> 
+
+   <trans-unit id="dialogHeaderEditStyles">
+    <source>Editar estilos</source>
+    <target>Edit styles</target>
+  </trans-unit> 
+
+  <trans-unit id="properties">
+    <source>Propiedades</source>
+    <target>Propierties</target>
   </trans-unit> 
 
   <trans-unit id="opcionEditarEstilos">
@@ -3975,9 +3994,14 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Set default values</target>
   </trans-unit> 
 
+  <trans-unit id="deleteFilters">
+    <source>Eliminar filtros</source>
+    <target>Delete filters</target>
+  </trans-unit>
+
     <trans-unit id="samplePanelTitle">
     <source>Previsualización</source>
-    <target>Previsualization</target>
+    <target>Preview</target>
   </trans-unit> 
 
    <trans-unit id="samplePanelDBName">
@@ -4074,6 +4098,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="newNameLabel">
 <source>Nuevo nombre</source>
 <target>New name</target>
+</trans-unit>
+
+<trans-unit id="allowSSL">
+<source>Conexión mediante SSL</source>
+<target>Connection via SSL</target>
 </trans-unit>
 <trans-unit id="filterVisibleScope">
 <source>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro, pero se les aplica</source>
@@ -4205,6 +4234,22 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>URL editado correctamente</source>
     <target>URL correctly edited</target>
   </trans-unit>
+
+      <trans-unit id="chartTypesKPIBAR">
+        <source>KPI + Gráfico de Barras</source>
+        <target>KPI + Bar chart</target>
+      </trans-unit>
+      
+      <trans-unit id="chartTypesKPILINE">
+        <source>KPI + Gráfico de Lineas</source>
+        <target>KPI +Line chart</target>
+      </trans-unit>
+
+      <trans-unit id="chartTypesKPIAREA">
+        <source>KPI + Gráfico de Áreas</source>
+        <target>KPI + Area graph</target>
+      </trans-unit>
+
   <trans-unit id="urlEditSaveError">
     <source>Formulario incompleto, rellene todos los campos</source>
     <target>Incomplete form. Fill all the fields</target>
@@ -4269,26 +4314,20 @@ Once configured you can invoke it whenever you want from the button.</target>
     <source>Descripción: </source>
     <target>Description: </target>
   </trans-unit> 
+
+   <trans-unit id="urlAction">
+    <source>Acciones: </source>
+    <target>Actions: </target>
+  </trans-unit> 
+
+  <trans-unit id="dialogHeaderCustomActions">
+    <source>ACCIONES PERSONALIZADAS </source>
+    <target>CUSTOM ACTIONS </target>
+
   <trans-unit id="textLabelUrl">
     <source>Agregar url</source>
     <target>Add url</target>
   </trans-unit> 
-
-
-      <trans-unit id="chartTypesKPIBAR">
-        <source>KPI + Gráfico de Barras</source>
-        <target>KPI + Bar chart</target>
-      </trans-unit>
-      
-      <trans-unit id="chartTypesKPILINE">
-        <source>KPI + Gráfico de Lineas</source>
-        <target>KPI + Line chart</target>
-      </trans-unit>
-
-      <trans-unit id="chartTypesKPIAREA">
-        <source>KPI + Gráfico de Áreas</source>
-        <target>KPI + Area chart</target>
-      </trans-unit>
 
       <trans-unit id="filters13">
         <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
@@ -4455,7 +4494,7 @@ Once configured you can invoke it whenever you want from the button.</target>
         <target>Filters</target>
       </trans-unit>
       <trans-unit id="optionalFilterDescription">
-        <source>Optional filters to limit the scope of your connection</source>
+        <source>Filtros opcionales para limitar el alcance de su conexión</source>
         <target>Optional filters to limit the scope of your connection</target>
       </trans-unit>
       <trans-unit id="connectionOptions">
@@ -4800,148 +4839,383 @@ Once configured you can invoke it whenever you want from the button.</target>
 
 <trans-unit id="chartLabelLinesOptionDescription">
   <source>Muestra las líneas en los puntos</source>
-  <target>Mostra les línies en els punts</target>
+  <target>Shows the lines at the points</target>
 </trans-unit>
 
 <trans-unit id="panelOptions6">
   <source>Pregunte a la IA</source>
-  <target>Pregunta a la IA</target>
+  <target>Ask the IA</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP1">
   <source>Una aplicación web de código libre que permite realizar informes gráficos e interactivos de forma sencilla.</source>
-  <target>Una aplicació web de codi lliure que permet fer informes gràfics i interactius de forma senzilla.</target>
+  <target>An open source web application that allows you to create graphical and interactive reports in a simple way.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaH1">
   <source>Código Abierto</source>
-  <target>Codi obert</target>
+  <target>Open source</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP2">
   <source>EDA es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión SaaS Edalitics.</source>
-  <target>EDA és una aplicació que es pot instal·lar als teus propis servidors o gaudir a la seva versió SaaS Edalitics.</target>
+  <target>EDA is an application that can be installed on your own servers or enjoyed in its SaaS version, Edalitics.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaA1">
   <source>Ver en Github</source>
-  <target>Veure a Github</target>
+  <target>See on Github</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaH2">
   <source>Documentación</source>
-  <target>Documentació</target>
+  <target>Documentation</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP3">
   <source>Accede a nuestra documentación completa para aprender a sacar el máximo provecho de EDA.</source>
-  <target>Accediu a la nostra documentació completa per aprendre a treure el màxim profit d'EDA.</target>
+  <target>Access our complete documentation to learn how to get the most out of EDA.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaA2">
   <source>Ver Documentación</source>
-  <target>Veure Documentació</target>
+  <target>See Documentation</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaH3">
   <source>Comunidad</source>
-  <target>Comunitat</target>
+  <target>Community</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP4">
   <source>Únete a nuestra comunidad para compartir experiencias y obtener ayuda.</source>
-  <target>Uneix-te a la nostra comunitat per compartir experiències i obtenir ajuda.</target>
+  <target>Join our community to share experiences and get help.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaA3">
   <source>Ir al Foro</source>
-  <target>Anar al Fòrum</target>
+  <target>Go to the Forum</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP5">
   <source>Aprende a usar EDA con nuestros tutoriales paso a paso.</source>
-  <target>Aprèn a fer servir EDA amb els nostres tutorials pas a pas.</target>
+  <target>Learn how to use EDA with our step-by-step tutorials.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaB1">
   <source>Crear Modelo de Datos</source>
-  <target>Crear Model de Dades</target>
+  <target>Create Data Model</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaB2">
   <source>Crear Informe</source>
-  <target>Crear informe</target>
+  <target>Create Report</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaH4">
   <source>¿Quieres probar EDA en el cloud?</source>
-  <target>Vols provar EDA al cloud?</target>
+  <target>Want to try EDA in the cloud?</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP6">
   <source>Edalitics te permitirá estar siempre a la última sin preocuparte por nada.</source>
-  <target>Edalitics et permetrà estar sempre a l'última sense preocupar-te de res.</target>
+  <target>Edalitics will allow you to always be up to date without worrying about anything.</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaH5">
   <source>Tutoriales en video</source>
-  <target>Tutorials en vídeo</target>
+  <target>Video tutorials</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaA4">
   <source>Prueba Edalitics gratis </source>
-  <target>Prova Edalitics gratis </target>
+  <target>Try Edalitics for free </target>
 </trans-unit>
 
 <trans-unit id="aboutEdaA5">
   <source>EDA ha sido desarrollado por</source>
-  <target>EDA ha estat desenvolupat per</target>
+  <target>EDA has been developed by</target>
 </trans-unit>
 
 <trans-unit id="aboutEdaP7">
   <source>Si necesita soporte empresarial o desea solicitar nuevas funcionalidades, no dude en contactar con nosotros.</source>
-  <target>Si necessiteu suport empresarial o voleu sol·licitar noves funcionalitats, no dubteu a contactar amb nosaltres.</target>
+  <target>If you need business support or want to request new features, please feel free to contact us.</target>
 </trans-unit>
 
 
 <trans-unit id="multiSelectDefaultLabel">
   <source>Selecciona un grupo *</source>
-  <target>Selecciona un grup *</target>
+  <target>Select a group *</target>
 </trans-unit>
 
 <trans-unit id="allElementsConnected">
   <source>Todos los elementos están conectados</source>
-  <target>Tots els elements estan connectats</target>
+  <target>All elements are connected</target>
 </trans-unit>
 
 <trans-unit id="dashboardFiltersMin">
   <source>Filtros del dashboard</source>
-  <target>Filtres del dashboard</target>
+  <target>Dashboard filters</target>
 </trans-unit>
 
 <trans-unit id="noConenction">
   <source>No hay conexiones activas</source>
-  <target>No hi ha connexions actives</target>
+  <target>There are no active connections</target>
 </trans-unit>
 
 <trans-unit id="select1to1">
   <source>Selecciona un elemento del listado izquierdo y luego uno del listado derecho para crear una conexión 1:1.</source>
-  <target>Seleccioneu un element del llistat esquerre i després un del llistat dret per crear una connexió 1:1.</target>
+  <target>Select an item from the left list and then one from the right list to create a 1:1 connection.</target>
 </trans-unit>
 
 <trans-unit id="connectDashboardPanel">
   <source>Conecta los filtros entre el dashboard y el panel</source>
-  <target>Connecta els filtres entre el dashboard i el panell</target>
+  <target>Connect filters between the dashboard and the panel</target>
 </trans-unit>
 
 <trans-unit id="mapFilters">
   <source>Mapear Filtros</source>
-  <target>Mapejar Filtres</target>
+  <target>Map Filters</target>
 </trans-unit>
 
 <trans-unit id="searcherInput">
   <source>Buscador</source>
   <target>Searcher</target>
+</trans-unit>
+
+<trans-unit id="manageModels">
+  <source>Gestiona la importación y exportación de fuentes de datos</source>
+  <target>Manages the import and export of data sources</target>
+</trans-unit>
+
+<trans-unit id="SelectModelToExport">
+  <source>Selecciona una fuente de datos para exportar</source>
+  <target>Select a data source to export</target>
+</trans-unit>
+
+<trans-unit id="SelectDashboardToExport">
+  <source>Selecciona un dashboard para exportar</source>
+  <target>Select a dashboard to export</target>
+</trans-unit>
+
+<trans-unit id="SelectModel">
+  <source>Selecciona una fuente de datos</source>
+  <target>Select a data source</target>
+</trans-unit>
+
+<trans-unit id="SelectDashboard">
+  <source>Selecciona un dashboard</source>
+  <target>Select a dashboard</target>
+</trans-unit>
+
+<trans-unit id="UploadModel">
+  <source>Sube un archivo de modelo</source>
+  <target>Upload a model file</target>
+</trans-unit>
+
+<trans-unit id="UploadDashboard">
+  <source>Sube un archivo de dashboard</source>
+  <target>Upload a dashboard file</target>
+</trans-unit>
+
+<trans-unit id="export">
+  <source>Exportar</source>
+  <target>Export</target>
+</trans-unit>
+
+<trans-unit id="import">
+  <source>Importar</source>
+  <target>Import</target>
+</trans-unit>
+
+<trans-unit id="clickToUpload">
+  <source>Click para subir</source>
+  <target>Click to upload</target>
+</trans-unit>
+
+<trans-unit id="dragDrop">
+  <source> o arrastra y suelta</source>
+  <target> or drag and drop</target>
+</trans-unit>
+
+<trans-unit id="manageModels">
+  <source>Gestiona la importación y exportación de modelos</source>
+  <target>Manages the import and export of models</target>
+</trans-unit>
+
+<trans-unit id="manageDashboards">
+  <source>Gestiona la importación y exportación de dashboards</source>
+  <target>Manage the import and export of dashboards</target>
+</trans-unit>
+
+<trans-unit id="askPanelData">
+  <source>Pregunta sobre los datos de tu panel ...</source>
+  <target>Ask about your panel data...</target>
+</trans-unit>
+
+<trans-unit id="askEddie">
+  <source>Pregúntale a Eddie 😊</source>
+  <target>Ask Eddie 😊</target>
+</trans-unit>
+
+<trans-unit id="askEddieNoIcon">
+  <source>Pregúntale a Eddie</source>
+  <target>Ask Eddie</target>
+</trans-unit>
+
+<trans-unit id="GPTChat">
+  <source>Chat con ChatGPT</source>
+  <target>Chat with ChatGPT</target>
+</trans-unit>
+
+<trans-unit id="escribiendo">
+  <source>Escribiendo...</source>
+  <target>Writing...</target>
+</trans-unit>
+
+<trans-unit id="escribeMensaje">
+  <source>Escribe tu mensaje...</source>
+  <target>Write your message...</target>
+</trans-unit>
+
+<trans-unit id="enviar">
+  <source>Enviar</source>
+  <target>Send</target>
+</trans-unit>
+
+<trans-unit id="viewName">
+  <source>Introduzca el nombre de la vista</source>
+  <target>Enter the view name.</target>
+</trans-unit>
+
+<trans-unit id="viewDescription">
+  <source>Introduce una breve descripción</source>
+  <target>Enter a short description</target>
+</trans-unit>
+
+<trans-unit id="viewTName">
+  <source>Nombre técnico</source>
+  <target>Technical name</target>
+</trans-unit>
+
+<trans-unit id="viewTNameP">
+  <source>Introduzca el identificador técnico</source>
+  <target>Enter the technical ID</target>
+</trans-unit>
+
+<trans-unit id="SQLExpression">
+  <source>Expresión SQL</source>
+  <target>SQL expression</target>
+</trans-unit>
+
+<trans-unit id="enterSQLExpression">
+  <source>Ingrese su consulta SQL aquí</source>
+  <target>Enter your SQL query here</target>
+</trans-unit>
+
+<trans-unit id="generating">
+  <source>Generando...</source>
+  <target>Generating...</target>
+</trans-unit>
+
+<trans-unit id="generateView">
+  <source>Generar vista</source>
+  <target>Generate view</target>
+</trans-unit>
+
+<trans-unit id="selectedTags">
+  <source>Tags seleccionados</source>
+  <target>Selected tags</target>
+</trans-unit>
+
+<trans-unit id="SSLConnection">
+  <source>Conexión sin SSL</source>
+  <target>Connection without SSL</target>
+</trans-unit>
+
+<trans-unit id="tablenameText">
+  <source>Nombre de la tabla</source>
+  <target>Name of the table</target>
+</trans-unit>
+
+<trans-unit id="separatorText">
+  <source>Separador</source>
+  <target>Separator</target>
+</trans-unit>
+
+<trans-unit id="uploadFileText">
+  <source>Subir archivo</source>
+  <target>Upload file</target>
+</trans-unit>
+
+<trans-unit id="emptyMessageTags">
+  <source>No se encontraron resultados</source>
+  <target>No results found.</target>
+</trans-unit>
+
+<trans-unit id="dimensionLabel">
+  <source>Dimension</source>
+  <target>Dimension</target>
+</trans-unit>
+
+<trans-unit id="factLabel">
+  <source>Hecho</source>
+  <target>Fact</target>
+</trans-unit>
+
+<trans-unit id="viewLabel">
+  <source>Vista</source>
+  <target>View</target>
+</trans-unit>
+
+<trans-unit id="tagCreated">
+  <source>Etiqueta creada correctamente</source>
+  <target>Label created successfully</target>
+</trans-unit>
+
+<trans-unit id="tagAssigned">
+  <source>Etiqueta asignada correctamente</source>
+  <target>Label assigned correctly</target>
+</trans-unit>
+
+<trans-unit id="validCredentials">
+  <source>Las credenciales son válidas</source>
+  <target>Credentials are valid.</target>
+</trans-unit>
+
+<trans-unit id="DatasourceTitle">
+  <source>Fuente de datos </source>
+  <target>Data source </target>
+</trans-unit>
+
+<trans-unit id="Cargando">
+  <source>Cargando... </source>
+  <target>Loading... </target>
+</trans-unit>
+
+<trans-unit id="Initial">
+  <source>Inicio</source>
+  <target>Home</target>
+</trans-unit>
+
+<trans-unit id="Final">
+  <source>Final</source>
+  <target>End</target>
+</trans-unit>
+
+<trans-unit id="DashboardUpdatedInfo">
+  <source>El dashboard ha sido actualizado correctamente.</source>
+  <target>The dashboard has been updated successfully..</target>
+</trans-unit>
+
+<trans-unit id="dsConnectionRefused">
+  <source>No se ha podido conectar a la base de datos.</source>
+  <target>Could not connect to database..</target>
+</trans-unit>
+
+<trans-unit id="searchDatasource">
+  <source>Buscar fuente de datos</source>
+  <target>Find data source</target>
 </trans-unit>
 
 <trans-unit id="selectPalette">
@@ -4959,16 +5233,194 @@ Once configured you can invoke it whenever you want from the button.</target>
   <target>Advance options</target>
 </trans-unit>
 
+<trans-unit id="condition">
+  <source>Condición</source>
+  <target>Condition</target>
+</trans-unit>
+
+<trans-unit id="alertColor">
+  <source>Color de la alerta</source>
+  <target>Alert color</target>
+</trans-unit>
+
+<trans-unit id="noAlertsConfigured">
+  <source>No hay alertas configuradas </source>
+  <target>No alerts configured.</target>
+</trans-unit>
+
+<trans-unit id="alertsConfigured">
+  <source>Alertas configuradas </source>
+  <target>Alerts configured</target>
+</trans-unit>
+
+<trans-unit id="lessThan">
+  <source>Menor que </source>
+  <target>Less que</target>
+</trans-unit>
+
+<trans-unit id="equalTo">
+  <source>Igual a </source>
+  <target>Equal to</target>
+</trans-unit>
+
+<trans-unit id="greaterThan">
+  <source>Mayor que</source>
+  <target>Greater than</target>
+</trans-unit>
+
+<trans-unit id="thresholdValue">
+  <source>Valor umbral</source>
+  <target>Threshold value</target>
+</trans-unit>
+
+<trans-unit id="numValTrigAlert">
+  <source>Valor numérico que activará la alerta</source>
+  <target>Numeric value that triggers the alert</target>
+</trans-unit>
+
+<trans-unit id="textChangeColor">
+  <source>el texto cambiará a este color</source>
+  <target>the text will change to this color</target>
+</trans-unit>
+
+<trans-unit id="value">
+<source>Valor</source>
+<target>Value</target>
+</trans-unit>
+
+<trans-unit id="colour">
+<source>Color</source>
+<target>Colour</target>
+</trans-unit>
+
+<trans-unit id="actions">
+<source>Acciones</source>
+<target>Actions</target>
+</trans-unit>
+
+<trans-unit id="orderAlerts">
+<source>Las alertas se aplicarán en orden de creación. Haga clic en el botón X para eliminar una alerta.</source>
+<target>Alerts must be applied in the order they are created. Click the X button to remove an alert.</target>
+</trans-unit>
+
+<trans-unit id="useFormAlertConfigure">
+<source>Configure una alerta usando el formulario de arriba para visualizar cambios en el gráfico.</source>
+<target>Set up an alert using the form above to view changes in the chart.</target>
+</trans-unit>
 
 <trans-unit id="panelOptions6">
   <source>Pregunte a la IA</source>
   <target>Ask to AI</target>
 </trans-unit>
 
-
-<trans-unit id="dashboardNewPanel">
+<trans-unit id="dashboardSidebarNewPanel">
   <source>Nuevo Panel</source>
   <target>New Panel</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarNewText">
+  <source>Nuevo texto</source>
+  <target>New text</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarNewFilter">
+  <source>Nuevo filtro</source>
+  <target>New filter</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarEditFilter">
+  <source>Editar filtro</source>
+  <target>Edit filter</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarImportPanel">
+  <source>Importar panel</source>
+  <target>Import panel</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarRefreshDashboard">
+  <source>Recargar informe</source>
+  <target>Refresh dashboard</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDashboardPrivacity">
+  <source>Privacidad informe</source>
+  <target>Privacy report</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarAddTag">
+  <source>Añadir etiqueta</source>
+  <target> Add tag</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarLiveDashboard">
+  <source>Live Dashboard</source>
+  <target>Live Dashboard</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarSave">
+  <source>Guardar</source>
+  <target>Save</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarSaveAs">
+  <source>Guardar como</source>
+  <target>Save as</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDeleteDashboard">
+  <source>Eliminar informe</source>
+  <target>Delete dashboard</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarMoreOptions">
+  <source>Más opciones</source>
+  <target>More options</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarEditStyles">
+  <source>Editar estilos</source>
+  <target>Edit styles</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownloadPDF">
+  <source>Descargar PDF</source>
+  <target>Download PDF</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownloadImage">
+  <source>Descargar imagen</source>
+  <target>Download image</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarSendEmail">
+  <source>Enviar por email</source>
+  <target>Send by email</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarCustomAction">
+  <source>Acción personalizada</source>
+  <target>Custom action</target>
+</trans-unit>
+
+<trans-unit id="confirmBtn">
+  <source>Confirmar</source>
+  <target>Confirm</target>
+</trans-unit>
+
+<trans-unit id="deleteBtn">
+  <source>Eliminar</source>
+  <target>Delete</target>
+</trans-unit>
+
+<trans-unit id="valueKPI">
+  <source>Cuando el valor KPI es</source>
+  <target>When the KPI value is</target>
+</trans-unit>
+
+<trans-unit id="alertsPreview">
+<source>Vista previa:</source>
+<target>Preview:</target>
 </trans-unit>
 
 <trans-unit id="enableFilters">
@@ -4979,6 +5431,61 @@ Once configured you can invoke it whenever you want from the button.</target>
 <trans-unit id="disableFilters">
   <source>Click en filtros deshabilitado</source>
   <target>Filter click disabled</target>
+</trans-unit>
+
+<trans-unit id="selectFileImport">
+  <source>Por favor selecciona un archivo para importar</source>
+  <target>Please select a file to import.</target>
+</trans-unit>
+
+<trans-unit id="logarithmicScale">
+  <source>Escala logarítmica</source>
+  <target>Logarithmic scale</target>
+</trans-unit>
+
+<trans-unit id="activeMouseFunctions">
+  <source>Activar funciones del ratón</source>
+  <target>Enable mouse functions</target>
+</trans-unit>
+
+<trans-unit id="enableBaseLayer">
+  <source>Activar capa base</source>
+  <target>Enable base layer</target>
+</trans-unit>
+
+<trans-unit id="legendPosition">
+  <source>Posición de la leyenda</source>
+  <target>Legend position</target>
+</trans-unit>
+
+<trans-unit id="topleftPosition">
+  <source>Superior izquierda</source>
+  <target>Upper left</target>
+</trans-unit>
+
+<trans-unit id="bottomleftPosition">
+  <source>Inferior izquierda</source>
+  <target>Lower left</target>
+</trans-unit>
+
+<trans-unit id="toprightPosition">
+  <source>Superior derecha</source>
+  <target>Upper right</target>
+</trans-unit>
+
+<trans-unit id="bottomrightPosition">
+  <source>Inferior derecha</source>
+  <target>Lower right</target>
+</trans-unit>
+
+<trans-unit id="newTextTitle">
+  <source>Titulo</source>
+  <target>Title</target>
+</trans-unit>
+
+<trans-unit id="selectDashboardPrivacity">
+  <source>Selecciona la privacidad del informe</source>
+  <target>Select report privacy</target>
 </trans-unit>
 
 

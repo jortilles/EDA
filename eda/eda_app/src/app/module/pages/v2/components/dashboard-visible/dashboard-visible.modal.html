@@ -8,7 +8,7 @@
     <form [formGroup]="form" class="form-horizontal form-material" (ngSubmit)="true">
     <div class="grid space-y-8">
     <!-- Botones de Selección -->
-      <h6 > Selecciona la privacidad del informe </h6>
+      <h6 i18n="@@selectDashboardPrivacity"> Selecciona la privacidad del informe </h6>
       <div class="col-12">
         <p-selectButton [options]="visibleTypes" formControlName="visible"  (onChange)="handleSelectedBtn($event)" 
           class="bg-gray-100 text-gray-700 rounded-md shadow-sm">
