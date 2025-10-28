@@ -399,7 +399,7 @@ public async reloadPanels(): Promise<void> {
       // Actualizo el panelChart si existe
       if (panel.panelChart) {
         try {
-          panel.panelChart.updateComponent();
+          panel.panelChart?.updateComponent();
         } catch (error) {
           console.error('Error al actualizar panelChart', error);
         }
@@ -438,9 +438,9 @@ public async reloadPanels(): Promise<void> {
           let config = this.setPanelsToFilter(panel);
           let anyChartToRemove : boolean;
           //TENEMOS ALGUN FILTRO APLICADO EN LOS FILTROS GLOBALES DEL DASHBOARD
-          
+
           if (this.globalFilter.globalFilters && this.globalFilter.globalFilters.length > 0) {
-            
+
             //Buscamos si hay un filtro que existe igual al que acabamos de clicar, y de la misma tabla
             let chartToRemove = this.globalFilter.globalFilters.find(f => 
               this.getChartClicked(f, table.table_name, column.column_name, event?.data.label) && f.panelList.includes(panel.content.query.dashboard.panel_id)
@@ -456,28 +456,10 @@ public async reloadPanels(): Promise<void> {
             // EL FILTRO CON EL QUE QUEREMOS TRABAJAR EXISTE
             if (chartToRemove) {
               if(makeNewFilter){
-                              // Creamos un filtro nuevo con from chart true
-              this.chartFilter = {
-                id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
-                isGlobal: true,
-                applyToAll: config.applyToAll || true,
-                panelList: config.panelList.map((p) => p.id),
-                table: {label: table.display_name.default,value: table.table_name,},
-                column: {label: column.display_name.default,value: column,},
-                selectedItems: [data.label], // valor del chart que hemos clicado
-                fromChart: true, //fromChart = true indica que se ha creado mediante un click
-              };
-
-              data.panel.content.query.query?.filters.push({
-                id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
-                isGlobal: true,
-                applyToAll: config.applyToAll || true,
-                panelList: config.panelList.map((p) => p.id),
-                table: {label: table.display_name.default,value: table.table_name,},
-                column: {label: column.display_name.default,value: column,},
-                selectedItems: [data.label], // valor del chart que hemos clicado
-                fromChart: true, //fromChart = true indica que se ha creado mediante un click
-              })
+                // Creamos un filtro nuevo con from chart true
+                this.chartFilter = this.createChartFilter(table,column, data.label, config);
+                // Control de filtros para filtros parciales
+                data.panel.content.query.query?.filters.push(this.createChartFilter(table,column, data.label, config))
          
               //Añadimos filtros nuevos
               try {
@@ -529,29 +511,10 @@ public async reloadPanels(): Promise<void> {
               }
               
               // Creamos un filtro nuevo con from chart true
-              this.chartFilter = {
-                id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
-                isGlobal: true,
-                applyToAll: config.applyToAll || true,
-                panelList: config.panelList.map((p) => p.id),
-                table: {label: table.display_name.default,value: table.table_name,},
-                column: {label: column.display_name.default,value: column,},
-                selectedItems: [data.label], // valor del chart que hemos clicado
-                fromChart: true, //fromChart = true indica que se ha creado mediante un click
-              };
-
-              
-              data.panel.content.query.query?.filters.push({
-                id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
-                isGlobal: true,
-                applyToAll: config.applyToAll || true,
-                panelList: config.panelList.map((p) => p.id),
-                table: {label: table.display_name.default,value: table.table_name,},
-                column: {label: column.display_name.default,value: column,},
-                selectedItems: [data.label], // valor del chart que hemos clicado
-                fromChart: true, //fromChart = true indica que se ha creado mediante un click
-              })
-
+             this.chartFilter = this.createChartFilter(table,column, data.label, config);
+             // Control de filtros para filtros parciales
+             data.panel.content.query.query?.filters.push(this.createChartFilter(table,column, data.label, config))
+             
               //Borramos filtros activos del global filter, pero los mantenemos guardados
               for (const element of this.lastFilters) {
                 await this.globalFilter.removeGlobalFilter(element.filter, true);
@@ -570,28 +533,10 @@ public async reloadPanels(): Promise<void> {
           // NO TENEMOS NINGUN FILTRO APLICADO EN LOS FILTROS GLOBALES DEL DASHBOARD
           else {
             // Creamos un filtro nuevo con from chart true
-            this.chartFilter = {
-              id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
-              isGlobal: true,
-              applyToAll: config.applyToAll || true,
-              panelList: config.panelList.map((p) => p.id),
-              table: { label: table.display_name.default, value: table.table_name,},
-              column: { label: column.display_name.default, value: column },
-              selectedItems: [data.label], // valor del chart que hemos clicado
-              fromChart: true, //fromChart = true indica que se ha creado mediante un click
-            };
+            this.chartFilter = this.createChartFilter(table,column, data.label, config);
+            // Control de filtros para filtros parciales
+            data.panel.content.query.query?.filters.push(this.createChartFilter(table,column, data.label, config))
 
-                          
-              data.panel.content.query.query?.filters.push({
-                id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
-                isGlobal: true,
-                applyToAll: config.applyToAll || true,
-                panelList: config.panelList.map((p) => p.id),
-                table: {label: table.display_name.default,value: table.table_name,},
-                column: {label: column.display_name.default,value: column,},
-                selectedItems: [data.label], // valor del chart que hemos clicado
-                fromChart: true, //fromChart = true indica que se ha creado mediante un click
-              })
             // Esperamos a que se apliquen los filtros, para luego recargar el global filter
           await this.globalFilter.onGlobalFilterAuto(this.chartFilter,table.table_name);
           this.reloadOnGlobalFilter();
@@ -609,6 +554,24 @@ public async reloadPanels(): Promise<void> {
 
 
   // FUNCIONES DE FILTROS DINAMICOS
+
+  createChartFilter(table: any, column: any, dataLabel: string, config: any): any {
+    return {
+        id: `${table.table_name}_${column.column_name}`,
+        isGlobal: true,
+        applyToAll: config.applyToAll ?? true,
+        panelList: config.panelList.map((p) => p.id),
+        table: { label: table.display_name.default, value: table.table_name },
+        column: { label: column.display_name.default, value: column },
+        selectedItems: [dataLabel],
+        fromChart: true
+    };
+}
+
+private addFilterToPanelQuery(panel: any, filter: any): void {
+    panel.content.query.query?.filters.push({ ...filter });
+}
+
 
   deleteDynamicFilter(chartToRemove: any, table: any, filterName: any) {
     // Borramos el filtro existente
@@ -746,7 +709,7 @@ public async reloadPanels(): Promise<void> {
       if (panel.currentQuery.length > 0) {
         panel.display_v.chart = '';
         await panel.runQueryFromDashboard(true);
-        setTimeout(() => panel.panelChart.updateComponent(), 100);
+        setTimeout(() => panel.panelChart?.updateComponent(), 100);
       }
     });
 
