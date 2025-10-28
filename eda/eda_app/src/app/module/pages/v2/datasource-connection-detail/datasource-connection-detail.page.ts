@@ -367,8 +367,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
 
   async handleBigQueryImport() {
     if (!this.bigQueryFile()) {
-      // TODO
-      // this.showToast('Error', 'Por favor selecciona un archivo para importar', 'error');
+      this.alertService.addError($localize`:@@selectFileImport:Por favor selecciona un archivo para importar`) 
       return;
     }
     
