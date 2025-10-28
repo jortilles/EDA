@@ -52,7 +52,7 @@ export class DataSourceListPage implements OnInit {
 
 
   async loadDataSources() {
-    const models = await lastValueFrom(this.datasourceService.getDataSourceNamesForDashboard());
+    const models = await lastValueFrom(this.datasourceService.getModelsNames());
     this.dataSources = (models.ds||[]).sort((a, b) => {
         let va = a.model_name.toLowerCase();
         let vb = b.model_name.toLowerCase();
