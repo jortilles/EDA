@@ -725,20 +725,20 @@
       </span>
     </button>
 
-    <button class="confirm-button" [disabled]="isCrosstableModified()" (click)="savePanel();" >
-      <i class="fa fa-check"></i>
-      <span i18n="@@guardarButton"> 
-        Confirmar
-      </span>
-    </button>
-
+    
     <button class="cancel-button" (click)="closeEditarConsulta()"  >
       <i class="fa fa-times"></i>
       <span i18n="@@cancelarButton"> 
         Cancelar
       </span>
     </button>
-
+    
+    <button class="confirm-button" [disabled]="isCrosstableModified()" (click)="savePanel();" >
+      <i class="fa fa-check"></i>
+      <span i18n="@@guardarButton"> 
+        Confirmar
+      </span>
+    </button>
   </ng-container>
 </eda-dialog2>
 

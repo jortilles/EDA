@@ -13,7 +13,9 @@ import * as _ from 'lodash';
 
 @Component({
     selector: 'app-filter-dialog',
-    templateUrl: './filter-dialog.component.html'
+    templateUrl: './filter-dialog.component.html',
+    styleUrls: ['../eda-blank-panel.component.css']
+
 })
 
 export class FilterDialogComponent extends EdaDialogAbstract {

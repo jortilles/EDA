@@ -1,21 +1,21 @@
 <eda-dialog [inject]="dialog">
   <div body class="grid gap-4">
-    <div class="flex flex-col mt-8 gap-4">
+    <div class="flex flex-col mt-4 gap-4">
       <!-- Configuración de filtros -->
-      <div class="grid grid-cols-2 gap-4 items-start">
-          <div class="flex flex-col gap-4">
+        <div class="grid grid-cols-[42.5%,42.5%,15%] gap-4 items-start mt-10">
+          <div class="flex flex-col gap-4 w-[100%]">
             <!-- Tipo de filtro  -->
             <div>
-              <span class="p-float-label">
+              <span class="p-float-label ">
                 <p-dropdown id="types" [options]="filter.types" [(ngModel)]="filterSelected" optionLabel="label"
-                  [autoDisplayFirst]="false" [style]="{'width': '95%'}" [showClear]="true"
+                  [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true"
                   (onChange)="handleFilterChange(filterSelected)">
                 </p-dropdown>
                 <label i18n="@@tiposFiltrosLabel" for="types">Tipos de filtro</label>
               </span>
             </div>
             <!-- Switch y botón -->
-            <div class="flex justify-between items-center w-full mt-4 w-[95%]">
+            <div class="flex justify-between items-center w-full mt-4 w-[100%]">
               <div class="flex items-center gap-2">
                 <label i18n="@@optionsLabel" for="filter_options">Opciones</label>
                 <br>
@@ -23,55 +23,77 @@
                   (onChange)="loadDropDrownData()">
                 </p-inputSwitch>
               </div>
-
-              <button class="flex items-center px-4 py-2 border rounded-md" (click)="addFilter()" [disabled]="display.filterButton">
-                <span i18n-label="@@addFilterBtn">Añadir filtro</span>
-              </button>
+  
+  
             </div>
           </div>
-      
+  
           <!-- Valores de los filtros -->
           <div class="flex flex-col gap-2">
             @if (!!display.calendar && !filter.switch) {
-              <eda-date-picker #myCalendar class="h-[3.2rem]" (onDatesChanges)="processPickerEvent($event)"></eda-date-picker>
+            <eda-date-picker #myCalendar class="h-[3.2rem]" (onDatesChanges)="processPickerEvent($event)"></eda-date-picker>
             }
             @if (!display.calendar && !filter.switch) {
-            <span class="p-float-label">
-              <input id="float-input1" class="h-[3.2rem] w-full rounded-md border px-2 py-4" [type]="inputType"
-                [(ngModel)]="filterValue.value1" (input)="handleValidForm({value1: filterValue.value1})" pInputText>
+            <span class="p-float-label h-[3.2rem] w-full">
+              <input
+                id="float-input1"
+                class="w-full h-full rounded-md border border-gray-300 px-3 py-2"
+                [type]="inputType"
+                [(ngModel)]="filterValue.value1"
+                (input)="handleValidForm({ value1: filterValue.value1 })"
+                pInputText
+              />
               <label i18n="@@valor1Label">Valor 1</label>
             </span>
+         
             }
             @if (filter.switch) {
-            <span class="p-float-label">
-              <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value1" [virtualScroll]="true"
-                class="h-[3.2rem]" [itemSize]="34" [filter]="false" [style]="{width:'100%'}" [panelStyle]="{minWidth:'100%'}"
-                (onChange)="handleValidForm({value1: filterValue.value1})" defaultLabel="Selecciona..." [loading]="loading"
-                [selectionLimit]="limitSelectionFields" id="float-input1">
+            <span class="p-float-label h-[3.2rem] [&_.p-multiselect-label-container]:h-[3.05rem] [&_.p-multiselect-label-container]:flex [&_.p-multiselect-label-container]:items-center">
+              <p-multiSelect
+                [options]="dropDownFields"
+                [(ngModel)]="filterValue.value1"
+                [virtualScroll]="true"
+                [itemSize]="34"
+                [filter]="false"
+                [style]="{width:'100%'}"
+                [panelStyle]="{minWidth:'100%'}"
+                (onChange)="handleValidForm({value1: filterValue.value1})"
+                defaultLabel="Selecciona..."
+                [loading]="loading"
+                [selectionLimit]="limitSelectionFields"
+                id="float-input1">
               </p-multiSelect>
               <label i18n="@@valor1Label">Valor 1</label>
             </span>
             }
             <!-- Segundo valor por si el filtro es between  -->
             @if (!!display.between) {
-              @if (!display.calendar && !filter.switch) {
-              <span class="p-float-label mt-4">
-                <input id="float-input2" class="h-[3.2rem] w-full rounded-md border px-2 py-4" [type]="inputType"
-                  [(ngModel)]="filterValue.value2" (input)="handleValidForm({value2: filterValue.value2})" pInputText>
-                <label i18n="@@valor2Label">Valor 2</label>
-              </span>
-              }
-              @if (filter.switch) {
-              <span class="p-float-label mt-4">
-                <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value2" [virtualScroll]="true" [itemSize]="34"
-                  [filter]="false" [style]="{width:'100%'}" [panelStyle]="{minWidth:'100%'}"
-                  (onChange)="handleValidForm({value2: filterValue.value2})" defaultLabel="Selecciona..." [loading]="loading"
-                  [selectionLimit]="limitSelectionFields" id="float-input2">
-                </p-multiSelect>
-                <label i18n="@@valor2Label">Valor 2</label>
-              </span>
-              }
+            @if (!display.calendar && !filter.switch) {
+            <span class="p-float-label h-[3.2rem] [&_.p-multiselect-label-container]:h-[3.05rem] [&_.p-multiselect-label-container]:flex [&_.p-multiselect-label-container]:items-center">
+              <input id="float-input2" class="h-[3.2rem] w-full rounded-md border px-2 py-4" [type]="inputType"
+                [(ngModel)]="filterValue.value2" (input)="handleValidForm({value2: filterValue.value2})" pInputText>
+              <label i18n="@@valor2Label">Valor 2</label>
+            </span>
             }
+            @if (filter.switch) {
+            <span class="p-float-label h-[3.2rem] [&_.p-multiselect-label-container]:h-[3.05rem] [&_.p-multiselect-label-container]:flex [&_.p-multiselect-label-container]:items-center">
+              <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value2" [virtualScroll]="true" [itemSize]="34"
+                [filter]="false" [style]="{width:'100%'}" [panelStyle]="{minWidth:'100%'}"
+                (onChange)="handleValidForm({value2: filterValue.value2})" defaultLabel="Selecciona..."
+                [selectionLimit]="limitSelectionFields" id="float-input2">
+              </p-multiSelect>
+              <label i18n="@@valor2Label">Valor 2</label>
+            </span>
+            }
+            }
+          </div>
+
+          <div class="flex flex-col gap-2 items-start ">
+
+            <button class="addFilter-button" (click)="addFilter()" [disabled]="display.filterButton">
+              <span i18n-label="@@addFilterBtn">Añadir filtro</span>
+            </button>
+
           </div>
         </div>
 

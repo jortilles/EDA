@@ -1,3 +1,13 @@
 .filter-label::after {
   content: "\00a0"; /* 1 espacio */
 }
+
+
+::ng-deep eda-date-picker input {
+  height: 40px;        /* Alto estético */
+  width: 100%;         /* Ocupa todo el ancho del wrapper */
+  padding: 0.5rem 1rem; /* Espaciado interno */
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  box-sizing: border-box;
+}

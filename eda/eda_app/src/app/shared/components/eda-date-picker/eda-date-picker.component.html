@@ -1,30 +1,34 @@
 <p-calendar class='eda-filter-multiselect' [locale]="locale" [(ngModel)]="rangeDates" dateFormat="dd.mm.yy"
 	selectionMode="range" [readonlyInput]="true" [monthNavigator]="true" [yearNavigator]="true" yearRange="1984:2030"
 	[firstDayOfWeek]="firstDayOfWeek" [placeholder]="rangePlaceholder" (onClickOutside)="emitChanges()"
-	(onClose)="emitChanges()" (onFocus)="activate()" (onSelect)="clearRange()" appendTo="body">
+	(onClose)="emitChanges()" (onFocus)="activate()" (onSelect)="clearRange()" appendTo="body" [style]="{width:'100%'}">
 	<p-footer>
-		<div class="col-10">
-			<p-dropdown [options]="ranges" [(ngModel)]="selectedRange" [placeholder]="rangePlaceholder" (onChange)="getRange()"></p-dropdown>
+
+		<div class="flex content-center">
+			<div class="col-10">
+				<p-dropdown [options]="ranges" [(ngModel)]="selectedRange" [placeholder]="rangePlaceholder" (onChange)="getRange()"></p-dropdown>
+			</div>
+	
+	
+			<div *ngIf="autoRemove || autoClear" class="d-flex w-[100%] align-center content-center text-center" style="gap: 10px;">
+				<ng-content select="[footer]"></ng-content>
+	
+				<button *ngIf="autoRemove"
+					pButton pRipple type="button"
+					icon="fa fa-trash"
+					(click)="remove()"
+					class="p-button-danger p-button-rounded p-button-outlined">
+				</button>
+				
+				<button *ngIf="autoClear"
+					pButton pRipple type="button"
+					label="Clean" icon="pi pi-undo"
+					(click)="clearRangeDates()"
+					class="p-button-rounded p-button-outlined">
+				</button>
+	
+			</div>
 		</div>
 
-
-		<div *ngIf="autoRemove || autoClear" class="d-flex" style="gap: 10px;">
-			<ng-content select="[footer]"></ng-content>
-
-			<button *ngIf="autoRemove"
-				pButton pRipple type="button"
-				icon="fa fa-trash"
-				(click)="remove()"
-				class="p-button-danger p-button-rounded p-button-outlined">
-			</button>
-			
-			<button *ngIf="autoClear"
-				pButton pRipple type="button"
-				label="Clean" icon="pi pi-undo"
-				(click)="clearRangeDates()"
-				class="p-button-rounded p-button-outlined">
-			</button>
-
-		</div>
 	</p-footer>
 </p-calendar>

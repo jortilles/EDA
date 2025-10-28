@@ -3,8 +3,8 @@
   <div body>
     <div class="grid gap-4"
       [ngClass]="{
-        'grid-cols-[1fr_1fr_1fr_3fr]': showFormatDateSection,
-        'grid-cols-[1fr_1fr_3fr]': !showFormatDateSection}
+        'grid-cols-[0.75fr_0.75fr_0.75fr_3.75fr]': showFormatDateSection,
+        'grid-cols-[1fr_1fr_4fr]': !showFormatDateSection}
       ">
       <!-- Agregaciones -->
       <div class="">
@@ -38,18 +38,20 @@
       @if (showFormatDateSection) {
         <div class="">
           <h4 i18n="@@dateFormatH4">Format</h4>
-          <div class="aggregation-list mt-10">
-            <p-dropdown
-              [(ngModel)]="formatDate"
-              [options]="formatDates"
-              [optionLabel]="'display_name'"
-              [autoDisplayFirst]="false"
-              [showClear]="true"
-              [style]="{'min-width': '100%'}"
-              (onChange)="addFormatDate()"
-              class="w-100"
-              appendTo="body">
-            </p-dropdown>
+          <div class="aggregation-list mt-10 w-full">
+            <div style="width: 100%;">
+              <p-dropdown
+              [style]="{width:'100%'}"
+                [(ngModel)]="formatDate"
+                [options]="formatDates"
+                [optionLabel]="'display_name'"
+                [autoDisplayFirst]="false"
+                [showClear]="true"
+                (onChange)="addFormatDate()"
+                appendTo="body"
+                styleClass="w-full">
+              </p-dropdown>
+            </div>
           </div>
 
           <div class="mt-5 ml-4" [pTooltip]="cumulativeSumTooltip" tooltipPosition="left">
@@ -65,20 +67,20 @@
       }
       <div>
         <h4 i18n="@@filtrarH4">Filtrar</h4>
-        <div class="grid grid-cols-2 gap-4 items-start  mt-10">
-          <div class="flex flex-col gap-4">
+        <div class="grid grid-cols-[42.5%,42.5%,15%] gap-4 items-start mt-10">
+          <div class="flex flex-col gap-4 w-[100%]">
             <!-- Tipo de filtro  -->
             <div>
-              <span class="p-float-label">
+              <span class="p-float-label ">
                 <p-dropdown id="types" [options]="filter.types" [(ngModel)]="filterSelected" optionLabel="label"
-                  [autoDisplayFirst]="false" [style]="{'width': '95%'}" [showClear]="true"
+                  [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true"
                   (onChange)="handleFilterChange(filterSelected)">
                 </p-dropdown>
                 <label i18n="@@tiposFiltrosLabel" for="types">Tipos de filtro</label>
               </span>
             </div>
             <!-- Switch y botón -->
-            <div class="flex justify-between items-center w-full mt-4 w-[95%]">
+            <div class="flex justify-between items-center w-full mt-4 w-[100%]">
               <div class="flex items-center gap-2">
                 <label i18n="@@optionsLabel" for="filter_options">Opciones</label>
                 <br>
@@ -87,46 +89,62 @@
                 </p-inputSwitch>
               </div>
   
-              <button class="flex items-center px-4 py-2 border rounded-md" (click)="addFilter()"
-                [disabled]="display.filterButton">
-                <span i18n-label="@@addFilterBtn">Añadir filtro</span>
-              </button>
+  
             </div>
           </div>
   
           <!-- Valores de los filtros -->
           <div class="flex flex-col gap-2">
-            @if (!!display.calendar && !filter.switch) {
+            @if (!!display.calendar) {
             <eda-date-picker #myCalendar class="h-[3.2rem]" (onDatesChanges)="processPickerEvent($event)"></eda-date-picker>
             }
             @if (!display.calendar && !filter.switch) {
-            <span class="p-float-label">
-              <input id="float-input1" class="h-[3.2rem] w-full rounded-md border px-2 py-4" [type]="inputType"
-                [(ngModel)]="filterValue.value1" (input)="handleValidForm({value1: filterValue.value1})" pInputText>
-              <label i18n="@@valor1Label">Valor 1</label>
+            <span class="p-float-label h-[3.2rem] w-full">
+              <input
+                id="float-input1"
+                class="w-full h-full rounded-md border border-gray-300 px-3 py-2"
+                [type]="inputType"
+                [(ngModel)]="filterValue.value1"
+                (input)="handleValidForm({ value1: filterValue.value1 })"
+                pInputText
+              />
+              @if(!showFormatDateSection){
+                <label i18n="@@valor1Label">Valor 1</label>
+              }
             </span>
+         
             }
             @if (filter.switch) {
-            <span class="p-float-label">
-              <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value1" [virtualScroll]="true"
-                class="h-[3.2rem]" [itemSize]="34" [filter]="false" [style]="{width:'100%'}" [panelStyle]="{minWidth:'100%'}"
-                (onChange)="handleValidForm({value1: filterValue.value1})" defaultLabel="Selecciona..." [loading]="loading"
-                [selectionLimit]="limitSelectionFields" id="float-input1">
+            <span class="p-float-label h-[3.2rem] [&_.p-multiselect-label-container]:h-[3.05rem] [&_.p-multiselect-label-container]:flex [&_.p-multiselect-label-container]:items-center">
+              <p-multiSelect
+                [options]="dropDownFields"
+                [(ngModel)]="filterValue.value1"
+                [virtualScroll]="true"
+                [itemSize]="34"
+                [filter]="false"
+                [style]="{width:'100%'}"
+                [panelStyle]="{minWidth:'100%'}"
+                (onChange)="handleValidForm({value1: filterValue.value1})"
+                defaultLabel="Selecciona..."
+                [loading]="loading"
+                [selectionLimit]="limitSelectionFields"
+                id="float-input1">
               </p-multiSelect>
-              <label i18n="@@valor1Label">Valor 1</label>
-            </span>
+              @if(!showFormatDateSection){
+                <label i18n="@@valor1Label">Valor 1</label>
+              }            </span>
             }
             <!-- Segundo valor por si el filtro es between  -->
             @if (!!display.between) {
             @if (!display.calendar && !filter.switch) {
-            <span class="p-float-label mt-4">
+            <span class="p-float-label h-[3.2rem] [&_.p-multiselect-label-container]:h-[3.05rem] [&_.p-multiselect-label-container]:flex [&_.p-multiselect-label-container]:items-center">
               <input id="float-input2" class="h-[3.2rem] w-full rounded-md border px-2 py-4" [type]="inputType"
                 [(ngModel)]="filterValue.value2" (input)="handleValidForm({value2: filterValue.value2})" pInputText>
               <label i18n="@@valor2Label">Valor 2</label>
             </span>
             }
             @if (filter.switch) {
-            <span class="p-float-label mt-4">
+            <span class="p-float-label h-[3.2rem] [&_.p-multiselect-label-container]:h-[3.05rem] [&_.p-multiselect-label-container]:flex [&_.p-multiselect-label-container]:items-center">
               <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value2" [virtualScroll]="true" [itemSize]="34"
                 [filter]="false" [style]="{width:'100%'}" [panelStyle]="{minWidth:'100%'}"
                 (onChange)="handleValidForm({value2: filterValue.value2})" defaultLabel="Selecciona..."
@@ -136,6 +154,15 @@
             </span>
             }
             }
+          </div>
+
+          <div class="flex flex-col gap-2 items-start ">
+
+            <button class="addFilter-button" (click)="addFilter()" [disabled]="display.filterButton">
+              <i class="fa fa-plus mr-2"></i>
+              <span i18n-label="@@addFilterBtn">Añadir filtro</span>
+            </button>
+
           </div>
         </div>
         <!-- Filter List -->
@@ -187,12 +214,20 @@
 
   <div footer>
     <div class="flex justify-end p-2 border-t gap-1.5">
+
       <button class="flex items-center px-4 py-2 border rounded-md" (click)="duplicateColumn()">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
         </svg>
         <span i18n-label="@@duplicateColumnButton">Duplicar columna</span>
       </button>
+
+      <button
+          class="cancel-button"
+          (click)="closeDialog()">
+          <i class="fa fa-times"></i>
+          <span i18n-label="@@cancelarBtn">Cancelar</span>
+       </button>
 
       <button class="confirm-button" [disabled]="!display.filterButton" (click)="closeDialog()">
         <i class="fa fa-check"></i> <span i18n-label="@@guardarButton">Confirmar</span>
