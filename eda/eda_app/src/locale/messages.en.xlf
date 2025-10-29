@@ -4323,6 +4323,7 @@ Once configured you can invoke it whenever you want from the button.</target>
   <trans-unit id="dialogHeaderCustomActions">
     <source>ACCIONES PERSONALIZADAS </source>
     <target>CUSTOM ACTIONS </target>
+  </trans-unit>
 
   <trans-unit id="textLabelUrl">
     <source>Agregar url</source>
