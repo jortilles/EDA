@@ -2683,6 +2683,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Només pots afegir filtres quan tots els panells estan configurats</target>
 </trans-unit>
 
+<trans-unit id="SaveWarningTittle">
+<source>Solo puedes guardar cuando todos los paneles están configurados</source>
+<target>Només pots guardar quan tots els panells estan configurats</target>
+</trans-unit>
+
 <trans-unit id="AddFiltersWarningText">
 <source>Puedes borrar los paneles en blanco o configurarlos</source>
 <target>Pots esborrar els panells en blanc o configurar-los</target>

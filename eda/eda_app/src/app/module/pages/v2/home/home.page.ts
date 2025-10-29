@@ -9,10 +9,12 @@ import { AlertService, DashboardService } from '@eda/services/service.index';
 import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
+import { CommonModule } from '@angular/common';
+
 @Component({
   selector: 'app-v2-home-page',
   standalone: true,
-  imports: [FormsModule, NgTemplateOutlet, IconComponent],
+  imports: [FormsModule, NgTemplateOutlet, IconComponent, CommonModule],
   templateUrl: './home.page.html'
 })
 export class HomePageV2 implements OnInit {
@@ -29,9 +31,7 @@ export class HomePageV2 implements OnInit {
   reportMap: any = {};
   
   tags: any[] = [];
-  selectedTags = signal<any[]>(JSON.parse(sessionStorage.getItem('activeTags') ? sessionStorage.getItem('activeTags') : '[]').map(
-    tag => ({ label: tag.label, value: String(tag.value) })
-  ));
+  selectedTags = signal<any>(JSON.parse(sessionStorage.getItem('activeTags') ? sessionStorage.getItem('activeTags') : '[]'));
 
   isOpenTags = signal(false)
   searchTagTerm = signal("")
@@ -108,24 +108,26 @@ export class HomePageV2 implements OnInit {
   }
 
 
-  public handleTagSelect(option: any): void {
-    const currentFilters = this.selectedTags(); // Filtros de tags 
-    const tags = JSON.parse(sessionStorage.getItem("activeTags") || "[]"); // Tags activos en sesion
-    
-    if (currentFilters.some((filter) => filter.value === option.value)) { //Si el filtro existe eliminamos este
-      this.selectedTags.set(currentFilters.filter((filter) => filter.value !== option.value)); // Elimina el valor del tag del headerTag
-      sessionStorage.setItem("activeTags", JSON.stringify((() => {
-        return tags.filter(tag => tag.value !== option.value) // Elimina valor del JSON de storage
-      })()));
-    } else {
-      this.selectedTags.set([...currentFilters, option]); // Añadir el valor del tag del headerTag
-      sessionStorage.setItem("activeTags", JSON.stringify((() => {
-        return [...tags, option]; // Añadir valor del JSON de storage
-      })()));
-    }
-    this.isOpenTags.set(false);
-    this.filterByTags();
+public handleTagSelect(option: any): void {
+  const currentFilters = this.selectedTags(); // Filtros de tags
+  const tags = JSON.parse(sessionStorage.getItem("activeTags") || "[]"); // Tags activos en sesión
+
+  const isSelected = currentFilters.value === option.value;
+
+  if (isSelected) {
+    // Eliminar tag
+    this.selectedTags.set('');
+    sessionStorage.setItem("activeTags", JSON.stringify(''));
+  } else {
+    // Añadir tag
+    this.selectedTags.set(option);
+
+    sessionStorage.setItem("activeTags", JSON.stringify(option));
   }
+
+  this.isOpenTags.set(false);
+  this.filterByTags();
+}
 
   public filteredTags(): any[] {
     return this.tags.filter((option) => option.label.toLowerCase().includes(this.searchTagTerm().toLowerCase()))
@@ -145,7 +147,7 @@ export class HomePageV2 implements OnInit {
   }
 
   public isTagSelected(optionValue: string): boolean {
-    return this.selectedTags().some(filter => filter.value === optionValue);
+    return this.selectedTags().value === optionValue;
   }
 
   public onCreateDashboard() {
@@ -285,6 +287,7 @@ export class HomePageV2 implements OnInit {
         );
       }
     });
+    this.loadReportTags();
   }
 
   /**

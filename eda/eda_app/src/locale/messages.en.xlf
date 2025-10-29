@@ -2677,6 +2677,12 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>You can only add filters when all panels are configured</target>
 </trans-unit>
 
+<trans-unit id="SaveWarningTittle">
+<source>Solo puedes guardar cuando todos los paneles están configurados</source>
+<target>You can only save dashboard when all panels are configured</target>
+</trans-unit>
+
+
 <trans-unit id="AddFiltersWarningText">
 <source>Puedes borrar los paneles en blanco o configurarlos</source>
 <target>You can delete the blank panels or configure them</target>

@@ -193,7 +193,8 @@ export class DashboardPageV2 implements OnInit {
       }
       // me.tags = me.tags.filter(tag => tag.value !== 0); //treiem del seleccionador de tags el valor "sense etiqueta"
       // me.tags = me.tags.filter(tag => tag.value !== 1); //treiem del seleccionador de tags el valor "tots"
-      this.selectedTags = this.dashboard.config.tags;
+
+      this.selectedTags = this.dashboard.config.tag;
       //this.onlyIcanEdit = this.dashboard.config.onlyIcanEdit;
     }
 
@@ -517,7 +518,7 @@ public async reloadPanels(): Promise<void> {
              
               //Borramos filtros activos del global filter, pero los mantenemos guardados
               for (const element of this.lastFilters) {
-                await this.globalFilter.removeGlobalFilter(element.filter, true);
+                this.globalFilter.removeGlobalFilter(element.filter, true);
               }             
               //Añadimos filtros nuevos
               try {
@@ -722,38 +723,51 @@ private addFilterToPanelQuery(panel: any, filter: any): void {
 
   public async saveDashboard() {
     // LiveDashboardTimer
-    this.triggerTimer();
-    const body = {
-      config: {
-        title: this.title,
-        panel: [],
-        ds: { _id: this.dataSource._id },
-        filters: this.cleanFiltersData(),
-        applyToAllfilter: this.applyToAllfilter,
-        visible: this.dashboard.config.visible,
-        tags: this.dashboard.config.tags,
-        refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
-        clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
-        // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
-        sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig, 
-        onlyIcanEdit: this.onlyIcanEdit, // NO puedo Editar dashboard --> publico con enlace
-        styles: this.dashboard.config.styles,
-        urls: this.dashboard.config.urls,
-        author: this.dashboard.config?.author
-      },
-      group: this.dashboard.group ? _.map(this.dashboard.group) : undefined,
-    }
+    let isvalid = true;
+    const emptyQuery = this.edaPanels.some((panel) => panel.currentQuery.length === 0);
 
-    body.config.panel = this.savePanels();
 
-    try {
-      await lastValueFrom(this.dashboardService.updateDashboard(this.dashboardId, body));
-      this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
-      this.dashboardService._notSaved.next(false);
-    } catch (err) {
-      this.alertService.addError(err);
-      throw err;
-    }
+
+      if (emptyQuery) isvalid = false;
+
+      if (!isvalid) {
+        this.alertService.addError($localize`:@@AddFiltersWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`)
+      }else{
+        
+        
+            this.triggerTimer();
+            const body = {
+              config: {
+                title: this.title,
+                panel: [],
+                ds: { _id: this.dataSource._id },
+                filters: this.cleanFiltersData(),
+                applyToAllfilter: this.applyToAllfilter,
+                visible: this.dashboard.config.visible,
+                tag: this.selectedTags,
+                refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
+                clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
+                // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
+                sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig, 
+                onlyIcanEdit: this.onlyIcanEdit, // NO puedo Editar dashboard --> publico con enlace
+                styles: this.dashboard.config.styles,
+                urls: this.dashboard.config.urls,
+                author: this.dashboard.config?.author
+              },
+              group: this.dashboard.group ? _.map(this.dashboard.group) : undefined,
+            }
+        
+            body.config.panel = this.savePanels();
+
+            try {
+              await lastValueFrom(this.dashboardService.updateDashboard(this.dashboardId, body));
+              this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
+              this.dashboardService._notSaved.next(false);
+            } catch (err) {
+              this.alertService.addError(err);
+              throw err;
+            }
+      }
   }
 
   private savePanels(): any[] {
@@ -764,12 +778,6 @@ private addFilterToPanelQuery(panel: any, filter: any): void {
 
     for (const panel of _panels) {
       const dashboardId = panel.dashboard?._id;
-
-      // check if panel is imported from other Dashboard
-      if (dashboardId && dashboardId != this.dashboardId) {
-        // remove content from panel, only store panel references
-        delete (panel.content);
-      }
     }
 
     return _panels;

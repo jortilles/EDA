@@ -30,56 +30,22 @@
       <div class="space-y-2 w-full sm:w-auto">
         <div class="text-sm text-muted-foreground"> <span i18n="@@filterReports">FILTRAR INFORMES:</span> </div>
         <div class="flex flex-wrap gap-2">
-          @for (tag of selectedTags(); track tag.value) {
-            <button
-              class="flex items-center py-1 px-3 border rounded-full shadow text-sm font-semibold"
-              (click)="removeTag(tag)"
-            >
-              {{ tag.label }}
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 ml-2">
-                <path d="M18 6 6 18" />
-                <path d="m6 6 12 12" />
-              </svg>
-            </button>
-          }
           <div class="relative">
-            <button
-              class="flex items-center rounded-full border px-2.5 py-1 text-sm font-semibold shadow"
-              (click)="toggleDropdownTags()"
-            >
-              <span i18n="@@addTag">Añadir etiqueta</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 ml-2">
-                <path d="M5 12h14" />
-                <path d="M12 5v14" />
-              </svg>
-            </button>
-            @if (isOpenTags()) {
-              <div class="absolute z-10 mt-1 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                <div class="p-2">
-                  <input
-                    class="w-full p-2 border border-gray-300 rounded mb-2"
-                    type="text"
-                    i18n-placeholder="@@searchTags"
-                    placeholder="Buscar etiquetas..."
-                    [(ngModel)]="searchTagTerm"
-                  />
-                  @for (option of filteredTags(); track option.value) {
-                    <div
-                      class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
-                      (click)="handleTagSelect(option)"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
-                        [class.invisible]="!isTagSelected(option.value)"
-                        class="h-4 w-4 mr-2"
-                      >
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                      {{ option.label }}
-                    </div>
-                  }
+
+            <div class="flex justify-center text-center font-bold">
+              <span class="flex items-center px-4 py-2 text-sm text-gray-700  ">Tags:</span>
+
+              @for (option of filteredTags(); track option.value) {
+                <div
+                  [ngClass]="isTagSelected(option.value) ? 'tag-selected' : 'tag'"
+                  (click)="handleTagSelect(option)"
+                  >
+                  {{ option.label }}
                 </div>
-              </div>
-            }
+              }
+            </div>
+
+
           </div>
         </div>
       </div>

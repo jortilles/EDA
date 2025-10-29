@@ -379,7 +379,7 @@ export class DashboardSidebarComponent {
           title: newDashboard.name,
           visible: newDashboard.visible,
           ds,
-          tags: null,
+          tag: null,
           refreshTime: null,
           clickFiltersEnabled: true,
           author: JSON.parse(localStorage.getItem('user')).name,
@@ -397,7 +397,7 @@ export class DashboardSidebarComponent {
           filters: this.dashboard.cleanFiltersData(),
           applyToAllfilter: this.dashboard.applyToAllfilter,
           visible: newDashboard.visible,
-          tags: this.dashboard.dashboard.config.tags,
+          tag: this.dashboard.dashboard.config.tag,
           refreshTime: (this.dashboard.refreshTime > 5) ? this.dashboard.refreshTime : this.dashboard.refreshTime ? 5 : null,
           clickFiltersEnabled: true,
           mailingAlertsEnabled: this.getMailingAlertsEnabled(),
@@ -490,7 +490,7 @@ export class DashboardSidebarComponent {
   public closeTagModal(tags: any[]) {
     this.isTagModalVisible = false;
     this.dashboard.selectedTags = tags;
-    this.dashboard.dashboard.config.tags = tags;
+    this.dashboard.dashboard.config.tag = tags;
   }
 
   public removeDashboard() {

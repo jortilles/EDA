@@ -449,6 +449,36 @@ body .ui-tree {
   border: 1px solid black !important;
 }
 
+/* Tag normal con hover */
+.tag {
+  padding: 0.5rem 1rem; /* px-4 py-2 equivalente */
+  font-size: 0.875rem;  /* text-sm */
+  color: #374151;       /* gray-700 */
+  background-color: #f3f4f6; /* gray-100 */
+  border-radius: 0.375rem; /* rounded-md */
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tag:hover {
+  background: linear-gradient(to right, #00B0BA, #38b2ac); /* gradiente */
+  color: white;
+}
+
+/* Tag seleccionado (igual que hover) */
+.tag-selected {
+    padding: 0.5rem 1rem; /* px-4 py-2 equivalente */
+  font-size: 0.875rem;  /* text-sm */
+  color: #374151;       /* gray-700 */
+  background-color: #f3f4f6; /* gray-100 */
+  border-radius: 0.375rem; /* rounded-md */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: linear-gradient(to right, #00B0BA, #38b2ac);
+  color: white;
+}
+
+
 /* Controles del medio centrados */
 .p-picklist-custom .p-picklist-buttons-wrapper {
   position: sticky;
