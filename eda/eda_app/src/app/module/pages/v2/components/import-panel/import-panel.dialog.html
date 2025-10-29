@@ -10,45 +10,29 @@
         <div class="mt-6">
           <div class="flex-1 flex flex-col">
             <label for="dashboard" class="mb-1">Dashboard</label>
-          <p-dropdown id="dashboard" [(ngModel)]="_import.fromDashboard" [options]="dashboardOptions"
-            [filter]="true" filterBy="config.title" [showClear]="true" [style]="{'minWidth':'100%'}"
-            (onChange)="onSelectDashboard()" appendTo="body">
-              <ng-template pTemplate="filter" let-options="options">
-                <div class="flex gap-1">
-                  <div class="p-inputgroup" (click)="$event.stopPropagation()">
-                    <span class="p-inputgroup-addon"><i class="pi pi-search"></i></span>
-                    <input 
-                      type="text"
-                      pInputText
-                      placeholder="Filter"
-                      [(ngModel)]="filterValue"
-                      (keyup)="filterDashboards($event, options)"
-                      class="w-full"
-                      />
-                      <!-- [(ngModel)]="filterValue"
-                      (keyup)="customFilterFunction($event, options)" -->
+              <p-dropdown
+                id="dashboard"
+                [(ngModel)]="_import.fromDashboard"
+                [options]="dashboardOptions"
+                optionLabel="config.title"
+                [filter]="true"
+                filterBy="config.title"
+                [showClear]="true"
+                [style]="{'minWidth': '100%'}"
+                (onChange)="onSelectDashboard()"
+                appendTo="body"
+              >
+                <ng-template pTemplate="selectedItem" let-selectedOption>
+                  <div class="flex align-items-center gap-2">
+                    <div>{{ selectedOption?.config?.title }}</div>
                   </div>
-                  <!-- <div class="p-inputgroup" (click)="$event.stopPropagation()">
-                    <span class="p-inputgroup-addon"><i class="pi pi-search"></i></span>
-                    <input 
-                      type="text"
-                      pInputText
-                      placeholder="Filter" 
-                      />
-                  </div> -->
-                </div>
-            </ng-template>
-            <ng-template pTemplate="selectedItem" let-selectedOption>
-              <div class="flex align-items-center gap-2">
-                  <div>{{ selectedOption?.config?.title }}</div>
-              </div>
-            </ng-template>
-            <ng-template let-option pTemplate="item">
-              <div class="flex align-items-center gap-2">
-                  <div>{{ option?.config?.title }}</div>
-              </div>
-            </ng-template>
-          </p-dropdown>
+                </ng-template>
+                <ng-template let-option pTemplate="item">
+                  <div class="flex align-items-center gap-2">
+                    <div>{{ option?.config?.title }}</div>
+                  </div>
+                </ng-template>
+              </p-dropdown>
           </div>
         </div>
 
