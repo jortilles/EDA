@@ -157,32 +157,6 @@ export class DashboardSidebarComponent {
       command: () => this.cleanPanelsCache()
     },
     {
-      id: 'dashboardPrivacity',
-      label:$localize`:@@dashboardSidebarDashboardPrivacity: Privacidad informe`,
-      icon: "pi pi-lock",
-      command: () => { 
-        this.isVisibleModalVisible = true;
-        this.hidePopover();
-      }
-    },{
-      id: 'addTag',
-      label: $localize`:@@dashboardSidebarAddTag: Añadir etiqueta`,
-      icon: "pi pi-tag",
-      command: () => {
-        this.isTagModalVisible = true;
-        this.hidePopover();
-      }
-    },
-    {
-      id: 'enableFilters',
-      label: this.clickFiltersEnabled ? $localize`:@@enableFilters: Click en filtros habilitado` 
-                                      : $localize`:@@disableFilters:Click en filtros deshabilitado`,
-      icon: this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock",
-      command: () => {
-        this.toggleClickFilters();
-      }
-    },
-    {
       id: 'liveDashboard',
       label:  $localize`:@@dashboardSidebarLiveDashboard: Live Dashboard`,
       icon: "pi pi-desktop",
@@ -222,6 +196,32 @@ export class DashboardSidebarComponent {
       command: () => {
         this.isEditStyleDialogVisible = true;
         this.hidePopover();
+      }
+    },
+    {
+      id: 'dashboardPrivacity',
+      label:$localize`:@@dashboardSidebarDashboardPrivacity: Privacidad informe`,
+      icon: "pi pi-lock",
+      command: () => { 
+        this.isVisibleModalVisible = true;
+        this.hidePopover();
+      }
+    },{
+      id: 'addTag',
+      label: $localize`:@@dashboardSidebarAddTag: Añadir etiqueta`,
+      icon: "pi pi-tag",
+      command: () => {
+        this.isTagModalVisible = true;
+        this.hidePopover();
+      }
+    },
+    {
+      id: 'enableFilters',
+      label: this.clickFiltersEnabled ? $localize`:@@enableFilters: Click en filtros habilitado` 
+                                      : $localize`:@@disableFilters:Click en filtros deshabilitado`,
+      icon: this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock",
+      command: () => {
+        this.toggleClickFilters();
       }
     },
     {
@@ -672,17 +672,17 @@ export class DashboardSidebarComponent {
   }
 
   toggleClickFilters() {
-      // Buscar el objeto una sola vez
-      const clickItem = this.sidebarItems.find(item => item.label === $localize`:@@enableFilters:Click en filtros habilitado` || $localize`:@@disableFilters:Click en filtros deshabilitado`);
+    // Buscar el objeto una sola vez
+    const clickItem = this.sidebarItems.find(item => item.id === 'enableFilters');
+    
+    // Alternar el estado
+    this.clickFiltersEnabled = !this.clickFiltersEnabled;
       
-      // Alternar el estado
-      this.clickFiltersEnabled = !this.clickFiltersEnabled;
-      
-      // Actualizar label e icono según estado
-      clickItem.label = this.clickFiltersEnabled ? $localize`:@@enableFilters:Click en filtros habilitado` : $localize`:@@disableFilters:Click en filtros deshabilitado`;
-      clickItem.icon = this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock";
-      
-      // Actualizar dashboard
-      this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
+    // Actualizar label e icono según estado
+    clickItem.label = this.clickFiltersEnabled ? $localize`:@@enableFilters:Click en filtros habilitado` : $localize`:@@disableFilters:Click en filtros deshabilitado`;
+    clickItem.icon = this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock";
+    
+    // Actualizar dashboard
+    this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
   }
 }
