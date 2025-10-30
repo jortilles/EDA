@@ -77,7 +77,7 @@ export class HomePageV2 implements OnInit {
   private async loadReportTags() {
     /** Obtener etiquetas únicas */
     this.tags = _.uniqBy(
-      [...this.privateReports, ...this.publicReports, ...this.roleReports, ...this.sharedReports]
+      [...this.allDashboards]
       .flatMap(db => db.config.tag) // Aplanamos los arrays de tags
       .filter(tag => tag !== null && tag !== undefined) // Eliminamos valores nulos o indefinidos
       .flatMap(tag => Array.isArray(tag) ? tag : [tag]) // Si es un array, lo expandimos; si no, lo mantenemos como está
@@ -280,14 +280,13 @@ public handleTagSelect(option: any): void {
                 break; // ya lo eliminamos
               }
             }
-            
+            this.loadReportTags();
             this.alertService.addSuccess($localize`:@@DashboardDeletedInfo:Informe eliminado correctamente.`);
           },
           err => this.alertService.addError(err)
         );
       }
     });
-    this.loadReportTags();
   }
 
   /**
