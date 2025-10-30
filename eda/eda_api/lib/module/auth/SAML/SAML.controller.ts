@@ -4,6 +4,7 @@ import passport from '../SAML.passport';
 import { samlStrategy } from '../SAML.passport';
 import ServerLogService from '../../../services/server-log/server-log.service';
 import { parseStringPromise } from 'xml2js';
+import zlib from 'zlib';
 
 // Importaciones necesarias
 import User, { IUser } from '../../admin/users/model/user.model';
@@ -19,10 +20,8 @@ const SAMLconfig = require('../../../../config/SAMLconfig');
 // Grupos de Edalitics
 import Group, { IGroup } from '../../admin/groups/model/group.model'
 
-
 // URL de Redirección
 const origen = SAMLconfig.urlRedirection; // http://localhost:4200
-
 
 export class SAMLController {
 
@@ -77,6 +76,13 @@ static async acs(req: Request, res: Response, next: NextFunction) {
 
         insertServerLog(req, 'info', 'newLogin', user.nameID, 'attempt');
 
+        const nameID = user.nameID
+        const sessionIndex = user.attributes.sessionIndex;
+        
+        console.log('nameID: ', nameID);
+        console.log('sessionIndex: ', sessionIndex);
+        console.log('user: ', user);
+
         const email = user.nameID;
         const name = user.nameID;
         const picture = '';
@@ -113,12 +119,17 @@ static async acs(req: Request, res: Response, next: NextFunction) {
 
         console.log('userSAML ===> ', userSAML);
 
-        token = await jwt.sign({ user: userSAML }, SEED, { expiresIn: 14400 });
+        const userPayload = {
+            ...userSAML.toObject(),    // Todos los datos de usuario
+            nameID: user.nameID,       // Se agrega nameID que proviene del IdP
+            nameIDFormat: user.nameIDFormat, // Se agrega nameIDFormat que proviene del IdP
+            sessionIndex: user.attributes?.sessionIndex  // Se agrega sessionIndex que proviene del IdP
+        };        
+
+        token = await jwt.sign({ user: userPayload }, SEED, { expiresIn: 14400 });
 
         // --- Sincronizar Grupos como en login normal ---
-        await Group.updateMany({}, { $pull: { users: userSAML._id } });
-        
-        console.log('la autenticación con SAML no recupera los grupos...... de momento. ');
+        await Group.updateMany({}, { $pull: { users: userSAML._id } });        
         //await Group.updateMany({ _id: { $in: '135792467811111111111115' } }, { $push: { users: userSAML._id } }).exec();
 
         // --------- REDIRECCIÓN A ANGULAR CON JWT ---------
@@ -155,6 +166,111 @@ static async acs(req: Request, res: Response, next: NextFunction) {
         );
         res.type('application/xml').send(xml);
     }
+
+  static async logout(req: Request, res: Response, next: NextFunction) {
+    try {
+
+      console.log('req.user: ', req.user);
+      const nameID = req.user.nameID;
+      const nameIDFormat = req.user.nameIDFormat;
+      const sessionIndex = req.user.sessionIndex;
+
+      // Si no tenemos datos SAML: hacemos logout local (frontend) y redirect
+      if (!nameID && !sessionIndex) return res.redirect(302, `${origen}/#/login`);
+
+      // Construir "profile" para getLogoutUrlAsync (Sirve para la peticion de logout)
+      const profile = {
+        nameID,
+        nameIDFormat,
+        sessionIndex
+      };
+
+      // RelayState: a dónde volver en tu frontend cuando logout termine en IdP
+      const relayState = `${origen}/#/login`;
+
+      console.log('relayState: ', relayState);
+      console.log('Logout profile:', profile);
+
+      // Pedir URL de logout al saml implementation
+      const saml: any = (samlStrategy as any)._saml;
+      const logoutUrl = await saml.getLogoutUrlAsync(profile, relayState, {});
+
+      console.log('logoutUrl: ', logoutUrl);
+
+      // Redirigir navegador al IdP para completar el SLO
+      return res.redirect(302, logoutUrl);
+    } catch (error) {
+      console.error('SAML logout error:', error);
+      return next(error);
+    }
+  }
+
+  static async sls(req: Request, res: Response, next: NextFunction) {
+    try {
+      const saml: any = (samlStrategy as any)._saml;
+      let result;
+
+      console.log(' ############################### CORRECTO ###############################');
+      const samlResponse = req.body.SAMLResponse;
+      const relayState = req.body.RelayState;
+
+      // Si no se recibe respuesta del SAML
+      if (!samlResponse) return res.status(400).send('No SAMLResponse received');
+
+      try {
+        result = await saml.validatePostResponseAsync(
+          { SAMLResponse: String(samlResponse) },
+          { skipSignatureValidation: false } // true solo para test; quitar en producción una vez tengas cert + cache ok
+        );
+        console.log('result', result);
+
+      } catch (error) {
+        console.warn('validatePostResponseAsync error, trying fallback parse:', error?.message || error);
+
+        try {
+          const xml = decodeBase64PossiblyDeflated(String(samlResponse));
+          const parsedXml = await parseStringPromise(xml, { explicitArray: false });
+          const logoutResp = parsedXml['samlp:LogoutResponse'] || parsedXml['LogoutResponse'] || parsedXml;
+          const statusCode =
+            logoutResp?.['samlp:Status']?.['samlp:StatusCode']?.['$']?.Value ||
+            logoutResp?.Status?.StatusCode?.['$']?.Value;
+          
+          console.log('xml: ', xml)
+          console.log('parsedXml: ', parsedXml)
+          console.log('logoutResp: ', logoutResp)
+          console.log('statusCode: ', statusCode)
+
+          if(!statusCode) {
+            console.warn('No StatusCode found in SAMLResponse fallback parse');
+          } else if(String(statusCode).endsWith(':Success')) {
+              return res.redirect(302, `${origen}/#/login?logged_out=1`);
+          } else {
+            console.warn('SAMLResponse status not success:', statusCode);
+            return res.status(400).send('Logout not successful');
+          }
+
+        } catch (error) {
+          console.warn('SAMLResponse status not success:', error);
+          return next(error);
+        }
+      }
+
+    } catch (error) {
+      console.error('SLS error:', error);
+      return next(error);
+    }
+
+    // Helper para el Buffer
+    function decodeBase64PossiblyDeflated(b64: string) {
+      const buf = Buffer.from(b64, 'base64');
+      try {
+        return zlib.inflateRawSync(buf).toString();
+      } catch {
+        return buf.toString();
+      }
+    }
+
+  }
 
 }
 

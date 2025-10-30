@@ -138,7 +138,18 @@ menuCommand(item: any, event: MouseEvent) {
   }
 
   if (path.includes('logout')) {
-    this.userService.logout();
+
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    if(user.nameID && user.nameIDFormat && user.sessionIndex) {
+      // LOGOUT A TRAVÉS DE SAML
+      this.userService.SAMLlogout();
+    } 
+    else {
+      // LOGOUT POR DEFAULT
+      this.userService.logout();
+    }
+
   } else if (path) {
     item.command ? item.command() : this.router.navigate([path]);
   } else if (item.lang) {
