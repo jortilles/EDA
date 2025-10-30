@@ -37,9 +37,14 @@ export const samlStrategy = new SamlStrategy(
   },
 
   // logoutVerify (SLO) – mínimo viable
-  (_profile: Profile | null, done: VerifiedCallback) => {
-    // Para vetar el logout, hacer: done(null, false)
-    done(null, true as unknown as Record<string, unknown>);
+  (profile: Profile | null, done: VerifiedCallback) => {
+    if (!profile) return done(new Error('Empty SAML logout profile'));
+
+    // opcional: aquí podrías validar que nameID y sessionIndex existan en BD
+    // const user = await User.findOne({ 'saml.nameID': profile.nameID });
+    // if (!user) return done(new Error('User not found for SLO'));
+
+    done(null, profile); // retorna el profile tal cual, para que passport-saml genere LogoutResponse correctamente
   }
 );
 

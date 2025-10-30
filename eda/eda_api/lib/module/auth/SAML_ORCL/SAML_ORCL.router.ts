@@ -15,5 +15,11 @@ router.post('/acs', express.urlencoded({ extended: false }), SAML_ORCL_Controlle
 // Control de metadata
 router.get('/metadata', SAML_ORCL_Controller.metadata);
 
+// Botón Logout "single Sign-On" con SAML => Redirige petición de logout al Idp
+router.get('/logout', authGuard ,SAML_ORCL_Controller.logout); // SP-initiated logout: redirige al IdP
+
+// Endpoint para recibir la respuesta/requests del IdP (GET o POST según el binding)
+router.post('/sls', express.urlencoded({ extended: false }), SAML_ORCL_Controller.sls);
+
 
 export default router;
