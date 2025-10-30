@@ -8,7 +8,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { MenuModule } from 'primeng/menu';
 import { MessageModule } from 'primeng/message';
 import { CompactType, DisplayGrid, GridsterComponent, GridsterConfig, GridsterItem, GridsterItemComponent, GridType } from 'angular-gridster2';
-import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, StyleProviderService, IGroup, DashboardStyles, ChartUtilsService } from '@eda/services/service.index';
+import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, StyleProviderService, IGroup, DashboardStyles, ChartUtilsService, UserService } from '@eda/services/service.index';
 import { EdaPanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index';
 import { DashboardSidebarComponent } from '../components/dashboard-sidebar/dashboard-sidebar.component';
 import { GlobalFilterV2Component } from '../components/global-filter/global-filter.component';
@@ -42,6 +42,7 @@ export class DashboardPageV2 implements OnInit {
   private route = inject(ActivatedRoute);
   private chartUtils = inject(ChartUtilsService);
   private dateUtilsService = inject(DateUtils);
+  private userService = inject(UserService);
 
   public title: string = $localize`:@@loading:Cargando informe...`;
   public styles: DashboardStyles;
@@ -361,6 +362,22 @@ export class DashboardPageV2 implements OnInit {
       this.sidebar.showPopover(event);
     }
   }
+
+      public canIedit(): boolean {
+        let result: boolean = false;
+        result = this.userService.isAdmin;
+        // si no es admin...
+        if (!result) {
+            if (this.dashboard.onlyIcanEdit) {
+                result = this.userService.user._id === this.dashboard.user
+            } else {
+                // Usuari anonim no pot editar
+                result = this.userService.user._id !== '135792467811111111111112';
+            }
+
+        }
+        return result;
+    }
 
   onRemovePanel(panel: any) {
     this.panels.splice(_.findIndex(this.panels, { id: panel }), 1);
@@ -717,8 +734,8 @@ private addFilterToPanelQuery(panel: any, filter: any): void {
   }
 
   isEditable(): boolean {
-    // TODO check is editable
-    return true;
+    // TODO check is editabl
+    return this.dashboard.dashboard.config.isEditable
   }
 
   public async saveDashboard() {
@@ -749,7 +766,7 @@ private addFilterToPanelQuery(panel: any, filter: any): void {
                 clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
                 // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
                 sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig, 
-                onlyIcanEdit: this.onlyIcanEdit, // NO puedo Editar dashboard --> publico con enlace
+                onlyIcanEdit: this.dashboard.config.onlyIcanEdit, // NO puedo Editar dashboard --> publico con enlace
                 styles: this.dashboard.config.styles,
                 urls: this.dashboard.config.urls,
                 author: this.dashboard.config?.author

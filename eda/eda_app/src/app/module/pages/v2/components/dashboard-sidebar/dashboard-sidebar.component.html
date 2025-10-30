@@ -8,9 +8,11 @@
           <h4 class="text-lg font-bold" id="dashboardName">
             {{ dashboard.title }}     
           </h4>
-          <button (click)="renameDashboard()" class="rounded-md p-2 cursor-pointer hover:bg-muted h-fit">
-            <eda-icon class="pointer-events-none" name="pencil"></eda-icon>
-          </button>
+          @if(isEditableCheck()){
+            <button (click)="renameDashboard()" class="rounded-md p-2 cursor-pointer hover:bg-muted h-fit">
+              <eda-icon class="pointer-events-none" name="pencil"></eda-icon>
+            </button>
+          }
         </div>
         <hr class="my-2" />
         <span>
@@ -29,73 +31,75 @@
     </div>
 
     <!-- Menú blanco -->
-    <div class="bg-white px-3 pb-3 pt-2">
-      <div class="flex flex-col gap-2 text-lg">
-        @for (item of itemsVisibles(); track item.label) {
-          @if (item.id === "editFilters") {
-            @if(hayFiltros){
-              <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors" (click)="item.command()">
-                <i [class]="item.icon + ' text-gray-600'"></i>
-                <span>{{ item.label }}</span>
-                <i class="pi pi-chevron-down ml-auto text-gray-400" [style.transform]="mostrarFiltros ? 'rotate(180deg)' : 'rotate(0deg)'" style="transition: transform 0.3s"></i>
-              </button>
-  
-              @if (item.items && mostrarFiltros) {
-                <div class="ml-6 flex flex-col gap-2">
-  
-                  @for (subItem of item.items; track subItem.label) {
-                    <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors" (click)="subItem.command()">
-                      <i [class]="subItem.icon + ' text-gray-600'"></i>
-                      <span>{{ subItem.label }}</span>
-                      <i class="pi" [class.pi-check]="subItem.active" [class.pi-square-o]="!subItem.active" ml-auto></i>
-                    </button>
-                  }
-                </div>
-              }
-            }
-          }
-          @else{
-            <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors" (click)="item.command()">
-              <i [class]="item.icon + ' text-gray-600'"></i>
-              <span>{{ item.label }}</span>
-              @if (item.items) {
-                <i class="pi pi-chevron-down ml-auto text-gray-400" [style.transform]="inputVisible ? 'rotate(180deg)' : 'rotate(0deg)'" style="transition: transform 0.3s"></i>
-              }
-            </button>
-            @if (item.id === "liveDashboard" || item.id === "newFilter") {
-              @if (item.id === "liveDashboard" && inputVisible) {
-                <input type="number" [value]="refreshTime" (input)="refreshTime = $any($event.target).value" 
-                class="w-full mt-1 px-2 py-1 border rounded-md" placeholder="Seconds_to_refresh" />
-              }
-              <hr class="my-2" />
-            }
-          }
-        }
-
-        <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
-          (click)="toggleOpciones()">
-          <!-- <i class="pi pi-chevron-down text-gray-600"></i> -->
-          <span i18n="dashboardSidebarMoreOptions">Más opciones</span>
-          <i class="pi pi-chevron-down ml-auto text-gray-400"
-            [style.transform]="mostrarOpciones ? 'rotate(180deg)' : 'rotate(0deg)'"
-            style="transition: transform 0.3s"></i>
-        </button>
-
-        @if (mostrarOpciones) {
-        <div class="ml-6 flex flex-col gap-2">
-          @for (item of itemsDesplegables().slice(1); track item.label) {
-          <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors" (click)="item.command()">
-            <i [class]="item.icon + ' text-gray-600'"></i>
-            <span>{{ item.label }}</span>
-            @if (item.items) {
-              <i class="pi pi-chevron-down ml-auto text-gray-400"></i>
-            }
-          </button>
-          }
-        </div>
-        }
-      </div>
-    </div>
+     @if(isEditableCheck()){
+<       <div class="bg-white px-3 pb-3 pt-2">
+         <div class="flex flex-col gap-2 text-lg">
+           @for (item of itemsVisibles(); track item.label) {
+             @if (item.id === "editFilters") {
+               @if(hayFiltros){
+                 <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors" (click)="item.command()">
+                   <i [class]="item.icon + ' text-gray-600'"></i>
+                   <span>{{ item.label }}</span>
+                   <i class="pi pi-chevron-down ml-auto text-gray-400" [style.transform]="mostrarFiltros ? 'rotate(180deg)' : 'rotate(0deg)'" style="transition: transform 0.3s"></i>
+                 </button>
+     
+                 @if (item.items && mostrarFiltros) {
+                   <div class="ml-6 flex flex-col gap-2">
+     
+                     @for (subItem of item.items; track subItem.label) {
+                       <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors" (click)="subItem.command()">
+                         <i [class]="subItem.icon + ' text-gray-600'"></i>
+                         <span>{{ subItem.label }}</span>
+                         <i class="pi" [class.pi-check]="subItem.active" [class.pi-square-o]="!subItem.active" ml-auto></i>
+                       </button>
+                     }
+                   </div>
+                 }
+               }
+             }
+             @else{
+               <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors" (click)="item.command()">
+                 <i [class]="item.icon + ' text-gray-600'"></i>
+                 <span>{{ item.label }}</span>
+                 @if (item.items) {
+                   <i class="pi pi-chevron-down ml-auto text-gray-400" [style.transform]="inputVisible ? 'rotate(180deg)' : 'rotate(0deg)'" style="transition: transform 0.3s"></i>
+                 }
+               </button>
+               @if (item.id === "liveDashboard" || item.id === "newFilter") {
+                 @if (item.id === "liveDashboard" && inputVisible) {
+                   <input type="number" [value]="refreshTime" (input)="refreshTime = $any($event.target).value" 
+                   class="w-full mt-1 px-2 py-1 border rounded-md" placeholder="Seconds_to_refresh" />
+                 }
+                 <hr class="my-2" />
+               }
+             }
+           }
+   
+           <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
+             (click)="toggleOpciones()">
+             <!-- <i class="pi pi-chevron-down text-gray-600"></i> -->
+             <span i18n="dashboardSidebarMoreOptions">Más opciones</span>
+             <i class="pi pi-chevron-down ml-auto text-gray-400"
+               [style.transform]="mostrarOpciones ? 'rotate(180deg)' : 'rotate(0deg)'"
+               style="transition: transform 0.3s"></i>
+           </button>
+   
+           @if (mostrarOpciones) {
+           <div class="ml-6 flex flex-col gap-2">
+             @for (item of itemsDesplegables().slice(1); track item.label) {
+             <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors" (click)="item.command()">
+               <i [class]="item.icon + ' text-gray-600'"></i>
+               <span>{{ item.label }}</span>
+               @if (item.items) {
+                 <i class="pi pi-chevron-down ml-auto text-gray-400"></i>
+               }
+             </button>
+             }
+           </div>
+           }
+         </div>
+       </div>
+     }
   </div>
 </p-overlayPanel>
 
