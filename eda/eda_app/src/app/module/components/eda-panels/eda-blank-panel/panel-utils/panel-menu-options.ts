@@ -293,7 +293,7 @@ export const PanelOptions = {
   },
 
   generateMenu: (ebp: EdaBlankPanelComponent) => {
-    const isEditable = ebp.isEditable();
+    const isEditable = ebp.isEditable(); 
     const isRemovable = ebp.isRemovable();
     const isImported = ebp.isImported;
     const type = ebp.getChartType();
@@ -314,7 +314,7 @@ export const PanelOptions = {
         item: () => PanelOptions.editChart(ebp),
       },
       {
-        show: isImported,
+        show: isEditable && isImported,
         item: () => PanelOptions.filtersMapper(ebp),
       },
       {
@@ -326,15 +326,15 @@ export const PanelOptions = {
         item: () => PanelOptions.exportExcel(ebp),
       },
       {
-        show: true,
+        show: isEditable,
         item: () => PanelOptions.duplicatePanel(ebp),
       },
       {
-        show: ebp.availableChatGpt,
+        show: isEditable && ebp.availableChatGpt,
         item: () => PanelOptions.askToIA(ebp),
       },
       {
-        show: isRemovable,
+        show: isEditable && isRemovable,
         item: () => PanelOptions.deletePanel(ebp),
       },
     ];

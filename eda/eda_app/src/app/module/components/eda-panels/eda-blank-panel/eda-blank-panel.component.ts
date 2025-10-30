@@ -390,7 +390,8 @@ public tableNodeExpand(event: any): void {
     isEditable() {
         const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
-        return (userName !== 'edaanonim' && !this.inject.isObserver) && !this.readonly;
+        const imProperty = userName === this.dashboard.dashboard.config.author
+        return (userName !== 'edaanonim' && !this.inject.isObserver) && !this.readonly && (this.dashboard.dashboard.config.onlyIcanEdit || imProperty);
     }
 
     isRemovable() {
