@@ -257,7 +257,7 @@ export const PanelOptions = {
   },
   readyToExport : (panelComponent: EdaBlankPanelComponent, fileType: string): void => {
     if (!panelComponent.panel.content) {
-        return panelComponent.alertService.addError(`No tienes contenido para exportar`);
+        return panelComponent.alertService.addError($localize`:@@noContentToExport:No tienes contenido para exportar`);
     }
     const cols = panelComponent.chartUtils.transformDataQueryForTable(panelComponent.chartLabels, panelComponent.chartData);
     const headers = panelComponent.currentQuery.map(o => o.display_name.default);

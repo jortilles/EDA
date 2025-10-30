@@ -3465,9 +3465,19 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Código de color</source>
     <target>Color code</target>
   </trans-unit>
-  <trans-unit id="seeRepetitions">
+ <trans-unit id="seeHideRepetitions">
     <source>Ver/ocultar valores repetidos</source>
-    <target>Show/hide repeated values</target>
+    <target>See/Hide repeated values</target>
+  </trans-unit>
+
+  <trans-unit id="seeRepetitions">
+    <source>Ver valores repetidos</source>
+    <target>See repeated values</target>
+  </trans-unit>
+
+  <trans-unit id="hideRepetitions">
+    <source>Ocultar valores repetidos</source>
+    <target>Hide repeated values</target>
   </trans-unit>
   <trans-unit id="seeNegativeNumbers">
     <source>Números negativos</source>
@@ -5478,16 +5488,110 @@ Once configured you can invoke it whenever you want from the button.</target>
   <target>Lower right</target>
 </trans-unit>
 
-<trans-unit id="newTextTitle">
-  <source>Titulo</source>
-  <target>Title</target>
-</trans-unit>
-
 <trans-unit id="selectDashboardPrivacity">
   <source>Selecciona la privacidad del informe</source>
   <target>Select report privacy</target>
 </trans-unit>
 
+<trans-unit id="defaultValueLabel">
+  <source>Valor por defecto</source>
+  <target>Default value</target>
+</trans-unit>
+
+<trans-unit id="selectedItems">
+  <source>seleccionados</source>
+  <target>selected</target>
+</trans-unit>
+
+<trans-unit id="filteredItems">
+  <source>elementos disponibles</source>
+  <target>available items</target>
+</trans-unit>
+
+<trans-unit id="noItemsAvailable">
+  <source>No hay elementos disponibles</source>
+  <target>No items available</target>
+</trans-unit>
+
+<trans-unit id="itemsSelected1">
+  <source>Seleccionados</source>
+  <target>Selected</target>
+</trans-unit>
+
+<trans-unit id="cleanEverything">
+  <source>Limpiar todo</source>
+  <target>Clear all</target>
+</trans-unit>
+
+<trans-unit id="cleanConnections">
+  <source>Limpiar </source>
+  <target>Clear</target>
+</trans-unit>
+
+<trans-unit id="connections">
+  <source>conexiones </source>
+  <target>connections</target>
+</trans-unit>
+
+<trans-unit id="panelFilters">
+  <source>Filtros del panel </source>
+  <target>Panel filters</target>
+</trans-unit>
+
+<trans-unit id="attachNewImage">
+  <source>Debe adjuntar una nueva imagen </source>
+  <target>You must attach a new image </target>
+</trans-unit>
+
+<trans-unit id="selectRecipients">
+  <source>Selecciona los destinatarios *</source>
+  <target>Select recipients *</target>
+</trans-unit>
+
+<trans-unit id="noContentToExport">
+  <source>No tienes contenido para exportar</source>
+  <target>You have no content to export.</target>
+</trans-unit>
+
+<trans-unit id="PanelModeSelectorEDA">
+  <source>Modo EDA</source>
+  <target>EDA mode</target>
+</trans-unit>
+
+<trans-unit id="PanelModeSelectorSQL">
+  <source>Modo SQL</source>
+  <target>SQL mode</target>
+</trans-unit>
+
+<trans-unit id="PanelModeSelectorTree">
+  <source>Modo Árbol</source>
+  <target>Tree mode</target>
+</trans-unit>
+
+<trans-unit id="REPORTCloned">
+  <source>Informe clonado correctamente</source>
+  <target>Report successfully cloned</target>
+</trans-unit>
+
+<trans-unit id="InvalidServerResponse">
+  <source>Respuesta inválida del servidor</source>
+  <target>Invalid server response</target>
+</trans-unit>
+
+<trans-unit id="CouldNotCloneReport">
+  <source>No se pudo clonar el informe. Por favor, inténtalo de nuevo.</source>
+  <target>Report could not be cloned. Please try again.</target>
+</trans-unit>
+
+<trans-unit id="searchEntities">
+  <source>Buscar entidades...</source>
+  <target>Search entities...</target>
+</trans-unit>
+
+<trans-unit id="searchAttributes">
+  <source>Buscar atributos...</source>
+  <target>Search attributes...</target>
+</trans-unit>
 
     </body>
 

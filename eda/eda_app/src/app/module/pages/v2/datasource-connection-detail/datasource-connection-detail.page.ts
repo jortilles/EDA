@@ -124,7 +124,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     const type = this.connectionForm.get('type')?.value;
 
     if (this.connectionForm.invalid && type !== 'excel' && type !== 'bigquery' ) {
-      this.alertService.addError('Formulario incorrecto, revise los campos obligatorios.');
+      this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`);
     } else if (type === 'excel') {
       this.saveExcelDataSource();
     } else if (type === 'bigquery') {
@@ -139,7 +139,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
 			this.spinnerService.on();
 			
 			if (this.connectionForm.invalid) {
-				this.alertService.addError('Formulario incorrecto, revise los campos obligatorios.');
+				this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`);
 			} else {
         await lastValueFrom(this.dataSourceService.testConnection(this.connectionForm.value));
 				this.alertService.addSuccess('Conectado con el servidor');

@@ -215,10 +215,12 @@
                            <span class="font-mono bg-slate-100 px-2 py-1 rounded text-slate-700">
                              {{alert.operand}}
                            </span>
-                           <span>
-                             {{alert.operand === '<' ? 'Menor que' : 
-                               alert.operand === '=' ? 'Igual a' : 'Mayor que'}}
-                           </span>
+                           <span [ngSwitch]="alert.operand">
+                            <span *ngSwitchCase="'<'" i18n="@@lessThan">Menor que</span>
+                            <span *ngSwitchCase="'='" i18n="@@equalTo">Igual a</span>
+                            <span *ngSwitchCase="'>'" i18n="@@greaterThan">Mayor que</span>
+                            <span *ngSwitchDefault>{{ alert.operand }}</span>
+                          </span>
                          </div>
                        </td>
                        <td class="p-3 font-mono">{{alert.value}}</td>
