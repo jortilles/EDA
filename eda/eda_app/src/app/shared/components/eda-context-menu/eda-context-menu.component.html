@@ -1,8 +1,26 @@
-<p-dialog #dialog class="eda-context" appendTo="body" [(visible)]="inject.display" [modal]="true" [closable]="false"
-    [resizable]="false" (document:keydown.esc)="inject.hideContextMenu()" [header]="inject.header" [style]="inject.style">
-    <p-panelMenu [model]="inject.contextMenuItems" [style]="{'width':'300px'}"></p-panelMenu>
+<p-dialog 
+    #dialog 
+    class="eda-context" 
+    appendTo="body" 
+    [(visible)]="inject.display" 
+    [modal]="true" 
+    [closable]="false"
+    [resizable]="false"
+    (document:keydown.esc)="inject.hideContextMenu()" 
+    (document:click)="onOutsideClick($event, dialog)"
+    [header]="inject.header" 
+    [style]="inject.style"
+    [dismissableMask]="true"
+    (onHide)="inject.hideContextMenu()"
+>
+    <p-panelMenu 
+        [model]="inject.contextMenuItems" 
+        [style]="{'width':'300px'}">
+    </p-panelMenu>
+
     <div style="text-align: right; margin-top: 1em;">
-        <span class="pointer" (click)="inject.hideContextMenu()"> <i class="fa fa-times font-16"></i> </span>
+        <span class="pointer" (click)="inject.hideContextMenu()"> 
+            <i class="fa fa-times font-16"></i> 
+        </span>
     </div>
-    
 </p-dialog>

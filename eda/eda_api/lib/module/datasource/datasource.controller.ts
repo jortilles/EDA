@@ -65,22 +65,9 @@ export class DataSourceController {
         const filter = DataSourceController.returnExternalFilter(req);
         try {
             //si no lleva filtro, pasamos directamente a recuperarlos todos
-            /*EDA const datasources = JSON.stringify(filter) !== '{}' ? */
-            /*EDA     await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.security', options ).exec() :*/
-            /*EDA     await DataSource.find({}, '_id ds.metadata.model_name ds.security', options ).exec();*/
-
-            /*Edalitics Free */const userID = req.user._id;
-            /*Edalitics Free */const filters = JSON.stringify(filter) 
-            /*Edalitics Free */let datasources;
-            /*Edalitics Free */if( filters !== '{}'){
-            /*Edalitics Free */    datasources = await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.security', options).exec() ;
-            /*Edalitics Free */}else{                
-            /*Edalitics Free */ if (userID == '135792467811111111111111' ){
-            /*Edalitics Free */    datasources = await DataSource.find( {} , '_id ds.metadata.model_name ds.security', options).exec();
-            /*Edalitics Free */  }else{
-            /*Edalitics Free */    datasources = await DataSource.find(  { 'ds.metadata.model_owner': { $in:[ '135792467811111111111111', userID ] } } , '_id ds.metadata.model_name ds.security', options).exec();
-            /*Edalitics Free */  }
-            /*Edalitics Free */}
+            const datasources = JSON.stringify(filter) !== '{}' ? 
+            await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.security', options ).exec() :
+            await DataSource.find({}, '_id ds.metadata.model_name ds.security', options ).exec();
             if (!datasources) {
                 return next(new HttpException(500, 'Error loading DataSources'));
             }
@@ -102,30 +89,23 @@ export class DataSourceController {
 
 
 
-    /* Aquesta funció retorna els datasources disponibles per fer un dashboard.
-    Un cop filtrats els permisos de grup i de usuari. */
-     static async GetDataSourcesNamesForDashboard(req: Request, res: Response, next: NextFunction) {
+    /**
+     *  Returns all the datoasources availables to create a new dashboard once they are filtered by users permissions. 
+     * @param req 
+     * @param res 
+     * @param next 
+     * @returns  datasource list filtered by user's permission.
+     */
+    static async GetDataSourcesNamesForDashboard(req: Request, res: Response, next: NextFunction) {
         const userID = req.user._id;
         let options: QueryOptions = {};
         // Esto es pare recuperar los filtros externos.
         const filter = DataSourceController.returnExternalFilter(req);
         try {
-            //si no lleva filtro, pasamos directamente a recuperarlos todos
-            
-            /*EDA const datasources = JSON.stringify(filter) !== '{}' ? */
-            /*EDA await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec() : */
-            /*EDA await DataSource.find({}, '_id ds.metadata.model_name ds.melettadata.model_granted_roles ds.metadata.model_owner', options).exec(); */ 
-            /*Edalitics Free */const filters = JSON.stringify(filter) 
-            let datasources;
-            /*Edalitics Free */if( filters !== '{}'){
-            /*Edalitics Free */    datasources = await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec() ;
-            /*Edalitics Free */}else{                
-            /*Edalitics Free */ if (userID == '135792467811111111111111' ){
-            /*Edalitics Free */    datasources = await DataSource.find( {} , '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec();
-            /*Edalitics Free */  }else{
-            /*Edalitics Free */    datasources = await DataSource.find(  { 'ds.metadata.model_owner': { $in:[  userID ] } } , '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec();
-            /*Edalitics Free */  }
-            /*Edalitics Free */}
+            //si no lleva filtro, pasamos directamente a recuperarlos todos           
+            const datasources = JSON.stringify(filter) !== '{}' ? 
+            await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec() : 
+            await DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec(); 
 
             if (!datasources) {
                 return next(new HttpException(500, 'Error loading DataSources'));
@@ -172,10 +152,7 @@ export class DataSourceController {
                 ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0))
 
 
-            /*Edalitics Free */if(output.filter(e=> e._id=='222222222222222222222222').length == 0  ){
-            /*Edalitics Free */    output.push(  { _id: '222222222222222222222222', model_name: 'Demo' } );
-            /*Edalitics Free */ }
-            
+
 
 
             return res.status(200).json({ ok: true, ds: output });
@@ -191,9 +168,7 @@ export class DataSourceController {
     }
 
 
-    /* Aquesta funció retorna els datasources disponibles per editar al llistat de l'esquerra.
-   Aquesta funció sustitueix GetDataSourcesNames en la nova versió on cada usuari por afegir i editar models de dades */
-    static async GetDataSourcesNamesForEdit(req: Request, res: Response, next: NextFunction) {
+       static async GetDataSourcesNamesForEdit(req: Request, res: Response, next: NextFunction) {
         const groups = await Group.find({ users: { $in: req.user._id } }).exec();
         const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
         const output = [];
@@ -215,7 +190,7 @@ export class DataSourceController {
             });
 
         } else {
-            // Si l'usuari NO es admin retorna els seus.
+           // if the user is not admin it return his own ones. 
             DataSource.find( { 'ds.metadata.model_owner': { $in:[  req.user._id ] } } , '_id ds.metadata.model_name ds.metadata.model_owner', options, (err, ds) => {
                 if (!ds) {
                     return next(new HttpException(500, 'Error loading DataSources'));

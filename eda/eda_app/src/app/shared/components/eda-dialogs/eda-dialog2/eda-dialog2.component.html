@@ -35,8 +35,8 @@
             </button>
             @if (ifShowDeleteFilter) {
                 <button class="execute-button" (click)="onDelete()">
-                   <i class="fa fa-refresh"></i>
-                   <span i18n="@@deleteFilters">Eliminar filtro</span>
+                   <i class="fa fa-trash-o"></i>
+                   <span i18n="@@deleteFilters">Eliminar</span>
                 </button>
             }
             
@@ -44,7 +44,7 @@
                <i class="fa fa-times"></i>
                <span i18n="@@cancelarBtn">Cancelar</span>
             </button>
-            <button *ngIf="ifShowApply" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white rounded-md" [disabled]="disableApply" (click)="onApply()">
+            <button *ngIf="ifShowApply" class="confirm-button" [disabled]="disableApply" (click)="onApply()">
                 <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
             </button>
         </div>

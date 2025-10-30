@@ -9,7 +9,6 @@ export abstract class EdaDialog2 {
     @Input() height: string = '60vh';
 
     @Input() breakpoints: Record<string, string> = {
-        xl: '90vw',
         lg: '90vw',
         md: '90vw',
         sm: '90vw',
@@ -29,7 +28,6 @@ export abstract class EdaDialog2 {
 
     // Mapa estándar de siglas a píxeles
     protected sizeMap: Record<string, string> = {
-        xl: '1280px',
         lg: '1024px',
         md: '768px',
         sm: '480px',

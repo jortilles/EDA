@@ -652,6 +652,23 @@ span.state-label {
   cursor: not-allowed;
 }
 
+.addFilter-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.75rem 1.5rem;               /* Más espacio interior */
+  border: 1px solid #d1d5db;            /* Color gris claro */
+  border-radius: 0.5rem;                 /* Bordes más suaves */
+  height: 3.2rem;                        /* Un poco más alto para mejor presencia */
+  width: 85%;
+  box-sizing: border-box;
+  background: white; /* Degradado más suave */
+  cursor: pointer;
+  font-weight: 500;
+  color: #111827;                        /* Texto más visible */
+  transition: all 0.2s ease-in-out;      /* Suaviza hover y click */
+}
+
 .confirm-button {
     display: flex;
   gap: 7%;
@@ -664,6 +681,12 @@ span.state-label {
   cursor: pointer;
 }
 
+.addFilter-button:disabled {
+  background: #e5e7eb;                   /* Gris más suave */
+  color: #9ca3af;                        /* Texto desactivado */
+  cursor: not-allowed;
+}
+
 .confirm-button:disabled {
   background: #d1d5db;
   color: #6b7280;     
@@ -673,21 +696,26 @@ span.state-label {
 
 .cancel-button,
 .execute-button,
-.confirm-button {
+.confirm-button,
+.addFilter-button {
   transition: background 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
 }
 
 /* Hover general sin movimiento */
-.cancel-button:hover {
+.cancel-button:hover:enabled {
   background: linear-gradient(to right, #d30026, #ff4b2b);
 }
 
-.execute-button:hover {
+.addFilter-button:hover:enabled {
+  background: linear-gradient(to right, #ffffff, #f3f3f3);
+}
+
+.execute-button:hover:enabled {
   background: #f9fafb;
   border-color: #d1d5db;
   color: #111827;
 }
 
-.confirm-button:hover {
+.confirm-button:hover:enabled {
   background: linear-gradient(to right, #00c8d1, #2dd4bf);
 }

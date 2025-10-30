@@ -22,7 +22,7 @@
         @if (showGroups) {
           <div class="mt-6">
             <p-multiSelect id="float-grups" formControlName="group" [options]="grups" [filter]="false" optionLabel="name"
-              defaultLabel="Selecciona un grupo *" appendTo="body">
+              i18n-defaultLabel="@@multiSelectDefaultLabel" defaultLabel="Selecciona un grupo *" appendTo="body">
             </p-multiSelect>
           </div>
         }

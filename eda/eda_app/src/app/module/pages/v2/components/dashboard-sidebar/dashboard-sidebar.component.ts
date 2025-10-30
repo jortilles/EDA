@@ -113,23 +113,27 @@ export class DashboardSidebarComponent {
   initSidebar() { 
     this.sidebarItems = [
     {
-      label: "Nou panell",
+      id: 'newPanel',
+      label: $localize`:@@dashboardSidebarNewPanel:Nuevo Panel`,
       icon: "pi pi-plus-circle",
       command: () => this.onAddWidget()
     },
     {
-      label: "Nou text",
+      id: 'newText',
+      label: $localize`:@@dashboardSidebarNewText:Nuevo texto`,
       icon: "pi pi-file-edit",
       command: () => this.onAddTitle()
     },
     {
-      label: "Nou filtre",
+      id: 'newFilter',
+      label: $localize`:@@dashboardSidebarNewFilter:Nuevo filtro`,
       icon: "pi pi-filter",
       command: () => this.onAddGlobalFilter()
       
     },
       {
-        label: "Editar filtros",
+        id: 'editFilters',
+        label: $localize`:@@dashboardSidebarEditFilter:Editar filtros`,
         icon: "pi pi-filter",
         command: () => this.toggleGlobalFilter(),
         items: this.dashboard.globalFilter.globalFilters.map(f => ({
@@ -140,52 +144,35 @@ export class DashboardSidebarComponent {
         ),
       },
     {
-      label: "Importar panell",
+      id: 'importPanel',
+      label: $localize`:@@dashboardSidebarImportPanel:Importar panel`,
       icon: "pi pi-plus-circle",
       command: () => this.onImportPanel()
       
     },
     {
-      label: "Recargar informe",
+      id: 'refreshDashboard',
+      label: $localize`:@@dashboardSidebarRefreshDashboard: Recargar informe`,
       icon: "pi pi-refresh",
       command: () => this.cleanPanelsCache()
     },
     {
-      label: "Privacitat informe",
-      icon: "pi pi-lock",
-      command: () => { 
-        this.isVisibleModalVisible = true;
-        this.hidePopover();
-      }
-    },{
-      label: "Afegir etiqueta",
-      icon: "pi pi-tag",
-      command: () => {
-        this.isTagModalVisible = true;
-        this.hidePopover();
-      }
-    },
-    {
-      label: this.clickFiltersEnabled ? "Click en filtros habilitado" : "Click en filtros deshabilitado",
-      icon: this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock",
-      command: () => {
-        this.toggleClickFilters();
-      }
-    },
-    {
-      label: "Live Dashboard",
+      id: 'liveDashboard',
+      label:  $localize`:@@dashboardSidebarLiveDashboard: Live Dashboard`,
       icon: "pi pi-desktop",
       items: [],
       command: () => {
         this.inputVisible = !this.inputVisible;
       },
     },{
-      label: "Guardar",
+      id: 'save',
+      label: $localize`:@@dashboardSidebarSave: Guardar`,
       icon: "pi pi-save",
       command: () => this.saveDashboard()
     },
     {
-      label: "Guardar com",
+      id: 'saveAs',
+      label: $localize`:@@dashboardSidebarSaveAs: Guardar como`,
       icon: "pi pi-copy",
       command: () => {
         this.isSaveAsDialogVisible = true;
@@ -193,13 +180,18 @@ export class DashboardSidebarComponent {
       }
     },
     {
-      label: "Eliminar informe",
+      id: 'deleteDashboard',
+      label: $localize`:@@dashboardSidebarDeleteDashboard: Eliminar informe`,
       icon: "pi pi-trash",
       command: () => this.removeDashboard()
     },
-      { label: 'Más opciones'},
+    { 
+      id: 'moreOptions',
+      label: $localize`:@@dashboardSidebarMoreOptions: Más opciones`,
+    },
     {
-      label: "Editar estils",
+      id: 'editStyles',
+      label: $localize`:@@dashboardSidebarEditStyles: Editar estilos`,
       icon: "pi pi-palette",
       command: () => {
         this.isEditStyleDialogVisible = true;
@@ -207,17 +199,46 @@ export class DashboardSidebarComponent {
       }
     },
     {
-      label: "Descargar PDF",
+      id: 'dashboardPrivacity',
+      label:$localize`:@@dashboardSidebarDashboardPrivacity: Privacidad informe`,
+      icon: "pi pi-lock",
+      command: () => { 
+        this.isVisibleModalVisible = true;
+        this.hidePopover();
+      }
+    },{
+      id: 'addTag',
+      label: $localize`:@@dashboardSidebarAddTag: Añadir etiqueta`,
+      icon: "pi pi-tag",
+      command: () => {
+        this.isTagModalVisible = true;
+        this.hidePopover();
+      }
+    },
+    {
+      id: 'enableFilters',
+      label: this.clickFiltersEnabled ? $localize`:@@enableFilters: Click en filtros habilitado` 
+                                      : $localize`:@@disableFilters:Click en filtros deshabilitado`,
+      icon: this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock",
+      command: () => {
+        this.toggleClickFilters();
+      }
+    },
+    {
+      id: 'downloadPDF',
+      label: $localize`:@@dashboardSidebarDownloadPDF: Descargar PDF`,
       icon: "pi pi-file-pdf",
       command: () => this.exportAsPDF()
     },
     {
-      label: "Descargar imatge",
+      id: 'downloadImage',
+      label: $localize`:@@dashboardSidebarDownloadImage:Descargar imagen`,
       icon: "pi pi-image",
       command: () => this.exportAsJPEG()
     },
     {
-      label: "Enviar per email",
+      id: 'sendEmail',
+      label: $localize`:@@dashboardSidebarSendEmail: Enviar por email`,
       icon: "pi pi-envelope",
       command: () => { 
         this.isMailConfigDialogVisible = true;
@@ -225,7 +246,8 @@ export class DashboardSidebarComponent {
       }
     },
     {
-      label: "Acció personalitzada",
+      id: 'customAction',
+      label: $localize`:@@dashboardSidebarCustomAction: Acción personalizada`,
       icon: "pi pi-cog",
       command: () => {
         this.isCustomActionDialogVisible = true;
@@ -357,7 +379,7 @@ export class DashboardSidebarComponent {
           title: newDashboard.name,
           visible: newDashboard.visible,
           ds,
-          tags: null,
+          tag: null,
           refreshTime: null,
           clickFiltersEnabled: true,
           author: JSON.parse(localStorage.getItem('user')).name,
@@ -375,7 +397,7 @@ export class DashboardSidebarComponent {
           filters: this.dashboard.cleanFiltersData(),
           applyToAllfilter: this.dashboard.applyToAllfilter,
           visible: newDashboard.visible,
-          tags: this.dashboard.dashboard.config.tags,
+          tag: this.dashboard.dashboard.config.tag,
           refreshTime: (this.dashboard.refreshTime > 5) ? this.dashboard.refreshTime : this.dashboard.refreshTime ? 5 : null,
           clickFiltersEnabled: true,
           mailingAlertsEnabled: this.getMailingAlertsEnabled(),
@@ -468,7 +490,7 @@ export class DashboardSidebarComponent {
   public closeTagModal(tags: any[]) {
     this.isTagModalVisible = false;
     this.dashboard.selectedTags = tags;
-    this.dashboard.dashboard.config.tags = tags;
+    this.dashboard.dashboard.config.tag = tags;
   }
 
   public removeDashboard() {
@@ -587,7 +609,7 @@ export class DashboardSidebarComponent {
   
   // Metodos de creación de la sidebar
    public indiceMasOpciones(): number {
-    return this.sidebarItems.findIndex(item => item.label === 'Más opciones');
+    return this.sidebarItems.findIndex(item => item.id === 'moreOptions');
   }
 
   public itemsVisibles() {
@@ -650,17 +672,17 @@ export class DashboardSidebarComponent {
   }
 
   toggleClickFilters() {
-      // Buscar el objeto una sola vez
-      const clickItem = this.sidebarItems.find(item => item.label === "Click en filtros habilitado" || item.label === "Click en filtros deshabilitado");
+    // Buscar el objeto una sola vez
+    const clickItem = this.sidebarItems.find(item => item.id === 'enableFilters');
+    
+    // Alternar el estado
+    this.clickFiltersEnabled = !this.clickFiltersEnabled;
       
-      // Alternar el estado
-      this.clickFiltersEnabled = !this.clickFiltersEnabled;
-      
-      // Actualizar label e icono según estado
-      clickItem.label = this.clickFiltersEnabled ? "Click en filtros habilitado" : "Click en filtros deshabilitado";
-      clickItem.icon = this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock";
-      
-      // Actualizar dashboard
-      this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
+    // Actualizar label e icono según estado
+    clickItem.label = this.clickFiltersEnabled ? $localize`:@@enableFilters:Click en filtros habilitado` : $localize`:@@disableFilters:Click en filtros deshabilitado`;
+    clickItem.icon = this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock";
+    
+    // Actualizar dashboard
+    this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
   }
 }

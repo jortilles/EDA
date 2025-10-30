@@ -1011,7 +1011,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="selectFuenteDatos" datatype="html">
 <source>Selecciona una fuente de datos *</source>
-<target>Seleciona una font de dades *</target>
+<target>Selecciona una font de dades *</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/home/create-dashboard/create-dashboard.component.html</context>
 <context context-type="linenumber">11</context>
@@ -2683,6 +2683,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Només pots afegir filtres quan tots els panells estan configurats</target>
 </trans-unit>
 
+<trans-unit id="SaveWarningTittle">
+<source>Solo puedes guardar cuando todos los paneles están configurados</source>
+<target>Només pots guardar quan tots els panells estan configurats</target>
+</trans-unit>
+
 <trans-unit id="AddFiltersWarningText">
 <source>Puedes borrar los paneles en blanco o configurarlos</source>
 <target>Pots esborrar els panells en blanc o configurar-los</target>
@@ -3202,6 +3207,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Sense Etiqueta </target>
   </trans-unit>
 
+  <trans-unit id="newTag">
+    <source> Nueva etiqueta   </source>
+    <target>Nova etiqueta </target>
+  </trans-unit>
 
   <trans-unit id="addTag">
     <source>AÑADIR ETIQUETA</source>
@@ -3221,12 +3230,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="linkedTo">
     <source> Vinculado con  </source>
     <target>Vinculat amb   </target>
-  </trans-unit>
-
-
-  <trans-unit id="newTag">
-    <source> Nueva etiqueta  </source>
-    <target> Nova etiqueta  </target>
   </trans-unit>
 
   <trans-unit id="DataModelHeader">
@@ -3366,8 +3369,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source> Límites</source>
     <target>  Limits</target>
   </trans-unit>
-
-
 
   <trans-unit id="usersPermissions">
     <source> Permisos de usuario</source>
@@ -4772,7 +4773,7 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Rol</source>
         <target>Rol</target>
       </trans-unit>
-      <trans-unit id="newUser">
+<trans-unit id="newUser">
   <source>Crear Nuevo Usuario</source>
   <target>Crear Nou Usuari</target>
 </trans-unit>
@@ -5228,12 +5229,12 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 </trans-unit>
 
 <trans-unit id="factLabel">
-  <source>Fact</source>
+  <source>Hecho</source>
   <target>Fet</target>
 </trans-unit>
 
 <trans-unit id="viewLabel">
-  <source>View</source>
+  <source>Vista</source>
   <target>Vista</target>
 </trans-unit>
 
@@ -5376,6 +5377,186 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="useFormAlertConfigure">
 <source>Configure una alerta usando el formulario de arriba para visualizar cambios en el gráfico.</source>
 <target>Configureu una alerta usant el formulari de dalt per visualitzar canvis al gràfic.</target>
+</trans-unit>
+
+<trans-unit id="panelOptions6">
+  <source>Pregunte a la IA</source>
+  <target>Pregunteu a la IA</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarNewPanel">
+  <source>Nuevo Panel</source>
+  <target>Nou panell</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarNewText">
+  <source>Nuevo texto</source>
+  <target>Nou text</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarNewFilter">
+  <source>Nuevo filtro</source>
+  <target>Nou filtre</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarEditFilter">
+  <source>Editar filtro</source>
+  <target>Editar filtre</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarImportPanel">
+  <source>Importar panel</source>
+  <target>Importar panell</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarRefreshDashboard">
+  <source>Recargar informe</source>
+  <target>Recarregar informe</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDashboardPrivacity">
+  <source>Privacidad informe</source>
+  <target>Privacitat informe</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarAddTag">
+  <source>Añadir etiqueta</source>
+  <target>Afegir etiqueta</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarLiveDashboard">
+  <source>Live Dashboard</source>
+  <target>Live Dashboard</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarSave">
+  <source>Guardar</source>
+  <target>Guardar</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarSaveAs">
+  <source>Guardar como</source>
+  <target>Guardar com</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDeleteDashboard">
+  <source>Eliminar informe</source>
+  <target>Eliminar informe</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarMoreOptions">
+  <source>Más opciones</source>
+  <target>Més opcions</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarEditStyles">
+  <source>Editar estilos</source>
+  <target>Editar estils</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownloadPDF">
+  <source>Descargar PDF</source>
+  <target>Descarregar PDF</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownloadImage">
+  <source>Descargar imagen</source>
+  <target>Descarregar imatge</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarSendEmail">
+  <source>Enviar por email</source>
+  <target>Enviar per email</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarCustomAction">
+  <source>Acción personalizada</source>
+  <target>Acció personalitzada</target>
+</trans-unit>
+
+<trans-unit id="confirmBtn">
+  <source>Confirmar</source>
+  <target>Confirmar</target>
+</trans-unit>
+
+<trans-unit id="deleteBtn">
+  <source>Eliminar</source>
+  <target>Eliminar</target>
+</trans-unit>
+
+<trans-unit id="valueKPI">
+  <source>Cuando el valor KPI es</source>
+  <target>Quan el valor KPI és</target>
+</trans-unit>
+
+<trans-unit id="alertsPreview">
+<source>Vista previa:</source>
+<target>Vista prèvia:</target>
+</trans-unit>
+
+<trans-unit id="enableFilters">
+  <source>Click en filtros habilitado</source>
+  <target>Click en filtres habilitat</target>
+</trans-unit>
+
+<trans-unit id="disableFilters">
+  <source>Click en filtros deshabilitado</source>
+  <target>Click en filtres deshabilitat</target>
+</trans-unit>
+
+<trans-unit id="selectFileImport">
+  <source>Por favor selecciona un archivo para importar</source>
+  <target>Si us plau selecciona un fitxer per importar</target>
+</trans-unit>
+
+<trans-unit id="logarithmicScale">
+  <source>Escala logarítmica</source>
+  <target>Escala logarítmica</target>
+</trans-unit>
+
+<trans-unit id="activeMouseFunctions">
+  <source>Activar funciones del ratón</source>
+  <target>Activar funcions del ratolí</target>
+</trans-unit>
+
+<trans-unit id="enableBaseLayer">
+  <source>Activar capa base</source>
+  <target>Activar capa base</target>
+</trans-unit>
+
+<trans-unit id="legendPosition">
+  <source>Posición de la leyenda</source>
+  <target>Posició de la llegenda</target>
+</trans-unit>
+
+<trans-unit id="topleftPosition">
+  <source>Superior izquierda</source>
+  <target>Superior esquerra</target>
+</trans-unit>
+
+<trans-unit id="bottomleftPosition">
+  <source>Inferior izquierda</source>
+  <target>Inferior esquerra</target>
+</trans-unit>
+
+<trans-unit id="toprightPosition">
+  <source>Superior derecha</source>
+  <target>Superior dreta</target>
+</trans-unit>
+
+<trans-unit id="bottomrightPosition">
+  <source>Inferior derecha</source>
+  <target>Inferior dreta</target>
+</trans-unit>
+
+<trans-unit id="newTextTitle">
+  <source>Titulo</source>
+  <target>Títol</target>
+</trans-unit>
+
+<trans-unit id="selectDashboardPrivacity">
+  <source>Selecciona la privacidad del informe</source>
+  <target>Seleccioneu la privadesa de l'informe</target>
 </trans-unit>
 
 

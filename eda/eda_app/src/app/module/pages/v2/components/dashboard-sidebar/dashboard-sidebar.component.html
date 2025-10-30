@@ -32,7 +32,7 @@
     <div class="bg-white px-3 pb-3 pt-2">
       <div class="flex flex-col gap-2 text-lg">
         @for (item of itemsVisibles(); track item.label) {
-          @if (item.label === "Editar filtros") {
+          @if (item.id === "editFilters") {
             @if(hayFiltros){
               <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors" (click)="item.command()">
                 <i [class]="item.icon + ' text-gray-600'"></i>
@@ -62,8 +62,8 @@
                 <i class="pi pi-chevron-down ml-auto text-gray-400" [style.transform]="inputVisible ? 'rotate(180deg)' : 'rotate(0deg)'" style="transition: transform 0.3s"></i>
               }
             </button>
-            @if (item.label === "Live Dashboard" || item.label === "Nou filtre") {
-              @if (item.label === "Live Dashboard" && inputVisible) {
+            @if (item.id === "liveDashboard" || item.id === "newFilter") {
+              @if (item.id === "liveDashboard" && inputVisible) {
                 <input type="number" [value]="refreshTime" (input)="refreshTime = $any($event.target).value" 
                 class="w-full mt-1 px-2 py-1 border rounded-md" placeholder="Seconds_to_refresh" />
               }
@@ -75,7 +75,7 @@
         <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
           (click)="toggleOpciones()">
           <!-- <i class="pi pi-chevron-down text-gray-600"></i> -->
-          <span>Más opciones</span>
+          <span i18n="dashboardSidebarMoreOptions">Más opciones</span>
           <i class="pi pi-chevron-down ml-auto text-gray-400"
             [style.transform]="mostrarOpciones ? 'rotate(180deg)' : 'rotate(0deg)'"
             style="transition: transform 0.3s"></i>
