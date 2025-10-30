@@ -4498,6 +4498,10 @@ Un cop configurada podreu invocar-la des del botó sempre que calgui.</target>
         <source>Esta es una columna calculada y no tiene formatos disponibles</source>
         <target>Aquesta és una columna calculada i no té formats disponibles.</target>
       </trans-unit>
+      <trans-unit id="errorSavingDashboardPannels">
+        <source>Error al guardar el informe. Error en el panel: </source>
+        <target>S'ha produït un error al desar l'informe. L'error és al panell </target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

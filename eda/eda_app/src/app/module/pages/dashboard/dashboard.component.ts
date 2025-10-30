@@ -613,6 +613,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         if(this.dashboard.datasSource.is_filtered) {
             this.display_v.edit_mode = false;
         }
+
+
+        if( (this.grups.filter(group => group.name === 'EDA_ADMIN' ).length > 0) )  this.display_v.edit_mode = true; // Admin always can edit
     }
 
     private setPanelSizes(panel) {
@@ -978,22 +981,33 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                                 panel.savePanel();
                             });
 
-                            this.dashboardService.updateDashboard(r.dashboard._id, body).subscribe(
-                                () => {
-                                    this.dashboardService._notSaved.next(false);
-                                    this.display_v.rightSidebar = false;
-                                    this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
-                                    this.router.navigate(['/dashboard/', r.dashboard._id]).then(() => {
-                                        window.location.reload();
-                                    });
 
-                                },
-                                err => {
-                                    this.dashboardService._notSaved.next(false);
-                                    this.display_v.rightSidebar = false;
-                                    this.alertService.addError(err);
-                                }
-                            );
+
+                            if(  this.checkPannels(body) === 'true'){
+                                this.dashboardService.updateDashboard(r.dashboard._id, body).subscribe(
+                                    () => {
+                                        this.dashboardService._notSaved.next(false);
+                                        this.display_v.rightSidebar = false;
+                                        this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
+                                        this.router.navigate(['/dashboard/', r.dashboard._id]).then(() => {
+                                            window.location.reload();
+                                        });
+
+                                    },
+                                    err => {
+                                        this.dashboardService._notSaved.next(false);
+                                        this.display_v.rightSidebar = false;
+                                        this.alertService.addError(err);
+                                    }
+                                );
+                            }else{
+
+                               this.alertService.addError($localize`:@@errorSavingDashboardPannels:Error al guardar el informe. Error en el panel: ` + this.checkPannels(body) );
+ 
+                            }
+
+
+                            
                         },
                         err => this.alertService.addError(err)
                     );
@@ -1221,21 +1235,44 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.edaPanels.forEach(panel => { panel.savePanel(); });
             body.config.panel = this.dashboard.panel;
 
-            this.dashboardService.updateDashboard(this.id, body).subscribe(
-                () => {
-                    this.display_v.rightSidebar = false;
-                    this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
-                },
-                err => {
-                    this.display_v.rightSidebar = false;
-                    this.alertService.addError(err);
-                }
-            );
 
-            //not saved alert message
-            this.dashboardService._notSaved.next(false);
+            if( this.checkPannels(body) === 'true'){
+                this.dashboardService.updateDashboard(this.id, body).subscribe(
+                    () => {
+                        this.display_v.rightSidebar = false;
+                        this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
+                    },
+                    err => {
+                        this.display_v.rightSidebar = false;
+                        this.alertService.addError(err);
+                    }
+                );
+                //not saved alert message
+                this.dashboardService._notSaved.next(false);
+            }else{
+                this.display_v.rightSidebar = false;
+                this.alertService.addError($localize`:@@errorSavingDashboardPannels:Error al guardar el informe. Error en el panel: ` + this.checkPannels(body) );
+            }
         }
     }
+
+ 
+    /**
+     * @description  Check if all pannels have data to be saved. If they are not correct return the name of the pannel
+     * @param dashboard  get the dashboard to check the pannels content
+     * @returns  the text true if everithing is fine or the name of the pannel with worng configuration
+     */
+    private checkPannels(dashboard): string {
+            let correct = 'true';
+            dashboard.config.panel.forEach(p => {
+                if(  p.content && p.content?.query?.query.fields.length < 1  ) { 
+                    console.log('NO SE PUEDEN GAURDAR PANELES SIN DATOS');
+                    correct = p.title;
+                }
+            })
+            return correct;
+    }
+
 
     public getMailingAlertsEnabled(): boolean {
 

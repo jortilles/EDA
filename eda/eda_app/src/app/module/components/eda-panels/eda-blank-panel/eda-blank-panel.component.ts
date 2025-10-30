@@ -371,6 +371,7 @@ export class EdaBlankPanelComponent implements OnInit {
     getEditMode() {
         const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
+        if(JSON.parse(user).role.includes('135792467811111111111110') ) return true; // Admin role always can edit
         return (userName !== 'edaanonim' && !this.inject.isObserver);
     }
 

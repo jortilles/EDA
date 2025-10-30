@@ -4473,6 +4473,10 @@
         <source>Esta es una columna calculada y no tiene formatos disponibles</source>
         <target>Esta es una columna calculada y no tiene formatos disponibles.</target>
       </trans-unit>
+      <trans-unit id="errorSavingDashboardPannels">
+        <source>Error al guardar el informe. Error en el panel: </source>
+        <target>Se ha producido un error al guardar el informe. El error está en el panel </target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

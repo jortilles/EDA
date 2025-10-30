@@ -4438,6 +4438,10 @@
         <source>Una tabla árbol se puede configurar de dos formas. Mediante campos que se van anidando por medio de agrupaciones o mediante la definición de dos columnas numéricas que definan una relación padre-hijo. Si las dos primeras columnas son numéricas, se asumirá que describen una relación padre hijo.</source>
         <target>Unha táboa de árbore pódese configurar de dúas maneiras: aniñando campos mediante agrupacións ou definindo dúas columnas numéricas que definan unha relación pai-fillo. Se as dúas primeiras columnas son numéricas, asumirase que describen unha relación pai-fillo.</target>
       </trans-unit>
+      <trans-unit id="errorSavingDashboardPannels">
+        <source>Error al guardar el informe. Error en el panel: </source>
+        <target>Produciuse un erro ao gardar o informe. Erro no panel: </target>
+      </trans-unit>
       <trans-unit id="mandatoryDiferentName">
         <source>Este nombre de campo calculado ya existe. Intente con otro.</source>
         <target>Este nome de campo calculado xa existe. Téntao con outro.</target>
