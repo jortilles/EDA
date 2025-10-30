@@ -84,8 +84,8 @@ export class SAML_ORCL_Controller {
             console.log('sessionIndex: ', sessionIndex);
             console.log('user: ', user);
 
-            const email = user.nameID;
-            const name = nameID.split('@')[0];
+            const email = user.email;
+            const name = email.split('@')[0];
             const picture = '';
 
             if (!email) return next(new HttpException(400, 'Usuario no verificado por la Entidad SSO'));
@@ -187,7 +187,7 @@ export class SAML_ORCL_Controller {
         res.type('application/xml').send(xml);
     }
 
-    static async logout(req: Request, res: Response, next: NextFunction) {
+    static async requestLogout(req: Request, res: Response, next: NextFunction) {
         try {
 
         console.log('req.user: ', req.user);
@@ -225,7 +225,7 @@ export class SAML_ORCL_Controller {
         }
     }
 
-    static async sls(req: Request, res: Response, next: NextFunction) {
+    static async logout(req: Request, res: Response, next: NextFunction) {
         try {
         const saml: any = (samlStrategy as any)._saml;
         let result;
