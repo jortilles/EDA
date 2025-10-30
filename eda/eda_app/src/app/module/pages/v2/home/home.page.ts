@@ -116,8 +116,8 @@ public handleTagSelect(option: any): void {
 
   if (isSelected) {
     // Eliminar tag
-    this.selectedTags.set('');
-    sessionStorage.setItem("activeTags", JSON.stringify(''));
+    this.selectedTags.set({"label":"Todos","value":"Todos"});
+    sessionStorage.setItem("activeTags", JSON.stringify({"label":"Todos","value":"Todos"}));
   } else {
     // Añadir tag
     this.selectedTags.set(option);
