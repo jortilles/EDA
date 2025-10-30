@@ -128,12 +128,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             setTimeout(_ => {
                 this.NO_DATA = true;
                 if( this.props.data?.labels[0]== "noDataAllowed") {
-                    this.NO_DATA = false;    
-                    this.NO_DATA_ALLOWED = true;   
-                    this.NO_FILTER_ALLOWED = false; 
+                    this.NO_DATA = false;
+                    this.NO_DATA_ALLOWED = true;
+                    this.NO_FILTER_ALLOWED = false;
                 }else if( this.props.data?.labels[0]== "noFilterAllowed") {
-                    this.NO_DATA = false;    
-                    this.NO_DATA_ALLOWED = false;    
+                    this.NO_DATA = false;
+                    this.NO_DATA_ALLOWED = false;
                     this.NO_FILTER_ALLOWED = true;
                 }
             })
@@ -216,7 +216,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     /**
      * Renders edaChartComponent
-     * @param type 
+     * @param type
      */
     private renderEdaChart(type: string) {
         const isbarline = this.props.edaChart === 'barline';
@@ -224,14 +224,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
         const dataTypes = this.props.query.map(column => column.column_type);
-    
+
         let values = _.cloneDeep(this.props.data.values);
 
         /**
         * add comparative
         */
         let cfg: any = this.props.config.getConfig();
-            // Si es un histogram faig aixó....        
+            // Si es un histogram faig aixó....
         if (  (['histogram'].includes(this.props.edaChart))
             && this.props.query.length === 1
             && this.props.query.filter(field => field.column_type === 'numeric').length == 1
@@ -259,7 +259,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             dataDescription.totalColumns++;
 
 
-            
+
         }
 
         const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart,  values, dataTypes, dataDescription, isbarline, cfg.numberOfColumns);
@@ -271,7 +271,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const minMax = this.props.chartType !== 'line' ? { min: null, max: null } : this.chartUtils.getMinMax(chartData);
 
         const manySeries = chartData[1]?.length > 10 ? true : false;
-        
+
         const styles:StyleConfig = {
             fontFamily: this.fontFamily,
             fontSize: this.fontSize,
@@ -285,7 +285,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             labelOffset: 5,
             padding: 5
         };
-      
+
         const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0]?.name,
             dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps,
             minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, this.props.edaChart, ticksOptions   );
@@ -310,8 +310,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.chartColors =  this.chartUtils.recoverChartColors(this.props.chartType, this.props.config);
         chartConfig.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
 
-        
-        
+
+
         //Si assignedColors no existe (informes viejos), lo generamos
         //Para una posterior versión se podria mirar de eliminar este bloque if else y solo mirar si existe el config
         if (chartConfig.assignedColors.length === 0) {
@@ -322,7 +322,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     chartConfig.chartLabels.forEach((element, index) => {
                         chartConfig.assignedColors.push({
                             value: element,
-                            color: chartConfig.chartColors[0].backgroundColor[index] || chartConfig.chartColors[chartData.length + index] 
+                            color: chartConfig.chartColors[0].backgroundColor[index] || chartConfig.chartColors[chartData.length + index]
                         });
                     });
                 } else {
@@ -330,7 +330,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                         //asignamos el valor de la data y color perteniente si lo tiene
                         chartConfig.assignedColors.push({
                             value: element,
-                            color: this.props.config.getConfig()["colors"][0].backgroundColor[index] 
+                            color: this.props.config.getConfig()["colors"][0].backgroundColor[index]
                         });
                     });
                 }
@@ -342,11 +342,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     color: chartConfig.chartColors[0].backgroundColor[0]
                 });
             });
-            }                 
+            }
         }
 
 
-        //Si aplicamos filtro 
+        //Si aplicamos filtro
         if (!["histogram", "barline"].includes(chartConfig.edaChart)) {
             //Seteamos variables: labels, colores, y indice del filtro
             const configData = chartConfig.assignedColors.flatMap((item) => item.value);
@@ -363,12 +363,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                         // Revisar indice
                         let config = this.props.config.getConfig();
                         let newAssignedColor = chartConfig.chartColors[0].backgroundColor[config['assignedColors'].length + index];
-                        
+
                         // si no lo contiene añadirlo
-                        if (!config['assignedColors'].includes(element)) { 
+                        if (!config['assignedColors'].includes(element)) {
                             config['assignedColors'].push({value: element, color: newAssignedColor});
                             this.props.config.setConfig(config)
-                        } 
+                        }
                         chartConfig.chartColors[0].backgroundColor[index] = newAssignedColor;
                         chartConfig.chartColors[0].borderColor[index] = newAssignedColor;
                     }
@@ -376,7 +376,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             }
         }
 
-        // chartColors unicamente se reflejan si estan dentro del chartDataset (esto asigna colores correctamente) 
+        // chartColors unicamente se reflejan si estan dentro del chartDataset (esto asigna colores correctamente)
         if (!chartData[1][0]?.backgroundColor) {
             chartData[1].forEach(( e,i) => {
                 try{
@@ -393,7 +393,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.linkedDashboardProps = this.props.linkedDashboardProps;
         this.createEdaChartComponent(chartConfig);
     }
-        
+
     /**
      * Creates a chart component
      * @param inject chart configuration
@@ -505,7 +505,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     /**
      * creates a kpiComponent
-     * @param inject 
+     * @param inject
     */
     private createEdaKpiComponent(inject: any) {
         this.entry.clear();
@@ -526,11 +526,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const chartType = this.props.chartType.split('kpi')[1];
         const chartSubType = this.props.edaChart.split('kpi')[1];
         const cfg: any = this.props.config.getConfig();
-        
+
         const chartConfig: any = {};
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
         const dataTypes = this.props.query.map((column: any) => column.column_type);
-    
+
         let values = _.cloneDeep(this.props.data.values);
 
         const chartData = this.chartUtils.transformDataQuery(chartType, chartSubType,  values, dataTypes, dataDescription, false, cfg.numberOfColumns);
@@ -548,24 +548,65 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             fontSize: this.fontSize,
             fontColor: this.fontColor
         }
-        
+
         const dimensions = this.getDimensions();
         dimensions.height = !dimensions.width ? 255 : dimensions.height;
         dimensions.width = !dimensions.width ? 1300 : dimensions.width;
- 
+
+        /*SDA CUSTOM*/  const dataLabelsCount = chartData[0] ? chartData[0].length : 0;
         const ticksOptions = {
-            xTicksLimit: 3,
+          /*SDA CUSTOM*/  xTicksLimit: dataLabelsCount,
             yTicksLimit: 0,
             maxRotation: 1,
             minRotation: 1,
-            labelOffset: 40,
-            padding: -2
+          /*SDA CUSTOM*/ labelOffset: 0,
+          /*SDA CUSTOM*/  padding: 0
         };
         const chartOptions = this.chartUtils.initChartOptions(
             chartType, dataDescription.numericColumns[0]?.name,
-            dataDescription.otherColumns, manySeries, false, dimensions, null, 
+            dataDescription.otherColumns, manySeries, false, dimensions, null,
             minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, chartSubType, ticksOptions, false
         );
+
+  /*SDA CUSTOM*/
+
+  /*SDA CUSTOM*/      // Setting custom options for kpi charts
+  /*SDA CUSTOM*/      if (!chartOptions.chartOptions.scales) {
+  /*SDA CUSTOM*/          chartOptions.chartOptions.scales = {};
+  /*SDA CUSTOM*/      }
+
+  /*SDA CUSTOM*/      // Setting X axis options
+  /*SDA CUSTOM*/      chartOptions.chartOptions.scales.x = {
+  /*SDA CUSTOM*/          ...chartOptions.chartOptions.scales.x,
+
+  /*SDA CUSTOM*/          grid: {
+  /*SDA CUSTOM*/              offset: 10,  // align grid with bars
+  /*SDA CUSTOM*/              display: false,
+  /*SDA CUSTOM*/              clip: false
+
+  /*SDA CUSTOM*/          },
+  /*SDA CUSTOM*/          ticks: {
+  /*SDA CUSTOM*/              ...chartOptions.chartOptions.scales.x?.ticks,
+  /*SDA CUSTOM*/              align: 'center',
+  /*SDA CUSTOM*/              crossAlign: 'near',
+  /*SDA CUSTOM*/              maxRotation: 90,
+  /*SDA CUSTOM*/              minRotation: 0,
+  /*SDA CUSTOM*/          },
+  /*SDA CUSTOM*/      };
+
+  /*SDA CUSTOM*/      // setting Y axis options
+  /*SDA CUSTOM*/      if (!chartOptions.chartOptions.layout) {
+  /*SDA CUSTOM*/          chartOptions.chartOptions.layout = {};
+  /*SDA CUSTOM*/      }
+
+  /*SDA CUSTOM*/      chartOptions.chartOptions.layout.padding = {
+  /*SDA CUSTOM*/          top: 15,
+  /*SDA CUSTOM*/          right: 15,
+  /*SDA CUSTOM*/          bottom: 25,
+  /*SDA CUSTOM*/          left: 20
+  /*SDA CUSTOM*/      };
+  /*SDA CUSTOM*/
+
         // let chartConfig: any = {};
         chartConfig.edaChart = {}
         chartConfig.showChart = true;
@@ -575,7 +616,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.edaChart.chartDataset = chartData[1];
         chartConfig.edaChart.chartOptions = chartOptions.chartOptions;
         chartConfig.edaChart.chartColors = this.chartUtils.recoverChartColors(chartType, this.props.config) || [];
-        
+
         // chartColors unicamente se reflejan si estan dentro del chartDataset
         if (chartConfig.edaChart.chartColors.length>0) {
             chartConfig.edaChart.chartDataset[0].backgroundColor = chartConfig.edaChart.chartColors[0].backgroundColor;
@@ -591,20 +632,20 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
 
         if (chartData[1][0]?.data) {
-            /* no se hace esto porque no tiene sentido 
+            /* no se hace esto porque no tiene sentido
             if(agg == 'avg' ){       kpiValue = _.avg(chartData[1][0]?.data);
             }else if(agg == 'max' ){ kpiValue = _.max(chartData[1][0]?.data);
             }else if(agg == 'avg' ){ kpiValue = _.sum(chartData[1][0]?.data);
             }else if(agg == 'min' ){ kpiValue = _.min(chartData[1][0]?.data);
             }else{                   kpiValue = _.sum(chartData[1][0]?.data);  } */
-            
+
             kpiValue = _.sum(chartData[1][0]?.data);
             if( this.countDecimals(kpiValue) >decimals ){
                 kpiValue = Number(kpiValue.toFixed(decimals)) ;
             }
-             
+
         }
-        
+
         chartConfig.chartType = this.props.chartType;
         chartConfig.value = kpiValue;
         chartConfig.header = kpiLabel;
@@ -627,13 +668,13 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      */
     private countDecimals (value) {
         if(Math.floor(value) === value) return 0;
-        return value.toString().split(".")[1].length || 0; 
+        return value.toString().split(".")[1].length || 0;
     }
 
 
     /**
      * creates a kpiChartComponent
-     * @param inject 
+     * @param inject
     */
     private createEdaKpiChartComponent(inject: any) {
         this.entry.clear();
@@ -668,7 +709,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     /**
      * creates a dynamicTextComponent
-     * @param inject 
+     * @param inject
      */
     private createEdadynamicTextComponent(inject: any) {
         this.entry.clear();
@@ -693,7 +734,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.coordinates = this.props.coordinates;
 
         try {
-            inject.coordinates = this.props.config['config']['coordinates'];                
+            inject.coordinates = this.props.config['config']['coordinates'];
         }catch{
             inject.coordinates = null ;
         }
@@ -731,7 +772,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }catch{
             inject.draggable = true;
         }
-        
+
         inject.linkedDashboard = this.props.linkedDashboardProps;
         if (type === 'coordinatesMap') {
             this.createMapComponent(inject)
@@ -746,9 +787,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
         //this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
-        
+
     }
-    
+
     private createGeoJsonMapComponent(inject: EdaMap) {
         this.entry.clear();
         const factory = this.resolver.resolveComponentFactory(EdaGeoJsonMapComponent);
@@ -769,7 +810,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.colors = this.props.config.getConfig()['colors'];
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
 
-        //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
+        //Tratamiento de assignedColors, cuando no haya valores, asignara un color
         this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));
 
         inject.linkedDashboard = this.props.linkedDashboardProps;
@@ -821,13 +862,13 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
-        //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
+        //Tratamiento de assignedColors, cuando no haya valores, asignara un color
         this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createBubblechartComponent(inject);
     }
-    
+
     private createBubblechartComponent(inject: any) {
         this.entry.clear();
         const factory = this.resolver.resolveComponentFactory(EdaBubblechartComponent);
@@ -845,8 +886,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
-        //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
-        this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));        
+        //Tratamiento de assignedColors, cuando no haya valores, asignara un color
+        this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));
         inject.linkedDashboard = this.props.linkedDashboardProps;
         this.createTreeMap(inject);
     }
@@ -870,7 +911,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
-        //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
+        //Tratamiento de assignedColors, cuando no haya valores, asignara un color
         this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
@@ -895,7 +936,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
-        //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
+        //Tratamiento de assignedColors, cuando no haya valores, asignara un color
         this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));
         inject.linkedDashboard = this.props.linkedDashboardProps;
         this.createSunburst(inject);
@@ -948,8 +989,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     /**
      * Initializes table
-     * @param type 
-     * @param configs 
+     * @param type
+     * @param configs
      */
     private initializeTable(type: string, configs?: any): EdaTable {
 
@@ -998,11 +1039,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
     }
 
-    private assignedColorsWork(config, inject) { 
+    private assignedColorsWork(config, inject) {
         inject.data.values.forEach((injectValue, index) => {
             //Primer string encontrado(valor del filtro)
             const injectValueString = injectValue.find(value => typeof value === 'string');
-            if (!config || !config['assignedColors'].some(item => item.value === injectValueString)) { 
+            if (!config || !config['assignedColors'].some(item => item.value === injectValueString)) {
                 inject.assignedColors.push({
                     value: injectValueString, color: inject.colors[index] ||
                     `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`
