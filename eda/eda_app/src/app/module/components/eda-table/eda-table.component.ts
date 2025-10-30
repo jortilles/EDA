@@ -366,8 +366,11 @@ export class EdaTableComponent implements OnInit {
                     const match1 = this.extractNumberRange(value1)
                     const match2 = this.extractNumberRange(value2)
                     result = (match1 < match2) ? -1 : (match1 > match2) ? 1 : 0;
-                } else
-                    result = value1.localeCompare(value2);
+                } else if (actualCol.type === "EdaColumnPercentage"){
+                    const match1 =  parseFloat(value1.replace('%', '') )
+                    const match2 =  parseFloat(value2.replace('%', '') )
+                    result = (match1 < match2) ? -1 : (match1 > match2) ? 1 : 0;
+                }else    result = value1.localeCompare(value2);
             }
             else
                 result = (value1 < value2) ? -1 : (value1 > value2) ? 1 : 0;
