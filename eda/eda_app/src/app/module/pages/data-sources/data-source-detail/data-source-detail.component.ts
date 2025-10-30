@@ -3,13 +3,16 @@ import { Component, OnInit, OnDestroy, EventEmitter, Output } from '@angular/cor
 import { Router, NavigationEnd } from '@angular/router';
 import { UntypedFormGroup } from '@angular/forms';
 import { MenuItem, SelectItem, TreeNode } from 'primeng/api';
-import { AlertService, DataSourceService, QueryParams, QueryBuilderService, SpinnerService } from '@eda/services/service.index';
+import { AlertService, DataSourceService, QueryParams, QueryBuilderService, SpinnerService, DashboardService } from '@eda/services/service.index';
 import { EditTablePanel, EditColumnPanel, EditModelPanel, ValueListSource, Relation } from '@eda/models/data-source-model/data-source-models';
 import { EdaDialogController, EdaDialogCloseEvent, EdaContextMenu, EdaContextMenuItem } from '@eda/shared/components/shared-components.index';
 import { aggTypes } from 'app/config/aggretation-types';
 import { EdaColumnFunction } from '@eda/components/eda-table/eda-columns/eda-column-function';
 import * as _ from 'lodash';
 import { EdaColumnEditable } from '@eda/components/eda-table/eda-columns/eda-column-editable';
+import { AGG_COMPUTED } from './aggregationConstants';
+import Swal from 'sweetalert2';
+
 
 
 @Component({
@@ -45,6 +48,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public csvPanelController: EdaDialogController;
     public cacheController : EdaDialogController;
     public securityController : EdaDialogController;
+    public calculatedColumnEditController = false;
     public items: MenuItem[];
     // public hideAllTablesBool : boolean = false;
     // public hideAllRelationsBool : boolean = false;
@@ -121,6 +125,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         private alertService: AlertService,
         private queryBuilderService: QueryBuilderService,
         private spinnerService: SpinnerService,
+        private dashboardService: DashboardService,
         private router: Router) {
         //
         const _me = this;
@@ -454,6 +459,16 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
     updateColumn() {
         if (this.columnPanel.technical_name) {
+
+            if(this.columnPanel.computed_column === 'computed') {
+                switch (this.columnPanel.column_type) {
+                    case 'text': this.columnPanel.aggregation_type = AGG_COMPUTED.AGG_TEXT; break;
+                    case 'date': this.columnPanel.aggregation_type = AGG_COMPUTED.AGG_DATE; break;
+                    case 'numeric': this.columnPanel.aggregation_type = AGG_COMPUTED.AGG_NUMERIC; break;
+                    default: this.columnPanel.aggregation_type = AGG_COMPUTED.AGG_COORDINATE; break;
+                }
+            }
+            
             this.dataModelService.changeColumnPanel(this.columnPanel);
         }
     }
@@ -507,9 +522,28 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.dataModelService.deleteRelation(relation);
     }
     deleteCalculatedCol(columnPanel: EditColumnPanel) {
-        this.dataModelService.deleteCalculatedCol(columnPanel);
-        this.typePanel = 'tabla';
-        this.update();
+        Swal.fire({
+            title: $localize`:@@Sure:¿Estás seguro?`,
+            text: $localize`:@@deleteCalculatedColumn:Si, Eliminar el campo calculado!`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
+            cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
+        }).then(async (borrado) => {
+            if (borrado.value) {
+                try {
+                    this.dataModelService.deleteCalculatedCol(columnPanel);
+                    this.typePanel = 'tabla';
+                    this.update();
+                    Swal.fire($localize`:@@Deleted:¡Eliminado!`, $localize`:@@deleteCalculatedColumnConfirmation:Campo calculado eliminado correctamente. Debera guardar cambios en el modelo de datos para que la eliminación sea permanente`, 'success');
+                } catch (err) {
+                    this.alertService.addError(err);
+                    throw err;
+                }
+            }
+        });
     }
     deleteView(tableName: string) {
         this.dataModelService.deleteView(tableName);
@@ -524,31 +558,25 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.update();
     }
 
-
-
-    checkCalculatedColumn(columnPanel: EditColumnPanel) {
-        this.spinnerService.on();
-        const table = this.dataModelService.getTable(columnPanel);
-        const column = table.columns.filter(col => col.column_name === columnPanel.technical_name)[0];
-        const agg = ['sum', 'max', 'min', 'avg', 'count', 'distinct'];
-        let exists = 0;
-        agg.forEach(e => { if (column.SQLexpression.toString().toLowerCase().indexOf(e) >= 0) { exists = 1; } });
-
-        if (exists == 0 && column.column_type == 'numeric' ) {
-            this.alertService.addError($localize`:@@IncorrectQueryAgg:Debes incluir la agregación (distinct, sum, max, min, etc)`);
-            this.spinnerService.off()
-        } else {
-            const queryParams: QueryParams = {
-                table: table.table_name,
-                dataSource: this.dataModelService.model_id,
-            };
-            const query = this.queryBuilderService.simpleQuery(column, queryParams);
-            this.dataModelService.executeQuery(query).subscribe(
-                res => { this.alertService.addSuccess($localize`:@@CorrectQuery:Consulta correcta`); this.spinnerService.off() },
-                err => { this.alertService.addError($localize`:@@IncorrectQuery:Consulta incorrecta`); this.spinnerService.off() }
-            );
-        }
+    editCalculatedField(columnPanel) {
+        this.calculatedColumnEditController = true;
+        // console.log('Columna enviada:::: ', columnPanel);
     }
+
+    onCloseCalculatedColumnEdit() {
+        this.calculatedColumnEditController = false;
+    }
+
+    newColumnEdited(colum: any) {
+        console.log('ANTERIOR : ', this.columnPanel)
+        console.log('ACTUAL: ', colum);
+        this.columnPanel = _.cloneDeep(colum);
+
+        // Updating the columnPanel
+        this.dataModelService.changeColumnPanel(this.columnPanel);
+
+    }
+
     checkConection() {
         this.spinnerService.on();
         let connection = this.modelPanel.connection;
@@ -578,6 +606,19 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             params: { table: this.tablePanel },
             close: (event, response) => {
                 if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+
+                    const column = response.column;
+                    
+                    let aggregation_type = [];
+                    switch (column.column_type) {
+                        case 'text': aggregation_type = AGG_COMPUTED.AGG_TEXT_VALUE_DISPLAY; break;
+                        case 'date': aggregation_type = AGG_COMPUTED.AGG_DATE_VALUE_DISPLAY; break;
+                        case 'numeric': aggregation_type = AGG_COMPUTED.AGG_NUMERIC_VALUE_DISPLAY; break;
+                        default: aggregation_type = AGG_COMPUTED.AGG_COORDINATE_VALUE_DISPLAY; break;
+                    }
+
+                    if(column.computed_column === 'computed') { response.column.aggregation_type = aggregation_type }
+
                     this.dataModelService.addCalculatedColumn(response);
                     this.update();
                     this.typePanel = 'columna';

@@ -1523,8 +1523,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="inputDescripcion" datatype="html">
-        <source> Descripción </source>
-        <target> Descripción </target>
+        <source> Descripción *</source>
+        <target> Descripción *</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
@@ -1571,10 +1571,10 @@
       </trans-unit>
       <trans-unit id="inputTipoColumna" datatype="html">
         <source>
-          Tipo de columna
+          Tipo de columna *
 </source>
         <target>
-          Tipo de columna
+          Tipo de columna *
 </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
@@ -2478,8 +2478,8 @@
       </trans-unit>
 
       <trans-unit id="sqlExpColumn" datatype="html">
-        <source>Expresión SQL (Debe incluir la agregación)</source>
-        <target>Expresión SQL (Debe incluir la agregación)</target>
+        <source>Expresión SQL *</source>
+        <target>Expresión SQL *</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
@@ -2715,8 +2715,8 @@
       </trans-unit>
 
       <trans-unit id="IncorrectQueryAgg">
-        <source>Debes incluir la agregación (distinct, sum, max, min, etc)</source>
-        <target>Debes incluir la agregación (distinct, sum, max, min, etc)</target>
+        <source>No se puede incluir las siguientes agregaciones: (avg, bit_and, bit_or, bit_xor, count, group_concat, json_arrayagg, json_objectagg, max, min, std, stddev, sum, var_pop, var_samp, variance, cume_dist, dense_rank, first_value, lag, last_value, lead, nth_value, ntile, percent_rank, rank, row_number)</source>
+        <target>No se pueden incluir las siguientes agregaciones: (avg, bit_and, bit_or, bit_xor, count, group_concat, json_arrayagg, json_objectagg, max, min, std, stddev, sum, var_pop, var_samp, variance, cume_dist, dense_rank, first_value, lag, last_value, lead, nth_value, ntile, percent_rank, rank, row_number)</target>
       </trans-unit>
 
       <trans-unit id="EstablishedConnections">
@@ -3968,8 +3968,8 @@
       </trans-unit>
 
       <trans-unit id="inputFormat">
-        <source>Número de decimales </source>
-        <target>Número de decimales</target>
+        <source>Número de decimales *</source>
+        <target>Número de decimales *</target>
       </trans-unit>
 
       <trans-unit id="DashboardMailingTitle">
@@ -4435,7 +4435,43 @@
       </trans-unit>
       <trans-unit id="chartInfoTreetableAvailable">
         <source>Una tabla árbol se puede configurar de dos formas. Mediante campos que se van anidando por medio de agrupaciones o mediante la definición de dos columnas numéricas que definan una relación padre-hijo. Si las dos primeras columnas son numéricas, se asumirá que describen una relación padre hijo.</source>
-        <target>Una tabla árbol se puede configurar de dos formas. Mediante campos que se van anidando por medio de agrupaciones o mediante la definición de dos columnas numéricas que definan una relación padre-hijo. Si las dos primeras columnas son numéricas, se asumirá que describen una relación padre hijo.</target>
+        <target>Una tabla árbol se puede configurar de dos formas. Mediante campos que se van anidando por medio de agrupaciones o mediante la definición de dos columnas numéricas que definan una relación padre-hijo. Si las dos primeras columnas son numéricas, se asumirá que describen una relación padre-hijo.</target>
+      </trans-unit>
+      <trans-unit id="mandatoryDiferentName">
+        <source>Este nombre de campo calculado ya existe. Intente con otro.</source>
+        <target>Este nombre de campo calculado ya existe. Indique otro.</target>
+      </trans-unit>
+      <trans-unit id="calculatedFieldSuccess">
+        <source>Cálculo del campo calculado verificado con éxito</source>
+        <target>Cálculo del campo calculado verificado con éxito.</target>
+      </trans-unit>
+      <trans-unit id="calculatedFieldError">
+        <source>Error en la creación del campo calculado. Expresión SQL incorrecta</source>
+        <target>Error en la creación del campo calculado. Expresión SQL incorrecta.</target>
+      </trans-unit>
+      <trans-unit id="formDialogCalculatedColumn">
+        <source>Recuerde rellenar todos los campos</source>
+        <target>Recuerde rellenar todos los campos.</target>
+      </trans-unit>
+      <trans-unit id="deleteCalculatedColumn">
+        <source>Si, Eliminar el campo calculado!</source>
+        <target>Si, eliminar el campo calculado.</target>
+      </trans-unit>
+      <trans-unit id="deleteCalculatedColumnConfirmation">
+        <source>Campo calculado eliminado correctamente. Debera guardar cambios en el modelo de datos para que la eliminación sea permanente</source>
+        <target>Campo calculado eliminado correctamente. Deberá guardar los cambios en el modelo de datos para que la eliminación sea permanente.</target>
+      </trans-unit>
+      <trans-unit id="titleCalculatedColumnEditMessage">
+        <source>Campo calculado actualizado correctamente</source>
+        <target>Campo calculado actualizado correctamente.</target>
+      </trans-unit>
+      <trans-unit id="textCalculatedColumnEditMessage">
+        <source>IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entra en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe</source>
+        <target>IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entrar en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe.</target>
+      </trans-unit>
+      <trans-unit id="noFormatsAvailable">
+        <source>Esta es una columna calculada y no tiene formatos disponibles</source>
+        <target>Esta es una columna calculada y no tiene formatos disponibles.</target>
       </trans-unit>
     </body>
   </file>

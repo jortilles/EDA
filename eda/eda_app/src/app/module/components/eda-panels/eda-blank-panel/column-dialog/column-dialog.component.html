@@ -312,7 +312,6 @@
 
             <div class="grid">
                 <div class="col-12 lg:col-2">
-
                     <ng-container *ngIf="selectedColumn">
 
                         <ng-container *ngIf="selectedColumn.column_type === 'date'">
@@ -320,8 +319,12 @@
                             <h4 i18n="@@dateFormatH4"> Formato </h4>
 
                             <hr>
+                           <!--SDA CUSTOM--> <div *ngIf="selectedColumn.computed_column == 'computed'" class="p-message p-message-info" style="margin-bottom: 1em; padding: 0.5em;">
+                           <!--SDA CUSTOM-->     <i class="pi pi-exclamation-triangle" style="margin-right: 0.5em;"></i>
+                           <!--SDA CUSTOM-->     <span i18n="@@noFormatsAvailable"> Esta es una columna calculada y no tiene opciones de formato disponibles</span>
+                           <!--SDA CUSTOM--> </div>
+                           <!--SDA CUSTOM--> <div *ngIf="selectedColumn.computed_column != 'computed'">
 
-                            <div class="aggregation-list">
 
                                 <p-dropdown
                                     [(ngModel)]="formatDate"
@@ -342,14 +345,14 @@
                                     <span>{{format.display_name | uppercase}}</span>
                                 </div> -->
 
-                            </div>
 
-                            <div  style="margin-top: 1.5em; margin-left: 1em;" [pTooltip]="cumulativeSumTooltip" tooltipPosition="left">
-                                <h6 i18n="@@cumulativeSum">Suma acumulativa</h6>
-                                <p-inputSwitch id="cumulativeSum" [(ngModel)]="cumulativeSum"
-                                    (onChange)="handleCumulativeSum()" [disabled]="!cumulativeSumAllowed()"></p-inputSwitch >
-                            </div>
 
+                                <div  style="margin-top: 1.5em; margin-left: 1em;" [pTooltip]="cumulativeSumTooltip" tooltipPosition="left">
+                                  <h6 i18n="@@cumulativeSum">Suma acumulativa</h6>
+                                  <p-inputSwitch id="cumulativeSum" [(ngModel)]="cumulativeSum"
+                                  (onChange)="handleCumulativeSum()" [disabled]="!cumulativeSumAllowed()"></p-inputSwitch >
+                                </div>
+                        <!--SDA CUSTOM-->      </div>
                         </ng-container>
 
                         <ng-container *ngIf="selectedColumn.aggregation_type.length===7">
@@ -357,8 +360,11 @@
                             <h4 i18n="@@dateFormatH4"> Formato </h4>
 
                             <hr>
-
-                            <div style="margin: 10px 0;">
+                           <!--SDA CUSTOM--><div *ngIf="selectedColumn.computed_column == 'computed'" class="p-message p-message-info" style="margin-bottom: 1em; padding: 0.5em;">
+                           <!--SDA CUSTOM-->    <i class="pi pi-exclamation-triangle" style="margin-right: 0.5em;"></i>
+                           <!--SDA CUSTOM-->    <span i18n="@@noFormatsAvailable"> Esta es una columna calculada y no tiene opciones de formato disponibles</span>
+                           <!--SDA CUSTOM--></div>
+                           <!--SDA CUSTOM--><div *ngIf="selectedColumn.computed_column != 'computed'" style="margin: 10px 0;">
 
                                  <div>
                                     <h5 i18n="@@rangesExpresionH5" style="margin-top: 5px; font-size: 1.2rem; display: inline;">Rangos: </h5>
@@ -377,7 +383,7 @@
                                  </div>
 
 
-                            </div>
+
 
                             <div *ngIf="availableRange">
 
@@ -417,7 +423,7 @@
 
                             </div>
 
-
+                          <!--SDA CUSTOM--> </div>
                         </ng-container>
 
                     </ng-container>

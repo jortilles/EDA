@@ -28,6 +28,11 @@ export class pushModelToMongo {
       }
     } else {
       try {
+        // Retrieving calculated fields to add them to the new model if they exist
+        const oldModelTables = found.ds.model.tables; // old tables model => here with computed columns
+        const newModelTables = model_ds.model.tables; // new tables model => new, without computed columns
+        model_ds.model.tables = rescueComputedColumns(oldModelTables, newModelTables);
+
         if (model_ds != null || model_ds != undefined) {
           await DataSource.updateOne({ _id: model_id }, { ds: model_ds });
           console.timeEnd("UpdateModel");
@@ -43,6 +48,25 @@ export class pushModelToMongo {
         }
       }
       
+    }
+
+    function rescueComputedColumns(oldModelTables: any[], newModelTables: any[]) {
+
+      oldModelTables.forEach((table: any) => {
+        let tableName= table.table_name;
+        table.columns.forEach((column: any) => {
+          if(column.computed_column==='computed') {
+
+            newModelTables.find((table: any) => {
+              return table.table_name === tableName;
+            }).columns.push(column);
+
+          }
+        })
+
+      })
+
+      return newModelTables;
     }
   }
 }

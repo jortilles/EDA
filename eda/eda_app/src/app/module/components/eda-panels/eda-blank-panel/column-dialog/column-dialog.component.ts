@@ -177,6 +177,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         const filterBeforeGrouping = this.filterBeforeAfter.filterBeforeGrouping;
         const aggregation_type = this.aggregationSelected ? this.aggregationSelected.value : null;
         const data = this.dropDownFields;
+        const computed_column = this.selectedColumn.computed_column;
+        const SQLexpression = this.selectedColumn.SQLexpression;
+        
 
         const filter = this.columnUtils.setFilter({
             obj: this.filterValue,
@@ -191,6 +194,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             filterBeforeGrouping,
             aggregation_type,
             data,
+            computed_column,
+            SQLexpression
         });
 
         this.filter.selecteds.push(filter);        
@@ -210,9 +215,13 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             add: true,
             filter: filter
         };
+
+        // Control of adding just filter in the where section
+        if(filter['filterBeforeGrouping']) {
+            this.updateSortedFiltersColumnDialog.emit(addToSortedFilters); // Emitting an event to the eda-blank-panel component
+        }
         
-        this.updateSortedFiltersColumnDialog.emit(addToSortedFilters); // Emitting an event to the eda-blank-panel component
-        this.dropDownFields = [];
+       this.dropDownFields = [];
     }
 
     removeFilter(item: any) {
@@ -264,6 +273,44 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 value: true,
             })
         }
+
+        // Changing to numeric type
+        if(this.aggregationsTypes.length === 3 && type.value !== 'none') {
+            this.selectedColumn.column_type = 'numeric';
+            const columnType = 'numeric';
+            const allowed = [];
+
+            for (const type of this.chartUtils.filterTypes) {
+                type.typeof.forEach(columnTypeOf => {
+                    if (columnTypeOf === columnType) {
+                        allowed.push(type);
+                    }
+                });
+            }
+
+            if (allowed.length > 0) {
+                this.filter.types = allowed;
+            }
+        } 
+
+        // Changing to text type
+        if(this.aggregationsTypes.length === 3 && type.value === 'none') {
+            this.selectedColumn.column_type = 'text';
+            const columnType = 'text';
+            const allowed = [];
+
+            for (const type of this.chartUtils.filterTypes) {
+                type.typeof.forEach(columnTypeOf => {
+                    if (columnTypeOf === columnType) {
+                        allowed.push(type);
+                    }
+                });
+            }
+
+            if (allowed.length > 0) {
+                this.filter.types = allowed;
+            }
+        } 
 
     }
 

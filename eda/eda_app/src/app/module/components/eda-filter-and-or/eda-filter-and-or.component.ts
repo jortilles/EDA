@@ -137,47 +137,55 @@ export class EdaFilterAndOrComponent implements OnInit {
     
     // Integration:
     this.dashboard = [];
+    let k = 0; // y value, start
 
     // Adding Panel Filters
     this.selectedFilters.forEach((sf, j) => {
-      this.dashboard.push(
-        {
-          cols: 3, 
-          rows:1, 
-          y: j, 
-          x:0, 
-          filter_table: sf.filter_table, 
-          filter_column: sf.filter_column, 
-          filter_type: sf.filter_type, 
-          filter_column_type: sf.filter_column_type, 
-          filter_elements: sf.filter_elements,
-          filter_codes: sf.filter_codes, 
-          filter_id: sf.filter_id, 
-          isGlobal: sf.isGlobal,
-          value: "and"
-        }
-      )
+      if(sf.filterBeforeGrouping) {
+        this.dashboard.push(
+          {
+            cols: 3, 
+            rows:1, 
+            y: k, 
+            x:0, 
+            filter_table: sf.filter_table, 
+            filter_column: sf.filter_column, 
+            filter_type: sf.filter_type, 
+            filter_column_type: sf.filter_column_type, 
+            filter_elements: sf.filter_elements, 
+            filter_id: sf.filter_id, 
+            isGlobal: sf.isGlobal,
+            value: "and"
+          }
+        );
+        k++;
+      }
     });
+
+    const temporalLength = k;
+    k = 0; // reset to zero
 
     // Adding Global Filters
     this.globalFilters.forEach((gf, i) => {
-      this.dashboard.push(
-        {
-          cols: 3, 
-          rows:1, 
-          y: i + this.selectedFilters.length, 
-          x: 0, 
-          filter_table: gf.filter_table,
-          filter_column: gf.filter_column, 
-          filter_type: gf.filter_type, 
-          filter_column_type: gf.filter_column_type, 
-          filter_elements: gf.filter_elements, 
-          filter_codes: gf.filter_codes, 
-          filter_id: gf.filter_id,
-          isGlobal: gf.isGlobal,
-          value: "and"
-        }
-      )
+      if(gf.filterBeforeGrouping) {
+        this.dashboard.push(
+          {
+            cols: 3, 
+            rows:1, 
+            y: k + temporalLength, 
+            x: 0, 
+            filter_table: gf.filter_table,
+            filter_column: gf.filter_column, 
+            filter_type: gf.filter_type, 
+            filter_column_type: gf.filter_column_type, 
+            filter_elements: gf.filter_elements, 
+            filter_id: gf.filter_id,
+            isGlobal: gf.isGlobal,
+            value: "and"
+          }
+        );
+        k++;
+      }
     });
 
     // A clone of the dashboard is created

@@ -225,6 +225,12 @@ export class MySqlBuilderService extends QueryBuilderService {
       if(this.queryTODO.fields[0].valueListSource !== undefined) {
         myQuery = `SELECT DISTINCT ${columns},  IFNULL(\`${this.queryTODO.fields[0].valueListSource.target_table}\`.\`${this.queryTODO.fields[0].valueListSource.target_id_column}\`, '') as \`id\`\nFROM ${o}`;
       }
+
+      // If the element is a SQL Expression type
+      if(this.queryTODO.fields[0].computed_column !== undefined && this.queryTODO.fields[0].computed_column == 'computed' ) {
+        myQuery = `SELECT DISTINCT ${this.queryTODO.fields[0].SQLexpression} as \`${this.queryTODO.fields[0].column_name}\` ,   ${this.queryTODO.fields[0].SQLexpression} as \`id\`\nFROM ${o}`;
+      }
+
     }
 
     // If it is EDA, there is no alias and if it is EDA2 tree mode, there is an alias.
@@ -411,6 +417,17 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     })
 
+    // Checking the computed fields and SQLexpression added
+    filters.forEach(filter => {
+      if (filter.computed_column === 'computed') {
+        const match = sortedFilters.find(sf => sf.filter_id === filter.filter_id);
+        if (match) {
+          match.computed_column = 'computed';
+          match.SQLexpression = filter.SQLexpression;
+        }
+      }
+    });
+    
     // Variable containing the new string of nested AND/OR filters corresponding to the graphic design of the items.
     let stringQuery = '\nwhere ';
 
@@ -420,7 +437,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     // Recursive function for the necessary nesting according to the AND/OR filter graph.
     function cadenaRecursiva(item: any) {
       // recursive item
-      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, filter_codes, value, valueListSource, sqlOptional } = item;
+      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, filter_codes, value, valueListSource, sqlOptional, computed_column, SQLexpression } = item;
 
       ////////////////////////////////////////////////// filter_type ////////////////////////////////////////////////// 
       let filter_type_value = '';
@@ -532,16 +549,31 @@ export class MySqlBuilderService extends QueryBuilderService {
       let validador = (valueListSource !== undefined && valueListSource !== null);
       // Result of the whole string 
 
-      let resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_id_column : filter_column}\` ${filter_type_value}${filter_elements_value}`;
+      let resultado = '';
+
+      if(computed_column==='computed') {
+        resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} (${SQLexpression}) ${filter_type_value}${filter_elements_value}`;
+      } else {
+        resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` ${filter_type_value}${filter_elements_value}`;
+      }
+
 
       // It is located in this position because the table and field must be duplicated in the query (*observation)
       if(filter_type === 'not_null_nor_empty') {
-        resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_id_column : filter_column}\` != '')`;
+        if(computed_column==='computed') {
+          resultado = `${resultado} (${SQLexpression}) != '')`;
+        } else {
+          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` != '')`;
+        }
       }
 
       // It is located in this position because the table and field must be duplicated in the query (*observation)
       if(filter_type === 'null_or_empty') {
-        resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_id_column : filter_column}\` = '')`;
+        if(computed_column==='computed') {
+          resultado = `${resultado} (${SQLexpression}) = '')`;
+        } else {
+          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` = '')`;
+        }
       }
 
       if(filter_type === 'in' && sqlOptional !== undefined) {
@@ -872,20 +904,28 @@ export class MySqlBuilderService extends QueryBuilderService {
       let whatIfExpression = '';
       if (el.whatif_column) whatIfExpression = `${el.whatif.operator} ${el.whatif.value}`;
 
-
       el = this.getMinFractionDigits(el);
 
       // Calculated columns are managed here
       if (el.computed_column === 'computed') {
         if(el.column_type=='text'){
-          columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
+          if(el.aggregation_type === 'none') { columns.push(` ${el.SQLexpression} as \`${el.display_name}\``);}
+          else if(el.aggregation_type === 'count_distinct') {columns.push(` count( distinct ${el.SQLexpression} ) as \`${el.display_name}\``);}
+          else {columns.push(` ${el.aggregation_type}(${el.SQLexpression}) as \`${el.display_name}\``);}
         }else if(el.column_type=='numeric'){
-          columns.push(`cast( ${el.SQLexpression} ${whatIfExpression} as decimal(32,${el.minimumFractionDigits}))   as \`${el.display_name}\``);
+          if(el.aggregation_type === 'none') { columns.push(` cast( ${el.SQLexpression} ${whatIfExpression} as decimal(32,${el.minimumFractionDigits}))   as \`${el.display_name}\``);}
+          else if(el.aggregation_type === 'count_distinct') { columns.push(` cast( count( distinct( ${el.SQLexpression} ${whatIfExpression})) as decimal(32,${el.minimumFractionDigits}))   as \`${el.display_name}\``);}
+          else {columns.push(` cast( ${el.aggregation_type}(${el.SQLexpression} ${whatIfExpression}) as decimal(32,${el.minimumFractionDigits}))   as \`${el.display_name}\``);}
         }else if(el.column_type=='date'){
-          columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
+          if(el.aggregation_type === 'none') { columns.push(` ${el.SQLexpression} as \`${el.display_name}\``);}
+          else if(el.aggregation_type === 'count_distinct') { columns.push(` count( distinct ${el.SQLexpression}) as \`${el.display_name}\``);}
+          else { columns.push(` ${el.aggregation_type}(${el.SQLexpression}) as \`${el.display_name}\``);}
         }else if(el.column_type=='coordinate'){
-          columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
+          if(el.aggregation_type === 'none') { columns.push(` ${el.SQLexpression} as \`${el.display_name}\``);}
+          else if(el.aggregation_type === 'count_distinct') { columns.push(` count( distinct ${el.SQLexpression}) as \`${el.display_name}\``);}
+          else {columns.push(` ${el.aggregation_type}(${el.SQLexpression}) as \`${el.display_name}\``);}
         }
+
         // GROUP BY
         if (el.format) {
           if (_.isEqual(el.format, 'year')) {
@@ -911,7 +951,9 @@ export class MySqlBuilderService extends QueryBuilderService {
           }
         } else {
           if( el.column_type != 'numeric' ){ // Computed colums require agrregations for numeric
-            grouping.push(` ${el.SQLexpression} `);
+            grouping.push(` (${el.SQLexpression}) `);
+          } else if(el.aggregation_type === 'none') {
+            grouping.push(` (${el.SQLexpression}) `);
           }
         }
       } else {
@@ -1108,7 +1150,6 @@ export class MySqlBuilderService extends QueryBuilderService {
    * @returns having clause in a string.  
    */
   public getHavingFilters(filters ): any {
-
     if (filters.length) {
 
       let filtersString = `\nhaving 1=1 `;
@@ -1160,7 +1201,6 @@ export class MySqlBuilderService extends QueryBuilderService {
    * @returns coumn name in string mode for having. 
    */
 public getHavingColname(column: any){
-
   let colname:String  ;
   if( column.computed_column === 'no'  || !column.hasOwnProperty('computed_column') ){
     let table_id = column.table_id;
@@ -1177,7 +1217,11 @@ public getHavingColname(column: any){
     
   }else{
     if(column.column_type == 'numeric'){
-      colname = `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits}))`;
+      if(column.aggregation_type === 'count_distinct') {
+        colname = `CAST( count( distinct (${column.SQLexpression})) as decimal(32,${column.minimumFractionDigits}))`;
+      } else {
+        colname = `CAST( ${column.aggregation_type}(${column.SQLexpression}) as decimal(32,${column.minimumFractionDigits}))`;
+      }
     }else{
       colname = `  ${column.SQLexpression}  `;
     }
@@ -1199,7 +1243,6 @@ public getHavingColname(column: any){
       column.minimumFractionDigits = 0;
     }
     const  colname = this.getHavingColname(column) ;
-
     let colType = column.column_type;
     
     switch (this.setFilterType(filterObject.filter_type)) {

@@ -417,8 +417,9 @@ export class GlobalFiltersService {
             autorelation: globalFilter.autorelation,
             valueListSource: globalFilter.selectedColumn.valueListSource,
             filterBeforeGrouping: true, // For all global filters it is Where
-            joins: globalFilter.joins
-
+            joins: globalFilter.joins,
+            computed_column: globalFilter.selectedColumn.computed_column,
+            SQLexpression: globalFilter.selectedColumn.SQLexpression,
         }
 
         return formatedFilter;

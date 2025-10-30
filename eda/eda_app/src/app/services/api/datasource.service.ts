@@ -106,7 +106,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 this._treeData.getValue()[0].expanded = true;
                 n.expanded = true;
                 child.expanded = true;
-            }  
+            }
         } );
         //this._treeData.next( this._treeData.getValue())
     }
@@ -139,12 +139,16 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 tables.push(currTable);
 
                 // Column nodes
-                table.columns.forEach((column: { display_name: { default: string; }; }) => {
+                table.columns.forEach((column: any) => {
                     const currCol: TreeNode = {};
                     currCol.label = column.display_name.default;
                     currCol.data = 'columna';
                     currCol.children = [];
-                    currCol.icon = 'fa fa-columns';
+                    // SDA CUSTOM - JCH - 20251014 - Add icon to column node depending on if is a computed column or not
+                    // https://github.com/SinergiaTIC/SinergiaDA/pull/375
+                    // currCol.icon = 'fa fa-columns';
+                    currCol.icon = column.computed_column === 'computed' ? 'fa fa-calculator' : 'fa fa-columns';
+                    /* END SDA CUSTOM*/
                     currCol.type = element && element.name === column.display_name.default ? 'selected' : 'unselected'
                     currTable.children.push(currCol);
 
@@ -253,7 +257,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         this._columnPanel.next(columnPanel);
         this._typePanel.next('columna');
     }
-  
+
 
     // Aux functions
     getTableByName(tableName: string): Array<Relation> {
@@ -269,7 +273,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
 
     deleteRelation(rel: Relation) {
 
-        // Relacions visibles/invisibles ??? ---------------------- WARNING !!!!!!!!!!!!!!! 
+        // Relacions visibles/invisibles ??? ---------------------- WARNING !!!!!!!!!!!!!!!
 
         // Update TablePanel
         const tmp_panel = this._tablePanel.getValue();
@@ -391,7 +395,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         tmpMetadata.cache_config = config;
         this._modelMetadata.next(tmpMetadata);
     }
-    //Añadir los tags al modelMetadata 
+    //Añadir los tags al modelMetadata
     addTags(tags:any){
         let tmpMetadata = this._modelMetadata.getValue();
         if(tmpMetadata.tags){
@@ -408,7 +412,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 let tagArray = []
                 let dsObject = data.ds;
                 dsObject.map((datasource) =>{
-                  if(datasource.ds.metadata.tags){ 
+                  if(datasource.ds.metadata.tags){
                     tagArray = [...tagArray,...datasource.ds.metadata.tags]
                 }
                 });
@@ -471,7 +475,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
             if( panel.valueListSource  ){
                 tmp_model[tableIndex].columns[columnindex].valueListSource = panel.valueListSource;
             }
-            
+
             this._databaseModel.next(tmp_model);
 
         } else if (panel.type === 'root') {
@@ -540,10 +544,10 @@ export class DataSourceService extends ApiService implements OnDestroy {
         let tmp_model = this.getModel();
         tmp_model.forEach(table => table.visible = false);
         this._databaseModel.next(tmp_model);
-      
+
     }
 
-    
+
     hideAllColumns(tablePanel:any){
         let tmp_model = this.getModel();
         tmp_model.forEach(table => {
@@ -553,7 +557,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
             }
         });
         this._databaseModel.next(tmp_model);
-      
+
     }
 
     hideAllRelations(){

@@ -100,7 +100,6 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     }
 
     addFilter() {
-
         const table = this.selectedColumn.table_id;
         const column_type  = this.selectedColumn.column_type;
         const column = this.selectedColumn.column_name;
@@ -113,6 +112,8 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         const aggregation_type = this.aggregationType ? this.aggregationType.value : null;
         const data = this.dropDownFields;
 
+        const computed_column = this.selectedColumn.computed_column;
+        const SQLexpression = this.selectedColumn.SQLexpression;
 
         const filter = this.columnUtils.setFilter({
             obj: this.filterValue,
@@ -127,6 +128,8 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             filterBeforeGrouping,
             aggregation_type,
             data,
+            computed_column,
+            SQLexpression
         });
         
         this.filter.selecteds.push(filter);
@@ -148,8 +151,10 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             filter: filter
         };
 
-        this.updateSortedFiltersFilterDialog.emit(addToSortedFilters); // Emitting an event to the eda-blank-panel component
-
+        // Control of adding just filter in the where section
+        if(filter['filterBeforeGrouping']) {
+            this.updateSortedFiltersFilterDialog.emit(addToSortedFilters); // Emitting an event to the eda-blank-panel component
+        }
     }
 
     carrega() {

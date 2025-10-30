@@ -63,12 +63,12 @@
             <button pButton type="button" icon="pi pi-plus"
             [label]="addPermission" class="p-button-secondary" (click)="openTablePermissionsDialog()"
             style="margin-bottom: 1px;"> </button>
+            <button *ngIf="selectedTableType !=='view'" pButton type="button" icon="pi pi-plus"
+            [label]="addCalculatedCol" class="p-button-secondary" (click)="openNewColDialog()"
+            style="margin-bottom: 1px;"> </button>
           <span class="hidden">
             <button pButton type="button" icon="pi pi-plus" [label]="addRelation" class="p-button-secondary "
                 (click)="openTableRelationDialog()" style="margin-bottom: 1px;"> </button>
-            <button *ngIf="selectedTableType !=='view'" pButton type="button" icon="pi pi-plus"
-                [label]="addCalculatedCol" class="p-button-secondary" (click)="openNewColDialog()"
-                style="margin-bottom: 1px;"> </button>
             <button pButton type="button" icon="pi pi-eye-slash" [label]="hideColumnsString" class="p-button-secondary"
                 (click)="hideAllColumns(tablePanel)" style="margin-bottom: 1px;"> </button>
           </span>
@@ -88,7 +88,7 @@
 
 <!-- EDICION DE LAS COLUMNAS -->
 
-<div *ngIf="typePanel==='columna' && columnPanel.technical_name" class="tp-container" [ngClass]="{'sda-disabled':dataModelService.model_id=='111111111111111111111111'}">
+<div *ngIf="typePanel==='columna' && columnPanel.technical_name" class="tp-container" [ngClass]="{'sda-disabled':dataModelService.model_id=='111111111111111111111111' && columnPanel.computed_column === 'no'}">
 
     <p-card i18n-header="@@editModelHeaders" header="Editar {{columnPanel.type ?  columnPanel.name : ''}}">
 
@@ -100,7 +100,7 @@
             <h5 class="title-datamodel" i18n="@@inputNombre">
                 Nombre
             </h5>
-            <p><input pInputText type="text" size="50" [(ngModel)]="columnPanel.name" (keyup)="update()"></p>
+            <p><input pInputText type="text" size="50" [(ngModel)]="columnPanel.name" [disabled]="columnPanel.computed_column === 'computed'"></p>
         </div>
 
         <div>
@@ -114,13 +114,13 @@
             <h5 class="title-datamodel" i18n="@@inputDescripcion">
                 Descripción
             </h5>
-            <p><input pInputText type="text" size="50" [(ngModel)]="columnPanel.description" (keyup)="update()"></p>
+            <p><input pInputText type="text" size="50" [(ngModel)]="columnPanel.description" [disabled]="columnPanel.computed_column === 'computed'"></p>
         </div>
 
         <div *ngIf="columnPanel.computed_column !== 'no'">
-            <h5 class="title-datamodel" i18n="@@sqlExpColumn">Expresión SQL (Debe incluir la agregación)</h5>
-            <p><textarea pInputTextarea type="text" [(ngModel)]="columnPanel.SQLexpression" (keyup)="update()" rows="5"
-                    cols="100" placeholder="sum(a*b)"> </textarea></p>
+            <h5 class="title-datamodel" i18n="@@sqlExpColumn">Expresión SQL</h5>
+            <p><textarea pInputTextarea type="text" [(ngModel)]="columnPanel.SQLexpression" rows="5"
+                    cols="100" [disabled]="columnPanel.computed_column === 'computed'"> </textarea></p>
         </div>
 
         <div  style="margin-bottom: 1em; margin-top: 0.5em;">
@@ -128,7 +128,7 @@
                 Tipo de columna
             </h5>
             <div>
-                <p-selectButton [options]="columnTypes" [(ngModel)]="selectedcolumnType" (onChange)=updateColumnType()>
+                <p-selectButton [options]="columnTypes" [(ngModel)]="selectedcolumnType" (onChange)=updateColumnType() [disabled]="columnPanel.computed_column === 'computed'">
                 </p-selectButton>
             </div>
         </div>
@@ -149,7 +149,7 @@
                 Número de decimales
             </h5>
             <div>
-                <p><input pInputText type="number" size="50" [(ngModel)]="columnPanel.minimumFractionDigits" (keyup)="update()"></p>
+                <p><input pInputText type="number" size="50" [(ngModel)]="columnPanel.minimumFractionDigits" (keyup)="update()" [disabled]="columnPanel.computed_column === 'computed'"></p>
             </div>
         </div>
 
@@ -192,8 +192,8 @@
         </div>
 
         <div>
-            <button *ngIf="columnPanel.SQLexpression" type="button" pButton (click)="checkCalculatedColumn(columnPanel)"
-                class="ui-button-success ml-2" label="Comprobar expresión" style="margin-right: 5px;"></button>
+            <button *ngIf="columnPanel.computed_column !== 'no'" type="button" pButton (click)="editCalculatedField(columnPanel)"
+                class="ui-button-success" label="Edición de campo calculado" style="margin-right: 5px;"></button>
             <button *ngIf="columnPanel.computed_column !== 'no'" type="button" pButton
                 (click)="deleteCalculatedCol(columnPanel)" class="p-button-raised p-button-danger" i18n-label="@@borrar"
                 label="Borrar"></button>
@@ -389,4 +389,4 @@
 <app-add-csv-dialog *ngIf="csvPanelController" [controller]="csvPanelController"></app-add-csv-dialog>
 <eda-cache-dialog *ngIf="cacheController" [controller]="cacheController"></eda-cache-dialog>
 <eda-security-dialog *ngIf="securityController" [controller]="securityController"></eda-security-dialog>
-
+<app-calculated-column-edit-dialog *ngIf="calculatedColumnEditController" [column]="columnPanel" (close)="onCloseCalculatedColumnEdit()" (newColum)="newColumnEdited($event)"></app-calculated-column-edit-dialog>

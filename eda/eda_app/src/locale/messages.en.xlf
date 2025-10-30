@@ -1392,8 +1392,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="inputDescripcion" datatype="html">
-<source> Descripción </source>
-<target> Description </target>
+<source> Descripción *</source>
+<target> Description *</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
 <context context-type="linenumber">16</context>
@@ -1429,10 +1429,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputTipoColumna" datatype="html">
 <source>
-                Tipo de columna
+                Tipo de columna *
 </source>
 <target>
-                Column type
+                Column type *
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
@@ -2350,8 +2350,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="sqlExpColumn" datatype="html">
-<source>Expresión SQL (Debe incluir la agregación)</source>
-<target>SQL expression (Must include aggregation)</target>
+<source>Expresión SQL *</source>
+<target>SQL expression *</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
   <context context-type="linenumber">103</context>
@@ -2569,8 +2569,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="IncorrectQueryAgg">
-<source>Debes incluir la agregación (distinct, sum, max, min, etc)</source>
-<target>You must include the aggregation (distinct, sum, max, min, etc)</target>
+<source>No se puede incluir las siguientes agregaciones: (avg, bit_and, bit_or, bit_xor, count, group_concat, json_arrayagg, json_objectagg, max, min, std, stddev, sum, var_pop, var_samp, variance, cume_dist, dense_rank, first_value, lag, last_value, lead, nth_value, ntile, percent_rank, rank, row_number)</source>
+<target>The following aggregations cannot be included: (avg, bit_and, bit_or, bit_xor, count, group_concat, json_arrayagg, json_objectagg, max, min, std, stddev, sum, var_pop, var_samp, variance, cume_dist, dense_rank, first_value, lag, last_value, lead, nth_value, ntile, percent_rank, rank, row_number)</target>
 </trans-unit>
 
 <trans-unit id="EstablishedConnections">
@@ -3741,8 +3741,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
     <trans-unit id="inputFormat">
-    <source>Número de decimales   </source>
-    <target>Decimal places  </target>
+    <source>Número de decimales *</source>
+    <target>Decimal places *</target>
   </trans-unit>
 
   <trans-unit id="DashboardMailingTitle">
@@ -4642,6 +4642,42 @@ Once configured you can invoke it whenever you want from the button.</target>
       <trans-unit id="chartInfoTreetableAvailable">
         <source>Una tabla árbol se puede configurar de dos formas. Mediante campos que se van anidando por medio de agrupaciones o mediante la definición de dos columnas numéricas que definan una relación padre-hijo. Si las dos primeras columnas son numéricas, se asumirá que describen una relación padre hijo.</source>
         <target>A tree table can be configured in two ways: by nesting fields using groupings, or by defining two numeric columns that define a parent-child relationship. If the first two columns are numeric, they will be assumed to describe a parent-child relationship.</target>
+      </trans-unit>
+      <trans-unit id="mandatoryDiferentName">
+        <source>Este nombre de campo calculado ya existe. Intente con otro.</source>
+        <target>This calculated field name already exists. Please try another one.</target>
+      </trans-unit>
+      <trans-unit id="calculatedFieldSuccess">
+        <source>Cálculo del campo calculado verificado con éxito</source>
+        <target>Calculation of the calculated field successfully verified</target>
+      </trans-unit>
+      <trans-unit id="calculatedFieldError">
+        <source>Error en la creación del campo calculado. Expresión SQL incorrecta</source>
+        <target>Error creating the calculated field. Invalid SQL expression.</target>
+      </trans-unit>
+      <trans-unit id="formDialogCalculatedColumn">
+        <source>Recuerde rellenar todos los campos</source>
+        <target>Please remember to fill in all the fields.</target>
+      </trans-unit>
+      <trans-unit id="deleteCalculatedColumn">
+        <source>Si, Eliminar el campo calculado!</source>
+        <target>Yes, delete the calculated field.</target>
+      </trans-unit>
+      <trans-unit id="deleteCalculatedColumnConfirmation">
+        <source>Campo calculado eliminado correctamente. Debera guardar cambios en el modelo de datos para que la eliminación sea permanente</source>
+        <target>Calculated field deleted successfully. You will need to save the changes in the data model for the deletion to be permanent.</target>
+      </trans-unit>
+      <trans-unit id="titleCalculatedColumnEditMessage">
+        <source>Campo calculado actualizado correctamente</source>
+        <target>Calculated field updated successfully.</target>
+      </trans-unit>
+      <trans-unit id="textCalculatedColumnEditMessage">
+        <source>IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entra en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe</source>
+        <target>IMPORTANT: When modifying an existing calculated field, the panels that use it are not automatically updated. You must enter the configuration of each of them, click on Run and save the report.</target>
+      </trans-unit>
+            <trans-unit id="noFormatsAvailable">
+        <source>Esta es una columna calculada y no tiene formatos disponibles</source>
+        <target>This is a calculated column and has no available formats.</target>
       </trans-unit>
         </body>
   </file>

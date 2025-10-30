@@ -854,8 +854,6 @@ export abstract class QueryBuilderService {
     }
 
     public findHavingColumn( havingFilter:any) {
-        
-
         if(this.queryTODO.fields.find((f: any)=> f.table_id === havingFilter.filter_table && 
                                             f.filter === havingFilter.filter_column)){
             return this.queryTODO.fields.find((f: any)=> f.table_id === havingFilter.filter_table && 
@@ -878,7 +876,9 @@ export abstract class QueryBuilderService {
                 whatif_column: false,
                 whatif: {},
                 joins: [],
-                autorelation: false
+                autorelation: false,
+                computed_column: havingFilter.computed_column ?? 'no',
+                SQLexpression: havingFilter.SQLexpression ?? '',
             }
         }
 

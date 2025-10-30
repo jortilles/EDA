@@ -51,6 +51,7 @@ import { SaveAsDialogComponent } from './dashboard/saveAsDialog/save-as-dialog.c
 import { EditStylesDialogComponent } from './dashboard/edit-styles-dialog/edit-styles.dialog.component';
 /*SDA CUSTOM*/ import { HomeSdaComponent } from './home-sda/home-sda.component';
 import { GlobalFilterComponent } from './dashboard/global-filter/global-filter.component';
+import { CalculatedColumnEditDialogComponent } from './data-sources/data-source-detail/calculated-column-edit-dialog/calculated-column-edit-dialog.component';
 
 
 @NgModule({
@@ -100,7 +101,8 @@ import { GlobalFilterComponent } from './dashboard/global-filter/global-filter.c
         UrlsActionComponent,
         LogsComponent,
         /*SDA CUSTOM*/ HomeSdaComponent,
-        /*SDA CUSTOM*/ AboutComponent
+        /*SDA CUSTOM*/ AboutComponent,
+        /*SDA CUSTOM*/ CalculatedColumnEditDialogComponent
 
     ]
 })

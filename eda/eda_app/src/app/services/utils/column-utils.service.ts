@@ -15,6 +15,8 @@ interface FilterOptions {
     filterBeforeGrouping?: boolean;
     aggregation_type?: string;
     data?: any;
+    computed_column?: string;
+    SQLexpression?: string;
 }
 
 @Injectable()
@@ -23,7 +25,7 @@ export class ColumnUtilsService {
 
     
     public setFilter(options: FilterOptions): object {
-        const { obj, table, column, column_type, type, selectedRange, valueListSource, autorelation, joins, filterBeforeGrouping, aggregation_type, data } = options;
+        const { obj, table, column, column_type, type, selectedRange, valueListSource, autorelation, joins, filterBeforeGrouping, aggregation_type,  data,  computed_column, SQLexpression } = options;
     
         const values = Object.keys(obj).map((key) => {
             if (!_.isNil(obj[key])) {
@@ -53,6 +55,8 @@ export class ColumnUtilsService {
             joins,
             filterBeforeGrouping,
             aggregation_type,
+            computed_column,
+            SQLexpression
         };
     
         if (valueListSource) {

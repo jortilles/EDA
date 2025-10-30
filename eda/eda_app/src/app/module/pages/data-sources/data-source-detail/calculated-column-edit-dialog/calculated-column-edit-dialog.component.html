@@ -1,0 +1,44 @@
+<eda-dialog2
+    [display]="display"
+    header="Edición de campos calculados"
+    i18n-label="@@filterSettings"
+    width="50vw" height="88vh"
+    (apply)="onApplyCalculatedColumn()"
+    (close)="onCloseCalculatedColumn()"
+>
+
+    <div content>
+
+        <form [formGroup]="form" class="form-horizontal form-material">
+
+            <div style="margin: 10px">
+                <h6 i18n="@@inputNombre">Nombre *</h6>
+                <p><input pInputText type="text" size="50" [(ngModel)]="name" formControlName="colName" id="eda_col_nombre" (keyup)="update()"></p>
+            </div>
+
+            <div style="margin: 10px">
+                <h6 i18n="@@inputDescripcion">Descripción *</h6>
+                <p><input pInputText type="text" size="50" [(ngModel)]="description" formControlName="description" id="eda_descripcion" (keyup)="update()"></p>
+            </div>
+
+            <div style="margin: 10px">
+                <h6 class="title-datamodel" i18n="@@sqlExpColumn">Expresión SQL</h6>
+                <p><textarea pInputTextarea type="text" [(ngModel)]="sqlExpressionString" rows="5" cols="100" formControlName="sqlExpression" id="eda_sqlExpression" (keyup)="update()"></textarea></p>
+            </div>
+
+            <div style="margin: 10px">
+                <h6 class="title-datamodel" i18n="@@inputTipoColumna">Tipo de columna</h6>
+                <p-selectButton [options]="columnTypes" [(ngModel)]="selectedcolumnType" formControlName="typeSelector" (onChange)="onTypeChange($event)">
+                </p-selectButton>
+            </div>      
+
+            <div *ngIf="selectedcolumnType==='numeric'" style="margin: 10px">
+                <h6 class="title-datamodel" i18n="@@inputFormat">Número de decimales</h6>
+                <p><input pInputText type="number" [(ngModel)]="decimalNumberValue" size="50" formControlName="decimalNumber" (keyup)="update()"></p>
+            </div>      
+
+        </form>
+
+    </div>
+
+</eda-dialog2>
