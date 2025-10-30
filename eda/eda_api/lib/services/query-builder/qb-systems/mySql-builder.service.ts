@@ -1072,7 +1072,7 @@ export class MySqlBuilderService extends QueryBuilderService {
           if (filterObject.filter_type === 'not_like') { 
             filterObject.filter_type = 'not like'
             /** if i have the lovely code i use the code */
-            if( filterObject.filter_codes.length !== undefined  &&  filterObject.valueListSource !== undefined ){
+            if( filterObject.filter_codes?.length !== undefined  &&  filterObject.valueListSource !== undefined ){
                 return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_codes[0].value1}%' `;
             }else{
                 return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
