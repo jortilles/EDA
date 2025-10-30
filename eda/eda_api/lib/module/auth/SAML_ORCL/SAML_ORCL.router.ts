@@ -19,7 +19,11 @@ router.get('/metadata', SAML_ORCL_Controller.metadata);
 router.get('/request-logout', authGuard ,SAML_ORCL_Controller.requestLogout); // SP-initiated logout: redirige al IdP
 
 // Endpoint para recibir la respuesta/requests del IdP (GET o POST según el binding)
-router.post('/logout', express.urlencoded({ extended: false }), SAML_ORCL_Controller.logout);
+// router.post('/logout', express.urlencoded({ extended: false }), SAML_ORCL_Controller.logout);
+
+router.route('/logout')
+  .get(express.urlencoded({ extended: false }), SAML_ORCL_Controller.logout)
+  .post(express.urlencoded({ extended: false }), SAML_ORCL_Controller.logout);
 
 
 export default router;
