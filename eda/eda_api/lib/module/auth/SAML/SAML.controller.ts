@@ -243,7 +243,7 @@ static async acs(req: Request, res: Response, next: NextFunction) {
           if(!statusCode) {
             console.warn('No StatusCode found in SAMLResponse fallback parse');
           } else if(String(statusCode).endsWith(':Success')) {
-              return res.redirect(302, `${origen}/#/login?logged_out=1`);
+              return res.redirect(302, `${origen}`);
           } else {
             console.warn('SAMLResponse status not success:', statusCode);
             return res.status(400).send('Logout not successful');
