@@ -208,11 +208,10 @@ export class DashboardPageV2 implements OnInit {
     // me.dataSource = res.datasource; // DataSource del dashboard
     // me.datasourceName = res.datasource.name;
     // me.form.controls['visible'].setValue(config.visible);
+
+    this.checkImportedPanels(dashboard);
     this.updateFilterDatesInPanels();
   }
-
-
-
 
   private updateFilterDatesInPanels(): void {
 
@@ -641,6 +640,29 @@ private addFilterToPanelQuery(panel: any, filter: any): void {
     this.sidebarService.invokeMethod('onImportPanel');
   }
 
+    checkImportedPanels(dashboard) {
+    dashboard.config.panel.forEach(element => {
+      try {        
+        if (element.globalFilterMap) {
+          const panelFilters = element.content.query.query.filters;
+  
+          element.globalFilterMap.forEach(filterLinkId => {
+            // Buscar el filtro del dashboard al que apunta targetId
+            const dashboardFilterToApply = dashboard.config.filters.find(filter => filter.id === filterLinkId.targetId);
+            const sourceFilter = panelFilters.find(f => f.filter_id === filterLinkId.sourceId);
+            const valueToApply = dashboardFilterToApply.selectedItems;
+  
+            if(sourceFilter?.filter_elements)
+              sourceFilter.filter_elements[0].value1 = valueToApply;
+          });
+        }
+      } catch (error) {
+        console.log('Error al cargar imported panels', error)      
+        this.alertService.addError('Error al cargar imported panels')  
+      }
+    });
+  }
+
   public onDuplicatePanel(panel: any) {
     this.panels.push(panel);
     this.dashboardService._notSaved.next(true);
@@ -734,7 +756,6 @@ private addFilterToPanelQuery(panel: any, filter: any): void {
   }
 
   isEditable(): boolean {
-    // TODO check is editabl
     return this.dashboard.dashboard.config.isEditable
   }
 
@@ -785,6 +806,7 @@ private addFilterToPanelQuery(panel: any, filter: any): void {
               throw err;
             }
       }
+      this.checkImportedPanels(this.dashboard);
   }
 
   private savePanels(): any[] {

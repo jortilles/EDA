@@ -57,9 +57,9 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   public addValuesPercentages: string = $localize`:@@addValuesPercentages:Valores y Porcentajes`;
   public addTrend: string = $localize`:@@addtrend:Tendencia`;
   public removeTrend: string = $localize`:@@removetrend:Quitar tendencia`;
-  public seeRepetitions: string = $localize`:@@seeRepetitions: ver/ocultar valores repetidos`;
+  public seeRepetitions: string = $localize`:@@seeHideRepetitions: ver/ocultar valores repetidos`;
   public withRepetitions: string = $localize`:@@seeRepetitions: ver valores repetidos`;
-  public withNoRepetitions: string = $localize`:@@seeRepetitions: ocultar valores repetidos`;
+  public withNoRepetitions: string = $localize`:@@hideRepetitions: ocultar valores repetidos`;
   public withNegativeNumbers: string = $localize`:@@withNegativeNumbers: Con números negativos`;
   public withoutNegativeNumbers: string = $localize`:@@withoutNegativeNumbers: Sin números negativos`;
   public seeNegativeNumbers: string = $localize`:@@seeNegativeNumbers: Números negativos`;

@@ -17,7 +17,7 @@
 
               <div class="col-12 " *ngIf="display.groups">
                   <p-multiSelect id="float-grups" formControlName="group" [options]="grups" [filter]="false"
-                      optionLabel="name" defaultLabel="Selecciona un grupo *"></p-multiSelect>
+                      optionLabel="name" i18n-defaultLabel="@@multiSelectDefaultLabel" defaultLabel="Selecciona un grupo *"></p-multiSelect>
               </div>
           </div>
 
@@ -30,7 +30,7 @@
           <button type="submit" pButton icon="fa fa-save" i18n-label="@@guardarBtn" label="Confirmar"
               icon="fa fa-check" id="eda_add_dashboard_confirmar" (click)="createNewDashboard()"></button>
           <button type="button" pButton icon="fa fa-times" (click)="closeDialog()"
-              class="p-button-raised p-button-danger" i18n-label="@@cerrarBtn" label="Cancelar"></button>
+              class="p-button-raised p-button-danger" i18n-label="@@cancelarBtn" label="Cancelar"></button>
       </div>
   </div>
 </eda-dialog>

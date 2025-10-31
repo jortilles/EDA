@@ -146,8 +146,7 @@ public async fillFiltersData(): Promise<void> {
     public setGlobalFilterItems(filter: any) {
         this.dashboard.edaPanels.forEach((ebp: EdaBlankPanelComponent) => {
             const filterMap = ebp.panel.globalFilterMap || [];
-            console.log(filter)
-         // if (filter.panelList.includes(ebp.panel.id)) {
+         if (filter.panelList.includes(ebp.panel.id)) {
                 //console.log(1)
                 const filterApplied = ebp.globalFilters.find((gf: any) => gf.filter_id === filter.id);
 
@@ -158,20 +157,15 @@ public async fillFiltersData(): Promise<void> {
                     ebp.assertGlobalFilter(formatedFilter);
                 }
 
-        /*   } else if (filterMap.length) {
-                console.log(2)
+        } else if (filterMap.length) {
+
                 const map = filterMap.find((f) => f.targetId == filter.id);
-                console.log(ebp)
-                console.log(map)
-                const panelFilter = ebp.selectedFilters.find((f) => f.filter_id === map?.sourceId);
-                console.log(panelFilter, 'externo')
-                if (panelFilter?.filter_id) {
-                    console.log(panelFilter, 'interno')
-                    const items = this.globalFilterService.assertGlobalFilterItems(filter);
+                const panelFilter = ebp.globalFilters.find(filter => filter.filter_id === map?.sourceId);
+                    const items = this.globalFilterService.formatFilter(filter);
                     panelFilter.filter_elements = items;
-                    map.filter_elements = items;
-                }
-            }*/
+                    
+                    ebp.assertGlobalFilter(items);
+            }
         })
     }
 

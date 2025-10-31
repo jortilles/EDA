@@ -49,7 +49,7 @@ export class DataSourcesComponent {
 
     addDataSource() {
         if (this.form.invalid) {
-            this.alertService.addError('Formulario incorrecto, revise los campos');
+            this.alertService.addError($localize`:@@IncorrectForm2:Formulario incorrecto, revise los campos`);
         } else {
             this.spinnerService.on();
             let connection = {

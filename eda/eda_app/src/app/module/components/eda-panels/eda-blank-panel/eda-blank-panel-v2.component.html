@@ -84,7 +84,7 @@
               title="Clique sobre un entidad para ver sus atributos.">
               Entidades
             </h3>
-            <input class="h-8 rounded-md w-full border px-2 text-lg" placeholder="Buscar entidades..." 
+            <input class="h-8 rounded-md w-full border px-2 text-lg" i18n-placeholder="@@searchEntities" placeholder="Buscar entidades..." 
               (keyup)="onTableInputKey($event)">
           </div>
           <div class="flex overflow-y-auto h-[51vh] text-lg">
@@ -155,7 +155,7 @@
               title="Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes">
               Atributos
             </h3>
-            <input class="h-8 w-full rounded-md border px-2 text-lg" placeholder="Buscar atributos..."
+            <input class="h-8 w-full rounded-md border px-2 text-lg" i18n-placeholder="@@searchAttributes" placeholder="Buscar atributos..."
               (keyup)="onColumnInputKey($event)">
           </div>
           }
@@ -300,10 +300,10 @@
                   </textarea>
                   <div class="mt-2 flex gap-4">
                     <button type="button" pButton icon="fa fa-database" class="p-button-success mt-2 w-fit"
-                      (click)="migrateQuery()" label="Abrir en modo SQL">
+                      (click)="migrateQuery()" i18n-label="@@openSqlMode" label="Abrir en modo SQL">
                     </button>
                     <button type="button" pButton icon="pi pi-times" class="p-button-secondary mt-2 w-fit"
-                      (click)="display_v.showQueryContainer = false" label="Cancelar">
+                      (click)="display_v.showQueryContainer = false" i18n-label="cancelarBtn" label="Cancelar">
                     </button>
                   </div>
                 </div>
@@ -735,7 +735,7 @@
     
     <button class="confirm-button" [disabled]="isCrosstableModified()" (click)="savePanel();" >
       <i class="fa fa-check"></i>
-      <span i18n="@@guardarButton"> 
+      <span i18n="@@guardarBtn"> 
         Confirmar
       </span>
     </button>

@@ -92,7 +92,7 @@ export class EbpChatgptComponent implements OnInit, AfterViewChecked{
   }
 
   public onClose(): void {
-    console.log('cancenlando ....')
+    console.log('cancelando ....')
     this.display = false;
     this.close.emit('Emitiendo este valor de cancelar ');
   }

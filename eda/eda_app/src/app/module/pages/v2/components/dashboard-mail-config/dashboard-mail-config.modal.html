@@ -59,7 +59,7 @@
             <h5 i18n="@@SendMailWho" class="text-lg font-semibold text-gray-800">Destinatarios</h5>
 
             <p-multiSelect id="dashboard-mail-config" [(ngModel)]="selectedUsers" [options]="users" optionLabel="label"
-                defaultLabel="Selecciona los destinatarios *"
+                i18n-defaultLabel="@@selectRecipients" defaultLabel="Selecciona los destinatarios *"
                 class="flex w-[auto] border border-gray-300 rounded-lg" [maxSelectedLabels]="2">
             </p-multiSelect>
         </div>

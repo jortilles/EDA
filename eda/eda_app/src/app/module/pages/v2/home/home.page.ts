@@ -252,7 +252,7 @@ public handleTagSelect(option: any): void {
       confirmButtonColor: "#14B8A6",
       cancelButtonColor: " #ff2802",
       confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
-      cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`,
+      cancelButtonText: $localize`:@@cancelarBtn:Cancelar`,
     }).then(deleted => {
       if (deleted.value) {
         this.dashboardService.deleteDashboard(report._id).subscribe(

@@ -8,6 +8,7 @@
           *ngIf="selectedItems().length > 0"
           (click)="clearAll()"
           class="px-3 py-1 text-sm font-medium text-gray-600 bg-transparent border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+          i18n="@@cleanEverything"
         >
           Limpiar todo
         </button>
@@ -16,7 +17,7 @@
       <!-- Selected Items Display -->
       <div *ngIf="selectedItems().length > 0" class="space-y-2 mb-4">
         <div class="font-medium text-gray-600">
-          Seleccionados ({{ selectedItems().length }})
+          <span i18n="@@itemsSelected1">Seleccionados</span>({{ selectedItems().length }})
         </div>
         <div class="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-lg min-h-[3rem]">
           <span 
@@ -61,7 +62,7 @@
     <!-- Items List -->
     <div class="p-6 pt-0">
       <div [class]="'border border-gray-200 rounded-md ' + (config.height || 'h-80') + ' overflow-y-auto'">
-        <div *ngIf="filteredItems().length === 0" class="flex items-center justify-center h-full text-gray-500">
+        <div *ngIf="filteredItems().length === 0" class="flex items-center justify-center h-full text-gray-500" i18n="@@noItemsAvailable">
           {{ searchTerm() ? 'No se encontraron elementos' : 'No hay elementos disponibles' }}
         </div>
         <div *ngIf="filteredItems().length > 0" class="p-2 space-y-1">
@@ -93,8 +94,8 @@
 
       <!-- Footer Info -->
       <div class="flex justify-between items-center mt-3 text-sm text-gray-500">
-        <span>{{ filteredItems().length }} elementos disponibles</span>
-        <span>{{ selectedItems().length }} seleccionados</span>
+        <span>{{ filteredItems().length }} <span i18n="@@filteredItems">elementos disponibles</span></span>
+        <span>{{ selectedItems().length }} <span i18n="@@selectedItems">seleccionados</span></span>
       </div>
     </div>
   </div>

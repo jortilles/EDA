@@ -30,6 +30,7 @@ export class EdaKpiComponent implements OnInit {
 
     ngAfterViewInit() {
         this.initDimensions();
+        console.log(this, 'edakpicomponent')
     }
 
     ngOnInit() {
@@ -97,7 +98,7 @@ export class EdaKpiComponent implements OnInit {
     getFontSize(): string {
         this.initDimensions();
 
-        let resultSize: number = this.containerHeight / 2;
+        let resultSize: number = this.containerHeight / 3;
         let textLongitude = (this.inject.value + this.inject.sufix).length;
         const ratio = (  this.containerHeight / this.containerWidth ) ;
 

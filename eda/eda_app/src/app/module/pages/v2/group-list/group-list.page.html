@@ -70,8 +70,8 @@
         <option value="EDA_USER_ROLE">USER</option>
       </select>
 
-      <p-pickList [source]="availableUsers" [target]="selectedGroup.users" sourceHeader="Usuarios disponibles"
-        targetHeader="Usuarios seleccionados" [filterBy]="'name,email'" filterPlaceholder="Buscar usuario..."
+      <p-pickList [source]="availableUsers" [target]="selectedGroup.users" i18n-sourceHeader="@@availableUsers" sourceHeader="Usuarios disponibles"
+        i18n-targetHeader="@@selectedUsers" targetHeader="Usuarios seleccionados" [filterBy]="'name,email'" filterPlaceholder="Buscar usuario..."
         [showSourceControls]="false" [showTargetControls]="false" [dragdrop]="true" [metaKeySelection]="true"
         class="p-picklist-custom">
 

@@ -143,7 +143,7 @@ export class ModelImportExportPage implements OnInit {
 handleModelExport() {
   const selected = this.selectedModel();
   if (!selected) {
-    this.alertService.addError('Por favor selecciona un modelo para exportar')
+    this.alertService.addError($localize`:@@selectModelToExport:Por favor selecciona un modelo para exportar`)
     return;
   }
 
@@ -162,10 +162,10 @@ handleModelExport() {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
-      this.alertService.addSuccess('Modelo exportado correctamente')
+      this.alertService.addSuccess($localize`:@@modelExportedSucessfully:Modelo exportado correctamente`)
     },
     err => {
-      this.alertService.addError('Ocurrió un problema al exportar el modelo')
+      this.alertService.addError($localize`:@@problemExportingModel:Ocurrió un problema al exportar el modelo`)
     }
   );
 }
@@ -174,7 +174,7 @@ handleModelExport() {
 handleDashboardExport() {
   const dashboardId = this.selectedDashboard()['_id'];
   if (!dashboardId) {
-    this.alertService.addError('Por favor selecciona un dashboard para exportar')
+    this.alertService.addError($localize`:@@selectDashboardToExport:Por favor selecciona un dashboard para exportar`)
     return;
   }
 
@@ -192,10 +192,10 @@ handleDashboardExport() {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
-      this.alertService.addSuccess('Dashboard exportado correctamente')
+      this.alertService.addSuccess($localize`:@@dashboardExportedSuccessfully:Dashboard exportado correctamente`)
     },
     err => {
-      this.alertService.addError('Por favor selecciona un dashboard para exportar')
+      this.alertService.addError($localize`:@@selectDashboardToExport:Por favor selecciona un dashboard para exportar`)
     }
   );
 }
@@ -205,7 +205,7 @@ handleDashboardExport() {
 
 handleModelImport() {
   if (!this.modelFile()) {
-      this.alertService.addError('Por favor selecciona un archivo para importar')
+      this.alertService.addError($localize`:@@onlyOneFile:Por favor selecciona un archivo para importar`)
     return;
   }
 
@@ -246,18 +246,18 @@ handleModelImport() {
               });
             }
           },
-          error: () => this.alertService.addError('Error al verificar integridad del modelo')
+          error: () => this.alertService.addError($localize`:@@errorVerifyingModelIntegrity:Error al verificar integridad del modelo`)
         });
       });
 
       // Actualizamos el modelo en el servidor --> Antiguo importModel()
       this.dataSourceService.updateModelInServer(modelId, json).subscribe({
-        next: () => this.alertService.addSuccess('Modelo importado correctamente'),
-        error: () => this.alertService.addError('Ha ocurrido un error al importar el modelo')
+        next: () => this.alertService.addSuccess($localize`:@@modelImportedSuccessfully:Modelo importado correctamente`),
+        error: () => this.alertService.addError($localize`:@@errorImportModel:Ha ocurrido un error al importar el modelo`)
 
       });
     } catch {
-      this.alertService.addError('El archivo no tiene un formato JSON válido');
+      this.alertService.addError($localize`:@@noCorrectJsonFormat:El archivo no tiene un formato JSON válido`);
     }
   };
   fileReader.readAsText(this.modelFile());
@@ -271,7 +271,7 @@ handleModelImport() {
 
 handleDashboardImport() {
   if (!this.dashboardFile()) {
-    this.alertService.addError('Por favor selecciona un archivo para importar');
+    this.alertService.addError($localize`:@@pleaseSelectFile:Por favor selecciona un archivo para importar`);
     return;
   }
 
@@ -286,27 +286,27 @@ handleDashboardImport() {
       // Intentar actualizar
       this.dashboardService.updateDashboard(importedDashboard._id, importedDashboard).subscribe(
         () => {
-          this.alertService.addSuccess('Dashboard actualizado correctamente')
+          this.alertService.addSuccess($localize`:@@dashboardUpdatedSuccessfully:Dashboard actualizado correctamente`)
         },
         () => {
           // Si falla, intentar crear
           this.dashboardService.addNewDashboard(importedDashboard).subscribe(
             () => {
-              this.alertService.addSuccess('Dashboard creado correctamente')
+              this.alertService.addSuccess($localize`:@@dashboardCreatedSuccessfully:Dashboard creado correctamente`)
             },
             err => {
-              this.alertService.addError('No se pudo importar el dashboard: ' + err.message + 'error')
+              this.alertService.addError($localize`:@@notPossibleImportDashboard:No se pudo importar el dashboard:` + err.message + 'error')
             }
           );
         }
       );
     } catch (e) {
-      this.alertService.addError('El archivo no tiene un formato JSON válido: ' + e.message + 'error')
+      this.alertService.addError($localize`:@@noValidJsonFormat:El archivo no tiene un formato JSON válido:` + e.message + 'error')
     }
   };
 
   reader.onerror = () => {
-    this.alertService.addError('No se pudo leer el archivo seleccionado')
+    this.alertService.addError($localize`:@@notPossibleReadFile:No se pudo leer el archivo seleccionado`)
   };
 
   reader.readAsText(this.dashboardFile());
