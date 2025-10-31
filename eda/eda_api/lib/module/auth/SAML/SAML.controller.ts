@@ -167,7 +167,7 @@ static async acs(req: Request, res: Response, next: NextFunction) {
         res.type('application/xml').send(xml);
     }
 
-  static async logout(req: Request, res: Response, next: NextFunction) {
+  static async requestLogout(req: Request, res: Response, next: NextFunction) {
     try {
 
       console.log('req.user: ', req.user);
@@ -205,53 +205,87 @@ static async acs(req: Request, res: Response, next: NextFunction) {
     }
   }
 
-  static async sls(req: Request, res: Response, next: NextFunction) {
+  static async logout(req: Request, res: Response, next: NextFunction) {
     try {
       const saml: any = (samlStrategy as any)._saml;
+      const method = req.method.toUpperCase();
       let result;
 
       console.log(' ############################### CORRECTO ###############################');
-      const samlResponse = req.body.SAMLResponse;
-      const relayState = req.body.RelayState;
+      const samlResponse = (method==='POST' ? req.body.SAMLResponse:req.qs.SAMLResponse);
+      const relayState = (method==='POST' ? req.body.RelayState:req.qs.RelayState);
 
       // Si no se recibe respuesta del SAML
       if (!samlResponse) return res.status(400).send('No SAMLResponse received');
 
-      try {
-        result = await saml.validatePostResponseAsync(
-          { SAMLResponse: String(samlResponse) },
-          { skipSignatureValidation: false } // true solo para test; quitar en producción una vez tengas cert + cache ok
-        );
-        console.log('result', result);
-
-      } catch (error) {
-        console.warn('validatePostResponseAsync error, trying fallback parse:', error?.message || error);
+      if(method==='POST') {
 
         try {
-          const xml = decodeBase64PossiblyDeflated(String(samlResponse));
-          const parsedXml = await parseStringPromise(xml, { explicitArray: false });
-          const logoutResp = parsedXml['samlp:LogoutResponse'] || parsedXml['LogoutResponse'] || parsedXml;
-          const statusCode =
-            logoutResp?.['samlp:Status']?.['samlp:StatusCode']?.['$']?.Value ||
-            logoutResp?.Status?.StatusCode?.['$']?.Value;
-          
-          console.log('xml: ', xml)
-          console.log('parsedXml: ', parsedXml)
-          console.log('logoutResp: ', logoutResp)
-          console.log('statusCode: ', statusCode)
-
-          if(!statusCode) {
-            console.warn('No StatusCode found in SAMLResponse fallback parse');
-          } else if(String(statusCode).endsWith(':Success')) {
-              return res.redirect(302, `${origen}`);
-          } else {
-            console.warn('SAMLResponse status not success:', statusCode);
-            return res.status(400).send('Logout not successful');
+          result = await saml.validatePostResponseAsync(
+            { SAMLResponse: String(samlResponse) },
+            { skipSignatureValidation: false } // true solo para test; quitar en producción una vez tengas cert + cache ok
+          );
+          console.log('result', result);
+  
+        } catch (error) {
+          console.warn('validatePostResponseAsync error, trying fallback parse:', error?.message || error);
+  
+          try {
+            const xml = decodeBase64PossiblyDeflated(String(samlResponse));
+            const parsedXml = await parseStringPromise(xml, { explicitArray: false });
+            const logoutResp = parsedXml['samlp:LogoutResponse'] || parsedXml['LogoutResponse'] || parsedXml;
+            const statusCode =
+              logoutResp?.['samlp:Status']?.['samlp:StatusCode']?.['$']?.Value ||
+              logoutResp?.Status?.StatusCode?.['$']?.Value;
+            
+            console.log('xml: ', xml)
+            console.log('parsedXml: ', parsedXml)
+            console.log('logoutResp: ', logoutResp)
+            console.log('statusCode: ', statusCode)
+  
+            if(!statusCode) {
+              console.warn('No StatusCode found in SAMLResponse fallback parse');
+            } else if(String(statusCode).endsWith(':Success')) {
+                return res.redirect(302, `${origen}`);
+            } else {
+              console.warn('SAMLResponse status not success:', statusCode);
+              return res.status(400).send('Logout not successful');
+            }
+  
+          } catch (error) {
+            console.warn('SAMLResponse status not success:', error);
+            return next(error);
           }
+        }
+
+      } else {
+        // ================= GET =================
+        try {
+            const xml = decodeBase64PossiblyDeflated(String(samlResponse));
+            const parsedXml = await parseStringPromise(xml, { explicitArray: false });
+            const logoutResp = parsedXml['samlp:LogoutResponse'] || parsedXml['LogoutResponse'] || parsedXml;
+            const statusCode =
+                logoutResp?.['samlp:Status']?.['samlp:StatusCode']?.['$']?.Value ||
+                logoutResp?.Status?.StatusCode?.['$']?.Value;
+            
+            console.log('GET xml: ', xml);
+            console.log('GET parsedXml: ', parsedXml);
+            console.log('GET logoutResp: ', logoutResp);
+            console.log('GET statusCode: ', statusCode);
+
+            if (!statusCode) {
+                console.warn('No StatusCode found in SAMLResponse (GET)');
+            } else if (String(statusCode).endsWith(':Success')) {
+                return res.redirect(302, `${origen}`);
+                // return res.redirect(302, relayState || '/');
+            } else {
+                console.warn('SAMLResponse status not success (GET):', statusCode);
+                return res.status(400).send('Logout not successful');
+            }
 
         } catch (error) {
-          console.warn('SAMLResponse status not success:', error);
-          return next(error);
+            console.warn('Error parsing GET SAMLResponse:', error);
+            return next(error);
         }
       }
 
