@@ -76,7 +76,7 @@
       <input type="password" [(ngModel)]="selectedUserApply.password" class="w-full border p-2 rounded mt-1" />
 
       <label class="block text-sm font-medium mt-2" i18n="@@group">Grupo</label>
-      <p-multiSelect [(ngModel)]="selectedUserApply.role" [options]="groups" optionLabel="name" optionValue="name"
+      <p-multiSelect [(ngModel)]="selectedUserApply.role" [options]="groups" optionLabel="name" optionValue="name" i18n-defaultLabel="@@groupSelect"
         defaultLabel="Selecciona..."
         [style]="{width: '100%'}"
         class="w-full border rounded mt-2">

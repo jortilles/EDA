@@ -79,7 +79,7 @@
             <span class="p-float-label h-[3.2rem] [&_.p-multiselect-label-container]:h-[3.05rem] [&_.p-multiselect-label-container]:flex [&_.p-multiselect-label-container]:items-center">
               <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value2" [virtualScroll]="true" [itemSize]="34"
                 [filter]="false" [style]="{width:'100%'}" [panelStyle]="{minWidth:'100%'}"
-                (onChange)="handleValidForm({value2: filterValue.value2})" defaultLabel="Selecciona..."
+                (onChange)="handleValidForm({value2: filterValue.value2})" i18n-defaultLabel="@@groupSelect" defaultLabel="Selecciona..."
                 [selectionLimit]="limitSelectionFields" id="float-input2">
               </p-multiSelect>
               <label i18n="@@valor2Label">Valor 2</label>
@@ -149,14 +149,14 @@
           class="cancel-button"
           (click)="closeDialog()">
           <i class="fa fa-times"></i>
-          <span i18n-label="@@cancelarBtn">Cancelar</span>
+          <span i18n="@@cancelarBtn">Cancelar</span>
        </button>
         <button
           class="confirm-button"
           [disabled]="!display.filterButton"
           (click)="closeDialog()">
           <i class="fa fa-check"></i>
-          <span i18n-label="@@guardarButton">Confirmar</span>
+          <span i18n="@@guardarBtn">Confirmar</span>
         </button>
       </div>
     </div>

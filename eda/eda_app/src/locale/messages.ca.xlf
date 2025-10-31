@@ -3888,6 +3888,16 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
      <trans-unit id="onlyIcanEditTag">
     <source>Edición privada:</source>
     <target>Edició privada:  </target>
+  </trans-unit>
+
+     <trans-unit id="onlyIcanEditTagEnable">
+    <source>Edición privada habilitada</source>
+    <target>Edició privada habilitada</target>
+  </trans-unit> 
+
+     <trans-unit id="onlyIcanEditTagDisable">
+    <source>Edición privada deshabilitada</source>
+    <target>Edició privada deshabilitada</target>
   </trans-unit> 
   
 
@@ -5609,12 +5619,12 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Filtres del panell</target>
 </trans-unit>
 
-<trans-unit id="updateProfilePic"> <!--No funciona,y no esta en ingles-->
+<trans-unit id="updateProfilePic">
   <source>Actualizar foto</source>
-  <target>Actualitzar imatge</target>
+  <target>Actualitzar foto</target>
 </trans-unit>
 
-<trans-unit id="uploadingProfilePic"> <!--No funciona,y no esta en ingles-->
+<trans-unit id="uploadingProfilePic">
   <source>Subiendo...</source>
   <target>Pujant...</target>
 </trans-unit>
@@ -5672,6 +5682,146 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="searchAttributes">
   <source>Buscar atributos...</source>
   <target>Buscar atributs...</target>
+</trans-unit>
+
+<trans-unit id="groupSelect">
+  <source>Selecciona...</source>
+  <target>Selecciona...</target>
+</trans-unit>
+
+<trans-unit id="selectedUsers">
+  <source>Usuarios seleccionados</source>
+  <target>Usuaris seleccionats</target>
+</trans-unit>
+
+<trans-unit id="availableUsers">
+  <source>Usuarios disponibles</source>
+  <target>Usuaris disponibles</target>
+</trans-unit>
+
+<trans-unit id="sidebarProfile">
+  <source>Perfil</source>
+  <target>Perfil</target>
+</trans-unit>
+
+<trans-unit id="copyPublicURL">
+  <source>copiar URL pública</source>
+  <target>copiar URL pública</target>
+</trans-unit>
+
+<trans-unit id="importPanelsTitle">
+  <source>Importar paneles</source>
+  <target>Importar panells</target>
+</trans-unit>
+
+<trans-unit id="selectPanels">
+  <source>Selecciona los paneles</source>
+  <target>Selecciona els panells</target>
+</trans-unit>
+
+<trans-unit id="searchPanels">
+  <source>Buscar paneles...</source>
+  <target>Buscar panells...</target>
+</trans-unit>
+
+<trans-unit id="ChangelignTitle">
+  <source>Alineación</source>
+  <target>Alineació</target>
+</trans-unit>
+
+<trans-unit id="forExample">
+  <source>Ej:50.5 </source>
+  <target>Ej:50.5</target>
+</trans-unit>
+
+<trans-unit id="dashboardExportedSuccessfully">
+  <source>Dashboard exportado correctamente</source>
+  <target>Dashboard exportat correctament</target>
+</trans-unit>
+
+<trans-unit id="selectDashboardToExport">
+  <source>Por favor selecciona un dashboard para exportar</source>
+  <target>Si us plau selecciona un dashboard per exportar</target>
+</trans-unit>
+
+<trans-unit id="problemExportingModel">
+  <source>Ocurrió un problema al exportar el modelo</source>
+  <target>Ha passat un problema en exportar el model</target>
+</trans-unit>
+
+<trans-unit id="modelExportedSucessfully">
+  <source>Modelo exportado correctamente</source>
+  <target>Model exportat correctament</target>
+</trans-unit>
+
+<trans-unit id="selectModelToExport">
+  <source>Por favor selecciona un modelo para exportar</source>
+  <target>Si us plau selecciona un model per exportar</target>
+</trans-unit>
+
+<trans-unit id="dashboardUpdatedSuccessfully">
+  <source>Dashboard actualizado correctamente</source>
+  <target>Dashboard actualitzat correctament</target>
+</trans-unit>
+
+<trans-unit id="dashboardCreatedSuccessfully">
+  <source>Dashboard creado correctamente</source>
+  <target>Dashboard creat correctament</target>
+</trans-unit>
+
+<trans-unit id="notPossibleImportDashboard">
+  <source>No se pudo importar el dashboard:</source>
+  <target>No s'ha pogut importar el dashboard:</target>
+</trans-unit>
+
+<trans-unit id="noValidJsonFormat">
+  <source>El archivo no tiene un formato JSON válido:</source>
+  <target>El fitxer no té un format JSON vàlid:</target>
+</trans-unit>
+
+<trans-unit id="notPossibleReadFile">
+  <source>No se pudo leer el archivo seleccionado</source>
+  <target>No s'ha pogut llegir el fitxer seleccionat</target>
+</trans-unit>
+
+<trans-unit id="pleaseSelectFile">
+  <source>Por favor selecciona un archivo para importar</source>
+  <target>Si us plau selecciona un fitxer per importar</target>
+</trans-unit>
+
+<trans-unit id="noCorrectJsonFormat">
+  <source>El archivo no tiene un formato JSON válido</source>
+  <target>El fitxer no té un format JSON vàlid</target>
+</trans-unit>
+
+<trans-unit id="errorImportModel">
+  <source>Ha ocurrido un error al importar el modelo</source>
+  <target>S'ha produït un error en importar el model</target>
+</trans-unit>
+
+<trans-unit id="modelImportedSuccessfully">
+  <source>Modelo importado correctamente</source>
+  <target>Model importat correctament</target>
+</trans-unit>
+
+<trans-unit id="errorVerifyingModelIntegrity">
+  <source>Error al verificar integridad del modelo</source>
+  <target>Error en verificar integritat del model</target>
+</trans-unit>
+
+<trans-unit id="onlyOneFile">
+  <source>Por favor selecciona un archivo para importar</source>
+  <target>Si us plau selecciona un fitxer per importar</target>
+</trans-unit>
+
+<trans-unit id="errorLoadingDashboard">
+  <source>Error al cargar el Dashboard</source>
+  <target>Error en carregar el Dashboard</target>
+</trans-unit>
+
+<trans-unit id="fillRequiredFields">
+  <source>Recuerde llenar los campos obligatorios</source>
+  <target>Recordeu omplir els camps obligatoris</target>
 </trans-unit>
 
 

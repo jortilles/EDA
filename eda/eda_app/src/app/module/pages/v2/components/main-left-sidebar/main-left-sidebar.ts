@@ -52,7 +52,7 @@ export class MainLeftSidebarComponent {
       {
         icon: 'settings',
         items: [
-          { path: '/profile', label: $localize`:@@profile:Perfil`, icon: 'profile' },
+          { path: '/profile', label: $localize`:@@sidebarProfile:Perfil`, icon: 'profile' },
           { lang: 'EN', label: 'English', icon: 'en-flag' },
           { lang: 'ES', label: 'Español', icon: 'es-flag' },
           { lang: 'CA', label: 'Català', icon: 'cat-flag' },

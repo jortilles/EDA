@@ -64,7 +64,7 @@
 
         <div class="space-y-2">
           <div class="flex items-center justify-between">
-            <label i18n="@@noBaseLayerH6"  class="block text-sm font-medium" i18n="@@enableBaseLayer">Activar capa base</label>
+            <label class="block text-sm font-medium" i18n="@@enableBaseLayer">Activar capa base</label>
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" [(ngModel)]="baseLayer" (ngModelChange)="modifyBaseLayer()" class="sr-only peer">
               <div
@@ -133,7 +133,7 @@
     <div class="flex justify-end p-2 border-t gap-1.5">
       <button  class="cancel-button" (click)="closeChartConfig()">
         <i class="fa fa-times"></i>
-        <span i18n-label="@@cancelarBtn">Cancelar</span>
+        <span i18n="@@cancelarBtn">Cancelar</span>
       </button>
       <button class="confirm-button" (click)="saveChartConfig()">
         <i class="fa fa-check"></i> <span i18n="confirmBtn">Confirmar</span>

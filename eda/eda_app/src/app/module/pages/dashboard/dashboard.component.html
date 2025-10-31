@@ -143,7 +143,7 @@
             </div>
             <input class="ml-2" *ngIf="addTag" type="text" pInputText [(ngModel)]="applyNewTag"> 
             <button pButton pRipple type="button" *ngIf="addTag" class="p-button-raised p-button-success ml-2" style="background-color: #4CAF50" (click)="setNewTag(applyNewTag)">
-                <span> Confirmar </span>
+                <span i18n="@@guardarBtn"> Confirmar </span>
             </button>
         </div>
     </div>
@@ -193,7 +193,7 @@
             </div>
         </form>
         <button id="copy-link" (click)="copyURL()" *ngIf="display_v.shared">
-            <span>
+            <span i18n="@@copyPublicURL">
                 <i class="fa fa-files-o" aria-hidden="true"></i>
                 copiar URL pública
             </span>

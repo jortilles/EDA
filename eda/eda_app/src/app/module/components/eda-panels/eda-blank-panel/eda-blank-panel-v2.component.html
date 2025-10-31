@@ -303,7 +303,7 @@
                       (click)="migrateQuery()" i18n-label="@@openSqlMode" label="Abrir en modo SQL">
                     </button>
                     <button type="button" pButton icon="pi pi-times" class="p-button-secondary mt-2 w-fit"
-                      (click)="display_v.showQueryContainer = false" label="Cancelar">
+                      (click)="display_v.showQueryContainer = false" i18n-label="cancelarBtn" label="Cancelar">
                     </button>
                   </div>
                 </div>
@@ -735,7 +735,7 @@
     
     <button class="confirm-button" [disabled]="isCrosstableModified()" (click)="savePanel();" >
       <i class="fa fa-check"></i>
-      <span i18n="@@guardarButton"> 
+      <span i18n="@@guardarBtn"> 
         Confirmar
       </span>
     </button>

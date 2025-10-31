@@ -3844,6 +3844,16 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Private edition:  </target>
   </trans-unit> 
 
+  <trans-unit id="onlyIcanEditTagEnable">
+    <source>Edición privada habilitada</source>
+    <target>Private edition enabled</target>
+  </trans-unit> 
+
+     <trans-unit id="onlyIcanEditTagDisable">
+    <source>Edición privada deshabilitada</source>
+    <target>Private edition disabled</target>
+  </trans-unit> 
+
   <trans-unit id="showLablesTooltip">
     <source>Mostrar o ocultar las etiquetas sobre los gráficos</source>
     <target>Show or hide labels on charts</target>
@@ -3864,11 +3874,16 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Mostrar Etiquetas</source>
     <target>Show Tags</target>
   </trans-unit> 
+
            <trans-unit id="showLabelsPercent">
     <source>Mostrar Etiquetas en Porcentaje</source>
     <target>Show Tags in Percent</target>
   </trans-unit> 
 
+  <trans-unit id="showPointLines">
+    <source>Mostrar Puntos en Líneas</source>
+    <target>Show Points on Lines</target>
+  </trans-unit> 
 
        <trans-unit id="histogramColum">
     <source>Columnas</source>
@@ -5592,6 +5607,157 @@ Once configured you can invoke it whenever you want from the button.</target>
   <source>Buscar atributos...</source>
   <target>Search attributes...</target>
 </trans-unit>
+
+<trans-unit id="groupSelect">
+  <source>Selecciona...</source>
+  <target>Select...</target>
+</trans-unit>
+
+<trans-unit id="updateProfilePic">
+  <source>Actualizar foto</source>
+  <target>Update photo</target>
+</trans-unit>
+
+<trans-unit id="uploadingProfilePic">
+  <source>Subiendo...</source>
+  <target>Uploading...</target>
+</trans-unit>
+
+<trans-unit id="selectedUsers">
+  <source>Usuarios seleccionados</source>
+  <target>Selected users</target>
+</trans-unit>
+
+<trans-unit id="availableUsers">
+  <source>Usuarios disponibles</source>
+  <target>Available users</target>
+</trans-unit>
+
+<trans-unit id="sidebarProfile">
+  <source>Perfil</source>
+  <target>Profile</target>
+</trans-unit>
+
+<trans-unit id="copyPublicURL">
+  <source>copiar URL pública</source>
+  <target>copy public URL</target>
+</trans-unit>
+
+<trans-unit id="importPanelsTitle">
+  <source>Importar paneles</source>
+  <target>Import panels</target>
+</trans-unit>
+
+<trans-unit id="selectPanels">
+  <source>Selecciona los paneles</source>
+  <target>Select panels</target>
+</trans-unit>
+
+<trans-unit id="searchPanels">
+  <source>Buscar paneles...</source>
+  <target>Search panels...</target>
+</trans-unit>
+
+<trans-unit id="ChangelignTitle">
+  <source>Alineación</source>
+  <target>Alignment</target>
+</trans-unit>
+
+<trans-unit id="forExample">
+  <source>Ej:50.5 </source>
+  <target>Ex:50.5</target>
+</trans-unit>
+
+<trans-unit id="dashboardExportedSuccessfully">
+  <source>Dashboard exportado correctamente</source>
+  <target>Dashboard exported successfully</target>
+</trans-unit>
+
+<trans-unit id="selectDashboardToExport">
+  <source>Por favor selecciona un dashboard para exportar</source>
+  <target>Please select a dashboard to export</target>
+</trans-unit>
+
+<trans-unit id="problemExportingModel">
+  <source>Ocurrió un problema al exportar el modelo</source>
+  <target>There was a problem exporting the model</target>
+</trans-unit>
+
+<trans-unit id="modelExportedSucessfully">
+  <source>Modelo exportado correctamente</source>
+  <target>Model exported successfully</target>
+</trans-unit>
+
+<trans-unit id="selectModelToExport">
+  <source>Por favor selecciona un modelo para exportar</source>
+  <target>Please select a model to export</target>
+</trans-unit>
+
+<trans-unit id="dashboardUpdatedSuccessfully">
+  <source>Dashboard actualizado correctamente</source>
+  <target>Dashboard updated successfully</target>
+</trans-unit>
+
+<trans-unit id="dashboardCreatedSuccessfully">
+  <source>Dashboard creado correctamente</source>
+  <target>Dashboard created successfully</target>
+</trans-unit>
+
+<trans-unit id="notPossibleImportDashboard">
+  <source>No se pudo importar el dashboard:</source>
+  <target>The dashboard could not be imported:</target>
+</trans-unit>
+
+<trans-unit id="noValidJsonFormat">
+  <source>El archivo no tiene un formato JSON válido:</source>
+  <target>The file does not have a valid JSON format:</target>
+</trans-unit>
+
+<trans-unit id="notPossibleReadFile">
+  <source>No se pudo leer el archivo seleccionado</source>
+  <target>The selected file could not be read.</target>
+</trans-unit>
+
+<trans-unit id="pleaseSelectFile">
+  <source>Por favor selecciona un archivo para importar</source>
+  <target>Please select a file to import</target>
+</trans-unit>
+
+<trans-unit id="noCorrectJsonFormat">
+  <source>El archivo no tiene un formato JSON válido</source>
+  <target>The file does not have a valid JSON format.</target>
+</trans-unit>
+
+<trans-unit id="errorImportModel">
+  <source>Ha ocurrido un error al importar el modelo</source>
+  <target>An error occurred while importing the model.</target>
+</trans-unit>
+
+<trans-unit id="modelImportedSuccessfully">
+  <source>Modelo importado correctamente</source>
+  <target>Model imported successfully</target>
+</trans-unit>
+
+<trans-unit id="errorVerifyingModelIntegrity">
+  <source>Error al verificar integridad del modelo</source>
+  <target>Error verifying model integrity</target>
+</trans-unit>
+
+<trans-unit id="onlyOneFile">
+  <source>Por favor selecciona un archivo para importar</source>
+  <target>Please select a file to import</target>
+</trans-unit>
+
+<trans-unit id="errorLoadingDashboard">
+  <source>Error al cargar el Dashboard</source>
+  <target>Error loading Dashboard</target>
+</trans-unit>
+
+<trans-unit id="fillRequiredFields">
+  <source>Recuerde llenar los campos obligatorios</source>
+  <target>Remember to fill in the required fields</target>
+</trans-unit>
+
 
     </body>
 

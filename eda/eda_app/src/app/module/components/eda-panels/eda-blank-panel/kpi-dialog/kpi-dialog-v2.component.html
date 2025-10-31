@@ -134,6 +134,7 @@
                      <input
                        id="value"
                        type="text"
+                       i18n-placeholder="@@forExample"
                        placeholder="Ej: 50.5"
                        [(ngModel)]="value"
                        class="w-full px-3 py-2 border rounded-md bg-white"
@@ -271,7 +272,7 @@
     <div class="flex justify-end p-2 border-t gap-1.5">
       <button  class="cancel-button" (click)="closeChartConfig()">
         <i class="fa fa-times"></i>
-        <span i18n-label="@@cancelarBtn">Cancelar</span>
+        <span i18n="@@cancelarBtn">Cancelar</span>
       </button>
       <button class="confirm-button" (click)="saveChartConfig()">
         <i class="fa fa-check"></i> <span i18n="@@confirmBtn">Confirmar</span>

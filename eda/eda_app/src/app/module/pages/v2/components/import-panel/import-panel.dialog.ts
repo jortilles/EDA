@@ -25,8 +25,8 @@ export class ImportPanelDialog implements OnInit {
   public activeTab: any;
 
   public pickListConfig = {
-    title: "Selecciona els panells",
-    searchPlaceholder: "Buscar panells...",
+    title: $localize`:@@selectPanels:Selecciona los paneles`,
+    searchPlaceholder: $localize`:@@searchPanels:Buscar paneles...`,
     height: "h-96",
     maxSelectedDisplay: 8,
   }
