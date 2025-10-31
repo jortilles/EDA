@@ -334,7 +334,7 @@ export const PanelOptions = {
         item: () => PanelOptions.askToIA(ebp),
       },
       {
-        show: isEditable && isRemovable,
+        show: isRemovable,
         item: () => PanelOptions.deletePanel(ebp),
       },
     ];
