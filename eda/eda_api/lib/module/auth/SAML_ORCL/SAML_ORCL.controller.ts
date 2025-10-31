@@ -95,28 +95,50 @@ export class SAML_ORCL_Controller {
 
             const userEda = await UserController.getUserInfoByEmail(email, true);
 
-            console.log('================= CONEXION ORCL INICIO =================');
+            // console.log('================= CONEXION ORCL INICIO =================');
             // Recuperar los nombres de los roles de la conexion a Oracle
             // Entrar a la base de datos de EDALITICS y recuperar los id de los roles obtenido de la anterior conexion a Oracle
             // Una vez obtenido todos los ids de todos los roles, agregarlos al usuario en cuestion.
 
 
-            // Parte 1: Obtención de los roles de la base de datos Oracle    
+            // Obtención de los roles de la base de datos Oracle    
             const roles = await getRoles(email);
             let roles_ids = []; // Variable de ids del usuario que esta haciendo login
 
-            // Parte 2: Verificando en los grupos de edalitics
-            const groups = await Group.find({}).exec();
+            await Promise.all(
+                roles.map(async (item: any) => {
+                    // Normaliza el nombre del rol
+                    const roleName = String(item.ROL || item.role || item.rol || '').trim();
+                    if (!roleName) return; // ignora si está vacío
 
-            // Parte 3: Agregando los ids de todos los roles que tiene el usuario
-            roles.forEach((item) => {
-                const group = groups.find((group) => String(group.name) === String(item.ROL));
-                if (group) {
-                    roles_ids.push(group._id);
-                }
-            });
+                    try {
+                    // Upsert: si existe devuelve el documento, si no, lo crea
+                    const groupDoc = await Group.findOneAndUpdate(
+                        { name: roleName }, // criterio de búsqueda
+                        {
+                        $setOnInsert: {
+                            name: roleName,
+                            role: item?.ROLE || item?.role || roleName,
+                            users: [],
+                            img: ''
+                        }
+                        },
+                        {
+                        new: true,    // devuelve el documento actualizado o recién insertado
+                        upsert: true, // crea si no existe
+                        }
+                    ).exec();
 
-            console.log('================= CONEXION ORCL FIN =================');
+                    if (groupDoc && groupDoc._id) {
+                        roles_ids.push(groupDoc._id);
+                    }
+                    } catch (err: any) {
+                    console.error(`Error creando o actualizando grupo "${roleName}":`, err.message);
+                    }
+                })
+            );
+
+            // console.log('================= CONEXION ORCL FIN =================');
             
             if (!userEda) {
                 // NUEVO USUARIO
@@ -257,10 +279,10 @@ export class SAML_ORCL_Controller {
                         logoutResp?.['samlp:Status']?.['samlp:StatusCode']?.['$']?.Value ||
                         logoutResp?.Status?.StatusCode?.['$']?.Value;
                     
-                    // console.log('xml: ', xml)
-                    // console.log('parsedXml: ', parsedXml)
-                    // console.log('logoutResp: ', logoutResp)
-                    // console.log('statusCode: ', statusCode)
+                    console.log('xml: ', xml)
+                    console.log('parsedXml: ', parsedXml)
+                    console.log('logoutResp: ', logoutResp)
+                    console.log('statusCode: ', statusCode)
     
                     if(!statusCode) {
                         console.warn('No StatusCode found in SAMLResponse fallback parse');

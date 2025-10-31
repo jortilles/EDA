@@ -55,6 +55,7 @@ class App {
 
     private mongoSetup(): void {
         mongoose.Promise = global.Promise;
+        mongoose.set('useFindAndModify', false); // elimina el warning
         mongoose.connect(this.mongoUrl, {
             useNewUrlParser: true,
             useUnifiedTopology: true
