@@ -109,8 +109,12 @@ export class SAML_ORCL_Controller {
             const groups = await Group.find({}).exec();
 
             // Parte 3: Agregando los ids de todos los roles que tiene el usuario
-            roles.forEach((item) => roles_ids.push(groups.find((group) => String(group.name) == String(item.ROL))._id));
-            console.log('roles_ids: ', roles_ids);
+            roles.forEach((item) => {
+                const group = groups.find((group) => String(group.name) === String(item.ROL));
+                if (group) {
+                    roles_ids.push(group._id);
+                }
+            });
 
             console.log('================= CONEXION ORCL FIN =================');
             
