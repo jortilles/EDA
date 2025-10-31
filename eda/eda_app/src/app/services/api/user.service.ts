@@ -232,11 +232,10 @@ export class UserService extends ApiService {
     }
 
     SAMLlogout() {
-        console.log('Logout SAML')
-
         // window.location.href = 'http://localhost:8666/auth/saml/logout';
         window.location.href = `https://edalitics.com${this.API}${this.authSAML_ORCL}/request-logout?token=${this.token}`;
-        
+
+        // Borramos el Token y el usuario
         this.user = null;
         this.token = '';
         localStorage.removeItem('token');
