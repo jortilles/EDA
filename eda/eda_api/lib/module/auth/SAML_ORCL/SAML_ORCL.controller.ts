@@ -113,6 +113,31 @@ export class SAML_ORCL_Controller {
                 const group = groups.find((group) => String(group.name) === String(item.ROL));
                 if (group) {
                     roles_ids.push(group._id);
+                } else {
+                    // CREAMOS EL GRUPO QUE VIENE DE ORACLE
+                    const group: IGroup = new Group({
+                        name: item.ROL,
+                        role: item.ROL,
+                        users: [],
+                        img: '',
+                    })
+
+                    group.save(async (err, groupSaved: IGroup) => {
+                        if(err) {
+                            return next(
+                                new HttpException(
+                                    400,
+                                    'Some error ocurred while creating the Group'
+                                )
+                            )
+                        }
+
+                        res.status(201).json({ ok: true, group: groupSaved })
+                    })
+
+                    // AGREGAMOS EL NUEVO GRUPO CREADO
+                    roles_ids.push(group._id);
+
                 }
             });
 
