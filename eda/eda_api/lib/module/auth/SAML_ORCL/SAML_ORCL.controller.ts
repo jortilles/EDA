@@ -109,33 +109,12 @@ export class SAML_ORCL_Controller {
             const groups = await Group.find({}).exec();
 
             // Parte 3: Agregando los ids de todos los roles que tiene el usuario
-            for (const item of roles) {
-                // Buscar en los grupos ya cargados
-                let found = groups.find(g => String(g.name) === String(item.ROL));
-                if (found) {
-                    roles_ids.push(found._id);
-                    continue;
+            roles.forEach((item) => {
+                const group = groups.find((group) => String(group.name) === String(item.ROL));
+                if (group) {
+                    roles_ids.push(group._id);
                 }
-
-                // Si no existe, crear y guardar
-                try {
-                    const newGroup = new Group({
-                    name: item.ROL,
-                    role: item.ROL,
-                    users: [],
-                    img: undefined
-                    });
-
-                    const saved = await newGroup.save();
-                    // Añadir al array de grupos (útil si hay duplicados en roles)
-                    // groups.push(saved);
-                    roles_ids.push(saved._id);
-
-                } catch (err) {
-                    // Manejo de error: no hacemos res aquí, devolvemos el error al flow principal
-                    return next(new HttpException(400, `Error creating group ${item.ROL}: ${String(err)}`));
-                }
-            }
+            });
 
             console.log('================= CONEXION ORCL FIN =================');
             
