@@ -84,8 +84,8 @@ static async acs(req: Request, res: Response, next: NextFunction) {
         const sessionIndex = user.attributes.sessionIndex;
 
         // Valores adicionales (Extracción del email y nombre)
-        const email = user.nameID;
-        const name = user.nameID;
+        const email = user.email;
+        const name = user.email;
         const picture = '';
 
         if (!email) return next(new HttpException(400, 'Usuario no verificado por la Entidad SSO'));
