@@ -170,6 +170,23 @@ eda-blank-panel :root {
   margin-top: 13px;
 }
 
+::ng-deep .p-tree .p-treenode-content {
+  padding-left: 0 !important;
+}
+
+::ng-deep .p-tree .p-treenode[aria-level="1"] > .p-treenode-content {
+  padding-left: 0.5rem !important;
+}
+
+::ng-deep .p-tree .p-treenode[aria-level="2"] > .p-treenode-content {
+  padding-left: 1.5rem !important;
+}
+
+::ng-deep .p-tree .p-treenode[aria-level="3"] > .p-treenode-content {
+  padding-left: 2.5rem !important;
+}
+
+
 .question {
   margin-left: 5px;
   vertical-align: middle;

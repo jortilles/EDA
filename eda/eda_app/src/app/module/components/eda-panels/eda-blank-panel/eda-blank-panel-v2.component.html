@@ -119,7 +119,7 @@
                     <!-- ESTE TEMPLATE CONTEMPLA AL PADRE -->
                     <ng-template let-node let-options="options" pTemplate="default">
                       <div class="p-treenode-content"
-                          [ngStyle]="{'padding-left.px': (node.level || 0) * 20}"
+                          [ngStyle]="{'padding-left.px': (node.level || 0) * 25}"
                           [ngClass]="checkNodeSelected(node) ? 'font-bold' : ''"
                           style="display:flex; align-items:center;">
                         {{node.label}}
