@@ -255,7 +255,7 @@ export class EdaBlankPanelComponent implements OnInit {
     async ngOnInit() {
         this.index = 0;
         this.readonly = this.panel.readonly;
-        this.tableNodes.forEach(node => node.level = 0);
+  this.assignLevels(this.tableNodes, 0);
 
         await this.setTablesData();
         
@@ -337,31 +337,20 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param event node to expand. Empty for nodes without more paths.
     */
 public tableNodeExpand(event: any): void {
+  const node = event?.node;
+  if (!node) return;
 
+  this.loadingNodes = true;
 
+  PanelInteractionUtils.expandTableNode(this, node);
 
-    const node = event?.node;
-    if (!node) return;
-
-    this.loadingNodes = true;
-
-    PanelInteractionUtils.expandTableNode(this, node);
-
-
-    // Intentamos asignar niveles
-    const assignLevels = (parent: any, level: number) => {
-        if (!parent.children) return;
-        parent.children.forEach(child => {
-            child.level = level + 1;
-            assignLevels(child, child.level);
-        });
-    };
-
-    assignLevels(node, node.level || 0);
-
-
+  // Si expandís de forma asíncrona, esperá al resultado
+  setTimeout(() => {
+    this.assignLevels([node], node.level || 0);
     this.loadingNodes = false;
+  });
 }
+
 
 
 
@@ -390,7 +379,8 @@ public tableNodeExpand(event: any): void {
     isEditable() {
         const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
-        return (userName !== 'edaanonim' && !this.inject.isObserver) && !this.readonly;
+        const imProperty = userName === this.dashboard.dashboard.config.author
+        return (userName !== 'edaanonim' && !this.inject.isObserver) && !this.readonly && (this.dashboard.dashboard.config.onlyIcanEdit || imProperty);
     }
 
     isRemovable() {
@@ -1712,6 +1702,15 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
         this.copyConfigCrossTable = JSON.parse(JSON.stringify(config));
         QueryUtils.runManualQuery(this) // Ejecutando con la nueva configuracion de currentQuery
     }
+
+private assignLevels(nodes: any[], level = 0): void {
+  nodes.forEach(node => {
+    node.level = level;
+    if (node.children?.length) {
+      this.assignLevels(node.children, level + 1);
+    }
+  });
+}
 
     getAttributeTypeIcon(type: string) {
         const icons = {

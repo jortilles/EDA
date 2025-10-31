@@ -1,21 +1,21 @@
 <eda-dialog2 
   [display]="display"
-  header="Pregúntale a Eddie 😊" i18n-header="@@askEddie" width="65vw" height="90vh"
+  header="Pregúntale a Eddie 😊" i18n-header="@@askEddie" width="45vw" height="90vh"
   [disableApply]="disableApply()"
   (apply)="onApply()"
   (close)="onClose()"
 >
-  <div content class="p-6 h-full flex flex-col overflow-x-hidden">
+  <div content class="p-6 h-[80vh] flex flex-col overflow-x-hidden">
     <h1 class="text-xl font-semibold mb-4" i18n="@@askPanelData">Pregunta sobre los datos de tu panel ...</h1>
 
-    <div class="flex-1 bg-gray-100 flex justify-center p-4 overflow-hidden overflow-x-hidden">
-      <div class="w-full max-w-2xl bg-white rounded-xl shadow-md p-6 flex flex-col gap-4 h-full overflow-x-hidden">
+    <div class="flex-1 bg-gray-100 h-[100%] flex justify-center p-4 overflow-hidden overflow-x-hidden">
+      <div class="w-full max-w-2xl bg-white rounded-xl shadow-md p-6 flex flex-col gap-4 h-fit overflow-x-hidden">
 
         <h1 class="text-2xl font-bold" i18n="@@GPTChat">Chat con ChatGPT</h1>
 
         <!-- Contenedor scrollable para mensajes -->
         <div #messageContainer class="flex-1 overflow-y-auto space-y-2 pr-2">
-          <div *ngFor="let msg of messages" class="animate-in fade-in slide-in-from-bottom duration-300">
+          <div *ngFor="let msg of messages" class="h-[17vh] animate-in fade-in slide-in-from-bottom duration-300">
             <div
               [ngClass]="{
                 'bg-blue-500 text-white self-end': msg.sender === 'user',

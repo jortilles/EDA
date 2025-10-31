@@ -3,89 +3,40 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div class="flex items-center gap-2">
-        <eda-icon name="home" class="text-[#00B0BA]"/>
+        <eda-icon name="home" class="text-[#00B0BA]" />
         <h1 class="text-2xl font-semibold" i18n="@@homeTitle">Mis informes</h1>
       </div>
       <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
         <div class="relative w-full sm:w-[300px]">
-          <eda-icon name="magnifying-glass" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-[65%] text-muted-foreground"/>
-          <input 
-          type="text" 
-          (keyup)="filterByTitle($event)"
+          <eda-icon name="magnifying-glass"
+            class="absolute left-3 top-1/2 h-4 w-4 -translate-y-[65%] text-muted-foreground" />
+          <input type="text" (keyup)="filterByTitle($event)"
             class="w-full rounded-md border border-input bg-background py-2 !pl-9 text-sm"
-            i18n-placeholder="@@searcherInput"
-            placeholder="Buscador"
-          >
+            i18n-placeholder="@@searcherInput" placeholder="Buscador">
         </div>
-        <button class="bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white font-bold px-4 py-2 rounded flex items-center"
+        <button
+          class="bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white font-bold px-4 py-2 rounded flex items-center"
           (click)="onCreateDashboard()">
-          <eda-icon name="plus" size="sm" class="h-4 mr-2"/>
+          <eda-icon name="plus" size="sm" class="h-4 mr-2" />
           <span i18n="@@tituloNuevoInforme">Crear nuevo informe</span>
         </button>
       </div>
     </div>
 
     <!-- Filters -->
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-      <div class="space-y-2 w-full sm:w-auto">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" style="overflow-wrap:anywhere"> <!-- Filtros -->
+      <div class="flex-1 min-w-0">
         <div class="text-sm text-muted-foreground"> <span i18n="@@filterReports">FILTRAR INFORMES:</span> </div>
-        <div class="flex flex-wrap gap-2">
-          @for (tag of selectedTags(); track tag.value) {
-            <button
-              class="flex items-center py-1 px-3 border rounded-full shadow text-sm font-semibold"
-              (click)="removeTag(tag)"
-            >
-              {{ tag.label }}
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 ml-2">
-                <path d="M18 6 6 18" />
-                <path d="m6 6 12 12" />
-              </svg>
-            </button>
-          }
-          <div class="relative">
-            <button
-              class="flex items-center rounded-full border px-2.5 py-1 text-sm font-semibold shadow"
-              (click)="toggleDropdownTags()"
-            >
-              <span i18n="@@addTag">Añadir etiqueta</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 ml-2">
-                <path d="M5 12h14" />
-                <path d="M12 5v14" />
-              </svg>
-            </button>
-            @if (isOpenTags()) {
-              <div class="absolute z-10 mt-1 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                <div class="p-2">
-                  <input
-                    class="w-full p-2 border border-gray-300 rounded mb-2"
-                    type="text"
-                    i18n-placeholder="@@searchTags"
-                    placeholder="Buscar etiquetas..."
-                    [(ngModel)]="searchTagTerm"
-                  />
-                  @for (option of filteredTags(); track option.value) {
-                    <div
-                      class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
-                      (click)="handleTagSelect(option)"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
-                        [class.invisible]="!isTagSelected(option.value)"
-                        class="h-4 w-4 mr-2"
-                      >
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                      {{ option.label }}
-                    </div>
-                  }
-                </div>
-              </div>
-            }
-          </div>
-        </div>
-      </div>
-      <div class="space-y-2 w-full sm:w-auto">
-        <div class="text-sm text-muted-foreground" i18n="@@sortReports">ORDENAR INFORMES:</div>
-        <select class="w-full sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm" [(ngModel)]="sortingType" (change)="handleSorting()">
+        <!-- Contenedor de tags -->
+        <div class="flex flex-wrap items-center gap-2 overflow-hidden"> <span
+            class="flex items-center px-4 py-2 text-sm text-gray-700">Tags:</span> @for (option of filteredTags(); track
+          option.value) { <div [ngClass]="isTagSelected(option.value) ? 'tag-selected' : 'tag'"
+            (click)="handleTagSelect(option)"> {{ option.label }} </div> } </div>
+      </div> <!-- Ordenar informes -->
+      <div class="w-full sm:w-auto flex-shrink-0">
+        <div class="text-sm text-muted-foreground" i18n="@@sortReports">ORDENAR INFORMES:</div> <select
+          class="w-full sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+          [(ngModel)]="sortingType" (change)="handleSorting()">
           <option value="name" i18n="@@name">Nombre</option>
           <option value="dateAsc" i18n="@@createdAt">Fecha (asc.)</option>
           <option value="dateDesc" i18n="@@createdAtDesc">Fecha (desc.)</option>
@@ -96,16 +47,20 @@
     <!-- Categories -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       <!-- Public Reports -->
-      <ng-container *ngTemplateOutlet="reportsTemplate; context: { reports: publicReports, title: publicTitle }"></ng-container>
+      <ng-container
+        *ngTemplateOutlet="reportsTemplate; context: { reports: publicReports, title: publicTitle }"></ng-container>
 
       <!-- Commons -->
-      <ng-container *ngTemplateOutlet="reportsTemplate; context: { reports: sharedReports, title: commonTitle }"></ng-container>
+      <ng-container
+        *ngTemplateOutlet="reportsTemplate; context: { reports: sharedReports, title: commonTitle }"></ng-container>
 
       <!-- Groups -->
-        <ng-container *ngTemplateOutlet="reportsTemplate; context: { reports: roleReports, title: groupTitle }"></ng-container>
-      
+      <ng-container
+        *ngTemplateOutlet="reportsTemplate; context: { reports: roleReports, title: groupTitle }"></ng-container>
+
       <!-- Private -->
-      <ng-container *ngTemplateOutlet="reportsTemplate; context: { reports: privateReports, title: privateTitle }"></ng-container>
+      <ng-container
+        *ngTemplateOutlet="reportsTemplate; context: { reports: privateReports, title: privateTitle }"></ng-container>
     </div>
   </div>
 </div>
@@ -116,54 +71,52 @@
   <div class="space-y-4">
     <h2 class="text-lg font-semibold">{{ title }}</h2>
     @for (report of reports; track report._id) {
-      <div class="rounded-lg border bg-card text-card-foreground shadow-sm" [attr.id]="'dashboard-' + report._id">
-        <div class="px-4 py-2 cursor-pointer" (mousedown)="openReport(report, $event)">
-          @if(!isEditing || editingReportId !== report._id){
-            <h3 class="text-base font-semibold">
-              {{ report.config?.title }}
-            </h3>
-          }@else {
-            <input class="edit-title-input text-base font-semibold px-2 py-1"
-            [(ngModel)]="editTitle" (blur)="handleEditing('done', report)"
-            (keydown.enter)="handleEditing('done', report)" (keydown.escape)="handleEditing('cancel', report)"
-            (click)="$event.stopPropagation()"autofocus
-            />
+    <div class="rounded-lg border bg-card text-card-foreground shadow-sm" [attr.id]="'dashboard-' + report._id">
+      <div class="px-4 py-2 cursor-pointer" (mousedown)="openReport(report, $event)">
+        @if(!isEditing || editingReportId !== report._id){
+        <h3 class="text-base font-semibold">
+          {{ report.config?.title }}
+        </h3>
+        }@else {
+        <input class="edit-title-input text-base font-semibold px-2 py-1" [(ngModel)]="editTitle"
+          (blur)="handleEditing('done', report)" (keydown.enter)="handleEditing('done', report)"
+          (keydown.escape)="handleEditing('cancel', report)" (click)="$event.stopPropagation()" autofocus />
+        }
+      </div>
+      <div class="flex items-center justify-between border-t px-4 py-2">
+        <div class="flex items-center gap-2 text-sm text-muted-foreground">
+          @if (report.config?.author && report.config?.author != 'Undefined') {
+          <span>{{report.config.author}}</span>
+          }
+          @if (report.config?.modifiedAt) {
+          <span>{{report.config.modifiedAt}} </span>
           }
         </div>
-        <div class="flex items-center justify-between border-t px-4 py-2">
-          <div class="flex items-center gap-2 text-sm text-muted-foreground">
-            @if (report.config?.author && report.config?.author != 'Undefined') {
-              <span>{{report.config.author}}</span>
-            }
-            @if (report.config?.modifiedAt) {
-              <span>{{report.config.modifiedAt}} </span>
-            }
-          </div>
-          <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2">
           @if (!isEditing || editingReportId !== report._id) {
-            <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="renameReport(report)">
-              <eda-icon name="pencil" class="mr-2"></eda-icon>
-            </button>        
+          <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="renameReport(report)">
+            <eda-icon name="pencil" class="mr-2"></eda-icon>
+          </button>
           }@else {
-            <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="handleEditing('done', report)">
-              <eda-icon name="check" class="mr-2"></eda-icon>
-            </button>        
+          <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="handleEditing('done', report)">
+            <eda-icon name="check" class="mr-2"></eda-icon>
+          </button>
           }
 
-            <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="cloneReport(report)">
-              <eda-icon name="document-duplicated"></eda-icon>
-            </button>
-            <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="deleteReport(report)">
-              <eda-icon name="bin"></eda-icon>
-            </button>
-          </div>
+          <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="cloneReport(report)">
+            <eda-icon name="document-duplicated"></eda-icon>
+          </button>
+          <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="deleteReport(report)">
+            <eda-icon name="bin"></eda-icon>
+          </button>
         </div>
       </div>
+    </div>
     }
     @empty {
-      <div class="mt-4 rounded-lg bg-muted p-4 text-center text-muted-foreground">
-        <span i18n="@@withoutContentYet">Sin contenido</span>
-      </div>
+    <div class="mt-4 rounded-lg bg-muted p-4 text-center text-muted-foreground">
+      <span i18n="@@withoutContentYet">Sin contenido</span>
+    </div>
     }
   </div>
 </ng-template>

@@ -27,6 +27,9 @@ export interface FilterItem {
 })
 export class FilterMapperComponent {
   private alertService = inject(AlertService);
+  @Input() panel;
+  @Input() dashboard;
+  @Input() dashboardFilter;
   @Input() panelFilters: FilterItem[] =  [];
   @Input() dashboardFilters: FilterItem[] =  [];
   @Input() connections: Connection[] = [];
@@ -76,6 +79,42 @@ export class FilterMapperComponent {
     "#dc2626", // red
   ]
 
+ngOnDestroy() {
+  this.connections.forEach(element => {
+    const panelFilter = this.panel.find(f => f.filter_id === element.sourceId);
+    const dashboardFilter = this.dashboardFilter.find(f => f.id === element.targetId);
+
+    if (!panelFilter || !dashboardFilter) return;
+
+    let dashboardPanel = this.dashboard.dashboard.config.panel.find(panel =>
+      panel.content.query.query.filters.some(f => f.filter_id === panelFilter.filter_id)
+    );
+
+    console.log(panelFilter, ' filtro del panel externo')
+    console.log(dashboardFilter, ' filtro del dashboard interno')
+    console.log(dashboardPanel, ' panel del dashboard interno')
+    
+    if (!dashboardPanel) return;
+    
+    
+    
+    const targetFilterInPanel = dashboardPanel.content.query.query.filters.find(
+      f => f.filter_id === panelFilter.filter_id
+    );
+    console.log(this.panel, 'paneles')
+
+    console.log(targetFilterInPanel)
+
+    //dashboardPanel.content.query.query.filters.find(filter => filter.filter_id === element.targetId) = targetFilterInPanel;
+
+
+     if (targetFilterInPanel?.filter_elements?.length) {
+       targetFilterInPanel.filter_elements[0].value1 = [...dashboardFilter.selectedItems];
+    }
+  });
+}
+
+
   handleItemClick(itemId: string, panel: "panel" | "dashboard"): void {
     if (this.isItemConnected(itemId)) {
       return
@@ -112,7 +151,7 @@ export class FilterMapperComponent {
     this.connectionsChange.emit(this.connections);
     this.selectedSource = null
   }
-  
+
   clearAllConnections(): void {
     this.connections = []
     this.connectionsChange.emit(this.connections);

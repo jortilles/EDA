@@ -38,7 +38,7 @@ export class EdaContextMenuComponent implements AfterViewInit {
 
         const isOutside = !dialogEl.contains(event.target as Node);
 
-        if (isOutside) {
+        if (isOutside && this.allowOutsideClose) {
             this.allowOutsideClose = false;
             this.inject.hideContextMenu();
         }
@@ -50,7 +50,7 @@ export class EdaContextMenuComponent implements AfterViewInit {
         // Espera un poco antes de permitir cerrar por clic fuera
         setTimeout(() => {
             this.allowOutsideClose = true;
-        }, 200);
+        }, 1000);
     }
 
     hideContextMenu() {

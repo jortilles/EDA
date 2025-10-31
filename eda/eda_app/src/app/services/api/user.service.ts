@@ -6,6 +6,8 @@ import { map } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { GlobalService } from './global.service';
 import { AlertService } from '../alerts/alert.service';
+import { URL_SERVICES } from '../../config/config';
+
 
 import { User } from '@eda/models/model.index';
 import Swal from 'sweetalert2';
@@ -14,6 +16,8 @@ import Swal from 'sweetalert2';
     providedIn: 'root'
 })
 export class UserService extends ApiService {
+
+    public API = URL_SERVICES;
     private route = '/admin/user';
     private routeThirdParty = '/tp/url';
     private authSAML = '/auth/saml';
@@ -217,6 +221,7 @@ export class UserService extends ApiService {
 
     /** Logout user and clean localstorage */
     logout() {
+        console.log('Logout por default')
         this.user = null;
         this.token = '';
 
@@ -224,6 +229,18 @@ export class UserService extends ApiService {
         localStorage.removeItem('token');
 
         this.router.navigate(['/login']);
+    }
+
+    SAMLlogout() {
+        // window.location.href = 'http://localhost:8666/auth/saml/logout';
+        window.location.href = `https://edalitics.com${this.API}${this.authSAML_ORCL}/request-logout?token=${this.token}`;
+
+        // Borramos el Token y el usuario
+        this.user = null;
+        this.token = '';
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+
     }
 
     /** Change the user profile image */

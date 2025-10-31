@@ -42,6 +42,9 @@ export class ImportPanelDialog implements OnInit {
   public dashboardOptions: any[] = [];
   public dashboardPanels: any[] = [];
 
+  public panelsFilters;
+  public dashboardFilters;
+
   constructor(
     private alertService: AlertService,
     private dashboardService: DashboardService) { }
@@ -56,7 +59,6 @@ export class ImportPanelDialog implements OnInit {
   private async initializeOptions() {
     const { publics, shared, dashboards, group } = await lastValueFrom(this.dashboardService.getDashboards());
     this.dashboardOptions = [].concat(publics, shared, dashboards, group);
-    console.log(this.dashboardOptions);
   }
 
   public async onSelectDashboard() {
@@ -154,6 +156,9 @@ export class ImportPanelDialog implements OnInit {
     if (panel?.id) {
       const panelFilters = panel.content.query.query.filters || [];
       const dashFilters = this.dashboard.globalFilter.globalFilters;
+
+      this.panelsFilters = panelFilters;
+      this.dashboardFilters = dashFilters;
 
       if (!this._filterMapper[panelId]) {
         this._filterMapper[panelId] = {

@@ -1,11 +1,14 @@
 import { NextFunction, Request, Response } from 'express';
 import { HttpException } from '../../global/model/index';
+
 import passport from '../SAML.passport';
 import { samlStrategy } from '../SAML.passport';
+
 import ServerLogService from '../../../services/server-log/server-log.service';
 import { parseStringPromise } from 'xml2js';
+import zlib from 'zlib';
 
-// Importaciones necesarias
+// Importaciones necesarias de usuario
 import User, { IUser } from '../../admin/users/model/user.model';
 import { UserController } from '../../admin/users/user.controller';
 
@@ -15,10 +18,8 @@ const bcrypt = require('bcryptjs');
 const SEED = require('../../../../config/seed').SEED;
 const SAMLconfig = require('../../../../config/SAMLconfig');
 
-
 // Grupos de Edalitics
 import Group, { IGroup } from '../../admin/groups/model/group.model'
-
 
 // URL de Redirección
 const origen = SAMLconfig.urlRedirection; // http://localhost:4200
@@ -39,7 +40,7 @@ export class SAMLController {
 
             try {
                 const u = new URL(String(rawReturn));
-                // Lista permitida
+                // Lista de dominios permitidos => (se puede mas dominios)
                 const allowed = [`${origen}`, 'https://tu-dominio.app'];
                 if (!allowed.some(a => u.origin === a)) throw new Error('returnUrl no permitido');
                 relay = u.toString();
@@ -77,8 +78,14 @@ static async acs(req: Request, res: Response, next: NextFunction) {
 
         insertServerLog(req, 'info', 'newLogin', user.nameID, 'attempt');
 
-        const email = user.nameID;
-        const name = user.nameID;
+        // Valores que definen el inicio de sesión del usuario SAML
+        const nameID = user.nameID
+        const nameIDFormat = user.nameIDFormat;
+        const sessionIndex = user.attributes.sessionIndex;
+
+        // Valores adicionales (Extracción del email y nombre)
+        const email = user.email;
+        const name = user.email;
         const picture = '';
 
         if (!email) return next(new HttpException(400, 'Usuario no verificado por la Entidad SSO'));
@@ -87,7 +94,7 @@ static async acs(req: Request, res: Response, next: NextFunction) {
 
         if (!userEda) {
             // NUEVO USUARIO
-            console.log('El USUARIO ES NUEVO...')
+            // console.log(' ----------- NUEVO USUARIO ----------- ')
             const userToSave: IUser = new User({
             name,
             email,
@@ -100,7 +107,7 @@ static async acs(req: Request, res: Response, next: NextFunction) {
             Object.assign(userSAML, userSaved);
         } else {
             // EL USUARIO YA EXISTE
-            console.log('EL USUARIO YA EXISTE ...')
+            // console.log(' ----------- EL USUARIO YA EXISTE ----------- ')
             userEda.name = name;
             userEda.email = email;
             userEda.password = bcrypt.hashSync('135792467811111111111115', 10);
@@ -111,14 +118,17 @@ static async acs(req: Request, res: Response, next: NextFunction) {
 
         userSAML.password = ':)';
 
-        console.log('userSAML ===> ', userSAML);
+        const userPayload = {
+            ...userSAML.toObject(),     // Todos los datos de usuario
+            nameID: nameID,             // Se agrega nameID que proviene del IdP
+            nameIDFormat: nameIDFormat, // Se agrega nameIDFormat que proviene del IdP
+            sessionIndex: sessionIndex  // Se agrega sessionIndex que proviene del IdP
+        };        
 
-        token = await jwt.sign({ user: userSAML }, SEED, { expiresIn: 14400 });
+        token = await jwt.sign({ user: userPayload }, SEED, { expiresIn: 14400 });
 
         // --- Sincronizar Grupos como en login normal ---
-        await Group.updateMany({}, { $pull: { users: userSAML._id } });
-        
-        console.log('la autenticación con SAML no recupera los grupos...... de momento. ');
+        await Group.updateMany({}, { $pull: { users: userSAML._id } });        
         //await Group.updateMany({ _id: { $in: '135792467811111111111115' } }, { $push: { users: userSAML._id } }).exec();
 
         // --------- REDIRECCIÓN A ANGULAR CON JWT ---------
@@ -136,7 +146,7 @@ static async acs(req: Request, res: Response, next: NextFunction) {
             relayState = defaultRelay;
         }
 
-        // Anexa ?token= al query del hash "#/login?token=..."
+        // Agregamos el Token en la redicción exitosa
         const sep = relayState.includes('?') ? '&' : '?';
         const redirectTo = `${relayState}${sep}token=${encodeURIComponent(token)}`;
 
@@ -155,6 +165,139 @@ static async acs(req: Request, res: Response, next: NextFunction) {
         );
         res.type('application/xml').send(xml);
     }
+
+  static async requestLogout(req: Request, res: Response, next: NextFunction) {
+    try {
+
+      console.log('req.user: ', req.user);
+      const nameID = req.user.nameID;
+      const nameIDFormat = req.user.nameIDFormat;
+      const sessionIndex = req.user.sessionIndex;
+
+      // Si no tenemos datos SAML: hacemos logout local (frontend) y redirect
+      if (!nameID && !sessionIndex) return res.redirect(302, `${origen}/#/login`);
+
+      // "PROFILE" (Sirve para la peticion de logout)
+      const profile = {
+        nameID,
+        nameIDFormat,
+        sessionIndex
+      };
+
+      // RelayState: a dónde volver en tu frontend cuando logout termine en IdP
+      const relayState = `${origen}/#/login`;
+
+      // Pedir URL de logout al saml implementation
+      const saml: any = (samlStrategy as any)._saml;
+      const logoutUrl = await saml.getLogoutUrlAsync(profile, relayState, {});
+
+      // Redirigir navegador al IdP para completar el SLO
+      return res.redirect(302, logoutUrl);
+    } catch (error) {
+      console.error('SAML logout error:', error);
+      return next(error);
+    }
+  }
+
+  static async logout(req: Request, res: Response, next: NextFunction) {
+    try {
+      const saml: any = (samlStrategy as any)._saml;
+      const method = req.method.toUpperCase();
+      let result;
+
+      const samlResponse = (method==='POST' ? req.body.SAMLResponse:req.qs.SAMLResponse);
+      const relayState = (method==='POST' ? req.body.RelayState:req.qs.RelayState);
+
+      // Si no se recibe respuesta del SAML
+      if (!samlResponse) return res.status(400).send('No SAMLResponse received');
+
+      if(method==='POST') {
+
+        try {
+          result = await saml.validatePostResponseAsync(
+            { SAMLResponse: String(samlResponse) },
+            { skipSignatureValidation: false } // true solo para test; quitar en producción una vez tengas cert + cache ok
+          );
+          console.log('result', result);
+  
+        } catch (error) {
+          console.warn('validatePostResponseAsync error, trying fallback parse:', error?.message || error);
+  
+          try {
+            const xml = decodeBase64PossiblyDeflated(String(samlResponse));
+            const parsedXml = await parseStringPromise(xml, { explicitArray: false });
+            const logoutResp = parsedXml['samlp:LogoutResponse'] || parsedXml['LogoutResponse'] || parsedXml;
+            const statusCode =
+              logoutResp?.['samlp:Status']?.['samlp:StatusCode']?.['$']?.Value ||
+              logoutResp?.Status?.StatusCode?.['$']?.Value;
+            
+            // console.log('xml: ', xml)
+            // console.log('parsedXml: ', parsedXml)
+            // console.log('logoutResp: ', logoutResp)
+            // console.log('statusCode: ', statusCode)
+  
+            if(!statusCode) {
+              console.warn('No StatusCode found in SAMLResponse fallback parse');
+            } else if(String(statusCode).endsWith(':Success')) {
+                return res.redirect(302, `${origen}`);
+            } else {
+              console.warn('SAMLResponse status not success:', statusCode);
+              return res.status(400).send('Logout not successful');
+            }
+  
+          } catch (error) {
+            console.warn('SAMLResponse status not success:', error);
+            return next(error);
+          }
+        }
+
+      } else {
+        // ================= GET =================
+        try {
+            const xml = decodeBase64PossiblyDeflated(String(samlResponse));
+            const parsedXml = await parseStringPromise(xml, { explicitArray: false });
+            const logoutResp = parsedXml['samlp:LogoutResponse'] || parsedXml['LogoutResponse'] || parsedXml;
+            const statusCode =
+                logoutResp?.['samlp:Status']?.['samlp:StatusCode']?.['$']?.Value ||
+                logoutResp?.Status?.StatusCode?.['$']?.Value;
+            
+            // console.log('GET xml: ', xml);
+            // console.log('GET parsedXml: ', parsedXml);
+            // console.log('GET logoutResp: ', logoutResp);
+            // console.log('GET statusCode: ', statusCode);
+
+            if (!statusCode) {
+                console.warn('No StatusCode found in SAMLResponse (GET)');
+            } else if (String(statusCode).endsWith(':Success')) {
+                return res.redirect(302, `${origen}`);
+                // return res.redirect(302, relayState || '/');
+            } else {
+                console.warn('SAMLResponse status not success (GET):', statusCode);
+                return res.status(400).send('Logout not successful');
+            }
+
+        } catch (error) {
+            console.warn('Error parsing GET SAMLResponse:', error);
+            return next(error);
+        }
+      }
+
+    } catch (error) {
+      console.error('SLS error:', error);
+      return next(error);
+    }
+
+    // Helper para el Buffer
+    function decodeBase64PossiblyDeflated(b64: string) {
+      const buf = Buffer.from(b64, 'base64');
+      try {
+        return zlib.inflateRawSync(buf).toString();
+      } catch {
+        return buf.toString();
+      }
+    }
+
+  }
 
 }
 

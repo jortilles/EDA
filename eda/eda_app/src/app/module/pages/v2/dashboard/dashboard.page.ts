@@ -8,7 +8,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { MenuModule } from 'primeng/menu';
 import { MessageModule } from 'primeng/message';
 import { CompactType, DisplayGrid, GridsterComponent, GridsterConfig, GridsterItem, GridsterItemComponent, GridType } from 'angular-gridster2';
-import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, StyleProviderService, IGroup, DashboardStyles, ChartUtilsService } from '@eda/services/service.index';
+import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, StyleProviderService, IGroup, DashboardStyles, ChartUtilsService, UserService } from '@eda/services/service.index';
 import { EdaPanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index';
 import { DashboardSidebarComponent } from '../components/dashboard-sidebar/dashboard-sidebar.component';
 import { GlobalFilterV2Component } from '../components/global-filter/global-filter.component';
@@ -42,6 +42,7 @@ export class DashboardPageV2 implements OnInit {
   private route = inject(ActivatedRoute);
   private chartUtils = inject(ChartUtilsService);
   private dateUtilsService = inject(DateUtils);
+  private userService = inject(UserService);
 
   public title: string = $localize`:@@loading:Cargando informe...`;
   public styles: DashboardStyles;
@@ -193,7 +194,8 @@ export class DashboardPageV2 implements OnInit {
       }
       // me.tags = me.tags.filter(tag => tag.value !== 0); //treiem del seleccionador de tags el valor "sense etiqueta"
       // me.tags = me.tags.filter(tag => tag.value !== 1); //treiem del seleccionador de tags el valor "tots"
-      this.selectedTags = this.dashboard.config.tags;
+
+      this.selectedTags = this.dashboard.config.tag;
       //this.onlyIcanEdit = this.dashboard.config.onlyIcanEdit;
     }
 
@@ -361,6 +363,22 @@ export class DashboardPageV2 implements OnInit {
     }
   }
 
+      public canIedit(): boolean {
+        let result: boolean = false;
+        result = this.userService.isAdmin;
+        // si no es admin...
+        if (!result) {
+            if (this.dashboard.onlyIcanEdit) {
+                result = this.userService.user._id === this.dashboard.user
+            } else {
+                // Usuari anonim no pot editar
+                result = this.userService.user._id !== '135792467811111111111112';
+            }
+
+        }
+        return result;
+    }
+
   onRemovePanel(panel: any) {
     this.panels.splice(_.findIndex(this.panels, { id: panel }), 1);
 
@@ -517,7 +535,7 @@ public async reloadPanels(): Promise<void> {
              
               //Borramos filtros activos del global filter, pero los mantenemos guardados
               for (const element of this.lastFilters) {
-                await this.globalFilter.removeGlobalFilter(element.filter, true);
+                this.globalFilter.removeGlobalFilter(element.filter, true);
               }             
               //Añadimos filtros nuevos
               try {
@@ -716,44 +734,57 @@ private addFilterToPanelQuery(panel: any, filter: any): void {
   }
 
   isEditable(): boolean {
-    // TODO check is editable
-    return true;
+    // TODO check is editabl
+    return this.dashboard.dashboard.config.isEditable
   }
 
   public async saveDashboard() {
     // LiveDashboardTimer
-    this.triggerTimer();
-    const body = {
-      config: {
-        title: this.title,
-        panel: [],
-        ds: { _id: this.dataSource._id },
-        filters: this.cleanFiltersData(),
-        applyToAllfilter: this.applyToAllfilter,
-        visible: this.dashboard.config.visible,
-        tags: this.dashboard.config.tags,
-        refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
-        clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
-        // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
-        sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig, 
-        onlyIcanEdit: this.onlyIcanEdit, // NO puedo Editar dashboard --> publico con enlace
-        styles: this.dashboard.config.styles,
-        urls: this.dashboard.config.urls,
-        author: this.dashboard.config?.author
-      },
-      group: this.dashboard.group ? _.map(this.dashboard.group) : undefined,
-    }
+    let isvalid = true;
+    const emptyQuery = this.edaPanels.some((panel) => panel.currentQuery.length === 0);
 
-    body.config.panel = this.savePanels();
 
-    try {
-      await lastValueFrom(this.dashboardService.updateDashboard(this.dashboardId, body));
-      this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
-      this.dashboardService._notSaved.next(false);
-    } catch (err) {
-      this.alertService.addError(err);
-      throw err;
-    }
+
+      if (emptyQuery) isvalid = false;
+
+      if (!isvalid) {
+        this.alertService.addError($localize`:@@AddFiltersWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`)
+      }else{
+        
+        
+            this.triggerTimer();
+            const body = {
+              config: {
+                title: this.title,
+                panel: [],
+                ds: { _id: this.dataSource._id },
+                filters: this.cleanFiltersData(),
+                applyToAllfilter: this.applyToAllfilter,
+                visible: this.dashboard.config.visible,
+                tag: this.selectedTags,
+                refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
+                clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
+                // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
+                sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig, 
+                onlyIcanEdit: this.dashboard.config.onlyIcanEdit, // NO puedo Editar dashboard --> publico con enlace
+                styles: this.dashboard.config.styles,
+                urls: this.dashboard.config.urls,
+                author: this.dashboard.config?.author
+              },
+              group: this.dashboard.group ? _.map(this.dashboard.group) : undefined,
+            }
+        
+            body.config.panel = this.savePanels();
+
+            try {
+              await lastValueFrom(this.dashboardService.updateDashboard(this.dashboardId, body));
+              this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
+              this.dashboardService._notSaved.next(false);
+            } catch (err) {
+              this.alertService.addError(err);
+              throw err;
+            }
+      }
   }
 
   private savePanels(): any[] {
@@ -764,12 +795,6 @@ private addFilterToPanelQuery(panel: any, filter: any): void {
 
     for (const panel of _panels) {
       const dashboardId = panel.dashboard?._id;
-
-      // check if panel is imported from other Dashboard
-      if (dashboardId && dashboardId != this.dashboardId) {
-        // remove content from panel, only store panel references
-        delete (panel.content);
-      }
     }
 
     return _panels;
