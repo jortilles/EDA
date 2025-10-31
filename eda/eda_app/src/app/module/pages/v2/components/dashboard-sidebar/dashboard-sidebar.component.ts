@@ -518,7 +518,7 @@ export class DashboardSidebarComponent {
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
       confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
-      cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
+      cancelButtonText: $localize`:@@cancelarBtn:Cancelar`
     }).then(async (borrado) => {
       if (borrado.value) {
         try {

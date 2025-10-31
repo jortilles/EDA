@@ -72,7 +72,7 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
 
     saveRelation() {
         if (this.form.invalid) {
-            return this.alertService.addError('Recuerde llenar los campos obligatorios');
+            return this.alertService.addError($localize`:@@fillRequiredFields:Recuerde llenar los campos obligatorios`);
         } else {
 
             const rel: Relation = {

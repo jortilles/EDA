@@ -81,7 +81,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">54</context>
 </context-group>
 </trans-unit>
-<trans-unit id="sidebarProfile" datatype="html">
+< id="sidebarProfile" datatype="html">
 <source>Perfil</source>
 <target>Perfil</target>
 <context-group purpose="location">
@@ -92,7 +92,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <source>Gestión de logs</source>
   <target>Gestió de logs</target>
 </trans-unit>
-</trans-unit>
+
 <trans-unit id="sidebarUserManagement" datatype="html">
 <source>Gestión de
                                     Usuarios</source>
@@ -1160,7 +1160,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="labelUsuarioEmail" datatype="html">
 <source>Correo electrónico</source>
-<target>Correo electronic</target>
+<target>Correu electrònic</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
 <context context-type="linenumber">18</context>
@@ -2655,6 +2655,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="IncorrectForm">
 <source>Formulario incorrecto. Revise los campos obligatorios.</source>
+<target>Formulari incorrecte, reviseu els camps.</target>
+</trans-unit>
+
+<trans-unit id="IncorrectForm2">
+<source>Formulario incorrecto, revise los campos.</source>
 <target>Formulari incorrecte. Revisa els camps obligatoris.</target>
 </trans-unit>
 
@@ -3495,9 +3500,19 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Codi de color</target>
   </trans-unit>
 
-  <trans-unit id="seeRepetitions">
+  <trans-unit id="seeHideRepetitions">
     <source>Ver/ocultar valores repetidos</source>
     <target>Veure/amagar valors repetits</target>
+  </trans-unit>
+
+  <trans-unit id="seeRepetitions">
+    <source>Ver valores repetidos</source>
+    <target>Veure valors repetits</target>
+  </trans-unit>
+
+  <trans-unit id="hideRepetitions">
+    <source>Ocultar valores repetidos</source>
+    <target>Amagar valors repetits</target>
   </trans-unit>
 
   <trans-unit id="seeNegativeNumbers">
@@ -3878,6 +3893,16 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
      <trans-unit id="onlyIcanEditTag">
     <source>Edición privada:</source>
     <target>Edició privada:  </target>
+  </trans-unit>
+
+     <trans-unit id="onlyIcanEditTagEnable">
+    <source>Edición privada habilitada</source>
+    <target>Edició privada habilitada</target>
+  </trans-unit> 
+
+     <trans-unit id="onlyIcanEditTagDisable">
+    <source>Edición privada deshabilitada</source>
+    <target>Edició privada deshabilitada</target>
   </trans-unit> 
   
 
@@ -4007,7 +4032,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="ChangeDefaultsColors">
     <source>Color del los gráficos</source>
-    <target>Color dels grafics</target>
+    <target>Color dels gràfics</target>
   </trans-unit> 
 
   <trans-unit id="dialogHeaderEditStyles">
@@ -4118,8 +4143,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Operació</target>
 </trans-unit>
 <trans-unit id="canIfilter">
-<source>Visiblidad del filtro</source>
-<target>Visiblitat del filtre</target>
+<source>Visibilidad del filtro</source>
+<target>Visibilitat del filtre</target>
 </trans-unit>
 <trans-unit id="public">
 <source>público</source>
@@ -5549,15 +5574,261 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Inferior dreta</target>
 </trans-unit>
 
-<trans-unit id="newTextTitle">
-  <source>Titulo</source>
-  <target>Títol</target>
-</trans-unit>
-
 <trans-unit id="selectDashboardPrivacity">
   <source>Selecciona la privacidad del informe</source>
-  <target>Seleccioneu la privadesa de l'informe</target>
+  <target>Seleccioneu la privacitat de l'informe</target>
 </trans-unit>
+
+<trans-unit id="defaultValueLabel">
+  <source>Valor por defecto</source>
+  <target>Valor per defecte</target>
+</trans-unit>
+
+<trans-unit id="selectedItems">
+  <source>seleccionados</source>
+  <target>seleccionats</target>
+</trans-unit>
+
+<trans-unit id="filteredItems">
+  <source>elementos disponibles</source>
+  <target>elements disponibles</target>
+</trans-unit>
+
+<trans-unit id="noItemsAvailable">
+  <source>No hay elementos disponibles</source>
+  <target>No hi ha elements disponibles</target>
+</trans-unit>
+
+<trans-unit id="itemsSelected1">
+  <source>Seleccionados</source>
+  <target>Seleccionats</target>
+</trans-unit>
+
+<trans-unit id="cleanEverything">
+  <source>Limpiar todo</source>
+  <target>Netejar-ho tot</target>
+</trans-unit>
+
+<trans-unit id="cleanConnections">
+  <source>Limpiar </source>
+  <target>Netejar</target>
+</trans-unit>
+
+<trans-unit id="connections">
+  <source>conexiones </source>
+  <target>connexions</target>
+</trans-unit>
+
+<trans-unit id="panelFilters">
+  <source>Filtros del panel </source>
+  <target>Filtres del panell</target>
+</trans-unit>
+
+<trans-unit id="updateProfilePic">
+  <source>Actualizar foto</source>
+  <target>Actualitzar foto</target>
+</trans-unit>
+
+<trans-unit id="uploadingProfilePic">
+  <source>Subiendo...</source>
+  <target>Pujant...</target>
+</trans-unit>
+
+<trans-unit id="attachNewImage">
+  <source>Debe adjuntar una nueva imagen </source>
+  <target>Heu d'adjuntar una nova imatge </target>
+</trans-unit>
+
+<trans-unit id="selectRecipients">
+  <source>Selecciona los destinatarios *</source>
+  <target>Selecciona els destinataris *</target>
+</trans-unit>
+
+<trans-unit id="noContentToExport">
+  <source>No tienes contenido para exportar</source>
+  <target>No tens contingut per exportar</target>
+</trans-unit>
+
+<trans-unit id="PanelModeSelectorEDA">
+  <source>Modo EDA</source>
+  <target>Mode EDA</target>
+</trans-unit>
+
+<trans-unit id="PanelModeSelectorSQL">
+  <source>Modo SQL</source>
+  <target>Mode SQL</target>
+</trans-unit>
+
+<trans-unit id="PanelModeSelectorTree">
+  <source>Modo Árbol</source>
+  <target>Mode Arbre</target>
+</trans-unit>
+
+<trans-unit id="REPORTCloned">
+  <source>Informe clonado correctamente</source>
+  <target>Informe clonat correctament</target>
+</trans-unit>
+
+<trans-unit id="InvalidServerResponse">
+  <source>Respuesta inválida del servidor</source>
+  <target>Resposta invàlida del servidor</target>
+</trans-unit>
+
+<trans-unit id="CouldNotCloneReport">
+  <source>No se pudo clonar el informe. Por favor, inténtalo de nuevo.</source>
+  <target>No s'ha pogut clonar l'informe. Si us plau, torna-ho a intentar.</target>
+</trans-unit>
+
+<trans-unit id="searchEntities">
+  <source>Buscar entidades...</source>
+  <target>Buscar entitats...</target>
+</trans-unit>
+
+<trans-unit id="searchAttributes">
+  <source>Buscar atributos...</source>
+  <target>Buscar atributs...</target>
+</trans-unit>
+
+<trans-unit id="groupSelect">
+  <source>Selecciona...</source>
+  <target>Selecciona...</target>
+</trans-unit>
+
+<trans-unit id="selectedUsers">
+  <source>Usuarios seleccionados</source>
+  <target>Usuaris seleccionats</target>
+</trans-unit>
+
+<trans-unit id="availableUsers">
+  <source>Usuarios disponibles</source>
+  <target>Usuaris disponibles</target>
+</trans-unit>
+
+<trans-unit id="sidebarProfile">
+  <source>Perfil</source>
+  <target>Perfil</target>
+</trans-unit>
+
+<trans-unit id="copyPublicURL">
+  <source>copiar URL pública</source>
+  <target>copiar URL pública</target>
+</trans-unit>
+
+<trans-unit id="importPanelsTitle">
+  <source>Importar paneles</source>
+  <target>Importar panells</target>
+</trans-unit>
+
+<trans-unit id="selectPanels">
+  <source>Selecciona los paneles</source>
+  <target>Selecciona els panells</target>
+</trans-unit>
+
+<trans-unit id="searchPanels">
+  <source>Buscar paneles...</source>
+  <target>Buscar panells...</target>
+</trans-unit>
+
+<trans-unit id="ChangelignTitle">
+  <source>Alineación</source>
+  <target>Alineació</target>
+</trans-unit>
+
+<trans-unit id="forExample">
+  <source>Ej:50.5 </source>
+  <target>Ej:50.5</target>
+</trans-unit>
+
+<trans-unit id="dashboardExportedSuccessfully">
+  <source>Dashboard exportado correctamente</source>
+  <target>Dashboard exportat correctament</target>
+</trans-unit>
+
+<trans-unit id="selectDashboardToExport">
+  <source>Por favor selecciona un dashboard para exportar</source>
+  <target>Si us plau selecciona un dashboard per exportar</target>
+</trans-unit>
+
+<trans-unit id="problemExportingModel">
+  <source>Ocurrió un problema al exportar el modelo</source>
+  <target>Ha passat un problema en exportar el model</target>
+</trans-unit>
+
+<trans-unit id="modelExportedSucessfully">
+  <source>Modelo exportado correctamente</source>
+  <target>Model exportat correctament</target>
+</trans-unit>
+
+<trans-unit id="selectModelToExport">
+  <source>Por favor selecciona un modelo para exportar</source>
+  <target>Si us plau selecciona un model per exportar</target>
+</trans-unit>
+
+<trans-unit id="dashboardUpdatedSuccessfully">
+  <source>Dashboard actualizado correctamente</source>
+  <target>Dashboard actualitzat correctament</target>
+</trans-unit>
+
+<trans-unit id="dashboardCreatedSuccessfully">
+  <source>Dashboard creado correctamente</source>
+  <target>Dashboard creat correctament</target>
+</trans-unit>
+
+<trans-unit id="notPossibleImportDashboard">
+  <source>No se pudo importar el dashboard:</source>
+  <target>No s'ha pogut importar el dashboard:</target>
+</trans-unit>
+
+<trans-unit id="noValidJsonFormat">
+  <source>El archivo no tiene un formato JSON válido:</source>
+  <target>El fitxer no té un format JSON vàlid:</target>
+</trans-unit>
+
+<trans-unit id="notPossibleReadFile">
+  <source>No se pudo leer el archivo seleccionado</source>
+  <target>No s'ha pogut llegir el fitxer seleccionat</target>
+</trans-unit>
+
+<trans-unit id="pleaseSelectFile">
+  <source>Por favor selecciona un archivo para importar</source>
+  <target>Si us plau selecciona un fitxer per importar</target>
+</trans-unit>
+
+<trans-unit id="noCorrectJsonFormat">
+  <source>El archivo no tiene un formato JSON válido</source>
+  <target>El fitxer no té un format JSON vàlid</target>
+</trans-unit>
+
+<trans-unit id="errorImportModel">
+  <source>Ha ocurrido un error al importar el modelo</source>
+  <target>S'ha produït un error en importar el model</target>
+</trans-unit>
+
+<trans-unit id="modelImportedSuccessfully">
+  <source>Modelo importado correctamente</source>
+  <target>Model importat correctament</target>
+</trans-unit>
+
+<trans-unit id="errorVerifyingModelIntegrity">
+  <source>Error al verificar integridad del modelo</source>
+  <target>Error en verificar integritat del model</target>
+</trans-unit>
+
+<trans-unit id="onlyOneFile">
+  <source>Por favor selecciona un archivo para importar</source>
+  <target>Si us plau selecciona un fitxer per importar</target>
+</trans-unit>
+
+<trans-unit id="errorLoadingDashboard">
+  <source>Error al cargar el Dashboard</source>
+  <target>Error en carregar el Dashboard</target>
+</trans-unit>
+
+<trans-unit id="fillRequiredFields">
+  <source>Recuerde llenar los campos obligatorios</source>
+  <target>Recordeu omplir els camps obligatoris</target>
+</trans-unit>
+
 
 
     </body>

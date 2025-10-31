@@ -499,7 +499,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             );
         } else {
             // Si accedicis a un dashboard sense cap ID saltaria error
-            me.alertService.addError('Error al cargar el Dashboard');
+            me.alertService.addError($localize`:@@errorLoadingDashboard:Error al cargar el Dashboard`);
         }
     }
 
@@ -851,7 +851,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
-            cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
+            cancelButtonText: $localize`:@@cancelarBtn:Cancelar`
         }).then(async (borrado) => {
             if (borrado.value) {
                 try {

@@ -71,7 +71,7 @@ export class GroupListComponent implements OnInit {
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: $localize`:@@DeleteGroupButton:Si, ¡Eliminalo!`,
-            cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
+            cancelButtonText: $localize`:@@cancelarBtn:Cancelar`
         }).then(borrado => {
             if ( borrado.value ) {
                 this.groupService.deleteGroup(group._id).subscribe(

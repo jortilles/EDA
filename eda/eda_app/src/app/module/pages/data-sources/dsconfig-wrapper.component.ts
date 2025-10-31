@@ -93,7 +93,7 @@ export class DsConfigWrapperComponent implements OnInit {
 
     async switchTypes() {
         const type = this.form.value.type.value;
-        if (this.form.invalid) { this.alertService.addError('Formulario incorrecto, revise los campos'); }
+        if (this.form.invalid) { this.alertService.addError($localize`:@@IncorrectForm2:Formulario incorrecto, revise los campos`); }
         else if (!['bigquery', 'excel'].includes(type)) {
             this.addDataSource();
         } else if (type === 'excel') {

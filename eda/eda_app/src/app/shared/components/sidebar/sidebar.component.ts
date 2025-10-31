@@ -136,7 +136,7 @@ export class SidebarComponent implements OnInit {
                         text: $localize`:@@NotSavedWarning:Hay cambios sin guardar. ¿Seguro que quieres salir?`,
                         icon: 'warning',
                         showDenyButton: true,
-                        denyButtonText: $localize`:@@cancelarButton:Cancelar`,
+                        denyButtonText: $localize`:@@cancelarBtn:Cancelar`,
                     }
                 ).then((result) => {
                     if (result.isConfirmed) {
@@ -194,7 +194,7 @@ export class SidebarComponent implements OnInit {
                 text: $localize`:@@NotSavedWarning:Hay cambios sin guardar. ¿Seguro que quieres salir?`,
                 icon: 'warning',
                 showDenyButton: true,
-                denyButtonText: $localize`:@@cancelarButton:Cancelar`,
+                denyButtonText: $localize`:@@cancelarBtn:Cancelar`,
             } as SweetAlertOptions
 
         if (this.dashboardService._notSaved.value === false) {
@@ -217,7 +217,7 @@ export class SidebarComponent implements OnInit {
                 text: $localize`:@@NotSavedWarning:Hay cambios sin guardar. ¿Seguro que quieres salir?`,
                 icon: 'warning',
                 showDenyButton: true,
-                denyButtonText: $localize`:@@cancelarButton:Cancelar`,
+                denyButtonText: $localize`:@@cancelarBtn:Cancelar`,
             } as SweetAlertOptions
 
         if (this.dataSourceService._unsaved.value === false) {

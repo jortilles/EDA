@@ -256,7 +256,7 @@ export class UserService extends ApiService {
 
                 }
             }).catch((err) => {
-                this.alertService.addError('Debe adjuntar una nueva imagen')
+                this.alertService.addError($localize`:@@attachNewImage:Debe adjuntar una nueva imagen`)
             });
     }
 
