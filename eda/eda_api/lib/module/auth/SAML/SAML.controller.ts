@@ -1,12 +1,14 @@
 import { NextFunction, Request, Response } from 'express';
 import { HttpException } from '../../global/model/index';
+
 import passport from '../SAML.passport';
 import { samlStrategy } from '../SAML.passport';
+
 import ServerLogService from '../../../services/server-log/server-log.service';
 import { parseStringPromise } from 'xml2js';
 import zlib from 'zlib';
 
-// Importaciones necesarias
+// Importaciones necesarias de usuario
 import User, { IUser } from '../../admin/users/model/user.model';
 import { UserController } from '../../admin/users/user.controller';
 
@@ -16,12 +18,12 @@ const bcrypt = require('bcryptjs');
 const SEED = require('../../../../config/seed').SEED;
 const SAMLconfig = require('../../../../config/SAMLconfig');
 
-
 // Grupos de Edalitics
 import Group, { IGroup } from '../../admin/groups/model/group.model'
 
 // URL de Redirección
 const origen = SAMLconfig.urlRedirection; // http://localhost:4200
+
 
 export class SAMLController {
 
@@ -38,7 +40,7 @@ export class SAMLController {
 
             try {
                 const u = new URL(String(rawReturn));
-                // Lista permitida
+                // Lista de dominios permitidos => (se puede mas dominios)
                 const allowed = [`${origen}`, 'https://tu-dominio.app'];
                 if (!allowed.some(a => u.origin === a)) throw new Error('returnUrl no permitido');
                 relay = u.toString();
@@ -76,13 +78,12 @@ static async acs(req: Request, res: Response, next: NextFunction) {
 
         insertServerLog(req, 'info', 'newLogin', user.nameID, 'attempt');
 
+        // Valores que definen el inicio de sesión del usuario SAML
         const nameID = user.nameID
+        const nameIDFormat = user.nameIDFormat;
         const sessionIndex = user.attributes.sessionIndex;
-        
-        console.log('nameID: ', nameID);
-        console.log('sessionIndex: ', sessionIndex);
-        console.log('user: ', user);
 
+        // Valores adicionales (Extracción del email y nombre)
         const email = user.nameID;
         const name = user.nameID;
         const picture = '';
@@ -93,7 +94,7 @@ static async acs(req: Request, res: Response, next: NextFunction) {
 
         if (!userEda) {
             // NUEVO USUARIO
-            console.log('El USUARIO ES NUEVO...')
+            // console.log(' ----------- NUEVO USUARIO ----------- ')
             const userToSave: IUser = new User({
             name,
             email,
@@ -106,7 +107,7 @@ static async acs(req: Request, res: Response, next: NextFunction) {
             Object.assign(userSAML, userSaved);
         } else {
             // EL USUARIO YA EXISTE
-            console.log('EL USUARIO YA EXISTE ...')
+            // console.log(' ----------- EL USUARIO YA EXISTE ----------- ')
             userEda.name = name;
             userEda.email = email;
             userEda.password = bcrypt.hashSync('135792467811111111111115', 10);
@@ -117,13 +118,11 @@ static async acs(req: Request, res: Response, next: NextFunction) {
 
         userSAML.password = ':)';
 
-        console.log('userSAML ===> ', userSAML);
-
         const userPayload = {
-            ...userSAML.toObject(),    // Todos los datos de usuario
-            nameID: user.nameID,       // Se agrega nameID que proviene del IdP
-            nameIDFormat: user.nameIDFormat, // Se agrega nameIDFormat que proviene del IdP
-            sessionIndex: user.attributes?.sessionIndex  // Se agrega sessionIndex que proviene del IdP
+            ...userSAML.toObject(),     // Todos los datos de usuario
+            nameID: nameID,             // Se agrega nameID que proviene del IdP
+            nameIDFormat: nameIDFormat, // Se agrega nameIDFormat que proviene del IdP
+            sessionIndex: sessionIndex  // Se agrega sessionIndex que proviene del IdP
         };        
 
         token = await jwt.sign({ user: userPayload }, SEED, { expiresIn: 14400 });
@@ -147,7 +146,7 @@ static async acs(req: Request, res: Response, next: NextFunction) {
             relayState = defaultRelay;
         }
 
-        // Anexa ?token= al query del hash "#/login?token=..."
+        // Agregamos el Token en la redicción exitosa
         const sep = relayState.includes('?') ? '&' : '?';
         const redirectTo = `${relayState}${sep}token=${encodeURIComponent(token)}`;
 
@@ -178,7 +177,7 @@ static async acs(req: Request, res: Response, next: NextFunction) {
       // Si no tenemos datos SAML: hacemos logout local (frontend) y redirect
       if (!nameID && !sessionIndex) return res.redirect(302, `${origen}/#/login`);
 
-      // Construir "profile" para getLogoutUrlAsync (Sirve para la peticion de logout)
+      // "PROFILE" (Sirve para la peticion de logout)
       const profile = {
         nameID,
         nameIDFormat,
@@ -188,14 +187,9 @@ static async acs(req: Request, res: Response, next: NextFunction) {
       // RelayState: a dónde volver en tu frontend cuando logout termine en IdP
       const relayState = `${origen}/#/login`;
 
-      console.log('relayState: ', relayState);
-      console.log('Logout profile:', profile);
-
       // Pedir URL de logout al saml implementation
       const saml: any = (samlStrategy as any)._saml;
       const logoutUrl = await saml.getLogoutUrlAsync(profile, relayState, {});
-
-      console.log('logoutUrl: ', logoutUrl);
 
       // Redirigir navegador al IdP para completar el SLO
       return res.redirect(302, logoutUrl);
@@ -211,7 +205,6 @@ static async acs(req: Request, res: Response, next: NextFunction) {
       const method = req.method.toUpperCase();
       let result;
 
-      console.log(' ############################### CORRECTO ###############################');
       const samlResponse = (method==='POST' ? req.body.SAMLResponse:req.qs.SAMLResponse);
       const relayState = (method==='POST' ? req.body.RelayState:req.qs.RelayState);
 
@@ -238,10 +231,10 @@ static async acs(req: Request, res: Response, next: NextFunction) {
               logoutResp?.['samlp:Status']?.['samlp:StatusCode']?.['$']?.Value ||
               logoutResp?.Status?.StatusCode?.['$']?.Value;
             
-            console.log('xml: ', xml)
-            console.log('parsedXml: ', parsedXml)
-            console.log('logoutResp: ', logoutResp)
-            console.log('statusCode: ', statusCode)
+            // console.log('xml: ', xml)
+            // console.log('parsedXml: ', parsedXml)
+            // console.log('logoutResp: ', logoutResp)
+            // console.log('statusCode: ', statusCode)
   
             if(!statusCode) {
               console.warn('No StatusCode found in SAMLResponse fallback parse');
@@ -268,10 +261,10 @@ static async acs(req: Request, res: Response, next: NextFunction) {
                 logoutResp?.['samlp:Status']?.['samlp:StatusCode']?.['$']?.Value ||
                 logoutResp?.Status?.StatusCode?.['$']?.Value;
             
-            console.log('GET xml: ', xml);
-            console.log('GET parsedXml: ', parsedXml);
-            console.log('GET logoutResp: ', logoutResp);
-            console.log('GET statusCode: ', statusCode);
+            // console.log('GET xml: ', xml);
+            // console.log('GET parsedXml: ', parsedXml);
+            // console.log('GET logoutResp: ', logoutResp);
+            // console.log('GET statusCode: ', statusCode);
 
             if (!statusCode) {
                 console.warn('No StatusCode found in SAMLResponse (GET)');

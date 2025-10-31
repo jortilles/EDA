@@ -16,7 +16,7 @@ const samlConfig: SamlConfig = {
   // passReqToCallback: true,
 };
 
-// new Strategy(options, signonVerify, logoutVerify)
+// new Strategy (options, signonVerify, logoutVerify)
 export const samlStrategy = new SamlStrategy(
   samlConfig,
 

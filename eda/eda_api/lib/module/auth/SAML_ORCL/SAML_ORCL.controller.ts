@@ -1,15 +1,19 @@
 import { NextFunction, Request, Response } from 'express';
 import { HttpException } from '../../global/model/index';
-// import passport from './SAML_ORCL.passport';
+
 import passport from '../SAML.passport';
 import { samlStrategy } from '../SAML.passport';
+
 import ServerLogService from '../../../services/server-log/server-log.service';
 import { parseStringPromise } from 'xml2js';
 import zlib from 'zlib';
 
-// Importaciones necesarias 
+// Importaciones necesarias de usuario 
 import User, { IUser } from '../../admin/users/model/user.model';
 import { UserController } from '../../admin/users/user.controller';
+
+// Importaciones necesarias de Grupos de Edalitics
+import Group, { IGroup } from '../../admin/groups/model/group.model'
 
 // Constantes necesarias 
 const jwt = require('jsonwebtoken');
@@ -18,12 +22,12 @@ const SEED = require('../../../../config/seed').SEED;
 const ORCL = require('../../../../config/bbdd_orcl').ORCL;
 const SAMLconfig = require('../../../../config/SAMLconfig');
 
-// Base de datos oracle
+// Requerido para la conexión de la base de datos Oracle
 const oracledb = require("oracledb");
-const origen = SAMLconfig.urlRedirection; // http://localhost:4200
 
-// Grupos de Edalitics
-import Group, { IGroup } from '../../admin/groups/model/group.model'
+// Constante de origen para la conexión SAML, en local => http://localhost:4200
+const origen = SAMLconfig.urlRedirection;
+
 
 export class SAML_ORCL_Controller {
 
@@ -39,7 +43,7 @@ export class SAML_ORCL_Controller {
 
             try {
                 const u = new URL(String(rawReturn));
-                // Lista de urls permitidas
+                // Lista de dominios permitidos => (se puede mas dominios)
                 const allowed = [`${origen}`, 'https://tu-dominio.app'];
                 if (!allowed.some(a => u.origin === a)) throw new Error('returnUrl no permitido');
                 relay = u.toString();
@@ -77,13 +81,12 @@ export class SAML_ORCL_Controller {
 
             insertServerLog(req, 'info', 'newLogin', user.email, 'attempt');
 
+            // Valores que definen el inicio de sesión del usuario SAML
             const nameID = user.nameID
+            const nameIDFormat = user.nameIDFormat;
             const sessionIndex = user.attributes.sessionIndex;
         
-            console.log('nameID: ', nameID);
-            console.log('sessionIndex: ', sessionIndex);
-            console.log('user: ', user);
-
+            // Valores adicionales (Extracción del email y nombre)
             const email = user.email;
             const name = email.split('@')[0];
             const picture = '';
@@ -92,28 +95,28 @@ export class SAML_ORCL_Controller {
 
             const userEda = await UserController.getUserInfoByEmail(email, true);
 
-            console.log('================= CONEXION ORCL =================');
+            console.log('================= CONEXION ORCL INICIO =================');
             // Recuperar los nombres de los roles de la conexion a Oracle
             // Entrar a la base de datos de EDALITICS y recuperar los id de los roles obtenido de la anterior conexion a Oracle
             // Una vez obtenido todos los ids de todos los roles, agregarlos al usuario en cuestion.
 
-            console.log('name: ', name);
-            console.log('email: ', email);
 
-            // Obtencion de los roles de la base de datos Oracle    
+            // Parte 1: Obtención de los roles de la base de datos Oracle    
             const roles = await getRoles(email);
             let roles_ids = []; // Variable de ids del usuario que esta haciendo login
 
-            // Verificando en los grupos de edalitics
+            // Parte 2: Verificando en los grupos de edalitics
             const groups = await Group.find({}).exec();
 
-            // agregando los ids de todos los roles que tiene el usuario
+            // Parte 3: Agregando los ids de todos los roles que tiene el usuario
             roles.forEach((item) => roles_ids.push(groups.find((group) => String(group.name) == String(item.ROL))._id));
             console.log('roles_ids: ', roles_ids);
+
+            console.log('================= CONEXION ORCL FIN =================');
             
             if (!userEda) {
                 // NUEVO USUARIO
-                console.log('El USUARIO ES NUEVO...')
+                // console.log(' ----------- NUEVO USUARIO ----------- ')
                 const userToSave: IUser = new User({
                     name,
                     email,
@@ -126,7 +129,7 @@ export class SAML_ORCL_Controller {
                 Object.assign(userSAML, userSaved);
             } else {
                 // EL USUARIO YA EXISTE
-                console.log('EL USUARIO YA EXISTE ...')
+                // console.log(' ----------- EL USUARIO YA EXISTE ----------- ')
                 userEda.name = name;
                 userEda.email = email;
                 userEda.password = bcrypt.hashSync('135792467811111111111115', 10);
@@ -136,13 +139,12 @@ export class SAML_ORCL_Controller {
             }
 
             userSAML.password = ':)';
-            console.log('userSAML ===> ', userSAML);
 
             const userPayload = {
-                ...userSAML.toObject(),    // Todos los datos de usuario
-                nameID: user.nameID,       // Se agrega nameID que proviene del IdP
-                nameIDFormat: user.nameIDFormat, // Se agrega nameIDFormat que proviene del IdP
-                sessionIndex: user.attributes?.sessionIndex  // Se agrega sessionIndex que proviene del IdP
+                ...userSAML.toObject(),     // Todos los datos de usuario
+                nameID: nameID,             // Se agrega nameID que proviene del IdP
+                nameIDFormat: nameIDFormat, // Se agrega nameIDFormat que proviene del IdP
+                sessionIndex: sessionIndex  // Se agrega sessionIndex que proviene del IdP
             };        
 
             token = await jwt.sign({ user: userPayload }, SEED, { expiresIn: 14400 });
@@ -166,10 +168,9 @@ export class SAML_ORCL_Controller {
                 relayState = defaultRelay;
             }
 
-            // Anexa ?token= al query del hash "#/login?token=..."
+            // Agregamos el Token en la redicción exitosa
             const sep = relayState.includes('?') ? '&' : '?';
             const redirectTo = `${relayState}${sep}token=${encodeURIComponent(token)}`;
-
 
             return res.redirect(302, redirectTo);
             } catch (error) {
@@ -198,7 +199,7 @@ export class SAML_ORCL_Controller {
         // Si no tenemos datos SAML: hacemos logout local (frontend) y redirect
         if (!nameID && !sessionIndex) return res.redirect(302, `${origen}/#/login`);
 
-      // Construir "profile" para getLogoutUrlAsync (Sirve para la peticion de logout)
+      // "PROFILE" (Sirve para la peticion de logout)
         const profile = {
             nameID,
             nameIDFormat,
@@ -208,14 +209,9 @@ export class SAML_ORCL_Controller {
         // RelayState: a dónde volver en tu frontend cuando logout termine en IdP
         const relayState = `${origen}/#/login`;
 
-        console.log('relayState: ', relayState);
-        console.log('Logout profile:', profile);
-
         // Pedir URL de logout al saml implementation
         const saml: any = (samlStrategy as any)._saml;
         const logoutUrl = await saml.getLogoutUrlAsync(profile, relayState, {});
-
-        console.log('logoutUrl: ', logoutUrl);
 
         // Redirigir navegador al IdP para completar el SLO
         return res.redirect(302, logoutUrl);
@@ -231,7 +227,6 @@ export class SAML_ORCL_Controller {
             const method = req.method.toUpperCase();
             let result;
 
-            console.log(' ############################### CORRECTO ###############################');
             const samlResponse = (method==='POST' ? req.body.SAMLResponse:req.qs.SAMLResponse);
             const relayState = (method==='POST' ? req.body.RelayState:req.qs.RelayState);
             
@@ -258,10 +253,10 @@ export class SAML_ORCL_Controller {
                         logoutResp?.['samlp:Status']?.['samlp:StatusCode']?.['$']?.Value ||
                         logoutResp?.Status?.StatusCode?.['$']?.Value;
                     
-                    console.log('xml: ', xml)
-                    console.log('parsedXml: ', parsedXml)
-                    console.log('logoutResp: ', logoutResp)
-                    console.log('statusCode: ', statusCode)
+                    // console.log('xml: ', xml)
+                    // console.log('parsedXml: ', parsedXml)
+                    // console.log('logoutResp: ', logoutResp)
+                    // console.log('statusCode: ', statusCode)
     
                     if(!statusCode) {
                         console.warn('No StatusCode found in SAMLResponse fallback parse');
@@ -289,10 +284,10 @@ export class SAML_ORCL_Controller {
                         logoutResp?.['samlp:Status']?.['samlp:StatusCode']?.['$']?.Value ||
                         logoutResp?.Status?.StatusCode?.['$']?.Value;
                     
-                    console.log('GET xml: ', xml);
-                    console.log('GET parsedXml: ', parsedXml);
-                    console.log('GET logoutResp: ', logoutResp);
-                    console.log('GET statusCode: ', statusCode);
+                    // console.log('GET xml: ', xml);
+                    // console.log('GET parsedXml: ', parsedXml);
+                    // console.log('GET logoutResp: ', logoutResp);
+                    // console.log('GET statusCode: ', statusCode);
 
                     if (!statusCode) {
                         console.warn('No StatusCode found in SAMLResponse (GET)');
