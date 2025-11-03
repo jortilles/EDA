@@ -76,7 +76,7 @@ export class EbpChatgptComponent implements OnInit, AfterViewChecked{
     try {
       this.messageContainer.nativeElement.scrollTop = this.messageContainer.nativeElement.scrollHeight;
     } catch (err) {
-      console.warn('Error haciendo scroll:', err);
+      console.warn($localize`:@@scrollError:Error haciendo scroll:`, err);
     }
   }
 
@@ -84,7 +84,7 @@ export class EbpChatgptComponent implements OnInit, AfterViewChecked{
   public onApply() {
     this.display = false;
     console.log('confirmando ....')
-    this.close.emit('Emitiendo este valor ');
+    this.close.emit($localize`:@@emittingValues:Emitiendo este valor`);
   }
 
   public disableApply(): boolean {
@@ -94,7 +94,7 @@ export class EbpChatgptComponent implements OnInit, AfterViewChecked{
   public onClose(): void {
     console.log('cancelando ....')
     this.display = false;
-    this.close.emit('Emitiendo este valor de cancelar ');
+    this.close.emit($localize`:@@emittingCancelValues: Emitiendo este valor de cancelar`);
   }
 
 

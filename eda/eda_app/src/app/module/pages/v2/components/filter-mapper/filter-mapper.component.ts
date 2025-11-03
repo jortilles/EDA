@@ -127,7 +127,7 @@ ngOnDestroy() {
         if (!this.isItemConnected(this.selectedSource.id)) {
 
           if (!this.isItemSameType(itemId)) {
-            return this.alertService.addWarning('No se pueden vincular filtros de tipos distintos.')
+            return this.alertService.addWarning($localize`:@@differentFiltersCannotBeConnected:No se pueden vincular filtros de tipos distintos.`)
           }
 
           const newConnection: Connection = {

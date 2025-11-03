@@ -3770,8 +3770,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="checkCredentials">
-    <source> Comprobar credenciales</source>
-    <target>Comprovar credencials </target>
+    <source>Comprobar credenciales</source>
+    <target>Comprovar credencials</target>
   </trans-unit>
 
   <trans-unit id="mailmanagementHeader">
@@ -5827,6 +5827,31 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="fillRequiredFields">
   <source>Recuerde llenar los campos obligatorios</source>
   <target>Recordeu omplir els camps obligatoris</target>
+</trans-unit>
+
+<trans-unit id="connectedWithServer">
+  <source>Conectado con el servidor</source>
+  <target>Connectat amb el servidor</target>
+</trans-unit>
+
+<trans-unit id="differentFiltersCannotBeConnected">
+  <source>No se pueden vincular filtros de tipos distintos.</source>
+  <target>No es poden enllaçar filtres de tipus diferents.</target>
+</trans-unit>
+
+<trans-unit id="scrollError">
+  <source>Error haciendo scroll</source>
+  <target>Error fent scroll</target>
+</trans-unit>
+
+<trans-unit id="emittingValues">
+  <source>Emitiendo este valor</source>
+  <target>Emetent aquest valor</target>
+</trans-unit>
+
+<trans-unit id="emittingCancelValues">
+  <source>Emitiendo este valor de cancelar</source>
+  <target>Emetent aquest valor de cancel·lar</target>
 </trans-unit>
 
 
