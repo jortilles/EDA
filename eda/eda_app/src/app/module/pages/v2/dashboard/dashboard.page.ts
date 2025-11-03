@@ -640,7 +640,7 @@ private addFilterToPanelQuery(panel: any, filter: any): void {
     this.sidebarService.invokeMethod('onImportPanel');
   }
 
-    checkImportedPanels(dashboard) {
+  checkImportedPanels(dashboard) {
     dashboard.config.panel.forEach(element => {
       try {        
         if (element.globalFilterMap) {
@@ -744,7 +744,6 @@ private addFilterToPanelQuery(panel: any, filter: any): void {
   }
 
   refreshPanels() {
-    
     this.edaPanels.forEach(async (panel) => {
       if (panel.currentQuery.length > 0) {
         panel.display_v.chart = '';
@@ -752,6 +751,45 @@ private addFilterToPanelQuery(panel: any, filter: any): void {
         setTimeout(() => panel.panelChart?.updateComponent(), 100);
       }
     });
+
+    
+    // LiveDashboardTimer
+    let isvalid = true;
+    const emptyQuery = this.edaPanels.some((panel) => panel.currentQuery.length === 0);
+
+
+
+      if (emptyQuery) isvalid = false;
+
+      if (!isvalid) {
+        this.alertService.addError($localize`:@@AddFiltersWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`)
+      }else{
+        
+        
+            this.triggerTimer();
+            const body = {
+              config: {
+                title: this.title,
+                panel: [],
+                ds: { _id: this.dataSource._id },
+                filters: this.cleanFiltersData(),
+                applyToAllfilter: this.applyToAllfilter,
+                visible: this.dashboard.config.visible,
+                tag: this.selectedTags,
+                refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
+                clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
+                // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
+                sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig, 
+                onlyIcanEdit: this.dashboard.config.onlyIcanEdit, // NO puedo Editar dashboard --> publico con enlace
+                styles: this.dashboard.config.styles,
+                urls: this.dashboard.config.urls,
+                author: this.dashboard.config?.author
+              },
+              group: this.dashboard.group ? _.map(this.dashboard.group) : undefined,
+            }
+        
+            body.config.panel = this.savePanels();
+          }
 
   }
 

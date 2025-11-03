@@ -1,4 +1,4 @@
-<div class="w-full max-w-2xl">
+<div class="w-full ">
   <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
     <!-- Header -->
     <div class="p-6 pb-4 border-b border-gray-100">
@@ -61,7 +61,7 @@
 
     <!-- Items List -->
     <div class="p-6 pt-0">
-      <div [class]="'border border-gray-200 rounded-md ' + (config.height || 'h-80') + ' overflow-y-auto'">
+      <div [class]="'border border-gray-200 rounded-md min-h-[20rem] overflow-y-auto'">
         <div *ngIf="filteredItems().length === 0" class="flex items-center justify-center h-full text-gray-500" i18n="@@noItemsAvailable">
           {{ searchTerm() ? 'No se encontraron elementos' : 'No hay elementos disponibles' }}
         </div>

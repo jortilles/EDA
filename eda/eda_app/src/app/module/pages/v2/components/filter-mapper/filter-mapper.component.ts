@@ -30,45 +30,12 @@ export class FilterMapperComponent {
   @Input() panel;
   @Input() dashboard;
   @Input() dashboardFilter;
-  @Input() panelFilters: FilterItem[] =  [];
-  @Input() dashboardFilters: FilterItem[] =  [];
+  @Input() panelFilters: FilterItem[] = [];
+  @Input() dashboardFilters: FilterItem[] = [];
   @Input() connections: Connection[] = [];
   @Output() connectionsChange: EventEmitter<any> = new EventEmitter();
-  // panelFilters: PanelItem[] = [
-  //   { id: "l1", label: "Usuario", color: "bg-slate-500" },
-  //   { id: "l2", label: "Producto", color: "bg-slate-500" },
-  //   { id: "l3", label: "Pedido", color: "bg-slate-500" },
-  //   { id: "l4", label: "Pago", color: "bg-slate-500" },
-  //   { id: "l5", label: "Inventario", color: "bg-slate-500" },
-  // ]
 
-  // dashboardFilters: PanelItem[] = [
-  //   { id: "r1", label: "Base de Datos", color: "bg-slate-500" },
-  //   { id: "r2", label: "API Externa", color: "bg-slate-500" },
-  //   { id: "r3", label: "Servicio Email", color: "bg-slate-500" },
-  //   { id: "r4", label: "Analytics", color: "bg-slate-500" },
-  //   { id: "r5", label: "Cache Redis", color: "bg-slate-500" },
-  // ]
-
-  // connections: Connection[] = [
-  //   {
-  //     id: "c1",
-  //     sourceId: "l1",
-  //     targetId: "r1",
-  //     sourcePanel: "panel",
-  //     targetPanel: "dashboard",
-  //     color: "#64748b",
-  //   },
-  //   {
-  //     id: "c2",
-  //     sourceId: "l2",
-  //     targetId: "r2",
-  //     sourcePanel: "panel",
-  //     targetPanel: "dashboard",
-  //     color: "#6366f1",
-  //   },
-  // ]
-
+  allSelectedConnexions: any[] = [];
   selectedSource: { id: string; panel: "panel" | "dashboard" } | null = null
   hoveredConnection: string | null = null
 
@@ -79,43 +46,38 @@ export class FilterMapperComponent {
     "#dc2626", // red
   ]
 
-ngOnDestroy() {
-  this.connections.forEach(element => {
-    const panelFilter = this.panel.find(f => f.filter_id === element.sourceId);
-    const dashboardFilter = this.dashboardFilter.find(f => f.id === element.targetId);
+  ngOnDestroy() {
+    console.log('Todos los paneles:', this.dashboard.dashboard.config.panel);
+    console.log('Todas las conexiones:', this.allSelectedConnexions);
 
-    if (!panelFilter || !dashboardFilter) return;
+    this.dashboard.dashboard.config.panel.forEach((panel, panelIndex) => {
+      const panelFilters = panel.content?.query?.query?.filters;
 
-    let dashboardPanel = this.dashboard.dashboard.config.panel.find(panel =>
-      panel.content.query.query.filters.some(f => f.filter_id === panelFilter.filter_id)
-    );
+      if (!panelFilters?.length) {
+        return;
+      }
 
-    console.log(panelFilter, ' filtro del panel externo')
-    console.log(dashboardFilter, ' filtro del dashboard interno')
-    console.log(dashboardPanel, ' panel del dashboard interno')
-    
-    if (!dashboardPanel) return;
-    
-    
-    
-    const targetFilterInPanel = dashboardPanel.content.query.query.filters.find(
-      f => f.filter_id === panelFilter.filter_id
-    );
-    console.log(this.panel, 'paneles')
+      panelFilters.forEach((filter) => {
+        const connection = this.allSelectedConnexions.find(
+          conn => conn.sourceId === filter.filter_id
+        );
+        if (!connection) { return;}
 
-    console.log(targetFilterInPanel)
+        const dashboardFilter = this.dashboardFilter.find(f => f.id === connection.targetId);
+        if (!dashboardFilter) { return;}
 
-    //dashboardPanel.content.query.query.filters.find(filter => filter.filter_id === element.targetId) = targetFilterInPanel;
+        filter.filter_elements[0].value1 = [...dashboardFilter.selectedItems];
+
+      });
+    });
+
+  }
 
 
-     if (targetFilterInPanel?.filter_elements?.length) {
-       targetFilterInPanel.filter_elements[0].value1 = [...dashboardFilter.selectedItems];
-    }
-  });
-}
 
 
   handleItemClick(itemId: string, panel: "panel" | "dashboard"): void {
+    console.log('handle item click  ')
     if (this.isItemConnected(itemId)) {
       return
     }
@@ -139,6 +101,7 @@ ngOnDestroy() {
             color: this.connectionColors[this.connections.length % this.connectionColors.length],
           }
           this.connections.push(newConnection);
+          this.allSelectedConnexions.push(newConnection)
           this.connectionsChange.emit(this.connections);
         }
       }
@@ -210,9 +173,9 @@ ngOnDestroy() {
 
   getAttributeTypeIcon(type: string) {
     const icons = {
-        numeric: 'mdi-numeric',
-        date: 'mdi-calendar-text',
-        text: 'mdi-alphabetical'
+      numeric: 'mdi-numeric',
+      date: 'mdi-calendar-text',
+      text: 'mdi-alphabetical'
     };
     return icons[type as keyof typeof icons] || '';
   }

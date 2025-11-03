@@ -162,7 +162,8 @@ public async fillFiltersData(): Promise<void> {
                 const map = filterMap.find((f) => f.targetId == filter.id);
                 const panelFilter = ebp.globalFilters.find(filter => filter.filter_id === map?.sourceId);
                     const items = this.globalFilterService.formatFilter(filter);
-                    panelFilter.filter_elements = items;
+                    if(panelFilter?.filter_elements)
+                        panelFilter.filter_elements = items;
                     
                     ebp.assertGlobalFilter(items);
             }
