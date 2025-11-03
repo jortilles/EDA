@@ -440,7 +440,7 @@ public async reloadPanels(): Promise<void> {
     }
     //Si es modo arbol o SQL no aplica filtros
     if (modeEDA && event.code === "ADDFILTER" && this.validateDashboard('GLOBALFILTER') && this.dashboard.config.clickFiltersEnabled) {
-
+      this.alertService.addSuccess($localize`:@@filteredReportMessage:Por favor, espera un momento mientras procesamos la selección.`);
 
         const data = event?.data;
         const panel = event?.data?.panel;
