@@ -47,9 +47,6 @@ export class FilterMapperComponent {
   ]
 
   ngOnDestroy() {
-    console.log('Todos los paneles:', this.dashboard.dashboard.config.panel);
-    console.log('Todas las conexiones:', this.allSelectedConnexions);
-
     this.dashboard.dashboard.config.panel.forEach((panel, panelIndex) => {
       const panelFilters = panel.content?.query?.query?.filters;
 
@@ -77,7 +74,6 @@ export class FilterMapperComponent {
 
 
   handleItemClick(itemId: string, panel: "panel" | "dashboard"): void {
-    console.log('handle item click  ')
     if (this.isItemConnected(itemId)) {
       return
     }
