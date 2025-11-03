@@ -590,7 +590,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="LogarithmicScaleH6" datatype="html">
 <source> ¿Escala logarítmica?    </source>
-<target> Logarithmic scale?    </target>
+<target> Skala logarytmiczna?    </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/maps-dialog/mapedit-dialog.component.html</context>
 <context context-type="linenumber">29</context>
@@ -694,7 +694,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="sqlExpresionH6" datatype="html">
 <source>Expresión SQL</source>
-<target>SQL Expression</target>
+<target>Wyrażenie SQL</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
 <context context-type="linenumber">182</context>
@@ -702,7 +702,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="originTable" datatype="html">
 <source>Tabla origen</source>
-<target>Origin table</target>
+<target>Tabela pochodzenia</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
 <context context-type="linenumber">187</context>
@@ -733,10 +733,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                                     Para ello introduce la consulta en el cuadro de texto y selecciona la tabla principal
                                     (puede ser cualquiera de las que aparecen en la consulta).
                                     Usaremos esta tabla para vincular la consulta a los filtros del informe. </source>
-<target>  You can perform SQL queries on the schema defined in your model.
-                                    To do this, enter the query in the text box and select the main table
-                                    (It can be any of those that appear in the query).
-                                    We will use this table to link the query to the report filters. </target>
+<target>  Możesz wykonywać zapytania SQL na schemacie zdefiniowanym w modelu.
+                                    Aby to zrobić, wprowadź zapytanie w polu tekstowym i wybierz tabelę główną.
+                                    (Może to być dowolna z tych, które pojawiają się w zapytaniu).
+                                    Wykorzystamy tę tabelę do połączenia zapytania z filtrami raportu.</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
 <context context-type="linenumber">202</context>
@@ -775,7 +775,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="indicaciones5" datatype="html">
 <source> Puedes vincular los filtros del informe con la consulta</source>
-<target> You can link the report filters with the query</target>
+<target> Możesz połączyć filtry raportu z zapytaniem</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
 <context context-type="linenumber">218</context>
@@ -791,10 +791,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </source>
 <target> Żeby to zrobić musisz dodać::
 <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>
- AND
+ I
 <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}"/>
 <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/>
- in &apos;WHERE&apos; clause from query
+ W &apos;GDZIE&apos; klauzula z zapytania
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -809,8 +809,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}"/>
 <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/>
 </source>
-<target> If you haven't added any WHERE clause, add it to the query and make the necessary joins,
-                                        together with the filter in the format
+<target> Jeśli nie dodałeś żadnej klauzuli WHERE, dodaj ją do zapytania i wykonaj niezbędne łączenia,
+                                        razem z filtrem w formacie
 <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>
 <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}"/>
 <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/>
@@ -825,9 +825,9 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                                         añadir las cláusulas JOIN necesarias
                                         para poder vicular la tabla del filtro con tu consulta
 </source>
-<target>If the table by which we filter is not in the query, remember that you must
-                                        add the necessary JOIN clauses
-                                        in order to link the filter table with your query
+<target>Jeśli tabela, według której filtrujemy, nie znajduje się w zapytaniu, pamiętaj, że musisz
+                                        dodać niezbędne klauzule JOIN
+                                        w celu połączenia tabeli filtru z zapytaniem
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -836,7 +836,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="indicaciones9" datatype="html">
 <source>Consulta simple</source>
-<target>Simple query</target>
+<target>Proste zapytanie</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
 <context context-type="linenumber">237</context>
@@ -844,7 +844,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="indicaciones10" datatype="html">
 <source>Consulta con los filtros del informe vinculados</source>
-<target>Query with linked report filters</target>
+<target>Zapytanie z powiązanymi filtrami raportów</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
 <context context-type="linenumber">246</context>
@@ -852,7 +852,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="indicaciones11" datatype="html">
 <source> Tenemos un filtro en el informe para el campo &apos;city&apos; de la tabla CUSTOMERS</source>
-<target> We have a filter in the report for the &apos;city&apos; field from CUSTOMERS table</target>
+<target> W raporcie mamy filtr dla &apos;miasto&apos; pole z tabeli CUSTOMERS</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
 <context context-type="linenumber">248</context>
@@ -860,7 +860,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="indicaciones12" datatype="html">
 <source> Consulta sin filtros vinculados</source>
-<target> Query without linked filters</target>
+<target> Zapytanie bez powiązanych filtrów</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
 <context context-type="linenumber">249</context>
@@ -868,7 +868,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="indicaciones13" datatype="html">
 <source> Consulta con filtros vinculados</source>
-<target> Query with linked filters</target>
+<target> Zapytanie z powiązanymi filtrami</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
 <context context-type="linenumber">254</context>
@@ -877,7 +877,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="indicaciones14" datatype="html">
 <source> Tenemos un filtro en el informe para el campo &apos;office_id&apos; de la tabla OFFICES
 </source>
-<target> We have a filter in the report for the field &apos;office_id&apos; from OFFICES table
+<target> W raporcie mamy filtr dla pola &apos;identyfikator_biura&apos; ze stołu OFFICES
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -1228,7 +1228,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputEmail" datatype="html">
 <source>Correo *</source>
-<target>Email *</target>
+<target>E-mail *</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
 <context context-type="linenumber">8</context>
@@ -1260,7 +1260,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputSeguridad" datatype="html">
 <source>Seguridad *</source>
-<target>Security *</target>
+<target>Bezpieczeństwo *</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
 <context context-type="linenumber">16</context>
@@ -1451,7 +1451,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="rolesPermisos" datatype="html">
 <source>Roles y permisos de fila</source>
-<target>Row roles and permissions</target>
+<target>Role i uprawnienia wiersza</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
 <context context-type="linenumber">102</context>
@@ -1505,7 +1505,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                 Host
 </source>
 <target>
-                Host
+                Gospodarz
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
@@ -1543,7 +1543,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="placeholderSourceColumns" datatype="html">
 <source>Columna origen</source>
 
-<target>Origin column</target>
+<target>Kolumna pochodzenia</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component.html</context>
 <context context-type="linenumber">8</context>
@@ -1551,7 +1551,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="placeholderTargetTables" datatype="html">
 <source>tabla destino</source>
-<target>Destination table</target>
+<target>Tabela docelowa</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component.html</context>
 <context context-type="linenumber">14</context>
@@ -1559,7 +1559,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="placeholderTargetColumns" datatype="html">
 <source>Columna destino </source>
-<target>destination column</target>
+<target>kolumna docelowa</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component.html</context>
 <context context-type="linenumber">19</context>
@@ -1643,7 +1643,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputMapTables" datatype="html">
 <source>Propiedades del mapa</source>
-<target>Map properties</target>
+<target>Właściwości mapy</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/mapsDialog/maps-dialog.component.html</context>
 <context context-type="linenumber">6</context>
@@ -1655,7 +1655,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputMapURL" datatype="html">
 <source> Subir archivo GeoJson (JSON)</source>
-<target>Upload GeoJson file (JSON)</target>
+<target>Prześlij plik GeoJson (JSON)</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/mapsDialog/maps-dialog.component.html</context>
 <context context-type="linenumber">9</context>
@@ -1663,7 +1663,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputMapField" datatype="html">
 <source>Campo a usar para vincular el modelo con el mapa</source>
-<target>Field to link datamodel to the map</target>
+<target>Pole do połączenia modelu danych z mapą</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/mapsDialog/maps-dialog.component.html</context>
 <context context-type="linenumber">14</context>
@@ -1781,12 +1781,12 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="targetRel">
 <source>Destino</source>
-<target>Target</target>
+<target>Miejsce docelowe</target>
 </trans-unit>
 
 <trans-unit id="originRel">
 <source>Origen</source>
-<target>Origin</target>
+<target>Pochodzenie</target>
 </trans-unit>
 
 <trans-unit id="userTable">
@@ -1861,7 +1861,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="chartTypes1">
 <source>Tabla de Datos</source>
-<target>Tabela</target>
+<target>Tabela danych</target>
 </trans-unit>
 <trans-unit id="chartTypes2">
 <source>Tabla Cruzada</source>
@@ -1923,7 +1923,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="chartTypes10">
 <source>Mapa de coordenadas</source>
-<target>Coordinates map</target>
+<target>Współrzędne mapy</target>
 </trans-unit>
 <trans-unit id="chartTypes11">
 <source>Mapa de Capas</source>
@@ -2002,11 +2002,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="dates4">
 <source>NO</source>
-<target>NO</target>
+<target>NIE</target>
 </trans-unit>
 <trans-unit id="dates5">
 <source>SEMANA</source>
-<target>SETMANA</target>
+<target>TYDZIEŃ</target>
 </trans-unit>
 <trans-unit id="dates6">
 <source>DIA DE LA SEMANA</source>
@@ -2015,7 +2015,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="dates7">
 <source>FECHA COMPLETA</source>
-<target>TIMESTAMP</target>
+<target>PEŁNA DATA</target>
 </trans-unit>
 
 <trans-unit id="dates8">
@@ -2033,11 +2033,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="newPanelTitle">
 <source>Nuevo Panel</source>
-<target>Nowy Panel</target>
+<target>Nowy pulpit nawigacyjny</target>
 </trans-unit>
 <trans-unit id="newPanelTitle2">
 <source>Nuevo Panel</source>
-<target>Nowy Panel</target>
+<target>Nowy pulpit nawigacyjny</target>
 </trans-unit>
 
 <trans-unit id="addMap" datatype="html">
@@ -2179,7 +2179,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="groups1">
 <source>EMAIL</source>
-<target>EMAIL</target>
+<target>E-MAIL</target>
 </trans-unit>
 <trans-unit id="groups2">
 <source>GRUPOS</source>
@@ -2205,7 +2205,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="direccionMail" datatype="html">
 <source>Dirección Email</source>
-<target>Email</target>
+<target>Adres e-mail</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
   <context context-type="linenumber">22</context>
@@ -2352,27 +2352,27 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="aggTsum">
 <source>Suma</source>
-<target>Suma</target>
+<target>Dodatek</target>
 </trans-unit>
 <trans-unit id="aggTmean">
 <source>Media</source>
-<target>AVG</target>
+<target>Przeciętny</target>
 </trans-unit>
 <trans-unit id="aggTmax">
 <source>Màximo</source>
-<target>Max</target>
+<target>Maksymalny</target>
 </trans-unit>
 <trans-unit id="aggTmin">
 <source>Mínimo</source>
-<target>Min</target>
+<target>Minimum</target>
 </trans-unit>
 <trans-unit id="aggTcount">
 <source>Cuenta Valores</source>
-<target>Licz</target>
+<target>Konto Papierów Wartościowych</target>
 </trans-unit>
 <trans-unit id="aggTcountD">
 <source>Valores Distintos</source>
-<target>Count Distinct</target>
+<target>Różne wartości</target>
 </trans-unit>
 <trans-unit id="commonPanel">
 <source>Común</source>
@@ -2380,7 +2380,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="groupPanel">
 <source>Grupo</source>
-<target>Grupowy</target>
+<target>Grupa</target>
 </trans-unit>
 <trans-unit id="privatePanel">
 <source>Privado</source>
@@ -2662,7 +2662,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="AddFiltersWarningButton">
 <source>Entendido</source>
-<target>OK</target>
+<target>Zrozumiany</target>
 </trans-unit>
 
 <trans-unit id="DeleteGroup">
@@ -2943,7 +2943,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="kpiAlerts" datatype="html">
 <source>        Alertas      </source>
-<target>        Komunikaty     </target>
+<target>        Alerty     </target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
   <context context-type="linenumber">60</context>
@@ -2951,7 +2951,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="addAlert" datatype="html">
 <source> Añadir alerta    </source>
-<target>Dodaj komunikat    </target>
+<target>Dodaj alert    </target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
   <context context-type="linenumber">77</context>
@@ -3021,7 +3021,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="topQueryH4" datatype="html">
     <source> Mostrar Top:</source>
-    <target> Show Top:</target>
+    <target> Pokaż górę:</target>
     <context-group purpose="location">
       <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
       <context context-type="linenumber">131</context>
@@ -3389,15 +3389,15 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
   <trans-unit id="addRowTotals">
     <source>Totales de fila</source>
-    <target>Suma</target>
+    <target>Sumy wierszy</target>
   </trans-unit>
   <trans-unit id="addRowSubtotals">
     <source>Subtotales de fila</source>
-    <target>Suma częściowa</target>
+    <target>Podsumowania wierszy</target>
   </trans-unit>
   <trans-unit id="addColTotals">
     <source>Totales de columna</source>
-    <target>Suma</target>
+    <target>Sumy kolumn</target>
   </trans-unit>
   <trans-unit id="addColSubtotals">
     <source>Subtotales de columna</source>
@@ -3421,7 +3421,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
   <trans-unit id="addtrend">
     <source>Tendencia</source>
-    <target>Trend</target>
+    <target>Tendencja</target>
   </trans-unit>
   <trans-unit id="removetrend">
     <source>Quitar tendencia</source>
@@ -3430,7 +3430,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="addTotals">
     <source>Totales</source>
-    <target>Suma</target>
+    <target>Sumy</target>
   </trans-unit>
   <trans-unit id="addPercentages">
     <source>Porcentajes</source>
@@ -3438,7 +3438,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
   <trans-unit id="addStyles">
     <source>Código de color</source>
-    <target>Kolor</target>
+    <target>kod koloru</target>
   </trans-unit>
   <trans-unit id="tableTitleDialog">
     <source>Propiedades de la tabla</source>
@@ -3446,7 +3446,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
   <trans-unit id="SubTotals">
     <source>SubTotales</source>
-    <target>Suma częściowa</target>
+    <target>Podsumy</target>
   </trans-unit>
 
   <trans-unit id="gradientTitle">
@@ -3461,7 +3461,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="adChacheConfig">
     <source>Configurar caché del modelo</source>
-    <target>Caché configuration</target>
+    <target>Konfiguruj pamięć podręczną modelu</target>
   </trans-unit>
 
   <trans-unit id="CacheDeletedOK">
@@ -3501,7 +3501,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="MailSending">
     <source>Envío de alertas por mail </source>
-    <target>Mail alerts</target>
+    <target>Wysyłanie alertów e-mailem</target>
   </trans-unit>
 
   <trans-unit id="SendMailEvery">
@@ -3521,13 +3521,13 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="at">
     <source>A las</source>
-    <target>At</target>
+    <target>Na</target>
   </trans-unit>
 
 
   <trans-unit id="NoValidCol">
     <source>No hay columnas válidas</source>
-    <target>No valid columns</target>
+    <target>Brak prawidłowych kolumn</target>
   </trans-unit>
 
 
@@ -3600,7 +3600,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="sidebarAlertsManagement">
   <source>Gestión de alertas </source>
-  <target>Alert management</target>
+  <target>Zarządzanie alertami</target>
 </trans-unit>
 
 
@@ -3611,7 +3611,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="gotodashboard">
   <source>Ir al informe </source>
-  <target>Go to dashboard</target>
+  <target>Przejdź do raportu</target>
 </trans-unit>
 
 <trans-unit id="alertsConfigTitle">
@@ -3621,7 +3621,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="panelTable">
   <source>PANEL </source>
-  <target>PANEL</target>
+  <target>PŁYTA</target>
 </trans-unit>
 
 <trans-unit id="dashboardTable">
@@ -3675,7 +3675,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="mailmanagementHeader">
     <source>Gestión de correo y envio de mails</source>
-    <target>Email i wysyłanie wiadomości</target>
+    <target>Zarządzanie pocztą e-mail i wysyłanie</target>
   </trans-unit>
 
   <trans-unit id="mailConfSaved">
@@ -3715,17 +3715,17 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="entidadesTitle">
     <source>Clique sobre un entidad para ver sus atributos.</source>
-    <target>Click on an entity to see its attributes</target>
+    <target>Kliknij jednostkę, aby zobaczyć jej atrybuty.</target>
   </trans-unit>
 
     <trans-unit id="atributsTitle">
-    <source>Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes.</source>
-    <target>Attributes of an entity. Drag attributes onto selection or filters to view them. By clicking on the attribute you access its properties</target>
+    <source>Atributos de una entidad. Arrastre los atributos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes.</source>
+    <target>Atrybuty encji. Przeciągnij atrybuty do zaznaczenia lub filtrów, aby je wyświetlić. Kliknięcie atrybutu spowoduje wyświetlenie jego właściwości.</target>
   </trans-unit>
 
     <trans-unit id="seleccionTitle">
     <source>Para lanzar una consulta. Seleccione los atributos que desea ver, Clique sobre ellos para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.</source>
-    <target>To launch a query. Select the attributes you want to see, click on them to configure them and run the query. You can always go back to this view.</target>
+    <target>Aby uruchomić zapytanie, wybierz atrybuty, które chcesz wyświetlić, kliknij je, aby je skonfigurować, a następnie uruchom zapytanie. Zawsze możesz wrócić do tego widoku.</target>
   </trans-unit>
 
     <trans-unit id="agregacionh5">
@@ -3735,7 +3735,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
     <trans-unit id="inputFormat">
     <source>Número de decimales   </source>
-    <target>Decimal places  </target>
+    <target>Liczba dziesiętna  </target>
   </trans-unit>
 
   <trans-unit id="DashboardMailingTitle">
@@ -3755,7 +3755,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
     <trans-unit id="dashbaordsMailingHeader">
     <source>Envio de informes por email </source>
-    <target>Dashboards mail sending</target>
+    <target>Wysyłanie raportów e-mailem</target>
   </trans-unit>
 
  <trans-unit id="cumulativeSum">
@@ -3771,12 +3771,12 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="inputFilter">
     <source>Filtros</source>
-    <target>Filtery</target>
+    <target>Filtry</target>
   </trans-unit>
 
      <trans-unit id="comparativeTooltip">
     <source>La función de comparar sólo se puede activar si se dispone de un campo de fecha agregado por mes y un único campo numèrico agregado</source>
-    <target>Compare function is only allowed in queries with one date field monthly or weekly aggregated and one numeric field</target>
+    <target>Funkcję porównywania można aktywować tylko wtedy, gdy istnieje pole zbiorczej daty dla każdego miesiąca i pojedyncze pole zbiorczej wartości liczbowej.</target>
   </trans-unit>
 
 
@@ -3881,7 +3881,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Treść panelu</target>
   </trans-unit>
 
-     <trans-unit id="ChangeFontFamily">
+     <trans-unit id="ChangeFontFamily"> <!--Revisar de aqui para arriba-->
     <source>Tipo de fuente</source>
     <target>Typ czcionki</target>
   </trans-unit>
@@ -3912,6 +3912,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Kolor wykresy</target>
   </trans-unit> 
 
+  <trans-unit id="dialogHeaderEditStyles">
+    <source>Editar estilos</source>
+    <target>Edytuj style</target>
+  </trans-unit> 
+
   <trans-unit id="opcionEditarEstilos">
     <source>EDITAR ESTILOS</source>
     <target>EDYTUJ STYL</target>
@@ -3934,6 +3939,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Volver a los valores por defecto</source>
     <target>Ustaw domyślnie</target>
   </trans-unit>
+
+  <trans-unit id="deleteFilters">
+    <source>Eliminar filtros</source>
+    <target>Usuń filtry</target>
+  </trans-unit> 
 
     <trans-unit id="samplePanelTitle">
     <source>Previsualización</source>
@@ -3965,6 +3975,14 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>w tym zakresie</target>
   </trans-unit>
 
+<trans-unit id="sidebarInform" datatype="html">
+<source>Crear Informe</source>
+<target>Utwórz raport</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
+<context context-type="linenumber">83</context>
+</context-group>
+</trans-unit>
 
 <trans-unit id="si">
 <source>Si</source>
@@ -3976,14 +3994,61 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Nie</target>
 </trans-unit>
 
+<trans-unit id="addBtn">
+<source>Añadir</source>
+<target>Dodać</target>
+</trans-unit>
+
+<trans-unit id="measureLabel">
+<source>Medida:</source>
+<target>Mierzyć:</target>
+</trans-unit>
+
+<trans-unit id="operationLabel">
+<source>Operación</source>
+<target>działanie</target>
+</trans-unit>
+<trans-unit id="canIfilter">
+<source>Visibilidad del filtro</source>
+<target>Widoczność filtra</target>
+</trans-unit>
+
 <trans-unit id="duplicatedColumnNameLabel">
 <source>Nombre columna duplicada:</source>
 <target>Zduplikowana nazwa kolumny:</target>
 </trans-unit>
 
+<trans-unit id="public">
+<source>público</source>
+<target>publiczny</target>
+</trans-unit>
+<trans-unit id="readOnly">
+<source>deshabilitado</source>
+<target>wyłączony</target>
+</trans-unit>
+<trans-unit id="hidden">
+<source>oculto</source>
+<target>ukryty</target>
+</trans-unit>
+
 <trans-unit id="positionFilterInReport">
 <source>Posición del filtro en el informe</source>
 <target>Filtruj pozycję w raporcie</target>
+</trans-unit>
+
+<trans-unit id="numericalValueLabel">
+<source>Valor numérico</source>
+<target>Wartość numeryczna</target>
+</trans-unit>
+
+<trans-unit id="newNameLabel">
+<source>Nuevo nombre</source>
+<target>Nowa nazwa</target>
+</trans-unit>
+
+<trans-unit id="allowSSL">
+<source>Conexión mediante SSL</source>
+<target>Połączenie poprzez SSL</target>
 </trans-unit>
 
 <trans-unit id="filterVisibleScope">
@@ -4019,12 +4084,27 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="tituloAbout" datatype="html">
 <source>Enterprise Data Analytics</source>
-<target>Enterprise Data Analytics</target>
+<target>Analityka danych przedsiębiorstwa</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
 <context context-type="linenumber">4</context>
 </context-group>
-</trans-unit>
+
+  <trans-unit id="filters13">
+    <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
+    <target>WARTOŚCI NIE NULL ANI PUSTE (not null and != '')</target>
+  </trans-unit>
+
+  <trans-unit id="filters14">
+    <source>VALORES NULOS O VACÍOS (null or = '')</source>
+    <target>WARTOŚCI NULL LUB PUSTE (null lub = '')</target>
+  </trans-unit>
+
+  <trans-unit id="aliasValuePh">
+    <source>Alias del filtro (opcional)</source>
+    <target>Filtruj alias (opcjonalnie)</target>
+  </trans-unit>
+
   <trans-unit id="noDataAllowed">
     <source>Este panel no está disponible por falta de permisos</source>
     <target>Ten Panel nie jest dostępny ze względu na brak uprawnień</target>
@@ -4122,11 +4202,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>DZIAŁANIE NIESTANDARDOWE</target>
   </trans-unit>
 
-
-
-
-
-
   <trans-unit id="urlEditSave">
     <source>URL editado correctamente</source>
     <target>Adres URL został pomyślnie zmieniony</target>
@@ -4141,7 +4216,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
   <trans-unit id="urlAddedSuccessfully">
     <source>URL agregado correctamente</source>
-    <target>URL agregado correctamente</target>
+    <target>Adres URL został pomyślnie dodany</target>
   </trans-unit>
   <trans-unit id="urlAddedIncomplete">
     <source>Formulario incompleto</source>
@@ -4204,6 +4279,16 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
     <target>Opis: </target>
   </trans-unit> 
 
+   <trans-unit id="urlAction">
+    <source>Acciones: </source>
+    <target>Akcje: </target>
+  </trans-unit> 
+
+  <trans-unit id="dialogHeaderCustomActions">
+    <source>ACCIONES PERSONALIZADAS </source>
+    <target>NIESTANDARDOWE DZIAŁANIA </target>
+  </trans-unit> 
+
   <trans-unit id="textLabelUrl">
     <source>Agregar url</source>
     <target>Dodaj adres URL</target>
@@ -4251,6 +4336,1411 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
     <source>Pregunte a la IA</source>
     <target>Zapytaj AI</target>
   </trans-unit>
+
+   <trans-unit id="GroupCreated">
+        <source>Grupo creado</source>
+        <target>Grupa utworzona</target>
+      </trans-unit>
+      <trans-unit id="GroupUpdated">
+        <source>Grupo actualizado</source>
+        <target>Zaktualizowana grupa</target>
+      </trans-unit>
+      <trans-unit id="GroupDeletedOk">
+        <source>El grupo a sido eliminado correctamente</source>
+        <target>Grupa została pomyślnie usunięta.</target>
+      </trans-unit>
+      <trans-unit id="UpdatedGroupError">
+        <source>El grupo no se ha podido actualizar</source>
+        <target>Nie udało się zaktualizować grupy.</target>
+      </trans-unit>
+      <trans-unit id="loginTitle">
+        <source>Inicio de sesión</source>
+        <target>Login</target>
+      </trans-unit>
+      <trans-unit id="restrictionAccess">
+        <source>Restringir Acceso</source>
+        <target>Ogranicz dostęp</target>
+      </trans-unit>
+      <trans-unit id="restrictionAccessDescription">
+        <source>Activar para limitar el acceso solo a usuarios autorizados</source>
+        <target>Włącz, aby ograniczyć dostęp tylko do autoryzowanych użytkowników</target>
+      </trans-unit>
+      <trans-unit id="permissionType">
+        <source>Tipo de Permisos</source>
+        <target>Rodzaje zezwoleń</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeDescription">
+        <source>Selecciona cómo quieres gestionar los permisos</source>
+        <target>Wybierz sposób zarządzania uprawnieniami</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeUser">
+        <source>Permisos por Usuario</source>
+        <target>Uprawnienia na użytkownika</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeGroup">
+        <source>Permisos por Grupo</source>
+        <target>Uprawnienia według grupy</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeUserDescription">
+        <source>Asignar permisos individualmente a usuarios específicos</source>
+        <target>Przypisz uprawnienia indywidualnie konkretnym użytkownikom</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeGroupDescription">
+        <source>Asignar permisos a grupos de usuarios</source>
+        <target>Przypisz uprawnienia grupom użytkowników</target>
+      </trans-unit>
+      <trans-unit id="selectUsers">
+        <source>Seleccionar Usuarios</source>
+        <target>Wybierz Użytkownicy</target>
+      </trans-unit>
+      <trans-unit id="selectGroups">
+        <source>Seleccionar Grupos</source>
+        <target>Wybierz Grupy</target>
+      </trans-unit>
+      <trans-unit id="DataModelHeader">
+        <source>Configurar nuevo orígen de datos</source>
+        <target>Skonfiguruj nowe źródło danych</target>
+      </trans-unit>
+      <trans-unit id="newDataSourceDescription">
+        <source>Conéctese a su base de datos para comenzar a consultar y visualizar sus datos</source>
+        <target>Połącz się ze swoją bazą danych, aby rozpocząć wyszukiwanie i wizualizację danych.</target>
+      </trans-unit>
+      <trans-unit id="name">
+        <source>Nombre</source>
+        <target>Nazwa</target>
+      </trans-unit>
+      <trans-unit id="nameRequired">
+        <source>El nombre es obligatorio</source>
+        <target>Imię jest wymagane</target>
+      </trans-unit>
+      <trans-unit id="type">
+        <source>Tipo</source>
+        <target>Typ</target>
+      </trans-unit>
+      <trans-unit id="server">
+        <source>Servidor</source>
+        <target>Serwer</target>
+      </trans-unit>
+      <trans-unit id="account">
+        <source>Cuenta</source>
+        <target>Konto</target>
+      </trans-unit>
+      <trans-unit id="serverRequired">
+        <source>Url del servidor es obligatorio</source>
+        <target>Adres URL serwera jest wymagany.</target>
+      </trans-unit>
+      <trans-unit id="accountRequired">
+        <source>El nombre de cuenta es obligatorio</source>
+        <target>Nazwa konta jest wymagana.</target>
+      </trans-unit>
+      <trans-unit id="port">
+        <source>Puerto</source>
+        <target>Port</target>
+      </trans-unit>
+      <trans-unit id="portRequired">
+        <source>El puerto es obligatorio</source>
+        <target>Port jest obowiązkowy</target>
+      </trans-unit>
+      <trans-unit id="database">
+        <source>Base de datos</source>
+        <target>Baza danych</target>
+      </trans-unit>
+      <trans-unit id="databaseRequired">
+        <source>Base de datos es obligatorio</source>
+        <target>Baza danych jest obowiązkowa</target>
+      </trans-unit>
+      <trans-unit id="schema">
+        <source>Esquema</source>
+        <target>Zarys</target>
+      </trans-unit>
+      <trans-unit id="username">
+        <source>Usuario</source>
+        <target>Użytkownik</target>
+      </trans-unit>
+      <trans-unit id="usernameRequired">
+        <source>El usuario es obligatorio</source>
+        <target>Użytkownik jest wymagany</target>
+      </trans-unit>
+      <trans-unit id="password">
+        <source>Contraseña</source>
+        <target>Hasło</target>
+      </trans-unit>
+      <trans-unit id="passwordRequired">
+        <source>La contraseña es obligatorio</source>
+        <target>Hasło jest wymagane.</target>
+      </trans-unit>
+      <trans-unit id="bigqueryKeyDragDrop">
+        <source>Sube un archivo de claves</source>
+        <target>Prześlij plik klucza</target>
+      </trans-unit>
+      <trans-unit id="filters">
+        <source>Filtros</source>
+        <target>Filtry</target>
+      </trans-unit>
+      <trans-unit id="optionalFilterDescription">
+        <source>Optional filters to limit the scope of your connection</source>
+        <target>Opcjonalne filtry ograniczające zakres połączenia</target>
+      </trans-unit>
+      <trans-unit id="connectionOptions">
+        <source>Opciones de conexión</source>
+        <target>Opcje połączenia</target>
+      </trans-unit>
+      <trans-unit id="optimizedQueries">
+        <source>Optimizar consultas</source>
+        <target>Optymalizuj zapytania</target>
+      </trans-unit>
+      <trans-unit id="optimizedQueriesTooltipDescription">
+        <source>Optimice automáticamente las consultas para un mejor rendimiento</source>
+        <target>Automatyczna optymalizacja zapytań w celu poprawy wydajności</target>
+      </trans-unit>
+      <trans-unit id="optimizedQueriesDescription">
+        <source>Mejore el rendimiento de las consultas con la optimización automática</source>
+        <target>Popraw wydajność zapytań dzięki automatycznej optymalizacji</target>
+      </trans-unit>
+      <trans-unit id="allowCache">
+        <source>Permitir caché</source>
+        <target>Zezwalaj na pamięć podręczną</target>
+      </trans-unit>
+      <trans-unit id="allowCacheTooltipDescription">
+        <source>Almacenar en caché los resultados de las consultas para mejorar el rendimiento de los datos a los que se accede con frecuencia</source>
+        <target>Wyniki zapytań w pamięci podręcznej w celu poprawy wydajności w przypadku często używanych danych</target>
+      </trans-unit>
+      <trans-unit id="allowCacheDescription">
+        <source>Almacenar en caché los resultados de las consultas para una recuperación de datos más rápida</source>
+        <target>Buforuje wyniki zapytań w celu szybszego pobierania danych</target>
+      </trans-unit>
+      <trans-unit id="sslConnection">
+        <source>Conexión SSL</source>
+        <target>Połączenie SSL</target>
+      </trans-unit>
+      <trans-unit id="sslConnectionTooltipDescription">
+        <source>Utilice SSL para cifrar la conexión a su base de datos para una mayor seguridad</source>
+        <target>Użyj protokołu SSL do szyfrowania połączenia z bazą danych i zwiększenia jego bezpieczeństwa</target>
+      </trans-unit>
+      <trans-unit id="sslConnectionDescription">
+        <source>Proteja su conexión con encriptación SSL</source>
+        <target>Chroń swoje połączenie za pomocą szyfrowania SSL</target>
+      </trans-unit>
+      <trans-unit id="testConnection">
+        <source>Probar conexión</source>
+        <target>Połączenie testowe</target>
+      </trans-unit>
+      <trans-unit id="basicInformation">
+        <source>Información básica</source>
+        <target>Podstawowe informacje</target>
+      </trans-unit>
+      <trans-unit id="advancedSettings">
+        <source>Configuración avanzada</source>
+        <target>Ustawienia zaawansowane</target>
+      </trans-unit>
+      <trans-unit id="noCacheDescription">
+        <source>Desactiva el sistema de caché para obtener datos en tiempo real</source>
+        <target>Wyłącz system buforowania, aby uzyskać dane w czasie rzeczywistym</target>
+      </trans-unit>
+      <trans-unit id="atTime">
+        <source>A las:</source>
+        <target>Na:</target>
+      </trans-unit>
+      <trans-unit id="mapDescription">
+        <source>Configurar las propiedades básicas de la visualización de su mapa</source>
+        <target>Skonfiguruj podstawowe właściwości wyświetlania swojej mapy</target>
+      </trans-unit>
+
+      <trans-unit id="selectField">
+        <source>Selecciona un campo</source>
+        <target>Wybierz pole</target>
+      </trans-unit>
+
+      <trans-unit id="linkMapColumnsDescription">
+        <source>Conecte sus columnas de datos a la visualización geográfica</source>
+        <target>Połącz kolumny danych z wizualizacją geograficzną</target>
+      </trans-unit>
+
+      <trans-unit id="selectTable">
+        <source>Selecciona una tabla</source>
+        <target>Wybierz stół</target>
+      </trans-unit>
+
+      <trans-unit id="selectColumn">
+        <source>Selecciona una columna</source>
+        <target>Wybierz kolumnę</target>
+      </trans-unit>
+
+      <trans-unit id="linkColumn">
+        <source>Vincular columna</source>
+        <target>Kolumna Link</target>
+      </trans-unit>
+
+      <trans-unit id="avaliableMaps">
+        <source>Mapas disponibles</source>
+        <target>Dostępne mapy</target>
+      </trans-unit>
+
+      <trans-unit id="mapsAvailableDescription">
+        <source>Mapas que están actualmente configurados y disponibles para su uso</source>
+        <target>Mapy, które są obecnie skonfigurowane i dostępne do użytku</target>
+      </trans-unit>
+
+      <trans-unit id="noMapsAvailable">
+        <source>No hay mapas disponibles</source>
+        <target>Brak dostępnych map.</target>
+      </trans-unit>
+
+      <trans-unit id="noMapsAvailableDescription">
+        <source>Configurar un mapa en la pestaña Propiedades del mapa</source>
+        <target>Skonfiguruj mapę na karcie Właściwości mapy</target>
+      </trans-unit>
+
+      <trans-unit id="homeTitle">
+        <source>Mis informes</source>
+        <target>Moje raporty</target>
+      </trans-unit>
+
+      <trans-unit id="filterReports">
+        <source>FILTRAR INFORMES:</source>
+        <target>FILTRUJ RAPORTY:</target>
+      </trans-unit>
+
+      <trans-unit id="addTag">
+        <source>Añadir etiqueta</source>
+        <target>Dodaj etykietę</target>
+      </trans-unit>
+
+      <trans-unit id="searchTags">
+        <source>Buscar etiquetas...</source>
+        <target>Szukaj tagów...</target>
+      </trans-unit>
+
+      <trans-unit id="sortReports">
+        <source>ORDENAR INFORMES:</source>
+        <target>RAPORTY ZAMÓWIEŃ:</target>
+      </trans-unit>
+
+      <trans-unit id="createdAt">
+        <source>Fecha (asc.)</source>
+        <target>Dane (rosnąco)</target>
+      </trans-unit>
+
+      <trans-unit id="createdAtDesc">
+        <source>Fecha (desc.)</source>
+        <target>Dane (opis)</target>
+      </trans-unit>
+
+      <trans-unit id="name">
+        <source>Nombre</source>
+        <target>Nazwa</target>
+      </trans-unit>
+
+      <trans-unit id="withoutContentYet">
+        <source>Sin contenido</source>
+        <target>Brak treści</target>
+      </trans-unit>
+
+      <trans-unit id="searchGroups">
+        <source>Buscar grupos...</source>
+        <target>Przeszukaj grupy...</target>
+      </trans-unit>
+
+      <trans-unit id="newGroup">
+        <source>Crear Nuevo Grupo</source>
+        <target>Utwórz nową grupę</target>
+      </trans-unit>
+
+      <trans-unit id="editGroup">
+        <source>Editar Grupo</source>
+        <target>Edytuj grupę</target>
+      </trans-unit>
+
+      <trans-unit id="adminGroupsTitle">
+        <source>Gestión de Grupos</source>
+        <target>Zarządzanie grupami</target>
+      </trans-unit>
+
+      <trans-unit id="addGroup">
+        <source>Crear Grupo</source>
+        <target>Utwórz grupę</target>
+      </trans-unit>
+
+      <trans-unit id="actions">
+        <source>Acciones</source>
+        <target>Akcje</target>
+      </trans-unit>
+
+      <trans-unit id="foundGroups">
+        <source>grupos encontrados</source>
+        <target>znalezione grupy</target>
+      </trans-unit>
+
+      <trans-unit id="tablePage">
+        <source>Página</source>
+        <target>Strona</target>
+      </trans-unit>
+
+      <trans-unit id="tablePageOf">
+        <source>de</source>
+        <target>z</target>
+      </trans-unit>
+
+      <trans-unit id="role">
+        <source>Rol</source>
+        <target>Rola</target>
+      </trans-unit>
+<trans-unit id="newUser">
+  <source>Crear Nuevo Usuario</source>
+  <target>Utwórz nowego użytkownika</target>
+</trans-unit>
+<trans-unit id="editUser">
+  <source>Editar Usuario</source>
+  <target>Edytuj użytkownika</target>
+</trans-unit>
+<trans-unit id="adminUsers">
+  <source>Gestión de Usuarios</source>
+  <target>Zarządzanie użytkownikami</target>
+</trans-unit>
+<trans-unit id="addUser">
+  <source>Crear Usuario</source>
+  <target>Utwórz użytkownika</target>
+</trans-unit>
+<trans-unit id="searchUsers">
+  <source>Buscar usuarios...</source>
+  <target>Wyszukaj użytkowników...</target>
+</trans-unit>
+<trans-unit id="foundUsers">
+  <source>usuarios encontrados</source>
+  <target>znaleźli użytkownicy</target>
+</trans-unit>
+<trans-unit id="group">
+  <source>Grupo</source>
+  <target>Grupa</target>
+</trans-unit>
+<trans-unit id="adminDatasource">
+  <source>Gestión de fuentes de datos</source>
+  <target>Zarządzanie źródłami danych</target>
+</trans-unit>
+<trans-unit id="addDatasource">
+  <source>Crear fuente de datos</source>
+  <target>Utwórz źródło danych</target>
+</trans-unit>
+<trans-unit id="foundDatasource">
+  <source>fuentes de datos encontradas</source>
+  <target>Znaleziono źródło danych</target>
+</trans-unit>
+<trans-unit id="profileTitle"><source>Perfil del usuario</source><target>Profil użytkownika</target></trans-unit>
+<trans-unit id="profileSubtitle"><source>Administra tu información personal y preferencias de cuenta</source><target>Zarządzaj swoimi danymi osobowymi i preferencjami konta</target></trans-unit>
+<trans-unit id="profileInfoTitle"><source>Información Personal</source><target>Dane osobowe</target></trans-unit>
+<trans-unit id="profileInfoSubtitle"><source>Actualiza tu información básica de perfil</source><target>Zaktualizuj podstawowe informacje o swoim profilu.</target></trans-unit>
+<trans-unit id="labelNombreUsuario"><source>Nombre de usuario</source><target>Nazwa użytkownika</target></trans-unit>
+<trans-unit id="usernameLengthValidation"><source>El nombre de usuario debe tener al menos 2 caracteres.</source><target>Nazwa użytkownika musi mieć co najmniej 2 znaki.</target></trans-unit>
+<trans-unit id="labelUsuarioEmail"><source>Correo electrónico</source><target>Correu electrònic</target></trans-unit>
+<trans-unit id="emailValidation"><source>Por favor ingresa un email válido.</source><target>Proszę podać prawidłowy adres e-mail.</target></trans-unit>
+<trans-unit id="changePassword"><source>Cambiar contraseña</source><target>Zmień hasło</target></trans-unit>
+<trans-unit id="newPassword"><source>Nueva contraseña</source><target>Nowe hasło</target></trans-unit>
+<trans-unit id="confirmNewPassword"><source>Confirmar nueva contraseña</source><target>Potwierdź nowe hasło</target></trans-unit>
+<trans-unit id="passwordValidation"><source>Las contraseñas no coinciden</source><target>Hasła nie są takie same.</target></trans-unit>
+<trans-unit id="saveChanges"><source>Guardar cambios</source><target>Zapisz zmiany</target></trans-unit>
+<trans-unit id="profileImage"><source>Foto de perfil</source><target>Zdjęcie profilowe</target></trans-unit>
+<trans-unit id="profileImageSubtitle"><source>Actualiza tu foto de perfil</source><target>Zaktualizuj swoje zdjęcie profilowe.</target></trans-unit>
+<trans-unit id="uploadImage"><source>Subir imagen</source><target>Prześlij obraz</target></trans-unit>
+<trans-unit id="profilePreferences"><source>Preferencias de cuenta</source><target>Preferencje konta</target></trans-unit>
+<trans-unit id="profileNotificationsPrefrences"><source>Administra tus preferencias de notificaciones</source><target>Zarządzaj preferencjami powiadomień</target></trans-unit>
+<trans-unit id="profileNotifications"><source>Notificaciones</source><target>Powiadomienia</target></trans-unit>
+<trans-unit id="profileUpdates"><source>Actualizaciones</source><target>Aktualizacje</target></trans-unit>
+<trans-unit id="profileUpdatesSubtitle"><source>Recibe actualizaciones sobre nuevas funciones</source><target>Otrzymuj aktualizacje dotyczące nowych funkcji</target></trans-unit>
+<trans-unit id="activated"><source>Activado</source><target>Aktywowany</target></trans-unit>
+<trans-unit id="newsletter"><source>Boletín</source><target>Biuletyn</target></trans-unit>
+<trans-unit id="newsletterDescription"><source>Recibe nuestro boletín mensual</source><target>Otrzymuj nasz comiesięczny biuletyn</target></trans-unit>
+<trans-unit id="inactivated"><source>Desactivado</source><target>Wyłączony</target></trans-unit>
+<trans-unit id="profileMessages"><source>Mensajes</source><target>Wiadomości</target></trans-unit>
+<trans-unit id="profileMessagesDescription"><source>Recibe notificaciones de nuevos mensajes</source><target>Otrzymuj powiadomienia o nowych wiadomościach</target></trans-unit>
+<trans-unit id="selectedImage"><source>Imagen seleccionada</source><target>Wybrany obraz</target></trans-unit>
+<trans-unit id="noImageSelected"><source>No hay imagen seleccionada</source><target>Nie wybrano obrazu</target></trans-unit>
+<trans-unit id="adminEmail">
+  <source>Gestión de correo</source>
+  <target>Zarządzanie pocztą</target>
+</trans-unit>
+<trans-unit id="adminEmailSubtitle">
+  <source>Configure los ajustes y credenciales de su servidor de correo electrónico</source>
+  <target>Skonfiguruj ustawienia i dane uwierzytelniające serwera poczty e-mail</target>
+</trans-unit>
+<trans-unit id="alertsConfigSubtitle">
+  <source>Administra tus configuraciones de alertas</source>
+  <target>Zarządzaj ustawieniami alertów</target>
+</trans-unit>
+<trans-unit id="dashbaordsMailingSubtitle">
+  <source>Administrar las configuraciones de correo electrónico del panel</source>
+  <target>Zarządzaj ustawieniami poczty e-mail na pulpicie nawigacyjnym</target>
+</trans-unit>
+<trans-unit id="chartDisplayTitle">
+  <source>Visualización</source>
+  <target>Wyobrażanie sobie</target>
+</trans-unit>
+
+<trans-unit id="chartDisplayOptionsTitle">
+  <source>Opciones de visualización</source>
+  <target>Opcje wyświetlania</target>
+</trans-unit>
+
+<trans-unit id="chartTrendOption">
+  <source>Mostrar línea de tendencia en el gráfico</source>
+  <target>Pokaż linię trendu na wykresie</target>
+</trans-unit>
+
+<trans-unit id="chartTrendOptionDescription">
+  <source>Muestra la línea de tendencia en el gráfico</source>
+  <target>Pokaż linię trendu na wykresie</target>
+</trans-unit>
+
+<trans-unit id="chartComparationOption">
+  <source>Habilita la comparación con períodos anteriores</source>
+  <target>Włącz porównanie z poprzednimi okresami</target>
+</trans-unit>
+
+<trans-unit id="chartComparationOptionDescription">
+  <source>Compara con datos de períodos anteriores</source>
+  <target>Porównaj z danymi z poprzednich okresów</target>
+</trans-unit>
+
+<trans-unit id="chartLabelOption">
+  <source>Muestra las etiquetas de cada segmento</source>
+  <target>Pokaż etykiety dla każdego segmentu</target>
+</trans-unit>
+
+<trans-unit id="chartLabelOptionDescription">
+  <source>Muestra el nombre de cada segmento</source>
+  <target>Pokaż nazwę każdego segmentu</target>
+</trans-unit>
+
+<trans-unit id="chartLabelPercentOption">
+  <source>Muestra los porcentajes en las etiquetas</source>
+  <target>Pokaż procenty na etykietach</target>
+</trans-unit>
+
+<trans-unit id="chartLabelPercentOptionDescription">
+  <source>Muestra el valor porcentual de cada segmento</source>
+  <target>Pokazuje wartość procentową każdego segmentu</target>
+</trans-unit>
+
+<trans-unit id="chartLabelLinesOptionDescription">
+  <source>Muestra las líneas en los puntos</source>
+  <target>Pokaż linie w punktach</target>
+</trans-unit>
+
+<trans-unit id="panelOptions6">
+  <source>Pregunte a la IA</source>
+  <target>Zapytaj AI</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP1">
+  <source>Una aplicación web de código libre que permite realizar informes gráficos e interactivos de forma sencilla.</source>
+  <target>Otwarta aplikacja internetowa umożliwiająca łatwe tworzenie graficznych i interaktywnych raportów.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH1">
+  <source>Código Abierto</source>
+  <target>Otwarte źródło</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP2">
+  <source>EDA es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión SaaS Edalitics.</source>
+  <target>EDA to aplikacja, którą można zainstalować na własnych serwerach lub użytkować w wersji SaaS Edalitics.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaA1">
+  <source>Ver en Github</source>
+  <target>Zobacz na Github</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH2">
+  <source>Documentación</source>
+  <target>Dokumentacja</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP3">
+  <source>Accede a nuestra documentación completa para aprender a sacar el máximo provecho de EDA.</source>
+  <target>Uzyskaj dostęp do naszej pełnej dokumentacji, aby dowiedzieć się, jak najlepiej wykorzystać EDA.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaA2">
+  <source>Ver Documentación</source>
+  <target>Zobacz Dokumentację</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH3">
+  <source>Comunidad</source>
+  <target>Wspólnota</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP4">
+  <source>Únete a nuestra comunidad para compartir experiencias y obtener ayuda.</source>
+  <target>Dołącz do naszej społeczności, aby wymieniać się doświadczeniami i uzyskać pomoc.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaA3">
+  <source>Ir al Foro</source>
+  <target>Przejdź do forum</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP5">
+  <source>Aprende a usar EDA con nuestros tutoriales paso a paso.</source>
+  <target>Dowiedz się, jak korzystać z EDA, korzystając z naszych samouczków krok po kroku.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaB1">
+  <source>Crear Modelo de Datos</source>
+  <target>Utwórz model danych</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaB2">
+  <source>Crear Informe</source>
+  <target>Utwórz raport</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH4">
+  <source>¿Quieres probar EDA en el cloud?</source>
+  <target>Chcesz wypróbować EDA w chmurze?</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP6">
+  <source>Edalitics te permitirá estar siempre a la última sin preocuparte por nada.</source>
+  <target>Dzięki Edalitics zawsze będziesz na bieżąco, nie martwiąc się o nic.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH5">
+  <source>Tutoriales en video</source>
+  <target>Samouczki wideo</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaA4">
+  <source>Prueba Edalitics gratis </source>
+  <target>Wypróbuj Edalitics za darmo </target>
+</trans-unit>
+
+<trans-unit id="aboutEdaA5">
+  <source>EDA ha sido desarrollado por</source>
+  <target>EDA została opracowana przez</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP7">
+  <source>Si necesita soporte empresarial o desea solicitar nuevas funcionalidades, no dude en contactar con nosotros.</source>
+  <target>Jeśli potrzebujesz wsparcia biznesowego lub chcesz zgłosić zapotrzebowanie na nowe funkcje, skontaktuj się z nami.</target>
+</trans-unit>
+
+<trans-unit id="multiSelectDefaultLabel">
+  <source>Selecciona un grupo *</source>
+  <target>Wybierz grupę *</target>
+</trans-unit>
+
+<trans-unit id="allElementsConnected">
+  <source>Todos los elementos están conectados</source>
+  <target>Wszystkie elementy są połączone</target>
+</trans-unit>
+
+<trans-unit id="dashboardFiltersMin">
+  <source>Filtros del dashboard</source>
+  <target>Filtry na desce rozdzielczej</target>
+</trans-unit>
+
+<trans-unit id="noConnection">
+  <source>No hay conexiones activas</source>
+  <target>Brak aktywnych połączeń.</target>
+</trans-unit>
+
+<trans-unit id="select1to1">
+  <source>Selecciona un elemento del listado izquierdo y luego uno del listado derecho para crear una conexión 1:1.</source>
+  <target>Wybierz element z listy po lewej stronie, a następnie z listy po prawej stronie, aby utworzyć połączenie 1:1.</target>
+</trans-unit>
+
+<trans-unit id="connectDashboardPanel">
+  <source>Conecta los filtros entre el dashboard y el panel</source>
+  <target>Podłącz filtry pomiędzy deską rozdzielczą a panelem</target>
+</trans-unit>
+
+<trans-unit id="mapFilters">
+  <source>Mapear Filtros</source>
+  <target>Filtry mapy</target>
+</trans-unit>
+
+<trans-unit id="searcherInput">
+  <source>Buscador</source>
+  <target>Wyszukiwarka</target>
+</trans-unit>
+
+<trans-unit id="manageModels">
+  <source>Gestiona la importación y exportación de fuentes de datos</source>
+  <target>Zarządza importem i eksportem źródeł danych</target>
+</trans-unit>
+
+<trans-unit id="SelectModelToExport">
+  <source>Selecciona una fuente de datos para exportar</source>
+  <target>Wybierz źródło danych do wyeksportowania</target>
+</trans-unit>
+
+<trans-unit id="SelectDashboardToExport">
+  <source>Selecciona un dashboard para exportar</source>
+  <target>Wybierz pulpit nawigacyjny do wyeksportowania</target>
+</trans-unit>
+
+<trans-unit id="SelectModel">
+  <source>Selecciona una fuente de datos</source>
+  <target>Wybierz źródło danych</target>
+</trans-unit>
+
+<trans-unit id="SelectDashboard">
+  <source>Selecciona un dashboard</source>
+  <target>Wybierz pulpit nawigacyjny</target>
+</trans-unit>
+
+<trans-unit id="UploadModel">
+  <source>Sube un archivo de modelo</source>
+  <target>Prześlij plik modelu</target>
+</trans-unit>
+
+<trans-unit id="UploadDashboard">
+  <source>Sube un archivo de dashboard</source>
+  <target>Prześlij plik pulpitu nawigacyjnego</target>
+</trans-unit>
+
+<trans-unit id="export">
+  <source>Exportar</source>
+  <target>Eksport</target>
+</trans-unit>
+
+<trans-unit id="import">
+  <source>Importar</source>
+  <target>Import</target>
+</trans-unit>
+
+<trans-unit id="clickToUpload">
+  <source>Click para subir</source>
+  <target>Kliknij, aby przesłać</target>
+</trans-unit>
+
+<trans-unit id="dragDrop">
+  <source> o arrastra y suelta</source>
+  <target> lub przeciągnij i upuść</target>
+</trans-unit>
+
+<trans-unit id="manageModels">
+  <source>Gestiona la importación y exportación de modelos</source>
+  <target>Zarządza importem i eksportem modeli</target>
+</trans-unit>
+
+<trans-unit id="manageDashboards">
+  <source>Gestiona la importación y exportación de dashboards</source>
+  <target>Zarządzaj importem i eksportem pulpitów nawigacyjnych</target>
+</trans-unit>
+
+<trans-unit id="askPanelData">
+  <source>Pregunta sobre los datos de tu panel ...</source>
+  <target>Zapytaj o dane panelowe ...</target>
+</trans-unit>
+
+<trans-unit id="askEddie">
+  <source>Pregúntale a Eddie 😊</source>
+  <target>Zapytaj Eddiego 😊</target>
+</trans-unit>
+
+<trans-unit id="askEddieNoIcon">
+  <source>Pregúntale a Eddie</source>
+  <target>Zapytaj Eddiego</target>
+</trans-unit>
+
+<trans-unit id="GPTChat">
+  <source>Chat con ChatGPT</source>
+  <target>Porozmawiaj z ChatGPT</target>
+</trans-unit>
+
+<trans-unit id="escribiendo">
+  <source>Escribiendo...</source>
+  <target>Pismo...</target>
+</trans-unit>
+
+<trans-unit id="escribeMensaje">
+  <source>Escribe tu mensaje...</source>
+  <target>Napisz swoją wiadomość...</target>
+</trans-unit>
+
+<trans-unit id="enviar">
+  <source>Enviar</source>
+  <target>Wysłać</target>
+</trans-unit>
+
+<trans-unit id="viewName">
+  <source>Introduzca el nombre de la vista</source>
+  <target>Wprowadź nazwę widoku</target>
+</trans-unit>
+
+<trans-unit id="viewDescription">
+  <source>Introduce una breve descripción</source>
+  <target>Wprowadź krótki opis</target>
+</trans-unit>
+
+<trans-unit id="viewTName">
+  <source>Nombre técnico</source>
+  <target>Nazwa techniczna</target>
+</trans-unit>
+
+<trans-unit id="viewTNameP">
+  <source>Introduzca el identificador técnico</source>
+  <target>Wprowadź identyfikator techniczny</target>
+</trans-unit>
+
+<trans-unit id="SQLExpression">
+  <source>Expresión SQL</source>
+  <target>Wyrażenie SQL</target>
+</trans-unit>
+
+<trans-unit id="enterSQLExpression">
+  <source>Ingrese su consulta SQL aquí</source>
+  <target>Wprowadź tutaj swoje zapytanie SQL</target>
+</trans-unit>
+
+<trans-unit id="generating">
+  <source>Generando...</source>
+  <target>Generowanie...</target>
+</trans-unit>
+
+<trans-unit id="generateView">
+  <source>Generar vista</source>
+  <target>Wygeneruj widok</target>
+</trans-unit>
+
+<trans-unit id="selectedTags">
+  <source>Tags seleccionados</source>
+  <target>Wybrane tagi</target>
+</trans-unit>
+
+<trans-unit id="SSLConnection">
+  <source>Conexión sin SSL</source>
+  <target>Połączenie bez SSL</target>
+</trans-unit>
+
+<trans-unit id="tablenameText">
+  <source>Nombre de la tabla</source>
+  <target>Nazwa tabeli</target>
+</trans-unit>
+
+<trans-unit id="separatorText">
+  <source>Separador</source>
+  <target>Separator</target>
+</trans-unit>
+
+<trans-unit id="uploadFileText">
+  <source>Subir archivo</source>
+  <target>Prześlij plik</target>
+</trans-unit>
+
+<trans-unit id="emptyMessageTags">
+  <source>No se encontraron resultados</source>
+  <target>Nie znaleziono żadnych wyników.</target>
+</trans-unit>
+
+<trans-unit id="dimensionLabel">
+  <source>Dimension</source>
+  <target>Wymiar</target>
+</trans-unit>
+
+<trans-unit id="factLabel">
+  <source>Hecho</source>
+  <target>Zrobione</target>
+</trans-unit>
+
+<trans-unit id="viewLabel">
+  <source>Vista</source>
+  <target>Pogląd</target>
+</trans-unit>
+
+<trans-unit id="tagCreated">
+  <source>Etiqueta creada correctamente</source>
+  <target>Etykieta została utworzona pomyślnie</target>
+</trans-unit>
+
+<trans-unit id="tagAssigned">
+  <source>Etiqueta asignada correctamente</source>
+  <target>Etykieta przypisana prawidłowo</target>
+</trans-unit>
+
+<trans-unit id="validCredentials">
+  <source>Las credenciales son válidas</source>
+  <target>Poświadczenia są ważne.</target>
+</trans-unit>
+
+<trans-unit id="DatasourceTitle">
+  <source>Fuente de datos </source>
+  <target>Źródło danych </target>
+</trans-unit>
+
+<trans-unit id="Cargando">
+  <source>Cargando... </source>
+  <target>Załadunek... </target>
+</trans-unit>
+
+
+<trans-unit id="Initial">
+  <source>Inicio</source>
+  <target>Dom</target>
+</trans-unit>
+
+
+<trans-unit id="Final">
+  <source>Final</source>
+  <target>Koniec</target>
+</trans-unit>
+<trans-unit id="DashboardUpdatedInfo">
+  <source>El dashboard ha sido actualizado correctamente.</source>
+  <target>Panel został pomyślnie zaktualizowany..</target>
+</trans-unit>
+
+<trans-unit id="dsConnectionRefused">
+  <source>No se ha podido conectar a la base de datos.</source>
+  <target>Nie można połączyć się z bazą danych..</target>
+</trans-unit>
+
+<trans-unit id="searchDatasource">
+  <source>Buscar fuente de datos</source>
+  <target>Znajdź źródło danych</target>
+</trans-unit>
+
+<trans-unit id="selectPalette">
+  <source>-- Seleccione una paleta --</source>
+  <target>-- Wybierz paletę --</target>
+</trans-unit>
+
+<trans-unit id="scenarios">
+  <source>Escenarios</source>
+  <target>Scenariusze</target>
+</trans-unit>
+
+<trans-unit id="AdvanceOptions">
+  <source>Opciones avanzadas</source>
+  <target>Zaawansowane opcje</target>
+</trans-unit>
+
+<trans-unit id="condition">
+  <source>Condición</source>
+  <target>Stan</target>
+</trans-unit>
+
+<trans-unit id="alertColor">
+  <source>Color de la alerta</source>
+  <target>Kolor ostrzegawczy</target>
+</trans-unit>
+
+<trans-unit id="noAlertsConfigured">
+  <source>No hay alertas configuradas </source>
+  <target>Nie skonfigurowano żadnych alertów.</target>
+</trans-unit>
+
+<trans-unit id="alertsConfigured">
+  <source>Alertas configuradas </source>
+  <target>Alerty skonfigurowane</target>
+</trans-unit>
+
+<trans-unit id="lessThan">
+  <source>Menor que </source>
+  <target>Mniej niż</target>
+</trans-unit>
+
+<trans-unit id="equalTo">
+  <source>Igual a </source>
+  <target>Równy</target>
+</trans-unit>
+
+<trans-unit id="greaterThan">
+  <source>Mayor que</source>
+  <target>Większy niż</target>
+</trans-unit>
+
+<trans-unit id="thresholdValue">
+  <source>Valor umbral</source>
+  <target>Wartość progowa</target>
+</trans-unit>
+
+<trans-unit id="numValTrigAlert">
+  <source>Valor numérico que activará la alerta</source>
+  <target>Wartość liczbowa, która spowoduje wyświetlenie alertu</target>
+</trans-unit>
+
+<trans-unit id="textChangeColor">
+  <source>el texto cambiará a este color</source>
+  <target>tekst zmieni się na ten kolor</target>
+</trans-unit>
+
+<trans-unit id="value">
+<source>Valor</source>
+<target>Wartość</target>
+</trans-unit>
+
+<trans-unit id="colour">
+<source>Color</source>
+<target>Kolor</target>
+</trans-unit>
+
+<trans-unit id="actions">
+<source>Acciones</source>
+<target>Akcje</target>
+</trans-unit>
+
+<trans-unit id="orderAlerts">
+<source>Las alertas se aplicarán en orden de creación. Haga clic en el botón X para eliminar una alerta.</source>
+<target>Alerty muszą być stosowane w kolejności ich utworzenia. Kliknij przycisk X, aby usunąć alert.</target>
+</trans-unit>
+
+<trans-unit id="useFormAlertConfigure">
+<source>Configure una alerta usando el formulario de arriba para visualizar cambios en el gráfico.</source>
+<target>Aby wyświetlić zmiany na wykresie, skonfiguruj alert za pomocą formularza powyżej.</target>
+</trans-unit>
+
+<trans-unit id="panelOptions6">
+  <source>Pregunte a la IA</source>
+  <target>Zapytaj AI</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarNewPanel">
+  <source>Nuevo Panel</source>
+  <target>Nowy panel</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarNewText">
+  <source>Nuevo texto</source>
+  <target>Nowy tekst</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarNewFilter">
+  <source>Nuevo filtro</source>
+  <target>Nowy filtr</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarEditFilter">
+  <source>Editar filtro</source>
+  <target>Edytuj filtr</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarImportPanel">
+  <source>Importar panel</source>
+  <target>Panel importu</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarRefreshDashboard">
+  <source>Recargar informe</source>
+  <target>Załaduj ponownie raport</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDashboardPrivacity">
+  <source>Privacidad informe</source>
+  <target>Raport dotyczący prywatności</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarAddTag">
+  <source>Añadir etiqueta</source>
+  <target>Dodaj etykietę</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarLiveDashboard">
+  <source>Live Dashboard</source>
+  <target>Panel na żywo</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarSave">
+  <source>Guardar</source>
+  <target>Ratować</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarSaveAs">
+  <source>Guardar como</source>
+  <target>Zapisz jako</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDeleteDashboard">
+  <source>Eliminar informe</source>
+  <target>Usuń raport</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarMoreOptions">
+  <source>Más opciones</source>
+  <target>Więcej opcji</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarEditStyles">
+  <source>Editar estilos</source>
+  <target>Edytuj style</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownloadPDF">
+  <source>Descargar PDF</source>
+  <target>Pobierz PDF</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownloadImage">
+  <source>Descargar imagen</source>
+  <target>Pobierz obraz</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarSendEmail">
+  <source>Enviar por email</source>
+  <target>Wyślij e-mailem</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarCustomAction">
+  <source>Acción personalizada</source>
+  <target>Akcja niestandardowa</target>
+</trans-unit>
+
+<trans-unit id="confirmBtn">
+  <source>Confirmar</source>
+  <target>Potwierdzać</target>
+</trans-unit>
+
+<trans-unit id="deleteBtn">
+  <source>Eliminar</source>
+  <target>Usuwać</target>
+</trans-unit>
+
+<trans-unit id="valueKPI">
+  <source>Cuando el valor KPI es</source>
+  <target>Gdy wartość KPI wynosi</target>
+</trans-unit>
+
+<trans-unit id="alertsPreview">
+<source>Vista previa:</source>
+<target>Zapowiedź:</target>
+</trans-unit>
+
+<trans-unit id="enableFilters">
+  <source>Click en filtros habilitado</source>
+  <target>Kliknij włączone filtry</target>
+</trans-unit>
+
+<trans-unit id="disableFilters">
+  <source>Click en filtros deshabilitado</source>
+  <target>Kliknij filtry wyłączone</target>
+</trans-unit>
+
+<trans-unit id="selectFileImport">
+  <source>Por favor selecciona un archivo para importar</source>
+  <target>Wybierz plik do zaimportowania.</target>
+</trans-unit>
+
+<trans-unit id="logarithmicScale">
+  <source>Escala logarítmica</source>
+  <target>Skala logarytmiczna</target>
+</trans-unit>
+
+<trans-unit id="activeMouseFunctions">
+  <source>Activar funciones del ratón</source>
+  <target>Włącz funkcje myszy</target>
+</trans-unit>
+
+<trans-unit id="enableBaseLayer">
+  <source>Activar capa base</source>
+  <target>Aktywuj warstwę bazową</target>
+</trans-unit>
+
+<trans-unit id="legendPosition">
+  <source>Posición de la leyenda</source>
+  <target>Pozycja legendy</target>
+</trans-unit>
+
+<trans-unit id="topleftPosition">
+  <source>Superior izquierda</source>
+  <target>Górny lewy</target>
+</trans-unit>
+
+<trans-unit id="bottomleftPosition">
+  <source>Inferior izquierda</source>
+  <target>Na dole po lewej</target>
+</trans-unit>
+
+<trans-unit id="toprightPosition">
+  <source>Superior derecha</source>
+  <target>Prawy górny róg</target>
+</trans-unit>
+
+<trans-unit id="bottomrightPosition">
+  <source>Inferior derecha</source>
+  <target>Prawy dolny róg</target>
+</trans-unit>
+
+<trans-unit id="selectDashboardPrivacity">
+  <source>Selecciona la privacidad del informe</source>
+  <target>Wybierz zgłoś prywatność</target>
+</trans-unit>
+
+<trans-unit id="defaultValueLabel">
+  <source>Valor por defecto</source>
+  <target>Wartość domyślna</target>
+</trans-unit>
+
+<trans-unit id="selectedItems">
+  <source>seleccionados</source>
+  <target>wybrany</target>
+</trans-unit>
+
+<trans-unit id="filteredItems">
+  <source>elementos disponibles</source>
+  <target>dostępne elementy</target>
+</trans-unit>
+
+<trans-unit id="noItemsAvailable">
+  <source>No hay elementos disponibles</source>
+  <target>Brak dostępnych elementów</target>
+</trans-unit>
+
+<trans-unit id="itemsSelected1">
+  <source>Seleccionados</source>
+  <target>Wybrany</target>
+</trans-unit>
+
+<trans-unit id="cleanEverything">
+  <source>Limpiar todo</source>
+  <target>Wyczyść wszystko</target>
+</trans-unit>
+
+<trans-unit id="cleanConnections">
+  <source>Limpiar </source>
+  <target>Posprzątać</target>
+</trans-unit>
+
+<trans-unit id="connections">
+  <source>conexiones </source>
+  <target>znajomości</target>
+</trans-unit>
+
+<trans-unit id="panelFilters">
+  <source>Filtros del panel </source>
+  <target>Filtry panelowe</target>
+</trans-unit>
+
+<trans-unit id="updateProfilePic">
+  <source>Actualizar foto</source>
+  <target>Zaktualizuj zdjęcie</target>
+</trans-unit>
+
+<trans-unit id="uploadingProfilePic">
+  <source>Subiendo...</source>
+  <target>w górę...</target>
+</trans-unit>
+
+<trans-unit id="attachNewImage">
+  <source>Debe adjuntar una nueva imagen </source>
+  <target>Musisz załączyć nowy obraz. </target>
+</trans-unit>
+
+<trans-unit id="selectRecipients">
+  <source>Selecciona los destinatarios *</source>
+  <target>Wybierz odbiorców *</target>
+</trans-unit>
+
+<trans-unit id="noContentToExport">
+  <source>No tienes contenido para exportar</source>
+  <target>Nie masz żadnej treści do wyeksportowania.</target>
+</trans-unit>
+
+<trans-unit id="PanelModeSelectorEDA">
+  <source>Modo EDA</source>
+  <target>Tryb EDA</target>
+</trans-unit>
+
+<trans-unit id="PanelModeSelectorSQL">
+  <source>Modo SQL</source>
+  <target>Tryb SQL</target>
+</trans-unit>
+
+<trans-unit id="PanelModeSelectorTree">
+  <source>Modo Árbol</source>
+  <target>Tryb drzewa</target>
+</trans-unit>
+
+<trans-unit id="REPORTCloned">
+  <source>Informe clonado correctamente</source>
+  <target>Raport pomyślnie sklonowany</target>
+</trans-unit>
+
+<trans-unit id="InvalidServerResponse">
+  <source>Respuesta inválida del servidor</source>
+  <target>Nieprawidłowa odpowiedź serwera</target>
+</trans-unit>
+
+<trans-unit id="CouldNotCloneReport">
+  <source>No se pudo clonar el informe. Por favor, inténtalo de nuevo.</source>
+  <target>Nie udało się sklonować raportu. Spróbuj ponownie..</target>
+</trans-unit>
+
+<trans-unit id="searchEntities">
+  <source>Buscar entidades...</source>
+  <target>Wyszukaj podmioty...</target>
+</trans-unit>
+
+<trans-unit id="searchAttributes">
+  <source>Buscar atributos...</source>
+  <target>Znajdź atrybuty...</target>
+</trans-unit>
+
+<trans-unit id="groupSelect">
+  <source>Selecciona...</source>
+  <target>Wybierać...</target>
+</trans-unit>
+
+<trans-unit id="selectedUsers">
+  <source>Usuarios seleccionados</source>
+  <target>Wybrani użytkownicy</target>
+</trans-unit>
+
+<trans-unit id="availableUsers">
+  <source>Usuarios disponibles</source>
+  <target>Dostępni użytkownicy</target>
+</trans-unit>
+
+<trans-unit id="sidebarProfile">
+  <source>Perfil</source>
+  <target>Profil</target>
+</trans-unit>
+
+<trans-unit id="copyPublicURL">
+  <source>copiar URL pública</source>
+  <target>skopiuj publiczny adres URL</target>
+</trans-unit>
+
+<trans-unit id="importPanelsTitle">
+  <source>Importar paneles</source>
+  <target>Importuj panele</target>
+</trans-unit>
+
+<trans-unit id="selectPanels">
+  <source>Selecciona los paneles</source>
+  <target>Wybierz panele</target>
+</trans-unit>
+
+<trans-unit id="searchPanels">
+  <source>Buscar paneles...</source>
+  <target>Panele wyszukiwania...</target>
+</trans-unit>
+
+<trans-unit id="ChangelignTitle">
+  <source>Alineación</source>
+  <target>Wyrównanie</target>
+</trans-unit>
+
+<trans-unit id="forExample">
+  <source>Ej:50.5 </source>
+  <target>Np:50,5</target>
+</trans-unit>
+
+<trans-unit id="dashboardExportedSuccessfully">
+  <source>Dashboard exportado correctamente</source>
+  <target>Panel został pomyślnie wyeksportowany</target>
+</trans-unit>
+
+<trans-unit id="selectDashboardToExport">
+  <source>Por favor selecciona un dashboard para exportar</source>
+  <target>Wybierz pulpit nawigacyjny do wyeksportowania</target>
+</trans-unit>
+
+<trans-unit id="problemExportingModel">
+  <source>Ocurrió un problema al exportar el modelo</source>
+  <target>Wystąpił problem podczas eksportowania modelu.</target>
+</trans-unit>
+
+<trans-unit id="modelExportedSucessfully">
+  <source>Modelo exportado correctamente</source>
+  <target>Model został pomyślnie wyeksportowany</target>
+</trans-unit>
+
+<trans-unit id="selectModelToExport">
+  <source>Por favor selecciona un modelo para exportar</source>
+  <target>Proszę wybrać model do wyeksportowania.</target>
+</trans-unit>
+
+<trans-unit id="dashboardUpdatedSuccessfully">
+  <source>Dashboard actualizado correctamente</source>
+  <target>Panel został pomyślnie zaktualizowany</target>
+</trans-unit>
+
+<trans-unit id="dashboardCreatedSuccessfully">
+  <source>Dashboard creado correctamente</source>
+  <target>Panel kontrolny został pomyślnie utworzony</target>
+</trans-unit>
+
+<trans-unit id="notPossibleImportDashboard">
+  <source>No se pudo importar el dashboard</source>
+  <target>Nie udało się zaimportować pulpitu nawigacyjnego</target>
+</trans-unit>
+
+<trans-unit id="noValidJsonFormat">
+  <source>El archivo no tiene un formato JSON válido:</source>
+  <target>Plik nie jest w prawidłowym formacie JSON:</target>
+</trans-unit>
+
+<trans-unit id="notPossibleReadFile">
+  <source>No se pudo leer el archivo seleccionado</source>
+  <target>Nie można odczytać wybranego pliku.</target>
+</trans-unit>
+
+<trans-unit id="pleaseSelectFile">
+  <source>Por favor selecciona un archivo para importar</source>
+  <target>Wybierz plik do zaimportowania.</target>
+</trans-unit>
+
+<trans-unit id="noCorrectJsonFormat">
+  <source>El archivo no tiene un formato JSON válido</source>
+  <target>Plik nie jest w prawidłowym formacie JSON.</target>
+</trans-unit>
+
+<trans-unit id="errorImportModel">
+  <source>Ha ocurrido un error al importar el modelo</source>
+  <target>Wystąpił błąd podczas importowania modelu.</target>
+</trans-unit>
+
+<trans-unit id="modelImportedSuccessfully">
+  <source>Modelo importado correctamente</source>
+  <target>Model zaimportowano pomyślnie</target>
+</trans-unit>
+
+<trans-unit id="errorVerifyingModelIntegrity">
+  <source>Error al verificar integridad del modelo</source>
+  <target>Błąd weryfikacji integralności modelu</target>
+</trans-unit>
+
+<trans-unit id="onlyOneFile">
+  <source>Por favor selecciona un archivo para importar</source>
+  <target>Wybierz plik do zaimportowania.</target>
+</trans-unit>
+
+<trans-unit id="errorLoadingDashboard">
+  <source>Error al cargar el Dashboard</source>
+  <target>Błąd podczas ładowania panelu</target>
+</trans-unit>
+
+<trans-unit id="fillRequiredFields">
+  <source>Recuerde llenar los campos obligatorios</source>
+  <target>Pamiętaj o wypełnieniu wymaganych pól.</target>
+</trans-unit>
+
+<trans-unit id="connectedWithServer">
+  <source>Conectado con el servidor</source>
+  <target>Połączono z serwerem</target>
+</trans-unit>
+
+<trans-unit id="differentFiltersCannotBeConnected">
+  <source>No se pueden vincular filtros de tipos distintos.</source>
+  <target>Nie można łączyć filtrów różnych typów.</target>
+</trans-unit>
+
+<trans-unit id="scrollError">
+  <source>Error haciendo scroll</source>
+  <target>Błąd przewijania</target>
+</trans-unit>
+
+<trans-unit id="emittingValues">
+  <source>Emitiendo este valor</source>
+  <target>Wydanie tej wartości</target>
+</trans-unit>
+
+<trans-unit id="emittingCancelValues">
+  <source>Emitiendo este valor de cancelar</source>
+  <target>Wydanie tej wartości anulowania</target>
+</trans-unit>
+
 </body>
 </file>
 </xliff>

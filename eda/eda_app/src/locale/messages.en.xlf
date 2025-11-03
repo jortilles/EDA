@@ -4990,7 +4990,7 @@ Once configured you can invoke it whenever you want from the button.</target>
   <target>Dashboard filters</target>
 </trans-unit>
 
-<trans-unit id="noConenction">
+<trans-unit id="noConnection">
   <source>No hay conexiones activas</source>
   <target>There are no active connections</target>
 </trans-unit>
