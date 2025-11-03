@@ -4990,7 +4990,7 @@ Once configured you can invoke it whenever you want from the button.</target>
   <target>Dashboard filters</target>
 </trans-unit>
 
-<trans-unit id="noConenction">
+<trans-unit id="noConnection">
   <source>No hay conexiones activas</source>
   <target>There are no active connections</target>
 </trans-unit>
@@ -5763,6 +5763,31 @@ Once configured you can invoke it whenever you want from the button.</target>
 <trans-unit id="fillRequiredFields">
   <source>Recuerde llenar los campos obligatorios</source>
   <target>Remember to fill in the required fields</target>
+</trans-unit>
+
+<trans-unit id="connectedWithServer">
+  <source>Conectado con el servidor</source>
+  <target>Connected to server</target>
+</trans-unit>
+
+<trans-unit id="differentFiltersCannotBeConnected">
+  <source>No se pueden vincular filtros de tipos distintos.</source>
+  <target>Filters of different types cannot be linked.</target>
+</trans-unit>
+
+<trans-unit id="scrollError">
+  <source>Error haciendo scroll</source>
+  <target>Scrolling error</target>
+</trans-unit>
+
+<trans-unit id="emittingValues">
+  <source>Emitiendo este valor</source>
+  <target>Emitting this value</target>
+</trans-unit>
+
+<trans-unit id="emittingCancelValues">
+  <source>Emitiendo este valor de cancelar</source>
+  <target>Issuing this cancellation value</target>
 </trans-unit>
 
 

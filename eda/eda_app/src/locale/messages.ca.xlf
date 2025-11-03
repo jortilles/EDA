@@ -3770,8 +3770,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="checkCredentials">
-    <source> Comprobar credenciales</source>
-    <target>Comprovar credencials </target>
+    <source>Comprobar credenciales</source>
+    <target>Comprovar credencials</target>
   </trans-unit>
 
   <trans-unit id="mailmanagementHeader">
@@ -4135,7 +4135,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="measureLabel">
 <source>Medida:</source>
-<target>Mesura</target>
+<target>Mesura:</target>
 </trans-unit>
 
 <trans-unit id="operationLabel">
@@ -4148,7 +4148,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="public">
 <source>público</source>
-<target>public</target>
+<target>públic</target>
 </trans-unit>
 <trans-unit id="readOnly">
 <source>deshabilitado</source>
@@ -4158,6 +4158,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>oculto</source>
 <target>ocult</target>
 </trans-unit>
+
 <trans-unit id="positionFilterInReport">
 <source>Posición del filtro en el informe</source>
 <target>Posició del filtre a l'informe</target>
@@ -4175,7 +4176,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="allowSSL">
 <source>Conexión mediante SSL</source>
-<target>Conexió mijanjant SSL</target>
+<target>Conexió mitjançant SSL</target>
 </trans-unit>
 <trans-unit id="filterVisibleScope">
 <source>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro. pero se les aplica</source>
@@ -5053,7 +5054,7 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Filtres del dashboard</target>
 </trans-unit>
 
-<trans-unit id="noConenction">
+<trans-unit id="noConnection">
   <source>No hay conexiones activas</source>
   <target>No hi ha connexions actives</target>
 </trans-unit>
@@ -5775,8 +5776,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 </trans-unit>
 
 <trans-unit id="notPossibleImportDashboard">
-  <source>No se pudo importar el dashboard:</source>
-  <target>No s'ha pogut importar el dashboard:</target>
+  <source>No se pudo importar el dashboard</source>
+  <target>No s'ha pogut importar el dashboard</target>
 </trans-unit>
 
 <trans-unit id="noValidJsonFormat">
@@ -5827,6 +5828,31 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="fillRequiredFields">
   <source>Recuerde llenar los campos obligatorios</source>
   <target>Recordeu omplir els camps obligatoris</target>
+</trans-unit>
+
+<trans-unit id="connectedWithServer">
+  <source>Conectado con el servidor</source>
+  <target>Connectat amb el servidor</target>
+</trans-unit>
+
+<trans-unit id="differentFiltersCannotBeConnected">
+  <source>No se pueden vincular filtros de tipos distintos.</source>
+  <target>No es poden enllaçar filtres de tipus diferents.</target>
+</trans-unit>
+
+<trans-unit id="scrollError">
+  <source>Error haciendo scroll</source>
+  <target>Error fent scroll</target>
+</trans-unit>
+
+<trans-unit id="emittingValues">
+  <source>Emitiendo este valor</source>
+  <target>Emetent aquest valor</target>
+</trans-unit>
+
+<trans-unit id="emittingCancelValues">
+  <source>Emitiendo este valor de cancelar</source>
+  <target>Emetent aquest valor de cancel·lar</target>
 </trans-unit>
 
 
