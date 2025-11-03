@@ -151,3 +151,7 @@
 @if (isImportPanelVisible) {
 <app-import-panel [dashboard]="dashboard" (close)="closeImportPanelModal($event)"></app-import-panel>
 }
+
+@if (isDependentFiltersVisible) {
+<app-dependent-filters [dashboard]="dashboard" (close)="closeDependentFilters($event)"></app-dependent-filters>  
+}

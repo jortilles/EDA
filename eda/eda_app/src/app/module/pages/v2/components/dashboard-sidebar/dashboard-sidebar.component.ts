@@ -19,12 +19,13 @@ import { ImportPanelDialog } from "../import-panel/import-panel.dialog";
 import { DashboardSidebarService } from "@eda/services/shared/dashboard-sidebar.service";
 import { ExposeMethod } from "@eda/shared/decorators/expose-method.decorator";
 import { IconComponent } from "../../../../../shared/components/icon/icon.component";
+import { DependentFilters } from "../dependent-filters/dependent-filters";
 
 @Component({
   selector: 'app-dashboard-sidebar',
   standalone: true,
   imports: [OverlayModule, OverlayPanelModule, DashboardSaveAsDialog, DashboardTagModal, DashboardEditStyleDialog,
-    DashboardCustomActionDialog, DashboardMailConfigModal, DashboardVisibleModal, ImportPanelDialog, IconComponent],
+    DashboardCustomActionDialog, DashboardMailConfigModal, DashboardVisibleModal, ImportPanelDialog, IconComponent, DependentFilters],
   templateUrl: './dashboard-sidebar.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styles: `
@@ -82,6 +83,7 @@ export class DashboardSidebarComponent {
   hayFiltros;
 
   isImportPanelVisible = false;
+  isDependentFiltersVisible = false;
 
   sidebarItems: any[] = [];
 
@@ -134,18 +136,25 @@ export class DashboardSidebarComponent {
       command: () => this.onAddGlobalFilter()
       
     },
-      {
-        id: 'editFilters',
-        label: $localize`:@@dashboardSidebarEditFilter:Editar filtros`,
-        icon: "pi pi-filter",
-        command: () => this.toggleGlobalFilter(),
-        items: this.dashboard.globalFilter.globalFilters.map(f => ({
-          label: f?.selectedColumn?.description?.default || f?.column?.value?.description?.default ,
-          icon: "pi pi-check",
-          command: () => this.handleSpecificFilter(f),
-        }),
-        ),
-      },
+    {
+      id: 'editFilters',
+      label: $localize`:@@dashboardSidebarEditFilter:Editar filtros`,
+      icon: "pi pi-filter",
+      command: () => this.toggleGlobalFilter(),
+      items: this.dashboard.globalFilter.globalFilters.map(f => ({
+        label: f?.selectedColumn?.description?.default || f?.column?.value?.description?.default ,
+        icon: "pi pi-check",
+        command: () => this.handleSpecificFilter(f),
+      }),
+      ),
+    },
+    {
+      id: 'dependentFilters',
+      label: $localize`:@@dashboardSidebarDependentFilters:Filtros Dependientes`,
+      icon: "pi pi-sliders-h",
+      command: () => this.dependentFilters()
+      
+    },
     {
       id: 'importPanel',
       label: $localize`:@@dashboardSidebarImportPanel:Importar panel`,
@@ -287,6 +296,11 @@ export class DashboardSidebarComponent {
     this.hidePopover();
   }
 
+  public dependentFilters() {
+    this.isDependentFiltersVisible = true;
+    this.hidePopover();
+  }
+
   @ExposeMethod()
   public onImportPanel(): void {
     this.isImportPanelVisible = true;
@@ -302,6 +316,11 @@ export class DashboardSidebarComponent {
       }
     }
 
+  }
+
+  public closeDependentFilters(response: any){
+    this.isDependentFiltersVisible = false;
+    console.log('response: ', response);
   }
 
   public onAddWidget(): void {
