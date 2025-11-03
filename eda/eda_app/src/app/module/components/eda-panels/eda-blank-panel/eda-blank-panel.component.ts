@@ -686,15 +686,14 @@ public tableNodeExpand(event: any): void {
     public changeChartTypeCheck(type: string, subType: string, config?: ChartConfig) {
         if (subType=='tableanalized') {
             this.changeChartType(type, subType, config)
-            // TODO - Popup no aparece
-            // this.confirmationService.confirm({
-            //     header: `Warning`,
-            //     message: `Este proceso realiza un seguido de consultas al modelo de datos y puede que le tome su tiempo. ¿Desea continuar?`,
-            //     acceptLabel: $localize`:@@si:Si`,
-            //     rejectLabel: $localize`:@@no:No`,
-            //     icon: 'pi pi-exclamation-triangle',
-            //     accept: () => this.changeChartType(type, subType, config)
-            // })
+           this.confirmationService.confirm({
+                 header: `Warning`,
+                 message: `Este proceso realiza un seguido de consultas al modelo de datos y puede que le tome su tiempo. ¿Desea continuar?`,
+                 acceptLabel: $localize`:@@si:Si`,
+                 rejectLabel: $localize`:@@no:No`,
+                 icon: 'pi pi-exclamation-triangle',
+                 accept: () => this.changeChartType(type, subType, config)
+             })
         } else {
             this.changeChartType(type, subType, config);
         }

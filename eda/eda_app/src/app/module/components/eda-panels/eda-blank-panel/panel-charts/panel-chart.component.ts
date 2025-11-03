@@ -484,7 +484,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const factory = this.resolver.resolveComponentFactory(EdaTableComponent);
 
         this.componentRef = this.entry.createComponent(factory);
-        const config = this.props.config.getConfig();
         this.componentRef.instance.inject = this.initializeTable(type, config);
         this.componentRef.instance.inject.value = this.chartUtils.transformDataQueryForTable(this.props.data.labels, this.props.data.values);
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
