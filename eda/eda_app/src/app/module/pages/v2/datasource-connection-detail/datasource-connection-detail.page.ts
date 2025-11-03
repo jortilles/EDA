@@ -90,7 +90,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
       database: ["", Validators.required],
       schema: [""],
       port: ["5432", Validators.required],
-      user: ["eda@jortilles.com", Validators.required],
+      user: ["", Validators.required],
       password: ["••••••", Validators.required],
       filter: [""],
       optimize: [true],
