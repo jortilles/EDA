@@ -16,7 +16,7 @@ import { DashboardPageV2 } from "../../dashboard/dashboard.page";
 
 export class DependentFilters implements OnInit {
 
-    @Input() dashboard: DashboardPageV2
+    @Input() dashboardPage: DashboardPageV2
     @Output() close: EventEmitter<any> = new EventEmitter<any>();
 
     public display: boolean = false;
@@ -25,7 +25,7 @@ export class DependentFilters implements OnInit {
 
     ngOnInit(): void {
         this.display = true;
-        console.log('MI dashboard: ', this.dashboard);
+        console.log('MI dashboardPage: ', this.dashboardPage);
     }
 
     public disableApply(): boolean { return false; }
