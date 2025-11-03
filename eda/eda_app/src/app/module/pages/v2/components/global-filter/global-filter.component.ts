@@ -136,11 +136,19 @@ public async fillFiltersData(): Promise<void> {
         const formatedFilter = this.globalFilterService.formatFilter(filter);
         this.setFilterButtonVisibilty();
 
-        filter.panelList
-            .map((id: string) => this.dashboard.edaPanels.toArray().find(p => p.panel.id === id))
-            .forEach((panel: EdaBlankPanelComponent) => {
-                if (panel) panel.assertGlobalFilter(formatedFilter);
-            });
+        this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
+            // If GlobalFilter is linked to Panel then assertFilter
+            if (filter.panelList.includes(panel.panel.id)) {
+                panel.assertGlobalFilter(formatedFilter);
+            } else {
+                // If in panel exists GlobalFilter but NOT linked to panel
+                const existFilter = panel.globalFilters.find((gf) => gf.filter_id == filter.id);
+                if (existFilter?.filter_id && !filter.panelList.includes(panel.panel.id)) {
+                    // Remove GlobalFilter from panel
+                    panel.globalFilters = panel.globalFilters.filter((gf) => gf.filter_id != filter.id);
+                }
+            }
+        });
     }
 
     public setGlobalFilterItems(filter: any) {
