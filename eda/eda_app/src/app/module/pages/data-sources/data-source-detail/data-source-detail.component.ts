@@ -636,6 +636,12 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         })
     }
 
+        onCloseViewDialog(response?: any) {
+        this.showViewDialog = false;
+        if (response) {
+            this.dataModelService.addView(response);
+        }}
+
     openNewMapDialog() {
         this.showMapDialog = true;
 
