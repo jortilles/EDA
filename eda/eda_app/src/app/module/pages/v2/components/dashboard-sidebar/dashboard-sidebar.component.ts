@@ -19,7 +19,7 @@ import { ImportPanelDialog } from "../import-panel/import-panel.dialog";
 import { DashboardSidebarService } from "@eda/services/shared/dashboard-sidebar.service";
 import { ExposeMethod } from "@eda/shared/decorators/expose-method.decorator";
 import { IconComponent } from "../../../../../shared/components/icon/icon.component";
-import { DependentFilters } from "../dependent-filters/dependent-filters";
+import { DependentFilters } from "../dependent-filters/dependent-filters.component";
 
 @Component({
   selector: 'app-dashboard-sidebar',

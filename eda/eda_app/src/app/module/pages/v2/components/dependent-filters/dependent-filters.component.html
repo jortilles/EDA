@@ -1,0 +1,34 @@
+<eda-dialog2
+    [display]="display"
+    i18n-header="@@dependentFiltersTitle"
+    header="Configuración de filtros dependientes"
+    width="1000px" 
+    height="1000px"
+    [disableApply]="disableApply()"
+    (apply)="onApply()"
+    (close)="onClose()"
+
+>
+    <div content class="p-6">
+        <div>
+            <h1>HOLAAAAAAAAAAA COMPONENTE</h1>
+
+            <gridster class="gridster" [options]="options">
+                <gridster-item [item]="item" *ngFor="let item of dashboard">
+                    <div class="button-holder">
+                    <button
+                        mat-mini-fab
+                        (mousedown)="removeItem($event, item)"
+                        (touchstart)="removeItem($event, item)"
+                    >
+                        <span>delete</span>
+                    </button>
+                    </div>
+                </gridster-item>
+            </gridster>
+
+        </div>
+
+    </div>
+
+</eda-dialog2>
