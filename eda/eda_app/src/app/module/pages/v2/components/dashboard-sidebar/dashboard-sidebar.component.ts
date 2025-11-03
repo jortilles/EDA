@@ -538,33 +538,66 @@ export class DashboardSidebarComponent {
 
 
 
- exportAsPDF() {
-  this.hidePopover();
-  this.spinner.on();
 
-  const node = document.getElementById('myDashboard');
-  if (!node) {
-    console.error('No se encontró el elemento del dashboard');
-    this.spinner.off();
-    return;
-  }
+  public exportAsPDF() {
+      this.hidePopover();
+    this.spinner.on();
 
-  const title = this.dashboard.title;
+  const element = document.getElementById('myDashboard');
 
-  domtoimage.toJpeg(node, { bgcolor: 'white' })
-    .then((dataUrl) => {
-      const img = new Image();
-      img.src = dataUrl;
-      img.onload = () => {
-        const pdf = new jspdf();
-        const width = pdf.internal.pageSize.getWidth();
-        const height = pdf.internal.pageSize.getHeight();
-        pdf.addImage(img, 'JPEG', 0, 0, width, height);
-        pdf.save(`${title}.pdf`);
-      };
-      this.spinner.off();
-    });
-  }
+  // El objeto incrustado es para mejorar la calidad del PDF
+  domtoimage.toJpeg(element, {
+    bgcolor: 'white',
+    quality: 1,
+    height: element.scrollHeight * 2,
+    width: element.scrollWidth * 2,
+    style: {
+      transform: 'scale(2)',
+      transformOrigin: 'top left'
+    }
+  }).then((dataUrl) => {
+    let img = new Image();
+    img.src = dataUrl;
+
+    img.onload = () => {
+      const pdf = new jspdf('p', 'pt', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      const imgWidth = img.width;
+      const imgHeight = img.height;
+      const ratio = pageWidth / imgWidth;
+      const scaledWidth = pageWidth;
+      let position = 0;
+
+      // Se crea un canvas para cortar la imagen en partes iguales para cada página
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d')!;
+      canvas.width = imgWidth;
+      canvas.height = pageHeight / ratio;
+
+      while (position < imgHeight) {
+        ctx.fillStyle = '#FFFFFF'; // Se establece todo el fondo de blanco
+        ctx.fillRect(0, 0, canvas.width, canvas.height);  // Se pinta todo el fondo
+
+        ctx.drawImage(img, 0, -position, imgWidth, imgHeight);
+
+        const pageData = canvas.toDataURL('image/jpeg', 1.0);
+        pdf.addImage(pageData, 'JPEG', 0, 0, scaledWidth, pageHeight);
+
+        position += canvas.height;
+
+        if (position < imgHeight) {
+          pdf.addPage();
+        }
+      }
+  this.spinner.off();
+
+      pdf.save(`${this.dashboard.title}.pdf`);
+    };
+  });
+}
+
   
   public exportAsJPEG() {
     this.hidePopover();
