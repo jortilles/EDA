@@ -6,11 +6,13 @@ export class MongoDBBuilderService {
     public queryTODO: any;
     public dataModel: any;
     public user: string;
+    public limit: number;
 
-    constructor(queryTODO: any, dataModel: any, user: any) {
+    constructor(queryTODO: any, dataModel: any, user: any, limit: number = 100) {
         this.queryTODO = queryTODO;
         this.dataModel = dataModel;
         this.user = user._id;
+        this.limit = limit;
     }
 
     public builder(): any {
@@ -232,7 +234,11 @@ export class MongoDBBuilderService {
         return {
             aggregations,
             dateProjection,
-            pipeline: [pipeline]
+            pipeline: [
+                pipeline,
+                {$limit: this.limit} // agregando limite
+            ],
+
         }
     }
 

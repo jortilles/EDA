@@ -553,7 +553,7 @@
                                     <p-dropdown id="chartSelector" [style]="{'width':'100%'}"
                                         [options]="chartTypes"
                                         formControlName="chart"
-                                        (onChange)="changeChartType(chartForm.value.chart.value, chartForm.value.chart.subValue, getChartStyles( chartForm.value.chart.value))
+                                        (onChange)="changeChartTypeCheck(chartForm.value.chart.value, chartForm.value.chart.subValue, getChartStyles(chartForm.value.chart.value))
                                         "optionLabel="label"
                                         [autoDisplayFirst]="false">
         
@@ -650,6 +650,8 @@
 <app-bubblechart-dialog *ngIf="bubblechartController" [controller]="bubblechartController"></app-bubblechart-dialog>
 
 <app-tree-map-dialog *ngIf="treeMapController" [controller]="treeMapController"></app-tree-map-dialog>
+
+<app-tree-table-dialog  *ngIf="treeTableController" [controller]="treeTableController"></app-tree-table-dialog>
 
 <app-funnel-dialog *ngIf="funnelController" [controller]="funnelController"></app-funnel-dialog>
 

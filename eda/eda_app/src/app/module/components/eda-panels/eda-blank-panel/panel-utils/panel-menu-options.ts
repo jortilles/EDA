@@ -58,7 +58,6 @@ export const PanelOptions = {
             });
 
           } else if (panelComponent.graficos.chartType === 'geoJsonMap') {
-
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.mapController = new EdaDialogController({
               params: {
@@ -66,6 +65,7 @@ export const PanelOptions = {
                 panelChart: panelComponent.panelChartConfig,
                 color: panelComponent.panelChart.componentRef.instance.color,
                 logarithmicScale: panelComponent.panelChart.componentRef.instance.logarithmicScale,
+                baseLayer: panelComponent.panelChart.componentRef.instance.inject.baseLayer,
                 legendPosition: panelComponent.panelChart.componentRef.instance.legendPosition,
                 draggable: panelComponent.panelChart.componentRef.instance.draggable
               },
@@ -136,6 +136,19 @@ export const PanelOptions = {
               },
               close: (event, response) => { panelComponent.onCloseTreeMapProperties(event, response) }
             });
+          }
+          else if(panelComponent.graficos.chartType === 'treetable') {
+            panelComponent.contextMenu.hideContextMenu();
+
+            panelComponent.treeTableController = new EdaDialogController({
+              // si el treeTableController es diferente de undefined se mostrara el dialog
+              params: {
+                panelID: _.get(panelComponent.panel, 'id'),
+                panelChart: panelComponent.panelChartConfig
+              },
+              close: (event, response) => { panelComponent.onCloseTreeTableProperties(event, response) }
+            })
+
 
           }
 

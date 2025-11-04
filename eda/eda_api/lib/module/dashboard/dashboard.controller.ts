@@ -14,22 +14,31 @@ import _ from 'lodash'
 const cache_config = require('../../../config/cache.config')
 const eda_api_config = require('../../../config/eda_api_config');
 export class DashboardController {
+
+  /**
+   * Retrieves all dashboards available to the current user, classifying them as private, group, public, and shared.
+   * @param req Express Request with user information
+   * @param res Express Response to send the result
+   * @param next NextFunction for error handling
+   */
   static async getDashboards(req: Request, res: Response, next: NextFunction) {
     try {
       let admin, privates, group, publics, shared = [];
       const groups = await Group.find({ users: { $in: req.user._id } }).exec();
       const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
       const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0;
+      const dataSources = await DataSource.find(
+        {},
+        'ds.metadata'
+      )
+
+
       if (isAdmin) {
-        admin = await DashboardController.getAllDashboardToAdmin(req)
-        publics = admin[0]
-        privates = admin[1]
-        group = admin[2]
-        shared = admin[3]
+        [publics, privates, group, shared] =  await DashboardController.getAllDashboardToAdmin(req)
       } else {
         group = await DashboardController.getGroupsDashboards(req)
         privates = await DashboardController.getPrivateDashboards(req)
-        publics = await DashboardController.getPublicsDashboards(req)
+        publics = await DashboardController.getPublicsDashboards(req , dataSources)
         shared = await DashboardController.getSharedDashboards(req)
       }
 
@@ -54,7 +63,11 @@ export class DashboardController {
       next(new HttpException(400, 'Some error occurred loading dashboards'));
     }
   }
-
+  /**
+   * Adds group information to dashboards of type group.
+   * @param dashboards List of dashboards to process
+   * @returns Dashboards with group information added
+   */
   static async addGroupInfo(dashboards) {
     for (const dashboard of dashboards) {
       if (dashboard.group && Array.isArray(dashboard.group)) {
@@ -63,16 +76,23 @@ export class DashboardController {
     }
     return dashboards;
   }
-
+  /**
+   * Retrieves the private dashboards of the current user, filtering by tags if specified.
+   * @param req Express Request with user information and possible tags
+   * @returns List of private dashboards
+   */
   static async getPrivateDashboards(req: Request) {
     try {
       const dashboards = await Dashboard.find(
         { user: req.user._id },
-        'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt'
+        'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.ds user'
       ).populate('user','name').exec()
       const privates = []
       for (const dashboard of dashboards) {
         if (dashboard.config.visible === 'private') {
+          // Obtain the name of the data source
+          dashboard.config.ds.name = (await DataSource.findById(dashboard.config.ds._id, 'ds.metadata.model_name').exec())?.ds?.metadata?.model_name ?? 'N/A';
+
           privates.push(dashboard)
         }
       }
@@ -105,7 +125,11 @@ export class DashboardController {
       throw new HttpException(400, 'Error loading privates dashboards')
     }
   }
-
+  /**
+   * Retrieves the dashboards of the groups the user belongs to, filtering by tags if specified.
+   * @param req Express Request with user information and possible tags
+   * @returns List of group dashboards
+   */
   static async getGroupsDashboards(req: Request) {
     try {
       const userGroups = await Group.find({
@@ -113,13 +137,12 @@ export class DashboardController {
       }).exec();
       const dashboards = await Dashboard.find(
         { group: { $in: userGroups.map(g => g._id) } },
-        'config.title config.visible group config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt'
-      ).exec()
+        'config.title config.visible group config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.ds user'
+      ).populate('user','name').exec()
       const groupDashboards = []
       for (let i = 0, n = dashboards.length; i < n; i += 1) {
         const dashboard = dashboards[i]
         for (const dashboardGroup of dashboard.group) {
-          //dashboard.group = groups.filter(g => JSON.stringify(g._id) === JSON.stringify(group));
           for (const userGroup of userGroups) {
             if (
               JSON.stringify(userGroup._id) === JSON.stringify(dashboardGroup)
@@ -160,17 +183,80 @@ export class DashboardController {
     }
   }
 
-  static async getPublicsDashboards(req: Request) {
+
+  /**
+   * Determines if the user can view the dashboard according to the datasource permissions.
+   * @param req Express Request with user information
+   * @param ds Datasource object to check
+   * @returns true if the user can view the dashboard, false otherwise
+   */
+  static iCanSeeTheDashboard(req: Request, ds: any ) :boolean{
+      let result = false;
+      if( ds.ds.metadata.model_granted_roles.length == 0){ // si no hay permisos puedo verlo.
+        result  =  true;
+      }
+      if( result == false ){
+                const user = req.user;
+                ds.ds.metadata.model_granted_roles.forEach(e => {
+                if(e.table == 'fullModel' ){
+                    if(e.users?.indexOf( user._id ) >= 0  ){ // el usuario puede ver el modelo
+                         result  = true;
+                        }
+                if(e.type ==  'anyoneCanSee' ){ // Todos pueden ver el modelo.
+                         result  = true;
+                        }
+                    if(  e.role?.length > 0 ) { // si el rol puede verlo lo ve
+                        user.role.forEach( r=> {
+                          if (  e.role.indexOf( r ) >= 0 ){
+                             result  = true;
+                          }
+                        })
+                    } 
+                    
+                }else{  // si  veo algo.
+                    if(e.permission == true ){
+                        if(e.users?.indexOf( user._id ) >= 0  ){ // el usuario puede ver el algo de alguna tabla
+                            result  = true;
+                            }
+                        if(  e.role?.length > 0 ) { // si el rol puede ver algo de alguna tabla 
+                            user.role.forEach( r=> {
+                              if (  e.role.indexOf( r ) >= 0 ){
+                                 result  = true;
+                              }
+                            })
+                        } 
+
+                      }     
+                    }
+            });
+      }
+      return result;
+    }
+
+  /**
+   * Retrieves the public dashboards the user has access to, filtering by tags if specified.
+   * @param req Express Request with user information and possible tags
+   * @param dss List of available datasources
+   * @returns List of public dashboards
+   */
+  static async getPublicsDashboards(req: Request, dss: any[]) {
     try {
       const dashboards = await Dashboard.find(
         {},
-        'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt'
+        'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.ds user'
       ).populate('user','name').exec()
       const publics = []
 
+     
+
       for (const dashboard of dashboards) {
         if (dashboard.config.visible === 'public') {
-          publics.push(dashboard)
+          const ds = dss.find( e=> e._id == dashboard.config.ds._id );
+          dashboard.config.ds.name =  ds.ds?.metadata?.model_name ?? 'N/A';
+          if(  this.iCanSeeTheDashboard(req, ds) == true ){
+             publics.push(dashboard);
+          }
+
         }
       }
 
@@ -201,7 +287,11 @@ export class DashboardController {
       throw new HttpException(400, 'Error loading public dashboards')
     }
   }
-
+  /**
+   * Retrieves the shared dashboards, filtering by tags if specified.
+   * @param req Express Request with possible tags
+   * @returns List of shared dashboards
+   */
   static async getSharedDashboards(req: Request) {
     try {
       const dashboards = await Dashboard.find(
@@ -241,7 +331,11 @@ export class DashboardController {
       throw new HttpException(400, 'Error loading shared dashboards')
     }
   }
-
+  /**
+   * Retrieves all dashboards for the administrator, allowing filtering by external properties and tags.
+   * @param req Express Request with possible filters
+   * @returns Lists of dashboards classified by visibility
+   */
   static async getAllDashboardToAdmin(req: Request) {
     let external;
     if (req.qs.external) {
@@ -345,7 +439,12 @@ export class DashboardController {
       throw new HttpException(400, 'Error loading dashboards for admin')
     }
   }
-
+  /**
+   * Retrieves a specific dashboard by ID and user permissions.
+   * @param req Express Request with dashboard ID and user
+   * @param res Express Response to send the result
+   * @param next NextFunction for error handling
+   */
   static async getDashboard(req: Request, res: Response, next: NextFunction) {
     try {
       const user = req['user']._id
@@ -396,11 +495,18 @@ export class DashboardController {
             if (!datasource) {
               return next(new HttpException(400, 'Datasouce not found with id'))
             }
-            let toJson = JSON.parse(JSON.stringify(datasource))
+            let toJson = JSON.parse(JSON.stringify(datasource));
 
             // Filtre de seguretat per les taules. Si no es te permis sobre una taula es posa com a oculta.
             // Per si de cas es fa servir a una relació.
             const uniquesForbiddenTables = DashboardController.getForbiddenTables(
+              toJson,
+              userGroups,
+              req.user._id
+            )
+
+            // Filtre de seguretat per les columnes. Si no es te permis sobre una columna es posa com a oculta.
+            const uniquesForbiddenColumns = DashboardController.getForbiddenColumns (
               toJson,
               userGroups,
               req.user._id
@@ -488,6 +594,19 @@ export class DashboardController {
               });
             });
 
+
+            // Si tengo columnas prohividas las pongo invisibles en el modelo.
+            try{
+              if(uniquesForbiddenColumns.length > 0){
+                uniquesForbiddenColumns.forEach( fc => {
+                  toJson.ds.model.tables.filter( t=> t.table_name == fc.table  )[0].columns.filter( c=> c.column_name == fc.column)[0].visible = false ;
+                });
+              }
+            }catch(e){
+              console.log('Error handling columns permissions');
+              console.log(e);
+            }
+
             const ds = {
               _id: datasource._id,
               model: toJson.ds.model,
@@ -499,7 +618,7 @@ export class DashboardController {
               'info',
               'DashboardAccessed',
               req.user.name,
-              ds._id + '--' + ds.name
+              dashboard._id + '--' + dashboard.config.title
             )
             return res.status(200).json({ ok: true, dashboard, datasource: ds })
           }
@@ -753,9 +872,36 @@ export class DashboardController {
     }
   }
 
+  /**
+   *  Filtra columnas  prohibidas en un modelo de datos. Devuelve el listado de columnas prohibidas para un usuario.
+   */
+  static getForbiddenColumns(
+    dataModelObject: any,
+    userGroups: Array<String>,
+    user: string
+  ) {
+    let forbiddenColumns = [];
+    if(dataModelObject.ds.metadata.model_granted_roles.length > 0 ){ /** SI HAY PERMISOS DEFINIDOS. SI NO, NO HAY SEGURIDAD */
+      if( dataModelObject.ds.metadata.model_granted_roles.filter( r=>r.none == true ).length > 0 ){
+        dataModelObject.ds.metadata.model_granted_roles.filter( r=>r.none == true ).forEach( c => {
+          if(  c.users?.includes(user) ){
+            forbiddenColumns.push(c);
+          }
+          userGroups.forEach( g=> { 
+            if( c.groups?.includes(g) ){
+              forbiddenColumns.push(c);
+            }
+          });
+        });
+      }
+  }
+    return forbiddenColumns;
+  }
+
+
 
   /**
-   *  Filtra tablas prohividas en un modelo de datos. Devuelve el listado de tablas prohividas para un usuario.
+   *  Filtra tablas prohibidas en un modelo de datos. Devuelve el listado de tablas prohibidas para un usuario.
    */
   static getForbiddenTables(
     dataModelObject: any,
@@ -953,6 +1099,17 @@ export class DashboardController {
     userGroups: Array<String>,
     user: string
   ) {
+
+    /**
+     * Lógica del proceso: cojo todas las tablas .
+     * Recupero las tablas que puedo ver explicitamente y quto las que por algún motivo no  puedo ver.
+     * Las tablas prohividas son las que están en el listado todas las tablas y no están permitidas explicitamente 
+     * 
+     * puedo ver todas las tablas menos las que tengo explicitamente prohibida
+     * 
+     * 
+     */
+
     const allTables = [];
     let allowedTablesBySecurityForMe = [];
     let forbiddenTables = [];
@@ -965,13 +1122,20 @@ export class DashboardController {
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       // Si el usuario puede ver todo el modelo.
       if (dataModelObject.ds.metadata.model_granted_roles.filter(r=> r.table == 'fullModel' 
+                                                                    && r.column == 'fullModel'  
         && r.permission == true
         && r.users?.includes(user)
                                                                 ).length > 0 ){
         // El usuairo puede ver todo.
-        forbiddenTables = [];
-        return forbiddenTables;
+        allowedTablesBySecurityForMe =  _.cloneDeep(allTables);
       }
+      // Excepto lo que le prohibo  explicitamente.                                                         
+      dataModelObject.ds.metadata.model_granted_roles.forEach(r => {
+        if(r.column == 'fullTable'   && r.users?.includes(user)  && r.permission == false   ){
+          forbiddenTables.push( r.table);
+        }
+      });;
+
       // Si el grupo puede ver todo el modelo.
       let groupCan =  0;
       userGroups.forEach(
@@ -986,9 +1150,23 @@ export class DashboardController {
         }
       );
       if(groupCan==1) {
-        forbiddenTables = [];
-        return forbiddenTables;
+        allowedTablesBySecurityForMe = _.cloneDeep(allTables);
       }
+
+
+      // Excepto lo que le prohibo  explicitamente al grupo
+      userGroups.forEach(
+        group=>{
+          const  forbidden = dataModelObject.ds.metadata.model_granted_roles.filter(r=> r.column == 'fullTable' 
+            && r.permission == false 
+            && r.groups?.includes(group) 
+          )
+          if (forbidden.length > 0 ){
+              forbidden.forEach( r=> forbiddenTables.push( r.table));
+          }
+        }
+      );
+
    
       for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
         if (
@@ -1064,14 +1242,11 @@ export class DashboardController {
         }
       }
     }
-
+    // puedo ver todas las tablas menos las que tengo explicitamente prohibidas
+    allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter( t=> !forbiddenTables.includes(t) );
     forbiddenTables = allTables.filter( t => !allowedTablesBySecurityForMe.includes( t )  );
     return forbiddenTables;
   }
-
-
-
-
 
 
   /**
@@ -1246,7 +1421,8 @@ export class DashboardController {
       const query = await connection.getQueryBuilded(
         myQuery,
         dataModelObject,
-        req.user
+        req.user,
+        req.body.query.queryLimit // Agregado de limite para fuente de datos generados a partir de un excel
       )
 
       /**---------------------------------------------------------------------------------------------------------*/
@@ -1451,11 +1627,11 @@ export class DashboardController {
 
       if (!cachedQuery) {
           connection.client = await connection.getclient()
-          const getResults = await connection.execSqlQuery(query)
-          let results = []
-          const resultsRollback = []
-          const oracleDataTypes = []
-          let oracleEval: Boolean = true
+          const getResults = await connection.execSqlQuery(query);
+          let results = [];
+          const resultsRollback = [];
+          const oracleDataTypes = [];
+          let oracleEval: Boolean = true;
           let labels: Array<string>
         if (getResults.length > 0) {
             labels = Object.keys(getResults[0]).map(i => i)
@@ -1465,7 +1641,7 @@ export class DashboardController {
           // Normalize data
 
           for (let i = 0, n = getResults.length; i < n; i++) {
-            const r = getResults[i]
+            const r = getResults[i];
             /** si es oracle  o alguns mysql haig de fer una merda per tornar els numeros normals. */
             /** poso els resultats al resultat i faig una matriu de tipus de numero. també faig una copia de seguretat */
             if (

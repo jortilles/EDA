@@ -29,13 +29,16 @@ import { EbpUtils } from './panel-utils/ebp-utils';
 import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
 import { ActivatedRoute } from '@angular/router';
-
-import {NULL_VALUE} from '../../../../config/personalitzacio/customizables'
+import { NULL_VALUE, EMPTY_VALUE } from '../../../../config/personalitzacio/customizables'
 import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
 import { inject, computed } from '@angular/core';
 import { DragDropComponent } from '@eda/components/drag-drop/drag-drop.component';
 import { lastValueFrom } from 'rxjs';
 import { DashboardPageV2 } from 'app/module/pages/v2/dashboard/dashboard.page';
+import { QueryService } from '@eda/services/api/query.service';
+import { ConfirmationService } from 'primeng/api';
+import Swal from 'sweetalert2';
+
 
 export interface IPanelAction {
     code: string;
@@ -86,6 +89,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public scatterPlotController: EdaDialogController;
     public knobController: EdaDialogController;
     public sunburstController: EdaDialogController;
+    public treeTableController: EdaDialogController;
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
 
@@ -130,6 +134,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public index: number;
     public description: string;
     public chartForm: UntypedFormGroup;
+    public previousChartForm: UntypedFormGroup;
     public userSelectedTable: string;
 
     /**Strings */
@@ -152,7 +157,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public ordenationTypes: OrdenationType[];
     public currentQuery: any[] = [];
     public currentSQLQuery: string = '';
-    public queryLimit: number;
+    public queryLimit: number = 5000; // por defecto se limita a 5.000
     public joinType: string = 'inner';
 
     public queryModes: any[] = [
@@ -223,11 +228,13 @@ export class EdaBlankPanelComponent implements OnInit {
         public queryBuilder: QueryBuilderService,
         public fileUtiles: FileUtiles,
         public dashboardService: DashboardService,
+        public queryService: QueryService,
         public chartUtils: ChartUtilsService,
         public alertService: AlertService,
         public spinnerService: SpinnerService,
         public groupService: GroupService,
         public userService: UserService,
+        private confirmationService: ConfirmationService
     ) {
         this.initializeBlankPanelUtils();
         this.initializeInputs();
@@ -296,7 +303,6 @@ export class EdaBlankPanelComponent implements OnInit {
             header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
             contextMenuItems: PanelOptions.generateMenu(this)
         });
-
         this.extraStyles =
             ['knob', 'radar'].includes(this.panel.content?.chart) ? { minHeight: '55vh', minWidth: '55vw', display: 'inline-block', alignItems: 'center' } :
             ['kpi'].includes(this.panel.content?.chart) ? {height: '100%', width: '100%', alignContent: 'center'} : 
@@ -432,6 +438,7 @@ public tableNodeExpand(event: any): void {
         this.filterTypes = this.chartUtils.filterTypes;
 
         this.ordenationTypes = this.chartUtils.ordenationTypes;
+
     }
 
     private initializeInputs(): void {
@@ -499,13 +506,23 @@ public tableNodeExpand(event: any): void {
             const [labels, values] = response;
             
             this.chartLabels = this.chartUtils.uniqueLabels(labels);
-            this.chartData = values.map(row =>
-                row.map(value => value == null ? NULL_VALUE : value)
-            );
+                this.chartData = response[1].map(item => item.map(a => {
+                
+                        if(a === null){
+                          return NULL_VALUE;
+                        }
+                        if(a === ''){
+                          return EMPTY_VALUE;
+                        }
+                
+                        return a;
+                
+                })); // canviem els null y els '' per valor customitzable
             
             this.buildGlobalconfiguration(panelContent);
         } catch (err) {
             this.alertService.addError(err);
+            this.display_v.minispinner = false;
             throw err;
         }
     }
@@ -549,6 +566,7 @@ public tableNodeExpand(event: any): void {
 
         PanelInteractionUtils.handleFilters(this, query.query);
         PanelInteractionUtils.handleFilterColumns(this, filters, fields);
+
         PanelInteractionUtils.verifyData(this);
 
         // Configurar tipo de gráfico
@@ -564,6 +582,7 @@ public tableNodeExpand(event: any): void {
         this.display_v.minispinner = false;
 
         this.graphicType = chartOption?.value;
+        this.previousChartForm = _.cloneDeep(this.chartForm); // Copiamos el anterior chartForm que habia configurado después de hacer click en el selector de gráficos.
 
         // Verificar si el gráfico es una tabla cruzada
         const crossTableChart = this.chartTypes.find(g => g.subValue === 'crosstable');
@@ -679,16 +698,47 @@ public tableNodeExpand(event: any): void {
         }
     }
 
+
+    public changeChartTypeCheck(type: string, subType: string, config?: ChartConfig) {
+
+        if (subType=='tableanalized') {
+            Swal.fire({
+                title: $localize`:@@NameTablaQuality:Tabla DataQuality`,
+                text: $localize`:@@SureDataQuality:¿Estás seguro de que deseas continuar con la visualización de DataQuality? Esta acción puede tomar un poco de tiempo.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: $localize`:@@ContinueTablaQuality:Continuar`,
+                cancelButtonText: $localize`:@@CancelTablaQuality:Cancelar`,
+            }).then( (borrado) => {
+                if(borrado.value){
+                    try {
+                        this.changeChartType(type, subType, config)
+                        this.previousChartForm = _.cloneDeep(this.chartForm);
+                    } catch (err) {
+                        this.alertService.addError(err);
+                        throw err;
+                    }
+                } else {
+                    this.chartForm = _.cloneDeep(this.previousChartForm);
+                }
+            })
+        } else {
+            this.changeChartType(type, subType, config);
+            this.previousChartForm = _.cloneDeep(this.chartForm);
+        }
+    }
+
     /**
      * Changes chart type 
      * @param type chart type
      * @param content panel content
      */
-    public changeChartType(type: string, subType: string, config?: ChartConfig) {
-        
-        this.graphicType = type; // Actualizamos el tipo de variable para el componente drag-drop
+    public async changeChartType(type: string, subType: string, config?: ChartConfig) {
+        // Actualizamos el tipo de variable para el componente drag-drop
+        this.graphicType = type;
         this.graficos = {};
-        let allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
         this.display_v.chart = type;
         this.graficos.chartType = type;
         this.graficos.edaChart = subType;
@@ -696,11 +746,26 @@ public tableNodeExpand(event: any): void {
         this.graficos.numberOfColumns = config && config.getConfig() ? config.getConfig()['numberOfColumns'] : null;
         this.graficos.assignedColors = config && config.getConfig() ? config.getConfig()['assignedColors'] : null;
 
+        const allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
+
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
             _.merge(_config, config||{});
-            
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
+
+            if (subType=='tableanalized') {
+                try {
+                    if (!this.display_v.minispinner) this.spinnerService.on();
+                    const data = await QueryUtils.analizedQuery(this);
+                    const transformedData = QueryUtils.transformAnalizedQueryData(this, data);
+                    this.renderChart(this.currentQuery, transformedData.labels, transformedData.values, type, subType, _config);
+                } catch(err) {
+                    throw err;
+                } finally {
+                    this.spinnerService.off();
+                }
+            } else {
+                this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
+            }
         }
 
         // Controlar si se ejecuta una tabla cruzada
@@ -1060,6 +1125,7 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
             this.panel.content.query.output.config.logarithmicScale = response.logarithmicScale;
             this.panel.content.query.output.config.legendPosition = response.legendPosition;
             this.panel.content.query.output.config.baseLayer = response.baseLayer;
+            this.panel.content.query.output.config.baseLayer = response.baseLayer;
             this.panel.content.query.output.config.draggable = response.draggable;
             this.panel.content.query.output.config.zoom = response.zoom;
             this.panel.content.query.output.config.coordinates =
@@ -1126,6 +1192,19 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
             this.dashboardService._notSaved.next(true);
         }
         this.treeMapController = undefined;
+    }
+
+    public onCloseTreeTableProperties(event, response) {
+
+        if(!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+            this.panel.content.query.output.config = response;
+            const config = new ChartConfig(response);
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+        }
+
+        // Al final de todo
+        this.treeTableController = undefined;
+
     }
 
     public onCloseFunnelProperties(event, response): void {

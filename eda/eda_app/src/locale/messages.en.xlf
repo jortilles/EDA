@@ -1426,10 +1426,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="addRelation" datatype="html">
 <source>Añadir relación</source>
 <target>Add relation</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-<context context-type="linenumber">36</context>
-</context-group>
 </trans-unit>
 <trans-unit id="inputTipoColumna" datatype="html">
 <source>
@@ -2427,7 +2423,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Añadir relación a la tabla</source>
 <target>Add relation to table</target>
 </trans-unit>
-
+<trans-unit id="modifyRelationTo">
+<source>Modificar relación de la tabla</source>
+<target>Modify table relation</target>
+</trans-unit>
 <trans-unit id="chartInfo1">
 <source>Los datos seleccionados no permiten utilizar este gráfico.</source>
 <target>Chart not avaiable with current data.</target>
@@ -4401,6 +4400,10 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Activar funciones del mouse</source>
         <target>Activate mouse functions</target>
       </trans-unit>
+      <trans-unit id="noBaseLayerH6">
+        <source>Activar capa base</source>
+        <target>Activate base layer</target>       
+      </trans-unit>
       <trans-unit id="loginTitle">
         <source>Inicio de sesión</source>
         <target>Login</target>
@@ -5791,6 +5794,274 @@ Once configured you can invoke it whenever you want from the button.</target>
 </trans-unit>
 
 
+      <trans-unit id="chartTypesTableAnalized" datatype="html">
+        <source>Tabla DataQuality</source>
+        <target>Table DataQuality</target>
+      </trans-unit>
+      <trans-unit id="atributoLabel" datatype="html">
+        <source>Atributo</source>
+        <target>Attribute</target>
+      </trans-unit>
+      <trans-unit id="atributoConsulta" datatype="html">
+        <source>Consulta</source>
+        <target>Query</target>
+      </trans-unit>
+      <trans-unit id="atributoValor" datatype="html">
+        <source>Valor</source>
+        <target>Value</target>
+      </trans-unit>
+      <trans-unit id="count_tablesLabel" datatype="html">
+        <source>Tablas implicadas</source>
+        <target>Tables involved</target>
+      </trans-unit>
+      <trans-unit id="count_rowsLabel" datatype="html">
+        <source>Total de registros</source>
+        <target>Total rows</target>
+      </trans-unit>
+      <trans-unit id="count_nullsLabel" datatype="html">
+        <source>Total nulos</source>
+        <target>Total nulls</target>
+      </trans-unit>
+      <trans-unit id="count_emptyLabel" datatype="html">
+        <source>Total cadenas vacías</source>
+        <target>Total empty strings</target>
+      </trans-unit>
+      <trans-unit id="count_distinctLabel" datatype="html">
+        <source>Total valores distintos</source>
+        <target>Total distinct values</target>
+      </trans-unit>
+      <trans-unit id="most_duplicatedLabel" datatype="html">
+        <source>Más repetido</source>
+        <target>Most repeated</target>
+      </trans-unit>
+      <trans-unit id="least_duplicatedLabel" datatype="html">
+        <source>Menos repetido</source>
+        <target>Least repeated</target>
+      </trans-unit>
+      <trans-unit id="maxLabel" datatype="html">
+        <source>Valor máximo</source>
+        <target>Maximum value</target>
+      </trans-unit>
+      <trans-unit id="minLabel" datatype="html">
+        <source>Valor mínimo</source>
+        <target>Minimum value</target>
+      </trans-unit>
+      <trans-unit id="moda_countsLabel" datatype="html">
+        <source>Moda</source>
+        <target>Mode</target>
+      </trans-unit>
+      <trans-unit id="avgLabel" datatype="html">
+        <source>Media</source>
+        <target>Average</target>
+      </trans-unit>
+      <trans-unit id="medianLabel" datatype="html">
+        <source>Mediana</source>
+        <target>Median</target>
+      </trans-unit>
+      <trans-unit id="median_count_bymonthLabel" datatype="html">
+        <source>Mediana por mes</source>
+        <target>Median by month</target>
+      </trans-unit>
+      <trans-unit id="max_bymonthLabel" datatype="html">
+        <source>Máximos por mes</source>
+        <target>Maximums by month</target>
+      </trans-unit>
+      <trans-unit id="min_bymonthLabel" datatype="html">
+        <source>Mínimos por mes</source>
+        <target>Minimums by month</target>
+      <trans-unit id="chartTypesTreeTable">
+        <source>Tabla Árbol</source>
+        <target>Tree Table</target>       
+      </trans-unit>
+      <trans-unit id="NameTablaQuality">
+        <source>Tabla DataQuality</source>
+        <target>Table DataQuality</target>       
+      </trans-unit>
+      <trans-unit id="SureDataQuality">
+        <source>¿Estás seguro de que deseas continuar con la visualización de DataQuality? Esta acción puede tomar un poco de tiempo.</source>
+        <target>Are you sure you want to continue viewing DataQuality? This may take a while.</target>       
+      </trans-unit>
+      <trans-unit id="ContinueTablaQuality">
+        <source>Continuar</source>
+        <target>Continue</target>       
+      </trans-unit>
+      <trans-unit id="CancelTablaQuality">
+        <source>Cancelar</source>
+        <target>Cancel</target>       
+      </trans-unit>
+      <trans-unit id="filteredReportMessage">
+        <source>Por favor, espera un momento mientras procesamos la selección.</source>
+        <target>Please wait a moment while we process your selection.</target>
+      </trans-unit>
+      <trans-unit id="logsManagement">
+        <source>Gestión de logs</source>
+        <target>Logs management</target>
+      </trans-unit>
+      <trans-unit id="logFileBtn">
+        <source>Logs</source>
+        <target>Logs</target>
+      </trans-unit>
+      <trans-unit id="logErrorFileBtn">
+        <source>Logs Error</source>
+        <target>Logs Error</target>
+      </trans-unit>
+      <trans-unit id="filterByTreetable">
+      <source>Filtro: </source>
+      <target>Filter: </target>
+      </trans-unit>
+      <trans-unit id="EmptyValueMessage">
+      <source>Sin Informar</source>
+      <target>Uninformed</target>
+      </trans-unit>
+
+      <trans-unit id="DatePickerNull">
+        <source>Fecha nula</source>
+        <target>Null date</target>
+      </trans-unit>
+
+
+      <trans-unit id="removeColumnGlobalFilter">
+        <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
+        <target>The column can not be removed because it has a linked filter</target>
+      </trans-unit>
+
+      <trans-unit id="invalidPathForm">
+        <source>Ruta incorrecta para el filtro seleccionado</source>
+        <target>Invalid path for the selected filter</target>
+      </trans-unit>
+
+      <trans-unit id="PanelModeSelectorEDA">
+        <source>Modo EDA</source>
+        <target>EDA mode</target>
+      </trans-unit>
+      <trans-unit id="PanelModeSelectorSQL">
+        <source>Modo SQL</source>
+        <target>SQL mode</target>
+      </trans-unit>
+      <trans-unit id="PanelModeSelectorTree">
+        <source>Modo Árbol</source>
+        <target>Tree mode</target>
+      </trans-unit>
+      <trans-unit id="filters13">
+        <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
+        <target>VALUES NOR NULL NOR EMPTY (not null and != '')</target>
+      </trans-unit>
+      <trans-unit id="filters14">
+        <source>VALORES NULOS O VACÍOS (null or = '')</source>
+        <target>NULL OR EMPTY VALUES (null or = '')</target>
+      </trans-unit>
+      <trans-unit id="aliasValuePh">
+        <source>Alias del filtro (opcional)</source>
+        <target>Filter alias (optional)</target>
+      </trans-unit>
+      <trans-unit id="noDataAllowed">
+        <source>Este panel no está disponible por falta de permisos</source>
+        <target>This panel is not available due to lack of permissions, the report opens in read-only mode.</target>
+      </trans-unit>
+      <trans-unit id="noFilterAllowed">
+        <source>Este panel no está disponible por falta de permisos en un filtro</source>
+        <target>This panel is not available due to lack of permissions on a filter, the report opens in read-only mode.</target>
+      </trans-unit>
+      <trans-unit id="DatePickerYearPreviousYearFull">
+        <source>El año pasado, completo</source>
+        <target>Last year, complete</target>
+      </trans-unit>
+      <trans-unit id="whereMessage">
+        <source>Filtro sobre todos los registros</source>
+        <target>Filter on all records</target>
+      </trans-unit>
+      <trans-unit id="havingMessage">
+        <source>Filtro sobre los resultados</source>
+        <target>Filter on results</target>
+      </trans-unit>
+      <trans-unit id="whereMessageLabel">
+        <source>Aplicar el filtro sobre todos los registros</source>
+        <target>Apply filter on all records</target>
+      </trans-unit>
+      <trans-unit id="havingMessageLabel">
+        <source>Aplicar el filtro sobre los resultados</source>
+        <target>Apply filter on results</target>
+      </trans-unit>
+      <trans-unit id="aggregationText">
+        <source>Agregación</source>
+        <target>Aggregation</target>
+      </trans-unit>
+      <trans-unit id="aplicarBtn">
+        <source>Aplicar</source>
+        <target>Apply</target>
+      </trans-unit>
+      <trans-unit id="disenoTablaCruzada">
+        <source>Diseño de la tabla cruzada: </source>
+        <target>Crosstab design: </target>
+      </trans-unit>
+      <trans-unit id="messageItemCrosstable">
+        <source>Este eje debe contener al menos un elemento</source>
+        <target>This axis must contain at least one element</target>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeX">
+        <source> • Eje vertical: Arrastre aquí los campos.</source>
+        <target>• Vertical axis: Drag fields here.</target>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeY">
+        <source> • Eje horizontal: Arrastre aquí los campos para el eje horizontal de la tabla cruzada.</source>
+        <target>• Horizontal Axis: Drag fields for the horizontal axis of the crosstab here.</target>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeZ">
+        <source> • Eje numérico: Arrastre aquí solo los campos numéricos.</source>
+        <target>• Number Axis: Drag only numeric fields here.</target>
+      </trans-unit>
+      <trans-unit id="ptooltipViewTextRanges">
+        <source>Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango válido - 12:18:50:100 </source>
+        <target>When setting a range, the aggregations will be blocked. Example of a valid range: 12:18:50:100 </target>
+      </trans-unit>
+      <trans-unit id="rangesExpresionH5">
+        <source>Rangos: </source>
+        <target>Ranges: </target>
+      </trans-unit>
+      <trans-unit id="addRange">
+        <source>Añadir Rango</source>
+        <target>Add a range</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionB">
+        <source>Rango</source>
+        <target>Range</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionNumberError">
+        <source>El correcto orden de los límites del rango van de menor a mayor</source>
+        <target>The correct order of the range limits is from smallest to largest</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionCharacterError">
+        <source>El último caracter del rango debe ser un número</source>
+        <target>The last character of the range must be a number</target>
+      </trans-unit>
+      <trans-unit id="ptooltipNotAvailableRanges">
+        <source>No es posible crear un rango nuevo por que ya existe uno configurado</source>
+        <target>It is not possible to create a new range because there is already one</target>
+      </trans-unit>
+      <trans-unit id="textBetween">
+        <source>Entre</source>
+        <target>Between</target>
+      </trans-unit>
+      <trans-unit id="filterSettings">
+        <source>Configuración de filtros</source>
+        <target>Filter settings</target>
+      </trans-unit>
+      <trans-unit id="treeTableTitleDialog">
+        <source>Propiedades de la tabla árbol</source>
+        <target>Tree table properties</target>
+      </trans-unit>
+      <trans-unit id="viewEdition">
+        <source>Edición de la vista</source>
+        <target>Editing the view</target>
+      </trans-unit>
+      <trans-unit id="viewEditionTitle">
+        <source>Edición de la Vista</source>
+        <target>Editing the view</target>
+      </trans-unit>
+      <trans-unit id="viewEditionDescription">
+        <source>La edición de la vista permite modificar únicamente la consulta (query), pero no debe cambiar los nombres de las columnas.</source>
+        <target>Editing the view allows you to modify only the query, but should not change the column names.</target>
+      </trans-unit>
     </body>
 
 

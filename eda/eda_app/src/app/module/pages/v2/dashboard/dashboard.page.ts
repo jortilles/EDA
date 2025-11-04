@@ -440,7 +440,7 @@ public async reloadPanels(): Promise<void> {
     }
     //Si es modo arbol o SQL no aplica filtros
     if (modeEDA && event.code === "ADDFILTER" && this.validateDashboard('GLOBALFILTER') && this.dashboard.config.clickFiltersEnabled) {
-
+      this.alertService.addSuccess($localize`:@@filteredReportMessage:Por favor, espera un momento mientras procesamos la selección.`);
 
         const data = event?.data;
         const panel = event?.data?.panel;
@@ -641,7 +641,7 @@ private addFilterToPanelQuery(panel: any, filter: any): void {
   }
 
   checkImportedPanels(dashboard) {
-    dashboard.config.panel.forEach(element => {
+    dashboard.config.panel?.forEach(element => {
       try {        
         if (element.globalFilterMap) {
           const panelFilters = element.content.query.query.filters;

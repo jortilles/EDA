@@ -7,7 +7,7 @@ import { ApiService } from "./api.service";
 })
 export class UrlsService extends ApiService{
 
-  private globalDSRoute = '/funcionalidadUrl';
+  private globalDSRoute = '/customActionCall';
 
   checkUrl(url:any){
     return this.post(`${this.globalDSRoute}/check`, url);

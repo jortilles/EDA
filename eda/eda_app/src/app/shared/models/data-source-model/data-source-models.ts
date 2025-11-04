@@ -76,6 +76,7 @@ export class Relation {
     source_column: Array<any>;
     target_table: string;
     target_column: Array<any>;
+    display_name?: {};
     visible: boolean;
 }
 

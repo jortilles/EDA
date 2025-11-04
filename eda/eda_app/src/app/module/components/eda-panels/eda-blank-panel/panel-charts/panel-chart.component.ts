@@ -2,6 +2,9 @@ import { EdaKnob } from './../../../eda-knob/edaKnob';
 import { EdaKnobComponent } from './../../../eda-knob/eda-knob.component';
 import { EdaScatter } from './../../../eda-scatter/eda-scatter.component';
 import { EdaTreeMap } from './../../../eda-treemap/eda-treemap.component';
+
+import { EdaTreeTable } from './../../../eda-treetable/eda-treetable.component';
+
 import { TreeMap } from './../../../eda-treemap/eda-treeMap';
 import { EdaD3Component } from './../../../eda-d3/eda-d3.component';
 import { TableConfig } from './chart-configuration-models/table-config';
@@ -39,7 +42,8 @@ import { TreeMapConfig } from './chart-configuration-models/treeMap-config';
 import { SunburstConfig } from './chart-configuration-models/sunburst-config';
 import { SankeyConfig } from './chart-configuration-models/sankey-config';
 import { ScatterConfig } from './chart-configuration-models/scatter-config';
-import { BubblechartConfig } from './chart-configuration-models/bubblechart.config';
+import { BubblechartConfig } from './chart-configuration-models/bubblechart.config';import { EdaChart } from '@eda/components/eda-chart/eda-chart';
+
 
 
 @Component({
@@ -153,6 +157,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * changes chart Type
      */
+
     public changeChartType() {
         const type = this.props.chartType;
 
@@ -199,6 +204,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (type === 'sunburst') {
             this.renderSunburst();
         }
+        if (type === 'treetable') {
+            this.renderTreetable();
+        }
     }
 
     /**
@@ -206,6 +214,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * @param type table or crosstable
      */
     private renderEdaTable(type) {
+
         if (type === 'table') {
             this.createEdatableComponent(type);
         }
@@ -478,15 +487,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
       * @param inject chart configuration
       */
     private createEdatableComponent(type: string) {
-
         this.entry.clear();
 
-        const factory = this.resolver.resolveComponentFactory(EdaTableComponent);
-        this.componentRef = this.entry.createComponent(factory);
-        this.componentRef.instance.inject = this.initializeTable(type, this.props.config.getConfig());
-        this.componentRef.instance.inject.value = this.chartUtils.transformDataQueryForTable(  this.props.data.labels, this.props.data.values);
-        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
         const config = this.props.config.getConfig();
+        const factory = this.resolver.resolveComponentFactory(EdaTableComponent);
+
+        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef.instance.inject = this.initializeTable(type, config);
+        this.componentRef.instance.inject.value = this.chartUtils.transformDataQueryForTable(this.props.data.labels, this.props.data.values);
+        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
 
         if (config) {
 
@@ -671,9 +680,23 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         // KPI Config
         let kpiValue: number;
         let kpiLabel = this.props.query.find((c: any) => c.column_type == 'numeric')?.display_name?.default;
-        
+        let decimals = this.props.query.find((c: any) => c.column_type == 'numeric')?.minimumFractionDigits;
+        let agg = this.props.query.find((c: any) => c.column_type == 'numeric')?.aggregation_type.find( (e: any) => e.selected == true )?.value;
+
+
         if (chartData[1][0]?.data) {
+            /* no se hace esto porque no tiene sentido 
+            if(agg == 'avg' ){       kpiValue = _.avg(chartData[1][0]?.data);
+            }else if(agg == 'max' ){ kpiValue = _.max(chartData[1][0]?.data);
+            }else if(agg == 'avg' ){ kpiValue = _.sum(chartData[1][0]?.data);
+            }else if(agg == 'min' ){ kpiValue = _.min(chartData[1][0]?.data);
+            }else{                   kpiValue = _.sum(chartData[1][0]?.data);  } */
+            
             kpiValue = _.sum(chartData[1][0]?.data);
+            if( this.countDecimals(kpiValue) >decimals ){
+                kpiValue = Number(kpiValue.toFixed(decimals)) ;
+            }
+             
         }
         
         chartConfig.chartType = this.props.chartType;
@@ -693,6 +716,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         this.createEdaKpiChartComponent(chartConfig);
     }
+    /**
+     * cuenta los decimales de los números.
+     */
+    private countDecimals (value) {
+        if(Math.floor(value) === value) return 0;
+        return value.toString().split(".")[1].length || 0; 
+    }
+
 
     /**
      * creates a kpiChartComponent
@@ -991,8 +1022,19 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const factory = this.resolver.resolveComponentFactory(EdaSunburstComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
-        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
+    }
 
+    private renderTreetable() {
+        const inject = this.props.data;
+        this.createTreetable(inject);
+    }
+
+    private createTreetable(inject: any) {
+        this.entry.clear();
+        const factory = this.resolver.resolveComponentFactory(EdaTreeTable);
+        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef.instance.inject = inject; // inject como input al componente Treetable
+        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
     }
 
     private randomID() {
@@ -1060,24 +1102,34 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * @param configs 
      */
     private initializeTable(type: string, configs?: any): EdaTable {
+
         const tableColumns = [];
-        for (let i = 0, n = this.props.query.length; i < n; i += 1) {
+        if (this.props.edaChart == 'tableanalized') {
+            configs = configs || {};
+            configs.rows = 25;
+            configs.initRows = 25;
+            configs.visibleRows = 25;
+            for (const label of this.props.data.labels) {
+                tableColumns.push(new EdaColumnText({ header: label, field: label, description: label }));
+            }
+        } else {
+            for (let i = 0, n = this.props.query.length; i < n; i += 1) {
 
-            const label = this.props.data.labels[i];
-            const r: Column = this.props.query[i];
-
-            if (_.isEqual(r.column_type, 'date')) {
-
-                tableColumns.push(new EdaColumnDate({ header: r.display_name.default, field: label, description: r.description.default }));
-            } else if (_.isEqual(r.column_type, 'numeric')) {
-
-                tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default , decimals: r.minimumFractionDigits}))
-            } else if (_.isEqual(r.column_type, 'text')) {
-                tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default }));
-            } else if (_.isEqual(r.column_type, 'coordinate')) {
-                tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default }));
+                const label = this.props.data.labels[i];
+                const r: Column = this.props.query[i];
+    
+                if (_.isEqual(r.column_type, 'date')) {
+                    tableColumns.push(new EdaColumnDate({ header: r.display_name.default, field: label, description: r.description.default }));
+                } else if (_.isEqual(r.column_type, 'numeric')) {
+                    tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default , decimals: r.minimumFractionDigits}))
+                } else if (_.isEqual(r.column_type, 'text')) {
+                    tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default }));
+                } else if (_.isEqual(r.column_type, 'coordinate')) {
+                    tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default }));
+                }
             }
         }
+
         if (type === 'table') {
             return new EdaTable({ cols: tableColumns, ...configs });
         } else if (type === 'crosstable') {

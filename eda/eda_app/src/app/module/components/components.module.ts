@@ -40,12 +40,13 @@ import {
     TableGradientDialogComponent,
     EdaFunnelComponent,
     FunnelDialog,
+    TreeTableDialogComponent,
     EdaBubblechartComponent,
     BubblechartDialog,
     CumSumAlertDialogComponent,
     EdaSunburstComponent,
     SunburstDialogComponent,
-    WhatIfDialogComponent
+    WhatIfDialogComponent,
  } from './component.index';
  
 import { SafeUrlPipe } from './eda-panels/eda-title-panel/urlSanitizer.pipe';
@@ -106,6 +107,7 @@ import { FilterMapperComponent } from '../pages/v2/components/filter-mapper/filt
         TableGradientDialogComponent,
         EdaFunnelComponent,
         FunnelDialog,
+        TreeTableDialogComponent,
         EdaBubblechartComponent,
         BubblechartDialog,
         EdaSunburstComponent,
@@ -139,6 +141,7 @@ import { FilterMapperComponent } from '../pages/v2/components/filter-mapper/filt
         KnobDialogComponent,
         TableGradientDialogComponent,
         FunnelDialog,
+        TreeTableDialogComponent,
         BubblechartDialog,
         EdaSunburstComponent,
         SunburstDialogComponent,
@@ -146,6 +149,7 @@ import { FilterMapperComponent } from '../pages/v2/components/filter-mapper/filt
         SunburstDialogComponent,
         MapCoordDialogComponent,
         DragDropComponent,
+        MapCoordDialogComponent,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

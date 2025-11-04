@@ -1,5 +1,4 @@
 import { toInteger } from "lodash";
-
 export class SchedulerFunctions {
 
   /**
@@ -28,13 +27,11 @@ export class SchedulerFunctions {
    */
 
   static checkScheduleDays(quantity: number, hours: string, minutes: string, currLastUpdated: string) {
-
     let now = this.totLocalISOTime(new Date());
     let date = new Date(Date.parse(now));
 
     date.setHours( parseInt(hours));
     date.setMinutes(0);
-
     let lastUpdated = new Date(Date.parse(currLastUpdated));
     console.log('Ultima actualizacion');
     console.log(lastUpdated);
@@ -52,9 +49,7 @@ export class SchedulerFunctions {
     if(nextUpdate >= date){
       //Se ha recargado hoy...
       console.log('Actualizando caché a las : ' + date)
-      //console.log(lastUpdated);
-      //console.log(date);
-      return true;
+            return true;
     }else{
       console.log('No se ha actualizado la caché');
       return false;

@@ -13,7 +13,6 @@ import { EventEmitter } from '@angular/core';
 import { EdaColumnChart } from './eda-columns/eda-column-chart';
 import { ToastModule } from 'primeng/toast';
 import { Key } from 'protractor';
-// import { FindValueSubscriber } from 'rxjs/internal/operators/find';
 import { values } from 'd3';
 import { title } from 'process';
 
@@ -237,7 +236,6 @@ export class EdaTable {
         } else if (this.resultAsPecentage === false && this.percentageColumns.length !== 0) {
             this.removePercentages();
         }
-
         if (this.withColTotals) {
             this.coltotals();
         }
@@ -245,7 +243,6 @@ export class EdaTable {
             event ? this.colSubTotals(event.first / event.rows + 1) : this.colSubTotals(1);
         } 
         if (!this.pivot) {
-        	// console.log(' this.noRepeatedRows() DESCOMENTADO');
             this.noRepeatedRows();
         }
     }
@@ -620,9 +617,33 @@ export class EdaTable {
 
         //esta primera iteración con this.noRepetitions en false se hace para devolver las palabras repetidas al diálogo.
         //Es una secuencia similar a la de quitar los valores, pero opuesta.
-        if (!this.noRepetitions && this.noRepetitions !== undefined) {
-           this.value = this.origValues  ;
-        } else {
+        if (!this.noRepetitions && this.noRepetitions !== undefined ) {
+            // si no he tocado nada, dejo el valor origintal
+           this.value = _.cloneDeep(this.origValues); 
+        }  else if (!this.noRepetitions && ( this.resultAsPecentage || this.onlyPercentages)) {
+            // si  quiero repetidos pero tengo porcentajes....
+           //separamos valores de claves
+           let values = this.extractDataValues(this.value);
+           //tomamos claves que serán el cabecero
+           let labels = this.extractLabels(this.value)
+           labels.shift(); //borramos el primer objeto.
+           let output = [];
+           // ESTO SE HACE PARA EVITAR REPETIDOS EN LA TABLA. SI UN CAMPO TIENE UNA COLUMNA QUE SE REPITE 
+
+           for (let i = 0; i < values.length; i += 1) {
+               const obj = [];
+               for (let e = 0; e < values[i].length; e += 1) {
+                    if( ! ['EdaColumnPercentage', 'EdaColumnNumber'].includes(  this.cols[e].type ) ) {
+                        obj[labels[e]] =  this.origValues[i][labels[e]];
+                    }else{
+                        obj[labels[e]] = values[i][e];
+                    }
+              }
+               output.push(obj);   
+             }
+           this.value = output;  
+
+        }else {
             //separamos valores de claves
             let values = this.extractDataValues(this.value);
             //tomamos claves que serán el cabecero
@@ -656,6 +677,7 @@ export class EdaTable {
 
 
     colsPercentages() {
+
 
         if (this.percentageColumns.length !== 0) {
             this.removePercentages();
@@ -725,7 +747,6 @@ export class EdaTable {
                 });
             })
         }
-
         if (this.onlyPercentages === true) {
             this.cols.forEach(col => {
                 if (col.type === "EdaColumnNumber") {
@@ -735,7 +756,7 @@ export class EdaTable {
         }
     }
 
-    removePercentages() {
+    removePercentages() {        
         const cols = [];
         const hidenColumns = this.cols.filter(col => col.visible === false).length > 0;
         //remove labels
@@ -780,10 +801,11 @@ export class EdaTable {
 
 
     public onSort($event) {
-
-        this.sortedColumn = $event;
-        this.onSortColEvent.emit($event);
-        this.checkTotals(null);
+        if (this.cols.find(col => col.field === $event.field).sortable) {            
+            this.sortedColumn = $event;
+            this.onSortColEvent.emit($event);
+            this.checkTotals(null);
+        }
     }
 
     sort(serie) {
@@ -820,7 +842,6 @@ export class EdaTable {
     PivotTable() {
 
         let axes = []
-        // console.log('PIVOTtABLE: ',this);
         const colsInfo = this.getColsInfo();
         const oldRows = this.getValues();
 
@@ -914,10 +935,8 @@ export class EdaTable {
 
         const params = this.generateCrossParams(axes);
         // console.log(`params ===> serieIndex ${serieIndex} <===`, params)
-
         const mapTree = this.buildMapCrossRecursive(params.newCols);
         // console.log(`mapTree ===> serieIndex ${serieIndex} <===`, mapTree);
-
         const populatedMap = this.populateCrossMap(mapTree, params.oldRows, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.pivotColsLabels);
         // console.log(`populatedMap ===> serieIndex ${serieIndex} <===`, populatedMap);
 
@@ -1155,8 +1174,6 @@ export class EdaTable {
                 lastMapKey = lastMapKey.get(row[clonePivotColsLabels[i]]);
             }
             let actualValue = lastMapKey.get(row[clonePivotColsLabels[i]]);
-            // console.log('actualValue: ', actualValue);
-            // console.log('typeOf actualValue: ', typeof(actualValue));
             lastMapKey.set(row[clonePivotColsLabels[i]], Number(actualValue) + value);
         });
         return map;

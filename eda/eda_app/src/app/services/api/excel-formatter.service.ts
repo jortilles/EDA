@@ -20,7 +20,7 @@ export class ExcelFormatterService extends ApiService {
      * @param filePath The path to the Excel file.
      */
     async readExcelToJson(file: File): Promise<JSON[]> {
-        if (!file.name.endsWith('.xls') && !file.name.endsWith('.xlsx')) return null;
+        if (!file.name.toString().toLowerCase().endsWith('.xls') && !file.name.toString().toLowerCase().endsWith('.xlsx')) return null;
 
         return new Promise<JSON[]>((resolve, reject) => {
             const fileReader = new FileReader();
@@ -33,7 +33,7 @@ export class ExcelFormatterService extends ApiService {
                 const sheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
 
                 const jsonData: JSON[] = XLSX.utils.sheet_to_json(sheet, { raw:false, dateNF:'yyyy-mm-dd' });
-                console.log('jsonData -->', jsonData)
+                //console.log('jsonData -->', jsonData)
                 resolve(jsonData);
             };
             fileReader.onerror = (error) => {

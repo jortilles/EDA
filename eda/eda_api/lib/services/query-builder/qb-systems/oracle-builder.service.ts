@@ -1,8 +1,11 @@
-import { QueryBuilderService } from './../query-builder.service';
+import { EdaQueryParams, QueryBuilderService } from './../query-builder.service';
 import * as _ from 'lodash';
 
 
 export class OracleBuilderService extends QueryBuilderService {
+    public analizedQuery(params: EdaQueryParams) {
+      return [];
+    }
 
   public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
     tables: Array<any>, limit: number,  joinType: string, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any ) {
@@ -284,7 +287,7 @@ export class OracleBuilderService extends QueryBuilderService {
         if(el.column_type=='text'){
           columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
         }else if(el.column_type=='numeric'){
-          columns.push(` ROUND(  CAST( ${el.SQLexpression}  as numeric)  ,2)  ${whatIfExpression}  as "${el.display_name}"`);
+          columns.push(` ROUND(  CAST( ${el.SQLexpression}  ${whatIfExpression} as NUMBER)  , ${el.minimumFractionDigits} )    as "${el.display_name}"`);
         }else if(el.column_type=='date'){
           columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
         }else if(el.column_type=='coordinate'){
@@ -323,13 +326,13 @@ export class OracleBuilderService extends QueryBuilderService {
 
         if (el.aggregation_type !== 'none') {
           if (el.aggregation_type === 'count_distinct') {
-            columns.push(`ROUND(count(distinct ${table_column}) , ${el.minimumFractionDigits}) ${whatIfExpression} as "${el.display_name}"`);
+            columns.push(`ROUND(count(distinct ${table_column})  ${whatIfExpression} , ${el.minimumFractionDigits}) as "${el.display_name}"`);
           } else {
-            columns.push(`ROUND(${el.aggregation_type}(${table_column}), ${el.minimumFractionDigits}) ${whatIfExpression} as "${el.display_name}"`);
+            columns.push(`ROUND(${el.aggregation_type}(${table_column}) ${whatIfExpression}  , ${el.minimumFractionDigits}) as "${el.display_name}"`);
           }
         } else {
           if (el.column_type === 'numeric') {
-            columns.push(`ROUND(${table_column}, ${el.minimumFractionDigits}) ${whatIfExpression} as "${el.display_name}"`);
+            columns.push(`ROUND(${table_column} ${whatIfExpression}, ${el.minimumFractionDigits})  as "${el.display_name}"`);
           } else if (el.column_type === 'date') {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
@@ -445,7 +448,7 @@ export class OracleBuilderService extends QueryBuilderService {
         colname =  `"${column.table_id}"."${column.column_name}"` ;
    }else{
       if(column.column_type == 'numeric'){
-        colname = `ROUND(  CAST( ${column.SQLexpression}  as numeric)  , ${column.minimumFractionDigits})`;
+        colname = `ROUND(  CAST( ${column.SQLexpression}  as NUMBER)  , ${column.minimumFractionDigits})`;
       }else{
         colname = `  ${column.SQLexpression}  `;
       }
@@ -506,7 +509,7 @@ export class OracleBuilderService extends QueryBuilderService {
         colname =   `\`${column.table_id}\`.\`${column.column_name}\`` ;
       }else{
         if(column.column_type == 'numeric'){
-          colname = `ROUND(  CAST( ${column.SQLexpression}  as numeric)  , ${column.minimumFractionDigits})`;
+          colname = `ROUND(  CAST( ${column.SQLexpression}  as NUMBER)  , ${column.minimumFractionDigits})`;
         }else{
           colname = `  ${column.SQLexpression}  `;
         }

@@ -1,9 +1,171 @@
-import { QueryBuilderService } from './../query-builder.service';
+import { EdaQueryParams, QueryBuilderService } from './../query-builder.service';
 import * as _ from 'lodash';
 
 
 export class PgBuilderService extends QueryBuilderService {
 
+  public analizedQuery(params: EdaQueryParams) {
+    const { fields, columns, tables, origin, dest, joinTree, grouping, filters, havingFilters, joinType, valueListJoins, schema } = params;
+    
+    const fromTable = tables.filter(table => table.name === origin).map(table => { return table.query ?  this.cleanViewString(table.query) : table.name })[0];
+    const vista = tables.filter(table => table.name === origin).map(table => { return table.query ? true: false })[0];
+    
+    const generateQuery = () => {
+      let myQuery: string = '';
+
+      if (vista) {
+        myQuery += `FROM ${fromTable}`; 
+      } else {
+        myQuery += `FROM "${schema}"."${fromTable}"`;
+      }
+  
+      // JOINS
+      let joinString: any[];
+      let alias: any;
+      if (this.queryTODO.joined) {
+        const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
+        joinString = responseJoins.joinString;
+        alias = responseJoins.aliasTables;
+      } else {
+        joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema);
+      }
+  
+      joinString.forEach(x => {
+        myQuery = myQuery + '\n' + x;
+      });
+  
+      // WHERE
+      myQuery += this.getFilters(filters);
+  
+      if (alias) {
+        for (const key in alias) {
+          myQuery = myQuery.split(key).join(`"${alias[key]}"`);
+        }
+      }
+
+      return myQuery;
+    }
+
+    const countTablesInSQL = (query: string) => {
+        const normalizedQuery = query.toUpperCase();
+    
+        // Expresiones regulares para detectar FROM, JOIN
+        const fromRegex = /\bFROM\b/g;
+        const joinRegex = /\bJOIN\b/g;
+    
+        // Contar
+        const fromCount = (normalizedQuery.match(fromRegex) || []).length;
+        const joinCount = (normalizedQuery.match(joinRegex) || []).length;
+    
+        // Total de tablas implicadas
+        // Cada FROM indica una tabla principal, y cada JOIN indica tablas adicionales
+        const totalTables = fromCount + joinCount;
+    
+        return totalTables;
+    }
+
+    const querys: any = {};
+    const fromQuery = generateQuery();
+
+    querys['general'] = [
+        `SELECT '${countTablesInSQL(fromQuery)}' AS "count_tables"`
+    ];
+
+    for (const col of fields) {
+      const diplayName = col.display_name;
+      const table_column = `"${col.table_id}"."${col.column_name}"`;
+        
+      let mainQuery = `(SELECT ${table_column} ${fromQuery}) AS main`
+
+      querys[diplayName] = [];
+
+        // Source Table
+        querys[diplayName].push(  `SELECT '${col.table_id}' AS source_table `   );
+        // COUNT 
+        querys[diplayName].push(`SELECT COUNT( * ) AS "count_rows" FROM ${col.table_id}`);
+
+
+      if (col.column_type == 'text') {
+        // COUNT NULLS
+        querys[diplayName].push(`SELECT SUM(CASE WHEN "main"."${col.column_name}" IS NULL THEN 1 ELSE 0 END) AS "count_nulls" FROM ${mainQuery}`);
+        // COUNT EMPTY
+        querys[diplayName].push(`SELECT SUM(CASE WHEN "main"."${col.column_name}" = '' THEN 1 ELSE 0 END) AS "count_empty" FROM ${mainQuery}`);
+        // COUNT DISTINCT
+        querys[diplayName].push(`SELECT COUNT(DISTINCT "main"."${col.column_name}") AS "count_distinct" FROM ${mainQuery}`);
+        // MostDuplicated
+        querys[diplayName].push(`
+          SELECT STRING_AGG(label_count, ', ') AS most_duplicated
+          FROM (
+              SELECT 
+                  "main"."${col.column_name}" || ' (' || COUNT("main"."${col.column_name}") || ')' AS label_count
+              FROM ${mainQuery}
+              GROUP BY "main"."${col.column_name}"
+              ORDER BY COUNT("main"."${col.column_name}") DESC
+              LIMIT 5
+          ) sub;
+        `);
+        // LeastDuplicated
+        querys[diplayName].push(`
+          SELECT STRING_AGG(label_count, ', ') AS least_duplicated
+          FROM (
+              SELECT 
+                  "main"."${col.column_name}" || ' (' || COUNT("main"."${col.column_name}") || ')' AS label_count
+              FROM ${mainQuery}
+              GROUP BY "main"."${col.column_name}"
+              ORDER BY COUNT("main"."${col.column_name}") ASC
+              LIMIT 5
+          ) sub;
+        `);
+      } else if (col.column_type == 'numeric') {
+        // COUNT NULLS
+        querys[diplayName].push(`SELECT SUM(CASE WHEN "main"."${col.column_name}" IS NULL THEN 1 ELSE 0 END) AS "count_nulls" FROM ${mainQuery}`);
+        // MAX
+        querys[diplayName].push(`SELECT MAX("main"."${col.column_name}") AS "max" FROM ${mainQuery}`);
+        // MIN
+        querys[diplayName].push(`SELECT MIN("main"."${col.column_name}") AS "min" FROM ${mainQuery}`);
+        // MODA
+        querys[diplayName].push(`
+            WITH moda_counts AS (
+                SELECT "main"."${col.column_name}" AS mode_value, COUNT(*) AS frequency
+                FROM ${mainQuery}
+                GROUP BY 1
+                ORDER BY 2 DESC
+                LIMIT 1
+            )
+            SELECT mode_value || ' (total: '|| frequency ||')' AS "mode"
+            FROM  moda_counts;
+        `);
+        // AVG
+        querys[diplayName].push(`SELECT TRUNC( AVG("main"."${col.column_name}"), 3) AS "avg" FROM ${mainQuery}`);
+        // MEDIAN
+        querys[diplayName].push(`SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY "main"."${col.column_name}") AS "median" FROM ${mainQuery}`);
+
+      } else if (col.column_type == 'date') {
+        // CountNulls
+        querys[diplayName].push(`SELECT SUM(CASE WHEN "main"."${col.column_name}" IS NULL THEN 1 ELSE 0 END) AS "count_nulls" FROM ${mainQuery}`);
+        // MAX
+        querys[diplayName].push(`SELECT TO_CHAR(MAX("main"."${col.column_name}"), 'YYYY-MM-DD') AS "max" FROM ${mainQuery}`);
+        // MIN
+        querys[diplayName].push(`SELECT TO_CHAR(MIN("main"."${col.column_name}"), 'YYYY-MM-DD') AS "min" FROM ${mainQuery}`);
+        //GROUP BY MONT
+        const queryMonth = `
+            WITH monthly_counts AS (
+                SELECT TO_CHAR("main"."${col.column_name}", 'YYYY-MM') AS vmonth, COUNT(*) AS total
+                FROM ${mainQuery}
+                GROUP BY 1
+            )
+        `;
+        // MEDIAN
+        querys[diplayName].push(`${queryMonth} SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY total) AS median_count_bymonth FROM monthly_counts;`);
+        // MAX
+        querys[diplayName].push(`${queryMonth} SELECT (vmonth || ' (total: ' || total || ')') "max_bymonth" FROM monthly_counts ORDER BY total DESC LIMIT 1;`);
+        // MIN
+        querys[diplayName].push(`${queryMonth} SELECT (vmonth || ' (total: ' || total || ')') "min_bymonth" FROM monthly_counts ORDER BY total ASC LIMIT 1;`);
+      }
+    }
+
+    return querys;
+  }
 
   public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
     tables: Array<any>, limit: number,  joinType: string, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any ) {
@@ -34,7 +196,7 @@ export class PgBuilderService extends QueryBuilderService {
     // JOINS
     let joinString: any[];
     let alias: any;
-    if (this.queryTODO.joined) {
+    if (this.queryTODO.joined) { /** si es modo arbol */
       const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
       joinString = responseJoins.joinString;
       alias = responseJoins.aliasTables;
@@ -172,7 +334,18 @@ export class PgBuilderService extends QueryBuilderService {
           if (typeof joinColumns[0] === 'string') {
             if(!view){
               //Si no es una vista
-              joinString.push(` ${myJoin} join "${schema}"."${t}" on "${schema}"."${e[j]}"."${joinColumns[1]}" = "${schema}"."${e[i]}"."${joinColumns[0]}"`);
+              // pero también puede ser que sea una columna calculada...
+               if(joinColumns[2] && joinColumns[2] === 'source' ){
+                // si la columna calculada es el source
+                 joinString.push(` ${myJoin} join "${schema}"."${t}" on  ${joinColumns[1]} = "${schema}"."${e[i]}"."${joinColumns[0]}"`);
+              }else  if(joinColumns[2] && joinColumns[2] === 'target' ){
+                // si la columna calculada es el target
+                 joinString.push(` ${myJoin} join "${schema}"."${t}" on "${schema}"."${e[j]}"."${joinColumns[1]}" = ${joinColumns[0]} `);
+              }else{
+                  // Si no es una columna calculada              
+                joinString.push(` ${myJoin} join "${schema}"."${t}" on "${schema}"."${e[j]}"."${joinColumns[1]}" = "${schema}"."${e[i]}"."${joinColumns[0]}"`);
+              }
+
             }else{
               //Si es una vista
               joinString.push(` ${myJoin} join ${t} on  "${e[j]}"."${joinColumns[1]}" = "${schema}"."${e[i]}"."${joinColumns[0]}"`);
@@ -185,12 +358,23 @@ export class PgBuilderService extends QueryBuilderService {
               //Si no es una vista
               let join = ` ${myJoin} join "${schema}"."${t}" on`;
               joinColumns[0].forEach((_, x) => {
+              // pero también puede ser que sea una columna calculada 
+              if(joinColumns[2] && joinColumns[2] === 'source' ){
+                // Si la columna calculada es el source
+                 join += `  ${joinColumns[1][x]}  =  "${schema}"."${e[i]}"."${joinColumns[0][x]}" and`
+              }else  if(joinColumns[2] && joinColumns[2] === 'target' ){
+                // Si la columna calculada es el source
+                 join += `  "${schema}"."${e[j]}"."${joinColumns[1][x]}" =  ${joinColumns[0][x]} and`
+              }else{
+                 // Si no es una columna calculada         
                 join += `  "${schema}"."${e[j]}"."${joinColumns[1][x]}" =  "${schema}"."${e[i]}"."${joinColumns[0][x]}" and`
+              } 
               });
               join = join.slice(0, join.length - 'and'.length);
               joinString.push(join);
             }else{
               //Si es una vista
+              //Si tienes que hacer columnas calculadas hazlas en la vista ;)
               let join = ` ${myJoin} join  ${t}  on`;
               joinColumns[0].forEach((_, x) => {
                 join += `  "${e[j]}"."${joinColumns[1][x]}" =  "${schema}"."${e[i]}"."${joinColumns[0][x]}" and`
@@ -312,12 +496,12 @@ export class PgBuilderService extends QueryBuilderService {
 
       el.minimumFractionDigits = el.minimumFractionDigits || 0;
 
-      // Aqui se manejan las columnas calculadas
+      // Aqui se manejan las columnas calculadascount_nulls
       if (el.computed_column === 'computed') {
         if(el.column_type=='text'){
           columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
         }else if(el.column_type=='numeric'){
-          columns.push(` ROUND(  CAST( ${el.SQLexpression}  as numeric)  , ${el.minimumFractionDigits})  ${whatIfExpression}  as "${el.display_name}"`);
+          columns.push(` ROUND(  CAST( ${el.SQLexpression}  as numeric) ${whatIfExpression} , ${el.minimumFractionDigits})    as "${el.display_name}"`);
         }else if(el.column_type=='date'){
           columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
         }else if(el.column_type=='coordinate'){
@@ -357,9 +541,9 @@ export class PgBuilderService extends QueryBuilderService {
         if (el.aggregation_type !== 'none') {
 
           if (el.aggregation_type === 'count_distinct') {
-            columns.push(`ROUND(count(distinct ${table_column})::numeric, ${el.minimumFractionDigits})::float ${whatIfExpression} as "${el.display_name}"`);
+            columns.push(`ROUND(count(distinct ${table_column})::numeric ${whatIfExpression}  , ${el.minimumFractionDigits})::float as "${el.display_name}"`);
           } else {
-            columns.push(`ROUND(${el.aggregation_type}(${table_column})::numeric, ${el.minimumFractionDigits})::float ${whatIfExpression} as "${el.display_name}"`);
+            columns.push(`ROUND(${el.aggregation_type}(${table_column})::numeric ${whatIfExpression} , ${el.minimumFractionDigits})::float as "${el.display_name}"`);
           }
 
 

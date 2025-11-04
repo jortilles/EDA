@@ -2710,6 +2710,17 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
 .p-picklist .p-picklist-buttons .p-button {
   margin-bottom: 0.5rem;
 }
+
+/* Oculta el botón ">>" (mover todos a la derecha) */
+.p-picklist-buttons .p-button:nth-child(2) {
+  display: none !important;
+}
+
+/* Oculta el botón "<<" (mover todos a la izquierda) */
+.p-picklist-buttons .p-button:nth-child(4) {
+  display: none !important;
+}
+
 .p-picklist .p-picklist-header {
   background: #f8f9fa;
   color: #495057;
@@ -2776,6 +2787,7 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
   color: #495057;
   background: #ffffff;
   margin: 0;
+  z-index: 1060 !important; /* z-index modificado para el drag-drap de la edición de la tabla árbol se superponga */
 }
 
 .p-timeline .p-timeline-event-marker {
@@ -3604,6 +3616,7 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
 
 .p-dialog-mask.p-component-overlay {
   background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1060 !important;   /* z-index modificado para el pop up se superponga */
 }
 
 .p-overlaypanel {

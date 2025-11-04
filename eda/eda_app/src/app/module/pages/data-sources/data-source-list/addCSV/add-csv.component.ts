@@ -158,11 +158,13 @@ export class AddCsvComponent implements OnInit {
     }
 
     const BATCH_SIZE = 1000;
+    console.log('csvRecords: ', this.csvRecords);
     const batches = Math.ceil(this.csvRecords.length / BATCH_SIZE);
 
     try {
       await this.createTableService.createTable(createBody).toPromise();
       let start = 0;
+
       for (let i = 0; i < batches; i++) {
         const rows = this.csvRecords.slice(start, start + BATCH_SIZE);
         start = start + BATCH_SIZE + 1;
@@ -174,6 +176,7 @@ export class AddCsvComponent implements OnInit {
           },
           model_id: this.model_id
         }
+
         await this.createTableService.insertData(insertBody).toPromise();
       }
       this.spinnerService.off();

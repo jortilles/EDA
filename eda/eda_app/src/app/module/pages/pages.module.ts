@@ -24,6 +24,7 @@ import { DsConfigWrapperComponent } from './data-sources/dsconfig-wrapper.compon
 import { DataSourceListComponent } from './data-sources/data-source-list/data-source-list.component';
 import { DataSourceDetailComponent } from './data-sources/data-source-detail/data-source-detail.component';
 import { TableRelationsDialogComponent } from './data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component';
+import { TableEditRelationsDialogComponent } from './data-sources/data-source-detail/table-edit-relations-dialog/table-edit-relations-dialog.component';
 import { ColumnPermissionDialogComponent } from './data-sources/data-source-detail/column-permissions-dialog/column-permission-dialog.component';
 import { TablePermissionDialogComponent } from './data-sources/data-source-detail/table-permissions-dialog/table-permission-dialog.component';
 import { ColumnValueListDialogComponent } from './data-sources/data-source-detail/column-value-list-dialog/column-value-list-dialog.component';
@@ -73,6 +74,7 @@ import { PrimengModule } from 'app/core/primeng.module';
         DataSourceListComponent,
         DataSourceDetailComponent,
         TableRelationsDialogComponent,
+        TableEditRelationsDialogComponent,
         GroupListComponent,
         GroupDetailComponent,
         DashboardFilterDialogComponent,

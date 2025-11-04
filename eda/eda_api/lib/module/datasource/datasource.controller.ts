@@ -57,7 +57,14 @@ export class DataSourceController {
         }
     }
 
-    /** aQUSTA FUNCIÓ RETORNA TOTS ELS DATASOURCES */
+    /**
+     *  this function returns the datasource list
+     * @param req  request 
+     * @param res response
+     * @param next next funciont
+     * @returns all the datasources
+     */
+
     static async GetDataSourcesNames(req: Request, res: Response, next: NextFunction) {
         
         let options: QueryOptions = {};
@@ -89,6 +96,13 @@ export class DataSourceController {
 
 
 
+    /**
+     *  Returns all the datoasources availables to create a new dashboard once they are filtered by users permissions. 
+     * @param req 
+     * @param res 
+     * @param next 
+     * @returns  datasource list filtered by user's permission.
+     */
     /**
      *  Returns all the datoasources availables to create a new dashboard once they are filtered by users permissions. 
      * @param req 
@@ -168,7 +182,9 @@ export class DataSourceController {
     }
 
 
-       static async GetDataSourcesNamesForEdit(req: Request, res: Response, next: NextFunction) {
+    /* Aquesta funció retorna els datasources disponibles per editar al llistat de l'esquerra.
+   Aquesta funció sustitueix GetDataSourcesNames en la nova versió on cada usuari por afegir i editar models de dades */
+    static async GetDataSourcesNamesForEdit(req: Request, res: Response, next: NextFunction) {
         const groups = await Group.find({ users: { $in: req.user._id } }).exec();
         const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
         const output = [];
@@ -505,7 +521,14 @@ export class DataSourceController {
             throw err;
         }
     }
-    /** Refresh the data model from the source database. The mysql, postgres, oracle, json websercive, etc source...  */
+
+
+/**
+ * Refresh the data model from the source database. The mysql, postgres, oracle, json websercive, etc source... 
+ * @param req 
+ * @param res 
+ * @param next 
+ */
     static async RefreshDataModel(req: Request, res: Response, next: NextFunction) {
         try {
 

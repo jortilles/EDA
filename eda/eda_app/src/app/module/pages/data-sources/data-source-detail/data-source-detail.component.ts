@@ -4,11 +4,14 @@ import { Router, NavigationEnd } from '@angular/router';
 import { UntypedFormGroup } from '@angular/forms';
 import { MenuItem, SelectItem, TreeNode } from 'primeng/api';
 import { AlertService, DataSourceService, QueryParams, QueryBuilderService, SpinnerService } from '@eda/services/service.index';
-import { EditTablePanel, EditColumnPanel, EditModelPanel, ValueListSource } from '@eda/models/data-source-model/data-source-models';
+import { EditTablePanel, EditColumnPanel, EditModelPanel, ValueListSource, Relation } from '@eda/models/data-source-model/data-source-models';
 import { EdaDialogController, EdaDialogCloseEvent, EdaContextMenu, EdaContextMenuItem } from '@eda/shared/components/shared-components.index';
 import { aggTypes } from 'app/config/aggretation-types';
 import { EdaColumnFunction } from '@eda/components/eda-table/eda-columns/eda-column-function';
 import * as _ from 'lodash';
+import { EdaColumnEditable } from '@eda/components/eda-table/eda-columns/eda-column-editable';
+import Swal from 'sweetalert2';
+
 
 @Component({
     selector: 'app-data-source-detail',
@@ -64,6 +67,9 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public user: any;
     // public hideAllTablesBool : boolean = false;
     // public hideAllRelationsBool : boolean = false;
+
+    public viewDialogEdition: boolean = false;
+    public viewInEdition: any
 
 
 
@@ -136,6 +142,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
     // model permissions
     public modelPermissions: Array<any>;
+    public selectedRelation: Relation;
 
     constructor(public dataModelService: DataSourceService,
         private alertService: AlertService,
@@ -281,12 +288,13 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 ]
             }),
             cols: [
-                new EdaColumnFunction({ click: (relation) => this.deleteRelation(relation._id) }),
                 new EdaColumnText({ field: 'origin', header: $localize`:@@originRel:Origen` }),
-                new EdaColumnText({ field: 'dest', header: $localize`:@@targetRel:Destino` })
+                new EdaColumnText({ field: 'dest', header: $localize`:@@targetRel:Destino` }),
+                new EdaColumnText({ field: 'name', header: $localize`:@@nameRel:Nombre` }),
+                new EdaColumnEditable({ field: 'modify', click: (relation) => this.updateRelation(relation._id)}),
+                new EdaColumnFunction({ field: 'delete', click: (relation) => this.deleteRelation(relation._id)}),
             ]
         })
-       
     }
 
     ngOnInit() {
@@ -384,6 +392,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                     const row = {
                         origin: relation.source_column,
                         dest: `${relation.target_table}.${relation.target_column}`,
+                        name: relation.display_name !== undefined && relation.display_name !== null ? relation.display_name['default'] : relation.target_table + ' - ' + relation.target_column,
                         _id: relation
                     };
                     if (!this.relationsTable.value.map(value => value.dest).includes(row.dest) ) {
@@ -513,6 +522,20 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.update();
     }
 
+    updateRelation(relation: Relation) {  
+        this.selectedRelation = relation;
+        this.relationController = new EdaDialogController({
+            params: { table: this.tablePanel},
+            close: (event, response) => {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    this.dataModelService.updateRelation(relation,response);
+                }
+                this.relationController = undefined;
+                this.selectedRelation = null;
+            }
+        });
+    }
+
     deleteRelation(relation) {
         this.dataModelService.deleteRelation(relation);
     }
@@ -602,16 +625,25 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         })
     }
 
+
     openNewViewDialog() {
-        this.showViewDialog = true;
+        this.viewController = new EdaDialogController({
+            params: { user: localStorage.getItem('user'), model_id: this.dataModelService.model_id },
+            close: (event, response) => {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    this.dataModelService.addView(response);
+
+                }
+                this.viewController = undefined;
+            }
+        })
     }
 
-    onCloseViewDialog(response?: any) {
+        onCloseViewDialog(response?: any) {
         this.showViewDialog = false;
         if (response) {
             this.dataModelService.addView(response);
-        }
-    }
+        }}
 
     openNewMapDialog() {
         this.showMapDialog = true;
@@ -714,6 +746,22 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             params: { column: this.columnPanel, table: table },
             close: (event, response) => {
                 if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+
+                    const display_name = {
+                        default: "xx-bridge",
+                        localized: [],
+                    }
+
+                    const originRelation: Relation = {
+                        target_table: response.target_table,
+                        target_column: response.target_id_column,
+                        source_table: response.source_table,
+                        source_column: response.source_column,
+                        display_name: display_name,
+                        visible: true
+                    }
+
+                    this.dataModelService.addRelation(originRelation);
                     this.dataModelService.addValueListSource(response);
                     this.updateColumn();
                 }
@@ -796,6 +844,44 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
     hideAllRelations() {
         this.dataModelService.hideAllRelations();
+    }
+
+    viewEdition() {
+        Swal.fire({
+            title: $localize`:@@viewEditionTitle:Edición de la Vista`,
+            text: $localize`:@@viewEditionDescription:La edición de la vista permite modificar únicamente la consulta (query), pero no debe cambiar los nombres de las columnas.`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: $localize`:@@ContinueTablaQuality:Continuar`,
+            cancelButtonText: $localize`:@@CancelTablaQuality:Cancelar`,
+        }).then( (borrado) => {
+            if(borrado.value){
+                // Encontrando la vista a editar:
+                let myViewInEdition;
+                let allViews = this.dataModelService.allViews();
+                myViewInEdition = allViews.find(e => e.table_name === this.tablePanel.technical_name && e.query === this.tablePanel.query && e.table_type === 'view')
+                this.viewInEdition = myViewInEdition;
+                this.viewDialogEdition = true;
+            } else {
+                console.log('No se hace ningun cambio: ', borrado)
+            }
+        })
+
+    }
+
+    public onCloseViewEditionDialog(event) {
+        if(event === 'cancel') {
+            this.viewDialogEdition = false;
+            return
+        }
+
+        // Aca se haran los cambios
+        this.viewDialogEdition = false;
+        this.tablePanel.query = event.query;
+        this.tablePanel.columns = event.columns;
+        this.dataModelService.editView(this.tablePanel);
     }
 }
 

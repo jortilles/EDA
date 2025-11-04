@@ -56,7 +56,10 @@ export { EdaKnobComponent } from './eda-knob/eda-knob.component';
 export { KnobDialogComponent } from './eda-panels/eda-blank-panel/knob-dialog/knob-dialog.component';
 export { Knob } from './eda-knob/primengKnob/knob';
 export { FunnelDialog } from './eda-panels/eda-blank-panel/funnel-dialog/funnel-dialog.component';
+export { TreeTableDialogComponent } from './eda-panels/eda-blank-panel/tree-table-dialog/tree-table-dialog.component';
 export { BubblechartDialog } from './eda-panels/eda-blank-panel/bubblechart-dialog/bubblechart-dialog.component';
 export { EdaSunburstComponent } from './eda-sunburst/eda-sunburst.component';
 export { SunburstDialogComponent } from './eda-panels/eda-blank-panel/sunbrust-dialog/sunburst-dialog.component';
 export { WhatIfDialogComponent } from './eda-panels/eda-blank-panel/whatif-dialog/whatif-dialog.component';
+export { EdaTreeTable} from './eda-treetable/eda-treetable.component';
+

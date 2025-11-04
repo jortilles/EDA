@@ -150,6 +150,10 @@
           <p>{{tablePanel.query}}</p>
       </div>
 
+        <div style="margin-bottom: 1rem;" *ngIf="tablePanel.query">
+            <button type="button" pButton (click)="viewEdition()" class="ui-button-success"
+                i18n-label='@@viewEdition' label="Edición de la vista"></button>
+        </div>
 
       <div>
           <h5 class="title-datamodel" i18n="@@inputEsconderTabla">Esconder tabla</h5>
@@ -925,6 +929,7 @@
 
 
 <!-- Looks Good -->
+<app-table-edit-relations-dialog *ngIf="selectedRelation" [controller]="relationController" [relation]="selectedRelation"></app-table-edit-relations-dialog>
 <app-column-value-list-dialog *ngIf="valueListController" [controller]="valueListController"></app-column-value-list-dialog>
 <app-table-relations-dialog *ngIf="relationController" [controller]="relationController"></app-table-relations-dialog>
 <app-column-permission-dialog *ngIf="permissionsController" [controller]="permissionsController"></app-column-permission-dialog>
@@ -943,4 +948,4 @@
 
 
 
-
+<app-view-dialog-edition *ngIf="viewDialogEdition" [viewInEdition]="viewInEdition" (close)="onCloseViewEditionDialog($event)"></app-view-dialog-edition>
