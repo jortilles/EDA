@@ -700,8 +700,6 @@ public tableNodeExpand(event: any): void {
 
     public changeChartTypeCheck(type: string, subType: string, config?: ChartConfig) {
         if (subType=='tableanalized') {
-            
-            
             Swal.fire({
                 title: $localize`:@@NameTablaQuality:Tabla DataQuality`,
                 text: $localize`:@@SureDataQuality:¿Estás seguro de que deseas continuar con la visualización de DataQuality? Esta acción puede tomar un poco de tiempo.`,
@@ -715,7 +713,6 @@ public tableNodeExpand(event: any): void {
                 if(borrado.value){
                     try {
                         this.changeChartType(type, subType, config)
-                        console.log('ACEPTOOOO')
                     } catch (err) {
                         this.alertService.addError(err);
                         throw err;
@@ -723,22 +720,7 @@ public tableNodeExpand(event: any): void {
                 }
             })
             
-            
-            
-            // this.changeChartType(type, subType, config)
-
-
-
-            console.log('paso por aqui???????');
-            // TODO - Popup no aparece
-            //  this.confirmationService.confirm({
-            //      header: `Warning`,
-            //      message: `Este proceso realiza un seguido de consultas al modelo de datos y puede que le tome su tiempo. ¿Desea continuar?`,
-            //      acceptLabel: $localize`:@@si:Si`,
-            //      rejectLabel: $localize`:@@no:No`,
-            //      icon: 'pi pi-exclamation-triangle',
-            //      accept: () => this.changeChartType(type, subType, config)
-            //  })
+            this.closeEditarConsulta();            
         } else {
             this.changeChartType(type, subType, config);
         }
