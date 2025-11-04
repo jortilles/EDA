@@ -40,7 +40,6 @@ import { AlertsManagementComponent } from './alerts-management/alerts-management
 import { MailManagementComponent } from './mail-management/mail-management.component';
 import {DashboardMailDialogComponent} from './dashboard/email-dialog/dashboard-mail-dialog.component';
 import { UrlsActionComponent } from './dashboard/urls-action/urls-action.component';
-import { ViewDialogEditionComponent } from './data-sources/data-source-detail/view-dialog-edition/view-dialog-edition.component';
 
 
 // Routes
