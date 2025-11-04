@@ -762,7 +762,7 @@ private addFilterToPanelQuery(panel: any, filter: any): void {
       if (emptyQuery) isvalid = false;
 
       if (!isvalid) {
-        this.alertService.addError($localize`:@@AddFiltersWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`)
+        this.alertService.addError($localize`:@@SaveWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`)
       }else{
         
         
@@ -807,7 +807,7 @@ private addFilterToPanelQuery(panel: any, filter: any): void {
       if (emptyQuery) isvalid = false;
 
       if (!isvalid) {
-        this.alertService.addError($localize`:@@AddFiltersWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`)
+        this.alertService.addError($localize`:@@SaveWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`)
       }else{
         
         
