@@ -641,7 +641,7 @@ private addFilterToPanelQuery(panel: any, filter: any): void {
   }
 
   checkImportedPanels(dashboard) {
-    dashboard.config.panel.forEach(element => {
+    dashboard.config.panel?.forEach(element => {
       try {        
         if (element.globalFilterMap) {
           const panelFilters = element.content.query.query.filters;

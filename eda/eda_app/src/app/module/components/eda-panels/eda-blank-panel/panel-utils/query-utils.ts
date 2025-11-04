@@ -361,9 +361,10 @@ export const QueryUtils = {
 
     ebp.newAxesChanged = false;
 
-    // Al aplicar Ejecutar el treetable de reinicia
-    if(ebp.panelChart.props.chartType==='treetable') {
-      ebp.panelChart.props.config.getConfig()['editedTreeTable'] = false;
+    // Al aplicar Ejecutar el treetable de reinicia 
+    // TODO REVISAR LA VARIABLE DE 
+    if(ebp.panelChartConfig.edaChart==='treetable') {
+      ebp.panelChartConfig.config.getConfig()['editedTreeTable'] = false;
     }
 
   },

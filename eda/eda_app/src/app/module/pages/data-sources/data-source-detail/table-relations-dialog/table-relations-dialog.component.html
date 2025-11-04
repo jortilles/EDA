@@ -18,7 +18,7 @@
         </p-dropdown>
       </div>
 
-      <button class="flex items-center mt-4 px-4 py-2 border rounded-md" (click)="addRelation()"
+      <button class="execute-button mt-4" (click)="addRelation()"
         [disabled]="!form.controls.targetTable.value  ||  !form.value.sourceCol || !form.value.targetCol ">
         <span i18n="@@addRelation">Añadir relación</span>
       </button>
@@ -40,13 +40,13 @@
 
   <div footer class="flex justify-end p-2 border-t gap-1.5">
     <button
-      class="rounded-md px-4 py-2 border"
+      class="cancel-button"
       (click)="closeDialog()"
       i18n="@@cancelarBtn">
       Cancelar
     </button>
     <button
-      class="rounded-md px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white"
+      class="confirm-button"
       [disabled]="selectedSourceCols.length === 0"
       (click)="saveRelation()"
       i18n="@@guardarBtn">
