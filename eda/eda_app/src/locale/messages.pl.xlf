@@ -89,6 +89,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">42</context>
 </context-group>
 </trans-unit>
+
+<trans-unit id="logsManagement" datatype="html">
+  <source>Gestión de logs</source>
+  <target>Zarządzanie logami</target>
+</trans-unit>
 <trans-unit id="sidebarUserManagement" datatype="html">
 <source>Gestión de Usuarios</source>
 <target>Zarządzanie użytkownikami</target>
@@ -2378,6 +2383,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Común</source>
 <target>Wspólny</target>
 </trans-unit>
+<trans-unit id="publicPanel">
+<source>Publico</source>
+<target>Publiczny</target>
+</trans-unit>
 <trans-unit id="groupPanel">
 <source>Grupo</source>
 <target>Grupa</target>
@@ -2630,6 +2639,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Nieprawidłowa forma. Sprawdź wymagane pola.</target>
 </trans-unit>
 
+<trans-unit id="IncorrectForm2">
+<source>Formulario incorrecto, revise los campos.</source>
+<target>Nieprawidłowy formularz. Proszę sprawdzić wymagane pola.</target>
+</trans-unit>
+
 <trans-unit id="ImportantMessage">
 <source>Importante</source>
 <target>Ważne</target>
@@ -2653,6 +2667,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="AddFiltersWarningTittle">
 <source>Solo puedes añadir filtros cuando todos los paneles están configurados</source>
 <target>Możesz dodać filtry tylko wtedy, gdy wszytkkie panele są skofigurowane</target>
+</trans-unit>
+
+<trans-unit id="SaveWarningTittle">
+<source>Solo puedes guardar cuando todos los paneles están configurados</source>
+<target>Możesz zapisać tylko wtedy, gdy wszystkie panele są skonfigurowane.</target>
 </trans-unit>
 
 <trans-unit id="AddFiltersWarningText">
@@ -2708,6 +2727,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="UpdatedUser">
 <source>Usuario actualizado </source>
 <target>Zaktualizowano użytkowanika </target>
+</trans-unit>
+
+<trans-unit id="UpdatedUserError">
+<source>Error al actualizar el usuario </source>
+<target>Błąd podczas aktualizacji użytkownika </target>
 </trans-unit>
 
 <trans-unit id="PasswordsNotEqual">
@@ -2822,6 +2846,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="DatePickerWeek">
 <source>Ésta semana</source>
 <target>Ten tydzień</target>
+</trans-unit>
+<trans-unit id="DatePickerWeekFull">
+<source>Ésta semana al completo</source>
+<target>Cały ten tydzień</target>
 </trans-unit>
 <trans-unit id="DatePickerLastWeek">
 <source>La semana pasada</source>
@@ -3132,7 +3160,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Przeciągnij tutaj atrybuty, które mają być widoczne w panelu.</target>
   </trans-unit>
 
-  <trans-unit id="dragFilters">
+  <trans-unit id="draggFilters">
     <source>Arrastre aquí los atributos sobre los que quiera filtrar</source>
     <target>Przeciągnij tutaj atrybuty, według których chcesz filtrować</target>
   </trans-unit>
@@ -3440,6 +3468,37 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Código de color</source>
     <target>kod koloru</target>
   </trans-unit>
+
+   <trans-unit id="seeHideRepetitions">
+    <source>Ver/ocultar valores repetidos</source>
+    <target>Pokaż/ukryj powtarzane wartości</target>
+  </trans-unit>
+
+  <trans-unit id="seeRepetitions">
+    <source>Ver valores repetidos</source>
+    <target>Zobacz powtarzające się wartości</target>
+  </trans-unit>
+
+  <trans-unit id="hideRepetitions">
+    <source>Ocultar valores repetidos</source>
+    <target>Ukryj zduplikowane wartości</target>
+  </trans-unit>
+
+  <trans-unit id="seeNegativeNumbers">
+    <source>Números negativos</source>
+    <target>Liczby ujemne</target>
+  </trans-unit>
+
+  <trans-unit id="withNegativeNumbers">
+    <source>Con números negativos</source>
+    <target>Z liczbami ujemnymi</target>
+  </trans-unit>
+
+  <trans-unit id="withoutNegativeNumbers">
+    <source>Sin números negativos</source>
+    <target>Żadnych liczb ujemnych</target>
+  </trans-unit>
+
   <trans-unit id="tableTitleDialog">
     <source>Propiedades de la tabla</source>
     <target>Właściości tabeli</target>
@@ -3517,6 +3576,16 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="SendMailWhat">
     <source>Contenido del mail: </source>
     <target>Treść wiadomości:  </target>
+  </trans-unit>
+
+   <trans-unit id="sendMailHeader">
+    <source>Configuración de los envíos por email</source>
+    <target>Konfigurowanie wysyłania wiadomości e-mail</target>
+  </trans-unit>
+
+  <trans-unit id="saveAsHeader" datatype="html">
+    <source>Guardar como...</source>
+    <target>Zapisz jako...</target>
   </trans-unit>
 
   <trans-unit id="at">
@@ -3768,6 +3837,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Ustawienia powiadomień</target>
   </trans-unit>
 
+ <trans-unit id="setNewAlert">
+    <source>Configurar nueva alerta</source>
+    <target>Ustaw nowy alert</target>
+  </trans-unit> 
 
   <trans-unit id="inputFilter">
     <source>Filtros</source>
@@ -3789,14 +3862,30 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Edycja prywatna:  </target>
   </trans-unit>
 
+   <trans-unit id="onlyIcanEditTagEnable">
+    <source>Edición privada habilitada</source>
+    <target>Możliwość edytowania prywatnego została włączona</target>
+  </trans-unit> 
+
+     <trans-unit id="onlyIcanEditTagDisable">
+    <source>Edición privada deshabilitada</source>
+    <target>Możliwość edytowania prywatnego została wyłączona</target>
+  </trans-unit> 
+
        <trans-unit id="showLabels">
     <source>Mostrar Etiquetas</source>
     <target>Pokaż tagi</target>
   </trans-unit>
-             <trans-unit id="showLabelsPercent">
+    
+    <trans-unit id="showLabelsPercent">
     <source>Mostrar Etiquetas en Porcentaje</source>
     <target>Pokaż tagi w procentach</target>
   </trans-unit>
+
+   <trans-unit id="showPointLines">
+    <source>Mostrar Puntos en Líneas</source>
+    <target>Pokaż punkty na liniach</target>
+  </trans-unit> 
 
        <trans-unit id="histogramColum">
     <source>Columnas</source>
@@ -3808,7 +3897,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Pokaż lub ukryj etykiety na wykresach</target>
   </trans-unit>
 
-  <trans-unit id="showLablesTooltip">
+  <trans-unit id="showLablesPercentTooltip">
     <source>Mostrar o ocultar las etiquetas en porcentaje sobre los gráficos</source>
     <target>Pokaż lub ukryj etykiety procentowe na wykresach</target>
   </trans-unit>
@@ -3915,6 +4004,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="dialogHeaderEditStyles">
     <source>Editar estilos</source>
     <target>Edytuj style</target>
+  </trans-unit> 
+
+  <trans-unit id="properties">
+    <source>Propiedades</source>
+    <target>łaściwości</target>
   </trans-unit> 
 
   <trans-unit id="opcionEditarEstilos">
