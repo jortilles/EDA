@@ -5728,11 +5728,6 @@ Once configured you can invoke it whenever you want from the button.</target>
   <target>The selected file could not be read.</target>
 </trans-unit>
 
-<trans-unit id="pleaseSelectFile">
-  <source>Por favor selecciona un archivo para importar</source>
-  <target>Please select a file to import</target>
-</trans-unit>
-
 <trans-unit id="noCorrectJsonFormat">
   <source>El archivo no tiene un formato JSON válido</source>
   <target>The file does not have a valid JSON format.</target>
@@ -5751,11 +5746,6 @@ Once configured you can invoke it whenever you want from the button.</target>
 <trans-unit id="errorVerifyingModelIntegrity">
   <source>Error al verificar integridad del modelo</source>
   <target>Error verifying model integrity</target>
-</trans-unit>
-
-<trans-unit id="onlyOneFile">
-  <source>Por favor selecciona un archivo para importar</source>
-  <target>Please select a file to import</target>
 </trans-unit>
 
 <trans-unit id="errorLoadingDashboard">
