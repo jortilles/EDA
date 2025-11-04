@@ -582,7 +582,6 @@ public tableNodeExpand(event: any): void {
         this.display_v.minispinner = false;
 
         this.graphicType = chartOption?.value;
-        this.previousChartForm = _.cloneDeep(this.chartForm); // Copiamos el anterior chartForm que habia configurado después de hacer click en el selector de gráficos.
 
         // Verificar si el gráfico es una tabla cruzada
         const crossTableChart = this.chartTypes.find(g => g.subValue === 'crosstable');
@@ -700,8 +699,9 @@ public tableNodeExpand(event: any): void {
 
 
     public changeChartTypeCheck(type: string, subType: string, config?: ChartConfig) {
-
         if (subType=='tableanalized') {
+            
+            
             Swal.fire({
                 title: $localize`:@@NameTablaQuality:Tabla DataQuality`,
                 text: $localize`:@@SureDataQuality:¿Estás seguro de que deseas continuar con la visualización de DataQuality? Esta acción puede tomar un poco de tiempo.`,
@@ -715,20 +715,35 @@ public tableNodeExpand(event: any): void {
                 if(borrado.value){
                     try {
                         this.changeChartType(type, subType, config)
-                        this.previousChartForm = _.cloneDeep(this.chartForm);
+                        console.log('ACEPTOOOO')
                     } catch (err) {
                         this.alertService.addError(err);
                         throw err;
                     }
-                } else {
-                    this.chartForm = _.cloneDeep(this.previousChartForm);
                 }
             })
+            
+            
+            
+            // this.changeChartType(type, subType, config)
+
+
+
+            console.log('paso por aqui???????');
+            // TODO - Popup no aparece
+            //  this.confirmationService.confirm({
+            //      header: `Warning`,
+            //      message: `Este proceso realiza un seguido de consultas al modelo de datos y puede que le tome su tiempo. ¿Desea continuar?`,
+            //      acceptLabel: $localize`:@@si:Si`,
+            //      rejectLabel: $localize`:@@no:No`,
+            //      icon: 'pi pi-exclamation-triangle',
+            //      accept: () => this.changeChartType(type, subType, config)
+            //  })
         } else {
             this.changeChartType(type, subType, config);
-            this.previousChartForm = _.cloneDeep(this.chartForm);
         }
     }
+
 
     /**
      * Changes chart type 
