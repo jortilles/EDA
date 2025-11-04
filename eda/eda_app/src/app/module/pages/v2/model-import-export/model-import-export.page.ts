@@ -205,7 +205,7 @@ handleDashboardExport() {
 
 handleModelImport() {
   if (!this.modelFile()) {
-      this.alertService.addError($localize`:@@onlyOneFile:Por favor selecciona un archivo para importar`)
+      this.alertService.addError($localize`:@@selectFileImport:Por favor selecciona un archivo para importar`)
     return;
   }
 
@@ -271,7 +271,7 @@ handleModelImport() {
 
 handleDashboardImport() {
   if (!this.dashboardFile()) {
-    this.alertService.addError($localize`:@@pleaseSelectFile:Por favor selecciona un archivo para importar`);
+    this.alertService.addError($localize`:@@selectFileImport:Por favor selecciona un archivo para importar`);
     return;
   }
 
