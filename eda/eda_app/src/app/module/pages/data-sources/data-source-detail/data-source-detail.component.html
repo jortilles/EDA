@@ -319,20 +319,55 @@
         </div>
       }
 
-      <!-- TODO -->
-      <!-- <div *ngIf="columnPanel.valueListSource" style="margin-bottom: 1em; margin-top: 0.5em;">
-        <h5 class="title-datamodel" i18n="@@possibleValuesList"  [pTooltip]="valueListSourceHeader">
-            Valores para filtro: 
-        </h5>
-        <div class="valuesListList">
-            <p> <b  [pTooltip]="valueListSourceTabla" i18n="@@possibleValuesListTable" >Tabla:</b>  {{columnPanel.valueListSource.target_table}}</p> 
-            <p> <b  [pTooltip]="valueListSourceID" i18n="@@possibleValuesListID">Columna id:</b>  {{columnPanel.valueListSource.target_id_column}} </p> 
-            <p> <b  [pTooltip]="valueListSourceDescripcion" i18n="@@possibleValuesListDescription">Columna descripción:</b>   {{columnPanel.valueListSource.target_description_column}}</p>
-        </div>
-        <div class="deleteRelation">
-            <i class="fa fa-trash btn pl-1" (click)="deleteValuesList(columnPanel)"></i>
-        </div>
-      </div> -->
+      @if(columnPanel.valueListSource){
+      <h3 class="text-lg font-medium text-gray-700 mb-3" i18n="@@rolesPermisos">Valores para filtro</h3>
+      
+      <div class="border rounded-lg">
+        <table class="w-full border-collapse rounded-lg overflow-hidden shadow-sm">
+          <thead class="bg-gray-100 text-gray-700 uppercase text-sm">
+            <tr>
+              <th class="p-3 text-left">Tabla</th>
+              <th class="p-3 text-left">Columna ID</th>
+              <th class="p-3 text-left">Columna descripción</th>
+              <th class="p-3 text-right" i18n="@@urlAction">Acciones</th>
+            </tr>
+          </thead>
+      
+          <tbody class="bg-white divide-y divide-gray-200 font-medium text-gray-800">
+            <tr class="hover:bg-gray-50 transition">
+              <td class="p-3">
+                <label class="block w-full rounded-md p-2 text-gray-800 font-medium">
+                  {{ columnPanel.valueListSource.target_table || '—' }}
+                </label>
+      
+              </td>
+      
+              <td class="p-3">
+      
+                <label class="block w-full rounded-md p-2 text-gray-800 font-medium">
+                  {{ columnPanel.valueListSource.target_id_column || '—' }}
+                </label>
+              </td>
+      
+              <td class="p-3">
+                <label class="block w-full rounded-md p-2 text-gray-800 font-medium">
+                  {{ columnPanel.valueListSource.target_description_column || '—' }}
+                </label>
+              </td>
+      
+            <td class="p-3 text-right">
+              <button pButton type="button" icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text" 
+              title="Eliminar valor" (click)="deleteValuesList(columnPanel)">
+              </button>
+            </td>
+
+            </tr>
+          </tbody>
+        </table>
+      
+      </div>
+      }
+
       
       <!-- Row Roles and Permissions -->
       @if (columnPanel.computed_column === 'no') {
