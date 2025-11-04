@@ -412,7 +412,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         } else if (['histogram'].includes(chartConfig.edaChart)) {
                 if (chartConfig.chartLabels.length === 0) {
-                    chartConfig.chartLabels = [chartConfig.assignedColors[0].value];
+                    chartConfig.chartLabels = [chartConfig.assignedColors[0]?.value];
                     chartConfig.chartDataset[0].data = [1];
                 }
                 if (sortByAsCol) {
