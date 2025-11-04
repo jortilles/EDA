@@ -4187,6 +4187,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
 <context context-type="linenumber">4</context>
 </context-group>
+  </trans-unit>
 
   <trans-unit id="filters13">
     <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
@@ -5774,11 +5775,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <target>Nie można odczytać wybranego pliku.</target>
 </trans-unit>
 
-<trans-unit id="pleaseSelectFile">
-  <source>Por favor selecciona un archivo para importar</source>
-  <target>Wybierz plik do zaimportowania.</target>
-</trans-unit>
-
 <trans-unit id="noCorrectJsonFormat">
   <source>El archivo no tiene un formato JSON válido</source>
   <target>Plik nie jest w prawidłowym formacie JSON.</target>
@@ -5797,11 +5793,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
 <trans-unit id="errorVerifyingModelIntegrity">
   <source>Error al verificar integridad del modelo</source>
   <target>Błąd weryfikacji integralności modelu</target>
-</trans-unit>
-
-<trans-unit id="onlyOneFile">
-  <source>Por favor selecciona un archivo para importar</source>
-  <target>Wybierz plik do zaimportowania.</target>
 </trans-unit>
 
 <trans-unit id="errorLoadingDashboard">

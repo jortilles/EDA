@@ -6015,11 +6015,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>No s'ha pogut llegir el fitxer seleccionat</target>
 </trans-unit>
 
-<trans-unit id="pleaseSelectFile">
-  <source>Por favor selecciona un archivo para importar</source>
-  <target>Si us plau selecciona un fitxer per importar</target>
-</trans-unit>
-
 <trans-unit id="noCorrectJsonFormat">
   <source>El archivo no tiene un formato JSON válido</source>
   <target>El fitxer no té un format JSON vàlid</target>
@@ -6038,11 +6033,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="errorVerifyingModelIntegrity">
   <source>Error al verificar integridad del modelo</source>
   <target>Error en verificar integritat del model</target>
-</trans-unit>
-
-<trans-unit id="onlyOneFile">
-  <source>Por favor selecciona un archivo para importar</source>
-  <target>Si us plau selecciona un fitxer per importar</target>
 </trans-unit>
 
 <trans-unit id="errorLoadingDashboard">
