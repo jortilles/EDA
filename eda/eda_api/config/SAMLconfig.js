@@ -7,6 +7,8 @@ module.exports = {
     idpCert: `-----BEGIN CERTIFICATE-----
 xxxxxxxxxxxxxxxxxxxxxxxxxx
 -----END CERTIFICATE-----`,
+    privateKey: 'xxxxxxxxxxxxxxxxxxxxxxxxxx',
+    publicCert: 'xxxxxxxxxxxxxxxxxxxxxxxxxx',
     logoutUrl: 'xxxxxxxxxxxxxxxxxxxxxxxxxx',
     identifierFormat: 'xxxxxxxxxxxxxxxxxxxxxxxxxx',
     wantAssertionsSigned: false,
