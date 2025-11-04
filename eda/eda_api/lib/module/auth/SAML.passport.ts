@@ -2,14 +2,22 @@ import passport from 'passport';
 import { Strategy as SamlStrategy, type Profile, type SamlConfig, type VerifiedCallback } from '@node-saml/passport-saml';
 const SAMLconfig = require('../../../config/SAMLconfig');
 
+// 🔧 Normaliza PEM (arregla \n escapados, Buffer u objetos)
+const normalizePem = (pem: any): string | undefined => {
+  if (!pem) return undefined;
+  if (Buffer.isBuffer(pem)) pem = pem.toString('utf8');
+  if (typeof pem === 'object' && pem.key) pem = pem.key;
+  if (typeof pem === 'string') return pem.replace(/\\n/g, '\n').trim();
+  return undefined;
+};
 
 const samlConfig: SamlConfig = {
   issuer: process.env.SAML_SP_ENTITY_ID || SAMLconfig.issuer,
   callbackUrl: process.env.SAML_ACS_URL || SAMLconfig.callbackUrl,
   entryPoint: SAMLconfig.entryPointValue,
   idpCert: SAMLconfig.idpCert,
-  privateKey: SAMLconfig.privateKey,
-  publicCert: SAMLconfig.publicCert,
+  privateKey: normalizePem(SAMLconfig.privateKey),
+  publicCert: normalizePem(SAMLconfig.publicCert),
   logoutUrl: SAMLconfig.logoutUrl,
   identifierFormat: SAMLconfig.identifierFormat,
   wantAssertionsSigned: SAMLconfig.wantAssertionsSigned,
