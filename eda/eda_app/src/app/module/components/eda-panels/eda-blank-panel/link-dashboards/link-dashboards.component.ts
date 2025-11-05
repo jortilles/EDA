@@ -3,6 +3,7 @@ import { SelectItem } from 'primeng/api';
 import { Component, Input } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { AlertService, DashboardService } from '@eda/services/service.index';
+import { ChangeDetectorRef } from '@angular/core';
 
 import * as _ from 'lodash';
 
@@ -38,11 +39,17 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
   public activateProgressBar: boolean = false;
   public noLink: boolean = false;
 
-  public oldLinked : any = null ;
-  public unLinkString : string = $localize`:@@unlink:Desvincular del informe: `
-  public noValidColumn : string = $localize`:@@NoValidCol:No hay columnas válidas`
+  public oldLinked: any = null;
+  public unLinkString: string = $localize`:@@unlink:Desvincular del informe: `
+  public noValidColumn: string = $localize`:@@NoValidCol:No hay columnas válidas`
 
-  constructor(private dashboardService: DashboardService, private alertService: AlertService) {
+  public loading = false;
+
+  constructor(
+    private dashboardService: DashboardService,
+    private alertService: AlertService,
+    private cd: ChangeDetectorRef // 👈 inyectamos ChangeDetectorRef
+  ) {
     super();
     this.dialog = new EdaDialog({
       show: () => this.onShow(),
@@ -80,7 +87,7 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
   onShow(): void {
     this.oldLinked = this.controller.params.linkedDashboard ? this.controller.params.linkedDashboard.dashboardName : null;
-    
+
     if ((this.controller.params.charttype === 'parallelSets') && !this.controller.params.modeSQL) {
 
       this.columns = this.controller.params.query.filter(col => (col.column_type === 'text' || col.column_type === 'date'))
@@ -102,11 +109,11 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
     else if (this.controller.params.charttype !== 'table' && !this.controller.params.modeSQL) {
       let column = this.controller.params.query
-        .map((col, i) => { return { col: col.column_name, table: col.table_id, colname: col.display_name.default, index:i, column_type:col.column_type } })
+        .map((col, i) => { return { col: col.column_name, table: col.table_id, colname: col.display_name.default, index: i, column_type: col.column_type } })
         .filter(col => (col.column_type === 'text' || col.column_type === 'date'))[0];
-    	this.column = column?column.colname : this.noValidColumn;
+      this.column = column ? column.colname : this.noValidColumn;
 
-      if(column){
+      if (column) {
         this.initDashboards(column);
       }
 
@@ -146,81 +153,96 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
   }
 
   public async initDashboards(column: any): Promise<any> {
-
     this.dasboards = [];
     this.filters = [];
     this.activateProgressBar = true;
 
+    const tempDashboards: SelectItem[] = [];
+    const tempFilters: any[] = [];
+
     try {
-
+      // Obtener lista general de dashboards
+      this.loading = true;
       const dashboardInfo = await this.dashboardService.getDashboards().toPromise();
-      const dashboards =
-        [].concat.apply([], [dashboardInfo.dashboards, dashboardInfo.group, dashboardInfo.publics, dashboardInfo.shared])
-          .filter(d => d._id !== this.controller.params.dashboard_id);
-          
-      const filters = [];
+      const dashboards = []
+        .concat(dashboardInfo.dashboards, dashboardInfo.group, dashboardInfo.publics, dashboardInfo.shared)
+        .filter(d => d._id !== this.controller.params.dashboard_id);
 
+      // Llamadas en paralelo para cargar los dashboards mas rapido
+      const results = await Promise.allSettled(
+        dashboards.map(d => this.dashboardService.getDashboard(d._id).toPromise())
+      );
 
-      for (let i = 0; i < dashboards.length; i++) {
-        let res;
-        try {
-          res = await this.dashboardService.getDashboard(dashboards[i]._id).toPromise();
-        } catch (err) {
+      // Procesar resultados
+      for (let i = 0; i < results.length; i++) {
+        const res = results[i];
+        const d = dashboards[i];
+
+        if (res.status !== 'fulfilled' || !res.value) continue;
+        const dash = res.value.dashboard;
+
+        if (
+          dash.config.ds._id !== this.controller.params.datasource ||
+          !dash.config?.filters?.length
+        ) {
+          continue;
         }
-    
-        if (res) {
-          /** If datasources are equal and dashboar has filters */
-          if (res.dashboard.config.ds._id === this.controller.params.datasource && res.dashboard.config?.filters?.length > 0) {
 
-            let disable = true;
+        let disable = true;
 
-            if (!this.controller.params.modeSQL) {
-              res.dashboard.config.filters.forEach(filter => {
-                if(filter.column){
-                  if (filter.column.value.column_name === column.col && filter.table.value === column.table) {
-                    disable = false;
-                  }
-                }else{
-                  console.log('NO SE HA IMPLEMENTADO TODAVÍA INFORMES VINCULADOS CON EL MODO ARBOL.');
-                  console.log(res.dashboard.config.title);
-                }
-                this.targetColumn = column.col;
-                this.targetTable = column.table;
-
-                this.sourceColumn = column.col;
-                this.sourceTable = column.table;
-
-              });
-
-              if (!disable) {
-                this.dasboards.push({ label: dashboards[i].config.title, value: dashboards[i]._id });
+        if (!this.controller.params.modeSQL) {
+          // No SQL mode
+          for (const filter of dash.config.filters) {
+            if (filter.column) {
+              if (
+                filter.column.value.column_name === column.col &&
+                filter.table.value === column.table
+              ) {
+                disable = false;
               }
-
             } else {
-
-              this.sourceColumn = column.col;
-              this.sourceTable = column.table;
-              res.dashboard.config.filters.forEach(filter => {
-                filters.push({ colname: filter.column.value.column_name, dashboardID: dashboards[i]._id, table: filter.table.value });
-              });
-              this.dasboards.push({ label: dashboards[i].config.title, value: dashboards[i]._id });
+              console.log('NO SE HA IMPLEMENTADO TODAVÍA INFORMES VINCULADOS CON EL MODO ARBOL.');
             }
-
           }
-        }
 
+          this.targetColumn = column.col;
+          this.targetTable = column.table;
+          this.sourceColumn = column.col;
+          this.sourceTable = column.table;
+
+          if (!disable) {
+            tempDashboards.push({ label: d.config.title, value: d._id });
+          }
+
+        } else {
+          // SQL mode
+          this.sourceColumn = column.col;
+          this.sourceTable = column.table;
+
+          for (const filter of dash.config.filters) {
+            tempFilters.push({
+              colname: filter.column.value.column_name,
+              dashboardID: d._id,
+              table: filter.table.value
+            });
+          }
+
+          tempDashboards.push({ label: d.config.title, value: d._id });
+        }
       }
 
-      this.filters = filters;
+      this.dasboards = tempDashboards;
+      this.filters = tempFilters;
+      this.cd.detectChanges();
 
-    }
-
-    catch (err) {
+    } catch (err) {
       this.alertService.addError(err);
       throw err;
-    }
-    finally {
+    } finally {
       this.activateProgressBar = false;
+      this.loading = false;
+      this.cd.detectChanges();
     }
   }
+
 }
