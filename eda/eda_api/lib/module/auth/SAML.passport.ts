@@ -21,7 +21,7 @@ const samlConfig: SamlConfig = {
   issuer: process.env.SAML_SP_ENTITY_ID || SAMLconfig.issuer,
   callbackUrl: process.env.SAML_ACS_URL || SAMLconfig.callbackUrl,
   entryPoint: SAMLconfig.entryPointValue,
-  idpCert: SAMLconfig.idpCerts,
+  idpCert: SAMLconfig.idpCert,
   privateKey: normalizePem(SAMLconfig.privateKey),
   publicCert: normalizePem(SAMLconfig.publicCert),
   logoutUrl: SAMLconfig.logoutUrl,
