@@ -39,7 +39,7 @@
               [options]="columns"
               [disabled]="noLink"
               (onChange)="initDashboards(selectedColumn)"
-              optionLabel="colname" placeholder="Column"
+              optionLabel="colname" placeholder="Field"
               [style]="{'width': '100%'}"
             ></p-dropdown>
           </div>
@@ -53,9 +53,10 @@
             <p-dropdown
               [options]="dasboards"
               [(ngModel)]="selectedDashboard"
-              [disabled]="noLink"
+              [disabled]="loading === false && activateProgressBar === false"
               [style]="{'width': '100%'}"
-              placeholder="Column"
+              placeholder="Dashboard"
+              [loading] = "loading===true"
             ></p-dropdown>
           </div>
         </div>
