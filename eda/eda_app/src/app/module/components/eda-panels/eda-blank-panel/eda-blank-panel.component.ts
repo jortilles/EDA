@@ -605,7 +605,7 @@ public tableNodeExpand(event: any): void {
             this.display_v.saved_panel = true;
 
             const query = this.initObjectQuery();
-            const chart = this.chartForm.value.chart.value ? this.chartForm.value.chart.value : this.chartForm.value.chart;
+            const chart = this.chartForm?.value.chart?.value ? this.chartForm?.value.chart?.value : this.chartForm?.value.chart;
             const edaChart = this.panelChart?.props.edaChart;
 
             this.panel.content = { query, chart, edaChart };
