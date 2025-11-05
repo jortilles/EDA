@@ -2,10 +2,9 @@ import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MailService, AlertService, DashboardService,SpinnerService } from '@eda/services/service.index';
-import { lastValueFrom } from 'rxjs';
-import { IconComponent } from '@eda/shared/components/icon/icon.component';
-
+import { from, lastValueFrom } from 'rxjs';
+import { mergeMap, toArray, tap, finalize } from 'rxjs/operators';
+import { MailService, AlertService, DashboardService, SpinnerService } from '@eda/services/service.index';
 
 interface AlertItem {
   id: string;
@@ -18,15 +17,14 @@ interface AlertItem {
 interface DashboardItem {
   id: string;
   dashboard: string;
-  datamodel: string; 
+  datamodel: string;
 }
 
 interface DashboardSummary {
   _id: string;
-  config?: {
-    haveAlerts?: boolean;
-  }
+  config?: { haveAlerts?: boolean };
 }
+
 interface DashboardsListResponse {
   dashboards?: DashboardSummary[];
   group?: DashboardSummary[];
@@ -46,11 +44,15 @@ interface DashboardDetailResponse {
           chart?: string;
           query?: {
             query?: { fields?: Array<{ display_name: string }> };
-            output?: { config?: { alertLimits?: Array<{
-              operand: string;
-              value: string | number;
-              mailing?: { enabled?: boolean };
-            }> } };
+            output?: {
+              config?: {
+                alertLimits?: Array<{
+                  operand: string;
+                  value: string | number;
+                  mailing?: { enabled?: boolean };
+                }>;
+              };
+            };
           };
         };
       }>;
@@ -66,38 +68,27 @@ interface DashboardDetailResponse {
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
   styles: []
 })
-  
-  
 export class EmailSettingsPage implements OnInit {
 
-  constructor() {
-  this.emailForm = this.fb.group({
-    host: [null, Validators.required],
-    port: [null, Validators.required],
-    secure: [false, Validators.required],
-    user: [null, Validators.required],
-    password: [null, Validators.required],
-  });
-  }
-  
-private fb = inject(FormBuilder);
+  // --- Services ---
+  private fb = inject(FormBuilder);
   private alertService = inject(AlertService);
   private mailService = inject(MailService);
   private dashboardService = inject(DashboardService);
   private spinnerService = inject(SpinnerService);
   private router = inject(Router);
 
-
+  // --- Signals ---
+  loadingSignal = signal(true);  
   tlsEnabled = signal<boolean>(false);
-  emailForm: FormGroup;
   isChecking = signal<boolean>(false);
   isSubmitting = signal<boolean>(false);
-
 
   alertsPerPage = signal<string>('10');
   dashboardsPerPage = signal<string>('10');
   alertItems = signal<AlertItem[]>([]);
   dashboardItems = signal<DashboardItem[]>([]);
+
   alertsPaged = computed(() => {
     const n = Number(this.alertsPerPage() || 10);
     return this.alertItems().slice(0, n);
@@ -108,29 +99,45 @@ private fb = inject(FormBuilder);
     return this.dashboardItems().slice(0, n);
   });
 
-  async ngOnInit(): Promise<void> {
-    await this.loadEmailSettings();
-    await this.loadDashboardsData();   
+  // --- Form ---
+  emailForm: FormGroup;
+
+  constructor() {
+    this.emailForm = this.fb.group({
+      host: [null, Validators.required],
+      port: [null, Validators.required],
+      secure: [false, Validators.required],
+      user: [null, Validators.required],
+      password: [null, Validators.required],
+    });
   }
 
-private async loadEmailSettings() {
-  const mailSettings = await lastValueFrom(this.mailService.getConfiguration());
-  this.emailForm.patchValue({
-    host: mailSettings.config.host,
-    port: mailSettings.config.port,
-    secure: mailSettings.config.secure,
-    user: mailSettings.config.auth.user,
-    password: null
-  });
+  async ngOnInit(): Promise<void> {
+    await this.loadEmailSettings();
+    await this.loadDashboardsData();
+  }
 
-  this.tlsEnabled.set(mailSettings.config.secure);
-}
+  // =====================================================
+  //   CARGA DE CONFIGURACIÓN DE CORREO
+  // =====================================================
+  private async loadEmailSettings() {
+    const mailSettings = await lastValueFrom(this.mailService.getConfiguration());
+    this.emailForm.patchValue({
+      host: mailSettings.config.host,
+      port: mailSettings.config.port,
+      secure: mailSettings.config.secure,
+      user: mailSettings.config.auth.user,
+      password: null
+    });
+    this.tlsEnabled.set(mailSettings.config.secure);
+  }
 
+  // =====================================================
+  //   CARGA DE DASHBOARDS (OPTIMIZADA CON RXJS)
+  // =====================================================
   private async loadDashboardsData() {
-    // Todos los dashboards
     const list = await lastValueFrom(this.dashboardService.getDashboards()) as DashboardsListResponse;
-      
-    // Unimos todos los dashboards en un solo array
+
     const allDashboards = [
       ...(list.dashboards ?? []),
       ...(list.group ?? []),
@@ -138,53 +145,56 @@ private async loadEmailSettings() {
       ...(list.shared ?? []),
     ];
 
-    // IDs de los dashboards
     const ids = allDashboards.map(d => d._id);
-
-    // Pedimos los detalles de dashboards
-    const detailPromises = ids.map(id => lastValueFrom(this.dashboardService.getDashboard(id)));
-    const details = (await Promise.all(detailPromises)) as DashboardDetailResponse[];
-
-    // Rellenamos signals
-    const alerts: AlertItem[] = [];
     const dashboardsForMail: DashboardItem[] = [];
+    const alerts: AlertItem[] = [];
 
-    for (const d of details) {
-      const dash = d.dashboard;
-      const title = dash.config?.title ?? '';
-      const modelName = d.datasource?.name ?? '';
-      const dashId = dash._id;
+    this.loadingSignal.set(true);
 
-      // Dashboard signals
-      const panels = dash.config?.panel ?? [];
-        if (dash.config?.sendViaMailConfig?.enabled) {
-          dashboardsForMail.push({
-            id: dashId,
-            dashboard: title,
-            datamodel: modelName,
-          });
-      }
-      
-      this.dashboardItems.set(dashboardsForMail);
+    await lastValueFrom(
+      from(ids).pipe(
+        mergeMap(id => this.dashboardService.getDashboard(id), 5),
+        tap((d: DashboardDetailResponse) => {
+          const dash = d.dashboard;
+          const title = dash.config?.title ?? '';
+          const modelName = d.datasource?.name ?? '';
+          const dashId = dash._id;
 
-      // Alerts signals
-      for (const p of panels) {
-        const isKpi = p?.content?.chart.startsWith('kpi');
-        const limits = p?.content?.query?.output?.config?.alertLimits ?? [];
-        if (!isKpi || limits.length === 0) continue;
+          // Dashboards con envío por mail
+          if (dash.config?.sendViaMailConfig?.enabled) {
+            dashboardsForMail.push({ id: dashId, dashboard: title, datamodel: modelName });
+          }
 
-        for (const a of limits) {
-          alerts.push({
-            id: dashId,
-            alerts: `KPI ${a.operand} ${a.value}`,
-            panel: p.title,
-            dashboard: title,
-            datamodel: modelName,
-          });
-        }
-      }
-    }
+          // Alertas por KPI
+          const panels = dash.config?.panel ?? [];
+          for (const p of panels) {
+            const isKpi = p?.content?.chart?.startsWith('kpi');
+            const limits = p?.content?.query?.output?.config?.alertLimits ?? [];
+            if (!isKpi || limits.length === 0) continue;
+
+            for (const a of limits) {
+              alerts.push({
+                id: dashId,
+                alerts: `KPI ${a.operand} ${a.value}`,
+                panel: p.title,
+                dashboard: title,
+                datamodel: modelName,
+              });
+            }
+          }
+
+          // Actualización parcial (UX fluida)
+          this.dashboardItems.set([...dashboardsForMail]);
+          this.alertItems.set([...alerts]);
+        }),
+        toArray(),
+        finalize(() => this.loadingSignal.set(false))
+      )
+    );
+
+    this.dashboardItems.set(dashboardsForMail);
     this.alertItems.set(alerts);
+    this.loadingSignal.set(false);
   }
 
   goToDashboardById(id: string) {
@@ -199,17 +209,17 @@ private async loadEmailSettings() {
     this.spinnerService.on();
     const options = this.getOptions();
 
-    this.mailService.checkConfiguration(options).subscribe(
-      res => {
+    this.mailService.checkConfiguration(options).subscribe({
+      next: () => {
         this.spinnerService.off();
-        this.alertService.addSuccess($localize`:@@mailConfOk:Credenciales  correctas`);
+        this.alertService.addSuccess($localize`:@@mailConfOk:Credenciales correctas`);
       },
-      err => {
-        this.alertService.addError(err)
+      error: err => {
+        this.spinnerService.off();
+        this.alertService.addError(err);
       }
-    );
+    });
   }
-
 
   async handleSubmit() {
     this.isSubmitting.set(true);
@@ -231,10 +241,11 @@ private async loadEmailSettings() {
       port: v.port,
       secure: v.secure,
       auth: { user: v.user, pass: v.password },
-      tls: { rejectUnauthorized: v.secure ? true : false }
+      tls: { rejectUnauthorized: !!v.secure }
     };
   }
 
-    public sendMailconfig() {
+  public sendMailconfig() {
+    // (Pendiente de implementación)
   }
 }
