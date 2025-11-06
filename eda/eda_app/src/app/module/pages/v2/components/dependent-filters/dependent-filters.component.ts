@@ -5,6 +5,7 @@ import { EdaDialog, EdaDialog2Component, EdaDialogAbstract, EdaDialogCloseEvent 
 import { SharedModule } from "@eda/shared/shared.module";
 import { SelectButtonModule } from "primeng/selectbutton";
 import { DashboardPageV2 } from "../../dashboard/dashboard.page";
+import * as _ from 'lodash';
 
 import {
   CompactType,
@@ -32,11 +33,12 @@ export class DependentFilters implements OnInit {
     @Input() dashboardPage: DashboardPageV2
     @Output() close: EventEmitter<any> = new EventEmitter<any>();
 
-    public display: boolean = false;
-
     options: GridsterConfig;
     dashboard: GridsterItem[];
     itemToPush: GridsterItemComponent;
+
+    public display: boolean = false;
+    private dashboardPrev: any = [];
 
     constructor() {}
 
@@ -115,6 +117,9 @@ export class DependentFilters implements OnInit {
             k++;
         });
 
+        // COPIA DEL DASHBOARD, PARA TENER UN DASHBOARD PREVIO
+        this.dashboardPrev = _.cloneDeep(this.dashboard);
+
     }
 
     onItemChange(item: GridsterItem): void {
@@ -126,8 +131,8 @@ export class DependentFilters implements OnInit {
         let arregloY = [...Array(x).keys()];
         // console.log('arregloY: 1', arregloY);
 
+        console.log('this.dashboardPrev: ', this.dashboardPrev);
 
-        // debugger;
 
         if(item.y >= this.dashboard.length){
             
@@ -139,7 +144,9 @@ export class DependentFilters implements OnInit {
                 }
             }
 
-            item.x = 0;
+            // debugger;
+
+            item.x = this.dashboardPrev.find((gf: any) => gf.filter_column === item.filter_column).x;
             item.y = arregloY[0];
 
             // Gridster que actualice la posición
@@ -170,6 +177,10 @@ export class DependentFilters implements OnInit {
                 
         //     }
         // }
+
+        // EL DASHBOARD PREVIO ADQUIERE EL VALOR ACTUAL:
+        this.dashboardPrev = _.cloneDeep(this.dashboard);
+
     }
 
     configurationDependentFilters(dashboard: any, item) {
