@@ -9,6 +9,7 @@ import { DashboardPageV2 } from "../../dashboard/dashboard.page";
 import {
   CompactType,
   GridsterConfig,
+  DisplayGrid,
   GridsterItem,
   GridsterItemComponent,
   GridsterModule,
@@ -45,15 +46,32 @@ export class DependentFilters implements OnInit {
 
 
         this.options = {
-            gridType: GridType.Fit,
-            compactType: CompactType.None,
-            pushItems: true,
-            draggable: {
-                enabled: true
-            },
-            resizable: {
-                enabled: true
-            }
+        gridType: GridType.Fit,        // mantienes Fit si quieres que siga llenando el contenedor
+        compactType: CompactType.None,
+        displayGrid: DisplayGrid.Always,
+        pushItems: false,
+        draggable: { enabled: true },
+        resizable: { enabled: false },
+
+        // ---- Mobile control ----
+        mobileBreakpoint: 150,
+
+        // Evita que los items cambien sus dimensiones en mobile:
+        // Si quieres que en mobile conserven el ancho/alto definidos por fixedCol/Row:
+        fixedColWidth: 90,           // ancho "base" que Gridster usará si keep...InMobile = true
+        fixedRowHeight: 50,          // alto "base" que Gridster usará si keep...InMobile = true
+        keepFixedWidthInMobile: true, // conserva el ancho fijo al entrar en mobile
+        keepFixedHeightInMobile: true,// conserva la altura fija al entrar en mobile
+
+        // Opciones útiles extra
+        disableWindowResize: false,   // false por defecto; si true evitaría recálculos automáticos
+        mobileModeEnabled: true,       // por claridad (no todas las versiones tienen esta prop)
+
+            minCols: 10,
+            maxCols: 10,
+            minRows: 9, // Make this value dynamic - pending
+            maxRows: 9, // Make this value dynamic - pending
+            margin: 0.2, // Reduce the margin between cells
         };
 
         this.dashboard = [
