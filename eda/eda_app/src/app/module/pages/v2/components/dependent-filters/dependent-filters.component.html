@@ -16,6 +16,11 @@
             <gridster class="gridster" [options]="options">
                 <gridster-item [item]="item" *ngFor="let item of dashboard">
                     <div class="button-holder">
+                        <div class="content-item">
+                            <p>{{item.filter_table}}</p>
+                            <p>{{item.filter_column}}</p>
+                            <p>{{item.filter_type}}</p>
+                        </div>
                     <!-- <button
                         mat-mini-fab
                         (mousedown)="removeItem($event, item)"

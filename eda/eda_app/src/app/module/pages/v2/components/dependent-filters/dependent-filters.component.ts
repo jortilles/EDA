@@ -44,6 +44,8 @@ export class DependentFilters implements OnInit {
         this.display = true;
         console.log('MI dashboardPage: ', this.dashboardPage);
 
+        // inicializando el initDashboard
+        this.initDashboard();
 
         this.options = {
         gridType: GridType.Fit,        // mantienes Fit si quieres que siga llenando el contenedor
@@ -74,19 +76,47 @@ export class DependentFilters implements OnInit {
         margin: 1, // Reduce the margin between cells
         };
 
-        this.dashboard = [
-        { cols: 3, rows: 1, y: 0, x: 0, initCallback: this.initItem.bind(this) },
-        { cols: 3, rows: 1, y: 1, x: 0 },
-        { cols: 3, rows: 1, y: 2, x: 0 },
-        { cols: 3, rows: 1, y: 3, x: 0 },
-        { cols: 3, rows: 1, y: 4, x: 0 },
-        { cols: 3, rows: 1, y: 5, x: 0 },
-        { cols: 3, rows: 1, y: 6, x: 0 },
-        { cols: 3, rows: 1, y: 7, x: 0 },
-        { cols: 3, rows: 1, y: 8, x: 0 },
-        { cols: 3, rows: 1, y: 9, x: 0 },
-        ];
+
+        // MANTENER COMO REFERENCIA EN EL DESARROLLO
+        // this.dashboard = [
+        // { cols: 3, rows: 1, y: 0, x: 0, initCallback: this.initItem.bind(this) },
+        // { cols: 3, rows: 1, y: 1, x: 0 },
+        // { cols: 3, rows: 1, y: 2, x: 0 },
+        // { cols: 3, rows: 1, y: 3, x: 0 },
+        // { cols: 3, rows: 1, y: 4, x: 0 },
+        // { cols: 3, rows: 1, y: 5, x: 0 },
+        // { cols: 3, rows: 1, y: 6, x: 0 },
+        // { cols: 3, rows: 1, y: 7, x: 0 },
+        // { cols: 3, rows: 1, y: 8, x: 0 },
+        // { cols: 3, rows: 1, y: 9, x: 0 },
+        // ];
         
+    }
+
+    initDashboard() {
+        this.dashboard = [];
+        let k = 0;
+
+        this.dashboardPage.globalFilter.globalFilters.forEach((gf: any) => {
+            this.dashboard.push(
+                {
+                    cols: 3,
+                    rows: 1,
+                    y: k,
+                    x: 0,
+                    filter_table: gf.selectedTable.display_name.default,
+                    filter_column: gf.selectedColumn.display_name.default,
+                    filter_type: gf.selectedColumn.column_type,
+                    filter_id: gf.id,
+                }
+            );
+            k++;
+        });
+
+    }
+
+    configurationDependentFilters(dashboard: any, item) {
+        // this.dashboard.splice(this.dashboard.indexOf(item), 1);
     }
 
 

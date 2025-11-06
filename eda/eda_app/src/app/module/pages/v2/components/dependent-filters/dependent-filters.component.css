@@ -10,3 +10,8 @@
     background-color: transparent;
     border: 1px solid #13d60c00;  /* Border lines around each item  */
 }
+
+.content-item {
+    padding: 3px;
+    background-color: rgb(30, 190, 129);
+}
