@@ -74,6 +74,8 @@ export class DependentFilters implements OnInit {
         minRows: 10, // Make this value dynamic - pending
         maxRows: 10, // Make this value dynamic - pending
         margin: 1, // Reduce the margin between cells
+
+        itemChangeCallback: this.onItemChange.bind(this)
         };
 
 
@@ -113,6 +115,61 @@ export class DependentFilters implements OnInit {
             k++;
         });
 
+    }
+
+    onItemChange(item: GridsterItem): void {
+
+        console.log('this.dashboard: ', this.dashboard);
+        console.log('item: ', item);
+
+        const x = this.dashboard.length;
+        let arregloY = [...Array(x).keys()];
+        // console.log('arregloY: 1', arregloY);
+
+
+        // debugger;
+
+        if(item.y >= this.dashboard.length){
+            
+            for(let i=0; i<this.dashboard.length; i++) {
+                if(this.dashboard[i].y >= this.dashboard.length) {
+                    console.log('gf: ', this.dashboard[i]);
+                } else {
+                    arregloY = arregloY.filter(index => index !== this.dashboard[i].y);
+                }
+            }
+
+            item.x = 0;
+            item.y = arregloY[0];
+
+            // Gridster que actualice la posición
+            if (this.options.api?.optionsChanged) {
+                this.options.api.optionsChanged();
+            }            
+    
+            console.log('arregloY: 2', arregloY);
+
+        } else {
+            console.log('AQUI NO DEBE HABER ESTE ANALISIS')
+        }
+
+
+        // // Verifica si es el ítem que debe quedarse fijo
+        // if (item === this.dashboard[0]) {
+        //     console.log('entraaaaa....')
+        //     // Si fue movido, lo regresa a (0,0)
+        //     if (item.x !== 0 || item.y !== 0) {
+
+        //         item.x = 0;
+        //         item.y = 0;
+
+        //         // Gridster que actualice la posición
+        //         if (this.options.api?.optionsChanged) {
+        //             this.options.api.optionsChanged();
+        //         }
+                
+        //     }
+        // }
     }
 
     configurationDependentFilters(dashboard: any, item) {
