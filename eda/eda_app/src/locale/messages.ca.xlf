@@ -6083,6 +6083,32 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>La edición de la vista permite modificar únicamente la consulta (query), pero no debe cambiar los nombres de las columnas.</source>
         <target>L'edició de la vista només permet modificar la consulta (query), però no ha de canviar els noms de les columnes.</target>
       </trans-unit>
+
+      <trans-unit id="fieldDashboard">
+        <source>Campo</source>
+        <target>Camp</target>
+      </trans-unit>
+
+      <trans-unit id="DashboardDashboard">
+        <source>Panel</source>
+        <target>Panell</target>
+      </trans-unit>
+
+      <trans-unit id="columnDashboard">
+        <source>Columna</source>
+        <target>Columna</target>
+      </trans-unit>
+
+      <trans-unit id="fieldDashboardDashboard">
+        <source>Panel</source>
+        <target>Panell</target>
+      </trans-unit>
+
+      <trans-unit id="columnDashboardDashboard">
+        <source>Columna</source>
+        <target>Columna</target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>

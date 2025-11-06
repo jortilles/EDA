@@ -39,7 +39,9 @@
               [options]="columns"
               [disabled]="noLink"
               (onChange)="initDashboards(selectedColumn)"
-              optionLabel="colname" placeholder="Field"
+              optionLabel="colname" 
+              i18n-placeholder="@@fieldDashboard"
+              placeholder="Field"
               [style]="{'width': '100%'}"
             ></p-dropdown>
           </div>
@@ -55,6 +57,7 @@
               [(ngModel)]="selectedDashboard"
               [disabled]="loading === false && activateProgressBar === false"
               [style]="{'width': '100%'}"
+              i18n-placeholder="@@DashboardDashboard"
               placeholder="Dashboard"
               [loading] = "loading===true"
             ></p-dropdown>
@@ -76,7 +79,9 @@
               [options]="columns"
               [disabled]="noLink"
               (onChange)="initDashboards(selectedColumn)"
-              optionLabel="colname" placeholder="Column"
+              optionLabel="colname" 
+              i18n-placeholder="@@columnDashboard"
+              placeholder="Column"
               [style]="{'width': '100%'}"
             ></p-dropdown>
           </div>
@@ -90,6 +95,7 @@
             <p-dropdown
             [(ngModel)]="selectedDashboard"
               [options]="dasboards"
+              i18n-placeholder="@@fieldDashboardDashboard"
               placeholder="Dashboard"
               [disabled]="noLink"
               (onChange)="filterFilters()"
@@ -106,7 +112,9 @@
             <p-dropdown
               [(ngModel)]="selectedFilter"
               [options]="filters"
-              optionLabel="colname" placeholder="Column"
+              optionLabel="colname" 
+              i18n-placeholder="@@columnDashboardDashboard"
+              placeholder="Column"
               [disabled]="noLink"
               [style]="{'width': '100%'}"
               (onChange)="handleTargetColumn()"
