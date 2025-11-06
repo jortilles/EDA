@@ -30,7 +30,6 @@ export class EdaKpiComponent implements OnInit {
 
     ngAfterViewInit() {
         this.initDimensions();
-        console.log(this, 'edakpicomponent')
     }
 
     ngOnInit() {

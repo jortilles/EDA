@@ -5862,135 +5862,135 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
 
         <trans-unit id="DatePickerNull">
         <source>Fecha nula</source>
-        <target>Null date</target>
+        <target>Data zerowa</target>
       </trans-unit>
 
 
       <trans-unit id="removeColumnGlobalFilter">
         <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
-        <target>The column can not be removed because it has a linked filter</target>
+        <target>Kolumny nie można usunąć, ponieważ ma ona powiązany filtr</target>
       </trans-unit>
 
       <trans-unit id="invalidPathForm">
         <source>Ruta incorrecta para el filtro seleccionado</source>
-        <target>Invalid path for the selected filter</target>
+        <target>Nieprawidłowa ścieżka dla wybranego filtra</target>
       </trans-unit>
 
       <trans-unit id="PanelModeSelectorEDA">
         <source>Modo EDA</source>
-        <target>EDA mode</target>
+        <target>Tryb EDA</target>
       </trans-unit>
       <trans-unit id="PanelModeSelectorSQL">
         <source>Modo SQL</source>
-        <target>SQL mode</target>
+        <target>Tryb SQL</target>
       </trans-unit>
       <trans-unit id="PanelModeSelectorTree">
         <source>Modo Árbol</source>
-        <target>Tree mode</target>
+        <target>Tryb drzewa</target>
       </trans-unit>
       <trans-unit id="filters13">
         <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
-        <target>VALUES NOR NULL NOR EMPTY (not null and != '')</target>
+        <target>WARTOŚCI NOR NULL NOR EMPTY (nie null i != '')</target>
       </trans-unit>
       <trans-unit id="filters14">
         <source>VALORES NULOS O VACÍOS (null or = '')</source>
-        <target>NULL OR EMPTY VALUES (null or = '')</target>
+        <target>WARTOŚCI NULL LUB PUSTE (null lub = '')</target>
       </trans-unit>
       <trans-unit id="aliasValuePh">
         <source>Alias del filtro (opcional)</source>
-        <target>Filter alias (optional)</target>
+        <target>Filtruj alias (opcjonalnie)</target>
       </trans-unit>
       <trans-unit id="noDataAllowed">
         <source>Este panel no está disponible por falta de permisos</source>
-        <target>This panel is not available due to lack of permissions, the report opens in read-only mode.</target>
+        <target>Ten panel jest niedostępny z powodu braku uprawnień, raport otwiera się w trybie tylko do odczytu.</target>
       </trans-unit>
       <trans-unit id="noFilterAllowed">
         <source>Este panel no está disponible por falta de permisos en un filtro</source>
-        <target>This panel is not available due to lack of permissions on a filter, the report opens in read-only mode.</target>
+        <target>Ten panel jest niedostępny z powodu braku uprawnień do filtru. Raport otwiera się w trybie tylko do odczytu.</target>
       </trans-unit>
       <trans-unit id="DatePickerYearPreviousYearFull">
         <source>El año pasado, completo</source>
-        <target>Last year, complete</target>
+        <target>W zeszłym roku, kompletne</target>
       </trans-unit>
       <trans-unit id="whereMessage">
         <source>Filtro sobre todos los registros</source>
-        <target>Filter on all records</target>
+        <target>Filtruj według wszystkich rekordów</target>
       </trans-unit>
       <trans-unit id="havingMessage">
         <source>Filtro sobre los resultados</source>
-        <target>Filter on results</target>
+        <target>Filtruj wyniki</target>
       </trans-unit>
       <trans-unit id="whereMessageLabel">
         <source>Aplicar el filtro sobre todos los registros</source>
-        <target>Apply filter on all records</target>
+        <target>Zastosuj filtr do wszystkich rekordów</target>
       </trans-unit>
       <trans-unit id="havingMessageLabel">
         <source>Aplicar el filtro sobre los resultados</source>
-        <target>Apply filter on results</target>
+        <target>Zastosuj filtr do wyników</target>
       </trans-unit>
       <trans-unit id="aggregationText">
         <source>Agregación</source>
-        <target>Aggregation</target>
+        <target>Zbiór</target>
       </trans-unit>
       <trans-unit id="aplicarBtn">
         <source>Aplicar</source>
-        <target>Apply</target>
+        <target>Stosować</target>
       </trans-unit>
       <trans-unit id="disenoTablaCruzada">
         <source>Diseño de la tabla cruzada: </source>
-        <target>Crosstab design: </target>
+        <target>Projekt tabeli krzyżowej: </target>
       </trans-unit>
       <trans-unit id="messageItemCrosstable">
         <source>Este eje debe contener al menos un elemento</source>
-        <target>This axis must contain at least one element</target>
+        <target>Ta oś musi zawierać co najmniej jeden element</target>
       </trans-unit>
       <trans-unit id="textoTablaCruzadaEjeX">
         <source> • Eje vertical: Arrastre aquí los campos.</source>
-        <target>• Vertical axis: Drag fields here.</target>
+        <target>• Oś pionowa: Przeciągnij pola tutaj.</target>
       </trans-unit>
       <trans-unit id="textoTablaCruzadaEjeY">
         <source> • Eje horizontal: Arrastre aquí los campos para el eje horizontal de la tabla cruzada.</source>
-        <target>• Horizontal Axis: Drag fields for the horizontal axis of the crosstab here.</target>
+        <target>• Oś pozioma: Przeciągnij pola dla osi poziomej tabeli przestawnej tutaj.</target>
       </trans-unit>
       <trans-unit id="textoTablaCruzadaEjeZ">
         <source> • Eje numérico: Arrastre aquí solo los campos numéricos.</source>
-        <target>• Number Axis: Drag only numeric fields here.</target>
+        <target>• Oś liczbowa: Przeciągnij tutaj tylko pola liczbowe.</target>
       </trans-unit>
       <trans-unit id="ptooltipViewTextRanges">
         <source>Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango válido - 12:18:50:100 </source>
-        <target>When setting a range, the aggregations will be blocked. Example of a valid range: 12:18:50:100 </target>
+        <target>Podczas ustawiania zakresu agregacje zostaną zablokowane. Przykład prawidłowego zakresu: 12:18:50:100 </target>
       </trans-unit>
       <trans-unit id="rangesExpresionH5">
         <source>Rangos: </source>
-        <target>Ranges: </target>
+        <target>Zakresy: </target>
       </trans-unit>
       <trans-unit id="addRange">
         <source>Añadir Rango</source>
-        <target>Add a range</target>
+        <target>Dodaj zakres</target>
       </trans-unit>
       <trans-unit id="rangeDescriptionB">
         <source>Rango</source>
-        <target>Range</target>
+        <target>Zakres</target>
       </trans-unit>
       <trans-unit id="rangeDescriptionNumberError">
         <source>El correcto orden de los límites del rango van de menor a mayor</source>
-        <target>The correct order of the range limits is from smallest to largest</target>
+        <target>Prawidłowa kolejność granic zakresu to od najmniejszego do największego</target>
       </trans-unit>
       <trans-unit id="rangeDescriptionCharacterError">
         <source>El último caracter del rango debe ser un número</source>
-        <target>The last character of the range must be a number</target>
+        <target>Ostatni znak zakresu musi być liczbą</target>
       </trans-unit>
       <trans-unit id="ptooltipNotAvailableRanges">
         <source>No es posible crear un rango nuevo por que ya existe uno configurado</source>
-        <target>It is not possible to create a new range because there is already one</target>
+        <target>Nie można utworzyć nowego zakresu, ponieważ istnieje już jeden</target>
       </trans-unit>
       <trans-unit id="textBetween">
         <source>Entre</source>
-        <target>Between</target>
+        <target>Między</target>
       </trans-unit>
       <trans-unit id="filterSettings">
         <source>Configuración de filtros</source>
-        <target>Filter settings</target>
+        <target>Ustawienia filtra</target>
       </trans-unit>
       <trans-unit id="treeTableTitleDialog">
         <source>Propiedades de la tabla árbol</source>

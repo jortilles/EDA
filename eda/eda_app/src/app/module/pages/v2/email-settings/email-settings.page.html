@@ -4,7 +4,8 @@
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
       <div class="p-6">
         <h2 class="text-xl font-semibold" i18n="@@adminEmail">Gestión de correo</h2>
-        <p class="text-gray-500 dark:text-gray-400" i18n="@@adminEmailSubtitle">Configure los ajustes y credenciales de su servidor de correo electrónico</p>
+        <p class="text-gray-500 dark:text-gray-400" i18n="@@adminEmailSubtitle">Configure los ajustes y credenciales de
+          su servidor de correo electrónico</p>
       </div>
       <div class="p-6 pt-0">
         <form [formGroup]="emailForm" (ngSubmit)="sendMailconfig()">
@@ -13,104 +14,82 @@
               <div class="space-y-2">
                 <label i18n="@@inputServidor" for="server" class="text-sm font-medium">SERVIDOR</label>
                 <div class="relative">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-3 h-4 w-4 text-gray-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="absolute left-3 top-3 h-4 w-4 text-gray-500">
                     <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
                     <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
                     <line x1="6" y1="6" x2="6.01" y2="6"></line>
                     <line x1="6" y1="18" x2="6.01" y2="18"></line>
                   </svg>
-                  <input 
-                    id="server" 
-                    type="text" 
-                    formControlName="host"
-                    class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:ring-offset-gray-800 dark:placeholder:text-gray-400 dark:focus-visible:ring-[#00BFB3]"
-                  />
+                  <input id="server" type="text" formControlName="host"
+                    class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:ring-offset-gray-800 dark:placeholder:text-gray-400 dark:focus-visible:ring-[#00BFB3]" />
                 </div>
               </div>
               <div class="space-y-2">
                 <label i18n="@@inputPort" for="port" class="text-sm font-medium">PUERTO</label>
                 <div class="relative">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-3 h-4 w-4 text-gray-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="absolute left-3 top-3 h-4 w-4 text-gray-500">
                     <line x1="4" y1="9" x2="20" y2="9"></line>
                     <line x1="4" y1="15" x2="20" y2="15"></line>
                     <line x1="10" y1="3" x2="8" y2="21"></line>
                     <line x1="16" y1="3" x2="14" y2="21"></line>
                   </svg>
-                  <input 
-                    id="port" 
-                    type="text" 
-                    formControlName="port"
-                    class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:ring-offset-gray-800 dark:placeholder:text-gray-400 dark:focus-visible:ring-[#00BFB3]"
-                  />
+                  <input id="port" type="text" formControlName="port"
+                    class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:ring-offset-gray-800 dark:placeholder:text-gray-400 dark:focus-visible:ring-[#00BFB3]" />
                 </div>
               </div>
             </div>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="space-y-2">
                 <label i18n="@@inputUsuario" for="user" class="text-sm font-medium">USUARIO</label>
                 <div class="relative">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-3 h-4 w-4 text-gray-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="absolute left-3 top-3 h-4 w-4 text-gray-500">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                   </svg>
-                  <input 
-                    id="user" 
-                    type="text" 
-                    formControlName="user"
-                    class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:ring-offset-gray-800 dark:placeholder:text-gray-400 dark:focus-visible:ring-[#00BFB3]"
-                  />
+                  <input id="user" type="text" formControlName="user"
+                    class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:ring-offset-gray-800 dark:placeholder:text-gray-400 dark:focus-visible:ring-[#00BFB3]" />
                 </div>
               </div>
               <div class="space-y-2">
                 <label i18n="@@inputPassword" for="password" class="text-sm font-medium">CONTRASEÑA</label>
                 <div class="relative">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-3 h-4 w-4 text-gray-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="absolute left-3 top-3 h-4 w-4 text-gray-500">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                   </svg>
-                  <input 
-                    id="password" 
-                    type="password" 
-                    formControlName="password"
-                    class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:ring-offset-gray-800 dark:placeholder:text-gray-400 dark:focus-visible:ring-[#00BFB3]"
-                  />
+                  <input id="password" type="password" formControlName="password"
+                    class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:ring-offset-gray-800 dark:placeholder:text-gray-400 dark:focus-visible:ring-[#00BFB3]" />
                 </div>
               </div>
             </div>
 
             <div class="flex items-center space-x-2">
               <label for="tls" class="text-sm font-medium">TLS</label>
-              <button 
-                type="button" 
-                role="switch" 
-                [attr.aria-checked]="tlsEnabled()"
-                (click)="toggleTls()"
+              <button type="button" role="switch" [attr.aria-checked]="tlsEnabled()" (click)="toggleTls()"
                 class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#00BFB3] data-[state=unchecked]:bg-gray-200 dark:focus-visible:ring-[#00BFB3] dark:focus-visible:ring-offset-gray-800 dark:data-[state=unchecked]:bg-gray-700"
-                [class.bg-[#00BFB3]]="tlsEnabled()"
-                [class.bg-gray-200]="!tlsEnabled()"
-              >
-                <span 
+                [class.bg-[#00BFB3]]="tlsEnabled()" [class.bg-gray-200]="!tlsEnabled()">
+                <span
                   class="pointer-events-none block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
-                  [class.translate-x-5]="tlsEnabled()"
-                  [class.translate-x-0]="!tlsEnabled()"
-                ></span>
+                  [class.translate-x-5]="tlsEnabled()" [class.translate-x-0]="!tlsEnabled()"></span>
               </button>
             </div>
 
             <div class="flex justify-between">
-              <button 
-                (click)="handleCheckCredentials()" 
-                [disabled]="isChecking()"
-                class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-gray-200 bg-white hover:bg-gray-100 hover:text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-gray-100 h-10 px-4 py-2"
-              >
+              <button (click)="handleCheckCredentials()" [disabled]="isChecking()"
+                class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-gray-200 bg-white hover:bg-gray-100 hover:text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-gray-100 h-10 px-4 py-2">
                 {{ isChecking() ? "Checking..." : "Check credentials" }}
               </button>
-              <button 
-                (click)="handleSubmit()" 
-                [disabled]="isSubmitting()"
-                class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#00BFB3] text-white hover:bg-[#00BFB3]/90 h-10 px-4 py-2"
-              >
+              <button (click)="handleSubmit()" [disabled]="isSubmitting()"
+                class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#00BFB3] text-white hover:bg-[#00BFB3]/90 h-10 px-4 py-2">
                 {{ isSubmitting() ? "Saving..." : "Confirm" }}
               </button>
             </div>
@@ -124,8 +103,18 @@
       <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
         <div class="p-6">
           <h2 class="text-xl font-semibold" i18n="@@alertsConfigTitle">Gestión de alertas</h2>
-          <p class="text-gray-500 dark:text-gray-400" i18n="@@alertsConfigSubtitle">Administra tus configuraciones de alertas</p>
+          <p class="text-gray-500 dark:text-gray-400" i18n="@@alertsConfigSubtitle">Administra tus configuraciones de
+            alertas</p>
         </div>
+
+
+        @if (loadingSignal()) {
+        <div class="p-6 flex flex-col items-center justify-center space-y-4 h-[35vh]">
+          <!-- Spinner -->
+          <div class="h-10 w-10 border-4 border-[#00BFB3] border-t-transparent rounded-full animate-spin"></div>
+          <p class="text-gray-600 dark:text-gray-300 font-medium">Cargando dashboards...</p>
+        </div>
+        } @else {
         <div class="p-6 pt-0">
           <div class="rounded-md border">
             <div class="w-full overflow-auto">
@@ -134,8 +123,9 @@
                   <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
                     <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                       <div class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4 text-[#00BFB3]">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                          class="mr-2 h-4 w-4 text-[#00BFB3]">
                           <path d="M18.387 12C19.198 15.799 21 17 21 17H3s3-2 3-9a6 6 0 0 1 7-5.916"></path>
                           <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                           <path d="M18 2v6"></path>
@@ -146,8 +136,9 @@
                     </th>
                     <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                       <div class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4 text-[#00BFB3]">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                          class="mr-2 h-4 w-4 text-[#00BFB3]">
                           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                         </svg>
                         PANEL
@@ -155,8 +146,9 @@
                     </th>
                     <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                       <div class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4 text-[#00BFB3]">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                          class="mr-2 h-4 w-4 text-[#00BFB3]">
                           <rect x="3" y="3" width="7" height="7"></rect>
                           <rect x="14" y="3" width="7" height="7"></rect>
                           <rect x="14" y="14" width="7" height="7"></rect>
@@ -167,8 +159,9 @@
                     </th>
                     <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                       <div class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4 text-[#00BFB3]">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                          class="mr-2 h-4 w-4 text-[#00BFB3]">
                           <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
                           <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
                           <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
@@ -176,7 +169,7 @@
                         Datamodel
                       </div>
                     </th>
-                    <th class="h-12 px-4 text-left"></th> <!-- nueva col -->
+                    <th class="h-12 px-4 text-left"></th>
                   </tr>
                 </thead>
                 <tbody class="[&_tr:last-child]:border-0">
@@ -186,9 +179,9 @@
                     <td class="p-4 align-middle">{{ item.panel }}</td>
                     <td class="p-4 align-middle">{{ item.dashboard }}</td>
                     <td class="p-4 align-middle">{{ item.datamodel }}</td>
-                    <!-- Acción equivalente al menú contextual "Ir al informe" -->
                     <td class="p-4 align-middle text-right">
-                      <button type="button" class="rounded-md border px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                      <button type="button"
+                        class="rounded-md border px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
                         (click)="goToDashboardById(item.id)">
                         Ir al informe
                       </button>
@@ -199,12 +192,11 @@
               </table>
             </div>
           </div>
+
           <div class="flex items-center justify-end space-x-2 py-4">
             <div class="relative">
-              <select 
-                [(ngModel)]="alertsPerPage" 
-                class="flex h-10 w-[70px] items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:ring-offset-gray-800 dark:placeholder:text-gray-400 dark:focus-visible:ring-[#00BFB3]"
-              >
+              <select [(ngModel)]="alertsPerPage"
+                class="flex h-10 w-[70px] items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:ring-offset-gray-800 dark:placeholder:text-gray-400 dark:focus-visible:ring-[#00BFB3]">
                 <option value="10">10</option>
                 <option value="20">20</option>
                 <option value="50">50</option>
@@ -213,14 +205,23 @@
             </div>
           </div>
         </div>
+        }
       </div>
 
       <!-- Dashboards Mail Sending Card -->
       <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
         <div class="p-6">
           <h2 class="text-xl font-semibold" i18n="@@dashbaordsMailingHeader">Envio de informes por email</h2>
-          <p class="text-gray-500 dark:text-gray-400" i18n="@@dashbaordsMailingSubtitle">Administrar las configuraciones de correo electrónico del panel</p>
+          <p class="text-gray-500 dark:text-gray-400" i18n="@@dashbaordsMailingSubtitle">Administrar las configuraciones
+            de correo electrónico del panel</p>
         </div>
+        @if (loadingSignal()) {
+        <div class="p-6 flex flex-col items-center justify-center space-y-4 h-[35vh]">
+          <!-- Spinner -->
+          <div class="h-10 w-10 border-4 border-[#00BFB3] border-t-transparent rounded-full animate-spin"></div>
+          <p class="text-gray-600 dark:text-gray-300 font-medium">Cargando dashboards...</p>
+        </div>
+        } @else {
         <div class="p-6 pt-0">
           <div class="rounded-md border">
             <div class="w-full overflow-auto">
@@ -229,7 +230,9 @@
                   <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
                     <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                       <div class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4 text-[#00BFB3]">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                          class="mr-2 h-4 w-4 text-[#00BFB3]">
                           <rect x="3" y="3" width="7" height="7"></rect>
                           <rect x="14" y="3" width="7" height="7"></rect>
                           <rect x="14" y="14" width="7" height="7"></rect>
@@ -240,7 +243,9 @@
                     </th>
                     <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                       <div class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4 text-[#00BFB3]">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                          class="mr-2 h-4 w-4 text-[#00BFB3]">
                           <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
                           <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
                           <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
@@ -256,7 +261,8 @@
                     <td class="p-4 align-middle">{{ item.dashboard }}</td>
                     <td class="p-4 align-middle">{{ item.datamodel }}</td>
                     <td class="p-4 align-middle text-right">
-                      <button type="button" class="rounded-md border px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                      <button type="button"
+                        class="rounded-md border px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
                         (click)="goToDashboardById(item.id)">
                         Ir al informe
                       </button>
@@ -269,10 +275,8 @@
           </div>
           <div class="flex items-center justify-end space-x-2 py-4">
             <div class="relative">
-              <select 
-                [(ngModel)]="dashboardsPerPage" 
-                class="flex h-10 w-[70px] items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:ring-offset-gray-800 dark:placeholder:text-gray-400 dark:focus-visible:ring-[#00BFB3]"
-              >
+              <select [(ngModel)]="dashboardsPerPage"
+                class="flex h-10 w-[70px] items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:ring-offset-gray-800 dark:placeholder:text-gray-400 dark:focus-visible:ring-[#00BFB3]">
                 <option value="10">10</option>
                 <option value="20">20</option>
                 <option value="50">50</option>
@@ -280,6 +284,7 @@
             </div>
           </div>
         </div>
+      }
       </div>
     </div>
   </div>

@@ -823,6 +823,8 @@ private addFilterToPanelQuery(panel: any, filter: any): void {
                 tag: this.selectedTags,
                 refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
                 clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
+                createdAt: this.dashboard.config.createdAt || new Date().toISOString(),
+                modifiedAt: new Date().toISOString(),
                 // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
                 sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig, 
                 onlyIcanEdit: this.dashboard.config.onlyIcanEdit, // NO puedo Editar dashboard --> publico con enlace

@@ -17,8 +17,12 @@ export class StyleService {
     if (!this._cssStyleSheet) {
       if (!document.styleSheets || this.headElement === null) return null;
       // Get the first style sheet that is enabled and mediaText is empty or screen.
-      this._cssStyleSheet = Array.from(document.styleSheets).find(s => !s.disabled && (s.media.mediaText == "" || s.media.mediaText.indexOf("screen") !== -1)) as CSSStyleSheet;
-
+      this._cssStyleSheet = Array.from(document.styleSheets)
+        .find(s =>
+          !s.disabled &&
+          (!s.href || s.href.startsWith(window.location.origin)) &&
+          (s.media.mediaText === "" || s.media.mediaText.includes("screen"))
+        ) as CSSStyleSheet;
       // If the style sheet doesn't exist yet, then create it.
       if (!this._cssStyleSheet) this._cssStyleSheet = this.createCssStyleSheet();
     }
@@ -50,7 +54,6 @@ export class StyleService {
     return styleSheetElement.sheet as CSSStyleSheet;
   }
   private getStyleRule(selectorText: string): CSSStyleRule {
-  
     if (!this.cssStyleSheet) return;
     let rules: CSSRuleList = this.cssStyleSheet.cssRules.length > 0 || this.cssStyleSheet.rules.length == 0 ? this.cssStyleSheet.cssRules : this.cssStyleSheet.rules;
     let rule: CSSStyleRule = Array.from(rules).find(r => r instanceof CSSStyleRule && r.selectorText.toLowerCase() == selectorText.toLowerCase()) as CSSStyleRule;
