@@ -10,23 +10,22 @@
 
 >
     <div content class="p-6">
-        <div>
-            <h1>HOLAAAAAAAAAAA COMPONENTE</h1>
+        <h1>HOLAAAAAAAAAAA COMPONENTE</h1>
 
+        <div class="content-gridster">
             <gridster class="gridster" [options]="options">
                 <gridster-item [item]="item" *ngFor="let item of dashboard">
                     <div class="button-holder">
-                    <button
+                    <!-- <button
                         mat-mini-fab
                         (mousedown)="removeItem($event, item)"
                         (touchstart)="removeItem($event, item)"
                     >
                         <span>delete</span>
-                    </button>
+                    </button> -->
                     </div>
                 </gridster-item>
             </gridster>
-
         </div>
 
     </div>

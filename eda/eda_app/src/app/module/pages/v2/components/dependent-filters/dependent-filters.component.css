@@ -1,3 +1,12 @@
+.content-gridster{
+    /* background-color: #00BFB3; ==> COLOR CORPORATIVO */  
+    background-color: #00bfb244; 
+    margin-top: 5px;
+    padding: 2px;
+}
+
 .gridster {
     height: 500px;
+    background-color: transparent;
+    border: 1px solid #13d60c00;  /* Border lines around each item  */
 }

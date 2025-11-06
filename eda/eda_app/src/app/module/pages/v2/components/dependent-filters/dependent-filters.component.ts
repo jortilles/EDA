@@ -48,7 +48,7 @@ export class DependentFilters implements OnInit {
         this.options = {
         gridType: GridType.Fit,        // mantienes Fit si quieres que siga llenando el contenedor
         compactType: CompactType.None,
-        displayGrid: DisplayGrid.Always,
+        // displayGrid: DisplayGrid.Always,
         pushItems: false,
         draggable: { enabled: true },
         resizable: { enabled: false },
@@ -58,8 +58,8 @@ export class DependentFilters implements OnInit {
 
         // Evita que los items cambien sus dimensiones en mobile:
         // Si quieres que en mobile conserven el ancho/alto definidos por fixedCol/Row:
-        fixedColWidth: 90,           // ancho "base" que Gridster usará si keep...InMobile = true
-        fixedRowHeight: 50,          // alto "base" que Gridster usará si keep...InMobile = true
+        fixedColWidth: 90,    
+        fixedRowHeight: 50,
         keepFixedWidthInMobile: true, // conserva el ancho fijo al entrar en mobile
         keepFixedHeightInMobile: true,// conserva la altura fija al entrar en mobile
 
@@ -67,25 +67,24 @@ export class DependentFilters implements OnInit {
         disableWindowResize: false,   // false por defecto; si true evitaría recálculos automáticos
         mobileModeEnabled: true,       // por claridad (no todas las versiones tienen esta prop)
 
-            minCols: 10,
-            maxCols: 10,
-            minRows: 9, // Make this value dynamic - pending
-            maxRows: 9, // Make this value dynamic - pending
-            margin: 0.2, // Reduce the margin between cells
+        minCols: 10,
+        maxCols: 10,
+        minRows: 10, // Make this value dynamic - pending
+        maxRows: 10, // Make this value dynamic - pending
+        margin: 1, // Reduce the margin between cells
         };
 
         this.dashboard = [
-        { cols: 2, rows: 1, y: 0, x: 0, initCallback: this.initItem.bind(this) },
-        { cols: 2, rows: 2, y: 0, x: 2 },
-        { cols: 1, rows: 1, y: 0, x: 4 },
-        { cols: 3, rows: 2, y: 1, x: 4 },
-        { cols: 1, rows: 1, y: 4, x: 5 },
-        { cols: 1, rows: 1, y: 2, x: 1 },
-        { cols: 2, rows: 2, y: 5, x: 5 },
-        { cols: 2, rows: 2, y: 3, x: 2 },
-        { cols: 2, rows: 1, y: 2, x: 2 },
-        { cols: 1, rows: 1, y: 3, x: 4 },
-        { cols: 1, rows: 1, y: 0, x: 6 }
+        { cols: 3, rows: 1, y: 0, x: 0, initCallback: this.initItem.bind(this) },
+        { cols: 3, rows: 1, y: 1, x: 0 },
+        { cols: 3, rows: 1, y: 2, x: 0 },
+        { cols: 3, rows: 1, y: 3, x: 0 },
+        { cols: 3, rows: 1, y: 4, x: 0 },
+        { cols: 3, rows: 1, y: 5, x: 0 },
+        { cols: 3, rows: 1, y: 6, x: 0 },
+        { cols: 3, rows: 1, y: 7, x: 0 },
+        { cols: 3, rows: 1, y: 8, x: 0 },
+        { cols: 3, rows: 1, y: 9, x: 0 },
         ];
         
     }
