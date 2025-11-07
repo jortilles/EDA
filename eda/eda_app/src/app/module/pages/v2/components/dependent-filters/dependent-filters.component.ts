@@ -129,6 +129,8 @@ export class DependentFilters implements OnInit {
 
         const x = this.dashboard.length;
         let arregloY = [...Array(x).keys()];
+        let controlDashY = [...Array(x).keys()];
+        let controlDashPrevY = [...Array(x).keys()];
 
         // console.log('this.dashboardPrev: ', this.dashboardPrev);
 
@@ -152,72 +154,73 @@ export class DependentFilters implements OnInit {
             }            
     
             // console.log('arregloY: 2', arregloY);
+            console.log('Arreglo de salto de linea ............ ');
 
         } else {
             // console.log('AQUI NO DEBE HABER ESTE ANALISIS')
             // console.log('AUQIIII dashboard: ', this.dashboard);
-            arregloY = [...Array(x).keys()];
+            controlDashY = [...Array(x).keys()];
+            controlDashPrevY = [...Array(x).keys()];
+
+            console.log('this.dashboard ==>>', this.dashboard);
+            console.log('this.dashboardPrev ==>>', this.dashboardPrev);
+            console.log('item ==>>', item);
 
             // verificando que siempre tengamos un filtro en todos los puntos verticales: { y=0, y=1, y=2, ..., y=n-1, y=n };
-            this.dashboard.forEach((gf: any) => {
-                arregloY = arregloY.filter(index => index !== gf.y);
-            })
+            this.dashboard.forEach((gf: any) => { controlDashY = controlDashY.filter(index => index !== gf.y); })
+            this.dashboardPrev.forEach((gf: any) => { controlDashPrevY = controlDashPrevY.filter(index => index !== gf.y); })
 
-            // debugger;
+            console.log('controlDashY ::: ', controlDashY);
+            console.log('controlDashPrevY ::: ', controlDashPrevY);
+            debugger;
 
-            if(arregloY.length === 0) {
+            // VERIFICACION PARA EL INTERCAMBIO O TRANSLAPE DE LOS ELEMENTOS EN EL GRID
+            if(controlDashY.length === 0 && controlDashPrevY.length === 0) {
 
-                ///////////////////////////
-                // MOVIMIENTO HORIZONTAL //
-                ///////////////////////////
+                //////////////////////////////////
+                // INICIO MOVIMIENTO HORIZONTAL //
+                //////////////////////////////////
+                console.log('CONTROL ----------- HORIZONTAL -----------')
 
                 const index = this.dashboard.findIndex(gf => gf.filter_column === item.filter_column);
-                // console.log('index: ', index);
-
-                // debugger;
 
                 if(index === 0) {
-                    console.log('item ceroooo')
+                    console.log('es cerooo')
                     item.x = 0;
                     item.y = 0;
-
-                    // Gridster que actualice la posición
-                    if (this.options.api?.optionsChanged) {
-                        this.options.api.optionsChanged();
-                    }  
+                    if (this.options.api?.optionsChanged) this.options.api.optionsChanged();   
                 } else {
-                    
-                    if(this.dashboard[index].x > this.dashboard[index-1].x + 1) {
-                        item.x = this.dashboard[index-1].x + 1;
-                        item.y = this.dashboard[index].y;
-    
-                        // Gridster que actualice la posición
-                        if (this.options.api?.optionsChanged) {
-                            this.options.api.optionsChanged();
-                        }    
+
+                    if(item.x > this.dashboardPrev[index].x) {
+                        console.log('DERECHAAAAAAAAAA')
+                        if(item.x > this.dashboard[index - 1].x + 1) {
+                            item.x = this.dashboard[index - 1].x + 1;
+                            if (this.options.api?.optionsChanged) this.options.api.optionsChanged();   
+                        }
+                    } else {
+                        console.log('IZQUIERDAAAAAAAA')
+                        console.log('this.dashboard: ', this.dashboard);
+                        console.log('this.dashboardPrev: ', this.dashboardPrev);
+                        console.log('item: ', item);
+                        console.log('index: ', index);
+                        debugger;
+
+
+
+
                     }
 
-                    // console.log('this.dashboard: ', this.dashboard);
-                    // console.log('this.dashboardPrev: ', this.dashboardPrev);
-                    // console.log('item: ', item);
-                    // console.log('index: ', index);
-                    // console.log('arregloY: ', arregloY);
-                    // debugger;
-                    
-                    // VERIFICACIÓN Y CONTROL DE LA HORIZONTAL DE TODOS LOS FILTROS
-                    for(let i = index + 1; i < this.dashboard.length; i++){
-                        if(this.dashboard[i].x > this.dashboard[i-1].x + 1) {
-                            this.dashboard[i].x = this.dashboard[i].x - 1;
-                            if (this.options.api?.optionsChanged) {
-                                this.options.api.optionsChanged();
-                            }   
-                        }
-                    }
+
+
+
 
                 }
 
 
-                // console.log('arregloY: ', arregloY);
+                ///////////////////////////////
+                // FIN MOVIMIENTO HORIZONTAL //
+                ///////////////////////////////
+
                 
             } else {
 
@@ -225,52 +228,19 @@ export class DependentFilters implements OnInit {
                 // INTERCAMBIO DE VALORES - CON CONTROL VERTICAL //
                 ///////////////////////////////////////////////////
 
-                debugger;
-                console.log('INICIA EL INTERCAMBIO DE VALORES............. CON CONTROL VERTICAL Y HORIZONTAL')
+                console.log('CONTROL ----------- VERTICAL -----------')
                 console.log('this.dashboard: ', this.dashboard);
                 console.log('this.dashboardPrev: ', this.dashboardPrev);
                 console.log('item: ', item);
                 console.log('arregloY: ', arregloY);
-
-
-                
-
             }
-
-
-
-
-
-
-
-
-
             
             // OTRO DESARROLLO
 
         }
 
-
-        // // Verifica si es el ítem que debe quedarse fijo
-        // if (item === this.dashboard[0]) {
-        //     console.log('entraaaaa....')
-        //     // Si fue movido, lo regresa a (0,0)
-        //     if (item.x !== 0 || item.y !== 0) {
-
-        //         item.x = 0;
-        //         item.y = 0;
-
-        //         // Gridster que actualice la posición
-        //         if (this.options.api?.optionsChanged) {
-        //             this.options.api.optionsChanged();
-        //         }
-                
-        //     }
-        // }
-
         // EL DASHBOARD PREVIO ADQUIERE EL VALOR ACTUAL:
         this.dashboardPrev = _.cloneDeep(this.dashboard);
-
     }
 
     configurationDependentFilters(dashboard: any, item) {
