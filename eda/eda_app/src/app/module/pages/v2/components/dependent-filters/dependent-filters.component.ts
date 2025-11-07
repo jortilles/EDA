@@ -186,8 +186,6 @@ export class DependentFilters implements OnInit {
                         this.options.api.optionsChanged();
                     }  
                 } else {
-
-                    console.log('falta un ligero control')
                     
                     if(this.dashboard[index].x > this.dashboard[index-1].x + 1) {
                         item.x = this.dashboard[index-1].x + 1;
@@ -199,10 +197,22 @@ export class DependentFilters implements OnInit {
                         }    
                     }
 
-                    // for(let i =0; i<this.dashboard.length; i++){
-                    //     this.dashboard[i].x = 0;
-                    //     this.dashboard[i].y = i;
-                    // }
+                    // console.log('this.dashboard: ', this.dashboard);
+                    // console.log('this.dashboardPrev: ', this.dashboardPrev);
+                    // console.log('item: ', item);
+                    // console.log('index: ', index);
+                    // console.log('arregloY: ', arregloY);
+                    // debugger;
+                    
+                    // VERIFICACIÓN Y CONTROL DE LA HORIZONTAL DE TODOS LOS FILTROS
+                    for(let i = index + 1; i < this.dashboard.length; i++){
+                        if(this.dashboard[i].x > this.dashboard[i-1].x + 1) {
+                            this.dashboard[i].x = this.dashboard[i].x - 1;
+                            if (this.options.api?.optionsChanged) {
+                                this.options.api.optionsChanged();
+                            }   
+                        }
+                    }
 
                 }
 
