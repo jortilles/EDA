@@ -531,7 +531,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
     }
 
-    resetSeries() { 
+ resetSeries() { 
         const type = this.chart['edaChart'];
         switch (type) {
             case 'doughnut':
@@ -544,17 +544,30 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
             case 'pyramid':
             case 'stackedbar':
             case 'radar' : 
+            case 'stackedbar' : 
             case 'stackedbar100':
                 this.originalSeries.forEach((color, index) => {
                     this.chart.chartDataset[index].backgroundColor = color?.bg;
                     this.chart.chartDataset[index].borderColor = color?.bg;
                 });
+                this.resetChartConfig();
                 break;
-            default:
-                this.chart.chartDataset[0].backgroundColor = this.originalSeries[0]?.bg;
-                this.chart.chartDataset[0].borderColor = this.originalSeries[0]?.bg;
+                default:
+                    this.chart.chartDataset[0].backgroundColor = this.originalSeries[0]?.bg;
+                    this.chart.chartDataset[0].borderColor = this.originalSeries[0]?.bg;
+                    this.resetChartConfig();
+
                 break;
         }
+    }
+
+    resetChartConfig(){
+        this.controller.params.config.config.getConfig()['addTrend'] = this.chart.showLabels;
+        this.controller.params.config.config.getConfig()['showLabels'] = this.chart.showLabels;
+        this.controller.params.config.config.getConfig()['showLabelsPercent'] = this.chart.showLabels;
+        this.controller.params.config.config.getConfig()['showPointLines'] = this.chart.showLabels;
+        this.controller.params.config.config.getConfig()['numberOfColumns'] = this.chart.showLabels;
+        this.controller.params.config.config.getConfig()['addComparative'] = this.chart.showLabels;
     }
 
     onChangeGridLines() {
