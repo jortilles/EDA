@@ -150,6 +150,7 @@ export class EdaBlankPanelComponent implements OnInit {
     /** Query Variables */
     public tables: any[] = [];
     public tablesToShow: any[] = [];
+    public initialTables: any[] = [];
     public assertedTables: any[] = [];
     public columns: any[] = [];
     public aggregationsTypes: any[] = [];
@@ -262,7 +263,7 @@ export class EdaBlankPanelComponent implements OnInit {
     async ngOnInit() {
         this.index = 0;
         this.readonly = this.panel.readonly;
-  this.assignLevels(this.tableNodes, 0);
+        this.assignLevels(this.tableNodes, 0);
 
         await this.setTablesData();
         
@@ -833,12 +834,15 @@ public tableNodeExpand(event: any): void {
      * 
      */
     public onTableInputKey(event: any) {
-        this.setTablesData();
-        if (event.target.value) {
-            this.tablesToShow = this.tablesToShow
-                .filter(table => table.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
-        }
+        const value = event.target.value?.toLowerCase() || '';
 
+        if (value === '') {
+            this.tablesToShow = this.initialTables;
+        } else {
+            this.tablesToShow = this.initialTables.filter(table =>
+                table.display_name.default.toLowerCase().includes(value)
+            );
+        }
     }
 
     public onColumnInputKey(event: any) {
