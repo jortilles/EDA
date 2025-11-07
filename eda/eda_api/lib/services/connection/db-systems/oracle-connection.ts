@@ -82,18 +82,19 @@ export class OracleConnection extends AbstractConnection {
             const tables = [];
 
             let whereTableSchema: string = `OWNER = '${this.config.schema}'`;
-
+            whereTableSchema= `1=1`;       /** se quita del filtro ${whereTableSchema} para permitir consultas sobre tablas sobre las que se tiene permiso.  */
+     
             /**
            * Set filter for tables if exists
            */
             const filters = filter ? filter.split(',') : []
-            let filter_str = filter ? ` ( TABLE_NAME LIKE '${filters[0].trim()}'` : ``;
+            let filter_str = filter ? `AND ( TABLE_NAME LIKE '${filters[0].trim()}'` : ``;
             for (let i = 1; i < filters.length; i++) {
                 filter_str += ` OR TABLE_NAME LIKE '${filters[i].trim()}'`;
             }
             if (filter) filter_str += ' )';
 
-            let v_filter_str = filter ? ` ( VIEW_NAME LIKE '${filters[0].trim()}'` : ``;
+            let v_filter_str = filter ? `AND ( VIEW_NAME LIKE '${filters[0].trim()}'` : ``;
             for (let i = 1; i < filters.length; i++) {
                 v_filter_str += ` OR VIEW_NAME LIKE '${filters[i].trim()}'`;
             }
@@ -103,11 +104,11 @@ export class OracleConnection extends AbstractConnection {
             const query = `
               SELECT DISTINCT TABLE_NAME 
               FROM ALL_TABLES
-              WHERE   ${filter_str}
+              WHERE   ${whereTableSchema} ${filter_str}
               UNION ALL
               SELECT DISTINCT VIEW_NAME
               from sys.all_views
-              WHERE ${v_filter_str}
+              WHERE ${whereTableSchema} ${v_filter_str}
             `;
 
             const getResults = await this.execQuery(query);
