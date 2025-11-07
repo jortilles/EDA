@@ -13,9 +13,9 @@
         <div>
           <h6 i18n="@@ChangePaneColor" class="mb-1">Color del panel:</h6>
           <p-colorPicker [(ngModel)]="panelColor" format="hex" appendTo="body"
-            (onChange)="setSampleTitleStyle()" />
+            (onChange)="setSampleTitleStyle(); setPanelContentStyle(); setPanelTitleStyle() " />
           <input type="text" pInputText class="eda-color-pick mt-2" [(ngModel)]="panelColor" minlength="7"
-            (onChange)="setSampleTitleStyle()" />
+            (onChange)="setSampleTitleStyle(); setPanelContentStyle(); setPanelTitleStyle() " />
         </div>
         <div>
           <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
