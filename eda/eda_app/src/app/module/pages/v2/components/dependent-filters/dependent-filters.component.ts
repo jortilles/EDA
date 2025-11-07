@@ -221,15 +221,19 @@ export class DependentFilters implements OnInit {
                 
             } else {
 
-                ////////////////////////////
-                // INTERCAMBIO DE VALORES //
-                ////////////////////////////
+                ///////////////////////////////////////////////////
+                // INTERCAMBIO DE VALORES - CON CONTROL VERTICAL //
+                ///////////////////////////////////////////////////
+
                 debugger;
                 console.log('INICIA EL INTERCAMBIO DE VALORES............. CON CONTROL VERTICAL Y HORIZONTAL')
                 console.log('this.dashboard: ', this.dashboard);
                 console.log('this.dashboardPrev: ', this.dashboardPrev);
                 console.log('item: ', item);
                 console.log('arregloY: ', arregloY);
+
+
+                
 
             }
 
