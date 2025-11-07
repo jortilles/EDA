@@ -656,8 +656,8 @@ span.state-label {
   align-items: center;
     border-radius: 0.375rem;
   padding: 0.5rem 1rem;   
-  color: black;            
-  background: #6cf4b4; 
+  color: white;            
+  background: #5699e0; 
   border: #e5e7eb solid 1px;
   cursor: pointer;
 }
