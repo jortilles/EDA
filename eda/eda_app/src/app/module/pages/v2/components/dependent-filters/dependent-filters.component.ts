@@ -124,27 +124,24 @@ export class DependentFilters implements OnInit {
 
     onItemChange(item: GridsterItem): void {
 
-        console.log('this.dashboard: ', this.dashboard);
-        console.log('item: ', item);
+        // console.log('this.dashboard: ', this.dashboard);
+        // console.log('item: ', item);
 
         const x = this.dashboard.length;
         let arregloY = [...Array(x).keys()];
-        // console.log('arregloY: 1', arregloY);
 
-        console.log('this.dashboardPrev: ', this.dashboardPrev);
+        // console.log('this.dashboardPrev: ', this.dashboardPrev);
 
 
         if(item.y >= this.dashboard.length){
             
             for(let i=0; i<this.dashboard.length; i++) {
                 if(this.dashboard[i].y >= this.dashboard.length) {
-                    console.log('gf: ', this.dashboard[i]);
+                    // console.log('gf: ', this.dashboard[i]);
                 } else {
                     arregloY = arregloY.filter(index => index !== this.dashboard[i].y);
                 }
             }
-
-            // debugger;
 
             item.x = this.dashboardPrev.find((gf: any) => gf.filter_column === item.filter_column).x;
             item.y = arregloY[0];
@@ -154,10 +151,89 @@ export class DependentFilters implements OnInit {
                 this.options.api.optionsChanged();
             }            
     
-            console.log('arregloY: 2', arregloY);
+            // console.log('arregloY: 2', arregloY);
 
         } else {
-            console.log('AQUI NO DEBE HABER ESTE ANALISIS')
+            // console.log('AQUI NO DEBE HABER ESTE ANALISIS')
+            // console.log('AUQIIII dashboard: ', this.dashboard);
+            arregloY = [...Array(x).keys()];
+
+            // verificando que siempre tengamos un filtro en todos los puntos verticales: { y=0, y=1, y=2, ..., y=n-1, y=n };
+            this.dashboard.forEach((gf: any) => {
+                arregloY = arregloY.filter(index => index !== gf.y);
+            })
+
+            // debugger;
+
+            if(arregloY.length === 0) {
+
+                ///////////////////////////
+                // MOVIMIENTO HORIZONTAL //
+                ///////////////////////////
+
+                const index = this.dashboard.findIndex(gf => gf.filter_column === item.filter_column);
+                // console.log('index: ', index);
+
+                // debugger;
+
+                if(index === 0) {
+                    console.log('item ceroooo')
+                    item.x = 0;
+                    item.y = 0;
+
+                    // Gridster que actualice la posición
+                    if (this.options.api?.optionsChanged) {
+                        this.options.api.optionsChanged();
+                    }  
+                } else {
+
+                    console.log('falta un ligero control')
+                    
+                    if(this.dashboard[index].x > this.dashboard[index-1].x + 1) {
+                        item.x = this.dashboard[index-1].x + 1;
+                        item.y = this.dashboard[index].y;
+    
+                        // Gridster que actualice la posición
+                        if (this.options.api?.optionsChanged) {
+                            this.options.api.optionsChanged();
+                        }    
+                    }
+
+                    // for(let i =0; i<this.dashboard.length; i++){
+                    //     this.dashboard[i].x = 0;
+                    //     this.dashboard[i].y = i;
+                    // }
+
+                }
+
+
+                // console.log('arregloY: ', arregloY);
+                
+            } else {
+
+                ////////////////////////////
+                // INTERCAMBIO DE VALORES //
+                ////////////////////////////
+                debugger;
+                console.log('INICIA EL INTERCAMBIO DE VALORES............. CON CONTROL VERTICAL Y HORIZONTAL')
+                console.log('this.dashboard: ', this.dashboard);
+                console.log('this.dashboardPrev: ', this.dashboardPrev);
+                console.log('item: ', item);
+                console.log('arregloY: ', arregloY);
+
+            }
+
+
+
+
+
+
+
+
+
+            
+            // OTRO DESARROLLO
+
         }
 
 
