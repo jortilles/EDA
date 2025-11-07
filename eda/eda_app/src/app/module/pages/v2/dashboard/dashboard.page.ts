@@ -446,7 +446,6 @@ public async reloadPanels(): Promise<void> {
         const panel = event?.data?.panel;
         let column: any;
         column = this.getCorrectColumnFiltered(event)
-  
         const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
         if (column && table) {
           this.edaPanels.forEach(panel => {
@@ -455,7 +454,7 @@ public async reloadPanels(): Promise<void> {
           let config = this.setPanelsToFilter(panel);
           let anyChartToRemove : boolean;
           //TENEMOS ALGUN FILTRO APLICADO EN LOS FILTROS GLOBALES DEL DASHBOARD
-
+          
           if (this.globalFilter.globalFilters && this.globalFilter.globalFilters.length > 0) {
 
             //Buscamos si hay un filtro que existe igual al que acabamos de clicar, y de la misma tabla
@@ -584,11 +583,6 @@ public async reloadPanels(): Promise<void> {
         fromChart: true
     };
 }
-
-private addFilterToPanelQuery(panel: any, filter: any): void {
-    panel.content.query.query?.filters.push({ ...filter });
-}
-
 
   deleteDynamicFilter(chartToRemove: any, table: any, filterName: any) {
     // Borramos el filtro existente
@@ -967,19 +961,27 @@ public startCountdown(seconds: number) {
   }
 
   public getCorrectColumnFiltered(event): string {
-    if (['doughnut', 'polarArea', 'bar', 'line', 'radar',''].includes(event.data.panel.content.chart)) {  //Si el evento es de un chart de la libreria ng2Chart
-      if (event.data.query.length > 2) // Si la query tiene más de dos valores en barras, necesitamos redefinir el filterBy
-         return event.data.query.find((query: any) => query?.display_name?.default === event.data.query[0].display_name.default);
-      else 
-        return event.data.query.find((query: any) => query?.display_name?.default === event.data.filterBy);         
+    const chartType = event.data?.panel?.content?.chart;
+    const queries = event.data?.query || [];
+    const filterBy = event.data?.filterBy;
+    if (['doughnut', 'polarArea', 'bar', 'line', 'radar'].includes(chartType)) {
+      const queryFiltered = queries.find(q => q.display_name?.default === filterBy);
+      if (queryFiltered?.column_type === 'numeric') {
+        return event.data.query.find(q => q.column_type === 'text');
+      }
+      else if (event.data.query.length > 2) // Si la query tiene más de dos valores en barras, necesitamos redefinir el filterBy
+        return event.data.query.find((query: any) => query?.display_name?.default === event.data.query[0].display_name.default);
+      else
+        return event.data.query.find((query: any) => query?.display_name?.default === event.data.filterBy);
     }
-    else if (['table','crosstable','treetable'].includes(event.data.panel.content.chart)) {
-        return event.data.query.find((query: any) => query?.column_name === event.data.filterBy);  
+    else if (['table', 'crosstable', 'treetable'].includes(event.data.panel.content.chart)) {
+      return event.data.query.find((query: any) => query?.column_name === event.data.filterBy);
     }
     else {
-        //Si el evento es de un chart de la libreria D3Chart o Leaflet
-        return event.data.query.find((query: any) => query?.display_name?.default.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);    
-    }   
+      //Si el evento es de un chart de la libreria D3Chart o Leaflet
+        return event.data.query.find((query: any) => query?.column_name?.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);    
+//        return event.data.query.find((query: any) => query?.display_name?.default.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);    
+    }
   }
   
   //----------------------------------------//

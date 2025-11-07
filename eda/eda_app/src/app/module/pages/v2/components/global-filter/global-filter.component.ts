@@ -489,7 +489,6 @@ public async fillFiltersData(): Promise<void> {
     }
 
     private async loadGlobalFiltersData(globalFilter?: any): Promise<void> {
-        console.log('???')
 
         if (!globalFilter) {
             globalFilter = this.globalFilter;
