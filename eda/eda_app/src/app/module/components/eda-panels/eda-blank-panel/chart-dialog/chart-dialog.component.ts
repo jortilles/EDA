@@ -137,12 +137,24 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
                 }
                 break;  
             default:
-                this.series = this.chart.chartDataset.map((dataset, index) => ({
-                    label: dataset.label,
-                    bg: this.resolveBackgroundColor(dataset, index),
-                    border: dataset.borderColor
+                if (!this.series.length) {
+                    this.series = this.chart.chartDataset.map((d, i) => ({
+                        label: d.label,
+                        bg: this.resolveBackgroundColor(d, i),
+                        border: d.borderColor
+                    }));
+                }
+
+                this.chart.chartColors = this.series.map(s => ({
+                    backgroundColor: s.bg,
+                    borderColor: s.bg
                 }));
-                this.chart.chartColors = this.series.map(s => ({ backgroundColor: this.hex2rgb(s.bg, 90), borderColor:  this.hex2rgb(s.border, 90) }));
+
+                this.chart.chartDataset = this.chart.chartDataset.map((d, i) => ({
+                    ...d,
+                    ...this.chart.chartColors[i]
+                }));
+
                 break;
         }
         if (!this.originalSeries || this.originalSeries.length === 0)
@@ -388,7 +400,6 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         config.showLabelsPercent = this.showLabelsPercent;
         config.showPointLines = this.showPointLines;
         config.numberOfColumns = this.numberOfColumns;
-        config.colors = this.chart.chartColors;
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
@@ -408,7 +419,6 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         config.showLabelsPercent = this.showLabelsPercent;
         config.showPointLines = this.showPointLines;
         config.numberOfColumns = this.numberOfColumns;
-        config.colors = this.chart.chartColors;
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
@@ -562,12 +572,12 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     }
 
     resetChartConfig(){
-        this.controller.params.config.config.getConfig()['addTrend'] = this.chart.showLabels;
+        this.controller.params.config.config.getConfig()['addTrend'] = this.chart.addTrend;
         this.controller.params.config.config.getConfig()['showLabels'] = this.chart.showLabels;
-        this.controller.params.config.config.getConfig()['showLabelsPercent'] = this.chart.showLabels;
-        this.controller.params.config.config.getConfig()['showPointLines'] = this.chart.showLabels;
-        this.controller.params.config.config.getConfig()['numberOfColumns'] = this.chart.showLabels;
-        this.controller.params.config.config.getConfig()['addComparative'] = this.chart.showLabels;
+        this.controller.params.config.config.getConfig()['showLabelsPercent'] = this.chart.showLabelsPercent;
+        this.controller.params.config.config.getConfig()['showPointLines'] = this.chart.showPointLines;
+        this.controller.params.config.config.getConfig()['numberOfColumns'] = this.chart.numberOfColumns;
+        this.controller.params.config.config.getConfig()['addComparative'] = this.chart.addComparative;
     }
 
     onChangeGridLines() {
@@ -584,6 +594,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         this.chart.addTrend = this.addTrend;
         this.chart.addComparative = this.addComparative;
         this.chart.showLabels = this.showLabels;
+        this.chart.showLabelsPercent = this.showLabelsPercent;
         this.chart.showPointLines = this.showPointLines;
         this.chart.numberOfColumns = this.numberOfColumns;
         this.onClose(EdaDialogCloseEvent.UPDATE, this.chart);
