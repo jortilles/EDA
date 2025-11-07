@@ -92,7 +92,6 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     }
 
     onShow(): void {
-        console.log(this)
         this.panelChartConfig = this.controller.params.panelChart;
         this.edaChart = this.controller.params.edaChart;
 
