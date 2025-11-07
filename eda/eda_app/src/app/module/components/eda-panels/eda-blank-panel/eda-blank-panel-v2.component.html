@@ -718,18 +718,19 @@
 
 
   <ng-container footer>
-    <button class="execute-button" [disabled]="disableRunQuery()" (click)="runManualQuery()">
-      <i class="fa fa-cogs"></i>
-      <span i18n="@@ejecutarBtn"> 
-        Ejecutar
-      </span>
-    </button>
-
+    
     
     <button class="cancel-button" (click)="closeEditarConsulta()"  >
       <i class="fa fa-times"></i>
       <span i18n="@@cancelarButton"> 
         Cancelar
+      </span>
+    </button>
+    
+    <button class="execute-button" [disabled]="disableRunQuery()" (click)="runManualQuery()">
+      <i class="fa fa-cogs"></i>
+      <span i18n="@@ejecutarBtn"> 
+        Ejecutar
       </span>
     </button>
     

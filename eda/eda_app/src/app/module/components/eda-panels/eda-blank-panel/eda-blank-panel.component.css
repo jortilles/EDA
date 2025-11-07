@@ -657,7 +657,7 @@ span.state-label {
     border-radius: 0.375rem;
   padding: 0.5rem 1rem;   
   color: black;            
-  background: white; 
+  background: #6cf4b4; 
   border: #e5e7eb solid 1px;
   cursor: pointer;
 }
