@@ -133,7 +133,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         { label: 'BigQuery', value: 'bigquery' },
         { label: 'SnowFlake', value: 'snowflake'},
         { label: 'JsonWebService', value: 'jsonwebservice'},
-        { label: 'Mongo', value: 'mongodb'}
+        { label: 'Mongo', value: 'mongodb'},
+        { label: 'Excel', value: 'excel'}
     ];
     public selectedTipoBD: SelectItem;
 
@@ -450,9 +451,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.dataModelService.currentModelPanel.subscribe(
             modelPanel => {
                 this.modelPanel = modelPanel;
-                // TODO Fixme
-                // this.selectedTipoBD = this.tiposBD.filter(type => type.value === modelPanel.connection.type)[0];
-                this.selectedTipoBD = this.tiposBD[0];
+                this.selectedTipoBD = this.tiposBD.filter(type => type.value === modelPanel.connection.type)[0];
             }, err => this.alertService.addError(err)
         );
 
