@@ -82,8 +82,6 @@ export class OracleConnection extends AbstractConnection {
             const tables = [];
 
             let whereTableSchema: string = `OWNER = '${this.config.schema}'`;
-            whereTableSchema= `1=1`;       /** se quita del filtro ${whereTableSchema} para permitir consultas sobre tablas sobre las que se tiene permiso.  */
-     
             /**
            * Set filter for tables if exists
            */
@@ -109,6 +107,7 @@ export class OracleConnection extends AbstractConnection {
               SELECT DISTINCT VIEW_NAME
               from sys.all_views
               WHERE ${whereTableSchema} ${v_filter_str}
+              ORDER BY 1;
             `;
 
             const getResults = await this.execQuery(query);
