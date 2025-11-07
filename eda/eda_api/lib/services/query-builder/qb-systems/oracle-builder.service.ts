@@ -12,11 +12,11 @@ export class OracleBuilderService extends QueryBuilderService {
       
     let o = tables.filter(table => table.name === origin)
       .map(table => { return table.query ? this.cleanViewString(table.query) : table.name })[0];
-    let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
+    let myQuery = `SELECT ${columns.join(', ')} \nFROM "${o}"`;
 
     /** SI ES UN SELECT PARA UN SELECTOR  VOLDRÉ VALORS ÚNICS */
        if (forSelector === true) {
-        myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
+        myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM "${o}"`;
       }
   
            
@@ -72,7 +72,8 @@ export class OracleBuilderService extends QueryBuilderService {
     }
 
 
-    if (limit) myQuery = `SELECT * FROM (${myQuery})\n WHERE ROWNUM <= ${limit}`;
+    if (limit) myQuery =  myQuery  +  ` FETCH FIRST ${limit} ROWS ONLY `;
+
     return myQuery;
   }
 

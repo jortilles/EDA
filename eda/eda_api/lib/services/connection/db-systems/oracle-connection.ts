@@ -61,6 +61,7 @@ export class OracleConnection extends AbstractConnection {
             this.client = await this.getclient();
             console.log('\x1b[32m%s\x1b[0m', 'Connecting to Oracle database...\n');
             this.itsConnected();
+            console.log('Me he conectado a Oracle correctamente');
         } catch (err) {
             throw err;
         } finally {
@@ -86,9 +87,9 @@ export class OracleConnection extends AbstractConnection {
            * Set filter for tables if exists
            */
             const filters = filter ? filter.split(',') : []
-            let filter_str = filter ? `AND ( OBJECT_NAME LIKE '${filters[0].trim()}'` : ``;
+            let filter_str = filter ? `AND ( TABLE_NAME LIKE '${filters[0].trim()}'` : ``;
             for (let i = 1; i < filters.length; i++) {
-                filter_str += ` OR OBJECT_NAME LIKE '${filters[i].trim()}'`;
+                filter_str += ` OR TABLE_NAME LIKE '${filters[i].trim()}'`;
             }
             if (filter) filter_str += ' )';
 
@@ -100,10 +101,9 @@ export class OracleConnection extends AbstractConnection {
 
 
             const query = `
-              SELECT DISTINCT OBJECT_NAME 
-              FROM ALL_OBJECTS
-              WHERE OBJECT_TYPE = 'TABLE'
-              AND ${whereTableSchema} ${filter_str}
+              SELECT DISTINCT TABLE_NAME 
+              FROM ALL_TABLES
+              WHERE   ${whereTableSchema} ${filter_str}
               UNION ALL
               SELECT DISTINCT VIEW_NAME
               from sys.all_views
@@ -113,7 +113,7 @@ export class OracleConnection extends AbstractConnection {
             const getResults = await this.execQuery(query);
             for (let i = 0, n = getResults.length; i < n; i++) {
                 const result = getResults[i];
-                tableNames.push(result.OBJECT_NAME);
+                tableNames.push(result.TABLE_NAME);
             }
 
             const fkQuery = `
