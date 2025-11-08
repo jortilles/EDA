@@ -284,7 +284,7 @@ export class GlobalFilterV2Component implements OnInit {
                     filter.type = this.globalFilter.type;
                     filter.isGlobal = this.globalFilter.isGlobal;
                     filter.visible = this.globalFilter.visible;
-                    filter.isAutocompleted = this.globalFilter.isAutocompleted;
+                    filter.isAutocompleted = this.globalFilter.isAutocompleted ?? false;
                     filter.applyToAll = this.globalFilter.applyToAll;
 
                     if (filter.pathList) {
@@ -601,8 +601,10 @@ export class GlobalFilterV2Component implements OnInit {
             (item && typeof item === 'object' && 'value' in item) ? item.value : item
         );
 
+        // Conseguir filtro que pertoca
+        let filter = this.globalFilters.find(filter => filter.id === filtro.id)
         // Filtramos los datos del autocomplete
-        this.autoCompleteValues = this.globalFilters[0].data.filter(item =>
+        this.autoCompleteValues = filter.data.filter(item =>
             item.label.toLowerCase().includes(query) && !selectedValues.includes(item.value)
         );
     }
