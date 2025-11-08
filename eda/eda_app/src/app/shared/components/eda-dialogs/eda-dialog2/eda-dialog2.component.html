@@ -29,6 +29,11 @@
             <!-- <button *ngIf="ifShowApply" [disabled]="disableApply"  pButton icon="fa fa-check" class="p-button-raised p-button-success" label="Confirmar" i18n-label="@@guardarBtn" (click)="onApply()"></button>  -->
             <!-- <button *ngIf="ifShowClose" pButton icon="fa fa-times" class="p-button-raised p-button-danger" label="Cerrar" i18n-label="@@cerrarBtn" (click)="onClose()"></button> -->
             
+            <button *ngIf="ifShowClose" class="cancel-button" (click)="onClose()">
+               <i class="fa fa-times"></i>
+               <span i18n="@@cancelarBtn">Cancelar</span>
+            </button>
+            
             <button *ngIf="ifShowReset" class="execute-button" (click)="onReset()">
                <i class="fa fa-refresh"></i>
                <span i18n="@@resetStylesBtn">Volver a los valores por defecto</span>
@@ -40,10 +45,6 @@
                 </button>
             }
             
-            <button *ngIf="ifShowClose" class="cancel-button" (click)="onClose()">
-               <i class="fa fa-times"></i>
-               <span i18n="@@cancelarBtn">Cancelar</span>
-            </button>
             <button *ngIf="ifShowApply" class="confirm-button" [disabled]="disableApply" (click)="onApply()">
                 <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
             </button>
