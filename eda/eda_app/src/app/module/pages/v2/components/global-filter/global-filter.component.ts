@@ -15,6 +15,7 @@ import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DestroyRef } from '@angular/core';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 import '@angular/localize/init';
 
 
@@ -22,7 +23,7 @@ import '@angular/localize/init';
     selector: 'app-v2-global-filter',
     templateUrl: './global-filter.component.html',
     standalone: true,
-    imports: [FormsModule, MultiSelectModule, IconComponent, SharedModule, CommonModule],
+    imports: [FormsModule, MultiSelectModule, IconComponent, SharedModule, CommonModule, AutoCompleteModule],
     styleUrls: ['./global-filter.component.css']
 })
 export class GlobalFilterV2Component implements OnInit {
@@ -45,6 +46,7 @@ export class GlobalFilterV2Component implements OnInit {
     public datePickerConfigs: {} = {};
 
     public filtrar: string = $localize`:@@filterButtonDashboard:Filtrar`;
+    autoCompleteValues: string[];
 
     constructor(
         private globalFilterService: GlobalFiltersService,
@@ -75,7 +77,7 @@ export class GlobalFilterV2Component implements OnInit {
         this.styleButton = {
             color: this.styleProviderService.filtersFontColor.source['_value'],
             backgroundColor: this.styleProviderService.panelColor.source['_value'],
-            fontSize: (this.styleProviderService.filtersFontSize.source['_value']*2 + 14) + 'px',
+            fontSize: (this.styleProviderService.filtersFontSize.source['_value'] * 2 + 14) + 'px',
             fontFamily: this.styleProviderService.filtersFontFamily.source['_value'],
         };
     }
@@ -87,7 +89,7 @@ export class GlobalFilterV2Component implements OnInit {
         this.setFilterButtonVisibilty();
         await this.fillFiltersData();
         // Datos de los filtros ya cargados
-        this.placeholderText ='';
+        this.placeholderText = '';
         this.loading = false;
     }
 
@@ -102,8 +104,8 @@ export class GlobalFilterV2Component implements OnInit {
     // métode per descobrir o amagar el botó de filtrar al dashboard
     private setFilterButtonVisibilty(): void {
         let myFilters = _.cloneDeep(this.globalFilters);
-        if(!this.isDashboardCreator  || !this.isAdmin){
-            myFilters= myFilters.filter((f: any) => {
+        if (!this.isDashboardCreator || !this.isAdmin) {
+            myFilters = myFilters.filter((f: any) => {
                 return (f.visible != "hidden" && f.visible == "readOnly") ||
                     (f.visible != "hidden" && f.visible == "public")
             });
@@ -118,18 +120,18 @@ export class GlobalFilterV2Component implements OnInit {
         });
     }
 
-public async fillFiltersData(): Promise<void> {
-    const tasks: Promise<any>[] = [];
+    public async fillFiltersData(): Promise<void> {
+        const tasks: Promise<any>[] = [];
 
-    for (const filter of this.globalFilters) {
-        if (this.getFilterType(filter) === 'date') {
-            this.loadDatesFromFilter(filter)
-        } else {
-            tasks.push(this.loadGlobalFiltersData(filter)); // Promise para asegurarnos de que todos los datos se han cargado
+        for (const filter of this.globalFilters) {
+            if (this.getFilterType(filter) === 'date') {
+                this.loadDatesFromFilter(filter)
+            } else {
+                tasks.push(this.loadGlobalFiltersData(filter)); // Promise para asegurarnos de que todos los datos se han cargado
+            }
         }
+        await Promise.all(tasks);
     }
-    await Promise.all(tasks);
-}
 
     /** Apply filter to panels when filter's selected value changes */
     public applyGlobalFilter(filter: any): void {
@@ -152,9 +154,10 @@ public async fillFiltersData(): Promise<void> {
     }
 
     public setGlobalFilterItems(filter: any) {
+        console.log(filter)
         this.dashboard.edaPanels.forEach((ebp: EdaBlankPanelComponent) => {
             const filterMap = ebp.panel.globalFilterMap || [];
-         if (filter.panelList.includes(ebp.panel.id)) {
+            if (filter.panelList.includes(ebp.panel.id)) {
                 //console.log(1)
                 const filterApplied = ebp.globalFilters.find((gf: any) => gf.filter_id === filter.id);
 
@@ -165,15 +168,15 @@ public async fillFiltersData(): Promise<void> {
                     ebp.assertGlobalFilter(formatedFilter);
                 }
 
-        } else if (filterMap.length) {
+            } else if (filterMap.length) {
 
                 const map = filterMap.find((f) => f.targetId == filter.id);
                 const panelFilter = ebp.globalFilters.find(filter => filter.filter_id === map?.sourceId);
-                    const items = this.globalFilterService.formatFilter(filter);
-                    if(panelFilter?.filter_elements)
-                        panelFilter.filter_elements = items;
-                    
-                    ebp.assertGlobalFilter(items);
+                const items = this.globalFilterService.formatFilter(filter);
+                if (panelFilter?.filter_elements)
+                    panelFilter.filter_elements = items;
+
+                ebp.assertGlobalFilter(items);
             }
         })
     }
@@ -185,18 +188,18 @@ public async fillFiltersData(): Promise<void> {
             const treeQueryMode = this.dashboard.edaPanels.some(
                 (panel) => panel.selectedQueryMode === 'EDA2'
             );
-    
+
             const globalFilter: any = {
                 isnew,
                 queryMode: treeQueryMode ? 'EDA2' : 'EDA',
                 ...filter
             };
-            
+
             if (!isnew) {
                 if (!globalFilter.selectedTable) {
                     globalFilter.selectedTable = { table_name: filter.table.value };
                 }
-    
+
                 if (!globalFilter.selectedColumn) {
                     globalFilter.selectedColumn = { ...filter.column.value };
                 }
@@ -219,7 +222,7 @@ public async fillFiltersData(): Promise<void> {
                 } else {
                     // Creamos filtro
                     let existFilter = await this.globalFilters.find((f) => f.id === filter.id);
-                    
+
                     if (existFilter) {
                         existFilter.selectedItems = filter.selectedItems;
                     } else {
@@ -230,7 +233,7 @@ public async fillFiltersData(): Promise<void> {
                     if (filter.column.value.column_type === 'date' && filter.selectedItems.length > 0) {
                         this.loadDatesFromFilter(filter);
                     } else {
-                        await this.loadGlobalFiltersData(filter);    
+                        await this.loadGlobalFiltersData(filter);
                     }
 
                     // Apply globalFilter to linkedPanels
@@ -259,14 +262,14 @@ public async fillFiltersData(): Promise<void> {
             this.globalFilter = gf;
         }
 
-        
+
         if (apply) {
             this.dashboard.edaPanels.forEach(panel => {
                 if (!this.globalFilter.isdeleted) {
                     panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== this.globalFilter.id);
                 }
             });
-            
+
             if (this.globalFilter.isnew) {
                 this.globalFilters.push(this.globalFilter);
             }
@@ -343,7 +346,7 @@ public async fillFiltersData(): Promise<void> {
                     } else {
                         await this.loadGlobalFiltersData(filter);
                     }
-                    
+
                     // Apply globalFilter to linkedPanels
                     this.applyGlobalFilter(filter);
 
@@ -395,7 +398,7 @@ public async fillFiltersData(): Promise<void> {
             this.dashboard.applyToAllfilter = { present: false, refferenceTable: null, id: null };
             this.dashboard.updateApplyToAllFilterInPanels();
         }
-        
+
         // Update fileterList and clean panels' filters
         this.globalFilters = this.globalFilters.filter((f: any) => f.id !== filter.id);
 
@@ -501,7 +504,7 @@ public async fillFiltersData(): Promise<void> {
             targetColumn = globalFilter.selectedColumn;
             //targetColumn.ordenation_type = 'Asc';
             targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
-            
+
         } else {
             targetTable = globalFilter.table.value;
             targetColumn = globalFilter.column.value;
@@ -521,7 +524,7 @@ public async fillFiltersData(): Promise<void> {
         try {
             const query = this.queryBuilderService.normalQuery([targetColumn], queryParams);
             query.query.forSelector = true;
-            
+
             const res = await this.dashboardService.executeQuery(query).toPromise();
             const message = res[0][0];
 
@@ -529,7 +532,7 @@ public async fillFiltersData(): Promise<void> {
                 this.globalFilters.find((gf: any) => gf.id == globalFilter.id).visible = 'hidden';
                 this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = false;
             }
-    
+
             const data = res[1].filter(item => !!item[0] || item[0] == '').map(item => ({ label: item[0], value: item[0] }));
             this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = data;
         } catch (err) {
@@ -580,6 +583,41 @@ public async fillFiltersData(): Promise<void> {
         }
 
         return disabled;
+    }
+
+    // Funciones para cuando tenemos autocompletes
+
+
+    // Funcion para cargar todos los valores via endpoint
+    loadFilterAutoComplete() {
+
+    }
+
+    // Funcion para filtrar valores basica
+    filterAutoComplete(event: any, filtro: any) {
+        const query = event.query.toLowerCase();
+
+        // Obtenemos un array solo con los valores seleccionados para evitar duplicados
+        const selectedValues = (filtro.selectedItems || []).map(item =>
+            (item && typeof item === 'object' && 'value' in item) ? item.value : item
+        );
+
+        // Filtramos los datos del autocomplete
+        this.autoCompleteValues = this.globalFilters[0].data.filter(item =>
+            item.label.toLowerCase().includes(query) && !selectedValues.includes(item.value)
+        );
+    }
+
+
+    onItemSelected(event: any, filtro: any) {
+        filtro.selectedItems = filtro.selectedItems.map((item: any) => {
+            if (item && typeof item === 'object' && 'value' in item) {
+                return item.value;
+            }
+            return item;
+        });
+        // Actualizar Global filter
+        this.setGlobalFilterItems(filtro)
     }
 
 }

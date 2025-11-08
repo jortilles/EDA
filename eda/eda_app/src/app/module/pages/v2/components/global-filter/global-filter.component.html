@@ -1,70 +1,70 @@
-<div class="flex flex-wrap items-center gap-4 mt-2 mb-2 ml-1 w-100 h-fit" style="flex-wrap: wrap!important">
+<div class="flex flex-wrap items-center gap-4 mb-2 ml-1 w-full">
+
+  <!-- Botón Filtrar -->
   @if (globalFilters.length > 0 && (isAdmin || isDashboardCreator || filterButtonVisibility.public)) {
-    <button
-      class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700  rounded-md border hover:bg-gray-300"
-      [style]="styleButton"
-      (click)="dashboard.refreshPanels()">
-      <i class="pi pi-filter"></i>
-      <span i18n="@@filtrarH4">Filtrar</span>
-      
-    </button>
+  <button class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md border hover:bg-gray-300"
+    [style]="styleButton" (click)="dashboard.refreshPanels()">
+    <i class="pi pi-filter"></i>
+    <span i18n="@@filtrarH4">Filtrar</span>
+  </button>
   }
 
-  @for (filter of globalFilters; track filter.filter_id) {
-    @if (isAdmin || isDashboardCreator || ['public', 'readOnly'].includes(filter.visible)) {
-      <div class="flex">
-        <div class="filter-label flex items-center gap-2"  >
-          <span [ngClass]="{'italic': !filter.applyToAll}"
-            class="text-sm text-gray-500"       
-            [style.color]="styleButton.color"
-            [style.font-size]="styleButton.fontSize"
-            [style.font-family]="styleButton.fontFamily"
-          >{{getFilterLabel(filter)}}: </span>
+  <div class="flex flex-wrap items-start gap-4 mt-2 mb-2 ml-1 w-full">
+
+    <!-- Contenedor general con scroll -->
+    <div class="filters-container flex flex-wrap gap-4 p-3 rounded-lg w-full bg-transparent">
+
+      @for (filter of globalFilters; track filter.filter_id) {
+      @if (isAdmin || isDashboardCreator || ['public', 'readOnly'].includes(filter.visible)) {
+
+      <!-- Tarjeta individual de filtro -->
+      <div
+        class="filter-card flex flex-col gap-2 bg-white rounded-lg p-3 border border-gray-200 shadow-sm min-w-[250px] max-w-[300px] flex-1">
+
+        <!-- Contenedor label + input -->
+        <div class="filter-row flex items-center gap-2 w-full">
+          <!-- Etiqueta -->
+          <span [ngClass]="{'italic': !filter.applyToAll}" class="text-sm font-semibold text-gray-700"
+            [style.color]="styleButton.color" [style.font-size]="styleButton.fontSize"
+            [style.font-family]="styleButton.fontFamily">
+            {{ getFilterLabel(filter) }}:
+          </span>
+
+          <!-- Filtro dentro de la tarjeta -->
+          @if (getFilterType(filter) == 'date') {
+          <eda-date-picker [autoClear]="true" [inject]="datePickerConfigs[filter.id]"
+            (onRemove)="removeGlobalFilter(filter, true)" (onDatesChanges)="processPickerEvent($event, filter)">
+          </eda-date-picker>
+          } @else {
+          @if(false){
+          <p-multiSelect [style]="styleButton" [options]="filter.data" [(ngModel)]="filter.selectedItems"
+            [virtualScroll]="true" [defaultLabel]="getFilterLabel(filter)" [disabled]="disableGlobalFilter(filter)"
+            [virtualScrollItemSize]="30" [loading]="loading" i18n-placeholder="@@Cargando"
+            [placeholder]="placeholderText" panelStyleClass="multiselect-auto-width"
+            (onChange)="setGlobalFilterItems(filter)">
+
+          </p-multiSelect>
+          }@else{
+
+          <p-autoComplete [(ngModel)]="filter.selectedItems" [suggestions]="autoCompleteValues"
+            (completeMethod)="filterAutoComplete($event, filter)" placeholder="Selecciona valor(es)"
+            [forceSelection]="false" [multiple]="true" (onSelect)="onItemSelected($event, filter)"
+            panelStyleClass="modern-autocomplete-panel" [style]="styleButton" class="modern-autocomplete flex-1">
+          </p-autoComplete>
+          }
+          }
         </div>
-          @if (getFilterType(filter)=='date') {
-
-        <eda-date-picker
-          [autoClear]="true"
-          [inject]="datePickerConfigs[filter.id]"
-          (onRemove)="removeGlobalFilter(filter, true)"
-          (onDatesChanges)="processPickerEvent($event, filter)"
-          >
-          
-          <ng-container footer>
-          </ng-container>
-        </eda-date-picker>
-
+      </div>
 
       }
-        @else {
-            <p-multiSelect
-              [style]="styleButton"
-              [options]="filter.data"
-              [(ngModel)]="filter.selectedItems"
-              [virtualScroll]="true"
-              [defaultLabel]="getFilterLabel(filter)"
-              [disabled]="disableGlobalFilter(filter)"
-              [virtualScrollItemSize]="30"
-              [loading]="loading"
-              i18n-placeholder="@@Cargando"
-              [placeholder]= "placeholderText"
-              panelStyleClass="multiselect-auto-width"
-              (onChange)="setGlobalFilterItems(filter)"
-              >
-    
-            </p-multiSelect>
-        }
-      </div>
-    }
-  }
-</div>
+      }
+    </div>
+  </div>
 
-@if (globalFilter) {
-  <app-global-filter-dialog
-    [(globalFilter)]="globalFilter"
-    [globalFilterList]="globalFilters"
-    [panels]="dashboard.panels"
-    [dataSource]="dashboard.dataSource"
-    (close)="onGlobalFilter($event)
+
+
+  @if (globalFilter) {
+  <app-global-filter-dialog [(globalFilter)]="globalFilter" [globalFilterList]="globalFilters"
+    [panels]="dashboard.panels" [dataSource]="dashboard.dataSource" (close)="onGlobalFilter($event)
   "></app-global-filter-dialog>
-}
+  }

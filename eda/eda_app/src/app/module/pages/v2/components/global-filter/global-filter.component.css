@@ -11,3 +11,75 @@
   border: 1px solid #d1d5db;
   box-sizing: border-box;
 }
+
+
+/*****************/
+/* CSS del modo autocomplete, alomejor mover luego a style css primeng o no */
+/*****************/
+
+/* Contenedor general */
+.filters-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start; /* que no se estire */
+  gap: 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.filters-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.filters-container::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 4px;
+}
+
+/* Tarjeta individual */
+.filter-card {
+  flex: 0 0 auto; /* evita que se expandan al 100% */
+  width: 260px;
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.modern-autocomplete ::ng-deep .p-autocomplete-token {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+}
+
+.modern-autocomplete ::ng-deep .p-autocomplete-token-icon {
+  color: #0369a1;
+}
+
+/* ✨ Paneles flotantes */
+::ng-deep .modern-autocomplete-panel,
+::ng-deep .modern-multiselect-panel {
+  padding: 0.25rem;
+  z-index: 99999;
+}
+
+
+/* Contenedor principal del autocomplete para ocupar todo el ancho */
+.modern-autocomplete ::ng-deep .p-autocomplete-multiple-container {
+  width: -webkit-fill-available;
+  max-height: 100px;
+  border: 1px solid #d1d5db;
+  padding: 0.4rem 0.6rem;
+  background-color: white;
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* Input interno para que ocupe todo el espacio restante */
+.modern-autocomplete ::ng-deep .p-autocomplete-input-token {
+  flex: 1;
+  min-width: 0;
+}
+
+
