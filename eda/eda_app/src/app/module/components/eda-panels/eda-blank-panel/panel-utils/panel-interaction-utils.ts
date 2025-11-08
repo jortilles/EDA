@@ -460,7 +460,6 @@ export const PanelInteractionUtils = {
       ebp.tablesToShow = ebp.tablesToShow
       .filter(table => table.visible === true)
       .sort((a, b) => (a.display_name.default > b.display_name.default) ? 1 : ((b.display_name.default > a.display_name.default) ? -1 : 0));
-      ebp.initialTables = [...ebp.tablesToShow]
     }
   },
 
@@ -765,7 +764,6 @@ export const PanelInteractionUtils = {
       ebp.rootTable = undefined;
       ebp.tablesToShow = ebp.dataSource.model.tables.filter( t => t.visible == true);
       ebp.tablesToShow.sort((a, b) => (a.display_name.default > b.display_name.default) ? 1 : ((b.display_name.default > a.display_name.default) ? -1 : 0));
-      ebp.initialTables = [...ebp.tablesToShow]
     } else {
       _.map(ebp.currentQuery, selected => selected.table_id === c.table_id);
     }

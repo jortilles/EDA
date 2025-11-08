@@ -150,7 +150,6 @@ export class EdaBlankPanelComponent implements OnInit {
     /** Query Variables */
     public tables: any[] = [];
     public tablesToShow: any[] = [];
-    public initialTables: any[] = [];
     public assertedTables: any[] = [];
     public columns: any[] = [];
     public aggregationsTypes: any[] = [];
@@ -830,20 +829,15 @@ public tableNodeExpand(event: any): void {
         return selectedTable;
     }
 
-    /**
-     * 
-     */
     public onTableInputKey(event: any) {
-        const value = event.target.value?.toLowerCase() || '';
-
-        if (value === '') {
-            this.tablesToShow = this.initialTables;
-        } else {
-            this.tablesToShow = this.initialTables.filter(table =>
-                table.display_name.default.toLowerCase().includes(value)
-            );
+        if (event.target.value) {
+            this.tablesToShow = this.tablesToShow
+                .filter(table => table.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
+        }else{
+             this.setTablesData();
         }
     }
+
 
     public onColumnInputKey(event: any) {
         if (!_.isNil(this.userSelectedTable)) {
