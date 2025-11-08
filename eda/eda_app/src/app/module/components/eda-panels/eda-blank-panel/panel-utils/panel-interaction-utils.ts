@@ -55,10 +55,11 @@ export const PanelInteractionUtils = {
 
 
     // Reset input and update table data if the findTable ngModel is not empty
-    // if (!_.isEqual(ebp.inputs.findTable.ngModel, '')) {
-        // ebp.inputs.findTable.reset();
-        // ebp.setTablesData();
-    // }
+    console.log(ebp);
+     if (!_.isEqual(ebp.inputs.findTable.ngModel, '')) {
+        ebp.inputs.findTable.reset();
+        ebp.setTablesData();
+     }
   },
   
   /**
