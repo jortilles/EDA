@@ -256,8 +256,6 @@ export class GlobalFilterV2Component implements OnInit {
 
     // Global Filter Dialog
     public async onGlobalFilter(apply: boolean, gf?: any): Promise<void> {
-        console.log('???')
-
         if (!this.globalFilter && gf) {
             this.globalFilter = gf;
         }
@@ -286,6 +284,7 @@ export class GlobalFilterV2Component implements OnInit {
                     filter.type = this.globalFilter.type;
                     filter.isGlobal = this.globalFilter.isGlobal;
                     filter.visible = this.globalFilter.visible;
+                    filter.isAutocompleted = this.globalFilter.isAutocompleted;
                     filter.applyToAll = this.globalFilter.applyToAll;
 
                     if (filter.pathList) {

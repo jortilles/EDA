@@ -60,6 +60,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     // Legacy 
     public applyToAll: boolean = false;
+    public isAutocompleted: boolean = false;
     // selectedPanels: any[] = []
 
     constructor(
@@ -90,6 +91,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 id: this.fileUtils.generateUUID(),
                 isnew: true,
                 isGlobal: true,
+                isAutocompleted: this.isAutocompleted,
                 queryMode: this.globalFilter.queryMode,
                 data: null,
                 selectedTable: {},
@@ -598,6 +600,12 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 }
             }
         }
+    }
+    
+    
+    public autocompleteFilterCheck(filtro: any) {
+        this.isAutocompleted = !this.isAutocompleted;
+        this.globalFilter.isAutocompleted = this.isAutocompleted;
     }
 
     public toggleShowAlias() {

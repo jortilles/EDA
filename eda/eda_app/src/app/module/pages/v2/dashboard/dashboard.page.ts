@@ -575,6 +575,7 @@ public async reloadPanels(): Promise<void> {
     return {
         id: `${table.table_name}_${column.column_name}`,
         isGlobal: true,
+        isAutocompleted: config.isAutocompleted ?? false,
         applyToAll: config.applyToAll ?? true,
         panelList: config.panelList.map((p) => p.id),
         table: { label: table.display_name.default, value: table.table_name },
@@ -676,6 +677,7 @@ public async reloadPanels(): Promise<void> {
         let globalFilter = {
           id: `${table.table_name}_${column.column_name}`,  //this.fileUtils.generateUUID(),
           isGlobal: true,
+          isAutocompleted: config.isAutocompleted,
           applyToAll: config.applyToAll,
           panelList: config.panelList.map(p => p.id),
           table: { label: table.display_name.default, value: table.table_name },
