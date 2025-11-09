@@ -47,6 +47,7 @@ export class GlobalFilterV2Component implements OnInit {
 
     public filtrar: string = $localize`:@@filterButtonDashboard:Filtrar`;
     autoCompleteValues: string[];
+    public filterTimeout: any;
 
     constructor(
         private globalFilterService: GlobalFiltersService,
@@ -593,22 +594,43 @@ export class GlobalFilterV2Component implements OnInit {
 
     }
 
-    // Funcion para filtrar valores basica
+
+
     filterAutoComplete(event: any, filtro: any) {
         const query = event.query.toLowerCase();
 
-        // Obtenemos un array solo con los valores seleccionados para evitar duplicados
-        const selectedValues = (filtro.selectedItems || []).map(item =>
-            (item && typeof item === 'object' && 'value' in item) ? item.value : item
-        );
+        // Mínimo de caracteres antes de filtrar
+        const minLength = 3;
+        if (query.length < minLength) {
+            this.autoCompleteValues = [];
+            return;
+        }
 
-        // Conseguir filtro que pertoca
-        let filter = this.globalFilters.find(filter => filter.id === filtro.id)
-        // Filtramos los datos del autocomplete
-        this.autoCompleteValues = filter.data.filter(item =>
-            item.label.toLowerCase().includes(query) && !selectedValues.includes(item.value)
-        );
+        // milisegundos para no cargar multiples veces mientras se escribe
+        const delay = 300;
+        clearTimeout(this.filterTimeout);
+        this.filterTimeout = setTimeout(() => {
+            // Obtenemos un array solo con los valores seleccionados para evitar duplicados
+            const selectedValues = (filtro.selectedItems || []).map(item =>
+                (item && typeof item === 'object' && 'value' in item) ? item.value : item
+            );
+
+            // Conseguir filtro que pertoca
+            const currentFilter = this.globalFilters.find(f => f.id === filtro.id);
+
+            if (!currentFilter?.data) {
+                this.autoCompleteValues = [];
+                return;
+            }
+
+            // Filtramos los datos del autocomplete
+            this.autoCompleteValues = currentFilter.data.filter(item =>
+                item.label.toLowerCase().includes(query) &&
+                !selectedValues.includes(item.value)
+            );
+        }, delay);
     }
+
 
 
     onItemSelected(event: any, filtro: any) {
@@ -622,4 +644,30 @@ export class GlobalFilterV2Component implements OnInit {
         this.setGlobalFilterItems(filtro)
     }
 
+    onAddValue(event: KeyboardEvent, filter: any) {
+        // Evita que el Enter cambie de foco
+        event.preventDefault(); 
+
+        const selectedValues = (filter.selectedItems || []).map(item =>
+            typeof item === 'object' ? item.value : item
+        );
+
+        // Si ya hay algún seleccionado, no hacemos nada
+        if (selectedValues.length > 0) {
+            return;
+        }
+
+        // Tomamos el primer valor disponible del autocomplete
+        if (this.autoCompleteValues && this.autoCompleteValues.length > 0) {
+            const firstItem = this.autoCompleteValues[0];
+
+            filter.selectedItems = [
+                ...(filter.selectedItems || []), firstItem
+            ];
+
+            // Limpiar input
+            (event.target as HTMLInputElement).value = '';
+            this.autoCompleteValues = [];
+        }
+    }
 }

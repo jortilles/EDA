@@ -56,9 +56,9 @@
                   (onRemove)="removeGlobalFilter(filter, true)" (onDatesChanges)="processPickerEvent($event, filter)">
                 </eda-date-picker>
                 } @else {
-                <p-autoComplete [(ngModel)]="filter.selectedItems" [suggestions]="autoCompleteValues"
+                <p-autoComplete  [(ngModel)]="filter.selectedItems" (keydown.enter)="onAddValue($event, filter)" [suggestions]="autoCompleteValues"
                   (completeMethod)="filterAutoComplete($event, filter)" placeholder="Selecciona valor(es)"
-                  [forceSelection]="false" [multiple]="true" (onSelect)="onItemSelected($event, filter)"
+                  [forceSelection]="false" [multiple]="true" (onSelect)="onItemSelected($event, filter)" 
                   panelStyleClass="modern-autocomplete-panel" [style]="styleButton" class="modern-autocomplete flex-1">
                 </p-autoComplete>
                 }
