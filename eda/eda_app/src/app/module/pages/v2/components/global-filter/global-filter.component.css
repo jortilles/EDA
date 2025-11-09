@@ -2,26 +2,24 @@
   content: "\00a0"; /* 1 espacio */
 }
 
-
+/* Input de date picker */
 ::ng-deep eda-date-picker input {
-  height: 40px;        /* Alto estético */
-  width: 100%;         /* Ocupa todo el ancho del wrapper */
-  padding: 0.5rem 1rem; /* Espaciado interno */
+  height: 40px;
+  width: 100%;
+  padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   border: 1px solid #d1d5db;
   box-sizing: border-box;
 }
 
-
 /*****************/
-/* CSS del modo autocomplete, alomejor mover luego a style css primeng o no */
+/* FILTROS Y CONTENEDORES */
 /*****************/
 
-/* Contenedor general */
 .filters-container {
   display: flex;
   flex-wrap: wrap;
-  align-content: flex-start; /* que no se estire */
+  align-content: flex-start;
   gap: 1rem;
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
@@ -38,48 +36,88 @@
 
 /* Tarjeta individual */
 .filter-card {
-  flex: 0 0 auto; /* evita que se expandan al 100% */
+  flex: 0 0 auto;
   width: 260px;
   transition: box-shadow 0.2s ease, transform 0.15s ease;
 }
 
-.modern-autocomplete ::ng-deep .p-autocomplete-token {
+
+/*****************/
+/* AUTOCOMPLETE  */
+/*****************/
+
+/* Contenedor principal del autocomplete */
+.modern-autocomplete ::ng-deep .p-autocomplete-multiple-container {
+  display: flex;
+  flex-direction: column; /* tokens arriba, input abajo */
+  flex-wrap: nowrap;
+  gap: 0.25rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  background-color: white;
+  box-sizing: border-box;
+  width: fit-avaible;
+  
+}
+
+/*  Tokens  con scroll */
+.modern-autocomplete ::ng-deep .p-autocomplete-multiple-container {
+  max-height: 5vh; 
+}
+
+/* wrapper interno */
+.modern-autocomplete ::ng-deep .p-autocomplete-multiple-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.modern-autocomplete ::ng-deep .p-autocomplete-multiple-container .p-autocomplete-token {
+  margin: 0.125rem 0.125rem 0.125rem 0;
   background-color: #e0f2fe;
   color: #0369a1;
   border-radius: 9999px;
   font-size: 0.875rem;
   font-weight: 500;
   padding: 0.25rem 0.5rem;
+  display: inline-flex;
+  align-items: center;
 }
 
-.modern-autocomplete ::ng-deep .p-autocomplete-token-icon {
-  color: #0369a1;
-}
-
-/* ✨ Paneles flotantes */
-::ng-deep .modern-autocomplete-panel,
-::ng-deep .modern-multiselect-panel {
-  padding: 0.25rem;
-  z-index: 99999;
-}
-
-
-/* Contenedor principal del autocomplete para ocupar todo el ancho */
+/*  tokens  en  contenedor scrollable */
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container {
-  width: -webkit-fill-available;
-  max-height: 100px;
-  border: 1px solid #d1d5db;
-  padding: 0.4rem 0.6rem;
-  background-color: white;
-  box-sizing: border-box;
-  display: flex;
-  flex-wrap: wrap;
+  /* wrapper tokens con scroll interno */
+  width: 14vw;
+  overflow-y: auto;
 }
 
-/* Input interno para que ocupe todo el espacio restante */
+/* Input debajo  */
 .modern-autocomplete ::ng-deep .p-autocomplete-input-token {
-  flex: 1;
+  order: 999; 
+  flex: none;
+  width: 100% !important;
   min-width: 0;
+  display: block;
+  box-sizing: border-box;
+  margin-top: 0.15rem;
 }
 
+/* Input interno real */
+.modern-autocomplete ::ng-deep input.p-autocomplete-input {
+  width: 100% !important;
+  outline: none;
+  background: transparent;
+  padding: 0.25rem 0;
+  box-sizing: border-box;
+  font-size: 0.875rem;
+}
 
+/* Scrollbar  */
+.modern-autocomplete ::ng-deep .p-autocomplete-multiple-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modern-autocomplete ::ng-deep .p-autocomplete-multiple-container::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 4px;
+}
