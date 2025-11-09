@@ -29,18 +29,11 @@
   width: 6px;
 }
 
-.filters-container::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
-  border-radius: 4px;
-}
-
 /* Tarjeta individual */
 .filter-card {
   flex: 0 0 auto;
   width: 260px;
-  transition: box-shadow 0.2s ease, transform 0.15s ease;
 }
-
 
 /*****************/
 /* AUTOCOMPLETE  */
@@ -56,9 +49,6 @@
   border: 1px solid #d1d5db;
   border-radius: 0.5rem;
   background-color: white;
-  box-sizing: border-box;
-  width: fit-avaible;
-  
 }
 
 /*  Tokens  con scroll */
@@ -86,7 +76,6 @@
 
 /*  tokens  en  contenedor scrollable */
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container {
-  /* wrapper tokens con scroll interno */
   width: 14vw;
   overflow-y: auto;
 }
@@ -98,7 +87,6 @@
   width: 100% !important;
   min-width: 0;
   display: block;
-  box-sizing: border-box;
   margin-top: 0.15rem;
 }
 
