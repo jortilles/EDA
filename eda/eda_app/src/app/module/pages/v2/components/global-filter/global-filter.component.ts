@@ -284,7 +284,8 @@ export class GlobalFilterV2Component implements OnInit {
                     filter.type = this.globalFilter.type;
                     filter.isGlobal = this.globalFilter.isGlobal;
                     filter.visible = this.globalFilter.visible;
-                    filter.isAutocompleted = this.globalFilter.isAutocompleted ?? false;
+                    filter.isAutocompleted = this.globalFilter.isAutocompleted !== undefined ?
+                        this.globalFilter.isAutocompleted : false;
                     filter.applyToAll = this.globalFilter.applyToAll;
 
                     if (filter.pathList) {

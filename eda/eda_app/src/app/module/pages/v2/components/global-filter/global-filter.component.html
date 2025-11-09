@@ -18,7 +18,7 @@
         @if (isAdmin || isDashboardCreator || ['public', 'readOnly'].includes(filter.visible)) {
 
           <!-- Si NO tiene autocomplete → estilo antiguo -->
-          @if(filter.isAutocompleted === false) {
+          @if(!filter.isAutocompleted || filter.isAutocompleted === false) {
             <div class="flex">
               <div class="filter-label flex items-center gap-2">
                 <span [ngClass]="{'italic': !filter.applyToAll}" class="text-sm text-gray-500"

@@ -91,7 +91,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 id: this.fileUtils.generateUUID(),
                 isnew: true,
                 isGlobal: true,
-                isAutocompleted: this.isAutocompleted,
+                isAutocompleted: this.isAutocompleted ?? false,
                 queryMode: this.globalFilter.queryMode,
                 data: null,
                 selectedTable: {},
@@ -127,6 +127,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.findPanelPathTables();
             this.aliasValue = display_name_alias;
         }
+        // Recogemos valor del switch
+        this.globalFilter.isAutocompleted = this.isAutocompleted;
     }
 
     public ngOnDestroy(): void {
@@ -150,16 +152,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
           panel.active = true;
           this.filteredPanels.push(panel);
         }
-
-        // if (panel.avaliable === false) {
-        //     this.selectPanelToFilter(panel);
-        // } else if (panel.active === true) {
-        //     panel.active = false;
-        //     this.panelstoFilter = this.panelstoFilter.filter(p => p.id !== panel.id);
-        // } else {
-        //     panel.active = true;
-        //     this.panelstoFilter.push(panel);
-        // }
     }
       
     public isPanelSelected(panel: any): boolean {
