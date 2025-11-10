@@ -64,8 +64,6 @@
 
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container .p-autocomplete-token {
   margin: 0.125rem 0.125rem 0.125rem 0;
-  background-color: #e0f2fe;
-  color: #0369a1;
   border-radius: 9999px;
   font-size: 0.875rem;
   font-weight: 500;
