@@ -182,6 +182,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public selectedFilters: any[] = [];
     public globalFilters: any[] = [];
     public filterValue: any = {};
+    public tableInput: string;
+    public columnInput: string;
 
     public loadingNodes: boolean = false;
     public rootTable: any;
@@ -1510,7 +1512,7 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
 
     public searchRelations = (c: Column) => PanelInteractionUtils.searchRelations(this, c);
 
-    public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table);
+    public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table, true);
 
     public removeColumn = (c: Column, list?: string, event?: Event) => PanelInteractionUtils.removeColumn(this, c, list);
 

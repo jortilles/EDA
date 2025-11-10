@@ -85,7 +85,7 @@
               Entidades
             </h3>
             <input class="h-8 rounded-md w-full border px-2 text-lg" i18n-placeholder="@@searchEntities" placeholder="Buscar entidades..." 
-              (keyup)="onTableInputKey($event)">
+              [(ngModel)] ="tableInput" (keyup)="onTableInputKey($event)">
           </div>
           <div class="flex overflow-y-auto h-[51vh] text-lg">
             <div>
@@ -155,8 +155,8 @@
               title="Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes">
               Atributos
             </h3>
-            <input class="h-8 rounded-md w-full border px-2 text-lg" i18n-placeholder="@@searchAttributes" placeholder="Buscar atributos..."
-              (keyup)="onColumnInputKey($event)">
+            <input class="h-8 rounded-md w-full border px-2 text-lg" i18n-placeholder="@@searchAttributes" placeholder="Buscar atributos..." 
+              [(ngModel)] ="columnInput" (keyup)="onColumnInputKey($event)">
           </div>
           }
           <div class="flex w-full overflow-y-auto h-[51vh] text-lg">
@@ -734,7 +734,7 @@
       </span>
     </button>
     
-    <button class="confirm-button" [disabled]="isCrosstableModified()" (click)="savePanel();" >
+    <button class="confirm-button" [disabled]="isCrosstableModified() || display_v.btnSave" (click)="savePanel();" >
       <i class="fa fa-check"></i>
       <span i18n="@@guardarBtn"> 
         Confirmar

@@ -6,33 +6,14 @@ import * as _ from 'lodash';
 
 export const PanelInteractionUtils = {
 
-  /**
+     /**
      * loads columns from table
      * @param table  
      */
-  loadColumns2: (ebp: EdaBlankPanelComponent, table: any) => {
-    ebp.userSelectedTable = table.table_name;
-    ebp.disableBtnSave();
-    // Clean columns
-    ebp.columns = [];
-    table.columns.forEach((c: Column) => {
-      c.table_id = table.table_name;
-      const matcher = _.find(ebp.currentQuery, (x: Column) => c.table_id === x.table_id && c.column_name === x.column_name && c.display_name.default === x.display_name.default );
-      if (!matcher) ebp.columns.push(c);
-      ebp.columns = ebp.columns.filter(col => col.visible === true)
-        .sort((a, b) => (a.display_name.default > b.display_name.default) ? 1 : ((b.display_name.default > a.display_name.default) ? -1 : 0));
-    });
-
-    // if (!_.isEqual(ebp.inputs.findTable.ngModel, '')) {
-    //   ebp.inputs.findTable.reset();
-    //   ebp.setTablesData();
-    // }
-  },
-
-  loadColumns: (ebp: EdaBlankPanelComponent, table: any) => {
+  loadColumns: (ebp: EdaBlankPanelComponent, table: any, reloadInputs?: boolean) => {
     // Set the user-selected table and disable the save button
     ebp.userSelectedTable = table.table_name;
-    ebp.disableBtnSave();
+
 
     // Clean columns
     const filteredColumns = table.columns.filter((tableColumn: Column) => {
@@ -51,15 +32,8 @@ export const PanelInteractionUtils = {
     // Sort columns by default display name
     ebp.columns = filteredColumns.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
 
-
-
-
-    // Reset input and update table data if the findTable ngModel is not empty
-    console.log(ebp);
-     if (!_.isEqual(ebp.inputs.findTable.ngModel, '')) {
-        ebp.inputs.findTable.reset();
-        ebp.setTablesData();
-     }
+    // Reload Inputs when call func from select table 
+    if(reloadInputs){ ebp.columnInput = ''; }
   },
   
   /**
@@ -101,6 +75,7 @@ export const PanelInteractionUtils = {
   },
 
   assertTable: (ebp: EdaBlankPanelComponent, column: Column) => {
+
     if (column.joins.length > 0 && !ebp.tables.some((t) => t.table_name == column.table_id)) {
       const rootJoin = column.joins[column.joins.length-1];
       const rootTable = (rootJoin[0]||'').split('.')[0];
@@ -642,9 +617,9 @@ export const PanelInteractionUtils = {
     PanelInteractionUtils.handleAggregationType(ebp, c);
     // Comprovacio ordenacio  de la nova columna afegida a la consulta
     PanelInteractionUtils.handleOrdTypes(ebp, c);
-    // TODO
-    // resetea las columnas a mostrar
-    // ebp.inputs.findColumn.reset();
+    // resetea el valor del filtro del buscador
+    ebp.tableInput = '';
+    ebp.columnInput = '';
 
     // Torna a carregar les columnes de la taula
     const selectedTable = ebp.getUserSelectedTable();
