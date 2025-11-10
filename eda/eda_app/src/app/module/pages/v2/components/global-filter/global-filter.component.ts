@@ -633,7 +633,7 @@ export class GlobalFilterV2Component implements OnInit {
 
 
 
-    onItemSelected(event: any, filtro: any) {
+    onItemSelected(filtro: any) {
         filtro.selectedItems = filtro.selectedItems.map((item: any) => {
             if (item && typeof item === 'object' && 'value' in item) {
                 return item.value;
@@ -648,15 +648,6 @@ export class GlobalFilterV2Component implements OnInit {
         // Evita que el Enter cambie de foco
         event.preventDefault(); 
 
-        const selectedValues = (filter.selectedItems || []).map(item =>
-            typeof item === 'object' ? item.value : item
-        );
-
-        // Si ya hay algún seleccionado, no hacemos nada
-        if (selectedValues.length > 0) {
-            return;
-        }
-
         // Tomamos el primer valor disponible del autocomplete
         if (this.autoCompleteValues && this.autoCompleteValues.length > 0) {
             const firstItem = this.autoCompleteValues[0];
@@ -669,5 +660,6 @@ export class GlobalFilterV2Component implements OnInit {
             (event.target as HTMLInputElement).value = '';
             this.autoCompleteValues = [];
         }
+        this.onItemSelected(filter)
     }
 }
