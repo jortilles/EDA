@@ -91,7 +91,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 id: this.fileUtils.generateUUID(),
                 isnew: true,
                 isGlobal: true,
-                isAutocompleted: this.isAutocompleted ?? false,
+                isAutocompleted: false,
                 queryMode: this.globalFilter.queryMode,
                 data: null,
                 selectedTable: {},
@@ -110,7 +110,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         } else {
             if (this.globalFilter.queryMode == 'EDA2') this.initPanels();
             else this.initPanelsLegacy();
-
+            this.isAutocompleted = this.globalFilter.isAutocompleted;
             this.initTablesForFilter();
 
             const tableName = this.globalFilter.selectedTable.table_name;
