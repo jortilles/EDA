@@ -172,9 +172,9 @@ export class DependentFilters implements OnInit {
 
             console.log('controlDashY ::: ', controlDashY);
             console.log('controlDashPrevY ::: ', controlDashPrevY);
-            debugger;
+            // debugger;
 
-            // VERIFICACION PARA EL INTERCAMBIO O TRANSLAPE DE LOS ELEMENTOS EN EL GRID
+            // VERIFICACION PARA EL INTERCAMBIO O TRANSLAPE DE LOS ELEMENTOS EN EL GRID VAYAN POR EL ELSE
             if(controlDashY.length === 0 && controlDashPrevY.length === 0) {
 
                 //////////////////////////////////
@@ -183,8 +183,10 @@ export class DependentFilters implements OnInit {
                 console.log('CONTROL ----------- HORIZONTAL -----------')
 
                 const index = this.dashboard.findIndex(gf => gf.filter_column === item.filter_column);
+                const preItem = this.dashboard.find((gf: any) => gf.y === (item.y-1));
 
-                if(index === 0) {
+
+                if(item.y === 0) {
                     console.log('es cerooo')
                     item.x = 0;
                     item.y = 0;
@@ -193,8 +195,8 @@ export class DependentFilters implements OnInit {
 
                     if(item.x > this.dashboardPrev[index].x) {
                         console.log('DERECHAAAAAAAAAA')
-                        if(item.x > this.dashboard[index - 1].x + 1) {
-                            item.x = this.dashboard[index - 1].x + 1;
+                        if(item.x > preItem.x + 1) {
+                            item.x = preItem.x + 1;
                             if (this.options.api?.optionsChanged) this.options.api.optionsChanged();   
                         }
                     } else {
@@ -203,19 +205,24 @@ export class DependentFilters implements OnInit {
                         console.log('this.dashboardPrev: ', this.dashboardPrev);
                         console.log('item: ', item);
                         console.log('index: ', index);
-                        debugger;
+                        // debugger;
 
+                        // CORREGIR
 
+                        // for(let i=preItem.y+2; i<this.dashboardPrev.length; i++) {
+                        //     if(this.dashboardPrev[index].x <= this.dashboardPrev[i].x){
 
+                        //         this.dashboard[i].x = this.dashboard[i].x - (this.dashboardPrev[index].x - item.x);
+                        //         if (this.options.api?.optionsChanged) this.options.api.optionsChanged();   
+
+                        //     } else {
+                        //         break;
+                        //     } 
+                        // }
 
                     }
 
-
-
-
-
                 }
-
 
                 ///////////////////////////////
                 // FIN MOVIMIENTO HORIZONTAL //
@@ -224,15 +231,41 @@ export class DependentFilters implements OnInit {
                 
             } else {
 
+
                 ///////////////////////////////////////////////////
                 // INTERCAMBIO DE VALORES - CON CONTROL VERTICAL //
                 ///////////////////////////////////////////////////
 
+
                 console.log('CONTROL ----------- VERTICAL -----------')
-                console.log('this.dashboard: ', this.dashboard);
                 console.log('this.dashboardPrev: ', this.dashboardPrev);
+                console.log('this.dashboard: ', this.dashboard);
                 console.log('item: ', item);
-                console.log('arregloY: ', arregloY);
+                console.log('arregloY: ', arregloY);            
+                console.log('controlDashY ::: ', controlDashY);
+                console.log('controlDashPrevY ::: ', controlDashPrevY);
+
+
+
+                const iniBlo = _.cloneDeep(this.dashboardPrev).find((gf: any) => item.filter_column === gf.filter_column);
+                const finBlo = _.cloneDeep(this.dashboardPrev).find((gf: any) => item.y === gf.y);
+
+                console.log('iniBlo: ',iniBlo);
+                console.log('finBlo: ',finBlo);
+
+                const ini = this.dashboard.find(gf => gf.filter_column === iniBlo.filter_column);
+                ini.x = finBlo.x
+                ini.y = finBlo.y
+                const fin = this.dashboard.find(gf => gf.filter_column === finBlo.filter_column);
+                fin.x = iniBlo.x
+                fin.y = iniBlo.y
+
+                console.log('New dashboard: ', this.dashboard);
+                // this.dashboardPrev = _.cloneDeep(this.dashboard);
+                // debugger;
+                if (this.options.api?.optionsChanged) this.options.api.optionsChanged();   
+                // debugger;
+                
             }
             
             // OTRO DESARROLLO
@@ -240,6 +273,7 @@ export class DependentFilters implements OnInit {
         }
 
         // EL DASHBOARD PREVIO ADQUIERE EL VALOR ACTUAL:
+        console.log('EPAAAAAAAAAAAAAAAAAAAAAAAAAAA')
         this.dashboardPrev = _.cloneDeep(this.dashboard);
     }
 
