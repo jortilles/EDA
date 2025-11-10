@@ -84,8 +84,15 @@
               title="Clique sobre un entidad para ver sus atributos.">
               Entidades
             </h3>
-            <input class="h-8 rounded-md w-full border px-2 text-lg" i18n-placeholder="@@searchEntities" placeholder="Buscar entidades..." 
-              [(ngModel)] ="tableInput" (keyup)="onTableInputKey($event)">
+            <div class="relative w-full">
+              <eda-icon name="search" class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500"></eda-icon>
+              <input 
+                class="h-8 rounded-md w-full border px-8 text-lg" 
+                placeholder="Buscar entidades..." 
+                [(ngModel)]="tableInput" 
+                (keyup)="onTableInputKey($event)">
+          </div>
+
           </div>
           <div class="flex overflow-y-auto h-[51vh] text-lg">
             <div>
@@ -155,8 +162,11 @@
               title="Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes">
               Atributos
             </h3>
-            <input class="h-8 rounded-md w-full border px-2 text-lg" i18n-placeholder="@@searchAttributes" placeholder="Buscar atributos..." 
-              [(ngModel)] ="columnInput" (keyup)="onColumnInputKey($event)">
+              <div class="relative w-full">
+                <eda-icon name="search" class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500"></eda-icon>
+                <input class="h-8 rounded-md w-full border px-8 text-lg" i18n-placeholder="@@searchAttributes" placeholder="Buscar atributos..." 
+                  [(ngModel)] ="columnInput" (keyup)="onColumnInputKey($event)">
+              </div>
           </div>
           }
           <div class="flex w-full overflow-y-auto h-[51vh] text-lg">
