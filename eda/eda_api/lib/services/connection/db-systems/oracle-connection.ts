@@ -107,8 +107,10 @@ export class OracleConnection extends AbstractConnection {
               SELECT DISTINCT VIEW_NAME
               from sys.all_views
               WHERE ${whereTableSchema} ${v_filter_str}
-              ORDER BY 1;
+              ORDER BY 1
             `;
+            
+            //console.log(query);
 
             const getResults = await this.execQuery(query);
             for (let i = 0, n = getResults.length; i < n; i++) {
