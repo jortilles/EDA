@@ -503,15 +503,12 @@ export class GlobalFilterV2Component implements OnInit {
         if (globalFilter.selectedTable) {
             targetTable = globalFilter.selectedTable.table_name;
             targetColumn = globalFilter.selectedColumn;
-            //targetColumn.ordenation_type = 'Asc';
             targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
 
         } else {
             targetTable = globalFilter.table.value;
             targetColumn = globalFilter.column.value;
-            //targetColumn.ordenation_type = 'Asc';
             targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
-
         }
 
         const queryParams = {
@@ -523,18 +520,22 @@ export class GlobalFilterV2Component implements OnInit {
         };
 
         try {
+            
             const query = this.queryBuilderService.normalQuery([targetColumn], queryParams);
             query.query.forSelector = true;
 
+            console.log(query,  'query')
+            
             const res = await this.dashboardService.executeQuery(query).toPromise();
             const message = res[0][0];
-
+            
             if (['noDataAllowed', 'noFilterAllowed'].includes(message)) {
                 this.globalFilters.find((gf: any) => gf.id == globalFilter.id).visible = 'hidden';
                 this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = false;
             }
-
+            
             const data = res[1].filter(item => !!item[0] || item[0] == '').map(item => ({ label: item[0], value: item[0] }));
+            console.log('hola', data)
             this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = data;
         } catch (err) {
             this.alertService.addError(err);
@@ -590,7 +591,56 @@ export class GlobalFilterV2Component implements OnInit {
 
 
     // Funcion para cargar todos los valores via endpoint
-    loadFilterAutoComplete() {
+    loadFilterAutoComplete(event: any, filtro: any) {
+        const query = event.query.toLowerCase();
+
+        // Mínimo de caracteres antes de filtrar
+        const minLength = 3;
+        if (query.length < minLength) {
+            this.autoCompleteValues = [];
+            return;
+        }
+
+        // milisegundos para no cargar multiples veces mientras se escribe
+        const delay = 300;
+        clearTimeout(this.filterTimeout);
+
+
+        this.filterTimeout = setTimeout(() => {
+
+        let targetTable: string;
+        let targetColumn: any;
+        if (filtro.selectedTable) {
+            targetTable = filtro.selectedTable.table_name;
+            targetColumn = filtro.selectedColumn;
+            targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
+
+        } else {
+            targetTable = filtro.table.value;
+            targetColumn = filtro.column.value;
+            targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
+        }
+
+        const queryParams = {
+            table: targetTable,
+            dataSource: this.dashboard.dataSource._id,
+            dashboard: '',
+            panel: '',
+            filters: []
+        };
+
+
+            const query = this.queryBuilderService.normalQuery([targetColumn], queryParams);
+            console.log(query)
+
+            // ENDPOINT
+            // QUERY BUILDER QUE DEVUELVA LOS VALORES 
+            // QUE COINCIDAN CON EL 
+            // LIKE %SELECTEDVALUE%
+            // Y QUE NO TENGAN THIS.AUTICOMPLETEVALUES
+
+
+        }, delay);
 
     }
 
