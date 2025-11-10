@@ -524,18 +524,17 @@ export class GlobalFilterV2Component implements OnInit {
             const query = this.queryBuilderService.normalQuery([targetColumn], queryParams);
             query.query.forSelector = true;
 
-            console.log(query,  'query')
             
             const res = await this.dashboardService.executeQuery(query).toPromise();
             const message = res[0][0];
             
+            console.log(query,  'query', res)
             if (['noDataAllowed', 'noFilterAllowed'].includes(message)) {
                 this.globalFilters.find((gf: any) => gf.id == globalFilter.id).visible = 'hidden';
                 this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = false;
             }
             
             const data = res[1].filter(item => !!item[0] || item[0] == '').map(item => ({ label: item[0], value: item[0] }));
-            console.log('hola', data)
             this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = data;
         } catch (err) {
             this.alertService.addError(err);
@@ -587,16 +586,11 @@ export class GlobalFilterV2Component implements OnInit {
         return disabled;
     }
 
-    // Funciones para cuando tenemos autocompletes
-
-
     // Funcion para cargar todos los valores via endpoint
-    loadFilterAutoComplete(event: any, filtro: any) {
-        const query = event.query.toLowerCase();
-
+   public async loadFilterAutoComplete(event: any, filtro: any) {
         // Mínimo de caracteres antes de filtrar
         const minLength = 3;
-        if (query.length < minLength) {
+        if (event.query.length < minLength) {
             this.autoCompleteValues = [];
             return;
         }
@@ -606,82 +600,52 @@ export class GlobalFilterV2Component implements OnInit {
         clearTimeout(this.filterTimeout);
 
 
-        this.filterTimeout = setTimeout(() => {
+        this.filterTimeout = setTimeout(async () => {
+            let targetTable: string;
+            let targetColumn: any;
+            if (filtro.selectedTable) {
+                targetTable = filtro.selectedTable.table_name;
+                targetColumn = filtro.selectedColumn;
+                targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
 
-        let targetTable: string;
-        let targetColumn: any;
-        if (filtro.selectedTable) {
-            targetTable = filtro.selectedTable.table_name;
-            targetColumn = filtro.selectedColumn;
-            targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
-
-        } else {
-            targetTable = filtro.table.value;
-            targetColumn = filtro.column.value;
-            targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
-        }
-
-        const queryParams = {
-            table: targetTable,
-            dataSource: this.dashboard.dataSource._id,
-            dashboard: '',
-            panel: '',
-            filters: []
-        };
-
-
-            const query = this.queryBuilderService.normalQuery([targetColumn], queryParams);
-            console.log(query)
-
-            // ENDPOINT
-            // QUERY BUILDER QUE DEVUELVA LOS VALORES 
-            // QUE COINCIDAN CON EL 
-            // LIKE %SELECTEDVALUE%
-            // Y QUE NO TENGAN THIS.AUTICOMPLETEVALUES
-
-
-        }, delay);
-
-    }
-
-
-
-    filterAutoComplete(event: any, filtro: any) {
-        const query = event.query.toLowerCase();
-
-        // Mínimo de caracteres antes de filtrar
-        const minLength = 3;
-        if (query.length < minLength) {
-            this.autoCompleteValues = [];
-            return;
-        }
-
-        // milisegundos para no cargar multiples veces mientras se escribe
-        const delay = 300;
-        clearTimeout(this.filterTimeout);
-        this.filterTimeout = setTimeout(() => {
-            // Obtenemos un array solo con los valores seleccionados para evitar duplicados
-            const selectedValues = (filtro.selectedItems || []).map(item =>
-                (item && typeof item === 'object' && 'value' in item) ? item.value : item
-            );
-
-            // Conseguir filtro que pertoca
-            const currentFilter = this.globalFilters.find(f => f.id === filtro.id);
-
-            if (!currentFilter?.data) {
-                this.autoCompleteValues = [];
-                return;
+            } else {
+                targetTable = filtro.table.value;
+                targetColumn = filtro.column.value;
+                targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
             }
 
-            // Filtramos los datos del autocomplete
-            this.autoCompleteValues = currentFilter.data.filter(item =>
-                item.label.toLowerCase().includes(query) &&
-                !selectedValues.includes(item.value)
-            );
+            const queryParams = {
+                table: targetTable,
+                dataSource: this.dashboard.dataSource._id,
+                dashboard: this.dashboard.dashboardId,
+                panel: '',
+                joinType: "inner",
+                rootTable:filtro.selectedTable.table_name,
+                queryMode: filtro.queryMode,
+                forSelector: true,
+                queryLimit: 5000,
+                filters: [{
+                    filter_column:filtro.selectedColumn.column_name,
+                    filter_column_type:filtro.selectedColumn.column_type,
+                    filter_elements:[{value1: [event.query]}],
+                    filter_id:filtro.id,
+                    filter_table:filtro.selectedTable.table_name,
+                    filter_type:"like",
+                    isGlobal:filtro.isGlobal,
+                    joins:[],
+            }]
+        };
+        const query = this.queryBuilderService.normalQuery([targetColumn], queryParams);
+        const res = await this.dashboardService.executeQuery(query).toPromise();
+        
+        const data = res[1].filter(item => !!item[0] || item[0] == '').map(item => ({ label: item[0], value: item[0] }));
+        this.globalFilters.find((gf: any) => gf.id == filtro.id).data = data;
+
+        this.autoCompleteValues = data;
+
         }, delay);
+
     }
-
-
 
     onItemSelected(filtro: any) {
         filtro.selectedItems = filtro.selectedItems.map((item: any) => {

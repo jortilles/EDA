@@ -25,6 +25,7 @@
   scrollbar-color: #cbd5e1 transparent;
 }
 
+
 .filters-container::-webkit-scrollbar {
   width: 6px;
 }
@@ -47,8 +48,7 @@
   gap: 0.25rem;
   padding: 0.4rem 0.6rem;
   border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  background-color: white;
+  border-radius: 0px;
 }
 
 /*  Tokens  con scroll */
@@ -89,13 +89,12 @@
 }
 
 /* Input interno real */
-.modern-autocomplete ::ng-deep input.p-autocomplete-input {
+.modern-autocomplete ::ng-deep .input.p-autocomplete-input {
   width: 100% !important;
   outline: none;
   background: transparent;
-  padding: 0.25rem 0;
-  box-sizing: border-box;
-  font-size: 0.875rem;
+  padding: 1rem 1;
+  font-size: 5.875rem;
 }
 
 /* Scrollbar  */
@@ -105,5 +104,4 @@
 
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container::-webkit-scrollbar-thumb {
   background-color: #cbd5e1;
-  border-radius: 4px;
 }
