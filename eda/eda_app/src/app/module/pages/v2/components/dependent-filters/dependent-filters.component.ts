@@ -34,11 +34,11 @@ export class DependentFilters implements OnInit {
     @Output() close: EventEmitter<any> = new EventEmitter<any>();
 
     options: GridsterConfig;
-    dashboard: GridsterItem[];
+    dashboard: GridsterItem[]; // Ordenamiento de los filtros dependientes
     itemToPush: GridsterItemComponent;
 
     public display: boolean = false;
-    private dashboardPrev: any = [];
+    private dashboardPrev: any = []; // Variable que almacena una copia del dashboard
 
     constructor() {}
 
@@ -50,7 +50,7 @@ export class DependentFilters implements OnInit {
         this.initDashboard();
 
         this.options = {
-        gridType: GridType.Fit,        // mantienes Fit si quieres que siga llenando el contenedor
+        gridType: GridType.Fit,
         compactType: CompactType.None,
         // displayGrid: DisplayGrid.Always,
         pushItems: false,
@@ -73,9 +73,9 @@ export class DependentFilters implements OnInit {
 
         minCols: 10,
         maxCols: 10,
-        minRows: 10, // Make this value dynamic - pending
-        maxRows: 10, // Make this value dynamic - pending
-        margin: 1, // Reduce the margin between cells
+        minRows: 10, // Hacer este valor dinamico - Pendiente
+        maxRows: 10, // Hacer este valor dinamico - Pendiente
+        margin: 1, // Margen entre los bloques
 
         itemChangeCallback: this.onItemChange.bind(this)
         };
@@ -124,22 +124,15 @@ export class DependentFilters implements OnInit {
 
     onItemChange(item: GridsterItem): void {
 
-        // console.log('this.dashboard: ', this.dashboard);
-        // console.log('item: ', item);
-
         const x = this.dashboard.length;
         let arregloY = [...Array(x).keys()];
         let controlDashY = [...Array(x).keys()];
         let controlDashPrevY = [...Array(x).keys()];
 
-        // console.log('this.dashboardPrev: ', this.dashboardPrev);
-
-
         if(item.y >= this.dashboard.length){
-            
+            // VERIFICAMOS QUE LOS BLOQUES NO SE ESCAPEN FUERA DE LA LONGITUD DE LA VARIABLE DASHBOARD
             for(let i=0; i<this.dashboard.length; i++) {
                 if(this.dashboard[i].y >= this.dashboard.length) {
-                    // console.log('gf: ', this.dashboard[i]);
                 } else {
                     arregloY = arregloY.filter(index => index !== this.dashboard[i].y);
                 }
@@ -153,26 +146,14 @@ export class DependentFilters implements OnInit {
                 this.options.api.optionsChanged();
             }            
     
-            // console.log('arregloY: 2', arregloY);
-            console.log('Arreglo de salto de linea ............ ');
-
         } else {
-            // console.log('AQUI NO DEBE HABER ESTE ANALISIS')
-            // console.log('AUQIIII dashboard: ', this.dashboard);
+            // CONTROL PARA LOS BLOQUES AL INTERIOR DE LA LOGINTUD DE LA VARIABLE DASHBOARD
             controlDashY = [...Array(x).keys()];
             controlDashPrevY = [...Array(x).keys()];
-
-            console.log('this.dashboard ==>>', this.dashboard);
-            console.log('this.dashboardPrev ==>>', this.dashboardPrev);
-            console.log('item ==>>', item);
 
             // verificando que siempre tengamos un filtro en todos los puntos verticales: { y=0, y=1, y=2, ..., y=n-1, y=n };
             this.dashboard.forEach((gf: any) => { controlDashY = controlDashY.filter(index => index !== gf.y); })
             this.dashboardPrev.forEach((gf: any) => { controlDashPrevY = controlDashPrevY.filter(index => index !== gf.y); })
-
-            console.log('controlDashY ::: ', controlDashY);
-            console.log('controlDashPrevY ::: ', controlDashPrevY);
-            // debugger;
 
             // VERIFICACION PARA EL INTERCAMBIO O TRANSLAPE DE LOS ELEMENTOS EN EL GRID VAYAN POR EL ELSE
             if(controlDashY.length === 0 && controlDashPrevY.length === 0) {
@@ -180,35 +161,25 @@ export class DependentFilters implements OnInit {
                 //////////////////////////////////
                 // INICIO MOVIMIENTO HORIZONTAL //
                 //////////////////////////////////
-                console.log('CONTROL ----------- HORIZONTAL -----------')
 
                 const index = this.dashboard.findIndex(gf => gf.filter_column === item.filter_column);
                 const preItem = this.dashboard.find((gf: any) => gf.y === (item.y-1));
 
                 if(item.y === 0) {
                     // CONTROL DE MOVIMIENTO HORIZONTAL PARA EL ELEMENTO (x=0; y=0)
-                    console.log('es cerooo')
                     item.x = 0;
                     item.y = 0;
                     if (this.options.api?.optionsChanged) this.options.api.optionsChanged();   
                 } else {
 
                     if(item.x > this.dashboardPrev[index].x) {
-                        // CONTROL DE MOVIMIENTO HORIZONTAL A LA DERECHA
-                        console.log('DERECHAAAAAAAAAA')
+                        // CONTROL DE MOVIMIENTO HORIZONTAL =>  DERECHA
                         if(item.x > preItem.x + 1) {
                             item.x = preItem.x + 1;
                             if (this.options.api?.optionsChanged) this.options.api.optionsChanged();   
                         }
                     } else {
-                        // CONTROL DE MOVIMIENTO HORIZONTAL A LA IZQUIERDA
-                        console.log('IZQUIERDAAAAAAAA')
-                        console.log('this.dashboard: ', this.dashboard);
-                        console.log('this.dashboardPrev: ', this.dashboardPrev);
-                        console.log('item: ', item);
-                        console.log('index: ', index);
-                        // debugger;
-
+                        // CONTROL DE MOVIMIENTO HORIZONTAL =>  IZQUIERDA
                         for(let j=item.y+1; j<this.dashboardPrev.length; j++) {
                             if(this.dashboardPrev.find((gl: any) => gl.y===item.y).x <= this.dashboardPrev.find((gl: any) => gl.y===j).x ) {
                                 this.dashboard.find((gl: any) => gl.y===j).x = this.dashboard.find((gl: any) => gl.y===j).x - (this.dashboardPrev.find((gl: any) => gl.y===(item.y)).x - item.x);
@@ -231,21 +202,9 @@ export class DependentFilters implements OnInit {
                 // INICIO INTERCAMBIO DE VALORES CON CONTROL VERTICAL //
                 ////////////////////////////////////////////////////////
 
-                console.log('CONTROL ----------- VERTICAL -----------')
-                console.log('this.dashboardPrev: ', this.dashboardPrev);
-                console.log('this.dashboard: ', this.dashboard);
-                console.log('item: ', item);
-                console.log('arregloY: ', arregloY);            
-                console.log('controlDashY ::: ', controlDashY);
-                console.log('controlDashPrevY ::: ', controlDashPrevY);
-
-
-
+                // Bloque de inicio de movimiento y de final de movimiento (Variables temporales)
                 const iniBlo = _.cloneDeep(this.dashboardPrev).find((gf: any) => item.filter_column === gf.filter_column);
                 const finBlo = _.cloneDeep(this.dashboardPrev).find((gf: any) => item.y === gf.y);
-
-                console.log('iniBlo: ',iniBlo);
-                console.log('finBlo: ',finBlo);
 
                 const ini = this.dashboard.find(gf => gf.filter_column === iniBlo.filter_column);
                 ini.x = finBlo.x
@@ -254,32 +213,21 @@ export class DependentFilters implements OnInit {
                 fin.x = iniBlo.x
                 fin.y = iniBlo.y
 
-                console.log('New dashboard: ', this.dashboard);
-                // this.dashboardPrev = _.cloneDeep(this.dashboard);
-                // debugger;
                 if (this.options.api?.optionsChanged) this.options.api.optionsChanged();   
-                // debugger;
-
                 
                 /////////////////////////////////////////////////////
                 // FIN INTERCAMBIO DE VALORES CON CONTROL VERTICAL //
                 /////////////////////////////////////////////////////
                 
             }
-            
-            // OTRO DESARROLLO
-
         }
 
         // EL DASHBOARD PREVIO ADQUIERE EL VALOR ACTUAL:
         this.dashboardPrev = _.cloneDeep(this.dashboard);
-
-        console.log('this.dashboard ::::::::: ', this.dashboard)
-        console.log('this.dashboard: ::::::::: ', this.dashboardPrev)
     }
 
     // FUNCION RECURSIVA QUE CONSTRUYE EL ORDERITEM
-    buildOrderItems(globalFilters, ordenamiento) {
+    buildOrderChildren(globalFilters, ordenamiento) {
         // Map rápido por filter_column => nodo en ordenamiento
         const byColumn = new Map(ordenamiento.map(n => [n.filter_column, n]));
 
@@ -385,8 +333,8 @@ export class DependentFilters implements OnInit {
         const result = globalFilters.map(gf => {
             const key = getFilterKey(gf);
             const node = key ? byColumn.get(key) : undefined;
-            const orderItem = node ? buildChildrenFor(node) : [];
-            return { ...gf, orderItem };
+            const children = node ? buildChildrenFor(node) : [];
+            return { ...gf, children };
         });
 
         return result;
@@ -404,9 +352,9 @@ export class DependentFilters implements OnInit {
     }   
 
 
-    ////////////////////////////////////////////////////////////////////////////
-    //////////////////// INICIO CONFIGURACION DEL COMPONENTE ///////////////////
-    ////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+    //////////////////// INICIO DEL CONTROL DEL DIALOG ///////////////////
+    //////////////////////////////////////////////////////////////////////
 
     public disableApply(): boolean { return false; }
 
@@ -414,8 +362,8 @@ export class DependentFilters implements OnInit {
         console.log('---- onApply ----');
         this.display = false;
 
-        const mirar = this.buildOrderItems(this.dashboardPage.globalFilter.globalFilters, this.dashboard)
-
+        // Generando el ordenamiento arbol por cada filtro global (por cada item).
+        const mirar = this.buildOrderChildren(this.dashboardPage.globalFilter.globalFilters, this.dashboard)
         console.log('mirar: ', mirar);
 
         this.close.emit('APLICANDO CAMBIOS AL DASHBOARD .....');
@@ -427,9 +375,9 @@ export class DependentFilters implements OnInit {
         this.close.emit('DASHBOARD SIN MODIFICAR.....');
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    ///////////////////// FIN CONFIGURACION DEL COMPONENTE /////////////////////
-    ////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+    ///////////////////// FIN DEL CONTROL DEL DIALOG /////////////////////
+    //////////////////////////////////////////////////////////////////////
 
 }
 
