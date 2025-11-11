@@ -463,7 +463,8 @@ export class DashboardPageV2 implements OnInit {
     //Check de modo
     let modeEDA = false;
     if (event?.data?.panel) {
-        modeEDA = event?.data.queryMode === 'EDA'
+      modeEDA = !event?.data.panel.content?.query?.query.modeSQL &&
+      (!event?.data.panel.content.query.query.queryMode || event?.data.panel.content.query.query.queryMode === 'EDA')
     }
     //Si es modo arbol o SQL no aplica filtros
     if (modeEDA && event.code === "ADDFILTER" && this.validateDashboard('GLOBALFILTER') && this.dashboard.config.clickFiltersEnabled) {
