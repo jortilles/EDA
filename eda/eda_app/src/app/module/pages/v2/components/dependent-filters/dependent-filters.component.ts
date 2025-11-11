@@ -278,8 +278,118 @@ export class DependentFilters implements OnInit {
         console.log('this.dashboard: ::::::::: ', this.dashboardPrev)
     }
 
-    configurationDependentFilters(dashboard: any, item) {
-        // this.dashboard.splice(this.dashboard.indexOf(item), 1);
+    // FUNCION RECURSIVA QUE CONSTRUYE EL ORDERITEM
+    buildOrderItems(globalFilters, ordenamiento) {
+        // Map rápido por filter_column => nodo en ordenamiento
+        const byColumn = new Map(ordenamiento.map(n => [n.filter_column, n]));
+
+        // Agrupar nodos por x (columna) y ordenar cada grupo por y asc
+        const colsMap = new Map();
+        for (const node of ordenamiento) {
+            if (!colsMap.has(node.x)) colsMap.set(node.x, []);
+            colsMap.get(node.x).push(node);
+        }
+        for (const [x, arr] of colsMap.entries()) {
+            arr.sort((a, b) => a.y - b.y);
+        }
+
+        // lista de x's ordenados asc
+        const xs = Array.from(colsMap.keys()).sort((a, b) => a - b);
+
+        // Para acelerar, map x -> array de nodos (ya ordenados por y)
+        const nodesByX = new Map(xs.map(x => [x, colsMap.get(x) || []]));
+
+        // Construcción recursiva con memo (memoKey = filter_column)
+        const memo = new Map();
+
+        function buildChildrenFor(node) {
+            if (!node) return [];
+            const key = node.filter_column;
+            if (memo.has(key)) return memo.get(key);
+
+            const currentX = node.x;
+            // encontrar siguiente columna existente
+            const ix = xs.indexOf(currentX);
+            if (ix === -1 || ix === xs.length - 1) {
+                memo.set(key, []);
+                return [];
+            }
+            const nextX = xs[ix + 1];
+            const candidates = nodesByX.get(nextX) || [];
+
+            // Si no hay candidatos -> sin hijos
+            if (candidates.length === 0) {
+                memo.set(key, []);
+                return [];
+            }
+
+            // Filtrar los candidatos que CAEN sobre este padre según la regla:
+            // un candidato se asigna a este padre si, al buscar entre todos los padres
+            // de la columna currentX el que tenga mayor y <= candidato.y, ese padre es este node.
+            // Para hacer eso de forma eficiente, necesitamos la lista de padres (col currentX) ordenada por y.
+            const parents = nodesByX.get(currentX) || [];
+            if (parents.length === 0) {
+                memo.set(key, []);
+                return [];
+            }
+
+            // Para cada candidato, encontrar su padre "designado" en la columna currentX
+            // (padre con mayor y <= candidate.y). Si no existe, el primer padre (fallback).
+            const assigned = [];
+            for (const cand of candidates) {
+                // binary search opcional para padres (parents ordenados por y)
+                let lo = 0, hi = parents.length - 1, foundIndex = -1;
+                while (lo <= hi) {
+                    const mid = Math.floor((lo + hi) / 2);
+                    if (parents[mid].y <= cand.y) {
+                    foundIndex = mid;
+                    lo = mid + 1;
+                    } else {
+                    hi = mid - 1;
+                    }
+                }
+                const parentIndex = (foundIndex === -1) ? 0 : foundIndex;
+                const designatedParent = parents[parentIndex];
+
+                // si el padre designado es el nodo actual, cand es hijo del node
+                if (designatedParent.filter_column === node.filter_column) {
+                    assigned.push(cand);
+                }
+            }
+
+            // Orden de children: por y asc (mantener consistencia)
+            assigned.sort((a, b) => a.y - b.y);
+
+            const children = assigned.map(cn => ({
+                name: cn.filter_column,
+                children: buildChildrenFor(cn)
+            }));
+
+            memo.set(key, children);
+            return children;
+        }
+
+        // Helper para obtener el "nombre" clave dentro de globalFilter
+        function getFilterKey(gf) {
+            if (!gf) return undefined;
+            if (gf.filter_column) return gf.filter_column;
+            // soporte opcional para gf.selectedColumn.display_name.default
+            try {
+                return gf.selectedColumn?.display_name?.default;
+            } catch (e) {
+                return undefined;
+            }
+        }
+
+        // Construir resultado manteniendo el orden de globalFilters
+        const result = globalFilters.map(gf => {
+            const key = getFilterKey(gf);
+            const node = key ? byColumn.get(key) : undefined;
+            const orderItem = node ? buildChildrenFor(node) : [];
+            return { ...gf, orderItem };
+        });
+
+        return result;
     }
 
 
@@ -303,6 +413,11 @@ export class DependentFilters implements OnInit {
     public onApply() {
         console.log('---- onApply ----');
         this.display = false;
+
+        const mirar = this.buildOrderItems(this.dashboardPage.globalFilter.globalFilters, this.dashboard)
+
+        console.log('mirar: ', mirar);
+
         this.close.emit('APLICANDO CAMBIOS AL DASHBOARD .....');
     }
 
