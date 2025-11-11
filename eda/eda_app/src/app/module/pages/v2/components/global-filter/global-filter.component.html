@@ -43,7 +43,7 @@
           }@else{
             <!-- Si tiene autocomplete -> estilo moderno -->
             <div
-              class="filter-card flex flex-col gap-2 rounded-lg p-3  max-w-[300px] flex-1">
+              class="filter-card flex flex-col gap-2 rounded-lg p-3 flex-1">
               <div class="filter-row flex items-center gap-2 w-full">
                 <span [ngClass]="{'italic': !filter.applyToAll}" class="text-sm font-semibold text-gray-700"
                   [style.color]="styleButton.color" [style.font-size]="styleButton.fontSize"
@@ -56,7 +56,7 @@
                   (onRemove)="removeGlobalFilter(filter, true)" (onDatesChanges)="processPickerEvent($event, filter)">
                 </eda-date-picker>
                 } @else {
-                <p-autoComplete  [(ngModel)]="filter.selectedItems" (keydown.enter)="onAddValue($event, filter)" [suggestions]="autoCompleteValues"
+                <p-autoComplete #AC [(ngModel)]="filter.selectedItems" (keydown.enter)="onAddValue($event, filter)" [suggestions]="autoCompleteValues"
                   (completeMethod)="loadFilterAutoComplete($event, filter)" placeholder="Selecciona valor(es)"
                   [forceSelection]="false" [multiple]="true" (onSelect)="onItemSelected(filter)" (onUnselect) ="onItemSelected(filter)"
                   panelStyleClass="modern-autocomplete-panel" [style]="styleButton" class="modern-autocomplete flex-1">

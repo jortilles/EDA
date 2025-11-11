@@ -26,14 +26,10 @@
 }
 
 
-.filters-container::-webkit-scrollbar {
-  width: 6px;
-}
-
 /* Tarjeta individual */
 .filter-card {
   flex: 0 0 auto;
-  width: 260px;
+  width: 15vw;
 }
 
 /*****************/
@@ -43,12 +39,14 @@
 /* Contenedor principal del autocomplete */
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container {
   display: flex;
-  flex-direction: column; /* tokens arriba, input abajo */
+  flex-direction: row-reverse; /* tokens arriba, input abajo */
   flex-wrap: nowrap;
   gap: 0.25rem;
   padding: 0.4rem 0.6rem;
   border: 1px solid #d1d5db;
   border-radius: 0px;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 /*  Tokens  con scroll */
@@ -59,7 +57,7 @@
 /* wrapper interno */
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row-reverse;
 }
 
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container .p-autocomplete-token {
@@ -74,23 +72,31 @@
 
 /*  tokens  en  contenedor scrollable */
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container {
-  width: 14vw;
-  overflow-y: auto;
+  width: 10vw;
 }
 
 /* Input debajo  */
 .modern-autocomplete ::ng-deep .p-autocomplete-input-token {
   order: 999; 
   flex: none;
-  width: 100% !important;
+  font-size: smaller;
+  width: 30% !important;
   min-width: 0;
   display: block;
   margin-top: 0.15rem;
+  border-right: 3px solid black;
+  margin-right: auto;
 }
+
+.modern-autocomplete ::ng-deep .p-autocomplete-input-token input {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 
 /* Input interno real */
 .modern-autocomplete ::ng-deep .input.p-autocomplete-input {
-  width: 100% !important;
   outline: none;
   background: transparent;
   padding: 1rem 1;

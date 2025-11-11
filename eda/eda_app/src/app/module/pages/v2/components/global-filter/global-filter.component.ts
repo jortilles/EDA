@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit } from "@angular/core";
+import { ViewChild, Component, inject, Input, OnInit, ViewChildren } from "@angular/core";
 import { AlertService, DashboardService, GlobalFiltersService, QueryBuilderService, UserService } from "@eda/services/service.index";
 import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
 import { EdaDialogCloseEvent, EdaDialogController } from "@eda/shared/components/shared-components.index";
@@ -28,6 +28,8 @@ import '@angular/localize/init';
 })
 export class GlobalFilterV2Component implements OnInit {
     @Input() dashboard: DashboardPageV2;
+    @ViewChild('AC') autoComplete: AutoCompleteModule;
+
     public globalFilters: any[] = [];
     public globalFilter: any;
     public styleButton: any = {};
@@ -155,7 +157,6 @@ export class GlobalFilterV2Component implements OnInit {
     }
 
     public setGlobalFilterItems(filter: any) {
-        console.log(filter)
         this.dashboard.edaPanels.forEach((ebp: EdaBlankPanelComponent) => {
             const filterMap = ebp.panel.globalFilterMap || [];
             if (filter.panelList.includes(ebp.panel.id)) {
@@ -528,7 +529,6 @@ export class GlobalFilterV2Component implements OnInit {
             const res = await this.dashboardService.executeQuery(query).toPromise();
             const message = res[0][0];
             
-            console.log(query,  'query', res)
             if (['noDataAllowed', 'noFilterAllowed'].includes(message)) {
                 this.globalFilters.find((gf: any) => gf.id == globalFilter.id).visible = 'hidden';
                 this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = false;
@@ -633,8 +633,8 @@ export class GlobalFilterV2Component implements OnInit {
                     filter_type:"like",
                     isGlobal:filtro.isGlobal,
                     joins:[],
-            }]
-        };
+                }]
+            };
         const query = this.queryBuilderService.normalQuery([targetColumn], queryParams);
         const res = await this.dashboardService.executeQuery(query).toPromise();
         
