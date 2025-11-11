@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, Subscription } from 'rxjs';
 import { DateUtils } from '@eda/services/utils/date-utils.service';
 import * as _ from 'lodash';
 import { ButtonModule } from 'primeng/button';
@@ -48,6 +48,7 @@ export class DashboardPageV2 implements OnInit {
   public styles: DashboardStyles;
   public gridsterOptions: GridsterConfig;
   public gridsterDashboard: GridsterItem[];
+  private edaPanelsSubscription: Subscription;
   
   public reportTitle: any;
   public reportPanel: any;
@@ -120,10 +121,40 @@ export class DashboardPageV2 implements OnInit {
   }
 
 
+  /* Set applyToAllFilters for new panel when it's created */
+      public ngAfterViewInit(): void {
+          this.edaPanelsSubscription = this.edaPanels.changes.subscribe((comps: QueryList<EdaBlankPanelComponent>) => {
+              const globalFilters = this.globalFilter?.globalFilters.filter(filter => filter.isGlobal === true);
+              const unsetPanels = this.edaPanels.filter(panel => _.isNil(panel.panel.content));
+  
+              this.setPanelsQueryMode();
+  
+              setTimeout(() => {
+                  const treeQueryMode = this.edaPanels.some((panel) => panel.selectedQueryMode === 'EDA2');
+  
+                  unsetPanels.forEach(panel => {
+                      globalFilters.forEach(filter => {
+                          if (panel && !treeQueryMode) {
+                              filter.panelList.push(panel.panel.id);
+                              const formatedFilter = this.globalFiltersService.formatFilter(filter);
+                              panel.assertGlobalFilter(formatedFilter)
+                          }
+                      });
+                  });
+  
+              }, 0);
+          });
+  
+      }
+
   ngOnDestroy() {
     // Poner estilos como predefinidios
     this.stylesProviderService.setStyles(this.stylesProviderService.generateDefaultStyles())
     this.stylesProviderService.loadingFromPalette = false;
+    this.stopRefresh = true;
+      if (this.edaPanelsSubscription) {
+          this.edaPanelsSubscription.unsubscribe();
+      }
   }
 
 
@@ -406,37 +437,33 @@ export class DashboardPageV2 implements OnInit {
     }, 100); // revisa cada 100ms
   }
   
-public async reloadPanels(): Promise<void> {
-  const tasks = this.edaPanels.map(async (panel) => {
-    if (panel.currentQuery.length > 0) {
-      panel.display_v.chart = '';
+  public async reloadPanels(): Promise<void> {
+    const tasks = this.edaPanels.map(async (panel) => {
+      if (panel.currentQuery.length > 0) {
+        panel.display_v.chart = '';
 
-      await panel.runQueryFromDashboard(true);
+        await panel.runQueryFromDashboard(true);
 
-      // Actualizo el panelChart si existe
-      if (panel.panelChart) {
-        try {
-          panel.panelChart?.updateComponent();
-        } catch (error) {
-          console.error('Error al actualizar panelChart', error);
+        // Actualizo el panelChart si existe
+        if (panel.panelChart) {
+          try {
+            panel.panelChart?.updateComponent();
+          } catch (error) {
+            console.error('Error al actualizar panelChart', error);
+          }
         }
       }
-    }
-  });
+    });
 
-  // Espero a que terminen todos en paralelo
-  await Promise.all(tasks);
-}
-
-
-
+    // Espero a que terminen todos en paralelo
+    await Promise.all(tasks);
+  }
 
   public async onPanelAction(event: IPanelAction): Promise<void> {
     //Check de modo
     let modeEDA = false;
     if (event?.data?.panel) {
-      modeEDA = !event?.data.panel.content?.query?.query.modeSQL &&
-      (!event?.data.panel.content.query.query.queryMode || event?.data.panel.content.query.query.queryMode === 'EDA')
+        modeEDA = event?.data.queryMode === 'EDA'
     }
     //Si es modo arbol o SQL no aplica filtros
     if (modeEDA && event.code === "ADDFILTER" && this.validateDashboard('GLOBALFILTER') && this.dashboard.config.clickFiltersEnabled) {
@@ -575,6 +602,7 @@ public async reloadPanels(): Promise<void> {
     return {
         id: `${table.table_name}_${column.column_name}`,
         isGlobal: true,
+        isAutocompleted: config.isAutocompleted ?? false,
         applyToAll: config.applyToAll ?? true,
         panelList: config.panelList.map((p) => p.id),
         table: { label: table.display_name.default, value: table.table_name },
@@ -676,6 +704,7 @@ public async reloadPanels(): Promise<void> {
         let globalFilter = {
           id: `${table.table_name}_${column.column_name}`,  //this.fileUtils.generateUUID(),
           isGlobal: true,
+          isAutocompleted: config.isAutocompleted,
           applyToAll: config.applyToAll,
           panelList: config.panelList.map(p => p.id),
           table: { label: table.display_name.default, value: table.table_name },
@@ -696,6 +725,7 @@ public async reloadPanels(): Promise<void> {
         }, 500);
       }
     }
+    this.setPanelsQueryMode();
   }
 
   private setPanelsToFilter(panel: any): any {
@@ -720,14 +750,14 @@ public async reloadPanels(): Promise<void> {
           { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' },
           { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
         ];
+        panel.selectedQueryMode = 'EDA2';
       } else if (standardQueryMode) {
         panel.queryModes = [
           { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
           { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
         ];
       }
-
-      if ((!standardQueryMode && !treeQueryMode) || this.edaPanels.length === 1) {
+      if (((!standardQueryMode && !treeQueryMode) || this.edaPanels.length === 1) && this.globalFilter.globalFilters.length === 0) {
         panel.queryModes = [
           { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
           { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
@@ -745,12 +775,10 @@ public async reloadPanels(): Promise<void> {
         setTimeout(() => panel.panelChart?.updateComponent(), 100);
       }
     });
-
     
     // LiveDashboardTimer
     let isvalid = true;
     const emptyQuery = this.edaPanels.some((panel) => panel.currentQuery.length === 0);
-
 
 
       if (emptyQuery) isvalid = false;
@@ -1071,10 +1099,5 @@ private getChartClicked(f: any, tableName: string, columnName: string, label: an
 
   return tableMatch && columnMatch && labelMatch;
 }
-
-
-
-
-
 
 }

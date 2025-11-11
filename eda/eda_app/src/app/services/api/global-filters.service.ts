@@ -315,6 +315,7 @@ export class GlobalFiltersService {
             filter_type: isDate ? 'between' : 'in',
             filter_elements: this.assertGlobalFilterItems(globalFilter),
             isGlobal: true,
+            isAutocompleted: globalFilter.isAutocompleted,
             applyToAll: globalFilter.applyToAll,
             valueListSource: valueListSource
         }
@@ -340,6 +341,7 @@ export class GlobalFiltersService {
             filter_elements: this.assertGlobalFilterItems(globalFilter),
             pathList: pathList,
             isGlobal: true,
+            isAutocompleted: globalFilter.isAutocompleted,
             applyToAll: globalFilter.applyToAll,
             autorelation: globalFilter.autorelation,
             valueListSource: globalFilter.selectedColumn.valueListSource

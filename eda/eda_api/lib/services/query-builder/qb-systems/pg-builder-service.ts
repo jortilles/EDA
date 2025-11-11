@@ -633,7 +633,7 @@ export class PgBuilderService extends QueryBuilderService {
       case 0:
         if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
         if (filterObject.filter_type === 'like') { 
-          return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
+          return `${colname}  ${'ilike'} '%${filterObject.filter_elements[0].value1}%' `;
         }
         if (filterObject.filter_type === 'not_like') { 
           filterObject.filter_type = 'not like'
@@ -753,7 +753,7 @@ public getHavingColname(column: any){
       case 0:
         if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
         if (filterObject.filter_type === 'like') { 
-          return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
+          return `${colname}  ${'ilike'} '%${filterObject.filter_elements[0].value1}%' `;
         }
         if (filterObject.filter_type === 'not_like') { 
           filterObject.filter_type = 'not like'
@@ -875,8 +875,7 @@ public getHavingColname(column: any){
       let arr = [];
 
       if (!colsInFilters.map(f => f.col.toUpperCase().trim()).includes(col.toUpperCase().trim())) {
-
-        arr.push(`${subs}::varchar like '%'`);
+        arr.push(`${subs}::varchar ilike '%'`);
 
       } else {
         const index = colsInFilters.filter(f => f.col.toUpperCase().trim() === col.toUpperCase().trim()).map(f => f.index)[0];

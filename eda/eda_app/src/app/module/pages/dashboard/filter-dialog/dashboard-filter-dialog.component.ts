@@ -36,6 +36,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     public targetTable: any;
     public selectedValues: any = [];
     public applyToAll: boolean = true;
+    public isAutocompleted: boolean = true;
     public switchChecked: boolean = false;
     public switchFilter: any;
     public publicRoHidden  = [ //valors del dropdown de filtrat de visiblitat
@@ -52,7 +53,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     public aliasValue : string = "";
     
     // Global filters vars
-    public filtersList: Array<{ table, column, panelList, data, selectedItems, selectedRange, id, isGlobal, applyToAll, visible, isdeleted? }> = [];
+    public filtersList: Array<{ table, column, panelList, data, selectedItems, selectedRange, id, isGlobal, isAutocompleted,applyToAll, visible, isdeleted? }> = [];
 
     //strings
     public header1 : string = $localize`:@@aplyToAllPanelsH5:¿Aplica a todos los paneles?`;
@@ -203,6 +204,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
                 selectedItems: this.selectedValues,
                 selectedRange:this.selectedRange,
                 isGlobal: true,
+                isAutocompleted: this.isAutocompleted,
                 applyToAll: !this.applyToAll,
                 visible: this.publicRoHiddenOption
             });
