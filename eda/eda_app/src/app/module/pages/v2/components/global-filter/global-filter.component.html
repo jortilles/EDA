@@ -57,9 +57,8 @@
                 </eda-date-picker>
                 } @else {
                 <p-autoComplete #AC [(ngModel)]="filter.selectedItems" (keydown.enter)="onAddValue($event, filter)" [suggestions]="autoCompleteValues"
-                  (completeMethod)="loadFilterAutoComplete($event, filter)" placeholder="Selecciona valor(es)"
-                  [forceSelection]="false" [multiple]="true" (onSelect)="onItemSelected(filter)" (onUnselect) ="onItemSelected(filter)"
-                  panelStyleClass="modern-autocomplete-panel" [style]="styleButton" class="modern-autocomplete flex-1">
+                  (completeMethod)="loadFilterAutoComplete($event, filter)" placeholder="Selecciona valor(es)" [forceSelection]="false" 
+                  [multiple]="true" (onSelect)="onItemSelected(filter)" (onUnselect) ="onItemSelected(filter)" class="modern-autocomplete flex-1">
                 </p-autoComplete>
                 }
               </div>

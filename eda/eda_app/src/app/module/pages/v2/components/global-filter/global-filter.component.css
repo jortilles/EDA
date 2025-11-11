@@ -16,6 +16,7 @@
 /* FILTROS Y CONTENEDORES */
 /*****************/
 
+/* contiene todos los filtros*/
 .filters-container {
   display: flex;
   flex-wrap: wrap;
@@ -25,8 +26,7 @@
   scrollbar-color: #cbd5e1 transparent;
 }
 
-
-/* Tarjeta individual */
+/* filtro individual */
 .filter-card {
   flex: 0 0 auto;
   width: 15vw;
@@ -39,27 +39,20 @@
 /* Contenedor principal del autocomplete */
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container {
   display: flex;
-  flex-direction: row-reverse; /* tokens arriba, input abajo */
+  flex-direction: row-reverse; 
   flex-wrap: nowrap;
   gap: 0.25rem;
   padding: 0.4rem 0.6rem;
   border: 1px solid #d1d5db;
-  border-radius: 0px;
   overflow-x: auto;
   scrollbar-width: thin;
+  max-height: 4.5vh; 
+  width: 10vw;
+  box-shadow: none;
+  border-radius: 10px;
 }
 
-/*  Tokens  con scroll */
-.modern-autocomplete ::ng-deep .p-autocomplete-multiple-container {
-  max-height: 5vh; 
-}
-
-/* wrapper interno */
-.modern-autocomplete ::ng-deep .p-autocomplete-multiple-container {
-  display: flex;
-  flex-direction: row-reverse;
-}
-
+/* chips - los tokens  */
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container .p-autocomplete-token {
   margin: 0.125rem 0.125rem 0.125rem 0;
   border-radius: 9999px;
@@ -70,44 +63,25 @@
   align-items: center;
 }
 
-/*  tokens  en  contenedor scrollable */
-.modern-autocomplete ::ng-deep .p-autocomplete-multiple-container {
-  width: 10vw;
-}
-
-/* Input debajo  */
+/* Zona Input  */
 .modern-autocomplete ::ng-deep .p-autocomplete-input-token {
   order: 999; 
   flex: none;
-  font-size: smaller;
-  width: 30% !important;
-  min-width: 0;
-  display: block;
+  font-size: 10px;
+  width: auto !important;
   margin-top: 0.15rem;
   border-right: 3px solid black;
   margin-right: auto;
 }
 
+/* INPUT PARA ESCRIBIR */
 .modern-autocomplete ::ng-deep .p-autocomplete-input-token input {
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
 }
 
-
-/* Input interno real */
-.modern-autocomplete ::ng-deep .input.p-autocomplete-input {
-  outline: none;
-  background: transparent;
-  padding: 1rem 1;
-  font-size: 5.875rem;
-}
-
-/* Scrollbar  */
-.modern-autocomplete ::ng-deep .p-autocomplete-multiple-container::-webkit-scrollbar {
-  width: 6px;
-}
-
+/* Scrollbar thmub, cuando pones mouse encima*/
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container::-webkit-scrollbar-thumb {
   background-color: #cbd5e1;
 }
