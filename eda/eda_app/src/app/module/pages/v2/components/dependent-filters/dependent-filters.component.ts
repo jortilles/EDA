@@ -185,8 +185,8 @@ export class DependentFilters implements OnInit {
                 const index = this.dashboard.findIndex(gf => gf.filter_column === item.filter_column);
                 const preItem = this.dashboard.find((gf: any) => gf.y === (item.y-1));
 
-
                 if(item.y === 0) {
+                    // CONTROL DE MOVIMIENTO HORIZONTAL PARA EL ELEMENTO (x=0; y=0)
                     console.log('es cerooo')
                     item.x = 0;
                     item.y = 0;
@@ -194,12 +194,14 @@ export class DependentFilters implements OnInit {
                 } else {
 
                     if(item.x > this.dashboardPrev[index].x) {
+                        // CONTROL DE MOVIMIENTO HORIZONTAL A LA DERECHA
                         console.log('DERECHAAAAAAAAAA')
                         if(item.x > preItem.x + 1) {
                             item.x = preItem.x + 1;
                             if (this.options.api?.optionsChanged) this.options.api.optionsChanged();   
                         }
                     } else {
+                        // CONTROL DE MOVIMIENTO HORIZONTAL A LA IZQUIERDA
                         console.log('IZQUIERDAAAAAAAA')
                         console.log('this.dashboard: ', this.dashboard);
                         console.log('this.dashboardPrev: ', this.dashboardPrev);
@@ -207,8 +209,6 @@ export class DependentFilters implements OnInit {
                         console.log('index: ', index);
                         // debugger;
 
-                        // CORREGIR
-                            //  2
                         for(let j=item.y+1; j<this.dashboardPrev.length; j++) {
                             if(this.dashboardPrev.find((gl: any) => gl.y===item.y).x <= this.dashboardPrev.find((gl: any) => gl.y===j).x ) {
                                 this.dashboard.find((gl: any) => gl.y===j).x = this.dashboard.find((gl: any) => gl.y===j).x - (this.dashboardPrev.find((gl: any) => gl.y===(item.y)).x - item.x);
@@ -218,17 +218,6 @@ export class DependentFilters implements OnInit {
                             }
                         }
 
-                        // for(let i=preItem.y+2; i<this.dashboardPrev.length; i++) {
-                        //     if(this.dashboardPrev[index].x <= this.dashboardPrev[i].x){
-
-                        //         this.dashboard[i].x = this.dashboard[i].x - (this.dashboardPrev[index].x - item.x);
-                        //         if (this.options.api?.optionsChanged) this.options.api.optionsChanged();   
-
-                        //     } else {
-                        //         break;
-                        //     } 
-                        // }
-
                     }
 
                 }
@@ -236,15 +225,11 @@ export class DependentFilters implements OnInit {
                 ///////////////////////////////
                 // FIN MOVIMIENTO HORIZONTAL //
                 ///////////////////////////////
-
                 
             } else {
-
-
-                ///////////////////////////////////////////////////
-                // INTERCAMBIO DE VALORES - CON CONTROL VERTICAL //
-                ///////////////////////////////////////////////////
-
+                ////////////////////////////////////////////////////////
+                // INICIO INTERCAMBIO DE VALORES CON CONTROL VERTICAL //
+                ////////////////////////////////////////////////////////
 
                 console.log('CONTROL ----------- VERTICAL -----------')
                 console.log('this.dashboardPrev: ', this.dashboardPrev);
@@ -274,6 +259,11 @@ export class DependentFilters implements OnInit {
                 // debugger;
                 if (this.options.api?.optionsChanged) this.options.api.optionsChanged();   
                 // debugger;
+
+                
+                /////////////////////////////////////////////////////
+                // FIN INTERCAMBIO DE VALORES CON CONTROL VERTICAL //
+                /////////////////////////////////////////////////////
                 
             }
             
@@ -282,8 +272,10 @@ export class DependentFilters implements OnInit {
         }
 
         // EL DASHBOARD PREVIO ADQUIERE EL VALOR ACTUAL:
-        console.log('EPAAAAAAAAAAAAAAAAAAAAAAAAAAA')
         this.dashboardPrev = _.cloneDeep(this.dashboard);
+
+        console.log('this.dashboard ::::::::: ', this.dashboard)
+        console.log('this.dashboard: ::::::::: ', this.dashboardPrev)
     }
 
     configurationDependentFilters(dashboard: any, item) {
