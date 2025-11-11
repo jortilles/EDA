@@ -638,7 +638,7 @@ export class ChartUtilsService {
                 'table', 'crosstable', 'kpi','dynamicText', 'geoJsonMap', 'coordinatesMap',
                 'doughnut', 'polarArea', 'line', 'kpiline', 'area', 'kpiarea', 'bar', 'kpibar', 'histogram',  'funnel', 'bubblechart',
                 'horizontalBar', 'barline', 'stackedbar', 'parallelSets', 'treeMap', 'scatterPlot', 'knob' ,
-                'pyramid', 'radar', 'stackedbar100', 'treetable'
+                'pyramid', 'radar', 'stackedbar100', 'treetable', 'sunburst'
             ];
 
         //table (at least one column)
@@ -668,7 +668,7 @@ export class ChartUtilsService {
                 notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
                 notAllowed.splice(notAllowed.indexOf('line'), 1);
                 notAllowed.splice(notAllowed.indexOf('area'), 1);
-                notAllowed.splice(notAllowed.indexOf('stackedbar'), 1);
+                notAllowed.splice(notAllowed.indexOf('sunburst'), 1);
                 notAllowed.splice(notAllowed.indexOf('stackedbar100'), 1);
             }
         if(dataDescription.otherColumns.length===1 && dataDescription.numericColumns.length>=1 && dataDescription.totalColumns>=2 ){
