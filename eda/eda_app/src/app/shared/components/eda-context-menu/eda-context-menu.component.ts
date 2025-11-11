@@ -24,29 +24,48 @@ export class EdaContextMenuComponent implements AfterViewInit {
     }
 
     onOutsideClick(event: MouseEvent, dialog: any) {
+        console.log('---------------------------------------');
+        console.log('DEBUG: onOutsideClick triggered');
+
         const dialogEl = dialog?.container || dialog?.containerViewChild?.nativeElement;
-        if (!dialogEl) return;
+        console.log('DEBUG: dialogEl =', dialogEl);
+
+        if (!dialogEl) {
+            console.log('DEBUG: dialog element not found, exiting');
+            return;
+        }
 
         // Si el diálogo aún no está visible, no hacemos nada
-        if (!this.inject.display) return;
+        console.log('DEBUG: inject.display =', this.inject.display);
+        if (!this.inject.display) {
+            console.log('DEBUG: dialog not visible, exiting');
+            return;
+        }
 
         // Ignorar mientras no esté permitido
+        console.log('DEBUG: allowOutsideClose =', this.allowOutsideClose);
         if (!this.allowOutsideClose) {
+            console.log('DEBUG: first click ignored, setting allowOutsideClose = true');
             this.allowOutsideClose = true;
             return;
         }
 
         const isOutside = !dialogEl.contains(event.target as Node);
+        console.log('DEBUG: isOutside =', isOutside);
+        console.log('DEBUG: event.target =', event.target);
 
         if (isOutside && this.allowOutsideClose) {
+            console.log('DEBUG: clicked outside, closing context menu');
             this.allowOutsideClose = false;
             this.inject.hideContextMenu();
+        } else {
+            console.log('DEBUG: click ignored (inside dialog or flag false)');
         }
     }
 
+
     showContextMenu() {
         this.inject.display = true;
-
         // Espera un poco antes de permitir cerrar por clic fuera
         setTimeout(() => {
             this.allowOutsideClose = true;
