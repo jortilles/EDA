@@ -46,7 +46,7 @@
   border: 1px solid #d1d5db;
   overflow-x: auto;
   scrollbar-width: thin;
-  max-height: 4.5vh; 
+  height: auto; 
   width: 10vw;
   box-shadow: none;
   border-radius: 10px;
@@ -54,7 +54,6 @@
 
 /* chips - los tokens  */
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container .p-autocomplete-token {
-  margin: 0.125rem 0.125rem 0.125rem 0;
   border-radius: 9999px;
   font-size: 0.875rem;
   font-weight: 500;
@@ -67,11 +66,23 @@
 .modern-autocomplete ::ng-deep .p-autocomplete-input-token {
   order: 999; 
   flex: none;
-  font-size: 10px;
-  width: auto !important;
-  margin-top: 0.15rem;
+  font-size: 0.75rem;
+  width: auto!important;
   border-right: 3px solid black;
   margin-right: auto;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+/* Loader de autocomplete */
+.modern-autocomplete ::ng-deep .p-autocomplete-loader {
+  position: absolute; /* para poder moverlo libremente */
+  right: -1.2rem;      /* espacio desde el borde derecho */
+  top: 50%;           /* centrar vertical */
+  transform: translateY(-50%); /* centrar exacto */
+  color: #00BFB3;
+  z-index: 10;        /* por si hay otros elementos encima */
 }
 
 /* INPUT PARA ESCRIBIR */
