@@ -66,12 +66,13 @@
 .modern-autocomplete ::ng-deep .p-autocomplete-input-token {
   order: 999; 
   flex: none;
-  font-size: 0.75rem;
-  width: auto!important;
+  font-size: 1.7vh;
+  width: 3vw;
+  height: 2.75vh;
   border-right: 3px solid black;
   margin-right: auto;
   border: 1px solid #d1d5db;
-  border-radius: 4px;
+  border-radius: 1px;
   background-color: #fff;
 }
 

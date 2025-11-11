@@ -1,4 +1,4 @@
-import { ViewChild, Component, inject, Input, OnInit, ViewChildren } from "@angular/core";
+import { ViewChild, Component, inject, Input, OnInit } from "@angular/core";
 import { AlertService, DashboardService, GlobalFiltersService, QueryBuilderService, UserService } from "@eda/services/service.index";
 import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
 import { EdaDialogCloseEvent, EdaDialogController } from "@eda/shared/components/shared-components.index";
@@ -28,7 +28,6 @@ import '@angular/localize/init';
 })
 export class GlobalFilterV2Component implements OnInit {
     @Input() dashboard: DashboardPageV2;
-    @ViewChild('AC') autoComplete: AutoCompleteModule;
 
     public globalFilters: any[] = [];
     public globalFilter: any;
@@ -43,6 +42,8 @@ export class GlobalFilterV2Component implements OnInit {
     public isDashboardCreator: boolean = false;
     public filterButtonVisibility = { public: false, readOnly: false };
     private styleProviderService = inject(StyleProviderService)
+    private itemJustSelected = false;
+
 
     //Date filter ranges Dropdown
     public datePickerConfigs: {} = {};
@@ -160,7 +161,6 @@ export class GlobalFilterV2Component implements OnInit {
         this.dashboard.edaPanels.forEach((ebp: EdaBlankPanelComponent) => {
             const filterMap = ebp.panel.globalFilterMap || [];
             if (filter.panelList.includes(ebp.panel.id)) {
-                //console.log(1)
                 const filterApplied = ebp.globalFilters.find((gf: any) => gf.filter_id === filter.id);
 
                 if (filterApplied) {
@@ -588,12 +588,15 @@ export class GlobalFilterV2Component implements OnInit {
 
     // Funcion para cargar todos los valores via endpoint
    public async loadFilterAutoComplete(event: any, filtro: any) {
-        // Mínimo de caracteres antes de filtrar
-        const minLength = 3;
-        if (event.query.length < minLength) {
-            this.autoCompleteValues = [];
-            return;
+       // Mínimo de caracteres antes de filtrar
+       const minLength = 2;
+       if (event.query.length < minLength) {
+           this.autoCompleteValues = [];
+           return;
         }
+
+        // Reset para el control del doble evento keyenter
+        this.itemJustSelected = false;
 
         // milisegundos para no cargar multiples veces mientras se escribe
         const delay = 300;
@@ -648,6 +651,8 @@ export class GlobalFilterV2Component implements OnInit {
     }
 
     onItemSelected(filtro: any) {
+        // Si seleccionamos manualmente con el enter no queremos el primero 
+        this.itemJustSelected = true;
         filtro.selectedItems = filtro.selectedItems.map((item: any) => {
             if (item && typeof item === 'object' && 'value' in item) {
                 return item.value;
@@ -658,22 +663,26 @@ export class GlobalFilterV2Component implements OnInit {
         this.setGlobalFilterItems(filtro)
     }
 
+
     onAddValue(event: KeyboardEvent, filter: any) {
-        // Evita que el Enter cambie de foco
+        // Si acaba de ocurrir una selección, no hacemos nada
+        if (this.itemJustSelected) {
+            this.itemJustSelected = false; // reset
+            return;
+        }
         event.preventDefault(); 
 
-        // Tomamos el primer valor disponible del autocomplete
         if (this.autoCompleteValues && this.autoCompleteValues.length > 0) {
             const firstItem = this.autoCompleteValues[0];
 
             filter.selectedItems = [
-                ...(filter.selectedItems || []), firstItem
+            ...(filter.selectedItems || []), firstItem
             ];
 
-            // Limpiar input
             (event.target as HTMLInputElement).value = '';
             this.autoCompleteValues = [];
         }
-        this.onItemSelected(filter)
+
+        this.onItemSelected(filter);
     }
 }
