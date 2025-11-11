@@ -208,6 +208,15 @@ export class DependentFilters implements OnInit {
                         // debugger;
 
                         // CORREGIR
+                            //  2
+                        for(let j=item.y+1; j<this.dashboardPrev.length; j++) {
+                            if(this.dashboardPrev.find((gl: any) => gl.y===item.y).x <= this.dashboardPrev.find((gl: any) => gl.y===j).x ) {
+                                this.dashboard.find((gl: any) => gl.y===j).x = this.dashboard.find((gl: any) => gl.y===j).x - (this.dashboardPrev.find((gl: any) => gl.y===(item.y)).x - item.x);
+                                if (this.options.api?.optionsChanged) this.options.api.optionsChanged();   
+                            } else {
+                                break;
+                            }
+                        }
 
                         // for(let i=preItem.y+2; i<this.dashboardPrev.length; i++) {
                         //     if(this.dashboardPrev[index].x <= this.dashboardPrev[i].x){
