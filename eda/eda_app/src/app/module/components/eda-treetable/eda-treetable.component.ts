@@ -44,7 +44,6 @@ export class EdaTreeTable implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    console.log(this.inject)
     const col1 = this.inject.query[0];
     const col2 = this.inject.query[1];
 
