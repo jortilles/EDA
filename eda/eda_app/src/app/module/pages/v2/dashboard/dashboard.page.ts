@@ -487,7 +487,7 @@ export class DashboardPageV2 implements OnInit {
 
             //Buscamos si hay un filtro que existe igual al que acabamos de clicar, y de la misma tabla
             let chartToRemove = this.globalFilter.globalFilters.find(f => 
-              this.getChartClicked(f, table.table_name, column.column_name, event?.data.label) && f.panelList.includes(panel.content.query.dashboard.panel_id)
+              this.getChartClicked(f, table.table_name, column.column_name, data.label) && f.panelList.includes(panel.content.query.dashboard.panel_id)
             );
             anyChartToRemove = !!chartToRemove; // true si encontró algún chart
 
@@ -996,7 +996,7 @@ public startCountdown(seconds: number) {
     if (['doughnut', 'polarArea', 'bar', 'line', 'radar'].includes(chartType)) {
       const queryFiltered = queries.find(q => q.display_name?.default === filterBy);
       if (queryFiltered?.column_type === 'numeric') {
-        return event.data.query.find(q => q.column_type === 'text');
+        return queries.find(q => q.column_type === 'text');
       }
       else if (event.data.query.length > 2) // Si la query tiene más de dos valores en barras, necesitamos redefinir el filterBy
         return event.data.query.find((query: any) => query?.display_name?.default === event.data.query[0].display_name.default);
