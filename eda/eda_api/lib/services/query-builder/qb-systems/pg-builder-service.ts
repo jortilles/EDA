@@ -875,7 +875,7 @@ public getHavingColname(column: any){
       let arr = [];
 
       if (!colsInFilters.map(f => f.col.toUpperCase().trim()).includes(col.toUpperCase().trim())) {
-        arr.push(`${subs}::varchar like '%'`);
+        arr.push(`${subs}::varchar ilike '%'`);
 
       } else {
         const index = colsInFilters.filter(f => f.col.toUpperCase().trim() === col.toUpperCase().trim()).map(f => f.index)[0];
