@@ -146,10 +146,9 @@ public async fillFiltersData(): Promise<void> {
 
     public setGlobalFilterItems(filter: any) {
 
-        console.log('filter: ', filter);
-        console.log('this.globalFilters: ', this.globalFilters);
+        // Aplicando los filtros dependientes
+        this.applyingDependentFilter(filter, this.globalFilters);
 
-        // nuevafunction()
 
         this.dashboard.edaPanels.forEach((ebp: EdaBlankPanelComponent) => {
             const filterMap = ebp.panel.globalFilterMap || [];
@@ -175,6 +174,42 @@ public async fillFiltersData(): Promise<void> {
             }
         })
     }
+
+    async applyingDependentFilter(filter, globalFilters) {
+        console.log('Filter: ', filter);
+        console.log('GlobalFilters: ', globalFilters);
+        console.log('this.dashboard: ',this.dashboard)
+
+        const queryParams = {
+            table: filter.selectedTable.table_name,
+            dataSource: this.dashboard.dataSource._id,
+            dashboard: this.dashboard.dashboardId,
+            panel: '',
+            joinType: "inner",
+            rootTable: filter.selectedTable.table_name,
+            queryMode: filter.queryMode,
+            forSelector: true,
+            queryLimit: 5000,
+            filters: [{
+                filter_column: filter.selectedColumn.column_name,
+                filter_column_type: filter.selectedColumn.column_type,
+                filter_elements: [{value1: filter.selectedItems}],
+                filter_id: filter.id,
+                filter_table: filter.selectedTable.table_name,
+                filter_type: "where",
+                isGlobal: filter.isGlobal,
+                joins:[],
+            }]
+        };
+        
+        const query = this.queryBuilderService.normalQuery([filter.selectedColumn], queryParams);
+        console.log('query: ', query);
+        const res = await this.dashboardService.executeQuery(query).toPromise();
+        
+        console.log('res::::::::::: ',res);
+
+    }
+
 
     // Global Filter Dialog
     public onShowGlobalFilter(isnew: boolean, filter?: any): void {
