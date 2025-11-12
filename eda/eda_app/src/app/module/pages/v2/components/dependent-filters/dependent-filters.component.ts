@@ -44,7 +44,8 @@ export class DependentFilters implements OnInit {
 
     ngOnInit(): void {
         this.display = true;
-        console.log('MI dashboardPage: ', this.dashboardPage);
+        console.log('Mis globalFilter inicial: ', this.dashboardPage.globalFilter);
+        console.log('Mis globalFilters inicial: ', this.dashboardPage.globalFilter.globalFilters);
 
         // inicializando el initDashboard
         this.initDashboard();
@@ -362,17 +363,22 @@ export class DependentFilters implements OnInit {
         console.log('---- onApply ----');
         this.display = false;
 
-        // Generando el ordenamiento arbol por cada filtro global (por cada item).
-        const mirar = this.buildOrderChildren(this.dashboardPage.globalFilter.globalFilters, this.dashboard)
-        console.log('mirar: ', mirar);
+        // Generando el ordenamiento children (tipo arbol) por cada filtro global (por cada item).
+        const globalFilters = this.buildOrderChildren(this.dashboardPage.globalFilter.globalFilters, this.dashboard)
+        const dependentFiltersStructure = this.dashboard;
 
-        this.close.emit('APLICANDO CAMBIOS AL DASHBOARD .....');
+        this.close.emit(
+            {
+                globalFilters : globalFilters, 
+                dependentFiltersStructure: dependentFiltersStructure
+            }
+        );
     }
 
     public onClose(): void {
         console.log('---- onClose ----');
         this.display = false;
-        this.close.emit('DASHBOARD SIN MODIFICAR.....');
+        this.close.emit({});
     }
 
     //////////////////////////////////////////////////////////////////////

@@ -30,6 +30,7 @@ export class GlobalFilterV2Component implements OnInit {
     public globalFilters: any[] = [];
     public globalFilter: any;
     public styleButton: any = {};
+    public dependentFiltersStructure: any[] = [];
     loading: boolean = true;
     placeholderText = this.loading ? $localize`:@@Cargando:Cargando...` : '';
 
@@ -144,6 +145,12 @@ public async fillFiltersData(): Promise<void> {
     }
 
     public setGlobalFilterItems(filter: any) {
+
+        console.log('filter: ', filter);
+        console.log('this.globalFilters: ', this.globalFilters);
+
+        // nuevafunction()
+
         this.dashboard.edaPanels.forEach((ebp: EdaBlankPanelComponent) => {
             const filterMap = ebp.panel.globalFilterMap || [];
          if (filter.panelList.includes(ebp.panel.id)) {
@@ -480,7 +487,6 @@ public async fillFiltersData(): Promise<void> {
     }
 
     private async loadGlobalFiltersData(globalFilter?: any): Promise<void> {
-        console.log('???')
 
         if (!globalFilter) {
             globalFilter = this.globalFilter;

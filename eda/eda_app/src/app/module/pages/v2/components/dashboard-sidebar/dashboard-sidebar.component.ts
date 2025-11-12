@@ -318,9 +318,18 @@ export class DashboardSidebarComponent {
 
   }
 
-  public closeDependentFilters(response: any){
+  public closeDependentFilters(dependentFilterObject: any){
     this.isDependentFiltersVisible = false;
-    console.log('response: ', response);
+
+    console.log('dependentFilterObject: ', dependentFilterObject)
+
+    console.log('this.dashboard: ', this.dashboard);
+
+    // Recibe el ordenamiento de children por cada item
+    if(Object.keys(dependentFilterObject).length > 0) {
+      this.dashboard.globalFilter.globalFilters = dependentFilterObject.globalFilters;
+      this.dashboard.globalFilter.dependentFiltersStructure = dependentFilterObject.dependentFiltersStructure;
+    } 
   }
 
   public onAddWidget(): void {
