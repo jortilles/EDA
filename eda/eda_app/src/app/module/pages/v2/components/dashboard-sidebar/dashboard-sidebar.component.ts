@@ -19,12 +19,14 @@ import { ImportPanelDialog } from "../import-panel/import-panel.dialog";
 import { DashboardSidebarService } from "@eda/services/shared/dashboard-sidebar.service";
 import { ExposeMethod } from "@eda/shared/decorators/expose-method.decorator";
 import { IconComponent } from "../../../../../shared/components/icon/icon.component";
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
+
 
 @Component({
   selector: 'app-dashboard-sidebar',
   standalone: true,
   imports: [OverlayModule, OverlayPanelModule, DashboardSaveAsDialog, DashboardTagModal, DashboardEditStyleDialog,
-    DashboardCustomActionDialog, DashboardMailConfigModal, DashboardVisibleModal, ImportPanelDialog, IconComponent],
+    DashboardCustomActionDialog, DashboardMailConfigModal, DashboardVisibleModal, ImportPanelDialog, IconComponent, DragDropModule],
   templateUrl: './dashboard-sidebar.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styles: `
@@ -56,9 +58,9 @@ export class DashboardSidebarComponent {
   private router = inject(Router);
   private spinner = inject(SpinnerService);
   private alertService = inject(AlertService);
-  private stylesProviderService =  inject(StyleProviderService)
-  private ChartUtilsService =  inject(ChartUtilsService)
-  
+  private stylesProviderService = inject(StyleProviderService)
+  private ChartUtilsService = inject(ChartUtilsService)
+
   @ViewChild('popover') popover!: OverlayPanel;
   @Input() dashboard: DashboardPageV2;
   @Output() bgClass = new EventEmitter<string>();
@@ -110,160 +112,159 @@ export class DashboardSidebarComponent {
       } else {
         console.warn(`Method '${method}' is not exposed on DashboardSidebarComponent`);
       }
-    }); 
+    });
   }
 
-  initSidebar() { 
+  initSidebar() {
     this.sidebarItems = [
-    {
-      id: 'newPanel',
-      label: $localize`:@@dashboardSidebarNewPanel:Nuevo Panel`,
-      icon: "pi pi-plus-circle",
-      command: () => this.onAddWidget()
-    },
-    {
-      id: 'newText',
-      label: $localize`:@@dashboardSidebarNewText:Nuevo texto`,
-      icon: "pi pi-file-edit",
-      command: () => this.onAddTitle()
-    },
-    {
-      id: 'newFilter',
-      label: $localize`:@@dashboardSidebarNewFilter:Nuevo filtro`,
-      icon: "pi pi-filter",
-      command: () => this.onAddGlobalFilter()
-      
-    },
+      {
+        id: 'newPanel',
+        label: $localize`:@@dashboardSidebarNewPanel:Nuevo Panel`,
+        icon: "pi pi-plus-circle",
+        command: () => this.onAddWidget()
+      },
+      {
+        id: 'newText',
+        label: $localize`:@@dashboardSidebarNewText:Nuevo texto`,
+        icon: "pi pi-file-edit",
+        command: () => this.onAddTitle()
+      },
+      {
+        id: 'newFilter',
+        label: $localize`:@@dashboardSidebarNewFilter:Nuevo filtro`,
+        icon: "pi pi-filter",
+        command: () => this.onAddGlobalFilter()
+
+      },
       {
         id: 'editFilters',
         label: $localize`:@@dashboardSidebarEditFilter:Editar filtros`,
         icon: "pi pi-filter",
         command: () => this.toggleGlobalFilter(),
         items: this.dashboard.globalFilter.globalFilters.map(f => ({
-          label: f?.selectedColumn?.description?.default || f?.column?.value?.description?.default ,
+          label: f?.selectedColumn?.description?.default || f?.column?.value?.description?.default,
           icon: "pi pi-check",
           command: () => this.handleSpecificFilter(f),
         }),
         ),
       },
-    {
-      id: 'importPanel',
-      label: $localize`:@@dashboardSidebarImportPanel:Importar panel`,
-      icon: "pi pi-plus-circle",
-      command: () => this.onImportPanel()
-      
-    },
-    {
-      id: 'refreshDashboard',
-      label: $localize`:@@dashboardSidebarRefreshDashboard: Recargar informe`,
-      icon: "pi pi-refresh",
-      command: () => this.cleanPanelsCache()
-    },
-    {
-      id: 'liveDashboard',
-      label:  $localize`:@@dashboardSidebarLiveDashboard: Live Dashboard`,
-      icon: "pi pi-desktop",
-      items: [],
-      command: () => {
-        this.inputVisible = !this.inputVisible;
+      {
+        id: 'importPanel',
+        label: $localize`:@@dashboardSidebarImportPanel:Importar panel`,
+        icon: "pi pi-plus-circle",
+        command: () => this.onImportPanel()
       },
-    },{
-      id: 'save',
-      label: $localize`:@@dashboardSidebarSave: Guardar`,
-      icon: "pi pi-save",
-      command: () => this.saveDashboard()
-    },
-    {
-      id: 'saveAs',
-      label: $localize`:@@dashboardSidebarSaveAs: Guardar como`,
-      icon: "pi pi-copy",
-      command: () => {
-        this.isSaveAsDialogVisible = true;
-        this.hidePopover();
-      }
-    },
-    {
-      id: 'deleteDashboard',
-      label: $localize`:@@dashboardSidebarDeleteDashboard: Eliminar informe`,
-      icon: "pi pi-trash",
-      command: () => this.removeDashboard()
-    },
-    { 
-      id: 'moreOptions',
-      label: $localize`:@@dashboardSidebarMoreOptions: Más opciones`,
-    },
-    {
-      id: 'editStyles',
-      label: $localize`:@@dashboardSidebarEditStyles: Editar estilos`,
-      icon: "pi pi-palette",
-      command: () => {
-        this.isEditStyleDialogVisible = true;
-        this.hidePopover();
-      }
-    },
-    {
-      id: 'dashboardPrivacity',
-      label:$localize`:@@dashboardSidebarDashboardPrivacity: Privacidad informe`,
-      icon: "pi pi-lock",
-      command: () => { 
-        this.isVisibleModalVisible = true;
-        this.hidePopover();
-      }
-    },{
-      id: 'addTag',
-      label: $localize`:@@dashboardSidebarAddTag: Añadir etiqueta`,
-      icon: "pi pi-tag",
-      command: () => {
-        this.isTagModalVisible = true;
-        this.hidePopover();
-      }
-    },
-    {
-      id: 'enableFilters',
-      label: this.clickFiltersEnabled ? $localize`:@@enableFilters: Click en filtros habilitado`
-                                      : $localize`:@@disableFilters:Click en filtros deshabilitado`,
-      icon: this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock",
-      command: () => {
-        this.toggleClickFilters();
-      }
-    },
-    {
-      id: 'enableEdition',
-      label: !this.isNotEditable ?   $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`,
-      icon: !this.isNotEditable ? "pi pi-check" : "pi pi-ban",
-      command: () => {
-        this.toggleEdit();
-      }
-    },
-    {
-      id: 'downloadPDF',
-      label: $localize`:@@dashboardSidebarDownloadPDF: Descargar PDF`,
-      icon: "pi pi-file-pdf",
-      command: () => this.exportAsPDF()
-    },
-    {
-      id: 'downloadImage',
-      label: $localize`:@@dashboardSidebarDownloadImage:Descargar imagen`,
-      icon: "pi pi-image",
-      command: () => this.exportAsJPEG()
-    },
-    {
-      id: 'sendEmail',
-      label: $localize`:@@dashboardSidebarSendEmail: Enviar por email`,
-      icon: "pi pi-envelope",
-      command: () => { 
-        this.isMailConfigDialogVisible = true;
-        this.hidePopover();
-      }
-    },
-    {
-      id: 'customAction',
-      label: $localize`:@@dashboardSidebarCustomAction: Acción personalizada`,
-      icon: "pi pi-cog",
-      command: () => {
-        this.isCustomActionDialogVisible = true;
-        this.hidePopover();
-      }
+      {
+        id: 'refreshDashboard',
+        label: $localize`:@@dashboardSidebarRefreshDashboard: Recargar informe`,
+        icon: "pi pi-refresh",
+        command: () => this.cleanPanelsCache()
+      },
+      {
+        id: 'liveDashboard',
+        label: $localize`:@@dashboardSidebarLiveDashboard: Live Dashboard`,
+        icon: "pi pi-desktop",
+        items: [],
+        command: () => {
+          this.inputVisible = !this.inputVisible;
+        },
+      }, {
+        id: 'save',
+        label: $localize`:@@dashboardSidebarSave: Guardar`,
+        icon: "pi pi-save",
+        command: () => this.saveDashboard()
+      },
+      {
+        id: 'saveAs',
+        label: $localize`:@@dashboardSidebarSaveAs: Guardar como`,
+        icon: "pi pi-copy",
+        command: () => {
+          this.isSaveAsDialogVisible = true;
+          this.hidePopover();
+        }
+      },
+      {
+        id: 'deleteDashboard',
+        label: $localize`:@@dashboardSidebarDeleteDashboard: Eliminar informe`,
+        icon: "pi pi-trash",
+        command: () => this.removeDashboard()
+      },
+      {
+        id: 'moreOptions',
+        label: $localize`:@@dashboardSidebarMoreOptions: Más opciones`,
+      },
+      {
+        id: 'editStyles',
+        label: $localize`:@@dashboardSidebarEditStyles: Editar estilos`,
+        icon: "pi pi-palette",
+        command: () => {
+          this.isEditStyleDialogVisible = true;
+          this.hidePopover();
+        }
+      },
+      {
+        id: 'dashboardPrivacity',
+        label: $localize`:@@dashboardSidebarDashboardPrivacity: Privacidad informe`,
+        icon: "pi pi-lock",
+        command: () => {
+          this.isVisibleModalVisible = true;
+          this.hidePopover();
+        }
+      }, {
+        id: 'addTag',
+        label: $localize`:@@dashboardSidebarAddTag: Añadir etiqueta`,
+        icon: "pi pi-tag",
+        command: () => {
+          this.isTagModalVisible = true;
+          this.hidePopover();
+        }
+      },
+      {
+        id: 'enableFilters',
+        label: this.clickFiltersEnabled ? $localize`:@@enableFilters: Click en filtros habilitado`
+          : $localize`:@@disableFilters:Click en filtros deshabilitado`,
+        icon: this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock",
+        command: () => {
+          this.toggleClickFilters();
+        }
+      },
+      {
+        id: 'enableEdition',
+        label: !this.isNotEditable ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`,
+        icon: !this.isNotEditable ? "pi pi-check" : "pi pi-ban",
+        command: () => {
+          this.toggleEdit();
+        }
+      },
+      {
+        id: 'downloadPDF',
+        label: $localize`:@@dashboardSidebarDownloadPDF: Descargar PDF`,
+        icon: "pi pi-file-pdf",
+        command: () => this.exportAsPDF()
+      },
+      {
+        id: 'downloadImage',
+        label: $localize`:@@dashboardSidebarDownloadImage:Descargar imagen`,
+        icon: "pi pi-image",
+        command: () => this.exportAsJPEG()
+      },
+      {
+        id: 'sendEmail',
+        label: $localize`:@@dashboardSidebarSendEmail: Enviar por email`,
+        icon: "pi pi-envelope",
+        command: () => {
+          this.isMailConfigDialogVisible = true;
+          this.hidePopover();
+        }
+      },
+      {
+        id: 'customAction',
+        label: $localize`:@@dashboardSidebarCustomAction: Acción personalizada`,
+        icon: "pi pi-cog",
+        command: () => {
+          this.isCustomActionDialogVisible = true;
+          this.hidePopover();
+        }
       },
     ]
   }
@@ -318,7 +319,7 @@ export class DashboardSidebarComponent {
       x: 0,
       y: 0,
     });
-    
+
     this.dashboard.panels.push(panel);
     this.stylesProviderService.loadedPanels++;
     this.hidePopover();
@@ -395,7 +396,7 @@ export class DashboardSidebarComponent {
           refreshTime: null,
           onlyIcanEdit: true,
           author: JSON.parse(localStorage.getItem('user')).name,
-          styles: this.stylesProviderService.generateDefaultStyles(), 
+          styles: this.stylesProviderService.generateDefaultStyles(),
         },
         group: (newDashboard.group || []).map((g: any) => g._id)
       };
@@ -456,7 +457,7 @@ export class DashboardSidebarComponent {
     this.dashboard.assignStyles();
     this.dashboard.refreshPanels();
 
-}
+  }
 
   public closeVisibleModal() {
     this.isVisibleModalVisible = false;
@@ -492,9 +493,9 @@ export class DashboardSidebarComponent {
       units: sendViaMailConfig.units,
       users: sendViaMailConfig.users
     };
-    
+
     // Asignar datos al config
-    this.dashboard.dashboard.config.sendViaMailConfig = configToSave;  
+    this.dashboard.dashboard.config.sendViaMailConfig = configToSave;
   }
 
 
@@ -540,65 +541,65 @@ export class DashboardSidebarComponent {
 
 
   public exportAsPDF() {
-      this.hidePopover();
+    this.hidePopover();
     this.spinner.on();
 
-  const element = document.getElementById('myDashboard');
+    const element = document.getElementById('myDashboard');
 
-  // El objeto incrustado es para mejorar la calidad del PDF
-  domtoimage.toJpeg(element, {
-    bgcolor: 'white',
-    quality: 1,
-    height: element.scrollHeight * 2,
-    width: element.scrollWidth * 2,
-    style: {
-      transform: 'scale(2)',
-      transformOrigin: 'top left'
-    }
-  }).then((dataUrl) => {
-    let img = new Image();
-    img.src = dataUrl;
-
-    img.onload = () => {
-      const pdf = new jspdf('p', 'pt', 'a4');
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-
-      const imgWidth = img.width;
-      const imgHeight = img.height;
-      const ratio = pageWidth / imgWidth;
-      const scaledWidth = pageWidth;
-      let position = 0;
-
-      // Se crea un canvas para cortar la imagen en partes iguales para cada página
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d')!;
-      canvas.width = imgWidth;
-      canvas.height = pageHeight / ratio;
-
-      while (position < imgHeight) {
-        ctx.fillStyle = '#FFFFFF'; // Se establece todo el fondo de blanco
-        ctx.fillRect(0, 0, canvas.width, canvas.height);  // Se pinta todo el fondo
-
-        ctx.drawImage(img, 0, -position, imgWidth, imgHeight);
-
-        const pageData = canvas.toDataURL('image/jpeg', 1.0);
-        pdf.addImage(pageData, 'JPEG', 0, 0, scaledWidth, pageHeight);
-
-        position += canvas.height;
-
-        if (position < imgHeight) {
-          pdf.addPage();
-        }
+    // El objeto incrustado es para mejorar la calidad del PDF
+    domtoimage.toJpeg(element, {
+      bgcolor: 'white',
+      quality: 1,
+      height: element.scrollHeight * 2,
+      width: element.scrollWidth * 2,
+      style: {
+        transform: 'scale(2)',
+        transformOrigin: 'top left'
       }
-  this.spinner.off();
+    }).then((dataUrl) => {
+      let img = new Image();
+      img.src = dataUrl;
 
-      pdf.save(`${this.dashboard.title}.pdf`);
-    };
-  });
-}
+      img.onload = () => {
+        const pdf = new jspdf('p', 'pt', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
 
-  
+        const imgWidth = img.width;
+        const imgHeight = img.height;
+        const ratio = pageWidth / imgWidth;
+        const scaledWidth = pageWidth;
+        let position = 0;
+
+        // Se crea un canvas para cortar la imagen en partes iguales para cada página
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d')!;
+        canvas.width = imgWidth;
+        canvas.height = pageHeight / ratio;
+
+        while (position < imgHeight) {
+          ctx.fillStyle = '#FFFFFF'; // Se establece todo el fondo de blanco
+          ctx.fillRect(0, 0, canvas.width, canvas.height);  // Se pinta todo el fondo
+
+          ctx.drawImage(img, 0, -position, imgWidth, imgHeight);
+
+          const pageData = canvas.toDataURL('image/jpeg', 1.0);
+          pdf.addImage(pageData, 'JPEG', 0, 0, scaledWidth, pageHeight);
+
+          position += canvas.height;
+
+          if (position < imgHeight) {
+            pdf.addPage();
+          }
+        }
+        this.spinner.off();
+
+        pdf.save(`${this.dashboard.title}.pdf`);
+      };
+    });
+  }
+
+
   public exportAsJPEG() {
     this.hidePopover();
     this.spinner.on();
@@ -631,28 +632,28 @@ export class DashboardSidebarComponent {
     let mailingenabled = false;
 
     this.dashboard.panels.forEach(panel => {
-        if (panel.content && panel.content.chart === 'kpi') {
-            try{
-                panel.content.query.output.config.alertLimits.forEach(alert => {
-                    if (alert.mailing.enabled === true) {
-                        mailingenabled = true
-                    };
-                });
-            }catch(e){
-                    console.log('error getting mailing alerts.... setting it to false');
-                    mailingenabled = false;
-            }
+      if (panel.content && panel.content.chart === 'kpi') {
+        try {
+          panel.content.query.output.config.alertLimits.forEach(alert => {
+            if (alert.mailing.enabled === true) {
+              mailingenabled = true
+            };
+          });
+        } catch (e) {
+          console.log('error getting mailing alerts.... setting it to false');
+          mailingenabled = false;
         }
+      }
     });
 
     return mailingenabled;
-  } 
+  }
 
-  
 
-  
+
+
   // Metodos de creación de la sidebar
-   public indiceMasOpciones(): number {
+  public indiceMasOpciones(): number {
     return this.sidebarItems.findIndex(item => item.id === 'moreOptions');
   }
 
@@ -673,7 +674,7 @@ export class DashboardSidebarComponent {
     // Abrimos desplegable de filtros
     this.mostrarFiltros = !this.mostrarFiltros;
   }
-  
+
   // Llamada al filtro especifico via sidebar
   public handleSpecificFilter(filtro: any) {
     this.hidePopover();
@@ -691,10 +692,10 @@ export class DashboardSidebarComponent {
 
     // remplazamos el elemento por un input 
     elementName.replaceWith(input);
-    
+
     // Foco del titulo
     input.focus();
-    
+
     // Cuando se pierde el foco, volver a texto
     input.addEventListener("blur", () => {
       const p = document.createElement("p");
@@ -704,47 +705,59 @@ export class DashboardSidebarComponent {
       p.className = 'italic font-slate-50'; // Estilo que le asignamos para diferenciar que no esta guardado
       this.dashboard.title = p.innerText
     });
-    
+
     // La tecla Enter quita el focus del titulo
     input.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault(); // evita saltos de línea
-        input.blur(); 
+        input.blur();
       }
     });
     this.dashboardService._notSaved.next(true);
   }
 
-    public isEditableCheck() {
-        const user = localStorage.getItem('user');
-        const userName = JSON.parse(user).name;
-        const imProperty = userName === this.dashboard.dashboard.config.author
-        return userName !== 'edaanonim' &&  (this.dashboard.dashboard.config.onlyIcanEdit || imProperty);
-    }
+  public isEditableCheck() {
+    const user = localStorage.getItem('user');
+    const userName = JSON.parse(user).name;
+    const imProperty = userName === this.dashboard.dashboard.config.author
+    return userName !== 'edaanonim' && (this.dashboard.dashboard.config.onlyIcanEdit || imProperty);
+  }
 
   toggleClickFilters() {
     // Buscar el objeto una sola vez
     const clickItem = this.sidebarItems.find(item => item.id === 'enableFilters');
-    
+
     // Alternar el estado
     this.clickFiltersEnabled = !this.clickFiltersEnabled;
-      
+
     // Actualizar label e icono según estado
     clickItem.label = this.clickFiltersEnabled ? $localize`:@@enableFilters:Click en filtros habilitado` : $localize`:@@disableFilters:Click en filtros deshabilitado`;
     clickItem.icon = this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock";
-    
+
     // Actualizar dashboard
     this.dashboard.dashboard.config.onlyIcanEdit = this.clickFiltersEnabled;
   }
+  
   toggleEdit() {
     // Buscar el objeto una sola vez
     const clickItem = this.sidebarItems.find(item => item.id === 'enableEdition');
-    
+
     // Alternar el estado
     this.isNotEditable = !this.isNotEditable;
-      
+
     // Actualizar label e icono según estado
     clickItem.label = !this.isNotEditable ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`;
     clickItem.icon = !this.isNotEditable ? "pi pi-check" : "pi pi-ban";
+  }
+
+  // FUNCIONES DE LOS EVENTOS QUE CONTROLAN EL DRAG AND DROP DE LOS FILTROS
+  // FUNCIONALIDAD DRAGDROP
+  drop(event: CdkDragDrop<any[]>) {
+    moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+  }
+
+  // SORT DE LOS FILTROS 
+  onDrop(event: CdkDragDrop<any[]>) {
+    moveItemInArray(this.dashboard.globalFilter.globalFilters, event.previousIndex, event.currentIndex);
   }
 }
