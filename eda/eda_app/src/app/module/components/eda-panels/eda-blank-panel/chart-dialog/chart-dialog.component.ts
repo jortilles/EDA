@@ -124,18 +124,38 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     }
 
     loadChartColors() {
-        const type = this.chart.chartType;
+        const type = this.chart['edaChart'];
         switch (type) {
             case 'doughnut':
             case 'polarArea':
-                    if (this.chart.chartLabels) {
+                if (this.chart.chartLabels) {
                     this.series = this.chart.chartLabels.map((c, inx) => ({
                         label: c,
                         bg: this.rgb2hex(this.chart.chartColors[0].backgroundColor[inx]) || this.chart.chartColors[0].backgroundColor[inx]
                     }));
                     this.chart.chartColors[0].backgroundColor = this.series.map(d => (this.hex2rgb(d.bg, 90)));
                 }
-                break;  
+                break;
+            case 'histogram':
+                if (!this.series.length) {
+                        const bgColor = this.normalizeColor(this.chart.chartDataset[0].backgroundColor);
+                        this.series = [{
+                            label: this.chart.chartDataset[0].label,
+                            bg: bgColor,
+                            border: '#10B4CD'
+                        }];
+                    }
+
+                this.chart.chartColors = this.series.map(s => ({
+                    backgroundColor: s.bg,
+                    borderColor: s.bg
+                }));
+
+                this.chart.chartDataset = this.chart.chartDataset.map((d, i) => ({
+                    ...d,
+                    ...this.chart.chartColors[i]
+                }));
+                break; 
             default:
                 if (!this.series.length) {
                     this.series = this.chart.chartDataset.map((d, i) => ({
@@ -172,6 +192,8 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
          return this.stylesProviderService.ActualChartPalette !== undefined ? this.stylesProviderService.ActualChartPalette['paleta'][index] :
              this.stylesProviderService.DEFAULT_PALETTE_COLOR['paleta'][index];
     }
+
+   
 
 
     handleInputColor(event) {
@@ -541,7 +563,36 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
     }
 
- resetSeries() { 
+    // Devolvemos siempre el color en formato #HEXDEC
+    private normalizeColor(color) {
+        // Si es un array 
+        if (Array.isArray(color)) {
+            color = color[0];
+        }
+
+        // Si ya es un hex válido tipo #aabbcc
+        if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(color)) {
+            return color;
+        }
+
+        // Si es un rgb() o rgba()
+        const rgbMatch = color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+        if (rgbMatch) {
+            const r = parseInt(rgbMatch[1]);
+            const g = parseInt(rgbMatch[2]);
+            const b = parseInt(rgbMatch[3]);
+            return (
+                '#' +
+                [r, g, b]
+                    .map(x => x.toString(16).padStart(2, '0'))
+                    .join('')
+            );
+        }
+        return color ;
+    }
+
+    // Funcion para resetear el valor de las series si se cierra
+    resetSeries() {
         const type = this.chart['edaChart'];
         switch (type) {
             case 'doughnut':
@@ -553,8 +604,8 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
                 break;
             case 'pyramid':
             case 'stackedbar':
-            case 'radar' : 
-            case 'stackedbar' : 
+            case 'radar':
+            case 'stackedbar':
             case 'stackedbar100':
                 this.originalSeries.forEach((color, index) => {
                     this.chart.chartDataset[index].backgroundColor = color?.bg;
@@ -562,10 +613,10 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
                 });
                 this.resetChartConfig();
                 break;
-                default:
-                    this.chart.chartDataset[0].backgroundColor = this.originalSeries[0]?.bg;
-                    this.chart.chartDataset[0].borderColor = this.originalSeries[0]?.bg;
-                    this.resetChartConfig();
+            default:
+                this.chart.chartDataset[0].backgroundColor = this.originalSeries[0]?.bg;
+                this.chart.chartDataset[0].borderColor = this.originalSeries[0]?.bg;
+                this.resetChartConfig();
 
                 break;
         }
