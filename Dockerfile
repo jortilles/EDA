@@ -1,4 +1,6 @@
-from node:23-bookworm
+from node:25.1-bookworm
+
+
 
 # instalar
 ENV DEBIAN_FRONTEND noninteractive
