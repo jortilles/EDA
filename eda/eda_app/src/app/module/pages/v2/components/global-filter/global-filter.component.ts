@@ -196,7 +196,7 @@ public async fillFiltersData(): Promise<void> {
                 filter_elements: [{value1: filter.selectedItems}],
                 filter_id: filter.id,
                 filter_table: filter.selectedTable.table_name,
-                filter_type: "where",
+                filter_type: "=",
                 isGlobal: filter.isGlobal,
                 joins:[],
             }]
