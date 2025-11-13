@@ -267,7 +267,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             dataDescription.totalColumns++;
         }
 
-        let colnum = this.props.config.getConfig()['assignedColors'].length;
+        let colnum = this.props.config.getConfig()['assignedColors'].length || null;
         const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart, values, dataTypes, dataDescription, isbarline, colnum);
         if (chartData.length == 0) {
             chartData.push([], []);
@@ -408,6 +408,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         } else if (['histogram'].includes(chartConfig.edaChart)) {
                 if (chartConfig.chartLabels.length === 0) {
                     chartConfig.chartLabels = chartConfig.assignedColors.map(element => element.value);
+                                        chartConfig.chartDataset[0].data = [1];
+
                 }
                 if (sortByAsCol) {
                     // Usa color coincidente de configColors
