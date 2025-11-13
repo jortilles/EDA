@@ -267,8 +267,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             dataDescription.totalColumns++;
         }
 
-        let colnum = this.props.config.getConfig()['assignedColors'].length || null;
-        const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart, values, dataTypes, dataDescription, isbarline, colnum);
+        // No pasamos el numero de columnas se calcula en la propia funcion
+        const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart, values, dataTypes, dataDescription, isbarline, null);
         if (chartData.length == 0) {
             chartData.push([], []);
         }

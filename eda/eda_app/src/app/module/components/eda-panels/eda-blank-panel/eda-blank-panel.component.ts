@@ -1087,6 +1087,9 @@ public tableNodeExpand(event: any): void {
                             this.graficos.chartColors[0].backgroundColor  
                 }
             });
+
+
+            console.log(this.graficos.assignedColors)
             }else{
                 this.graficos.assignedColors = [];
                 this.graficos.chartLabels.forEach(element => {
@@ -1101,6 +1104,7 @@ public tableNodeExpand(event: any): void {
                     this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels,
                     this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors, this.graficos.showPointLines));
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
+                console.log(layout)
             }
             //not saved alert message
         this.dashboardService._notSaved.next(true);
