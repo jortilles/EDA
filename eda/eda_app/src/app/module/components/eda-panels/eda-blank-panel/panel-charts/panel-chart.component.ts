@@ -320,7 +320,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         
         const sortByAsCol = !this.styleProviderService.loadingFromPalette; // Ordenado por assignedColors
         let colors = this.chartUtils.generateChartColorsFromPalette(chartConfig.chartLabels.length, this.paletaActual).flatMap((item) => item.backgroundColor);
-       
+        console.log(this.props)
+        console.log(chartConfig)
     
         const chartColors = chartConfig.chartColors[0];
         const assignedColors = chartConfig.assignedColors;
