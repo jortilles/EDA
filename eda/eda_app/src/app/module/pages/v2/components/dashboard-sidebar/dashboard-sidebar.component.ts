@@ -759,5 +759,6 @@ export class DashboardSidebarComponent {
   // SORT DE LOS FILTROS 
   onDrop(event: CdkDragDrop<any[]>) {
     moveItemInArray(this.dashboard.globalFilter.globalFilters, event.previousIndex, event.currentIndex);
+    this.dashboardService._notSaved.next(true);
   }
 }
