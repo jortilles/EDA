@@ -1,46 +1,47 @@
 <eda-dialog [inject]="dialog" >
-  <div body>
+  <div body class="w-fit justify-self-center">
 
-    <div class="card" style="margin-top: 30px; margin-left: 50px; margin-right: 50px; margin-bottom: 50px;">
-      <p-pickList 
-        [source]="sourceProducts" 
-        [target]="targetProducts" 
+    <div class="card picklist-card justify-items-center">
+      <p-pickList
+        [source]="sourceProducts"
+        [target]="targetProducts"
         sourceHeader="Etiquetas de jerarquía"
-        targetHeader="Etiquetas de hojas" 
-        [dragdrop]="true" 
+        targetHeader="Etiquetas de hojas"
+        [dragdrop]="true"
         [responsive]="true"
-        [sourceStyle]="{ height: '20rem' }" 
-        [targetStyle]="{ height: '20rem' }" 
+        [sourceStyle]="{ height: '22rem', width: '30rem'}"
+        [targetStyle]="{ height: '22rem', width: '30rem'}"
         breakpoint="1400px"
         [showSourceControls]="false"
         [showTargetControls]="false"
-        >
-        
+        class="picklist-gris-elegante"
+      >
         <ng-template let-product pTemplate="item">
-          <div class="flex flex-wrap p-2 align-items-center gap-3">
-            <div class="flex-1 flex flex-column gap-2">
-              <span class="font-bold">{{ product }}</span>
+          <div
+            class="flex flex-wrap items-center p-3 gap-2 bg-gray-50 hover:bg-gray-100 rounded-md border border-gray-200 transition-all duration-200"
+          >
+            <div class="flex-1 flex flex-col">
+              <span class="font-medium text-gray-700">{{ product }}</span>
             </div>
           </div>
         </ng-template>
-
       </p-pickList>
     </div>
+
   </div>
 
   <div footer>
-
-    <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
-
-      <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check"
-        class="p-button-raised p-button-success" i18n-label="@@guardarButton" label="Confirmar"
-        id="eda_table_dialog_confirmar">
+    <div class="flex justify-end p-2 border-t gap-1.5">
+      <button class="cancel-button"
+        (click)="closeChartConfig()">
+        <i class="fa fa-times"></i>
+        <span i18n="@@cancelarBtn">Cancelar</span>
       </button>
-
-      <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times"
-        class="p-button-raised p-button-danger" i18n-label="@@cancelarButton" label="Cancelar">
+      <button
+        class="confirm-button"
+        (click)="saveChartConfig()">
+        <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
       </button>
     </div>
-
   </div>
 </eda-dialog>
