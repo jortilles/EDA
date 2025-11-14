@@ -222,7 +222,6 @@ public async fillFiltersData(): Promise<void> {
 
                 const filterItem = globalFilters.find((gl: any) => gl.id === filter.children[i].filter_id);
                 console.log('filterItem: ', filterItem);
-                debugger;
 
                 filterCollection.push({
                         filter_column: filter.selectedColumn.column_name,
@@ -234,6 +233,14 @@ public async fillFiltersData(): Promise<void> {
                         isGlobal: filter.isGlobal,
                         joins:[],
                 })
+
+
+                // Se agregan Filtros de PADRES
+                for(let r=0; r<globalFilters.length; r++) {
+                    if(globalFilters[r].id !==filter.id && globalFilters[r].id !==filterItem.id) {  
+                        this.filterCollectionRecursive(globalFilters[r].children, filterItem.selectedColumn.column_name, globalFilters[r], filterCollection)
+                    }
+                }
 
                 const queryParams = {
                     table: filterItem.selectedTable.table_name,
@@ -252,7 +259,7 @@ public async fillFiltersData(): Promise<void> {
                 const query = this.queryBuilderService.normalQuery([filterItem.selectedColumn], queryParams);
                 const res = await this.dashboardService.executeQuery(query).toPromise();
 
-                console.log('res -----:::::> ', res);
+                console.log('QUERY -----:::::> ', res);
 
                 // VERIFICA SI CHILDREN ES DE LONGITUD DIFERENTE DE CERO
                 if(filterItem.children.length !== 0) {
@@ -265,11 +272,66 @@ public async fillFiltersData(): Promise<void> {
             }
             //filterCollection = [];                
         } else {
-            console.log('No tiene children ....')
+            console.log('No TIENE CHILDREN ....')
         }
 
     }
 
+filterCollectionRecursive( children: any[] | undefined, column_name: string, globalFilter: any, filterCollection: any[] ): boolean {
+    
+    if (!children || children.length === 0) return false;
+
+    for (const child of children) {
+        if (child.column_name === column_name) {
+        const newFilter = {
+            filter_column: globalFilter.selectedColumn.column_name,
+            filter_column_type: globalFilter.selectedColumn.column_type,
+            filter_elements: [{ value1: globalFilter.selectedItems }],
+            filter_id: globalFilter.id,
+            filter_table: globalFilter.selectedTable.table_name,
+            filter_type: "in",
+            isGlobal: globalFilter.isGlobal,
+            joins: [],
+        };
+
+        // comparar sólo las propiedades relevantes
+        const newKey = {
+            filter_column: newFilter.filter_column,
+            filter_column_type: newFilter.filter_column_type,
+            filter_elements: newFilter.filter_elements,
+            filter_table: newFilter.filter_table,
+            filter_type: newFilter.filter_type,
+            isGlobal: newFilter.isGlobal,
+            joins: newFilter.joins ?? []
+        };
+
+        const exists = filterCollection.some((fc: any) => {
+            const fcKey = {
+            filter_column: fc.filter_column,
+            filter_column_type: fc.filter_column_type,
+            filter_elements: fc.filter_elements,
+            filter_table: fc.filter_table,
+            filter_type: fc.filter_type,
+            isGlobal: fc.isGlobal,
+            joins: fc.joins ?? []
+            };
+            return _.isEqual(fcKey, newKey);
+        });
+
+        if (!exists) {
+            filterCollection.push(newFilter);
+        }
+        return true; // encontramos (o ya existía) => detener búsqueda
+        }
+
+        if (child.children && child.children.length > 0) {
+        const found = this.filterCollectionRecursive(child.children, column_name, globalFilter, filterCollection);
+        if (found) return true;
+        }
+    }
+
+    return false;
+}
 
     // Global Filter Dialog
     public onShowGlobalFilter(isnew: boolean, filter?: any): void {
