@@ -104,7 +104,6 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
         new TableConfig(false, false, 5, false, false, false, false, null, null, null, false, false, [])
       )
     }
-
     this.setItems();
   }
 
@@ -329,7 +328,6 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
       this.myPanelChartComponent.componentRef.instance.applyPivotSyles(this.styles);
 
     }
-    this.styleProviderService.colorCode = true;
     this.gradientMenuController = undefined;
   }
 

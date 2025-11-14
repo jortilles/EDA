@@ -239,7 +239,6 @@ export class DashboardEditStyleDialog {
 		}
 		this.stylesProviderService.setStyles(response)
 		this.stylesProviderService.palKnob = true;
-		this.stylesProviderService.colorCode = false; // Priorizar estilos sobre codigo de color
 		this.apply.emit(response);
 	}
 
