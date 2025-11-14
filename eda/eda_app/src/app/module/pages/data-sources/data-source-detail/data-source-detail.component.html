@@ -963,7 +963,7 @@
 <app-table-edit-relations-dialog *ngIf="selectedRelation" [controller]="relationController" [relation]="selectedRelation"></app-table-edit-relations-dialog>
 <app-column-value-list-dialog *ngIf="valueListController" [controller]="valueListController"></app-column-value-list-dialog>
 <app-table-relations-dialog *ngIf="relationController" [controller]="relationController"></app-table-relations-dialog>
-<app-column-permission-dialog *ngIf="permissionsController" [controller]="permissionsController"></app-column-permission-dialog>
+<app-column-permission-dialog *ngIf="permissionsController" [table]="tablePanel" [column]="columnPanel" [controller]="permissionsController"></app-column-permission-dialog>
 <app-calculated-column-dialog *ngIf="newColController" [controller]="newColController"></app-calculated-column-dialog>
 
 
