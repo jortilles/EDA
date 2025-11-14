@@ -1,0 +1,56 @@
+/* --- Contenedor principal --- */
+.picklist-card {
+  margin: 3rem 3rem 3rem 3rem;
+  padding: 1.5rem;
+  background: #fafafa;
+  border-radius: 10px;
+  border: 1px solid #aaaaaa;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+/* --- Estructura del PickList --- */
+.picklist-gris-elegante {
+  display: flex;
+  gap: 1.5rem;
+  background: #f9f9f9;
+  padding: 1rem;
+  border-radius: 10px;
+}
+
+/* --- Cada lista (izquierda/derecha) --- */
+.picklist-gris-elegante .p-picklist-list {
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #bfbfbf;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.03);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.picklist-gris-elegante .p-picklist-list:hover {
+  border-color: #999999;
+}
+
+/* --- Encabezado de las listas --- */
+.picklist-gris-elegante .p-picklist-header {
+  background: #e5e5e5;
+  color: #333333;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 8px 8px 0 0;
+  padding: 0.6rem;
+  border-bottom: 1px solid #d1d5db;
+  letter-spacing: 0.3px;
+}
+
+/* --- Ítems --- */
+.picklist-gris-elegante .p-picklist-item {
+  border: none;
+  background: transparent;
+}
+
+/* --- Hover de ítems --- */
+.picklist-gris-elegante .p-picklist-item:hover {
+  background: #f3f4f6;
+  border-radius: 6px;
+}
+

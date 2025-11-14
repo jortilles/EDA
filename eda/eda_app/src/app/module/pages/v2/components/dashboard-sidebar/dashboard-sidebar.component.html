@@ -38,29 +38,29 @@
         @if(isEditableCheck() || item.id === 'refreshDashboard'){
         @if (item.id === "editFilters") {
         @if(hayFiltros){
-        <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
-          (click)="item.command()">
-          <i [class]="item.icon + ' text-gray-600'"></i>
-          <span>{{ item.label }}</span>
-          <i class="pi pi-chevron-down ml-auto text-gray-400"
-            [style.transform]="mostrarFiltros ? 'rotate(180deg)' : 'rotate(0deg)'"
-            style="transition: transform 0.3s"></i>
-        </button>
-
-        @if (item.items && mostrarFiltros) {
-        <div class="ml-6 flex flex-col gap-2">
-
-          @for (subItem of item.items; track subItem.label) {
           <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
-            (click)="subItem.command()">
-            <i [class]="subItem.icon + ' text-gray-600'"></i>
-            <span>{{ subItem.label }}</span>
-            <i class="pi" [class.pi-check]="subItem.active" [class.pi-square-o]="!subItem.active" ml-auto></i>
+            (click)="item.command()">
+            <i [class]="item.icon + ' text-gray-600'"></i>
+            <span>{{ item.label }}</span>
+            <i class="pi pi-chevron-down ml-auto text-gray-400"
+              [style.transform]="mostrarFiltros ? 'rotate(180deg)' : 'rotate(0deg)'"
+              style="transition: transform 0.3s"></i>
           </button>
+          @if (item.items && mostrarFiltros) {
+            <div class="ml-6 flex flex-col gap-2" cdkDropList [cdkDropListData]="item.items" (cdkDropListDropped)="drop($event)"
+              (cdkDropListDropped)="onDrop($event)">
+
+              @for (subItem of item.items; track subItem.label) {
+              <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors" cdkDrag
+                (click)="subItem.command()">
+                <i [class]="subItem.icon + ' text-gray-600'"></i>
+                <span>{{ subItem.label }}</span>
+                <i class="pi" [class.pi-check]="subItem.active" [class.pi-square-o]="!subItem.active" ml-auto></i>
+              </button>
+              }
+            </div>
+            }
           }
-        </div>
-        }
-        }
         }
         @else{
         <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"

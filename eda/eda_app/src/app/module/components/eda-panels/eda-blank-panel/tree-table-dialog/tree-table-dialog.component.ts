@@ -31,7 +31,7 @@ export class TreeTableDialogComponent extends EdaDialogAbstract implements OnIni
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
       title: this.treeTableTitleDialog,
     });
-    this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
+    this.dialog.style = { width: 'fit-content', height: 'fit-content', top:"-4em", left:'1em'};
   }
 
   ngOnInit(): void {
