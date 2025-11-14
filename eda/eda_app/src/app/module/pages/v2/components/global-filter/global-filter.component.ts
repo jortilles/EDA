@@ -178,7 +178,7 @@ public async fillFiltersData(): Promise<void> {
     async applyingDependentFilter(filter, globalFilters) {
         console.log('Filter: ', filter);
         console.log('GlobalFilters: ', globalFilters);
-        console.log('this.dashboard: ',this.dashboard)
+        // console.log('this.dashboard: ',this.dashboard)
 
         await this.recursiveFilters(filter, globalFilters, this.dashboard.dataSource._id, this.dashboard.dashboardId, []);
 
@@ -209,7 +209,7 @@ public async fillFiltersData(): Promise<void> {
         // const res = await this.dashboardService.executeQuery(query).toPromise();
         
         // console.log('res::::::::::: ',res);
-        console.log('completadoooooo.....');
+        console.log('TERMINOOOOOOOOOOOOOO.....');
 
     }
 
@@ -219,9 +219,10 @@ public async fillFiltersData(): Promise<void> {
 
             for(let i=0; i<filter.children.length; i++) {
 
+
                 const filterItem = globalFilters.find((gl: any) => gl.id === filter.children[i].filter_id);
                 console.log('filterItem: ', filterItem);
-                // debugger;
+                debugger;
 
                 filterCollection.push({
                         filter_column: filter.selectedColumn.column_name,
@@ -251,20 +252,21 @@ public async fillFiltersData(): Promise<void> {
                 const query = this.queryBuilderService.normalQuery([filterItem.selectedColumn], queryParams);
                 const res = await this.dashboardService.executeQuery(query).toPromise();
 
-                console.log('res::::: ', res);
+                console.log('res -----:::::> ', res);
 
                 // VERIFICA SI CHILDREN ES DE LONGITUD DIFERENTE DE CERO
                 if(filterItem.children.length !== 0) {
                     // RECURSIVIDAD
                     this.recursiveFilters(filterItem, globalFilters, _id, dashboardId, filterCollection);
                     // .....
+                } else {
+                    filterCollection = [];
                 }
-
-
             }
             //filterCollection = [];                
+        } else {
+            console.log('No tiene children ....')
         }
-
 
     }
 
