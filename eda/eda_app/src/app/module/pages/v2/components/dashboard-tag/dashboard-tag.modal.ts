@@ -27,9 +27,26 @@ export class DashboardTagModal implements OnInit {
   constructor(private alertService: AlertService) { }
 
   ngOnInit(): void {
+    // Recogemos todos los tags guardados en local 
     const tags = JSON.parse(localStorage.getItem('tags')) || [];
-    this.tags = _.uniqBy(tags, 'value');
     this.selectedTags = this.dashboard.selectedTags;
+    this.tags = _.uniqBy(tags, 'value');
+
+    // Si this tags no es una array porque son tags legacy, tenemos que convertirlo en array
+    if(!Array.isArray(this.tags)){
+      this.tags = [this.tags];
+    }
+    
+    // Añadimos los tags que estan presentes en este documento, por si no estan guardados en local
+    if(!Array.isArray(this.selectedTags)){
+      this.selectedTags = [this.selectedTags];
+    } 
+    
+    // Añadir valores de tag que vengan importados
+    this.tags.push(...this.selectedTags.map(tag => ({label: tag,value: tag})));
+
+    // Eliminar duplicados por 'label' por si sí estan guardados en local y no repetirlos
+    this.tags = Array.from(new Map(this.tags.map(item => [item.label, item])).values());
   }
 
   public setNewTag() {
