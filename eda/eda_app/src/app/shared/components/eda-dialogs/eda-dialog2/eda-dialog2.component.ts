@@ -21,6 +21,7 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, AfterView
     @ViewChild('dialogRef') dialogRef!: Dialog;
     @ViewChild('contentWrapper') contentWrapper!: ElementRef;
     @Input() overflow: string = 'hidden';
+    @Input() draggable: string;
 
 
     private resizeObserver!: ResizeObserver;

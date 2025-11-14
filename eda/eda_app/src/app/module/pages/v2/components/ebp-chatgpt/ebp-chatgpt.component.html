@@ -2,10 +2,13 @@
   [display]="display"
   header="Pregúntale a Eddie 😊" i18n-header="@@askEddie" width="45vw" height="90vh"
   [disableApply]="disableApply()"
+  draggable=true
   (apply)="onApply()"
-  (close)="onClose()"
+  (close)="onClose()" 
+  class="cursor-move"
 >
-  <div content class="p-6 h-[80vh] flex flex-col overflow-x-hidden">
+
+  <div content class="p-6 h-[80vh] flex flex-col overflow-x-hidden " >
     <h1 class="text-xl font-semibold mb-4" i18n="@@askPanelData">Pregunta sobre los datos de tu panel ...</h1>
 
     <div class="flex-1 bg-gray-100 h-[100%] flex justify-center p-4 overflow-hidden overflow-x-hidden">
