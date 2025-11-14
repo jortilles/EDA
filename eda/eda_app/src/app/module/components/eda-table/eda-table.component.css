@@ -73,33 +73,33 @@ th{
 
 
 
-/* Aplica estilo al contenedor del summary */
+/* Aplica estilo al contenedor del footer */
 .eda-table ::ng-deep .p-datatable-footer {
-    background-color: inherit; /* igual que el header */
+    background-color: inherit; 
 }
-/* Aplica estilo al contenedor del summary */
+/* Aplica estilo al contenedor del paginator */
 .eda-table ::ng-deep .p-paginator{
-    background-color: inherit; /* igual que el header */
+    background-color: inherit; 
     color: inherit;
 }
 
-/* Aplica estilo al contenedor del summary */
+/* Aplica estilo al contenedor del paginator dropdown */
 .eda-table ::ng-deep .p-paginator .p-dropdown{
-    background-color: inherit; /* igual que el header */
+    background-color: inherit; 
     color: inherit;
 }
-/* Aplica estilo al contenedor del summary */
+/* Aplica estilo al contenedor del paginator dropdown TEXTO */
 .eda-table ::ng-deep .p-paginator .p-dropdown-label{
     color: inherit;
 }
-/* Aplica estilo al contenedor del summary */
+/* Aplica estilo al contenedor del paginator dropdown FLECHA */
 .eda-table ::ng-deep .p-paginator .p-dropdown-trigger{
     color: inherit;
 }
 
 /* Estilo del panel overlay que aparece al abrir el dropdown */
 ::ng-deep .p-dropdown-panel {
-    background-color: inherit; /* igual que el header */
+    background-color: inherit; 
 }
 
 /* Items dentro del panel */
