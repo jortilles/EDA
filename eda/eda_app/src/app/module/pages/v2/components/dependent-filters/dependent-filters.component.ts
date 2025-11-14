@@ -109,8 +109,8 @@ export class DependentFilters implements OnInit {
                     rows: 1,
                     y: k,
                     x: 0,
-                    filter_table: gf.selectedTable.display_name.default,
-                    filter_column: gf.selectedColumn.display_name.default,
+                    filter_table: gf.selectedTable.table_name,
+                    filter_column: gf.selectedColumn.column_name,
                     filter_type: gf.selectedColumn.column_type,
                     filter_id: gf.id,
                 }
@@ -310,7 +310,8 @@ export class DependentFilters implements OnInit {
             assigned.sort((a, b) => a.y - b.y);
 
             const children = assigned.map(cn => ({
-                name: cn.filter_column,
+                column_name: cn.filter_column,
+                filter_id: cn.filter_id,
                 children: buildChildrenFor(cn)
             }));
 
@@ -324,7 +325,7 @@ export class DependentFilters implements OnInit {
             if (gf.filter_column) return gf.filter_column;
             // soporte opcional para gf.selectedColumn.display_name.default
             try {
-                return gf.selectedColumn?.display_name?.default;
+                return gf.selectedColumn?.column_name;
             } catch (e) {
                 return undefined;
             }

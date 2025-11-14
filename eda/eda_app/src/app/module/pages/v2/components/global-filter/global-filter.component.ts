@@ -180,33 +180,91 @@ public async fillFiltersData(): Promise<void> {
         console.log('GlobalFilters: ', globalFilters);
         console.log('this.dashboard: ',this.dashboard)
 
-        const queryParams = {
-            table: filter.selectedTable.table_name,
-            dataSource: this.dashboard.dataSource._id,
-            dashboard: this.dashboard.dashboardId,
-            panel: '',
-            joinType: "inner",
-            rootTable: filter.selectedTable.table_name,
-            queryMode: filter.queryMode,
-            forSelector: true,
-            queryLimit: 5000,
-            filters: [{
-                filter_column: filter.selectedColumn.column_name,
-                filter_column_type: filter.selectedColumn.column_type,
-                filter_elements: [{value1: filter.selectedItems}],
-                filter_id: filter.id,
-                filter_table: filter.selectedTable.table_name,
-                filter_type: "=",
-                isGlobal: filter.isGlobal,
-                joins:[],
-            }]
-        };
+        await this.recursiveFilters(filter, globalFilters, this.dashboard.dataSource._id, this.dashboard.dashboardId, []);
+
+        // const queryParams = {
+        //     table: filter.selectedTable.table_name,
+        //     dataSource: this.dashboard.dataSource._id,
+        //     dashboard: this.dashboard.dashboardId,
+        //     panel: '',
+        //     joinType: "inner",
+        //     rootTable: filter.selectedTable.table_name,
+        //     queryMode: filter.queryMode,
+        //     forSelector: true,
+        //     queryLimit: 5000,
+        //     filters: [{
+        //         filter_column: filter.selectedColumn.column_name,
+        //         filter_column_type: filter.selectedColumn.column_type,
+        //         filter_elements: [{value1: filter.selectedItems}],
+        //         filter_id: filter.id,
+        //         filter_table: filter.selectedTable.table_name,
+        //         filter_type: "=",
+        //         isGlobal: filter.isGlobal,
+        //         joins:[],
+        //     }]
+        // };
         
-        const query = this.queryBuilderService.normalQuery([filter.selectedColumn], queryParams);
-        console.log('query: ', query);
-        const res = await this.dashboardService.executeQuery(query).toPromise();
+        // const query = this.queryBuilderService.normalQuery([filter.selectedColumn], queryParams);
+        // console.log('query: ', query);
+        // const res = await this.dashboardService.executeQuery(query).toPromise();
         
-        console.log('res::::::::::: ',res);
+        // console.log('res::::::::::: ',res);
+        console.log('completadoooooo.....');
+
+    }
+
+    async recursiveFilters(filter: any, globalFilters: any, _id: any, dashboardId: any, filterCollection: any) {
+        
+        if(filter.children.length !==0) {
+
+            for(let i=0; i<filter.children.length; i++) {
+
+                const filterItem = globalFilters.find((gl: any) => gl.id === filter.children[i].filter_id);
+                console.log('filterItem: ', filterItem);
+                // debugger;
+
+                filterCollection.push({
+                        filter_column: filter.selectedColumn.column_name,
+                        filter_column_type: filter.selectedColumn.column_type,
+                        filter_elements: [{value1: filter.selectedItems}],
+                        filter_id: filter.id,
+                        filter_table: filter.selectedTable.table_name,
+                        filter_type: "in",
+                        isGlobal: filter.isGlobal,
+                        joins:[],
+                })
+
+                const queryParams = {
+                    table: filterItem.selectedTable.table_name,
+                    dataSource: _id,
+                    dashboard: dashboardId,
+                    panel: '',
+                    joinType: "inner",
+                    rootTable: filterItem.selectedTable.table_name,
+                    queryMode: filterItem.queryMode,
+                    forSelector: true,
+                    queryLimit: 5000,
+                    filters: filterCollection
+                };
+
+                // LANZA LA QUERY
+                const query = this.queryBuilderService.normalQuery([filterItem.selectedColumn], queryParams);
+                const res = await this.dashboardService.executeQuery(query).toPromise();
+
+                console.log('res::::: ', res);
+
+                // VERIFICA SI CHILDREN ES DE LONGITUD DIFERENTE DE CERO
+                if(filterItem.children.length !== 0) {
+                    // RECURSIVIDAD
+                    this.recursiveFilters(filterItem, globalFilters, _id, dashboardId, filterCollection);
+                    // .....
+                }
+
+
+            }
+            //filterCollection = [];                
+        }
+
 
     }
 
