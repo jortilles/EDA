@@ -146,7 +146,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     this.NO_FILTER_ALLOWED = true;
                 }
             })
-
         }
     }
 
@@ -266,13 +265,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             let newCol = { name: dateCol.name + '_newDate', index: dateCol.index + 1 };
             dataDescription.otherColumns.push(newCol);
             dataDescription.totalColumns++;
-
-
-            
         }
 
-        const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart, values, dataTypes, dataDescription, isbarline, cfg.numberOfColumns);
-
+        // No pasamos el numero de columnas se calcula en la propia funcion
+        const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart, values, dataTypes, dataDescription, isbarline, null);
         if (chartData.length == 0) {
             chartData.push([], []);
         }
@@ -320,7 +316,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         
         const sortByAsCol = !this.styleProviderService.loadingFromPalette; // Ordenado por assignedColors
         let colors = this.chartUtils.generateChartColorsFromPalette(chartConfig.chartLabels.length, this.paletaActual).flatMap((item) => item.backgroundColor);
-       
     
         const chartColors = chartConfig.chartColors[0];
         const assignedColors = chartConfig.assignedColors;
@@ -412,8 +407,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         } else if (['histogram'].includes(chartConfig.edaChart)) {
                 if (chartConfig.chartLabels.length === 0) {
-                    chartConfig.chartLabels = [chartConfig.assignedColors[0]?.value];
-                    chartConfig.chartDataset[0].data = [1];
+                    chartConfig.chartLabels = chartConfig.assignedColors.map(element => element.value);
+                                        chartConfig.chartDataset[0].data = [1];
+
                 }
                 if (sortByAsCol) {
                     // Usa color coincidente de configColors
@@ -1026,7 +1022,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     private renderTreetable() {
-        const inject = this.props.data;
+        const inject = this.props;
         this.createTreetable(inject);
     }
 

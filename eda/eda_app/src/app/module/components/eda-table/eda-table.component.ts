@@ -99,7 +99,7 @@ export class EdaTableComponent implements OnInit {
     }
 
     getStyle() {
-        if(this.styleProviderService.pageStylesApplied.source['_value'] && !this.styleProviderService.colorCode) 
+        if(this.styleProviderService.pageStylesApplied.source['_value'] && Object.keys(this.styles).length === 0) 
         return {
             'color': this.styleProviderService.panelFontColor.source['_value'],
             'font-family': this.styleProviderService.panelFontFamily.source['_value'],

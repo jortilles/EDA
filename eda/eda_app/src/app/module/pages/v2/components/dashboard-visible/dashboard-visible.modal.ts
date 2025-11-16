@@ -50,15 +50,15 @@ private initializeForm(): void {
 
   this.visibleTypes = [
     //{ label: $localize`:@@public:public`, value: 'public', icon: 'fa fa-fw fa-globe' },
-    { label: $localize`:@@publicPanel:Publico`, value: 'public', icon: 'fa fa-fw fa-globe' },
-    { label: $localize`:@@commonPanel:Común`, value: 'shared', icon: 'fa fa-fw fa-globe' },
+    { label: $localize`:@@publicPanel:Publico`, value: 'shared', icon: 'fa fa-fw fa-globe' },
+    { label: $localize`:@@commonPanel:Común`, value: 'public', icon: 'fa fa-fw fa-globe' },
     { label: $localize`:@@groupPanel:Grupo`, value: 'group', icon: 'fa fa-fw fa-users' },
     { label: $localize`:@@privatePanel:Privado`, value: 'private', icon: 'fa fa-fw fa-lock' },
   ];
 
   this.form.controls['visible'].setValue(this.dashboard.dashboard.config.visible);
   this.showGroups = this.form.controls['visible'].value === 'group';
-  this.showUrl = this.form.controls['visible'].value === 'public';
+  this.showUrl = this.form.controls['visible'].value === 'shared';
   }
 
   private loadGroups(): void {
@@ -84,7 +84,7 @@ private initializeForm(): void {
   public handleSelectedBtn(event): void {
     const groupControl = this.form.get('group');
     this.showGroups = event.value === 'group';
-    this.showUrl = event.value === 'public';
+    this.showUrl = event.value === 'shared';
 
     if (this.showGroups) {
       groupControl.setValidators(Validators.required);

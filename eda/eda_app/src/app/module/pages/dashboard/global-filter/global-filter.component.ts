@@ -156,6 +156,7 @@ export class GlobalFilterComponent implements OnInit {
                     filter.pathList = this.globalFilter.pathList;
                     filter.type = this.globalFilter.type;
                     filter.isGlobal = this.globalFilter.isGlobal;
+                    filter.isAutocompleted = this.globalFilter.isAutocompleted;
                     filter.visible = this.globalFilter.visible;
 
                     for (const key in filter.pathList) {

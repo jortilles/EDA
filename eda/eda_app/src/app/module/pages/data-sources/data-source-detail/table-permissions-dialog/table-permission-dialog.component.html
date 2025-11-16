@@ -1,45 +1,128 @@
-<eda-dialog2 [display]="display" [header]="title" width="40vw" height="60vh"
-  [disableApply]="(selectedUsers.length < 1 && selectedRoles.length < 1)" (apply)="savePermission()"
+<eda-dialog2 [display]="display" [header]="title" width="50vw" height="80vh"
+  [disableApply]="(selectedUsers.length < 1 && selectedRoles.length < 1  && !anyoneCanSee)" (apply)="savePermission()"
   (close)="closeDialog()">
 
-  <div content class="p-2 space-y-6">
-    <div class="grid">
+   <div content class="p-2 space-y-6">
+    <div class="p-3 border-b border-gray-200">
+      @if (!anyoneCanSee) {
+        <p class="text-gray-600 leading-relaxed" i18n="@@anyCanSeeNO">
+          Define quién puede acceder y ver este modelo. Solo los usuarios y grupos explícitamente autorizados tendrán
+          acceso.
+        </p>
+      } @else {
+        <p class="text-gray-600 leading-relaxed" i18n="@@anyCanSeeYES">
+          Cualquier usuario puede ver el modelo.
+          Los filtros de seguridad se definen a nivel de tabla y columna concreta.
+        </p>
+      }
+    </div>
 
-      <div class="col-12">
-        <div style="margin: 1em;">
-          <p-radioButton name="groupname" value="users" [label]="usersLabel" [(ngModel)]="type"
-            (onClick)="resetValues()">
-          </p-radioButton>
+    <!-- Access Restriction Toggle -->
+    <div class="bg-gray-50 rounded-lg border border-gray-200">
+      <div class="p-3">
+        <div class="flex items-center justify-between">
+          <div class="space-y-1">
+            <h3 class="font-medium text-gray-900" i18n="@@restrictionAccess">Restringir Acceso</h3>
+            <p class="text-gray-600" i18n="@@restrictionAccessDescription">Activar para limitar el acceso solo a usuarios autorizados</p>
+          </div>
+
+          <button 
+            type="button" 
+            role="switch" 
+            [attr.aria-checked]="!anyoneCanSee"
+            (click)="anyoneCanSee = !anyoneCanSee;"
+            class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50" 
+            [ngClass]="{'bg-[#00BFB3]': !anyoneCanSee, 'bg-input': anyoneCanSee}"
+          >
+            <span 
+              class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform" 
+              [ngClass]="{'translate-x-5': !anyoneCanSee, 'translate-x-0': anyoneCanSee}"
+            ></span>
+          </button>
         </div>
-        <div style="margin: 1em;">
-          <p-radioButton name="groupname" value="groups" [label]="groupsLabel" [(ngModel)]="type"
-            (onClick)="resetValues()"></p-radioButton>
-        </div>
-      </div>
-
-      <!-- USERS -->
-      <div *ngIf="type==='users'" class="col-12">
-        <p-multiSelect [options]="users" [(ngModel)]="selectedUsers" [virtualScroll]="true" [itemSize]="30"
-          [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '60%' }"
-          [panelStyle]="{minWidth:'15em'}" [maxSelectedLabels]="1" [defaultLabel]="usersDefaultLabel">
-        </p-multiSelect>
-      </div>
-
-      <!-- GROUPS -->
-      <div *ngIf="type==='groups'" class="col-12">
-        <p-multiSelect [options]="roles" [(ngModel)]="selectedRoles" [virtualScroll]="true" [itemSize]="30"
-          [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '60%' }"
-          [panelStyle]="{minWidth:'15em'}" [maxSelectedLabels]="1" [defaultLabel]="groupsDefaultLabel">
-        </p-multiSelect>
-      </div>
-
-      <!-- COMMON -->
-      <div style="margin-left: 1em;" *ngIf="type" class="col-12">
-        <div i18n="@@tablePermissionNO" *ngIf="!permission">No tiene permiso para ver esta tabla</div>
-        <div i18n="@@tablePpermissionYES" *ngIf="permission">SI tiene permiso para ver esta tabla</div>
-        <p-inputSwitch [(ngModel)]="permission"></p-inputSwitch>
       </div>
     </div>
+
+    @if (!anyoneCanSee) {
+      <!-- Permission Type Selection -->
+      <div class="bg-gray-50 rounded-lg border border-gray-200">
+        <div class="p-3 border-b border-gray-200">
+          <h3 class="text-base font-medium text-gray-900" i18n="@@permissionType">Tipo de Permisos</h3>
+          <p class=" text-gray-600" i18n="@@permissionTypeDescription">Selecciona cómo quieres gestionar los permisos</p>
+        </div>
+        <div class="p-3 space-y-4">
+          <!-- User Permissions Radio -->
+          <div
+            class="flex items-center space-x-3 p-3 rounded-lg border bg-white border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer"
+            (click)="setPermissionType('users')">
+            <input type="radio" id="user-permissions" name="permissionType" value="users"
+              [checked]="type === 'users'"
+              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
+            <label for="user-permissions" class="flex items-center gap-2 cursor-pointer flex-1">
+              <svg class="h-4 w-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              </svg>
+              <div>
+                <div class="font-medium text-gray-900" i18n="@@permissionTypeUser">Permisos por Usuario</div>
+                <div class=" text-gray-600" i18n="@@permissionTypeUserDescription">Asignar permisos individualmente a usuarios específicos</div>
+              </div>
+            </label>
+          </div>
+
+          <!-- Group Permissions Radio -->
+          <div
+            class="flex items-center space-x-3 p-3 rounded-lg border bg-white border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer"
+            (click)="setPermissionType('groups')">
+            <input type="radio" id="group-permissions" name="permissionType" value="groups"
+              [checked]="type === 'groups'"
+              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
+            <label for="group-permissions" class="flex items-center gap-2 cursor-pointer flex-1">
+              <svg class="h-4 w-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                </path>
+              </svg>
+              <div>
+                <div class="font-medium text-gray-900" i18n="@@permissionTypeGroup">Permisos por Grupo</div>
+                <div class=" text-gray-600" i18n="@@permissionTypeGroupDescription">Asignar permisos a grupos de usuarios</div>
+              </div>
+            </label>
+          </div>
+
+          <!-- User Selection -->
+          <div class="space-y-3 mt-4" *ngIf="type === 'users'">
+            <label class=" font-medium text-gray-900" i18n="@@selectUsers">Seleccionar Usuarios</label>
+            <p-multiSelect
+              [(ngModel)]="selectedUsers"
+              [options]="users"
+              [style]="{ width: '100%' }"
+              [itemSize]="30"
+              [virtualScroll]="true"
+              [maxSelectedLabels]="3"
+              [defaultLabel]="usersDefaultLabel"
+              appendTo="body">
+            </p-multiSelect>
+          </div>
+
+          <!-- Group Selection -->
+          <div class="space-y-3 mt-4" *ngIf="type === 'groups'">
+            <label class=" font-medium text-gray-900" i18n="@@selectGroups">Seleccionar Grupos</label>
+            <p-multiSelect
+              [(ngModel)]="selectedRoles"
+              [options]="roles"
+              [itemSize]="30"
+              [virtualScroll]="true"
+              [style]="{ width: '100%' }"
+              [maxSelectedLabels]="3"
+              [defaultLabel]="groupsDefaultLabel"
+              appendTo="body">
+            </p-multiSelect>
+          </div>
+        </div>
+      </div>
+    }
   </div>
+
 
 </eda-dialog2>

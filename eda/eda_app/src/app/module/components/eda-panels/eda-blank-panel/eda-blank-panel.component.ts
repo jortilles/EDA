@@ -1071,35 +1071,42 @@ public tableNodeExpand(event: any): void {
      * @param event 
      * @param properties properties to set
      */
-    public onCloseChartProperties(event, properties): void {
+ public onCloseChartProperties(event, properties): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             if (properties) {
                 this.graficos = {};
-                this.graficos = _.cloneDeep(properties);                
-            
+        this.graficos = _.cloneDeep(properties);
+            if(properties.edaChart !== 'histogram'){
                 //assignedColors se le modifica el color dependiendo de su label
                 this.graficos.assignedColors.forEach((e) => {
-                    if (this.graficos.chartLabels.includes(e.value)) {
+                if (this.graficos.chartLabels.includes(e.value)) {
                         let indexColor = this.graficos.chartLabels.findIndex(element => element === e.value)
                         e.color = this.graficos.chartColors[0].backgroundColor[indexColor]?.length > 1 ?
                             this.graficos.chartColors[0].backgroundColor[indexColor] : 
-                            this.graficos.chartColors[0].backgroundColor    
-                    }
+                            this.graficos.chartColors[0].backgroundColor  
+                }
+            });
+            }else{
+                this.graficos.assignedColors = [];
+                this.graficos.chartLabels.forEach(element => {
+                    this.graficos.assignedColors.push({value: element, color: this.graficos.chartColors[0].backgroundColor})
                 });
+                properties.chartDataset[0].data = this.graficos.assignedColors.map(element => element.value)
+            }
         
                 this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors };
                 const layout =
                     new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType,
                     this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels,
                     this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors, this.graficos.showPointLines));
-
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
             }
             //not saved alert message
-            this.dashboardService._notSaved.next(true);
-        }
-        this.chartController = undefined;
+        this.dashboardService._notSaved.next(true);
     }
+    this.chartController = undefined;
+}
+
 
     public onCloseTableProperties(event, properties: TableConfig): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {

@@ -1,7 +1,8 @@
-<div class="eda-table">
-    <p-table #table [columns]="inject.cols" [value]="inject.value" [paginator]="true" [rows]="inject.rows" [rowsPerPageOptions]="[5, 10, 25, 50, 100]" paginatorDropdownAppendTo="body" (onPage)="inject.onPage($event)" (onSort)="inject.onSort($event)" [sortField]="inject.sortedColumn ? inject.sortedColumn.field : null"
+<div class="eda-table" [ngStyle]="getStyle()">
+    <p-table #table [columns]="inject.cols" [value]="inject.value" [paginator]="true" [rows]="inject.rows" [rowsPerPageOptions]="[5, 10, 25, 50, 100]" 
+        paginatorDropdownAppendTo="body" (onPage)="inject.onPage($event)" (onSort)="inject.onSort($event)" [sortField]="inject.sortedColumn ? inject.sortedColumn.field : null"
         [sortOrder]="inject.sortedColumn ? inject.sortedColumn.order : null" [autoLayout]="inject.autolayout"
-        styleClass="p-datatable-striped">
+        styleClass="p-datatable-striped" [ngStyle]="getStyle()">
 
         <!-- Search -->
         <ng-template pTemplate="caption" *ngIf="inject.search">
@@ -115,26 +116,27 @@
             </tr>
         </ng-template>
 
-        <ng-template pTemplate="footer" id="totalsFooter">
+        <ng-template pTemplate="footer" id="totalsFooter" >
             <tr *ngIf="inject.withColSubTotals">
                 <td *ngFor="let column of  inject.partialTotalsRow" [style.text-align]=column.style [style.border]=column.border style="padding: 0.571em 0.857em;" [class]=column.class>
                     {{column.data}}
                 </td>
             </tr>
             <tr *ngIf="inject.withColTotals">
-                <td *ngFor="let column of  inject.totalsRow" [style.text-align]=column.style [style.border]=column.border style="padding: 0.571em 0.857em;" [class]=column.class>
+                <td *ngFor="let column of  inject.totalsRow" [style.text-align]=column.style [style.border]=column.border style="padding: 0.571em 0.857em;" [ngStyle]="getStyle()" [class]=column.class>
                     {{column.data}}
                 </td>
             </tr>
 
         </ng-template>
 
-        <ng-template pTemplate="summary">
+        <ng-template pTemplate="summary" >
             <div class="ui-helper-clearfix">
-                <span i18n="@@registers1" *ngIf="table.filteredValue != undefined" style="margin-top: -0.5em;" class="items-length float-right">{{ table.filteredValue.length }} registros</span>
-                <span i18n="@@registers2" *ngIf="!table.filteredValue && table.value.length" style="margin-top: -0.5em;" class="items-length float-right">{{ table.value.length }} registros</span>
+                <span i18n="@@registers1" *ngIf="table.filteredValue != undefined" style="margin-top: -0.5em;" class="items-length float-right" [ngStyle]="getStyle()">{{ table.filteredValue.length }} registros</span>
+                <span i18n="@@registers2" *ngIf="!table.filteredValue && table.value.length" style="margin-top: -0.5em;" class="items-length float-right" [ngStyle]="getStyle()">{{ table.value.length }} registros</span>
             </div>
         </ng-template>
+
     </p-table>
 </div>
 

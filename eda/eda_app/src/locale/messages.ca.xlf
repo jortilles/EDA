@@ -3768,6 +3768,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>El velocímetre necessita un o dos valors numèrics, en cas de disposar de dos valors, el segon s'interpretarà com a límit </target>
   </trans-unit>
 
+   <trans-unit id="chartInfo18">
+    <source>El sunburst necesita al menos una categoria y un campo numérico </source>
+    <target>El sunburst necesita almenys una categoria y un campo numèric </target>
+  </trans-unit>
+
      <trans-unit id="chartInfoHistogram">
     <source>Un histograma requiere una única columna de valores numericos de los que se calculará la frecuencia </source>
     <target>Un histograma requereix una única columna de valors numèrics dels quals es calcularà la freqüència </target>

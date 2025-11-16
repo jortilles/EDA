@@ -29,7 +29,7 @@ export class TablePermissionDialogComponent implements OnInit {
     public roles: Array<object>;
     public selectedRoles: Array<any> = [];
 
-
+    public anyoneCanSee: boolean = false;
     public permission : boolean = true;
     public none : boolean = false;
     public type : string;
@@ -80,32 +80,53 @@ export class TablePermissionDialogComponent implements OnInit {
     savePermission() {
         let permissionFilter = {};
 
-        if(this.type === 'users'){
+        if (this.anyoneCanSee === true) {
             permissionFilter = {
-                users : this.selectedUsers.map(usr => usr._id),
-                usersName : this.selectedUsers.map(usr => usr.name),
-                none : this.none ? true : false,
-                table : this.table.technical_name,
-                column : "fullTable",
-                global : true,
-                permission : this.permission ? true : false,
-                type : 'users'
+                users: ["(~ => All)"],
+                usersName: ["(~ => All)"],
+                none: this.none ? true : false,
+                table: "fullModel",
+                column: "fullModel",
+                global: true,
+                permission: this.anyoneCanSee ? true : false,
+                type: 'anyoneCanSee'
             };
-        }
-        else if(this.type === 'groups'){
-            permissionFilter = {
-                groups : this.selectedRoles.map(usr => usr._id),
-                groupsName : this.selectedRoles.map(usr => usr.name),
-                none : this.none ? true : false,
-                table : this.table.technical_name,
-                column : "fullTable",
-                global : true,
-                permission : this.permission,
-                type : 'groups'
-            };
+        } else {
+
+
+            if (this.type === 'users') {
+                permissionFilter = {
+                    users: this.selectedUsers.map(usr => usr._id),
+                    usersName: this.selectedUsers.map(usr => usr.name),
+                    none: this.none ? true : false,
+                    table: this.table.technical_name,
+                    column: "fullTable",
+                    global: true,
+                    permission: this.permission ? true : false,
+                    type: 'users'
+                };
+            }
+            else if (this.type === 'groups') {
+                permissionFilter = {
+                    groups: this.selectedRoles.map(usr => usr._id),
+                    groupsName: this.selectedRoles.map(usr => usr.name),
+                    none: this.none ? true : false,
+                    table: this.table.technical_name,
+                    column: "fullTable",
+                    global: true,
+                    permission: this.permission,
+                    type: 'groups'
+                };
+            }
         }
         this.onClose(permissionFilter);
     }
+
+    
+  setPermissionType(type: "users" | "groups") {
+    this.type = type;
+  }
+
 
     resetValues(){
         if(this.type === 'users') this.selectedRoles = [];

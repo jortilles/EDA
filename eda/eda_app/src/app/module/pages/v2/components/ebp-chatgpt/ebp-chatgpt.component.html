@@ -2,24 +2,27 @@
   [display]="display"
   header="Pregúntale a Eddie 😊" i18n-header="@@askEddie" width="45vw" height="90vh"
   [disableApply]="disableApply()"
+  draggable=true
   (apply)="onApply()"
-  (close)="onClose()"
+  (close)="onClose()" 
+  class="cursor-move"
 >
-  <div content class="p-6 h-[80vh] flex flex-col overflow-x-hidden">
+
+  <div content class="p-6 h-[80vh] flex flex-col overflow-x-hidden " >
     <h1 class="text-xl font-semibold mb-4" i18n="@@askPanelData">Pregunta sobre los datos de tu panel ...</h1>
 
     <div class="flex-1 bg-gray-100 h-[100%] flex justify-center p-4 overflow-hidden overflow-x-hidden">
-      <div class="w-full max-w-2xl bg-white rounded-xl shadow-md p-6 flex flex-col gap-4 h-fit overflow-x-hidden">
+      <div class="w-full max-w-2xl bg-white rounded-xl shadow-md p-6 flex flex-col gap-4 h-auto overflow-x-hidden">
 
         <h1 class="text-2xl font-bold" i18n="@@GPTChat">Chat con ChatGPT</h1>
 
         <!-- Contenedor scrollable para mensajes -->
         <div #messageContainer class="flex-1 overflow-y-auto space-y-2 pr-2">
-          <div *ngFor="let msg of messages" class="h-[17vh] animate-in fade-in slide-in-from-bottom duration-300">
+          <div *ngFor="let msg of messages" class="h-auto animate-in fade-in slide-in-from-bottom duration-300">
             <div
               [ngClass]="{
-                'bg-blue-500 text-white self-end': msg.sender === 'user',
-                'bg-gray-200 text-gray-900 self-start': msg.sender === 'bot'
+                'bg-blue-500 text-white justify-self-end': msg.sender === 'user',
+                'bg-gray-200 text-gray-900 justify-self-start': msg.sender === 'bot'
               }"
               class="rounded-xl px-4 py-2 max-w-xs w-fit break-words"
             >

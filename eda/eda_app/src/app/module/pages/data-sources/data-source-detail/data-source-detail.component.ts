@@ -625,7 +625,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
 
 
-    openNewViewDialog() {
+   /* openNewViewDialog() {
         this.viewController = new EdaDialogController({
             params: { user: localStorage.getItem('user'), model_id: this.dataModelService.model_id },
             close: (event, response) => {
@@ -636,8 +636,10 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 this.viewController = undefined;
             }
         })
+    }*/
+    openNewViewDialog() {
+        this.showViewDialog = true;
     }
-
         onCloseViewDialog(response?: any) {
         this.showViewDialog = false;
         if (response) {

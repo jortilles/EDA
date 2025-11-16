@@ -60,6 +60,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     // Legacy 
     public applyToAll: boolean = false;
+    public isAutocompleted: boolean = false;
     // selectedPanels: any[] = []
 
     constructor(
@@ -90,6 +91,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 id: this.fileUtils.generateUUID(),
                 isnew: true,
                 isGlobal: true,
+                isAutocompleted: false,
                 queryMode: this.globalFilter.queryMode,
                 data: null,
                 selectedTable: {},
@@ -108,7 +110,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         } else {
             if (this.globalFilter.queryMode == 'EDA2') this.initPanels();
             else this.initPanelsLegacy();
-
+            this.isAutocompleted = this.globalFilter.isAutocompleted;
             this.initTablesForFilter();
 
             const tableName = this.globalFilter.selectedTable.table_name;
@@ -125,6 +127,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.findPanelPathTables();
             this.aliasValue = display_name_alias;
         }
+        // Recogemos valor del switch
+        this.globalFilter.isAutocompleted = this.isAutocompleted;
     }
 
     public ngOnDestroy(): void {
@@ -148,16 +152,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
           panel.active = true;
           this.filteredPanels.push(panel);
         }
-
-        // if (panel.avaliable === false) {
-        //     this.selectPanelToFilter(panel);
-        // } else if (panel.active === true) {
-        //     panel.active = false;
-        //     this.panelstoFilter = this.panelstoFilter.filter(p => p.id !== panel.id);
-        // } else {
-        //     panel.active = true;
-        //     this.panelstoFilter.push(panel);
-        // }
     }
       
     public isPanelSelected(panel: any): boolean {
@@ -598,6 +592,12 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 }
             }
         }
+    }
+    
+    
+    public autocompleteFilterCheck(filtro: any) {
+        this.isAutocompleted = !this.isAutocompleted;
+        this.globalFilter.isAutocompleted = this.isAutocompleted;
     }
 
     public toggleShowAlias() {

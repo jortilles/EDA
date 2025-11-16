@@ -19,6 +19,7 @@ export const EbpUtils = {
       case 'stackedbar':
         str = $localize`:@@chartInfo4:\n Un gráfico combinado necesita una categoría y dos séries numéricas`;
         description += `\n${str}`;
+        break;
       case 'stackedbar100':
         str = $localize`:@@chartInfo4:\n Un gráfico combinado necesita una categoría y dos séries numéricas`;
         description += `\n${str}`;
@@ -81,6 +82,10 @@ export const EbpUtils = {
           str = $localize`:@@chartInfo17:El velocímetro necesita uno o dos valores numéricos, en caso de disponer de dos valores el segundo se interpretará como límite`;
           description += `\n${str}`;
           break;
+      case 'sunburst':
+        str = $localize`:@@chartInfo18:El sunburst necesita al menos una categoria y un campo numérico `;
+        description += `\n${str}`;
+        break;
       case 'histogram':
         str = $localize`:@@chartInfoHistogram:Un histograma necesita una única columna de valores numericos de los que se calculará la frecuencia`;
         description += `\n${str}`;

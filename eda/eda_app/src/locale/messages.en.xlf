@@ -3701,7 +3701,12 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
    <trans-unit id="chartInfo17">
     <source>El velocímetro necesita uno o dos valores numéricos. En caso de disponer de dos valores el segundo se interpretará como límite </source>
-    <target>Gauge requires uno or two numeric values, if two values are provided second one is interpreted as a limit</target>
+    <target>Gauge requires one or two numeric values, if two values are provided second one is interpreted as a limit</target>
+  </trans-unit>
+
+  <trans-unit id="chartInfo18">
+    <source>El sunburst necesita al menos una categoria y un campo numérico </source>
+    <target>Sunburst requires at least one category and one numeric field </target>
   </trans-unit>
 
      <trans-unit id="chartInfoHistogram">

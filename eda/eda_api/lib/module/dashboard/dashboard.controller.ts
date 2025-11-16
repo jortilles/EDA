@@ -250,7 +250,7 @@ export class DashboardController {
      
 
       for (const dashboard of dashboards) {
-        if (dashboard.config.visible === 'public') {
+        if (dashboard.config.visible === 'shared') {
           const ds = dss.find( e=> e._id == dashboard.config.ds._id );
           dashboard.config.ds.name =  ds.ds?.metadata?.model_name ?? 'N/A';
           if(  this.iCanSeeTheDashboard(req, ds) == true ){
@@ -300,7 +300,7 @@ export class DashboardController {
       ).populate('user','name').exec()
       const shared = []
       for (const dashboard of dashboards) {
-        if (dashboard.config.visible === 'shared') {
+        if (dashboard.config.visible === 'public') {
           shared.push(dashboard)
         }
       }
@@ -363,7 +363,7 @@ export class DashboardController {
       
       for (const dashboard of dashboards) {
         switch (dashboard.config.visible) {
-          case 'public':
+          case 'shared':
             publics.push(dashboard)
             break
           case 'private':
@@ -373,7 +373,7 @@ export class DashboardController {
             dashboard.group = await Group.find({ _id: dashboard.group }).exec()
             groups.push(dashboard)
             break
-          case 'shared':
+          case 'public':
             shared.push(dashboard)
             break
         }
