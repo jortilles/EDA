@@ -64,7 +64,7 @@ export const LogoImage = 'assets/images/logos/logo.png';
 
 export const LogoSidebar = 'assets/images/logos/logo.png';
 
-export const SubLogoImage = 'assets/images/logos/sub-logo.png';
+export const SubLogoImage = 'assets/images/logos/logo_500.png';
 
 export const BackgroundImage = 'assets/images/background/data-bg.png';
 
