@@ -52,7 +52,7 @@
                <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
                  <span class="font-medium">{{ item.label }}</span>
                  <div class="flex items-center gap-2">
-                   <span class="text-md text-slate-500 font-mono">{{ item.bg }}</span>
+                   <input [(ngModel)]="item.bg" class="text-md text-slate-500 font-mono justify-items-end w-[3.5vw]">
                    <p-colorPicker [(ngModel)]="item.bg" (onChange)="handleInputColor(item)" format="hex" appendTo="body"/>
                  </div>
                </div>
