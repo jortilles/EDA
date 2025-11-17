@@ -259,7 +259,22 @@ public async fillFiltersData(): Promise<void> {
                 const query = this.queryBuilderService.normalQuery([filterItem.selectedColumn], queryParams);
                 const res = await this.dashboardService.executeQuery(query).toPromise();
 
-                console.log('QUERY -----:::::> ', res);
+                // Haciendo el filtro de los nuevos valores:
+                const filterName = res[0][0];
+                const filterData = res[1].map((item: any) => {
+                    return ({
+                        label: item[0],
+                        value: item[0],
+                    })
+                })
+                const filterTarget = globalFilters.find((item: any) => item.selectedColumn.column_name === filterName);
+                // Modifica la referencia del objeto directamente.
+                filterTarget.data = filterData;
+
+                console.log('QUERY -----:::::::::::::::::> ', res);
+                console.log('filterName: ', filterName);
+                console.log('filterData: ', filterData);
+                console.log('globalFilters: ', globalFilters);
 
                 // VERIFICA SI CHILDREN ES DE LONGITUD DIFERENTE DE CERO
                 if(filterItem.children.length !== 0) {
