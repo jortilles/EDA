@@ -2,8 +2,8 @@
     [display]="display"
     i18n-header="@@dependentFiltersTitle"
     header="Configuración de filtros dependientes"
-    width="1000px" 
-    height="1000px"
+    width="750px" 
+    height="750px"
     [disableApply]="disableApply()"
     (apply)="onApply()"
     (close)="onClose()"
@@ -14,7 +14,10 @@
 
         <div class="content-gridster">
             <gridster class="gridster" [options]="options">
-                <gridster-item [item]="item" *ngFor="let item of dashboard">
+                <gridster-item 
+                    [item]="item" 
+                    *ngFor="let item of dashboard" 
+                    class="gridster-item">
                     <div class="button-holder">
                         <div class="content-item">
                             <p>{{item.filter_table}}</p>

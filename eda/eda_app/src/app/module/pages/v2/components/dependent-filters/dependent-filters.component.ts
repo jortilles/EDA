@@ -53,7 +53,7 @@ export class DependentFilters implements OnInit {
         this.options = {
         gridType: GridType.Fit,
         compactType: CompactType.None,
-        // displayGrid: DisplayGrid.Always,
+        displayGrid: DisplayGrid.Always,
         pushItems: false,
         draggable: { enabled: true },
         resizable: { enabled: false },
@@ -72,8 +72,8 @@ export class DependentFilters implements OnInit {
         disableWindowResize: false,   // false por defecto; si true evitaría recálculos automáticos
         mobileModeEnabled: true,       // por claridad (no todas las versiones tienen esta prop)
 
-        minCols: 10,
-        maxCols: 10,
+        minCols: 12,
+        maxCols: 12,
         minRows: 10, // Hacer este valor dinamico - Pendiente
         maxRows: 10, // Hacer este valor dinamico - Pendiente
         margin: 1, // Margen entre los bloques

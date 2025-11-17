@@ -3,23 +3,37 @@
     background-color: #DCFCE7; 
     margin-top: 5px;
     padding: 2px;
+    border-radius: 10px;
 }
 
 .gridster {
-    height: 500px;
+    height: 375px;
     background-color: transparent;
     border: 1px solid #13d60c00;  /* Border lines around each item  */
 }
 
 .button-holder {
-    background-color: red;
+    background-color: rgba(255, 0, 0, 0);
+    border: none;
+
 }
 
-
-.content-item {
+.gridster-item {
+    cursor: pointer;
     border: 1px solid #CCCCCC;
-    padding: 3px;
     background-color: #fff;
     border-radius: 10px;
 }
 
+.gridster-item:hover {
+    background-color: #9AEAD7;
+}
+
+
+.content-item {
+    /* border: 1px solid #CCCCCC; */
+    background-color: #cf0c0c00;
+    /* margin-top: 4px; */
+    border-radius: 10px;
+    padding: 5px
+}
