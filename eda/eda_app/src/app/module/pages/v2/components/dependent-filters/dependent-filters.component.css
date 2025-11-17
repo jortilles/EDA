@@ -1,6 +1,6 @@
 .content-gridster{
     /* background-color: #00BFB3; ==> COLOR CORPORATIVO */  
-    background-color: #00bfb244; 
+    background-color: #DCFCE7; 
     margin-top: 5px;
     padding: 2px;
 }
@@ -11,7 +11,15 @@
     border: 1px solid #13d60c00;  /* Border lines around each item  */
 }
 
-.content-item {
-    padding: 3px;
-    background-color: rgb(30, 190, 129);
+.button-holder {
+    background-color: red;
 }
+
+
+.content-item {
+    border: 1px solid #CCCCCC;
+    padding: 3px;
+    background-color: #fff;
+    border-radius: 10px;
+}
+
