@@ -111,7 +111,6 @@ static async acs(req: Request, res: Response, next: NextFunction) {
             userEda.name = name;
             userEda.email = email;
             userEda.password = bcrypt.hashSync('135792467811111111111115', 10);
-            userEda.role = [];
             const userSaved = await userEda.save();
             Object.assign(userSAML, userSaved);
         }
