@@ -17,7 +17,7 @@
       <!-- Selected Items Display -->
       <div *ngIf="selectedItems().length > 0" class="space-y-2 mb-4">
         <div class="font-medium text-gray-600">
-          <span i18n="@@itemsSelected1">Seleccionados</span>({{ selectedItems().length }})
+          <span i18n="@@itemsSelected1">Seleccionado</span>
         </div>
         <div class="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-lg min-h-[3rem]">
           <span 
@@ -61,7 +61,7 @@
 
     <!-- Items List -->
     <div class="p-6 pt-0">
-      <div [class]="'border border-gray-200 rounded-md min-h-[20rem] overflow-y-auto'">
+      <div [class]="'border border-gray-200 rounded-md min-h-[17.5rem] overflow-y-auto'">
         <div *ngIf="filteredItems().length === 0" class="flex items-center justify-center h-full text-gray-500" i18n="@@noItemsAvailable">
           {{ searchTerm() ? 'No se encontraron elementos' : 'No hay elementos disponibles' }}
         </div>
@@ -95,7 +95,6 @@
       <!-- Footer Info -->
       <div class="flex justify-between items-center mt-3 text-sm text-gray-500">
         <span>{{ filteredItems().length }} <span i18n="@@filteredItems">elementos disponibles</span></span>
-        <span>{{ selectedItems().length }} <span i18n="@@selectedItems">seleccionados</span></span>
       </div>
     </div>
   </div>

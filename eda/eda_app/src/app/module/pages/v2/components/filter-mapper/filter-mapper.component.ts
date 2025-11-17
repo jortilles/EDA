@@ -35,7 +35,6 @@ export class FilterMapperComponent {
   @Input() connections: Connection[] = [];
   @Output() connectionsChange: EventEmitter<any> = new EventEmitter();
 
-  allSelectedConnexions: any[] = [];
   selectedSource: { id: string; panel: "panel" | "dashboard" } | null = null
   hoveredConnection: string | null = null
 
@@ -55,7 +54,7 @@ export class FilterMapperComponent {
       }
 
       panelFilters.forEach((filter) => {
-        const connection = this.allSelectedConnexions.find(
+        const connection = this.connections.find(
           conn => conn.sourceId === filter.filter_id
         );
         if (!connection) { return;}
@@ -69,9 +68,6 @@ export class FilterMapperComponent {
     });
 
   }
-
-
-
 
   handleItemClick(itemId: string, panel: "panel" | "dashboard"): void {
     if (this.isItemConnected(itemId)) {
@@ -97,7 +93,6 @@ export class FilterMapperComponent {
             color: this.connectionColors[this.connections.length % this.connectionColors.length],
           }
           this.connections.push(newConnection);
-          this.allSelectedConnexions.push(newConnection)
           this.connectionsChange.emit(this.connections);
         }
       }

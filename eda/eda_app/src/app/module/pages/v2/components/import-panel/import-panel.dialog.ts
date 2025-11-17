@@ -50,7 +50,6 @@ export class ImportPanelDialog implements OnInit {
     private dashboardService: DashboardService) { }
 
   ngOnInit(): void {
-    console.log('import panel works');
     this.display = true;
     this.initializeOptions();
   }
@@ -106,7 +105,6 @@ export class ImportPanelDialog implements OnInit {
   }
 
   private setImportPanels(): any[] {
-    console.log('que pasa')
     const panelsRef = this._import.panelsRef || [];
     const dashboard = this._dashboard?.dashboard;
     const dataSource = this._dashboard?.datasource;
@@ -174,6 +172,5 @@ export class ImportPanelDialog implements OnInit {
   public setActiveTab(id: string) {
     this.activeTab = id;
     this.initFilterMapper(id);
-    console.log(this)
   }
 }
