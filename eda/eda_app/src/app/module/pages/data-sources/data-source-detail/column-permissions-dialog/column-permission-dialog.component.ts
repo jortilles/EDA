@@ -127,7 +127,6 @@ export class ColumnPermissionDialogComponent implements OnInit {
     this.type = type;
   }
 
-
   resetValues(){
         if(this.type === 'users') this.selectedRoles = [];
         else this.selectedUsers = [];
@@ -139,7 +138,6 @@ export class ColumnPermissionDialogComponent implements OnInit {
             this.dynamic = false;
         }
     }
-
 
     syncronizeAllNoneValuesAll(){
         if(this.all === true ){
