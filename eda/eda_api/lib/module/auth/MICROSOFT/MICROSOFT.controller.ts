@@ -59,7 +59,6 @@ export class MicrosoftController {
                     userEda.name = givenName;
                     userEda.email = email;
                     userEda.password = bcrypt.hashSync(oid, 10); 
-                    userEda.role = []; // Sin grupo
                     userEda.save(async (err, userSaved) => {
                         if(err) return next(new HttpException(400, 'Some error ocurred while creating the User'));
                         Object.assign(user, userSaved);

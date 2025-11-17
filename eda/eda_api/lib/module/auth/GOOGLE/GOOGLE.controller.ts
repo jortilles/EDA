@@ -63,7 +63,6 @@ export class GoogleController {
                     userEda.name = name;
                     userEda.email = email;
                     userEda.password = bcrypt.hashSync(jti, 10); // validar con Juanjo
-                    userEda.role = [];
                     userEda.save(async (err, userSaved) => {
                         if(err) return next(new HttpException(400, 'Some error ocurred while creating the User'));
                         Object.assign(user, userSaved);
