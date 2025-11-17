@@ -13,7 +13,7 @@ export class EdaContextMenuComponent implements AfterViewInit {
     
     @ViewChild('dialog') dialog: Dialog;
 
-    private allowOutsideClose = false;
+    public allowOutsideClose;
 
     ngAfterViewInit() {
         this.inject.dialog = this.dialog;
@@ -22,6 +22,7 @@ export class EdaContextMenuComponent implements AfterViewInit {
     onOutsideClick(event: MouseEvent, dialog: any) {
         const dialogEl = dialog?.container || dialog?.containerViewChild?.nativeElement;
 
+        // Si no se clicka en el diálogo, salir
         if (!dialogEl) {
             return;
         }
@@ -34,8 +35,7 @@ export class EdaContextMenuComponent implements AfterViewInit {
 
         const isOutside = !dialogEl.contains(event.target as Node);
 
-        if (isOutside && this.allowOutsideClose) {
-            this.allowOutsideClose = false;
+        if (isOutside) {
             this.close.emit();
         }
     }
