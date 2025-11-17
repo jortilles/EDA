@@ -256,6 +256,8 @@ public async fillFiltersData(): Promise<void> {
                 };
 
                 // LANZA LA QUERY
+                
+                this.loading = true;
                 const query = this.queryBuilderService.normalQuery([filterItem.selectedColumn], queryParams);
                 const res = await this.dashboardService.executeQuery(query).toPromise();
 
@@ -272,17 +274,21 @@ public async fillFiltersData(): Promise<void> {
                 // Modifica la referencia del objeto filtro directamente.
                 filterTarget.data = filterData;
 
-                console.log('QUERY -----:::::::::::::::::> ', res);
-                console.log('FilterName: ', filterName);
-                console.log('FilterData: ', filterData);
-                console.log('GlobalFilters: ', globalFilters);
+                // console.log('QUERY -----:::::::::::::::::> ', res);
+                // console.log('FilterName: ', filterName);
+                // console.log('FilterData: ', filterData);
+                // console.log('GlobalFilters: ', globalFilters);
 
                 // Creación de un Set con todos los valores válidos
                 const validValues = new Set(filterData.map((fd: any) => fd.value));
                 // Filtrar los elementos seleccionados que existen en validValues
                 filterTarget.selectedItems = filterTarget.selectedItems.filter(item => validValues.has(item));
 
-                // VERIFICA SI CHILDREN ES DE LONGITUD DIFERENTE DE CERO
+                this.loading = false;
+
+                ///////////////////////////////////////////////////////////
+                // VERIFICA SI CHILDREN ES DE LONGITUD DIFERENTE DE CERO //
+                ///////////////////////////////////////////////////////////
                 if(filterItem.children.length !== 0) {
                     // RECURSIVIDAD
                     this.recursiveFilters(filterItem, globalFilters, _id, dashboardId, filterCollection);
@@ -295,7 +301,6 @@ public async fillFiltersData(): Promise<void> {
         } else {
             console.log('No TIENE CHILDREN ....')
         }
-
     }
 
 filterCollectionRecursive( children: any[] | undefined, column_name: string, globalFilter: any, filterCollection: any[] ): boolean {
