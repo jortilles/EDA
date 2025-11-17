@@ -4,6 +4,7 @@ import ServerLogService from '../../../services/server-log/server-log.service';
 
 // Importaciones necesarias
 import User, { IUser } from '../../admin/users/model/user.model';
+import Group, { IGroup } from '../../admin/groups/model/group.model';
 import { UserController } from '../../admin/users/user.controller';
 import authConfig from './MICROSOFT.verify';
 import fetch from './MICROSOFT.fetch';
@@ -44,7 +45,8 @@ export class MicrosoftController {
                         email: email,
                         password: bcrypt.hashSync(oid, 10),
                         img: 'imagen', // Falta solucionar
-                        role: [] // Sin Grupo
+                        role: ['135792467811111111111115'],  // Edalitics FREE role por defecto
+                        creation_date: new Date()
                     });
                     userToSave.save(async (err, userSaved) => {
                         if(err) return next(new HttpException(400, 'Some error ocurred while creating the User'));
@@ -53,6 +55,11 @@ export class MicrosoftController {
                         token = await jwt.sign({user}, SEED, {expiresIn: 14400})
                         return res.status(200).json({ user, token: token, id: user._id });
                     });
+                    await Group.updateOne({ _id: '135792467811111111111115' }, { $addToSet: { users: userToSave._id } }).then(function () { 
+                    }) 
+                    .catch(function (error) {
+                        console.log('Error updating group ', error);
+                    })  // Edalitics FREE role por defecto
                 } else {
                     // Si el usuario ya esta registrado, se actualiza algunos datos.
                     userEda.name = givenName;
