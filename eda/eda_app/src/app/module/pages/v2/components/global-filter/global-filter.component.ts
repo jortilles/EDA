@@ -268,13 +268,19 @@ public async fillFiltersData(): Promise<void> {
                     })
                 })
                 const filterTarget = globalFilters.find((item: any) => item.selectedColumn.column_name === filterName);
-                // Modifica la referencia del objeto directamente.
+
+                // Modifica la referencia del objeto filtro directamente.
                 filterTarget.data = filterData;
 
                 console.log('QUERY -----:::::::::::::::::> ', res);
-                console.log('filterName: ', filterName);
-                console.log('filterData: ', filterData);
-                console.log('globalFilters: ', globalFilters);
+                console.log('FilterName: ', filterName);
+                console.log('FilterData: ', filterData);
+                console.log('GlobalFilters: ', globalFilters);
+
+                // Creación de un Set con todos los valores válidos
+                const validValues = new Set(filterData.map((fd: any) => fd.value));
+                // Filtrar los elementos seleccionados que existen en validValues
+                filterTarget.selectedItems = filterTarget.selectedItems.filter(item => validValues.has(item));
 
                 // VERIFICA SI CHILDREN ES DE LONGITUD DIFERENTE DE CERO
                 if(filterItem.children.length !== 0) {
