@@ -23,7 +23,7 @@ type User = {
   selector: 'app-user-list',
   templateUrl: './user-list.page.html',
   standalone: true,
-  imports: [SharedModule, CommonModule, FormsModule, IconComponent,MultiSelectModule],
+  imports: [SharedModule, CommonModule, FormsModule, IconComponent, MultiSelectModule],
 })
 export class UserListPage implements OnInit {
   private userService = inject(UserService);
@@ -37,8 +37,8 @@ export class UserListPage implements OnInit {
 
   searchTerm: string = '';
   sortConfig: { key: keyof User; direction: 'asc' | 'desc' } | null = null;
-  selectedUser: User = {name:'',email:'',password:''};
-  selectedUserApply: User = {name:'',email:'',password:''};
+  selectedUser: User = { name: '', email: '', password: '' };
+  selectedUserApply: User = { name: '', email: '', password: '' };
   showUserDetail: boolean = false;
 
   currentPage: number = 1;
@@ -83,7 +83,7 @@ export class UserListPage implements OnInit {
   async loadGroups() {
     this.groups = await lastValueFrom(this.groupService.getGroups());
   }
-  
+
 
 
   handleSort(key: keyof User) {
@@ -117,40 +117,40 @@ export class UserListPage implements OnInit {
   }
 
   handleCreateUser() {
-      // REVISAR QUE PASA CON LAS INICIALES DE USER cache
-    this.selectedUser = {name:'',email:'',password:'', isnew: true };
-    this.selectedUserApply = {name:'',email:'',password:'', isnew: true };
+    // REVISAR QUE PASA CON LAS INICIALES DE USER cache
+    this.selectedUser = { name: '', email: '', password: '', isnew: true };
+    this.selectedUserApply = { name: '', email: '', password: '', isnew: true };
     this.showUserDetail = true;
   }
 
   handleDeleteUser(userId: string) {
     // Control de no borrar el propio usuario
     if (userId === this.userService.getUserObject()._id) {
-        Swal.fire($localize`:@@cantDeleteUser:No se puede borrar el usuario`, $localize`:@@cantSelfDelete:No se puede borrar a si mismo`, 'error');
-        return;
+      Swal.fire($localize`:@@cantDeleteUser:No se puede borrar el usuario`, $localize`:@@cantSelfDelete:No se puede borrar a si mismo`, 'error');
+      return;
     }
 
     // Confirmación del borrado de usuario
     let title = $localize`:@@DeleteUserMessage:Estás a punto de borrar el usuario `
     Swal.fire({
-        title: $localize`:@@Sure:¿Estás seguro?`,
-        text: `${title} `,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: $localize`:@@DeleteUser:Si, ¡Bórralo!`
+      title: $localize`:@@Sure:¿Estás seguro?`,
+      text: `${title} `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: $localize`:@@DeleteUser:Si, ¡Bórralo!`
     }).then(deleted => {
-      if (deleted.value === true) { 
+      if (deleted.value === true) {
         this.users = this.users.filter(user => user._id !== userId);
         this.userService.deleteUser(userId).subscribe(
-        res => {
+          res => {
             Swal.fire($localize`:@@UserDeletedOk:El usuario a sido eliminado correctamente`, res.email, 'success');
             this.loadUserList();
-        }, err => {
-          Swal.fire($localize`:@@ErrorMessage:Ha ocurrido un error`, err.text, 'error');
-        }
-      );
+          }, err => {
+            Swal.fire($localize`:@@ErrorMessage:Ha ocurrido un error`, err.text, 'error');
+          }
+        );
       }
     });
   }
@@ -158,7 +158,7 @@ export class UserListPage implements OnInit {
   onApplyUserDetail() {
     this.showUserDetail = false;
     if (this.selectedUser.isnew) { //Estamos creando usuario
-      
+
       let roleIds = (this.selectedUserApply?.role ?? [])
         .map(name => this.groups.find(group => group.name === name)?._id)
         .filter(id => id);
@@ -177,28 +177,28 @@ export class UserListPage implements OnInit {
         }, err => {
           Swal.fire($localize`:@@RegisterError:Error al registrarse`, err.text, 'error');
         }
-      );   
+      );
     }
 
     else { //Estamos modificando usuario
       let userToModify = this.users.find(user => user._id === this.selectedUser._id);
       this.selectedUser = this.selectedUserApply;
-      userToModify.password = this.selectedUser.password; 
-      if (userToModify.password && userToModify.password !== '') {
-        userToModify.name = this.selectedUser.name; 
-        userToModify.email = this.selectedUser.email;
-        userToModify.role = this.groups.filter(group => this.selectedUser.role.includes(group.name))
-        this.userService.manageUpdateUsers(userToModify).subscribe(
-          res => {
-            Swal.fire($localize`:@@UpdatedUser:Usuario actualizado`, res.email, 'success');
-            this.loadUserList();
-          }, err => {
-            Swal.fire($localize`:@@UpdatedUserError:Error al actualizar el usuario`, err.text, 'error');
-          }
-        );
-      } else {
-        Swal.fire($localize`:@@UpdatedUserError:Error al actualizar el usuario`,'error','error');
+
+      if (this.selectedUser.password && this.selectedUser.password.length > 1) {
+        userToModify.password = this.selectedUser.password;
       }
+
+      userToModify.name = this.selectedUser.name;
+      userToModify.email = this.selectedUser.email;
+      userToModify.role = this.groups.filter(group => this.selectedUser.role.includes(group.name))
+      this.userService.manageUpdateUsers(userToModify).subscribe(
+        res => {
+          Swal.fire($localize`:@@UpdatedUser:Usuario actualizado`, res.email, 'success');
+          this.loadUserList();
+        }, err => {
+          Swal.fire($localize`:@@UpdatedUserError:Error al actualizar el usuario`, err.text, 'error');
+        }
+      );
     }
   }
 }
