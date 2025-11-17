@@ -867,7 +867,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
         
         //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
-        this.props.config.setConfig(this.assignedColorsWork2(this.props.config.getConfig(), inject));
+        this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));
 
         
 
@@ -1066,7 +1066,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     public updateD3ChartColors(chartType: string) {
         const numberOfColors = this.componentRef.instance?.colors?.length || 1;
-        const newColors = this.chartUtils.generateRGBColorGradientScaleD3(numberOfColors, this.styleProviderService.ActualChartPalette['paleta']);
+        let newColors: Array<{ color: string }> = [];
+        if (this.styleProviderService.loadingFromPalette) {
+            // Genera colores en RGB o Hex segun la paleta
+            newColors = this.chartUtils.generateRGBColorGradientScaleD3(numberOfColors, this.styleProviderService.ActualChartPalette['paleta'])
+                .map(({ color }) => ({ color: this.chartUtils.rgbOrRgbaToHex(color) }));
+        } else {
+            return; // No hay que modificar nada
+        }
         switch (chartType) {
             case 'treeMap':
                 this.props.config.setConfig(new TreeMapConfig(newColors.map(({ color }) => color).map(color => this.chartUtils.hex2rgbD3(color))));
@@ -1090,7 +1097,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 break;
             default:
                 break;
-        }        
+        }
     }
 
     /**
@@ -1149,34 +1156,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 inject.colors[index] = inject.assignedColors[mapValues.findIndex(value => value === injectValueString)]['color'];
             }
         });
-        config = inject;
-        return config;
-    }
-
-
-    private assignedColorsWork2(config, inject) { 
-        inject.assignedColors = [];
-        const usedColors: { [key: string]: string } = {}; // mapa value → color
-        let colorIndex = 0; // solo avanza cuando aparece un nuevo valor
-
-        inject.data.values.forEach((injectValue) => {
-            // Primer string encontrado (valor del filtro)
-            const injectValueString = injectValue.find(value => typeof value === 'string');
-
-            if (!usedColors[injectValueString]) {
-                // si es la primera vez que aparece, asignar color
-                usedColors[injectValueString] = inject.colors[colorIndex] || 
-                    `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
-                colorIndex++; // avanzamos el índice SOLO para nuevos valores
-            }
-
-            // añadimos al array el valor con su color ya definido
-            inject.assignedColors.push({
-                value: injectValueString,
-                color: usedColors[injectValueString]
-            });
-        });
-
         config = inject;
         return config;
     }
