@@ -795,7 +795,7 @@
 
 
 @if(contextMenu){
-  <eda-context-menu [inject]="contextMenu"></eda-context-menu>
+  <eda-context-menu (close)="contextMenu.display = false" [inject]="contextMenu"></eda-context-menu>
 }
 
 @if(isVisibleEbpChatGpt) {

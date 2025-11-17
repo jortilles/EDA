@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, ViewChild, ViewEncapsulation} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Input, Output, ViewChild, ViewEncapsulation} from '@angular/core';
 import {EdaContextMenu} from '@eda/shared/components/eda-context-menu/eda-context-menu';
 import {Dialog} from 'primeng/dialog';
 
@@ -9,33 +9,20 @@ import {Dialog} from 'primeng/dialog';
 })
 export class EdaContextMenuComponent implements AfterViewInit {
     @Input() inject: EdaContextMenu;
+    @Output() close = new EventEmitter<void>();
+    
     @ViewChild('dialog') dialog: Dialog;
 
     private allowOutsideClose = false;
-    private lastOutsideClickTime = 0; // timestamp del último click
 
     ngAfterViewInit() {
         this.inject.dialog = this.dialog;
     }
 
     onOutsideClick(event: MouseEvent, dialog: any) {
-        const now = Date.now();
-
-        // Ignorar si la función se llamó hace menos de 300ms
-        if (now - this.lastOutsideClickTime < 100) {
-            return;
-        }
-        this.lastOutsideClickTime = now;
-
-
         const dialogEl = dialog?.container || dialog?.containerViewChild?.nativeElement;
 
         if (!dialogEl) {
-            return;
-        }
-
-        // Si el diálogo aún no está visible, no hacemos nada
-        if (!this.inject.display) {
             return;
         }
 
@@ -49,21 +36,7 @@ export class EdaContextMenuComponent implements AfterViewInit {
 
         if (isOutside && this.allowOutsideClose) {
             this.allowOutsideClose = false;
-            this.inject.hideContextMenu();
+            this.close.emit();
         }
-    }
-
-    showContextMenu() {
-        this.inject.display = true;
-
-        // Espera un poco antes de permitir cerrar por clic fuera
-        setTimeout(() => {
-            this.allowOutsideClose = true;
-        }, 1000);
-    }
-
-    hideContextMenu() {
-        this.inject.display = false;
-        this.allowOutsideClose = false; // Resetea al cerrar
     }
 }
