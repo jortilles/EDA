@@ -1,9 +1,10 @@
 .content-gridster{
     /* background-color: #00BFB3; ==> COLOR CORPORATIVO */  
-    background-color: #DCFCE7; 
+    background-color: #fff; 
     margin-top: 5px;
     padding: 2px;
     border-radius: 10px;
+    border: 2px solid #d1e7dd;
 }
 
 .gridster {
@@ -36,4 +37,13 @@
     /* margin-top: 4px; */
     border-radius: 10px;
     padding: 5px
+}
+
+::ng-deep gridster.display-grid .gridster-column {
+  border-left-color: #d1e7dd !important;
+  border-right-color: #d1e7dd !important;
+}
+::ng-deep gridster.display-grid .gridster-row {
+  border-top-color: #d1e7dd !important;
+  border-bottom-color: #d1e7dd !important;
 }

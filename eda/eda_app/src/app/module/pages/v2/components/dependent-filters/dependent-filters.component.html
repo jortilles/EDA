@@ -2,15 +2,15 @@
     [display]="display"
     i18n-header="@@dependentFiltersTitle"
     header="Configuración de filtros dependientes"
-    width="750px" 
-    height="750px"
+    width="60vw" 
+    height="76vh"
     [disableApply]="disableApply()"
     (apply)="onApply()"
     (close)="onClose()"
 
 >
     <div content class="p-6">
-        <h6>Preparando los filtros dependientes</h6>
+        <h6 class="mb-4">Preparando los filtros dependientes</h6>
 
         <div class="content-gridster">
             <gridster class="gridster" [options]="options">
@@ -20,9 +20,7 @@
                     class="gridster-item">
                     <div class="button-holder">
                         <div class="content-item">
-                            <p>{{item.filter_table}}</p>
-                            <p><strong>{{item.filter_column}}</strong></p>
-                            <p>{{item.filter_type}}</p>
+                            <p><strong>{{item.filter_column}}</strong> : {{item.filter_table}} </p>
                         </div>
                     <!-- <button
                         mat-mini-fab

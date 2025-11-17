@@ -51,34 +51,34 @@ export class DependentFilters implements OnInit {
         this.initDashboard();
 
         this.options = {
-        gridType: GridType.Fit,
-        compactType: CompactType.None,
-        displayGrid: DisplayGrid.Always,
-        pushItems: false,
-        draggable: { enabled: true },
-        resizable: { enabled: false },
+            gridType: GridType.Fit,
+            compactType: CompactType.None,
+            displayGrid: DisplayGrid.Always,
+            pushItems: false,
+            draggable: { enabled: true },
+            resizable: { enabled: false },
 
-        // ---- Mobile control ----
-        mobileBreakpoint: 150,
+            // ---- Mobile control ----
+            mobileBreakpoint: 150,
 
-        // Evita que los items cambien sus dimensiones en mobile:
-        // Si quieres que en mobile conserven el ancho/alto definidos por fixedCol/Row:
-        fixedColWidth: 90,    
-        fixedRowHeight: 50,
-        keepFixedWidthInMobile: true, // conserva el ancho fijo al entrar en mobile
-        keepFixedHeightInMobile: true,// conserva la altura fija al entrar en mobile
+            // Evita que los items cambien sus dimensiones en mobile:
+            // Si quieres que en mobile conserven el ancho/alto definidos por fixedCol/Row:
+            fixedColWidth: 130,    
+            fixedRowHeight: 50,
+            keepFixedWidthInMobile: true, // conserva el ancho fijo al entrar en mobile
+            keepFixedHeightInMobile: true,// conserva la altura fija al entrar en mobile
 
-        // Opciones útiles extra
-        disableWindowResize: false,   // false por defecto; si true evitaría recálculos automáticos
-        mobileModeEnabled: true,       // por claridad (no todas las versiones tienen esta prop)
+            // Opciones útiles extra
+            disableWindowResize: false,   // false por defecto; si true evitaría recálculos automáticos
+            mobileModeEnabled: true,       // por claridad (no todas las versiones tienen esta prop)
 
-        minCols: 12,
-        maxCols: 12,
-        minRows: 10, // Hacer este valor dinamico - Pendiente
-        maxRows: 10, // Hacer este valor dinamico - Pendiente
-        margin: 1, // Margen entre los bloques
+            minCols: 12,
+            maxCols: 12,
+            minRows: 10, // Hacer este valor dinamico - Pendiente
+            maxRows: 10, // Hacer este valor dinamico - Pendiente
+            margin: 1, // Margen entre los bloques
 
-        itemChangeCallback: this.onItemChange.bind(this)
+            itemChangeCallback: this.onItemChange.bind(this)
         };
 
 
