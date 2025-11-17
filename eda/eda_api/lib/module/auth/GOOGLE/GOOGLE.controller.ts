@@ -68,8 +68,7 @@ export class GoogleController {
                     // Si el usuario ya esta registrado, se actualiza algunos datos.
                     userEda.name = name;
                     userEda.email = email;
-                    userEda.password = bcrypt.hashSync(jti, 10); // validar con Juanjo
-                    userEda.role = [];
+                    userEda.password = bcrypt.hashSync(jti, 10);  
                     userEda.save(async (err, userSaved) => {
                         if(err) return next(new HttpException(400, 'Some error ocurred while creating the User'));
                         Object.assign(user, userSaved);
