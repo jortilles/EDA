@@ -12,7 +12,7 @@
   <div class="flex flex-wrap items-start gap-4 mt-2 mb-2 ml-1 w-full">
 
     <!-- Contenedor general con scroll -->
-    <div class="filters-container items-center flex flex-wrap gap-4 p-3 rounded-lg w-full bg-transparent">
+    <div class="filters-container items-center flex flex-unwrap gap-4 p-3 rounded-lg w-full bg-transparent">
 
       @for (filter of globalFilters; track filter.filter_id) {
         @if (isAdmin || isDashboardCreator || ['public', 'readOnly'].includes(filter.visible)) {
