@@ -101,6 +101,7 @@ static async acs(req: Request, res: Response, next: NextFunction) {
             password: bcrypt.hashSync('135792467811111111111115', 10),
             img: picture,
             role: [],
+            creation_date: new Date()
             });
 
             const userSaved = await userToSave.save();

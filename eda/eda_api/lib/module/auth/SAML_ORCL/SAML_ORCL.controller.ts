@@ -149,6 +149,7 @@ export class SAML_ORCL_Controller {
                     password: bcrypt.hashSync('135792467811111111111115', 10),
                     img: picture,
                     role: roles_ids,
+                    creation_date: new Date()
                 });
 
                 const userSaved = await userToSave.save();

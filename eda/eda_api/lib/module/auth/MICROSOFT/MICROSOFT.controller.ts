@@ -44,7 +44,8 @@ export class MicrosoftController {
                         email: email,
                         password: bcrypt.hashSync(oid, 10),
                         img: 'imagen', // Falta solucionar
-                        role: [] // Sin Grupo
+                        role: [],
+                        creation_date: new Date()
                     });
                     userToSave.save(async (err, userSaved) => {
                         if(err) return next(new HttpException(400, 'Some error ocurred while creating the User'));

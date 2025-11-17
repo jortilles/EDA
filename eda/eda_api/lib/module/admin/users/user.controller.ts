@@ -74,7 +74,8 @@ export class UserController {
                             email: userAD.username,
                             password: bcrypt.hashSync('no_serveix_de_re_pero_no_pot_ser_null', 10),
                             img: body.img,
-                            role: adGroupsInMongo
+                            role: adGroupsInMongo,
+                            creation_date: new Date()
                         });
                         userToSave.save(async (err, userSaved) => {
                             if (err) {

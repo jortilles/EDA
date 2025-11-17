@@ -48,7 +48,8 @@ export class GoogleController {
                         email: email,
                         password: bcrypt.hashSync(jti, 10),
                         img: picture,
-                        role: []// validar con Juanjo
+                        role: [],
+                        creation_date: new Date()
                     });
                     userToSave.save(async (err, userSaved) => {
                         if(err) return next(new HttpException(400, 'Some error ocurred while creating the User'));
