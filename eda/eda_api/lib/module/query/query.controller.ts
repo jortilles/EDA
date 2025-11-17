@@ -112,7 +112,7 @@ export class QueryController {
             for (const column in querys) {
                 results[column] = {};
                 for (const query of querys[column]) {
-                    console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${logDate}  for Dashboard:${dashboardId} and Panel:${panelId}`)
+                    /* Edalitics free  console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${logDate}  for Dashboard:${dashboardId} and Panel:${panelId}`) */
                     console.log(query)
                     console.log('\n-------------------------------------------------------------------------------\n');
                     

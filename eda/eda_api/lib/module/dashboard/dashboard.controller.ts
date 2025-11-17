@@ -38,8 +38,10 @@ export class DashboardController {
       } else {
         group = await DashboardController.getGroupsDashboards(req)
         privates = await DashboardController.getPrivateDashboards(req)
-        publics = await DashboardController.getPublicsDashboards(req , dataSources)
-        shared = await DashboardController.getSharedDashboards(req)
+        /*EDA  publics = await DashboardController.getPublicsDashboards(req , dataSources) */
+        /*Edalitics Free */publics = await DashboardController.getPublicsDashboards(req, dataSources)
+        /*EDA shared = await DashboardController.getSharedDashboards(req) */
+        /*Edalitics Free */shared = await DashboardController.getSharedDashboards(req)
       }
 
       // Modificación de fecha y adición de autor si no lo tiene (informes viejos)
@@ -242,7 +244,8 @@ export class DashboardController {
   static async getPublicsDashboards(req: Request, dss: any[]) {
     try {
       const dashboards = await Dashboard.find(
-        {},
+      /*EDA{},*/
+      /*Edalitics Free */  { user: req.user._id },
         'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.ds user'
       ).populate('user','name').exec()
       const publics = []
@@ -292,10 +295,12 @@ export class DashboardController {
    * @param req Express Request with possible tags
    * @returns List of shared dashboards
    */
-  static async getSharedDashboards(req: Request) {
+  /* EDA static async getSharedDashboards(req: Request) { */
+  /*Edalitics Free */static async getSharedDashboards(req: Request) {
     try {
       const dashboards = await Dashboard.find(
-        {},
+        /*EDA{},*/
+        /*Edalitics Free */  { user: req.user._id },
         'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt'
       ).populate('user','name').exec()
       const shared = []
@@ -1427,12 +1432,16 @@ export class DashboardController {
 
       /**---------------------------------------------------------------------------------------------------------*/
 
-      console.log(
-        '\x1b[32m%s\x1b[0m',
-        `QUERY for user ${req.user.name}, with ID: ${req.user._id
-        },  at: ${formatDate(new Date())}  for Dashboard:${req.body.dashboard.dashboard_id
-        } and Panel:${req.body.dashboard.panel_id}  `
-      )
+      /* Edalitics Free console.log(
+        Edalitics Free  '\x1b[32m%s\x1b[0m',
+        Edalitics Free  `QUERY for user ${req.user.name}, with ID: ${req.user._id
+        Edalitics Free  },  at: ${formatDate(new Date())}  for Dashboard:${req.body.dashboard.dashboard_id
+        Edalitics Free  } and Panel:${req.body.dashboard.panel_id}  `
+      ) */
+      /* Edalitics Free */ console.log(
+      /* Edalitics Free */   '\x1b[32m%s\x1b[0m',
+      /* Edalitics Free */   `QUERY   at: ${formatDate(new Date())}  `
+      /* Edalitics Free */ )
       console.log(query)
       console.log('\n-------------------------------------------------------------------------------\n');
 
@@ -1613,8 +1622,8 @@ export class DashboardController {
           return next(new HttpException(500,'Queries in format "select x from A, B" are not suported'));
       }
 
-        console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${formatDate(new Date())} `);
-        console.log(query)
+       /* Edalitics Free  console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${formatDate(new Date())} `); */
+      console.log(query)
       console.log('\n-------------------------------------------------------------------------------\n');
 
         /**cached query */
