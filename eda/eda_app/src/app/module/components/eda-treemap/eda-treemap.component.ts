@@ -45,7 +45,7 @@ export class EdaTreeMap implements AfterViewInit {
     this.firstColLabels = [...new Set(this.firstColLabels)];
     this.data = this.formatData(this.inject.data);
     this.colors = this.inject.colors.length > 0 ? this.inject.colors :
-      this.chartUtilService.generateChartColorsFromPalette(this.firstColLabels.length, this.styleProviderService.ActualChartPalette['paleta']).map(item => item.backgroundColor);    
+    this.chartUtilService.generateChartColorsFromPalette(this.firstColLabels.length, this.styleProviderService.ActualChartPalette['paleta']).map(item => item.backgroundColor);    
     this.assignedColors = this.inject.assignedColors || [];
   }
 
@@ -132,7 +132,7 @@ export class EdaTreeMap implements AfterViewInit {
   }
 
   draw() {
-        // Borrado inicial de otros charts 
+    // Borrado inicial de otros charts 
     this.svg.selectAll('*').remove();
     const container = this.svgContainer.nativeElement as HTMLElement;
     const width = container.clientWidth - 20,
