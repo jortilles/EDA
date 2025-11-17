@@ -3,7 +3,7 @@ import { Component, ViewChild } from '@angular/core';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { UserService } from '@eda/services/service.index';
-import { StyleProviderService,ChartUtilsService } from '@eda/services/service.index';
+import { StyleProviderService, ChartUtilsService } from '@eda/services/service.index';
 import * as _ from 'lodash';
 import { KpiConfig } from '../panel-charts/chart-configuration-models/kpi-config';
 
@@ -49,7 +49,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     public allPalettes: any = this.stylesProviderService.ChartsPalettes;
 
 
-    constructor(private userService: UserService,private stylesProviderService: StyleProviderService,private ChartUtilsService: ChartUtilsService) {
+    constructor(private userService: UserService, private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) {
 
         super();
 
@@ -86,8 +86,8 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
 
     closeChartConfig() {
         // Modificación a datasetoriginal si este se modifica y no se guarda
-        if(this.panelChartConfig.edaChart !== 'kpi')
-          this.edaChart.chartDataset[0].backgroundColor = this.originalColors[0]['backgroundColor'];
+        if (this.panelChartConfig.edaChart !== 'kpi')
+            this.edaChart.chartDataset[0].backgroundColor = this.originalColors[0]['backgroundColor'];
         this.onClose(EdaDialogCloseEvent.NONE);
     }
 
@@ -99,7 +99,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
 
         this.loadChartColors();
         this.alerts = config.alertLimits || []; //deepcopy
-        if(this.panelChartConfig.edaChart !== 'kpi')
+        if (this.panelChartConfig.edaChart !== 'kpi')
             this.originalColors = [...this.edaChart?.chartColors]; // Guardar estado original aquí
         this.display = true;
     }
@@ -111,7 +111,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
                 bg: this.rgb2hex(dataset.backgroundColor) || dataset.backgroundColor,
                 border: dataset.borderColor
             }));
-            
+
             this.edaChart.chartColors = this.series.map(s => ({ backgroundColor: this.hex2rgb(s.bg, 90), borderColor: s.border }));
         }
     }
@@ -140,9 +140,9 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
         if (rgb) {
             rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
             return (rgb && rgb.length === 4) ? '#' +
-            ('0' + parseInt(rgb[1], 10).toString(16)).slice(-2) +
-            ('0' + parseInt(rgb[2], 10).toString(16)).slice(-2) +
-            ('0' + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';
+                ('0' + parseInt(rgb[1], 10).toString(16)).slice(-2) +
+                ('0' + parseInt(rgb[2], 10).toString(16)).slice(-2) +
+                ('0' + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';
         }
     }
 
@@ -152,7 +152,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
             const r = parseInt(hex.substring(0, 2), 16);
             const g = parseInt(hex.substring(2, 4), 16);
             const b = parseInt(hex.substring(4, 6), 16);
-            
+
             return 'rgba(' + r + ',' + g + ',' + b + ',' + opacity / 100 + ')';
         }
     }
@@ -161,17 +161,17 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
         if (this.edaChart.chartDataset) {
             const newDatasets = [];
             const dataset = this.edaChart.chartDataset;
-            
+
             for (let i = 0, n = dataset.length; i < n; i += 1) {
                 if (dataset[i].label === event.label) {
                     dataset[i].backgroundColor = this.hex2rgb(event.bg, 90);
                     dataset[i].borderColor = this.hex2rgb(event.bg, 100);
-                    this.edaChart.chartColors[i] = _.pick(dataset[i], [ 'backgroundColor', 'borderColor']);
+                    this.edaChart.chartColors[i] = _.pick(dataset[i], ['backgroundColor', 'borderColor']);
                 } else {
                     if (!_.isArray(dataset[i].backgroundColor)) {
                         dataset[i].backgroundColor = this.edaChart.chartColors[i].backgroundColor;
                         dataset[i].borderColor = this.edaChart.chartColors[i].backgroundColor;
-                        this.edaChart.chartColors[i] = _.pick(dataset[i], [  'backgroundColor', 'borderColor']);
+                        this.edaChart.chartColors[i] = _.pick(dataset[i], ['backgroundColor', 'borderColor']);
                     } else {
                         if (this.edaChart.chartLabels) {
                             const labels = this.edaChart.chartLabels;
@@ -185,7 +185,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
                         }
                     }
                 }
-                
+
                 newDatasets.push(dataset[i]);
             }
 
@@ -274,25 +274,52 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
         return (!this.quantity || !this.units || !(this.selectedUsers.length > 0) || !this.mailMessage)
     }
 
-    onPaletteSelected() { 
-        // Saber numero de segmentos para interpolar colores
+    onPaletteSelected() {
+
         const dataset = this.edaChart.chartDataset;
-            
-        // Recuperamos paleta seleccionada y creamos colores
-        this.panelChartComponent['chartUtils'].MyPaletteColors = this.selectedPalette['paleta']; 
-        const newColors = this.ChartUtilsService.generateRGBColorGradientScaleD3(1, this.panelChartComponent['chartUtils'].MyPaletteColors);
-        
-        // Actualizar los color pickers individuales al modificar la paleta
-        this.series = this.edaChart.chartDataset.map(dataset => ({
-            label: dataset.label,
-            bg: newColors[0].color,
-            border: newColors[0].color
-        }));
-        
-        // Actualizar los colores del chart
-        dataset[0].backgroundColor = this.hex2rgb(newColors[0].color, 90);
-        dataset[0].borderColor = this.hex2rgb(newColors[0].color, 100);
-        
+
+        // Obtener paleta seleccionada
+        this.panelChartComponent['chartUtils'].MyPaletteColors = this.selectedPalette['paleta'];
+
+        // Generar escala (un solo color para kpi)
+        const newColors = this.ChartUtilsService.generateRGBColorGradientScaleD3(
+            1,this.panelChartComponent['chartUtils'].MyPaletteColors
+        );
+
+        const newColor = newColors[0].color;
+
+        // Actualizamos los pickers 
+        this.series = dataset.map(d => ({label: d.label, bg: newColor, border: newColor }));
+
+        for (let i = 0; i < dataset.length; i++) {
+
+            // Caso 1: backgroundColor NO es array --> se asigna color directo
+            if (!Array.isArray(dataset[i].backgroundColor)) {
+
+                dataset[i].backgroundColor = this.hex2rgb(newColor, 90);
+                dataset[i].borderColor = this.hex2rgb(newColor, 100);
+
+                this.edaChart.chartColors[i] = _.pick(dataset[i], [
+                    'backgroundColor', 'borderColor'
+                ]);
+
+            } else {
+                // Caso 2: backgroundColor ES array --> gráfico por categorías
+                if (this.edaChart.chartLabels) {
+                    const labels = this.edaChart.chartLabels;
+
+                    for (let j = 0; j < labels.length; j++) {
+                        dataset[i].backgroundColor[j] = this.hex2rgb(newColor, 90);
+                        dataset[i].borderColor[j] = this.hex2rgb(newColor, 100);
+
+                        this.edaChart.chartColors[i].backgroundColor[j] =
+                            this.hex2rgb(newColor, 90);
+                    }
+                }
+            }
+        }
+
+        // Actualizar gráfico
         this.panelChartComponent.componentRef.instance.inject.edaChart = this.edaChart;
         this.panelChartComponent.componentRef.instance.updateChart();
     }
