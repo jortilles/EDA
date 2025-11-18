@@ -5850,6 +5850,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
     <source>Cancelar</source>
     <target>Anulować</target>       
   </trans-unit>
+  <trans-unit id="filteredReportMessage">
+    <source>Por favor, espera un momento mientras procesamos la selección.</source>
+    <target>Poczekaj chwilę, aż dokonamy Twojego wyboru.</target>
+  </trans-unit>
   <trans-unit id="filterByTreetable">
   <source>Filtro: </source>
   <target>Filtr: </target>

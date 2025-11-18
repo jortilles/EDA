@@ -4572,6 +4572,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Cancelar</source>
         <target>Cancel·la</target>       
       </trans-unit>
+      <trans-unit id="filteredReportMessage">
+        <source>Por favor, espera un momento mientras procesamos la selección.</source>
+        <target>Si us plau, espereu un moment mentre processem la vostra selecció.</target>
+      </trans-unit>
       <trans-unit id="GroupCreated">
         <source>Grupo creado</source>
         <target>Grup creat</target>
