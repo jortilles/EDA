@@ -30,7 +30,7 @@ export class GlobalFilterV2Component implements OnInit {
     public globalFilters: any[] = [];
     public globalFilter: any;
     public styleButton: any = {};
-    public dependentFiltersStructure: any[] = [];
+    public orderDependentFilters: any[] = [];
     loading: boolean = true;
     placeholderText = this.loading ? $localize`:@@Cargando:Cargando...` : '';
 
@@ -90,6 +90,10 @@ export class GlobalFilterV2Component implements OnInit {
         // Datos de los filtros ya cargados
         this.placeholderText ='';
         this.loading = false;
+    }
+
+    public async initOrderDependentFilters(orderDependentFilters: any[]): Promise<void> {
+        this.orderDependentFilters = _.cloneDeep(orderDependentFilters);
     }
 
     private setFiltersVisibility(): void {

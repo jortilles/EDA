@@ -20,6 +20,8 @@ import { DashboardSidebarService } from "@eda/services/shared/dashboard-sidebar.
 import { ExposeMethod } from "@eda/shared/decorators/expose-method.decorator";
 import { IconComponent } from "../../../../../shared/components/icon/icon.component";
 import { DependentFilters } from "../dependent-filters/dependent-filters.component";
+import * as _ from 'lodash';
+
 
 @Component({
   selector: 'app-dashboard-sidebar',
@@ -322,13 +324,13 @@ export class DashboardSidebarComponent {
     this.isDependentFiltersVisible = false;
 
     console.log('dependentFilterObject: ', dependentFilterObject)
-
     console.log('this.dashboard: ', this.dashboard);
 
     // Recibe el ordenamiento de children por cada item
     if(Object.keys(dependentFilterObject).length > 0) {
+      // Guardado de la estructura de los filtros dependientes de manera temporal
       this.dashboard.globalFilter.globalFilters = dependentFilterObject.globalFilters;
-      this.dashboard.globalFilter.dependentFiltersStructure = dependentFilterObject.dependentFiltersStructure;
+      this.dashboard.globalFilter.orderDependentFilters = dependentFilterObject.orderDependentFilters;
     } 
   }
 

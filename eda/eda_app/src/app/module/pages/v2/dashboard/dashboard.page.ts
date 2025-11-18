@@ -172,6 +172,7 @@ export class DashboardPageV2 implements OnInit {
       this.title = dashboard.config.title;
       this.applyToAllfilter = dashboard.config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
       this.globalFilter?.initGlobalFilters(dashboard.config.filters || []);// Filtres del dashboard
+      this.globalFilter?.initOrderDependentFilters(dashboard.config.orderDependentFilters || []); // Filtros dependientes
       this.initPanels(dashboard);
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
       this.getUrlParams();
@@ -790,7 +791,8 @@ private addFilterToPanelQuery(panel: any, filter: any): void {
                 onlyIcanEdit: this.dashboard.config.onlyIcanEdit, // NO puedo Editar dashboard --> publico con enlace
                 styles: this.dashboard.config.styles,
                 urls: this.dashboard.config.urls,
-                author: this.dashboard.config?.author
+                author: this.dashboard.config?.author,
+                orderDependentFilters: this.globalFilter?.orderDependentFilters,
               },
               group: this.dashboard.group ? _.map(this.dashboard.group) : undefined,
             }

@@ -44,11 +44,20 @@ export class DependentFilters implements OnInit {
 
     ngOnInit(): void {
         this.display = true;
-        console.log('Mis globalFilter inicial: ', this.dashboardPage.globalFilter);
-        console.log('Mis globalFilters inicial: ', this.dashboardPage.globalFilter.globalFilters);
+        console.log('Mis this.dashboardPage.dashboard.config.orderDependentFilters: ', this.dashboardPage.dashboard.config.orderDependentFilters);
+        console.log('Mis this.dashboardPage.globalFilter.orderDependentFilters: ', this.dashboardPage.globalFilter.orderDependentFilters);
 
-        // inicializando el initDashboard
-        this.initDashboard();
+        // Si existe una configuración previa de los filtros dependientes debería prevalecer
+        if(this.dashboardPage.globalFilter.orderDependentFilters.length !== 0) {
+
+            this.dashboard = _.cloneDeep(this.dashboardPage.globalFilter.orderDependentFilters);
+            this.dashboardPrev = _.cloneDeep(this.dashboard);
+
+        } else {
+            // inicializando el initDashboard
+            this.initDashboard();
+        }
+
 
         this.options = {
             gridType: GridType.Fit,
@@ -366,12 +375,12 @@ export class DependentFilters implements OnInit {
 
         // Generando el ordenamiento children (tipo arbol) por cada filtro global (por cada item).
         const globalFilters = this.buildOrderChildren(this.dashboardPage.globalFilter.globalFilters, this.dashboard)
-        const dependentFiltersStructure = this.dashboard;
+        const orderDependentFilters = this.dashboard;
 
         this.close.emit(
             {
                 globalFilters : globalFilters, 
-                dependentFiltersStructure: dependentFiltersStructure
+                orderDependentFilters: orderDependentFilters
             }
         );
     }
