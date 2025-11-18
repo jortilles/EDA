@@ -840,7 +840,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
         //this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
-        
     }
     
     private createGeoJsonMapComponent(inject: EdaMap) {
@@ -849,7 +848,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
         // Revisar filtro en click 
-        //this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
+        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
     }
 
 
