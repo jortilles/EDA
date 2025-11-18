@@ -23,6 +23,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     @Output() close: EventEmitter<any> = new EventEmitter<any>();
     @Output() globalFilterChange: EventEmitter<any> = new EventEmitter<any>();
+    @Output() deleteFilterEvent: EventEmitter<any> = new EventEmitter<any>();
+
 
     public display: boolean = false;
 
@@ -605,6 +607,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public onDelete() {
+
         this.styleProviderService.loadedPanels = this.allPanels.length;
         // Nombre del filtro seleccionado
         const filterNameID = this.globalFilter.id;
@@ -633,6 +636,9 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 }
             }, 100);
         }
+
+        // Enviando el valor true de eliminación de un Filtro
+        this.deleteFilterEvent.emit(true);
     }
 
     public onApply(): void {

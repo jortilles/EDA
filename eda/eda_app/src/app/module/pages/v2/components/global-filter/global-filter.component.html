@@ -65,6 +65,7 @@
     [globalFilterList]="globalFilters"
     [panels]="dashboard.panels"
     [dataSource]="dashboard.dataSource"
-    (close)="onGlobalFilter($event)
-  "></app-global-filter-dialog>
+    (close)="onGlobalFilter($event)"
+    (deleteFilterEvent)="deleteFilterEvent($event)"
+  ></app-global-filter-dialog>
 }

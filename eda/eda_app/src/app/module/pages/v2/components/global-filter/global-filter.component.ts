@@ -504,6 +504,11 @@ filterCollectionRecursive( children: any[] | undefined, column_name: string, glo
         this.dashboard.refreshPanels();
     }
 
+    public deleteFilterEvent(event: any) {
+        // Se reinicia el ordenamiento de los filtros dependientes
+        if(event) this.orderDependentFilters = [];
+    }
+
     // Deprecated
     // Legacy Global Filter
     public async xonGlobalFilter(filter: any, targetTable: string): Promise<void> {
