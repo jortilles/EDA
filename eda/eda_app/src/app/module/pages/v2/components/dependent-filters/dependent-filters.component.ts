@@ -239,7 +239,7 @@ export class DependentFilters implements OnInit {
     // FUNCION RECURSIVA QUE CONSTRUYE EL ORDERITEM
     buildOrderChildren(globalFilters, ordenamiento) {
         // Map rápido por filter_column => nodo en ordenamiento
-        const byColumn = new Map(ordenamiento.map(n => [n.filter_column, n]));
+        const byColumn = new Map(ordenamiento.map(n => [n.filter_id, n]));
 
         // Agrupar nodos por x (columna) y ordenar cada grupo por y asc
         const colsMap = new Map();
@@ -262,7 +262,7 @@ export class DependentFilters implements OnInit {
 
         function buildChildrenFor(node) {
             if (!node) return [];
-            const key = node.filter_column;
+            const key = node.filter_id;
             if (memo.has(key)) return memo.get(key);
 
             const currentX = node.x;
@@ -310,7 +310,7 @@ export class DependentFilters implements OnInit {
                 const designatedParent = parents[parentIndex];
 
                 // si el padre designado es el nodo actual, cand es hijo del node
-                if (designatedParent.filter_column === node.filter_column) {
+                if (designatedParent.filter_id === node.filter_id) {
                     assigned.push(cand);
                 }
             }
@@ -331,10 +331,10 @@ export class DependentFilters implements OnInit {
         // Helper para obtener el "nombre" clave dentro de globalFilter
         function getFilterKey(gf) {
             if (!gf) return undefined;
-            if (gf.filter_column) return gf.filter_column;
+            if (gf.filter_id) return gf.filter_id;
             // soporte opcional para gf.selectedColumn.display_name.default
             try {
-                return gf.selectedColumn?.column_name;
+                return gf.id;
             } catch (e) {
                 return undefined;
             }

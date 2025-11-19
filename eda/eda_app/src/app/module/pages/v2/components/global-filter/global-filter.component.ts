@@ -195,27 +195,11 @@ public async fillFiltersData(): Promise<void> {
 
         await this.recursiveFilters(filter, globalFilters, this.dashboard.dataSource._id, this.dashboard.dashboardId, []);
 
-        // const queryParams = {
-        //     table: filter.selectedTable.table_name,
-        //     dataSource: this.dashboard.dataSource._id,
-        //     dashboard: this.dashboard.dashboardId,
-        //     panel: '',
-        //     joinType: "inner",
-        //     rootTable: filter.selectedTable.table_name,
-        //     queryMode: filter.queryMode,
-        //     forSelector: true,
-        //     queryLimit: 5000,
-        //     filters: [{
-        //         filter_column: filter.selectedColumn.column_name,
-        //         filter_column_type: filter.selectedColumn.column_type,
-        //         filter_elements: [{value1: filter.selectedItems}],
-        //         filter_id: filter.id,
-        //         filter_table: filter.selectedTable.table_name,
-        //         filter_type: "=",
-        //         isGlobal: filter.isGlobal,
-        //         joins:[],
-        //     }]
-        // };
+        /////////////////////////////////////////////////////////////
+        // AGREGAR FILTRADO PARA TODOS LOS VALORES QUE TIENE x = 0;
+        /////////////////////////////////////////////////////////////
+
+
         
         // const query = this.queryBuilderService.normalQuery([filter.selectedColumn], queryParams);
         // console.log('query: ', query);
