@@ -171,8 +171,8 @@ export class DashboardPageV2 implements OnInit {
       this.dashboard = dashboard;
       this.title = dashboard.config.title;
       this.applyToAllfilter = dashboard.config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
-      this.globalFilter?.initGlobalFilters(dashboard.config.filters || []);// Filtres del dashboard
       this.globalFilter?.initOrderDependentFilters(dashboard.config.orderDependentFilters || []); // Filtros dependientes
+      this.globalFilter?.initGlobalFilters(dashboard.config.filters || []);// Filtres del dashboard
       this.initPanels(dashboard);
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
       this.getUrlParams();

@@ -89,6 +89,16 @@ export class GlobalFilterV2Component implements OnInit {
         await this.fillFiltersData();
         // Datos de los filtros ya cargados
         this.placeholderText ='';
+
+
+        // Inicialización de los filtros dependientes, solo si estan configurados:
+        if(this.orderDependentFilters.length !== 0) {
+            console.log('INICIALIZANDO FILTROS DEPENDIENTES ..........................');
+            const initDependentFilter = this.orderDependentFilters.find((f: any) => f.x===0 && f.y===0);
+            const initDependentGlobalFilter = this.globalFilters.find((gf: any) => gf.id === initDependentFilter.filter_id)
+            this.applyingDependentFilter(initDependentGlobalFilter, this.globalFilters);
+        }
+
         this.loading = false;
     }
 
@@ -150,9 +160,8 @@ public async fillFiltersData(): Promise<void> {
 
     public setGlobalFilterItems(filter: any) {
 
-        // Aplicando los filtros dependientes
-        this.applyingDependentFilter(filter, this.globalFilters);
-
+        // Aplicando los filtros dependientes si existe un ordenamiento configurado
+        if(this.orderDependentFilters.length !==0) this.applyingDependentFilter(filter, this.globalFilters);
 
         this.dashboard.edaPanels.forEach((ebp: EdaBlankPanelComponent) => {
             const filterMap = ebp.panel.globalFilterMap || [];
@@ -180,9 +189,9 @@ public async fillFiltersData(): Promise<void> {
     }
 
     async applyingDependentFilter(filter, globalFilters) {
+
         console.log('Filter: ', filter);
         console.log('GlobalFilters: ', globalFilters);
-        // console.log('this.dashboard: ',this.dashboard)
 
         await this.recursiveFilters(filter, globalFilters, this.dashboard.dataSource._id, this.dashboard.dashboardId, []);
 
@@ -453,7 +462,25 @@ filterCollectionRecursive( children: any[] | undefined, column_name: string, glo
             });
             
             if (this.globalFilter.isnew) {
+
+
+                // Agregamos un item mas al ordenamiento de filtros dependientes:
+                if(this.orderDependentFilters.length !== 0) {
+                    this.orderDependentFilters.push({
+                        cols: 3,
+                        rows: 1,
+                        y: this.orderDependentFilters.length,
+                        x: 0,
+                        filter_table: this.globalFilter.selectedTable.table_name,
+                        filter_column: this.globalFilter.selectedColumn.column_name,
+                        filter_type: this.globalFilter.selectedColumn.column_type,
+                        filter_id: this.globalFilter.id,
+                    })
+                }
+
+                // debugger;
                 this.globalFilters.push(this.globalFilter);
+
             }
 
             for (const filter of this.globalFilters) {
