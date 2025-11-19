@@ -247,11 +247,10 @@ public async fillFiltersData(): Promise<void> {
                         joins:[],
                 })
 
-
                 // Se agregan Filtros de PADRES
                 for(let r=0; r<globalFilters.length; r++) {
                     if(globalFilters[r].id !==filter.id && globalFilters[r].id !==filterItem.id) {  
-                        this.filterCollectionRecursive(globalFilters[r].children, filterItem.selectedColumn.column_name, globalFilters[r], filterCollection)
+                        this.filterCollectionRecursive(globalFilters[r].children, filterItem.id, globalFilters[r], filterCollection)
                     }
                 }
 
@@ -274,6 +273,8 @@ public async fillFiltersData(): Promise<void> {
                 const query = this.queryBuilderService.normalQuery([filterItem.selectedColumn], queryParams);
                 const res = await this.dashboardService.executeQuery(query).toPromise();
 
+                // debugger;
+
                 // Haciendo el filtro de los nuevos valores:
                 const filterName = res[0][0];
                 const filterData = res[1].map((item: any) => {
@@ -282,10 +283,12 @@ public async fillFiltersData(): Promise<void> {
                         value: item[0],
                     })
                 })
-                const filterTarget = globalFilters.find((item: any) => item.selectedColumn.column_name === filterName);
+
+                // const filterTarget = globalFilters.find((item: any) => item.selectedColumn.column_name === filterName);
 
                 // Modifica la referencia del objeto filtro directamente.
-                filterTarget.data = filterData;
+                // filterTarget.data = filterData;
+                filterItem.data = filterData;
 
                 // console.log('QUERY -----:::::::::::::::::> ', res);
                 // console.log('FilterName: ', filterName);
@@ -295,7 +298,7 @@ public async fillFiltersData(): Promise<void> {
                 // Creación de un Set con todos los valores válidos
                 const validValues = new Set(filterData.map((fd: any) => fd.value));
                 // Filtrar los elementos seleccionados que existen en validValues
-                filterTarget.selectedItems = filterTarget.selectedItems.filter(item => validValues.has(item));
+                filterItem.selectedItems = filterItem.selectedItems.filter(item => validValues.has(item));
 
                 this.loading = false;
 
@@ -316,12 +319,14 @@ public async fillFiltersData(): Promise<void> {
         }
     }
 
-filterCollectionRecursive( children: any[] | undefined, column_name: string, globalFilter: any, filterCollection: any[] ): boolean {
+filterCollectionRecursive( children: any[] | undefined, id: string, globalFilter: any, filterCollection: any[] ): boolean {
+
+    console.log('ENTRAAAAAAAAAAAAAAAAAAAA')
     
     if (!children || children.length === 0) return false;
 
     for (const child of children) {
-        if (child.column_name === column_name) {
+        if (child.filter_id === id) {
         const newFilter = {
             filter_column: globalFilter.selectedColumn.column_name,
             filter_column_type: globalFilter.selectedColumn.column_type,
@@ -364,7 +369,7 @@ filterCollectionRecursive( children: any[] | undefined, column_name: string, glo
         }
 
         if (child.children && child.children.length > 0) {
-        const found = this.filterCollectionRecursive(child.children, column_name, globalFilter, filterCollection);
+        const found = this.filterCollectionRecursive(child.children, id, globalFilter, filterCollection);
         if (found) return true;
         }
     }

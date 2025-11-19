@@ -213,13 +213,13 @@ export class DependentFilters implements OnInit {
                 ////////////////////////////////////////////////////////
 
                 // Bloque de inicio de movimiento y de final de movimiento (Variables temporales)
-                const iniBlo = _.cloneDeep(this.dashboardPrev).find((gf: any) => item.filter_column === gf.filter_column);
+                const iniBlo = _.cloneDeep(this.dashboardPrev).find((gf: any) => item.filter_id === gf.filter_id);
                 const finBlo = _.cloneDeep(this.dashboardPrev).find((gf: any) => item.y === gf.y);
 
-                const ini = this.dashboard.find(gf => gf.filter_column === iniBlo.filter_column);
+                const ini = this.dashboard.find(gf => gf.filter_id === iniBlo.filter_id);
                 ini.x = finBlo.x
                 ini.y = finBlo.y
-                const fin = this.dashboard.find(gf => gf.filter_column === finBlo.filter_column);
+                const fin = this.dashboard.find(gf => gf.filter_id === finBlo.filter_id);
                 fin.x = iniBlo.x
                 fin.y = iniBlo.y
 
