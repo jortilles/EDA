@@ -506,7 +506,16 @@ filterCollectionRecursive( children: any[] | undefined, column_name: string, glo
 
     public deleteFilterEvent(event: any) {
         // Se reinicia el ordenamiento de los filtros dependientes
-        if(event) this.orderDependentFilters = [];
+        if(event) {
+            // Eliminando el ordenamiento
+            this.orderDependentFilters = [];
+            // Eliminando las relaciones entre los filtros globales 
+            this.globalFilters.forEach((gf: any) => {
+                gf.children = [];
+            });
+
+            this.initGlobalFilters(this.globalFilters)
+        }
     }
 
     // Deprecated
