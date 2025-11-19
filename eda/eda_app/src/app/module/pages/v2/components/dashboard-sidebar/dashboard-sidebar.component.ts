@@ -299,8 +299,14 @@ export class DashboardSidebarComponent {
   }
 
   public dependentFilters() {
-    this.isDependentFiltersVisible = true;
-    this.hidePopover();
+
+    if(this.dashboard.globalFilter.globalFilters.length !== 0) {
+      this.isDependentFiltersVisible = true;
+      this.hidePopover();
+    } else {
+      this.alertService.addWarning("Debe disponer de filtros globales para poder avanzar con la configuración de los filtros dependientes.");
+    }
+
   }
 
   @ExposeMethod()

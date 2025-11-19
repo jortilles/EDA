@@ -476,6 +476,7 @@ filterCollectionRecursive( children: any[] | undefined, column_name: string, glo
                         filter_type: this.globalFilter.selectedColumn.column_type,
                         filter_id: this.globalFilter.id,
                     })
+                    this.alertService.addInfo("Se agregó un nuevo filtro a la relación de filtros dependientes");
                 }
 
                 // debugger;
@@ -534,14 +535,19 @@ filterCollectionRecursive( children: any[] | undefined, column_name: string, glo
     public deleteFilterEvent(event: any) {
         // Se reinicia el ordenamiento de los filtros dependientes
         if(event) {
-            // Eliminando el ordenamiento
-            this.orderDependentFilters = [];
-            // Eliminando las relaciones entre los filtros globales 
-            this.globalFilters.forEach((gf: any) => {
-                gf.children = [];
-            });
 
-            this.initGlobalFilters(this.globalFilters)
+            if(this.orderDependentFilters.length !==0) {
+                // Eliminando el ordenamiento
+                this.orderDependentFilters = [];
+                // Eliminando las relaciones entre los filtros globales 
+                this.globalFilters.forEach((gf: any) => {
+                    gf.children = [];
+                });
+    
+                this.alertService.addWarning('Se ha reiniciado la configuración de los filtros dependientes');
+                this.initGlobalFilters(this.globalFilters)
+            }
+
         }
     }
 
