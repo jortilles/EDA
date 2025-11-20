@@ -337,6 +337,9 @@ export class DashboardSidebarComponent {
       // Guardado de la estructura de los filtros dependientes de manera temporal
       this.dashboard.globalFilter.globalFilters = dependentFilterObject.globalFilters;
       this.dashboard.globalFilter.orderDependentFilters = dependentFilterObject.orderDependentFilters;
+
+      // Actualización de los valores de los filtros al realizar una nueva configuración
+      this.dashboard.globalFilter.initGlobalFilters(this.dashboard.globalFilter.globalFilters);
     } 
   }
 
