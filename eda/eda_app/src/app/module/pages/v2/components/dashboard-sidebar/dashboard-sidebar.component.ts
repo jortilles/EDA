@@ -329,9 +329,6 @@ export class DashboardSidebarComponent {
   public closeDependentFilters(dependentFilterObject: any){
     this.isDependentFiltersVisible = false;
 
-    console.log('dependentFilterObject: ', dependentFilterObject)
-    console.log('this.dashboard: ', this.dashboard);
-
     // Recibe el ordenamiento de children por cada item
     if(Object.keys(dependentFilterObject).length > 0) {
       // Guardado de la estructura de los filtros dependientes de manera temporal

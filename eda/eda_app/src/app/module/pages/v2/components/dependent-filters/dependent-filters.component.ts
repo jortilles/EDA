@@ -44,8 +44,6 @@ export class DependentFilters implements OnInit {
 
     ngOnInit(): void {
         this.display = true;
-        console.log('Mis this.dashboardPage.dashboard.config.orderDependentFilters: ', this.dashboardPage.dashboard.config.orderDependentFilters);
-        console.log('Mis this.dashboardPage.globalFilter.orderDependentFilters: ', this.dashboardPage.globalFilter.orderDependentFilters);
 
         // Si existe una configuración previa de los filtros dependientes debería prevalecer
         if(this.dashboardPage.globalFilter.orderDependentFilters.length !== 0) {
@@ -57,7 +55,6 @@ export class DependentFilters implements OnInit {
             // inicializando el initDashboard
             this.initDashboard();
         }
-
 
         this.options = {
             gridType: GridType.Fit,
@@ -89,21 +86,6 @@ export class DependentFilters implements OnInit {
 
             itemChangeCallback: this.onItemChange.bind(this)
         };
-
-
-        // MANTENER COMO REFERENCIA EN EL DESARROLLO
-        // this.dashboard = [
-        // { cols: 3, rows: 1, y: 0, x: 0, initCallback: this.initItem.bind(this) },
-        // { cols: 3, rows: 1, y: 1, x: 0 },
-        // { cols: 3, rows: 1, y: 2, x: 0 },
-        // { cols: 3, rows: 1, y: 3, x: 0 },
-        // { cols: 3, rows: 1, y: 4, x: 0 },
-        // { cols: 3, rows: 1, y: 5, x: 0 },
-        // { cols: 3, rows: 1, y: 6, x: 0 },
-        // { cols: 3, rows: 1, y: 7, x: 0 },
-        // { cols: 3, rows: 1, y: 8, x: 0 },
-        // { cols: 3, rows: 1, y: 9, x: 0 },
-        // ];
         
     }
 
@@ -370,7 +352,6 @@ export class DependentFilters implements OnInit {
     public disableApply(): boolean { return false; }
 
     public onApply() {
-        console.log('---- onApply ----');
         this.display = false;
 
         // Generando el ordenamiento children (tipo arbol) por cada filtro global (por cada item).
@@ -386,7 +367,6 @@ export class DependentFilters implements OnInit {
     }
 
     public onClose(): void {
-        console.log('---- onClose ----');
         this.display = false;
         this.close.emit({});
     }

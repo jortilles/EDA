@@ -93,7 +93,6 @@ export class GlobalFilterV2Component implements OnInit {
 
         // Inicialización de los filtros dependientes, solo si estan configurados:
         if(this.orderDependentFilters.length !== 0) {
-            console.log('INICIALIZANDO FILTROS DEPENDIENTES ..........................');
             const initDependentFilter = this.orderDependentFilters.find((f: any) => f.x===0 && f.y===0);
             const initDependentGlobalFilter = this.globalFilters.find((gf: any) => gf.id === initDependentFilter.filter_id)
             this.applyingDependentFilter(initDependentGlobalFilter, this.globalFilters);
@@ -166,7 +165,6 @@ public async fillFiltersData(): Promise<void> {
         this.dashboard.edaPanels.forEach((ebp: EdaBlankPanelComponent) => {
             const filterMap = ebp.panel.globalFilterMap || [];
          if (filter.panelList.includes(ebp.panel.id)) {
-                //console.log(1)
                 const filterApplied = ebp.globalFilters.find((gf: any) => gf.filter_id === filter.id);
 
                 if (filterApplied) {
@@ -189,25 +187,7 @@ public async fillFiltersData(): Promise<void> {
     }
 
     async applyingDependentFilter(filter, globalFilters) {
-
-        console.log('Filter: ', filter);
-        console.log('GlobalFilters: ', globalFilters);
-
         await this.recursiveFilters(filter, globalFilters, this.dashboard.dataSource._id, this.dashboard.dashboardId, []);
-
-        /////////////////////////////////////////////////////////////
-        // AGREGAR FILTRADO PARA TODOS LOS VALORES QUE TIENE x = 0;
-        /////////////////////////////////////////////////////////////
-
-
-        
-        // const query = this.queryBuilderService.normalQuery([filter.selectedColumn], queryParams);
-        // console.log('query: ', query);
-        // const res = await this.dashboardService.executeQuery(query).toPromise();
-        
-        // console.log('res::::::::::: ',res);
-        console.log('TERMINOOOOOOOOOOOOOO.....');
-
     }
 
     async recursiveFilters(filter: any, globalFilters: any, _id: any, dashboardId: any, filterCollection: any) {
@@ -216,9 +196,7 @@ public async fillFiltersData(): Promise<void> {
 
             for(let i=0; i<filter.children.length; i++) {
 
-
                 const filterItem = globalFilters.find((gl: any) => gl.id === filter.children[i].filter_id);
-                console.log('filterItem: ', filterItem);
 
                 filterCollection.push({
                         filter_column: filter.selectedColumn.column_name,
@@ -257,8 +235,6 @@ public async fillFiltersData(): Promise<void> {
                 const query = this.queryBuilderService.normalQuery([filterItem.selectedColumn], queryParams);
                 const res = await this.dashboardService.executeQuery(query).toPromise();
 
-                // debugger;
-
                 // Haciendo el filtro de los nuevos valores:
                 const filterName = res[0][0];
                 const filterData = res[1].map((item: any) => {
@@ -268,16 +244,7 @@ public async fillFiltersData(): Promise<void> {
                     })
                 })
 
-                // const filterTarget = globalFilters.find((item: any) => item.selectedColumn.column_name === filterName);
-
-                // Modifica la referencia del objeto filtro directamente.
-                // filterTarget.data = filterData;
                 filterItem.data = filterData;
-
-                // console.log('QUERY -----:::::::::::::::::> ', res);
-                // console.log('FilterName: ', filterName);
-                // console.log('FilterData: ', filterData);
-                // console.log('GlobalFilters: ', globalFilters);
 
                 // Creación de un Set con todos los valores válidos
                 const validValues = new Set(filterData.map((fd: any) => fd.value));
@@ -297,69 +264,66 @@ public async fillFiltersData(): Promise<void> {
                     filterCollection = [];
                 }
             }
-            //filterCollection = [];                
         } else {
-            console.log('No TIENE CHILDREN ....')
+            // El filtro no tiene children
         }
     }
 
-filterCollectionRecursive( children: any[] | undefined, id: string, globalFilter: any, filterCollection: any[] ): boolean {
+    filterCollectionRecursive( children: any[] | undefined, id: string, globalFilter: any, filterCollection: any[] ): boolean {
+        
+        if (!children || children.length === 0) return false;
 
-    console.log('ENTRAAAAAAAAAAAAAAAAAAAA')
-    
-    if (!children || children.length === 0) return false;
+        for (const child of children) {
+            if (child.filter_id === id) {
+                const newFilter = {
+                    filter_column: globalFilter.selectedColumn.column_name,
+                    filter_column_type: globalFilter.selectedColumn.column_type,
+                    filter_elements: [{ value1: globalFilter.selectedItems }],
+                    filter_id: globalFilter.id,
+                    filter_table: globalFilter.selectedTable.table_name,
+                    filter_type: "in",
+                    isGlobal: globalFilter.isGlobal,
+                    joins: [],
+                };
 
-    for (const child of children) {
-        if (child.filter_id === id) {
-        const newFilter = {
-            filter_column: globalFilter.selectedColumn.column_name,
-            filter_column_type: globalFilter.selectedColumn.column_type,
-            filter_elements: [{ value1: globalFilter.selectedItems }],
-            filter_id: globalFilter.id,
-            filter_table: globalFilter.selectedTable.table_name,
-            filter_type: "in",
-            isGlobal: globalFilter.isGlobal,
-            joins: [],
-        };
+                // comparar sólo las propiedades relevantes
+                const newKey = {
+                    filter_column: newFilter.filter_column,
+                    filter_column_type: newFilter.filter_column_type,
+                    filter_elements: newFilter.filter_elements,
+                    filter_table: newFilter.filter_table,
+                    filter_type: newFilter.filter_type,
+                    isGlobal: newFilter.isGlobal,
+                    joins: newFilter.joins ?? []
+                };
 
-        // comparar sólo las propiedades relevantes
-        const newKey = {
-            filter_column: newFilter.filter_column,
-            filter_column_type: newFilter.filter_column_type,
-            filter_elements: newFilter.filter_elements,
-            filter_table: newFilter.filter_table,
-            filter_type: newFilter.filter_type,
-            isGlobal: newFilter.isGlobal,
-            joins: newFilter.joins ?? []
-        };
+                const exists = filterCollection.some((fc: any) => {
+                    const fcKey = {
+                    filter_column: fc.filter_column,
+                    filter_column_type: fc.filter_column_type,
+                    filter_elements: fc.filter_elements,
+                    filter_table: fc.filter_table,
+                    filter_type: fc.filter_type,
+                    isGlobal: fc.isGlobal,
+                    joins: fc.joins ?? []
+                    };
+                    return _.isEqual(fcKey, newKey);
+                });
 
-        const exists = filterCollection.some((fc: any) => {
-            const fcKey = {
-            filter_column: fc.filter_column,
-            filter_column_type: fc.filter_column_type,
-            filter_elements: fc.filter_elements,
-            filter_table: fc.filter_table,
-            filter_type: fc.filter_type,
-            isGlobal: fc.isGlobal,
-            joins: fc.joins ?? []
-            };
-            return _.isEqual(fcKey, newKey);
-        });
+                if (!exists) {
+                    filterCollection.push(newFilter);
+                }
+                return true; // encontramos (o ya existía) => detener búsqueda
+            }
 
-        if (!exists) {
-            filterCollection.push(newFilter);
+            if (child.children && child.children.length > 0) {
+                const found = this.filterCollectionRecursive(child.children, id, globalFilter, filterCollection);
+                if (found) return true;
+            }
         }
-        return true; // encontramos (o ya existía) => detener búsqueda
-        }
 
-        if (child.children && child.children.length > 0) {
-        const found = this.filterCollectionRecursive(child.children, id, globalFilter, filterCollection);
-        if (found) return true;
-        }
+        return false;
     }
-
-    return false;
-}
 
     // Global Filter Dialog
     public onShowGlobalFilter(isnew: boolean, filter?: any): void {
@@ -436,7 +400,6 @@ filterCollectionRecursive( children: any[] | undefined, id: string, globalFilter
 
     // Global Filter Dialog
     public async onGlobalFilter(apply: boolean, gf?: any): Promise<void> {
-        console.log('???')
 
         if (!this.globalFilter && gf) {
             this.globalFilter = gf;
