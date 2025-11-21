@@ -467,25 +467,16 @@
                             </svg>
                           </summary>
                           <div class="text-sm text-gray-600 pl-2 pb-4 pt-2">
-                            <!-- <p>Crea consultas SQL para analizar datos de ventas por línea de producto.</p>
-                                  <p class="mt-2">Tablas disponibles: Customers, Orders, Products, Employees, Offices.</p> -->
-                            <p class="mb-2" i18n="@@indicaciones1"> Puedes realizar consultas SQL sobre el esquema definido
-                              en tu modelo.
-                              Para ello introduce la consulta en el cuadro de texto y selecciona la tabla
-                              principal
-                              (puede ser cualquiera de las que aparecen en la consulta).
-                              Usaremos esta tabla para vincular la consulta a los filtros del informe.
+                            <p class="mb-2" i18n="@@joins1">
+                              La funcionalidad de <strong>Intersección de Joins</strong> permite definir cómo se relacionan las tablas de tu consulta mediante <strong>LEFT</strong>, <strong>INNER</strong> o <strong>RIGHT JOIN</strong>.
+                              Esto te da control sobre qué registros se incluyen en el resultado, dependiendo de la presencia o ausencia de coincidencias entre las tablas.
                             </p>
 
-                            <h4 class="text-sm font-medium mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
+                            <h4 class="text-sm font-medium mb-2" i18n="@@joins2">Limitaciones:</h4>
 
                             <ul class="list-disc pl-6">
-                              <li i18n="@@indicaciones3">
-                                Solo es posible usar las tablas del esquema definido en el modelo (si lo hay)
-                              </li>
-                              <li i18n="@@indicaciones4">
-                                Debes utilizar alias para todas las tablas de la consulta ( select a,b from tabla t where c
-                                )
+                              <li i18n="@@joins3">
+                                Solo es posible hacer joins entre tablas definidas dentro del modelo o consulta actual.
                               </li>
                             </ul>
                           </div>
@@ -498,11 +489,10 @@
                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                                 class="text-blue-500 mr-2">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="12" y1="16" x2="12" y2="12"></line>
-                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
                               </svg>
-                              <span i18n="@@informacionGeneral">What if</span>
+                              <span>What if</span>
                             </div>
                             <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
                               xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -510,25 +500,20 @@
                             </svg>
                           </summary>
                           <div class="text-sm text-gray-600 pl-2 pb-4 pt-2">
-                            <!-- <p>Crea consultas SQL para analizar datos de ventas por línea de producto.</p>
-                                  <p class="mt-2">Tablas disponibles: Customers, Orders, Products, Employees, Offices.</p> -->
-                            <p class="mb-2" i18n="@@indicaciones1"> Puedes realizar consultas SQL sobre el esquema definido
-                              en tu modelo.
-                              Para ello introduce la consulta en el cuadro de texto y selecciona la tabla
-                              principal
-                              (puede ser cualquiera de las que aparecen en la consulta).
-                              Usaremos esta tabla para vincular la consulta a los filtros del informe.
+                            <p class="mb-2" i18n="@@whatif1">
+                              La funcionalidad <strong>What If</strong> te permite crear atributos nuevos a partir de otros atributos en tu gráfico.
+                              A estos nuevos campos se les puede aplicar una operación matemática para modificar su valor según tus necesidades,
+                              y también es posible cambiarles el nombre para identificarlos fácilmente.
                             </p>
 
-                            <h4 class="text-sm font-medium mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
+                            <h4 class="text-sm font-medium mb-2" i18n="@@whatif2">Limitaciones:</h4>
 
                             <ul class="list-disc pl-6">
-                              <li i18n="@@indicaciones3">
-                                Solo es posible usar las tablas del esquema definido en el modelo (si lo hay)
+                              <li i18n="@@whatif3">
+                                Solo es posible crear nuevos atributos basados en los atributos existentes en el gráfico.
                               </li>
-                              <li i18n="@@indicaciones4">
-                                Debes utilizar alias para todas las tablas de la consulta ( select a,b from tabla t where c
-                                )
+                              <li i18n="@@whatif4">
+                                Esta opción solo está disponible con atributos de tipo numérico.
                               </li>
                             </ul>
                           </div>
@@ -538,12 +523,13 @@
                         <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
                           <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
                             <div class="flex items-center">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                class="text-blue-500 mr-2">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="12" y1="16" x2="12" y2="12"></line>
-                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500 mr-2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
                               </svg>
                               <span i18n="@@informacionGeneral">Filtros avanzados</span>
                             </div>
@@ -553,28 +539,20 @@
                             </svg>
                           </summary>
                           <div class="text-sm text-gray-600 pl-2 pb-4 pt-2">
-                            <!-- <p>Crea consultas SQL para analizar datos de ventas por línea de producto.</p>
-                                  <p class="mt-2">Tablas disponibles: Customers, Orders, Products, Employees, Offices.</p> -->
-                            <p class="mb-2" i18n="@@indicaciones1"> Puedes realizar consultas SQL sobre el esquema definido
-                              en tu modelo.
-                              Para ello introduce la consulta en el cuadro de texto y selecciona la tabla
-                              principal
-                              (puede ser cualquiera de las que aparecen en la consulta).
-                              Usaremos esta tabla para vincular la consulta a los filtros del informe.
+                            <p class="mb-2" i18n="@@filtrosAvanzados1">
+                              La funcionalidad <strong>Filtros Avanzados</strong> permite relacionar los filtros globales y de panel utilizando operadores <strong>AND</strong> o <strong>OR</strong>.
+                              Esto posibilita que los filtros no solo se apliquen como un conjunto fijo de condiciones, sino que puedan interoperar entre sí según la relación definida.
                             </p>
 
-                            <h4 class="text-sm font-medium mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
+                            <h4 class="text-sm font-medium mb-2" i18n="@@filtrosAvanzados2">Limitaciones:</h4>
 
                             <ul class="list-disc pl-6">
-                              <li i18n="@@indicaciones3">
-                                Solo es posible usar las tablas del esquema definido en el modelo (si lo hay)
-                              </li>
-                              <li i18n="@@indicaciones4">
-                                Debes utilizar alias para todas las tablas de la consulta ( select a,b from tabla t where c
-                                )
+                              <li i18n="@@filtrosAvanzados3">
+                                Solo es posible usar filtros definidos dentro del dashboard actual.
                               </li>
                             </ul>
                           </div>
+
                         </details>
                       </div>
                     </div>
