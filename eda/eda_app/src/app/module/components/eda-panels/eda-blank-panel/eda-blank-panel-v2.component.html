@@ -87,14 +87,14 @@
             <div class="relative w-full">
               <eda-icon name="search" class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500"></eda-icon>
               <input 
-                class="h-8 rounded-md w-full border px-8 text-lg" 
+                class="h-8 rounded-md w-full border px-8 text-medium" 
                 placeholder="Buscar entidades..." 
                 [(ngModel)]="tableInput" 
                 (keyup)="onTableInputKey($event)">
           </div>
 
           </div>
-          <div class="flex overflow-y-auto h-[51vh] text-lg">
+          <div class="flex overflow-y-auto h-[51vh] text-medium">
             <div>
               <ng-template #entityList>
                 <div class="space-y-1 p-2">
@@ -164,12 +164,12 @@
             </h3>
               <div class="relative w-full">
                 <eda-icon name="search" class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500"></eda-icon>
-                <input class="h-8 rounded-md w-full border px-8 text-lg" i18n-placeholder="@@searchAttributes" placeholder="Buscar atributos..." 
+                <input class="h-8 rounded-md w-full border px-8 text-medium" i18n-placeholder="@@searchAttributes" placeholder="Buscar atributos..." 
                   [(ngModel)] ="columnInput" (keyup)="onColumnInputKey($event)">
               </div>
           </div>
           }
-          <div class="flex w-full overflow-y-auto h-[51vh] text-lg">
+          <div class="flex w-full overflow-y-auto h-[51vh] text-medium">
 
             <div>
               <div class="space-y-1 p-2" cdkDropList #columnsList="cdkDropList" [cdkDropListData]="columns"
@@ -248,7 +248,7 @@
             <!-- Filter section -->
             <div class="pb-6">
               <h3 class="text-lg mb-2 font-bold" i18n="@@filtrosH4">Filtrar los resultados por:</h3>
-              <div class="flex gap-1 rounded-lg border p-2 min-h-[25px] bg-emerald-50 filter-list  text-lg" cdkDropList
+              <div class="flex gap-1 rounded-lg border p-2 min-h-[25px] bg-emerald-50 filter-list  text-medium" cdkDropList
                 #filterList="cdkDropList" cdkDropListOrientation="horizontal" [cdkDropListData]="filtredColumns"
                 [cdkDropListConnectedTo]="[columnsList, selectList]" (cdkDropListDropped)="drop($event)">
                 @for (attr of filtredColumns; track attr.display_name.default) {
@@ -321,7 +321,7 @@
               </div>
 
               <div class="mt-2">
-                <h3 class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-fit"
+                <h3 class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-[max-content]"
                   [ngClass]="display_v.advancedSetting ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
                   (click)="display_v.advancedSetting = true" i18n="@@AdvanceOptions">
                   Opciones avanzadas
@@ -340,7 +340,7 @@
               <div class=" ml-3">
                 <h3 class="text-base font-semibold" i18n="@@resumenAtrH6">Resumen de atributos</h3>
                 @for (attr of currentQuery; track attr.display_name.default) {
-                <p class="flex items-center text-lg">
+                <p class="flex items-center text-medium">
                   <strong [innerHTML]="getColumnJoins(attr)"></strong>
                   <span>
                     <strong> {{ getNiceTableName(attr.table_id) }} </strong>
