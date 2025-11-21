@@ -6037,6 +6037,86 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Columna</source>
         <target>Kolumna</target>
       </trans-unit>
-</body>
+
+      <trans-unit id="joins">
+        <source>Tipo de interesección</source>
+        <target>Typ połączenia</target>
+      </trans-unit>
+
+      <trans-unit id="joins1">
+        <source>
+          La funcionalidad de <strong>Intersección de Joins</strong> permite definir cómo se relacionan las tablas de tu consulta mediante <strong>LEFT</strong>, <strong>INNER</strong> o <strong>RIGHT JOIN</strong>.
+          Esto te da control sobre qué registros se incluyen en el resultado, dependiendo de la presencia o ausencia de coincidencias entre las tablas.
+        </source>
+        <target>
+          Funkcja <strong>Intersekcja Joinów</strong> pozwala określić, jak tabele w Twoim zapytaniu są powiązane przy użyciu <strong>LEFT</strong>, <strong>INNER</strong> lub <strong>RIGHT JOIN</strong>.
+          Daje to kontrolę nad tym, które rekordy zostaną uwzględnione w wyniku, w zależności od obecności lub braku dopasowań między tabelami.
+        </target>
+      </trans-unit>
+
+      <trans-unit id="joins2">
+        <source>Limitaciones:</source>
+        <target>Ograniczenia:</target>
+      </trans-unit>
+
+      <trans-unit id="joins3">
+        <source>Solo es posible hacer joins entre tablas definidas dentro del modelo o consulta actual.</source>
+        <target>Możliwe jest wykonywanie joinów tylko między tabelami zdefiniowanymi w bieżącym modelu lub zapytaniu.</target>
+      </trans-unit>
+
+      <trans-unit id="whatif1">
+        <source>
+          La funcionalidad <strong>What If</strong> te permite crear atributos nuevos a partir de otros atributos en tu gráfico.
+          A estos nuevos campos se les puede aplicar una operación matemática para modificar su valor según tus necesidades,
+          y también es posible cambiarles el nombre para identificarlos fácilmente.
+        </source>
+        <target>
+          Funkcja <strong>What If</strong> pozwala tworzyć nowe atrybuty na podstawie innych atrybutów w Twoim wykresie.
+          Można zastosować operację matematyczną do tych nowych pól, aby zmienić ich wartość zgodnie z potrzebami,
+          a także możliwe jest zmienienie ich nazwy dla łatwej identyfikacji.
+        </target>
+      </trans-unit>
+
+      <trans-unit id="whatif2">
+        <source>Limitaciones:</source>
+        <target>Ograniczenia:</target>
+      </trans-unit>
+
+      <trans-unit id="whatif3">
+        <source>Solo es posible crear nuevos atributos basados en los atributos existentes en el gráfico.</source>
+        <target>Możliwe jest tworzenie nowych atrybutów tylko na podstawie istniejących atrybutów w wykresie.</target>
+      </trans-unit>
+
+      <trans-unit id="whatif4">
+        <source>Esta opción solo está disponible con atributos de tipo numérico.</source>
+        <target>Ta opcja jest dostępna tylko dla atrybutów typu liczbowego.</target>
+      </trans-unit>
+
+      <trans-unit id="filtrosAvanzados">
+        <source>Filtros avanzados</source>
+        <target>Zaawansowane filtry</target>
+      </trans-unit>
+
+      <trans-unit id="filtrosAvanzados1">
+        <source>
+          La funcionalidad <strong>Filtros Avanzados</strong> permite relacionar los filtros globales y de panel utilizando operadores <strong>AND</strong> o <strong>OR</strong>.
+          Esto posibilita que los filtros no solo se apliquen como un conjunto fijo de condiciones, sino que puedan interoperar entre sí según la relación definida.
+        </source>
+        <target>
+          Funkcja <strong>Zaawansowane filtry</strong> pozwala powiązać filtry globalne i panelowe, używając operatorów <strong>AND</strong> lub <strong>OR</strong>.
+          Pozwala to na to, aby filtry nie były stosowane tylko jako stały zestaw warunków, ale mogły współdziałać w zależności od zdefiniowanych powiązań.
+        </target>
+      </trans-unit>
+
+      <trans-unit id="filtrosAvanzados2">
+        <source>Limitaciones:</source>
+        <target>Ograniczenia:</target>
+      </trans-unit>
+
+      <trans-unit id="filtrosAvanzados3">
+        <source>Solo es posible usar filtros definidos dentro del dashboard actual.</source>
+        <target>Możliwe jest używanie tylko filtrów zdefiniowanych w bieżącym dashboardzie.</target>
+      </trans-unit>
+  </body>
 </file>
 </xliff>

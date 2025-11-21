@@ -6118,6 +6118,85 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Columna</target>
       </trans-unit>
 
+      <trans-unit id="joins">
+        <source>Tipo de interesección</source>
+        <target>Tipus d'interesecció</target>
+      </trans-unit>
+
+      <trans-unit id="joins1">
+        <source>
+          La funcionalidad de <strong>Intersección de Joins</strong> permite definir cómo se relacionan las tablas de tu consulta mediante <strong>LEFT</strong>, <strong>INNER</strong> o <strong>RIGHT JOIN</strong>.
+          Esto te da control sobre qué registros se incluyen en el resultado, dependiendo de la presencia o ausencia de coincidencias entre las tablas.
+        </source>
+        <target>
+          La funcionalitat de <strong>Intersecció de Joins</strong> permet definir com es relacionen les taules de la vostra consulta mitjançant <strong>LEFT</strong>, <strong>INNER</strong> o <strong>RIGHT JOIN</strong>.
+          Això us dóna control sobre quins registres s'inclouen en el resultat, depenent de la presència o absència de coincidències entre les taules.
+        </target>
+      </trans-unit>
+
+      <trans-unit id="joins2">
+        <source>Limitaciones:</source>
+        <target>Limitacions:</target>
+      </trans-unit>
+
+      <trans-unit id="joins3">
+        <source>Solo es posible hacer joins entre tablas definidas dentro del modelo o consulta actual.</source>
+        <target>Només és possible fer joins entre taules definides dins del model o consulta actual.</target>
+      </trans-unit>
+
+      <trans-unit id="whatif1">
+        <source>
+          La funcionalidad <strong>What If</strong> te permite crear atributos nuevos a partir de otros atributos en tu gráfico.
+          A estos nuevos campos se les puede aplicar una operación matemática para modificar su valor según tus necesidades,
+          y también es posible cambiarles el nombre para identificarlos fácilmente.
+        </source>
+        <target>
+          La funcionalitat <strong>What If</strong> us permet crear nous atributs a partir d'altres atributs al vostre gràfic.
+          A aquests nous camps se'ls pot aplicar una operació matemàtica per modificar-ne el valor segons les teves necessitats,
+          i també és possible canviar-los el nom per identificar-los fàcilment.
+        </target>
+      </trans-unit>
+
+      <trans-unit id="whatif2">
+        <source>Limitaciones:</source>
+        <target>Limitacions:</target>
+      </trans-unit>
+
+      <trans-unit id="whatif3">
+        <source>Solo es posible crear nuevos atributos basados en los atributos existentes en el gráfico.</source>
+        <target>Només és possible crear nous atributs basats en els atributs existents al gràfic.</target>
+      </trans-unit>
+
+      <trans-unit id="whatif4">
+        <source>Esta opción solo está disponible con atributos de tipo numérico.</source>
+        <target>Aquesta opció només està disponible amb atributs de tipus numèric.</target>
+      </trans-unit>
+
+      <trans-unit id="filtrosAvanzados">
+        <source>Filtros avanzados</source>
+        <target>Filtres avançats</target>
+      </trans-unit>
+
+      <trans-unit id="filtrosAvanzados1">
+        <source>
+          La funcionalidad <strong>Filtros Avanzados</strong> permite relacionar los filtros globales y de panel utilizando operadores <strong>AND</strong> o <strong>OR</strong>.
+          Esto posibilita que los filtros no solo se apliquen como un conjunto fijo de condiciones, sino que puedan interoperar entre sí según la relación definida.
+        </source>
+        <target>
+          La funcionalitat <strong>Filtres avançats</strong> permet relacionar els filtres globals i de panell utilitzant operadors <strong>AND</strong> o <strong>OR</strong>.
+          Això possibilita que els filtres no només s'apliquin com a conjunt fix de condicions, sinó que puguin interoperar entre si segons la relació definida.
+        </target>
+      </trans-unit>
+
+      <trans-unit id="filtrosAvanzados2">
+        <source>Limitaciones:</source>
+        <target>Limitacions:</target>
+      </trans-unit>
+
+      <trans-unit id="filtrosAvanzados3">
+        <source>Solo es posible usar filtros definidos dentro del dashboard actual.</source>
+        <target>Només és possible fer servir filtres definits dins del dashboard actual.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
