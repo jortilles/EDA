@@ -6,15 +6,14 @@
       <h2 class="text-lg font-medium pt-3" [ngStyle]="panelText">{{ panel.title || title }}</h2>
     </div>
     <!-- Ícono a la derecha -->
-    <i  
-    [ngClass]="{'edit-blink': lodash.isEmpty(panel.content)}"
-     class="pi pi-ellipsis-v cursor-pointer ml-2  w-[28px] h-[28px] flex items-center justify-center text-center rounded-full content-center" (click)="contextMenu.showContextMenu($event)">
+    <i [ngClass]="{'edit-blink': lodash.isEmpty(panel.content)}"
+      class="pi pi-ellipsis-v cursor-pointer ml-2  w-[28px] h-[28px] flex items-center justify-center text-center rounded-full content-center"
+      (click)="contextMenu.showContextMenu($event)">
     </i>
   </div>
 
 
-  <div
-    class="flex items-center justify-center flex-grow overflow-y-auto rounded-lg bg-gray-50"
+  <div class="flex items-center justify-center flex-grow overflow-y-auto rounded-lg bg-gray-50"
     [class.spinner-panel]="display_v.minispinner">
     @if (display_v.saved_panel && !display_v.minispinner) {
     <div class="relative w-full h-full">
@@ -36,8 +35,8 @@
   </div>
 </div>
 
-<eda-dialog2 *ngIf="display_v.page_dialog" [display]="display_v.page_dialog" width="90vw" [ngStyle]="panelContent" [overflow]="'auto'"
-  height="100vh">
+<eda-dialog2 *ngIf="display_v.page_dialog" [display]="display_v.page_dialog" width="90vw" [ngStyle]="panelContent"
+  [overflow]="'hidden'" height="100vh">
   <!-- Header -->
   <div header class="w-full flex items-center justify-between px-2 py-2">
     <div class="p-2" (click)="titleClick=true;">
@@ -50,12 +49,13 @@
         class="w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4]">
       }
     </div>
-    <p-dropdown [(ngModel)]="selectedQueryMode" [options]="queryModes" appendTo="body" (onChange)="changeQueryMode()"></p-dropdown>
+    <p-dropdown [(ngModel)]="selectedQueryMode" [options]="queryModes" appendTo="body"
+      (onChange)="changeQueryMode()"></p-dropdown>
   </div>
 
   <!-- Main Content -->
-  <div content class="flex w-full flex-col rounded-lg bg-background">
-    <div class="flex-1 relative">
+  <div content class="flex w-full flex-col rounded-lg bg-background ">
+    <div class="flex-1 relative ">
       <!-- Tabs -->
       <div class="flex mb-4 space-x-4 pl-3">
         <h3 (click)="indextab = 0" i18n="@@vistaSeleccionador"
@@ -76,7 +76,7 @@
       @if (selectedQueryMode !== 'SQL') {
       <!-- Edit Query View -->
       <!-- Left Sidebar -->
-      <div class="flex w-full border-r">
+      <div class="flex w-full border-r h-[70vh] overflow-y-hidden">
         <!-- Entities Section -->
         <div class="w-1/6 border-r ">
           <div class="border-b p-3 pt-0">
@@ -86,16 +86,13 @@
             </h3>
             <div class="relative w-full">
               <eda-icon name="search" class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500"></eda-icon>
-              <input 
-                class="h-8 rounded-md w-full border px-8 text-medium" 
-                placeholder="Buscar entidades..." 
-                [(ngModel)]="tableInput" 
-                (keyup)="onTableInputKey($event)">
-          </div>
+              <input class="h-8 rounded-md w-full border px-8 text-medium" placeholder="Buscar entidades..."
+                [(ngModel)]="tableInput" (keyup)="onTableInputKey($event)">
+            </div>
 
           </div>
           <div class="flex overflow-y-auto h-[51vh] text-medium">
-            <div>
+            <div class="w-full">
               <ng-template #entityList>
                 <div class="space-y-1 p-2">
                   @for (entity of tablesToShow; track entity.table_name) {
@@ -118,35 +115,31 @@
               }
               <!-- EDA JOINS TREE MODE -->
               @if (selectedQueryMode=='EDA2') {
-                @if (currentQuery.length > 0) {
-                  <p-tree [value]="tableNodes" selectionMode="single" [loading]="loadingNodes"
-                          (onNodeExpand)="tableNodeExpand($event)" (onNodeSelect)="tableNodeSelect($event)">
-                    
+              @if (currentQuery.length > 0) {
+              <p-tree [value]="tableNodes" selectionMode="single" [loading]="loadingNodes"
+                (onNodeExpand)="tableNodeExpand($event)" (onNodeSelect)="tableNodeSelect($event)">
 
-                    <!-- ESTE TEMPLATE CONTEMPLA AL PADRE -->
-                    <ng-template let-node let-options="options" pTemplate="default">
-                      <div class="p-treenode-content"
-                          [ngStyle]="{'padding-left.px': (node.level || 0) * 25}"
-                          [ngClass]="checkNodeSelected(node) ? 'font-bold' : ''"
-                          style="display:flex; align-items:center;">
-                        {{node.label}}
-                      </div>
-                    </ng-template>
-                    
-                    <!-- ESTE TEMPLATE TRATA A LOS HIJOS -->
-                      <ng-template let-node let-options="options" pTemplate="child">
-                        <div class="p-treenode-content"
-                        [ngStyle]="{'padding-left.px': (node.level || 0) * 20}"
-                        [ngClass]="checkNodeSelected(node) ? 'font-bold' : ''"
-                        style="display:flex; align-items:center;">
-                          {{node.label}}
-                        </div>
-                      </ng-template>
 
-                  </p-tree>
-                } @else {
-                <ng-container *ngTemplateOutlet="entityList"></ng-container>
-                }
+                <!-- ESTE TEMPLATE CONTEMPLA AL PADRE -->
+                <ng-template let-node let-options="options" pTemplate="default">
+                  <div class="p-treenode-content" [ngStyle]="{'padding-left.px': (node.level || 0) * 25}"
+                    [ngClass]="checkNodeSelected(node) ? 'font-bold' : ''" style="display:flex; align-items:center;">
+                    {{node.label}}
+                  </div>
+                </ng-template>
+
+                <!-- ESTE TEMPLATE TRATA A LOS HIJOS -->
+                <ng-template let-node let-options="options" pTemplate="child">
+                  <div class="p-treenode-content" [ngStyle]="{'padding-left.px': (node.level || 0) * 20}"
+                    [ngClass]="checkNodeSelected(node) ? 'font-bold' : ''" style="display:flex; align-items:center;">
+                    {{node.label}}
+                  </div>
+                </ng-template>
+
+              </p-tree>
+              } @else {
+              <ng-container *ngTemplateOutlet="entityList"></ng-container>
+              }
               }
               <!-- ----------- -->
             </div>
@@ -162,16 +155,16 @@
               title="Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes">
               Atributos
             </h3>
-              <div class="relative w-full">
-                <eda-icon name="search" class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500"></eda-icon>
-                <input class="h-8 rounded-md w-full border px-8 text-medium" i18n-placeholder="@@searchAttributes" placeholder="Buscar atributos..." 
-                  [(ngModel)] ="columnInput" (keyup)="onColumnInputKey($event)">
-              </div>
+            <div class="relative w-full">
+              <eda-icon name="search" class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500"></eda-icon>
+              <input class="h-8 rounded-md w-full border px-8 text-medium" i18n-placeholder="@@searchAttributes"
+                placeholder="Buscar atributos..." [(ngModel)]="columnInput" (keyup)="onColumnInputKey($event)">
+            </div>
           </div>
           }
           <div class="flex w-full overflow-y-auto h-[51vh] text-medium">
 
-            <div>
+            <div class="w-full">
               <div class="space-y-1 p-2" cdkDropList #columnsList="cdkDropList" [cdkDropListData]="columns"
                 [cdkDropListConnectedTo]="[selectList, filterList]" (cdkDropListDropped)="drop($event)"
                 [cdkDropListEnterPredicate]="isAllowed">
@@ -181,11 +174,11 @@
                   cdkDrag [cdkDragData]="attr" (cdkDragDropped)="searchRelations(attr)" (click)="moveItem(attr)"
                   [style.opacity]="attr.hidden && attr.hidden == 1 ? '0.5' : '1'">
                   <span class="mdi {{getAttributeTypeIcon(attr.column_type)}}"></span>
-                  <span   [ngClass]="{
+                  <span [ngClass]="{
                     'font-bold': getAttributeTypeIcon(attr.column_type) === 'mdi-numeric',
                     'italic': getAttributeTypeIcon(attr.column_type) === 'mdi-alphabetical'
                   }"> {{attr.display_name.default}}</span>
-                  
+
                   <i class="drag-handle-icon ml-auto"></i>
 
                   <!-- Preview cuando se está arrastrando -->
@@ -203,7 +196,7 @@
         </div>
 
         <!-- Main Content Area -->
-        <div class="flex-1 p-3 pt-0 w-4/6 overflow-y-auto h-[62.5vh]">
+        <div class="flex-1 p-3 pt-0 w-4/6 overflow-y-auto h-auto">
           <div class="space-y-4">
             <!-- Selected Attributes -->
             <div>
@@ -248,9 +241,10 @@
             <!-- Filter section -->
             <div class="pb-6">
               <h3 class="text-lg mb-2 font-bold" i18n="@@filtrosH4">Filtrar los resultados por:</h3>
-              <div class="flex gap-1 rounded-lg border p-2 min-h-[25px] bg-emerald-50 filter-list  text-medium" cdkDropList
-                #filterList="cdkDropList" cdkDropListOrientation="horizontal" [cdkDropListData]="filtredColumns"
-                [cdkDropListConnectedTo]="[columnsList, selectList]" (cdkDropListDropped)="drop($event)">
+              <div class="flex gap-1 rounded-lg border p-2 min-h-[25px] bg-emerald-50 filter-list  text-medium"
+                cdkDropList #filterList="cdkDropList" cdkDropListOrientation="horizontal"
+                [cdkDropListData]="filtredColumns" [cdkDropListConnectedTo]="[columnsList, selectList]"
+                (cdkDropListDropped)="drop($event)">
                 @for (attr of filtredColumns; track attr.display_name.default) {
                 <div
                   class="flex justify-start items-center gap-2 rounded-md px-3 py-2 font-bold bg-muted/50 cursor-move bg-white p-2 select-box text-center"
@@ -281,9 +275,14 @@
               </div>
             </div>
 
+            <!-- Show Top -->
+            <div class="text-left text-lg pb-6">
+              <h3 class="text-base font-bold inline"><span i18n="@@topQueryH4">Mostrar Top:</span></h3>
+              <input type="number" [(ngModel)]="queryLimit" class="w-1/6 border p-1 rounded ml-2"(input)="onTopChange()">
+            </div>
+
             <!-- Advanced Settings -->
             @if(currentQuery.length > 0){
-
             <div class="columns-4">
               <div class="relative inline-block">
                 <div class="flex items-center gap-2">
@@ -321,7 +320,8 @@
               </div>
 
               <div class="mt-2">
-                <h3 class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-[max-content]"
+                <h3
+                  class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-[max-content]"
                   [ngClass]="display_v.advancedSetting ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
                   (click)="display_v.advancedSetting = true" i18n="@@AdvanceOptions">
                   Opciones avanzadas
@@ -336,8 +336,8 @@
             <!-- Query Summary -->
 
             @if(!display_v.advancedSetting){
-            <div class="grid grid-cols-2  border rounded-lg bg-gray-50 min-h-[25vh] overflow-y-auto">
-              <div class=" ml-3">
+            <div class="grid grid-cols-2  border rounded-lg bg-gray-50 min-h-[25vh] overflow-y-auto p-2">
+              <div class=" ml-3 p-2">
                 <h3 class="text-base font-semibold" i18n="@@resumenAtrH6">Resumen de atributos</h3>
                 @for (attr of currentQuery; track attr.display_name.default) {
                 <p class="flex items-center text-medium">
@@ -369,7 +369,7 @@
                 <h3 class="text-base font-semibold" i18n="@@resumenFiltrosInformeH6">Resumen de filtros del informe
                 </h3>
                 @for (attr of globalFilters; track attr) {
-                <p class="flex items-center">
+                <p class="flex items-center  mb-8">
                   <strong [innerHTML]="getFilterJoins(attr)"></strong>
                   <span [innerHTML]="getDisplayFilterStr(attr)"></span>
                 </p>
@@ -378,28 +378,201 @@
             </div>
             }
             @else {
-            <div class="grid grid-cols-8">
+            <div class="grid grid-cols-2 border rounded-lg bg-gray-50 p-4 min-h-[25vh] overflow-y-auto">
               <!-- Join Type -->
-              <div class="col-span-3">
-                <h3 i18n="@@joinTypeH4" class="text-base font-bold inline">Tipo de intersección:</h3>
-                <button *ngFor="let type of joinTypeOptions" class="border px-3 py-1 rounded-lg mb-4 hover:bg-gray-100"
-                  (click)="onJoinTypeChange(type)">
-                  {{ type.label }}
-                </button>
-              </div>
-              <!-- Show Top -->
-              <div class="col-span-3 text-center">
-                <h3 class="text-base font-bold inline"><span i18n="@@topQueryH4">Mostrar Top:</span></h3>
-                <input type="number" [(ngModel)]="queryLimit" class="w-1/6 border p-1 rounded ml-2"
-                  (input)="onTopChange()">
+              <div class="grid col-span-1 grid-rows-4 p-2">
+
+                <div class="grid grid-cols-4 row-span-1 items-center" >
+                  <div class="col-span-1">
+                    <h3 i18n="@@joinTypeH4" class="text-base font-bold inline">
+                      Tipo de intersección:
+                    </h3>
+                  </div>
+
+                  <div class="col-span-3">
+                    <div class="flex">
+                      <button *ngFor="let type of joinTypeOptions" 
+                              (click)="onJoinTypeChange(type)" 
+                              [ngClass]="{'bg-[#00BFB3] text-white': joinType === type, 'bg-white text-black': joinType !== type}"
+                              class="w-[3.5vw] px-3 py-2 border rounded-lg mr-2 hover:bg-[#00BFB3] hover:text-white">
+                        {{ type.label }}
+                      </button>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-4 row-span-1 items-center">
+                  <div class="col-span-1">
+                    <h3 class="text-base font-bold inline"><span i18n="@@scenarios">Escenarios: </span></h3>
+                  </div>
+
+                  <div class="col-span-2">
+
+                    <button class="w-fit px-3 py-2 row-span-1 border rounded-lg
+                            bg-white text-black hover:bg-[#00BFB3] hover:text-white"
+                      (click)="onWhatIfDialog()">
+                      What If?
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-4 items-center">
+                  <div class="col-span-1">
+                    <h3 class="text-base font-bold inline"><span i18n="@@scenarios">Filtros avanzados: </span></h3>
+                  </div>
+
+                  <div class="col-span-3">
+
+                    <button class="w-fit px-3 py-2 border rounded-lg
+                            bg-white text-black hover:bg-[#00BFB3] hover:text-white"
+                      (click)="onWhatIfDialog()">
+                      Configurar
+                    </button>
+                  </div>
+                </div>
+
               </div>
 
-              <div class="col-span-2">
-                <h3 class="text-base font-bold inline"><span i18n="@@scenarios">Escenarios: </span></h3>
-                <button class="border px-3 py-2 rounded-lg font-bold hover:bg-gray-100" (click)="onWhatIfDialog()">
-                  What If?
-                </button>
+              <div class="col-span-1">
+
+                <div class="p-3">
+                  <h3 class="font-semibold mb-4" i18n="@@indicaciones">Indicaciones</h3>
+
+                  <div class="w-full">
+                    <!-- General Information -->
+                    <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
+                      <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
+                        <div class="flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="text-blue-500 mr-2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                          </svg>
+                          <span i18n="@@informacionGeneral">Información general</span>
+                        </div>
+                        <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
+                          xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </summary>
+                      <div class="text-sm text-gray-600 pl-2 pb-4 pt-2">
+                        <!-- <p>Crea consultas SQL para analizar datos de ventas por línea de producto.</p>
+                            <p class="mt-2">Tablas disponibles: Customers, Orders, Products, Employees, Offices.</p> -->
+                        <p class="mb-2" i18n="@@indicaciones1"> Puedes realizar consultas SQL sobre el esquema definido
+                          en tu modelo.
+                          Para ello introduce la consulta en el cuadro de texto y selecciona la tabla
+                          principal
+                          (puede ser cualquiera de las que aparecen en la consulta).
+                          Usaremos esta tabla para vincular la consulta a los filtros del informe.
+                        </p>
+
+                        <h4 class="text-sm font-medium mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
+
+                        <ul class="list-disc pl-6">
+                          <li i18n="@@indicaciones3">
+                            Solo es posible usar las tablas del esquema definido en el modelo (si lo hay)
+                          </li>
+                          <li i18n="@@indicaciones4">
+                            Debes utilizar alias para todas las tablas de la consulta ( select a,b from tabla t where c
+                            )
+                          </li>
+                        </ul>
+                      </div>
+                    </details>
+
+                    <!-- Link query and panel filters -->
+                    <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
+                      <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
+                        <div class="flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="text-blue-500 mr-2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                          </svg>
+                          <span i18n="@@informacionGeneral">What if</span>
+                        </div>
+                        <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
+                          xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </summary>
+                      <div class="text-sm text-gray-600 pl-2 pb-4 pt-2">
+                        <!-- <p>Crea consultas SQL para analizar datos de ventas por línea de producto.</p>
+                            <p class="mt-2">Tablas disponibles: Customers, Orders, Products, Employees, Offices.</p> -->
+                        <p class="mb-2" i18n="@@indicaciones1"> Puedes realizar consultas SQL sobre el esquema definido
+                          en tu modelo.
+                          Para ello introduce la consulta en el cuadro de texto y selecciona la tabla
+                          principal
+                          (puede ser cualquiera de las que aparecen en la consulta).
+                          Usaremos esta tabla para vincular la consulta a los filtros del informe.
+                        </p>
+
+                        <h4 class="text-sm font-medium mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
+
+                        <ul class="list-disc pl-6">
+                          <li i18n="@@indicaciones3">
+                            Solo es posible usar las tablas del esquema definido en el modelo (si lo hay)
+                          </li>
+                          <li i18n="@@indicaciones4">
+                            Debes utilizar alias para todas las tablas de la consulta ( select a,b from tabla t where c
+                            )
+                          </li>
+                        </ul>
+                      </div>
+                    </details>
+
+                    <!-- Examples -->
+                    <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
+                      <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
+                        <div class="flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="text-blue-500 mr-2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                          </svg>
+                          <span i18n="@@informacionGeneral">Filtros avanzados</span>
+                        </div>
+                        <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
+                          xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </summary>
+                      <div class="text-sm text-gray-600 pl-2 pb-4 pt-2">
+                        <!-- <p>Crea consultas SQL para analizar datos de ventas por línea de producto.</p>
+                            <p class="mt-2">Tablas disponibles: Customers, Orders, Products, Employees, Offices.</p> -->
+                        <p class="mb-2" i18n="@@indicaciones1"> Puedes realizar consultas SQL sobre el esquema definido
+                          en tu modelo.
+                          Para ello introduce la consulta en el cuadro de texto y selecciona la tabla
+                          principal
+                          (puede ser cualquiera de las que aparecen en la consulta).
+                          Usaremos esta tabla para vincular la consulta a los filtros del informe.
+                        </p>
+
+                        <h4 class="text-sm font-medium mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
+
+                        <ul class="list-disc pl-6">
+                          <li i18n="@@indicaciones3">
+                            Solo es posible usar las tablas del esquema definido en el modelo (si lo hay)
+                          </li>
+                          <li i18n="@@indicaciones4">
+                            Debes utilizar alias para todas las tablas de la consulta ( select a,b from tabla t where c
+                            )
+                          </li>
+                        </ul>
+                      </div>
+                    </details>
+                  </div>
+                </div>
+
               </div>
+
             </div>
             }
             }
@@ -661,9 +834,8 @@
     @if(indextab == 1){
     <div class="grid grid-cols-5 gap-x-4">
       <div class="col-span-4">
--       <div class="rounded-lg border p-4 bg-muted/30 flex justify-center" style="height:60vh;">
-          <panel-chart #panelChartComponentPreview [props]="panelChartConfig"
-            [style]="extraStyles">
+        <div class="rounded-lg border p-4 bg-muted/30 flex justify-center" style="height:60vh;">
+          <panel-chart #panelChartComponentPreview [props]="panelChartConfig" [style]="extraStyles">
           </panel-chart>
         </div>
       </div>
@@ -671,7 +843,8 @@
         <div class="w-96 space-y-2" [ngClass]="{'w-3/6': graphicType==='crosstable'}">
           <form [formGroup]="chartForm">
             <p-dropdown id="chartSelector" formControlName="chart" optionLabel="label" [style]="{'width':'16.5vw'}"
-              [options]="chartTypes" [autoDisplayFirst]="false" [scrollHeight]="'52.5vh'" [panelStyle]="{'max-width':'16.5vw'}"
+              [options]="chartTypes" [autoDisplayFirst]="false" [scrollHeight]="'52.5vh'"
+              [panelStyle]="{'max-width':'16.5vw'}"
               (onChange)="changeChartTypeCheck(chartForm.value.chart.value, chartForm.value.chart.subValue, getChartStyles(chartForm.value.chart.value))">
 
               <ng-template pTemplate="selectedItem">
@@ -728,25 +901,25 @@
 
 
   <ng-container footer>
-    
-    
-    <button class="cancel-button" (click)="closeEditarConsulta()"  >
+
+
+    <button class="cancel-button" (click)="closeEditarConsulta()">
       <i class="fa fa-times"></i>
-      <span i18n="@@cancelarButton"> 
+      <span i18n="@@cancelarButton">
         Cancelar
       </span>
     </button>
-    
+
     <button class="execute-button" [disabled]="disableRunQuery()" (click)="runManualQuery()">
       <i class="fa fa-cogs"></i>
-      <span i18n="@@ejecutarBtn"> 
+      <span i18n="@@ejecutarBtn">
         Ejecutar
       </span>
     </button>
-    
-    <button class="confirm-button" [disabled]="isCrosstableModified() || display_v.btnSave" (click)="savePanel();" >
+
+    <button class="confirm-button" [disabled]="isCrosstableModified() || display_v.btnSave" (click)="savePanel();">
       <i class="fa fa-check"></i>
-      <span i18n="@@guardarBtn"> 
+      <span i18n="@@guardarBtn">
         Confirmar
       </span>
     </button>
@@ -756,7 +929,7 @@
 <app-column-dialog *ngIf="configController" [controller]="configController"></app-column-dialog>
 
 @if(filterController){
-  <app-filter-dialog [controller]="filterController" [height]="'10px'"></app-filter-dialog>
+<app-filter-dialog [controller]="filterController" [height]="'10px'"></app-filter-dialog>
 }
 
 <app-chart-dialog *ngIf="chartController" [controller]="chartController"></app-chart-dialog>
@@ -781,7 +954,7 @@
 
 <app-tree-map-dialog *ngIf="treeMapController" [controller]="treeMapController"></app-tree-map-dialog>
 
-<app-tree-table-dialog  *ngIf="treeTableController" [controller]="treeTableController"></app-tree-table-dialog>
+<app-tree-table-dialog *ngIf="treeTableController" [controller]="treeTableController"></app-tree-table-dialog>
 
 <app-funnel-dialog *ngIf="funnelController" [controller]="funnelController"></app-funnel-dialog>
 
@@ -795,17 +968,17 @@
 
 
 @if(contextMenu){
-  <eda-context-menu (close)="contextMenu.display = false" [inject]="contextMenu"></eda-context-menu>
+<eda-context-menu (close)="contextMenu.display = false" [inject]="contextMenu"></eda-context-menu>
 }
 
 @if(isVisibleEbpChatGpt) {
-  <app-ebp-chatgpt (close)="closeChatGpt($event)" [dataChatGpt]="dataChatGpt"></app-ebp-chatgpt>
+<app-ebp-chatgpt (close)="closeChatGpt($event)" [dataChatGpt]="dataChatGpt"></app-ebp-chatgpt>
 }
 @if (display_v.whatIf_dialog) {
-  <app-whatif-dialog [(currentQuery)]="currentQuery" (close)="onCloseWhatIfDialog()"></app-whatif-dialog>
+<app-whatif-dialog [(currentQuery)]="currentQuery" (close)="onCloseWhatIfDialog()"></app-whatif-dialog>
 }
 
-@if (display_v.filterMapperDialog) {  
-  <app-filter-mapper-dialog [dashboard]="dashboard" [panel]="panel"
-    (close)="onCloseFilterMapperDialog($event)"></app-filter-mapper-dialog>
+@if (display_v.filterMapperDialog) {
+<app-filter-mapper-dialog [dashboard]="dashboard" [panel]="panel"
+  (close)="onCloseFilterMapperDialog($event)"></app-filter-mapper-dialog>
 }

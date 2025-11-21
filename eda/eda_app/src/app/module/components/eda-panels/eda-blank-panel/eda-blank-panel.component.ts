@@ -158,7 +158,6 @@ export class EdaBlankPanelComponent implements OnInit {
     public currentQuery: any[] = [];
     public currentSQLQuery: string = '';
     public queryLimit: number = 5000; // por defecto se limita a 5.000
-    public joinType: string = 'inner';
 
     public queryModes: any[] = [
         { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
@@ -206,7 +205,9 @@ export class EdaBlankPanelComponent implements OnInit {
         { icon: 'pi pi-align-right', label: 'Right', joinType: 'right' }
     ];
 
+    public joinType = this.joinTypeOptions[1]; // default init in Inner
 
+    
     /**panel chart component configuration */
     public panelChartConfig: PanelChart = new PanelChart();
     
@@ -1024,7 +1025,7 @@ public tableNodeExpand(event: any): void {
 
 
     onJoinTypeChange(type?: any) {
-        this.joinType = type?.value;
+        this.joinType = type;
         this.display_v.joinType = true;
     }
 
