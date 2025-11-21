@@ -91,7 +91,7 @@
             </div>
 
           </div>
-          <div class="flex overflow-y-auto h-[51vh] text-medium">
+          <div class="flex overflow-y-auto h-[56vh] text-medium">
             <div class="w-full">
               <ng-template #entityList>
                 <div class="space-y-1 p-2">
@@ -111,35 +111,35 @@
               </ng-template>
               <!-- EDA STANDARD MODE -->
               @if (selectedQueryMode=='EDA') {
-              <ng-container *ngTemplateOutlet="entityList"></ng-container>
+                <ng-container *ngTemplateOutlet="entityList"></ng-container>
               }
               <!-- EDA JOINS TREE MODE -->
               @if (selectedQueryMode=='EDA2') {
-              @if (currentQuery.length > 0) {
-              <p-tree [value]="tableNodes" selectionMode="single" [loading]="loadingNodes"
-                (onNodeExpand)="tableNodeExpand($event)" (onNodeSelect)="tableNodeSelect($event)">
+                @if (currentQuery.length > 0) {
+                  <p-tree [value]="tableNodes" selectionMode="single" [loading]="loadingNodes"
+                    (onNodeExpand)="tableNodeExpand($event)" (onNodeSelect)="tableNodeSelect($event)">
 
 
-                <!-- ESTE TEMPLATE CONTEMPLA AL PADRE -->
-                <ng-template let-node let-options="options" pTemplate="default">
-                  <div class="p-treenode-content" [ngStyle]="{'padding-left.px': (node.level || 0) * 25}"
-                    [ngClass]="checkNodeSelected(node) ? 'font-bold' : ''" style="display:flex; align-items:center;">
-                    {{node.label}}
-                  </div>
-                </ng-template>
+                    <!-- ESTE TEMPLATE CONTEMPLA AL PADRE -->
+                    <ng-template let-node let-options="options" pTemplate="default">
+                      <div class="p-treenode-content" [ngStyle]="{'padding-left.px': (node.level || 0) * 25}"
+                        [ngClass]="checkNodeSelected(node) ? 'font-bold' : ''" style="display:flex; align-items:center;">
+                        {{node.label}}
+                      </div>
+                    </ng-template>
 
-                <!-- ESTE TEMPLATE TRATA A LOS HIJOS -->
-                <ng-template let-node let-options="options" pTemplate="child">
-                  <div class="p-treenode-content" [ngStyle]="{'padding-left.px': (node.level || 0) * 20}"
-                    [ngClass]="checkNodeSelected(node) ? 'font-bold' : ''" style="display:flex; align-items:center;">
-                    {{node.label}}
-                  </div>
-                </ng-template>
+                    <!-- ESTE TEMPLATE TRATA A LOS HIJOS -->
+                    <ng-template let-node let-options="options" pTemplate="child">
+                      <div class="p-treenode-content" [ngStyle]="{'padding-left.px': (node.level || 0) * 20}"
+                        [ngClass]="checkNodeSelected(node) ? 'font-bold' : ''" style="display:flex; align-items:center;">
+                        {{node.label}}
+                      </div>
+                    </ng-template>
 
-              </p-tree>
-              } @else {
-              <ng-container *ngTemplateOutlet="entityList"></ng-container>
-              }
+                  </p-tree>
+                } @else {
+                <ng-container *ngTemplateOutlet="entityList"></ng-container>
+                }
               }
               <!-- ----------- -->
             </div>
@@ -162,7 +162,7 @@
             </div>
           </div>
           }
-          <div class="flex w-full overflow-y-auto h-[51vh] text-medium">
+          <div class="flex w-full overflow-y-auto h-[56vh] text-medium">
 
             <div class="w-full">
               <div class="space-y-1 p-2" cdkDropList #columnsList="cdkDropList" [cdkDropListData]="columns"
@@ -197,7 +197,7 @@
 
         <!-- Main Content Area -->
         <div class="flex-1 p-3 pt-0 w-4/6 overflow-y-auto h-auto">
-          <div class="space-y-4">
+          <div>
             <!-- Selected Attributes -->
             <div>
               <h3 i18n="@@seleccionH4" class="text-lg mb-2 font-bold" i18n-title="@@seleccionTitle"
@@ -276,305 +276,329 @@
             </div>
 
             <!-- Show Top -->
-            <div class="text-left text-lg pb-6">
+            <div class="text-left text-lg pb-4">
               <h3 class="text-base font-bold inline"><span i18n="@@topQueryH4">Mostrar Top:</span></h3>
-              <input type="number" [(ngModel)]="queryLimit" class="w-1/6 border p-1 rounded ml-2"(input)="onTopChange()">
+              <input type="number" [(ngModel)]="queryLimit" class="w-1/6 border p-1 rounded ml-2"
+                (input)="onTopChange()">
             </div>
+ 
 
             <!-- Advanced Settings -->
             @if(currentQuery.length > 0){
-            <div class="columns-4">
-              <div class="relative inline-block">
-                <div class="flex items-center gap-2">
-                  <h3 class="cursor-pointer text-lg font-bold font-sans transition-colors duration-200"
-                    [ngClass]="!display_v.advancedSetting ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
-                    (click)="display_v.advancedSetting = false" i18n="@@yourQuerySQL">
-                    Mi consulta SQL
-                  </h3>
-                  <span>
-                    <i class="pi pi-info-circle cursor-pointer text-gray-500" [pTooltip]="ptooltipViewQuery"
-                      (click)="getQuery($event)">
-                    </i>
-                  </span>
-                </div>
-                <!-- Contenedor de query -->
-                <div *ngIf="display_v.showQueryContainer" id="query-container"
-                  class="absolute top-full left-0 mt-1 w-[35vw] h-[25vh] max-h-[80vh] bg-white z-50 shadow-lg rounded-lg p-4 border border-gray-300 flex flex-col">
-                  <div *ngIf="display_v.minispinnerSQL" class="flex justify-center items-center w-full min-h-[15vh]">
-                    <p-progressSpinner [style]="{width:'4vw', height:'4vw'}" strokeWidth="5"
-                      fill="#EEEEEE"></p-progressSpinner>
-                  </div>
-                  <textarea *ngIf="!display_v.minispinnerSQL" class="w-full flex-1 p-2 border rounded resize-none mb-2"
-                    [(ngModel)]="queryFromServer" pInputTextarea autoResize="autoResize">
-                  </textarea>
-                  <div class="mt-2 flex gap-4">
-                    <button type="button" pButton icon="fa fa-database" class="p-button-success mt-2 w-fit"
-                      (click)="migrateQuery()" i18n-label="@@openSqlMode" label="Abrir en modo SQL">
-                    </button>
-                    <button type="button" pButton icon="pi pi-times" class="p-button-secondary mt-2 w-fit"
-                      (click)="display_v.showQueryContainer = false" i18n-label="cancelarBtn" label="Cancelar">
-                    </button>
-                  </div>
-                </div>
-
-              </div>
-
-              <div class="mt-2">
-                <h3
-                  class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-[max-content]"
-                  [ngClass]="display_v.advancedSetting ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
-                  (click)="display_v.advancedSetting = true" i18n="@@AdvanceOptions">
-                  Opciones avanzadas
-                </h3>
-              </div>
-            </div>
-
-
-
-
-
-            <!-- Query Summary -->
-
-            @if(!display_v.advancedSetting){
-            <div class="grid grid-cols-2  border rounded-lg bg-gray-50 min-h-[25vh] overflow-y-auto p-2">
-              <div class=" ml-3 p-2">
-                <h3 class="text-base font-semibold" i18n="@@resumenAtrH6">Resumen de atributos</h3>
-                @for (attr of currentQuery; track attr.display_name.default) {
-                <p class="flex items-center text-medium">
-                  <strong [innerHTML]="getColumnJoins(attr)"></strong>
-                  <span>
-                    <strong> {{ getNiceTableName(attr.table_id) }} </strong>
-                    <i class="pi pi-angle-right"></i>
-                    {{attr.display_name.default}}
-                  </span>
-                  @for (aggregation of attr.aggregation_type; track aggregation.display_name) {
-                  @if (aggregation.selected && !['No', 'no'].includes(aggregation.display_name)) {
-                  &nbsp;({{aggregation.display_name}})
-                  }
-                  }
-                </p>
-                }
-                <br>
-                <h3 class="text-base font-semibold" i18n="@@resumenFiltrosPanelH6">Resumen de filtros del panel</h3>
-
-                @for (attr of selectedFilters; track attr) {
-                <p class="flex items-center">
-                  <strong [innerHTML]="getFilterJoins(attr)"></strong>
-                  <span [innerHTML]="getDisplayFilterStr(attr)"></span>
-                </p>
-                }
-              </div>
-
-              <div>
-                <h3 class="text-base font-semibold" i18n="@@resumenFiltrosInformeH6">Resumen de filtros del informe
-                </h3>
-                @for (attr of globalFilters; track attr) {
-                <p class="flex items-center  mb-8">
-                  <strong [innerHTML]="getFilterJoins(attr)"></strong>
-                  <span [innerHTML]="getDisplayFilterStr(attr)"></span>
-                </p>
-                }
-              </div>
-            </div>
-            }
-            @else {
-            <div class="grid grid-cols-2 border rounded-lg bg-gray-50 p-4 min-h-[25vh] overflow-y-auto">
-              <!-- Join Type -->
-              <div class="grid col-span-1 grid-rows-4 p-2">
-
-                <div class="grid grid-cols-4 row-span-1 items-center" >
-                  <div class="col-span-1">
-                    <h3 i18n="@@joinTypeH4" class="text-base font-bold inline">
-                      Tipo de intersección:
+              <div class="grid grid-cols-3 align-items-center">
+                <div class="relative inline-block cols-span-1">
+                  <div class="flex items-center gap-2">
+                    <h3 class="cursor-pointer text-lg font-bold font-sans transition-colors duration-200"
+                      [ngClass]="display_v.advancedSetting=== 0 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
+                      (click)="display_v.advancedSetting = 0" i18n="@@yourQuerySQL">
+                      Mi consulta SQL
                     </h3>
+                    <span>
+                      <i class="pi pi-info-circle cursor-pointer text-gray-500" [pTooltip]="ptooltipViewQuery"
+                        (click)="getQuery($event)">
+                      </i>
+                    </span>
+                  </div>
+                  <!-- Contenedor de query -->
+                  <div *ngIf="display_v.showQueryContainer" id="query-container"
+                    class="absolute top-full left-0 mt-1 w-[35vw] h-[30vh] max-h-[80vh] bg-white z-50 shadow-lg rounded-lg p-4 border border-gray-300 flex flex-col">
+                    <div *ngIf="display_v.minispinnerSQL" class="flex justify-center items-center w-full min-h-[15vh]">
+                      <p-progressSpinner [style]="{width:'4vw', height:'4vw'}" strokeWidth="5"
+                        fill="#EEEEEE"></p-progressSpinner>
+                    </div>
+                    <textarea *ngIf="!display_v.minispinnerSQL" class="w-full flex-1 p-2 border rounded resize-none mb-2"
+                      [(ngModel)]="queryFromServer" pInputTextarea autoResize="autoResize">
+                      </textarea>
+                    <div class="mt-2 flex gap-4">
+                      <button type="button" pButton icon="fa fa-database" class="p-button-success mt-2 w-fit"
+                        (click)="migrateQuery()" i18n-label="@@openSqlMode" label="Abrir en modo SQL">
+                      </button>
+                      <button type="button" pButton icon="pi pi-times" class="p-button-secondary mt-2 w-fit"
+                        (click)="display_v.showQueryContainer = false" i18n-label="cancelarBtn" label="Cancelar">
+                      </button>
+                    </div>
                   </div>
 
-                  <div class="col-span-3">
-                    <div class="flex">
-                      <button *ngFor="let type of joinTypeOptions" 
-                              (click)="onJoinTypeChange(type)" 
-                              [ngClass]="{'bg-[#00BFB3] text-white': joinType === type, 'bg-white text-black': joinType !== type}"
-                              class="w-[3.5vw] px-3 py-2 border rounded-lg mr-2 hover:bg-[#00BFB3] hover:text-white">
-                        {{ type.label }}
-                      </button>
+                </div>
+
+                <div class="relative inline-block cols-span-1">
+                  <h3
+                    class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-[max-content]"
+                    [ngClass]="display_v.advancedSetting === 1 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
+                    (click)="display_v.advancedSetting = 1" i18n="@@AdvanceOptions">
+                    Opciones avanzadas
+                  </h3>
+                </div>
+      
+                <div class="relative inline-block cols-span-1">
+                  <h3
+                    class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-[max-content]"
+                    [ngClass]="display_v.advancedSetting === 2? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
+                    (click)="display_v.advancedSetting = 2">
+                    Prompt ChatGPT
+                  </h3>
+                </div>
+              </div>
+
+
+
+
+
+              <!-- Query Summary -->
+
+              @if(display_v.advancedSetting === 0){
+                <div class="grid grid-cols-2  border rounded-lg bg-gray-50 min-h-[30vh] overflow-y-auto p-2">
+                  <div class=" ml-3 p-2">
+                    <h3 class="text-base font-semibold" i18n="@@resumenAtrH6">Resumen de atributos</h3>
+                    @for (attr of currentQuery; track attr.display_name.default) {
+                    <p class="flex items-center text-medium">
+                      <strong [innerHTML]="getColumnJoins(attr)"></strong>
+                      <span>
+                        <strong> {{ getNiceTableName(attr.table_id) }} </strong>
+                        <i class="pi pi-angle-right"></i>
+                        {{attr.display_name.default}}
+                      </span>
+                      @for (aggregation of attr.aggregation_type; track aggregation.display_name) {
+                      @if (aggregation.selected && !['No', 'no'].includes(aggregation.display_name)) {
+                      &nbsp;({{aggregation.display_name}})
+                      }
+                      }
+                    </p>
+                    }
+                    <br>
+                    <h3 class="text-base font-semibold" i18n="@@resumenFiltrosPanelH6">Resumen de filtros del panel</h3>
+
+                    @for (attr of selectedFilters; track attr) {
+                    <p class="flex items-center">
+                      <strong [innerHTML]="getFilterJoins(attr)"></strong>
+                      <span [innerHTML]="getDisplayFilterStr(attr)"></span>
+                    </p>
+                    }
+                  </div>
+
+                  <div>
+                    <h3 class="text-base font-semibold" i18n="@@resumenFiltrosInformeH6">Resumen de filtros del informe
+                    </h3>
+                    @for (attr of globalFilters; track attr) {
+                    <p class="flex items-center">
+                      <strong [innerHTML]="getFilterJoins(attr)"></strong>
+                      <span [innerHTML]="getDisplayFilterStr(attr)"></span>
+                    </p>
+                    }
+                  </div>
+                </div>
+              }
+              @else if(display_v.advancedSetting === 1){
+                <div class="grid grid-cols-2 border rounded-lg bg-gray-50 p-4 min-h-[30vh] overflow-y-auto">
+                  <!-- Join Type -->
+                  <div class="grid col-span-1 grid-rows-4 p-2">
+
+                    <div class="grid grid-cols-4 row-span-1 items-center">
+                      <div class="col-span-1">
+                        <h3 i18n="@@joinTypeH4" class="text-base font-bold inline">
+                          Tipo de intersección:
+                        </h3>
+                      </div>
+
+                      <div class="col-span-3">
+                        <div class="flex">
+                          <button *ngFor="let type of joinTypeOptions" (click)="onJoinTypeChange(type)"
+                            [ngClass]="{'bg-[#00BFB3] text-white': joinType === type, 'bg-white text-black': joinType !== type}"
+                            class="w-[3.5vw] px-3 py-2 border rounded-lg mr-2 hover:bg-[#00BFB3] hover:text-white">
+                            {{ type.label }}
+                          </button>
+                        </div>
+
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-4 row-span-1 items-center">
+                      <div class="col-span-1">
+                        <h3 class="text-base font-bold inline"><span i18n="@@scenarios">Escenarios: </span></h3>
+                      </div>
+
+                      <div class="col-span-2">
+
+                        <button class="w-fit px-3 py-2 row-span-1 border rounded-lg
+                                  bg-white text-black hover:bg-[#00BFB3] hover:text-white" (click)="onWhatIfDialog()">
+                          What If?
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-4 items-center">
+                      <div class="col-span-1">
+                        <h3 class="text-base font-bold inline"><span i18n="@@scenarios">Filtros avanzados: </span></h3>
+                      </div>
+
+                      <div class="col-span-3">
+
+                        <button class="w-fit px-3 py-2 border rounded-lg
+                                  bg-white text-black hover:bg-[#00BFB3] hover:text-white" (click)="onWhatIfDialog()">
+                          Configurar
+                        </button>
+                      </div>
                     </div>
 
                   </div>
-                </div>
 
-                <div class="grid grid-cols-4 row-span-1 items-center">
                   <div class="col-span-1">
-                    <h3 class="text-base font-bold inline"><span i18n="@@scenarios">Escenarios: </span></h3>
+
+                    <div class="p-3">
+                      <h3 class="font-semibold mb-4" i18n="@@indicaciones">Indicaciones</h3>
+
+                      <div class="w-full">
+                        <!-- General Information -->
+                        <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
+                          <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
+                            <div class="flex items-center">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="text-blue-500 mr-2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                              </svg>
+                              <span i18n="@@informacionGeneral">Tipo de interesección</span>
+                            </div>
+                            <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
+                              xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </summary>
+                          <div class="text-sm text-gray-600 pl-2 pb-4 pt-2">
+                            <!-- <p>Crea consultas SQL para analizar datos de ventas por línea de producto.</p>
+                                  <p class="mt-2">Tablas disponibles: Customers, Orders, Products, Employees, Offices.</p> -->
+                            <p class="mb-2" i18n="@@indicaciones1"> Puedes realizar consultas SQL sobre el esquema definido
+                              en tu modelo.
+                              Para ello introduce la consulta en el cuadro de texto y selecciona la tabla
+                              principal
+                              (puede ser cualquiera de las que aparecen en la consulta).
+                              Usaremos esta tabla para vincular la consulta a los filtros del informe.
+                            </p>
+
+                            <h4 class="text-sm font-medium mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
+
+                            <ul class="list-disc pl-6">
+                              <li i18n="@@indicaciones3">
+                                Solo es posible usar las tablas del esquema definido en el modelo (si lo hay)
+                              </li>
+                              <li i18n="@@indicaciones4">
+                                Debes utilizar alias para todas las tablas de la consulta ( select a,b from tabla t where c
+                                )
+                              </li>
+                            </ul>
+                          </div>
+                        </details>
+
+                        <!-- Link query and panel filters -->
+                        <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
+                          <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
+                            <div class="flex items-center">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="text-blue-500 mr-2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                              </svg>
+                              <span i18n="@@informacionGeneral">What if</span>
+                            </div>
+                            <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
+                              xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </summary>
+                          <div class="text-sm text-gray-600 pl-2 pb-4 pt-2">
+                            <!-- <p>Crea consultas SQL para analizar datos de ventas por línea de producto.</p>
+                                  <p class="mt-2">Tablas disponibles: Customers, Orders, Products, Employees, Offices.</p> -->
+                            <p class="mb-2" i18n="@@indicaciones1"> Puedes realizar consultas SQL sobre el esquema definido
+                              en tu modelo.
+                              Para ello introduce la consulta en el cuadro de texto y selecciona la tabla
+                              principal
+                              (puede ser cualquiera de las que aparecen en la consulta).
+                              Usaremos esta tabla para vincular la consulta a los filtros del informe.
+                            </p>
+
+                            <h4 class="text-sm font-medium mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
+
+                            <ul class="list-disc pl-6">
+                              <li i18n="@@indicaciones3">
+                                Solo es posible usar las tablas del esquema definido en el modelo (si lo hay)
+                              </li>
+                              <li i18n="@@indicaciones4">
+                                Debes utilizar alias para todas las tablas de la consulta ( select a,b from tabla t where c
+                                )
+                              </li>
+                            </ul>
+                          </div>
+                        </details>
+
+                        <!-- Examples -->
+                        <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
+                          <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
+                            <div class="flex items-center">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="text-blue-500 mr-2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                              </svg>
+                              <span i18n="@@informacionGeneral">Filtros avanzados</span>
+                            </div>
+                            <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
+                              xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </summary>
+                          <div class="text-sm text-gray-600 pl-2 pb-4 pt-2">
+                            <!-- <p>Crea consultas SQL para analizar datos de ventas por línea de producto.</p>
+                                  <p class="mt-2">Tablas disponibles: Customers, Orders, Products, Employees, Offices.</p> -->
+                            <p class="mb-2" i18n="@@indicaciones1"> Puedes realizar consultas SQL sobre el esquema definido
+                              en tu modelo.
+                              Para ello introduce la consulta en el cuadro de texto y selecciona la tabla
+                              principal
+                              (puede ser cualquiera de las que aparecen en la consulta).
+                              Usaremos esta tabla para vincular la consulta a los filtros del informe.
+                            </p>
+
+                            <h4 class="text-sm font-medium mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
+
+                            <ul class="list-disc pl-6">
+                              <li i18n="@@indicaciones3">
+                                Solo es posible usar las tablas del esquema definido en el modelo (si lo hay)
+                              </li>
+                              <li i18n="@@indicaciones4">
+                                Debes utilizar alias para todas las tablas de la consulta ( select a,b from tabla t where c
+                                )
+                              </li>
+                            </ul>
+                          </div>
+                        </details>
+                      </div>
+                    </div>
+
                   </div>
 
-                  <div class="col-span-2">
-
-                    <button class="w-fit px-3 py-2 row-span-1 border rounded-lg
-                            bg-white text-black hover:bg-[#00BFB3] hover:text-white"
-                      (click)="onWhatIfDialog()">
-                      What If?
-                    </button>
-                  </div>
                 </div>
-
-                <div class="grid grid-cols-4 items-center">
-                  <div class="col-span-1">
-                    <h3 class="text-base font-bold inline"><span i18n="@@scenarios">Filtros avanzados: </span></h3>
-                  </div>
-
-                  <div class="col-span-3">
-
-                    <button class="w-fit px-3 py-2 border rounded-lg
-                            bg-white text-black hover:bg-[#00BFB3] hover:text-white"
-                      (click)="onWhatIfDialog()">
-                      Configurar
-                    </button>
-                  </div>
-                </div>
-
+              }@else{
+              <div class="grid grid-cols-2 border rounded-lg bg-gray-50 min-h-[30vh] h-fit overflow-y-auto p-2 ng-star-inserted">
+                <h1>
+                  HOLAAAAAAAAAAAAAAAA
+                </h1>
+                  <!-- AÑADIR AQUI COMPONENTE PROMPT DEL CHAT RONALD -->
               </div>
-
-              <div class="col-span-1">
-
-                <div class="p-3">
-                  <h3 class="font-semibold mb-4" i18n="@@indicaciones">Indicaciones</h3>
-
-                  <div class="w-full">
-                    <!-- General Information -->
-                    <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
-                      <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
-                        <div class="flex items-center">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="text-blue-500 mr-2">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="12" y1="16" x2="12" y2="12"></line>
-                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                          </svg>
-                          <span i18n="@@informacionGeneral">Información general</span>
-                        </div>
-                        <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
-                          xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </summary>
-                      <div class="text-sm text-gray-600 pl-2 pb-4 pt-2">
-                        <!-- <p>Crea consultas SQL para analizar datos de ventas por línea de producto.</p>
-                            <p class="mt-2">Tablas disponibles: Customers, Orders, Products, Employees, Offices.</p> -->
-                        <p class="mb-2" i18n="@@indicaciones1"> Puedes realizar consultas SQL sobre el esquema definido
-                          en tu modelo.
-                          Para ello introduce la consulta en el cuadro de texto y selecciona la tabla
-                          principal
-                          (puede ser cualquiera de las que aparecen en la consulta).
-                          Usaremos esta tabla para vincular la consulta a los filtros del informe.
-                        </p>
-
-                        <h4 class="text-sm font-medium mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
-
-                        <ul class="list-disc pl-6">
-                          <li i18n="@@indicaciones3">
-                            Solo es posible usar las tablas del esquema definido en el modelo (si lo hay)
-                          </li>
-                          <li i18n="@@indicaciones4">
-                            Debes utilizar alias para todas las tablas de la consulta ( select a,b from tabla t where c
-                            )
-                          </li>
-                        </ul>
-                      </div>
-                    </details>
-
-                    <!-- Link query and panel filters -->
-                    <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
-                      <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
-                        <div class="flex items-center">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="text-blue-500 mr-2">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="12" y1="16" x2="12" y2="12"></line>
-                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                          </svg>
-                          <span i18n="@@informacionGeneral">What if</span>
-                        </div>
-                        <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
-                          xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </summary>
-                      <div class="text-sm text-gray-600 pl-2 pb-4 pt-2">
-                        <!-- <p>Crea consultas SQL para analizar datos de ventas por línea de producto.</p>
-                            <p class="mt-2">Tablas disponibles: Customers, Orders, Products, Employees, Offices.</p> -->
-                        <p class="mb-2" i18n="@@indicaciones1"> Puedes realizar consultas SQL sobre el esquema definido
-                          en tu modelo.
-                          Para ello introduce la consulta en el cuadro de texto y selecciona la tabla
-                          principal
-                          (puede ser cualquiera de las que aparecen en la consulta).
-                          Usaremos esta tabla para vincular la consulta a los filtros del informe.
-                        </p>
-
-                        <h4 class="text-sm font-medium mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
-
-                        <ul class="list-disc pl-6">
-                          <li i18n="@@indicaciones3">
-                            Solo es posible usar las tablas del esquema definido en el modelo (si lo hay)
-                          </li>
-                          <li i18n="@@indicaciones4">
-                            Debes utilizar alias para todas las tablas de la consulta ( select a,b from tabla t where c
-                            )
-                          </li>
-                        </ul>
-                      </div>
-                    </details>
-
-                    <!-- Examples -->
-                    <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
-                      <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
-                        <div class="flex items-center">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="text-blue-500 mr-2">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="12" y1="16" x2="12" y2="12"></line>
-                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                          </svg>
-                          <span i18n="@@informacionGeneral">Filtros avanzados</span>
-                        </div>
-                        <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
-                          xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </summary>
-                      <div class="text-sm text-gray-600 pl-2 pb-4 pt-2">
-                        <!-- <p>Crea consultas SQL para analizar datos de ventas por línea de producto.</p>
-                            <p class="mt-2">Tablas disponibles: Customers, Orders, Products, Employees, Offices.</p> -->
-                        <p class="mb-2" i18n="@@indicaciones1"> Puedes realizar consultas SQL sobre el esquema definido
-                          en tu modelo.
-                          Para ello introduce la consulta en el cuadro de texto y selecciona la tabla
-                          principal
-                          (puede ser cualquiera de las que aparecen en la consulta).
-                          Usaremos esta tabla para vincular la consulta a los filtros del informe.
-                        </p>
-
-                        <h4 class="text-sm font-medium mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
-
-                        <ul class="list-disc pl-6">
-                          <li i18n="@@indicaciones3">
-                            Solo es posible usar las tablas del esquema definido en el modelo (si lo hay)
-                          </li>
-                          <li i18n="@@indicaciones4">
-                            Debes utilizar alias para todas las tablas de la consulta ( select a,b from tabla t where c
-                            )
-                          </li>
-                        </ul>
-                      </div>
-                    </details>
-                  </div>
-                </div>
-
+              }
+            } @else {
+              <!-- ZONA CUANDO NO HAY ATRIBUTOS SELECCIONADOS -->
+              <!-- PROMPT DE CHATGPT -->
+              <div class="grid grid-cols-2 border rounded-lg bg-gray-50 min-h-[30vh] h-fit overflow-y-auto p-2 ng-star-inserted">
+                <h1>
+                  HOLAAAAAAAAAAAAAAAA
+                </h1>
+                  <!-- AÑADIR AQUI COMPONENTE PROMPT DEL CHAT RONALD -->
               </div>
-
-            </div>
-            }
             }
           </div>
         </div>
@@ -827,6 +851,12 @@
         </div>
       </div>
       }
+      }@else {
+      <!-- Chart Edit View -->
+      <div>
+
+        HOLAAAAAAAAAAAAAAAA
+      </div>
       }
     </div>
 

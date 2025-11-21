@@ -126,7 +126,7 @@ export class EdaBlankPanelComponent implements OnInit {
         disableQueryInfo: true,
         notSaved: false,
         minispinnerSQL: false,
-        advancedSetting: false,
+        advancedSetting: 0,
         filterMapperDialog: false,
         showQueryContainer: false,
     };
