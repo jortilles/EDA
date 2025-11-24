@@ -328,13 +328,14 @@ export class DashboardSidebarComponent {
 
   public closeDependentFilters(dependentFilterObject: any){
     this.isDependentFiltersVisible = false;
-
+    
     // Recibe el ordenamiento de children por cada item
     if(Object.keys(dependentFilterObject).length > 0) {
+      this.dashboard.globalFilter.loading = true; // Mostrar spinner mientras se actualizan los filtros
       // Guardado de la estructura de los filtros dependientes de manera temporal
       this.dashboard.globalFilter.globalFilters = dependentFilterObject.globalFilters;
       this.dashboard.globalFilter.orderDependentFilters = dependentFilterObject.orderDependentFilters;
-
+      this.dashboardService._notSaved.next(true); // Marcar dashboard como no guardado
       // Actualización de los valores de los filtros al realizar una nueva configuración
       this.dashboard.globalFilter.initGlobalFilters(this.dashboard.globalFilter.globalFilters);
     } 
