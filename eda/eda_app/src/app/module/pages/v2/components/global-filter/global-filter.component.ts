@@ -32,6 +32,7 @@ export class GlobalFilterV2Component implements OnInit {
     public globalFilters: any[] = [];
     public globalFilter: any;
     public styleButton: any = {};
+    public orderDependentFilters: any[] = [];
     loading: boolean = true;
     placeholderText = this.loading ? $localize`:@@Cargando:Cargando...` : '';
 
@@ -93,8 +94,21 @@ export class GlobalFilterV2Component implements OnInit {
         this.setFilterButtonVisibilty();
         await this.fillFiltersData();
         // Datos de los filtros ya cargados
-        this.placeholderText = '';
+        this.placeholderText ='';
+
+
+        // Inicialización de los filtros dependientes, solo si estan configurados:
+        if(this.orderDependentFilters.length !== 0) {
+            const initDependentFilter = this.orderDependentFilters.find((f: any) => f.x===0 && f.y===0);
+            const initDependentGlobalFilter = this.globalFilters.find((gf: any) => gf.id === initDependentFilter.filter_id)
+            this.applyingDependentFilter(initDependentGlobalFilter, this.globalFilters);
+        }
+
         this.loading = false;
+    }
+
+    public async initOrderDependentFilters(orderDependentFilters: any[]): Promise<void> {
+        this.orderDependentFilters = _.cloneDeep(orderDependentFilters);
     }
 
     private setFiltersVisibility(): void {
@@ -158,9 +172,13 @@ export class GlobalFilterV2Component implements OnInit {
     }
 
     public setGlobalFilterItems(filter: any) {
+
+        // Aplicando los filtros dependientes si existe un ordenamiento configurado
+        if(this.orderDependentFilters.length !==0) this.applyingDependentFilter(filter, this.globalFilters);
+
         this.dashboard.edaPanels.forEach((ebp: EdaBlankPanelComponent) => {
             const filterMap = ebp.panel.globalFilterMap || [];
-            if (filter.panelList.includes(ebp.panel.id)) {
+         if (filter.panelList.includes(ebp.panel.id)) {
                 const filterApplied = ebp.globalFilters.find((gf: any) => gf.filter_id === filter.id);
 
                 if (filterApplied) {
@@ -181,6 +199,145 @@ export class GlobalFilterV2Component implements OnInit {
                 ebp.assertGlobalFilter(items);
             }
         })
+    }
+
+    async applyingDependentFilter(filter, globalFilters) {
+        await this.recursiveFilters(filter, globalFilters, this.dashboard.dataSource._id, this.dashboard.dashboardId, []);
+    }
+
+    async recursiveFilters(filter: any, globalFilters: any, _id: any, dashboardId: any, filterCollection: any) {
+        
+        if(filter.children.length !==0) {
+
+            for(let i=0; i<filter.children.length; i++) {
+
+                const filterItem = globalFilters.find((gl: any) => gl.id === filter.children[i].filter_id);
+
+                filterCollection.push({
+                        filter_column: filter.selectedColumn.column_name,
+                        filter_column_type: filter.selectedColumn.column_type,
+                        filter_elements: [{value1: filter.selectedItems}],
+                        filter_id: filter.id,
+                        filter_table: filter.selectedTable.table_name,
+                        filter_type: "in",
+                        isGlobal: filter.isGlobal,
+                        joins:[],
+                })
+
+                // Se agregan Filtros de PADRES
+                for(let r=0; r<globalFilters.length; r++) {
+                    if(globalFilters[r].id !==filter.id && globalFilters[r].id !==filterItem.id) {  
+                        this.filterCollectionRecursive(globalFilters[r].children, filterItem.id, globalFilters[r], filterCollection)
+                    }
+                }
+
+                const queryParams = {
+                    table: filterItem.selectedTable.table_name,
+                    dataSource: _id,
+                    dashboard: dashboardId,
+                    panel: '',
+                    joinType: "inner",
+                    rootTable: filterItem.selectedTable.table_name,
+                    queryMode: filterItem.queryMode,
+                    forSelector: true,
+                    queryLimit: 5000,
+                    filters: filterCollection
+                };
+
+                // LANZA LA QUERY
+                
+                this.loading = true;
+                const query = this.queryBuilderService.normalQuery([filterItem.selectedColumn], queryParams);
+                const res = await this.dashboardService.executeQuery(query).toPromise();
+
+                // Haciendo el filtro de los nuevos valores:
+                const filterName = res[0][0];
+                const filterData = res[1].map((item: any) => {
+                    return ({
+                        label: item[0],
+                        value: item[0],
+                    })
+                })
+
+                filterItem.data = filterData;
+
+                // Creación de un Set con todos los valores válidos
+                const validValues = new Set(filterData.map((fd: any) => fd.value));
+                // Filtrar los elementos seleccionados que existen en validValues
+                filterItem.selectedItems = filterItem.selectedItems.filter(item => validValues.has(item));
+
+                this.loading = false;
+
+                ///////////////////////////////////////////////////////////
+                // VERIFICA SI CHILDREN ES DE LONGITUD DIFERENTE DE CERO //
+                ///////////////////////////////////////////////////////////
+                if(filterItem.children.length !== 0) {
+                    // RECURSIVIDAD
+                    this.recursiveFilters(filterItem, globalFilters, _id, dashboardId, filterCollection);
+                    // .....
+                } else {
+                    filterCollection = [];
+                }
+            }
+        } else {
+            // El filtro no tiene children
+        }
+    }
+
+    filterCollectionRecursive( children: any[] | undefined, id: string, globalFilter: any, filterCollection: any[] ): boolean {
+        
+        if (!children || children.length === 0) return false;
+
+        for (const child of children) {
+            if (child.filter_id === id) {
+                const newFilter = {
+                    filter_column: globalFilter.selectedColumn.column_name,
+                    filter_column_type: globalFilter.selectedColumn.column_type,
+                    filter_elements: [{ value1: globalFilter.selectedItems }],
+                    filter_id: globalFilter.id,
+                    filter_table: globalFilter.selectedTable.table_name,
+                    filter_type: "in",
+                    isGlobal: globalFilter.isGlobal,
+                    joins: [],
+                };
+
+                // comparar sólo las propiedades relevantes
+                const newKey = {
+                    filter_column: newFilter.filter_column,
+                    filter_column_type: newFilter.filter_column_type,
+                    filter_elements: newFilter.filter_elements,
+                    filter_table: newFilter.filter_table,
+                    filter_type: newFilter.filter_type,
+                    isGlobal: newFilter.isGlobal,
+                    joins: newFilter.joins ?? []
+                };
+
+                const exists = filterCollection.some((fc: any) => {
+                    const fcKey = {
+                    filter_column: fc.filter_column,
+                    filter_column_type: fc.filter_column_type,
+                    filter_elements: fc.filter_elements,
+                    filter_table: fc.filter_table,
+                    filter_type: fc.filter_type,
+                    isGlobal: fc.isGlobal,
+                    joins: fc.joins ?? []
+                    };
+                    return _.isEqual(fcKey, newKey);
+                });
+
+                if (!exists) {
+                    filterCollection.push(newFilter);
+                }
+                return true; // encontramos (o ya existía) => detener búsqueda
+            }
+
+            if (child.children && child.children.length > 0) {
+                const found = this.filterCollectionRecursive(child.children, id, globalFilter, filterCollection);
+                if (found) return true;
+            }
+        }
+
+        return false;
     }
 
     // Global Filter Dialog
@@ -271,7 +428,25 @@ export class GlobalFilterV2Component implements OnInit {
             });
 
             if (this.globalFilter.isnew) {
+
+
+                // Agregamos un item mas al ordenamiento de filtros dependientes:
+                if(this.orderDependentFilters.length !== 0) {
+                    this.orderDependentFilters.push({
+                        cols: 3,
+                        rows: 1,
+                        y: this.orderDependentFilters.length,
+                        x: 0,
+                        filter_table: this.globalFilter.selectedTable.table_name,
+                        filter_column: this.globalFilter.selectedColumn.column_name,
+                        filter_type: this.globalFilter.selectedColumn.column_type,
+                        filter_id: this.globalFilter.id,
+                    })
+                    this.alertService.addInfo("Se agregó un nuevo filtro a la relación de filtros dependientes");
+                }
+
                 this.globalFilters.push(this.globalFilter);
+
             }
 
             for (const filter of this.globalFilters) {
@@ -322,6 +497,25 @@ export class GlobalFilterV2Component implements OnInit {
 
         this.globalFilter = undefined;
         this.dashboard.refreshPanels();
+    }
+
+    public deleteFilterEvent(event: any) {
+        // Se reinicia el ordenamiento de los filtros dependientes
+        if(event) {
+
+            if(this.orderDependentFilters.length !==0) {
+                // Eliminando el ordenamiento
+                this.orderDependentFilters = [];
+                // Eliminando las relaciones entre los filtros globales 
+                this.globalFilters.forEach((gf: any) => {
+                    gf.children = [];
+                });
+    
+                this.alertService.addWarning('Se ha reiniciado la configuración de los filtros dependientes');
+                this.initGlobalFilters(this.globalFilters)
+            }
+
+        }
     }
 
     // Deprecated

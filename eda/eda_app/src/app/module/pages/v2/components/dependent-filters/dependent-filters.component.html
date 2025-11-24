@@ -1,0 +1,32 @@
+<eda-dialog2
+    [display]="display"
+    i18n-header="@@dependentFiltersTitle"
+    header="Configuración de filtros dependientes"
+    width="60vw" 
+    height="82vh"
+    [disableApply]="disableApply()"
+    (apply)="onApply()"
+    (close)="onClose()"
+
+>
+    <div content class="p-6">
+        <h6 class="mb-4">Preparando los filtros dependientes</h6>
+
+        <div class="content-gridster">
+            <gridster class="gridster" [options]="options">
+                <gridster-item 
+                    [item]="item" 
+                    *ngFor="let item of dependentFilterGrid" 
+                    class="gridster-item">
+                    <div class="button-holder">
+                        <div class="content-item">
+                            <p><strong>{{item.filter_column}}</strong> : {{item.filter_table}} </p>
+                        </div>
+                    </div>
+                </gridster-item>
+            </gridster>
+        </div>
+
+    </div>
+
+</eda-dialog2>

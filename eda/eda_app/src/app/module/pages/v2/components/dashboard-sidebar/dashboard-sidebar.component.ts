@@ -19,6 +19,9 @@ import { ImportPanelDialog } from "../import-panel/import-panel.dialog";
 import { DashboardSidebarService } from "@eda/services/shared/dashboard-sidebar.service";
 import { ExposeMethod } from "@eda/shared/decorators/expose-method.decorator";
 import { IconComponent } from "../../../../../shared/components/icon/icon.component";
+import { DependentFilters } from "../dependent-filters/dependent-filters.component";
+import * as _ from 'lodash';
+
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 
 
@@ -26,7 +29,7 @@ import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-
   selector: 'app-dashboard-sidebar',
   standalone: true,
   imports: [OverlayModule, OverlayPanelModule, DashboardSaveAsDialog, DashboardTagModal, DashboardEditStyleDialog,
-    DashboardCustomActionDialog, DashboardMailConfigModal, DashboardVisibleModal, ImportPanelDialog, IconComponent, DragDropModule],
+    DashboardCustomActionDialog, DashboardMailConfigModal, DashboardVisibleModal, ImportPanelDialog, IconComponent, DependentFilters, DragDropModule],
   templateUrl: './dashboard-sidebar.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styles: `
@@ -84,6 +87,7 @@ export class DashboardSidebarComponent {
   hayFiltros;
 
   isImportPanelVisible = false;
+  isDependentFiltersVisible = false;
 
   sidebarItems: any[] = [];
 
@@ -136,18 +140,25 @@ export class DashboardSidebarComponent {
         command: () => this.onAddGlobalFilter()
 
       },
-      {
-        id: 'editFilters',
-        label: $localize`:@@dashboardSidebarEditFilter:Editar filtros`,
-        icon: "pi pi-filter",
-        command: () => this.toggleGlobalFilter(),
-        items: this.dashboard.globalFilter.globalFilters.map(f => ({
-          label: f?.selectedColumn?.description?.default || f?.column?.value?.description?.default,
-          icon: "pi pi-check",
-          command: () => this.handleSpecificFilter(f),
-        }),
-        ),
-      },
+    {
+      id: 'editFilters',
+      label: $localize`:@@dashboardSidebarEditFilter:Editar filtros`,
+      icon: "pi pi-filter",
+      command: () => this.toggleGlobalFilter(),
+      items: this.dashboard.globalFilter.globalFilters.map(f => ({
+        label: f?.selectedColumn?.description?.default || f?.column?.value?.description?.default,
+        icon: "pi pi-check",
+        command: () => this.handleSpecificFilter(f),
+      }),
+      ),
+    },
+    {
+      id: 'dependentFilters',
+      label: $localize`:@@dashboardSidebarDependentFilters:Filtros Dependientes`,
+      icon: "pi pi-sliders-h",
+      command: () => this.dependentFilters()
+      
+    },
       {
         id: 'importPanel',
         label: $localize`:@@dashboardSidebarImportPanel:Importar panel`,
@@ -288,6 +299,17 @@ export class DashboardSidebarComponent {
     this.hidePopover();
   }
 
+  public dependentFilters() {
+
+    if(this.dashboard.globalFilter.globalFilters.length !== 0) {
+      this.isDependentFiltersVisible = true;
+      this.hidePopover();
+    } else {
+      this.alertService.addWarning("Debe disponer de filtros globales para poder avanzar con la configuración de los filtros dependientes.");
+    }
+
+  }
+
   @ExposeMethod()
   public onImportPanel(): void {
     this.isImportPanelVisible = true;
@@ -303,6 +325,21 @@ export class DashboardSidebarComponent {
       }
     }
 
+  }
+
+  public closeDependentFilters(dependentFilterObject: any){
+    this.isDependentFiltersVisible = false;
+    
+    // Recibe el ordenamiento de children por cada item
+    if(Object.keys(dependentFilterObject).length > 0) {
+      this.dashboard.globalFilter.loading = true; // Mostrar spinner mientras se actualizan los filtros
+      // Guardado de la estructura de los filtros dependientes de manera temporal
+      this.dashboard.globalFilter.globalFilters = dependentFilterObject.globalFilters;
+      this.dashboard.globalFilter.orderDependentFilters = dependentFilterObject.orderDependentFilters;
+      this.dashboardService._notSaved.next(true); // Marcar dashboard como no guardado
+      // Actualización de los valores de los filtros al realizar una nueva configuración
+      this.dashboard.globalFilter.initGlobalFilters(this.dashboard.globalFilter.globalFilters);
+    } 
   }
 
   public onAddWidget(): void {
