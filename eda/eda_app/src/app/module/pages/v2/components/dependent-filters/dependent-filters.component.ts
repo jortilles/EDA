@@ -100,18 +100,17 @@ export class DependentFilters implements OnInit {
                     rows: 1,
                     y: k,
                     x: 0,
-                    filter_table: gf.selectedTable.table_name,
-                    filter_column: gf.selectedColumn.column_name,
-                    filter_type: gf.selectedColumn.column_type,
+                    filter_table: gf.selectedTable?.table_name ||gf.table?.value,
+                    filter_column: gf.selectedColumn?.column_name || gf.column?.value?.column_name,
+                    filter_type: gf.selectedColumn?.column_type || gf.column?.value?.column_type,
                     filter_id: gf.id,
                 }
             );
             k++;
         });
-
+        
         // COPIA DEL DASHBOARD, PARA TENER UN DASHBOARD PREVIO
         this.dependentFilterGridPrev = _.cloneDeep(this.dependentFilterGrid);
-
     }
 
     onItemChange(item: GridsterItem): void {
