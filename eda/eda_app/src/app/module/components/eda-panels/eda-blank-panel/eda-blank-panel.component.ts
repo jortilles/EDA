@@ -205,7 +205,7 @@ export class EdaBlankPanelComponent implements OnInit {
         { icon: 'pi pi-align-right', label: 'Right', joinType: 'right' }
     ];
 
-    public joinType = this.joinTypeOptions[1]; // default init in Inner
+    public joinType = this.joinTypeOptions[1].joinType; // default init in Inner
 
     
     /**panel chart component configuration */
@@ -1025,7 +1025,7 @@ public tableNodeExpand(event: any): void {
 
 
     onJoinTypeChange(type?: any) {
-        this.joinType = type;
+        this.joinType = type.joinType;
         this.display_v.joinType = true;
     }
 
