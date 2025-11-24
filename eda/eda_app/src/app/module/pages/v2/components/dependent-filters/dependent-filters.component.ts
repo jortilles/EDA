@@ -30,15 +30,15 @@ import {
 
 export class DependentFilters implements OnInit {
 
-    @Input() dashboardPage: DashboardPageV2
+    @Input() dashboard: DashboardPageV2
     @Output() close: EventEmitter<any> = new EventEmitter<any>();
 
     options: GridsterConfig;
-    dashboard: GridsterItem[]; // Ordenamiento de los filtros dependientes
+    dependentFilterGrid: GridsterItem[]; // Ordenamiento de los filtros dependientes
     itemToPush: GridsterItemComponent;
 
     public display: boolean = false;
-    private dashboardPrev: any = []; // Variable que almacena una copia del dashboard
+    private dependentFilterGridPrev: any = []; // Variable que almacena una copia del dependentFilterGrid
 
     constructor() {}
 
@@ -46,10 +46,10 @@ export class DependentFilters implements OnInit {
         this.display = true;
 
         // Si existe una configuración previa de los filtros dependientes debería prevalecer
-        if(this.dashboardPage.globalFilter.orderDependentFilters.length !== 0) {
+        if(this.dashboard.globalFilter.orderDependentFilters.length !== 0) {
 
-            this.dashboard = _.cloneDeep(this.dashboardPage.globalFilter.orderDependentFilters);
-            this.dashboardPrev = _.cloneDeep(this.dashboard);
+            this.dependentFilterGrid = _.cloneDeep(this.dashboard.globalFilter.orderDependentFilters);
+            this.dependentFilterGridPrev = _.cloneDeep(this.dependentFilterGrid);
 
         } else {
             // inicializando el initDashboard
@@ -90,11 +90,11 @@ export class DependentFilters implements OnInit {
     }
 
     initDashboard() {
-        this.dashboard = [];
+        this.dependentFilterGrid = [];
         let k = 0;
 
-        this.dashboardPage.globalFilter.globalFilters.forEach((gf: any) => {
-            this.dashboard.push(
+        this.dashboard.globalFilter.globalFilters.forEach((gf: any) => {
+            this.dependentFilterGrid.push(
                 {
                     cols: 3,
                     rows: 1,
@@ -110,27 +110,27 @@ export class DependentFilters implements OnInit {
         });
 
         // COPIA DEL DASHBOARD, PARA TENER UN DASHBOARD PREVIO
-        this.dashboardPrev = _.cloneDeep(this.dashboard);
+        this.dependentFilterGridPrev = _.cloneDeep(this.dependentFilterGrid);
 
     }
 
     onItemChange(item: GridsterItem): void {
 
-        const x = this.dashboard.length;
+        const x = this.dependentFilterGrid.length;
         let arregloY = [...Array(x).keys()];
         let controlDashY = [...Array(x).keys()];
         let controlDashPrevY = [...Array(x).keys()];
 
-        if(item.y >= this.dashboard.length){
+        if(item.y >= this.dependentFilterGrid.length){
             // VERIFICAMOS QUE LOS BLOQUES NO SE ESCAPEN FUERA DE LA LONGITUD DE LA VARIABLE DASHBOARD
-            for(let i=0; i<this.dashboard.length; i++) {
-                if(this.dashboard[i].y >= this.dashboard.length) {
+            for(let i=0; i<this.dependentFilterGrid.length; i++) {
+                if(this.dependentFilterGrid[i].y >= this.dependentFilterGrid.length) {
                 } else {
-                    arregloY = arregloY.filter(index => index !== this.dashboard[i].y);
+                    arregloY = arregloY.filter(index => index !== this.dependentFilterGrid[i].y);
                 }
             }
 
-            item.x = this.dashboardPrev.find((gf: any) => gf.filter_column === item.filter_column).x;
+            item.x = this.dependentFilterGridPrev.find((gf: any) => gf.filter_column === item.filter_column).x;
             item.y = arregloY[0];
 
             // Gridster que actualice la posición
@@ -144,8 +144,8 @@ export class DependentFilters implements OnInit {
             controlDashPrevY = [...Array(x).keys()];
 
             // verificando que siempre tengamos un filtro en todos los puntos verticales: { y=0, y=1, y=2, ..., y=n-1, y=n };
-            this.dashboard.forEach((gf: any) => { controlDashY = controlDashY.filter(index => index !== gf.y); })
-            this.dashboardPrev.forEach((gf: any) => { controlDashPrevY = controlDashPrevY.filter(index => index !== gf.y); })
+            this.dependentFilterGrid.forEach((gf: any) => { controlDashY = controlDashY.filter(index => index !== gf.y); })
+            this.dependentFilterGridPrev.forEach((gf: any) => { controlDashPrevY = controlDashPrevY.filter(index => index !== gf.y); })
 
             // VERIFICACION PARA EL INTERCAMBIO O TRANSLAPE DE LOS ELEMENTOS EN EL GRID VAYAN POR EL ELSE
             if(controlDashY.length === 0 && controlDashPrevY.length === 0) {
@@ -154,8 +154,8 @@ export class DependentFilters implements OnInit {
                 // INICIO MOVIMIENTO HORIZONTAL //
                 //////////////////////////////////
 
-                const index = this.dashboard.findIndex(gf => gf.filter_column === item.filter_column);
-                const preItem = this.dashboard.find((gf: any) => gf.y === (item.y-1));
+                const index = this.dependentFilterGrid.findIndex(gf => gf.filter_column === item.filter_column);
+                const preItem = this.dependentFilterGrid.find((gf: any) => gf.y === (item.y-1));
 
                 if(item.y === 0) {
                     // CONTROL DE MOVIMIENTO HORIZONTAL PARA EL ELEMENTO (x=0; y=0)
@@ -164,7 +164,7 @@ export class DependentFilters implements OnInit {
                     if (this.options.api?.optionsChanged) this.options.api.optionsChanged();   
                 } else {
 
-                    if(item.x > this.dashboardPrev[index].x) {
+                    if(item.x > this.dependentFilterGridPrev[index].x) {
                         // CONTROL DE MOVIMIENTO HORIZONTAL =>  DERECHA
                         if(item.x > preItem.x + 1) {
                             item.x = preItem.x + 1;
@@ -172,9 +172,9 @@ export class DependentFilters implements OnInit {
                         }
                     } else {
                         // CONTROL DE MOVIMIENTO HORIZONTAL =>  IZQUIERDA
-                        for(let j=item.y+1; j<this.dashboardPrev.length; j++) {
-                            if(this.dashboardPrev.find((gl: any) => gl.y===item.y).x <= this.dashboardPrev.find((gl: any) => gl.y===j).x ) {
-                                this.dashboard.find((gl: any) => gl.y===j).x = this.dashboard.find((gl: any) => gl.y===j).x - (this.dashboardPrev.find((gl: any) => gl.y===(item.y)).x - item.x);
+                        for(let j=item.y+1; j<this.dependentFilterGridPrev.length; j++) {
+                            if(this.dependentFilterGridPrev.find((gl: any) => gl.y===item.y).x <= this.dependentFilterGridPrev.find((gl: any) => gl.y===j).x ) {
+                                this.dependentFilterGrid.find((gl: any) => gl.y===j).x = this.dependentFilterGrid.find((gl: any) => gl.y===j).x - (this.dependentFilterGridPrev.find((gl: any) => gl.y===(item.y)).x - item.x);
                                 if (this.options.api?.optionsChanged) this.options.api.optionsChanged();   
                             } else {
                                 break;
@@ -195,13 +195,13 @@ export class DependentFilters implements OnInit {
                 ////////////////////////////////////////////////////////
 
                 // Bloque de inicio de movimiento y de final de movimiento (Variables temporales)
-                const iniBlo = _.cloneDeep(this.dashboardPrev).find((gf: any) => item.filter_id === gf.filter_id);
-                const finBlo = _.cloneDeep(this.dashboardPrev).find((gf: any) => item.y === gf.y);
+                const iniBlo = _.cloneDeep(this.dependentFilterGridPrev).find((gf: any) => item.filter_id === gf.filter_id);
+                const finBlo = _.cloneDeep(this.dependentFilterGridPrev).find((gf: any) => item.y === gf.y);
 
-                const ini = this.dashboard.find(gf => gf.filter_id === iniBlo.filter_id);
+                const ini = this.dependentFilterGrid.find(gf => gf.filter_id === iniBlo.filter_id);
                 ini.x = finBlo.x
                 ini.y = finBlo.y
-                const fin = this.dashboard.find(gf => gf.filter_id === finBlo.filter_id);
+                const fin = this.dependentFilterGrid.find(gf => gf.filter_id === finBlo.filter_id);
                 fin.x = iniBlo.x
                 fin.y = iniBlo.y
 
@@ -215,7 +215,7 @@ export class DependentFilters implements OnInit {
         }
 
         // EL DASHBOARD PREVIO ADQUIERE EL VALOR ACTUAL:
-        this.dashboardPrev = _.cloneDeep(this.dashboard);
+        this.dependentFilterGridPrev = _.cloneDeep(this.dependentFilterGrid);
     }
 
     // FUNCION RECURSIVA QUE CONSTRUYE EL ORDERITEM
@@ -341,7 +341,7 @@ export class DependentFilters implements OnInit {
     removeItem($event: MouseEvent | TouchEvent, item): void {
         $event.preventDefault();
         $event.stopPropagation();
-        this.dashboard.splice(this.dashboard.indexOf(item), 1);
+        this.dependentFilterGrid.splice(this.dependentFilterGrid.indexOf(item), 1);
     }   
 
 
@@ -355,8 +355,8 @@ export class DependentFilters implements OnInit {
         this.display = false;
 
         // Generando el ordenamiento children (tipo arbol) por cada filtro global (por cada item).
-        const globalFilters = this.buildOrderChildren(this.dashboardPage.globalFilter.globalFilters, this.dashboard)
-        const orderDependentFilters = this.dashboard;
+        const globalFilters = this.buildOrderChildren(this.dashboard.globalFilter.globalFilters, this.dependentFilterGrid)
+        const orderDependentFilters = this.dependentFilterGrid;
 
         this.close.emit(
             {

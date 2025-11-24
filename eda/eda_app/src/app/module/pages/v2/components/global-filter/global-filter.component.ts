@@ -431,7 +431,6 @@ public async fillFiltersData(): Promise<void> {
                     this.alertService.addInfo("Se agregó un nuevo filtro a la relación de filtros dependientes");
                 }
 
-                // debugger;
                 this.globalFilters.push(this.globalFilter);
 
             }

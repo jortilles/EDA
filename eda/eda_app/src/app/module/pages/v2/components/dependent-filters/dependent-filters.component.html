@@ -16,19 +16,12 @@
             <gridster class="gridster" [options]="options">
                 <gridster-item 
                     [item]="item" 
-                    *ngFor="let item of dashboard" 
+                    *ngFor="let item of dependentFilterGrid" 
                     class="gridster-item">
                     <div class="button-holder">
                         <div class="content-item">
                             <p><strong>{{item.filter_column}}</strong> : {{item.filter_table}} </p>
                         </div>
-                    <!-- <button
-                        mat-mini-fab
-                        (mousedown)="removeItem($event, item)"
-                        (touchstart)="removeItem($event, item)"
-                    >
-                        <span>delete</span>
-                    </button> -->
                     </div>
                 </gridster-item>
             </gridster>
