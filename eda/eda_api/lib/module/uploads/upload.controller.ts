@@ -36,7 +36,7 @@ export class UploadController {
             const ROOT_PATH = process.cwd();
             const uploadsPath = path.join(ROOT_PATH, 'lib/module/uploads/images', randomName);
 
-            file.mv(uploadsPath, err => {
+            file.mv(uploadsPath, async err => {
 
                 if (err) {
                     console.log(err);
@@ -51,32 +51,32 @@ export class UploadController {
                         }
 
                         // const oldPath = path.resolve(__dirname, `../../uploads/${userBD.img}`);
-                        const oldPath = path.join(ROOT_PATH, 'lib/module/uploads/images', `${userBD.img}`);
+                            const oldPath = path.join(ROOT_PATH, 'lib/module/uploads/images', `${userBD.img}`);
 
-                        // Si existe, elimina la imagen anterior
-                        try {
-                            if (fs.existsSync(oldPath)) {
-                                const stat = fs.lstatSync(oldPath);
-                                if (stat.isFile()) {
-                                    fs.unlinkSync(oldPath);
-                                    console.log('Archivo anterior eliminado correctamente');
-                                } else {
-                                    console.warn('El path no es un archivo, no se elimina:', oldPath);
+                            // Si existe, elimina la imagen anterior
+                            try {
+                                if (fs.existsSync(oldPath)) {
+                                    const stat = fs.lstatSync(oldPath);
+                                    if (stat.isFile()) {
+                                        fs.unlinkSync(oldPath);
+                                        console.log('Archivo anterior eliminado correctamente');
+                                    } else {
+                                        console.warn('El path no es un archivo, no se elimina:', oldPath);
+                                    }
                                 }
+                            } catch (err) {
+                                console.error('Error eliminando archivo anterior:', err);
                             }
-                        } catch (err) {
-                            console.error('Error eliminando archivo anterior:', err);
-                        }
-
-                        userBD.img = randomName;
-
+    
+                            userBD.img = randomName;
+                            
                         userBD.save((err, userUpdated) => {
 
                             if (err) {
                                 return next(new HttpException(500, 'Error saving image'));
                             }
 
-                            return res.status(200).json({ ok: true, message: 'Profile Image successful updated', user: userUpdated });
+                                return res.status(200).json({ ok: true, message: 'Profile Image successful updated', user: userUpdated });
                         });
                     });
                 }

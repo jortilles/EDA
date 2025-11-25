@@ -18,19 +18,16 @@ import { groupCollapsed } from 'console'
 export class GroupController {
 
 
-  static async getGroups (req: Request, res: Response, next: NextFunction) {
-        try {
-            Group.find({}).exec((err, groups: IGroup[]) => {
-              if (err) {
-                return next(new HttpException(500, 'Error loading groups'))
-              }
-              return res.status(200).json(groups)
-            })
-          } catch (err) {
-            next(err)
-          }
-   
+  static async getGroups(req: Request, res: Response, next: NextFunction) {
+    try {
+      const groups = await Group.find({});
+      return res.status(200).json(groups);
+    } catch (err) {
+      return next(new HttpException(500, 'Error loading groups'));
+    }
   }
+
+
 
   /** retorna els grups d'un usuari */
   static async getMineGroups (req: Request, res: Response, next: NextFunction) {
@@ -57,24 +54,25 @@ export class GroupController {
   }
 
   /** retorna un objecte grup des de un id */
-  static async getGroup (req: Request, res: Response, next: NextFunction) {
-    try {
-      Group.findById({ _id: req.params.id }, async (err, group: IGroup) => {
-        if (err) {
-          return next(new HttpException(400, 'Error loading the group'))
-        }
+  static async getGroup(req: Request, res: Response, next: NextFunction) {
+  try {
+    const group = await Group.findById(req.params.id);
 
-        group.users = await User.find(
-          { role: { $in: group._id } },
-          'name email img role'
-        ).exec()
-
-        return res.status(200).json(group)
-      })
-    } catch (err) {
-      next(err)
+    if (!group) {
+      return next(new HttpException(400, 'Group not found'));
     }
+
+    group.users = await User.find(
+      { role: { $in: group._id } },
+      'name email img role'
+    );
+
+    return res.status(200).json(group);
+
+  } catch (err) {
+    return next(err);
   }
+}
 
 
 
@@ -131,7 +129,7 @@ export class GroupController {
       users: []  
     })
     await  group.save();
-    return group._id;
+    return group._id.toString();
 
   }
 
@@ -146,135 +144,137 @@ export class GroupController {
         img: body.img
       })
       // return res.status(201).json({ok: true});
-      group.save(async (err, groupSaved: IGroup) => {
-        if (err) {
-          return next(
-            new HttpException(
-              400,
-              'Some error ocurred while creating the Group'
-            )
-          )
-        }
+      try {
+        const groupSaved = await group.save();
 
         if (body.users.length > 0) {
           await User.updateMany(
             { _id: { $in: body.users } },
             { $push: { role: groupSaved._id } }
-          ).exec()
+          );
         }
 
-        res.status(201).json({ ok: true, group: groupSaved })
-      })
+        return res.status(201).json({ ok: true, group: groupSaved });
+
+      } catch (err) {
+        return next(
+          new HttpException(
+            400,
+            'Some error ocurred while creating the Group'
+          )
+        );
+      }
+
     } catch (err) {
       next(err)
     }
   }
 
-  static async updateGroup (req: Request, res: Response, next: NextFunction) {
+
+
+  static async updateGroup(req: Request, res: Response, next: NextFunction) {
     try {
-      const body = req.body
-      Group.findById(req.params.id, (err, group: IGroup) => {
-        if (err) {
-          return next(new HttpException(500, 'Group not found'))
-        }
+      const body = req.body;
 
-        if (!group) {
-          return next(
-            new HttpException(400, `Group with id ${req.params.id} not found`)
-          )
-        }
+      // Buscar grupo sin callback
+      const group = await Group.findById(req.params.id);
 
+      if (!group) {
+        return next(
+          new HttpException(400, `Group with id ${req.params.id} not found`)
+        );
+      }
 
+      // Actualizar campos
+      group.name = body.name;
+      group.users = body.users;
+      group.role = body.role;
 
-        group.name = body.name;
-        group.users = body.users;
-        group.role = body.role;
+      // Guardar grupo
+      const groupSaved = await group.save();
 
-        group.save(async (err, groupSaved: IGroup) => {
-          if (err) {
-            return next(new HttpException(500, 'Error updating the group'))
-          }
-
-          // Borrem de tots els usuaris el grup actualitzat
-          await User.updateMany(
-            {},
-            { $pull: { role: { $in: [req.params.id] } } }
-          )
-          // Introduim de nou als usuaris seleccionat el grup actualitzat
-          await User.updateMany(
-            { _id: { $in: body.users } },
-            { $push: { role: req.params.id } }
-          ).exec()
-
-          return res.status(200).json({ ok: true, group: groupSaved })
-        })
-      })
-    } catch (err) {
-      next(err)
-    }
-  }
-
-  static async deleteGroup (req: Request, res: Response, next: NextFunction) {
-    try {
-      await Dashboard.updateOne({}, { $pull: { group: req.params.id } }).exec()
-      await User.updateOne(
-        { role: req.params.id },
+      // Eliminar el grupo actual de todos los usuarios
+      await User.updateMany(
+        {},
         { $pull: { role: { $in: [req.params.id] } } }
-      ).exec()
-      let options: QueryOptions = {}
+      );
 
-      Group.findByIdAndDelete(
-        req.params.id,
-        options,
-        async (err, groupDeleted: IGroup) => {
-          if (err) {
-            return next(new HttpException(500, 'Error removing group'))
-          }
+      // Agregar el grupo a los usuarios seleccionados
+      await User.updateMany(
+        { _id: { $in: body.users } },
+        { $push: { role: req.params.id } }
+      );
 
-          if (!groupDeleted) {
-            return next(new HttpException(400, 'Group not exists'))
-          }
+      return res.status(200).json({ ok: true, group: groupSaved });
 
-          return res.status(200).json({ ok: true })
-        }
-      )
     } catch (err) {
-      next(err)
+      return next(new HttpException(500, 'Error updating the group'));
     }
   }
+
+
+  static async deleteGroup(req: Request, res: Response, next: NextFunction) {
+  try {
+    // Quitar el grupo de los dashboards
+    await Dashboard.updateOne({}, { $pull: { group: req.params.id } });
+
+    // Quitar el grupo de los usuarios que lo tienen
+    await User.updateOne(
+      { role: req.params.id },
+      { $pull: { role: req.params.id } }
+    );
+
+    // Borrar el grupo
+    const groupDeleted = await Group.findByIdAndDelete(req.params.id);
+
+    if (!groupDeleted) {
+      return next(new HttpException(400, 'Group does not exist'));
+    }
+
+    return res.status(200).json({ ok: true });
+
+  } catch (err) {
+    return next(new HttpException(500, 'Error removing group'));
+  }
+}
+
 
   /**
    * Esta función borra un grupo que ya no está en el Active Directory
    */
-  static async deleteGroupFromAD ( grupo:string ) {
-    
+  static async deleteGroupFromAD(grupo: string): Promise<string> {
     try {
-      let groupId =  await  GroupController.getLocalGroupsIds( [grupo] );
-      await Dashboard.updateOne({}, { $pull: { group: groupId[0] } }).exec()
+      const groupIds = await GroupController.getLocalGroupsIds([grupo]);
+      const groupId = groupIds[0];
+
+      if (!groupId) {
+        console.log('Group not found locally');
+        return grupo;
+      }
+
+      // Quitar el grupo de los dashboards
+      await Dashboard.updateOne({}, { $pull: { group: groupId } });
+
+      // Quitar el grupo de los usuarios
       await User.updateOne(
-        { role: groupId[0] },
-        { $pull: { role: { $in: [groupId[0]] } } }
-      ).exec()
-      let options: QueryOptions = {}
+        { role: groupId },
+        { $pull: { role: groupId } }
+      );
 
-      Group.findByIdAndDelete(
-        groupId[0] ,
-        options,
-        async (err, groupDeleted: IGroup) => {
-          if (err) {
-            console.log( 'Error removing group');
-          }
+      // Borrar el grupo
+      const groupDeleted = await Group.findByIdAndDelete(groupId);
 
-          if (!groupDeleted) {
-            console.log( 'Group not exists');
-          }
+      if (!groupDeleted) {
+        console.log('Group does not exist');
+      } else {
+        console.log(`Group ${grupo} deleted successfully`);
+      }
 
-          return grupo;
-        }
-      )
+      return grupo;
+
     } catch (err) {
-      console.log( err);
+      console.error('Error deleting group:', err);
+      return grupo;
     }
   }
-
 }

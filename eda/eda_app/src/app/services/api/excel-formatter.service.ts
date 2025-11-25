@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import * as XLSX from 'xlsx';
 import * as _ from 'lodash';
+import ExcelJS from 'exceljs/dist/exceljs.min.js';
 import { Observable } from 'rxjs/internal/Observable';
 import { ApiService } from './api.service';
 import { HttpClient } from '@angular/common/http';
@@ -19,28 +19,65 @@ export class ExcelFormatterService extends ApiService {
      * Reads an Excel file and converts the data to JSON.
      * @param filePath The path to the Excel file.
      */
-    async readExcelToJson(file: File): Promise<JSON[]> {
-        if (!file.name.toString().toLowerCase().endsWith('.xls') && !file.name.toString().toLowerCase().endsWith('.xlsx')) return null;
+    async readExcelToJson(file: File): Promise<any[] | null> {
+        // Solo aceptar archivos xls/xlsx
+        const ext = file.name.toLowerCase();
+        if (!ext.endsWith('.xls') && !ext.endsWith('.xlsx')) return null;
 
-        return new Promise<JSON[]>((resolve, reject) => {
-            const fileReader = new FileReader();
-            fileReader.onload = (event) => {
-                const data = event.target.result;
-                const workbook: XLSX.WorkBook = XLSX.read(data, { type: 'binary', cellDates: true });
+        return new Promise<any[]>((resolve, reject) => {
+            const reader = new FileReader();
 
-                console.log('workobook', workbook);
-                const sheetName: string = workbook.SheetNames[0];
-                const sheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
+            reader.onload = async (event: ProgressEvent<FileReader>) => {
+                try {
+                    const arrayBuffer = event.target?.result;
+                    if (!arrayBuffer) {
+                        reject('No file data');
+                        return;
+                    }
 
-                const jsonData: JSON[] = XLSX.utils.sheet_to_json(sheet, { raw:false, dateNF:'yyyy-mm-dd' });
-                //console.log('jsonData -->', jsonData)
-                resolve(jsonData);
+                    const workbook = new ExcelJS.Workbook();
+                    await workbook.xlsx.load(arrayBuffer as ArrayBuffer);
+
+                    // Tomar la primera hoja
+                    const worksheet = workbook.worksheets[0];
+                    if (!worksheet) {
+                        resolve([]);
+                        return;
+                    }
+
+                    const jsonData: any[] = [];
+
+                    // Iterar cada fila
+                    worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+                        const rowData: any = {};
+                        row.eachCell((cell, colNumber) => {
+                            // Usar la primera fila como headers
+                            if (rowNumber === 1) {
+                                rowData[colNumber] = cell.text;
+                            } else {
+                                const header = worksheet.getRow(1).getCell(colNumber).text;
+                                rowData[header] = cell.text;
+                            }
+                        });
+                        // Ignorar la fila de headers en jsonData
+                        if (rowNumber !== 1) {
+                            jsonData.push(rowData);
+                        }
+                    });
+
+                    resolve(jsonData);
+                } catch (err) {
+                    console.error('Error reading Excel:', err);
+                    reject(err);
+                }
             };
-            fileReader.onerror = (error) => {
-                console.error('Error reading file', error);
+
+            reader.onerror = (error) => {
+                console.error('FileReader error', error);
                 reject(error);
             };
-            fileReader.readAsArrayBuffer(file);
+
+            reader.readAsArrayBuffer(file);
         });
     }
     /**

@@ -223,11 +223,12 @@ export class ExcelSheetController {
                     }
                 }
             });
-
-            datasource.save((err, data_source) => {
-                if (err) { return next(new HttpException(500, `Error saving the datasource`)); }
+            try {
+                const data_source = await datasource.save();
                 return res.status(201).json({ ok: true, data_source_id: data_source._id });
-            });
+            } catch (error) {
+                return (new HttpException(500, `Error saving the datasource`));
+            }
         } catch (error) {
             console.log("Error al parsear el excel: ", error);
             throw error;

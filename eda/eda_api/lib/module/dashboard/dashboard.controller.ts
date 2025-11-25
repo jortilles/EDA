@@ -461,169 +461,92 @@ export class DashboardController {
         .map(dashboard => dashboard._id)
         .filter(id => id.toString() === req.params.id)
 
-      Dashboard.findOne({ _id: req.params.id }, async (err, dashboard) => {
-        if (err) {
-          console.log('Dashboard not found with this id:' + req.params.id)
-          return next(
-            new HttpException(500, 'Dashboard not found with this id')
-          )
+      try {
+  // Obtener el dashboard
+  const dashboard = await Dashboard.findById(req.params.id);
+  if (!dashboard) {
+    console.log('Dashboard not found with this id:' + req.params.id);
+    return next(new HttpException(500, 'Dashboard not found with this id'));
+  }
+
+  await DashboardController.initDashboardPanels(dashboard);
+
+  const visibilityCheck = !['shared', 'public'].includes(dashboard.config.visible);
+  const roleCheck =
+    !userRoles.includes('EDA_ADMIN') &&
+    userGroupDashboards.length === 0 &&
+    dashboard.user.toString() !== user;
+
+  if (visibilityCheck && roleCheck) {
+    console.log("You don't have permission " + user + ' for dashboard ' + req.params.id);
+    return next(new HttpException(500, "You don't have permission"));
+  }
+
+  // Obtener el datasource asociado
+  const datasource = await DataSource.findById(dashboard.config.ds._id);
+  if (!datasource) {
+    return next(new HttpException(400, 'Datasource not found with id'));
+  }
+
+  // Convertir a objeto JSON
+  const toJson = JSON.parse(JSON.stringify(datasource));
+
+  // Filtrar tablas y columnas prohibidas
+  const uniquesForbiddenTables = DashboardController.getForbiddenTables(toJson, userGroups, req.user._id);
+  const uniquesForbiddenColumns = DashboardController.getForbiddenColumns(toJson, userGroups, req.user._id);
+
+  const includesAdmin = req.user.role.includes("135792467811111111111110");
+
+  if (!includesAdmin) {
+    // Ocultar tablas prohibidas
+    if (uniquesForbiddenTables.length > 0 && toJson.ds.model.tables) {
+      toJson.ds.model.tables.forEach(table => {
+        if (uniquesForbiddenTables.includes(table.table_name)) {
+          table.visible = false;
         }
+      });
 
-        await DashboardController.initDashboardPanels(dashboard);
-
-        const visibilityCheck = !['shared', 'public'].includes(dashboard.config.visible);
-
-        const roleCheck =
-          !userRoles.includes('EDA_ADMIN') &&
-          userGroupDashboards.length === 0 &&
-          dashboard.user.toString() !== user
-
-        if (visibilityCheck && roleCheck) {
-          console.log("You don't have permission " + user + ' for dashboard ' + req.params.id);
-          return next(new HttpException(500, "You don't have permission"))
+      // Ocultar columnas prohibidas en paneles
+      dashboard.config.panel.forEach(panel => {
+        if (panel.content?.query?.query?.fields) {
+          panel.content.query.query.fields = panel.content.query.query.fields.filter(
+            field => !uniquesForbiddenTables.includes(field.table_id)
+          );
         }
+      });
+    }
+  }
 
-        DataSource.findById(
-          { _id: dashboard.config.ds._id },
-          (err, datasource) => {
-            if (err) {
-              return next(
-                new HttpException(500, 'Error searching the DataSource')
-              )
-            }
+  // Inicializar relaciones de tablas
+  toJson.ds.model.tables.forEach(table => {
+    table.relations.forEach(r => {
+      r.autorelation ??= false;
+      r.bridge ??= false;
+    });
+  });
 
-            if (!datasource) {
-              return next(new HttpException(400, 'Datasouce not found with id'))
-            }
-            let toJson = JSON.parse(JSON.stringify(datasource));
+  // Ocultar columnas prohibidas en modelo
+  uniquesForbiddenColumns.forEach(fc => {
+    const table = toJson.ds.model.tables.find(t => t.table_name === fc.table);
+    const column = table?.columns.find(c => c.column_name === fc.column);
+    if (column) column.visible = false;
+  });
 
-            // Filtre de seguretat per les taules. Si no es te permis sobre una taula es posa com a oculta.
-            // Per si de cas es fa servir a una relació.
-            const uniquesForbiddenTables = DashboardController.getForbiddenTables(
-              toJson,
-              userGroups,
-              req.user._id
-            )
+  const ds = {
+    _id: datasource._id,
+    model: toJson.ds.model,
+    name: toJson.ds.metadata.model_name
+  };
 
-            // Filtre de seguretat per les columnes. Si no es te permis sobre una columna es posa com a oculta.
-            const uniquesForbiddenColumns = DashboardController.getForbiddenColumns (
-              toJson,
-              userGroups,
-              req.user._id
-            )
+  insertServerLog(req, 'info', 'DashboardAccessed', req.user.name, dashboard._id + '--' + dashboard.config.title);
 
-            const includesAdmin = req.user.role.includes("135792467811111111111110")
+  return res.status(200).json({ ok: true, dashboard, datasource: ds });
 
-            if (!includesAdmin) {
+} catch (err) {
+  console.log(err);
+  return next(new HttpException(500, 'Error processing dashboard'));
+}
 
-              try {
-                // Poso taules prohivides a false
-                if (uniquesForbiddenTables.length > 0) {
-                  // Poso taules prohivides a false
-                  for (let x = 0; x < toJson.ds.model.tables.length; x++) {
-                    try {
-                      if (
-                        uniquesForbiddenTables.includes(
-                          toJson.ds.model.tables[x].table_name
-                        )
-                      ) {
-                        toJson.ds.model.tables[x].visible = false
-                      }
-                    } catch (e) {
-                      console.log('Error evaluating role permission')
-                      console.log(e)
-                    }
-                  }
-
-                  // Oculto columnes als panells
-                  for (let i = 0; i < dashboard.config.panel.length; i++) {
-                    if (dashboard.config.panel[i].content != undefined) {
-                      let MyFields = []
-                      let notAllowedColumns = []
-                      for (
-                        let c = 0;
-                        c <
-                        dashboard.config.panel[i].content.query.query.fields
-                          .length;
-                        c++
-                      ) {
-                        if (
-                          uniquesForbiddenTables.includes(
-                            dashboard.config.panel[i].content.query.query.fields[
-                              c
-                            ].table_id
-                          )
-                        ) {
-                          notAllowedColumns.push(
-                            dashboard.config.panel[i].content.query.query.fields[
-                            c
-                            ]
-                          )
-                        } else {
-                          MyFields.push(
-                            dashboard.config.panel[i].content.query.query.fields[
-                            c
-                            ]
-                          )
-                        }
-                      }
-                      if (notAllowedColumns.length > 0) {
-                        dashboard.config.panel[
-                          i
-                        ].content.query.query.fields = MyFields
-                      }
-                    }
-                  }
-                }
-              } catch (error) {
-
-                console.log('no pannels in dashboard')
-              }
-
-            }
-
-            // Se agrega false a autorelation y bridge
-            toJson.ds.model.tables.forEach(table => {
-              table.relations.forEach(r => {
-                if(r.autorelation == undefined){
-                  r.autorelation = false;
-                }
-                if(r.bridge == undefined){
-                  r.bridge = false;
-                }
-              });
-            });
-
-
-            // Si tengo columnas prohividas las pongo invisibles en el modelo.
-            try{
-              if(uniquesForbiddenColumns.length > 0){
-                uniquesForbiddenColumns.forEach( fc => {
-                  toJson.ds.model.tables.filter( t=> t.table_name == fc.table  )[0].columns.filter( c=> c.column_name == fc.column)[0].visible = false ;
-                });
-              }
-            }catch(e){
-              console.log('Error handling columns permissions');
-              console.log(e);
-            }
-
-            const ds = {
-              _id: datasource._id,
-              model: toJson.ds.model,
-              name: toJson.ds.metadata.model_name
-            }
-
-            insertServerLog(
-              req,
-              'info',
-              'DashboardAccessed',
-              req.user.name,
-              dashboard._id + '--' + dashboard.config.title
-            )
-            return res.status(200).json({ ok: true, dashboard, datasource: ds })
-          }
-        )
-      })
     } catch (err) {
       next(err)
     }
@@ -698,27 +621,18 @@ export class DashboardController {
       /**avoid dashboards without name */
       if (dashboard.config.title === null) { dashboard.config.title = '-' };
       //Save dashboard in db
-      dashboard.save((err, dashboard) => {
-        if (err) {
-          return next(
-            new HttpException(
-              400,
-              'Some error ocurred while creating the dashboard'
-            )
-          )
-        }
+      const dashboardCreated = await dashboard.save();
 
-        return res.status(201).json({ ok: true, dashboard })
-      })
+      return res.status(201).json({ ok: true, dashboard })
     } catch (err) {
-      next(err)
+      return new HttpException(400, 'Some error ocurred while creating the dashboard')
     }
   }
 
   static async update(req: Request, res: Response, next: NextFunction) {
     try {
       const body = req.body;
-      Dashboard.findById(req.params.id, (err, dashboard: IDashboard) => {
+      Dashboard.findById(req.params.id, async (err, dashboard: IDashboard) => {
         if (err) {
           return next(new HttpException(500, 'Error searching the dashboard'))
         }
@@ -728,23 +642,21 @@ export class DashboardController {
             new HttpException(400, 'Dashboard not exist with this id')
           )
         }
+
         dashboard.config = body.config
         dashboard.group = body.group
         /**avoid dashboards without name */
         if (dashboard.config.title === null) { dashboard.config.title = '-' };
-        
-        
-        
-        dashboard.save((err, dashboard) => {
-          if (err) {
-            return next(new HttpException(500, 'Error updating dashboard'))
-          }
 
+        try {
+          const dashboardToUpdate = await dashboard.save();
           return res.status(200).json({ ok: true, dashboard })
-        })
-      })
-    } catch (err) {
-      next(err)
+        } catch (err) {
+          return (new HttpException(500, 'Error updating dashboard'))
+        }
+      });
+    } catch (error) {
+      return (new HttpException(500, 'Error updating dashboard'))
     }
   }
   
@@ -776,54 +688,48 @@ export class DashboardController {
         };
       }
 
-      Dashboard.findByIdAndUpdate(
+      const dashboard = await Dashboard.findByIdAndUpdate(
         id,
         { $set: updateObj },
-        { new: true, runValidators: true },
-        (err, dashboard) => {
-          if (err) {
-            return next(
-              new HttpException(
-                400,
-                'Some error occurred while updating the dashboard'
-              )
-            );
-          }
-
-          if (!dashboard) {
-            return next(
-              new HttpException(404, 'Dashboard not found with this id')
-            );
-          }
-
-          return res.status(200).json({ ok: true, dashboard });
-        }
+        { new: true, runValidators: true }
       );
+
+      if (!dashboard) {
+        return next(
+          new HttpException(404, 'Dashboard not found with this id')
+        );
+      }
+
+      return res.status(200).json({ ok: true, dashboard });
+
     } catch (err) {
-      next(err);
+      return next(
+        new HttpException(
+          400,
+          'Some error occurred while updating the dashboard'
+        )
+      );
     }
+
   }
 
   static async delete(req: Request, res: Response, next: NextFunction) {
-    let options: QueryOptions = {}
     try {
-      Dashboard.findByIdAndDelete(req.params.id, options, (err, dashboard) => {
-        if (err) {
-          return next(new HttpException(500, 'Error removing dashboard'))
-        }
+      const dashboard = await Dashboard.findByIdAndDelete(req.params.id);
 
-        if (!dashboard) {
-          return next(
-            new HttpException(400, 'Not exists dahsboard with this id')
-          )
-        }
+      if (!dashboard) {
+        return next(
+          new HttpException(400, 'Dashboard with this id does not exist')
+        );
+      }
 
-        return res.status(200).json({ ok: true, dashboard })
-      })
+      return res.status(200).json({ ok: true, dashboard });
+
     } catch (err) {
-      next(err)
+      return next(new HttpException(500, 'Error removing dashboard'));
     }
   }
+
 
   static async initDashboardPanels(dashboard: any) {
     const panels = dashboard.config.panel || [];

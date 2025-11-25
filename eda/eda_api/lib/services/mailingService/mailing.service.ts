@@ -80,7 +80,7 @@ export class MailingService {
 
       dashboards.forEach(dashboard => {
         const userMails = dashboard.config.sendViaMailConfig.users.map(user => user.email);
-        const dashboardID = dashboard._id;
+        const dashboardID: string = dashboard._id.toString();
         let shouldUpdate = false;
         if (dashboard.config.sendViaMailConfig.units = 'hours') {
           shouldUpdate = SchedulerFunctions.checkScheduleHours(dashboard.config.sendViaMailConfig.quantity, dashboard.config.sendViaMailConfig.lastUpdated);

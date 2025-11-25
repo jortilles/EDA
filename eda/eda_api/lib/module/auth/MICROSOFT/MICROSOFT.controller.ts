@@ -47,25 +47,30 @@ export class MicrosoftController {
                         role: [],
                         creation_date: new Date()
                     });
-                    userToSave.save(async (err, userSaved) => {
-                        if(err) return next(new HttpException(400, 'Some error ocurred while creating the User'));
+                    try {
+                        const userSaved = await userToSave.save();                        
                         Object.assign(user, userSaved);
                         user.password = ':)';
                         token = await jwt.sign({user}, SEED, {expiresIn: 14400})
                         return res.status(200).json({ user, token: token, id: user._id });
-                    });
+                    } catch (error) {
+                        return(new HttpException(400, 'Some error ocurred while creating the User'));
+                    }
                 } else {
                     // Si el usuario ya esta registrado, se actualiza algunos datos.
                     userEda.name = givenName;
                     userEda.email = email;
                     userEda.password = bcrypt.hashSync(oid, 10); 
-                    userEda.save(async (err, userSaved) => {
-                        if(err) return next(new HttpException(400, 'Some error ocurred while creating the User'));
+                    
+                    try {
+                        const userSaved = await userEda.save(); 
                         Object.assign(user, userSaved);
                         user.password = ':)';
                         token = await jwt.sign({user}, SEED, {expiresIn: 14400});
                         return res.status(200).json({ user, token: token, id: user._id });
-                    })
+                    } catch (error) {
+                        return (new HttpException(400, 'Some error ocurred while creating the User'));
+                    }
                 }
             } else {
                 return next(new HttpException(400, 'Usuario no verificado por Microsoft'));
