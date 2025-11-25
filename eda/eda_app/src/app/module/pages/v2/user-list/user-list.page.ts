@@ -172,7 +172,7 @@ export class UserListPage implements OnInit {
 
       this.userService.createUser(user).subscribe(
         res => {
-          Swal.fire($localize`:@@CreatedUser:Usuario creado`, res.email, 'success');
+          Swal.fire($localize`:@@UserCreated:Usuario creado`, res.email, 'success');
           this.loadUserList();
         }, err => {
           Swal.fire($localize`:@@RegisterError:Error al registrarse`, err.text, 'error');

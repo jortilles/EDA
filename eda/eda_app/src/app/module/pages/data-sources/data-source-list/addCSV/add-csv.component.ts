@@ -62,7 +62,7 @@ export class AddCsvComponent implements OnInit {
       { label: 'date', value: "timestamp" },
     ];
 
-    this.editFieldsHeaders = [$localize`:@@csvField:Campo`, $localize`:@@csvType:Tipo`, $localize`:@@csvFormat:Formato`, $localize`:@@csvSep:Separador Decimal`];
+    this.editFieldsHeaders = [$localize`:@@csvField:Campo`, $localize`:@@type:Tipo`, $localize`:@@csvFormat:Formato`, $localize`:@@csvSep:Separador Decimal`];
 
     this.dataFormats = [
       { label: '', value: '' },

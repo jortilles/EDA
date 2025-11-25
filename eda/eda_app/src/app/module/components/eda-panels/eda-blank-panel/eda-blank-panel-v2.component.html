@@ -420,7 +420,7 @@
 
                     <div class="grid grid-cols-4 items-center">
                       <div class="col-span-1">
-                        <h3 class="text-base font-bold inline"><span i18n="@@scenarios">Filtros avanzados: </span></h3>
+                        <h3 class="text-base font-bold inline"><span i18n="@@filtrosAvanzados">Filtros avanzados: </span></h3>
                       </div>
 
                       <div class="col-span-3">
@@ -460,11 +460,10 @@
                           </summary>
                           <div class="text-sm text-gray-600 pl-2 pb-4 pt-2">
                             <p class="mb-2" i18n="@@joins1">
-                              La funcionalidad de <strong>Intersección de Joins</strong> permite definir cómo se relacionan las tablas de tu consulta mediante <strong>LEFT</strong>, <strong>INNER</strong> o <strong>RIGHT JOIN</strong>.
-                              Esto te da control sobre qué registros se incluyen en el resultado, dependiendo de la presencia o ausencia de coincidencias entre las tablas.
+                              La funcionalidad de <strong>Intersección de Joins</strong> permite definir cómo se relacionan las tablas de tu consulta mediante <strong>LEFT</strong>, <strong>INNER</strong> o <strong>RIGHT JOIN</strong>. Esto te da control sobre qué registros se incluyen en el resultado, dependiendo de la presencia o ausencia de coincidencias entre las tablas.
                             </p>
 
-                            <h4 class="text-sm font-medium mb-2" i18n="@@joins2">Limitaciones:</h4>
+                            <h4 class="text-sm font-medium mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
 
                             <ul class="list-disc pl-6">
                               <li i18n="@@joins3">
@@ -492,13 +491,8 @@
                             </svg>
                           </summary>
                           <div class="text-sm text-gray-600 pl-2 pb-4 pt-2">
-                            <p class="mb-2" i18n="@@whatif1">
-                              La funcionalidad <strong>What If</strong> te permite crear atributos nuevos a partir de otros atributos en tu gráfico.
-                              A estos nuevos campos se les puede aplicar una operación matemática para modificar su valor según tus necesidades,
-                              y también es posible cambiarles el nombre para identificarlos fácilmente.
-                            </p>
-
-                            <h4 class="text-sm font-medium mb-2" i18n="@@whatif2">Limitaciones:</h4>
+                            <p class="mb-2" i18n="@@whatif1"> La funcionalidad <strong>What If</strong> te permite crear atributos nuevos a partir de otros atributos en tu gráfico. A estos nuevos campos se les puede aplicar una operación matemática para modificar su valor según tus necesidades, y también es posible cambiarles el nombre para identificarlos fácilmente.</p>
+                            <h4 class="text-sm font-medium mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
 
                             <ul class="list-disc pl-6">
                               <li i18n="@@whatif3">
@@ -532,11 +526,9 @@
                           </summary>
                           <div class="text-sm text-gray-600 pl-2 pb-4 pt-2">
                             <p class="mb-2" i18n="@@filtrosAvanzados1">
-                              La funcionalidad <strong>Filtros Avanzados</strong> permite relacionar los filtros globales y de panel utilizando operadores <strong>AND</strong> o <strong>OR</strong>.
-                              Esto posibilita que los filtros no solo se apliquen como un conjunto fijo de condiciones, sino que puedan interoperar entre sí según la relación definida.
+                            La funcionalidad <strong>Filtros Avanzados</strong> permite relacionar los filtros globales y de panel utilizando operadores <strong>AND</strong> o <strong>OR</strong>. Esto posibilita que los filtros no solo se apliquen como un conjunto fijo de condiciones, sino que puedan interoperar entre sí según la relación definida.
                             </p>
-
-                            <h4 class="text-sm font-medium mb-2" i18n="@@filtrosAvanzados2">Limitaciones:</h4>
+                            <h4 class="text-sm font-medium mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
 
                             <ul class="list-disc pl-6">
                               <li i18n="@@filtrosAvanzados3">
@@ -562,7 +554,7 @@
       <div class="grid grid-cols-1 md:grid-cols-5 gap-0 h-full">
         <div class="md:col-span-3 p-4 border-r border-gray-200">
           <div class="space-y-4">
-            <h3 class="font-semibold text-gray-700" i18n="@@sqlExpresionH6">Expresión SQL</h3>
+            <h3 class="font-semibold text-gray-700" i18n="@@SQLExpression">Expresión SQL</h3>
             <div class="relative">
               <textarea [(ngModel)]="currentSQLQuery"
                 class="w-full h-64 p-3 border border-gray-300 rounded-md font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
@@ -771,7 +763,7 @@
                           Tenemos un filtro en el informe para el campo 'office_id' de la tabla OFFICES
                         </h4>
 
-                        <p class="text-sm text-gray-500" i18n="@@indicaciones15"> Consulta sin filtros vinculados
+                        <p class="text-sm text-gray-500" i18n="@@indicaciones12"> Consulta sin filtros vinculados
                         </p>
                         <div class="bg-gray-50 p-3 rounded-md text-sm font-mono">
                           <div class="flex items-start">
@@ -783,7 +775,7 @@
                           </div>
                         </div>
 
-                        <p class="text-sm text-gray-500 mt-2" i18n="@@indicaciones16">Consulta con filtros
+                        <p class="text-sm text-gray-500 mt-2" i18n="@@indicaciones13">Consulta con filtros
                           vinculados</p>
                         <div class="bg-gray-50 p-3 rounded-md text-sm font-mono">
                           <div class="flex items-start">
@@ -883,7 +875,7 @@
 
     <button class="cancel-button" (click)="closeEditarConsulta()">
       <i class="fa fa-times"></i>
-      <span i18n="@@cancelarButton">
+      <span i18n="@@cancelarBtn">
         Cancelar
       </span>
     </button>

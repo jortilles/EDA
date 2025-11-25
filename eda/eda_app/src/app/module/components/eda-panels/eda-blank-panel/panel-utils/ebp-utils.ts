@@ -37,7 +37,7 @@ export const EbpUtils = {
         description += `\n${str}`;
         break;
       case 'bar': 
-        str = $localize`:@@chartInfo7:Un gráfico de barras necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.`;
+        str = $localize`:@@chartInfo6:Un gráfico de barras necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.`;
         description += `\n${str}`;
         break;
       case 'bubblechart':
@@ -99,7 +99,7 @@ export const EbpUtils = {
         description += `\n${str}`;
         break;
       default:
-        description = $localize`:@@chartInfo13:Los datos seleccionados no permiten utilizar este gráfico.`;
+        description = $localize`:@@chartInfo1:Los datos seleccionados no permiten utilizar este gráfico.`;
         break;
     }
 

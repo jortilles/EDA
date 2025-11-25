@@ -928,7 +928,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
         let panel = new EdaPanel({
             id: this.fileUtiles.generateUUID(),
-            title: $localize`:@@newPanelTitle2:Nuevo Panel`,
+            title: $localize`:@@newPanelTitle:Nuevo Panel`,
             type: EdaPanelType.BLANK,
             w: 20,
             h: 10,

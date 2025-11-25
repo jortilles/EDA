@@ -40,7 +40,7 @@
               [disabled]="noLink"
               (onChange)="initDashboards(selectedColumn)"
               optionLabel="colname" 
-              i18n-placeholder="@@fieldDashboard"
+              i18n-placeholder="@@csvField"
               placeholder="Field"
               [style]="{'width': '100%'}"
             ></p-dropdown>
@@ -57,7 +57,7 @@
               [(ngModel)]="selectedDashboard"
               [disabled]="loading === false && activateProgressBar === false"
               [style]="{'width': '100%'}"
-              i18n-placeholder="@@DashboardDashboard"
+              i18n-placeholder="@@fieldDashboardDashboard"
               placeholder="Dashboard"
               [loading] = "loading===true"
             ></p-dropdown>
@@ -113,7 +113,7 @@
               [(ngModel)]="selectedFilter"
               [options]="filters"
               optionLabel="colname" 
-              i18n-placeholder="@@columnDashboardDashboard"
+              i18n-placeholder="@@columnDashboard"
               placeholder="Column"
               [disabled]="noLink"
               [style]="{'width': '100%'}"

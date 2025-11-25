@@ -37,8 +37,8 @@ export class DsConfigWrapperComponent implements OnInit {
 	public type: any;
 	public name: string;
 	public header: string = $localize`:@@DataModelHeader:Configurar nueva fuente de datos`;
-	public optimizeString: string = $localize`:@@OptimizeQuery:Optimizar consultas`;
-	public allowCacheSTR: string = $localize`:@@allowCache: Habilitar caché`;
+	public optimizeString: string = $localize`:@@optimizedQueries:Optimizar consultas`;
+	public allowCacheSTR: string = $localize`:@@enableCache: Habilitar caché`;
 	public filterTooltip: string = $localize`:@@filterTooltip:Puedes añadir palabras separadas por comas, que se aplicarán como filtros de tipo LIKE a la hora de recuperar las tablas de tu base de datos`;
 	public allowSSLSTR: string = $localize`:@@allowSSL:Conexión mediante SSL`;
 	public excelFileName:string = "";

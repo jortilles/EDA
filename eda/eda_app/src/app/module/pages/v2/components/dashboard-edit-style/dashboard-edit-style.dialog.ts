@@ -58,9 +58,9 @@ export class DashboardEditStyleDialog {
 
   public dashBoardStyles: DashboardStyles;
 
-  public titleHeader: string = $localize`:@@dashboardTitleEdit:Título del informe`;
-  public filtersHeader: string = $localize`:@@filtersEdit:Filtros`;
-  public panelTitleHeader: string = $localize`:@@panelTitleEdit:Título del panel`;
+  public titleHeader: string = $localize`:@@samplePanelDBName:Título del informe`;
+  public filtersHeader: string = $localize`:@@filters:Filtros`;
+  public panelTitleHeader: string = $localize`:@@samplePanelName:Título del panel`;
   public panelContentHeader: string = $localize`:@@panelContentEdit:Contenido del panel`;
   public samplePanelTitle: string = $localize`:@@samplePanelTitle:Previsualización`;
   public samplePanelDBName: string = $localize`:@@samplePanelDBName:Título del informe`;

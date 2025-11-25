@@ -85,7 +85,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public addView:string = $localize`:@@addView:Añadir vista`;
     public addTagDataSource:string = $localize`:@@addTagDataSource: Añadir Tag`;
     public addCSV:string = $localize`:@@addCSV:Añadir tabla desde csv`;
-    public addRelation:string = $localize`:@@addRelationButton:Añadir relación`;
+    public addRelation:string = $localize`:@@addRelation:Añadir relación`;
     public addCalculatedCol:string = $localize`:@@addCalculatedCol:Añadir columna  calculada`;
     public addPermission:string = $localize`:@@addPermission:Añadir permiso`;
     public addValueList:string = $localize`:@@addValueList:Añadir lista de valores posibles`;
@@ -291,7 +291,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             cols: [
                 new EdaColumnText({ field: 'origin', header: $localize`:@@originRel:Origen` }),
                 new EdaColumnText({ field: 'dest', header: $localize`:@@targetRel:Destino` }),
-                new EdaColumnText({ field: 'name', header: $localize`:@@nameRel:Nombre` }),
+                new EdaColumnText({ field: 'name', header: $localize`:@@name:Nombre` }),
                 new EdaColumnEditable({ field: 'modify', click: (relation) => this.updateRelation(relation._id)}),
                 new EdaColumnFunction({ field: 'delete', click: (relation) => this.deleteRelation(relation._id)}),
             ]
@@ -856,7 +856,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: $localize`:@@ContinueTablaQuality:Continuar`,
-            cancelButtonText: $localize`:@@CancelTablaQuality:Cancelar`,
+            cancelButtonText: $localize`:@@cancelarBtn:Cancelar`,
         }).then( (borrado) => {
             if(borrado.value){
                 // Encontrando la vista a editar:

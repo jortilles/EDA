@@ -11,14 +11,6 @@
           <context context-type="linenumber">24</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="placeholderInputPassword" datatype="html">
-        <source>Contraseña</source>
-        <target>Contrasenya</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
-          <context context-type="linenumber">31</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="spanRememberme" datatype="html">
         <source>Recuérdame</source>
         <target>Recorda'm</target>
@@ -35,34 +27,18 @@
           <context context-type="linenumber">41</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="e369e13629132e32dcd958b82261059243f21d58" datatype="html">
-        <source>Contraseña</source>
-        <target>Contrasenya</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/core/pages/register/register.component.html</context>
-          <context context-type="linenumber">31</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="d554461cfe5e5317e9257ceb0f9f96bec13c86c4" datatype="html">
-        <source>Confirma contraseña</source>
-        <target>Confirma la contrasenya</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/core/pages/register/register.component.html</context>
-          <context context-type="linenumber">35</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="terms1" datatype="html">
         <source> Estoy de acuerdo con los <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
-términos<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
+          términos<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
       </source>
       <target> Estic d'acord amb els <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
-termes<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
-    </target>
-    <context-group purpose="location">
-      <context context-type="sourcefile">app/core/pages/register/register.component.html</context>
-      <context context-type="linenumber">42</context>
-    </context-group>
-  </trans-unit>
+          termes<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
+      </target>
+      <context-group purpose="location">
+        <context context-type="sourcefile">app/core/pages/register/register.component.html</context>
+        <context context-type="linenumber">42</context>
+      </context-group>
+      </trans-unit>
   <trans-unit id="haveAccount" datatype="html">
     <source>
 							¿Tienes una cuenta? <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
@@ -95,15 +71,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <target>Gestió de logs</target>
 </trans-unit>
 
-<trans-unit id="sidebarUserManagement" datatype="html">
-<source>Gestión de
-                                    Usuarios</source>
-<target>Gestió d'usuaris</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
-<context context-type="linenumber">47</context>
-</context-group>
-</trans-unit>
 <trans-unit id="sidebarGroupManagement" datatype="html">
 <source>Gestión de
                                     Grupos</source>
@@ -425,14 +392,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
 <context context-type="linenumber">291</context>
 </context-group>
-</trans-unit>
-<trans-unit id="guardarButton" datatype="html">
-<source>Confirmar</source>
-<target>Confirmar</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
-<context context-type="linenumber">364</context>
-</context-group>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/chart-dialog/chart-dialog.component.html</context>
 <context context-type="linenumber">54</context>
@@ -446,26 +405,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">35</context>
 </context-group>
 </trans-unit>
-<trans-unit id="tiposFiltroLabel" datatype="html">
-<source>
-                        Tipos de filtro
-</source>
-<target>
-                        Tipus de filtre
-</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component.html</context>
-<context context-type="linenumber">22</context>
-</context-group>
-</trans-unit>
-<trans-unit id="addFilterButton" datatype="html">
-<source>Añadir filtro</source>
-<target>Afegir filtre</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component.html</context>
-<context context-type="linenumber">228</context>
-</context-group>
-</trans-unit>
+
 <trans-unit id="guardarBtn" datatype="html">
 <source>Confirmar</source>
 <target>Confirmar</target>
@@ -532,22 +472,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/maps-dialog/mapedit-dialog.component.html</context>
 <context context-type="linenumber">17</context>
-</context-group>
-</trans-unit>
-<trans-unit id="cancelarButton" datatype="html">
-<source>Cancelar</source>
-<target>Cancel·lar</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/chart-dialog/chart-dialog.component.html</context>
-<context context-type="linenumber">58</context>
-</context-group>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/table-dialog/table-dialog.component.html</context>
-<context context-type="linenumber">22</context>
-</context-group>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/maps-dialog/mapedit-dialog.component.html</context>
-<context context-type="linenumber">38</context>
 </context-group>
 </trans-unit>
 <trans-unit id="dangerQuery" datatype="html">
@@ -703,14 +627,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
 <context context-type="linenumber">166</context>
-</context-group>
-</trans-unit>
-<trans-unit id="sqlExpresionH6" datatype="html">
-<source>Expresión SQL</source>
-<target>Expressió SQL</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
-<context context-type="linenumber">182</context>
 </context-group>
 </trans-unit>
 <trans-unit id="originTable" datatype="html">
@@ -895,22 +811,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
 <context context-type="linenumber">262</context>
-</context-group>
-</trans-unit>
-<trans-unit id="indicaciones15" datatype="html">
-<source> Consulta sin filtros vinculados</source>
-<target> Consulta sense filtres vinculats</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
-<context context-type="linenumber">265</context>
-</context-group>
-</trans-unit>
-<trans-unit id="indicaciones16" datatype="html">
-<source> Consulta con filtros vinculados</source>
-<target> Consulta amb filtres vinculats</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
-<context context-type="linenumber">271</context>
 </context-group>
 </trans-unit>
 <trans-unit id="vistaSeleccionador" datatype="html">
@@ -1194,16 +1094,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <note priority="1" from="description">Button actualizar foto profile</note>
 <note priority="1" from="meaning">Button</note>
 </trans-unit>
-<trans-unit id="nuevoUsuarioBtn" datatype="html">
-<source>Crear usuario</source>
-<target>Crear usuari</target>
-<source>Crear usuario</source>
-<target>Crear usuari</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/users-management/users-list/users-list.component.html</context>
-<context context-type="linenumber">5</context>
-</context-group>
-</trans-unit>
+
 <trans-unit id="inputNombre" datatype="html">
 <source>Nombre *</source>
 <target>Nom *</target>
@@ -1280,14 +1171,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">16</context>
 </context-group>
 </trans-unit>
-<trans-unit id="inputRepitePassword" datatype="html">
-<source>Repite la contraseña</source>
-<target>Repeteix la contrasenya</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
-<context context-type="linenumber">17</context>
-</context-group>
-</trans-unit>
+
 <trans-unit id="inputGrupo" datatype="html">
 <source>Grupo *</source>
 <target>Grup *</target>
@@ -1344,14 +1228,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">49</context>
 </context-group>
 </trans-unit>
-<trans-unit id="inputNombreDb2" datatype="html">
-<source>BASE DE DATOS *</source>
-<target>BASE DE DADES *</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/data-sources/data-sources.component.html</context>
-<context context-type="linenumber">56</context>
-</context-group>
-</trans-unit>
+
 <trans-unit id="inputNombreEsquema" datatype="html">
 <source>ESQUEMA</source>
 <target>ESQUEMA</target>
@@ -1446,19 +1323,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">80</context>
 </context-group>
 </trans-unit>
-<trans-unit id="agregacionH6" datatype="html">
-<source>
-                Agregación
-</source>
-
-<target>
-                Agregació
-</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-<context context-type="linenumber">90</context>
-</context-group>
-</trans-unit>
 <trans-unit id="rolesPermisos" datatype="html">
 <source>Roles y permisos de fila</source>
 <target>Rols i permisos de fila</target>
@@ -1467,7 +1331,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">102</context>
 </context-group>
 </trans-unit>
-
 
 <trans-unit id="addModelPermissions" datatype="html">
   <source> Añadir permiso a nivel de modelo</source>
@@ -1478,8 +1341,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source> Añadir permiso</source>
 <target> Afegir permís</target>
 </trans-unit>
-
-
 
 <trans-unit id="esconderColumna" datatype="html">
 <source>Esconder columna</source>
@@ -1541,18 +1402,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">181</context>
 </context-group>
 </trans-unit>
-<trans-unit id="inputNombreUsuario" datatype="html">
-<source>
-                Usuario
-</source>
-<target>
-                Usuari
-</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-<context context-type="linenumber">188</context>
-</context-group>
-</trans-unit>
+
 <trans-unit id="placeholderSourceColumns" datatype="html">
 <source>Columna origen</source>
 
@@ -1578,9 +1428,13 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">19</context>
 </context-group>
 </trans-unit>
+<trans-unit id="placeholderTargetColumnId" datatype="html">
+<source>Columna con el id </source>
+<target>Columna amb l'id</target>
+</trans-unit>
 <trans-unit id="placeholderRelationName" datatype="html">
-<source>Nombre relación </source>
-<target>Nom relació </target>
+<source>Nombre relación</source>
+<target>Nom relació</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component.html</context>
 <context context-type="linenumber">19</context>
@@ -1590,23 +1444,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Columna con la descripción </source>
 <target>Columna amb la descripció</target>
 </trans-unit>
-<trans-unit id="crearGrupoLabel" datatype="html">
-<source>Crear grupo</source>
-<target>Crear grup</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/groups-management/group-list/group-list.component.html</context>
-<context context-type="linenumber">5</context>
-</context-group>
-</trans-unit>
-<trans-unit id="0acf4e0f9350f920b529a38364281d337c54edfd" datatype="html">
-<source>Cerrar</source>
-<target>Tancar</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/groups-management/group-detail/group-detail.component.html</context>
-<context context-type="linenumber">32</context>
-</context-group>
-<note priority="1" from="description">cerrarBtn</note>
-</trans-unit>
+
 <trans-unit id="aplyToAllPanelsH5" datatype="html">
 <source>
             ¿Aplica a todos los paneles?
@@ -1650,14 +1488,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/dashboard/filter-dialog/dashboard-filter-dialog.component.html</context>
 <context context-type="linenumber">46</context>
-</context-group>
-</trans-unit>
-<trans-unit id="tituloPermisosColumna" datatype="html">
-<source>Añadir permiso</source>
-<target>Afegir permís</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/column-permissions-dialog/column-permission-dialog.component.html</context>
-<context context-type="linenumber">3</context>
 </context-group>
 </trans-unit>
 <trans-unit id="inputMapTables" datatype="html">
@@ -1704,7 +1534,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">26</context>
 </context-group>
 </trans-unit>
-<trans-unit id="avaliableMaps" datatype="html">
+<trans-unit id="availableMaps" datatype="html">
 <source>Mapas disponibles</source>
 <target>Mapes disponibles</target>
 <context-group purpose="location">
@@ -1728,12 +1558,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">57</context>
 </context-group>
 </trans-unit>
-
-
-
-
-
-
 
 <trans-unit id="borrar" datatype="html">
 <source>Borrar</source>
@@ -1787,14 +1611,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Cargando informe...</source>
 <target>Carregant informe...</target>
 </trans-unit>
-<trans-unit id="addRelationButton" datatype="html">
-<source> Añadir relación </source>
-<target> Afegir relació </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-<context context-type="linenumber">36</context>
-</context-group>
-</trans-unit>
 <trans-unit id="addCalculatedCol" datatype="html">
 <source>Añadir columna calculada</source>
 <target>Afegir columna calculada</target>
@@ -1812,11 +1628,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="originRel">
 <source>Origen</source>
 <target>Origen</target>
-</trans-unit>
-
-<trans-unit id="nameRel">
-<source>Nombre</source>
-<target>Nom</target>
 </trans-unit>
 
 <trans-unit id="userTable">
@@ -1847,27 +1658,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">140</context>
 </context-group>
 </trans-unit>
-<trans-unit id="edaMode" datatype="html">
-<source>Modo EDA</source>
-<target>Mode EDA</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
-<context context-type="linenumber">344</context>
-</context-group>
-</trans-unit>
-<trans-unit id="sqlMode" datatype="html">
-<source>Modo SQL</source>
-<target>Mode SQL</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
-<context context-type="linenumber">345</context>
-</context-group>
-</trans-unit>
-
-<trans-unit id="panelOptions1">
-<source>Editar consulta</source>
-<target>Editar consulta</target>
-</trans-unit>
 
 <trans-unit id="panelOptions2">
 <source>Editar opciones del gráfico</source>
@@ -1889,12 +1679,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Duplicar panell</target>
 </trans-unit>
 
-
 <trans-unit id="duplicateColumnButton">
 <source>Duplicar columna</source>
 <target>Duplicar columna</target>
 </trans-unit>
-
 
 <trans-unit id="chartTypes1">
 <source>Tabla de Datos</source>
@@ -1932,7 +1720,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Un texto dinámicos requiere de un único valor NO numérico</source>
 <target>Un text dinàmic requereix un únic valor NO numèric</target>
 </trans-unit>
-
 
 <trans-unit id="chartTypes6">
 <source>Gráfico de Barras Apliadas</source>
@@ -2074,14 +1861,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Nuevo Panel</source>
 <target>Nou Panell</target>
 </trans-unit>
-<trans-unit id="newPanelTitle2">
-<source>Nuevo Panel</source>
-<target>Nou Panell</target>
-</trans-unit>
+
 
 <trans-unit id="addMap" datatype="html">
-<source> Mapas</source>
-<target> Mapes</target>
+<source>Mapas</source>
+<target>Mapes</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
   <context context-type="linenumber">210</context>
@@ -2103,15 +1887,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/data-sources/dsconfig-wrapper.component.ts</context>
   <context context-type="linenumber">106</context>
-</context-group>
-</trans-unit>
-
-<trans-unit id="saveNewTag" datatype="html">
-<source>Añadir Tag</source>
-<target>Afegir Tag</target>
-<context-group purpose="location">
-  <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/addTag/add-tag.component.html</context>
-  <context context-type="linenumber">24</context>
 </context-group>
 </trans-unit>
 
@@ -2157,15 +1932,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
 </context-group>
 </trans-unit>
-<trans-unit id="inputNombreEsquemaModel" datatype="html">
-<source>Esquema</source>
-<target>Esquema</target>
-<context-group purpose="location">
-  <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-  <context context-type="linenumber">181</context>
-</context-group>
-</trans-unit>
-
 <trans-unit id="listRelations" datatype="html">
 <source>Relaciones</source>
 <target>Relacions</target>
@@ -2192,7 +1958,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="namePass" datatype="html">
-<source>password</source>
+<source>contrasenya</source>
 <target>contrasenya</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
@@ -2251,15 +2017,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 
-<trans-unit id="passwordLogin" datatype="html">
-<source>Contraseña</source>
-<target>Contrasenya</target>
-<context-group purpose="location">
-  <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
-  <context context-type="linenumber">28</context>
-</context-group>
-</trans-unit>
-
 <trans-unit id="informacionGeneral" datatype="html">
 <source>Información general</source>
 <target>Informació general</target>
@@ -2284,24 +2041,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
   <context context-type="linenumber">242</context>
-</context-group>
-</trans-unit>
-
-<trans-unit id="newPassPlaceholderUsers" datatype="html">
-<source>Repite la contraseña</source>
-<target>Repeteix la contrasenya</target>
-<context-group purpose="location">
-  <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
-  <context context-type="linenumber">17</context>
-</context-group>
-</trans-unit>
-
-<trans-unit id="AddPermiso" datatype="html">
-<source>Añadir permiso</source>
-<target>Afegir permís</target>
-<context-group purpose="location">
-  <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/column-permissions-dialog/column-permission-dialog.component.html</context>
-  <context context-type="linenumber">3</context>
 </context-group>
 </trans-unit>
 
@@ -2371,15 +2110,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 
-<trans-unit id="sqlExp" datatype="html">
-<source>Expresión SQL</source>
-<target>Expressió SQL</target>
-<context-group purpose="location">
-  <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-  <context context-type="linenumber">74</context>
-</context-group>
-</trans-unit>
-
 <trans-unit id="sqlExpColumn" datatype="html">
 <source>Expresión SQL (Debe incluir la agregación)</source>
 <target>Expressió SQL (Ha d'incloure l'agregació)</target>
@@ -2388,8 +2118,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <context context-type="linenumber">103</context>
 </context-group>
 </trans-unit>
-
-
 
 <trans-unit id="aggTsum">
 <source>Suma</source>
@@ -2423,18 +2151,15 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Publico</source>
 <target>Públic</target>
 </trans-unit>
-<trans-unit id="groupPanel">
-<source>Grupo</source>
-<target>Grup</target>
-</trans-unit>
+
 <trans-unit id="privatePanel">
 <source>Privado</source>
 <target>Privat</target>
 </trans-unit>
 
 <trans-unit id="col">
-<source>Atributo</source>
-<target>Atribut</target>
+<source>Atributo:</source>
+<target>Atribut:</target>
 </trans-unit>
 <trans-unit id="table">
 <source>de la entidad</source>
@@ -2482,10 +2207,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Un gráfico de barras necesita una o más categorías y una série numérica.</source>
 <target>Un gràfic de barres necessita una o més categories i una sèrie numèrica. A més, si hi ha més d'una sèrie les dades numèriques han d'agregar-se.</target>
 </trans-unit>
-<trans-unit id="chartInfo7">
-<source>Un gráfico de barras necesita una o más categorías y una série numérica.</source>
-<target>Un gràfic de barres necessita una o més categories i una sèrie numèrica. A més, si hi ha més d'una sèrie les dades numèriques han d'agregar-se.</target>
-</trans-unit>
 <trans-unit id="chartInfo8">
 <source>Un gráfico polar necesita una categoría y una série numérica.</source>
 <target>Un gràfic polar necessita una categoria i una sèrie numèrica.</target>
@@ -2510,10 +2231,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Es necesario un campo vinculado a un archivo GeoJson y un campo de tipo numérico.</source>
 <target>És necessari un camp vinculat a un arxiu GeoJson i un camp de tipus numèric.</target>
 </trans-unit>
-<trans-unit id="chartInfo13">
-<source>Los datos seleccionados no permiten utilizar este gráfico.</source>
-<target>Les dades seleccionades no permeten utilitzar aquest gràfic.</target>
-</trans-unit>
 <trans-unit id="chartInfoBubble">
 <source>Un gráfico de burbujas necesita una categorías y una série numérica.</source>
 <target>Un gràfic de bombolles necessita una categoria i una sèrie numèrica.</target>
@@ -2537,31 +2254,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 
-<trans-unit id="MapDatamodel">
-<source>Mapas</source>
-<target>Mapes</target>
-</trans-unit>
-
 <trans-unit id="tooManyValuestext">
 <source>Hay demasiados valores para este gráfico. Agrega o filtra los datos para poder visualizarlos mejor.</source>
 <target>Hi ha massa valors per aquest gràfic. Agrega o filtra les dades per poder visualitzar-los millor.</target>
 </trans-unit>
-<trans-unit id="inputTipoDatamodel" datatype="html">
-<source> Tipo </source>
-<target> Tipus </target>
-<context-group purpose="location">
-  <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-  <context context-type="linenumber">157</context>
-</context-group>
-</trans-unit>
-<trans-unit id="MapsDatamodel" datatype="html">
-<source>  Mapas  </source>
-<target>  Mapes  </target>
-<context-group purpose="location">
-  <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-  <context context-type="linenumber">206</context>
-</context-group>
-</trans-unit>
+
 
 <trans-unit id="notSavedChanges" datatype="html">
 <source> Hay cambios sin guardar... </source>
@@ -2580,11 +2277,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="DatadourceTitle">
 <source>Fuente de datos: </source>
 <target>Font de dades: </target>
-</trans-unit>
-
-<trans-unit id="DatadourceText">
-<source>Creada correctamente </source>
-<target>Creada correctament</target>
 </trans-unit>
 
 <trans-unit id="ErrorMessage">
@@ -2738,11 +2430,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Si, elimina'l!</target>
 </trans-unit>
 
-<trans-unit id="DeleteGroupCancel">
-<source>Cancelar</source>
-<target>Cancel·lar</target>
-</trans-unit>
-
 <trans-unit id="deleteDashboardWarning">
 <source>Estás a punto de borrar el informe: </source>
 <target>Ets a punt d'esborrar l'informe: </target>
@@ -2753,16 +2440,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Informe eliminat correctament.  </target>
 </trans-unit>
 
-<trans-unit id="userDetailHeader">
-<source>USUARIO </source>
-<target>USUARI </target>
-</trans-unit>
-
-<trans-unit id="userDetailSaveButton">
-<source>GUARDAR </source>
-<target>GUARDAR </target>
-</trans-unit>
-
 <trans-unit id="UpdatedUser">
 <source>Usuario actualizado </source>
 <target>Usuari actualitzat </target>
@@ -2771,16 +2448,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="UpdatedUserError">
 <source>Error al actualizar el usuario </source>
 <target>Error al actualitzar l'usuari </target>
-</trans-unit>
-
-<trans-unit id="PasswordsNotEqual">
-<source>Las contraseñas no coinciden </source>
-<target>Les contrassenyes no coincideixen</target>
-</trans-unit>
-
-<trans-unit id="CreatedUser">
-<source>Usuario creado </source>
-<target>Usuari creat</target>
 </trans-unit>
 
 <trans-unit id="fileNotPicture">
@@ -2956,15 +2623,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Selecciona un rang</target>
 </trans-unit>
 
-<trans-unit id="inputPuerto" datatype="html">
-<source>Puerto  </source>
-<target>Port  </target>
-<context-group purpose="location">
-  <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-  <context context-type="linenumber">181</context>
-</context-group>
-</trans-unit>
-
 <trans-unit id="filterButtonDashboard">
 <source>Filtrar</source>
 <target>Filtrar </target>
@@ -3041,15 +2699,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <context-group purpose="location">
       <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/viewDialog/view-dialog.component.html</context>
       <context context-type="linenumber">31</context>
-    </context-group>
-  </trans-unit>
-
-  <trans-unit id="inputQueryView" datatype="html">
-    <source> Vista </source>
-    <target> Vista </target>
-    <context-group purpose="location">
-      <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-      <context context-type="linenumber">23</context>
     </context-group>
   </trans-unit>
 
@@ -3150,10 +2799,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Campo</source>
     <target>Camp</target>
   </trans-unit>
-  <trans-unit id="csvType">
-    <source>Tipo</source>
-    <target>Tipus</target>
-  </trans-unit>
   <trans-unit id="csvFormat">
     <source>Formato</source>
     <target>Format</target>
@@ -3184,11 +2829,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="addFile">
     <source>Subir archivo</source>
     <target>Pujar arxiu </target>
-  </trans-unit>
-
-  <trans-unit id="FiltersH4">
-    <source>Filtros</source>
-    <target>Filtres </target>
   </trans-unit>
 
   <trans-unit id="dragFields">
@@ -3236,11 +2876,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Nova etiqueta </target>
   </trans-unit>
 
-  <trans-unit id="addTag">
-    <source>AÑADIR ETIQUETA</source>
-    <target>AFEGIR ETIQUETA </target>
-  </trans-unit>
-
   <trans-unit id="AllTags">
     <source> Todos  </source>
     <target>Tots </target>
@@ -3261,19 +2896,14 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target> Configurar nova font de dades  </target>
   </trans-unit>
 
-  <trans-unit id="OptimizeQuery">
-    <source> Optimizar consultas  </source>
-    <target> Optimitzar consultes  </target>
-  </trans-unit>
-
   <trans-unit id="inputBigQueryKeys">
     <source> Subir archivo de claves (json) *  </source>
     <target> Pujar arxiu de claus (json) *   </target>
   </trans-unit>
 
   <trans-unit id="DatasourceText">
-    <source> Creada correctamente  </source>
-    <target> Creada correctament  </target>
+    <source>Creada correctamente</source>
+    <target>Creada correctament</target>
   </trans-unit>
 
   <trans-unit id="panelOptions0">
@@ -3337,11 +2967,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="importDashboard">
     <source> Importar Informe </source>
     <target> Importar Informe </target>
-  </trans-unit>
-
-  <trans-unit id="import">
-    <source> Importar </source>
-    <target> Importar </target>
   </trans-unit>
 
   <trans-unit id="DBInconsistencies">
@@ -3636,7 +3261,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Guardar com...</target>
   </trans-unit>
 
-
   <trans-unit id="at">
     <source>A las</source>
     <target>A les</target>
@@ -3715,11 +3339,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="column">
     <source>COLUMNAS </source>
     <target>COLUMNES</target>
-  </trans-unit>
-
-  <trans-unit id="sidebarAlertsManagement">
-    <source>Gestión de alertas </source>
-    <target>Gestió d'alertes</target>
   </trans-unit>
 
 
@@ -3808,7 +3427,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Configuració guardada correctament</target>
   </trans-unit>
 
-  <trans-unit id="allowCache">
+  <trans-unit id="enableCache">
     <source>Habilitar caché </source>
     <target>Habilitar caché</target>
   </trans-unit>
@@ -3833,12 +3452,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>COMPTE *</target>
   </trans-unit> 
 
-   <trans-unit id="inputCuentaEdit">
-    <source>Cuenta  </source>
-    <target>Compte </target>
-
-  </trans-unit> 
-
   <trans-unit id="entidadesTitle">
     <source>Clique sobre un entidad para ver sus atributos. </source>
     <target>Cliqueu sobre una entitat per veure els seus atributs</target>
@@ -3855,8 +3468,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="agregacionh5">
-    <source>Agregación   </source>
-    <target>Agregació  </target>
+    <source>Agregación</source>
+    <target>Agregació</target>
   </trans-unit> 
 
      <trans-unit id="inputFormat">
@@ -3900,8 +3513,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit> 
 
      <trans-unit id="inputFilter">
-    <source>Filtros</source>
-    <target>Filtres</target>
+    <source>FILTROS</source>
+    <target>FILTRES</target>
   </trans-unit> 
 
      <trans-unit id="comparativeTooltip">
@@ -3936,18 +3549,13 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit> 
   
   <trans-unit id="showLabelsPercent">
-    <source>Mostrar Etiquetas</source>
+    <source>Mostrar Etiquetas en Porcentajes</source>
     <target>Mostra Etiquetes en Percentatges</target>
   </trans-unit> 
 
   <trans-unit id="showPointLines">
     <source>Mostrar Puntos en Líneas</source>
     <target>Mostra Punts en Línies</target>
-  </trans-unit> 
-
-       <trans-unit id="histogramColum">
-    <source>Columnas</source>
-    <target>Columnes</target>
   </trans-unit> 
 
      <trans-unit id="showLablesTooltip">
@@ -4008,21 +3616,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>EDITAR ESTILS DE L'INFORME</target>
   </trans-unit> 
 
-     <trans-unit id="dashboardTitleEdit">
-    <source>Título del informe</source>
-    <target>Títol de l'informe</target>
-  </trans-unit> 
-
-     <trans-unit id="filtersEdit">
-    <source>Filtros</source>
-    <target>Filtres</target>
-  </trans-unit> 
-
-     <trans-unit id="panelTitleEdit">
-    <source>Título del panel</source>
-    <target>Títol del panell</target>
-  </trans-unit> 
-
      <trans-unit id="panelContentEdit">
     <source>Contenido del panel</source>
     <target>Contingut del panell</target>
@@ -4057,11 +3650,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="ChangeDefaultsColors">
     <source>Color del los gráficos</source>
     <target>Color dels gràfics</target>
-  </trans-unit> 
-
-  <trans-unit id="dialogHeaderEditStyles">
-    <source>Editar estilos</source>
-    <target>Editar estils</target>
   </trans-unit> 
 
   <trans-unit id="properties">
@@ -4126,16 +3714,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>en este rango</source>
     <target>en aquest rang</target>
   </trans-unit> 
-  
-  
-<trans-unit id="sidebarInform" datatype="html">
-<source>Crear Informe</source>
-<target>Crear Informe</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
-<context context-type="linenumber">83</context>
-</context-group>
-</trans-unit>
+
 
 <trans-unit id="si">
 <source>Si</source>
@@ -4377,11 +3956,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Acció</target>
   </trans-unit> 
 
-  <trans-unit id="descriptionUrl">
-    <source>Descripción</source>
-    <target>Descripció</target>
-  </trans-unit> 
-
   <trans-unit id="editionUrl">
     <source>Edición</source>
     <target>Edició</target>
@@ -4455,10 +4029,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Este panel no está disponible por falta de permisos en un filtro</source>
         <target>Aquest panell no està disponible per manca de permisos en un filtre</target>
       </trans-unit>
-      <trans-unit id="DatePickerYearPreviousYearFull">
-        <source>El año pasado, completo</source>
-        <target>L'any passat, complet</target>
-      </trans-unit>
       <trans-unit id="aplicarBtn">
         <source>Aplicar</source>
         <target>Aplicar</target>
@@ -4475,10 +4045,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Activar funciones del mouse</source>
         <target>Activar funcions del mouse</target>       
       </trans-unit>
-      <trans-unit id="noBaseLayerH6">
-        <source>Activar capa base</source>
-        <target>Activar capa base</target>       
-      </trans-unit>
         <trans-unit id="chartTypesTableAnalized" datatype="html">
         <source>Tabla DataQuality</source>
         <target>Taula DataQuality</target>
@@ -4490,10 +4056,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="atributoConsulta" datatype="html">
         <source>Consulta</source>
         <target>Consulta</target>
-      </trans-unit>
-      <trans-unit id="atributoValor" datatype="html">
-        <source>Valor</source>
-        <target>Valor</target>
       </trans-unit>
       <trans-unit id="count_tablesLabel" datatype="html">
         <source>Tablas implicadas</source>
@@ -4535,10 +4097,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Moda</source>
         <target>Moda</target>
       </trans-unit>
-      <trans-unit id="avgLabel" datatype="html">
-        <source>Media</source>
-        <target>Mitjana</target>
-      </trans-unit>
       <trans-unit id="medianLabel" datatype="html">
         <source>Mediana</source>
         <target>Mediana</target>
@@ -4567,10 +4125,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="ContinueTablaQuality">
         <source>Continuar</source>
         <target>Continuar</target>       
-      </trans-unit>
-      <trans-unit id="CancelTablaQuality">
-        <source>Cancelar</source>
-        <target>Cancel·la</target>       
       </trans-unit>
       <trans-unit id="filteredReportMessage">
         <source>Por favor, espera un momento mientras procesamos la selección.</source>
@@ -4656,10 +4210,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Aplicar el filtro sobre los resultados</source>
         <target>Aplica el filtre sobre els resultats</target>
       </trans-unit>
-      <trans-unit id="aggregationText">
-        <source>Agregación</source>
-        <target>Agregació</target>
-      </trans-unit>
       <trans-unit id="ptooltipViewTextRanges">
         <source>Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango válido - 12:18:50:100 </source>
         <target>Al configurar un rang les agregacions quedaran bloquejades. Exemple de rang vàlid: 12:18:50:100 </target>
@@ -4672,10 +4222,7 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Añadir Rango</source>
         <target>Afegeix un rang</target>
       </trans-unit>
-      <trans-unit id="rangeDescriptionB">
-        <source>Rango</source>
-        <target>Rang</target>
-      </trans-unit>
+
       <trans-unit id="rangeDescriptionNumberError">
         <source>El correcto orden de los límites del rango van de menor a mayor</source>
         <target>L'ordre correcte dels límits del rang és de més petit a més gran</target>
@@ -4745,7 +4292,7 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Seleccionar Grupos</source>
         <target>Seleccionar Grups</target>
       </trans-unit>
-      <trans-unit id="DataModelHeader">
+      <trans-unit id="DataModelDB">
         <source>Configurar nuevo orígen de datos</source>
         <target>Configurar nouva font de dades</target>
       </trans-unit>
@@ -4800,10 +4347,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="schema">
         <source>Esquema</source>
         <target>Esquema</target>
-      </trans-unit>
-      <trans-unit id="username">
-        <source>Usuario</source>
-        <target>Usuari</target>
       </trans-unit>
       <trans-unit id="usernameRequired">
         <source>El usuario es obligatorio</source>
@@ -4919,11 +4462,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Vincular columna</target>
       </trans-unit>
 
-      <trans-unit id="avaliableMaps">
-        <source>Mapas disponibles</source>
-        <target>Mapes disponibles</target>
-      </trans-unit>
-
       <trans-unit id="mapsAvailableDescription">
         <source>Mapas que están actualmente configurados y disponibles para su uso</source>
         <target>Mapes que actualment estan configurats i disponibles per al seu ús</target>
@@ -4974,11 +4512,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Data (desc.)</target>
       </trans-unit>
 
-      <trans-unit id="name">
-        <source>Nombre</source>
-        <target>Nom</target>
-      </trans-unit>
-
       <trans-unit id="withoutContentYet">
         <source>Sin contenido</source>
         <target>Sense contingut</target>
@@ -5007,11 +4540,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="addGroup">
         <source>Crear Grupo</source>
         <target>Crear Grup</target>
-      </trans-unit>
-
-      <trans-unit id="actions">
-        <source>Acciones</source>
-        <target>Accions</target>
       </trans-unit>
 
       <trans-unit id="foundGroups">
@@ -5073,13 +4601,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <source>fuentes de datos encontradas</source>
   <target>font de dades trobades</target>
 </trans-unit>
-<trans-unit id="profileTitle"><source>Perfil del usuario</source><target>Perfil de l'usuari</target></trans-unit>
 <trans-unit id="profileSubtitle"><source>Administra tu información personal y preferencias de cuenta</source><target>Administra la teva informació personal i preferències del compte</target></trans-unit>
 <trans-unit id="profileInfoTitle"><source>Información Personal</source><target>Informació personal</target></trans-unit>
 <trans-unit id="profileInfoSubtitle"><source>Actualiza tu información básica de perfil</source><target>Actualitza la teva informació bàsica del perfil</target></trans-unit>
-<trans-unit id="labelNombreUsuario"><source>Nombre de usuario</source><target>Nom d'usuari</target></trans-unit>
 <trans-unit id="usernameLengthValidation"><source>El nombre de usuario debe tener al menos 2 caracteres.</source><target>El nom d'usuari ha de tenir almenys 2 caràcters.</target></trans-unit>
-<trans-unit id="labelUsuarioEmail"><source>Correo electrónico</source><target>Correu electrònic</target></trans-unit>
 <trans-unit id="emailValidation"><source>Por favor ingresa un email válido.</source><target>Si us plau, introdueix un correu electrònic vàlid.</target></trans-unit>
 <trans-unit id="changePassword"><source>Cambiar contraseña</source><target>Canviar contrasenya</target></trans-unit>
 <trans-unit id="newPassword"><source>Nueva contraseña</source><target>Nova contrasenya</target></trans-unit>
@@ -5313,7 +4838,7 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Cercador</target>
 </trans-unit>
 
-<trans-unit id="manageModels">
+<trans-unit id="manageDBModels">
   <source>Gestiona la importación y exportación de fuentes de datos</source>
   <target>Gestiona la importació i exportació de fonts de dades</target>
 </trans-unit>
@@ -5423,11 +4948,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Introdueix una breu descripció</target>
 </trans-unit>
 
-<trans-unit id="viewTName">
-  <source>Nombre técnico</source>
-  <target>Nom tècnic</target>
-</trans-unit>
-
 <trans-unit id="viewTNameP">
   <source>Introduzca el identificador técnico</source>
   <target>Introduïu l'identificador tècnic</target>
@@ -5448,11 +4968,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Generant...</target>
 </trans-unit>
 
-<trans-unit id="generateView">
-  <source>Generar vista</source>
-  <target>Generar vista</target>
-</trans-unit>
-
 <trans-unit id="selectedTags">
   <source>Tags seleccionados</source>
   <target>Tags seleccionats</target>
@@ -5461,21 +4976,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="SSLConnection">
   <source>Conexión sin SSL</source>
   <target>Connexió sense SSL</target>
-</trans-unit>
-
-<trans-unit id="tablenameText">
-  <source>Nombre de la tabla</source>
-  <target>Nom de la taula</target>
-</trans-unit>
-
-<trans-unit id="separatorText">
-  <source>Separador</source>
-  <target>Separador</target>
-</trans-unit>
-
-<trans-unit id="uploadFileText">
-  <source>Subir archivo</source>
-  <target>Pujar fitxer</target>
 </trans-unit>
 
 <trans-unit id="emptyMessageTags">
@@ -5639,16 +5139,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <target>Configureu una alerta usant el formulari de dalt per visualitzar canvis al gràfic.</target>
 </trans-unit>
 
-<trans-unit id="panelOptions6">
-  <source>Pregunte a la IA</source>
-  <target>Pregunteu a la IA</target>
-</trans-unit>
-
-<trans-unit id="dashboardSidebarNewPanel">
-  <source>Nuevo Panel</source>
-  <target>Nou panell</target>
-</trans-unit>
-
 <trans-unit id="dashboardSidebarNewText">
   <source>Nuevo texto</source>
   <target>Nou text</target>
@@ -5677,11 +5167,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="dashboardSidebarDashboardPrivacity">
   <source>Privacidad informe</source>
   <target>Privacitat informe</target>
-</trans-unit>
-
-<trans-unit id="dashboardSidebarAddTag">
-  <source>Añadir etiqueta</source>
-  <target>Afegir etiqueta</target>
 </trans-unit>
 
 <trans-unit id="dashboardSidebarLiveDashboard">
@@ -5734,11 +5219,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Acció personalitzada</target>
 </trans-unit>
 
-<trans-unit id="confirmBtn">
-  <source>Confirmar</source>
-  <target>Confirmar</target>
-</trans-unit>
-
 <trans-unit id="deleteBtn">
   <source>Eliminar</source>
   <target>Eliminar</target>
@@ -5782,11 +5262,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="enableBaseLayer">
   <source>Activar capa base</source>
   <target>Activar capa base</target>
-</trans-unit>
-
-<trans-unit id="legendPosition">
-  <source>Posición de la leyenda</source>
-  <target>Posició de la llegenda</target>
 </trans-unit>
 
 <trans-unit id="topleftPosition">
@@ -5884,21 +5359,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>No tens contingut per exportar</target>
 </trans-unit>
 
-<trans-unit id="PanelModeSelectorEDA">
-  <source>Modo EDA</source>
-  <target>Mode EDA</target>
-</trans-unit>
-
-<trans-unit id="PanelModeSelectorSQL">
-  <source>Modo SQL</source>
-  <target>Mode SQL</target>
-</trans-unit>
-
-<trans-unit id="PanelModeSelectorTree">
-  <source>Modo Árbol</source>
-  <target>Mode Arbre</target>
-</trans-unit>
-
 <trans-unit id="REPORTCloned">
   <source>Informe clonado correctamente</source>
   <target>Informe clonat correctament</target>
@@ -5937,11 +5397,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="availableUsers">
   <source>Usuarios disponibles</source>
   <target>Usuaris disponibles</target>
-</trans-unit>
-
-<trans-unit id="sidebarProfile">
-  <source>Perfil</source>
-  <target>Perfil</target>
 </trans-unit>
 
 <trans-unit id="copyPublicURL">
@@ -6079,7 +5534,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Emetent aquest valor de cancel·lar</target>
 </trans-unit>
 
-
       <trans-unit id="viewEdition">
         <source>Edición de la vista</source>
         <target>Edició de la vista</target>
@@ -6093,16 +5547,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>L'edició de la vista només permet modificar la consulta (query), però no ha de canviar els noms de les columnes.</target>
       </trans-unit>
 
-      <trans-unit id="fieldDashboard">
-        <source>Campo</source>
-        <target>Camp</target>
-      </trans-unit>
-
-      <trans-unit id="DashboardDashboard">
-        <source>Panel</source>
-        <target>Panell</target>
-      </trans-unit>
-
       <trans-unit id="columnDashboard">
         <source>Columna</source>
         <target>Columna</target>
@@ -6113,30 +5557,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Panell</target>
       </trans-unit>
 
-      <trans-unit id="columnDashboardDashboard">
-        <source>Columna</source>
-        <target>Columna</target>
-      </trans-unit>
-
       <trans-unit id="joins">
-        <source>Tipo de interesección</source>
-        <target>Tipus d'interesecció</target>
+        <source>Tipo de intersección</source>
+        <target>Tipus d'intersecció</target>
       </trans-unit>
 
       <trans-unit id="joins1">
-        <source>
-          La funcionalidad de <strong>Intersección de Joins</strong> permite definir cómo se relacionan las tablas de tu consulta mediante <strong>LEFT</strong>, <strong>INNER</strong> o <strong>RIGHT JOIN</strong>.
-          Esto te da control sobre qué registros se incluyen en el resultado, dependiendo de la presencia o ausencia de coincidencias entre las tablas.
-        </source>
-        <target>
-          La funcionalitat de <strong>Intersecció de Joins</strong> permet definir com es relacionen les taules de la vostra consulta mitjançant <strong>LEFT</strong>, <strong>INNER</strong> o <strong>RIGHT JOIN</strong>.
-          Això us dóna control sobre quins registres s'inclouen en el resultat, depenent de la presència o absència de coincidències entre les taules.
-        </target>
-      </trans-unit>
-
-      <trans-unit id="joins2">
-        <source>Limitaciones:</source>
-        <target>Limitacions:</target>
+        <source>La funcionalidad de <ph id="0"/>Intersección de Joins<ph id="1"/> permite definir cómo se relacionan las tablas de tu consulta mediante <ph id="2"/>LEFT<ph id="3"/>, <ph id="4"/>INNER<ph id="5"/> o <ph id="6"/>RIGHT JOIN<ph id="7"/>. Esto te da control sobre qué registros se incluyen en el resultado, dependiendo de la presencia o ausencia de coincidencias entre las tablas.</source>
+        <target>La funcionalitat de <ph id="0"/>Intersecció de Joins<ph id="1"/> permet definir com es relacionen les taules de la vostra consulta mitjançant <ph id="2"/>LEFT<ph id="3"/>, <ph id="4"/>INNER<ph id="5"/> o <ph id="6"/>RIGHT JOIN<ph id="7"/>. Això us dóna control sobre quins registres s'inclouen en el resultat, depenent de la presència o absència de coincidències entre les taules.</target>
       </trans-unit>
 
       <trans-unit id="joins3">
@@ -6145,21 +5573,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       </trans-unit>
 
       <trans-unit id="whatif1">
-        <source>
-          La funcionalidad <strong>What If</strong> te permite crear atributos nuevos a partir de otros atributos en tu gráfico.
-          A estos nuevos campos se les puede aplicar una operación matemática para modificar su valor según tus necesidades,
-          y también es posible cambiarles el nombre para identificarlos fácilmente.
-        </source>
-        <target>
-          La funcionalitat <strong>What If</strong> us permet crear nous atributs a partir d'altres atributs al vostre gràfic.
-          A aquests nous camps se'ls pot aplicar una operació matemàtica per modificar-ne el valor segons les teves necessitats,
-          i també és possible canviar-los el nom per identificar-los fàcilment.
-        </target>
-      </trans-unit>
-
-      <trans-unit id="whatif2">
-        <source>Limitaciones:</source>
-        <target>Limitacions:</target>
+        <source>La funcionalidad <ph id="0"/>What If<ph id="1"/> te permite crear atributos nuevos a partir de otros atributos en tu gráfico. A estos nuevos campos se les puede aplicar una operación matemática para modificar su valor según tus necesidades, y también es posible cambiarles el nombre para identificarlos fácilmente.</source>
+        <target>La funcionalitat <ph id="0"/>What If<ph id="1"/> us permet crear nous atributs a partir d'altres atributs al vostre gràfic. A aquests nous camps se'ls pot aplicar una operació matemàtica per modificar-ne el valor segons les teves necessitats, i també és possible canviar-los el nom per identificar-los fàcilment.</target>
       </trans-unit>
 
       <trans-unit id="whatif3">
@@ -6178,24 +5593,33 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       </trans-unit>
 
       <trans-unit id="filtrosAvanzados1">
-        <source>
-          La funcionalidad <strong>Filtros Avanzados</strong> permite relacionar los filtros globales y de panel utilizando operadores <strong>AND</strong> o <strong>OR</strong>.
-          Esto posibilita que los filtros no solo se apliquen como un conjunto fijo de condiciones, sino que puedan interoperar entre sí según la relación definida.
-        </source>
-        <target>
-          La funcionalitat <strong>Filtres avançats</strong> permet relacionar els filtres globals i de panell utilitzant operadors <strong>AND</strong> o <strong>OR</strong>.
-          Això possibilita que els filtres no només s'apliquin com a conjunt fix de condicions, sinó que puguin interoperar entre si segons la relació definida.
-        </target>
-      </trans-unit>
-
-      <trans-unit id="filtrosAvanzados2">
-        <source>Limitaciones:</source>
-        <target>Limitacions:</target>
+        <source>La funcionalidad <ph id="0"/>Filtros Avanzados<ph id="1"/> permite relacionar los filtros globales y de panel utilizando operadores <ph id="2"/>AND<ph id="3"/> o <ph id="4"/>OR<ph id="5"/>. Esto posibilita que los filtros no solo se apliquen como un conjunto fijo de condiciones, sino que puedan interoperar entre sí según la relación definida.</source>
+        <target>La funcionalitat <ph id="0"/>Filtres avançats<ph id="1"/> permet relacionar els filtres globals i de panell utilitzant operadors <ph id="2"/>AND<ph id="3"/> o <ph id="4"/>OR<ph id="5"/>. Això possibilita que els filtres no només s'apliquin com a conjunt fix de condicions, sinó que puguin interoperar entre si segons la relació definida.</target>
       </trans-unit>
 
       <trans-unit id="filtrosAvanzados3">
         <source>Solo es posible usar filtros definidos dentro del dashboard actual.</source>
         <target>Només és possible fer servir filtres definits dins del dashboard actual.</target>
+      </trans-unit>
+
+      <trans-unit id="dashboardSidebarDependentFilters">
+        <source>Filtros dependientes</source>
+        <target>Filtres dependents</target>
+      </trans-unit>
+
+      <trans-unit id="dependentFiltersTitle">
+        <source>Configuración de filtros dependientes</source>
+        <target>Configuració de filtres dependents</target>
+      </trans-unit>
+
+      <trans-unit id="preparingDependentFilters">
+        <source>Preparando los filtros dependientes</source>
+        <target>Preparant els filtres dependents</target>
+      </trans-unit>
+
+      <trans-unit id="autocompleteFilter">
+        <source>¿Filtro autocomplete?</source>
+        <target>Filtre autocomplete?</target>
       </trans-unit>
     </body>
   </file>

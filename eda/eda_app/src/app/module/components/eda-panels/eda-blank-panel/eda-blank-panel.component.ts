@@ -711,7 +711,7 @@ public tableNodeExpand(event: any): void {
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
                 confirmButtonText: $localize`:@@ContinueTablaQuality:Continuar`,
-                cancelButtonText: $localize`:@@CancelTablaQuality:Cancelar`,
+                cancelButtonText: $localize`:@@cancelarBtn:Cancelar`,
             }).then( (borrado) => {
                 if(borrado.value){
                     try {

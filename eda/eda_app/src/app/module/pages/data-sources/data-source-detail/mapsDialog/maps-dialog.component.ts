@@ -14,7 +14,7 @@ export class MapDialogComponent implements OnInit {
   public display: boolean = false;
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
 
-  public title = $localize`:@@MapDatamodel:Mapas`;
+  public title = $localize`:@@addMap:Mapas`;
 
   @ViewChild('fileUploader', { static: false }) fileUploader: UploadFileComponent;
 

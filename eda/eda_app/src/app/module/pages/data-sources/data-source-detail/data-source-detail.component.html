@@ -146,7 +146,7 @@
       </div>
 
       <div *ngIf="tablePanel.query">
-          <h5 class="title-datamodel" i18n="@@inputQueryView"> Vista </h5>
+          <h5 class="title-datamodel" i18n="@@viewLabel"> Vista </h5>
           <p>{{tablePanel.query}}</p>
       </div>
 
@@ -570,7 +570,7 @@
         <h3 class="text-lg font-medium text-gray-700 mb-4 border-b pb-2" i18n="@@conexionh4">Conexión</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div class="grid gap-2">
-            <label for="type" class="font-medium" i18n="@@inputTipoDatamodel">Tipo</label>
+            <label for="type" class="font-medium" i18n="@@type">Tipo</label>
             <div class="relative">
               <select 
                 id="type" 
@@ -588,7 +588,7 @@
           @if (!['bigquery'].includes(selectedTipoBD.value)) {
             <div class="grid gap-2">
               @if (selectedTipoBD.value === 'snowflake') {
-                <label for="host" class="font-medium" i18n="@@inputCuentaEdit">Cuenta</label>
+                <label for="host" class="font-medium" i18n="@@account">Cuenta</label>
               } @else {
                 <label for="host" class="font-medium" i18n="@@inputHost">Host</label>
               }
@@ -611,7 +611,7 @@
           </div>
           @if (!['bigquery'].includes(selectedTipoBD.value)) {
             <div class="grid gap-2">
-              <label for="port" class="font-medium" i18n="@@inputPuerto">Puerto</label>
+              <label for="port" class="font-medium" i18n="@@port">Puerto</label>
               <input 
                 id="port" 
                 [(ngModel)]="modelPanel.connection.port"
@@ -621,7 +621,7 @@
             </div>
 
             <div class="grid gap-2">
-              <label for="schema" class="font-medium" i18n="@@inputNombreEsquemaModel">Esquema</label>
+              <label for="schema" class="font-medium" i18n="@@schema">Esquema</label>
               <input 
                 id="schema" 
                 [(ngModel)]="modelPanel.connection.schema"
@@ -656,7 +656,7 @@
 
           @if (!['bigquery'].includes(selectedTipoBD.value)) {
             <div class="grid gap-2">
-              <label for="user" class="font-medium" i18n="@@inputNombreUsuario">Usuario</label>
+              <label for="user" class="font-medium" i18n="@@placeholderInputUsuario">Usuario</label>
               <input 
                 id="user" 
                 [(ngModel)]="modelPanel.connection.user"
@@ -681,7 +681,7 @@
           }
           
           <div class="grid gap-2">
-            <label for="filters" class="font-medium" i18n="@@inputFilter">Filtros</label>
+            <label for="filters" class="font-medium" i18n="@@filters">Filtros</label>
             <input 
               id="filters" 
               class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
@@ -813,7 +813,7 @@
                         Conexión
                     </h4>
                     <div class="col-12  xl:col-4">
-                        <h5 class="title-datamodel" i18n="@@inputTipoDatamodel">
+                        <h5 class="title-datamodel" i18n="@@type">
                             Tipo
                         </h5>
                         <p-dropdown [options]="tiposBD" [(ngModel)]="selectedTipoBD"
@@ -831,7 +831,7 @@
                     </div>
 
                     <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value === 'snowflake'">
-                        <h5 class="title-datamodel" i18n="@@inputCuentaEdit">
+                        <h5 class="title-datamodel" i18n="@@account">
                             Cuenta
                         </h5>
                         <input pInputText type="text" [(ngModel)]="modelPanel.connection.host" (keyup)="update()">
@@ -845,14 +845,14 @@
                     </div>
 
                     <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value !== 'bigquery'">
-                        <h5 class="title-datamodel" i18n="@@inputPuerto">
+                        <h5 class="title-datamodel" i18n="@@port">
                             Puerto
                         </h5>
                         <input pInputText type="text" [(ngModel)]="modelPanel.connection.port" (keyup)="update()">
                     </div>
 
                     <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value !== 'bigquery'">
-                        <h5 class="title-datamodel" i18n="@@inputNombreEsquemaModel">
+                        <h5 class="title-datamodel" i18n="@@schema">
                             Esquema
                         </h5>
                         <input pInputText type="text" [(ngModel)]="modelPanel.connection.schema" (keyup)="update()">
@@ -874,7 +874,7 @@
                     </div>
 
                     <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value !== 'bigquery'">
-                        <h5 class="title-datamodel" i18n="@@inputNombreUsuario">
+                        <h5 class="title-datamodel" i18n="@@placeholderInputUsuario">
                             Usuario
                         </h5>
                         <input pInputText type="text" [(ngModel)]="modelPanel.connection.user" (keyup)="update()">
@@ -889,7 +889,7 @@
                     </div>
 
                     <div class="col-12  xl:col-4">
-                        <h5 class="title-datamodel" i18n="@@inputFilter">
+                        <h5 class="title-datamodel" i18n="@@filters">
                             Filtros
                         </h5>
                         <input pInputText type="text" [(ngModel)]="modelPanel.metadata.filter" (keyup)="update()">

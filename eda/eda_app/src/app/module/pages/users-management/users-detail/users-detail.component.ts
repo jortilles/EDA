@@ -51,9 +51,9 @@ export class UsersFitxaComponent extends EdaDialogAbstract {
 
         if (this.controller.params.id) {
 
-            let title = $localize`:@@userDetailHeader: USUARIO`
+            let title = $localize`:@@userTable: USUARIO`
             this.dialog.setTitle(`${title} - ${_.toUpper(this.controller.params.name)}`);
-            this.btnLabel = $localize`:@@userDetailSaveButton:GUARDAR`;
+            this.btnLabel = $localize`:@@opcionGuardar:GUARDAR`;
             //this.form.controls['password'].disable({ onlySelf: true })
             this.loadUser();
         }
@@ -125,13 +125,13 @@ export class UsersFitxaComponent extends EdaDialogAbstract {
                 }
             } else {
                 if (!this.isMatch('password', 'rpassword')) {
-                    return this.alertService.addWarning($localize`:@@PasswordsNotEqual:Las contraseñas no coinciden`);
+                    return this.alertService.addWarning($localize`:@@passwordValidation:Las contraseñas no coinciden`);
                 }
                 this.user.password = form.password;
                 this.userService.createUser(this.user).subscribe(
                     res => {
                         this.onClose(EdaDialogCloseEvent.NEW);
-                        Swal.fire($localize`:@@CreatedUser:Usuario creado`, res.email, 'success');
+                        Swal.fire($localize`:@@UserCreated:Usuario creado`, res.email, 'success');
                     }, err => {
                         Swal.fire($localize`:@@RegisterError:Error al registrarse`, err.text, 'error');
                     }

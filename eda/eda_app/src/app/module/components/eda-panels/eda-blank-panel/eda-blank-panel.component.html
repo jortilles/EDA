@@ -96,7 +96,7 @@
                     <!-- SQL MODE -->
                     <ng-container *ngIf="selectedQueryMode=='SQL'">
                         <div class="col-7">
-                            <h6 i18n="@@sqlExpresionH6">Expresión SQL</h6>
+                            <h6 i18n="@@SQLExpression">Expresión SQL</h6>
                             <hr>
                             <textarea id="query-area" class="sqlInput" rows="12" cols="100" pInputTextarea autoResize="autoResize" [(ngModel)]="currentSQLQuery">
                             </textarea>
@@ -198,7 +198,7 @@
                                             <p i18n="@@indicaciones14">
                                                 Tenemos un filtro en el informe para el campo 'office_id' de la tabla OFFICES
                                             </p>
-                                            <li i18n="@@indicaciones15"> Consulta sin filtros vinculados</li>
+                                            <li i18n="@@indicaciones12"> Consulta sin filtros vinculados</li>
                                             <ul>
                                                 <li style=" font-weight: bold;">
                                                     SELECT e.employee_name
@@ -206,7 +206,7 @@
                                                     WHERE e.employee_name IN ('Julia', 'John')
                                                 </li>
                                             </ul>
-                                            <li i18n="@@indicaciones16"> Consulta con filtros vinculados</li>
+                                            <li i18n="@@indicaciones13"> Consulta con filtros vinculados</li>
                                             <ul>
                                                 <li style="font-weight: bold">
                                                     <p>SELECT e.employee_name FROM EMPLOYEE e</p>

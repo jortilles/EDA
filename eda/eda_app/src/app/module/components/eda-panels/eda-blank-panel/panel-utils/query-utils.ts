@@ -95,7 +95,7 @@ export const QueryUtils = {
   },
   
   transformAnalizedQueryData: (ebp: EdaBlankPanelComponent, data: any) => {
-    const labels = [$localize`:@@atributoLabel:Atributo`, $localize`:@@atributoConsulta:Consulta`, $localize`:@@atributoValor:Valor`];
+    const labels = [$localize`:@@atributoLabel:Atributo`, $localize`:@@atributoConsulta:Consulta`, $localize`:@@value:Valor`];
     const values = [];
 
     const i18n = {
@@ -110,7 +110,7 @@ export const QueryUtils = {
         "max": $localize`:@@maxLabel:Valor máximo`,
         "min": $localize`:@@minLabel:Valor mínimo`,
         "mode": $localize`:@@moda_countsLabel:Moda`,
-        "avg": $localize`:@@avgLabel:Media`,
+        "avg": $localize`:@@aggTmean:Media`,
         "median": $localize`:@@medianLabel:Mediana`,
         "median_count_bymonth": $localize`:@@median_count_bymonthLabel:Mediana por mes`,
         "max_bymonth": $localize`:@@max_bymonthLabel:Máximos por mes`,

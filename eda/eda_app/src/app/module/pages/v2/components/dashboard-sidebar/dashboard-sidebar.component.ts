@@ -123,7 +123,7 @@ export class DashboardSidebarComponent {
     this.sidebarItems = [
       {
         id: 'newPanel',
-        label: $localize`:@@dashboardSidebarNewPanel:Nuevo Panel`,
+        label: $localize`:@@newPanelTitle:Nuevo Panel`,
         icon: "pi pi-plus-circle",
         command: () => this.onAddWidget()
       },
@@ -223,7 +223,7 @@ export class DashboardSidebarComponent {
         }
       }, {
         id: 'addTag',
-        label: $localize`:@@dashboardSidebarAddTag: Añadir etiqueta`,
+        label: $localize`:@@addTag: Añadir etiqueta`,
         icon: "pi pi-tag",
         command: () => {
           this.isTagModalVisible = true;
@@ -345,7 +345,7 @@ export class DashboardSidebarComponent {
   public onAddWidget(): void {
     const panel = new EdaPanel({
       id: this.fileUtils.generateUUID(),
-      title: $localize`:@@newPanelTitle2:Nuevo Panel`,
+      title: $localize`:@@newPanelTitle:Nuevo Panel`,
       type: EdaPanelType.BLANK,
       w: 20,
       h: 10,

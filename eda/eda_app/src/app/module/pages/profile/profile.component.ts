@@ -27,7 +27,7 @@ export class ProfileComponent implements OnInit {
         }
 
         if(this.checkNewPasswords(this.newPassword, this.newPasswordCheck)){
-            return this.alertService.addWarning($localize`:@@PasswordsNotEqual:Las contraseñas no coinciden`);
+            return this.alertService.addWarning($localize`:@@passwordValidation:Las contraseñas no coinciden`);
         }else{
             this.user.password = this.newPassword;
             this.userService.updateUser(this.user).subscribe(
