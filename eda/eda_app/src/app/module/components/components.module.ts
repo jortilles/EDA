@@ -57,6 +57,7 @@ import { PrimengModule } from 'app/core/primeng.module';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { FilterMapperDialog } from '../pages/v2/components/filter-mapper-dialog/filter-mapper.dialog';
 import { FilterMapperComponent } from '../pages/v2/components/filter-mapper/filter-mapper.component';
+import { PromptComponent } from '../pages/v2/components/prompt/prompt.component';
 
 
 @NgModule({
@@ -69,6 +70,7 @@ import { FilterMapperComponent } from '../pages/v2/components/filter-mapper/filt
         EbpChatgptComponent,
         FilterMapperDialog,
         FilterMapperComponent,
+        PromptComponent,
     ],
     declarations: [
         EdaBlankPanelComponent,
