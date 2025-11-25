@@ -41,19 +41,13 @@ export class DataSourceController {
 
     static async GetDataSourceById(req: Request, res: Response, next: NextFunction) {
         try {
-            DataSource.findById({ _id: req.params.id }, (err, dataSource) => {
-                if (err) {
-                    return next(new HttpException(404, 'Datasouce not found'));
-                }
-                // ocultem el password
-                dataSource.ds.connection.password = EnCrypterService.decode(dataSource.ds.connection.password);
-                dataSource.ds.connection.password = '__-(··)-__';
-
-
-                return res.status(200).json({ ok: true, dataSource });
-            });
+            const dataSource = await DataSource.findById({ _id: req.params.id });
+            // ocultem el password
+            dataSource.ds.connection.password = EnCrypterService.decode(dataSource.ds.connection.password);
+            dataSource.ds.connection.password = '__-(··)-__';
+            return res.status(200).json({ ok: true, dataSource });
         } catch (err) {
-            next(err);
+            return (new HttpException(404, 'Datasouce not found'));
         }
     }
 
