@@ -44,41 +44,37 @@ export class UploadController {
                 }
 
                 if (req.qs.from === 'user') {
-                    User.findById(id, (err, userBD) => {
-
-                        if (!userBD) {
-                            return next(new HttpException(500, 'User not exists'));
-                        }
+                    try {
+                        const userBD = await User.findById(id);
 
                         // const oldPath = path.resolve(__dirname, `../../uploads/${userBD.img}`);
-                            const oldPath = path.join(ROOT_PATH, 'lib/module/uploads/images', `${userBD.img}`);
+                        const oldPath = path.join(ROOT_PATH, 'lib/module/uploads/images', `${userBD.img}`);
 
-                            // Si existe, elimina la imagen anterior
-                            try {
-                                if (fs.existsSync(oldPath)) {
-                                    const stat = fs.lstatSync(oldPath);
-                                    if (stat.isFile()) {
-                                        fs.unlinkSync(oldPath);
-                                        console.log('Archivo anterior eliminado correctamente');
-                                    } else {
-                                        console.warn('El path no es un archivo, no se elimina:', oldPath);
-                                    }
+                        // Si existe, elimina la imagen anterior
+                        try {
+                            if (fs.existsSync(oldPath)) {
+                                const stat = fs.lstatSync(oldPath);
+                                if (stat.isFile()) {
+                                    fs.unlinkSync(oldPath);
+                                    console.log('Archivo anterior eliminado correctamente');
+                                } else {
+                                    console.warn('El path no es un archivo, no se elimina:', oldPath);
                                 }
-                            } catch (err) {
-                                console.error('Error eliminando archivo anterior:', err);
                             }
-    
-                            userBD.img = randomName;
-                            
-                        userBD.save((err, userUpdated) => {
+                        } catch (err) {
+                            console.error('Error eliminando archivo anterior:', err);
+                        }
 
-                            if (err) {
-                                return next(new HttpException(500, 'Error saving image'));
-                            }
-
-                                return res.status(200).json({ ok: true, message: 'Profile Image successful updated', user: userUpdated });
-                        });
-                    });
+                        userBD.img = randomName;
+                        try {
+                            const userUpdated = await userBD.save();
+                            return res.status(200).json({ ok: true, message: 'Profile Image successful updated', user: userUpdated });
+                        } catch (error) {
+                            return next(new HttpException(500, 'Error saving image'));
+                        }
+                    } catch (error) {
+                            return (new HttpException(500, 'User not exists'));
+                    }
                 }
             });
         } catch (err) {
