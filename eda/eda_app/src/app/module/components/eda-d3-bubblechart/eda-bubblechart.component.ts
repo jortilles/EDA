@@ -197,7 +197,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
       .attr("r", function (d) {
         return size(d.value)
       })//La funcion size recoge el valor numerico asignado del circulo y posteriormente le asigna su diametro
-
+      .style("cursor", "pointer")
       .style("fill-opacity", 1)
       .attr("stroke", "black")
       .style("stroke-width", 1)

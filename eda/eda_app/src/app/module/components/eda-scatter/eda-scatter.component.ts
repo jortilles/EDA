@@ -170,6 +170,7 @@ export class EdaScatter implements AfterViewInit {
       .attr("fill", "var(--panel-font-color)")
       .attr("font-family", "var(--panel-font-family)")
       .attr("font-size", 10)
+      .style("cursor", "pointer")
       .selectAll("circle")
       .data(this.data)
       .join("circle")

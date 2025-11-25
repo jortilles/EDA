@@ -147,6 +147,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .attr("height", d => d.y1 - d.y0)
       .attr("width", d => d.x1 - d.x0)
       .attr("fill", "#242a33")
+      
 
 
     svg.append("g")
@@ -155,6 +156,8 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .data(links)
       .join("path")
       .attr("d", sankeyLinkHorizontal())
+      .style("cursor", "pointer")
+
       .on('click', (mouseevent, data) => {
         if (this.inject.linkedDashboard) {
           const props = this.inject.linkedDashboard;

@@ -168,6 +168,7 @@ export class EdaSunburstComponent implements AfterViewInit {
       .append('g')
       .attr('fill', 'none')
       .attr('pointer-events', 'all')
+      .style("cursor", "pointer")
       .on('mouseleave', () => {
         path.attr('fill-opacity', 1)
         label.style('visibility', 'hidden')

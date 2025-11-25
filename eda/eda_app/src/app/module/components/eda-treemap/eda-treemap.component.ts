@@ -164,7 +164,9 @@ export class EdaTreeMap implements AfterViewInit {
       .selectAll("g")
       .data(root.leaves())
       .join("g")
-      .attr("transform", (d) => `translate(${d.x0},${d.y0})`);
+      .attr("transform", (d) => `translate(${d.x0},${d.y0})`)
+      .style("cursor", "pointer");
+
 
     // leaf.append("title")
     //   .text(d => `${d.ancestors().reverse().map(d => d.data.name).join("/")}\n${d.value}`);
@@ -211,6 +213,7 @@ export class EdaTreeMap implements AfterViewInit {
           .append("div")
           .attr("class", "d3tooltip")
           .style("opacity", 0);
+
         
         this.div.transition().duration(200).style("opacity", 0.9);
         this.div
@@ -228,6 +231,7 @@ export class EdaTreeMap implements AfterViewInit {
         const tooltipData = this.getToolTipData(data);
 
         this.div
+
           .style("top", d.pageY - 70 + linked + "px")
           .style("left", d.pageX - tooltipData.width / 2 + "px");
       });
