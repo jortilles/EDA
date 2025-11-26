@@ -520,14 +520,10 @@ export class DataSourceController {
     }
 
     static async getMongoDataSource(id: string) {
-
         try {
-            return await DataSource.findById(id, (err, dataSource: IDataSource) => {
-                if (err) {
-                    throw Error();
-                }
+            const dataSource = await DataSource.findById(id);
+            console.log('holaaaaaaaaaaa', dataSource)
                 return dataSource;
-            })
         } catch (err) {
             throw err;
         }
@@ -596,16 +592,13 @@ export class DataSourceController {
             const out = DataSourceController.FindAndUpdateDataModel(datasource.ds.model.tables, storedDataModel.ds.model.tables);
             datasource.ds.model.tables = DataSourceController.FindAndDeleteDataModel(datasource.ds.model.tables, out);
 
-
-            DataSource.findById(req.params.id, async (err, dataSource: IDataSource) => {
-                if (err) {
-                    return next(new HttpException(500, `Error updating the datasource`));
-                }
-
+            try {
+                const dataSource: IDataSource = await DataSource.findById(req.params.id)
+                
                 dataSource.ds.model.tables = datasource.ds.model.tables;
-
+    
                 const iDataSource = new DataSource(dataSource);
-
+    
                 try {
                     const saved = await iDataSource.save();
                     if (!saved) {
@@ -615,7 +608,10 @@ export class DataSourceController {
                 } catch (error) {
                     return next(new HttpException(500, `Error updating the datasource`));
                 }
-            });
+            } catch (error) {
+                
+                return (new HttpException(500, `Error updating the datasource`));
+            }
         } catch (err) {
             next(err);
         }
