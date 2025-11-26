@@ -56,7 +56,7 @@ export class MainLeftSidebarComponent {
           { lang: 'EN', label: 'English', icon: 'en-flag' },
           { lang: 'ES', label: 'Español', icon: 'es-flag' },
           { lang: 'CA', label: 'Català', icon: 'cat-flag' },
-          { lang: 'PO', label: 'Polski', icon: 'pl-flag' },
+          { lang: 'PL', label: 'Polski', icon: 'pl-flag' },
         ]
       },
       {
@@ -169,7 +169,7 @@ menuCommand(item: any, event: MouseEvent) {
     }
     switch (lan) {
       case 'EN': window.location.href = baseUrl + 'en/#/home'; break;
-      case 'CAT': window.location.href = baseUrl + 'ca/#/home'; break;
+      case 'CA': window.location.href = baseUrl + 'ca/#/home'; break;
       case 'ES': window.location.href = baseUrl + 'es/#/home'; break;
       case 'PL'  : window.location.href = baseUrl + 'pl/#/home'; break;
     }
