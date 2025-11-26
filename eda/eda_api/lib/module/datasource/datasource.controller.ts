@@ -522,7 +522,6 @@ export class DataSourceController {
     static async getMongoDataSource(id: string) {
         try {
             const dataSource = await DataSource.findById(id);
-            console.log('holaaaaaaaaaaa', dataSource)
                 return dataSource;
         } catch (err) {
             throw err;
