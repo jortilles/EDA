@@ -442,7 +442,7 @@ export class GlobalFilterV2Component implements OnInit {
                         filter_type: this.globalFilter.selectedColumn.column_type,
                         filter_id: this.globalFilter.id,
                     })
-                    this.alertService.addInfo("Se agregó un nuevo filtro a la relación de filtros dependientes");
+                    this.alertService.addInfo($localize`:@@newFilterAddToDF:Se agregó un nuevo filtro a la relación de filtros dependientes`);
                 }
 
                 this.globalFilters.push(this.globalFilter);
@@ -511,7 +511,7 @@ export class GlobalFilterV2Component implements OnInit {
                     gf.children = [];
                 });
     
-                this.alertService.addWarning('Se ha reiniciado la configuración de los filtros dependientes');
+                this.alertService.addWarning($localize`:@@DFSettingsRestarted:Se ha reiniciado la configuración de los filtros dependientes`);
                 this.initGlobalFilters(this.globalFilters)
             }
 

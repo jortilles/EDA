@@ -5621,6 +5621,21 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>¿Filtro autocomplete?</source>
         <target>Filtre autocomplete?</target>
       </trans-unit>
+
+      <trans-unit id="globalFiltersToDF">
+        <source>Debe disponer de filtros globales para poder avanzar con la configuración de los filtros dependientes.</source>
+        <target>Heu de disposar de filtres globals per poder avançar amb la configuració dels filtres dependents.</target>
+      </trans-unit>
+
+      <trans-unit id="newFilterAddToDF">
+        <source>Se agregó un nuevo filtro a la relación de filtros dependientes</source>
+        <target>S'ha afegit un nou filtre a la relació de filtres dependents</target>
+      </trans-unit>
+
+      <trans-unit id="DFSettingsRestarted">
+        <source>Se ha reiniciado la configuración de los filtros dependientes</source>
+        <target>S'ha reiniciat la configuració dels filtres dependents</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

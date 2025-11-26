@@ -5556,14 +5556,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       </trans-unit>
 
        <trans-unit id="joins1">
-        <source>
-          La funcionalidad de <strong>Intersección de Joins</strong> permite definir cómo se relacionan las tablas de tu consulta mediante <strong>LEFT</strong>, <strong>INNER</strong> o <strong>RIGHT JOIN</strong>.
-          Esto te da control sobre qué registros se incluyen en el resultado, dependiendo de la presencia o ausencia de coincidencias entre las tablas.
-        </source>
-        <target>
-          Funkcjonalność <strong>Przecięcie połączeń</strong> pozwala zdefiniować, w jaki sposób tabele w zapytaniu są powiązane <strong>LEWY</strong>, <strong>WEWNĘTRZNY</strong> Lub <strong>DOŁĄCZ PRAWO</strong>.
-          Dzięki temu możesz kontrolować, które rekordy zostaną uwzględnione w wynikach, w zależności od obecności lub braku dopasowań pomiędzy tabelami.
-        </target>
+        <source>La funcionalidad de <ph id="0"/>Intersección de Joins<ph id="1"/> permite definir cómo se relacionan las tablas de tu consulta mediante <ph id="2"/>LEFT<ph id="3"/>, <ph id="4"/>INNER<ph id="5"/> o <ph id="6"/>RIGHT JOIN<ph id="7"/>. Esto te da control sobre qué registros se incluyen en el resultado, dependiendo de la presencia o ausencia de coincidencias entre las tablas.</source>
+        <target>Funkcja <ph id="0"/>Join Intersection<ph id="1"/> pozwala określić, w jaki sposób tabele w zapytaniu są powiązane za pomocą <ph id="2"/>LEFT<ph id="3"/>, <ph id="4"/>INNER<ph id="5"/> lub <ph id="6"/>RIGHT JOIN<ph id="7"/>. Daje to kontrolę nad tym, które rekordy zostaną uwzględnione w wyniku, w zależności od obecności lub braku dopasowań między tabelami.</target>
       </trans-unit>
 
       <trans-unit id="joins3">
@@ -5572,16 +5566,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       </trans-unit>
 
       <trans-unit id="whatif1">
-        <source>
-          La funcionalidad <strong>What If</strong> te permite crear atributos nuevos a partir de otros atributos en tu gráfico.
-          A estos nuevos campos se les puede aplicar una operación matemática para modificar su valor según tus necesidades,
-          y también es posible cambiarles el nombre para identificarlos fácilmente.
-        </source>
-        <target>
-          Funkcja <strong>Co by było, gdyby</strong> umożliwia tworzenie nowych atrybutów na podstawie innych atrybutów grafiki.
-          W tych nowych polach można zastosować operację matematyczną, aby zmodyfikować wartość zgodnie z potrzebami.
-          Można również zmienić ich nazwy, aby ułatwić ich identyfikację.
-        </target>
+        <source>La funcionalidad <ph id="0"/>What If<ph id="1"/> te permite crear atributos nuevos a partir de otros atributos en tu gráfico. A estos nuevos campos se les puede aplicar una operación matemática para modificar su valor según tus necesidades, y también es posible cambiarles el nombre para identificarlos fácilmente.</source>
+        <target>Funkcja <ph id="0"/>What If<ph id="1"/> umożliwia tworzenie nowych atrybutów na podstawie innych atrybutów na wykresie. W tych nowych polach można zastosować operację matematyczną, aby zmodyfikować ich wartości zgodnie z potrzebami, a także zmienić ich nazwy, aby łatwo je zidentyfikować.</target>
       </trans-unit>
 
       <trans-unit id="whatif3">
@@ -5600,14 +5586,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       </trans-unit>
 
       <trans-unit id="filtrosAvanzados1">
-        <source>
-          La funcionalidad <strong>Filtros Avanzados</strong> permite relacionar los filtros globales y de panel utilizando operadores <strong>AND</strong> o <strong>OR</strong>.
-          Esto posibilita que los filtros no solo se apliquen como un conjunto fijo de condiciones, sino que puedan interoperar entre sí según la relación definida.
-        </source>
-        <target>
-          Funkcja <strong>Filtry zaawansowane</strong> umożliwia powiązanie filtrów globalnych i panelowych za pomocą operatorów <strong>AND</strong> lub <strong>OR</strong>. 
-          Dzięki temu filtry nie tylko mogą być stosowane jako stały zestaw warunków, ale także współdziałać ze sobą zgodnie ze zdefiniowaną relacją.
-        </target>
+        <source>La funcionalidad <ph id="0"/>Filtros Avanzados<ph id="1"/> permite relacionar los filtros globales y de panel utilizando operadores <ph id="2"/>AND<ph id="3"/> o <ph id="4"/>OR<ph id="5"/>. Esto posibilita que los filtros no solo se apliquen como un conjunto fijo de condiciones, sino que puedan interoperar entre sí según la relación definida.</source>
+        <target>Funkcja <ph id="0"/>Advanced Filters<ph id="1"/> umożliwia powiązanie filtrów globalnych i panelowych przy użyciu operatorów <ph id="2"/>AND<ph id="3"/> lub <ph id="4"/>OR<ph id="5"/>. Dzięki temu filtry nie tylko mogą być stosowane jako stały zestaw warunków, ale także współdziałać ze sobą zgodnie z określoną relacją.</target>
       </trans-unit>
 
       <trans-unit id="dashboardSidebarDependentFilters">
@@ -5628,6 +5608,21 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="autocompleteFilter">
         <source>¿Filtro autocomplete?</source>
         <target>Filtr autouzupełniania?</target>
+      </trans-unit>
+
+      <trans-unit id="globalFiltersToDF">
+        <source>Debe disponer de filtros globales para poder avanzar con la configuración de los filtros dependientes.</source>
+        <target>Aby móc kontynuować konfigurację filtrów zależnych, musisz mieć dostępne filtry globalne.</target>
+      </trans-unit>
+
+      <trans-unit id="newFilterAddToDF">
+        <source>Se agregó un nuevo filtro a la relación de filtros dependientes</source>
+        <target>Do listy filtrów zależnych dodano nowy filtr</target>
+      </trans-unit>
+
+      <trans-unit id="DFSettingsRestarted">
+        <source>Se ha reiniciado la configuración de los filtros dependientes</source>
+        <target>Konfiguracja filtrów zależnych została zresetowana</target>
       </trans-unit>
 </body>
 </file>

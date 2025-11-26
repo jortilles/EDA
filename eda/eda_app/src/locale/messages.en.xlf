@@ -5543,23 +5543,14 @@ Once configured you can invoke it whenever you want from the button.</target>
         <target>The <ph id="0"/>Join Intersection<ph id="1"/> feature allows you to define how the tables in your query are related using <ph id="2"/>LEFT<ph id="3"/>, <ph id="4"/>INNER<ph id="5"/>, or <ph id="6"/>RIGHT JOIN<ph id="7"/>. This gives you control over which records are included in the result, depending on the presence or absence of matches between tables.</target>
       </trans-unit>
 
-
       <trans-unit id="joins3">
         <source>Solo es posible hacer joins entre tablas definidas dentro del modelo o consulta actual.</source>
         <target>It is only possible to perform joins between tables defined within the current model or query.</target>
       </trans-unit>
 
       <trans-unit id="whatif1">
-        <source>
-          La funcionalidad <strong>What If</strong> te permite crear atributos nuevos a partir de otros atributos en tu gráfico.
-          A estos nuevos campos se les puede aplicar una operación matemática para modificar su valor según tus necesidades,
-          y también es posible cambiarles el nombre para identificarlos fácilmente.
-        </source>
-        <target>
-          The <strong>What If</strong> feature allows you to create new attributes based on other attributes in your chart.
-          You can apply a mathematical operation to these new fields to modify their value according to your needs,
-          and it is also possible to rename them for easy identification.
-        </target>
+        <source>La funcionalidad <ph id="0"/>What If<ph id="1"/> te permite crear atributos nuevos a partir de otros atributos en tu gráfico. A estos nuevos campos se les puede aplicar una operación matemática para modificar su valor según tus necesidades, y también es posible cambiarles el nombre para identificarlos fácilmente.</source>
+        <target>The <ph id="0"/>What If<ph id="1"/> feature allows you to create new attributes based on other attributes in your chart. You can apply a mathematical operation to these new fields to modify their value according to your needs, and it is also possible to rename them for easy identification.</target>
       </trans-unit>
 
       <trans-unit id="whatif3">
@@ -5578,14 +5569,8 @@ Once configured you can invoke it whenever you want from the button.</target>
       </trans-unit>
 
       <trans-unit id="filtrosAvanzados1">
-        <source>
-          La funcionalidad <strong>Filtros Avanzados</strong> permite relacionar los filtros globales y de panel utilizando operadores <strong>AND</strong> o <strong>OR</strong>.
-          Esto posibilita que los filtros no solo se apliquen como un conjunto fijo de condiciones, sino que puedan interoperar entre sí según la relación definida.
-        </source>
-        <target>
-          The <strong>Advanced Filters</strong> feature allows you to relate global and panel filters using <strong>AND</strong> or <strong>OR</strong> operators.
-          This enables filters to not only apply as a fixed set of conditions, but also to interact with each other depending on the defined relationship.
-        </target>
+        <source>La funcionalidad <ph id="0"/>Filtros Avanzados<ph id="1"/> permite relacionar los filtros globales y de panel utilizando operadores <ph id="2"/>AND<ph id="3"/> o <ph id="4"/>OR<ph id="5"/>. Esto posibilita que los filtros no solo se apliquen como un conjunto fijo de condiciones, sino que puedan interoperar entre sí según la relación definida.</source>
+        <target>The <ph id="0"/>Advanced Filters<ph id="1"/> feature allows you to relate global and panel filters using <ph id="2"/>AND<ph id="3"/> or <ph id="4"/>OR<ph id="5"/> operators. This enables filters to not only apply as a fixed set of conditions, but also to interact with each other depending on the defined relationship.</target>
       </trans-unit>
 
       <trans-unit id="filtrosAvanzados3">
@@ -5611,6 +5596,21 @@ Once configured you can invoke it whenever you want from the button.</target>
       <trans-unit id="autocompleteFilter">
         <source>¿Filtro autocomplete?</source>
         <target>Autocomplete filter?</target>
+      </trans-unit>
+
+      <trans-unit id="globalFiltersToDF">
+        <source>Debe disponer de filtros globales para poder avanzar con la configuración de los filtros dependientes.</source>
+        <target>You must have global filters available in order to proceed with the configuration of dependent filters.</target>
+      </trans-unit>
+
+      <trans-unit id="newFilterAddToDF">
+        <source>Se agregó un nuevo filtro a la relación de filtros dependientes</source>
+        <target>A new filter was added to the dependent filter list</target>
+      </trans-unit>
+
+      <trans-unit id="DFSettingsRestarted">
+        <source>Se ha reiniciado la configuración de los filtros dependientes</source>
+        <target>The configuration of dependent filters has been reset</target>
       </trans-unit>
     </body>
   </file>

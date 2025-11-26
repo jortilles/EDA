@@ -305,7 +305,7 @@ export class DashboardSidebarComponent {
       this.isDependentFiltersVisible = true;
       this.hidePopover();
     } else {
-      this.alertService.addWarning("Debe disponer de filtros globales para poder avanzar con la configuración de los filtros dependientes.");
+      this.alertService.addWarning($localize`:@@globalFiltersToDF:Debe disponer de filtros globales para poder avanzar con la configuración de los filtros dependientes.`);
     }
 
   }
