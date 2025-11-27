@@ -71,11 +71,9 @@ export class ChatGptController {
                 apiKey: API_KEY
             });
 
-            const { text, history } = req.body;
+            const { text, history, data, schema, firstTime } = req.body;
 
-            console.log('INICIOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
-            console.log('text: ', text);
-            console.log('history: ', history);
+            console.log('INICIOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
 
             // Sanitizar history: dejar solo { role, content }
             const safeHistory = Array.isArray(history) ? history.map((m: any) => {
@@ -104,26 +102,77 @@ export class ChatGptController {
             const messages: any = safeHistory;            
             console.log('messages: ', messages)
 
+
+            if(firstTime) {
+                console.log('es la primera vez que se envia el schema');
+                
+                messages.unshift({
+                role: "system",
+                content: `You are an assistant who knows the following database structure:
+                ${JSON.stringify(schema, null, 2)} \`
+
+                When a user requests data from a table without specifying columns, you must:
+                - Include **all columns** from the table in the getFields call.
+                - Never return empty columns (columns or fields or attributes).
+                - If the table has more than 10 columns, first ask the user if they want all of them.
+                It always generates the getFields calls with exact column names according to the schema.`
+                });
+
+            }
+
+            console.log('messages: ', messages)
+
             // Definir en otro directorio
             const getHoroscopeTool: any = {
                 type: "function",       // obligatorio
                 name: "getHoroscope",
                 description: "Get todays horoscope for an astrological sign.",
                 parameters: {
-                type: "object",
-                properties: {
-                    sign: {
-                    type: "string",
-                    description: "An astrological sign like Taurus or Aquarius",
+                    type: "object",
+                    properties: {
+                        sign: {
+                            type: "string",
+                            description: "An astrological sign like Taurus or Aquarius",
+                        },
                     },
-                },
-                required: ["sign"],
-                additionalProperties: false // <- CORRECCIÓN CLAVE: evita propiedades extra
+                    required: ["sign"],
+                    additionalProperties: false // <- CORRECCIÓN CLAVE: evita propiedades extra
                 },
                 strict: true,           // obligatorio
             };
 
-            const tools: any[] = [getHoroscopeTool];
+            const getFieldsTool: any = {
+                type: "function",
+                name: "getFields",
+                description: "Returns an array of tables objects where each one contains its corresponding columns element which is an array of columns. You must check the schema",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        tables: {
+                            type: "array",
+                            description: "Array of table requests. Each element must be an object with 'table' (string) and 'columns' (array of strings). If no column is specified, you must add all the columns from the corresponding table. You must check the schema",
+                            items: {
+                                type: "object",
+                                properties: {
+                                    table: { type: "string", description: "Name of the table (e.g. 'customers')" },
+                                    columns: {
+                                        type: "array",
+                                        description: "List of string column names. If not specified or empty, return all columns for the table. You must check the schema. You must identify tables or entities in the prompt query to match them with the columns you will return. Take also into account synonyms and possible typography mistakes. Never return empty if you dont know make a request",
+                                        items: { type: "string" }
+                                    }
+                                },
+                                required: ["table", "columns"],
+                                additionalProperties: false
+                            }
+                        }
+                    },
+                    required: ["tables"],
+                    additionalProperties: false
+                },
+                strict: true
+            };
+
+            const tools: any[] = [getHoroscopeTool, getFieldsTool];
 
             let response: any = await openai.responses.create({
                 model: MODEL,
@@ -136,6 +185,7 @@ export class ChatGptController {
 
             const toolCall: any = response.output?.find((c: any) => c.type === "function_call");
             let toolResult: string | null = null;
+            let currentQueryTool: any[];
 
             console.log('TOOLCALL: ', toolCall);
 
@@ -173,6 +223,22 @@ export class ChatGptController {
                 
             }
 
+            if(toolCall && toolCall.name === "getFields"){
+                console.log('SE EJECUTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
+                const args = toolCall.arguments ? JSON.parse(toolCall.arguments) : {};
+                const tables = args.tables ?? "Unknown";
+                const tools = response.tools;
+
+                // Current Query
+                currentQueryTool = getFields(tables, data);
+                response.currentQuery = currentQueryTool;
+                response.output_text = 'Se ha configurado con exito la consulta solicitada';
+
+                
+
+
+            }
+
 
             console.log('ENVIO AL FRONT-END: ',response)
 
@@ -190,8 +256,28 @@ export class ChatGptController {
 
 }
 
-    // --- función real implementada en el backend ---
+// --- función real implementada en el backend ---
 function getHoroscope(sign: string) {
-  // Aquí implementa la lógica real: llamada a otra API, BD, etc.
   return `${sign}: Next Tuesday you will befriend a baby otter.`;
+}
+
+function getFields(tables: any[], data: any[]) {
+
+    let currentQuery: any[] = [];
+
+    console.log('tables: ', tables);
+
+    tables.forEach((t: any) => {
+        const table = data.find((item: any) => item.table_name === t.table.toLowerCase());
+        if(table) {
+            t.columns.forEach((c: any) => {
+                const column = table.columns.find((item: any) => item.column_name === c.toLowerCase());
+                if(column) {
+                    currentQuery.push(column);
+                }
+            })
+        }
+    })
+
+    return currentQuery;
 }

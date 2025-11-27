@@ -5,6 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
 
+// Componentes
+import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
+
 
 interface ChatMessage {
     id?: string | number;
@@ -24,15 +27,37 @@ styleUrls: ['./prompt.component.css']
 export class PromptComponent implements OnInit, AfterViewChecked {
 
     @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
+    @Input() edaBlankPanel: EdaBlankPanelComponent;
+    @Output() newCurrentQuery: EventEmitter<any[]> = new EventEmitter();
+
 
     messages: ChatMessage[] = [];
     inputText = '';
     sending = false;
+    schema: any[] = [] 
+    firstTime: boolean = true;
 
     constructor(private chatgptService: ChatgptService) {}
 
     ngOnInit(): void {
+        this.initSchema(this.edaBlankPanel.tables)
+    }
 
+    initSchema(tables: any[]) {
+        let schema = [];
+
+        tables.forEach((table: any) => {
+            let columns = [];
+            table.columns.forEach((column: any) => {
+                columns.push(column.column_name);
+            })
+            schema.push({
+                table: table.table_name,
+                columns: columns
+            })
+        })
+
+        this.schema = schema;
     }
 
     ngAfterViewChecked(): void {
@@ -40,6 +65,28 @@ export class PromptComponent implements OnInit, AfterViewChecked {
     }
 
     sendMessage(): void {
+
+        const tables = this.edaBlankPanel.tables;
+
+        // Primeras pruebas sin filtros
+        const params = {
+            table: '',
+            dataSource: this.edaBlankPanel.dataSource._id,
+            panel: this.edaBlankPanel.panel.id,
+            dashboard: this.edaBlankPanel.inject.dashboard_id,
+            filters: [],
+            config: null,
+            queryLimit: this.edaBlankPanel.queryLimit,
+            joinType: this.edaBlankPanel.joinType,
+            rootTable: this.edaBlankPanel.rootTable?.table_name,
+            connectionProperties: this.edaBlankPanel.connectionProperties
+        }
+
+        console.log('tables: ', tables);
+        console.log('params: ', params);
+        // debugger;   
+
+
         const text = this.inputText?.trim();
 
         if (!text) return;
@@ -51,15 +98,33 @@ export class PromptComponent implements OnInit, AfterViewChecked {
 
         console.log('text: ', text);
         console.log('messages: ', this.messages);
+        console.log('schema: ', this.schema);
+        console.log('firstTime: ', this.firstTime);
         // debugger;
 
         // Llamada al servicio que envía el prompt al backend / OpenAI
-        this.chatgptService.sendPrompt(text, this.messages).subscribe({
+        this.chatgptService.sendPrompt(text, this.messages, tables, this.schema, this.firstTime).subscribe({
             next: (resp) => {
                 // Esperamos que `resp` contenga la respuesta ya procesada como texto. Adapta según tu backend.
-                const assistantMessage: ChatMessage = { role: 'assistant', content: resp?.text ?? String(resp), timestamp: Date.now() };
+
+                console.log('resp:::::::COMPONENTE  ', resp);
+                // debugger;
+                const currentQuery = resp.response.currentQuery;
+
+                if(currentQuery) {
+                    if( currentQuery.length !==0 ) {
+                        console.log('EMITIR A EBP....')
+                        this.newCurrentQuery.emit(currentQuery);
+                    }
+                }
+
+                const text = resp.response.output_text
+                const assistantMessage: ChatMessage = { role: 'assistant', content: text ?? String(text), timestamp: Date.now() };
                 this.messages.push(assistantMessage);
                 this.sending = false;
+
+                // Cambiamos a false despues de la primera consulta
+                this.firstTime = false;
             },
             error: (err) => {
                 console.error('Error al enviar prompt:', err);

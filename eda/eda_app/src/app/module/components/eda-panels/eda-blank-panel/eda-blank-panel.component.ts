@@ -1703,6 +1703,12 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
         this.isVisibleEbpChatGpt = false;
     } 
 
+    public currentQueryFromPrompt(event: any) {
+        console.log('EVENTOOOOOO: ', event);
+        console.log('THIS: ', this);
+        this.currentQuery = _.cloneDeep(event);
+    }
+
     public onFilterMapper() {
         this.display_v.filterMapperDialog = true;
     }

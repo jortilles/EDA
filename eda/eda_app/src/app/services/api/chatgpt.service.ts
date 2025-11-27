@@ -18,17 +18,17 @@ export class ChatgptService extends ApiService{
     return this.get(`${this.chatGptRoute}/availableChatGpt`)
   }
 
-  sendPrompt(text: string, history?: any[]): Observable<{ text: string } | any> {
+  sendPrompt(text: string, history?: any[], data?: any, schema? :any[], firstTime? : boolean): Observable<{ text: string } | any> {
 
-    const payload = { text, history };
+    const payload = { text, history, data, schema, firstTime };
 
     return this.post(`${this.chatGptRoute}/prompt`, payload).pipe(
       map((resp: any) => {
         // Si tu backend devuelve un campo 'text' u otro, adáptalo aquí.
         // Por defecto devolvemos resp directamente.
-        console.log('RECEPCION DE RESP: resp => ', resp);
+        console.log('RECEPCION DE RESP EN EL SERVICIO ', resp);
         
-        return resp.response.output_text;
+        return resp;
       })
     );
   }

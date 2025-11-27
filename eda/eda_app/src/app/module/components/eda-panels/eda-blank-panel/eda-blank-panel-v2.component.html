@@ -566,7 +566,7 @@
                   HOLAAAAAAAAAAAAAAAA
                 </h1>
                   <!-- AÑADIR AQUI COMPONENTE PROMPT DEL CHAT RONALD -->
-                  <Prompt></Prompt>
+                  <Prompt [edaBlankPanel]="this" (newCurrentQuery)="currentQueryFromPrompt($event)"></Prompt>
               </div>
               }
             } @else {
@@ -574,8 +574,9 @@
               <!-- PROMPT DE CHATGPT -->
               <div class="grid grid-cols-2 border rounded-lg bg-gray-50 min-h-[30vh] h-fit overflow-y-auto p-2 ng-star-inserted">
                 <h1>
-                  HOLAAAAAAAAAAAAAAAA
+                  HOLAAAAAAAAAAAAAAAAI 
                 </h1>
+                <Prompt [edaBlankPanel]="this" (newCurrentQuery)="currentQueryFromPrompt($event)" ></Prompt> 
                   <!-- AÑADIR AQUI COMPONENTE PROMPT DEL CHAT RONALD -->
               </div>
             }
