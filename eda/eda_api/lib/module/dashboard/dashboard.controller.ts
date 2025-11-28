@@ -557,52 +557,48 @@ export class DashboardController {
     const user = req['user']._id;
     const userGroups = req['user'].role;
 
-    DataSource.findById(
-      { _id: model_id },
-      (err, datasource) => {
-        if (err) {
-          return next(
-            new HttpException(500, 'Error searching the DataSource')
-          )
-        }
+     try {
+    const { model_id } = req.params;
 
-        if (!datasource) {
-          return next(new HttpException(400, 'Datasouce not found with id'))
-        }
+    // Buscar datasource sin callbacks
+    const datasource = await DataSource.findById(model_id);
 
-        let toJson = JSON.parse(JSON.stringify(datasource))
+    if (!datasource) {
+      return next(new HttpException(404, "Datasource not found with id"));
+    }
 
-        // Filtre de seguretat per les taules. Si no es te permis sobre una taula es posa com a oculta.
-        // Per si de cas es fa servir a una relació.
-        const uniquesForbiddenTables = DashboardController.getForbiddenTables(
-          toJson,
-          userGroups,
-          req.user._id
-        )
+    let toJson = JSON.parse(JSON.stringify(datasource));
 
-        const includesAdmin = req.user.role.includes("135792467811111111111110")
+    // Filtre de seguretat per les taules
+    const uniquesForbiddenTables = DashboardController.getForbiddenTables(
+      toJson,
+      req.user.groups,
+      req.user._id
+    );
 
-        // Se agrega false a autorelation y bridge
-        toJson.ds.model.tables.forEach(table => {
-          table.relations.forEach(r => {
-            if (r.autorelation == undefined) {
-              r.autorelation = false;
-            }
-            if (r.bridge == undefined) {
-              r.bridge = false;
-            }
-          });
-        });
+    // Comprobar admin
+    const includesAdmin = req.user.role.includes("135792467811111111111110");
 
-        const ds = {
-          _id: datasource._id,
-          model: toJson.ds.model,
-          name: toJson.ds.metadata.model_name
-        }
+    // Añadir valores por defecto a relaciones
+    toJson.ds.model.tables.forEach(table => {
+      table.relations.forEach(r => {
+        r.autorelation = r.autorelation ?? false;
+        r.bridge = r.bridge ?? false;
+      });
+    });
 
-        return res.status(200).json(ds)
-      }
-    )
+    const ds = {
+      _id: datasource._id,
+      model: toJson.ds.model,
+      name: toJson.ds.metadata.model_name
+    };
+
+    return res.status(200).json(ds);
+
+  } catch (err) {
+    console.error(err);
+    next(new HttpException(500, "Error searching the DataSource"));
+  }
   }
 
   static async create(req: Request, res: Response, next: NextFunction) {
