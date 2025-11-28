@@ -56,10 +56,10 @@ export class HomePageV2 implements OnInit {
 
   private async loadReports() {
     const { publics, shared, dashboards, group } = await lastValueFrom(this.dashboardService.getDashboards());
-    this.publicReports = publics;
+    this.publicReports = shared;
     this.privateReports = dashboards;
     this.roleReports = group;
-    this.sharedReports = shared;
+    this.sharedReports = publics;
 
   this.allDashboards = [].concat(this.publicReports, this.privateReports, this.roleReports, this.sharedReports);
 

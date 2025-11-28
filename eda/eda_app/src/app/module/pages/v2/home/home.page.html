@@ -48,11 +48,11 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       <!-- Public Reports -->
       <ng-container
-        *ngTemplateOutlet="reportsTemplate; context: { reports: publicReports, title: publicTitle }"></ng-container>
+        *ngTemplateOutlet="reportsTemplate; context: { reports: sharedReports, title: publicTitle }"></ng-container>
 
       <!-- Commons -->
       <ng-container
-        *ngTemplateOutlet="reportsTemplate; context: { reports: sharedReports, title: commonTitle }"></ng-container>
+        *ngTemplateOutlet="reportsTemplate; context: { reports: publicReports, title: commonTitle }"></ng-container>
 
       <!-- Groups -->
       <ng-container
