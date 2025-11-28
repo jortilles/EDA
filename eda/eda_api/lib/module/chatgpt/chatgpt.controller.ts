@@ -167,12 +167,71 @@ export class ChatGptController {
 
             console.log('messages: ', messages)
 
+            // CALLING FUNCTION
+
+            // 
+            const getFieldsTool: any = {
+                type: "function",
+                name: "getFields",
+                description: "Returns an array of tables objects where each one contains its corresponding columns element which is an array of columns. You must check the SCHEMA STRUCTURE because thats is the format",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        tables: {
+                            type: "array",
+                            description: "Array of table requests. Each element must be an object with: 'table' (string) and 'columns' (array of strings). If no column is specified, you must add all the columns from the corresponding table. You must check the schema",
+                            items: {
+                                type: "object",
+                                properties: {
+                                    table: { type: "string", description: "Name of the table (e.g. 'customers')" },
+                                    columns: {
+                                        type: "array",
+                                        description: "List of string column names. If not specified or empty, return all columns for the table. You must check the schema. You must identify tables or entities in the prompt query to match them with the columns you will return. Take also into account synonyms and possible typography mistakes. Never return empty if you dont know make a request. you must return column names must exactly match the schema.",
+                                        items: { type: "string" }
+                                    }
+                                },
+                                required: ["table", "columns"],
+                                additionalProperties: false
+                            }
+                        }
+                    },
+                    required: ["tables"],
+                    additionalProperties: false
+                },
+                strict: true
+            };
+
+            const tools: any[] = [getFieldsTool];
+
+
             let response: any = await openai.responses.create({
                 model: MODEL,
                 input: messages,
+                tools: tools,
             })
 
             console.log('::::::::::::::::::::: RESPONSE :::::::::::::::::::::');
+
+            const toolCall: any = response.output?.find((c: any) => c.type === "function_call");
+            let toolResult: string | null = null;
+            let currentQueryTool: any[];
+            console.log('TOOLCALL: ', toolCall);
+
+            if(toolCall && toolCall.name === "getFields"){
+                console.log('SE EJECUTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
+                const args = toolCall.arguments ? JSON.parse(toolCall.arguments) : {};
+                const tables = args.tables ?? "Unknown";
+                const tools = response.tools;
+
+                // Current Query
+                console.log('tables de la IA: ', tables);
+                currentQueryTool = getFields(tables, data);
+                response.currentQuery = currentQueryTool;
+                response.output_text = 'Se ha configurado con exito la consulta';
+
+            }
+
+
             console.log('ENVIO AL FRONT-END: ',response)
 
             res.status(200).json({
@@ -189,5 +248,24 @@ export class ChatGptController {
 
 }
 
+function getFields(tables: any[], data: any[]) {
 
+    let currentQuery: any[] = [];
+
+    console.log('tables: ', tables);
+
+    tables.forEach((t: any) => {
+        const table = data.find((item: any) => item.table_name === t.table.toLowerCase());
+        if(table) {
+            t.columns.forEach((c: any) => {
+                const column = table.columns.find((item: any) => item.column_name === c.toLowerCase());
+                if(column) {
+                    currentQuery.push(column);
+                }
+            })
+        }
+    })
+
+    return currentQuery;
+}
 
