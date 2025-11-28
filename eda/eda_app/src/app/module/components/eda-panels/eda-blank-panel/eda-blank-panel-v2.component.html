@@ -566,7 +566,12 @@
                   HOLAAAAAAAAAAAAAAAA
                 </h1>
                   <!-- AÑADIR AQUI COMPONENTE PROMPT DEL CHAT RONALD -->
-                  <Prompt [edaBlankPanel]="this" (newCurrentQuery)="currentQueryFromPrompt($event)"></Prompt>
+                  <Prompt 
+                    [edaBlankPanel]="this" 
+                    (newCurrentQuery)="currentQueryFromPrompt($event)"
+                    (principalTable)="principalTableFunction($event)" 
+                  >
+                  </Prompt>
               </div>
               }
             } @else {
@@ -576,7 +581,12 @@
                 <h1>
                   HOLAAAAAAAAAAAAAAAAI 
                 </h1>
-                <Prompt [edaBlankPanel]="this" (newCurrentQuery)="currentQueryFromPrompt($event)" ></Prompt> 
+                <Prompt 
+                  [edaBlankPanel]="this" 
+                  (newCurrentQuery)="currentQueryFromPrompt($event)"
+                  (principalTable)="principalTableFunction($event)" 
+                >
+                </Prompt> 
                   <!-- AÑADIR AQUI COMPONENTE PROMPT DEL CHAT RONALD -->
               </div>
             }

@@ -310,6 +310,8 @@ export class EdaBlankPanelComponent implements OnInit {
             ['knob', 'radar'].includes(this.panel.content?.chart) ? { minHeight: '55vh', minWidth: '55vw', display: 'inline-block', alignItems: 'center' } :
             ['kpi'].includes(this.panel.content?.chart) ? {height: '100%', width: '100%', alignContent: 'center'} : 
             {height: '100%', width: '100%'};
+
+            console.log('THISSSSSSSSSSSSSSSSSSSSSSSSSSSS: ', this)
     }
     
     /**
@@ -477,6 +479,9 @@ public tableNodeExpand(event: any): void {
 
     public async setTablesData()  {
         await this.setPanelDataSource();
+
+        console.log('this:::::::::::::::: ', this);
+        debugger;
 
         const tables = TableUtils.getTablesData(this.dataSource.model.tables, this.inject.applyToAllfilter);
         this.tables = [].concat(_.cloneDeep(tables.allTables), this.assertedTables);
@@ -1499,6 +1504,9 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
     * Runs actual query when execute button is pressed to check for heavy queries
     */
     public runManualQuery = () => {
+
+        console.log('THIS: ', this);
+
         const chartType = this.panelChart?.props?.chartType || '';
 
         if (chartType == 'crosstable' && this.indextab === 1) {
@@ -1707,6 +1715,10 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
         console.log('EVENTOOOOOO: ', event);
         console.log('THIS: ', this);
         this.currentQuery = _.cloneDeep(event);
+    }
+
+    public principalTableFunction(event: any) {
+        this.userSelectedTable = event;
     }
 
     public onFilterMapper() {

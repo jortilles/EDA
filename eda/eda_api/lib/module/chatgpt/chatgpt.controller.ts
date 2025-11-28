@@ -172,7 +172,26 @@ export class ChatGptController {
                 strict: true
             };
 
-            const tools: any[] = [getHoroscopeTool, getFieldsTool];
+
+            const getAllColumnsByTableNameTool: any = {
+                type: "function",       // obligatorio
+                name: "getAllColumnsByTableName",
+                description: "Returns the table name. The table name must exist in the schema; synonyms and minor typos may be considered.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        table: {
+                            type: "string",
+                            description: "Name of the table, must exist in the schema",
+                        },
+                    },
+                    required: ["table"],
+                    additionalProperties: false
+                },
+                strict: true,           
+            };
+
+            const tools: any[] = [getHoroscopeTool, getFieldsTool, getAllColumnsByTableNameTool];
 
             let response: any = await openai.responses.create({
                 model: MODEL,
@@ -233,10 +252,22 @@ export class ChatGptController {
                 currentQueryTool = getFields(tables, data);
                 response.currentQuery = currentQueryTool;
                 response.output_text = 'Se ha configurado con exito la consulta solicitada';
+            }
 
-                
 
+            if(toolCall && toolCall.name === "getAllColumnsByTableName"){
+                console.log('SE EJECUTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA TODAS LA COLUMNAS');
+                const args = toolCall.arguments ? JSON.parse(toolCall.arguments) : {};
+                const tableName = args.table ?? "Unknown";
+                const tools = response.tools;
 
+                console.log('argsargsargsargsargsargs: ', args);
+
+                // Current Query
+                currentQueryTool = getAllColumnsByTableName(tableName, data);
+                response.currentQuery = currentQueryTool;
+                response.principalTable =  tableName;
+                response.output_text = 'Se ha configurado con exito la consulta solicitada';
             }
 
 
@@ -280,4 +311,31 @@ function getFields(tables: any[], data: any[]) {
     })
 
     return currentQuery;
+}
+
+function getAllColumnsByTableName(tableName: any, data) {
+    let currentQuery: any[] = [];
+
+        console.log('tableName: ', tableName);
+
+        const table = data.find((item: any) => item.table_name === tableName);
+
+        if(table) {
+            table.columns.forEach((col: any) => {
+
+                if(col.column_type === 'numeric') {
+                    const agg = col.aggregation_type.find((agg: any) => agg.value === 'sum');
+                    agg.selected = true;
+                }
+
+                if(col.column_type === 'text' || col.column_type === 'date') {
+                    const agg = col.aggregation_type.find((agg: any) => agg.value === 'none');
+                    agg.selected = true;
+                }
+
+                currentQuery.push(col);
+            })
+        }
+
+    return currentQuery;    
 }

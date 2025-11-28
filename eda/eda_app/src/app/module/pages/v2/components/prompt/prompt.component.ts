@@ -29,12 +29,13 @@ export class PromptComponent implements OnInit, AfterViewChecked {
     @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
     @Input() edaBlankPanel: EdaBlankPanelComponent;
     @Output() newCurrentQuery: EventEmitter<any[]> = new EventEmitter();
+    @Output() principalTable: EventEmitter<any[]> = new EventEmitter();
 
 
     messages: ChatMessage[] = [];
     inputText = '';
     sending = false;
-    schema: any[] = [] 
+    schema: any[] = [] ;
     firstTime: boolean = true;
 
     constructor(private chatgptService: ChatgptService) {}
@@ -110,11 +111,13 @@ export class PromptComponent implements OnInit, AfterViewChecked {
                 console.log('resp:::::::COMPONENTE  ', resp);
                 // debugger;
                 const currentQuery = resp.response.currentQuery;
+                const principalTable = resp.response.principalTable;
 
                 if(currentQuery) {
                     if( currentQuery.length !==0 ) {
                         console.log('EMITIR A EBP....')
                         this.newCurrentQuery.emit(currentQuery);
+                        this.principalTable.emit(principalTable);
                     }
                 }
 
