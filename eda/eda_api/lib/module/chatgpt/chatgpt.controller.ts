@@ -71,9 +71,20 @@ export class ChatGptController {
                 apiKey: API_KEY
             });
 
+            const forbiddenKeywords = ["jesus", "bitcoin", "news", "world", "born", "sex", "war", "money", "games", "animals"];
             const { text, history, data, schema, firstTime } = req.body;
 
-            console.log('INICIOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
+            console.log('INICIOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
+
+            // Temas que no estan incluidos en la interaccion con la IA
+            if (forbiddenKeywords.some(k => text.includes(k))) {
+                return res.status(200).json({
+                    ok: true,
+                    response: {
+                    output: "I am only here to help build table and column structures. How can I help you?."
+                    }
+                });
+            }
 
             // Sanitizar history: dejar solo { role, content }
             const safeHistory = Array.isArray(history) ? history.map((m: any) => {
@@ -102,144 +113,66 @@ export class ChatGptController {
             const messages: any = safeHistory;            
             console.log('messages: ', messages)
 
+            // Ejemplo de respuesta.
+            const exampleResponse: any[] = [
+                {
+                    table: 'customers',
+                    columns: [
+                        'country',
+                        'city',
+                        'state'
+                    ]
+                }, 
+                {
+                    table: 'payments',
+                    columns: [
+                        'amount',
+                        'checknumber',
+                        'customernumber'
+                    ]
+                }
+            ]
+
 
             if(firstTime) {
                 console.log('es la primera vez que se envia el schema');
                 
                 messages.unshift({
-                role: "system",
-                content: `You are an assistant who knows the following database structure:
-                ${JSON.stringify(schema, null, 2)} \`
+                    role: "system",
+                    content: `You are an assistant specialized ONLY in constructing table structures with columns.
 
-                When a user requests data from a table without specifying columns, you must:
-                - Include **all columns** from the table in the getFields call.
-                - Never return empty columns (columns or fields or attributes).
-                - If the table has more than 10 columns, first ask the user if they want all of them.
-                It always generates the getFields calls with exact column names according to the schema.`
-                });
+                    Here is the schema: ${JSON.stringify(schema, null, 2)}. You can use it to check whether the table and its columns exist.
 
+                    You MUST NEVER answer any questions unrelated to table or column structure. 
+                    If a user asks anything outside table/column construction, respond EXACTLY:
+
+                    "I am only here to help build table and column structures. How can I help you?."
+
+                    Follow these rules strictly:
+                    1. Only interact to get the info needed to build the table structure.
+                    2. Each table must have at least one column.
+                    3. If a user asks for all data of a table with more than 10 columns, ask which columns they want.
+                    4. Only return valid table structures to the getField() function; do not include tables without columns.
+
+                    Your goal is ONLY to produce JSON structures matching this example:
+                    ${JSON.stringify(exampleResponse, null, 2)}
+
+                    Do NOT answer any other question under any circumstance. 
+                    Always default to the exact refusal message if the question is outside your scope.`
+                    });
+
+            } else {
+                console.log('NO SE ENVIO EL SCHEMA');
             }
 
             console.log('messages: ', messages)
 
-            // Definir en otro directorio
-            const getHoroscopeTool: any = {
-                type: "function",       // obligatorio
-                name: "getHoroscope",
-                description: "Get todays horoscope for an astrological sign.",
-                parameters: {
-                    type: "object",
-                    properties: {
-                        sign: {
-                            type: "string",
-                            description: "An astrological sign like Taurus or Aquarius",
-                        },
-                    },
-                    required: ["sign"],
-                    additionalProperties: false // <- CORRECCIÓN CLAVE: evita propiedades extra
-                },
-                strict: true,           // obligatorio
-            };
-
-            const getFieldsTool: any = {
-                type: "function",
-                name: "getFields",
-                description: "Returns an array of tables objects where each one contains its corresponding columns element which is an array of columns. You must check the schema",
-                parameters: {
-                    type: "object",
-                    properties: {
-                        tables: {
-                            type: "array",
-                            description: "Array of table requests. Each element must be an object with 'table' (string) and 'columns' (array of strings). If no column is specified, you must add all the columns from the corresponding table. You must check the schema",
-                            items: {
-                                type: "object",
-                                properties: {
-                                    table: { type: "string", description: "Name of the table (e.g. 'customers')" },
-                                    columns: {
-                                        type: "array",
-                                        description: "List of string column names. If not specified or empty, return all columns for the table. You must check the schema. You must identify tables or entities in the prompt query to match them with the columns you will return. Take also into account synonyms and possible typography mistakes. Never return empty if you dont know make a request",
-                                        items: { type: "string" }
-                                    }
-                                },
-                                required: ["table", "columns"],
-                                additionalProperties: false
-                            }
-                        }
-                    },
-                    required: ["tables"],
-                    additionalProperties: false
-                },
-                strict: true
-            };
-
-            const tools: any[] = [getHoroscopeTool, getFieldsTool];
-
             let response: any = await openai.responses.create({
                 model: MODEL,
                 input: messages,
-                tools: tools,
             })
 
             console.log('::::::::::::::::::::: RESPONSE :::::::::::::::::::::');
-            console.log('response =>', response);
-
-            const toolCall: any = response.output?.find((c: any) => c.type === "function_call");
-            let toolResult: string | null = null;
-            let currentQueryTool: any[];
-
-            console.log('TOOLCALL: ', toolCall);
-
-            if(toolCall && toolCall.name === "getHoroscope") {
-
-                const args = toolCall.arguments ? JSON.parse(toolCall.arguments) : {};
-                const sign = args.sign ?? "Unknown";
-                const tools = response.tools;
-
-                console.log('args: ', args)
-                console.log('sign: ', sign)
-                console.log('tools: ', tools) // Arreglo de tools 
-
-                toolResult = getHoroscope(sign);
-                console.log('toolResult: ', toolResult);
-
-                response.output_text = toolResult;
-                
-
-                //  // --- 5) (Opcional) enviar el resultado de la tool de vuelta al modelo para respuesta final ---
-                // const followUpMessages: any = [
-                //     ...safeHistory,
-                //     // registramos que hubo una llamada a tool (puedes formatearlo como prefieras)
-                //     { role: "assistant", content: `__tool_call__ ${toolCall.tool}(${JSON.stringify(toolCall.arguments)})` },
-                //     // añadir la salida de la herramienta
-                //     { role: "assistant", content: toolResult },
-                // ];
-
-                // // Segunda llamada: ahora pedimos la respuesta final del asistente
-                // response = await openai.responses.create({
-                //     model: MODEL,
-                //     input: followUpMessages,
-                //     tools, // seguir enviando metadata para permitir más tool_calls
-                // });
-                
-            }
-
-            if(toolCall && toolCall.name === "getFields"){
-                console.log('SE EJECUTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
-                const args = toolCall.arguments ? JSON.parse(toolCall.arguments) : {};
-                const tables = args.tables ?? "Unknown";
-                const tools = response.tools;
-
-                // Current Query
-                currentQueryTool = getFields(tables, data);
-                response.currentQuery = currentQueryTool;
-                response.output_text = 'Se ha configurado con exito la consulta solicitada';
-
-                
-
-
-            }
-
-
             console.log('ENVIO AL FRONT-END: ',response)
 
             res.status(200).json({
@@ -256,28 +189,5 @@ export class ChatGptController {
 
 }
 
-// --- función real implementada en el backend ---
-function getHoroscope(sign: string) {
-  return `${sign}: Next Tuesday you will befriend a baby otter.`;
-}
 
-function getFields(tables: any[], data: any[]) {
 
-    let currentQuery: any[] = [];
-
-    console.log('tables: ', tables);
-
-    tables.forEach((t: any) => {
-        const table = data.find((item: any) => item.table_name === t.table.toLowerCase());
-        if(table) {
-            t.columns.forEach((c: any) => {
-                const column = table.columns.find((item: any) => item.column_name === c.toLowerCase());
-                if(column) {
-                    currentQuery.push(column);
-                }
-            })
-        }
-    })
-
-    return currentQuery;
-}

@@ -86,7 +86,6 @@ export class PromptComponent implements OnInit, AfterViewChecked {
         console.log('params: ', params);
         // debugger;   
 
-
         const text = this.inputText?.trim();
 
         if (!text) return;
@@ -97,9 +96,9 @@ export class PromptComponent implements OnInit, AfterViewChecked {
         this.sending = true;
 
         console.log('text: ', text);
-        console.log('messages: ', this.messages);
-        console.log('schema: ', this.schema);
         console.log('firstTime: ', this.firstTime);
+        console.log('messages - history: ', this.messages);
+        console.log('schema: ', this.schema);
         // debugger;
 
         // Llamada al servicio que envía el prompt al backend / OpenAI
@@ -109,14 +108,15 @@ export class PromptComponent implements OnInit, AfterViewChecked {
 
                 console.log('resp:::::::COMPONENTE  ', resp);
                 // debugger;
-                const currentQuery = resp.response.currentQuery;
 
-                if(currentQuery) {
-                    if( currentQuery.length !==0 ) {
-                        console.log('EMITIR A EBP....')
-                        this.newCurrentQuery.emit(currentQuery);
-                    }
-                }
+
+                // const currentQuery = resp.response.currentQuery;
+                // if(currentQuery) {
+                //     if( currentQuery.length !==0 ) {
+                //         console.log('EMITIR A EBP....')
+                //         this.newCurrentQuery.emit(currentQuery);
+                //     }
+                // }
 
                 const text = resp.response.output_text
                 const assistantMessage: ChatMessage = { role: 'assistant', content: text ?? String(text), timestamp: Date.now() };
