@@ -185,6 +185,7 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
       .datum(data2)
       .attr('fill', `url(#${this.id}_temperature-gradient)`)
       .attr('d', area);
+
     svg.append('path')
       .datum(data2)
       .attr('fill',  `url(#${this.id}_temperature-gradient)`)
@@ -213,9 +214,10 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
       .attr('y', 50)
       .text(({ label }) => label)
       .attr('style', `
-          font-family: ${fontPanel};
-          font-size: 14px;
-      `)
+        font-family: ${fontPanel};
+        font-size: 14px;
+        `)
+      .style("cursor", "pointer")
       .attr("fill", colorPanel)
       .on('click', (mouseevent, data) => {
         if (this.inject.linkedDashboard) {

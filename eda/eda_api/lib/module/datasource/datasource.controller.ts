@@ -6,7 +6,7 @@ import ManagerConnectionService from '../../services/connection/manager-connecti
 import ConnectionModel from './model/connection.model';
 import { EnCrypterService } from '../../services/encrypter/encrypter.service';
 import BigQueryConfig from './model/BigQueryConfig.model';
-import CachedQuery  from '../../services/cache-service/cached-query.model';
+import CachedQuery from '../../services/cache-service/cached-query.model';
 import { QueryOptions } from 'mongoose';
 import { upperCase } from 'lodash';
 import Group from '../../module/admin/groups/model/group.model';
@@ -21,8 +21,8 @@ export class DataSourceController {
         try {
             //si no lleva filtro, pasamos directamente a recuperarlos todos
             const datasources = JSON.stringify(filter) !== '{}' ?
-            await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) } ).exec() :
-            await DataSource.find( {} ).exec();
+                await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }).exec() :
+                await DataSource.find({}).exec();
 
             const protectedDataSources = [];
             for (let i = 0, n = datasources.length; i < n; i += 1) {
@@ -41,19 +41,13 @@ export class DataSourceController {
 
     static async GetDataSourceById(req: Request, res: Response, next: NextFunction) {
         try {
-            DataSource.findById({ _id: req.params.id }, (err, dataSource) => {
-                if (err) {
-                    return next(new HttpException(404, 'Datasouce not found'));
-                }
-                // ocultem el password
-                dataSource.ds.connection.password = EnCrypterService.decode(dataSource.ds.connection.password);
-                dataSource.ds.connection.password = '__-(··)-__';
-
-
-                return res.status(200).json({ ok: true, dataSource });
-            });
+            const dataSource = await DataSource.findById({ _id: req.params.id });
+            // ocultem el password
+            dataSource.ds.connection.password = EnCrypterService.decode(dataSource.ds.connection.password);
+            dataSource.ds.connection.password = '__-(··)-__';
+            return res.status(200).json({ ok: true, dataSource });
         } catch (err) {
-            next(err);
+            return (new HttpException(404, 'Datasouce not found'));
         }
     }
 
@@ -66,15 +60,15 @@ export class DataSourceController {
      */
 
     static async GetDataSourcesNames(req: Request, res: Response, next: NextFunction) {
-        
+
         let options: QueryOptions = {};
         // Esto es pare recuperar los filtros externos.
         const filter = DataSourceController.returnExternalFilter(req);
         try {
             //si no lleva filtro, pasamos directamente a recuperarlos todos
-            const datasources = JSON.stringify(filter) !== '{}' ? 
-            await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.security', options ).exec() :
-            await DataSource.find({}, '_id ds.metadata.model_name ds.security', options ).exec();
+            const datasources = JSON.stringify(filter) !== '{}' ?
+                await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.security', options).exec() :
+                await DataSource.find({}, '_id ds.metadata.model_name ds.security', options).exec();
             if (!datasources) {
                 return next(new HttpException(500, 'Error loading DataSources'));
             }
@@ -87,7 +81,7 @@ export class DataSourceController {
             output.sort((a, b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 :
                 ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0))
             return res.status(200).json({ ok: true, ds: output });
-        }catch(e){
+        } catch (e) {
             console.log('Error getting GetDataSourcesNames');
             console.log(e);
         }
@@ -117,9 +111,9 @@ export class DataSourceController {
         const filter = DataSourceController.returnExternalFilter(req);
         try {
             //si no lleva filtro, pasamos directamente a recuperarlos todos           
-            const datasources = JSON.stringify(filter) !== '{}' ? 
-            await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec() : 
-            await DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec(); 
+            const datasources = JSON.stringify(filter) !== '{}' ?
+                await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec() :
+                await DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec();
 
             if (!datasources) {
                 return next(new HttpException(500, 'Error loading DataSources'));
@@ -191,34 +185,57 @@ export class DataSourceController {
         let options: QueryOptions = {};
         // Si l'usuari es admin retorna tots els ds.
         if (isAdmin) {
-            DataSource.find({}, '_id ds.metadata.model_name ds.security', options, (err, ds) => {
-                if (!ds) {
+            try {
+                // Buscar DataSources
+                const dataSources = await DataSource.find({}, '_id ds.metadata.model_name ds.security');
+
+                if (!dataSources || dataSources.length === 0) {
                     return next(new HttpException(500, 'Error loading DataSources'));
                 }
-                const names = JSON.parse(JSON.stringify(ds));
-                for (let i = 0, n = names.length; i < n; i += 1) {
-                    const e = names[i];
-                    output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
-                }
-                output.sort((a, b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 :
-                    ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0));
+
+                // Transformar datos
+                const output = dataSources.map(ds => ({ _id: ds._id, model_name: ds.ds.metadata.model_name }));
+
+                // Ordenar por model_name ignorando mayúsculas
+                output.sort((a, b) => {
+                    const nameA = a.model_name.toUpperCase();
+                    const nameB = b.model_name.toUpperCase();
+                    return nameA > nameB ? 1 : nameA < nameB ? -1 : 0;
+                });
+
                 return res.status(200).json({ ok: true, ds: output });
-            });
+
+            } catch (err) {
+                return next(new HttpException(500, 'Error loading DataSources'));
+            }
+
 
         } else {
-           // if the user is not admin it return his own ones. 
-            DataSource.find( { 'ds.metadata.model_owner': { $in:[  req.user._id ] } } , '_id ds.metadata.model_name ds.metadata.model_owner', options, (err, ds) => {
-                if (!ds) {
+            // if the user is not admin it return his own ones. 
+            try {
+                // Filtrar DataSources por el owner actual
+                const dataSources = await DataSource.find({ 'ds.metadata.model_owner': { $in: [req.user._id] } }, '_id ds.metadata.model_name ds.metadata.model_owner');
+
+                if (!dataSources || dataSources.length === 0) {
                     return next(new HttpException(500, 'Error loading DataSources'));
                 }
-                const names = JSON.parse(JSON.stringify(ds));
-                for (let i = 0, n = names.length; i < n; i += 1) {
-                    const e = names[i];
-                            output.push({ _id: e._id, model_name: e.ds.metadata.model_name });  
-                }
-                output.sort((a, b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 : ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0));
+
+                // Transformar los documentos
+                const output = dataSources.map(ds => ({ _id: ds._id, model_name: ds.ds.metadata.model_name }));
+
+                // Ordenar por model_name ignorando mayúsculas
+                output.sort((a, b) => {
+                    const nameA = a.model_name.toUpperCase();
+                    const nameB = b.model_name.toUpperCase();
+                    return nameA > nameB ? 1 : nameA < nameB ? -1 : 0;
+                });
+
                 return res.status(200).json({ ok: true, ds: output });
-            });
+
+            } catch (err) {
+                return next(new HttpException(500, 'Error loading DataSources'));
+            }
+
         }
     }
 
@@ -237,12 +254,9 @@ export class DataSourceController {
                 id = id.$oid;
                 body._id = id;
             }
-            DataSource.findById(id, (err, dataSource: IDataSource) => {
-                if (err) {
-                    console.log(err);
-                    return next(new HttpException(500, 'Datasouce not found'));
-                }
 
+            try {
+                const dataSource: IDataSource = await DataSource.findById(id);
                 if (!dataSource) {
                     console.log('Importing new datasource');
                     let cadena = JSON.stringify(body);
@@ -297,17 +311,17 @@ export class DataSourceController {
 
                 const iDataSource = new DataSource(ds);
 
-                iDataSource.save((err, dataSource) => {
-                    if (err) {
-                        console.log(err);
-                        next(new HttpException(500, 'Error updating dataSource'));
-
-                    }
-
+                try {
+                    const dataSource = await iDataSource.save();
                     return res.status(200).json({ ok: true, message: 'Modelo actualizado correctamente' });
-                })
-            });
-
+                } catch (error) {
+                    console.log(error);
+                    next(new HttpException(500, 'Error updating dataSource'));
+                }
+            } catch (err) {
+                console.log(err);
+                return next(new HttpException(500, 'Datasouce not found'));
+            }
         } catch (err) {
             next(err);
         }
@@ -315,30 +329,31 @@ export class DataSourceController {
 
     static async DeleteDataSource(req: Request, res: Response, next: NextFunction) {
         try {
-            Dashboard.find({}, (err, dashboards) => {
+            Dashboard.find({}, async (err, dashboards) => {
                 const dbds = dashboards.filter(d => d.config.ds._id === req.params.id);
                 let stopLoop = false;
 
-                for (let i = 0; i < dbds.length; i++) {
-                    if (stopLoop) {
-                        return false;
-                    }
-                    let options: QueryOptions = {};
-                    Dashboard.findByIdAndDelete(dbds[i]._id, options, (err, dashboard) => {
-                        if (err) {
-                            stopLoop = true;
-                            return next(new HttpException(500, 'Error removing dashboard'));
+                try {
+                    // Eliminar todos los dashboards asociados
+                    for (const dbd of dbds) {
+                        const dashboard = await Dashboard.findByIdAndDelete(dbd._id);
+                        if (!dashboard) {
+                            return next(new HttpException(500, `Error removing dashboard with id ${dbd._id}`));
                         }
-                    });
-                }
-                let options: QueryOptions = {};
-                DataSource.findByIdAndDelete(req.params.id, options, (err, dataSource) => {
-                    if (err) {
+                    }
+
+                    // Eliminar el DataSource
+                    const dataSource = await DataSource.findByIdAndDelete(req.params.id);
+                    if (!dataSource) {
                         return next(new HttpException(500, 'Error removing dataSource'));
                     }
 
                     return res.status(200).json({ ok: true, dataSource });
-                });
+
+                } catch (err) {
+                    return next(new HttpException(500, 'Error removing dataSource or dashboards'));
+                }
+
             });
         } catch (err) {
             next(err);
@@ -347,7 +362,7 @@ export class DataSourceController {
 
     static async CheckConnection(req: Request, res: Response, next: NextFunction) {
 
-        if (!['postgres', 'mysql', 'vertica', 'sqlserver', 'oracle', 'bigquery', 'snowflake', 'jsonwebservice', 'mongodb' ].includes(req.qs.type)) {
+        if (!['postgres', 'mysql', 'vertica', 'sqlserver', 'oracle', 'bigquery', 'snowflake', 'jsonwebservice', 'mongodb'].includes(req.qs.type)) {
 
             next(new HttpException(404, '"Only" postgres, MySQL, oracle, SqlServer, Google BigQuery, Snowflake and Vertica are accepted'));
 
@@ -437,14 +452,12 @@ export class DataSourceController {
                 }
             });
 
-            datasource.save((err, data_source) => {
-                if (err) {
-                    return next(new HttpException(500, `Error saving the datasource`));
-                }
-
+            try {
+                const data_source = await datasource.save();
                 return res.status(201).json({ ok: true, data_source_id: data_source._id });
-            });
-
+            } catch (error) {
+                return (new HttpException(500, `Error saving the datasource`));
+            }
 
         } catch (err) {
             next(err);
@@ -492,15 +505,13 @@ export class DataSourceController {
 
             });
 
-            datasource.save((err, data_source) => {
-
-                if (err) {
-                    console.log(err);
-                    return next(new HttpException(500, `Error saving the datasource`));
-                }
-
+            try {
+                const data_source = await datasource.save();
                 return res.status(201).json({ ok: true, data_source_id: data_source._id });
-            });
+            } catch (error) {
+                console.log(error);
+                return (new HttpException(500, `Error saving the datasource`));
+            }
 
         } catch (err) {
 
@@ -509,26 +520,21 @@ export class DataSourceController {
     }
 
     static async getMongoDataSource(id: string) {
-
         try {
-            return await DataSource.findById(id, (err, dataSource: IDataSource) => {
-                if (err) {
-                    throw Error();
-                }
+            const dataSource = await DataSource.findById(id);
                 return dataSource;
-            })
         } catch (err) {
             throw err;
         }
     }
 
 
-/**
- * Refresh the data model from the source database. The mysql, postgres, oracle, json websercive, etc source... 
- * @param req 
- * @param res 
- * @param next 
- */
+    /**
+     * Refresh the data model from the source database. The mysql, postgres, oracle, json websercive, etc source... 
+     * @param req 
+     * @param res 
+     * @param next 
+     */
     static async RefreshDataModel(req: Request, res: Response, next: NextFunction) {
         try {
 
@@ -585,29 +591,26 @@ export class DataSourceController {
             const out = DataSourceController.FindAndUpdateDataModel(datasource.ds.model.tables, storedDataModel.ds.model.tables);
             datasource.ds.model.tables = DataSourceController.FindAndDeleteDataModel(datasource.ds.model.tables, out);
 
-
-            DataSource.findById(req.params.id, (err, dataSource: IDataSource) => {
-                if (err) {
-                    return next(new HttpException(500, `Error updating the datasource`));
-                }
-
+            try {
+                const dataSource: IDataSource = await DataSource.findById(req.params.id)
+                
                 dataSource.ds.model.tables = datasource.ds.model.tables;
-
+    
                 const iDataSource = new DataSource(dataSource);
-
-                iDataSource.save((err, saved) => {
-                    if (err) {
-                        return next(new HttpException(500, `Error updating the datasource`));
-                    }
-
+    
+                try {
+                    const saved = await iDataSource.save();
                     if (!saved) {
                         return next(new HttpException(500, `Error in the save datasource`));
                     }
-
                     return res.status(200).json({ ok: true, message: out });
-                });
-
-            });
+                } catch (error) {
+                    return next(new HttpException(500, `Error updating the datasource`));
+                }
+            } catch (error) {
+                
+                return (new HttpException(500, `Error updating the datasource`));
+            }
         } catch (err) {
             next(err);
         }
@@ -682,7 +685,7 @@ export class DataSourceController {
         }
     }
 
-    static returnExternalFilter(req: Request){
+    static returnExternalFilter(req: Request) {
         // Esto es pare recuperar los filtros externos.
         let external;
         if (req.qs.external) {

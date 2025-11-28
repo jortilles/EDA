@@ -603,7 +603,6 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
                 });
                 break;
             case 'pyramid':
-            case 'stackedbar':
             case 'radar':
             case 'stackedbar':
             case 'stackedbar100':

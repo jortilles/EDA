@@ -55,7 +55,6 @@ class App {
 
     private mongoSetup(): void {
         mongoose.Promise = global.Promise;
-        mongoose.set('useFindAndModify', false); // elimina el warning
         mongoose.connect(this.mongoUrl, {
             useNewUrlParser: true,
             useUnifiedTopology: true
@@ -65,7 +64,6 @@ class App {
             console.log('\n\x1b[34m=====\x1b[0m \x1b[31mCould not connect to the database. Exiting now... \x1b[0m \x1b[34m=====\x1b[0m\n', err);
             process.exit();
         });
-        mongoose.set('useCreateIndex', true);
     }
 }
 

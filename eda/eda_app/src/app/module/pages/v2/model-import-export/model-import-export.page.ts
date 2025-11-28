@@ -308,7 +308,6 @@ handleDashboardImport() {
   reader.onerror = () => {
     this.alertService.addError($localize`:@@notPossibleReadFile:No se pudo leer el archivo seleccionado`)
   };
-
   reader.readAsText(this.dashboardFile());
 
   // Clean fields

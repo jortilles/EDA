@@ -39,7 +39,7 @@ export class MongoDBConnection extends AbstractConnection {
             this.connectUrl = `${type}://${credentialStr}${host}:${port}/${db}?authSource=${authSource}`;
 
             const options = { useNewUrlParser: true, useUnifiedTopology: true };
-            const connection = await MongoClient.connect(this.connectUrl, options);
+            const connection = await MongoClient.connect(this.connectUrl);
             return connection;
         } catch (error) {
             throw error;

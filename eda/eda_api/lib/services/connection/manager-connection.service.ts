@@ -100,16 +100,19 @@ export class ManagerConnectionService {
     }
 
     private static async getDataSource(id: string): Promise<any> {
-        try {
-            return await DataSource.findOne({ _id: id }, (err, datasource) => {
-                if (err) {
-                    throw Error(err);
-                }
-                return datasource;
-            });
-        } catch (err) {
-            throw err;
-        }
+try {
+  const datasource = await DataSource.findOne({ _id: id });
+
+  if (!datasource) {
+    throw new Error(`Datasource not found with id ${id}`);
+  }
+
+  return datasource;
+
+} catch (err) {
+  throw err;
+}
+
     }
 }
 

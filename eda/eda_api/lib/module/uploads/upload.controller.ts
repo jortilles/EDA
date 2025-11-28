@@ -36,7 +36,7 @@ export class UploadController {
             const ROOT_PATH = process.cwd();
             const uploadsPath = path.join(ROOT_PATH, 'lib/module/uploads/images', randomName);
 
-            file.mv(uploadsPath, err => {
+            file.mv(uploadsPath, async err => {
 
                 if (err) {
                     console.log(err);
@@ -44,11 +44,8 @@ export class UploadController {
                 }
 
                 if (req.qs.from === 'user') {
-                    User.findById(id, (err, userBD) => {
-
-                        if (!userBD) {
-                            return next(new HttpException(500, 'User not exists'));
-                        }
+                    try {
+                        const userBD = await User.findById(id);
 
                         // const oldPath = path.resolve(__dirname, `../../uploads/${userBD.img}`);
                         const oldPath = path.join(ROOT_PATH, 'lib/module/uploads/images', `${userBD.img}`);
@@ -69,16 +66,15 @@ export class UploadController {
                         }
 
                         userBD.img = randomName;
-
-                        userBD.save((err, userUpdated) => {
-
-                            if (err) {
-                                return next(new HttpException(500, 'Error saving image'));
-                            }
-
+                        try {
+                            const userUpdated = await userBD.save();
                             return res.status(200).json({ ok: true, message: 'Profile Image successful updated', user: userUpdated });
-                        });
-                    });
+                        } catch (error) {
+                            return next(new HttpException(500, 'Error saving image'));
+                        }
+                    } catch (error) {
+                            return (new HttpException(500, 'User not exists'));
+                    }
                 }
             });
         } catch (err) {

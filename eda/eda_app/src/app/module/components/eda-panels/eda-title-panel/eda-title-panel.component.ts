@@ -59,14 +59,6 @@ export class EdaTitlePanelComponent implements OnInit {
             header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
             contextMenuItems: [
                 new EdaContextMenuItem({
-                    label: $localize`:@@panelOptions4:Eliminar panel`,
-                    icon: 'fa fa-trash',
-                    command: () => {
-                        this.contextMenu.hideContextMenu();
-                        this.removePanel();
-                    }
-                }),
-                new EdaContextMenuItem({
                     label: $localize`:@@panelOptions2:Editar opciones del gráfico`,
                     icon: 'mdi mdi-wrench', 
                     command: () => {
@@ -86,7 +78,16 @@ export class EdaTitlePanelComponent implements OnInit {
                             }
                           });
                     }
+                }),
+                new EdaContextMenuItem({
+                    label: $localize`:@@panelOptions4:Eliminar panel`,
+                    icon: 'fa fa-trash',
+                    command: () => {
+                        this.contextMenu.hideContextMenu();
+                        this.removePanel();
+                    }
                 })
+
             ]
         });
 

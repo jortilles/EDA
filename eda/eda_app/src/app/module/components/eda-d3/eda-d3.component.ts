@@ -49,6 +49,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
     this.chartUtilService.generateChartColorsFromPalette(this.firstColLabels?.length, this.styleProviderService.ActualChartPalette['paleta']).map(item => item.backgroundColor);
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     this.assignedColors = this.inject.assignedColors || []; 
+    this.assignedColors.forEach((element, index) => {if(element.value === undefined) element.value = this.firstColLabels[index]}); // linea para cuando value es numerico
   }
 
   ngAfterViewInit() {
@@ -115,7 +116,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
     const colorsTree = this.assignedColors?.length > 0 ? this.assignedColors.map(item => item.color) : this.colors;
 
     //Funcion de ordenación de colores de D3
-    const color = d3.scaleOrdinal(this.firstColLabels, colorsTree).unknown("#ccc");
+    const color = d3.scaleOrdinal(this.firstColLabels, colorsTree);
 
     let { _nodes, _links } = this.graph(keys, data, metricKey);
 
@@ -147,6 +148,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .attr("height", d => d.y1 - d.y0)
       .attr("width", d => d.x1 - d.x0)
       .attr("fill", "#242a33")
+      
 
 
     svg.append("g")
@@ -155,6 +157,8 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .data(links)
       .join("path")
       .attr("d", sankeyLinkHorizontal())
+      .style("cursor", "pointer")
+
       .on('click', (mouseevent, data) => {
         if (this.inject.linkedDashboard) {
           const props = this.inject.linkedDashboard;

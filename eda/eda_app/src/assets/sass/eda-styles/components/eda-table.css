@@ -9,9 +9,9 @@ body .eda-table tr {
     height: 1.1em!important;
 }
 
-body .eda-table .header-title th {
-    //background-color: var(--main-color-table-header);
-}
+/* body .eda-table .header-title th {
+    background-color: var(--main-color-table-header);
+} */
 
 /* body .eda-table .header-filter th {
     background-color: #fff!important;
@@ -58,7 +58,7 @@ body .eda-table .ui-multiselect .ui-multiselect-label {
 :host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
     text-align: left; /* Asegurar alineación uniforme */
     padding: 12px 16px; /* Más espacio */
-    //background: #f8f9fa; /* Color más suave */
+    /*background: #f8f9fa;  Color más suave */
     font-weight: bold;
 }
 
@@ -71,7 +71,7 @@ body .eda-table .ui-multiselect .ui-multiselect-label {
 }
 
 :host ::ng-deep .p-datatable-thead th {
-    //background-color: #f1f1f1 !important;
+    /* background-color: #f1f1f1 !important; */
     border-bottom: 2px solid #ddd !important;
 }
 

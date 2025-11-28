@@ -58,7 +58,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
     this.colors = this.inject.colors.length > 0 ? this.inject.colors :
       this.chartUtilService.generateChartColorsFromPalette(this.firstColLabels.length, this.styleProviderService.ActualChartPalette['paleta']).map(item => item.backgroundColor);
     this.assignedColors = this.inject.assignedColors || []; 
-
+    this.assignedColors.forEach((element, index) => {if(element.value === undefined) element.value = this.firstColLabels[index]}); // linea para cuando value es numerico
   }
 
   ngOnDestroy(): void {
@@ -130,7 +130,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
     //Funcion de ordenación de colores de D3
     const valuesBubble = this.assignedColors.map((item) => item.value);
     const colorsBubble = this.assignedColors[0].color ? this.assignedColors.map(item => item.color) : this.colors;
-    const color = d3.scaleOrdinal(this.firstColLabels,  colorsBubble).unknown("#ccc");
+    const color = d3.scaleOrdinal(this.firstColLabels,  colorsBubble);
 
     //llamamos a la libreria de los circulos
     const treemap = data => d3.pack()
@@ -197,7 +197,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
       .attr("r", function (d) {
         return size(d.value)
       })//La funcion size recoge el valor numerico asignado del circulo y posteriormente le asigna su diametro
-
+      .style("cursor", "pointer")
       .style("fill-opacity", 1)
       .attr("stroke", "black")
       .style("stroke-width", 1)

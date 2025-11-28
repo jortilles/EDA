@@ -136,7 +136,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public ngOnDestroy(): void {
         this.globalFilter = undefined;
         for (const panel of this.panels) {
-            panel.content.globalFilterPaths = []
+            if(panel?.content?.globalFilterPaths)
+                panel.content.globalFilterPaths = []
         }
     }
 

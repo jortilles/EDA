@@ -47,6 +47,7 @@ export class EdaTreeMap implements AfterViewInit {
     this.colors = this.inject.colors.length > 0 ? this.inject.colors :
     this.chartUtilService.generateChartColorsFromPalette(this.firstColLabels.length, this.styleProviderService.ActualChartPalette['paleta']).map(item => item.backgroundColor);    
     this.assignedColors = this.inject.assignedColors || [];
+    this.assignedColors.forEach((element, index) => {if(element.value === undefined) element.value = this.firstColLabels[index]}); // linea para cuando value es numerico
   }
 
   ngOnDestroy(): void {
@@ -141,7 +142,7 @@ export class EdaTreeMap implements AfterViewInit {
     const valuesTree = this.assignedColors.map((item) => item.value);
     const colorsTree = this.assignedColors[0]?.color ? this.assignedColors.map(item => item.color) : this.colors;
     //Funcion de ordenación de colores de D3
-    const color = d3.scaleOrdinal(this.firstColLabels,  colorsTree).unknown("#ccc");
+    const color = d3.scaleOrdinal(this.firstColLabels,  colorsTree);
     
     const treemap = (data) =>
       d3
@@ -164,7 +165,9 @@ export class EdaTreeMap implements AfterViewInit {
       .selectAll("g")
       .data(root.leaves())
       .join("g")
-      .attr("transform", (d) => `translate(${d.x0},${d.y0})`);
+      .attr("transform", (d) => `translate(${d.x0},${d.y0})`)
+      .style("cursor", "pointer");
+
 
     // leaf.append("title")
     //   .text(d => `${d.ancestors().reverse().map(d => d.data.name).join("/")}\n${d.value}`);
@@ -176,7 +179,9 @@ export class EdaTreeMap implements AfterViewInit {
         //AQUI SE PONE EL COLOR DEL TREEMAP
         while (d.depth > 1) d = d.parent;
         //Devolvemos SOLO EL COLOR de assignedColors que comparte la data y colors de assignedColors
-        return  valuesTree.findIndex((item) => d.data.name.includes(item)) === -1 ? color(d.data.name) : colorsTree[valuesTree.findIndex((item) => d.data.name.includes(item))];
+        if(typeof d.data.name === 'number')
+          d.data.name = d.data.name.toString(); 
+         return  valuesTree.findIndex((item) => d.data.name.includes(item)) === -1 ? color(d.data.name) : colorsTree[valuesTree.findIndex((item) => d.data.name.includes(item))];
       })
       .attr("fill-opacity", 0.6)
       .attr("width", (d) => d.x1 - d.x0)
@@ -211,6 +216,7 @@ export class EdaTreeMap implements AfterViewInit {
           .append("div")
           .attr("class", "d3tooltip")
           .style("opacity", 0);
+
         
         this.div.transition().duration(200).style("opacity", 0.9);
         this.div
@@ -228,6 +234,7 @@ export class EdaTreeMap implements AfterViewInit {
         const tooltipData = this.getToolTipData(data);
 
         this.div
+
           .style("top", d.pageY - 70 + linked + "px")
           .style("left", d.pageX - tooltipData.width / 2 + "px");
       });

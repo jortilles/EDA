@@ -36,7 +36,7 @@
 </div>
 
 <eda-dialog2 *ngIf="display_v.page_dialog" [display]="display_v.page_dialog" width="90vw" [ngStyle]="panelContent"
-  [overflow]="'hidden'" height="100vh">
+  [overflow]="'auto'" height="100vh">
   <!-- Header -->
   <div header class="w-full flex items-center justify-between px-2 py-2">
     <div class="p-2" (click)="titleClick=true;">
@@ -76,7 +76,7 @@
       @if (selectedQueryMode !== 'SQL') {
       <!-- Edit Query View -->
       <!-- Left Sidebar -->
-      <div class="flex w-full border-r h-[70vh] overflow-y-hidden">
+      <div class="flex w-full border-r h-[65vh] overflow-y-hidden">
         <!-- Entities Section -->
         <div class="w-1/6 border-r ">
           <div class="border-b p-3 pt-0">
@@ -91,7 +91,7 @@
             </div>
 
           </div>
-          <div class="flex overflow-y-auto h-[56vh] text-medium">
+          <div class="flex overflow-y-auto h-[55vh] text-medium">
             <div class="w-full">
               <ng-template #entityList>
                 <div class="space-y-1 p-2">
@@ -162,7 +162,7 @@
             </div>
           </div>
           }
-          <div class="flex w-full overflow-y-auto h-[56vh] text-medium">
+          <div class="flex w-full overflow-y-auto h-[55vh] text-medium">
 
             <div class="w-full">
               <div class="space-y-1 p-2" cdkDropList #columnsList="cdkDropList" [cdkDropListData]="columns"
@@ -240,7 +240,7 @@
 
             <!-- Filter section -->
             <div class="pb-6">
-              <h3 class="text-lg mb-2 font-bold" i18n="@@filtrosH4">Filtrar los resultados por:</h3>
+              <h3 class="text-lg mb-2 mt-2 font-bold" i18n="@@filtrosH4">Filtrar los resultados por:</h3>
               <div class="flex gap-1 rounded-lg border p-2 min-h-[25px] bg-emerald-50 filter-list  text-medium"
                 cdkDropList #filterList="cdkDropList" cdkDropListOrientation="horizontal"
                 [cdkDropListData]="filtredColumns" [cdkDropListConnectedTo]="[columnsList, selectList]"
@@ -383,7 +383,7 @@
               @else if(display_v.advancedSetting === 1){
                 <div class="grid grid-cols-2 border rounded-lg bg-gray-50 p-4 min-h-[30vh] overflow-y-auto">
                   <!-- Join Type -->
-                  <div class="grid col-span-1 grid-rows-4 p-2">
+                  <div class="grid col-span-1 grid-rows-3 p-2">
 
                     <div class="grid grid-cols-4 row-span-1 items-center">
                       <div class="col-span-1">
@@ -802,7 +802,7 @@
 
     <!-- Preview View -->
     @if(indextab == 1){
-    <div class="grid grid-cols-5 gap-x-4">
+    <div class="grid grid-cols-5 gap-x-4 ">
       <div class="col-span-4">
         <div class="rounded-lg border p-4 bg-muted/30 flex justify-center" style="height:60vh;">
           <panel-chart #panelChartComponentPreview [props]="panelChartConfig" [style]="extraStyles">
@@ -887,7 +887,7 @@
       </span>
     </button>
 
-    <button class="confirm-button" [disabled]="isCrosstableModified() || display_v.btnSave" (click)="savePanel();">
+    <button class="confirm-button" [disabled]="isCrosstableModified() || display_v.btnSave" (click)="savePanel();"> 
       <i class="fa fa-check"></i>
       <span i18n="@@guardarBtn">
         Confirmar
