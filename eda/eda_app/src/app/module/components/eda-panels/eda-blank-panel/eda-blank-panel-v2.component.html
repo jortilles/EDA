@@ -36,7 +36,7 @@
 </div>
 
 <eda-dialog2 *ngIf="display_v.page_dialog" [display]="display_v.page_dialog" width="90vw" [ngStyle]="panelContent"
-  [overflow]="'hidden'" height="100vh">
+  [overflow]="'auto'" height="100vh">
   <!-- Header -->
   <div header class="w-full flex items-center justify-between px-2 py-2">
     <div class="p-2" (click)="titleClick=true;">
@@ -810,7 +810,7 @@
 
     <!-- Preview View -->
     @if(indextab == 1){
-    <div class="grid grid-cols-5 gap-x-4">
+    <div class="grid grid-cols-5 gap-x-4 ">
       <div class="col-span-4">
         <div class="rounded-lg border p-4 bg-muted/30 flex justify-center" style="height:60vh;">
           <panel-chart #panelChartComponentPreview [props]="panelChartConfig" [style]="extraStyles">
@@ -895,7 +895,7 @@
       </span>
     </button>
 
-    <button class="confirm-button" [disabled]="isCrosstableModified() || display_v.btnSave" (click)="savePanel();">
+    <button class="confirm-button" [disabled]="isCrosstableModified() || display_v.btnSave" (click)="savePanel();"> 
       <i class="fa fa-check"></i>
       <span i18n="@@guardarBtn">
         Confirmar
