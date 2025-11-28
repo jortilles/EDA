@@ -134,22 +134,12 @@ export class EdaTreeMap implements AfterViewInit {
 
   draw() {
     // Borrado inicial de otros charts 
-    console.log(this, 'assigndcolors')
-    console.log(this.assignedColors, 'assigndcolors')
     this.svg.selectAll('*').remove();
     const container = this.svgContainer.nativeElement as HTMLElement;
     const width = container.clientWidth - 20,
     height = container.clientHeight - 20;
     //Valores de assignedColors separados
-    const valuesTree = this.assignedColors.map((item) =>{
-      if(typeof item.value === 'number'){
-        item.value = item.value.toString();
-        console.log(item.value, 'entro')
-      }else{
-        item.value
-        console.log(item.value, 'no entro')
-      }
-    } );
+    const valuesTree = this.assignedColors.map((item) => item.value);
     const colorsTree = this.assignedColors[0]?.color ? this.assignedColors.map(item => item.color) : this.colors;
     //Funcion de ordenación de colores de D3
     const color = d3.scaleOrdinal(this.firstColLabels,  colorsTree);
