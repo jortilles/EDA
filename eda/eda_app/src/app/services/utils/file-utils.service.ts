@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { URL_SERVICES } from '../../config/config';
-import ExcelJS from 'exceljs/dist/exceljs.min.js';
+import ExcelJS from 'exceljs/dist/exceljs.bare.min.js';
 import { saveAs } from 'file-saver';
 import * as _ from 'lodash';
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
-import ExcelJS from 'exceljs/dist/exceljs.min.js';
+import ExcelJS from 'exceljs/dist/exceljs.bare.min.js';
 import { Observable } from 'rxjs/internal/Observable';
 import { ApiService } from './api.service';
 import { HttpClient } from '@angular/common/http';
