@@ -47,6 +47,7 @@ export class EdaTreeMap implements AfterViewInit {
     this.colors = this.inject.colors.length > 0 ? this.inject.colors :
     this.chartUtilService.generateChartColorsFromPalette(this.firstColLabels.length, this.styleProviderService.ActualChartPalette['paleta']).map(item => item.backgroundColor);    
     this.assignedColors = this.inject.assignedColors || [];
+    this.assignedColors.forEach((element, index) => {if(element.value === undefined) element.value = this.firstColLabels[index]}); // linea para cuando value es numerico
   }
 
   ngOnDestroy(): void {
@@ -133,15 +134,25 @@ export class EdaTreeMap implements AfterViewInit {
 
   draw() {
     // Borrado inicial de otros charts 
+    console.log(this, 'assigndcolors')
+    console.log(this.assignedColors, 'assigndcolors')
     this.svg.selectAll('*').remove();
     const container = this.svgContainer.nativeElement as HTMLElement;
     const width = container.clientWidth - 20,
     height = container.clientHeight - 20;
     //Valores de assignedColors separados
-    const valuesTree = this.assignedColors.map((item) => item.value);
+    const valuesTree = this.assignedColors.map((item) =>{
+      if(typeof item.value === 'number'){
+        item.value = item.value.toString();
+        console.log(item.value, 'entro')
+      }else{
+        item.value
+        console.log(item.value, 'no entro')
+      }
+    } );
     const colorsTree = this.assignedColors[0]?.color ? this.assignedColors.map(item => item.color) : this.colors;
     //Funcion de ordenación de colores de D3
-    const color = d3.scaleOrdinal(this.firstColLabels,  colorsTree).unknown("#ccc");
+    const color = d3.scaleOrdinal(this.firstColLabels,  colorsTree);
     
     const treemap = (data) =>
       d3
@@ -178,7 +189,9 @@ export class EdaTreeMap implements AfterViewInit {
         //AQUI SE PONE EL COLOR DEL TREEMAP
         while (d.depth > 1) d = d.parent;
         //Devolvemos SOLO EL COLOR de assignedColors que comparte la data y colors de assignedColors
-        return  valuesTree.findIndex((item) => d.data.name.includes(item)) === -1 ? color(d.data.name) : colorsTree[valuesTree.findIndex((item) => d.data.name.includes(item))];
+        if(typeof d.data.name === 'number')
+          d.data.name = d.data.name.toString(); 
+         return  valuesTree.findIndex((item) => d.data.name.includes(item)) === -1 ? color(d.data.name) : colorsTree[valuesTree.findIndex((item) => d.data.name.includes(item))];
       })
       .attr("fill-opacity", 0.6)
       .attr("width", (d) => d.x1 - d.x0)

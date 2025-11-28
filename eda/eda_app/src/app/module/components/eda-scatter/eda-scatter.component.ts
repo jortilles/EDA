@@ -47,6 +47,7 @@ export class EdaScatter implements AfterViewInit {
     this.firstColLabels = this.inject.data.values.map(row => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
     this.assignedColors = this.inject.assignedColors || []; 
+    this.assignedColors.forEach((element, index) => {if(element.value === undefined) element.value = this.firstColLabels[index]}); // linea para cuando value es numerico
   }
   ngOnDestroy(): void {
     if (this.div)
@@ -96,7 +97,7 @@ export class EdaScatter implements AfterViewInit {
     const colorsScatter = this.assignedColors[0].color ? this.assignedColors.map(item => item.color) : this.colors;
     
     //Funcion de ordenación de colores de D3
-    const color = d3.scaleOrdinal(this.firstColLabels,  colorsScatter).unknown("#ccc");
+    const color = d3.scaleOrdinal(this.firstColLabels,  colorsScatter);
 
     const x_range: Array<any> = d3.extent(this.data, (d: any) => d.x);
     const y_range: Array<any> = d3.extent(this.data, (d: any) => d.y);
