@@ -6,58 +6,45 @@
       <div class="border rounded-lg shadow-sm">
         <div class="p-4 space-y-4">
           @if (globalFilter?.selectedTable?.table_name && globalFilter?.selectedColumn) {
-            <div class="flex items-center justify-between">
-              <h3 class="text-lg font-medium">
-                {{globalFilter.selectedTable?.display_name?.default}} - {{globalFilter.selectedColumn?.display_name?.default}}
-              </h3>
-            </div>
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-bold">
+              Opciones del filtro:
+            </h3>
+          </div>
           }
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="flex items-center justify-between space-x-2">
-              <div class="flex flex-col space-y-2">
-                <label class="font-medium" i18n="@@aplyToAllPanelsH5">¿Aplica a todos los paneles?</label>
-                <button 
-                  type="button" 
-                  role="switch" 
-                  [attr.aria-checked]="applyToAll"
-                  (click)="applyToAllCheck()"
-                  class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50" 
-                  [ngClass]="{'bg-[#00BFB3]': applyToAll, 'bg-input': !applyToAll}"
-                >
-                  <span 
-                    class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform" 
-                    [ngClass]="{'translate-x-5': applyToAll, 'translate-x-0': !applyToAll}"
-                  ></span>
-                </button>
-
-
-                <label i18n="@@autocompleteFilter" class="font-medium">¿Filtro autocomplete?</label>
-                <button 
-                  type="button" 
-                  role="switch" 
-                  [attr.aria-checked]="isAutocompleted"
-                  (click)="autocompleteFilterCheck(this)"
-                  class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50" 
-                  [ngClass]="{'bg-[#00BFB3]': isAutocompleted, 'bg-input': !isAutocompleted}"
-                >
-                  <span 
-                    class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform" 
-                    [ngClass]="{'translate-x-5': isAutocompleted, 'translate-x-0': !isAutocompleted}"
-                  ></span>
-                </button>
-              </div>
+    
+          <div class="grid grid-cols-3">
+            <div class="space-x-2 flex items-center h-max">
+              <label  i18n="@@aplyToAllPanelsH5">¿Aplica a todos los paneles?</label>
+              <button type="button" role="switch" [attr.aria-checked]="applyToAll" (click)="applyToAllCheck()"
+                class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"
+                [ngClass]="{'bg-[#00BFB3]': applyToAll, 'bg-input': !applyToAll}">
+                <span
+                  class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform"
+                  [ngClass]="{'translate-x-5': applyToAll, 'translate-x-0': !applyToAll}"></span>
+              </button>
             </div>
-            
-            <div class="flex flex-col space-y-1.5">
-              <label class="text-sm font-medium">{{header4}}</label>
-              <div class="relative">
-                <p-dropdown
-                  [options]="publicRoHidden" [(ngModel)]="globalFilter.visible"
-                  i18n-title="@@filterVisibleScope"
-                  title="Definir la visibilidad del filtro. Públi'Los filtros deben ser del mismo tipaje!'co: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuarios no pueden ver el filtro, pero se les aplica"
-                  [style]="{'width': '100%'}" selected="publicRoHiddenOption"
-                ></p-dropdown>
+    
+            <div class="space-x-2 flex items-center h-max">
+              <label i18n="@@autocompleteFilter" >¿Filtro autocomplete?</label>
+              <button type="button" role="switch" [attr.aria-checked]="isAutocompleted"
+                (click)="autocompleteFilterCheck(this)"
+                class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"
+                [ngClass]="{'bg-[#00BFB3]': isAutocompleted, 'bg-input': !isAutocompleted}">
+                <span
+                  class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform"
+                  [ngClass]="{'translate-x-5': isAutocompleted, 'translate-x-0': !isAutocompleted}"></span>
+              </button>
+            </div>
+            <div>
+              <div class="flex flex-col space-y-1.5">
+                <label>{{header4}}</label>
+                <div class="relative">
+                  <p-dropdown [options]="publicRoHidden" [(ngModel)]="globalFilter.visible"
+                    i18n-title="@@filterVisibleScope"
+                    title="Definir la visibilidad del filtro. Públi'Los filtros deben ser del mismo tipaje!'co: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuarios no pueden ver el filtro, pero se les aplica"
+                    [style]="{'width': '100%'}" selected="publicRoHiddenOption"></p-dropdown>
+                </div>
               </div>
             </div>
           </div>
