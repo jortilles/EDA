@@ -1162,8 +1162,9 @@ export class DashboardController {
       let connectionProps: any;
       if (req.body.dashboard?.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
 
+      console.log(req.body)
       const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
-
+      console.log(connection)
       const dataModel = await connection.getDataSource(req.body.model_id, req.qs.properties)
       /**--------------------------------------------------------------------------------------------------------- */
       /**Security check */

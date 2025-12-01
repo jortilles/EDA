@@ -29,11 +29,13 @@ export class DataSourceConnectionDetailPage implements OnInit {
   public allowSSLSTR: string = $localize`:@@allowSSL:Conexión mediante SSL`;
 
   public excelFileName: string = "";
+  public csvFileName: string = "";
 
   public canBeClosed = false;
   public uploading = false;
   public uploadSuccessful = false;
   public excelFileData: JSON[] = [];
+  public csvFileData: JSON[] = [];
 
 
   connectionForm!: FormGroup
@@ -196,10 +198,10 @@ export class DataSourceConnectionDetailPage implements OnInit {
           acceptLabel: $localize`:@@si:Si`,
           rejectLabel: $localize`:@@no:No`,
           icon: 'pi pi-exclamation-triangle',
-          accept: () => this.saveJSONCollection(),
+          accept: () => this.saveCsvJSONCollection(),
         })
       } else {
-        this.saveJSONCollection();
+        this.saveCsvJSONCollection();
       }
     }
   }
@@ -294,6 +296,36 @@ export class DataSourceConnectionDetailPage implements OnInit {
     }
   }
 
+  public async saveCsvJSONCollection(): Promise<void> {
+
+    this.spinnerService.on();
+
+    const value = this.connectionForm.value;
+
+    if (!value.name) {
+      this.alertService.addError("No name provided");
+    } else if (Object.keys(this.csvFileData).length > 0) {
+      try {
+        const fileData = {
+          name: value.name,
+          fields: this.csvFileData,
+          optimize: value.optimize,
+          allowCache: value.allowCache
+        };
+        
+        const res = await lastValueFrom(this.csvFormatterService.addNewCollectionFromJSON(fileData));
+
+        this.spinnerService.off();
+        this.alertService.addSuccess($localize`:@@CollectionText:Colección creada correctamente`,);
+        this.router.navigate(['/data-source/', res.data_source_id]);
+      } catch (err) {
+        this.spinnerService.off();
+        this.alertService.addError(err);
+        throw err;
+      }
+    }
+  }
+
   public async checkExcelCollection(): Promise<any> {
     try {
       const nameData = { name: this.connectionForm.get('name')?.value }
@@ -310,11 +342,6 @@ export class DataSourceConnectionDetailPage implements OnInit {
     const type = this.databaseTypes.find((t) => t.value === value);
 
     this.connectionForm.get('port')?.setValue(type.port);
-  }
-
-  addExcelFile() {
-    this.excelFile.nativeElement.value = "";
-    this.excelFile.nativeElement.click();
   }
 
   async excelFileLoaded(event: any) {
@@ -336,11 +363,11 @@ export class DataSourceConnectionDetailPage implements OnInit {
     const file = event.target.files[0];
 
     if (file) {
-      this.excelFileName = file.name;
+      this.csvFileName = file.name;
       try {
         const jsonData = await this.csvFormatterService.readCsvToJson(file);
 
-        jsonData === null ? this.alertService.addError('Cargue un archivo .csv') : this.excelFileData = jsonData;
+        jsonData === null ? this.alertService.addError('Cargue un archivo .csv') : this.csvFileData = jsonData;
       } catch (error) {
         console.error('Error al leer el archivo csv:', error);
       }

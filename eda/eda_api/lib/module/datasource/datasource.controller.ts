@@ -329,7 +329,7 @@ export class DataSourceController {
 
     static async DeleteDataSource(req: Request, res: Response, next: NextFunction) {
         try {
-            Dashboard.find({}, async (err, dashboards) => {
+            const dashboards = await Dashboard.find();
                 const dbds = dashboards.filter(d => d.config.ds._id === req.params.id);
                 let stopLoop = false;
 
@@ -353,8 +353,6 @@ export class DataSourceController {
                 } catch (err) {
                     return next(new HttpException(500, 'Error removing dataSource or dashboards'));
                 }
-
-            });
         } catch (err) {
             next(err);
         }
