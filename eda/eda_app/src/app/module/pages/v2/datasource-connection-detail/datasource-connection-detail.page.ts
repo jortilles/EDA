@@ -1,7 +1,7 @@
 import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { DataSourceService, SpinnerService, AlertService, StyleProviderService, ExcelFormatterService, UploadFileService } from '@eda/services/service.index';
+import { DataSourceService, SpinnerService, AlertService, StyleProviderService, ExcelFormatterService, CsvFormatterService, UploadFileService } from '@eda/services/service.index';
 import { ConfirmationService, SharedModule } from 'primeng/api';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
@@ -49,8 +49,9 @@ export class DataSourceConnectionDetailPage implements OnInit {
     { label: 'BigQuery', value: 'bigquery', port: null },
     { label: 'SnowFlake', value: 'snowflake', port: null },
     { label: 'jsonWebService', value: 'jsonwebservice' },
-    { label: 'Excel', value: 'excel', port: 27017 },
     { label: 'Mongo', value: 'mongo', port: 27017 },
+    { label: 'Excel', value: 'excel', port: 27017 },
+    { label: 'Csv', value: 'csv', port: 27017 },
   ];
 
   public sidOptions: any[] = [
@@ -64,8 +65,11 @@ export class DataSourceConnectionDetailPage implements OnInit {
   bigQueryFileName = signal<string>('');
   isDraggingBigQueryFile = signal<boolean>(false);
   _excelFile = signal<File | null>(null);
+  _csvFile = signal<File | null>(null);
   _excelFileName = signal<string>('');
+  _csvFileName = signal<string>('');
   isDraggingExcelFile = signal<boolean>(false);
+  isDraggingCsvFile = signal<boolean>(false);
 
   constructor(
     private router: Router,
@@ -74,6 +78,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     private alertService: AlertService,
     public styleProviderService: StyleProviderService,
     private excelFormatterService: ExcelFormatterService,
+    private csvFormatterService: CsvFormatterService,
     private fb: FormBuilder
   ) {}
 
@@ -123,10 +128,12 @@ export class DataSourceConnectionDetailPage implements OnInit {
   async onSubmit() {
     const type = this.connectionForm.get('type')?.value;
 
-    if (this.connectionForm.invalid && type !== 'excel' && type !== 'bigquery' ) {
+    if (this.connectionForm.invalid && type !== 'excel' && type !== 'bigquery' && type !== 'csv' ) {
       this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`);
     } else if (type === 'excel') {
       this.saveExcelDataSource();
+    } else if (type === 'csv') {
+      this.saveCsvDataSource();
     } else if (type === 'bigquery') {
       this.saveBigQueryDataSource();
     } else {
@@ -154,6 +161,28 @@ export class DataSourceConnectionDetailPage implements OnInit {
 	}
 
   public async saveExcelDataSource(): Promise<void> {
+    const value = this.connectionForm.value;
+
+    if (!value.name) {
+      this.alertService.addError("No name provided");
+    } else {
+      const checker = await this.checkExcelCollection();
+      if (checker.existence) {
+        this.confirmationService.confirm({
+          message: $localize`:@@confirmationExcelMessage:¿Estás seguro de que quieres sobreescribir este modelo de datos?`,
+          header: $localize`:@@confirmationExcel:Confirmación`,
+          acceptLabel: $localize`:@@si:Si`,
+          rejectLabel: $localize`:@@no:No`,
+          icon: 'pi pi-exclamation-triangle',
+          accept: () => this.saveJSONCollection(),
+        })
+      } else {
+        this.saveJSONCollection();
+      }
+    }
+  }
+
+  public async saveCsvDataSource(): Promise<void> {
     const value = this.connectionForm.value;
 
     if (!value.name) {
@@ -303,13 +332,28 @@ export class DataSourceConnectionDetailPage implements OnInit {
     }
   }
 
+  async csvFileLoaded(event: any) {
+    const file = event.target.files[0];
+
+    if (file) {
+      this.excelFileName = file.name;
+      try {
+        const jsonData = await this.csvFormatterService.readCsvToJson(file);
+
+        jsonData === null ? this.alertService.addError('Cargue un archivo .csv') : this.excelFileData = jsonData;
+      } catch (error) {
+        console.error('Error al leer el archivo csv:', error);
+      }
+    }
+  }
+
   // Métodos para manejar eventos de drag & drop
   handleDrag(e: DragEvent) {
     e.preventDefault();
     e.stopPropagation();
   }
 
-  handleDragIn(e: DragEvent, type: 'bigquery' | 'excel') {
+  handleDragIn(e: DragEvent, type: 'bigquery' | 'excel' | 'csv') {
     e.preventDefault();
     e.stopPropagation();
     if (type === 'bigquery') {
@@ -319,7 +363,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     }
   }
 
-  handleDragOut(e: DragEvent, type: 'bigquery' | 'excel') {
+  handleDragOut(e: DragEvent, type: 'bigquery' | 'excel' | 'csv') {
     e.preventDefault();
     e.stopPropagation();
     if (type === 'bigquery') {
@@ -329,7 +373,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     }
   }
 
-  handleDrop(e: DragEvent, type: 'bigquery' | 'excel') {
+  handleDrop(e: DragEvent, type: 'bigquery' | 'excel' | 'csv') {
     e.preventDefault();
     e.stopPropagation();
 
@@ -347,7 +391,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     }
   }
 
-  handleFileSelect(e: Event, type: 'bigquery' | 'excel') {
+  handleFileSelect(e: Event, type: 'bigquery' | 'excel' | 'csv') {
     const input = e.target as HTMLInputElement;
     const files = input.files;
     if (files && files.length > 0) {
@@ -355,13 +399,16 @@ export class DataSourceConnectionDetailPage implements OnInit {
     }
   }
 
-  handleFiles(file: File, type: 'bigquery' | 'excel') {
+  handleFiles(file: File, type: 'bigquery' | 'excel' | 'csv') {
     if (type === 'bigquery') {
       this.bigQueryFileName.set(file.name);
       this.bigQueryFile.set(file);
     } else if (type === 'excel') {
       this._excelFileName.set(file.name);
       this._excelFile.set(file);
+    }else if (type === 'csv') {
+      this._csvFileName.set(file.name);
+      this._csvFile.set(file);
     }
   }
 
