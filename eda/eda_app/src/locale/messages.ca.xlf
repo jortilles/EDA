@@ -4308,6 +4308,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>El nombre es obligatorio</source>
         <target>El nom és obligatori</target>
       </trans-unit>
+      <trans-unit id="separatorRequired">
+        <source>El separador es obligatorio</source>
+        <target>El separador és obligatori</target>
+      </trans-unit>
       <trans-unit id="type">
         <source>Tipo</source>
         <target>Tipus</target>
