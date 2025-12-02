@@ -187,7 +187,7 @@ export class CsvSheetController {
             const datasource: IDataSource = new DataSource({
                 ds: {
                     connection: {
-                        type: "csv",
+                        type: "mongodb",
                         host: host.substring(0, host.indexOf(':')),
                         port: Number(port),
                         database,

@@ -188,7 +188,7 @@ export class ExcelSheetController {
             const datasource: IDataSource = new DataSource({
                 ds: {
                     connection: {
-                        type: "excel",
+                        type: "mongodb",
                         host: host.substring(0, host.indexOf(':')),
                         port: Number(port),
                         database,
