@@ -53,7 +53,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     { label: 'jsonWebService', value: 'jsonwebservice' },
     { label: 'Mongo', value: 'mongo', port: 27017 },
     { label: 'Excel', value: 'excel', port: 27017 },
-    { label: 'Csv', value: 'csv', port: 27017 },
+    // { label: 'Csv', value: 'csv', port: 27017 },
   ];
 
   public sidOptions: any[] = [
