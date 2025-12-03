@@ -242,7 +242,6 @@ export class DataSourceConnectionDetailPage implements OnInit {
 
   public async saveCsvDataSource(): Promise<void> {
     const value = this.connectionForm.value;
-    console.log(this)
     if (!value.name) {
       this.alertService.addError("No name provided");
     } else {
@@ -328,8 +327,6 @@ export class DataSourceConnectionDetailPage implements OnInit {
 
     const value = this.connectionForm.value;
 
-    console.log(this.excelFileData)
-
     if (!value.name) {
       this.alertService.addError("No name provided");
     } else if (Object.keys(this.excelFileData).length > 0) {
@@ -355,25 +352,21 @@ export class DataSourceConnectionDetailPage implements OnInit {
   }
 
   public async saveCsvJSONCollection(): Promise<void> {
-
-    console.log(this)
     this.spinnerService.on();
     
     const value = this.connectionForm.value;
-    console.log(value)
     if (!value.name) {
       this.alertService.addError("No name provided");
-    } else if (Object.keys(this.csvRecords).length > 0) {
+    } else if (Object.keys(this.csvFileData).length > 0) {
       try {
         const fileData = {
           name: value.name,
-          fields: this.csvRecords,
+          fields: this.csvFileData,
           optimize: value.optimize,
           allowCache: value.allowCache
         };
         
-        console.log('voy a hacer el res')
-        const res = await lastValueFrom(this.csvFormatterService.addNewCollectionFromJSON(fileData));
+        const res = await lastValueFrom(this.excelFormatterService.addNewCollectionFromJSON(fileData));
 
         this.spinnerService.off();
         this.alertService.addSuccess($localize`:@@CollectionText:Colección creada correctamente`,);
@@ -425,9 +418,10 @@ export class DataSourceConnectionDetailPage implements OnInit {
     if (file) {
       this.csvFileName = file.name;
       try {
-        const jsonData = await this.csvFormatterService.readCsvToJson(file);
+        const jsonData = await this.excelFormatterService.readExcelToJson(file);
 
         jsonData === null ? this.alertService.addError('Cargue un archivo .csv') : this.csvRecords = jsonData;
+        this.csvFileData = this.csvRecords;
       } catch (error) {
         console.error('Error al leer el archivo csv:', error);
       }
@@ -520,9 +514,11 @@ async onFilesAdded() {
     const file = this.file.nativeElement.files[0];
     try {
       this.csvRecords = await this.ngxCsvParser.parse(file, { header: true, delimiter: this.delimiter })
+
       .pipe().toPromise();
       this.csvHeaders = Object.keys(this.csvRecords[0]);
       const types = this.getTypes(this.csvHeaders, this.csvRecords);
+      this.csvFileData = this.csvRecords;
       this.csvHeaders.forEach((header, h) => {
         let row = { field: header };
         for (let i = 0; i < 3; i++) {
