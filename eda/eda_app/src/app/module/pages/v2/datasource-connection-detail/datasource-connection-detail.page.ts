@@ -1,7 +1,7 @@
 import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { DataSourceService, SpinnerService, AlertService, StyleProviderService, ExcelFormatterService, CsvFormatterService, UploadFileService } from '@eda/services/service.index';
+import { DataSourceService, SpinnerService, AlertService, StyleProviderService, ExcelFormatterService, UploadFileService } from '@eda/services/service.index';
 import { ConfirmationService, SharedModule, SelectItem } from 'primeng/api';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
@@ -100,7 +100,6 @@ export class DataSourceConnectionDetailPage implements OnInit {
     private alertService: AlertService,
     public styleProviderService: StyleProviderService,
     private excelFormatterService: ExcelFormatterService,
-    private csvFormatterService: CsvFormatterService,
     private ngxCsvParser: NgxCsvParser,
     private fb: FormBuilder
   ) {
