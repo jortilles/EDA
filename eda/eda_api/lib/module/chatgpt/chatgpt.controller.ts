@@ -247,10 +247,12 @@ export class ChatGptController {
                 const args = toolCall.arguments ? JSON.parse(toolCall.arguments) : {};
                 const tables = args.tables ?? "Unknown";
                 const tools = response.tools;
+                const principalTable = tables[0].table
 
                 // Current Query
                 currentQueryTool = getFields(tables, data);
                 response.currentQuery = currentQueryTool;
+                response.principalTable =  principalTable;
                 response.output_text = 'Se ha configurado con exito la consulta solicitada';
             }
 
@@ -297,6 +299,7 @@ function getFields(tables: any[], data: any[]) {
     let currentQuery: any[] = [];
 
     console.log('tables: ', tables);
+    console.log('data: ', data);
 
     tables.forEach((t: any) => {
         const table = data.find((item: any) => item.table_name === t.table.toLowerCase());
@@ -304,6 +307,7 @@ function getFields(tables: any[], data: any[]) {
             t.columns.forEach((c: any) => {
                 const column = table.columns.find((item: any) => item.column_name === c.toLowerCase());
                 if(column) {
+                    column.table_id = table.table_name;
                     currentQuery.push(column);
                 }
             })
@@ -332,6 +336,8 @@ function getAllColumnsByTableName(tableName: any, data) {
                     const agg = col.aggregation_type.find((agg: any) => agg.value === 'none');
                     agg.selected = true;
                 }
+
+                col.table_id = tableName;
 
                 currentQuery.push(col);
             })

@@ -481,7 +481,7 @@ public tableNodeExpand(event: any): void {
         await this.setPanelDataSource();
 
         console.log('this:::::::::::::::: ', this);
-        debugger;
+        // debugger;
 
         const tables = TableUtils.getTablesData(this.dataSource.model.tables, this.inject.applyToAllfilter);
         this.tables = [].concat(_.cloneDeep(tables.allTables), this.assertedTables);
@@ -1519,6 +1519,9 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
     };
 
     public moveItem = (column: any) => {
+
+        console.log('column: ', column);
+
         PanelInteractionUtils.moveItem(this, column);
 
         if (this.selectedQueryMode == 'EDA2' && this.currentQuery.length === 1) {
@@ -1711,10 +1714,15 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
         this.isVisibleEbpChatGpt = false;
     } 
 
-    public currentQueryFromPrompt(event: any) {
-        console.log('EVENTOOOOOO: ', event);
+    public currentQueryFromPrompt(currentQuery: any) {
+        console.log('EVENTOOOOOO: ', currentQuery);
         console.log('THIS: ', this);
-        this.currentQuery = _.cloneDeep(event);
+        this.currentQuery = _.cloneDeep(currentQuery);
+
+        currentQuery.forEach((cq: any) => {
+            this.moveItem(cq);
+        })
+
     }
 
     public principalTableFunction(event: any) {
