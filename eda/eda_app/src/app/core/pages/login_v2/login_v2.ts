@@ -260,6 +260,7 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
                 this.userService.savingStorage(userSAML._id, token, userSAML);
             } catch (error) {
                 console.log('error', error)
+                Swal.fire('Error al iniciar sesión', error.error?.message || 'Ha ocurrido un error inesperado', 'error');
             }
             
             this.router.navigate([next]);
@@ -305,6 +306,7 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
                 this.userService.savingStorage(userSAML._id, token, userSAML);
             } catch (error) {
                 console.log('error', error)
+                Swal.fire('Error al iniciar sesión', error.error?.message || 'Ha ocurrido un error inesperado', 'error');
             }
             
             this.router.navigate([next]);
