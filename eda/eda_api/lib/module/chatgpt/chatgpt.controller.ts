@@ -67,12 +67,27 @@ export class ChatGptController {
         
         
         try {
+
             const openai = new OpenAI({
                 apiKey: API_KEY
             });
 
             const { text, history, data, schema, firstTime } = req.body;
+            const forbiddenKeywords: string[] = [ "política", "sexo", "hack", "violencia", "pornografía", "droga", "ilegal", "piratería"];
 
+            function isForbidden(message: string) {
+                const msgLower = message.toLowerCase();
+                return forbiddenKeywords.some(keyword => msgLower.includes(keyword.toLowerCase()));
+            }
+
+            if (isForbidden(text)) {
+                return res.status(400).json({
+                    ok: false,
+                    response: "No puedo responder a esa pregunta, intentelo nuevamente."
+                });
+            }
+
+            
             // Sanitizar history: dejar solo { role, content }
             const safeHistory = Array.isArray(history) ? history.map((m: any) => {
                 // content puede estar en distintos formatos en tu app, normalizamos a string
@@ -107,7 +122,10 @@ export class ChatGptController {
                 - Include **all columns** from the table in the getFields call.
                 - Never return empty columns (columns or fields or attributes).
                 - If the table has more than 10 columns, first ask the user if they want all of them.
-                It always generates the getFields calls with exact column names according to the schema.`
+                It always generates the getFields calls with exact column names according to the schema.
+                
+                You should not respond to messages containing prohibited content or out-of-context questions.
+                `
                 });
 
             }
