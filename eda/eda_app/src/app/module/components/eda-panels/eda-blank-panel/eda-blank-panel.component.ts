@@ -310,8 +310,6 @@ export class EdaBlankPanelComponent implements OnInit {
             ['knob', 'radar'].includes(this.panel.content?.chart) ? { minHeight: '55vh', minWidth: '55vw', display: 'inline-block', alignItems: 'center' } :
             ['kpi'].includes(this.panel.content?.chart) ? {height: '100%', width: '100%', alignContent: 'center'} : 
             {height: '100%', width: '100%'};
-
-            console.log('THISSSSSSSSSSSSSSSSSSSSSSSSSSSS: ', this)
     }
     
     /**
@@ -479,9 +477,6 @@ public tableNodeExpand(event: any): void {
 
     public async setTablesData()  {
         await this.setPanelDataSource();
-
-        console.log('this:::::::::::::::: ', this);
-        // debugger;
 
         const tables = TableUtils.getTablesData(this.dataSource.model.tables, this.inject.applyToAllfilter);
         this.tables = [].concat(_.cloneDeep(tables.allTables), this.assertedTables);
@@ -1505,8 +1500,6 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
     */
     public runManualQuery = () => {
 
-        console.log('THIS: ', this);
-
         const chartType = this.panelChart?.props?.chartType || '';
 
         if (chartType == 'crosstable' && this.indextab === 1) {
@@ -1519,8 +1512,6 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
     };
 
     public moveItem = (column: any) => {
-
-        console.log('column: ', column);
 
         PanelInteractionUtils.moveItem(this, column);
 
@@ -1710,13 +1701,10 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
     }
 
     public closeChatGpt(event: any) {
-        console.log('el Valor a llegado y es: ', event);
         this.isVisibleEbpChatGpt = false;
     } 
 
     public currentQueryFromPrompt(currentQuery: any) {
-        console.log('EVENTOOOOOO: ', currentQuery);
-        console.log('THIS: ', this);
         this.currentQuery = _.cloneDeep(currentQuery);
 
         currentQuery.forEach((cq: any) => {

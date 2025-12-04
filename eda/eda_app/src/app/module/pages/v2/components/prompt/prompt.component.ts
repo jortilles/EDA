@@ -83,10 +83,6 @@ export class PromptComponent implements OnInit, AfterViewChecked {
             connectionProperties: this.edaBlankPanel.connectionProperties
         }
 
-        console.log('tables: ', tables);
-        console.log('params: ', params);
-        // debugger;   
-
 
         const text = this.inputText?.trim();
 
@@ -97,25 +93,17 @@ export class PromptComponent implements OnInit, AfterViewChecked {
         this.inputText = '';
         this.sending = true;
 
-        console.log('text: ', text);
-        console.log('messages: ', this.messages);
-        console.log('schema: ', this.schema);
-        console.log('firstTime: ', this.firstTime);
-        // debugger;
-
+        
         // Llamada al servicio que envía el prompt al backend / OpenAI
         this.chatgptService.sendPrompt(text, this.messages, tables, this.schema, this.firstTime).subscribe({
             next: (resp) => {
                 // Esperamos que `resp` contenga la respuesta ya procesada como texto. Adapta según tu backend.
 
-                console.log('resp:::::::COMPONENTE  ', resp);
-                // debugger;
                 const currentQuery = resp.response.currentQuery;
                 const principalTable = resp.response.principalTable;
 
                 if(currentQuery) {
                     if( currentQuery.length !==0 ) {
-                        console.log('EMITIR A EBP....')
                         this.newCurrentQuery.emit(currentQuery);
                         this.principalTable.emit(principalTable);
                     }

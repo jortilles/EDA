@@ -73,8 +73,6 @@ export class ChatGptController {
 
             const { text, history, data, schema, firstTime } = req.body;
 
-            console.log('INICIOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
-
             // Sanitizar history: dejar solo { role, content }
             const safeHistory = Array.isArray(history) ? history.map((m: any) => {
                 // content puede estar en distintos formatos en tu app, normalizamos a string
@@ -94,17 +92,11 @@ export class ChatGptController {
                 };
             }) : [];
 
-            // Asegúrate de añadir el nuevo mensaje del usuario si viene en `text`
-            // if (text && text.trim().length > 0) {
-            //     safeHistory.push({ role: "user", content: String(text) });
-            // }
 
             const messages: any = safeHistory;            
-            console.log('messages: ', messages)
 
 
             if(firstTime) {
-                console.log('es la primera vez que se envia el schema');
                 
                 messages.unshift({
                 role: "system",
@@ -120,27 +112,7 @@ export class ChatGptController {
 
             }
 
-            console.log('messages: ', messages)
-
             // Definir en otro directorio
-            const getHoroscopeTool: any = {
-                type: "function",       // obligatorio
-                name: "getHoroscope",
-                description: "Get todays horoscope for an astrological sign.",
-                parameters: {
-                    type: "object",
-                    properties: {
-                        sign: {
-                            type: "string",
-                            description: "An astrological sign like Taurus or Aquarius",
-                        },
-                    },
-                    required: ["sign"],
-                    additionalProperties: false // <- CORRECCIÓN CLAVE: evita propiedades extra
-                },
-                strict: true,           // obligatorio
-            };
-
             const getFieldsTool: any = {
                 type: "function",
                 name: "getFields",
@@ -191,7 +163,7 @@ export class ChatGptController {
                 strict: true,           
             };
 
-            const tools: any[] = [getHoroscopeTool, getFieldsTool, getAllColumnsByTableNameTool];
+            const tools: any[] = [getFieldsTool, getAllColumnsByTableNameTool];
 
             let response: any = await openai.responses.create({
                 model: MODEL,
@@ -199,30 +171,23 @@ export class ChatGptController {
                 tools: tools,
             })
 
-            console.log('::::::::::::::::::::: RESPONSE :::::::::::::::::::::');
-            console.log('response =>', response);
 
             const toolCall: any = response.output?.find((c: any) => c.type === "function_call");
             let toolResult: string | null = null;
             let currentQueryTool: any[];
 
-            console.log('TOOLCALL: ', toolCall);
 
-            if(toolCall && toolCall.name === "getHoroscope") {
-
+            if(toolCall && toolCall.name === "getFields"){
                 const args = toolCall.arguments ? JSON.parse(toolCall.arguments) : {};
-                const sign = args.sign ?? "Unknown";
+                const tables = args.tables ?? "Unknown";
                 const tools = response.tools;
+                const principalTable = tables[0].table
 
-                console.log('args: ', args)
-                console.log('sign: ', sign)
-                console.log('tools: ', tools) // Arreglo de tools 
-
-                toolResult = getHoroscope(sign);
-                console.log('toolResult: ', toolResult);
-
-                response.output_text = toolResult;
-                
+                // Current Query
+                currentQueryTool = getFields(tables, data);
+                response.currentQuery = currentQueryTool;
+                response.principalTable =  principalTable;
+                response.output_text = 'Se ha configurado con exito la consulta solicitada';
 
                 //  // --- 5) (Opcional) enviar el resultado de la tool de vuelta al modelo para respuesta final ---
                 // const followUpMessages: any = [
@@ -239,31 +204,13 @@ export class ChatGptController {
                 //     input: followUpMessages,
                 //     tools, // seguir enviando metadata para permitir más tool_calls
                 // });
-                
-            }
-
-            if(toolCall && toolCall.name === "getFields"){
-                console.log('SE EJECUTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
-                const args = toolCall.arguments ? JSON.parse(toolCall.arguments) : {};
-                const tables = args.tables ?? "Unknown";
-                const tools = response.tools;
-                const principalTable = tables[0].table
-
-                // Current Query
-                currentQueryTool = getFields(tables, data);
-                response.currentQuery = currentQueryTool;
-                response.principalTable =  principalTable;
-                response.output_text = 'Se ha configurado con exito la consulta solicitada';
             }
 
 
             if(toolCall && toolCall.name === "getAllColumnsByTableName"){
-                console.log('SE EJECUTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA TODAS LA COLUMNAS');
                 const args = toolCall.arguments ? JSON.parse(toolCall.arguments) : {};
                 const tableName = args.table ?? "Unknown";
                 const tools = response.tools;
-
-                console.log('argsargsargsargsargsargs: ', args);
 
                 // Current Query
                 currentQueryTool = getAllColumnsByTableName(tableName, data);
@@ -271,9 +218,6 @@ export class ChatGptController {
                 response.principalTable =  tableName;
                 response.output_text = 'Se ha configurado con exito la consulta solicitada';
             }
-
-
-            console.log('ENVIO AL FRONT-END: ',response)
 
             res.status(200).json({
                 ok: true,
@@ -289,17 +233,10 @@ export class ChatGptController {
 
 }
 
-// --- función real implementada en el backend ---
-function getHoroscope(sign: string) {
-  return `${sign}: Next Tuesday you will befriend a baby otter.`;
-}
-
+// --- función real implementada en el backend --- //
 function getFields(tables: any[], data: any[]) {
 
     let currentQuery: any[] = [];
-
-    console.log('tables: ', tables);
-    console.log('data: ', data);
 
     tables.forEach((t: any) => {
         const table = data.find((item: any) => item.table_name === t.table.toLowerCase());
@@ -319,8 +256,6 @@ function getFields(tables: any[], data: any[]) {
 
 function getAllColumnsByTableName(tableName: any, data) {
     let currentQuery: any[] = [];
-
-        console.log('tableName: ', tableName);
 
         const table = data.find((item: any) => item.table_name === tableName);
 
