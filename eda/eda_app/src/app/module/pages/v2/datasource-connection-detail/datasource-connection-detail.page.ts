@@ -560,9 +560,10 @@ export class DataSourceConnectionDetailPage implements OnInit {
   async onFilesAdded() {
     const file = this.file.nativeElement.files[0];
     try {
-      this.csvRecords = await this.ngxCsvParser.parse(file, { header: true, delimiter: this.delimiter })
-
-        .pipe().toPromise();
+      // Si no tiene separador le añado para que no salte un error
+      if(!this.delimiter)
+        this.delimiter = ';';
+      this.csvRecords = await this.ngxCsvParser.parse(file, { header: true, delimiter: this.delimiter }).pipe().toPromise();
       this.csvHeaders = Object.keys(this.csvRecords[0]);
       const types = this.getTypes(this.csvHeaders, this.csvRecords);
       this.csvFileData = this.csvRecords;
@@ -571,8 +572,10 @@ export class DataSourceConnectionDetailPage implements OnInit {
         for (let i = 0; i < 3; i++) {
           row[this.names[i]] = i === 0 ? types[h] : '';
         }
+        this.csvColumns = [];
         this.csvColumns.push(row);
       });
+
     } catch (err) {
       console.log(err);
     }
