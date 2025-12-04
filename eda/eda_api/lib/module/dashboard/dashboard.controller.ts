@@ -557,48 +557,45 @@ export class DashboardController {
     const user = req['user']._id;
     const userGroups = req['user'].role;
 
-     try {
-    const { model_id } = req.params;
+    try {
+      const datasource = await DataSource.findById(req.params.id);
 
-    // Buscar datasource sin callbacks
-    const datasource = await DataSource.findById(model_id);
+      if (!datasource) {
+        return next(new HttpException(404, "Datasource not found with id"));
+      }
 
-    if (!datasource) {
-      return next(new HttpException(404, "Datasource not found with id"));
-    }
+      let toJson = JSON.parse(JSON.stringify(datasource));
 
-    let toJson = JSON.parse(JSON.stringify(datasource));
+      // Filtre de seguretat per les taules
+      const uniquesForbiddenTables = DashboardController.getForbiddenTables(
+        toJson,
+        req.user.groups,
+        req.user._id
+      );
 
-    // Filtre de seguretat per les taules
-    const uniquesForbiddenTables = DashboardController.getForbiddenTables(
-      toJson,
-      req.user.groups,
-      req.user._id
-    );
+      // Comprobar admin
+      const includesAdmin = req.user.role.includes("135792467811111111111110");
 
-    // Comprobar admin
-    const includesAdmin = req.user.role.includes("135792467811111111111110");
-
-    // Añadir valores por defecto a relaciones
-    toJson.ds.model.tables.forEach(table => {
-      table.relations.forEach(r => {
-        r.autorelation = r.autorelation ?? false;
-        r.bridge = r.bridge ?? false;
+      // Añadir valores por defecto a relaciones
+      toJson.ds.model.tables.forEach(table => {
+        table.relations.forEach(r => {
+          r.autorelation = r.autorelation ?? false;
+          r.bridge = r.bridge ?? false;
+        });
       });
-    });
 
-    const ds = {
-      _id: datasource._id,
-      model: toJson.ds.model,
-      name: toJson.ds.metadata.model_name
-    };
+      const ds = {
+        _id: datasource._id,
+        model: toJson.ds.model,
+        name: toJson.ds.metadata.model_name
+      };
 
-    return res.status(200).json(ds);
+      return res.status(200).json(ds);
 
-  } catch (err) {
-    console.error(err);
-    next(new HttpException(500, "Error searching the DataSource"));
-  }
+    } catch (err) {
+      console.error(err);
+      next(new HttpException(500, "Error searching the DataSource"));
+    }
   }
 
   static async create(req: Request, res: Response, next: NextFunction) {
