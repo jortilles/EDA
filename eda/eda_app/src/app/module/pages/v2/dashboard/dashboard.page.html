@@ -1,79 +1,105 @@
-<div class="min-h-screen" id="myDashboard">
-  <div class="w-full p-3 h-max" [ngStyle]="backgroundColor">
-    <div>
-      <!-- Header -->
-      <div class="flex items-center relative w-full items-start ml-1 my-2" [ngStyle]="reportPanel">
-
-        <div class="flex-1">
-          @if (!titleClick) {
-          <h1 class="text-2xl font-semibold tracking-tight cursor-pointer w-fit" [ngStyle]="reportTitle">
-            {{ title.trim().length > 0 ? title : '\uD83D\uDD89' }}
-          </h1>
-          } @else {
-          <input type="text" [(ngModel)]="title" autofocusOnShow (focusout)="titleClick = false;"
-            class="w-full max-w-md px-3 py-2 bg-gray-100 rounded-md cursor-auto focus:outline-none focus:ring-2 focus:ring-[#00bcd4]">
-          }
-        </div>
-        @if(!hideWheel){
-          <button class="w-6 h-6 rounded-full flex items-center justify-center ml-2 " [ngStyle]="reportTitle" (click)="showSidebar($event)">
-            <i class="pi pi-ellipsis-v"></i>
-          </button>
-        }
-      </div>
-
-      <!-- Filters Section -->
-      <div class="flex justify-between items-center">
-        <app-v2-global-filter #globalFilter [dashboard]="this"></app-v2-global-filter>
-
-        @if (notSaved) {
-          <p-message severity="warn" i18n-text="@@notSavedChanges" text="Hay cambios sin guardar..." styleClass="w-full"></p-message>
-        }
-      </div>
+<div class="flex">
+  <!-- Columna izquierda -->
+  @if(isCustomDashboard){
+  <div class="flex pt-4 flex-col w-[20%] gap-4 bg-[#96adb5]">
+    <!-- Imagen superior -->
+    <div class="h-1/8 flex items-center justify-center">
+      <img src="assets/images/datapolis.svg" alt="">
     </div>
 
-
-    <div [style.height]="height + 'px'">
-      <gridster [options]="gridsterOptions" class="dashboard-grid">
-        @for (panel of panels; track panel) {
-        <gridster-item class="gridster-item" [item]="panel" [dragAndDrop]="panel.dragAndDrop"
-          [resizable]="panel.resizable">
-
-            @if (panel.type===0) {
-              <eda-blank-panel #edaPanel [dashboard]="this" [panel]="panel" [inject]="injectEdaPanel" [panelContent]="panelContent" [panelText]="panelTitle"
-                (remove)="onRemovePanel($event)" (action)="onPanelAction($event)" (duplicate)="onDuplicatePanel($event)"
-                [availableChatGpt]="availableChatGpt">
-              </eda-blank-panel>
-            }
-
-          @if (panel.type===1) {
-          <eda-title-panel #edaPanel [id]="panel.id" [panel]="panel" [inject]="injectEdaPanel"
-            (remove)="onRemovePanel($event)" (duplicate)="onDuplicatePanel($event)" class="eda-text-panel">
-          </eda-title-panel>
+    <!-- Listado -->
+    <div class="h-6/8 p-2 overflow-auto">
+      <ul class="space-y-2 pl-[10%]">
+        @for (item of leftItems; track $index) {
+        <li class="p-2 pt-0 pb-0 text-white font-bold">
+          @if (item.isStarting) {
+          <div class="flex items-center">
+            <eda-icon [name]="item.icon" class="h-6" />
+            <a (click)="changeSrc()" class="btn">{{ item.name }}</a>
+          </div>
+          }@else{
+          <a class="btn ml-[10%]">{{ item.name }}</a>
           }
-
-        </gridster-item>
+        </li>
         }
-      </gridster>
+
+        <!-- Agrega más items según necesites -->
+      </ul>
+    </div>
+
+    <span class="pt-6  pl-[10%] text-white font-bold"> FET AMB </span>
+    <div class="pb-4 h-1/8 w-[80%] flex self-center justify-center">
+      <img src="assets/images/Logo-edalitics.png" alt="">
     </div>
   </div>
+  }
+
+  <div [ngClass]="isCustomDashboard ? 'w-[85%]' : 'w-full'" id="myDashboard">
+    <div class="w-full p-3 h-max" [ngStyle]="backgroundColor">
+      <div>
+        <!-- Header -->
+        <div class="flex items-center relative w-full items-start ml-1 my-2" [ngStyle]="reportPanel">
+
+          <div class="flex-1">
+            @if (!titleClick) {
+            <h1 class="text-2xl font-semibold tracking-tight cursor-pointer w-fit" [ngStyle]="reportTitle">
+              {{ title.trim().length > 0 ? title : '\uD83D\uDD89' }}
+            </h1>
+            } @else {
+            <input type="text" [(ngModel)]="title" autofocusOnShow (focusout)="titleClick = false;"
+              class="w-full max-w-md px-3 py-2 bg-gray-100 rounded-md cursor-auto focus:outline-none focus:ring-2 focus:ring-[#00bcd4]">
+            }
+          </div>
+          @if(!hideWheel){
+          <button class="w-6 h-6 rounded-full flex items-center justify-center ml-2 " [ngStyle]="reportTitle"
+            (click)="showSidebar($event)">
+            <i class="pi pi-ellipsis-v"></i>
+          </button>
+          }
+        </div>
+
+        <!-- Filters Section -->
+        <div class="flex justify-between items-center">
+          <app-v2-global-filter #globalFilter [dashboard]="this"></app-v2-global-filter>
+
+          @if (notSaved) {
+          <p-message severity="warn" i18n-text="@@notSavedChanges" text="Hay cambios sin guardar..."
+            styleClass="w-full"></p-message>
+          }
+        </div>
+      </div>
+
+
+      <div [style.height]="height + 'px'">
+        <gridster [options]="gridsterOptions" class="dashboard-grid">
+          @for (panel of panels; track panel) {
+          <gridster-item class="gridster-item" [item]="panel" [dragAndDrop]="panel.dragAndDrop"
+            [resizable]="panel.resizable">
+
+            @if (panel.type===0) {
+            <eda-blank-panel #edaPanel [dashboard]="this" [panel]="panel" [inject]="injectEdaPanel"
+              [panelContent]="panelContent" [panelText]="panelTitle" (remove)="onRemovePanel($event)"
+              (action)="onPanelAction($event)" (duplicate)="onDuplicatePanel($event)"
+              [availableChatGpt]="availableChatGpt">
+            </eda-blank-panel>
+            }
+
+            @if (panel.type===1) {
+            <eda-title-panel #edaPanel [id]="panel.id" [panel]="panel" [inject]="injectEdaPanel"
+              (remove)="onRemovePanel($event)" (duplicate)="onDuplicatePanel($event)" class="eda-text-panel">
+            </eda-title-panel>
+            }
+
+          </gridster-item>
+          }
+        </gridster>
+      </div>
+    </div>
+
+  </div>
+
+  @if (dashboard) {
+  <app-dashboard-sidebar [dashboard]="this"></app-dashboard-sidebar>
+  }
 
 </div>
-
-@if (dashboard) {
-<app-dashboard-sidebar [dashboard]="this"></app-dashboard-sidebar>
-}
-
-
-<!-- <div>
-    <span i18n="@@notSavedChanges" class="div-cambios " *ngIf="display_v.notSaved" style="color: var(--panel-font-color);"> Hay cambios sin guardar... </span>
-
-    <button *ngIf="!display_v.hideWheel" (click)="display_v.rightSidebar = true" class="right-side-toggle waves-effect waves-light btn-inverse btn btn-circle btn-sm pull-right m-l-10">
-        <i id="gearButton" class="fa fa-cog text-white" style="font-size: 14px;"></i>
-    </button>
-
-</div>
-
-
-<div  *ngIf="display_v.panelMode" >
-  <a href="https://eda.jortilles.com/">Enterprise Data Analytics</a>
-</div> -->

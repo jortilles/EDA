@@ -23,7 +23,7 @@ import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.
 @Component({
   selector: 'app-v2-dashboard-page',
   standalone: true,
-  imports: [FormsModule, GridsterComponent, GridsterItemComponent, DashboardSidebarComponent, GlobalFilterV2Component, ComponentsModule, ButtonModule, DropdownModule, MenuModule, MessageModule, FocusOnShowDirective,CommonModule],
+  imports: [FormsModule, GridsterComponent, GridsterItemComponent, DashboardSidebarComponent, GlobalFilterV2Component, ComponentsModule, ButtonModule, DropdownModule, MenuModule, MessageModule, FocusOnShowDirective, CommonModule],
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.css'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -32,7 +32,7 @@ export class DashboardPageV2 implements OnInit {
   @ViewChild(DashboardSidebarComponent) sidebar!: DashboardSidebarComponent;
   @ViewChild(GlobalFilterV2Component) globalFilter: GlobalFilterV2Component;
   @ViewChildren(EdaBlankPanelComponent) edaPanels: QueryList<EdaBlankPanelComponent>;
-  
+
   private sidebarService = inject(DashboardSidebarService)
   private globalFiltersService = inject(GlobalFiltersService);
   private stylesProviderService = inject(StyleProviderService);
@@ -49,7 +49,7 @@ export class DashboardPageV2 implements OnInit {
   public gridsterOptions: GridsterConfig;
   public gridsterDashboard: GridsterItem[];
   private edaPanelsSubscription: Subscription;
-  
+
   public reportTitle: any;
   public reportPanel: any;
   public backgroundColor: any;
@@ -63,7 +63,9 @@ export class DashboardPageV2 implements OnInit {
   public hideWheel: boolean = false;
   public panelMode: boolean = false;
   public connectionProperties: any;
-
+  public leftItems: { name: string, href: string, isStarting: boolean, icon?: any }[];
+  public isCustomDashboard: boolean = false;
+  public: string = "https://free.edalitics.com/es/#/dashboard/67f8ef208a7621c66552d111?panelMode=true";
 
   titleClick: boolean = false;
   sidebarVisible = false;
@@ -95,7 +97,7 @@ export class DashboardPageV2 implements OnInit {
   };
 
   public urls: any[] = [];
-  public sendViaMailConfig: any = { enabled: false};
+  public sendViaMailConfig: any = { enabled: false };
 
   public selectedTags: any[] = [];
 
@@ -112,7 +114,7 @@ export class DashboardPageV2 implements OnInit {
     );
 
     this.chatgptService.availableChatGpt().subscribe((resp: any) => {
-      if(resp.response.available) {
+      if (resp.response.available) {
         this.availableChatGpt = true;
       } else {
         this.availableChatGpt = false;
@@ -122,46 +124,46 @@ export class DashboardPageV2 implements OnInit {
 
 
   /* Set applyToAllFilters for new panel when it's created */
-      public ngAfterViewInit(): void {
-          this.edaPanelsSubscription = this.edaPanels.changes.subscribe((comps: QueryList<EdaBlankPanelComponent>) => {
-              const globalFilters = this.globalFilter?.globalFilters.filter(filter => filter.isGlobal === true);
-              const unsetPanels = this.edaPanels.filter(panel => _.isNil(panel.panel.content));
-  
-              this.setPanelsQueryMode();
-  
-              setTimeout(() => {
-                  const treeQueryMode = this.edaPanels.some((panel) => panel.selectedQueryMode === 'EDA2');
-  
-                  unsetPanels.forEach(panel => {
-                      globalFilters.forEach(filter => {
-                          if (panel && !treeQueryMode) {
-                              filter.panelList.push(panel.panel.id);
-                              const formatedFilter = this.globalFiltersService.formatFilter(filter);
-                              panel.assertGlobalFilter(formatedFilter)
-                          }
-                      });
-                  });
-  
-              }, 0);
+  public ngAfterViewInit(): void {
+    this.edaPanelsSubscription = this.edaPanels.changes.subscribe((comps: QueryList<EdaBlankPanelComponent>) => {
+      const globalFilters = this.globalFilter?.globalFilters.filter(filter => filter.isGlobal === true);
+      const unsetPanels = this.edaPanels.filter(panel => _.isNil(panel.panel.content));
+
+      this.setPanelsQueryMode();
+
+      setTimeout(() => {
+        const treeQueryMode = this.edaPanels.some((panel) => panel.selectedQueryMode === 'EDA2');
+
+        unsetPanels.forEach(panel => {
+          globalFilters.forEach(filter => {
+            if (panel && !treeQueryMode) {
+              filter.panelList.push(panel.panel.id);
+              const formatedFilter = this.globalFiltersService.formatFilter(filter);
+              panel.assertGlobalFilter(formatedFilter)
+            }
           });
-  
-      }
+        });
+
+      }, 0);
+    });
+
+  }
 
   ngOnDestroy() {
     // Poner estilos como predefinidios
     this.stylesProviderService.setStyles(this.stylesProviderService.generateDefaultStyles())
     this.stylesProviderService.loadingFromPalette = false;
     this.stopRefresh = true;
-      if (this.edaPanelsSubscription) {
-          this.edaPanelsSubscription.unsubscribe();
-      }
+    if (this.edaPanelsSubscription) {
+      this.edaPanelsSubscription.unsubscribe();
+    }
   }
 
 
 
-  
-  
-    private initializeGridsterOptions(): void {
+
+
+  private initializeGridsterOptions(): void {
     this.gridsterOptions = {
       gridType: GridType.VerticalFixed, // Configuración general del Gridster : permite scroll vertical y los items generados son de tamaño fijo.
       compactType: CompactType.None, // Controla la configuración de compactar en el gridster
@@ -189,7 +191,7 @@ export class DashboardPageV2 implements OnInit {
       itemChangeCallback: (item: GridsterItem) => this.onItemChange(item),
       itemResizeCallback: (item: GridsterItem) => this.onItemChange(item)
     };
-    }
+  }
 
   public async loadDashboard() {
     const dashboardId = this.route.snapshot.paramMap.get('id');
@@ -209,13 +211,12 @@ export class DashboardPageV2 implements OnInit {
       this.getUrlParams();
       this.globalFilter.findGlobalFilterByUrlParams(this.queryParams);
       this.globalFilter.fillFiltersData();
-      
+
       if (this.styles.palette !== undefined) {
         this.chartUtils.MyPaletteColors = this.styles.palette['paleta'];
       }
-      
-      
-      if (this.dashboard.config.styles?.palette && this.dashboard.config.styles?.stylesApplied) { 
+
+      if (this.dashboard.config.styles?.palette && this.dashboard.config.styles?.stylesApplied) {
         this.assignStyles();
         this.stylesProviderService.setStyles(this.styles, true)
       }
@@ -224,17 +225,22 @@ export class DashboardPageV2 implements OnInit {
         dashboard.config.stopRefresh = false;
         this.startCountdown(dashboard.config.refreshTime);
       }
-      // me.tags = me.tags.filter(tag => tag.value !== 0); //treiem del seleccionador de tags el valor "sense etiqueta"
-      // me.tags = me.tags.filter(tag => tag.value !== 1); //treiem del seleccionador de tags el valor "tots"
-
       this.selectedTags = this.dashboard.config.tag;
-      //this.onlyIcanEdit = this.dashboard.config.onlyIcanEdit;
     }
+
+
+    const url = window.location.href;
+    if (url.endsWith("modePanel=true")) {
+      this.buildCustomizedPanel();
+    }
+
+
+
 
     // Estableix els permisos d'edició i propietat...
     // this.setEditMode();
     // // Check dashboard owner
-      //TODO
+    //TODO
     // this.checkVisibility(res.dashboard);
     // me.setDashboardCreator(res.dashboard);
     // me.dataSource = res.datasource; // DataSource del dashboard
@@ -247,77 +253,77 @@ export class DashboardPageV2 implements OnInit {
 
   private updateFilterDatesInPanels(): void {
 
-        /**Set ranges for dates in panel filters */
-        this.panels.filter(panel => panel.content).forEach(panel => {
+    /**Set ranges for dates in panel filters */
+    this.panels.filter(panel => panel.content).forEach(panel => {
 
-            let panelFilters = [...panel.content.query.query.filters];
-            panel.content.query.query.filters = [];
+      let panelFilters = [...panel.content.query.query.filters];
+      panel.content.query.query.filters = [];
 
-            panelFilters.forEach(pFilter => {
+      panelFilters.forEach(pFilter => {
 
-                if (!!pFilter.selectedRange) {
+        if (!!pFilter.selectedRange) {
 
-                    let range = this.dateUtilsService.getRange(pFilter.selectedRange);
-                    let stringRange = this.dateUtilsService.rangeToString(range);
+          let range = this.dateUtilsService.getRange(pFilter.selectedRange);
+          let stringRange = this.dateUtilsService.rangeToString(range);
 
-                    pFilter.filter_elements[0] = { value1: [stringRange[0]] }
-                    pFilter.filter_elements[1] = { value2: [stringRange[1]] }
+          pFilter.filter_elements[0] = { value1: [stringRange[0]] }
+          pFilter.filter_elements[1] = { value2: [stringRange[1]] }
 
-                }
+        }
 
-                panel.content.query.query.filters.push(pFilter);
+        panel.content.query.query.filters.push(pFilter);
 
-            });
+      });
 
+    });
+
+    /**Set ranges for dates in global filters */
+    this.globalFilter?.globalFilters.filter(f => f.selectedRange).forEach(filter => {
+
+      let range = this.dateUtilsService.getRange(filter.selectedRange);
+      let stringRange = this.dateUtilsService.rangeToString(range);
+      filter.selectedItems = stringRange;
+
+      this.panels.filter(panel => panel.content).forEach(panel => {
+
+        const panelFilters = [...panel.content.query.query.filters];
+        panel.content.query.query.filters = [];
+
+        panelFilters.forEach(pFilter => {
+
+          if (pFilter.filter_id === filter.id) {
+            const formatedFilter = this.globalFiltersService.formatFilter(filter);
+            panel.content.query.query.filters.push(formatedFilter);
+          } else {
+            panel.content.query.query.filters.push(pFilter);
+          }
         });
+      });
+    });
+  }
 
-        /**Set ranges for dates in global filters */
-        this.globalFilter?.globalFilters.filter(f => f.selectedRange).forEach(filter => {
-
-            let range = this.dateUtilsService.getRange(filter.selectedRange);
-            let stringRange = this.dateUtilsService.rangeToString(range);
-            filter.selectedItems = stringRange;
-
-            this.panels.filter(panel => panel.content).forEach(panel => {
-
-                const panelFilters = [...panel.content.query.query.filters];
-                panel.content.query.query.filters = [];
-
-                panelFilters.forEach(pFilter => {
-
-                    if (pFilter.filter_id === filter.id) {
-                        const formatedFilter = this.globalFiltersService.formatFilter(filter);
-                        panel.content.query.query.filters.push(formatedFilter);
-                    } else {
-                        panel.content.query.query.filters.push(pFilter);
-                    }
-                });
-            });
-        });
-    }
-    
 
   // Método que asigna los estilos
   public assignStyles() {
     // Panel del título del informe    
     this.reportPanel = {
-      height: 5 + (this.dashboard.config.styles.title.fontSize*0.25) + 'vh',
+      height: 5 + (this.dashboard.config.styles.title.fontSize * 0.25) + 'vh',
     };
-    
+
     // Texto del título del informe
     this.reportTitle = {
       color: this.dashboard.config.styles.title.fontColor,
       'font-size': (20 + this.dashboard.config.styles.title.fontSize * 3) + 'px',
       'font-family': this.dashboard.config.styles.title.fontFamily,
       display: 'flex',
-    'justify-content': this.dashboard.config.styles.titleAlign === 'center' ? 'center'
-                      : this.dashboard.config.styles.titleAlign === 'flex-end' ? 'right'
-                      : 'flex-start'  
+      'justify-content': this.dashboard.config.styles.titleAlign === 'center' ? 'center'
+        : this.dashboard.config.styles.titleAlign === 'flex-end' ? 'right'
+          : 'flex-start'
     };
 
     // Panel del título del chart
     this.backgroundColor = {
-      background: this.dashboard.config.styles.backgroundColor, 
+      background: this.dashboard.config.styles.backgroundColor,
     };
 
     // Texto del título del chart
@@ -328,8 +334,8 @@ export class DashboardPageV2 implements OnInit {
       'font-family': this.dashboard.config.styles.panelTitle.fontFamily,
       display: 'flex',
       'justify-content': this.dashboard.config.styles.panelTitleAlign === 'center' ? 'center'
-                        : this.dashboard.config.styles.panelTitleAlign === 'flex-end' ? 'right'
-                        : 'flex-start'
+        : this.dashboard.config.styles.panelTitleAlign === 'flex-end' ? 'right'
+          : 'flex-start'
     };
 
     this.panelContent = {
@@ -377,15 +383,15 @@ export class DashboardPageV2 implements OnInit {
 
   // Init functions
   private initializeResponsiveSizes(): void {
-      if (window.innerWidth >= 1200) {
-          this.toLitle = false;
-          this.toMedium = false;
-      }
+    if (window.innerWidth >= 1200) {
+      this.toLitle = false;
+      this.toMedium = false;
+    }
 
-      if (window.innerWidth < 1000) {
-          this.toLitle = true;
-          this.toMedium = false;
-      }
+    if (window.innerWidth < 1000) {
+      this.toLitle = true;
+      this.toMedium = false;
+    }
   }
 
   showSidebar(event: Event) {
@@ -394,21 +400,21 @@ export class DashboardPageV2 implements OnInit {
     }
   }
 
-      public canIedit(): boolean {
-        let result: boolean = false;
-        result = this.userService.isAdmin;
-        // si no es admin...
-        if (!result) {
-            if (this.dashboard.onlyIcanEdit) {
-                result = this.userService.user._id === this.dashboard.user
-            } else {
-                // Usuari anonim no pot editar
-                result = this.userService.user._id !== '135792467811111111111112';
-            }
+  public canIedit(): boolean {
+    let result: boolean = false;
+    result = this.userService.isAdmin;
+    // si no es admin...
+    if (!result) {
+      if (this.dashboard.onlyIcanEdit) {
+        result = this.userService.user._id === this.dashboard.user
+      } else {
+        // Usuari anonim no pot editar
+        result = this.userService.user._id !== '135792467811111111111112';
+      }
 
-        }
-        return result;
     }
+    return result;
+  }
 
   onRemovePanel(panel: any) {
     this.panels.splice(_.findIndex(this.panels, { id: panel }), 1);
@@ -430,14 +436,14 @@ export class DashboardPageV2 implements OnInit {
     // Simula el click en el btn
     const interval = setInterval(() => {
       if (this.globalFilter.loading === false) {
-          clearInterval(interval); // detener el polling
-          let btn = document.getElementById('dashFilterBtn');
-          if (btn) btn.click();
-          else this.reloadPanels();
+        clearInterval(interval); // detener el polling
+        let btn = document.getElementById('dashFilterBtn');
+        if (btn) btn.click();
+        else this.reloadPanels();
       }
     }, 100); // revisa cada 100ms
   }
-  
+
   public async reloadPanels(): Promise<void> {
     const tasks = this.edaPanels.map(async (panel) => {
       if (panel.currentQuery.length > 0) {
@@ -464,10 +470,10 @@ export class DashboardPageV2 implements OnInit {
     //Check de modo
     let modeEDA = false;
     const panel = event?.data?.panel
-    
+
     // Check de filtros en click habilitados
     const filtersEnabled: boolean = this.dashboard.config.clickFiltersEnabled;
-    
+
     // Check si el panel es importado
     const isImportedPanel: boolean = panel?.globalFilterMap;
 
@@ -609,17 +615,17 @@ export class DashboardPageV2 implements OnInit {
 
   createChartFilter(table: any, column: any, dataLabel: string, config: any): any {
     return {
-        id: `${table.table_name}_${column.column_name}`,
-        isGlobal: true,
-        isAutocompleted: config.isAutocompleted ?? false,
-        applyToAll: config.applyToAll ?? true,
-        panelList: config.panelList.map((p) => p.id),
-        table: { label: table.display_name.default, value: table.table_name },
-        column: { label: column.display_name.default, value: column },
-        selectedItems: [dataLabel],
-        fromChart: true
+      id: `${table.table_name}_${column.column_name}`,
+      isGlobal: true,
+      isAutocompleted: config.isAutocompleted ?? false,
+      applyToAll: config.applyToAll ?? true,
+      panelList: config.panelList.map((p) => p.id),
+      table: { label: table.display_name.default, value: table.table_name },
+      column: { label: column.display_name.default, value: column },
+      selectedItems: [dataLabel],
+      fromChart: true
     };
-}
+  }
 
   deleteDynamicFilter(chartToRemove: any, table: any, filterName: any) {
     // Borramos el filtro existente
@@ -628,10 +634,10 @@ export class DashboardPageV2 implements OnInit {
     // Borramos del global filter el filtro a borrar fromChart
     this.globalFilter.removeGlobalFilterOnClick(chartToRemove, true);
     // Recuperamos el filtro correspondiente y lo eliminamos de los filtros guardados
-    if (filterToAddIndx !== -1 ) { 
+    if (filterToAddIndx !== -1) {
       this.globalFilter.onGlobalFilterAuto(this.lastFilters[filterToAddIndx].filter, table.table_name)
       this.lastFilters.splice(filterToAddIndx, 1);
-    }  
+    }
   }
 
   recoverDynamicFilter(chartToRemove?: any, existingFilter?: any, filterName?: string) {
@@ -645,17 +651,17 @@ export class DashboardPageV2 implements OnInit {
     this.globalFilter.applyGlobalFilter(chartToRemove);
   }
 
-  isFilterAppliedToChart(anyChartToRemove: any, data: any) : boolean {
+  isFilterAppliedToChart(anyChartToRemove: any, data: any): boolean {
 
     let filterInPanel = data.panel.content.query.query?.filters.find((f: any) =>
       (f.filter_elements?.some((fe: any) => fe.value1?.includes(data.label))) ||
-      (data.label.includes(f.selectedItems))) 
+      (data.label.includes(f.selectedItems)))
       !== undefined;
 
-    if(anyChartToRemove && filterInPanel) {
+    if (anyChartToRemove && filterInPanel) {
       // aunque coincida, si este no esta aplicado en el propio panel como filtro, crearemos uno de nuevo
       return false;
-    }   
+    }
     return true;
   }
 
@@ -673,23 +679,23 @@ export class DashboardPageV2 implements OnInit {
 
   checkImportedPanels(dashboard) {
     dashboard.config.panel?.forEach(element => {
-      try {        
+      try {
         if (element.globalFilterMap) {
           const panelFilters = element.content.query.query.filters;
-  
+
           element.globalFilterMap.forEach(filterLinkId => {
             // Buscar el filtro del dashboard al que apunta targetId
             const dashboardFilterToApply = dashboard.config.filters.find(filter => filter.id === filterLinkId.targetId);
             const sourceFilter = panelFilters.find(f => f.filter_id === filterLinkId.sourceId);
             const valueToApply = dashboardFilterToApply.selectedItems;
-  
-            if(sourceFilter?.filter_elements)
+
+            if (sourceFilter?.filter_elements)
               sourceFilter.filter_elements[0].value1 = valueToApply;
           });
         }
       } catch (error) {
-        console.log('Error al cargar imported panels', error)      
-        this.alertService.addError('Error al cargar imported panels')  
+        console.log('Error al cargar imported panels', error)
+        this.alertService.addError('Error al cargar imported panels')
       }
     });
   }
@@ -722,7 +728,7 @@ export class DashboardPageV2 implements OnInit {
         };
 
         await this.globalFilter.onGlobalFilter(true, globalFilter);
-      
+
 
         this.dashboardService._notSaved.next(true);
 
@@ -743,8 +749,8 @@ export class DashboardPageV2 implements OnInit {
     const panelsToFilter = panels.filter(p => p.avaliable === true);
 
     return {
-        panelList: panelsToFilter,
-        applyToAll: (panels.length === panelsToFilter.length)
+      panelList: panelsToFilter,
+      applyToAll: (panels.length === panelsToFilter.length)
     };
   }
 
@@ -784,43 +790,43 @@ export class DashboardPageV2 implements OnInit {
         setTimeout(() => panel.panelChart?.updateComponent(), 100);
       }
     });
-    
+
     // LiveDashboardTimer
     let isvalid = true;
     const emptyQuery = this.edaPanels.some((panel) => panel.currentQuery.length === 0);
 
 
-      if (emptyQuery) isvalid = false;
+    if (emptyQuery) isvalid = false;
 
-      if (!isvalid) {
-        this.alertService.addError($localize`:@@SaveWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`)
-      }else{
-        
-        
-            this.triggerTimer();
-            const body = {
-              config: {
-                title: this.title,
-                panel: [],
-                ds: { _id: this.dataSource._id },
-                filters: this.cleanFiltersData(),
-                applyToAllfilter: this.applyToAllfilter,
-                visible: this.dashboard.config.visible,
-                tag: this.selectedTags,
-                refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
-                clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
-                // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
-                sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig, 
-                onlyIcanEdit: this.dashboard.config.onlyIcanEdit, // NO puedo Editar dashboard --> publico con enlace
-                styles: this.dashboard.config.styles,
-                urls: this.dashboard.config.urls,
-                author: this.dashboard.config?.author
-              },
-              group: this.dashboard.group ? _.map(this.dashboard.group) : undefined,
-            }
-        
-            body.config.panel = this.savePanels();
-          }
+    if (!isvalid) {
+      this.alertService.addError($localize`:@@SaveWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`)
+    } else {
+
+
+      this.triggerTimer();
+      const body = {
+        config: {
+          title: this.title,
+          panel: [],
+          ds: { _id: this.dataSource._id },
+          filters: this.cleanFiltersData(),
+          applyToAllfilter: this.applyToAllfilter,
+          visible: this.dashboard.config.visible,
+          tag: this.selectedTags,
+          refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
+          clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
+          // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
+          sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig,
+          onlyIcanEdit: this.dashboard.config.onlyIcanEdit, // NO puedo Editar dashboard --> publico con enlace
+          styles: this.dashboard.config.styles,
+          urls: this.dashboard.config.urls,
+          author: this.dashboard.config?.author
+        },
+        group: this.dashboard.group ? _.map(this.dashboard.group) : undefined,
+      }
+
+      body.config.panel = this.savePanels();
+    }
 
   }
 
@@ -835,50 +841,50 @@ export class DashboardPageV2 implements OnInit {
 
 
 
-      if (emptyQuery) isvalid = false;
+    if (emptyQuery) isvalid = false;
 
-      if (!isvalid) {
-        this.alertService.addError($localize`:@@SaveWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`)
-      }else{
-        
-        
-            this.triggerTimer();
-            const body = {
-              config: {
-                title: this.title,
-                panel: [],
-                ds: { _id: this.dataSource._id },
-                filters: this.cleanFiltersData(),
-                applyToAllfilter: this.applyToAllfilter,
-                visible: this.dashboard.config.visible,
-                tag: this.selectedTags,
-                refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
-                clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
-                createdAt: this.dashboard.config.createdAt || new Date().toISOString(),
-                modifiedAt: new Date().toISOString(),
-                // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
-                sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig, 
-                onlyIcanEdit: this.dashboard.config.onlyIcanEdit, // NO puedo Editar dashboard --> publico con enlace
-                styles: this.dashboard.config.styles,
-                urls: this.dashboard.config.urls,
-                author: this.dashboard.config?.author,
-                orderDependentFilters: this.globalFilter?.orderDependentFilters,
-              },
-              group: this.dashboard.group ? _.map(this.dashboard.group) : undefined,
-            }
-        
-            body.config.panel = this.savePanels();
+    if (!isvalid) {
+      this.alertService.addError($localize`:@@SaveWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`)
+    } else {
 
-            try {
-              await lastValueFrom(this.dashboardService.updateDashboard(this.dashboardId, body));
-              this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
-              this.dashboardService._notSaved.next(false);
-            } catch (err) {
-              this.alertService.addError(err);
-              throw err;
-            }
+
+      this.triggerTimer();
+      const body = {
+        config: {
+          title: this.title,
+          panel: [],
+          ds: { _id: this.dataSource._id },
+          filters: this.cleanFiltersData(),
+          applyToAllfilter: this.applyToAllfilter,
+          visible: this.dashboard.config.visible,
+          tag: this.selectedTags,
+          refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
+          clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
+          createdAt: this.dashboard.config.createdAt || new Date().toISOString(),
+          modifiedAt: new Date().toISOString(),
+          // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
+          sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig,
+          onlyIcanEdit: this.dashboard.config.onlyIcanEdit, // NO puedo Editar dashboard --> publico con enlace
+          styles: this.dashboard.config.styles,
+          urls: this.dashboard.config.urls,
+          author: this.dashboard.config?.author,
+          orderDependentFilters: this.globalFilter?.orderDependentFilters,
+        },
+        group: this.dashboard.group ? _.map(this.dashboard.group) : undefined,
       }
-      this.checkImportedPanels(this.dashboard);
+
+      body.config.panel = this.savePanels();
+
+      try {
+        await lastValueFrom(this.dashboardService.updateDashboard(this.dashboardId, body));
+        this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
+        this.dashboardService._notSaved.next(false);
+      } catch (err) {
+        this.alertService.addError(err);
+        throw err;
+      }
+    }
+    this.checkImportedPanels(this.dashboard);
   }
 
   private savePanels(): any[] {
@@ -920,49 +926,49 @@ export class DashboardPageV2 implements OnInit {
     return filtersCleaned;
   }
 
-private countdownInterval: any;
+  private countdownInterval: any;
 
-public startCountdown(seconds: number) {
+  public startCountdown(seconds: number) {
 
-  if (this.dashboard.config.stopRefresh) return;
+    if (this.dashboard.config.stopRefresh) return;
 
-  let counter = seconds;
+    let counter = seconds;
 
-  // Evita intervalos duplicados
-  clearInterval(this.countdownInterval);
-  this.countdownInterval = setInterval(() => {
-    if (this.dashboard.config.stopRefresh) {
-      clearInterval(this.countdownInterval);
-      return;
-    }    
-    counter--; 
-    if (counter < 0) {
-      this.onResetWidgets();
-      counter = seconds; // Cambio de recursividad a contador
-    }
-  }, 1000);
-}
+    // Evita intervalos duplicados
+    clearInterval(this.countdownInterval);
+    this.countdownInterval = setInterval(() => {
+      if (this.dashboard.config.stopRefresh) {
+        clearInterval(this.countdownInterval);
+        return;
+      }
+      counter--;
+      if (counter < 0) {
+        this.onResetWidgets();
+        counter = seconds; // Cambio de recursividad a contador
+      }
+    }, 1000);
+  }
 
   public onResetWidgets(): void {
     // Get the queries in the dashboard for delete it from cache
     const queries = [];
-    this.panels.forEach( p=> {
-            if(p.content  !== undefined && p.content.query  !== undefined && p.content.query.query  !== undefined){
-                queries.push( p.content.query.query );
-            }
-        });
+    this.panels.forEach(p => {
+      if (p.content !== undefined && p.content.query !== undefined && p.content.query.query !== undefined) {
+        queries.push(p.content.query.query);
+      }
+    });
     let body =
     {
-        model_id: this.dataSource._id,
-        queries: queries
+      model_id: this.dataSource._id,
+      queries: queries
     }
 
     this.dashboardService.cleanCache(body).subscribe(
-        res => {
-            this.loadDashboard();
-            this.dashboardService._notSaved.next(false);
-        },
-        err => console.log(err)
+      res => {
+        this.loadDashboard();
+        this.dashboardService._notSaved.next(false);
+      },
+      err => console.log(err)
     )
   }
 
@@ -972,16 +978,16 @@ public startCountdown(seconds: number) {
 
     //Give time to stop counter if any
     setTimeout(() => {
-        if (!this.refreshTime) this.stopRefresh = true;
-        else if (this.refreshTime) this.stopRefresh = false;
+      if (!this.refreshTime) this.stopRefresh = true;
+      else if (this.refreshTime) this.stopRefresh = false;
 
-        if (this.refreshTime && this.refreshTime < 5) this.refreshTime = 5;
+      if (this.refreshTime && this.refreshTime < 5) this.refreshTime = 5;
 
-        this.startCountdown(this.refreshTime);
+      this.startCountdown(this.refreshTime);
 
     }, 2000)
 
-  } 
+  }
 
   public validateDashboard(action: string): boolean {
     let isvalid = true;
@@ -1017,29 +1023,29 @@ public startCountdown(seconds: number) {
     }
     else {
       //Si el evento es de un chart de la libreria D3Chart o Leaflet
-        return event.data.query.find((query: any) => query?.column_name?.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);    
-//        return event.data.query.find((query: any) => query?.display_name?.default.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);    
+      return event.data.query.find((query: any) => query?.column_name?.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);
+      //        return event.data.query.find((query: any) => query?.display_name?.default.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);    
     }
   }
-  
+
   //----------------------------------------//
   //--Revisar si es necesario o se puede eliminar--//
   // Obtiene el item que se encuentra en la parte más inferior del gridster -- Revisar si es necesario
   getBottomMostItem(): GridsterItem | undefined {
-      let bottomMostItem: GridsterItem | undefined;
-      let maxBottom = -1; // Inicializamos con un valor bajo
+    let bottomMostItem: GridsterItem | undefined;
+    let maxBottom = -1; // Inicializamos con un valor bajo
 
-      for (let item of this.panels) {
-          // Calculamos la posición final en Y (bottom) del ítem
-          const bottom = item.y + item.rows;
-  
-          // Si el ítem actual es más bajo, lo actualizamos
-          if (bottom > maxBottom) {
-          maxBottom = bottom;
-          bottomMostItem = item;
-          }
+    for (let item of this.panels) {
+      // Calculamos la posición final en Y (bottom) del ítem
+      const bottom = item.y + item.rows;
+
+      // Si el ítem actual es más bajo, lo actualizamos
+      if (bottom > maxBottom) {
+        maxBottom = bottom;
+        bottomMostItem = item;
       }
-      return bottomMostItem; // El item de la posición mas inferior de todo el gridster
+    }
+    return bottomMostItem; // El item de la posición mas inferior de todo el gridster
   }
 
   // Función que cambia el valor de la altura del gridster cada vez que hay un cambio en el elemento
@@ -1048,66 +1054,94 @@ public startCountdown(seconds: number) {
       let valor = this.getBottomMostItem();
       this.height = ((valor.y + valor.rows + 2) * 32);
       this.cdr.detectChanges();
-    } 
+    }
   }
 
 
   private getUrlParams(): void {
     this.route.queryParams.subscribe(params => {
       this.queryParams = params;
-      try{
-        if(params['hideWheel'] == 'true'){
-          this.hideWheel =true;
+      try {
+        if (params['hideWheel'] == 'true') {
+          this.hideWheel = true;
         }
-        if(params['panelMode'] == 'true'){
-          this.panelMode =true;
-          this.hideWheel =true;
+        if (params['panelMode'] == 'true') {
+          this.panelMode = true;
+          this.hideWheel = true;
         }
         if (params['cnproperties']) {
-          this.connectionProperties = JSON.parse(decodeURIComponent(params['cnproperties'])); 
+          this.connectionProperties = JSON.parse(decodeURIComponent(params['cnproperties']));
         }
-        
-      } catch(e){
-        console.error('getUrlParams: '+ e);
+
+      } catch (e) {
+        console.error('getUrlParams: ' + e);
       }
     });
   }
 
 
-// --- Función para detectar el filtro clicado ---
-private getChartClicked(f: any, tableName: string, columnName: string, label: any): boolean {
-  const norm = (val: any) =>
-    val?.toString()
-      ?.normalize("NFD")
-      ?.replace(/[\u0300-\u036f]/g, "")
-      ?.toLowerCase()
-      ?.trim();
+  // --- Función para detectar el filtro clicado ---
+  private getChartClicked(f: any, tableName: string, columnName: string, label: any): boolean {
+    const norm = (val: any) =>
+      val?.toString()
+        ?.normalize("NFD")
+        ?.replace(/[\u0300-\u036f]/g, "")
+        ?.toLowerCase()
+        ?.trim();
 
-  const newTable = norm(f.selectedTable?.table_name);
-  const newColumn = norm(f.selectedColumn?.column_name);
-  const oldTable = norm(f.table?.value);
-  const oldColumn = norm(f.column?.value?.column_name);
+    const newTable = norm(f.selectedTable?.table_name);
+    const newColumn = norm(f.selectedColumn?.column_name);
+    const oldTable = norm(f.table?.value);
+    const oldColumn = norm(f.column?.value?.column_name);
 
-  const targetTable = norm(tableName);
-  const targetColumn = norm(columnName);
-  const targetLabel = norm(label);
+    const targetTable = norm(tableName);
+    const targetColumn = norm(columnName);
+    const targetLabel = norm(label);
 
-  const tableMatch = newTable === targetTable || oldTable === targetTable;
-  const columnMatch = newColumn === targetColumn || oldColumn === targetColumn;
+    const tableMatch = newTable === targetTable || oldTable === targetTable;
+    const columnMatch = newColumn === targetColumn || oldColumn === targetColumn;
 
-  let labelMatch = false;
+    let labelMatch = false;
 
 
 
-  if (Array.isArray(f.selectedItems)) {
-    f.selectedItems.forEach((item, i) => {
-      const normItem = norm(item);
-      const includes = normItem?.includes(targetLabel);
-      if (includes) labelMatch = true;
-    });
-  } 
+    if (Array.isArray(f.selectedItems)) {
+      f.selectedItems.forEach((item, i) => {
+        const normItem = norm(item);
+        const includes = normItem?.includes(targetLabel);
+        if (includes) labelMatch = true;
+      });
+    }
 
-  return tableMatch && columnMatch && labelMatch;
-}
+    return tableMatch && columnMatch && labelMatch;
+  }
+
+  public changeSrc() {
+    const iframe = document.getElementById('showDashboard') as HTMLIFrameElement;
+    if (iframe) {
+      const baseUrl = 'https://eda3.edalitics.com/es/#/public/68d54b212a5c413d371bc8ee?panelMode=true';
+      iframe.src = baseUrl + '?refresh=' + Date.now();
+    }
+  }
+
+  private buildCustomizedPanel(){
+    this.leftItems = [
+      { name: 'Portada', href: 'custom', isStarting: true, icon: 'grafico' },
+      { name: 'Mobilitat ', href: 'custom', isStarting: true, icon: 'coche' },
+      { name: 'Desplaçaments ', href: 'custom', isStarting: false },
+      { name: 'Parc de vehicles ', href: 'custom', isStarting: false },
+      { name: 'Medi ambient ', href: 'custom', isStarting: true, icon: 'hoja' },
+      { name: 'Energia i consum ', href: 'custom', isStarting: false },
+      { name: 'Externalitats ', href: 'custom', isStarting: false },
+      { name: 'Seguretat ', href: 'custom', isStarting: true, icon: 'cuidado' },
+      { name: 'Delinqüència ', href: 'custom', isStarting: false },
+      { name: 'Viari ', href: 'custom', isStarting: false },
+      { name: 'Turisme ', href: 'custom', isStarting: true, icon: 'sombrilla' },
+      { name: 'Visitants ', href: 'custom', isStarting: false },
+      { name: 'Hosteleria ', href: 'custom', isStarting: false },
+      { name: 'Configuració ', href: 'custom', isStarting: true, icon: 'engranaje' },
+    ];
+    this.isCustomDashboard = true;
+  }
 
 }
