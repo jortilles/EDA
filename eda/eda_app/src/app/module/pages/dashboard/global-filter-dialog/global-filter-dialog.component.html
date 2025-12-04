@@ -5,15 +5,13 @@
       <!-- Filter Details -->
       <div class="border rounded-lg shadow-sm">
         <div class="p-4 space-y-4">
-          @if (globalFilter?.selectedTable?.table_name && globalFilter?.selectedColumn) {
           <div class="flex items-center justify-between">
             <h3 class="text-lg font-bold">
               Opciones del filtro:
             </h3>
           </div>
-          }
     
-          <div class="grid grid-cols-3">
+          <div class="grid grid-cols-3 items-center">
             <div class="space-x-2 flex items-center h-max">
               <label  i18n="@@aplyToAllPanelsH5">¿Aplica a todos los paneles?</label>
               <button type="button" role="switch" [attr.aria-checked]="applyToAll" (click)="applyToAllCheck()"
@@ -37,13 +35,14 @@
               </button>
             </div>
             <div>
-              <div class="flex flex-col space-y-1.5">
-                <label>{{header4}}</label>
-                <div class="relative">
-                  <p-dropdown [options]="publicRoHidden" [(ngModel)]="globalFilter.visible"
-                    i18n-title="@@filterVisibleScope"
-                    title="Definir la visibilidad del filtro. Públi'Los filtros deben ser del mismo tipaje!'co: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuarios no pueden ver el filtro, pero se les aplica"
-                    [style]="{'width': '100%'}" selected="publicRoHiddenOption"></p-dropdown>
+              <div class="flex flex-row space-x-1.5 items-center">
+                <label class="flex-none">{{header4}}:</label>
+                <div class="relative flex-grow">
+                  <p-dropdown 
+                    [options]="publicRoHidden" [(ngModel)]="globalFilter.visible"
+                    i18n-title="@@filterVisibleScope" title="..."
+                    [style]="{'width': '100%'}" selected="publicRoHiddenOption">
+                  </p-dropdown>
                 </div>
               </div>
             </div>
