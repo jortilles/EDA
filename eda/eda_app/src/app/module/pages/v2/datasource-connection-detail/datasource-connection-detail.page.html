@@ -325,22 +325,28 @@
               <label for="separator" class="block font-medium" i18n="@@name">
                 Separador <span class="text-red-500">*</span>
               </label>
-              <input id="separator" type="text" formControlName="separator" placeholder="Separador del modelo ; , . ..." [(ngModel)]="delimiter"
+              <input id="separator" type="text" formControlName="separator" placeholder="Separador del modelo ; , . ..."
+                [(ngModel)]="delimiter"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
-                [class.border-red-500]="connectionForm.get('separator')?.invalid && connectionForm.get('separator')?.touched" />
+                [class.border-red-500]="connectionForm.get('separator')?.invalid && connectionForm.get('separator')?.touched"
+                (change)="retryCsvWithNewSeparator()" />
               @if(connectionForm.get('separator')?.invalid && connectionForm.get('separator')?.touched){
               <p class="text-red-500 text-sm" i18n="@@separatorRequired"> El separador es obligatorio </p>
               }
             </div>
 
             <!-- Drag & Drop CSV -->
+            <!-- Drag & Drop CSV -->
             <div (dragenter)="handleDragIn($event, 'csv')" (dragleave)="handleDragOut($event, 'csv')"
               (dragover)="handleDrag($event)" (drop)="handleDrop($event, 'csv')"
               class="relative mt-2 flex h-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors"
-              [class.border-[#00BFB3]]="isDraggingCsvFile()" [class.bg-[#00BFB3]]="isDraggingCsvFile()"
-              [class.border-gray-300]="!isDraggingCsvFile()" [class.hover:border-[#00BFB3]]="!isDraggingCsvFile()">
+              [class.border-[#00BFB3]]="isDraggingCsvFile() && delimiter"
+              [class.bg-[#00BFB3]]="isDraggingCsvFile() && delimiter"
+              [class.border-gray-300]="!isDraggingCsvFile() || !delimiter"
+              [class.hover:border-[#00BFB3]]="delimiter && !isDraggingCsvFile()">
               <input type="file" #file (change)="handleFileSelect($event, 'csv'); onFilesAdded()"
-                class="absolute inset-0 z-50 h-full w-full cursor-pointer opacity-0" accept=".csv" />
+                [disabled]="!delimiter" class="absolute inset-0 z-50 h-full w-full cursor-pointer opacity-0"
+                accept=".csv" />
 
               <div class="flex flex-col items-center justify-center text-sm">
                 <div *ngIf="_csvFileName(); else noFile">
@@ -365,6 +371,7 @@
                 </ng-template>
               </div>
             </div>
+
           </div>
 
           <!-- Tabla de CSV -->
@@ -374,49 +381,52 @@
               <thead class="bg-gray-100">
                 <tr>
                   @for(header of editFieldsHeaders; track $index){
-                    <th  class="p-3"> {{ header }} </th>
+                  <th class="p-3"> {{ header }} </th>
                   }
                 </tr>
               </thead>
 
               <tbody>
                 @for(row of csvColumns; track $index){
-                  <tr>
-                    <!-- Campo -->
-                    <td class="p-3">{{ row.field }}</td>
-  
-                    <!-- Tipo -->
-                    <td class="p-3">
-                      <select class="border rounded p-2 w-full" [(ngModel)]="row.type"  [ngModelOptions]="{standalone: true}">
-                        @for(dt of dataTypes; track $index){
-                          <option [value]="dt.value || dt"> {{ dt.label || dt }} </option>
-                        }
-                      </select>
-                    </td>
-  
-                    <!-- Formato si es timestamp -->
-                     @if(row.type === 'timestamp'){
-                       <td class="p-3">
-                         <select class="border rounded p-2 w-full" [(ngModel)]="row.format"  [ngModelOptions]="{standalone: true}">
-                           @for(df of dataFormats; track $index){
-                             <option [value]="df.value || df"> {{ df.label || df }} </option>
-                           }
-                         </select>
-                       </td>
-                     }
-  
-                    <!-- Separador decimal para integer o numeric -->
-                     @if(['integer', 'numeric'].includes(row.type)){
-                      <td></td>
-                       <td class="p-3">
-                         <select class="border rounded p-2 w-full" [(ngModel)]="row.separator"  [ngModelOptions]="{standalone: true}">
-                           @for(sep of decSeparators; track $index){
-                             <option [value]="sep.value || sep"> {{ sep.label || sep }} </option>
-                           }
-                         </select>
-                       </td>
-                     }
-                  </tr>
+                <tr>
+                  <!-- Campo -->
+                  <td class="p-3">{{ row.field }}</td>
+
+                  <!-- Tipo -->
+                  <td class="p-3">
+                    <select class="border rounded p-2 w-full" [(ngModel)]="row.type"
+                      [ngModelOptions]="{standalone: true}">
+                      @for(dt of dataTypes; track $index){
+                      <option [value]="dt.value || dt"> {{ dt.label || dt }} </option>
+                      }
+                    </select>
+                  </td>
+
+                  <!-- Formato si es timestamp -->
+                  @if(row.type === 'timestamp'){
+                  <td class="p-3">
+                    <select class="border rounded p-2 w-full" [(ngModel)]="row.format"
+                      [ngModelOptions]="{standalone: true}">
+                      @for(df of dataFormats; track $index){
+                      <option [value]="df.value || df"> {{ df.label || df }} </option>
+                      }
+                    </select>
+                  </td>
+                  }
+
+                  <!-- Separador decimal para integer o numeric -->
+                  @if(['integer', 'numeric'].includes(row.type)){
+                  <td></td>
+                  <td class="p-3">
+                    <select class="border rounded p-2 w-full" [(ngModel)]="row.separator"
+                      [ngModelOptions]="{standalone: true}">
+                      @for(sep of decSeparators; track $index){
+                      <option [value]="sep.value || sep"> {{ sep.label || sep }} </option>
+                      }
+                    </select>
+                  </td>
+                  }
+                </tr>
                 }
               </tbody>
             </table>

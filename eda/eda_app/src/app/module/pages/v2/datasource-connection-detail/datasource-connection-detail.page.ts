@@ -9,6 +9,7 @@ import { UploadFileComponent } from '../../data-sources/data-source-detail/uploa
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { lastValueFrom } from 'rxjs';
 import { NgxCsvParser } from 'ngx-csv-parser';
+import { ChangeDetectorRef } from '@angular/core';
 
 
 @Component({
@@ -23,8 +24,9 @@ export class DataSourceConnectionDetailPage implements OnInit {
 
   @ViewChild('fileUploader', { static: false }) fileUploader: UploadFileComponent;
   @ViewChild('excelFile', { static: false }) excelFile: ElementRef<HTMLInputElement>;
+  @ViewChild('file') fileInput!: ElementRef<HTMLInputElement>;
 
-  public header: string = $localize`:@@DataModelHeader:Configurar nueva fuente de datos`;  
+  public header: string = $localize`:@@DataModelHeader:Configurar nueva fuente de datos`;
   public header2 = true;
   public optimizeString: string = $localize`:@@optimizedQueries:Optimizar consultas`;
   public allowCacheSTR: string = $localize`:@@enableCache: Habilitar caché`;
@@ -68,7 +70,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
   ];
 
   public bigQueryProjectId: any;
-  
+
   bigQueryFile = signal<File | null>(null);
   bigQueryFileName = signal<string>('');
   isDraggingBigQueryFile = signal<boolean>(false);
@@ -101,7 +103,8 @@ export class DataSourceConnectionDetailPage implements OnInit {
     public styleProviderService: StyleProviderService,
     private excelFormatterService: ExcelFormatterService,
     private ngxCsvParser: NgxCsvParser,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef
   ) {
 
 
@@ -185,7 +188,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
   async onSubmit() {
     const type = this.connectionForm.get('type')?.value;
 
-    if (this.connectionForm.invalid && type !== 'excel' && type !== 'bigquery' && type !== 'csv' ) {
+    if (this.connectionForm.invalid && type !== 'excel' && type !== 'bigquery' && type !== 'csv') {
       this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`);
     } else if (type === 'excel') {
       this.saveExcelDataSource();
@@ -198,24 +201,24 @@ export class DataSourceConnectionDetailPage implements OnInit {
     }
   }
 
-	public async testConnection() {
-		try {
-			this.spinnerService.on();
-			
-			if (this.connectionForm.invalid) {
-				this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`);
-			} else {
+  public async testConnection() {
+    try {
+      this.spinnerService.on();
+
+      if (this.connectionForm.invalid) {
+        this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`);
+      } else {
         await lastValueFrom(this.dataSourceService.testConnection(this.connectionForm.value));
-				this.alertService.addSuccess($localize`:@@connectedWithServer:Conectado con el servidor`);
-			}
-		} catch (err) {
+        this.alertService.addSuccess($localize`:@@connectedWithServer:Conectado con el servidor`);
+      }
+    } catch (err) {
       this.alertService.addError($localize`:@@dsConnectionRefused:No se ha podido conectar a la base de datos.`);
 
-			throw err;
-		} finally {
-			this.spinnerService.off();
-		}
-	}
+      throw err;
+    } finally {
+      this.spinnerService.off();
+    }
+  }
 
   public async saveExcelDataSource(): Promise<void> {
     const value = this.connectionForm.value;
@@ -352,7 +355,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
 
   public async saveCsvJSONCollection(): Promise<void> {
     this.spinnerService.on();
-    
+
     const value = this.connectionForm.value;
     if (!value.name) {
       this.alertService.addError("No name provided");
@@ -364,7 +367,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
           optimize: value.optimize,
           allowCache: value.allowCache
         };
-        
+
         const res = await lastValueFrom(this.excelFormatterService.addNewCollectionFromJSON(fileData));
 
         this.spinnerService.off();
@@ -479,6 +482,58 @@ export class DataSourceConnectionDetailPage implements OnInit {
     }
   }
 
+  retryCsvWithNewSeparator() {
+    const input = this.fileInput?.nativeElement;
+    if (!input) {
+      return;
+    }
+
+    const files = input.files;
+    if (!files || files.length === 0) {
+      return;
+    }
+
+    const file = files[0];
+    this.parseCsv(file);
+  }
+
+  parseCsv(file: File) {
+    const separator = this.connectionForm.get('separator')?.value || ';';
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const text = reader.result as string;
+
+      const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+      if (lines.length === 0) {
+        this.csvColumns = [];
+        return;
+      }
+
+      const headers = lines[0].split(separator);
+
+      // Mapear filas; si field vacío, le ponemos nombre genérico
+      const rows = headers.map((header, i) => {
+        const fieldName = header?.trim() || `column_${i + 1}`;
+        return {
+          field: fieldName,
+          type: 'string',
+          format: '',
+          separator: '.'
+        };
+      });
+
+      this.csvColumns = rows;
+    };
+
+    reader.onerror = (err) => {
+      this.csvColumns = [];
+    };
+
+    reader.readAsText(file);
+  }
+
   handleFiles(file: File, type: 'bigquery' | 'excel' | 'csv') {
     if (type === 'bigquery') {
       this.bigQueryFileName.set(file.name);
@@ -486,7 +541,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     } else if (type === 'excel') {
       this._excelFileName.set(file.name);
       this._excelFile.set(file);
-    }else if (type === 'csv') {
+    } else if (type === 'csv') {
       this._csvFileName.set(file.name);
       this._csvFile.set(file);
     }
@@ -494,27 +549,20 @@ export class DataSourceConnectionDetailPage implements OnInit {
 
   async handleBigQueryImport() {
     if (!this.bigQueryFile()) {
-      this.alertService.addError($localize`:@@selectFileImport:Por favor selecciona un archivo para importar`) 
+      this.alertService.addError($localize`:@@selectFileImport:Por favor selecciona un archivo para importar`)
       return;
     }
-    
+
     const data: any = await lastValueFrom(this.uploadFileService.upload(this.bigQueryFile(), '/global/upload/bigqueryCredentials'));
     this.bigQueryProjectId = data?.file?.project_id;
   }
 
-
-
-
-//REVISAR
-
-
-
-async onFilesAdded() {
+  async onFilesAdded() {
     const file = this.file.nativeElement.files[0];
     try {
       this.csvRecords = await this.ngxCsvParser.parse(file, { header: true, delimiter: this.delimiter })
 
-      .pipe().toPromise();
+        .pipe().toPromise();
       this.csvHeaders = Object.keys(this.csvRecords[0]);
       const types = this.getTypes(this.csvHeaders, this.csvRecords);
       this.csvFileData = this.csvRecords;
@@ -544,13 +592,13 @@ async onFilesAdded() {
         if (value && !onlyNumbers.test(value)) {
           types[j] = 'text';
           nulls[j] = false;
-        }else if(value){
+        } else if (value) {
           nulls[j] = false;
         }
       });
     }
     types.forEach((type, i) => {
-      if(nulls[i]) types[i] = 'text';
+      if (nulls[i]) types[i] = 'text';
     });
     return types;
   }
