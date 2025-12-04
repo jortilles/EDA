@@ -2015,12 +2015,12 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="IncorrectForm">
 <source>Formulario incorrecto. Revise los campos obligatorios.</source>
-<target>Nieprawidłowa forma. Sprawdź wymagane pola.</target>
+<target>Nieprawidłowy formularz. Proszę sprawdzić wymagane pola.</target>
 </trans-unit>
 
 <trans-unit id="IncorrectForm2">
 <source>Formulario incorrecto, revise los campos.</source>
-<target>Nieprawidłowy formularz. Proszę sprawdzić wymagane pola.</target>
+<target>Nieprawidłowa forma. Sprawdź wymagane pola.</target>
 </trans-unit>
 
 <trans-unit id="ImportantMessage">
@@ -5280,6 +5280,61 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="DFSettingsRestarted">
         <source>Se ha reiniciado la configuración de los filtros dependientes</source>
         <target>Konfiguracja filtrów zależnych została zresetowana</target>
+      </trans-unit>
+
+      <trans-unit id="schemaTableDB">
+        <source>e.g., schema:public,table:users</source>
+        <target>np. schemat:publiczny,tabela:użytkownicy</target>
+      </trans-unit>
+
+      <trans-unit id="warehouse">
+        <source>Warehouse</source>
+        <target>Magazyn</target>
+      </trans-unit>
+
+      <trans-unit id="poolLimit">
+        <source>Pool Limit</source>
+        <target>Limit puli</target>
+      </trans-unit>
+
+      <trans-unit id="SID">
+        <source>SID</source>
+        <target>SID</target>
+      </trans-unit>
+
+      <trans-unit id="excel10mb">
+        <source>EXCEL (max. 10MB)</source>
+        <target>EXCEL (maks. 10 MB)</target>
+      </trans-unit>
+        
+      <trans-unit id="json10mb">
+        <source>JSON (max. 10MB)</source>
+        <target>JSON (maks. 10MB)</target>
+      </trans-unit>
+
+      <trans-unit id="databaseExample">
+        <source>database.example.com</source>
+        <target>baza_danych.przykład.com</target>
+      </trans-unit>
+
+      <trans-unit id="mydatabase">
+        <source>my_database</source>
+        <target>moja_baza_danych</target>
+      </trans-unit>
+
+      <trans-unit id="usernameDB">
+        <source>username</source>
+        <target>nazwa użytkownika</target>
+      </trans-unit>
+
+      <trans-unit id="publicSchema">
+        <source>public</source>
+        <target>publiczny</target>
+      </trans-unit>
+
+      <trans-unit id="myDBConnection">
+        <source>My Database Connection</source>
+        <target>Moje połączenie z bazą danych</target>
       </trans-unit>
 </body>
 </file>

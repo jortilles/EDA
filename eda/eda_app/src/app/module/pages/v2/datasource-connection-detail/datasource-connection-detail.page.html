@@ -55,6 +55,7 @@
               type="text"
               formControlName="name"
               placeholder="My Database Connection"
+              i18n-placeholder="@@myDBConnection"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
               [class.border-red-500]="connectionForm.get('name')?.invalid && connectionForm.get('name')?.touched"
             />
@@ -96,6 +97,7 @@
                   type="text"
                   formControlName="host"
                   placeholder="database.example.com"
+                  i18n-placeholder="@@databaseExample"
                   class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
                   [class.border-red-500]="connectionForm.get('host')?.invalid && connectionForm.get('host')?.touched"
                 />
@@ -143,6 +145,7 @@
                   type="text"
                   formControlName="database"
                   placeholder="my_database"
+                  i18n-placeholder="@@mydatabase"
                   class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
                   [class.border-red-500]="connectionForm.get('database')?.invalid && connectionForm.get('database')?.touched"
                 />
@@ -166,6 +169,7 @@
                 type="text"
                 formControlName="schema"
                 placeholder="public"
+                i18n-placeholder="@@publicSchema"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
               />
             </div>
@@ -181,6 +185,7 @@
                   type="text"
                   formControlName="user"
                   placeholder="username"
+                  i18n-placeholder="@@usernameDB"
                   class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
                   [class.border-red-500]="connectionForm.get('user')?.invalid && connectionForm.get('user')?.touched"
                 />
@@ -240,6 +245,7 @@
                   type="text"
                   formControlName="database"
                   placeholder="my_database"
+                  i18n-placeholder="@@mydatabase"
                   class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
                   [class.border-red-500]="connectionForm.get('database')?.invalid && connectionForm.get('database')?.touched"
                 />
@@ -284,9 +290,9 @@
                         <polyline points="14 2 14 8 20 8"></polyline>
                       </svg>
                       <p class="mb-1 font-medium text-gray-600">
-                        <span class="text-[#00BFB3]">Click para subir</span> o arrastra y suelta
+                        <span class="text-[#00BFB3]" i18n="@@clickToUpload">Click para subir</span> <span i18n="@@dragDrop"> o arrastra y suelta </span>
                       </p>
-                      <p class="text-xs text-gray-500">JSON (max. 10MB)</p>
+                      <p class="text-xs text-gray-500" i18n="@@json10mb">JSON (max. 10MB)</p>
                     }
                   </div>
                 </div>
@@ -294,6 +300,7 @@
                   (click)="handleBigQueryImport()" 
                   class="mt-4 w-full inline-flex items-center justify-center rounded-md font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-gray-800 dark:focus-visible:ring-[#00BFB3] bg-[#00BFB3] text-white hover:bg-[#00BFB3]/90 h-10 px-4 py-2"
                   [disabled]="!bigQueryFile()"
+                  i18n="@@import"
                 >
                   <eda-icon name="import" class="mr-2"></eda-icon>
                   Importar
@@ -313,6 +320,7 @@
                   type="text"
                   formControlName="server"
                   placeholder="database.example.com"
+                  i18n-placeholder="@@databaseExample"
                   class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
                   [class.border-red-500]="connectionForm.get('server')?.invalid && connectionForm.get('server')?.touched"
                 />
@@ -349,9 +357,9 @@
                 <polyline points="14 2 14 8 20 8"></polyline>
               </svg>
               <p class="mb-1 font-medium text-gray-600">
-                <span class="text-[#00BFB3]">Click para subir</span> o arrastra y suelta
+                <span class="text-[#00BFB3]" i18n="@@clickToUpload">Click para subir</span> <span i18n="@@dragDrop"> o arrastra y suelta </span>
               </p>
-              <p class="text-xs text-gray-500">EXCEL (max. 10MB)</p>
+              <p class="text-xs text-gray-500" i18n="@@excel10mb">EXCEL (max. 10MB)</p>
               }
             </div>
           </div>
@@ -367,7 +375,7 @@
           @if (connectionForm.get('type')?.value == 'oracle') {
             <!-- SID Options -->
             <div class="space-y-2">
-              <label for="sid" class="block font-medium">
+              <label for="sid" class="block font-medium" i18n="@@SID">
                 SID
               </label>
               <select
@@ -383,7 +391,7 @@
           @if (connectionForm.get('type')?.value == 'mysql') {
             <!-- Pool Limit -->
             <div class="space-y-2">
-              <label for="poolLimit" class="block font-medium">
+              <label for="poolLimit" class="block font-medium" i18n="@@poolLimit">
                 Pool Limit
               </label>
               <input
@@ -398,7 +406,7 @@
           @if (connectionForm.get('type')?.value == 'snowflake') {
             <!-- Warehouse -->
             <div class="space-y-2">
-              <label for="warehouse" class="block font-medium">
+              <label for="warehouse" class="block font-medium" i18n="@@warehouse">
                 Warehouse
               </label>
               <input
@@ -423,6 +431,7 @@
               type="text"
               formControlName="filter"
               placeholder="e.g., schema:public,table:users"
+              i18n-placeholder="@@schemaTableDB"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
             />
             <p class="text-sm text-gray-500 mt-1" i18n="@@optionalFilterDescription">Optional filters to limit the scope of your connection</p>

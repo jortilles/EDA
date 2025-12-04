@@ -5486,6 +5486,61 @@ OR<ph id="5"/>
 <source>Se ha reiniciado la configuración de los filtros dependientes</source>
 <target>The configuration of dependent filters has been reset</target>
 </trans-unit>
+
+      <trans-unit id="schemaTableDB">
+        <source>e.g., schema:public,table:users</source>
+        <target>e.g., schema:public,table:users</target>
+      </trans-unit>
+
+      <trans-unit id="warehouse">
+        <source>Warehouse</source>
+        <target>Warehouse</target>
+      </trans-unit>
+
+      <trans-unit id="poolLimit">
+        <source>Pool Limit</source>
+        <target>Pool Limit</target>
+      </trans-unit>
+
+      <trans-unit id="SID">
+        <source>SID</source>
+        <target>SID</target>
+      </trans-unit>
+
+      <trans-unit id="excel10mb">
+        <source>EXCEL (max. 10MB)</source>
+        <target>EXCEL (max. 10MB)</target>
+      </trans-unit>
+        
+      <trans-unit id="json10mb">
+        <source>JSON (max. 10MB)</source>
+        <target>JSON (max. 10MB)</target>
+      </trans-unit>
+
+      <trans-unit id="databaseExample">
+        <source>database.example.com</source>
+        <target>database.example.com</target>
+      </trans-unit>
+
+      <trans-unit id="mydatabase">
+        <source>my_database</source>
+        <target>my_database</target>
+      </trans-unit>
+
+      <trans-unit id="usernameDB">
+        <source>username</source>
+        <target>username</target>
+      </trans-unit>
+
+      <trans-unit id="publicSchema">
+        <source>public</source>
+        <target>public</target>
+      </trans-unit>
+
+      <trans-unit id="myDBConnection">
+        <source>My Database Connection</source>
+        <target>My Database Connection</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>
