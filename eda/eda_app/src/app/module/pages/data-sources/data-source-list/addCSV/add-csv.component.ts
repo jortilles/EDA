@@ -1,7 +1,7 @@
 import { AlertService } from './../../../../../services/alerts/alert.service';
 import { SpinnerService } from './../../../../../services/shared/spinner.service';
 import { SelectItem } from 'primeng/api';
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, signal, ViewChild } from '@angular/core';
 import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { NgxCsvParser } from 'ngx-csv-parser';
 import { AddTableService } from '@eda/services/api/createTable.service';
@@ -22,7 +22,12 @@ export class AddCsvComponent implements OnInit {
 
   public title = $localize`:@@addTableTitle:Añadir Tabla`;
   @ViewChild('file', { static: false }) file: { nativeElement: { files: { [key: string]: File; }; value: string; click: () => void; }; };
+  @ViewChild('file') fileInput!: ElementRef<HTMLInputElement>;
 
+  _csvFile = signal<File | null>(null);
+  _csvFileName = signal<string>('');
+  isDraggingExcelFile = signal<boolean>(false);
+  isDraggingCsvFile = signal<boolean>(false);
   public dialog: EdaDialog;
   public csvRecords: any;
   public csvHeaders: any;
@@ -96,12 +101,15 @@ export class AddCsvComponent implements OnInit {
   }
 
   async onFilesAdded() {
+    if(!this.delimiter)
+        this.delimiter = ';';
     const file = this.file.nativeElement.files[0];
     try {
       this.csvRecords = await this.ngxCsvParser.parse(file, { header: this.header, delimiter: this.delimiter })
         .pipe().toPromise();
       this.csvHeaders = Object.keys(this.csvRecords[0]);
       const types = this.getTypes(this.csvHeaders, this.csvRecords);
+      this.csvColumns = [];
       this.csvHeaders.forEach((header, h) => {
         let row = { field: header };
         for (let i = 0; i < 3; i++) {
@@ -188,5 +196,99 @@ export class AddCsvComponent implements OnInit {
       this.spinnerService.off();
       this.alertService.addError(err.text.routine)
     }
+  }
+
+
+  retryCsvWithNewSeparator() {
+    const input = this.fileInput?.nativeElement;
+    if (!input) {
+      return;
+    }
+
+    const files = input.files;
+    if (!files || files.length === 0) {
+      return;
+    }
+
+    const file = files[0];
+    this.parseCsv(file);
+  }
+  // Métodos para manejar eventos de drag & drop
+  handleDrag(e: DragEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  handleDragIn(e: DragEvent, type: 'bigquery' | 'excel' | 'csv') {
+    e.preventDefault();
+    e.stopPropagation();
+    this.isDraggingExcelFile.set(true);
+  }
+
+  handleDragOut(e: DragEvent, type: 'bigquery' | 'excel' | 'csv') {
+    e.preventDefault();
+    e.stopPropagation();
+      this.isDraggingExcelFile.set(false);
+  }
+
+  handleDrop(e: DragEvent, type: 'bigquery' | 'excel' | 'csv') {
+    e.preventDefault();
+    e.stopPropagation();
+
+      this.isDraggingExcelFile.set(false);
+
+    const files = e.dataTransfer?.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+    }
+  }
+
+  handleFileSelect(e: Event, type: 'bigquery' | 'excel' | 'csv') {
+    const input = e.target as HTMLInputElement;
+    const files = input.files;
+    if (files && files.length > 0) {
+      this.handleFiles(files[0], type);
+    }
+  }
+
+    handleFiles(file: File, type: 'bigquery' | 'excel' | 'csv') {
+      this._csvFileName.set(file.name);
+      this._csvFile.set(file);
+  }
+
+
+  parseCsv(file: File) {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const text = reader.result as string;
+
+      const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+      if(this.delimiter === '')
+        return
+      
+      this.csvColumns = [];
+      const headers = lines[0].split(this.delimiter);
+
+      // Mapear filas; si field vacío, le ponemos nombre genérico
+      const rows = headers.map((header, i) => {
+        const fieldName = header?.trim() || `column_${i + 1}`;
+        return {
+          field: fieldName,
+          type: 'string',
+          format: '',
+          separator: '.'
+        };
+      });
+
+      this.csvColumns = rows;
+    };
+
+    reader.onerror = (err) => {
+      this.csvColumns = [];
+    };
+
+    reader.readAsText(file);
   }
 }
