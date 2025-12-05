@@ -5,6 +5,7 @@ import express from 'express';
 import SAMLRouter from './SAML/SAML.router';
 import GOOGLERouter from './GOOGLE/GOOGLE.router';
 import MICROSOFTRouter from './MICROSOFT/MICROSOFT.router';
+import OAUTHRouter from './OAUTH/OAUTH.router'
 import SAML_ORCL_Router from './SAML_ORCL/SAML_ORCL.router';
 
 // LoginType
@@ -46,6 +47,8 @@ if(EDA_API_CONFIG.authentication_type?.type === 'sso'){
         if(EDA_API_CONFIG.authentication_type.options.elements.some((item: any) => item === 'google')) router.use('/google', GOOGLERouter);
 
         if(EDA_API_CONFIG.authentication_type.options.elements.some((item: any) => item === 'microsoft')) router.use('/microsoft', MICROSOFTRouter);
+
+        if(EDA_API_CONFIG.authentication_type.options.elements.some((item: any) => item === 'oauth')) router.use('/oauth', OAUTHRouter);
 
     }  
 
