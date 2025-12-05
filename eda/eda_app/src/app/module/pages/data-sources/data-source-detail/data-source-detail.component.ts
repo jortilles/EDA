@@ -78,6 +78,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public utilities: string = $localize`:@@utilities:Utilidades`;
     public hideTablesString: string = $localize`:@@hideTables:Ocultar todas las tablas`;
     public hideColumnsString: string = $localize`:@@hideColumns:Ocultar todas las columnas`;
+    public deleteViewString: string = $localize`:@@inputBorrarVista:Borrar vista`;
     public hideAllRelationsString: string = $localize`:@@hideAllRelations: Ocultar todas las relaciones`;
     public addCacheConfig:string = $localize`:@@addCacheConfig:Configurar Caché`;
     public viewsecurity:string = $localize`:@@viewsecurity:Ver configuración de seguridad`;
