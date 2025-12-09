@@ -39,10 +39,12 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
     loginForm: FormGroup;
     urlParams: any;
     returnUrl: string;
+
     singleSignOnSamlMixOrclAvailable : boolean = false;
     singleSignOnSamlAvailable : boolean = false;
     singleSignOnGoogleAvailable : boolean = false;
     singleSignOnMicrosoftAvailable : boolean = false;
+    singleSignOnOauthAvailable : boolean = false;
 
     private googleInitialized = false;        // Inicia google.accounts.id una sola vez
     private googleButtonRendered = false;     // Evita multiple renderizado
@@ -114,6 +116,12 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
                     if(loginMethods.includes("microsoft")) {
                         this.singleSignOnMicrosoftAvailable = true;
                     }
+
+                    if(loginMethods.includes("oauth")) {
+                        this.singleSignOnOauthAvailable = true;
+                    }
+
+                    console.log('loginMethodsÑ ', loginMethods);
                     
                     return;
                 }
@@ -312,6 +320,10 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
             this.router.navigate([next]);
             return;
         }
+    }
+
+    loginButtonOauth() {
+        console.log('control y acceso al servicio');
     }
 
     async checkUrlAvailability(url: string, timeout = 3000):Promise<boolean> {
