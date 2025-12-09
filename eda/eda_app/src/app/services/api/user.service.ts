@@ -24,6 +24,7 @@ export class UserService extends ApiService {
     private route = '/admin/user';
     private routeThirdParty = '/tp/url';
     private authSAML = '/auth/saml';
+    private authOAUTH = '/auth/oauth';
     private authSAML_ORCL = '/auth/saml'; // ===> /auth/samlorcl
     private authGOOGLE = '/auth/google';
     private authMICROSOFT = '/auth/microsoft';
@@ -134,15 +135,22 @@ export class UserService extends ApiService {
     loginUrlSAMLmixOrcl(): Observable<string> {
         const url = `${this.authSAML_ORCL}/login`;
         return this.get(url).pipe(map((r: any) => {
-            return r.url
+            return r.url;
         }));
     }
 
     loginUrlSAML(): Observable<string> {
         const url = `${this.authSAML}/login`;
         return this.get(url).pipe(map((r: any) => {
-            return r.url
+            return r.url;
         }));
+    }
+
+    loginUrlOauth(): Observable<string> {
+        const url = `${this.authOAUTH}/login`;
+        return this.get(url).pipe(map((r: any) => {
+            return r.url;
+        }))
     }
 
     credentialGoogle(respGoogle: any): Observable<any> {

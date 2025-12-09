@@ -30,7 +30,8 @@ export class OAUTHController {
             const url = base.toString();
             const redirectTo = url
 
-            return res.redirect(302, redirectTo);
+            // return res.redirect(302, redirectTo);
+            return res.json({ url: base.toString() });
 
         } catch (error) {
             console.log('Error: no se pudo construir la URL: ', error);

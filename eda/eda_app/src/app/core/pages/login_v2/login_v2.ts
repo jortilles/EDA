@@ -322,8 +322,27 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
         }
     }
 
-    loginButtonOauth() {
-        console.log('control y acceso al servicio');
+    async loginButtonOauth() {
+        try {
+            const loginUrl = await lastValueFrom(this.userService.loginUrlOauth());
+
+            const isAvailable = await this.checkUrlAvailability(loginUrl);
+
+            if(!isAvailable){
+                Swal.fire(
+                    'Single Sign-On',
+                    'El servicio de autenticación oauth2 no está disponible en este momento. Intenta de nuevo más tarde.',
+                    'error'
+                );
+                return;
+            }
+
+            window.location.assign(loginUrl); // redirige al login de OAuth2
+
+        } catch (e: any) {
+            Swal.fire('SSO', e?.error?.message || 'No se pudo obtener la URL del Single Sign-On Oauth', 'error');
+        }
+
     }
 
     async checkUrlAvailability(url: string, timeout = 3000):Promise<boolean> {
