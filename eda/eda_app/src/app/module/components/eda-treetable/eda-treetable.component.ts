@@ -11,6 +11,8 @@ interface Column {
   header: string;
 }
 
+import { FATHER_ID } from './../../../config/personalitzacio/customizables'
+
 @Component({
   selector: 'app-eda-treetable',
   templateUrl: './eda-treetable.component.html',
@@ -113,12 +115,13 @@ export class EdaTreeTable implements OnInit {
 
       // Buscamos en queryvalue la fila de este nodo y obtenemos el IDPadre
       const parentKey = values.find(r => String(r[1]) === id)?.[0];
+      const parentString = parentKey.toString();
 
-      if (parentKey === 0 || parentKey === null) { // su padre es 0 o no tiene ==> root
+      if (parentKey === FATHER_ID && id === FATHER_ID.toString()) { // su padre es 0 o no tiene ==> root
         root.push(node);
-      } else if (parentKey && nodesMap[parentKey]) {// tiene padre y esta en lista ==> child
+      } else if (parentString && nodesMap[parentString]) {// tiene padre y esta en lista ==> child
         nodesMap[parentKey].children.push(node);
-      } else { /* tiene padre y no esta en lista ==> huerfano */ }
+      } else { /* tiene padre y no esta en lista ==> huerfano */}
     });
     return root;
   }
