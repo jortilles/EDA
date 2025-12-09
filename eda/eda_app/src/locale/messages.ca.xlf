@@ -5636,6 +5636,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Se ha reiniciado la configuración de los filtros dependientes</source>
         <target>S'ha reiniciat la configuració dels filtres dependents</target>
       </trans-unit>
+      <trans-unit id="showField">
+        <source>Mostrar campo de origen</source>
+        <target>Mostrar camp d'origen</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
