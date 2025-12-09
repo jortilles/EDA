@@ -33,4 +33,4 @@ COPY /eda /eda
 RUN chmod u+x /eda/docker_run_manual.sh
 
 # entrypoint
-ENTRYPOINT /eda/docker_run.sh
+ENTRYPOINT /eda/docker_run_manual.sh
