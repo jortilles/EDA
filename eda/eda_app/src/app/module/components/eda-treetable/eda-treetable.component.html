@@ -1,30 +1,45 @@
 <div class="container-treetable" style="height: 100%; display: flex; flex-direction: column;">
-    <div style="flex: 1; overflow: auto;">
-        <p-treeTable [value]="nodes" [scrollable]="true" [tableStyle]="{'min-width':'50rem'}" selectionMode="single">
-          
-            <!-- Header -->
-          <ng-template pTemplate="header">
-            <tr>
-              <th *ngFor="let col of leafs" class="tt-header">{{ col.header }}</th>
-            </tr>
-          </ng-template>
-        
-          <!-- Body -->
-          <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
-            <tr [ttRow]="rowNode">
-              <td class="tt-cell-top">
-                <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
-                <!-- anotar aqui ngmodel de opcion mostrar header -->
-                @if(false){
-                    <span ><strong>{{ leafs[0].header }}---</strong></span>
-                }
-                {{ rowData[leafs[0].field] }}
-              </td>
-              <td *ngFor="let col of leafs.slice(1)" class="tt-cell-top">
-                {{ rowData[col.field] }}
-              </td>
-            </tr>
-          </ng-template>
-        </p-treeTable>
-    </div>
+  <div style="flex: 1; overflow: auto;">
+    <p-treeTable #tt [value]="nodes" [scrollable]="true" [tableStyle]="{'min-width':'50rem'}" selectionMode="single"
+      [filterMode]="filterMode">
+
+      <!-- Header -->
+      <ng-template pTemplate="header">
+        <tr>
+          @for(col of leafs; track $index){
+          <th class="tt-header">
+            <div class="header-cell">
+              <span class="header-title">{{ col.header }}</span>
+
+              <input class="input-filter" type="text" pInputText
+                (input)="tt.filter($event.target.value, col.header, 'contains')"
+                [placeholder]="filterBy + ' ' + col.header" />
+            </div>
+          </th>
+          }
+
+        </tr>
+      </ng-template>
+
+      <!-- Body -->
+      <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
+        <tr [ttRow]="rowNode">
+          <td class="tt-cell-top" (click)="handleClick(rowData[leafs[0].field], leafs[0].field)">
+            <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+            <!-- anotar aqui ngmodel de opcion mostrar header -->
+            @if(false){
+            <span><strong>{{ leafs[0].header }}---</strong></span>
+            }
+            {{ rowData[leafs[0].field] }}
+          </td>
+          @for(col of leafs.slice(1); track $index){
+          <td class="tt-cell-top"
+            (click)="handleClick(rowData[col.field], col.field)">
+            {{ rowData[col.field] }}
+          </td>
+          }
+        </tr>
+      </ng-template>
+    </p-treeTable>
+  </div>
 </div>

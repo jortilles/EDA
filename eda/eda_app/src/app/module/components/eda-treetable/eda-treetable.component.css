@@ -1,7 +1,29 @@
-/* Fondo gris para header */
+/* header */
 .tt-header {
-  background-color: #e0e0e0; /* gris claro */
-  border-radius: 2px;
-  font-weight: bold;
+  background-color: #e0e0e0;
+  padding: 6px 8px;
 }
 
+/* header cont */
+.header-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+/* header text */
+.header-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* header filter */
+.input-filter {
+  width: auto;
+  font-size: 11px;
+  padding: 3px 6px;
+  border: 1px solid #c1c1c1;
+  border-radius: 3px;
+}
