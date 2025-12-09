@@ -68,8 +68,8 @@ export class EdaTreeTable implements OnInit {
           nodesMap[key] = { key, data: dataObj, children: [] };
       });
 
-      // Roots son los hijos que:
-      const roots: TreeNode[] = [];
+      // Root es la estructura de la tabla:
+      const root: TreeNode[] = [];
 
       // Moldear y enlazar listado de nodes para tener el treenode
       Object.values(nodesMap).forEach(node => {
@@ -79,12 +79,12 @@ export class EdaTreeTable implements OnInit {
           const parentKey = values.find(r => String(r[1]) === id)?.[0];
 
           if (parentKey === 0 || parentKey === null) { // su padre es 0 o no tiene ==> root
-              roots.push(node);
+              root.push(node);
           } else if (parentKey && nodesMap[parentKey]) {// tiene padre y esta en lista ==> child
               nodesMap[parentKey].children.push(node);
           } else { /* tiene padre y no esta en lista ==> huerfano */ }
       });
-      return roots;
+      return root;
   }
 
   handleClick(item: any, column: string) {
