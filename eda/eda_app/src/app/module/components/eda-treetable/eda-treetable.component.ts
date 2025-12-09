@@ -40,11 +40,13 @@ export class EdaTreeTable implements OnInit {
 
   nodes: TreeNode[] = [];
   leafs: { field: string; header: string }[] = [];
+  showField: boolean = false;
 
   constructor() { }
 
   ngOnInit(): void {
     // Control de errores de la entrada de datos
+    this.showField = this.inject.config.config.showOriginField || false;
     if (!this.inject || !Array.isArray(this.inject.query) || !Array.isArray(this.inject.data?.values)) {
       console.error('Inject structure incorrecta. Esperado inject.query[] y inject.data.values[]');
       return;

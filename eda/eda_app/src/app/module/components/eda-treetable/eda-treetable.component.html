@@ -24,22 +24,23 @@
       <!-- Body -->
       <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
         <tr [ttRow]="rowNode">
-          <td class="tt-cell-top" (click)="handleClick(rowData[leafs[0].field], leafs[0].field)">
+          @for(col of leafs; track $index){
+          <td class="tt-cell-top" (click)="handleClick(rowData[col.field], col.field)">
+
+            <!-- Solo en la primera columna mostramos el toggler -->
+            @if($index === 0){
             <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
-            <!-- anotar aqui ngmodel de opcion mostrar header -->
-            @if(false){
-            <span><strong>{{ leafs[0].header }}---</strong></span>
             }
-            {{ rowData[leafs[0].field] }}
-          </td>
-          @for(col of leafs.slice(1); track $index){
-          <td class="tt-cell-top"
-            (click)="handleClick(rowData[col.field], col.field)">
+            <!-- Mostrar header opcional -->
+            @if(showField){
+            <strong>{{ col.header }} - </strong>
+            }
             {{ rowData[col.field] }}
           </td>
           }
         </tr>
       </ng-template>
+
     </p-treeTable>
   </div>
 </div>
