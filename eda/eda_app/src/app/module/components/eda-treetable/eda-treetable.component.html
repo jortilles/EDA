@@ -1,93 +1,46 @@
 <div class="container-treetable" style="height: 100%; display: flex; flex-direction: column;">
-    @if (!isDynamic) {
-        <!-- Contenedor scrollable para tablas NO DINAMICAS -->
-        <div style="flex: 1; overflow: auto;">
-            <p-treeTable #tt [value]="files" [scrollable]="true" [tableStyle]="{'min-width':'50rem'}" selectionMode="single" [filterMode]="filterMode">
-                
-                <!-- ng-template para los títulos -->
-                <ng-template pTemplate="header">
-                    <tr>
-                        @for (label of labels; track $index) {
-                            <th class="header-style">{{ label }}</th>
-                        }
-                    </tr>
-                    <tr>
-                        @for (label of labels ; track $index) {
-                            @if (label) {
-                                <th>
-                                    <input 
-                                        class="input-filter"
-                                        type="text" 
-                                        pInputText
-                                        (input)="tt.filter($event.target.value, label, 'contains')"
-                                        [placeholder]="filterBy + ' ' + label"
-                                        [ngStyle]="{ width: labels.length >= 12 ? '100px' : 'auto' }"/>
-                                </th>
-                            }
-                        }
-                    </tr>
-                </ng-template>
+  <div style="flex: 1; overflow: auto;">
+    <p-treeTable #tt [value]="nodes" [scrollable]="true" [tableStyle]="{'min-width':'50rem'}" selectionMode="single"
+      [filterMode]="filterMode">
 
-                <!-- ng-template para la data distribuida -->
-                <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
-                    <tr [ttRow]="rowNode">
-                        <td>
-                            <!-- Primera columna -->
-                            <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
-                            {{ rowData[labels[0]] }}
-                        </td>
-                        @for (label of labels; track $index) {
-                            @if ($index > 0) {
-                                <td>{{ rowData[label] }}</td>
-                            }
-                        }
-                    </tr>
-                </ng-template>
-            </p-treeTable>
-        </div>
-    } @else {
-        <!-- Contenedor scrollable para tablas DINAMICAS -->
-        <div style="flex: 1; overflow: auto;">
-            <p-treeTable #ttt [value]="dynamicFiles" [columns]="dynamicCols" [scrollable]="true" [tableStyle]="{'min-width':'50rem'}">
-                
-                <ng-template pTemplate="header" let-columns>
-                    <tr>
-                        @for (col of columns; track $index) {
-                            <th class="header-style">{{ col.header }}</th>
-                        }
-                    </tr>
-                    <tr>
-                        @for (label of dynamicCols; track $index) {
-                            @if (label.field) {
-                                <th>
-                                    <input 
-                                        class="input-filter"
-                                        type="text" 
-                                        pInputText
-                                        (input)="ttt.filter($event.target.value, label.field, 'contains')"
-                                        [placeholder]="filterBy + ' ' + label.field"
-                                        [ngStyle]="{ width: dynamicCols.length >= 12 ? '80px' : 'auto' }"
-                                    />
-                                </th>
-                            }
-                        }
-                    </tr>
-                </ng-template>
+      <!-- Header -->
+      <ng-template pTemplate="header">
+        <tr>
+          @for(col of leafs; track $index){
+          <th class="tt-header">
+            <div class="header-cell">
+              <span class="header-title">{{ col.header }}</span>
 
-                <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
-                    <tr [ttRow]="rowNode">
-                        @for (col of columns; track $index) {
-                            <td>
-                                @if ($index === 0) {
-                                    <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
-                                }
-                                <span style="cursor:pointer" (click)="handleClick(lodash.get(rowData, col.field), col.field)" [innerHTML]="rowData[col.field]"></span>
-                            </td>
-                        }
-                    </tr>
-                </ng-template>
+              <input class="input-filter" type="text" pInputText
+                (input)="tt.filter($event.target.value, col.header, 'contains')"
+                [placeholder]="filterBy + ' ' + col.header" />
+            </div>
+          </th>
+          }
 
-            </p-treeTable>
-        </div>
-    }
+        </tr>
+      </ng-template>
+
+      <!-- Body -->
+      <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
+        <tr [ttRow]="rowNode">
+          @for(col of leafs; track $index){
+          <td class="tt-cell-top" (click)="handleClick(rowData[col.field], col.field)">
+
+            <!-- Solo en la primera columna mostramos el toggler -->
+            @if($index === 0){
+            <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+            }
+            <!-- Mostrar header opcional -->
+            @if(showField){
+            <strong>{{ col.header }} - </strong>
+            }
+            {{ rowData[col.field] }}
+          </td>
+          }
+        </tr>
+      </ng-template>
+
+    </p-treeTable>
+  </div>
 </div>

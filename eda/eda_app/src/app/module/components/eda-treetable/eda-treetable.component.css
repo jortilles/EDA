@@ -1,24 +1,29 @@
-
-.container-treetable{
-    margin: 0.1rem;
+/* header */
+.tt-header {
+  background-color: #e0e0e0;
+  padding: 6px 8px;
 }
 
-tr .header-style {
-    background: #edeff1;
-    border: 1px solid white;
-    border-radius: 0.4rem;
-    font-weight: 600;
-    padding: 0.6rem 1rem;
+/* header cont */
+.header-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
 }
 
+/* header text */
+.header-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* header filter */
 .input-filter {
-    border: 1px solid #cbd5e1;  /* color azul bonito */
-    border-radius: 6px;         /* esquinas redondeadas */
-    padding: 6px 10px;
-    outline: none;
-}
-
-.input-filter:focus {
-    border-color: #2ecc70c5;     /* cambia a verde al enfocar */
-    box-shadow: 0 0 5px rgba(46, 204, 113, 0.5);
+  width: auto;
+  font-size: 11px;
+  padding: 3px 6px;
+  border: 1px solid #c1c1c1;
+  border-radius: 3px;
 }

@@ -19,6 +19,7 @@ export class TreeTableDialogComponent extends EdaDialogAbstract implements OnIni
   public panelChartConfig: PanelChart = new PanelChart();
   public config: any;
   public treeTableTitleDialog = $localize`:@@treeTableTitleDialog:Propiedades de la tabla árbol`;
+  public showOriginField: boolean;
 
   sourceProducts: any[] = [];
   targetProducts: any[] = [];
@@ -37,12 +38,13 @@ export class TreeTableDialogComponent extends EdaDialogAbstract implements OnIni
   ngOnInit(): void {
     this.onShow();
   }
-
+  
   onShow(): void {
     this.panelChartConfig = this.controller.params.panelChart;
     this.config = (<TreeTableConfig>this.panelChartConfig.config.getConfig())
     this.sourceProducts = this.config.hierarchyLabels;
     this.targetProducts = this.config.leafLabels;
+    this.showOriginField = this.config.showOriginField;
     // console.log('this.panelChartConfig: ', this.panelChartConfig);
   }
 
@@ -51,7 +53,7 @@ export class TreeTableDialogComponent extends EdaDialogAbstract implements OnIni
   }
 
   saveChartConfig() {
-
+    this.config.showOriginField = this.showOriginField;
     this.config.editedTreeTable = true;
     this.config.hierarchyLabels =  _.cloneDeep(this.sourceProducts);
     this.config.leafLabels =  _.cloneDeep(this.targetProducts);
