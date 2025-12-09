@@ -9,11 +9,31 @@ export class OAUTHController {
 
     static async login(req: Request, res: Response, next: NextFunction) {
         try {
-            // Metadata para el inicio de la sesión 
+            // Metadata para el inicio de la sesión oauth2
             const { response_type, client_id, redirect_uri, scope, state, access_type, baseUrlAuthentication } = OAUTHconfig;
-            const redirectTo = `${baseUrlAuthentication}?response_type=${response_type}&client_id=${client_id}&redirect_uri=${redirect_uri}&scope=${scope}&state=${state}&access_type=${access_type}`
+
+            // Usando la api nativa del navegador
+            const base = new URL(baseUrlAuthentication);
+            
+            // Usando la api nativa del navegador
+            const params = new URLSearchParams({
+                response_type: response_type,
+                client_id: client_id,
+                redirect_uri: redirect_uri,
+                scope: scope,
+                state: state,
+                access_type: access_type,
+            })
+
+            base.search = params.toString();
+
+            const url = base.toString();
+            const redirectTo = url
+
             return res.redirect(302, redirectTo);
+
         } catch (error) {
+            console.log('Error: no se pudo construir la URL: ', error);
             next(error);
         }
     }
