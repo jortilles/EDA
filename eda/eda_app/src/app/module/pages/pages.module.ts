@@ -31,6 +31,7 @@ import { ColumnValueListDialogComponent } from './data-sources/data-source-detai
 import { ModelPermissionDialogComponent } from './data-sources/data-source-detail/model-permissions-dialog/model-permission-dialog.component';
 import { MapDialogComponent } from './data-sources/data-source-detail/mapsDialog/maps-dialog.component';
 import { ViewDialogComponent } from './data-sources/data-source-detail/view-dialog/view-dialog.component';
+import { ViewDialogEditionComponent } from './data-sources/data-source-detail/view-dialog-edition/view-dialog-edition.component';
 import {AddCsvComponent} from './data-sources/data-source-list/addCSV/add-csv.component';
 import { AddTagComponent } from './data-sources/data-source-list/add-tag-dialog/add-tag.component';
 import { ModelSettingsComponent } from './model-settings/model-settings.component';
@@ -87,6 +88,7 @@ import { PrimengModule } from 'app/core/primeng.module';
         MapDialogComponent,
         UploadFileComponent,
         ViewDialogComponent,
+        ViewDialogEditionComponent,
         AddCsvComponent,
         AddTagComponent,
         DsConfigWrapperComponent,

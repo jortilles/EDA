@@ -990,8 +990,8 @@
 <app-add-csv-dialog *ngIf="showCsvDialog" [model_id]="dataModelService.model_id" (close)="closeCSVDialog($event)"></app-add-csv-dialog>
 <app-table-permission-dialog *ngIf="showTablePermissionsDialog" [table]="tablePanel" (close)="closeTablePermissionsDialog($event)"></app-table-permission-dialog>
 <app-view-dialog *ngIf="showViewDialog" [model_id]="dataModelService.model_id" [user]="user" (close)="onCloseViewDialog($event)"></app-view-dialog>
+<app-view-dialog-edition *ngIf="viewDialogEdition" [viewInEdition]="viewInEdition" (close)="onCloseViewEditionDialog($event)"></app-view-dialog-edition>
 <app-add-tag-dialog *ngIf="showAddTagDialog" [model_id]="dataModelService.model_id" [tagArray]="modelPanel.metadata.tags" (close)="onCloseTagDialog($event)"></app-add-tag-dialog>
 
 
 
-<app-view-dialog *ngIf="viewDialogEdition" [viewInEdition]="viewInEdition" (close)="onCloseViewEditionDialog($event)"></app-view-dialog>
