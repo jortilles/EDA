@@ -31,6 +31,6 @@ export const authGuard = async function (req: Request, res: Response, next: Next
             next();
         });
     } else {
-        return next(new HttpException(401, 'Token required sss'));
+        return next(new HttpException(401, 'Token required'));
     }
 };
