@@ -34,17 +34,10 @@ export class ViewDialogEditionComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
-    console.log('hola')
-
-
     this.initForm()
 
     this.form = this.formBuilder.group({
-      viewName: [this.viewName, Validators.required],
-      description: [this.description, Validators.required],
-      technical_name: [this.technical_name, Validators.required],
-      SQLexpression: [this.SQLexpression, Validators.required]
+      SQLexpression: [this.viewInEdition.query, Validators.required]
     });  
 
     // Evalúa el estado inicial
