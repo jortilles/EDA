@@ -6,7 +6,6 @@ import SAMLRouter from './SAML/SAML.router';
 import GOOGLERouter from './GOOGLE/GOOGLE.router';
 import MICROSOFTRouter from './MICROSOFT/MICROSOFT.router';
 import SAML_ORCL_Router from './SAML_ORCL/SAML_ORCL.router';
-import { authGuard } from '../../guards/auth-guard';
 
 // LoginType
 import {loginType} from './loginType'
@@ -19,7 +18,7 @@ const router = express.Router();
 
 // Crear un endpoint para entregar el valor de la configuracion de login (Tipos de logins activos)
 // Ejemplo: SAML, Google y Microsoft.
-router.get('/typeLogin', authGuard, loginType.loginTypeSelection);
+router.get('/typeLogin', loginType.loginTypeSelection);
 
 if(EDA_API_CONFIG.authentication_type?.type === 'sso_mixto'){
 
