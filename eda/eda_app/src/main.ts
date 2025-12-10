@@ -24,29 +24,35 @@ const isIE =
   window.navigator.userAgent.indexOf("MSIE ") > -1 ||
   window.navigator.userAgent.indexOf("Trident/") > -1;
 
+// Comprueba que estamos en un navegador y que la Web Crypto API está disponible
+const canInitMsal = typeof window !== 'undefined' && !!(window as any).crypto && !!(window as any).crypto.subtle;
+
+const msalProviders = canInitMsal ? [
+  importProvidersFrom(
+    MsalModule.forRoot(
+      new PublicClientApplication({
+        auth: {
+          clientId: MICROSOFT_ID,
+          authority: MICROSOFT_AUTHORITY,
+          redirectUri: MICROSOFT_REDIRECT_URI
+        },
+        cache: {
+          cacheLocation: 'localStorage',
+          storeAuthStateInCookie: isIE
+        }
+      }),
+      null,
+      null
+    )
+  )
+] : [];
+
 bootstrapApplication(AppComponent, {
   ...appConfig,
   providers: [
     ...(appConfig.providers || []),
-    importProvidersFrom(
-      MsalModule.forRoot(
-        new PublicClientApplication({
-          auth: {
-            clientId: MICROSOFT_ID,
-            authority: MICROSOFT_AUTHORITY,
-            redirectUri: MICROSOFT_REDIRECT_URI
-          },
-          cache: {
-            cacheLocation: 'localStorage',
-            storeAuthStateInCookie: isIE
-          }
-        }), 
-        null, 
-        null
-      )
-    )
-  ],
-
+    ...msalProviders
+  ]
 })
-  .catch(err => console.error(err));
+.catch(err => console.error(err));
 
