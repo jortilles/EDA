@@ -4,15 +4,14 @@ import * as _ from 'lodash';
 
 // Modules for the Treetable
 import { TreeNode } from 'primeng/api';
-import { TreeTableModule  } from 'primeng/treetable';
-
-// Custom constant
-import { FATHER_ID } from './../../../config/personalitzacio/customizables'
+import { TreeTableModule } from 'primeng/treetable';
 
 interface Column {
-    field: string;
-    header: string;
+  field: string;
+  header: string;
 }
+
+import { FATHER_ID } from './../../../config/personalitzacio/customizables'
 
 @Component({
   selector: 'app-eda-treetable',
@@ -25,7 +24,7 @@ export class EdaTreeTable implements OnInit {
 
   @Input() inject: any; // El inject contiene dos arreglos => (labels y values)
   @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
-  
+
   files!: TreeNode[];
   labels: any[] = [];
   labelsInputs: any[] = [];
@@ -41,84 +40,97 @@ export class EdaTreeTable implements OnInit {
   dynamicCols!: Column[];
   isDynamic: Boolean = false; // Ask if dynamic table is used
 
+  nodes: TreeNode[] = [];
+  leafs: { field: string; header: string }[] = [];
+  showField: boolean = false;
+
   constructor() { }
 
   ngOnInit(): void {
+    // Control de errores de la entrada de datos
+    this.showField = this.inject.config.config.showOriginField || false;
+    if (!this.inject || !Array.isArray(this.inject.query) || !Array.isArray(this.inject.data?.values)) {
+      console.error('Inject structure incorrecta. Esperado inject.query[] y inject.data.values[]');
+      return;
+    }
+
     const col1 = this.inject.query[0];
     const col2 = this.inject.query[1];
 
-    if(col1.column_type === 'numeric' && col2.column_type === 'numeric') {
+    if (col1.column_type === 'numeric' && col2.column_type === 'numeric') {
       this.isDynamic = false;
-      this.initBasicTreeTable()
+      this.prepareColumns();
+      this.nodes = this.buildTree();
     } else {
       this.isDynamic = true;
       this.initDynamicTreeTable()
     }
+  }
+
+  // Rescatamos la query y conseguimos las columas visibles
+  // Solo se mostrarán los campos posteriores a los IDs
+  prepareColumns() {
+    // rescato columnas después de los IDs
+    this.leafs = this.inject.query.slice(2).map(c => ({
+      field: c?.name ?? c?.display_name?.default ?? '',
+      header: c?.display_name?.default ?? c?.name ?? ''
+    }));
 
   }
 
-  initBasicTreeTable() {
-    // Collecting title tags for the Treetable
-    this.inject.query.slice(2).forEach((e: any) => {
-      this.labels.push(e.display_name.default)
-    })
+  // Construcción jerarquia EXPL ==>
+  /*
+    **NODE MAP** 
+    Primero creamos un mapa que recorre todas las filas que llegan de
+    la query, aquí guardamos el IDitem, sus valores y sus hijos vacios []
+    
+    **ROOTS**
+    Segundo creamos el treenode que devolveremos, tiene la misma estructura que 
+    FiltrosDependientes, roots --> data con childrens, dentro de childrens --> data con childrens...
+     Hay dos casos: cuando el primer ID se comparte con el padre, o cuando no
+  */
+  buildTree(): TreeNode[] {
+    const values: any[][] = this.inject.data.values; // Todas las filas [IDPadre, IDItem, valorN, ...]
+    const nodesMap: Record<string, TreeNode> = {}; // Mapa de nodos por su ID.
 
-    this.inject.query.forEach((e: any) => {
-      this.labelsInputs.push(e.display_name.default)
-    })
+    // Recorremos todos los valores y guardamos todos los nodos a mostrar sin ids
+    values.forEach(row => {
+      const dataObj: Record<string, any> = {};
+      // Guardamos en dataobj los campos que queremos mostrar en la tabla
+      this.inject.query.slice(2).forEach((queryField, idx) => {
+        const field = queryField?.name ?? queryField?.display_name?.default ?? '';
+        dataObj[field] = row[idx + 2]; // +2 porque los IDs esstan SIEMPRE al inicio
+      });
 
-
-    // Getting the first label of the labels as a generic id
-    this.id_label = this.labelsInputs[0];
-
-    // Building the object needed for the Treetable
-    this.buildHierarchyTreetable(this.labelsInputs, this.inject.data.values).then( (files: any) => {
-      this.files = files;
-    } )
-  }
-
-  // Function that provides sorting logic
-  buildHierarchyTreetable(labels: string[], values: any[]) {
-    const map: { [key: number]: any } = {};
-
-    // First, build the node map
-    values.forEach(item => {
-        const node: { [key: string]: any } = {}; // Create a node with dynamic keys
-
-        // Dynamically assign properties using labels
-        labels.forEach((label, index) => {
-            node[label] = item[index]; // We assign the values of `values` to the properties defined by `labels`
-        });
-
-        // Store the node in the map using the ID as the key
-        map[node[`${this.id_label}`]] = { 
-            data: node,  // The `data` object is dynamic, it contains the properties of the node
-            children: []  // We initialize the empty children list
-        };
+      const key = String(row[1]); //IDItem
+      nodesMap[key] = { key, data: dataObj, children: [] };
     });
 
-    // Now, build the hierarchy by assigning children to their parents.
-    const result: any[] = [];
+    // Root es la estructura de la tabla:
+    const root: TreeNode[] = [];
+    let  rootFound:boolean = false;
+    // Moldear y enlazar listado de nodes para tener el treenode
+    Object.values(nodesMap).forEach(node => {
+      const id = node.key;
+      
+      // Buscamos en queryvalue la fila de este nodo y obtenemos el IDPadre
+      const parentKey = values.find(r => String(r[1]) === id)?.[0];
+      const parentString = parentKey.toString();
 
-    values.forEach(item => {
-        const currentItem = map[item[0]]; // Current node
-        const parentId = item[1]; // Father ID
-
-        // Root node starts with FATHER_ID (constant value 0)
-        if (parentId === FATHER_ID) {
-            result.push(currentItem);
-        } else if (map[parentId]) {
-            map[parentId].children.push(currentItem); // Add father
-        }
+      if (parentKey === FATHER_ID && !rootFound) { // su padre es 0 o no tiene ==> root
+        root.push(node);
+        rootFound = true;
+      } else if (parentString && nodesMap[parentString]) {// tiene padre y esta en lista ==> child
+        nodesMap[parentKey].children.push(node);
+      } else { /* tiene padre y no esta en lista ==> huerfano */}
     });
-
-    return Promise.resolve(result); // Promise sent to expect large amount of data
+    return root;
   }
 
   initDynamicTreeTable() {
 
     let data: any;
-    let labelsDisplay = this.inject.query.map((c: any) => c.display_name.default); 
+    let labelsDisplay = this.inject.query.map((c: any) => c.display_name.default);
 
     data = {
       labels: labelsDisplay,
@@ -159,18 +171,18 @@ export class EdaTreeTable implements OnInit {
 
     // Visualization control of the element of the treeTable
     // -----------------------------------------------------
-    if(hierarchyLabels.length!==0 && leafLabels.length===0) {
-      leafLabels.push(hierarchyLabels[hierarchyLabels.length-1]);
+    if (hierarchyLabels.length !== 0 && leafLabels.length === 0) {
+      leafLabels.push(hierarchyLabels[hierarchyLabels.length - 1]);
       hierarchyLabels.pop();
     }
 
-    if(leafLabels.length!==0 && hierarchyLabels.length===0) {
-      hierarchyLabels.push(leafLabels[leafLabels.length-1]);
+    if (leafLabels.length !== 0 && hierarchyLabels.length === 0) {
+      hierarchyLabels.push(leafLabels[leafLabels.length - 1]);
       leafLabels.pop();
     }
     // -----------------------------------------------------
 
-    if(this.inject.config.config.editedTreeTable) {
+    if (this.inject.config.config.editedTreeTable) {
       hierarchyLabels = this.inject.config.config.hierarchyLabels;
       leafLabels = this.inject.config.config.leafLabels;
     } else {
@@ -181,7 +193,7 @@ export class EdaTreeTable implements OnInit {
 
     // Label information with unique value columns
     this.dynamicCols = leafLabels.map(item => {
-        return { field: item.toLowerCase(), header: item}
+      return { field: item.toLowerCase(), header: item }
     })
 
     // Recursive tree builder
@@ -216,17 +228,17 @@ export class EdaTreeTable implements OnInit {
     return buildLevel(rows, 0);
   }
 
-    handleClick(item: any, colname: string) {
+  handleClick(item: any, colname: string) {
     if (this.inject.linkedDashboardProps && this.inject.linkedDashboardProps.sourceCol === colname) {
-        const props = this.inject.linkedDashboardProps;
-        const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${item}`;
-        window.open(url, "_blank");
+      const props = this.inject.linkedDashboardProps;
+      const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${item}`;
+      window.open(url, "_blank");
     } else {
       const indexFilterBy = this.inject.data.values.find(row => row.includes(item));
       const filterBy = indexFilterBy ? this.inject.data.labels[indexFilterBy.indexOf(item)] : null;
       let label = item;
-      this.onClick.emit({label, filterBy});
+      this.onClick.emit({ label, filterBy });
     }
-}
+  }
 
 }

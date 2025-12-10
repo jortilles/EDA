@@ -5281,6 +5281,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Se ha reiniciado la configuración de los filtros dependientes</source>
         <target>Konfiguracja filtrów zależnych została zresetowana</target>
       </trans-unit>
+      <trans-unit id="showField">
+        <source>Mostrar campo de origen</source>
+        <target>Pokaż pole pochodzenia</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>
