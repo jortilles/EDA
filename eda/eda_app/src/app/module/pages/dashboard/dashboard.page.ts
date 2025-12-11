@@ -224,22 +224,8 @@ export class DashboardPage implements OnInit {
         dashboard.config.stopRefresh = false;
         this.startCountdown(dashboard.config.refreshTime);
       }
-      // me.tags = me.tags.filter(tag => tag.value !== 0); //treiem del seleccionador de tags el valor "sense etiqueta"
-      // me.tags = me.tags.filter(tag => tag.value !== 1); //treiem del seleccionador de tags el valor "tots"
-
       this.selectedTags = this.dashboard.config.tag;
-      //this.onlyIcanEdit = this.dashboard.config.onlyIcanEdit;
     }
-
-    // Estableix els permisos d'edició i propietat...
-    // this.setEditMode();
-    // // Check dashboard owner
-      //TODO
-    // this.checkVisibility(res.dashboard);
-    // me.setDashboardCreator(res.dashboard);
-    // me.dataSource = res.datasource; // DataSource del dashboard
-    // me.datasourceName = res.datasource.name;
-    // me.form.controls['visible'].setValue(config.visible);
 
     this.checkImportedPanels(dashboard);
     this.updateFilterDatesInPanels();
