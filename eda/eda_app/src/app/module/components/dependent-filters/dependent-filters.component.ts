@@ -4,7 +4,7 @@ import { CommonModule } from "@angular/common";
 import { EdaDialog, EdaDialog2Component, EdaDialogAbstract, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
 import { SharedModule } from "@eda/shared/shared.module";
 import { SelectButtonModule } from "primeng/selectbutton";
-import { DashboardPage } from "app/module/pages/dashboard/dashboard.page";
+import { DashboardPage } from "../../pages/dashboard/dashboard.page";
 import * as _ from 'lodash';
 
 import {

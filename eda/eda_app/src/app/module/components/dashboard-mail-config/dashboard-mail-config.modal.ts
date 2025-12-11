@@ -10,7 +10,7 @@ import { InputSwitchModule } from 'primeng/inputswitch';
 
 import * as _ from 'lodash';
 import { EdaDialog } from "@eda/shared/components/shared-components.index";
-import { DashboardPage } from "app/module/pages/dashboard/dashboard.page";
+import { DashboardPage } from "../../pages/dashboard/dashboard.page";
 
 
 @Component({

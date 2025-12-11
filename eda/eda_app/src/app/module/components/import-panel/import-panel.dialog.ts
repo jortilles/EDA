@@ -5,7 +5,7 @@ import { EdaDialog, EdaDialog2Component, EdaDialogAbstract, EdaDialogCloseEvent 
 import { SharedModule } from "@eda/shared/shared.module";
 import { MultiSelectModule } from "primeng/multiselect";
 import { SelectButtonModule } from "primeng/selectbutton";
-import { DashboardPage } from "app/module/pages/dashboard/dashboard.page";
+import { DashboardPage } from "../../pages/dashboard/dashboard.page";
 import { DropdownFilterOptions, DropdownModule } from "primeng/dropdown";
 import { lastValueFrom } from "rxjs/internal/lastValueFrom";
 import { EdaPickListComponent } from "@eda/shared/eda-pick-list/eda-pick-list.component";

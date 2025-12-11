@@ -6,7 +6,7 @@ import { SharedModule } from "@eda/shared/shared.module";
 import { SelectItem } from "primeng/api";
 import { MultiSelectModule } from "primeng/multiselect";
 import { SelectButtonModule } from "primeng/selectbutton";
-import { DashboardPage } from "app/module/pages/dashboard/dashboard.page";
+import { DashboardPage } from "../../pages/dashboard/dashboard.page";
 
 @Component({
   selector: 'app-dashboard-visible',

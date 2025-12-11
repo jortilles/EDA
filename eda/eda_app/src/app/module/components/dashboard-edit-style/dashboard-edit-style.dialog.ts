@@ -12,9 +12,7 @@ import { SliderModule } from 'primeng/slider';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { CommonModule } from '@angular/common'; 
-
-
-import { DashboardPage } from "app/module/pages/dashboard/dashboard.page";
+import { DashboardPage } from "../../pages/dashboard/dashboard.page";
 
 @Component({
   selector: 'app-dashboard-edit-style',

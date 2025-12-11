@@ -8,7 +8,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { SelectButtonModule } from "primeng/selectbutton";
 import * as _ from 'lodash';
 import { IconComponent } from "../../../shared/components/icon/icon.component";
-import { DashboardPage } from "app/module/pages/dashboard/dashboard.page";
+import { DashboardPage } from "../../pages/dashboard/dashboard.page";
 
 
 @Component({
