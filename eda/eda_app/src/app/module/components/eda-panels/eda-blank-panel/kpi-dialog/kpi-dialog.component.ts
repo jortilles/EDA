@@ -10,7 +10,7 @@ import { KpiConfig } from '../panel-charts/chart-configuration-models/kpi-config
 
 @Component({
     selector: 'app-kpi-dialog',
-    templateUrl: './kpi-dialog-v2.component.html',
+    templateUrl: './kpi-dialog.component.html',
     styleUrls: ['./kpi-dialog.component.css']
 })
 
@@ -59,7 +59,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
             title: $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
         });
 
-        this.dialog.style = { width: '80%', height: '70%', top: "-4em", left: '1em' };
+        this.dialog.style = { width: '80%', height: '75%', top: "-4em", left: '1em' };
 
         if (this.userService.user.name == "edaanonim") {
             this.canIRunAlerts = false;

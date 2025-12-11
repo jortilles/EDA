@@ -12,7 +12,7 @@ import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-co
 
 @Component({
     selector: 'app-chart-dialog',
-    templateUrl: './chart-dialog-v2.component.html'
+    templateUrl: './chart-dialog.component.html'
 })
 
 export class ChartDialogComponent extends EdaDialogAbstract  {

@@ -9,7 +9,7 @@ import { layerGroup } from 'leaflet';
 
 @Component({
   selector: 'app-mapedit-dialog',
-  templateUrl: './mapedit-dialog-v2.component.html'
+  templateUrl: './mapedit-dialog.component.html'
 })
 
 export class MapEditDialogComponent extends EdaDialogAbstract {

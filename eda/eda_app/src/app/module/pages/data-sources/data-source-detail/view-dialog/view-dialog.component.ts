@@ -4,8 +4,7 @@ import { AlertService, SpinnerService, DashboardService } from '@eda/services/se
 
 @Component({
   selector: 'app-view-dialog',
-  templateUrl: './view-dialog-v2.component.html',
-  //styleUrls: ['./view-dialog.component.css']
+  templateUrl: './view-dialog.component.html',
 })
 
 export class ViewDialogComponent implements OnInit {
