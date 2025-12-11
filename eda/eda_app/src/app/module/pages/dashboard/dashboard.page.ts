@@ -10,8 +10,8 @@ import { MessageModule } from 'primeng/message';
 import { CompactType, DisplayGrid, GridsterComponent, GridsterConfig, GridsterItem, GridsterItemComponent, GridType } from 'angular-gridster2';
 import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, StyleProviderService, IGroup, DashboardStyles, ChartUtilsService, UserService } from '@eda/services/service.index';
 import { EdaPanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index';
-import { DashboardSidebarComponent } from '../components/dashboard-sidebar/dashboard-sidebar.component';
-import { GlobalFilterV2Component } from '../components/global-filter/global-filter.component';
+import { DashboardSidebarComponent } from './dashboard-sidebar/dashboard-sidebar.component';
+import { GlobalFilterComponent } from '@eda/components/global-filter/global-filter.component'; 
 import { EdaBlankPanelComponent, IPanelAction } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { ComponentsModule } from '@eda/components/components.module';
 import { FormsModule } from '@angular/forms';
@@ -23,14 +23,14 @@ import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.
 @Component({
   selector: 'app-v2-dashboard-page',
   standalone: true,
-  imports: [FormsModule, GridsterComponent, GridsterItemComponent, DashboardSidebarComponent, GlobalFilterV2Component, ComponentsModule, ButtonModule, DropdownModule, MenuModule, MessageModule, FocusOnShowDirective,CommonModule],
+  imports: [FormsModule, GridsterComponent, GridsterItemComponent, DashboardSidebarComponent, GlobalFilterComponent, ComponentsModule, ButtonModule, DropdownModule, MenuModule, MessageModule, FocusOnShowDirective,CommonModule],
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.css'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class DashboardPageV2 implements OnInit {
+export class DashboardPage implements OnInit {
   @ViewChild(DashboardSidebarComponent) sidebar!: DashboardSidebarComponent;
-  @ViewChild(GlobalFilterV2Component) globalFilter: GlobalFilterV2Component;
+  @ViewChild(GlobalFilterComponent) globalFilter: GlobalFilterComponent;
   @ViewChildren(EdaBlankPanelComponent) edaPanels: QueryList<EdaBlankPanelComponent>;
   
   private sidebarService = inject(DashboardSidebarService)
