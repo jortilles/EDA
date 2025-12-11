@@ -47,7 +47,7 @@ export interface IPanelAction {
 
 @Component({
     selector: 'eda-blank-panel',
-    templateUrl: './eda-blank-panel-v2.component.html',
+    templateUrl: './eda-blank-panel.component.html',
     styleUrls: ['./eda-blank-panel.component.css'],
 })
 export class EdaBlankPanelComponent implements OnInit {
