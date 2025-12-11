@@ -1,0 +1,65 @@
+<eda-dialog2 [display]="display"
+  i18n-header="@@importPanelsTitle" header="Importar paneles" width="600px" height="auto"
+  [disableApply]="disableApply()"
+  (apply)="onApply()"
+  (close)="onClose()">
+
+  <div content class="p-6">
+    <div class="grid space-y-4">
+      @if (!displayMapper) {
+        <div class="mt-6">
+          <div class="flex-1 flex flex-col">
+            <label for="dashboard" class="mb-1">Dashboard</label>
+              <p-dropdown
+                id="dashboard"
+                [(ngModel)]="_import.fromDashboard"
+                [options]="dashboardOptions"
+                optionLabel="config.title"
+                [filter]="true"
+                filterBy="config.title"
+                [showClear]="true"
+                [style]="{'minWidth': '100%'}"
+                (onChange)="onSelectDashboard()"
+                appendTo="body"
+              >
+                <ng-template pTemplate="selectedItem" let-selectedOption>
+                  <div class="flex align-items-center gap-2">
+                    <div>{{ selectedOption?.config?.title }}</div>
+                  </div>
+                </ng-template>
+                <ng-template let-option pTemplate="item">
+                  <div class="flex align-items-center gap-2">
+                    <div>{{ option?.config?.title }}</div>
+                  </div>
+                </ng-template>
+              </p-dropdown>
+          </div>
+        </div>
+
+        <div class="mt-6">
+           <eda-pick-list [config]="pickListConfig" [availableItems]="dashboardPanels" (selectionChange)="onPanelsChange($event)"></eda-pick-list>
+        </div>
+      } @else {
+        <!-- Tabs -->
+        <div class="mb-6 w-full grid grid-cols-4">
+          @for (panel of _import.panelsRef; track panel.id) {
+            <button (click)="setActiveTab(panel.id)" class="py-2 px-4 text-center transition-colors"
+              [class.bg-slate-100]="activeTab === panel.id" [class.border-b-2]="activeTab === panel.id"
+              [class.border-primary]="activeTab === panel.id" [class.font-medium]="activeTab === panel.id">
+              <span>{{panel.label}}</span>
+            </button>
+          }
+        </div>
+
+        @if (activeTab) {
+          <eda-filter-mapper [panel]="panelsFilters" [dashboardFilter]="dashboardFilters"  [dashboard]="dashboard" [panelFilters]="_filterMapper[activeTab].panelFilters" [dashboardFilters]="_filterMapper[activeTab].dashboardFilters" [(connections)]="_filterMapper[activeTab].connections" >
+            <div header>
+              <h1 class="text-2xl font-bold text-gray-900 mb-1" i18n="@@mapFilters">Mapear Filtros </h1>
+              <p class="text-gray-600 mb-3" i18n="@@connectDashboardPanel">Conecta los filtros entre el dashboard y el panel</p>
+            </div>
+          </eda-filter-mapper>
+        }
+      }
+    </div>
+  </div>
+</eda-dialog2>

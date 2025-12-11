@@ -1,0 +1,16 @@
+<eda-dialog2 [display]="display"
+  header="Mapear Filtros" width="40vw" height="80vh"
+  [disableApply]="disableApply()"
+  (apply)="onApply()"
+  (close)="onClose()">
+
+  <div content class="p-6">
+    <div class="grid space-y-4">
+        <eda-filter-mapper [panelFilters]="_filterMapper.panelFilters" [dashboardFilters]="_filterMapper.dashboardFilters" [(connections)]="_filterMapper.connections">
+        <div header>
+            <p class="text-gray-600 mb-3" i18n="@@connectDashboardPanel">Conecta los filtros entre el dashboard y el panel</p>
+        </div>
+        </eda-filter-mapper>
+    </div>
+  </div>
+</eda-dialog2>

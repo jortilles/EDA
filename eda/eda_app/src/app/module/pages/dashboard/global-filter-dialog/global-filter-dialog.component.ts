@@ -8,7 +8,7 @@ import * as _ from 'lodash';
 @Component({
     selector: 'app-global-filter-dialog',
     templateUrl: './global-filter-dialog.component.html',
-    styleUrls: ['../dashboard.component.css']
+    styleUrls: ['../dashboard.page.css']
 })
 export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     @Input() globalFilter: any;

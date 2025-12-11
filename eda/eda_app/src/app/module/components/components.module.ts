@@ -5,7 +5,7 @@ import { CoreModule } from '../../core/core.module';
 import { SharedModule } from '../../shared/shared.module';
 import { EdaBlankPanelComponent } from './eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { PanelChartComponent} from './eda-panels/eda-blank-panel/panel-charts/panel-chart.component'
-import { EbpChatgptComponent } from '../pages/v2/components/ebp-chatgpt/ebp-chatgpt.component'
+import { EbpChatgptComponent } from './ebp-chatgpt/ebp-chatgpt.component';
 
 // Component
 import {
@@ -55,8 +55,8 @@ import { DragDropComponent } from './drag-drop/drag-drop.component';
 import { CommonModule } from '@angular/common';
 import { PrimengModule } from 'app/core/primeng.module';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
-import { FilterMapperDialog } from '../pages/v2/components/filter-mapper-dialog/filter-mapper.dialog';
-import { FilterMapperComponent } from '../pages/v2/components/filter-mapper/filter-mapper.component';
+import { FilterMapperDialog } from './filter-mapper-dialog/filter-mapper.dialog';
+import { FilterMapperComponent } from './filter-mapper/filter-mapper.component';
 
 
 @NgModule({
