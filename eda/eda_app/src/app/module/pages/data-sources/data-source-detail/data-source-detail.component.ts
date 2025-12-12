@@ -16,6 +16,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 //standalone pruebas
+import { TableEditRelationsDialogComponent } from './table-edit-relations-dialog/table-edit-relations-dialog.component';
 import { ColumnValueListDialogComponent } from './column-value-list-dialog/column-value-list-dialog.component';
 import { TableRelationsDialogComponent } from './table-relations-dialog/table-relations-dialog.component';
 import { ColumnPermissionDialogComponent } from './column-permissions-dialog/column-permission-dialog.component';
@@ -39,6 +40,7 @@ const ANGULAR_MODULES = [
 
 // Standalone Components
 const STANDALONE_COMPONENTS = [  
+  TableEditRelationsDialogComponent,
   ColumnValueListDialogComponent,
   TableRelationsDialogComponent,
   ColumnPermissionDialogComponent,

@@ -38,7 +38,6 @@ import { PrimengModule } from 'app/core/primeng.module';
     ],
     declarations: [
         AccountSettingsComponent,
-        TableEditRelationsDialogComponent,
         DashboardFilterDialogComponent,
         AlertsManagementComponent,
         DashboardMailDialogComponent,
