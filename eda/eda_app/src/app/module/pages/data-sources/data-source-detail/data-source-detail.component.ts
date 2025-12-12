@@ -16,9 +16,15 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 //standalone pruebas
-import { ViewDialogComponent } from './view-dialog/view-dialog.component';
+import { SecurityDialogComponent } from './security-dialog/security-dialog.component';
+import { AddCsvComponent } from '../data-source-list/addCSV/add-csv.component';
+import { TablePermissionDialogComponent } from './table-permissions-dialog/table-permission-dialog.component';
 import { ViewDialogEditionComponent } from './view-dialog-edition/view-dialog-edition.component';
+import { ViewDialogComponent } from './view-dialog/view-dialog.component';
 import { AddTagComponent } from '../data-source-list/add-tag/add-tag.component';
+
+
+
 @Component({
   standalone: true,
   selector: 'app-data-source-detail',
@@ -27,6 +33,7 @@ import { AddTagComponent } from '../data-source-list/add-tag/add-tag.component';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     PrimengModule,FormsModule,ReactiveFormsModule,
+    TablePermissionDialogComponent, AddCsvComponent, SecurityDialogComponent,
     ViewDialogComponent, ViewDialogEditionComponent, AddTagComponent,
   ]
 })

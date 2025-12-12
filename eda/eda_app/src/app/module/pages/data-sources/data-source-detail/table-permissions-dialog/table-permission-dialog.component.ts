@@ -1,12 +1,13 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { DataSourceService, QueryBuilderService, UserService, GroupService, QueryParams } from "@eda/services/service.index";
-import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent, EdaDialog2Component } from "@eda/shared/components/shared-components.index";
-
+import { Component, EventEmitter, Input, OnInit, Output, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+import { DataSourceService, UserService, GroupService } from "@eda/services/service.index";
+import { EdaDialog, EdaDialog2Component } from "@eda/shared/components/shared-components.index";
+import { CommonModule } from "@angular/common";
 @Component({
     standalone: true,
     selector: 'app-table-permission-dialog',
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './table-permission-dialog.component.html',
-    imports: [EdaDialog2Component]
+    imports: [EdaDialog2Component, CommonModule]
 })
 
 export class TablePermissionDialogComponent implements OnInit {
