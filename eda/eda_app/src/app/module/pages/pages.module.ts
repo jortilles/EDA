@@ -9,19 +9,9 @@ import { GridsterModule } from 'angular-gridster2';
 
 
 // Component
-import { HomeComponent } from './home/home.component';
-import { ProfileComponent } from './profile/profile.component';
 import { AccountSettingsComponent } from './account-settings/account-settings.component';
-import { UsersLlistaComponent } from './users-management/users-list/users-list.component';
-import { UsersFitxaComponent } from './users-management/users-detail/users-detail.component';
-import { GroupListComponent } from './groups-management/group-list/group-list.component';
-import { GroupDetailComponent } from './groups-management/group-detail/group-detail.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
 import { DashboardFilterDialogComponent } from './dashboard/filter-dialog/dashboard-filter-dialog.component';
 import { GlobalFilterDialogComponent } from './dashboard/global-filter-dialog/global-filter-dialog.component';
-import { DataSourcesComponent } from './data-sources/datasource-configuration/data-sources.component';
-import { DsConfigWrapperComponent } from './data-sources/dsconfig-wrapper.component'
-import { DataSourceListComponent } from './data-sources/data-source-list/data-source-list.component';
 import { DataSourceDetailComponent } from './data-sources/data-source-detail/data-source-detail.component';
 import { TableRelationsDialogComponent } from './data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component';
 import { TableEditRelationsDialogComponent } from './data-sources/data-source-detail/table-edit-relations-dialog/table-edit-relations-dialog.component';
@@ -32,13 +22,9 @@ import { ModelPermissionDialogComponent } from './data-sources/data-source-detai
 import { MapDialogComponent } from './data-sources/data-source-detail/mapsDialog/maps-dialog.component';
 import { ViewDialogComponent } from './data-sources/data-source-detail/view-dialog/view-dialog.component';
 import { ViewDialogEditionComponent } from './data-sources/data-source-detail/view-dialog-edition/view-dialog-edition.component';
-import {AddCsvComponent} from './data-sources/data-source-list/addCSV/add-csv.component';
-import { AddTagComponent } from './data-sources/data-source-list/add-tag-dialog/add-tag.component';
-import { ModelSettingsComponent } from './model-settings/model-settings.component';
 import { CacheDialogComponent } from './data-sources/data-source-detail/cache-dialog/cache-dialog.component';
 import { SecurityDialogComponent } from './data-sources/data-source-detail/security-dialog/security-dialog.component';
 import { AlertsManagementComponent } from './alerts-management/alerts-management.component';
-import { MailManagementComponent } from './mail-management/mail-management.component';
 import {DashboardMailDialogComponent} from './dashboard/email-dialog/dashboard-mail-dialog.component';
 import { UrlsActionComponent } from './dashboard/urls-action/urls-action.component';
 
@@ -49,7 +35,6 @@ import { CalculatedColumnDialogComponent } from './data-sources/data-source-deta
 import { UploadFileComponent } from './data-sources/data-source-detail/upload-file/upload-file.component';
 import { SaveAsDialogComponent } from './dashboard/saveAsDialog/save-as-dialog.component';
 import { EditStylesDialogComponent } from './dashboard/edit-styles-dialog/edit-styles.dialog.component';
-import { GlobalFilterComponent } from './dashboard/global-filter/global-filter.component';
 import { PrimengModule } from 'app/core/primeng.module';
 
 
@@ -59,27 +44,18 @@ import { PrimengModule } from 'app/core/primeng.module';
         PrimengModule,
         CoreModule,
         // GridsterModule.forRoot(),
+                ComponentsModule,
+
         GridsterModule,
         SharedModule,
-        ComponentsModule,
         PAGES_ROUTES,
     ],
     declarations: [
-        HomeComponent,
-        DashboardComponent,
         AccountSettingsComponent,
-        ProfileComponent,
-        UsersLlistaComponent,
-        UsersFitxaComponent,
-        DataSourcesComponent,
-        DataSourceListComponent,
         DataSourceDetailComponent,
         TableRelationsDialogComponent,
         TableEditRelationsDialogComponent,
-        GroupListComponent,
-        GroupDetailComponent,
         DashboardFilterDialogComponent,
-        GlobalFilterComponent,
         ColumnPermissionDialogComponent,
         ColumnValueListDialogComponent,
         TablePermissionDialogComponent,
@@ -89,14 +65,9 @@ import { PrimengModule } from 'app/core/primeng.module';
         UploadFileComponent,
         ViewDialogComponent,
         ViewDialogEditionComponent,
-        AddCsvComponent,
-        AddTagComponent,
-        DsConfigWrapperComponent,
-        ModelSettingsComponent,
         CacheDialogComponent,
         SecurityDialogComponent,
         AlertsManagementComponent,
-        MailManagementComponent,
         DashboardMailDialogComponent,
         SaveAsDialogComponent,
         EditStylesDialogComponent,
