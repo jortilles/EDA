@@ -15,6 +15,9 @@ import { MsalModule } from '@azure/msal-angular';
 import { PublicClientApplication } from '@azure/msal-browser';
 import { MICROSOFT_ID, MICROSOFT_AUTHORITY, MICROSOFT_REDIRECT_URI } from '@eda/configs/config';
 
+
+import { URL_SERVICES } from '../src/app/config/config';
+
 registerLocaleData(localeEs);
 registerLocaleData(localeCa);
 registerLocaleData(localePl);
@@ -24,28 +27,49 @@ const isIE =
   window.navigator.userAgent.indexOf("MSIE ") > -1 ||
   window.navigator.userAgent.indexOf("Trident/") > -1;
 
+const providers = [...(appConfig.providers || [])];
+
+
+const API = URL_SERVICES;
+
+async function controlMsal() {
+  try {
+    const resp = await fetch(`${API}/auth/typeLogin`);
+    const data = await resp.json();
+    const loginMethods = data?.response?.options?.elements || [];
+
+    if(loginMethods.includes('microsoft')) {
+      providers.push(
+        importProvidersFrom(
+          MsalModule.forRoot(
+            new PublicClientApplication({
+              auth: {
+                clientId: MICROSOFT_ID,
+                authority: MICROSOFT_AUTHORITY,
+                redirectUri: MICROSOFT_REDIRECT_URI
+              },
+              cache: {
+                cacheLocation: 'localStorage',
+                storeAuthStateInCookie: isIE
+              }
+            }), 
+            null, 
+            null
+          )
+        )
+      );
+    }
+    
+  } catch (error) {
+    console.error('error: ', error);
+  }
+}
+
 bootstrapApplication(AppComponent, {
   ...appConfig,
-  providers: [
-    ...(appConfig.providers || []),
-    importProvidersFrom(
-      MsalModule.forRoot(
-        new PublicClientApplication({
-          auth: {
-            clientId: MICROSOFT_ID,
-            authority: MICROSOFT_AUTHORITY,
-            redirectUri: MICROSOFT_REDIRECT_URI
-          },
-          cache: {
-            cacheLocation: 'localStorage',
-            storeAuthStateInCookie: isIE
-          }
-        }), 
-        null, 
-        null
-      )
-    )
-  ],
+  providers
 
 })
   .catch(err => console.error(err));
+
+controlMsal();
