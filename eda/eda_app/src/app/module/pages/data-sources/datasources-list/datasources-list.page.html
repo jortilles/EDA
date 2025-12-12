@@ -41,7 +41,7 @@
       <eda-icon name="chevron-left"></eda-icon>
     </button>
     <span class="font-semibold"> <span i18n="@@tablePage">Página</span> {{ currentPage }} <span i18n="@@tablePageOf">de</span> {{ totalPages() }}</span>
-    <button (click)="setPage(currentPage + 1)" [disabled]="currentPage === totalPages()" class="px-4 py-2 font-semibold rounded">
+    <button (click)="setPage(currentPage + 1)"  [disabled]="currentPage === totalPages()" class="px-4 py-2 font-semibold rounded">
       <eda-icon name="chevron-right"></eda-icon>
     </button>
   </div>

@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { PagesV3Component } from './pages-v3';
+import { DataSourceListComponent } from './data-sources/data-source-list/data-source-list.component';
 import { VerifyTokenGuard } from '@eda/services/service.index';
 import { RoleGuard } from '@eda/services/guards/role-guard.guard';
 export const pagesV3Routes: Routes = [
@@ -9,11 +10,11 @@ export const pagesV3Routes: Routes = [
     children: [
       {
         path: '',
-        loadComponent: () => import('./home/home.page').then(c => c.HomePageV2)
+        loadComponent: () => import('./home/home.page').then(c => c.HomePage)
       },
       {
         path: 'home',
-        loadComponent: () => import('./home/home.page').then(c => c.HomePageV2)
+        loadComponent: () => import('./home/home.page').then(c => c.HomePage)
       },
       {
         path: 'about',
@@ -45,7 +46,7 @@ export const pagesV3Routes: Routes = [
         path: 'admin/data-source',
         data: { admin: false, datasource: true },
         canActivate: [RoleGuard],
-        loadComponent: () => import('./data-sources/datasource-list/datasource-list.page').then(c => c.DataSourceListPage)
+        loadComponent: () => import('./data-sources/datasources-list/datasources-list.page').then(c => c.DataSourceListPage)
       },
       {
         path: 'admin/data-source/new',
@@ -67,7 +68,12 @@ export const pagesV3Routes: Routes = [
         path: 'logs',
         loadComponent: () => import('./logs/logs.component').then(c => c.LogsComponent)
       },
-
+      {
+        path: 'data-source/:id',
+        component: DataSourceListComponent,
+        canActivate: [VerifyTokenGuard],
+        runGuardsAndResolvers: 'paramsChange'
+      },
     ]
   }
 ];

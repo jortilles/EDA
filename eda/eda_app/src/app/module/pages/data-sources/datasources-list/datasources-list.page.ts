@@ -10,8 +10,8 @@ import * as _ from 'lodash';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-datasource-list',
-  templateUrl: './datasource-list.page.html',
+  selector: 'app-datasources-list',
+  templateUrl: './datasources-list.page.html',
   standalone: true,
   imports: [SharedModule, CommonModule, FormsModule, IconComponent],
 })

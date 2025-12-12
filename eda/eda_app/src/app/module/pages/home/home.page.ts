@@ -17,7 +17,7 @@ import { CommonModule } from '@angular/common';
   imports: [FormsModule, NgTemplateOutlet, IconComponent, CommonModule],
   templateUrl: './home.page.html'
 })
-export class HomePageV2 implements OnInit {
+export class HomePage implements OnInit {
   private createDashboardService = inject(CreateDashboardService);
   private dashboardService = inject(DashboardService);
   private alertService = inject(AlertService);

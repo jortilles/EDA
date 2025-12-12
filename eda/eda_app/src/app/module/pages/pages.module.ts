@@ -11,8 +11,6 @@ import { GridsterModule } from 'angular-gridster2';
 // Component
 import { AccountSettingsComponent } from './account-settings/account-settings.component';
 import { DashboardFilterDialogComponent } from './dashboard/filter-dialog/dashboard-filter-dialog.component';
-import { GlobalFilterDialogComponent } from './dashboard/global-filter-dialog/global-filter-dialog.component';
-import { DataSourceDetailComponent } from './data-sources/data-source-detail/data-source-detail.component';
 import { TableRelationsDialogComponent } from './data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component';
 import { TableEditRelationsDialogComponent } from './data-sources/data-source-detail/table-edit-relations-dialog/table-edit-relations-dialog.component';
 import { ColumnPermissionDialogComponent } from './data-sources/data-source-detail/column-permissions-dialog/column-permission-dialog.component';
@@ -52,7 +50,6 @@ import { PrimengModule } from 'app/core/primeng.module';
     ],
     declarations: [
         AccountSettingsComponent,
-        DataSourceDetailComponent,
         TableRelationsDialogComponent,
         TableEditRelationsDialogComponent,
         DashboardFilterDialogComponent,
