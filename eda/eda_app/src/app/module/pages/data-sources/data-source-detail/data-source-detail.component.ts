@@ -17,6 +17,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 //standalone pruebas
 import { ViewDialogComponent } from './view-dialog/view-dialog.component';
+import { ViewDialogEditionComponent } from './view-dialog-edition/view-dialog-edition.component';
 
 @Component({
   standalone: true,
@@ -25,10 +26,8 @@ import { ViewDialogComponent } from './view-dialog/view-dialog.component';
   styleUrls: ['../data-source-list/data-source-list.component.css'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
-    PrimengModule,     // tus módulos de PrimeNG
-    FormsModule,       // << necesario para [(ngModel)]
-    ReactiveFormsModule // << opcional si usas FormGroup/FormControl
-    , ViewDialogComponent
+    PrimengModule,FormsModule,ReactiveFormsModule,
+    ViewDialogComponent, ViewDialogEditionComponent,
   ]
 })
 export class DataSourceDetailComponent implements OnInit, OnDestroy {
