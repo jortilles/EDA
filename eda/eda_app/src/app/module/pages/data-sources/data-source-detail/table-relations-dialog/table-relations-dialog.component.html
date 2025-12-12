@@ -25,14 +25,16 @@
 
       <div class="mt-4">
         <ul>
-          <li *ngFor="let sourceCol of selectedSourceCols; let i=index">
-            <i class="fa fa-close" style="color: #c0555e;"
-              (click)="deleteRelation(i)">
-            </i>
-            &nbsp;&nbsp;
-            {{controller.params.table.description}}.{{sourceCol.display_name.default}} ⇴
-            {{targetTable}}.{{selectedTargetCols[i].display_name.default}}
-          </li>
+          @for(sourceCol of selectedSourceCols; track $index){
+            <li>
+              <i class="fa fa-close" style="color: #c0555e;"
+                (click)="deleteRelation($index)">
+              </i>
+              &nbsp;&nbsp;
+              {{controller.params.table.description}}.{{sourceCol.display_name.default}} ⇴
+              {{targetTable}}.{{selectedTargetCols[$index].display_name.default}}
+            </li>
+          }
         </ul>
       </div>
     </form>

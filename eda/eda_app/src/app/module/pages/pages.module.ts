@@ -40,7 +40,6 @@ import { PrimengModule } from 'app/core/primeng.module';
         AccountSettingsComponent,
         TableEditRelationsDialogComponent,
         DashboardFilterDialogComponent,
-        ColumnValueListDialogComponent,
         AlertsManagementComponent,
         DashboardMailDialogComponent,
         SaveAsDialogComponent,

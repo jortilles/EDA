@@ -3,12 +3,16 @@ import {SelectItem} from 'primeng/api';
 import {EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract} from '@eda/shared/components/shared-components.index';
 import { DataSourceService, QueryBuilderService, UserService, GroupService, QueryParams } from "@eda/services/service.index";
 import {ValueListSource} from '@eda/models/data-source-model/data-source-models';
-import { AlertService } from '@eda/services/service.index';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DropdownModule } from 'primeng/dropdown';
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 
 @Component({
+    standalone: true,
     selector: 'app-column-value-list-dialog',
     templateUrl: './column-value-list-dialog.component.html',
-    styleUrls: ['./column-value-list-dialog.component.css']
+    styleUrls: ['./column-value-list-dialog.component.css'],
+    imports: [FormsModule, ReactiveFormsModule, DropdownModule, EdaDialog2Component]
 })
 
 export class ColumnValueListDialogComponent extends EdaDialogAbstract {
@@ -50,14 +54,6 @@ export class ColumnValueListDialogComponent extends EdaDialogAbstract {
         });
         this.dialog.style = { width: '40%', height: '50%', top:"-4em", left:'1em' };
 
-/*
-
-        this.form = this.formBuilder.group({
-            sourceCol: [null, Validators.required],
-            targetTable: [null, Validators.required],
-            targetCol: [null, Validators.required]
-        }); //, {validators: this.checkOrder('sourceCol', 'targetTable')});
-        */
     }
 
     onShow(): void {
