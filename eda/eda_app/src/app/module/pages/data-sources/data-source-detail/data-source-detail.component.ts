@@ -18,7 +18,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 //standalone pruebas
 import { ViewDialogComponent } from './view-dialog/view-dialog.component';
 import { ViewDialogEditionComponent } from './view-dialog-edition/view-dialog-edition.component';
-
+import { AddTagComponent } from '../data-source-list/add-tag/add-tag.component';
 @Component({
   standalone: true,
   selector: 'app-data-source-detail',
@@ -27,7 +27,7 @@ import { ViewDialogEditionComponent } from './view-dialog-edition/view-dialog-ed
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     PrimengModule,FormsModule,ReactiveFormsModule,
-    ViewDialogComponent, ViewDialogEditionComponent,
+    ViewDialogComponent, ViewDialogEditionComponent, AddTagComponent,
   ]
 })
 export class DataSourceDetailComponent implements OnInit, OnDestroy {
