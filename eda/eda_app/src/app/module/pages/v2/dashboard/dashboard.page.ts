@@ -182,14 +182,29 @@ export class DashboardPageV2 implements OnInit {
       minRows: 30, // Se puede optimizar para diferentes pantallas, aún así, con 30 funciona bien
       maxRows: 300,
       margin: 2, // Reduce el margen entre celdas
-      fixedRowHeight: 30, // Reduce el tamaño de la altura de las filas
-      fixedColWidth: 50, // Ajusta también el ancho de las columnas
+      fixedRowHeight: undefined, // Reduce el tamaño de la altura de las filas
+      fixedColWidth: undefined, // Ajusta también el ancho de las columnas
       disableScrollHorizontal: true, // Desactiva scroll horizontal si es necesario
       disableScrollVertical: true, // Desactiva scroll vertical si es necesario
       itemChangeCallback: (item: GridsterItem) => this.onItemChange(item),
       itemResizeCallback: (item: GridsterItem) => this.onItemChange(item)
     };
+      this.updateSquareCells();
+      window.addEventListener('resize', () => this.updateSquareCells());
+
     }
+
+    private  updateSquareCells() {
+    const container = document.querySelector('gridster') as HTMLElement;
+    if (!container) return;
+
+    const cols = this.gridsterOptions.minCols!;
+    const width = container.clientWidth;
+    const cellSize = Math.floor(width / cols);
+
+    this.gridsterOptions.fixedRowHeight = cellSize;
+    this.gridsterOptions.api?.optionsChanged();
+  }
 
   public async loadDashboard() {
     const dashboardId = this.route.snapshot.paramMap.get('id');
