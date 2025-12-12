@@ -7,6 +7,8 @@ import { CalendarModule } from 'primeng/calendar';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { SelectButtonModule } from "primeng/selectbutton";
 import { InputSwitchModule } from 'primeng/inputswitch';
+import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
+
 
 import * as _ from 'lodash';
 import { EdaDialog } from "@eda/shared/components/shared-components.index";
@@ -16,7 +18,7 @@ import { DashboardPage } from "../../pages/dashboard/dashboard.page";
 @Component({
   selector: 'app-dashboard-mail-config',
   standalone: true,
-  imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule, FloatLabelModule,CalendarModule,InputSwitchModule],
+  imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule, FloatLabelModule,CalendarModule,InputSwitchModule,EdaDialog2Component],
   templateUrl: './dashboard-mail-config.modal.html',
 })
 

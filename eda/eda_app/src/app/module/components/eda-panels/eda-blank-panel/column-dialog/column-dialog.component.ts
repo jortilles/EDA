@@ -1,6 +1,11 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgClass } from '@angular/common';
+import { TooltipModule } from 'primeng/tooltip'; 
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+
 import { SelectItem } from 'primeng/api';
-import { EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract, EdaDatePickerComponent } from '@eda/shared/components/shared-components.index';
+import { EdaDialog, EdaDialogCloseEvent, EdaDialog2Component, EdaDialogAbstract, EdaDatePickerComponent } from '@eda/shared/components/shared-components.index';
 import {
     DashboardService,
     FilterType,
@@ -14,7 +19,10 @@ import { aggTypes } from 'app/config/aggretation-types';
 import * as _ from 'lodash';
 
 @Component({
+    standalone: true,
+    imports: [EdaDialog2Component, NgClass,TooltipModule, FormsModule, ReactiveFormsModule,CommonModule],
     selector: 'app-column-dialog',
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './column-dialog.component.html',
     styleUrls: ['../eda-blank-panel.component.css']
 })

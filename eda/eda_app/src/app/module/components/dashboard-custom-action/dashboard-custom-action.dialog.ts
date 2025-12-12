@@ -9,13 +9,13 @@ import { SelectButtonModule } from "primeng/selectbutton";
 import * as _ from 'lodash';
 import { IconComponent } from "../../../shared/components/icon/icon.component";
 import { DashboardPage } from "../../pages/dashboard/dashboard.page";
-
+import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 
 @Component({
   selector: 'app-dashboard-custom-action',
   standalone: true,
   templateUrl: './dashboard-custom-action.dialog.html',
-imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule, FloatLabelModule, IconComponent],
+imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule, FloatLabelModule, IconComponent, EdaDialog2Component],
 })
 export class DashboardCustomActionDialog{
   @Output() close: EventEmitter<any> = new EventEmitter<any>();

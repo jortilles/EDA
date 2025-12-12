@@ -8,12 +8,13 @@ import { DropdownModule } from "primeng/dropdown";
 import { lastValueFrom } from "rxjs/internal/lastValueFrom";
 import { FilterMapperComponent } from "../filter-mapper/filter-mapper.component";
 import { EdaPanel } from "@eda/models/model.index";
+import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 
 @Component({
   selector: 'app-filter-mapper-dialog',
   standalone: true,
   templateUrl: './filter-mapper.dialog.html',
-  imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule, DropdownModule, FilterMapperComponent]
+  imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule, DropdownModule, FilterMapperComponent, EdaDialog2Component]
 })
 
 export class FilterMapperDialog implements OnInit {

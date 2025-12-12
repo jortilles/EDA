@@ -1,4 +1,5 @@
 import { AfterViewChecked, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 
 // Modulos necesarios
 import { SharedModule } from "@eda/shared/shared.module";
@@ -11,7 +12,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-ebp-chatgpt',
   standalone: true,
-  imports: [SharedModule, FormsModule, CommonModule],
+  imports: [SharedModule, FormsModule, CommonModule,EdaDialog2Component],
   templateUrl: './ebp-chatgpt.component.html',
   styleUrl: './ebp-chatgpt.component.css'
 })

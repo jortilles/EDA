@@ -22,7 +22,7 @@ import {
     selector:'app-dependent-filters',
     standalone: true,
     templateUrl: './dependent-filters.component.html',
-    imports: [SharedModule, ReactiveFormsModule, SelectButtonModule, CommonModule, GridsterModule],
+    imports: [SharedModule, ReactiveFormsModule, SelectButtonModule, CommonModule, GridsterModule,EdaDialog2Component],
     styleUrls: ["./dependent-filters.component.css"],
 
 })

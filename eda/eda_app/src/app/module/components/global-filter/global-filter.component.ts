@@ -1,4 +1,4 @@
-import { ViewChild, Component, inject, Input, OnInit } from "@angular/core";
+import { ViewChild, Component, inject, Input, OnInit, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import { AlertService, DashboardService, GlobalFiltersService, QueryBuilderService, UserService } from "@eda/services/service.index";
 import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
 import { EdaDialogCloseEvent, EdaDialogController } from "@eda/shared/components/shared-components.index";
@@ -17,11 +17,24 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import '@angular/localize/init';
 
 
+// pruebas
+import { DropdownModule } from 'primeng/dropdown';       // Si usas <p-dropdown>
+import { InputSwitchModule } from 'primeng/inputswitch'; // Si usas <p-inputSwitch>
+import { ScrollPanelModule } from 'primeng/scrollpanel'; // Si usas <p-scrollPanel>
+
+
 @Component({
     selector: 'app-v2-global-filter',
     templateUrl: './global-filter.component.html',
     standalone: true,
-    imports: [FormsModule, MultiSelectModule, IconComponent, SharedModule, CommonModule, AutoCompleteModule],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    imports: [FormsModule, MultiSelectModule, IconComponent, SharedModule, CommonModule, AutoCompleteModule,
+
+            DropdownModule,
+    InputSwitchModule,
+    ScrollPanelModule
+
+    ],
     styleUrls: ['./global-filter.component.css']
 })
 export class GlobalFilterComponent implements OnInit {

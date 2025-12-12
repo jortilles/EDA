@@ -2,15 +2,17 @@ import { AlertService } from './../../../../../services/alerts/alert.service';
 import { SpinnerService } from './../../../../../services/shared/spinner.service';
 import { SelectItem } from 'primeng/api';
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
+import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent, EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { NgxCsvParser } from 'ngx-csv-parser';
 import { AddTableService } from '@eda/services/api/createTable.service';
 
 
 @Component({
+  standalone: true,
   selector: 'app-add-csv-dialog',
   templateUrl: './add-csv.component.html',
-  styleUrls: ['./add-csv.component.css']
+  styleUrls: ['./add-csv.component.css'],
+  imports: [EdaDialog2Component]
 })
 
 export class AddCsvComponent implements OnInit {

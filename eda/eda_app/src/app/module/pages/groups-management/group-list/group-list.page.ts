@@ -10,6 +10,7 @@ import { IGroup } from '@eda/services/service.index';
 import * as _ from 'lodash';
 import Swal from 'sweetalert2';
 import { PickListModule } from "primeng/picklist";
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 
 type Group = {
   _id?: string;
@@ -24,7 +25,7 @@ type Group = {
   selector: 'app-group-list',
   templateUrl: './group-list.page.html',
   standalone: true,
-  imports: [SharedModule, CommonModule, FormsModule, IconComponent, PickListModule],
+  imports: [SharedModule, CommonModule, FormsModule, IconComponent, PickListModule, EdaDialog2Component],
 })
 export class GroupListPage implements OnInit {
   private groupService = inject(GroupService);

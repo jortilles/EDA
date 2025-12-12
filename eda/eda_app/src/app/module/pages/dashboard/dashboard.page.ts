@@ -23,7 +23,8 @@ import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.
 @Component({
   selector: 'app-v2-dashboard-page',
   standalone: true,
-  imports: [FormsModule, GridsterComponent, GridsterItemComponent, DashboardSidebarComponent, GlobalFilterComponent, ComponentsModule, ButtonModule, DropdownModule, MenuModule, MessageModule, FocusOnShowDirective,CommonModule],
+  imports: [FormsModule, GridsterComponent, GridsterItemComponent, DashboardSidebarComponent, EdaBlankPanelComponent,
+     GlobalFilterComponent, ComponentsModule, ButtonModule, DropdownModule, MenuModule, MessageModule, FocusOnShowDirective,CommonModule],
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.css'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

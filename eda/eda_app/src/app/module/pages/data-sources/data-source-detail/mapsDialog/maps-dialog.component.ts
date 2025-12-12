@@ -3,11 +3,13 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { DataSourceService } from '@eda/services/service.index';
 import { SelectItem } from 'primeng/api';
 import { UploadFileComponent } from '../upload-file/upload-file.component';
+import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 
 @Component({
+  standalone: true,
   selector: 'app-map-dialog',
   templateUrl: './maps-dialog.component.html',
-//   styleUrls: ['./maps-dialog.component.css']
+  imports: [EdaDialog2Component]
 })
 
 export class MapDialogComponent implements OnInit {

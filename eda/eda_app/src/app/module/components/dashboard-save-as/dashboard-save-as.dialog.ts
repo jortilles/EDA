@@ -11,7 +11,7 @@ import { SelectButtonModule } from "primeng/selectbutton";
   selector: 'app-dashboard-save-as',
   standalone: true,
   templateUrl: './dashboard-save-as.dialog.html',
-  imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule]
+  imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule,EdaDialog2Component]
 })
 
 export class DashboardSaveAsDialog implements OnInit {

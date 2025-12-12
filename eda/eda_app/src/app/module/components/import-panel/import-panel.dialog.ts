@@ -15,7 +15,7 @@ import { FilterMapperComponent } from "../filter-mapper/filter-mapper.component"
   selector: 'app-import-panel',
   standalone: true,
   templateUrl: './import-panel.dialog.html',
-  imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule, DropdownModule, EdaPickListComponent, FilterMapperComponent]
+  imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule, DropdownModule, EdaPickListComponent, FilterMapperComponent, EdaDialog2Component]
 })
 
 export class ImportPanelDialog implements OnInit {

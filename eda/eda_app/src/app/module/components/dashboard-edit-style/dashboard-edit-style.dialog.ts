@@ -20,7 +20,7 @@ import { DashboardPage } from "../../pages/dashboard/dashboard.page";
   styleUrls: ['./dashboard-edit-style.dialog.css'],
   templateUrl: './dashboard-edit-style.dialog.html',
   imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule,
-    MultiSelectModule, FloatLabelModule, SliderModule, ColorPickerModule,RadioButtonModule,CommonModule]
+    MultiSelectModule, FloatLabelModule, SliderModule, ColorPickerModule,RadioButtonModule,CommonModule, EdaDialog2Component]
 })
 export class DashboardEditStyleDialog {
   @Output() close: EventEmitter<any> = new EventEmitter<any>();

@@ -8,6 +8,7 @@ import { SharedModule } from '@eda/shared/shared.module';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { lastValueFrom } from 'rxjs';
 import Swal from 'sweetalert2';
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import * as _ from 'lodash';
 
 type User = {
@@ -23,7 +24,7 @@ type User = {
   selector: 'app-user-list',
   templateUrl: './user-list.page.html',
   standalone: true,
-  imports: [SharedModule, CommonModule, FormsModule, IconComponent, MultiSelectModule],
+  imports: [SharedModule, CommonModule, FormsModule, IconComponent, MultiSelectModule, EdaDialog2Component],
 })
 export class UserListPage implements OnInit {
   private userService = inject(UserService);

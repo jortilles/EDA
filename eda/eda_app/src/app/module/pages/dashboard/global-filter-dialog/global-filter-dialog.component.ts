@@ -1,14 +1,18 @@
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import { EdaPanel } from "@eda/models/model.index";
 import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, QueryBuilderService, StyleProviderService } from "@eda/services/service.index";
 import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
+import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 import * as _ from 'lodash';
 
 @Component({
+    standalone: true,
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     selector: 'app-global-filter-dialog',
     templateUrl: './global-filter-dialog.component.html',
-    styleUrls: ['../dashboard.page.css']
+    styleUrls: ['../dashboard.page.css'], 
+    imports: [ EdaDialog2Component],
 })
 export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     @Input() globalFilter: any;

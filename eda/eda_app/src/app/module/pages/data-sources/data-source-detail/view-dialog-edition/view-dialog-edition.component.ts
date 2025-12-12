@@ -1,11 +1,14 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { AlertService, DashboardService, DataSourceService, SpinnerService } from '@eda/services/service.index';
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import * as _ from 'lodash';
 
 @Component({
+  standalone: true,
   selector: 'app-view-dialog-edition',
   templateUrl: './view-dialog-edition.component.html',
+  imports: [EdaDialog2Component]
 })
 export class ViewDialogEditionComponent implements OnInit {
 

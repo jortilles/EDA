@@ -14,6 +14,10 @@ import Swal from 'sweetalert2';
 import { PrimengModule } from 'app/core/primeng.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+
+//standalone pruebas
+import { ViewDialogComponent } from './view-dialog/view-dialog.component';
+
 @Component({
   standalone: true,
   selector: 'app-data-source-detail',
@@ -24,6 +28,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     PrimengModule,     // tus módulos de PrimeNG
     FormsModule,       // << necesario para [(ngModel)]
     ReactiveFormsModule // << opcional si usas FormGroup/FormControl
+    , ViewDialogComponent
   ]
 })
 export class DataSourceDetailComponent implements OnInit, OnDestroy {

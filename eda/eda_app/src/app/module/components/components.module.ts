@@ -3,7 +3,6 @@ import { NgModule, CUSTOM_ELEMENTS_SCHEMA  } from '@angular/core';
 // Module
 import { CoreModule } from '../../core/core.module';
 import { SharedModule } from '../../shared/shared.module';
-import { EdaBlankPanelComponent } from './eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { PanelChartComponent} from './eda-panels/eda-blank-panel/panel-charts/panel-chart.component'
 import { EbpChatgptComponent } from './ebp-chatgpt/ebp-chatgpt.component';
 
@@ -15,7 +14,6 @@ import {
     EdaTitlePanelComponent,
     EdaKpiComponent,
     EdadynamicTextComponent,
-    ColumnDialogComponent,
     FilterDialogComponent,
     ChartDialogComponent,
     TableDialogComponent,
@@ -46,7 +44,6 @@ import {
     CumSumAlertDialogComponent,
     EdaSunburstComponent,
     SunburstDialogComponent,
-    WhatIfDialogComponent,
  } from './component.index';
  
 import { SafeUrlPipe } from './eda-panels/eda-title-panel/urlSanitizer.pipe';
@@ -55,7 +52,6 @@ import { DragDropComponent } from './drag-drop/drag-drop.component';
 import { CommonModule } from '@angular/common';
 import { PrimengModule } from 'app/core/primeng.module';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
-import { FilterMapperDialog } from './filter-mapper-dialog/filter-mapper.dialog';
 import { FilterMapperComponent } from './filter-mapper/filter-mapper.component';
 
 
@@ -67,11 +63,9 @@ import { FilterMapperComponent } from './filter-mapper/filter-mapper.component';
         SharedModule,
         IconComponent,
         EbpChatgptComponent,
-        FilterMapperDialog,
         FilterMapperComponent,
     ],
     declarations: [
-        EdaBlankPanelComponent,
         EdaDashboardPanelComponent,
         EdaTitlePanelComponent,
         SafeUrlPipe,
@@ -80,7 +74,6 @@ import { FilterMapperComponent } from './filter-mapper/filter-mapper.component';
         EdaChartComponent,
         EdaKpiComponent,
         EdadynamicTextComponent,
-        ColumnDialogComponent,
         FilterDialogComponent,
         ChartDialogComponent,
         TableDialogComponent,
@@ -112,12 +105,10 @@ import { FilterMapperComponent } from './filter-mapper/filter-mapper.component';
         BubblechartDialog,
         EdaSunburstComponent,
         SunburstDialogComponent,
-        WhatIfDialogComponent,
         SunburstDialogComponent,
         DragDropComponent
     ],
     exports: [
-        EdaBlankPanelComponent,
         EdaDashboardPanelComponent,
         EdaTitlePanelComponent,
         SafeUrlPipe,
@@ -145,7 +136,6 @@ import { FilterMapperComponent } from './filter-mapper/filter-mapper.component';
         BubblechartDialog,
         EdaSunburstComponent,
         SunburstDialogComponent,
-        WhatIfDialogComponent,
         SunburstDialogComponent,
         MapCoordDialogComponent,
         DragDropComponent,

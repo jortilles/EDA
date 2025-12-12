@@ -1,10 +1,18 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { AlertService, SpinnerService, DashboardService } from '@eda/services/service.index';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 
 @Component({
+  standalone: true,
   selector: 'app-view-dialog',
   templateUrl: './view-dialog.component.html',
+    imports: [
+      FormsModule,       // << necesario para [(ngModel)]
+      ReactiveFormsModule, // << opcional si usas FormGroup/FormControl
+      EdaDialog2Component
+    ]
 })
 
 export class ViewDialogComponent implements OnInit {

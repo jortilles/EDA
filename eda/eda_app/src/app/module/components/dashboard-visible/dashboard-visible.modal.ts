@@ -11,7 +11,7 @@ import { DashboardPage } from "../../pages/dashboard/dashboard.page";
 @Component({
   selector: 'app-dashboard-visible',
   standalone: true,
-  imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule],
+  imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule,EdaDialog2Component],
   templateUrl: './dashboard-visible.modal.html',
 })
 export class DashboardVisibleModal {

@@ -1,25 +1,22 @@
 import { GroupService } from './../../../../services/api/group.service';
+import { CommonModule ,NgClass } from '@angular/common';
+import { TooltipModule } from 'primeng/tooltip'; 
 import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
 import { TableConfig } from './panel-charts/chart-configuration-models/table-config';
 import { PanelChartComponent } from './panel-charts/panel-chart.component';
-import { Component, Input, OnInit, ViewChild, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { Component, Input, OnInit, ViewChild, Output, EventEmitter, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDrag } from '@angular/cdk/drag-drop';
 import { Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
-import {
-    DashboardService, ChartUtilsService, AlertService,
-    SpinnerService, FileUtiles, EdaChartType,
-    FilterType, QueryBuilderService, OrdenationType, UserService
-} from '@eda/services/service.index';
-import {
-    EdaPageDialogComponent, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent
-} from '@eda/shared/components/shared-components.index';
+import { DashboardService, ChartUtilsService, AlertService, SpinnerService, FileUtiles, EdaChartType, FilterType, QueryBuilderService, OrdenationType, UserService } from '@eda/services/service.index';
+import { EdaDialog2Component, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { EdaChartComponent } from '@eda/components/component.index';
 import { PanelChart } from './panel-charts/panel-chart';
 import * as _ from 'lodash';
 import { ChartConfig } from './panel-charts/chart-configuration-models/chart-config';
 import { ChartJsConfig } from './panel-charts/chart-configuration-models/chart-js-config';
 import { EdaInputText } from '@eda/shared/components/eda-input/eda-input-text';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 /** Panel utils  */
 import { PanelOptions } from './panel-utils/panel-menu-options';
@@ -36,9 +33,13 @@ import { DragDropComponent } from '@eda/components/drag-drop/drag-drop.component
 import { lastValueFrom } from 'rxjs';
 import { DashboardPage } from 'app/module/pages/dashboard/dashboard.page';
 import { QueryService } from '@eda/services/api/query.service';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, SharedModule } from 'primeng/api';
 import Swal from 'sweetalert2';
 
+// pruebas
+import { WhatIfDialogComponent } from '@eda/components/component.index';
+import { EbpChatgptComponent } from '@eda/components/ebp-chatgpt/ebp-chatgpt.component';
+import { FilterMapperComponent } from '@eda/components/filter-mapper/filter-mapper.component';
 
 export interface IPanelAction {
     code: string;
@@ -46,6 +47,14 @@ export interface IPanelAction {
 }
 
 @Component({
+    standalone: true,
+    imports : 
+    [
+        EdaDialog2Component, SharedModule, WhatIfDialogComponent,EbpChatgptComponent, 
+        FilterMapperComponent,NgClass,TooltipModule, FormsModule, ReactiveFormsModule,
+        DragDropModule, CommonModule
+    ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     selector: 'eda-blank-panel',
     templateUrl: './eda-blank-panel.component.html',
     styleUrls: ['./eda-blank-panel.component.css'],

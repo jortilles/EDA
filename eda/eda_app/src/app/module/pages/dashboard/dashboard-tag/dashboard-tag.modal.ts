@@ -7,12 +7,13 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { SelectButtonModule } from "primeng/selectbutton";
 import * as _ from 'lodash';
 import { DashboardPage } from "../dashboard.page";
+import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 
 @Component({
   selector: 'app-dashboard-tag-modal',
   standalone: true,
   templateUrl: './dashboard-tag.modal.html',
-  imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule, FloatLabelModule]
+  imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule, FloatLabelModule, EdaDialog2Component]
 })
 
 export class DashboardTagModal implements OnInit {
