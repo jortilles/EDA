@@ -16,6 +16,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 //standalone pruebas
+import { MapDialogComponent } from './mapsDialog/maps-dialog.component';
+import { ModelPermissionDialogComponent } from './model-permissions-dialog/model-permission-dialog.component';
+import { CacheDialogComponent } from './cache-dialog/cache-dialog.component';
 import { SecurityDialogComponent } from './security-dialog/security-dialog.component';
 import { AddCsvComponent } from '../data-source-list/addCSV/add-csv.component';
 import { TablePermissionDialogComponent } from './table-permissions-dialog/table-permission-dialog.component';
@@ -33,6 +36,7 @@ import { AddTagComponent } from '../data-source-list/add-tag/add-tag.component';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     PrimengModule,FormsModule,ReactiveFormsModule,
+    MapDialogComponent, ModelPermissionDialogComponent, CacheDialogComponent,
     TablePermissionDialogComponent, AddCsvComponent, SecurityDialogComponent,
     ViewDialogComponent, ViewDialogEditionComponent, AddTagComponent,
   ]

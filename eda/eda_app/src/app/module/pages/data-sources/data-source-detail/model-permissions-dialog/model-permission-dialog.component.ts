@@ -1,15 +1,16 @@
-import { Component, EventEmitter, OnInit, Output, signal } from "@angular/core";
+import { Component, EventEmitter, OnInit, Output, signal, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import { UserService, GroupService } from "@eda/services/service.index";
 import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
-
+import { CommonModule } from '@angular/common';
 
 
 @Component({
   standalone: true,
   selector: 'app-model-permission-dialog',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './model-permission-dialog.component.html',
   styleUrls: ['./model-permission-dialog.component.css'],
-  imports: [EdaDialog2Component]
+  imports: [EdaDialog2Component, CommonModule]
 })
 
 export class ModelPermissionDialogComponent implements OnInit {

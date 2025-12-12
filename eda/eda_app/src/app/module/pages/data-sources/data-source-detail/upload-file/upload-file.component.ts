@@ -5,6 +5,7 @@ import { AlertService } from '@eda/services/service.index';
 
 
 @Component({
+  standalone: true,
   selector: 'app-uploadFile',
   templateUrl: './upload-fle.component.html',
   styleUrls: ['./upload-file.component.css']
