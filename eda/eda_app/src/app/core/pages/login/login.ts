@@ -23,8 +23,8 @@ declare function init_plugins();
     selector: 'app-loginv2',
     standalone: true,
     imports: [CommonModule, RouterModule, ReactiveFormsModule, ParticlesBackgroundComponent, MsalModule],
-    templateUrl: './login_v2.html',
-    styleUrls: ["./login_v2.scss"],
+    templateUrl: './login.html',
+    styleUrls: ["./login.scss"],
 })
 export class LoginV2Component implements OnInit, AfterViewChecked {
 
