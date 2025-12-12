@@ -16,6 +16,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 //standalone pruebas
+import { CalculatedColumnDialogComponent } from './calculatedColumn-dialog/calculated-column-dialog.component';
 import { MapDialogComponent } from './mapsDialog/maps-dialog.component';
 import { ModelPermissionDialogComponent } from './model-permissions-dialog/model-permission-dialog.component';
 import { CacheDialogComponent } from './cache-dialog/cache-dialog.component';
@@ -26,7 +27,26 @@ import { ViewDialogEditionComponent } from './view-dialog-edition/view-dialog-ed
 import { ViewDialogComponent } from './view-dialog/view-dialog.component';
 import { AddTagComponent } from '../data-source-list/add-tag/add-tag.component';
 
+// Angular Modules
+const ANGULAR_MODULES = [
+  FormsModule,
+  ReactiveFormsModule,
+  PrimengModule
+];
 
+// Standalone Components
+const STANDALONE_COMPONENTS = [
+  CalculatedColumnDialogComponent,
+  MapDialogComponent,
+  ModelPermissionDialogComponent,
+  CacheDialogComponent,
+  TablePermissionDialogComponent,
+  AddCsvComponent,
+  SecurityDialogComponent,
+  ViewDialogComponent,
+  ViewDialogEditionComponent,
+  AddTagComponent
+];
 
 @Component({
   standalone: true,
@@ -34,12 +54,7 @@ import { AddTagComponent } from '../data-source-list/add-tag/add-tag.component';
   templateUrl: './data-source-detail.component.html',
   styleUrls: ['../data-source-list/data-source-list.component.css'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [
-    PrimengModule,FormsModule,ReactiveFormsModule,
-    MapDialogComponent, ModelPermissionDialogComponent, CacheDialogComponent,
-    TablePermissionDialogComponent, AddCsvComponent, SecurityDialogComponent,
-    ViewDialogComponent, ViewDialogEditionComponent, AddTagComponent,
-  ]
+  imports: [ANGULAR_MODULES, STANDALONE_COMPONENTS]
 })
 export class DataSourceDetailComponent implements OnInit, OnDestroy {
     @Output() onTableCreated: EventEmitter<any> = new EventEmitter();
