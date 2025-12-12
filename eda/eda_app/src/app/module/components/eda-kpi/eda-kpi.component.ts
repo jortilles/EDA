@@ -24,8 +24,6 @@ export class EdaKpiComponent implements OnInit {
     containerHeight: number = 20;
     containerWidth: number = 20;
 
-    showChart: boolean = true;
-
     constructor(private styleProviderService : StyleProviderService) { }
 
     ngAfterViewInit() {
