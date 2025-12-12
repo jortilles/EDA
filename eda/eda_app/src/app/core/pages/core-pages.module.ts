@@ -5,7 +5,6 @@ import { CoreModule } from '../core.module';
 import { SharedModule } from '../../shared/shared.module';
 
 // Components
-import { LoginComponent } from './login/login.component';
 import { PageNotFoundComponent } from './404/page-not-found.component';
 import { LogoutComponent } from './logout/logout.component';
 import { RegisterComponent } from './register/register.component';
@@ -26,13 +25,11 @@ import { PrimengModule } from '../primeng.module';
         SharedModule,
     ],
     declarations: [
-        LoginComponent,
         LogoutComponent,
         PageNotFoundComponent,
         AnonymousLoginComponent
     ],
     exports: [
-        LoginComponent,
         LogoutComponent,
         PageNotFoundComponent,
         AnonymousLoginComponent

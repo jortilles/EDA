@@ -34,7 +34,7 @@ import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config'
 import { inject, computed } from '@angular/core';
 import { DragDropComponent } from '@eda/components/drag-drop/drag-drop.component';
 import { lastValueFrom } from 'rxjs';
-import { DashboardPageV2 } from 'app/module/pages/v2/dashboard/dashboard.page';
+import { DashboardPage } from 'app/module/pages/dashboard/dashboard.page';
 import { QueryService } from '@eda/services/api/query.service';
 import { ConfirmationService } from 'primeng/api';
 import Swal from 'sweetalert2';
@@ -47,7 +47,7 @@ export interface IPanelAction {
 
 @Component({
     selector: 'eda-blank-panel',
-    templateUrl: './eda-blank-panel-v2.component.html',
+    templateUrl: './eda-blank-panel.component.html',
     styleUrls: ['./eda-blank-panel.component.css'],
 })
 export class EdaBlankPanelComponent implements OnInit {
@@ -61,7 +61,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     @Input() panelContent: any = {};
     @Input() panelText: any;
-    @Input() dashboard: DashboardPageV2;
+    @Input() dashboard: DashboardPage;
     @Input() panel: EdaPanel;
     @Input() inject: InjectEdaPanel;
     @Input() availableChatGpt: any;

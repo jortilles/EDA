@@ -1,5 +1,5 @@
 import { EdaTable, EdaColumnText, EdaColumnContextMenu } from '@eda/components/component.index';
-import { Component, OnInit, OnDestroy, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, OnDestroy, EventEmitter, Output, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { UntypedFormGroup } from '@angular/forms';
 import { MenuItem, SelectItem, TreeNode } from 'primeng/api';
@@ -11,14 +11,21 @@ import { EdaColumnFunction } from '@eda/components/eda-table/eda-columns/eda-col
 import * as _ from 'lodash';
 import { EdaColumnEditable } from '@eda/components/eda-table/eda-columns/eda-column-editable';
 import Swal from 'sweetalert2';
-
+import { PrimengModule } from 'app/core/primeng.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
-    selector: 'app-data-source-detail',
-    templateUrl: './data-source-detail.component.html',
-    styleUrls: ['../data-source-list/data-source-list.component.css']
+  standalone: true,
+  selector: 'app-data-source-detail',
+  templateUrl: './data-source-detail.component.html',
+  styleUrls: ['../data-source-list/data-source-list.component.css'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [
+    PrimengModule,     // tus módulos de PrimeNG
+    FormsModule,       // << necesario para [(ngModel)]
+    ReactiveFormsModule // << opcional si usas FormGroup/FormControl
+  ]
 })
-
 export class DataSourceDetailComponent implements OnInit, OnDestroy {
     @Output() onTableCreated: EventEmitter<any> = new EventEmitter();
 
@@ -301,6 +308,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        console.log('ME INICIO')
       this.carregarPanels();
               this.items = [{
             label: 'Options',
