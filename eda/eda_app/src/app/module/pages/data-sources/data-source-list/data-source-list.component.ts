@@ -1,15 +1,20 @@
 import { SpinnerService } from '../../../../services/shared/spinner.service';
 import { TreeNode } from 'primeng/api';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component,CUSTOM_ELEMENTS_SCHEMA, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { AlertService, DataSourceService } from '@eda/services/service.index';
 import Swal, { SweetAlertOptions } from 'sweetalert2';
+import { DataSourceDetailComponent } from '../data-source-detail/data-source-detail.component';
+import { PrimengModule } from 'app/core/primeng.module';
+
 import * as _ from 'lodash';
 
-
 @Component({
+    standalone: true,
     selector: 'app-data-source-list',
     templateUrl: './data-source-list.component.html',
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    imports: [ PrimengModule, DataSourceDetailComponent ],
     styleUrls: ['./data-source-list.component.css']
 })
 export class DataSourceListComponent implements OnInit, OnDestroy {
