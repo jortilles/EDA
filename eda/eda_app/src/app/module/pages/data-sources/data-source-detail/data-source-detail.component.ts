@@ -16,6 +16,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 //standalone pruebas
+import { TableRelationsDialogComponent } from './table-relations-dialog/table-relations-dialog.component';
+import { ColumnPermissionDialogComponent } from './column-permissions-dialog/column-permission-dialog.component';
 import { CalculatedColumnDialogComponent } from './calculatedColumn-dialog/calculated-column-dialog.component';
 import { MapDialogComponent } from './mapsDialog/maps-dialog.component';
 import { ModelPermissionDialogComponent } from './model-permissions-dialog/model-permission-dialog.component';
@@ -35,7 +37,9 @@ const ANGULAR_MODULES = [
 ];
 
 // Standalone Components
-const STANDALONE_COMPONENTS = [
+const STANDALONE_COMPONENTS = [  
+  TableRelationsDialogComponent,
+  ColumnPermissionDialogComponent,
   CalculatedColumnDialogComponent,
   MapDialogComponent,
   ModelPermissionDialogComponent,

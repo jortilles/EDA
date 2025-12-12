@@ -1,15 +1,16 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import { DataSourceService, QueryBuilderService, UserService, GroupService, QueryParams } from "@eda/services/service.index";
-import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent, EdaDialog2Component } from "@eda/shared/components/shared-components.index";
-
-
+import { EdaDialog, EdaDialogCloseEvent, EdaDialog2Component } from "@eda/shared/components/shared-components.index";
+import { FormsModule } from "@angular/forms";
+import { PrimengModule } from "app/core/primeng.module";
 
 
 @Component({
     standalone: true,
     selector: 'app-column-permission-dialog',
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './column-permission-dialog.component.html',
-    imports: [EdaDialog2Component]
+    imports: [EdaDialog2Component,FormsModule, PrimengModule]
 })
 
 export class ColumnPermissionDialogComponent implements OnInit {
