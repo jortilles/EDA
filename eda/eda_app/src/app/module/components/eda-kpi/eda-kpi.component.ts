@@ -116,10 +116,9 @@ export class EdaKpiComponent implements OnInit {
             resultSize = resultSize / 1.8;
         }
         // Si tengo ung gráfico lo hago más pequeño
-        if (this.showChart) {
+        if (this.inject.showChart) {
             resultSize = resultSize / 1.8;
         }
-      
         return resultSize.toFixed().toString() + 'px';
     }
 
