@@ -39,6 +39,7 @@ import Swal from 'sweetalert2';
 import { EdaContextMenuComponent } from '@eda/shared/components/shared-components.index';
 // pruebas
 import { WhatIfDialogComponent } from '@eda/components/component.index';
+import { FilterMapperDialog } from '@eda/components/filter-mapper-dialog/filter-mapper.dialog';
 import { EbpChatgptComponent } from '@eda/components/ebp-chatgpt/ebp-chatgpt.component';
 import { FilterMapperComponent } from '@eda/components/filter-mapper/filter-mapper.component';
 export interface IPanelAction {
@@ -52,7 +53,7 @@ export interface IPanelAction {
     [
         EdaDialog2Component, SharedModule, WhatIfDialogComponent,EbpChatgptComponent, 
         FilterMapperComponent,NgClass,TooltipModule, FormsModule, ReactiveFormsModule,
-        DragDropModule, CommonModule, PanelChartComponent, EdaContextMenuComponent, DropdownModule
+        DragDropModule, CommonModule, PanelChartComponent, EdaContextMenuComponent, DropdownModule, FilterMapperDialog
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     selector: 'eda-blank-panel',

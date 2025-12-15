@@ -5,24 +5,26 @@ import { DashboardPage } from "../dashboard.page";
 import { AlertService, DashboardService, FileUtiles, SpinnerService, StyleProviderService, ChartUtilsService } from "@eda/services/service.index";
 import { EdaPanel, EdaPanelType, EdaTitlePanel } from "@eda/models/model.index";
 import { lastValueFrom } from "rxjs";
-import { DashboardSaveAsDialog } from "../../../components/dashboard-save-as/dashboard-save-as.dialog";
-import { DashboardEditStyleDialog } from "../../../components/dashboard-edit-style/dashboard-edit-style.dialog";
-import { DashboardCustomActionDialog } from "../../../components/dashboard-custom-action/dashboard-custom-action.dialog";
-import { DashboardTagModal } from "../dashboard-tag/dashboard-tag.modal";
 import { Router } from "@angular/router";
 import domtoimage from 'dom-to-image';
 import jspdf from 'jspdf';
 import Swal from 'sweetalert2';
-import { DashboardMailConfigModal } from "../../../components/dashboard-mail-config/dashboard-mail-config.modal";
-import { DashboardVisibleModal } from "../../../components/dashboard-visible/dashboard-visible.modal";
-import { ImportPanelDialog } from "../../../components/import-panel/import-panel.dialog";
 import { DashboardSidebarService } from "@eda/services/shared/dashboard-sidebar.service";
 import { ExposeMethod } from "@eda/shared/decorators/expose-method.decorator";
 import { IconComponent } from "../../../../shared/components/icon/icon.component";
-import { DependentFilters } from "../../../components/dependent-filters/dependent-filters.component";
 import * as _ from 'lodash';
-
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
+
+// Imports del sidebar
+import { DashboardSaveAsDialog } from "../../../components/dashboard-save-as/dashboard-save-as.dialog";
+import { DashboardEditStyleDialog } from "../../../components/dashboard-edit-style/dashboard-edit-style.dialog";
+import { DashboardCustomActionDialog } from "../../../components/dashboard-custom-action/dashboard-custom-action.dialog";
+import { DashboardTagModal } from "../dashboard-tag/dashboard-tag.modal";
+import { DashboardMailConfigModal } from "../../../components/dashboard-mail-config/dashboard-mail-config.modal";
+import { DashboardVisibleModal } from "../../../components/dashboard-visible/dashboard-visible.modal";
+import { ImportPanelDialog } from "../../../components/import-panel/import-panel.dialog";
+import { DependentFilters } from "../../../components/dependent-filters/dependent-filters.component";
+
 
 
 @Component({

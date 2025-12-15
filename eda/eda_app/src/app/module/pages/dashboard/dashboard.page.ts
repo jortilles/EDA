@@ -19,12 +19,46 @@ import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive
 import { CommonModule } from '@angular/common';
 import { ChatgptService } from '@eda/services/api/chatgpt.service';
 import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.service';
+// Imports del sidebar
+import { DashboardSaveAsDialog } from "@eda/components/dashboard-save-as/dashboard-save-as.dialog";
+import { DashboardEditStyleDialog } from "@eda/components/dashboard-edit-style/dashboard-edit-style.dialog";
+import { DashboardCustomActionDialog } from "@eda/components/dashboard-custom-action/dashboard-custom-action.dialog";
+// import { DashboardTagModal } from "@eda/components/dashboard-tag/dashboard-tag.modal";
+import { DashboardTagModal } from './dashboard-tag/dashboard-tag.modal'; 
+import { DashboardMailConfigModal } from "@eda/components/dashboard-mail-config/dashboard-mail-config.modal";
+import { DashboardVisibleModal } from "@eda/components/dashboard-visible/dashboard-visible.modal";
+import { ImportPanelDialog } from "@eda/components/import-panel/import-panel.dialog";
+import { DependentFilters } from '@eda/components/dependent-filters/dependent-filters.component';
+import { FilterDialogComponent } from '@eda/components/component.index';
 
 @Component({
   selector: 'app-v2-dashboard-page',
   standalone: true,
-  imports: [FormsModule, GridsterComponent, GridsterItemComponent, DashboardSidebarComponent, EdaBlankPanelComponent,
-     GlobalFilterComponent, ComponentsModule, ButtonModule, DropdownModule, MenuModule, MessageModule, FocusOnShowDirective,CommonModule],
+  imports: [
+    FormsModule,
+    GridsterComponent,
+    GridsterItemComponent,
+    DashboardSidebarComponent,
+    EdaBlankPanelComponent,
+    GlobalFilterComponent,
+    ComponentsModule,
+    ButtonModule,
+    DropdownModule,
+    MenuModule,
+    MessageModule,
+    FocusOnShowDirective,
+    CommonModule,
+    DashboardSaveAsDialog,
+    DashboardEditStyleDialog,
+    DashboardCustomActionDialog,
+    DashboardTagModal,
+    DashboardTagModal,
+    DashboardMailConfigModal,
+    DashboardVisibleModal,
+    ImportPanelDialog,FilterDialogComponent,
+    DependentFilters
+  ],
+
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.css'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
