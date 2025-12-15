@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { DataSourceService } from '@eda/services/service.index';
-import { EdaColumnText, EdaTable } from '@eda/components/component.index';
+import { EdaColumnText, EdaTable, EdaTableComponent } from '@eda/components/component.index';
 import { EditColumnPanel, EditModelPanel } from '@eda/models/data-source-model/data-source-models';
 import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 
@@ -10,7 +10,7 @@ import { EdaDialog2Component } from "@eda/shared/components/shared-components.in
   selector: 'eda-security-dialog',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './security-dialog.component.html',
-  imports: [EdaDialog2Component]
+  imports: [EdaDialog2Component, EdaTableComponent]
 })
 
 export class SecurityDialogComponent implements OnInit {

@@ -53,7 +53,8 @@ const STANDALONE_COMPONENTS = [
   SecurityDialogComponent,
   ViewDialogComponent,
   ViewDialogEditionComponent,
-  AddTagComponent
+  AddTagComponent,
+  EdaTableComponent
 ];
 
 @Component({
