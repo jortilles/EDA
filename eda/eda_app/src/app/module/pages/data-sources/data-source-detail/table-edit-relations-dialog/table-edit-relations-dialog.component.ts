@@ -1,16 +1,19 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import {SelectItem} from 'primeng/api';
 import {EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract} from '@eda/shared/components/shared-components.index';
 import {Relation} from '@eda/models/data-source-model/data-source-models';
 import {DataSourceService} from '@eda/services/api/datasource.service';
-import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AlertService } from '@eda/services/service.index';
-
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 
 @Component({
+    standalone: true,
     selector: 'app-table-edit-relations-dialog',
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './table-edit-relations-dialog.component.html',
-    styleUrls: ['./table-edit-relations-dialog.component.css']
+    styleUrls: ['./table-edit-relations-dialog.component.css'],
+    imports: [ReactiveFormsModule, EdaDialog2Component]
 })
 
 export class TableEditRelationsDialogComponent extends EdaDialogAbstract {

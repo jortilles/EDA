@@ -1,13 +1,14 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent, EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { EdaDialog, EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { AlertService, DataSourceService } from '@eda/services/service.index';
+import { FormsModule } from '@angular/forms';
 
 
 @Component({
   standalone: true,
   selector: 'eda-cache-dialog',
   templateUrl: './cache-dialog.component.html',
-  imports : [EdaDialog2Component]
+  imports : [EdaDialog2Component, FormsModule]
 })
 
 export class CacheDialogComponent implements OnInit {

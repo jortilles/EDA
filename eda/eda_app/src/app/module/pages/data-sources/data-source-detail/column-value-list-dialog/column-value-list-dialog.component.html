@@ -1,6 +1,5 @@
-<eda-dialog [inject]="dialog">
-
-    <div body>
+<eda-dialog2 width="50vw" height="65vh" (apply)="saveValueListSource()" (close)="closeDialog()" [header]="title" >
+    <div content class="p-2 space-y-6">
         <div class="col-12 xl:col-4 mb-4">
             <p-dropdown [options]="targetTables" filter="true" optionLabel="label"
             [(ngModel)]="targetTable" [style]="{width:'100%'}"  (onChange)="getColumnsByTable()" 
@@ -22,18 +21,4 @@
             </p-dropdown>
         </div>
     </div>
-
-    <div footer class="flex justify-end p-2 border-t gap-1.5">
-      <button
-        class="cancel-button"
-        (click)="closeDialog()">
-        <i class="fa fa-times"></i>
-        <span i18n="@@cancelarBtn">Cancelar</span>
-      </button>
-      <button
-        class="confirm-button"
-        (click)="saveValueListSource()">
-        <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
-      </button>
-    </div>
-</eda-dialog>
+</eda-dialog2>

@@ -1,19 +1,23 @@
-import { Component } from '@angular/core';
-import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Output } from '@angular/core';
+import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent,EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { AlertService} from '@eda/services/service.index';
-import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule, FormsModule} from '@angular/forms';
 
 
 @Component({
+  standalone: true,
   selector: 'app-calculated-column-dialog',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './calculated-column-dialog.component.html',
-  styleUrls: ['../../../../../../assets/sass/eda-styles/components/dialog-component.css']
+  styleUrls: ['../../../../../../assets/sass/eda-styles/components/dialog-component.css'],
+  imports: [ReactiveFormsModule, EdaDialog2Component, FormsModule]
 })
 
 export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
 
   public dialog: EdaDialog;
   public form: UntypedFormGroup;
+  public title = $localize`:@@addCalculatedColTitle:Añadir columna calculada a la tabla `;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -24,9 +28,7 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
     this.dialog = new EdaDialog({
       show: () => this.onShow(),
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: $localize`:@@addCalculatedColTitle:Añadir columna calculada a la tabla `
     });
-    this.dialog.style = { width: '50%', height: '40%', top:"-4em", left:'1em'};
 
     this.form = this.formBuilder.group({
       colName: [null, Validators.required],
@@ -66,7 +68,4 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
       this.onClose(EdaDialogCloseEvent.NEW, { column: column, table_name: this.controller.params.table.technical_name });
     }
   }
-
-
-
 }

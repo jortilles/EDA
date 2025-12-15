@@ -9,9 +9,7 @@ import { EdaDialog2Component } from '@eda/shared/components/shared-components.in
   selector: 'app-view-dialog',
   templateUrl: './view-dialog.component.html',
     imports: [
-      FormsModule,       // << necesario para [(ngModel)]
-      ReactiveFormsModule, // << opcional si usas FormGroup/FormControl
-      EdaDialog2Component
+      FormsModule, ReactiveFormsModule, EdaDialog2Component
     ]
 })
 

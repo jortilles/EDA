@@ -65,7 +65,9 @@
       <p-table [value]="csvColumns">
         <ng-template pTemplate="header">
           <tr>
-            <th *ngFor="let header of editFieldsHeaders">{{header}}</th>
+            @for(header of editFieldsHeaders; track $index){
+              <th>{{header}}</th>
+            }
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-row>
