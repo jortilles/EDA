@@ -348,7 +348,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        console.log('ME INICIO')
       this.carregarPanels();
               this.items = [{
             label: 'Options',
