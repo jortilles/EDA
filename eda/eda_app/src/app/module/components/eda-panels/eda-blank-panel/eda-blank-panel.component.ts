@@ -17,6 +17,7 @@ import { ChartConfig } from './panel-charts/chart-configuration-models/chart-con
 import { ChartJsConfig } from './panel-charts/chart-configuration-models/chart-js-config';
 import { EdaInputText } from '@eda/shared/components/eda-input/eda-input-text';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { DropdownModule } from 'primeng/dropdown';
 
 /** Panel utils  */
 import { PanelOptions } from './panel-utils/panel-menu-options';
@@ -51,7 +52,7 @@ export interface IPanelAction {
     [
         EdaDialog2Component, SharedModule, WhatIfDialogComponent,EbpChatgptComponent, 
         FilterMapperComponent,NgClass,TooltipModule, FormsModule, ReactiveFormsModule,
-        DragDropModule, CommonModule, PanelChartComponent, EdaContextMenuComponent
+        DragDropModule, CommonModule, PanelChartComponent, EdaContextMenuComponent, DropdownModule
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     selector: 'eda-blank-panel',

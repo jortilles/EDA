@@ -12,7 +12,6 @@
     </i>
   </div>
 
-
   <div class="flex items-center justify-center flex-grow overflow-y-auto rounded-lg bg-gray-50"
     [class.spinner-panel]="display_v.minispinner">
     @if (display_v.saved_panel && !display_v.minispinner) {
@@ -288,7 +287,6 @@
                   (input)="onTopChange()">
               </div>
   
-  
               <!-- Advanced Settings -->
               @if(currentQuery.length > 0){
               <div class="grid grid-cols-3 align-items-center">
@@ -344,12 +342,7 @@
   
               </div>
   
-  
-  
-  
-  
               <!-- Query Summary -->
-  
               @if(display_v.advancedSetting === 0){
               <div class="grid grid-cols-2  border rounded-lg bg-gray-50 min-h-[30vh] overflow-y-auto p-2">
                 <div class=" ml-3 p-2">
@@ -438,8 +431,7 @@
   
                     <div class="col-span-3">
   
-                      <button class="w-fit px-3 py-2 border rounded-lg
-                                    bg-white text-black hover:bg-[#00BFB3] hover:text-white" (click)="onWhatIfDialog()">
+                      <button class="w-fit px-3 py-2 border rounded-lg bg-white text-black hover:bg-[#00BFB3] hover:text-white" (click)="onWhatIfDialog()">
                         Configurar
                       </button>
                     </div>
@@ -559,13 +551,10 @@
                             </li>
                           </ul>
                         </div>
-  
                       </details>
                     </div>
                   </div>
-  
                 </div>
-  
               </div>
               }
               }
@@ -582,23 +571,8 @@
                 <textarea [(ngModel)]="currentSQLQuery"
                   class="w-full h-64 p-3 border border-gray-300 rounded-md font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
                   placeholder="SELECT * FROM customers">
-                          </textarea>
-                <!-- TBD -->
-                <!-- <button 
-                  class="absolute right-2 top-2 px-2 py-1 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-100 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-500 mr-1">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                  </svg>
-                  Sugerir
-                </button>  -->
+                </textarea>
+
               </div>
   
               <!-- Table Selection and Filters -->
@@ -680,13 +654,6 @@
                     </svg>
                   </summary>
                   <div class="text-sm text-gray-600 pl-2 pb-4 pt-2">
-                    <!-- <p>
-                                Los filtros del panel se pueden vincular a tu consulta SQL para filtrar dinámicamente los
-                                resultados.
-                              </p>
-                              <p class="mt-2">
-                                Usa <code class="bg-gray-100 px-1 rounded">${city}</code> para referenciar el filtro de ciudad.
-                              </p> -->
                     <p i18n="@@indicaciones5">
                       Puedes vincular los filtros del informe con la consulta
                     </p>
@@ -955,7 +922,6 @@
 @if(alertController){
   <app-alert-dialog [controller]="alertController"></app-alert-dialog>
 }
-
 
 @if(cumsumAlertController){
   <app-cumsum-alert-dialog [controller]="cumsumAlertController"></app-cumsum-alert-dialog>
