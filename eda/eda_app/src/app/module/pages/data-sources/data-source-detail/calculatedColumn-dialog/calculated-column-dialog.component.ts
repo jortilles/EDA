@@ -1,5 +1,5 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Input, Output } from '@angular/core';
-import { EdaDialogAbstract, EdaDialogCloseEvent,EdaDialog2Component, EdaDialog2 } from '@eda/shared/components/shared-components.index';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Output } from '@angular/core';
+import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent,EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { AlertService} from '@eda/services/service.index';
 import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule, FormsModule} from '@angular/forms';
 
@@ -13,31 +13,52 @@ import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule, 
   imports: [ReactiveFormsModule, EdaDialog2Component, FormsModule]
 })
 
-export class CalculatedColumnDialogComponent{
+export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
 
-  public dialog: EdaDialog2;
-
-  @Input() table: any;
-  @Input() controller: any;
-  @Output() close: EventEmitter<any> = new EventEmitter<any>();
-  
-  public columnName;
-  public descriptionContent;
+  public dialog: EdaDialog;
+  public form: UntypedFormGroup;
   public title = $localize`:@@addCalculatedColTitle:Añadir columna calculada a la tabla `;
 
-  constructor(private alertService: AlertService) {}
-    
+  constructor(
+    private formBuilder: UntypedFormBuilder,
+    private alertService: AlertService
+  ) {
+    super();
+
+    this.dialog = new EdaDialog({
+      show: () => this.onShow(),
+      hide: () => this.onClose(EdaDialogCloseEvent.NONE),
+    });
+
+    this.form = this.formBuilder.group({
+      colName: [null, Validators.required],
+      description: [null, Validators.required]
+    });
+  }
+  onShow(): void {
+    const title = this.dialog.title;
+    this.dialog.title = `${title} ${this.controller.params.table.name}`;
+  }
+  onClose(event: EdaDialogCloseEvent, response?: any): void {
+    return this.controller.close(event, response);
+  }
+
+  closeDialog() {
+    this.onClose(EdaDialogCloseEvent.NONE);
+  }
+
   saveColumn() {
-    if (!this.validateForm()) {
+    if (this.form.invalid) {
       return this.alertService.addError($localize`:@@mandatoryFields:Recuerde llenar los campos obligatorios`);
     } else {
+
       const column: any = {
         aggregation_type: [{ value: "none", display_name: "No" }],
         column_granted_roles: [],
-        column_name: this.columnName,
+        column_name: this.form.value.colName,
         column_type: "numeric",
-        description: { default: this.descriptionContent, localized: Array(0) },
-        display_name: { default: this.columnName, localized: Array(0) },
+        description: { default: this.form.value.description, localized: Array(0) },
+        display_name: { default: this.form.value.colName, localized: Array(0) },
         row_granted_roles: [],
         SQLexpression: '',
         computed_column : 'computed',
@@ -46,21 +67,5 @@ export class CalculatedColumnDialogComponent{
       };
       this.onClose(EdaDialogCloseEvent.NEW, { column: column, table_name: this.controller.params.table.technical_name });
     }
-  }
-
-  public validateForm(): boolean{
-    let validatedForm = false;
-    if((this.columnName && this.columnName.trim() !== '') && (this.descriptionContent && this.descriptionContent.trim() !== '')){
-      validatedForm = true;
-    }
-    return validatedForm;
-  }
-
-  onClose(event: EdaDialogCloseEvent, response?: any): void {
-        return this.controller.close(event, response);
-    }
-
-  closeDialog() {
-    this.onClose(EdaDialogCloseEvent.NONE);
   }
 }
