@@ -1,5 +1,5 @@
-<eda-dialog2 [inject]="dialog">
-  <div body class="py-4">
+<eda-dialog2 width="50vw" height="65vh" (apply)="saveRelation()" (close)="closeDialog()" [header]="title" >
+  <div content class="py-4">
     <form [formGroup]="form">
       <div class="grid grid-cols-3 gap-3">
         <p-dropdown [options]="targetTables" formControlName="targetTable" filter="true" optionLabel="label"
@@ -38,21 +38,5 @@
         </ul>
       </div>
     </form>
-  </div>
-
-  <div footer class="flex justify-end p-2 border-t gap-1.5">
-    <button
-      class="cancel-button"
-      (click)="closeDialog()"
-      i18n="@@cancelarBtn">
-      Cancelar
-    </button>
-    <button
-      class="confirm-button"
-      [disabled]="selectedSourceCols.length === 0"
-      (click)="saveRelation()"
-      i18n="@@guardarBtn">
-      Confirmar
-    </button>
   </div>
 </eda-dialog2>

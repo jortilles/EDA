@@ -1,4 +1,4 @@
-import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import {Component, CUSTOM_ELEMENTS_SCHEMA, Input} from '@angular/core';
 import {SelectItem} from 'primeng/api';
 import {EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract, EdaDialog2Component} from '@eda/shared/components/shared-components.index';
 import {Relation} from '@eda/models/data-source-model/data-source-models';
@@ -16,8 +16,9 @@ import { AlertService } from '@eda/services/service.index';
     imports: [DropdownModule, ReactiveFormsModule, EdaDialog2Component]
 })
 
-export class TableRelationsDialogComponent extends EdaDialogAbstract {
-    public dialog: EdaDialog;
+export class TableRelationsDialogComponent{
+    @Input() controller: any;
+
     // Drop down vars
     public sourceCols: any[] = [];
     public targetTables: any[] = [];
@@ -34,6 +35,7 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
     public showTargetTables = false;
 
     public form: UntypedFormGroup;
+    public title = $localize`:@@addRelationTo:Añadir relación a la tabla `;
 
     public emptyMessageTags: string = $localize`:@@emptyMessageTags:No se encontraron resultados`;
 
@@ -41,15 +43,6 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
         private dataModelService: DataSourceService,
         private formBuilder: UntypedFormBuilder,
         private alertService: AlertService) {
-        super();
-
-
-        this.dialog = new EdaDialog({
-            show: () => this.onShow(),
-            hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-            title: $localize`:@@addRelationTo:Añadir relación a la tabla`
-        });
-        this.dialog.style = { width: '54%', height: '50%', top:"-4em", left:'1em' };
         
         this.form = this.formBuilder.group({
             sourceCol: [null, Validators.required],
@@ -59,9 +52,8 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
         }); //, {validators: this.checkOrder('sourceCol', 'targetTable')});
     }
 
-    onShow(): void {
-        const title = this.dialog.title;
-        this.dialog.title = `${title} ${this.controller.params.table.name}`;
+    ngOnInit(): void {
+        console.log(this.dataModelService)
         this.sourceCols = this.controller.params.table.columns;
         this.targetTables = this.dataModelService.getModel().map(t => {
             const item: SelectItem = { label: t.display_name.default, value: t };
@@ -101,7 +93,6 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
     }
 
     addRelation(){
-
         this.targetTable = this.form.controls.targetTable.value.label;
         this.form.controls.targetTable.disable();
 
