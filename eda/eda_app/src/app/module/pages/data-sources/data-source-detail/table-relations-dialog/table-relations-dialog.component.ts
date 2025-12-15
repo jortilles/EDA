@@ -53,7 +53,6 @@ export class TableRelationsDialogComponent{
     }
 
     ngOnInit(): void {
-        console.log(this.dataModelService)
         this.sourceCols = this.controller.params.table.columns;
         this.targetTables = this.dataModelService.getModel().map(t => {
             const item: SelectItem = { label: t.display_name.default, value: t };
