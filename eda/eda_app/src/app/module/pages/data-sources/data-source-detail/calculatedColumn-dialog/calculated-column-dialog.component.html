@@ -1,46 +1,21 @@
-<eda-dialog2 [inject]="dialog">
-  <div body>
-    <form [formGroup]="form" class="grid gap-4">
-      <div class="grid gap-2">
-        <label for="name"
-          i18n="@@inputNombre"
-          class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
-          Nombre <span class="text-red-500">*</span>
-        </label>
-        <input id="name" value="Customers"
-          formControlName="colName"
-          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-        />
-      </div>
-      <div class="grid gap-2">
-        <label
-          for="description"
-          i18n="@@inputDescripcion"
-          class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
-          Descripción
-        </label>
-        <textarea id="description"
-          formControlName="description"  
-          class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+<eda-dialog2 width="50vw" height="65vh" (apply)="saveColumn()" [header]="title" (close)="closeDialog()">
+  <div content class="p-2 space-y-6">
+    <div class="grid gap-2">
+      <label for="name" i18n="@@inputNombre"
+        class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+        Nombre <span class="text-red-500">*</span>
+      </label>
+      <input id="name" value="Customers" [(ngModel)]="columnName"
+        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" />
+    </div>
+    <div class="grid gap-2">
+      <label for="description" i18n="@@inputDescripcion"
+        class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+        Descripción
+      </label>
+      <textarea id="description" [(ngModel)]="descriptionContent"
+        class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
         </textarea>
-      </div>
-    </form>
-  </div>
-
-  <div footer class="flex justify-end p-2 border-t gap-1.5">
-    <button
-      class="rounded-md px-4 py-2 border"
-      (click)="closeDialog()"
-      i18n="@@cancelarBtn">
-      Cancelar
-    </button>
-    <button
-      class="rounded-md px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white"
-      (click)="saveColumn()"
-      i18n="@@guardarBtn">
-      Confirmar
-    </button>
+    </div>
   </div>
 </eda-dialog2>
