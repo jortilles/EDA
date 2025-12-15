@@ -1,5 +1,5 @@
 import { DashboardService } from './../../../../services/api/dashboard.service';
-import { Component, OnInit, Input, Output, EventEmitter, ViewEncapsulation } from "@angular/core";
+import { Component, OnInit, Input, Output, EventEmitter, ViewEncapsulation, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import { InjectEdaPanel, EdaTitlePanel } from '@eda/models/model.index';
 import { EdaContextMenu, EdaContextMenuItem, EdaDialogCloseEvent, EdaDialogController } from '@eda/shared/components/shared-components.index';
 import { DomSanitizer } from '@angular/platform-browser'
@@ -8,11 +8,16 @@ import {SafeUrlPipe} from './urlSanitizer.pipe'
 import * as _ from 'lodash';
 import { environment } from 'environments/environment';
 
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
 @Component({
+    standalone: true,
     selector: 'eda-title-panel',
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './eda-title-panel.component.html',
     styleUrls: ['./eda-title-panel.component.css'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    imports: [FormsModule, CommonModule, SafeHtmlPipe]
 })
 
 export class EdaTitlePanelComponent implements OnInit {

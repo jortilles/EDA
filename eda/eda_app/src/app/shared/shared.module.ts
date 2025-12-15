@@ -10,10 +10,10 @@ import { FocusOnShowDirective } from './directives/autofocus.directive';
 // Components
 import {
     EdaPageDialogComponent,
-    EdaDialogComponent,
+    // EdaDialogComponent,
     EdaDialog2Component,
     NavbarComponent,
-    EdaContextMenuComponent,
+    // EdaContextMenuComponent,
     EdaInputComponent,
     EdaDatePickerComponent,
     EdaFieldComponent
@@ -26,8 +26,8 @@ import { EdaListComponent } from './components/eda-list/eda-list.component';
     declarations: [
         EdaPageDialogComponent,
         NavbarComponent,
-        EdaDialogComponent,
-        EdaContextMenuComponent,
+        // EdaDialogComponent,
+        // EdaContextMenuComponent,
         EdaInputComponent,
         EdaDatePickerComponent,
         EdaFieldComponent,
@@ -43,10 +43,10 @@ import { EdaListComponent } from './components/eda-list/eda-list.component';
     exports: [
         EdaPageDialogComponent,
         NavbarComponent,
-        EdaDialogComponent,
+        // EdaDialogComponent,
         PipesModule,
-        EdaDialogComponent,
-        EdaContextMenuComponent,
+        // EdaDialogComponent,
+        // EdaContextMenuComponent,
         EdaInputComponent,
         FocusOnShowDirective,
         EdaDatePickerComponent,

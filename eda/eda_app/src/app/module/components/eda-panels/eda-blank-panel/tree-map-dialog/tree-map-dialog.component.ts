@@ -1,13 +1,17 @@
-import { Component, ViewChild, AfterViewChecked } from '@angular/core';
+import { Component, ViewChild, AfterViewChecked, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { TreeMapConfig } from '../panel-charts/chart-configuration-models/treeMap-config';
 import { StyleProviderService,ChartUtilsService } from '@eda/services/service.index';
-
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 @Component({
+  standalone: true,
   selector: 'app-tree-map-dialog',
-  templateUrl: './tree-map-dialog.component.html'
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  templateUrl: './tree-map-dialog.component.html',
+  imports: [FormsModule, CommonModule]
 })
 
 export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked {

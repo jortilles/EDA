@@ -1,19 +1,22 @@
 import { EdaDialogAbstract, EdaDialogCloseEvent, EdaDialog } from '@eda/shared/components/shared-components.index';
-import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Output, ViewChild } from '@angular/core';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { UserService } from '@eda/services/service.index';
 import { EdaChart } from '@eda/components/eda-chart/eda-chart';
 import { StyleProviderService } from '@eda/services/service.index';
 import { DynamicTextConfig } from '../panel-charts/chart-configuration-models/dynamicText-config';
-
+import { FormsModule } from '@angular/forms';
 
 
 
 @Component({
+  standalone: true,
   selector: 'app-dynamicText-dialog',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './dynamicText-dialog.component.html',
-  styleUrls: ['./dynamicText-dialog.component.css']
+  styleUrls: ['./dynamicText-dialog.component.css'],
+  imports: [FormsModule, ]
 })
 
 export class dynamicTextDialogComponent extends EdaDialogAbstract {

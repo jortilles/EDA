@@ -1,16 +1,20 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, ViewChild } from '@angular/core';
 import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { EdaDialogAbstract } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog-abstract';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { TreeTableConfig } from '../panel-charts/chart-configuration-models/treeTable-config';
 import * as _ from 'lodash';
-
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
 
 @Component({
+  standalone: true,
   selector: 'app-tree-table-dialog',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './tree-table-dialog.component.html',
-  styleUrls: ['./tree-table-dialog.component.css']
+  styleUrls: ['./tree-table-dialog.component.css'],
+  imports: [FormsModule, CommonModule]
 })
 export class TreeTableDialogComponent extends EdaDialogAbstract implements OnInit {
 

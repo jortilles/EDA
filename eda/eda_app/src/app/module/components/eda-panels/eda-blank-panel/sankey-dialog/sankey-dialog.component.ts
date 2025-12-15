@@ -1,14 +1,18 @@
 import { SankeyConfig } from './../panel-charts/chart-configuration-models/sankey-config';
-import { Component, ViewChild, AfterViewChecked } from '@angular/core';
+import { Component, ViewChild, AfterViewChecked, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { StyleProviderService,ChartUtilsService } from '@eda/services/service.index';
-
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
+  standalone: true,
   selector: 'app-sankey-dialog',
-  templateUrl: './sankey-dialog.component.html'
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  templateUrl: './sankey-dialog.component.html',
+  imports: [FormsModule, CommonModule]
 })
 
 export class SankeyDialog extends EdaDialogAbstract implements AfterViewChecked {

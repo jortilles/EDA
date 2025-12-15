@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { AlertService, DashboardService } from "@eda/services/service.index";
 import { SharedModule } from "@eda/shared/shared.module";
@@ -11,8 +11,9 @@ import { EdaPanel } from "@eda/models/model.index";
 import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 
 @Component({
-  selector: 'app-filter-mapper-dialog',
   standalone: true,
+  selector: 'app-filter-mapper-dialog',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './filter-mapper.dialog.html',
   imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule, DropdownModule, FilterMapperComponent, EdaDialog2Component]
 })

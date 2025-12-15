@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-ebp-chatgpt',
   standalone: true,
-  imports: [SharedModule, FormsModule, CommonModule,EdaDialog2Component],
+  imports: [SharedModule, FormsModule, CommonModule, EdaDialog2Component],
   templateUrl: './ebp-chatgpt.component.html',
   styleUrl: './ebp-chatgpt.component.css'
 })

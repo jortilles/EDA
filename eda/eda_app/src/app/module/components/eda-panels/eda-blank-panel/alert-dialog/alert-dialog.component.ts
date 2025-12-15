@@ -1,11 +1,14 @@
 import { EdaDialogAbstract, EdaDialogCloseEvent, EdaDialog } from '@eda/shared/components/shared-components.index';
-import { Component } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 
 @Component({
+  standalone: true,
   selector: 'app-alert-dialog',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './alert-dialog.component.html',
-  styleUrls: ['./alert-dialog.component.css']
+  styleUrls: ['./alert-dialog.component.css'],
+  imports: []
 })
 
 export class AlertDialogComponent extends EdaDialogAbstract {

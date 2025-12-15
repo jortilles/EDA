@@ -1,17 +1,20 @@
 import { EdaDialogAbstract, EdaDialogCloseEvent, EdaDialog } from '@eda/shared/components/shared-components.index';
-import { Component, ViewChild } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, ViewChild } from '@angular/core';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { UserService } from '@eda/services/service.index';
 import { StyleProviderService, ChartUtilsService } from '@eda/services/service.index';
 import * as _ from 'lodash';
-import { KpiConfig } from '../panel-charts/chart-configuration-models/kpi-config';
-
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
+    standalone: true,
     selector: 'app-kpi-dialog',
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './kpi-dialog.component.html',
-    styleUrls: ['./kpi-dialog.component.css']
+    styleUrls: ['./kpi-dialog.component.css'],
+    imports: [FormsModule, CommonModule]
 })
 
 export class KpiEditDialogComponent extends EdaDialogAbstract {

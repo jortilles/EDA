@@ -1,13 +1,17 @@
-import { Component, ViewChild } from "@angular/core";
+import { Component, CUSTOM_ELEMENTS_SCHEMA, ViewChild } from "@angular/core";
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
 import { PanelChart } from "../panel-charts/panel-chart";
 import { PanelChartComponent } from "../panel-charts/panel-chart.component";
 import { StyleProviderService } from '@eda/services/service.index';
-
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
 
 @Component({
+    standalone: true,
     selector: 'knob-dialog',
-    templateUrl: './knob-dialog.component.html'
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    templateUrl: './knob-dialog.component.html',
+    imports: [FormsModule, CommonModule]
 })
 
 export class KnobDialogComponent extends EdaDialogAbstract {

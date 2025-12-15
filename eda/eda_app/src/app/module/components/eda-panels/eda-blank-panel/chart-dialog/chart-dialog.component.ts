@@ -1,6 +1,6 @@
 
 import { PanelChartComponent } from './../panel-charts/panel-chart.component';
-import { Component, ViewChild } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, ViewChild } from '@angular/core';
 import { PointStyle } from 'chart.js';
 import { EdaChart } from '@eda/components/eda-chart/eda-chart';
 import { EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract } from '@eda/shared/components/shared-components.index';
@@ -8,11 +8,16 @@ import * as _ from 'lodash';
 import { StyleProviderService,ChartUtilsService } from '@eda/services/service.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
+import { CommonModule } from '@angular/common';  // <-- Importar CommonModule
+ import { FormsModule } from '@angular/forms';  // <-- necesario para ngModel
 
 
 @Component({
+    standalone: true,
     selector: 'app-chart-dialog',
-    templateUrl: './chart-dialog.component.html'
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    templateUrl: './chart-dialog.component.html',
+    imports: [CommonModule, FormsModule]
 })
 
 export class ChartDialogComponent extends EdaDialogAbstract  {

@@ -1,11 +1,14 @@
 import { EdaDialogAbstract, EdaDialogCloseEvent, EdaDialog } from '@eda/shared/components/shared-components.index';
-import { Component } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 
 @Component({
+  standalone: true,
   selector: 'app-cumsum-alert-dialog',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './cumsum-alert-dialog.component.html',
-  styleUrls: ['./cumsum-alert-dialog.component.css']
+  styleUrls: ['./cumsum-alert-dialog.component.css'],
+  imports: []
 })
 
 export class CumSumAlertDialogComponent extends EdaDialogAbstract {

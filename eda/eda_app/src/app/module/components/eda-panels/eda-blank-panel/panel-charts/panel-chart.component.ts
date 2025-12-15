@@ -11,7 +11,8 @@ import { TableConfig } from './chart-configuration-models/table-config';
 import {
     Component, OnInit, Input, SimpleChanges,
     OnChanges, ViewChild, ViewContainerRef, ComponentFactoryResolver,
-    OnDestroy, Output, EventEmitter, Self, ElementRef, NgZone
+    OnDestroy, Output, EventEmitter, Self, ElementRef, NgZone,
+    CUSTOM_ELEMENTS_SCHEMA
 } from '@angular/core';
 import { EdaKpiComponent } from '../../../eda-kpi/eda-kpi.component';
 import { EdadynamicTextComponent } from '../../../eda-dynamicText/eda-dynamicText.component';
@@ -44,12 +45,17 @@ import { SankeyConfig } from './chart-configuration-models/sankey-config';
 import { ScatterConfig } from './chart-configuration-models/scatter-config';
 import { BubblechartConfig } from './chart-configuration-models/bubblechart.config';import { EdaChart } from '@eda/components/eda-chart/eda-chart';
 
-
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
 
 @Component({
+    standalone: true,
     selector: 'panel-chart',
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './panel-chart.component.html',
-    styleUrls: []
+    styleUrls: [],
+    imports: [FormsModule, CommonModule]
+
 })
 
 export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {

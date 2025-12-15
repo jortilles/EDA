@@ -1,11 +1,17 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, ViewChild } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { Editor } from 'primeng/editor';
 import { DomSanitizer } from '@angular/platform-browser';
 import * as _ from 'lodash';
+
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
 @Component({
+	standalone: true,
 	selector: 'app-title-dialog',
+	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	templateUrl: './quill-editor.component.html',
+	imports: [FormsModule, CommonModule]
 })
 
 export class TitleDialogComponent extends EdaDialogAbstract {

@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, CUSTOM_ELEMENTS_SCHEMA, ViewChild} from '@angular/core';
 import {SelectItem} from 'primeng/api';
 import {EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent, EdaDatePickerComponent} from '@eda/shared/components/shared-components.index';
 import {Column} from '@eda/models/model.index';
@@ -10,11 +10,16 @@ import {
     FilterType, QueryBuilderService,
 } from '@eda/services/service.index';
 import * as _ from 'lodash';
+import { FormsModule } from '@angular/forms';  // <-- necesario para ngModel
+
 
 @Component({
+    standalone: true,
     selector: 'app-filter-dialog',
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './filter-dialog.component.html',
-    styleUrls: ['../eda-blank-panel.component.css']
+    styleUrls: ['../eda-blank-panel.component.css'],
+    imports: [FormsModule]
 
 })
 

@@ -1,15 +1,18 @@
 import { EdaDialogAbstract, EdaDialogCloseEvent, EdaDialog } from '@eda/shared/components/shared-components.index';
-import { Component, ViewChild } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, ViewChild } from '@angular/core';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { MapUtilsService, StyleProviderService, ChartUtilsService } from "@eda/services/service.index";
 import { layerGroup } from 'leaflet';
-
+import { FormsModule } from '@angular/forms';
 
 
 @Component({
+  standalone: true,
   selector: 'app-mapedit-dialog',
-  templateUrl: './mapedit-dialog.component.html'
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  templateUrl: './mapedit-dialog.component.html',
+  imports: [FormsModule],
 })
 
 export class MapEditDialogComponent extends EdaDialogAbstract {

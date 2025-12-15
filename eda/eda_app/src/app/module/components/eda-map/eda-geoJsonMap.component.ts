@@ -5,6 +5,7 @@ import {
   SecurityContext,
   Output,
   EventEmitter,
+  CUSTOM_ELEMENTS_SCHEMA,
 } from "@angular/core";
 import { Component, AfterViewInit } from "@angular/core";
 import { MapUtilsService,StyleProviderService } from "@eda/services/service.index";
@@ -16,8 +17,13 @@ import { DomSanitizer } from "@angular/platform-browser";
 import * as L from 'leaflet';
 import { feature } from "topojson-client";
 
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
+
 @Component({
+  standalone: true,
   selector: "eda-geomap",
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: "./eda-geojson-map.component.html",
   styleUrls: ["./eda-map.component.css"],
   animations: [
@@ -28,6 +34,7 @@ import { feature } from "topojson-client";
       ]),
     ]),
   ],
+  imports: [FormsModule, CommonModule]
 })
 export class EdaGeoJsonMapComponent
   implements OnInit, AfterViewInit, AfterViewChecked

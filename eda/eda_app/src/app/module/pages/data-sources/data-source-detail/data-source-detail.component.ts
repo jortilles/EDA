@@ -1,4 +1,4 @@
-import { EdaTable, EdaColumnText, EdaColumnContextMenu } from '@eda/components/component.index';
+import { EdaTable, EdaColumnText, EdaColumnContextMenu, EdaTableComponent } from '@eda/components/component.index';
 import { Component, OnInit, OnDestroy, EventEmitter, Output, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { UntypedFormGroup } from '@angular/forms';
@@ -27,8 +27,9 @@ import { ViewDialogComponent } from './view-dialog/view-dialog.component';
   imports: [
     PrimengModule,     // tus módulos de PrimeNG
     FormsModule,       // << necesario para [(ngModel)]
-    ReactiveFormsModule // << opcional si usas FormGroup/FormControl
-    , ViewDialogComponent
+    ReactiveFormsModule, // << opcional si usas FormGroup/FormControl
+    ViewDialogComponent,
+    EdaTableComponent
   ]
 })
 export class DataSourceDetailComponent implements OnInit, OnDestroy {

@@ -1,6 +1,6 @@
 import { EdaDialogController } from './../../../../../shared/components/eda-dialogs/eda-dialog/eda-dialog-controller';
 import { TableConfig } from '../panel-charts/chart-configuration-models/table-config';
-import { Component, ViewChild, AfterViewInit, Inject } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, Inject, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog';
 import { EdaDialogAbstract } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog-abstract';
 import { MenuItem } from 'primeng/api';
@@ -9,12 +9,17 @@ import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
 import { StyleProviderService } from '@eda/services/service.index';
-
+import { EdaDialogComponent } from '@eda/shared/components/shared-components.index';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
+  standalone: true,
   selector: 'app-table-dialog',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './table-dialog.component.html',
-  styleUrls: ['../../../../../../assets/sass/eda-styles/components/table-dialog.component.css']
+  styleUrls: ['../../../../../../assets/sass/eda-styles/components/table-dialog.component.css'],
+  imports: [CommonModule, FormsModule, EdaDialogComponent]
 })
 
 export class TableDialogComponent extends EdaDialogAbstract implements AfterViewInit {

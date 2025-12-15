@@ -1,13 +1,18 @@
-import { Component, ViewChild, AfterViewChecked } from '@angular/core';
+import { Component, ViewChild, AfterViewChecked, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { BubblechartConfig } from '../panel-charts/chart-configuration-models/bubblechart.config';
 import { StyleProviderService,ChartUtilsService } from '@eda/services/service.index';
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
 
 @Component({
+  standalone: true,
   selector: 'app-bubblechart-dialog',
-  templateUrl: './bubblechart-dialog.component.html'
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  templateUrl: './bubblechart-dialog.component.html',
+  imports: [FormsModule, CommonModule]
 })
 
 export class BubblechartDialog extends EdaDialogAbstract implements AfterViewChecked {

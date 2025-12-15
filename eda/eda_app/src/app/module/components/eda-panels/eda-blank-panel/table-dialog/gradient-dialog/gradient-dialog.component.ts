@@ -1,9 +1,15 @@
-import { Component } from "@angular/core";
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
 
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
+
 @Component({
+  standalone: true,
   selector: 'eda-table-gradient-dialog',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './gradient-dialog.component.html',
+  imports: [FormsModule, CommonModule]
   // styleUrls: ['../../../../../../assets/sass/eda-styles/components/table-dialog.component.css']
 })
 
