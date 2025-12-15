@@ -35,12 +35,11 @@ import { DashboardPage } from 'app/module/pages/dashboard/dashboard.page';
 import { QueryService } from '@eda/services/api/query.service';
 import { ConfirmationService, SharedModule } from 'primeng/api';
 import Swal from 'sweetalert2';
-
+import { EdaContextMenuComponent } from '@eda/shared/components/shared-components.index';
 // pruebas
 import { WhatIfDialogComponent } from '@eda/components/component.index';
 import { EbpChatgptComponent } from '@eda/components/ebp-chatgpt/ebp-chatgpt.component';
 import { FilterMapperComponent } from '@eda/components/filter-mapper/filter-mapper.component';
-
 export interface IPanelAction {
     code: string;
     data: any;
@@ -52,7 +51,7 @@ export interface IPanelAction {
     [
         EdaDialog2Component, SharedModule, WhatIfDialogComponent,EbpChatgptComponent, 
         FilterMapperComponent,NgClass,TooltipModule, FormsModule, ReactiveFormsModule,
-        DragDropModule, CommonModule
+        DragDropModule, CommonModule, PanelChartComponent, EdaContextMenuComponent
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     selector: 'eda-blank-panel',
