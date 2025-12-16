@@ -317,15 +317,15 @@
                         <textarea class="w-full flex-1 p-2 border rounded resize-none mb-2"
                           [(ngModel)]="queryFromServer" pInputTextarea autoResize="autoResize">
                         </textarea>
+                        <div class="mt-2 flex gap-4">
+                          <button type="button" pButton icon="fa fa-database" class="p-button-success mt-2 w-fit"
+                            (click)="migrateQuery()" i18n-label="@@openSqlMode" label="Abrir en modo SQL">
+                          </button>
+                          <button type="button" pButton icon="pi pi-times" class="p-button-secondary mt-2 w-fit"
+                            (click)="display_v.showQueryContainer = false" i18n-label="cancelarBtn" label="Cancelar">
+                          </button>
+                        </div>
                       }
-                      <div class="mt-2 flex gap-4">
-                        <button type="button" pButton icon="fa fa-database" class="p-button-success mt-2 w-fit"
-                          (click)="migrateQuery()" i18n-label="@@openSqlMode" label="Abrir en modo SQL">
-                        </button>
-                        <button type="button" pButton icon="pi pi-times" class="p-button-secondary mt-2 w-fit"
-                          (click)="display_v.showQueryContainer = false" i18n-label="cancelarBtn" label="Cancelar">
-                        </button>
-                      </div>
                     </div>
                   }
   

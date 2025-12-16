@@ -555,7 +555,6 @@ export class ColumnDialogComponent {
 
     /** Query per dropdown  */
     async loadDropDrownData() {
-    console.log('Loading dropdown data...', this);
 
     this.filterValue.value1 = null;
     this.filterValue.value2 = null;
