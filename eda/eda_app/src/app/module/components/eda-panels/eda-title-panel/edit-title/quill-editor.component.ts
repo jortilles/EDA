@@ -28,7 +28,7 @@ export class TitleDialogComponent{
 	public ngOnInit(): void {
 		this.title = this.controller.params.title;
 		const urlImage = document.querySelector('#qlUrlImage');
-		urlImage.addEventListener('click', ($event) => this.urlImageHandler(event));
+		urlImage?.addEventListener('click', ($event) => this.urlImageHandler(event));
 	}
 
 	public onClose(event: EdaDialogCloseEvent, response?: any): void {
