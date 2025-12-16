@@ -30,6 +30,7 @@ import { TableDialogComponent } from '@eda/components/component.index';
 import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.service';
 import { DependentFilters } from '@eda/components/dependent-filters/dependent-filters.component';
 import { FilterDialogComponent } from '@eda/components/component.index';
+import { GlobalFilterDialogComponent } from '@eda/components/component.index';
 import { ImportPanelDialog } from "@eda/components/import-panel/import-panel.dialog";
 import { DashboardSaveAsDialog } from "@eda/components/dashboard-save-as/dashboard-save-as.dialog";
 import { DashboardEditStyleDialog } from "@eda/components/dashboard-edit-style/dashboard-edit-style.dialog";
@@ -74,6 +75,7 @@ const STANDALONE_COMPONENTS = [
   DashboardTagModal,
   DashboardMailConfigModal,
   DashboardVisibleModal,
+  GlobalFilterDialogComponent,
   FilterDialogComponent,
   DashboardFilterDialogComponent,
   ImportPanelDialog,

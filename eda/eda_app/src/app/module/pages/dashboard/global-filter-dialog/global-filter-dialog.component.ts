@@ -3,16 +3,28 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, CUSTOM_ELEME
 import { EdaPanel } from "@eda/models/model.index";
 import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, QueryBuilderService, StyleProviderService } from "@eda/services/service.index";
 import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
-import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 import * as _ from 'lodash';
+import { NgClass } from "@angular/common";
+import { EdaDatePickerComponent } from "@eda/shared/components/shared-components.index";
+import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
+import { DropdownModule } from "primeng/dropdown";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";  
+import { CardModule } from "primeng/card";
+import { TreeSelectModule } from "primeng/treeselect";
+import { MultiSelectModule } from "primeng/multiselect";
+import { TooltipModule } from "primeng/tooltip";
+import { TableModule } from "primeng/table";
+import { ButtonModule } from "primeng/button";
+import { CommonModule } from '@angular/common';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @Component({
     standalone: true,
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     selector: 'app-global-filter-dialog',
     templateUrl: './global-filter-dialog.component.html',
     styleUrls: ['../dashboard.page.css'], 
-    imports: [ EdaDialog2Component],
+    imports: [ NgClass, EdaDatePickerComponent, EdaDialog2Component, DropdownModule, FormsModule, 
+        ReactiveFormsModule, CardModule,TreeSelectModule, MultiSelectModule, TooltipModule, TableModule, ButtonModule,CommonModule, DragDropModule ],
 })
 export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     @Input() globalFilter: any;
@@ -85,6 +97,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     };
 
     public ngOnInit(): void {
+        console.log('AAAAAA')
         this.display = true;
         this.modelTables = _.cloneDeep(this.dataSource.model.tables);
         this.initGlobalFilter();

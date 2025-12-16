@@ -32,6 +32,7 @@ export { EdaD3Component } from './eda-d3/eda-d3.component';
 // Eda Panels
 export { ColumnDialogComponent } from './eda-panels/eda-blank-panel/column-dialog/column-dialog.component';
 export { FilterDialogComponent } from './eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component';
+export { GlobalFilterDialogComponent } from '../pages/dashboard/global-filter-dialog/global-filter-dialog.component';
 export { ChartDialogComponent } from './eda-panels/eda-blank-panel/chart-dialog/chart-dialog.component';
 export { TableDialogComponent } from './eda-panels/eda-blank-panel/table-dialog/table-dialog.component';
 export { TableGradientDialogComponent } from './eda-panels/eda-blank-panel/table-dialog/gradient-dialog/gradient-dialog.component';

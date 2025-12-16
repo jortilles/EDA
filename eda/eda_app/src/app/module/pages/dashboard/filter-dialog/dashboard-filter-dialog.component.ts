@@ -14,6 +14,10 @@ import { FormsModule } from '@angular/forms';  // <-- necesario para ngModel
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { CardModule } from 'primeng/card';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { DropdownModule } from 'primeng/dropdown';
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 
 @Component({
     standalone: true,
@@ -21,7 +25,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './dashboard-filter-dialog.component.html',
     styleUrls: ['./dashboard-filter-dialog.component.css'],
-    imports: [FormsModule, CommonModule, ButtonModule, DragDropModule]
+    imports: [FormsModule, CommonModule, ButtonModule, DragDropModule,CardModule,MultiSelectModule,DropdownModule,EdaDialog2Component]
 })
 
 export class DashboardFilterDialogComponent extends EdaDialogAbstract {

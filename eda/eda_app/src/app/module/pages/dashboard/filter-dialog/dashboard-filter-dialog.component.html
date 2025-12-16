@@ -1,6 +1,6 @@
-<eda-dialog [inject]="dialog">
+<eda-dialog2>
 
-    <div body>
+    <div content>
         <ng-container *ngIf="params?.isnew">
             <ng-container *ngTemplateOutlet="filterTemplate;"></ng-container>
         </ng-container>
@@ -17,7 +17,7 @@
                 i18n-label="@@cancelarBtn" label="Cancelar"></button>
         </div>
     </div>
-</eda-dialog>
+</eda-dialog2>
 
 
 <ng-template #filterTemplate>

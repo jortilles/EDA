@@ -24,7 +24,7 @@ import { DashboardMailConfigModal } from "../../../components/dashboard-mail-con
 import { DashboardVisibleModal } from "../../../components/dashboard-visible/dashboard-visible.modal";
 import { ImportPanelDialog } from "../../../components/import-panel/import-panel.dialog";
 import { DependentFilters } from "../../../components/dependent-filters/dependent-filters.component";
-import { FilterDialogComponent } from '@eda/components/component.index';
+import { GlobalFilterDialogComponent } from "@eda/components/component.index";
 
 const STANDALONE_COMPONENTS = [
     DashboardSaveAsDialog,
@@ -35,7 +35,7 @@ const STANDALONE_COMPONENTS = [
     DashboardVisibleModal,
     ImportPanelDialog,
     DependentFilters,
-    FilterDialogComponent
+    GlobalFilterDialogComponent
 ] 
 
 const ANGULAR_MODULES = [
