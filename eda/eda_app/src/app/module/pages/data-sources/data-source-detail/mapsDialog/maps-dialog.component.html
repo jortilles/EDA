@@ -4,17 +4,6 @@
   <div content class="p-2 space-y-6">
     <!-- Tabs -->
     <div class="grid w-full grid-cols-3 gap-3">
-      <!-- <button 
-            (click)="setDashboardTab('export')" 
-            class="flex items-center justify-center px-3 py-2 font-semibold rounded-l-md transition-colors"
-            [class.bg-[#00BFB3]]="dashboardTab() === 'export'"
-            [class.text-white]="dashboardTab() === 'export'"
-            [class.bg-gray-100]="dashboardTab() !== 'export'"
-            [class.dark:bg-gray-800]="dashboardTab() !== 'export'"
-          >
-            <eda-icon name="export" class="mr-2"></eda-icon>
-            Exportar
-          </button> -->
       <button 
         [ngClass]="{'bg-[#00BFB3] text-white': activeTab === 'properties', 'bg-gray-100': activeTab !== 'properties'}"
         class="px-3 py-2 font-semibold rounded-md transition-colors"

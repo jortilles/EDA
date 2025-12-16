@@ -40,7 +40,7 @@ import { SunburstConfig } from './chart-configuration-models/sunburst-config';
 import { SankeyConfig } from './chart-configuration-models/sankey-config';
 import { ScatterConfig } from './chart-configuration-models/scatter-config';
 import { BubblechartConfig } from './chart-configuration-models/bubblechart.config';
-
+import { MapCoordDialogComponent } from '../mapcoord-dialog/mapcoord-dialog.component';
 import { FormsModule } from '@angular/forms'; 
 import { CommonModule } from '@angular/common';
 
@@ -49,7 +49,7 @@ import { CommonModule } from '@angular/common';
     selector: 'panel-chart',
     templateUrl: './panel-chart.component.html',
     styleUrls: [],
-    imports: [FormsModule, CommonModule]
+    imports: [FormsModule, CommonModule,MapCoordDialogComponent]
 })
 
 export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {

@@ -13,7 +13,6 @@ import { EdaPanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index'
 import { DashboardSidebarComponent } from './dashboard-sidebar/dashboard-sidebar.component';
 import { GlobalFilterComponent } from '@eda/components/global-filter/global-filter.component'; 
 import { EdaBlankPanelComponent, IPanelAction } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
-import { ChartDialogComponent } from '@eda/components/component.index';
 import { ComponentsModule } from '@eda/components/components.module';
 import { FormsModule } from '@angular/forms';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
@@ -21,6 +20,11 @@ import { CommonModule } from '@angular/common';
 import { ChatgptService } from '@eda/services/api/chatgpt.service';
 import { DashboardFilterDialogComponent } from './filter-dialog/dashboard-filter-dialog.component';
 import { EdaTitlePanelComponent } from '@eda/components/component.index';
+// Dialogs 
+import { ChartDialogComponent } from '@eda/components/component.index';
+import { BubblechartDialog } from '@eda/components/component.index';
+import { MapCoordDialogComponent } from '@eda/components/component.index';
+import { MapEditDialogComponent } from '@eda/components/component.index';
 // Imports del sidebar
 import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.service';
 import { DependentFilters } from '@eda/components/dependent-filters/dependent-filters.component';
@@ -33,14 +37,22 @@ import { DashboardTagModal } from './dashboard-tag/dashboard-tag.modal';
 import { DashboardMailConfigModal } from "@eda/components/dashboard-mail-config/dashboard-mail-config.modal";
 import { DashboardCustomActionDialog } from "@eda/components/dashboard-custom-action/dashboard-custom-action.dialog";
 
-
-const ANGULAR_MODULES = [
-    FormsModule,
-    ComponentsModule,
+const PRIMENG_MODULES = [
     ButtonModule,
     DropdownModule,
     MenuModule,
     MessageModule,
+]
+
+const DIALOGS_COMPONENTS = [
+  ChartDialogComponent,
+  MapEditDialogComponent,
+  MapCoordDialogComponent,
+]
+
+const ANGULAR_MODULES = [
+    FormsModule,
+    ComponentsModule,
     FocusOnShowDirective,
     CommonModule,
 ];
@@ -64,16 +76,13 @@ const STANDALONE_COMPONENTS = [
   DependentFilters,
   FilterDialogComponent,
   DashboardFilterDialogComponent,
-  ChartDialogComponent,
   EdaTitlePanelComponent
 ]
 @Component({
   selector: 'app-v2-dashboard-page',
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [
-    STANDALONE_COMPONENTS, ANGULAR_MODULES, GRIDSTER_MODULES
-  ],
+  imports: [STANDALONE_COMPONENTS, ANGULAR_MODULES, GRIDSTER_MODULES, PRIMENG_MODULES, DIALOGS_COMPONENTS],
 
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.css'],

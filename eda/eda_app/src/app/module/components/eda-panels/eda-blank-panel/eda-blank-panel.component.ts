@@ -17,6 +17,7 @@ import { TreeModule } from 'primeng/tree';
 // Eda config
 import { NULL_VALUE, EMPTY_VALUE} from '../../../../config/personalitzacio/customizables';
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
+
 import { PanelChart } from './panel-charts/panel-chart';
 import { PanelOptions } from './panel-utils/panel-menu-options';
 import { TableConfig } from './panel-charts/chart-configuration-models/table-config';
@@ -42,6 +43,9 @@ import { FilterMapperComponent } from '@eda/components/filter-mapper/filter-mapp
 import { EbpChatgptComponent } from '@eda/components/ebp-chatgpt/ebp-chatgpt.component';
 import { DashboardPage } from 'app/module/pages/dashboard/dashboard.page';
 import { TreeMapDialog } from '@eda/components/component.index';
+import { EdadynamicTextComponent } from '@eda/components/component.index';
+import { EdaTitlePanelComponent } from '@eda/components/component.index';
+import { PanelMenuModule } from 'primeng/panelmenu';
 // Panel Utils
 import { TableUtils } from './panel-utils/tables-utils';
 import { QueryUtils } from './panel-utils/query-utils';
@@ -49,19 +53,27 @@ import { EbpUtils } from './panel-utils/ebp-utils';
 import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils';
 
+//pruebas
+import { SunburstDialogComponent } from '@eda/components/component.index';
+import { BubblechartDialog } from '@eda/components/component.index';
+import { MapEditDialogComponent } from '@eda/components/component.index';
+import { MapCoordDialogComponent } from '@eda/components/component.index';
+import { ChartDialogComponent } from '@eda/components/component.index';
+
 export interface IPanelAction {
     code: string;
     data: any;
 }
-
-const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass, ]
-const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule];
-const STANDALONE_COMPONENTS = [EdaDialog2Component, WhatIfDialogComponent, EbpChatgptComponent,FilterMapperComponent, 
-    PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, TreeMapDialog
+const DIALOGS_COMPONENTS = [ChartDialogComponent, MapCoordDialogComponent, MapEditDialogComponent];
+const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass];
+const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule];
+const STANDALONE_COMPONENTS = [
+    EdaDialog2Component, WhatIfDialogComponent, EbpChatgptComponent,FilterMapperComponent, EdadynamicTextComponent,EdaTitlePanelComponent,
+    PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, TreeMapDialog, SunburstDialogComponent, 
 ]
 @Component({
     standalone: true,
-    imports : [ STANDALONE_COMPONENTS,PRIMENG_MODULES, ANGULAR_MODULES],
+    imports : [ STANDALONE_COMPONENTS,PRIMENG_MODULES, ANGULAR_MODULES, DIALOGS_COMPONENTS],
     selector: 'eda-blank-panel',
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './eda-blank-panel.component.html',
