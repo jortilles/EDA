@@ -1,22 +1,22 @@
-<eda-dialog2 width="80vw" height="70vh" [overflow]="'auto'" [header]="title" >
-  <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-full">
+<eda-dialog2 width="80vw" height="80vh" [header]="title" (apply)="saveChartConfig()" (close)="closeChartConfig()">
+  <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-[70vh]">
     <!-- Chart Preview -->
     <div class="flex-1 flex justify-center border-b md:border-b-0 md:border-r bg-slate-50" >
       <div class="relative" [ngClass]="this.controller.params.chart.edaChart === 'radar' ? 'w-[30vw]' : 'p-3 h-full w-full content-end'">
-          @if (display) {
-        <panel-chart #PanelChartComponent [props]="panelChartConfig" class="h-[95%] w-full block"></panel-chart>
+        @if (display) {
+          <panel-chart #PanelChartComponent [props]="panelChartConfig" class="h-[95%] w-full block"></panel-chart>
         }
       </div>
     </div>
 
     <!-- Settings -->
-    <div class=" flex-1 overflow-y-auto pl-6">
+    <div class=" flex-1 h-[95%] overflow-y-auto pl-6">
       <!-- Display Tab -->
       <div class="space-y-6 p-4 pt-0 mb-6 bg-slate-50 rounded-md">
         <div class="space-y-4">
-          <h3 class="p-dialog-title" i18n="@@chartDisplayOptionsTitle">
+          <h1 class="p-dialog-title" i18n="@@chartDisplayOptionsTitle">
             Opciones de visualización
-          </h3>
+          </h1>
 
           <div class="space-y-4 text-base">
             @if (panelChartConfig.edaChart !== 'histogram') {
@@ -192,7 +192,7 @@
 
       <div class="space-y-6  p-4 pt-0 bg-slate-50 rounded-md">
         <div class="space-y-4">
-          <h3 i18n="@@colorsChartH6" class="p-dialog-title">Colores</h3>
+          <h1 i18n="@@colorsChartH6" class="p-dialog-title">Colores</h1>
 
           <div class="grid gap-4 grid-rows-auto gap-6">
             <div>

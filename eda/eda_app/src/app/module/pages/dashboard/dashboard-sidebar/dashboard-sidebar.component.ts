@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, inject, Input, Output, ViewChild } from "@angular/core";
+import { Component, EventEmitter, inject, Input, Output, ViewChild } from "@angular/core";
 import { OverlayModule } from "primeng/overlay";
 import { OverlayPanel, OverlayPanelModule } from "primeng/overlaypanel";
 import { DashboardPage } from "../dashboard.page";
@@ -50,7 +50,6 @@ const ANGULAR_MODULES = [
   standalone: true,
   imports: [ STANDALONE_COMPONENTS, ANGULAR_MODULES],
   templateUrl: './dashboard-sidebar.component.html',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styles: `
     .overlay-backdrop {
         position: fixed;

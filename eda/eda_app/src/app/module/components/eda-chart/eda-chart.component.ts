@@ -10,7 +10,6 @@ import { NgChartsModule } from 'ng2-charts';
 @Component({
     standalone: true,
     selector: 'eda-chart',
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './eda-chart.component.html',
     styleUrls: [],
     imports: [FormsModule, CommonModule, NgChartsModule]

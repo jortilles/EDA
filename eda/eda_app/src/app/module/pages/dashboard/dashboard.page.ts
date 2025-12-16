@@ -13,13 +13,14 @@ import { EdaPanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index'
 import { DashboardSidebarComponent } from './dashboard-sidebar/dashboard-sidebar.component';
 import { GlobalFilterComponent } from '@eda/components/global-filter/global-filter.component'; 
 import { EdaBlankPanelComponent, IPanelAction } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
+import { ChartDialogComponent } from '@eda/components/component.index';
 import { ComponentsModule } from '@eda/components/components.module';
 import { FormsModule } from '@angular/forms';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 import { CommonModule } from '@angular/common';
 import { ChatgptService } from '@eda/services/api/chatgpt.service';
 import { DashboardFilterDialogComponent } from './filter-dialog/dashboard-filter-dialog.component';
-
+import { EdaTitlePanelComponent } from '@eda/components/component.index';
 // Imports del sidebar
 import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.service';
 import { DependentFilters } from '@eda/components/dependent-filters/dependent-filters.component';
@@ -62,18 +63,20 @@ const STANDALONE_COMPONENTS = [
   ImportPanelDialog,
   DependentFilters,
   FilterDialogComponent,
-  DashboardFilterDialogComponent
+  DashboardFilterDialogComponent,
+  ChartDialogComponent,
+  EdaTitlePanelComponent
 ]
 @Component({
   selector: 'app-v2-dashboard-page',
   standalone: true,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     STANDALONE_COMPONENTS, ANGULAR_MODULES, GRIDSTER_MODULES
   ],
 
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.css'],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class DashboardPage implements OnInit {
   @ViewChild(DashboardSidebarComponent) sidebar!: DashboardSidebarComponent;

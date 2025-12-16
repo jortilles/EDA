@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef} from '@angular/core';
 import { EdadynamicText } from './eda-dynamicText';
 import { dynamicTextDialogComponent } from './../eda-panels/eda-blank-panel/dynamicText-dialog/dynamicText-dialog.component';
 import { StyleProviderService } from '@eda/services/service.index';
