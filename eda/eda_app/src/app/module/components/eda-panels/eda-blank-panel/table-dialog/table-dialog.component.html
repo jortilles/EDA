@@ -1,5 +1,5 @@
-<eda-dialog [inject]="dialog">
-  <div body class="flex flex-col flex-1 overflow-hidden h-full">
+<eda-dialog2 [display]="display" [header]="title" width="80vw" height="70vh" [overflow]="'auto'" (apply)="saveChartConfig()" (close)="closeChartConfig()">
+  <div content class="flex flex-col flex-1 overflow-hidden h-full">
     <p-menubar [model]="items" styleClass="total-item">
     </p-menubar>
 
@@ -12,18 +12,6 @@
     </div>
   </div>
 
-
-  <div footer>
-    <div class="flex justify-end p-2 border-t gap-1.5">
-      <button  class="cancel-button" (click)="closeChartConfig()">
-        <i class="fa fa-times"></i>
-        <span i18n="@@cancelarBtn">Cancelar</span>
-      </button>
-      <button class="confirm-button" (click)="saveChartConfig()">
-        <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
-      </button>
-    </div>
-  </div>
-</eda-dialog>
+</eda-dialog2>
 
 <eda-table-gradient-dialog *ngIf="gradientMenuController" [controller]="gradientMenuController"></eda-table-gradient-dialog>

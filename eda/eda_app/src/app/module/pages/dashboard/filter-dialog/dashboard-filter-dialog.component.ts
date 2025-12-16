@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import {
     GlobalFiltersService,
     AlertService,
@@ -10,10 +10,18 @@ import { EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract, EdaDatePickerCompone
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/datePickerConfig';
 import * as _ from 'lodash';
+import { FormsModule } from '@angular/forms';  // <-- necesario para ngModel
+import { CommonModule } from '@angular/common';
+import { ButtonModule } from 'primeng/button';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+
 @Component({
+    standalone: true,
     selector: 'dashboard-filter-dialog',
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './dashboard-filter-dialog.component.html',
-    styleUrls: ['./dashboard-filter-dialog.component.css']
+    styleUrls: ['./dashboard-filter-dialog.component.css'],
+    imports: [FormsModule, CommonModule, ButtonModule, DragDropModule]
 })
 
 export class DashboardFilterDialogComponent extends EdaDialogAbstract {

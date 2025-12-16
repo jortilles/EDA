@@ -25,6 +25,7 @@ import { ChartDialogComponent } from '@eda/components/component.index';
 import { BubblechartDialog } from '@eda/components/component.index';
 import { MapCoordDialogComponent } from '@eda/components/component.index';
 import { MapEditDialogComponent } from '@eda/components/component.index';
+import { TableDialogComponent } from '@eda/components/component.index';
 // Imports del sidebar
 import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.service';
 import { DependentFilters } from '@eda/components/dependent-filters/dependent-filters.component';
@@ -48,6 +49,7 @@ const DIALOGS_COMPONENTS = [
   ChartDialogComponent,
   MapEditDialogComponent,
   MapCoordDialogComponent,
+  TableDialogComponent
 ]
 
 const ANGULAR_MODULES = [
@@ -74,8 +76,6 @@ const STANDALONE_COMPONENTS = [
   DashboardVisibleModal,
   ImportPanelDialog,
   DependentFilters,
-  FilterDialogComponent,
-  DashboardFilterDialogComponent,
   EdaTitlePanelComponent
 ]
 @Component({
