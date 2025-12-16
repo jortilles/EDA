@@ -74,6 +74,8 @@ const STANDALONE_COMPONENTS = [
   DashboardTagModal,
   DashboardMailConfigModal,
   DashboardVisibleModal,
+  FilterDialogComponent,
+  DashboardFilterDialogComponent,
   ImportPanelDialog,
   DependentFilters,
   EdaTitlePanelComponent

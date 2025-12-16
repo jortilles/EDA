@@ -37,6 +37,7 @@ import { EdaChartComponent } from '@eda/components/component.index';
 import { PanelChartComponent } from './panel-charts/panel-chart.component';
 import { DragDropComponent } from '@eda/components/drag-drop/drag-drop.component';
 import { ColumnDialogComponent } from '@eda/components/component.index';
+import { FilterDialogComponent } from '@eda/components/component.index';
 import { WhatIfDialogComponent } from '@eda/components/component.index';
 import { FilterMapperDialog } from '@eda/components/filter-mapper-dialog/filter-mapper.dialog';
 import { FilterMapperComponent } from '@eda/components/filter-mapper/filter-mapper.component';
@@ -67,7 +68,7 @@ const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass
 const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule];
 const STANDALONE_COMPONENTS = [
     EdaDialog2Component, WhatIfDialogComponent, EbpChatgptComponent,FilterMapperComponent, EdadynamicTextComponent,EdaTitlePanelComponent,
-    PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, TreeMapDialog, 
+    PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, TreeMapDialog, 
 ]
 @Component({
     standalone: true,
