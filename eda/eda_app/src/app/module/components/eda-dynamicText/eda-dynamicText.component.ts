@@ -2,13 +2,11 @@ import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, 
 import { EdadynamicText } from './eda-dynamicText';
 import { dynamicTextDialogComponent } from './../eda-panels/eda-blank-panel/dynamicText-dialog/dynamicText-dialog.component';
 import { StyleProviderService } from '@eda/services/service.index';
-
 import { FormsModule } from '@angular/forms'; 
 import { CommonModule } from '@angular/common';
 @Component({
     standalone: true,
     selector: 'eda-dynamicText',
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],  
     templateUrl: './eda-dynamicText.component.html',
     imports: [FormsModule, CommonModule]
 })

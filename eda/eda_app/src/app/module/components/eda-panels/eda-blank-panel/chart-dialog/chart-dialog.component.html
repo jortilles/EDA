@@ -1,5 +1,5 @@
-<eda-dialog [inject]="dialog">
-  <div body class="flex flex-col md:flex-row flex-1 overflow-hidden h-full">
+<eda-dialog2 width="80vw" height="70vh" [overflow]="'auto'" [header]="title" >
+  <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-full">
     <!-- Chart Preview -->
     <div class="flex-1 flex justify-center border-b md:border-b-0 md:border-r bg-slate-50" >
       <div class="relative" [ngClass]="this.controller.params.chart.edaChart === 'radar' ? 'w-[30vw]' : 'p-3 h-full w-full content-end'">
@@ -226,19 +226,4 @@
       </div>
     </div>
   </div>
-
-  <div footer>
-    <div class="flex justify-end p-2 border-t gap-1.5">
-      <button class="cancel-button"
-        (click)="closeChartConfig()">
-        <i class="fa fa-times"></i>
-        <span i18n="@@cancelarBtn">Cancelar</span>
-      </button>
-      <button
-        class="confirm-button"
-        (click)="saveChartConfig()">
-        <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
-      </button>
-    </div>
-  </div>
-</eda-dialog>
+</eda-dialog2>

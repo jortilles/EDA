@@ -2,13 +2,11 @@ import {AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Input, O
 import {EdaContextMenu} from '@eda/shared/components/eda-context-menu/eda-context-menu';
 import {Dialog} from 'primeng/dialog';
 import { CommonModule } from '@angular/common';
-import { DialogModule } from 'primeng/dialog';  // <--- esto es clave
-import { PanelMenuModule } from 'primeng/panelmenu'; // <--- IMPORTAR ESTO
-
+import { DialogModule } from 'primeng/dialog'; 
+import { PanelMenuModule } from 'primeng/panelmenu';
 @Component({
     standalone: true,
     selector: 'eda-context-menu',
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './eda-context-menu.component.html',
     encapsulation: ViewEncapsulation.None,
     imports: [CommonModule, DialogModule, PanelMenuModule],

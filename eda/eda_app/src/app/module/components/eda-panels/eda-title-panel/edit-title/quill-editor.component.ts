@@ -1,34 +1,31 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, ViewChild } from '@angular/core';
-import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, Input, ViewChild } from '@angular/core';
+import { EdaDialog, EdaDialog2Component, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { Editor } from 'primeng/editor';
 import { DomSanitizer } from '@angular/platform-browser';
+import { DialogModule } from 'primeng/dialog'; 
+import { PanelChartComponent } from '../../eda-blank-panel/panel-charts/panel-chart.component';
+import { EdaContextMenuComponent } from '@eda/shared/components/shared-components.index';
 import * as _ from 'lodash';
+import { EditorModule } from 'primeng/editor';
 
 import { FormsModule } from '@angular/forms'; 
 import { CommonModule } from '@angular/common';
 @Component({
 	standalone: true,
 	selector: 'app-title-dialog',
-	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	templateUrl: './quill-editor.component.html',
-	imports: [FormsModule, CommonModule]
+	imports: [FormsModule, CommonModule, DialogModule, EdaDialog2Component, PanelChartComponent, EdaContextMenuComponent,EditorModule]
 })
 
-export class TitleDialogComponent extends EdaDialogAbstract {
+export class TitleDialogComponent{
+	@Input () controller: any;
 	@ViewChild('Editor') editor: Editor;
-	public dialog: EdaDialog;
+	public header = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
 	public title: string;
-	constructor(private sanitizer: DomSanitizer) {
-		super();
-		this.dialog = new EdaDialog({
-			show: () => this.onShow(),
-			hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-			title: $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
-		});
-		this.dialog.style = { width: '80%', height: '70%', top: "-4em", left: '1em' };
-	}
 
-	public onShow(): void {
+	constructor(private sanitizer: DomSanitizer) {}
+
+	public ngOnInit(): void {
 		this.title = this.controller.params.title;
 		const urlImage = document.querySelector('#qlUrlImage');
 		urlImage.addEventListener('click', ($event) => this.urlImageHandler(event));

@@ -105,7 +105,7 @@ import { FilterMapperComponent } from './filter-mapper/filter-mapper.component';
         // BubblechartDialog,
         // EdaSunburstComponent,
         // SunburstDialogComponent,
-        DragDropComponent
+        //DragDropComponent
     ],
     exports: [
         // EdaDashboardPanelComponent,
@@ -136,7 +136,7 @@ import { FilterMapperComponent } from './filter-mapper/filter-mapper.component';
         // EdaSunburstComponent,
         // SunburstDialogComponent,
         // MapCoordDialogComponent,
-        DragDropComponent,
+        //DragDropComponent,
         // MapCoordDialogComponent,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]

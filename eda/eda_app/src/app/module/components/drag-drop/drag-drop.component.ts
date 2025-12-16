@@ -1,11 +1,14 @@
 import { Component, Input, Output, OnChanges, SimpleChanges, EventEmitter } from '@angular/core';
 import { CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { DragDropModule } from '@angular/cdk/drag-drop'; // <-- import this
 
 
 @Component({
+  standalone: true,
   selector: 'drag-drop',
   templateUrl: './drag-drop.component.html',
-  styleUrls: ['./drag-drop.component.css']
+  styleUrls: ['./drag-drop.component.css'],
+  imports: [DragDropModule],
 })
 export class DragDropComponent implements OnChanges {
 
