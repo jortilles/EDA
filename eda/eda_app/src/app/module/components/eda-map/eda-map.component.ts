@@ -1,4 +1,4 @@
-import { OnInit, ChangeDetectorRef, Input, AfterViewChecked, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+import { OnInit, Input, AfterViewChecked } from "@angular/core";
 import { Component, AfterViewInit } from "@angular/core";
 import * as L from "leaflet";
 import { MapUtilsService, StyleProviderService } from "@eda/services/service.index";
@@ -10,7 +10,6 @@ import { CommonModule } from '@angular/common';
 @Component({
   standalone: true,
   selector: 'eda-map',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './eda-map.component.html',
   styleUrls: ['./eda-map.component.css'],
   imports: [FormsModule, CommonModule]

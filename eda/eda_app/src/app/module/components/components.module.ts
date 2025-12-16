@@ -137,7 +137,6 @@ import { FilterMapperComponent } from './filter-mapper/filter-mapper.component';
         // SunburstDialogComponent,
         // MapCoordDialogComponent,
         //DragDropComponent,
-        // MapCoordDialogComponent,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
