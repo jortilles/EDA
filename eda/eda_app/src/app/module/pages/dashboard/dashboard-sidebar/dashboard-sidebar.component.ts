@@ -24,14 +24,31 @@ import { DashboardMailConfigModal } from "../../../components/dashboard-mail-con
 import { DashboardVisibleModal } from "../../../components/dashboard-visible/dashboard-visible.modal";
 import { ImportPanelDialog } from "../../../components/import-panel/import-panel.dialog";
 import { DependentFilters } from "../../../components/dependent-filters/dependent-filters.component";
+import { FilterDialogComponent } from '@eda/components/component.index';
 
+const STANDALONE_COMPONENTS = [
+    DashboardSaveAsDialog,
+    DashboardEditStyleDialog,
+    DashboardCustomActionDialog,
+    DashboardTagModal,
+    DashboardMailConfigModal,
+    DashboardVisibleModal,
+    ImportPanelDialog,
+    DependentFilters,
+    FilterDialogComponent
+] 
 
+const ANGULAR_MODULES = [
+  OverlayModule, 
+  OverlayPanelModule,
+  IconComponent, 
+  DragDropModule
+]
 
 @Component({
   selector: 'app-dashboard-sidebar',
   standalone: true,
-  imports: [OverlayModule, OverlayPanelModule, DashboardSaveAsDialog, DashboardTagModal, DashboardEditStyleDialog,
-    DashboardCustomActionDialog, DashboardMailConfigModal, DashboardVisibleModal, ImportPanelDialog, IconComponent, DependentFilters, DragDropModule],
+  imports: [ STANDALONE_COMPONENTS, ANGULAR_MODULES],
   templateUrl: './dashboard-sidebar.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styles: `

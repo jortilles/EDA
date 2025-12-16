@@ -9,10 +9,6 @@ import { GridsterModule } from 'angular-gridster2';
 
 // Component
 import { AccountSettingsComponent } from './account-settings/account-settings.component';
-import { DashboardFilterDialogComponent } from './dashboard/filter-dialog/dashboard-filter-dialog.component';
-import { TableRelationsDialogComponent } from './data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component';
-import { TableEditRelationsDialogComponent } from './data-sources/data-source-detail/table-edit-relations-dialog/table-edit-relations-dialog.component';
-import { ColumnValueListDialogComponent } from './data-sources/data-source-detail/column-value-list-dialog/column-value-list-dialog.component';
 import { AlertsManagementComponent } from './alerts-management/alerts-management.component';
 import {DashboardMailDialogComponent} from './dashboard/email-dialog/dashboard-mail-dialog.component';
 import { UrlsActionComponent } from './dashboard/urls-action/urls-action.component';
@@ -38,7 +34,6 @@ import { PrimengModule } from 'app/core/primeng.module';
     ],
     declarations: [
         AccountSettingsComponent,
-        DashboardFilterDialogComponent,
         AlertsManagementComponent,
         DashboardMailDialogComponent,
         SaveAsDialogComponent,

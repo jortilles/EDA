@@ -15,7 +15,6 @@ import {
     NavbarComponent,
     // EdaContextMenuComponent,
     EdaInputComponent,
-    EdaDatePickerComponent,
     EdaFieldComponent
 } from './components/shared-components.index';
 import { PrimengModule } from 'app/core/primeng.module';
@@ -29,7 +28,6 @@ import { EdaListComponent } from './components/eda-list/eda-list.component';
         // EdaDialogComponent,
         // EdaContextMenuComponent,
         EdaInputComponent,
-        EdaDatePickerComponent,
         EdaFieldComponent,
     ],
     imports: [
@@ -49,7 +47,6 @@ import { EdaListComponent } from './components/eda-list/eda-list.component';
         // EdaContextMenuComponent,
         EdaInputComponent,
         FocusOnShowDirective,
-        EdaDatePickerComponent,
         EdaFieldComponent,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]

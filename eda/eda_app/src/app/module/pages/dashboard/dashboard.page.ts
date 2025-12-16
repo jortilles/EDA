@@ -18,29 +18,23 @@ import { FormsModule } from '@angular/forms';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 import { CommonModule } from '@angular/common';
 import { ChatgptService } from '@eda/services/api/chatgpt.service';
-import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.service';
+import { DashboardFilterDialogComponent } from './filter-dialog/dashboard-filter-dialog.component';
+
 // Imports del sidebar
-import { DashboardSaveAsDialog } from "@eda/components/dashboard-save-as/dashboard-save-as.dialog";
-import { DashboardEditStyleDialog } from "@eda/components/dashboard-edit-style/dashboard-edit-style.dialog";
-import { DashboardCustomActionDialog } from "@eda/components/dashboard-custom-action/dashboard-custom-action.dialog";
-// import { DashboardTagModal } from "@eda/components/dashboard-tag/dashboard-tag.modal";
-import { DashboardTagModal } from './dashboard-tag/dashboard-tag.modal'; 
-import { DashboardMailConfigModal } from "@eda/components/dashboard-mail-config/dashboard-mail-config.modal";
-import { DashboardVisibleModal } from "@eda/components/dashboard-visible/dashboard-visible.modal";
-import { ImportPanelDialog } from "@eda/components/import-panel/import-panel.dialog";
+import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.service';
 import { DependentFilters } from '@eda/components/dependent-filters/dependent-filters.component';
 import { FilterDialogComponent } from '@eda/components/component.index';
+import { ImportPanelDialog } from "@eda/components/import-panel/import-panel.dialog";
+import { DashboardSaveAsDialog } from "@eda/components/dashboard-save-as/dashboard-save-as.dialog";
+import { DashboardEditStyleDialog } from "@eda/components/dashboard-edit-style/dashboard-edit-style.dialog";
+import { DashboardVisibleModal } from "@eda/components/dashboard-visible/dashboard-visible.modal";
+import { DashboardTagModal } from './dashboard-tag/dashboard-tag.modal'; 
+import { DashboardMailConfigModal } from "@eda/components/dashboard-mail-config/dashboard-mail-config.modal";
+import { DashboardCustomActionDialog } from "@eda/components/dashboard-custom-action/dashboard-custom-action.dialog";
 
-@Component({
-  selector: 'app-v2-dashboard-page',
-  standalone: true,
-  imports: [
+
+const ANGULAR_MODULES = [
     FormsModule,
-    GridsterComponent,
-    GridsterItemComponent,
-    DashboardSidebarComponent,
-    EdaBlankPanelComponent,
-    GlobalFilterComponent,
     ComponentsModule,
     ButtonModule,
     DropdownModule,
@@ -48,15 +42,33 @@ import { FilterDialogComponent } from '@eda/components/component.index';
     MessageModule,
     FocusOnShowDirective,
     CommonModule,
-    DashboardSaveAsDialog,
-    DashboardEditStyleDialog,
-    DashboardCustomActionDialog,
-    DashboardTagModal,
-    DashboardTagModal,
-    DashboardMailConfigModal,
-    DashboardVisibleModal,
-    ImportPanelDialog,FilterDialogComponent,
-    DependentFilters
+];
+const GRIDSTER_MODULES = [
+    GridsterComponent,
+    GridsterItemComponent
+]
+
+// Standalone Components
+const STANDALONE_COMPONENTS = [
+  DashboardSidebarComponent,
+  EdaBlankPanelComponent, 
+  GlobalFilterComponent, 
+  DashboardSaveAsDialog,
+  DashboardEditStyleDialog,
+  DashboardCustomActionDialog,
+  DashboardTagModal,
+  DashboardMailConfigModal,
+  DashboardVisibleModal,
+  ImportPanelDialog,
+  DependentFilters,
+  FilterDialogComponent,
+  DashboardFilterDialogComponent
+]
+@Component({
+  selector: 'app-v2-dashboard-page',
+  standalone: true,
+  imports: [
+    STANDALONE_COMPONENTS, ANGULAR_MODULES, GRIDSTER_MODULES
   ],
 
   templateUrl: './dashboard.page.html',
