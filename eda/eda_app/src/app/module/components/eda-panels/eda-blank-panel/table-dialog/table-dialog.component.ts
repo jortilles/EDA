@@ -13,7 +13,6 @@ import { FormsModule } from '@angular/forms';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { MenubarModule } from 'primeng/menubar';
 import { TableGradientDialogComponent } from './gradient-dialog/gradient-dialog.component';
-import { EdaTableComponent } from '@eda/components/component.index';
 
 @Component({
   standalone: true,
@@ -21,7 +20,7 @@ import { EdaTableComponent } from '@eda/components/component.index';
   templateUrl: './table-dialog.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styleUrls: ['../../../../../../assets/sass/eda-styles/components/table-dialog.component.css'],
-  imports: [CommonModule, FormsModule, EdaDialog2Component, MenubarModule, TableGradientDialogComponent, EdaTableComponent]
+  imports: [CommonModule, FormsModule, EdaDialog2Component, MenubarModule, TableGradientDialogComponent, PanelChartComponent]
 })
 
 export class TableDialogComponent{
