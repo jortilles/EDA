@@ -18,7 +18,6 @@ import { TableGradientDialogComponent } from './gradient-dialog/gradient-dialog.
   standalone: true,
   selector: 'app-table-dialog',
   templateUrl: './table-dialog.component.html',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styleUrls: ['../../../../../../assets/sass/eda-styles/components/table-dialog.component.css'],
   imports: [CommonModule, FormsModule, EdaDialog2Component, MenubarModule, TableGradientDialogComponent, PanelChartComponent]
 })
@@ -32,7 +31,7 @@ export class TableDialogComponent{
   public items: MenuItem[];
 
   public gradientMenuController: EdaDialogController;
-
+  // TODO REVISAR EL CONTROLADOR CUANDO SE INICIA
 
   public row_totals;
   public col_totals;

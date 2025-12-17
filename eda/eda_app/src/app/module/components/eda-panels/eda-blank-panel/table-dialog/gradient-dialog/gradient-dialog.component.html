@@ -1,9 +1,8 @@
-<eda-dialog [inject]="dialog" >
-  <div body>
+<eda-dialog2  [header]="title" width="80vw" height="90vh" [overflow]="'auto'" (apply)="saveGradientConfig()" (close)="closeDialog()">
+  <div content class="flex flex-col flex-1 overflow-hidden h-full">
     <h5 i18n="@@colorsChartH6" class="custom-border-b1">
       Colores
     </h5>
-
   
     <div class="chart-color-selection w-1/5 mt-4">
       <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
@@ -33,17 +32,5 @@
     </div>
 
   </div>
-  
-  <div footer>
-    <div class="flex justify-end p-2 border-t gap-1.5">
-      <button class="cancel-button" (click)="closeDialog()">
-        <i class="fa fa-times"></i>
-        <span i18n="@@cancelarBtn">Cancelar</span>
-      </button>
-      <button class="confirm-button"
-        (click)="saveGradientConfig()">
-        <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
-      </button>
-    </div>
-  </div>
-</eda-dialog>
+
+</eda-dialog2>

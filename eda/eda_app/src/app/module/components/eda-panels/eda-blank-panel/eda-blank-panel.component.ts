@@ -54,6 +54,10 @@ import { EbpUtils } from './panel-utils/ebp-utils';
 import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils';
 
+//
+import { CumSumAlertDialogComponent } from '@eda/components/component.index';
+import { AlertDialogComponent } from '@eda/components/component.index';
+
 //pruebas
 import { MapEditDialogComponent } from '@eda/components/component.index';
 import { MapCoordDialogComponent } from '@eda/components/component.index';
@@ -68,6 +72,8 @@ import { KnobDialogComponent } from '@eda/components/component.index';
 import { SankeyDialog } from '@eda/components/component.index';
 import { dynamicTextDialogComponent } from '@eda/components/component.index';
 import { TableDialogComponent } from '@eda/components/component.index';
+import { TableGradientDialogComponent } from '@eda/components/component.index';
+import { KpiEditDialogComponent } from '@eda/components/component.index';
 export interface IPanelAction {
     code: string;
     data: any;
@@ -75,9 +81,10 @@ export interface IPanelAction {
 const DIALOGS_COMPONENTS = [
     ChartDialogComponent,BubblechartDialog, MapCoordDialogComponent, MapEditDialogComponent,
     TreeTableDialogComponent, SunburstDialogComponent, TreeMapDialog, ScatterPlotDialog,
-    FunnelDialog, KnobDialogComponent, SankeyDialog, dynamicTextDialogComponent, TableDialogComponent
+    FunnelDialog, KnobDialogComponent, SankeyDialog, dynamicTextDialogComponent, TableDialogComponent,
+    TableGradientDialogComponent, AlertDialogComponent, KpiEditDialogComponent
 ];
-const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass];
+const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass, CumSumAlertDialogComponent];
 const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule];
 const STANDALONE_COMPONENTS = [
     EdaDialog2Component, WhatIfDialogComponent, EbpChatgptComponent,FilterMapperComponent, EdadynamicTextComponent,EdaTitlePanelComponent,
