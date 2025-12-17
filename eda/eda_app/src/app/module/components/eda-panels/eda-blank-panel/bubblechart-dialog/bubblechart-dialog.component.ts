@@ -1,44 +1,34 @@
-import { Component, ViewChild, AfterViewChecked, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
+import { Component, ViewChild, CUSTOM_ELEMENTS_SCHEMA, OnInit, Input } from '@angular/core';
+import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { BubblechartConfig } from '../panel-charts/chart-configuration-models/bubblechart.config';
 import { StyleProviderService,ChartUtilsService } from '@eda/services/service.index';
 import { FormsModule } from '@angular/forms'; 
 import { CommonModule } from '@angular/common';
-
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { ColorPickerModule } from 'primeng/colorpicker';
 @Component({
   standalone: true,
   selector: 'app-bubblechart-dialog',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './bubblechart-dialog.component.html',
-  imports: [FormsModule, CommonModule]
+  imports: [FormsModule, EdaDialog2Component, PanelChartComponent, CommonModule, ColorPickerModule],
 })
 
-export class BubblechartDialog extends EdaDialogAbstract implements AfterViewChecked {
+export class BubblechartDialog implements OnInit {
 
   @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
-
+  @Input() controller;
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
   public colors: Array<string>;
   public originalColors: string[];
   public labels: Array<number>;
-  public display:boolean=false;
   public selectedPalette: { name: string; paleta: any } | null = null;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
+  public title = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
 
-  constructor(private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) {
-
-    super();
-
-    this.dialog = new EdaDialog({
-      show: () => this.onShow(),
-      hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
-    });
-    this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
-  }
+  constructor(private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) { }
   ngAfterViewChecked(): void {
     if (!this.colors && this.myPanelChartComponent?.componentRef) {
       //To avoid "Expression has changed after it was checked" warning
@@ -51,9 +41,8 @@ export class BubblechartDialog extends EdaDialogAbstract implements AfterViewChe
     }
   }
 
-  onShow(): void {
+  ngOnInit(): void {
     this.panelChartConfig = this.controller.params.panelChart;
-    this.display = true;
   }
 
   onClose(event: EdaDialogCloseEvent, response?: any): void {

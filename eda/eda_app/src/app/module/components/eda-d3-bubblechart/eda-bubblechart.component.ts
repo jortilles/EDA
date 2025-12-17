@@ -20,7 +20,6 @@ import { CommonModule } from '@angular/common';
 @Component({
   standalone: true,
   selector: 'eda-bubblechart',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './eda-bubblechart.component.html',
   styleUrls: ['./eda-bubblechart.component.css'],
   imports: [FormsModule, CommonModule]
