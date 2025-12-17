@@ -92,6 +92,7 @@ export class HomePageV2 implements OnInit {
   }
 
   public openReport(report: any, event: MouseEvent) {
+    if(this.isEditing){return}
     // Crear la URL completa del informe    
     const urlTree = this.router.createUrlTree(['/dashboard', report._id]);
     const relativeUrl = this.router.serializeUrl(urlTree);
