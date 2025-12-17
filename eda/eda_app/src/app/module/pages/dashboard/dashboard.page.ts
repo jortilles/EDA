@@ -45,13 +45,6 @@ const PRIMENG_MODULES = [
     MessageModule,
 ]
 
-const DIALOGS_COMPONENTS = [
-  ChartDialogComponent,
-  MapEditDialogComponent,
-  MapCoordDialogComponent,
-  TableDialogComponent
-]
-
 const ANGULAR_MODULES = [
     FormsModule,
     ComponentsModule,
@@ -84,7 +77,7 @@ const STANDALONE_COMPONENTS = [
   selector: 'app-v2-dashboard-page',
   standalone: true,
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [STANDALONE_COMPONENTS, ANGULAR_MODULES, GRIDSTER_MODULES, PRIMENG_MODULES, DIALOGS_COMPONENTS],
+  imports: [STANDALONE_COMPONENTS, ANGULAR_MODULES, GRIDSTER_MODULES, PRIMENG_MODULES],
 
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.css'],

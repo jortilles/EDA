@@ -60,12 +60,17 @@ import { MapEditDialogComponent } from '@eda/components/component.index';
 import { MapCoordDialogComponent } from '@eda/components/component.index';
 import { ChartDialogComponent } from '@eda/components/component.index';
 import { BubblechartDialog } from '@eda/components/component.index';
+import { TreeTableDialogComponent } from '@eda/components/component.index';
+import { SunburstDialogComponent } from '@eda/components/component.index';
 
 export interface IPanelAction {
     code: string;
     data: any;
 }
-const DIALOGS_COMPONENTS = [ChartDialogComponent,BubblechartDialog, MapCoordDialogComponent, MapEditDialogComponent];
+const DIALOGS_COMPONENTS = [
+    ChartDialogComponent,BubblechartDialog, MapCoordDialogComponent, MapEditDialogComponent,
+    TreeTableDialogComponent, SunburstDialogComponent
+];
 const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass];
 const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule];
 const STANDALONE_COMPONENTS = [
