@@ -63,6 +63,9 @@ import { TreeTableDialogComponent } from '@eda/components/component.index';
 import { SunburstDialogComponent } from '@eda/components/component.index';
 import { ScatterPlotDialog } from '@eda/components/component.index';    
 import { TreeMapDialog } from '@eda/components/component.index';
+import { FunnelDialog } from '@eda/components/component.index';
+import { KnobDialogComponent } from '@eda/components/component.index';
+import { SankeyDialog } from '@eda/components/component.index';
 export interface IPanelAction {
     code: string;
     data: any;
@@ -70,6 +73,7 @@ export interface IPanelAction {
 const DIALOGS_COMPONENTS = [
     ChartDialogComponent,BubblechartDialog, MapCoordDialogComponent, MapEditDialogComponent,
     TreeTableDialogComponent, SunburstDialogComponent, TreeMapDialog, ScatterPlotDialog,
+    FunnelDialog, KnobDialogComponent, SankeyDialog
 ];
 const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass];
 const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule];
