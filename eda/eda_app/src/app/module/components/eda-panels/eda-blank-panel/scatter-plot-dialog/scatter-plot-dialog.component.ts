@@ -1,4 +1,4 @@
-import { Component, ViewChild, AfterViewChecked, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, ViewChild, AfterViewChecked, CUSTOM_ELEMENTS_SCHEMA, OnInit, Input } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
@@ -6,20 +6,22 @@ import { ScatterConfig } from '../panel-charts/chart-configuration-models/scatte
 import { StyleProviderService,ChartUtilsService } from '@eda/services/service.index';
 import { FormsModule } from '@angular/forms'; 
 import { CommonModule } from '@angular/common';
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { ColorPickerModule } from 'primeng/colorpicker';
 
 @Component({
   standalone: true,
   selector: 'app-scatter-plot-dialog',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './scatter-plot-dialog.component.html',
-  imports: [FormsModule, CommonModule]
+  imports: [FormsModule, CommonModule, PanelChartComponent, EdaDialog2Component, ColorPickerModule]
 })
 
-export class ScatterPlotDialog extends EdaDialogAbstract implements AfterViewChecked {
+export class ScatterPlotDialog implements OnInit {
 
+  @Input() controller: any
   @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
 
-  public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
   public colors: Array<string>;
   private originalColors: string[] = [];
@@ -27,18 +29,8 @@ export class ScatterPlotDialog extends EdaDialogAbstract implements AfterViewChe
   public display: boolean = false;
   public selectedPalette: { name: string; paleta: any } | null = null;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
-
-  constructor(private stylesProviderService: StyleProviderService, private d3ChartUtils: ChartUtilsService) {
-
-    super();
-
-    this.dialog = new EdaDialog({
-      show: () => this.onShow(),
-      hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
-    });
-    this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
-  }
+  public title = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
+  constructor(private stylesProviderService: StyleProviderService, private d3ChartUtils: ChartUtilsService) {}
 
   ngAfterViewChecked(): void {
     if (!this.colors && this.myPanelChartComponent?.componentRef) {
@@ -53,7 +45,7 @@ export class ScatterPlotDialog extends EdaDialogAbstract implements AfterViewChe
     }
   }
 
-  onShow(): void {
+  ngOnInit(): void {
     this.panelChartConfig = this.controller.params.panelChart;
     this.display = true;
   }

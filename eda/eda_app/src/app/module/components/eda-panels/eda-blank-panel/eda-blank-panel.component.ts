@@ -44,7 +44,6 @@ import { FilterMapperComponent } from '@eda/components/filter-mapper/filter-mapp
 import { EbpChatgptComponent } from '@eda/components/ebp-chatgpt/ebp-chatgpt.component';
 import { LinkDashboardsComponent } from '@eda/components/component.index';
 import { DashboardPage } from 'app/module/pages/dashboard/dashboard.page';
-import { TreeMapDialog } from '@eda/components/component.index';
 import { EdadynamicTextComponent } from '@eda/components/component.index';
 import { EdaTitlePanelComponent } from '@eda/components/component.index';
 import { PanelMenuModule } from 'primeng/panelmenu';
@@ -62,20 +61,21 @@ import { ChartDialogComponent } from '@eda/components/component.index';
 import { BubblechartDialog } from '@eda/components/component.index';
 import { TreeTableDialogComponent } from '@eda/components/component.index';
 import { SunburstDialogComponent } from '@eda/components/component.index';
-
+import { ScatterPlotDialog } from '@eda/components/component.index';    
+import { TreeMapDialog } from '@eda/components/component.index';
 export interface IPanelAction {
     code: string;
     data: any;
 }
 const DIALOGS_COMPONENTS = [
     ChartDialogComponent,BubblechartDialog, MapCoordDialogComponent, MapEditDialogComponent,
-    TreeTableDialogComponent, SunburstDialogComponent
+    TreeTableDialogComponent, SunburstDialogComponent, TreeMapDialog, ScatterPlotDialog,
 ];
 const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass];
 const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule];
 const STANDALONE_COMPONENTS = [
     EdaDialog2Component, WhatIfDialogComponent, EbpChatgptComponent,FilterMapperComponent, EdadynamicTextComponent,EdaTitlePanelComponent,
-    PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, TreeMapDialog, LinkDashboardsComponent,
+    PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
 ]
 @Component({
     standalone: true,
