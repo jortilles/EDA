@@ -42,6 +42,7 @@ import { WhatIfDialogComponent } from '@eda/components/component.index';
 import { FilterMapperDialog } from '@eda/components/filter-mapper-dialog/filter-mapper.dialog';
 import { FilterMapperComponent } from '@eda/components/filter-mapper/filter-mapper.component';
 import { EbpChatgptComponent } from '@eda/components/ebp-chatgpt/ebp-chatgpt.component';
+import { LinkDashboardsComponent } from '@eda/components/component.index';
 import { DashboardPage } from 'app/module/pages/dashboard/dashboard.page';
 import { TreeMapDialog } from '@eda/components/component.index';
 import { EdadynamicTextComponent } from '@eda/components/component.index';
@@ -68,7 +69,7 @@ const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass
 const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule];
 const STANDALONE_COMPONENTS = [
     EdaDialog2Component, WhatIfDialogComponent, EbpChatgptComponent,FilterMapperComponent, EdadynamicTextComponent,EdaTitlePanelComponent,
-    PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, TreeMapDialog, 
+    PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, TreeMapDialog, LinkDashboardsComponent,
 ]
 @Component({
     standalone: true,
