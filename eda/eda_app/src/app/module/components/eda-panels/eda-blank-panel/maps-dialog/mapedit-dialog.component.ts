@@ -1,23 +1,24 @@
 import { EdaDialogCloseEvent, EdaDialog } from '@eda/shared/components/shared-components.index';
-import { Component, Input, ViewChild, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, Input, ViewChild, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { MapUtilsService, StyleProviderService, ChartUtilsService } from "@eda/services/service.index";
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { EdaDialog2Component } from '@eda/shared/components/eda-dialogs/eda-dialog2/eda-dialog2.component';
 import { ColorPickerModule } from 'primeng/colorpicker';
 
 @Component({
   standalone: true,
   selector: 'app-mapedit-dialog',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './mapedit-dialog.component.html',
   imports: [CommonModule, FormsModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent],
 })
 
-export class MapEditDialogComponent {
+export class MapEditDialogComponent implements OnInit {
   @Input() controller: any;
-  @ViewChild("PanelChartComponent", { static: false })
+  @ViewChild(PanelChartComponent, { static: false })
   myPanelChartComponent: PanelChartComponent;
 
   public dialog: EdaDialog;
@@ -41,10 +42,14 @@ export class MapEditDialogComponent {
   public display: boolean = false;
   
   
-  constructor(private mapUtilsService: MapUtilsService, private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) { }
+  constructor(private mapUtilsService: MapUtilsService, private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) {
+
+    console.log('EdaDialog2Component', EdaDialog2Component);
+
+  }
   
 
-  ngOnInit() {
+  ngOnInit(): void {
     //Funcion llamada al abrir el mapa edit
     console.log("OPEN MAP EDIT DIALOG");
     this.mapUtilsService.mapEditOpen();
