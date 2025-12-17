@@ -1,4 +1,4 @@
-import { Component, ViewChild, AfterViewChecked, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, ViewChild, AfterViewChecked, CUSTOM_ELEMENTS_SCHEMA, OnInit, Input } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
@@ -6,17 +6,17 @@ import { FunnelConfig } from '../panel-charts/chart-configuration-models/funnel.
 import { StyleProviderService,ChartUtilsService } from '@eda/services/service.index';
 import { FormsModule } from '@angular/forms'; 
 import { CommonModule } from '@angular/common';
-
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { ColorPickerModule } from 'primeng/colorpicker';
 @Component({
   standalone: true,
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   selector: 'app-funnel-dialog',
   templateUrl: './funnel-dialog.component.html',
-  imports: [FormsModule, CommonModule]
+  imports: [FormsModule, CommonModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent],
 })
 
-export class FunnelDialog extends EdaDialogAbstract implements AfterViewChecked {
-
+export class FunnelDialog implements OnInit {
+  @Input() controller: any;
   @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
 
   public dialog: EdaDialog;
@@ -27,18 +27,9 @@ export class FunnelDialog extends EdaDialogAbstract implements AfterViewChecked 
   public display: boolean = false;
   public selectedPalette: { name: string; paleta: any } | null = null;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
+  public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
 
-  constructor(private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) {
-
-    super();
-
-    this.dialog = new EdaDialog({
-      show: () => this.onShow(),
-      hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
-    });
-    this.dialog.style = { width: '80%', height: '70%', top: "-4em", left: '1em' };
-  }
+  constructor(private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) {}
 
   ngAfterViewChecked(): void {
     if (!this.colors && this.myPanelChartComponent?.componentRef) {
@@ -51,7 +42,7 @@ export class FunnelDialog extends EdaDialogAbstract implements AfterViewChecked 
     }
   }
 
-  onShow(): void {
+  ngOnInit(): void {
     this.panelChartConfig = this.controller.params.panelChart;
     this.display = true;
   }
