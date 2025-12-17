@@ -21,10 +21,11 @@ import { DashboardEditStyleDialog } from "../../../components/dashboard-edit-sty
 import { DashboardCustomActionDialog } from "../../../components/dashboard-custom-action/dashboard-custom-action.dialog";
 import { DashboardTagModal } from "../dashboard-tag/dashboard-tag.modal";
 import { DashboardMailConfigModal } from "../../../components/dashboard-mail-config/dashboard-mail-config.modal";
-import { DashboardVisibleModal } from "../../../components/dashboard-visible/dashboard-visible.modal";
 import { ImportPanelDialog } from "../../../components/import-panel/import-panel.dialog";
 import { DependentFilters } from "../../../components/dependent-filters/dependent-filters.component";
-import { GlobalFilterDialogComponent } from "@eda/components/component.index";
+import { DashboardVisibleModal } from "../../../components/dashboard-visible/dashboard-visible.modal";
+import { GlobalFilterDialogComponent } from "../../../pages/dashboard/global-filter-dialog/global-filter-dialog.component";
+import { GlobalFilterComponent } from "@eda/components/global-filter/global-filter.component";
 
 const STANDALONE_COMPONENTS = [
     DashboardSaveAsDialog,
@@ -35,7 +36,8 @@ const STANDALONE_COMPONENTS = [
     DashboardVisibleModal,
     ImportPanelDialog,
     DependentFilters,
-    GlobalFilterDialogComponent
+    GlobalFilterDialogComponent,
+    GlobalFilterComponent
 ] 
 
 const ANGULAR_MODULES = [

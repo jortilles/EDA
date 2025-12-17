@@ -21,20 +21,35 @@ import '@angular/localize/init';
 import { DropdownModule } from 'primeng/dropdown';       // Si usas <p-dropdown>
 import { InputSwitchModule } from 'primeng/inputswitch'; // Si usas <p-inputSwitch>
 import { ScrollPanelModule } from 'primeng/scrollpanel'; // Si usas <p-scrollPanel>
+import { GlobalFilterDialogComponent } from "../component.index";
+import { EdaDatePickerComponent } from "@eda/shared/components/shared-components.index";
 
+const STANDALONE_COMPONENTS = [
+    EdaDatePickerComponent
+];
+
+const PRIMENG_MODULES = [
+    DropdownModule,
+    InputSwitchModule,
+    ScrollPanelModule,
+    AutoCompleteModule
+];
+
+const DIALOGS_COMPONENTS = [
+    GlobalFilterDialogComponent
+];
+
+const ANGULAR_MODULES = [
+    FormsModule,
+    MultiSelectModule,
+    CommonModule
+]
 
 @Component({
+    standalone: true,
     selector: 'app-v2-global-filter',
     templateUrl: './global-filter.component.html',
-    standalone: true,
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    imports: [FormsModule, MultiSelectModule, IconComponent, SharedModule, CommonModule, AutoCompleteModule,
-
-            DropdownModule,
-    InputSwitchModule,
-    ScrollPanelModule
-
-    ],
+    imports: [STANDALONE_COMPONENTS, PRIMENG_MODULES, ANGULAR_MODULES, DIALOGS_COMPONENTS],
     styleUrls: ['./global-filter.component.css']
 })
 export class GlobalFilterComponent implements OnInit {
@@ -375,7 +390,7 @@ export class GlobalFilterComponent implements OnInit {
                 }
             }
 
-
+            
             this.globalFilter = globalFilter;
         }
     }

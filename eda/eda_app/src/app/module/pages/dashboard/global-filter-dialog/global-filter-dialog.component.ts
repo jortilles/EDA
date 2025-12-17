@@ -18,13 +18,35 @@ import { ButtonModule } from "primeng/button";
 import { CommonModule } from '@angular/common';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
+const ANGULAR_MODULES = [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NgClass,
+    DragDropModule,
+];
+
+const PRIMENG_MODULES = [
+    DropdownModule,
+    CardModule,
+    TreeSelectModule,
+    MultiSelectModule,
+    TooltipModule,
+    TableModule,
+    ButtonModule,
+];
+
+const STANDALONE_COMPONENTS = [
+    EdaDialog2Component,
+    EdaDatePickerComponent,
+];
+
 @Component({
     standalone: true,
     selector: 'app-global-filter-dialog',
     templateUrl: './global-filter-dialog.component.html',
     styleUrls: ['../dashboard.page.css'], 
-    imports: [ NgClass, EdaDatePickerComponent, EdaDialog2Component, DropdownModule, FormsModule, 
-        ReactiveFormsModule, CardModule,TreeSelectModule, MultiSelectModule, TooltipModule, TableModule, ButtonModule,CommonModule, DragDropModule ],
+    imports: [ ANGULAR_MODULES, PRIMENG_MODULES, STANDALONE_COMPONENTS ],
 })
 export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     @Input() globalFilter: any;
@@ -97,8 +119,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     };
 
     public ngOnInit(): void {
-        console.log('AAAAAA')
-        this.display = true;
         this.modelTables = _.cloneDeep(this.dataSource.model.tables);
         this.initGlobalFilter();
         this.formReady = true;
@@ -159,7 +179,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public togglePanel(panel: any): void {
-      console.log('toggle', panel, this.isPanelSelected(panel.id));
         if (!panel.avaliable) {
           console.log('not available');
           this.initPanelsLegacy(panel);
@@ -591,19 +610,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public applyToAllCheck() {
         this.applyToAll = !this.applyToAll;
 
-        console.log('this.applyToAll);', this.applyToAll);
-        console.log('this.formReady);', this.formReady);
-        console.log('globalFilter.queryMode', this.globalFilter.queryMode);
-        console.log('this.globalFilter.isdeleted', this.globalFilter.isdeleted);
-        
-        //@if (formReady && !globalFilter.isdeleted) {
-        //@if (globalFilter.queryMode == 'EDA') {
-        //@if (!applyToAll) {
-
         if (this.applyToAll){
             this.filteredPanels = this.allPanels.filter(p => p.avaliable === true);
-
-            console.log(this.filteredPanels);
 
             const selectedPanelList = this.globalFilter.panelList || [];
             for (let displayPanel of this.allPanels) {

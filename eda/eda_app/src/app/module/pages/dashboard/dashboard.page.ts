@@ -18,7 +18,6 @@ import { FormsModule } from '@angular/forms';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 import { CommonModule } from '@angular/common';
 import { ChatgptService } from '@eda/services/api/chatgpt.service';
-import { DashboardFilterDialogComponent } from './filter-dialog/dashboard-filter-dialog.component';
 import { EdaTitlePanelComponent } from '@eda/components/component.index';
 // Dialogs 
 import { ChartDialogComponent } from '@eda/components/component.index';
@@ -77,7 +76,6 @@ const STANDALONE_COMPONENTS = [
   DashboardVisibleModal,
   GlobalFilterDialogComponent,
   FilterDialogComponent,
-  DashboardFilterDialogComponent,
   ImportPanelDialog,
   DependentFilters,
   EdaTitlePanelComponent
