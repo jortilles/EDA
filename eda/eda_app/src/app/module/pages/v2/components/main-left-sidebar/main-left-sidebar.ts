@@ -32,8 +32,12 @@ export class MainLeftSidebarComponent {
   public panelMode: boolean = false;
   private route = inject(ActivatedRoute);
   navItems: NavItem[] = [];
-  
+  public isAnonim: boolean;
   ngOnInit(): void {
+    const user = JSON.parse(localStorage.getItem('user'));
+    this.isAnonim = user.email === 'edaanonim@jortilles.com';
+    //this.isAnonim = user._id === 'XXXXXXXXXXXXXXX';
+    // Cambiar al id que pertoca
     const interval = setInterval(() => {
       // Si lo datos del usuario han cargado
       if (this.userService.isAdmin !== undefined) {
