@@ -1,4 +1,4 @@
-<eda-dialog [inject]="dialog">
+<eda-dialog2  [header]="title" width="80vw" height="90vh" [overflow]="'auto'" (apply)="saveChartConfig()" (close)="closeChartConfig()">
   <div body class="flex flex-col md:flex-row flex-1 overflow-hidden h-full">
     <!-- Chart Preview -->
     <div class="p-6 flex-1 flex items-center justify-center border-b md:border-b-0 md:border-r bg-slate-50">
@@ -268,15 +268,4 @@
     </div>
   </div>
 
-  <div footer>
-    <div class="flex justify-end p-2 border-t gap-1.5">
-      <button  class="cancel-button" (click)="closeChartConfig()">
-        <i class="fa fa-times"></i>
-        <span i18n="@@cancelarBtn">Cancelar</span>
-      </button>
-      <button class="confirm-button" (click)="saveChartConfig()">
-        <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
-      </button>
-    </div>
-  </div>
-</eda-dialog>
+</eda-dialog2>

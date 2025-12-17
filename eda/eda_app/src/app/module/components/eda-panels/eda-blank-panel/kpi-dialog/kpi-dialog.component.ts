@@ -1,5 +1,5 @@
-import { EdaDialogAbstract, EdaDialogCloseEvent, EdaDialog } from '@eda/shared/components/shared-components.index';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, ViewChild } from '@angular/core';
+import { EdaDialogCloseEvent, EdaDialog, EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { UserService } from '@eda/services/service.index';
@@ -7,22 +7,21 @@ import { StyleProviderService, ChartUtilsService } from '@eda/services/service.i
 import * as _ from 'lodash';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ColorPickerModule } from 'primeng/colorpicker';
 
 @Component({
     standalone: true,
     selector: 'app-kpi-dialog',
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './kpi-dialog.component.html',
     styleUrls: ['./kpi-dialog.component.css'],
-    imports: [FormsModule, CommonModule]
+    imports: [FormsModule, CommonModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent]
 })
 
-export class KpiEditDialogComponent extends EdaDialogAbstract {
-
+export class KpiEditDialogComponent implements OnInit{
+    @Input() controller: any;
     @ViewChild('PanelChartComponent', { static: false }) panelChartComponent: PanelChartComponent;
     @ViewChild('mailConfig', { static: false }) mailConfig: any;
 
-    public dialog: EdaDialog;
     public panelChartConfig: PanelChart = new PanelChart();
 
     public value: number;
@@ -50,19 +49,10 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     public activeTab: "colors" | "alerts" = "alerts";
     public selectedPalette: { name: string; paleta: any } | null = null;
     public allPalettes: any = this.stylesProviderService.ChartsPalettes;
-
+    public title : string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
 
     constructor(private userService: UserService, private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) {
 
-        super();
-
-        this.dialog = new EdaDialog({
-            show: () => this.onShow(),
-            hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-            title: $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
-        });
-
-        this.dialog.style = { width: '80%', height: '75%', top: "-4em", left: '1em' };
 
         if (this.userService.user.name == "edaanonim") {
             this.canIRunAlerts = false;
@@ -94,7 +84,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
         this.onClose(EdaDialogCloseEvent.NONE);
     }
 
-    onShow(): void {
+    ngOnInit(): void {
         this.panelChartConfig = this.controller.params.panelChart;
         this.edaChart = this.controller.params.edaChart;
 

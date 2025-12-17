@@ -1,4 +1,4 @@
-import { Component, ViewChild, CUSTOM_ELEMENTS_SCHEMA, Input } from '@angular/core';
+import { Component, ViewChild, Input } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { Column } from '@eda/models/model.index';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';

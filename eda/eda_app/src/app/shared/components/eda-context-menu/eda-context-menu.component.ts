@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Input, Output, ViewChild, ViewEncapsulation} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Input, Output, ViewChild, ViewEncapsulation} from '@angular/core';
 import {EdaContextMenu} from '@eda/shared/components/eda-context-menu/eda-context-menu';
 import {Dialog} from 'primeng/dialog';
 import { CommonModule } from '@angular/common';

@@ -1,6 +1,6 @@
 import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
 import * as d3 from 'd3'
-import { Component, AfterViewInit, Input, ViewChild, ElementRef, Output, EventEmitter, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core'
+import { Component, AfterViewInit, Input, ViewChild, ElementRef, Output, EventEmitter} from '@angular/core'
 import { SunBurst } from './eda-sunbrust'
 
 import { FormsModule } from '@angular/forms'; 
@@ -9,7 +9,6 @@ import { CommonModule } from '@angular/common';
 @Component({
   standalone: true,
   selector: 'eda-sunburst' /* tag que jo li dono  */,
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './eda-sunburst.component.html' /** sdf */,
   styleUrls: ['./eda-sunburst.component.css'],
   imports: [FormsModule, CommonModule]

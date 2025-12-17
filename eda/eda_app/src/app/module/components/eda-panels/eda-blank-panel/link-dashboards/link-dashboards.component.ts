@@ -1,6 +1,6 @@
 import { LinkedDashboardProps } from './link-dashboard-props';
 import { SelectItem } from 'primeng/api';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { AlertService, DashboardService } from '@eda/services/service.index';
 import { ChangeDetectorRef } from '@angular/core';

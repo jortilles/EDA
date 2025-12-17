@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
 import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent,EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { AlertService} from '@eda/services/service.index';
 import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule, FormsModule} from '@angular/forms';
@@ -7,7 +7,6 @@ import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule, 
 @Component({
   standalone: true,
   selector: 'app-calculated-column-dialog',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './calculated-column-dialog.component.html',
   styleUrls: ['../../../../../../assets/sass/eda-styles/components/dialog-component.css'],
   imports: [ReactiveFormsModule, EdaDialog2Component, FormsModule]

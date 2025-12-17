@@ -1,5 +1,5 @@
 import { DashboardService } from './../../../services/api/dashboard.service';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { User } from '@eda/models/model.index';
 import { SidebarService, UserService, AlertService, DataSourceService, StyleProviderService } from '@eda/services/service.index';
@@ -15,7 +15,6 @@ import { CommonModule } from '@angular/common';
     styleUrls: ['./sidebar.component.css'],
     imports: [CommonModule, RouterModule, PipesModule],
     standalone: true,
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class SidebarComponent implements OnInit {
     public user: User;

@@ -1,5 +1,5 @@
-import { Component,  CUSTOM_ELEMENTS_SCHEMA,  Input,  OnInit,  ViewChild } from "@angular/core";
-import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
+import { Component,  Input,  OnInit,  ViewChild } from "@angular/core";
+import { EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
 import { SunburstConfig } from "../panel-charts/chart-configuration-models/sunburst-config";
 import { PanelChart } from "../panel-charts/panel-chart";
 import { PanelChartComponent } from "../panel-charts/panel-chart.component";

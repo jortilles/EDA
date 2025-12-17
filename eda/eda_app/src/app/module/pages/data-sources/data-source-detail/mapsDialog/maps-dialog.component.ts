@@ -1,17 +1,15 @@
 import { FormGroup, ReactiveFormsModule, FormControl, Validators, FormsModule } from '@angular/forms';
-import { Component, EventEmitter, OnInit, Output, ViewChild, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { DataSourceService } from '@eda/services/service.index';
 import { SelectItem } from 'primeng/api';
 import { UploadFileComponent } from '../upload-file/upload-file.component';
 import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 import { CommonModule } from '@angular/common';
-
 @Component({
   standalone: true,
   selector: 'app-map-dialog',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './maps-dialog.component.html',
-  imports: [EdaDialog2Component, CommonModule, ReactiveFormsModule, FormsModule]
+  imports: [EdaDialog2Component, CommonModule, ReactiveFormsModule, FormsModule, UploadFileComponent]
 })
 
 export class MapDialogComponent implements OnInit {

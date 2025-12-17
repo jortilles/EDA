@@ -1,6 +1,6 @@
 import { EdaDialogController } from './../../../../../shared/components/eda-dialogs/eda-dialog/eda-dialog-controller';
 import { TableConfig } from '../panel-charts/chart-configuration-models/table-config';
-import { Component, ViewChild, AfterViewInit, Inject, CUSTOM_ELEMENTS_SCHEMA, Input } from '@angular/core';
+import { Component, ViewChild, Input } from '@angular/core';
 import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog';
 import { MenuItem } from 'primeng/api';
 import * as _ from 'lodash';

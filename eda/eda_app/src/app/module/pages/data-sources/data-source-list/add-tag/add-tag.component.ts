@@ -1,5 +1,5 @@
 import { AlertService } from '@eda/services/service.index';
-import { Component, OnInit, Input, Output, EventEmitter, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormsModule} from '@angular/forms';
 import { DataSourceService } from '@eda/services/service.index';
 import { MultiSelectModule } from 'primeng/multiselect';
@@ -17,7 +17,6 @@ interface TagOption {
   selector: 'app-add-tag-dialog',
   templateUrl: './add-tag.component.html',
   styleUrls: ['./add-tag.component.css'],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [MultiSelectModule, ButtonModule, TableModule, FormsModule, EdaDialog2Component]
 })
 

@@ -19,12 +19,7 @@ import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive
 import { CommonModule } from '@angular/common';
 import { ChatgptService } from '@eda/services/api/chatgpt.service';
 import { EdaTitlePanelComponent } from '@eda/components/component.index';
-// Dialogs 
-import { ChartDialogComponent } from '@eda/components/component.index';
-import { BubblechartDialog } from '@eda/components/component.index';
-import { MapCoordDialogComponent } from '@eda/components/component.index';
-import { MapEditDialogComponent } from '@eda/components/component.index';
-import { TableDialogComponent } from '@eda/components/component.index';
+
 // Imports del sidebar
 import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.service';
 import { DependentFilters } from '@eda/components/dependent-filters/dependent-filters.component';

@@ -1,4 +1,4 @@
-import {Component, CUSTOM_ELEMENTS_SCHEMA, Input} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {SelectItem} from 'primeng/api';
 import {EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract, EdaDialog2Component} from '@eda/shared/components/shared-components.index';
 import {Relation} from '@eda/models/data-source-model/data-source-models';
@@ -10,7 +10,6 @@ import { AlertService } from '@eda/services/service.index';
 @Component({
     standalone: true,
     selector: 'app-table-relations-dialog',
-    schemas:[CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './table-relations-dialog.component.html',
     styleUrls: ['./table-relations-dialog.component.css'],
     imports: [DropdownModule, ReactiveFormsModule, EdaDialog2Component]

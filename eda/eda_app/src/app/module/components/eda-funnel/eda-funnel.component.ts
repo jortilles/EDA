@@ -1,8 +1,7 @@
-import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit, Output, EventEmitter, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit, Output, EventEmitter } from '@angular/core';
 import * as d3 from 'd3';
 import { EdaFunnel } from './eda-funnel';
 import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
-import * as dataUtils from '../../../services/utils/transform-data-utils';
 
 import { FormsModule } from '@angular/forms'; 
 import { CommonModule } from '@angular/common';
@@ -17,7 +16,6 @@ interface FunnelData {
 @Component({
   standalone: true,
   selector: 'eda-funnel',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './eda-funnel.component.html',
   styleUrls: [],
   imports: [FormsModule, CommonModule]

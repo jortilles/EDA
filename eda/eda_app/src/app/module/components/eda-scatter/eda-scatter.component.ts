@@ -1,5 +1,5 @@
 import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
-import { AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
 import * as d3 from 'd3';
 import { ScatterPlot } from "./eda-scatter";
 import * as _ from 'lodash';
@@ -11,7 +11,6 @@ import { CommonModule } from '@angular/common';
 @Component({
   standalone: true,
   selector: 'eda-d3',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './eda-scatter.component.html',
   styleUrls: ['./eda-scatter.component.css'],
   encapsulation: ViewEncapsulation.Emulated,

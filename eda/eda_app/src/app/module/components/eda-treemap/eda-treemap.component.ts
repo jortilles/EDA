@@ -1,6 +1,6 @@
 
 import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
-import { AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
 import { ChartsColors } from '@eda/configs/index';
 import * as d3 from 'd3';
 import { TreeMap } from "./eda-treeMap";
@@ -13,7 +13,6 @@ import { CommonModule } from '@angular/common';
 @Component({
   standalone: true,
   selector: "eda-d3",
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: "./eda-treemap.component.html",
   styleUrls: ["./eda-treemap.component.css"],
   encapsulation: ViewEncapsulation.Emulated,

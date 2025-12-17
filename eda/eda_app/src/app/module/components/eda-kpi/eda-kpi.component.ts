@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef } from '@angular/core';
 import { StyleProviderService } from '@eda/services/service.index';
 import { registerLocaleData } from '@angular/common';
 import { EdaKpi } from './eda-kpi';
@@ -11,9 +11,8 @@ import { CommonModule } from '@angular/common';
 @Component({
     standalone: true,
     selector: 'eda-kpi',
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     templateUrl: './eda-kpi.component.html',
-    imports: [FormsModule, CommonModule]
+    imports: [FormsModule, CommonModule, EdaChartComponent]
 })
 
 export class EdaKpiComponent implements OnInit {

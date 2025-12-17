@@ -1,14 +1,12 @@
-import { ViewChild, Component, inject, Input, OnInit, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+import { Component, inject, Input, OnInit } from "@angular/core";
 import { AlertService, DashboardService, GlobalFiltersService, QueryBuilderService, UserService } from "@eda/services/service.index";
 import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
-import { EdaDialogCloseEvent, EdaDialogController } from "@eda/shared/components/shared-components.index";
+import { EdaDialogController } from "@eda/shared/components/shared-components.index";
 import { EdaBlankPanelComponent } from "@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component";
 import * as _ from 'lodash';
 import { DashboardPage } from "app/module/pages/dashboard/dashboard.page";
 import { MultiSelectModule } from "primeng/multiselect";
 import { FormsModule } from "@angular/forms";
-import { IconComponent } from "@eda/shared/components/icon/icon.component";
-import { SharedModule } from "@eda/shared/shared.module";
 import { StyleProviderService } from '@eda/services/service.index';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';

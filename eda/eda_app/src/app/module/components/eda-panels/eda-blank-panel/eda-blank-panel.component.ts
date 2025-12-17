@@ -18,6 +18,7 @@ import { TreeModule } from 'primeng/tree';
 import { NULL_VALUE, EMPTY_VALUE} from '../../../../config/personalitzacio/customizables';
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 
+import { EdaKpiComponent } from '@eda/components/component.index';
 import { PanelChart } from './panel-charts/panel-chart';
 import { PanelOptions } from './panel-utils/panel-menu-options';
 import { TableConfig } from './panel-charts/chart-configuration-models/table-config';

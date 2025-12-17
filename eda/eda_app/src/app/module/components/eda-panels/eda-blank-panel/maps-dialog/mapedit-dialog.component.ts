@@ -1,5 +1,5 @@
 import { EdaDialogCloseEvent, EdaDialog } from '@eda/shared/components/shared-components.index';
-import { Component, Input, ViewChild, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
+import { Component, Input, ViewChild, OnInit } from '@angular/core';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { MapUtilsService, StyleProviderService, ChartUtilsService } from "@eda/services/service.index";
@@ -11,7 +11,6 @@ import { ColorPickerModule } from 'primeng/colorpicker';
 @Component({
   standalone: true,
   selector: 'app-mapedit-dialog',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './mapedit-dialog.component.html',
   imports: [CommonModule, FormsModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent],
 })

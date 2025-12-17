@@ -1,19 +1,15 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { AlertService, DashboardService } from "@eda/services/service.index";
 import { SharedModule } from "@eda/shared/shared.module";
 import { MultiSelectModule } from "primeng/multiselect";
 import { SelectButtonModule } from "primeng/selectbutton";
 import { DropdownModule } from "primeng/dropdown";
-import { lastValueFrom } from "rxjs/internal/lastValueFrom";
 import { FilterMapperComponent } from "../filter-mapper/filter-mapper.component";
-import { EdaPanel } from "@eda/models/model.index";
 import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 
 @Component({
   standalone: true,
   selector: 'app-filter-mapper-dialog',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './filter-mapper.dialog.html',
   imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule, DropdownModule, FilterMapperComponent, EdaDialog2Component]
 })

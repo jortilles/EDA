@@ -1,4 +1,4 @@
-import { Component, ViewChild, AfterViewChecked, CUSTOM_ELEMENTS_SCHEMA, OnInit, Input } from '@angular/core';
+import { Component, ViewChild, OnInit, Input } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
@@ -12,7 +12,6 @@ import { ColorPickerModule } from 'primeng/colorpicker';
 @Component({
   standalone: true,
   selector: 'app-scatter-plot-dialog',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './scatter-plot-dialog.component.html',
   imports: [FormsModule, CommonModule, PanelChartComponent, EdaDialog2Component, ColorPickerModule]
 })

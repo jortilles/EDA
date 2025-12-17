@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, AfterViewInit, Output, EventEmitter, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import { EdaChart } from './eda-chart';
 import { BaseChartDirective } from 'ng2-charts';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -11,7 +11,6 @@ import { NgChartsModule } from 'ng2-charts';
     standalone: true,
     selector: 'eda-chart',
     templateUrl: './eda-chart.component.html',
-    styleUrls: [],
     imports: [FormsModule, CommonModule, NgChartsModule]
 })
 

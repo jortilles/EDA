@@ -1,8 +1,7 @@
-import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit, Output, EventEmitter, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit, Output, EventEmitter } from '@angular/core';
 import * as d3 from 'd3';
 import { sankeyLinkHorizontal } from 'd3-sankey'
 import { sankey as Sankey } from 'd3-sankey';
-import { ChartsColors } from '@eda/configs/index';
 import { EdaD3 } from './eda-d3';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
 import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
@@ -13,7 +12,6 @@ import { CommonModule } from '@angular/common';
 @Component({
   standalone: true,
   selector: 'eda-d3',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './eda-d3.component.html',
   styleUrls: ['./eda-d3.component.css'],
   imports: [FormsModule, CommonModule]
