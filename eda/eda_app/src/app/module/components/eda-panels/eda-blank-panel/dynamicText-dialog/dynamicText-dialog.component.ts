@@ -1,5 +1,5 @@
 import { EdaDialogAbstract, EdaDialogCloseEvent, EdaDialog } from '@eda/shared/components/shared-components.index';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { UserService } from '@eda/services/service.index';
@@ -7,20 +7,19 @@ import { EdaChart } from '@eda/components/eda-chart/eda-chart';
 import { StyleProviderService } from '@eda/services/service.index';
 import { DynamicTextConfig } from '../panel-charts/chart-configuration-models/dynamicText-config';
 import { FormsModule } from '@angular/forms';
-
-
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { ColorPickerModule } from 'primeng/colorpicker';
 
 @Component({
   standalone: true,
   selector: 'app-dynamicText-dialog',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './dynamicText-dialog.component.html',
   styleUrls: ['./dynamicText-dialog.component.css'],
-  imports: [FormsModule, ]
+  imports: [FormsModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule],
 })
 
-export class dynamicTextDialogComponent extends EdaDialogAbstract {
-
+export class dynamicTextDialogComponent implements OnInit {
+  @Input() controller: any;
   @ViewChild('PanelChartComponent', { static: false }) PanelChartComponent: PanelChartComponent;
 
   public dialog: EdaDialog;
@@ -33,20 +32,9 @@ export class dynamicTextDialogComponent extends EdaDialogAbstract {
   @Output() messageEvent = new EventEmitter<any>();
   public disabled:boolean;
   public display:boolean=false;
+  public title:string=$localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
 
-  constructor( private userService: UserService,private styleProviderService : StyleProviderService) {
-
-    super();
-
-    this.dialog = new EdaDialog({
-      show: () => this.onShow(),
-      hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
-    });
-    this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
-
-    
-  }
+  constructor( private userService: UserService,private styleProviderService : StyleProviderService) {}
   
   saveChartConfig() {
     this.PanelChartComponent.fontColor=this.color;
@@ -58,7 +46,7 @@ export class dynamicTextDialogComponent extends EdaDialogAbstract {
       });
   }
   
-  onShow(): void {
+  ngOnInit(): void {
     const panelChart = this.controller.params.panelChart;
     this.panelChartConfig = panelChart;
     const colorConfig = panelChart?.config?.config;

@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef} from '@angular/core';
 import { EdadynamicText } from './eda-dynamicText';
-import { dynamicTextDialogComponent } from './../eda-panels/eda-blank-panel/dynamicText-dialog/dynamicText-dialog.component';
 import { StyleProviderService } from '@eda/services/service.index';
 import { FormsModule } from '@angular/forms'; 
 import { CommonModule } from '@angular/common';
@@ -13,7 +12,7 @@ import { CommonModule } from '@angular/common';
 
 export class EdadynamicTextComponent implements OnInit {
     @Input() inject: EdadynamicText;
-    @Input() color: dynamicTextDialogComponent;
+    @Input() color;
     @Output() onNotify: EventEmitter<any> = new EventEmitter();
     @ViewChild('dynamicTextContainer', { static: false }) dynamicTextContainer!: ElementRef;
 
