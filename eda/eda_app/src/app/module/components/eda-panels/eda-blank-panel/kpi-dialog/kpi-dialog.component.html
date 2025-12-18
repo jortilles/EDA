@@ -12,7 +12,7 @@
     
     <!-- Settings -->
     <div class="p-6 flex-1 overflow-y-auto">
-      <div  [ngClass]="edaChart !== undefined ? 'mb-6 grid grid-cols-2 gap-4': ' grid mb-6'"  >
+      <div  [ngClass]="panelChartConfig.edaChart !== 'kpi' ? 'mb-6 grid grid-cols-2 gap-4': ' grid mb-6'"  >
         <button 
           [class]="'py-2 px-4 text-center rounded-md transition-all ' + (activeTab === 'alerts' ? 'bg-[#00BFB3] text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-700')"
           (click)="setActiveTab('alerts')"
