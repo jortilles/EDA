@@ -20,6 +20,7 @@ export interface Query {
         // modeSQL: boolean, Deprecated use queryMode instead
         SQLexpression : string,
         queryLimit : number,
+        groupByEnabled: boolean,
         joinType: string,
         forSelector?: boolean,
         rootTable: string

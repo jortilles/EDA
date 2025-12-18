@@ -56,7 +56,7 @@ export abstract class QueryBuilderService {
     abstract processFilter(filter: any, columnType: string);
     abstract normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[],
         grouping: any[], filters: any[], havingFilters: any[], tables: Array<any>, limit: number, 
-        joinType: string,valueListJoins:any[], Schema?: string, database?: string, forSelector?: any );
+        joinType: string,groupByEnabled:boolean, valueListJoins:any[], Schema?: string, database?: string, forSelector?: any );
     abstract sqlQuery(query: string, filters: any[], filterMarks: string[]): string;
     abstract buildPermissionJoin(origin: string, join: string[], permissions: any[], schema?: string);
     abstract parseSchema(tables: string[], schema?: string, database?: string);
@@ -335,6 +335,7 @@ export abstract class QueryBuilderService {
         const tables = this.dataModel.ds.model.tables.map(table => ({ name: table.table_name, query: table.query }));
         const joinType = this.queryTODO.joinType;
         const queryLimit = this.queryTODO.queryLimit;
+        const groupByEnabled = this.queryTODO.groupByEnabled !== undefined ? this.queryTODO.groupByEnabled : true;
         const schema = this.dataModel.ds.connection.schema || 'public'; 
         const database = this.dataModel.ds.connection.database; 
         const forSelector = this.queryTODO.forSelector; 
@@ -350,7 +351,7 @@ export abstract class QueryBuilderService {
         } else {
             this.query = this.normalQuery(
                 columns, origin, dest, joinTree, grouping,  filters, havingFilters, tables,
-                queryLimit, joinType, valueListJoins, schema, database, forSelector
+                queryLimit, joinType, groupByEnabled,valueListJoins, schema, database, forSelector
             );
             return this.query;
         }

@@ -1,24 +1,29 @@
 import { EdaDialogController } from './../../../../../shared/components/eda-dialogs/eda-dialog/eda-dialog-controller';
 import { TableConfig } from '../panel-charts/chart-configuration-models/table-config';
-import { Component, ViewChild, AfterViewInit, Inject } from '@angular/core';
+import { Component, ViewChild, Input } from '@angular/core';
 import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog';
-import { EdaDialogAbstract } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog-abstract';
 import { MenuItem } from 'primeng/api';
 import * as _ from 'lodash';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
 import { StyleProviderService } from '@eda/services/service.index';
-
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { MenubarModule } from 'primeng/menubar';
+import { TableGradientDialogComponent } from './gradient-dialog/gradient-dialog.component';
 
 @Component({
+  standalone: true,
   selector: 'app-table-dialog',
   templateUrl: './table-dialog.component.html',
-  styleUrls: ['../../../../../../assets/sass/eda-styles/components/table-dialog.component.css']
+  styleUrls: ['../../../../../../assets/sass/eda-styles/components/table-dialog.component.css'],
+  imports: [CommonModule, FormsModule, EdaDialog2Component, MenubarModule, TableGradientDialogComponent, PanelChartComponent]
 })
 
-export class TableDialogComponent extends EdaDialogAbstract implements AfterViewInit {
-
+export class TableDialogComponent{
+  @Input() controller: any;
   @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
 
   public dialog: EdaDialog;
@@ -26,7 +31,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   public items: MenuItem[];
 
   public gradientMenuController: EdaDialogController;
-
+  // TODO REVISAR EL CONTROLADOR CUANDO SE INICIA
 
   public row_totals;
   public col_totals;
@@ -65,26 +70,16 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   public seeNegativeNumbers: string = $localize`:@@seeNegativeNumbers: Números negativos`;
 
   public tableTitleDialog = $localize`:@@tableTitleDialog:Propiedades de la tabla`;
+  public display: boolean = false;
+  public title: string = this.tableTitleDialog;
 
-  constructor(private styleProviderService : StyleProviderService) {
-    super();
-
-    this.dialog = new EdaDialog({
-      show: () => this.onShow(),
-      hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: this.tableTitleDialog
-    });
-    this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
-  }
-  ngAfterViewInit(): void {
-
-  }
+  constructor(private styleProviderService : StyleProviderService) {}
 
   setChartProperties() {
     this.setCols();
     this.styles = this.myPanelChartComponent.componentRef.instance.inject.styles || []; // si es null regresa vacio
   }
-  onShow(): void {
+  ngOnInit(): void {
     this.panelChartConfig = this.controller.params.panelChart;
     if (this.panelChartConfig && this.panelChartConfig.config) {
       const config = (<TableConfig>this.panelChartConfig.config.getConfig());

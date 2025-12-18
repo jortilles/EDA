@@ -2,7 +2,9 @@ import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit, Output,
 import * as d3 from 'd3';
 import { EdaFunnel } from './eda-funnel';
 import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
-import * as dataUtils from '../../../services/utils/transform-data-utils';
+
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
 
 interface FunnelData {
   step: number;
@@ -12,9 +14,11 @@ interface FunnelData {
 
 
 @Component({
+  standalone: true,
   selector: 'eda-funnel',
   templateUrl: './eda-funnel.component.html',
-  styleUrls: []
+  styleUrls: [],
+  imports: [FormsModule, CommonModule]
 })
 
 export class EdaFunnelComponent implements AfterViewInit, OnInit {

@@ -14,10 +14,14 @@ import * as _ from 'lodash';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
 import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
 
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
 @Component({
+  standalone: true,
   selector: 'eda-bubblechart',
   templateUrl: './eda-bubblechart.component.html',
-  styleUrls: ['./eda-bubblechart.component.css']
+  styleUrls: ['./eda-bubblechart.component.css'],
+  imports: [FormsModule, CommonModule]
 })
 export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   @Input() inject: EdaBubblechart

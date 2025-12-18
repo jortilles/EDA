@@ -7,9 +7,9 @@ export class SQLserviceBuilderService extends QueryBuilderService {
         return [];
     }
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
-    tables: Array<any>, limit: number,  joinType: string, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any ) {
-      
+ public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
+    tables: Array<any>, limit: number,  joinType: string, groupByEnabled:boolean, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any ) {
+       
     let SCHEMA = `${schema}`;
 
     if (SCHEMA === 'null' || SCHEMA === '') {
@@ -48,8 +48,10 @@ export class SQLserviceBuilderService extends QueryBuilderService {
     // WHERE
     myQuery += this.getFilters(filters );
 
+
+    
     // GroupBy
-    if (grouping.length > 0) {
+    if (grouping.length > 0 && ((groupByEnabled))) {
       myQuery += '\ngroup by ' + grouping.join(', ');
     }
 

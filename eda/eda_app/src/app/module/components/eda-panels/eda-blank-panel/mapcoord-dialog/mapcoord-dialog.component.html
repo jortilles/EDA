@@ -1,10 +1,11 @@
-<eda-dialog [inject]="dialog">
+<eda-dialog2 [display]="display" [header]="title" width="80vw" height="80vh" [overflow]="'auto'"
+  (apply)="saveChartConfig()" (close)="closeChartConfig()">
 
-    <div body class="flex flex-col md:flex-row flex-1 overflow-hidden h-full ">
+    <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-full ">
         <!-- Chart Preview -->
         <div
             class="p-6 flex-[2] flex items-center justify-center border-b md:border-b md:border-r bg-slate-50 border border-gray-400">
-            <div class="relative w-full h-full ">
+            <div class="relative w-full h-[60vh] ">
                 @if (display) {
                 <panel-chart #PanelChartComponent [props]="panelChartConfig" class="h-full w-full block"></panel-chart>
                 }
@@ -15,7 +16,7 @@
             <div class="space-y-6">
                 <!-- Colors -->
                 <div class="space-y-4">
-                    <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase">Colors</h3>
+                    <h1 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase">Colors</h1>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm mb-6 md:col-span-2"
                             [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
@@ -86,21 +87,5 @@
                 </div>
             </div>
         </div>
-
     </div>
-
-    <div footer>
-        <div class="flex justify-end p-2 border-t gap-1.5">
-            <button class="cancel-button"
-                (click)="closeChartConfig()">
-                <i class="fa fa-times"></i>
-                <span i18n="@@cancelarBtn">Cancelar</span>
-            </button>
-            <button
-                class="confirm-button"
-                (click)="saveChartConfig()">
-                <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
-            </button>
-        </div>
-    </div>
-</eda-dialog>
+</eda-dialog2>

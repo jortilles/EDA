@@ -1,10 +1,13 @@
-import {Component, Input, ViewChild, AfterViewInit, DoCheck, NgZone} from '@angular/core';
+import {Component, Input, ViewChild, AfterViewInit, NgZone} from '@angular/core';
 import {EdaDialog} from './eda-dialog';
 import {Dialog} from 'primeng/dialog';
+import { DialogModule } from 'primeng/dialog';
 
 @Component({
+    standalone: true,
     selector: 'eda-dialog',
     templateUrl: './eda-dialog.component.html',
+    imports: [DialogModule]
 })
 export class EdaDialogComponent implements AfterViewInit {
     display = false;

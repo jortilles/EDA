@@ -1,14 +1,12 @@
-<eda-dialog [inject]="dialog">
-  <div body class="flex flex-col md:flex-row flex-1 overflow-hidden h-full">
+<eda-dialog2 width="80vw" height="80vh" [header]="title" (apply)="saveChartConfig()" (close)="closeChartConfig()">
+  <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-[65vh]">
     <!-- Chart Preview -->
     <div class="p-6 flex-1 flex items-center justify-center border-b md:border-b-0 md:border-r bg-slate-50">
       <div class="relative w-full max-w-xl aspect-square">
-        @if (display) {
           <panel-chart #PanelChartComponent
             [props]="panelChartConfig"
             class="h-full w-full block"
           ></panel-chart>
-        }
       </div>
     </div>
 
@@ -17,9 +15,9 @@
       <div class="space-y-6">
         <div class="space-y-4">
           <div class="space-y-4">
-            <h3 class="font-medium text-slate-500 uppercase" i18n="@@chartDisplayOptionsTitle">
+            <h1 class="font-medium text-slate-500 uppercase" i18n="@@chartDisplayOptionsTitle">
               Opciones de visualización
-            </h3>
+            </h1>
   
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
@@ -36,7 +34,7 @@
 
 
 
-          <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase">Colors</h3>
+          <h1 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase">Colors</h1>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
@@ -52,51 +50,6 @@
 
       </div>
     </div>
-
-    <!-- <div class="grid col-4">
-
-      <div class="col-6">
-
-        <h6 i18n="@@colorsChartH6" class="custom-border-b1">
-          Colores
-        </h6>
-
-        <div class="chart-color-selection">
-          <div class="mb-1">
-            <input type="text" [(ngModel)]="color" pInputText style="width: 40%" (keyup)="handleInputColor()" />
-            <p-colorPicker [(ngModel)]="color" appendTo="body" (onChange)="handleInputColor()"></p-colorPicker>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="col-6" *ngIf="!limitInQuery">
-
-        <h6 i18n="@@Limits" class="custom-border-b1">
-          Limites
-        </h6>
-
-        <div class="mb-1">
-          <input type="number" [(ngModel)]="min" pInputText placeholder="min" />
-        </div>
-        <div class="mb-1">
-          <input type="number" [(ngModel)]="max" pInputText placeholder="max" />
-        </div>
-
-      </div>
-
-    </div> -->
   </div>
 
-  <div footer>
-    <div class="flex justify-end p-2 border-t gap-1.5">
-      <button  class="cancel-button" (click)="closeChartConfig()">
-        <i class="fa fa-times"></i>
-        <span i18n="@@cancelarBtn">Cancelar</span>
-      </button>
-      <button class="confirm-button" (click)="saveChartConfig()">
-        <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
-      </button>
-    </div>
-  </div>
-</eda-dialog>
+</eda-dialog2>
