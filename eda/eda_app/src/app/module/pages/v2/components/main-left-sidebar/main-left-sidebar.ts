@@ -35,9 +35,7 @@ export class MainLeftSidebarComponent {
   public isAnonim: boolean;
   ngOnInit(): void {
     const user = JSON.parse(localStorage.getItem('user'));
-    this.isAnonim = user.email === 'edaanonim@jortilles.com';
-    //this.isAnonim = user._id === 'XXXXXXXXXXXXXXX';
-    // Cambiar al id que pertoca
+    this.isAnonim = user._id === '135792467811111111111112';
     const interval = setInterval(() => {
       // Si lo datos del usuario han cargado
       if (this.userService.isAdmin !== undefined) {
