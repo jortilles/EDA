@@ -264,6 +264,7 @@ export class GlobalFilterComponent implements OnInit {
                     rootTable: filterItem.selectedTable.table_name,
                     queryMode: filterItem.queryMode,
                     forSelector: true,
+                    groupByEnabled: true,
                     queryLimit: 5000,
                     filters: filterCollection
                 };
@@ -842,6 +843,7 @@ export class GlobalFilterComponent implements OnInit {
                 panel: '',
                 joinType: "inner",
                 rootTable:filtro.selectedTable.table_name,
+                groupByEnabled: true,
                 queryMode: filtro.queryMode,
                 forSelector: true,
                 queryLimit: 5000,

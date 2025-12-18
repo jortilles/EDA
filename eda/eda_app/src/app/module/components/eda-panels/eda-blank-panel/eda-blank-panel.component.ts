@@ -148,7 +148,6 @@ export class EdaBlankPanelComponent implements OnInit {
     public indextab = 0;
 
     public inputs: any = {};
-
     /**Dashbard emitter */
     // public actualSize : {litle:boolean, medium:boolean}
 
@@ -206,6 +205,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public currentQuery: any[] = [];
     public currentSQLQuery: string = '';
     public queryLimit: number = 5000; // por defecto se limita a 5.000
+    public groupByEnabled: boolean = true;
 
     public queryModes: any[] = [
         { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
@@ -584,7 +584,7 @@ public tableNodeExpand(event: any): void {
      */
     public buildGlobalconfiguration(panelContent: any): void {
         const { query, chart, edaChart } = panelContent;
-        const { modeSQL, fields, filters, queryLimit, config } = query.query;
+        const { modeSQL, fields, filters, queryLimit, groupByEnabled, config } = query.query;
         const queryMode = this.selectedQueryMode;
 
         const isEditable = !this.readonly;
@@ -614,7 +614,7 @@ public tableNodeExpand(event: any): void {
 
         // Configuración global del panel
         this.queryLimit = queryLimit;
-
+        this.groupByEnabled = groupByEnabled;
         PanelInteractionUtils.handleFilters(this, query.query);
         PanelInteractionUtils.handleFilterColumns(this, filters, fields);
 
@@ -677,6 +677,7 @@ public tableNodeExpand(event: any): void {
     }
 
     public initObjectQuery() {
+        console.log(this)
         if (this.selectedQueryMode == 'SQL') {
             return QueryUtils.initSqlQuery(this);
         } else {
@@ -1881,5 +1882,23 @@ private assignLevels(nodes: any[], level = 0): void {
     isCrosstableValid():boolean {
         return this.dragDrop?.validated;
     }
+
+    toggleGroupBy(): void {
+        console.log(this.groupByEnabled)
+        this.groupByEnabled = !this.groupByEnabled;
+        if (this.groupByEnabled) {
+            this.applyGroupBy();
+        } else {
+            this.removeGroupBy();
+        }
+    }
+
+applyGroupBy(): void {
+  // Lógica para activar el group by
+}
+
+removeGroupBy(): void {
+  // Lógica para desactivar el group by
+}
 
 }
