@@ -67,7 +67,7 @@ import { FilterMapperComponent } from './filter-mapper/filter-mapper.component';
     declarations: [
         // EdaDashboardPanelComponent,
         // EdaTitlePanelComponent,
-        SafeUrlPipe,
+        // SafeUrlPipe,
         // SafeHtmlPipe,
         // EdaTableComponent,
         // EdaChartComponent,
@@ -108,7 +108,7 @@ import { FilterMapperComponent } from './filter-mapper/filter-mapper.component';
     exports: [
         // EdaDashboardPanelComponent,
         // EdaTitlePanelComponent,
-        SafeUrlPipe,
+        // SafeUrlPipe,
         // SafeHtmlPipe,
         // EdaTableComponent,
         // EdaChartComponent,
