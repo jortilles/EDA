@@ -3,12 +3,10 @@
     <!-- Chart Preview -->
     <div class="p-6 flex-1 flex items-center justify-center border-b md:border-b-0 md:border-r bg-slate-50">
       <div class="relative w-full max-w-xl aspect-square">
-        @if (display) {
           <panel-chart #PanelChartComponent
             [props]="panelChartConfig"
             class="h-full w-full block"
           ></panel-chart>
-        }
       </div>
     </div>
 
@@ -17,9 +15,9 @@
       <div class="space-y-6">
         <div class="space-y-4">
           <div class="space-y-4">
-            <h3 class="font-medium text-slate-500 uppercase" i18n="@@chartDisplayOptionsTitle">
+            <h1 class="font-medium text-slate-500 uppercase" i18n="@@chartDisplayOptionsTitle">
               Opciones de visualización
-            </h3>
+            </h1>
   
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
@@ -36,7 +34,7 @@
 
 
 
-          <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase">Colors</h3>
+          <h1 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase">Colors</h1>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">

@@ -55,7 +55,6 @@ export { LinkDashboardsComponent } from './eda-panels/eda-blank-panel/link-dashb
 export { EdaTreeMap} from './eda-treemap/eda-treemap.component';
 export { EdaKnobComponent } from './eda-knob/eda-knob.component';
 export { KnobDialogComponent } from './eda-panels/eda-blank-panel/knob-dialog/knob-dialog.component';
-export { Knob } from './eda-knob/primengKnob/knob';
 export { FunnelDialog } from './eda-panels/eda-blank-panel/funnel-dialog/funnel-dialog.component';
 export { TreeTableDialogComponent } from './eda-panels/eda-blank-panel/tree-table-dialog/tree-table-dialog.component';
 export { BubblechartDialog } from './eda-panels/eda-blank-panel/bubblechart-dialog/bubblechart-dialog.component';
