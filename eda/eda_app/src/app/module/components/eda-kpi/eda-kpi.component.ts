@@ -3,7 +3,7 @@ import { StyleProviderService } from '@eda/services/service.index';
 import { registerLocaleData } from '@angular/common';
 import { EdaKpi } from './eda-kpi';
 import es from '@angular/common/locales/es';
-import { EdaChartComponent } from '../component.index';
+import { EdaChartComponent } from '../eda-chart/eda-chart.component';
 
 import { FormsModule } from '@angular/forms'; 
 import { CommonModule } from '@angular/common';

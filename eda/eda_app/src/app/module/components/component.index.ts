@@ -1,5 +1,4 @@
 // Eda Chart
-export { EdaChartComponent } from './eda-chart/eda-chart.component';
 
 
 export * from './eda-table/eda-table';
@@ -17,7 +16,6 @@ export * from './eda-d3-bubblechart/eda-bubblechart.component';
  // export * from './eda-d3/eda-d3.component';
 
 // Eda KPI
-export { EdaKpiComponent } from './eda-kpi/eda-kpi.component';
 
 // Eda dynamicText
 export { EdadynamicTextComponent } from './eda-dynamicText/eda-dynamicText.component';

@@ -18,7 +18,6 @@ import { TreeModule } from 'primeng/tree';
 import { NULL_VALUE, EMPTY_VALUE} from '../../../../config/personalitzacio/customizables';
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 
-import { EdaKpiComponent } from '@eda/components/component.index';
 import { PanelChart } from './panel-charts/panel-chart';
 import { PanelOptions } from './panel-utils/panel-menu-options';
 import { TableConfig } from './panel-charts/chart-configuration-models/table-config';
@@ -34,7 +33,7 @@ import { QueryService } from '@eda/services/api/query.service';
 // Standalone components
 import { EdaDialog2Component, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent, EdaContextMenuComponent} from '@eda/shared/components/shared-components.index';
 import { EdaInputText } from '@eda/shared/components/eda-input/eda-input-text';
-import { EdaChartComponent } from '@eda/components/component.index';
+import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
 import { PanelChartComponent } from './panel-charts/panel-chart.component';
 import { DragDropComponent } from '@eda/components/drag-drop/drag-drop.component';
 import { ColumnDialogComponent } from '@eda/components/component.index';
@@ -89,7 +88,7 @@ const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass
 const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule];
 const STANDALONE_COMPONENTS = [
     EdaDialog2Component, WhatIfDialogComponent, EbpChatgptComponent,FilterMapperComponent, EdadynamicTextComponent,EdaTitlePanelComponent,
-    PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
+    PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent, 
 ]
 @Component({
     standalone: true,

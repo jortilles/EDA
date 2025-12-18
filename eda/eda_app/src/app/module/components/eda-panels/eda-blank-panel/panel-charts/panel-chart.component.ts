@@ -10,12 +10,11 @@ import { EdaD3Component } from './../../../eda-d3/eda-d3.component';
 import { TableConfig } from './chart-configuration-models/table-config';
 import { Component, OnInit, Input, SimpleChanges, OnChanges, ViewChild, ViewContainerRef, ComponentFactoryResolver,
     OnDestroy, Output, EventEmitter, Self, ElementRef,} from '@angular/core';
-import { EdaKpiComponent } from '../../../eda-kpi/eda-kpi.component';
 import { EdadynamicTextComponent } from '../../../eda-dynamicText/eda-dynamicText.component';
 import { EdaTableComponent } from '../../../eda-table/eda-table.component';
 import { PanelChart } from './panel-chart';
 import { ChartUtilsService, StyleConfig, StyleProviderService } from '@eda/services/service.index';
-
+import { EdaKpiComponent } from '@eda/components/eda-kpi/eda-kpi.component';
 import { Column } from '@eda/models/model.index';
 import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
 import { EdaColumnDate } from '@eda/components/eda-table/eda-columns/eda-column-date';
@@ -471,8 +470,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         /** JUANJO MIRA ESTO*/
         this.componentRef = this.entry.createComponent(EdaChartComponent);
         this.componentRef.instance.inject = inject;
-                console.log(inject)
-
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
         this.configUpdated.emit(this.currentConfig);
     }
@@ -577,7 +574,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     private createEdaKpiComponent(inject: any) {
         this.entry.clear();
         console.log(inject)
-        // this.componentRef = this.entry.createComponent(EdaKpiComponent);
+        this.componentRef = this.entry.createComponent(EdaKpiComponent);
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onNotify.subscribe(data => {
             const kpiConfig = new KpiConfig({ sufix: data.sufix, alertLimits: inject.alertLimits });
