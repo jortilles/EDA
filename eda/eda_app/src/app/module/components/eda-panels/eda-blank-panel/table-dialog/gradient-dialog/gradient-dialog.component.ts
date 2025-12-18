@@ -6,16 +6,16 @@ import { CommonModule } from '@angular/common';
 import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 import { InputSwitchModule } from "primeng/inputswitch";
 import { PanelChartComponent } from "../../panel-charts/panel-chart.component";
+import { ColorPickerModule } from "primeng/colorpicker";
 @Component({
   standalone: true,
   selector: 'eda-table-gradient-dialog',
   templateUrl: './gradient-dialog.component.html',
-  imports: [FormsModule, CommonModule, EdaDialog2Component, InputSwitchModule, PanelChartComponent]
+  imports: [FormsModule, CommonModule, EdaDialog2Component, InputSwitchModule, PanelChartComponent, ColorPickerModule]
 })
 
 export class TableGradientDialogComponent implements OnInit{
   @Input () controller: any;
-  public dialog: EdaDialog;
   public min : string = '#ffffff';
   public max: string = '#e85656';
   public noStyle : boolean = false;
@@ -27,8 +27,7 @@ export class TableGradientDialogComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    console.log('hola')
-    this.dialog.title =  `${$localize`:@@gradientTitle:Código de color para la columna: `} ${this.controller.params.col.header}`;
+    this.title =  `${$localize`:@@gradientTitle:Código de color para la columna: `} ${this.controller.params.col.header}`;
     if(this.controller.params.style){
       this.min = this.controller.params.style.min;
       this.max = this.controller.params.style.max;
