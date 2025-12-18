@@ -1,4 +1,5 @@
 // Eda Chart
+export { EdaChartComponent } from './eda-chart/eda-chart.component';
 
 
 export * from './eda-table/eda-table';

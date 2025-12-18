@@ -573,7 +573,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     */
     private createEdaKpiComponent(inject: any) {
         this.entry.clear();
-        console.log(inject)
         this.componentRef = this.entry.createComponent(EdaKpiComponent);
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onNotify.subscribe(data => {
@@ -721,7 +720,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     */
     private createEdaKpiChartComponent(inject: any) {
         this.entry.clear();
-        // this.componentRef = this.entry.createComponent(EdaKpiComponent);
+        this.componentRef = this.entry.createComponent(EdaKpiComponent);
         this.componentRef.instance.inject = inject;
 
         this.componentRef.instance.onNotify.subscribe(data => {
@@ -731,9 +730,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.configUpdated.emit(this.currentConfig);;
 
         this.componentRef = this.entry.createComponent(EdaChartComponent);
-        // this.componentRef.instance.inject = inject;
+        this.componentRef.instance.inject = inject;
         // this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
-        // this.configUpdated.emit(this.currentConfig);;
+        this.configUpdated.emit(this.currentConfig);;
     }
 
 

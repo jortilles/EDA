@@ -62,6 +62,20 @@ export class KpiEditDialogComponent implements OnInit{
 
     }
 
+        ngOnInit(): void {
+        this.panelChartConfig = this.controller.params.panelChart;
+        console.log(this)
+        this.edaChart = this.controller.params.edaChart;
+
+        const config: any = this.panelChartConfig.config.getConfig();
+
+        this.loadChartColors();
+        this.alerts = config.alertLimits || []; //deepcopy
+        if (this.panelChartConfig.edaChart !== 'kpi')
+            this.originalColors = [...this.edaChart?.chartColors]; // Guardar estado original aquí
+        this.display = true;
+    }
+
     setActiveTab(tab: "colors" | "alerts"): void {
         this.activeTab = tab
     }
@@ -79,23 +93,12 @@ export class KpiEditDialogComponent implements OnInit{
 
     closeChartConfig() {
         // Modificación a datasetoriginal si este se modifica y no se guarda
-        if (this.panelChartConfig.edaChart !== 'kpi')
+        if (this.panelChartConfig.edaChart !== 'kpi' && this.edaChart?.chartDataset !== undefined)
             this.edaChart.chartDataset[0].backgroundColor = this.originalColors[0]['backgroundColor'];
         this.onClose(EdaDialogCloseEvent.NONE);
     }
 
-    ngOnInit(): void {
-        this.panelChartConfig = this.controller.params.panelChart;
-        this.edaChart = this.controller.params.edaChart;
 
-        const config: any = this.panelChartConfig.config.getConfig();
-
-        this.loadChartColors();
-        this.alerts = config.alertLimits || []; //deepcopy
-        if (this.panelChartConfig.edaChart !== 'kpi')
-            this.originalColors = [...this.edaChart?.chartColors]; // Guardar estado original aquí
-        this.display = true;
-    }
 
     loadChartColors() {
         if (this.edaChart) {

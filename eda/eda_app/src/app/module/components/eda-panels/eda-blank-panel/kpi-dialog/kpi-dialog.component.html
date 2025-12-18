@@ -3,12 +3,10 @@
     <!-- Chart Preview -->
     <div class="p-6 flex-1 flex items-center justify-center border-b md:border-b-0 md:border-r bg-slate-50">
       <div class="relative w-full h-full  aspect-square flex-wrap justify-center content-center">
-        @if (display) {
           <panel-chart #PanelChartComponent
             [props]="panelChartConfig"
             class="h-full w-full"
           ></panel-chart>
-        }
       </div>
     </div>
     
@@ -22,7 +20,7 @@
         >
           Alertas
         </button>
-        @if (this?.edaChart !== undefined ) {
+        @if (panelChartConfig.edaChart !== 'kpi' ) {
           <button 
             [class]="'py-2 px-4 text-center rounded-md transition-all ' + (activeTab === 'colors' ? 'bg-[#00BFB3] text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-700')"
             (click)="setActiveTab('colors')"
