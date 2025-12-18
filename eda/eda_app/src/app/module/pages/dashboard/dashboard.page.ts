@@ -13,7 +13,6 @@ import { EdaPanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index'
 import { DashboardSidebarComponent } from './dashboard-sidebar/dashboard-sidebar.component';
 import { GlobalFilterComponent } from '@eda/components/global-filter/global-filter.component'; 
 import { EdaBlankPanelComponent, IPanelAction } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
-import { ComponentsModule } from '@eda/components/components.module';
 import { FormsModule } from '@angular/forms';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 import { CommonModule } from '@angular/common';
@@ -42,7 +41,6 @@ const PRIMENG_MODULES = [
 
 const ANGULAR_MODULES = [
     FormsModule,
-    ComponentsModule,
     FocusOnShowDirective,
     CommonModule,
 ];

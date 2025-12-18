@@ -3,7 +3,6 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 // Modules
 import { CoreModule } from '../../core/core.module';
 import { SharedModule } from '../../shared/shared.module';
-import { ComponentsModule } from '../components/components.module';
 import { GridsterModule } from 'angular-gridster2';
 
 
@@ -27,7 +26,6 @@ import { PrimengModule } from 'app/core/primeng.module';
         PrimengModule,
         CoreModule,
         // GridsterModule.forRoot(),
-        ComponentsModule,
         GridsterModule,
         SharedModule,
         PAGES_ROUTES,
