@@ -6,72 +6,78 @@
   <div content class="p-2 space-y-6">
     <!-- <div class="px-6 py-6 space-y-6"> -->
       <!-- Update Frequency Section -->
-      <div *ngIf="!noCache" class="bg-gray-50 rounded-lg p-4">
-        <div class="space-y-4">
-          <div class="flex items-center gap-2">
-            <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                    d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
-            </svg>
-            <label class=" font-medium text-gray-700" i18n="@@RefreshCacheTitle">
-              Actualizar los datos del modelo cada:
-            </label>
-          </div>
-
-          <div class="flex items-center gap-3">
-            <input
-              type="number"
-              [(ngModel)]="quantity"
-              [disabled]="noCache"
-              min="1"
-              class="w-20 px-3 py-2 border border-gray-300 rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:text-gray-500"
-            />
-
-            <div class="flex gap-4">
-              <label class="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="timeUnit"
-                  value="days"
-                  [(ngModel)]="units"
-                  [disabled]="noCache"
-                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 disabled:opacity-50"
-                />
-                <span class=" text-gray-700" i18n="@@days">Día/s</span>
-              </label>
-              <label class="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="timeUnit"
-                  value="hours"
-                  [(ngModel)]="units"
-                  [disabled]="noCache"
-                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 disabled:opacity-50"
-                />
-                <span class=" text-gray-700" i18n="@@hours">Hora/s</span>
-              </label>
-            </div>
-          </div>
-
-          <div *ngIf="units==='days'" class="flex items-center gap-3">
-            <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <label for="updateTime" class=" text-gray-700" i18n="@@atTime">A las:</label>
-            <input
-              id="updateTime"
-              type="time"
-              [(ngModel)]="hours"
-              [disabled]="noCache"
-              class="w-32 px-3 py-2 border border-gray-300 rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:text-gray-500"
-            />
-          </div>
-        </div>
-      </div>
+       @if(!noCache){
+         <div class="bg-gray-50 rounded-lg p-4">
+           <div class="space-y-4">
+             <div class="flex items-center gap-2">
+               <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                       d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
+               </svg>
+               <label class=" font-medium text-gray-700" i18n="@@RefreshCacheTitle">
+                 Actualizar los datos del modelo cada:
+               </label>
+             </div>
+   
+             <div class="flex items-center gap-3">
+               <input
+                 type="number"
+                 [(ngModel)]="quantity"
+                 [disabled]="noCache"
+                 min="1"
+                 class="w-20 px-3 py-2 border border-gray-300 rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:text-gray-500"
+               />
+   
+               <div class="flex gap-4">
+                 <label class="flex items-center space-x-2 cursor-pointer">
+                   <input
+                     type="radio"
+                     name="timeUnit"
+                     value="days"
+                     [(ngModel)]="units"
+                     [disabled]="noCache"
+                     class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 disabled:opacity-50"
+                   />
+                   <span class=" text-gray-700" i18n="@@days">Día/s</span>
+                 </label>
+                 <label class="flex items-center space-x-2 cursor-pointer">
+                   <input
+                     type="radio"
+                     name="timeUnit"
+                     value="hours"
+                     [(ngModel)]="units"
+                     [disabled]="noCache"
+                     class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 disabled:opacity-50"
+                   />
+                   <span class=" text-gray-700" i18n="@@hours">Hora/s</span>
+                 </label>
+               </div>
+             </div>
+   
+             @if(units==='days'){
+               <div class="flex items-center gap-3">
+                 <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                 </svg>
+                 <label for="updateTime" class=" text-gray-700" i18n="@@atTime">A las:</label>
+                 <input
+                   id="updateTime"
+                   type="time"
+                   [(ngModel)]="hours"
+                   [disabled]="noCache"
+                   class="w-32 px-3 py-2 border border-gray-300 rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:text-gray-500"
+                 />
+               </div>
+             }
+           </div>
+         </div>
+       }
 
       <!-- Separator -->
-      <hr *ngIf="!noCache" class="border-gray-200">
+       @if(!noCache){
+        <hr class="border-gray-200"> 
+       }
 
       <!-- Cache Controls Section -->
       <div class="space-y-4">

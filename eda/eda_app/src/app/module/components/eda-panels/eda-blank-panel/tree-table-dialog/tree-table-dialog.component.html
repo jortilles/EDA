@@ -1,5 +1,5 @@
-<eda-dialog [inject]="dialog">
-  <div body class="w-fit justify-self-center">
+<eda-dialog2 width="80vw" height="80vh" [header]="title" (apply)="saveChartConfig()" (close)="closeChartConfig()">
+  <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-[70vh]">
 
     <div class="flex items-center justify-between w-full p-2 border-b w-[30rem]">
       <label i18n="@@showField" class="font-medium text-gray-700">
@@ -49,4 +49,4 @@
       </button>
     </div>
   </div>
-</eda-dialog>
+</eda-dialog2>

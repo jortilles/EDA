@@ -3,11 +3,15 @@ import { EdaChart } from './eda-chart';
 import { BaseChartDirective } from 'ng2-charts';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { ChartsColors } from '@eda/configs/index';
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
+import { NgChartsModule } from 'ng2-charts';
 
 @Component({
+    standalone: true,
     selector: 'eda-chart',
     templateUrl: './eda-chart.component.html',
-    styleUrls: []
+    imports: [FormsModule, CommonModule, NgChartsModule]
 })
 
 export class EdaChartComponent implements OnInit, AfterViewInit {

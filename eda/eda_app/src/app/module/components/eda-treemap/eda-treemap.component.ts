@@ -7,13 +7,16 @@ import { TreeMap } from "./eda-treeMap";
 import * as _ from 'lodash';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
 
-
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
 
 @Component({
+  standalone: true,
   selector: "eda-d3",
   templateUrl: "./eda-treemap.component.html",
   styleUrls: ["./eda-treemap.component.css"],
   encapsulation: ViewEncapsulation.Emulated,
+  imports: [FormsModule, CommonModule]
 })
 export class EdaTreeMap implements AfterViewInit {
   @Input() inject: TreeMap;

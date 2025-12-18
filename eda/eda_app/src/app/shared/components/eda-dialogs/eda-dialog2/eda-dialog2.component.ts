@@ -2,9 +2,23 @@ import { Component, OnInit, OnDestroy, Input, AfterViewInit, ViewChild, ElementR
 import { EdaDialog2 } from './eda-dialog2';
 import { Dialog } from 'primeng/dialog';
 
+
+import { CommonModule } from '@angular/common';
+import { DialogModule } from 'primeng/dialog';
+import { ButtonModule } from 'primeng/button'; // si usas botones dentro del diálogo
+import { FormsModule } from '@angular/forms'; // para [(ngModel)] si lo usas
+
+
 @Component({
+    standalone: true,
     selector: 'eda-dialog2',
     templateUrl: './eda-dialog2.component.html',
+    imports: [
+        CommonModule,
+        DialogModule,
+        ButtonModule,
+        FormsModule
+    ],
     styles: `
       ::ng-deep .p-dialog .p-dialog-footer {
         padding-bottom: 0.5rem;

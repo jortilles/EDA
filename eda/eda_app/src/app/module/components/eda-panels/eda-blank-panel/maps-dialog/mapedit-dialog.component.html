@@ -1,93 +1,133 @@
-<eda-dialog [inject]="dialog">
+<eda-dialog2 [display]="display" [header]="title" width="80vw" height="80vh" [overflow]="'auto'"
+  (apply)="saveChartConfig()" (close)="closeChartConfig()">
 
-  <div body class="grid">
-    <div class="col-8">
-
-        <div class="eda-chart-panel" style="margin-left: 6em; margin-top: 2em; width: 60%; background-color: var(--panel-color);">
-          <panel-chart *ngIf="display" #PanelChartComponent [props]="panelChartConfig"  style="height: 90%; width: 90%; display:block;  margin-top:5em">
-          </panel-chart>
-        </div>
-
+  <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-[70vh]">
+    <!-- Chart Preview -->
+    <div class="p-6 flex-[2] flex items-center justify-center border-b md:border-b-0 md:border-r bg-slate-50">
+      <div class="relative w-full h-full">
+        @if (display) {
+          <panel-chart #PanelChartComponent
+            [props]="panelChartConfig"
+            class="h-full w-full block"
+          ></panel-chart>
+        }
+      </div>
     </div>
 
-
-    <div class="col-4">
-
-
-      <h6 i18n="@@colorsChartH6" class="custom-border-b1">
-        Colores
-      </h6>
-
-      <div class="chart-color-selection">
-        <div class="mb-1">
-          <input type="text" [(ngModel)]="color" pInputText style="width: 40%" (keyup)="handleInputColor()" />
-          <p-colorPicker [(ngModel)]="color" appendTo="body" (onChange)="handleInputColor()"></p-colorPicker>
-          <!-- <input type="text" pInputText class="eda-color-pick" (input)="handleInputColor()" minlength="7"> -->
-        </div>
-
-      </div>
-
-      <h6 i18n="@@LogarithmicScaleH6" class="custom-border-b1">
-        ¿Escala logaritmica?
-      </h6>
-      <div class="mb-1">
-        <p-inputSwitch [(ngModel)]="logarithmicScale" (onChange)="renderMap()">
-        </p-inputSwitch>
-      </div>
-      <h6 i18n="@@noMouseH6" class="custom-border-b1">
-        Activar funciones del mouse
-      </h6>
-      <div class="mb-1">
-        <p-inputSwitch [(ngModel)]="draggable" (onChange)="nullMouseOptions()">
-        </p-inputSwitch>
-      </div>
-      
-      <h6 i18n="@@enableBaseLayer" class="custom-border-b1">
-        Activar capa base
-      </h6>
-      <div class="mb-1">
-        <p-inputSwitch [(ngModel)]="baseLayer" (onChange)="modifyBaseLayer()">
-        </p-inputSwitch>
-      </div>
-      
-      <h6 i18n="@@LegendPosition" class="custom-border-b1">
-        Posición de la leyenda
-      </h6>
-
-      <div class="col-3" style="border: 1px solid #fbfbfb; border-radius: 10px; background-color: #f2f3f5;">
-        <div class="grid">
-          <div class="col-6" style="text-align: left;">
-            <p-radioButton name="groupname" value="topleft" [(ngModel)]="legendPosition" (onClick)="changeLegend()">
-            </p-radioButton>
-          </div>
-          <div class="col-6" style="text-align: right;">
-            <p-radioButton name="groupname" value="topright" [(ngModel)]="legendPosition" (onClick)="changeLegend()">
-            </p-radioButton>
+    <div class="p-6 flex-[1] overflow-y-auto">
+      <div class="space-y-6">
+        <!-- Colors -->
+        <div class="space-y-4">
+          <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase">Colores</h3>
+          
+          <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm mb-6"
+            [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
+            <option [ngValue]="null" disabled hidden i18n="@@selectPalette">
+              -- Seleccione una paleta --
+            </option>
+            @for (palette of allPalettes; track $index) {
+            <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
+            }
+          </select>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+              <div class="flex items-center gap-2">
+                <input [(ngModel)]="color" (input)="handleInputColor()" class="text-md text-slate-500 font-mono">  
+                <p-colorPicker [(ngModel)]="color" (onChange)="handleInputColor()" format="hex" appendTo="body"/>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="grid">
-          <div class="col-6" style="text-align: left;">
-            <p-radioButton name="groupname" value="bottomleft" [(ngModel)]="legendPosition" (onClick)="changeLegend()">
-            </p-radioButton>
+        <!-- EscalaLogaritmica -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label for="logarithmic-switch" class="block text-sm font-medium" i18n="@@logarithmicScale">Escala logarítmica</label>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" [(ngModel)]="logarithmicScale" class="sr-only peer" (ngModelChange)="renderMap()">
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]"></div>
+            </label>
           </div>
-          <div class="col-6" style="text-align: right">
-            <p-radioButton name="groupname" value="bottomright" [(ngModel)]="legendPosition" (onClick)="changeLegend()">
-            </p-radioButton>
+        </div>
+
+        <!-- Mouse -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label for="mouse-functions-switch" class="block text-sm font-medium" i18n="@@activeMouseFunctions">Activar funciones del ratón</label>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" [(ngModel)]="draggable" (onChange)="nullMouseOptions()" class="sr-only peer">
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]"></div>
+            </label>
+          </div>
+        </div>
+
+        <!-- BaseLayer Active --> 
+
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="block text-sm font-medium" i18n="@@enableBaseLayer">Activar capa base</label>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" [(ngModel)]="baseLayer" (ngModelChange)="modifyBaseLayer()" class="sr-only peer">
+              <div
+                class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- LegendPosition -->
+        <div class="space-y-4">
+          <label class="block text-sm font-medium" i18n="@@legendPosition">Posición de la leyenda</label>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="flex items-center space-x-2 border rounded-md p-2">
+              <input 
+                type="radio" 
+                id="topleft" 
+                name="legendPosition" 
+                (input)="changeLegend('topleft')" 
+                [checked]="this.legendPosition === 'topleft' "
+                class="h-4 w-4 text-[#00BFB3]"
+              />
+              <label for="topleft" class="text-sm" i18n="@@topleftPosition">Superior izquierda</label>
+            </div>
+            <div class="flex items-center space-x-2 border rounded-md p-2">
+              <input 
+                type="radio" 
+                id="topright" 
+                name="legendPosition" 
+                (input)="changeLegend('topright')" 
+                [checked]="this.legendPosition === 'topright' "
+                class="h-4 w-4 text-[#00BFB3]"
+              />
+              <label for="topright" class="text-sm" i18n="@@toprightPosition">Superior derecha</label>
+            </div>
+            <div class="flex items-center space-x-2 border rounded-md p-2">
+              <input 
+                type="radio" 
+                id="bottomleft" 
+                name="legendPosition" 
+                (input)="changeLegend('bottomleft')" 
+                [checked]="this.legendPosition === 'bottomleft' "
+                class="h-4 w-4 text-[#00BFB3]"
+              />
+              <label for="bottomleft" class="text-sm" i18n="@@bottomleftPosition">Inferior izquierda</label>
+            </div>
+            <div class="flex items-center space-x-2 border rounded-md p-2">
+              <input 
+                type="radio" 
+                id="bottomright" 
+                name="legendPosition" 
+                (input)="changeLegend('bottomright')" 
+                [checked]="this.legendPosition === 'bottomright' "
+                class="h-4 w-4 text-[#00BFB3]"
+              />
+              <label for="bottomright" class="text-sm" i18n="@@bottomrightPosition">Inferior derecha</label>
+            </div>
           </div>
         </div>
       </div>
-
     </div>
   </div>
+</eda-dialog2>
 
-  <div class="flex justify-end p-2 border-t gap-1.5">
-    <button  class="cancel-button" (click)="closeChartConfig()">
-      <i class="fa fa-times"></i>
-      <span i18n="@@cancelarBtn">Cancelar</span>
-    </button>
-    <button class="confirm-button" (click)="saveChartConfig()">
-      <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
-    </button>
-  </div>
-</eda-dialog>
+  

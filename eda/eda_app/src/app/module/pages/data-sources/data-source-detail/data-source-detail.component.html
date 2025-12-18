@@ -110,11 +110,13 @@
       </div>
       
       <div class="flex flex-wrap gap-2 pt-4">
-        <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#FF0000] text-primary-foreground hover:bg-[#FF0000]/90 h-10 px-4 py-2"
-          (click)="deleteView(tablePanel.technical_name)">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <rect x="6" y="7" width="12" height="14" rx="2"/> <path d="M5 7h14"/> <path d="M9 7V4h6v3"/> <line x1="10" y1="11" x2="10" y2="17"/> <line x1="14" y1="11" x2="14" y2="17"/> </svg>       
-          {{deleteViewString}}
-        </button>
+        @if(tablePanel.query){
+          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#FF0000] text-primary-foreground hover:bg-[#FF0000]/90 h-10 px-4 py-2"
+            (click)="deleteView(tablePanel.technical_name)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <rect x="6" y="7" width="12" height="14" rx="2"/> <path d="M5 7h14"/> <path d="M9 7V4h6v3"/> <line x1="10" y1="11" x2="10" y2="17"/> <line x1="14" y1="11" x2="14" y2="17"/> </svg>       
+            {{deleteViewString}}
+          </button>
+        }
         <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#00BFB3] text-primary-foreground hover:bg-[#00BFB3]/90 h-10 px-4 py-2"
           (click)="openTablePermissionsDialog()">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"  width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2">
@@ -140,83 +142,6 @@
       </div>
     </div>
   </div>
-
-  <!-- <p-card i18n-header="@@editModelHeaders" header="Editar {{tablePanel.type ? tablePanel.name : ''}}">
-      <p-header style="font-size: 18px;">
-
-      </p-header>
-      <div>
-          <h5 class="title-datamodel" i18n="@@inputNombre">Nombre</h5>
-          <p><input pInputText type="text" size="50" [(ngModel)]="tablePanel.name" (keyup)="update()"></p>
-      </div>
-
-      <div>
-          <h5 class="title-datamodel" i18n="@@inputNombreTecnico">Nombre técnico</h5>
-          <p>{{tablePanel.technical_name}}</p>
-      </div>
-
-      <div>
-          <h5 class="title-datamodel" i18n="@@inputDescripcion"> Descripción </h5>
-          <p><input pInputText type="text" size="50" [(ngModel)]="tablePanel.description" (keyup)="update()"></p>
-      </div>
-
-      <div *ngIf="tablePanel.query">
-          <h5 class="title-datamodel" i18n="@@viewLabel"> Vista </h5>
-          <p>{{tablePanel.query}}</p>
-      </div>
-
-        <div style="margin-bottom: 1rem;" *ngIf="tablePanel.query">
-            <button type="button" pButton (click)="viewEdition()" class="ui-button-success"
-                i18n-label='@@viewEdition' label="Edición de la vista"></button>
-        </div>
-
-      <div>
-          <h5 class="title-datamodel" i18n="@@inputEsconderTabla">Esconder tabla</h5>
-          <p-inputSwitch (onChange)="toggle_table(tablePanel.visible)" [ngModel]="!tablePanel.visible" (ngModelChange)="tablePanel.visible = $event">
-          </p-inputSwitch>
-      </div>
-
-      <div style="margin-bottom: 1em; margin-top: 0.5em;">
-          <h5 class="title-datamodel" i18n="@@inputTipoTabla">Tipo de tabla</h5>
-          <div>
-              <p-selectButton [options]="tableTypes" [(ngModel)]="selectedTableType" (onChange)="updateTableType()">
-              </p-selectButton>
-          </div>
-
-      </div>
-
-      <div>
-          <h5 class="title-datamodel" i18n="@@listRelations">Relaciones</h5>
-          <eda-table [inject]="relationsTable"></eda-table>
-      </div>
-
-      <div>
-          <h5 class="title-datamodel" i18n="@@rolesPermisosTabla">Visibilidad de tablas</h5>
-          <eda-table [inject]="permissionTable"></eda-table>
-      </div>
-
-      <span class="p-buttonset">
-          <button pButton type="button" icon="pi pi-plus"
-          [label]="addPermission" class="p-button-secondary" (click)="openTablePermissionsDialog()"
-          style="margin-bottom: 1px;"> </button>
-
-          <button pButton type="button" icon="pi pi-plus" [label]="addRelation" class="p-button-secondary"
-              (click)="openTableRelationDialog()" style="margin-bottom: 1px;"> </button>
-          <button *ngIf="selectedTableType !=='view'" pButton type="button" icon="pi pi-plus"
-              [label]="addCalculatedCol" class="p-button-secondary" (click)="openNewColDialog()"
-              style="margin-bottom: 1px;"> </button>
-          <button pButton type="button" icon="pi pi-eye-slash" [label]="hideColumnsString" class="p-button-secondary"
-              (click)="hideAllColumns(tablePanel)" style="margin-bottom: 1px;"> </button>
-
-      </span>
-
-      <div *ngIf="tablePanel.query">
-          <h5 class="title-datamodel" i18n="@@inputBorrarVista">Borrar vista</h5>
-          <button pButton type="button" icon="pi pi-trash" class="ui-button-danger"
-              (click)="deleteView(tablePanel.technical_name)"></button>
-      </div>
-
-  </p-card> -->
 </div>
 
 
@@ -441,117 +366,6 @@
       }
     </div>
   </div>
-  
-  <!-- <p-card i18n-header="@@editModelHeaders" header="Editar {{columnPanel.type ?  columnPanel.name : ''}}">
-
-      <p-header style="font-size: 18px;">
-
-      </p-header>
-
-      <div>
-          <h5 class="title-datamodel" i18n="@@inputNombre">
-              Nombre
-          </h5>
-          <p><input pInputText type="text" size="50" [(ngModel)]="columnPanel.name" (keyup)="update()"></p>
-      </div>
-
-      <div>
-          <h5 class="title-datamodel" i18n="@@inputNombreTecnico">
-              Nombre técnico
-          </h5>
-          <p>{{columnPanel.technical_name}}</p>
-      </div>
-
-      <div>
-          <h5 class="title-datamodel" i18n="@@inputDescripcion">
-              Descripción
-          </h5>
-          <p><input pInputText type="text" size="50" [(ngModel)]="columnPanel.description" (keyup)="update()"></p>
-      </div>
-
-      <div *ngIf="columnPanel.computed_column !== 'no'">
-          <h5 class="title-datamodel" i18n="@@sqlExpColumn">Expresión SQL (Debe incluir la agregación)</h5>
-          <p><textarea pInputTextarea type="text" [(ngModel)]="columnPanel.SQLexpression" (keyup)="update()" rows="5"
-                  cols="100" placeholder="sum(a*b)"> </textarea></p>
-      </div>
-
-      <div  style="margin-bottom: 1em; margin-top: 0.5em;">
-          <h5 class="title-datamodel" i18n="@@inputTipoColumna">
-              Tipo de columna
-          </h5>
-          <div>
-              <p-selectButton [options]="columnTypes" [(ngModel)]="selectedcolumnType" (onChange)=updateColumnType()>
-              </p-selectButton>
-          </div>
-      </div>
-
-      <div *ngIf="columnPanel.computed_column === 'no'" style="margin-bottom: 1em; margin-top: 0.5em;">
-          <h5 class="title-datamodel" i18n="@@agregacionh5">
-              Agregación
-          </h5>
-          <p>
-              <p-selectButton [options]="aggTypes" [(ngModel)]="selectedAggType" multiple="multiple" (onChange)="updateAgg()">
-              </p-selectButton>
-          </p>
-
-      </div>
-
-      <div *ngIf="selectedcolumnType === 'numeric'" style="margin-bottom: 1em; margin-top: 0.5em;">
-          <h5 class="title-datamodel" i18n="@@inputFormat">
-              Número de decimales
-          </h5>
-          <div>
-              <p><input pInputText type="number" size="50" [(ngModel)]="columnPanel.minimumFractionDigits" (keyup)="update()"></p>
-          </div>
-      </div>
-
-
-      <div *ngIf="columnPanel.valueListSource" style="margin-bottom: 1em; margin-top: 0.5em;">
-          <h5 class="title-datamodel" i18n="@@possibleValuesList"  [pTooltip]="valueListSourceHeader">
-              Valores para filtro: 
-          </h5>
-          <div class="valuesListList">
-              <p> <b  [pTooltip]="valueListSourceTabla" i18n="@@possibleValuesListTable" >Tabla:</b>  {{columnPanel.valueListSource.target_table}}</p> 
-              <p> <b  [pTooltip]="valueListSourceID" i18n="@@possibleValuesListID">Columna id:</b>  {{columnPanel.valueListSource.target_id_column}} </p> 
-              <p> <b  [pTooltip]="valueListSourceDescripcion" i18n="@@possibleValuesListDescription">Columna descripción:</b>   {{columnPanel.valueListSource.target_description_column}}</p>
-          </div>
-          <div class="deleteRelation">
-              <i class="fa fa-trash btn pl-1" (click)="deleteValuesList(columnPanel)"></i>
-          </div>
-      </div>
-
-      <div *ngIf="columnPanel.computed_column === 'no'">
-          <h5 class="title-datamodel" i18n="@@rolesPermisos">Roles y permisos de fila</h5>
-          <eda-table [inject]="permissionsColumn"></eda-table>
-      </div>
-
-
-      <button *ngIf="columnPanel.computed_column === 'no'" pButton type="button" icon="pi pi-plus"
-      [label]="addValueList" class="p-button-secondary" (click)="openValueListDialog()"
-      style="margin-bottom: 1px;"> </button>
-
-
-      <button *ngIf="columnPanel.computed_column === 'no'" pButton type="button" icon="pi pi-plus"
-          [label]="addPermission" class="p-button-secondary" (click)="openPermissionsRelationDialog()"
-          style="margin-bottom: 1px;"> </button>
-
-      <div *ngIf="columnPanel.computed_column === 'no'">
-          <h5 class="title-datamodel" i18n="@@esconderColumna">Esconder columna</h5>
-          <p>
-              <p-inputSwitch (onChange)="toggle_column(columnPanel.visible)" [ngModel]="!columnPanel.visible" (ngModelChange)="columnPanel.visible = $event">
-              </p-inputSwitch>
-          </p>
-      </div>
-
-      <div>
-          <button *ngIf="columnPanel.SQLexpression" type="button" pButton (click)="checkCalculatedColumn(columnPanel)"
-              class="ui-button-success ml-2" label="Comprobar expresión" style="margin-right: 5px;"></button>
-          <button *ngIf="columnPanel.computed_column !== 'no'" type="button" pButton
-              (click)="deleteCalculatedCol(columnPanel)" class="p-button-raised p-button-danger" i18n-label="@@borrar"
-              label="Borrar"></button>
-      </div>
-
-  </p-card> -->
 </div>
 
 
@@ -806,181 +620,16 @@
       </div>
     </div>
   </div>
-    <!-- <p-card i18n-header="@@editModelHeaders" header="Editar {{modelPanel.type ? modelPanel.metadata.model_name : ''}}">
-        <div class="grid">
-            <div style="margin-bottom: 1rem;" class="col-12">
-
-                <p-header style="font-size: 18px;">
-                </p-header>
-                <div class="grid">
-                    <h4 class="col-12" i18n="@@metadata" style="border-bottom: 1px solid #d4d4d4;">
-                        Metadata
-                    </h4>
-
-                    <div class="col-12  xl:col-4">
-                        <h5 class="title-datamodel" i18n="@@inputNombre">
-                            Nombre
-                        </h5>
-                        <input pInputText type="text" [(ngModel)]="modelPanel.metadata.model_name" (keyup)="update()">
-                    </div>
-
-                    <h4 class="col-12" i18n="@@conexionh4" style="border-bottom: 1px solid #d4d4d4;">
-                        Conexión
-                    </h4>
-                    <div class="col-12  xl:col-4">
-                        <h5 class="title-datamodel" i18n="@@type">
-                            Tipo
-                        </h5>
-                        <p-dropdown [options]="tiposBD" [(ngModel)]="selectedTipoBD"
-                            i18n-placeholder="placeholder|Dropdown tipos@@placeholderDropdown"
-                            i18n-placeholder="@@inputTipo" placeholder="Tipo" optionLabel="label"
-                            (onChange)="setDbType()" [style]="{width:'150px'}">
-                        </p-dropdown>
-                    </div>
-
-                    <div class="col-12  xl:col-4" *ngIf="  selectedTipoBD.value !== 'bigquery' && selectedTipoBD.value !== 'snowflake'">
-                        <h5 class="title-datamodel" i18n="@@inputHost">
-                            Host
-                        </h5>
-                        <input pInputText type="text" [(ngModel)]="modelPanel.connection.host" (keyup)="update()">
-                    </div>
-
-                    <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value === 'snowflake'">
-                        <h5 class="title-datamodel" i18n="@@account">
-                            Cuenta
-                        </h5>
-                        <input pInputText type="text" [(ngModel)]="modelPanel.connection.host" (keyup)="update()">
-                    </div>
-
-                    <div class="col-12  xl:col-4">
-                        <h5 class="title-datamodel" i18n="@@inputNombreDB">
-                            Base de datos
-                        </h5>
-                        <input pInputText type="text" [(ngModel)]="modelPanel.connection.database" (keyup)="update()">
-                    </div>
-
-                    <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value !== 'bigquery'">
-                        <h5 class="title-datamodel" i18n="@@port">
-                            Puerto
-                        </h5>
-                        <input pInputText type="text" [(ngModel)]="modelPanel.connection.port" (keyup)="update()">
-                    </div>
-
-                    <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value !== 'bigquery'">
-                        <h5 class="title-datamodel" i18n="@@schema">
-                            Esquema
-                        </h5>
-                        <input pInputText type="text" [(ngModel)]="modelPanel.connection.schema" (keyup)="update()">
-                    </div>
-
-                    <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value === 'mysql'">
-                        <h5 class="title-datamodel" >
-                            Pool Limit
-                        </h5>
-                        <input pInputText type="text" [(ngModel)]="modelPanel.connection.poolLimit" (keyup)="update()">
-                    </div>
-
-
-                    <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value === 'snowflake'">
-                        <h5 class="title-datamodel" >
-                            Warehouse
-                        </h5>
-                        <input pInputText type="text" [(ngModel)]="modelPanel.connection.warehouse" (keyup)="update()">
-                    </div>
-
-                    <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value !== 'bigquery'">
-                        <h5 class="title-datamodel" i18n="@@placeholderInputUsuario">
-                            Usuario
-                        </h5>
-                        <input pInputText type="text" [(ngModel)]="modelPanel.connection.user" (keyup)="update()">
-                    </div>
-
-                    <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value !== 'bigquery'">
-                        <h5 class="title-datamodel" i18n="password@@inputPassword">
-                            Password
-                        </h5>
-                        <input pInputText type="password" [(ngModel)]="modelPanel.connection.password"
-                            (keyup)="update()" autocomplete="new-password">
-                    </div>
-
-                    <div class="col-12  xl:col-4">
-                        <h5 class="title-datamodel" i18n="@@filters">
-                            Filtros
-                        </h5>
-                        <input pInputText type="text" [(ngModel)]="modelPanel.metadata.filter" (keyup)="update()">
-                    </div>
-
-                    <div class="col-12 " *ngIf="modelPanel.connection.ssl && (selectedTipoBD.value == 'mysql' || selectedTipoBD.value == 'postgres' || selectedTipoBD.value == 'sqlserver') "
-                        i18n-label='@@allowSSL' style=" display: flex !important; align-items: center !important;">
-                        <p-inputSwitch [(ngModel)]="modelPanel.connection.ssl" (keyup)="update()" label="Permitir SSL" >
-                        </p-inputSwitch>
-                        &nbsp; Conexión mediante SSL
-                    </div>
-                    
-                    <div class="col-12 " *ngIf="!modelPanel.connection.ssl && (selectedTipoBD.value == 'mysql' || selectedTipoBD.value == 'postgres' || selectedTipoBD.value == 'sqlserver') "
-                        i18n-label='@@allowSSL' style=" display: flex !important; align-items: center !important;">
-                        <p-inputSwitch [(ngModel)]="modelPanel.connection.ssl" (keyup)="update()" label="Permitir SSL" >
-                        </p-inputSwitch>
-                        &nbsp; Conexión sin SSL
-                    </div>
-                    <div class="col-12 " *ngIf="selectedTipoBD.value !== 'bigquery'">
-                        <button type="button" pButton (click)="checkConection()" class="ui-button-success ml-2"
-                            i18n-label='@@checkConnection' label="Comprobar conexión"></button>
-                    </div>
-                </div>
-            </div>
-            <div style="margin-bottom: 1rem;" class="col-12">
-
-                <h4 style="margin-bottom: 4px; border-bottom: 1px solid #d4d4d4;"> {{functionalities}} </h4>
-
-                <span class="p-buttonset">
-
-                    <button pButton type="button" icon="pi pi-map" [label]="addMap" class="p-button-secondary"
-                        (click)="openNewMapDialog()" style="margin-bottom: 1px;"> </button>
-                    <button pButton type="button" icon="pi pi-plus" [label]="addView" class="p-button-secondary"
-                        (click)="openNewViewDialog()" style="margin-bottom: 1px;"> </button>
-                    <button pButton type="button" icon="pi pi-plus" [label]="addCSV" class="p-button-secondary"
-                        (click)="openCSVDialog()" style="margin-bottom: 1px;"> </button>
-                    <button pButton type="button" (click)="openTagDialog()" icon="pi pi-plus" [label]="addTagDataSource" class="p-button-secondary"
-                         style="margin-bottom: 1px;"> </button>
-                </span>
-            </div>
-            <div style="margin-bottom: 1rem;" class="col-12">
-                <h4 style="margin-bottom: 4px; border-bottom: 1px solid #d4d4d4;"> {{utilities}} </h4>
-
-                <span class="p-buttonset">
-                    <button pButton type="button" icon="pi pi-eye-slash" [label]="hideTablesString"
-                        class="p-button-secondary" (click)="hideAllTables()" style="margin-bottom: 1px;"> </button>
-                    <button pButton type="button" icon="pi pi-eye-slash" [label]="hideAllRelationsString"
-                        class="p-button-secondary" (click)="hideAllRelations()" style="margin-bottom: 1px;"> </button>
-                    <button pButton type="button" icon="pi pi-cog" [label]="addCacheConfig" class="p-button-secondary"
-                        (click)="openCacheDialog()" style="margin-bottom: 1px;"> </button>
-                    <button pButton type="button" icon="pi pi-plus" [label]="addPermission" class="p-button-secondary" 
-                         (click)="openModelPermissionsDialog()" style="margin-bottom: 1px;"> </button>
-                    <button pButton type="button" icon="pi pi-eye" [label]="viewsecurity" class="p-button-secondary"
-                         (click)="openSecurityDialog()" style="margin-bottom: 1px;"> </button>
-                </span>
-
-            </div>
-
-            <div style="margin-bottom: 1rem;" class="col-12">
-                <h4 style="margin-bottom: 4px; border-bottom: 1px solid #d4d4d4;" i18n="@@rolesPermisosModelo">Visibilidad a nivel de modelo</h4>
-                <eda-table [inject]="permissionModel"></eda-table>
-
-
-            </div>
-        </div>
-    </p-card> -->
 </div>
 
 
 <!-- Looks Good -->
 <app-table-edit-relations-dialog *ngIf="selectedRelation" [controller]="relationController" [relation]="selectedRelation"></app-table-edit-relations-dialog>
+
 <app-column-value-list-dialog *ngIf="valueListController" [controller]="valueListController"></app-column-value-list-dialog>
 <app-table-relations-dialog *ngIf="relationController" [controller]="relationController"></app-table-relations-dialog>
 <app-column-permission-dialog *ngIf="permissionsController" [table]="tablePanel" [column]="columnPanel" [controller]="permissionsController"></app-column-permission-dialog>
 <app-calculated-column-dialog *ngIf="newColController" [controller]="newColController"></app-calculated-column-dialog>
-
 
 <!-- V2 -->
 <app-map-dialog *ngIf="showMapDialog" (close)="closeMapDialog($event)"></app-map-dialog> 

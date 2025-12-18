@@ -1,53 +1,102 @@
-import { GroupService } from './../../../../services/api/group.service';
-import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
-import { TableConfig } from './panel-charts/chart-configuration-models/table-config';
-import { PanelChartComponent } from './panel-charts/panel-chart.component';
-import { Component, Input, OnInit, ViewChild, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDrag } from '@angular/cdk/drag-drop';
-import { Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
-import {
-    DashboardService, ChartUtilsService, AlertService,
-    SpinnerService, FileUtiles, EdaChartType,
-    FilterType, QueryBuilderService, OrdenationType, UserService
-} from '@eda/services/service.index';
-import {
-    EdaPageDialogComponent, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent
-} from '@eda/shared/components/shared-components.index';
-import { EdaChartComponent } from '@eda/components/component.index';
-import { PanelChart } from './panel-charts/panel-chart';
+// Angular
+import { Component, Input, Output, EventEmitter, ViewChild, OnInit, inject, computed, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CommonModule, NgClass } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { DragDropModule, CdkDrag, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { ActivatedRoute } from '@angular/router';
+import { lastValueFrom } from 'rxjs';
 import * as _ from 'lodash';
+import Swal from 'sweetalert2';
+// PrimeNG
+import { ButtonModule } from 'primeng/button';
+import { DropdownModule } from 'primeng/dropdown';
+import { TooltipModule } from 'primeng/tooltip';
+import { ConfirmationService, SharedModule } from 'primeng/api';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { TreeModule } from 'primeng/tree';
+// Eda config
+import { NULL_VALUE, EMPTY_VALUE} from '../../../../config/personalitzacio/customizables';
+import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
+
+import { PanelChart } from './panel-charts/panel-chart';
+import { PanelOptions } from './panel-utils/panel-menu-options';
+import { TableConfig } from './panel-charts/chart-configuration-models/table-config';
 import { ChartConfig } from './panel-charts/chart-configuration-models/chart-config';
 import { ChartJsConfig } from './panel-charts/chart-configuration-models/chart-js-config';
+import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
+import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
+// Eda Services
+import { EdaChartType, FilterType, OrdenationType} from '@eda/services/service.index';
+import { DashboardService, ChartUtilsService, AlertService, SpinnerService, FileUtiles, QueryBuilderService, UserService } from '@eda/services/service.index';
+import { GroupService } from '../../../../services/api/group.service';
+import { QueryService } from '@eda/services/api/query.service';
+// Standalone components
+import { EdaDialog2Component, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent, EdaContextMenuComponent} from '@eda/shared/components/shared-components.index';
 import { EdaInputText } from '@eda/shared/components/eda-input/eda-input-text';
-
-/** Panel utils  */
-import { PanelOptions } from './panel-utils/panel-menu-options';
+import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
+import { PanelChartComponent } from './panel-charts/panel-chart.component';
+import { DragDropComponent } from '@eda/components/drag-drop/drag-drop.component';
+import { ColumnDialogComponent } from '@eda/components/component.index';
+import { FilterDialogComponent } from '@eda/components/component.index';
+import { WhatIfDialogComponent } from '@eda/components/component.index';
+import { FilterMapperDialog } from '@eda/components/filter-mapper-dialog/filter-mapper.dialog';
+import { FilterMapperComponent } from '@eda/components/filter-mapper/filter-mapper.component';
+import { EbpChatgptComponent } from '@eda/components/ebp-chatgpt/ebp-chatgpt.component';
+import { LinkDashboardsComponent } from '@eda/components/component.index';
+import { DashboardPage } from 'app/module/pages/dashboard/dashboard.page';
+import { EdadynamicTextComponent } from '@eda/components/component.index';
+import { EdaTitlePanelComponent } from '@eda/components/component.index';
+import { PanelMenuModule } from 'primeng/panelmenu';
+// Panel Utils
 import { TableUtils } from './panel-utils/tables-utils';
 import { QueryUtils } from './panel-utils/query-utils';
 import { EbpUtils } from './panel-utils/ebp-utils';
 import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
-import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
-import { ActivatedRoute } from '@angular/router';
-import { NULL_VALUE, EMPTY_VALUE } from '../../../../config/personalitzacio/customizables'
-import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
-import { inject, computed } from '@angular/core';
-import { DragDropComponent } from '@eda/components/drag-drop/drag-drop.component';
-import { lastValueFrom } from 'rxjs';
-import { DashboardPageV2 } from 'app/module/pages/v2/dashboard/dashboard.page';
-import { QueryService } from '@eda/services/api/query.service';
-import { ConfirmationService } from 'primeng/api';
-import Swal from 'sweetalert2';
+import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils';
 
+//
+import { CumSumAlertDialogComponent } from '@eda/components/component.index';
+import { AlertDialogComponent } from '@eda/components/component.index';
 
+//pruebas
+import { MapEditDialogComponent } from '@eda/components/component.index';
+import { MapCoordDialogComponent } from '@eda/components/component.index';
+import { ChartDialogComponent } from '@eda/components/component.index';
+import { BubblechartDialog } from '@eda/components/component.index';
+import { TreeTableDialogComponent } from '@eda/components/component.index';
+import { SunburstDialogComponent } from '@eda/components/component.index';
+import { ScatterPlotDialog } from '@eda/components/component.index';    
+import { TreeMapDialog } from '@eda/components/component.index';
+import { FunnelDialog } from '@eda/components/component.index';
+import { KnobDialogComponent } from '@eda/components/component.index';
+import { SankeyDialog } from '@eda/components/component.index';
+import { dynamicTextDialogComponent } from '@eda/components/component.index';
+import { TableDialogComponent } from '@eda/components/component.index';
+import { TableGradientDialogComponent } from '@eda/components/component.index';
+import { KpiEditDialogComponent } from '@eda/components/component.index';
 export interface IPanelAction {
     code: string;
     data: any;
 }
-
+const DIALOGS_COMPONENTS = [
+    ChartDialogComponent,BubblechartDialog, MapCoordDialogComponent, MapEditDialogComponent,
+    TreeTableDialogComponent, SunburstDialogComponent, TreeMapDialog, ScatterPlotDialog,
+    FunnelDialog, KnobDialogComponent, SankeyDialog, dynamicTextDialogComponent, TableDialogComponent,
+    TableGradientDialogComponent, AlertDialogComponent, KpiEditDialogComponent
+];
+const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass, CumSumAlertDialogComponent];
+const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule];
+const STANDALONE_COMPONENTS = [
+    EdaDialog2Component, WhatIfDialogComponent, EbpChatgptComponent,FilterMapperComponent, EdadynamicTextComponent,EdaTitlePanelComponent,
+    PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
+    DragDropComponent 
+]
 @Component({
+    standalone: true,
+    imports : [ STANDALONE_COMPONENTS,PRIMENG_MODULES, ANGULAR_MODULES, DIALOGS_COMPONENTS],
     selector: 'eda-blank-panel',
-    templateUrl: './eda-blank-panel-v2.component.html',
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    templateUrl: './eda-blank-panel.component.html',
     styleUrls: ['./eda-blank-panel.component.css'],
 })
 export class EdaBlankPanelComponent implements OnInit {
@@ -61,7 +110,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     @Input() panelContent: any = {};
     @Input() panelText: any;
-    @Input() dashboard: DashboardPageV2;
+    @Input() dashboard: DashboardPage;
     @Input() panel: EdaPanel;
     @Input() inject: InjectEdaPanel;
     @Input() availableChatGpt: any;
@@ -100,7 +149,6 @@ export class EdaBlankPanelComponent implements OnInit {
     public indextab = 0;
 
     public inputs: any = {};
-
     /**Dashbard emitter */
     // public actualSize : {litle:boolean, medium:boolean}
 
@@ -158,6 +206,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public currentQuery: any[] = [];
     public currentSQLQuery: string = '';
     public queryLimit: number = 5000; // por defecto se limita a 5.000
+    public groupByEnabled: boolean = true;
 
     public queryModes: any[] = [
         { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
@@ -536,7 +585,7 @@ public tableNodeExpand(event: any): void {
      */
     public buildGlobalconfiguration(panelContent: any): void {
         const { query, chart, edaChart } = panelContent;
-        const { modeSQL, fields, filters, queryLimit, config } = query.query;
+        const { modeSQL, fields, filters, queryLimit, groupByEnabled, config } = query.query;
         const queryMode = this.selectedQueryMode;
 
         const isEditable = !this.readonly;
@@ -566,7 +615,7 @@ public tableNodeExpand(event: any): void {
 
         // Configuración global del panel
         this.queryLimit = queryLimit;
-
+        this.groupByEnabled = groupByEnabled;
         PanelInteractionUtils.handleFilters(this, query.query);
         PanelInteractionUtils.handleFilterColumns(this, filters, fields);
 
@@ -629,6 +678,7 @@ public tableNodeExpand(event: any): void {
     }
 
     public initObjectQuery() {
+        console.log(this)
         if (this.selectedQueryMode == 'SQL') {
             return QueryUtils.initSqlQuery(this);
         } else {
@@ -1833,5 +1883,23 @@ private assignLevels(nodes: any[], level = 0): void {
     isCrosstableValid():boolean {
         return this.dragDrop?.validated;
     }
+
+    toggleGroupBy(): void {
+        console.log(this.groupByEnabled)
+        this.groupByEnabled = !this.groupByEnabled;
+        if (this.groupByEnabled) {
+            this.applyGroupBy();
+        } else {
+            this.removeGroupBy();
+        }
+    }
+
+applyGroupBy(): void {
+  // Lógica para activar el group by
+}
+
+removeGroupBy(): void {
+  // Lógica para desactivar el group by
+}
 
 }

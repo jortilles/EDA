@@ -8,9 +8,9 @@ export class BigQueryBuilderService extends QueryBuilderService {
     return [];
   }
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
-    tables: Array<any>, limit: number,  joinType: string, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any ) {
-    let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
+ public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
+    tables: Array<any>, limit: number,  joinType: string, groupByEnabled:boolean, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any ) {
+      let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
     let myQuery = '';
 
     /**If origin is a view => (select foo from etc.) */
@@ -53,7 +53,7 @@ export class BigQueryBuilderService extends QueryBuilderService {
     myQuery += this.getFilters(filters, 'where');
 
     // GroupBy
-    if (grouping.length > 0) {
+    if (grouping.length > 0 && ((groupByEnabled))) {
       myQuery += '\ngroup by ' + grouping.join(', ');
     }
 

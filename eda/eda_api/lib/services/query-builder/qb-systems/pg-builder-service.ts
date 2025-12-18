@@ -167,10 +167,9 @@ export class PgBuilderService extends QueryBuilderService {
     return querys;
   }
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
-    tables: Array<any>, limit: number,  joinType: string, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any ) {
-
-    if (schema === 'null' || schema === '') {
+ public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
+    tables: Array<any>, limit: number,  joinType: string, groupByEnabled:boolean, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any ) {
+     if (schema === 'null' || schema === '') {
       schema = 'public';
     }
     let myQuery = `SELECT ${columns.join(', ')} \n`
@@ -212,7 +211,7 @@ export class PgBuilderService extends QueryBuilderService {
     myQuery += this.getFilters(filters );
 
     // GroupBy
-    if (grouping.length > 0) {
+    if (grouping.length > 0 && ((groupByEnabled))) {
       myQuery += '\ngroup by ' + grouping.join(', ');
     }
 

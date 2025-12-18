@@ -1,20 +1,25 @@
-import { Component,  ViewChild } from "@angular/core";
-import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
+import { Component,  Input,  OnInit,  ViewChild } from "@angular/core";
+import { EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
 import { SunburstConfig } from "../panel-charts/chart-configuration-models/sunburst-config";
 import { PanelChart } from "../panel-charts/panel-chart";
 import { PanelChartComponent } from "../panel-charts/panel-chart.component";
 import { StyleProviderService,ChartUtilsService } from '@eda/services/service.index';
 
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
+import { ColorPickerModule } from "primeng/colorpicker";
+import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 @Component({
+  standalone: true,
   selector: 'sunburst-dialog',
-  templateUrl: './sunburst-dialog.component.html'
+  templateUrl: './sunburst-dialog.component.html',
+  imports: [FormsModule, CommonModule, PanelChartComponent, EdaDialog2Component, ColorPickerModule]
 })
 
-export class SunburstDialogComponent extends EdaDialogAbstract  {
-
+export class SunburstDialogComponent implements OnInit {
+  @Input() controller: any
   @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
 
-  public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
   public colors: Array<string>;
   private originalColors: string[] = [];
@@ -22,18 +27,8 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
   public display:boolean=false;
   public selectedPalette: { name: string; paleta: any } | null = null;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
-
-  constructor(private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) {
-
-    super();
-
-    this.dialog = new EdaDialog({
-      show: () => this.onShow(),
-      hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
-    });
-    this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
-  }
+  public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
+  constructor(private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) {}
 
   ngAfterViewChecked(): void {
     if (!this.colors && this.myPanelChartComponent?.componentRef) {
@@ -56,7 +51,7 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
     }
   }
 
-  onShow(): void {
+  ngOnInit(): void {
     this.panelChartConfig = this.controller.params.panelChart;
     this.display = true;
   }

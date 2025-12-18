@@ -8,7 +8,6 @@ declare function init_plugins();
 @Component({
     selector: 'app-pages',
     templateUrl: './pages.component.html',
-    styleUrls: ['./pages.component.css'],
     standalone: true,
     imports: [RouterModule, SidebarComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],

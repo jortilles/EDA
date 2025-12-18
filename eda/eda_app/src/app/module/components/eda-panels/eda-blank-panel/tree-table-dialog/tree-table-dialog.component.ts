@@ -1,52 +1,43 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { EdaDialogAbstract } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog-abstract';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { TreeTableConfig } from '../panel-charts/chart-configuration-models/treeTable-config';
 import * as _ from 'lodash';
-
-
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { PickListModule } from 'primeng/picklist';
 @Component({
+  standalone: true,
   selector: 'app-tree-table-dialog',
   templateUrl: './tree-table-dialog.component.html',
-  styleUrls: ['./tree-table-dialog.component.css']
+  styleUrls: ['./tree-table-dialog.component.css'],
+  imports: [FormsModule, CommonModule, PanelChartComponent, EdaDialog2Component, PickListModule],
 })
-export class TreeTableDialogComponent extends EdaDialogAbstract implements OnInit {
-
+export class TreeTableDialogComponent implements OnInit {
+  @Input() controller: any;
   @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
   public config: any;
-  public treeTableTitleDialog = $localize`:@@treeTableTitleDialog:Propiedades de la tabla árbol`;
+  public title = $localize`:@@treeTableTitleDialog:Propiedades de la tabla árbol`;
   public showOriginField: boolean;
 
   sourceProducts: any[] = [];
   targetProducts: any[] = [];
 
-  constructor() {
-    super();
-
-    this.dialog = new EdaDialog({
-      show: () => this.onShow(),
-      hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: this.treeTableTitleDialog,
-    });
-    this.dialog.style = { width: 'fit-content', height: 'fit-content', top:"-4em", left:'1em'};
-  }
+  constructor() {}
 
   ngOnInit(): void {
-    this.onShow();
-  }
-  
-  onShow(): void {
     this.panelChartConfig = this.controller.params.panelChart;
     this.config = (<TreeTableConfig>this.panelChartConfig.config.getConfig())
     this.sourceProducts = this.config.hierarchyLabels;
     this.targetProducts = this.config.leafLabels;
-    this.showOriginField = this.config.showOriginField;
-    // console.log('this.panelChartConfig: ', this.panelChartConfig);
+    this.showOriginField = this.config.showOriginField;  
   }
+
 
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     return this.controller.close(event, response);

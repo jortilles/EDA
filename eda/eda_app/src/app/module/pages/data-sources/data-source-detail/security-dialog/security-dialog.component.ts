@@ -1,12 +1,15 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DataSourceService } from '@eda/services/service.index';
-import { EdaColumnText, EdaTable } from '@eda/components/component.index';
+import { EdaColumnText, EdaTable, EdaTableComponent } from '@eda/components/component.index';
 import { EditColumnPanel, EditModelPanel } from '@eda/models/data-source-model/data-source-models';
+import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 
 
 @Component({
+  standalone: true,
   selector: 'eda-security-dialog',
   templateUrl: './security-dialog.component.html',
+  imports: [EdaDialog2Component, EdaTableComponent]
 })
 
 export class SecurityDialogComponent implements OnInit {

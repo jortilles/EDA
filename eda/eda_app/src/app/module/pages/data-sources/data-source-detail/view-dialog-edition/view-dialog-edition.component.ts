@@ -1,11 +1,14 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AlertService, DashboardService, DataSourceService, SpinnerService } from '@eda/services/service.index';
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import * as _ from 'lodash';
 
 @Component({
+  standalone: true,
   selector: 'app-view-dialog-edition',
   templateUrl: './view-dialog-edition.component.html',
+  imports: [EdaDialog2Component, FormsModule, ReactiveFormsModule]
 })
 export class ViewDialogEditionComponent implements OnInit {
 
@@ -15,6 +18,11 @@ export class ViewDialogEditionComponent implements OnInit {
   public form: UntypedFormGroup;
   public display: boolean = false;
 	public ok: boolean = true;
+  public isGenerating: boolean = false;
+  generateText = {
+    generating: $localize`:@@generating:Generando...`,
+    generate: $localize`:@@generateView:Generar vista`
+  };
   public confirmed: boolean = false;
 
 

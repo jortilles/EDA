@@ -3,13 +3,25 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from
 import { SelectItem } from 'primeng/api';
 import { EdaDatePickerConfig } from './datePickerConfig';
 import { locales } from './date-locales';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { CalendarModule } from 'primeng/calendar';
+import { DropdownModule } from 'primeng/dropdown';
+import { ButtonModule } from 'primeng/button'; 
+import { RippleModule } from 'primeng/ripple'; 
 
 
 
 @Component({
+	standalone: true,
 	selector: 'eda-date-picker',
 	templateUrl: './eda-date-picker.component.html',
-	styleUrls: ['./eda-date-picker.component.css']
+	styleUrls: ['./eda-date-picker.component.css'], 
+	imports: [
+		CommonModule, FormsModule,
+		CalendarModule, DropdownModule,
+		ButtonModule, RippleModule, 
+  	],
 })
 
 export class EdaDatePickerComponent implements OnChanges {

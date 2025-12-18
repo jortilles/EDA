@@ -386,6 +386,7 @@ export const QueryUtils = {
       queryLimit: ebp.queryLimit,
       joinType: ebp.joinType,
       rootTable: ebp.rootTable?.table_name,
+      groupByEnabled: ebp.groupByEnabled,
       connectionProperties: ebp.connectionProperties
     };
     return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode);
