@@ -52,14 +52,15 @@ export class MicrosoftController {
                         const userSaved = await userToSave.save();                        
                         Object.assign(user, userSaved);
                         user.password = ':)';
-                        token = await jwt.sign({user}, SEED, {expiresIn: 14400})
+                        token = await jwt.sign({user}, SEED, {expiresIn: 14400}) 
+                        await Group.updateOne({ _id: '135792467811111111111115' },  // Edalitics FREE 
+                            { $addToSet: { users: userToSave._id } }).then(function () { // Edalitics FREE 
+                                console.log('role actualizado'); // Edalitics FREE 
+                            }) ; // Edalitics FREE role por defecto
                         return res.status(200).json({ user, token: token, id: user._id });
-               
-                    await Group.updateOne({ _id: '135792467811111111111115' }, { $addToSet: { users: userToSave._id } }).then(function () { 
-                    }) 
-                    .catch(function (error) {
-                        console.log('Error updating group ', error);
-                    })  // Edalitics FREE role por defecto
+                    }catch( error) {
+                        console.log('Error updating group ', error);   
+                    }
                 } else {
                     // Si el usuario ya esta registrado, se actualiza algunos datos.
                     userEda.name = givenName;
@@ -81,6 +82,7 @@ export class MicrosoftController {
             }
         } catch (error) {
             next(error);
+
         }
     }
 }
