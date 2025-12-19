@@ -142,10 +142,11 @@ export class LinkDashboardsComponent {
 
   public filterFilters() {
     this.filters = this.filters.filter(column => column.dashboardID === <any>this.selectedDashboard);
+    console.log(this, 'this.filterFilters')
   }
 
   public handleTargetColumn() {
-
+    console.log(this)
     this.targetColumn = this.selectedFilter.colname;
     this.targetTable = this.selectedFilter.table;
 
@@ -191,15 +192,23 @@ export class LinkDashboardsComponent {
 
         if (!this.controller.params.modeSQL) {
           // No SQL mode
+          console.log(this)
+          console.log(dash.config)
           for (const filter of dash.config.filters) {
-            if (filter.column) {
-              if (
-                filter.column.value.column_name === column.col &&
-                filter.table.value === column.table
-              ) {
+            const column = filter?.column ?? filter?.selectedColumn;
+            if(column === filter?.column){
+              if (filter.column.value.column_name === column.col && filter.table.value === column.table) {
                 disable = false;
+                this.noLink = false;
               }
-            } else {
+            }
+            else if(column === filter?.selectedColumn){
+              if (column.column_name === column.col && filter.selectedTable.table_name === column.table) {
+                disable = false;
+                this.noLink = false;
+              }
+            }
+            else {
               console.log('NO SE HA IMPLEMENTADO TODAVÍA INFORMES VINCULADOS CON EL MODO ARBOL.');
             }
           }
