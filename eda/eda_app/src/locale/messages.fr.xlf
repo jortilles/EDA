@@ -5663,6 +5663,11 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>My Database Connection</source>
         <target>Ma connexion à la base de données</target>
       </trans-unit>
+
+      <trans-unit id="loadingDashboards">
+        <source>Cargando dashboards...</source>
+        <target>Chargement des tableaux de bord...</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

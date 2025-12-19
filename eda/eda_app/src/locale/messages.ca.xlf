@@ -5691,6 +5691,11 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>My Database Connection</source>
         <target>La meva conexió de la base de dades</target>
       </trans-unit>
+
+      <trans-unit id="loadingDashboards">
+        <source>Cargando dashboards...</source>
+        <target>Carregant dashboards...</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

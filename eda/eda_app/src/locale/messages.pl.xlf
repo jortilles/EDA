@@ -5336,6 +5336,11 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>My Database Connection</source>
         <target>Moje połączenie z bazą danych</target>
       </trans-unit>
+
+      <trans-unit id="loadingDashboards">
+        <source>Cargando dashboards...</source>
+        <target>Ładowanie pulpitów nawigacyjnych...</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

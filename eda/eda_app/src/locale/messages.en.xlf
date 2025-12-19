@@ -5541,6 +5541,11 @@ OR<ph id="5"/>
         <source>My Database Connection</source>
         <target>My Database Connection</target>
       </trans-unit>
+
+      <trans-unit id="loadingDashboards">
+        <source>Cargando dashboards...</source>
+        <target>Loading dashboards...</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>
