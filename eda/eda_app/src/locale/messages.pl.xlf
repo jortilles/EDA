@@ -5271,6 +5271,11 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Filtr autouzupełniania?</target>
       </trans-unit>
 
+      <trans-unit id="mandatoryFilter">
+        <source>¿Filtro autocomplete?</source>
+        <target>Filtre autocomplete?</target>
+      </trans-unit>
+
       <trans-unit id="globalFiltersToDF">
         <source>Debe disponer de filtros globales para poder avanzar con la configuración de los filtros dependientes.</source>
         <target>Aby móc kontynuować konfigurację filtrów zależnych, musisz mieć dostępne filtry globalne.</target>

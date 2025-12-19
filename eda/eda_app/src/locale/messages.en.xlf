@@ -5476,6 +5476,11 @@ OR<ph id="5"/>
 <target>Autocomplete filter?</target>
 </trans-unit>
 
+<trans-unit id="mandatoryFilter">
+  <source>¿Filtro autocomplete?</source>
+  <target>Mandatory filter?</target>
+</trans-unit>
+
 <trans-unit id="globalFiltersToDF">
 <source>Debe disponer de filtros globales para poder avanzar con la configuración de los filtros dependientes.</source>
 <target>You must have global filters available in order to proceed with the configuration of dependent filters.</target>

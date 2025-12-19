@@ -678,7 +678,6 @@ public tableNodeExpand(event: any): void {
     }
 
     public initObjectQuery() {
-        console.log(this)
         if (this.selectedQueryMode == 'SQL') {
             return QueryUtils.initSqlQuery(this);
         } else {
@@ -1885,7 +1884,6 @@ private assignLevels(nodes: any[], level = 0): void {
     }
 
     toggleGroupBy(): void {
-        console.log(this.groupByEnabled)
         this.groupByEnabled = !this.groupByEnabled;
         if (this.groupByEnabled) {
             this.applyGroupBy();
