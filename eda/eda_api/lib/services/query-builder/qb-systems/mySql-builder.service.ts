@@ -270,7 +270,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     if (limit){
       myQuery += `\nlimit ${limit}`;
     }else{
-      myQuery += `\nlimit 100000`; // Por defecto limit 100000
+      myQuery += `\nlimit 1000`; // Por defecto limit 100000
     }    
 
     if (alias) {
