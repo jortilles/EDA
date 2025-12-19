@@ -146,7 +146,6 @@ export class LinkDashboardsComponent {
   }
 
   public handleTargetColumn() {
-    console.log(this)
     this.targetColumn = this.selectedFilter.colname;
     this.targetTable = this.selectedFilter.table;
 
@@ -190,22 +189,18 @@ export class LinkDashboardsComponent {
 
         let disable = true;
 
-        if (!this.controller.params.modeSQL) {
+        if (!this.controller.params.modeSQL ||this.controller.params.modeSQL === undefined) {
           // No SQL mode
-          console.log(this)
-          console.log(dash.config)
           for (const filter of dash.config.filters) {
-            const column = filter?.column ?? filter?.selectedColumn;
-            if(column === filter?.column){
+            const filterColumn = filter?.column ?? filter?.selectedColumn;
+            if(filterColumn === filter?.column){
               if (filter.column.value.column_name === column.col && filter.table.value === column.table) {
                 disable = false;
-                this.noLink = false;
               }
             }
-            else if(column === filter?.selectedColumn){
-              if (column.column_name === column.col && filter.selectedTable.table_name === column.table) {
+            else if(filterColumn === filter?.selectedColumn){
+              if (filterColumn.column_name === column.col && filter.selectedTable.table_name === column.table) {
                 disable = false;
-                this.noLink = false;
               }
             }
             else {
@@ -238,7 +233,6 @@ export class LinkDashboardsComponent {
           tempDashboards.push({ label: d.config.title, value: d._id });
         }
       }
-
       this.dasboards = tempDashboards;
       this.filters = tempFilters;
       this.cd.detectChanges();
