@@ -52,7 +52,7 @@ export class SaveAsDialogComponent extends EdaDialogAbstract {
 
     this.visibleTypes = [
       { label: $localize`:@@commonPanel:Común`, value: 'public', icon: 'fa fa-fw fa-globe' },
-      { label: $localize`:@@groupPanel:Grupo`, value: 'group', icon: 'fa fa-fw fa-users' },
+      { label: $localize`:@@group:Grupo`, value: 'group', icon: 'fa fa-fw fa-users' },
       { label: $localize`:@@privatePanel:Privado`, value: 'private', icon: 'fa fa-fw fa-lock' },
     ];
 

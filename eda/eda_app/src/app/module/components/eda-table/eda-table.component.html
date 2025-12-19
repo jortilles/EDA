@@ -1,4 +1,4 @@
-<div class="eda-table" [ngStyle]="getStyle()">
+<div class="eda-table">
     <p-table #table [columns]="inject.cols" [value]="inject.value" [paginator]="true" [rows]="inject.rows" [rowsPerPageOptions]="[5, 10, 25, 50, 100]" 
         paginatorDropdownAppendTo="body" (onPage)="inject.onPage($event)" (onSort)="inject.onSort($event)" [sortField]="inject.sortedColumn ? inject.sortedColumn.field : null"
         [sortOrder]="inject.sortedColumn ? inject.sortedColumn.order : null" [autoLayout]="inject.autolayout"
@@ -22,10 +22,10 @@
 
             <tr *ngFor="let serie of inject.series" >
                 <th *ngFor="let label of serie.labels" [attr.rowspan]="label.rowspan" [attr.colspan]="label.colspan" 
-                (click)="inject.onHeaderClick(label)" [pTooltip]="getTooltip(label)" style="text-align:center"  [ngStyle]="getStyle()">
-                    <div class="flex items-center"  [ngStyle]="getStyle()">
+                (click)="inject.onHeaderClick(label)" [pTooltip]="getTooltip(label)" style="text-align:center"  >
+                    <div class="flex items-center">
                         {{label.title}}
-                        <p-sortIcon [ngStyle]="getStyle()" *ngIf="label.sortable"  ></p-sortIcon>
+                        <p-sortIcon *ngIf="label.sortable"  ></p-sortIcon>
                     </div>
                 </th>
             </tr>

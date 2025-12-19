@@ -7,6 +7,8 @@ import { ApiService } from './api.service';
 import { GlobalService } from './global.service';
 import { AlertService } from '../alerts/alert.service';
 import { URL_SERVICES } from '../../config/config';
+import { URL_LOGOUT_SAML } from '../../config/config';
+
 
 
 import { User } from '@eda/models/model.index';
@@ -18,6 +20,7 @@ import Swal from 'sweetalert2';
 export class UserService extends ApiService {
 
     public API = URL_SERVICES;
+    public URL_LOGOUT_SAML = URL_LOGOUT_SAML;
     private route = '/admin/user';
     private routeThirdParty = '/tp/url';
     private authSAML = '/auth/saml';
@@ -233,7 +236,7 @@ export class UserService extends ApiService {
 
     SAMLlogout() {
         // window.location.href = 'http://localhost:8666/auth/saml/logout';
-        window.location.href = `https://edalitics.com${this.API}${this.authSAML_ORCL}/request-logout?token=${this.token}`;
+        window.location.href = `${URL_LOGOUT_SAML}${this.API}${this.authSAML_ORCL}/request-logout?token=${this.token}`;
 
         // Borramos el Token y el usuario
         this.user = null;

@@ -4,12 +4,16 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { AlertService, DataSourceService } from '@eda/services/service.index';
 import Swal, { SweetAlertOptions } from 'sweetalert2';
+import { DataSourceDetailComponent } from '../data-source-detail/data-source-detail.component';
+import { PrimengModule } from 'app/core/primeng.module';
+
 import * as _ from 'lodash';
 
-
 @Component({
+    standalone: true,
     selector: 'app-data-source-list',
     templateUrl: './data-source-list.component.html',
+    imports: [ PrimengModule, DataSourceDetailComponent ],
     styleUrls: ['./data-source-list.component.css']
 })
 export class DataSourceListComponent implements OnInit, OnDestroy {

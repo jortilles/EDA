@@ -1,16 +1,20 @@
 import { AlertService } from './../../../../../services/alerts/alert.service';
 import { SpinnerService } from './../../../../../services/shared/spinner.service';
 import { SelectItem } from 'primeng/api';
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { EdaDialog, EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { NgxCsvParser } from 'ngx-csv-parser';
 import { AddTableService } from '@eda/services/api/createTable.service';
 
 
 @Component({
+  standalone: true,
   selector: 'app-add-csv-dialog',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './add-csv.component.html',
-  styleUrls: ['./add-csv.component.css']
+  styleUrls: ['./add-csv.component.css'],
+  imports: [EdaDialog2Component, FormsModule]
 })
 
 export class AddCsvComponent implements OnInit {
@@ -62,7 +66,7 @@ export class AddCsvComponent implements OnInit {
       { label: 'date', value: "timestamp" },
     ];
 
-    this.editFieldsHeaders = [$localize`:@@csvField:Campo`, $localize`:@@csvType:Tipo`, $localize`:@@csvFormat:Formato`, $localize`:@@csvSep:Separador Decimal`];
+    this.editFieldsHeaders = [$localize`:@@csvField:Campo`, $localize`:@@type:Tipo`, $localize`:@@csvFormat:Formato`, $localize`:@@csvSep:Separador Decimal`];
 
     this.dataFormats = [
       { label: '', value: '' },

@@ -1,20 +1,23 @@
-import { EdaDialogAbstract, EdaDialogCloseEvent, EdaDialog } from '@eda/shared/components/shared-components.index';
-import { Component, ViewChild } from '@angular/core';
+import { EdaDialogCloseEvent, EdaDialog } from '@eda/shared/components/shared-components.index';
+import { Component, Input, ViewChild, OnInit } from '@angular/core';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { MapUtilsService, StyleProviderService, ChartUtilsService } from "@eda/services/service.index";
-import { layerGroup } from 'leaflet';
-
-
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { EdaDialog2Component } from '@eda/shared/components/eda-dialogs/eda-dialog2/eda-dialog2.component';
+import { ColorPickerModule } from 'primeng/colorpicker';
 
 @Component({
+  standalone: true,
   selector: 'app-mapedit-dialog',
-  templateUrl: './mapedit-dialog-v2.component.html'
+  templateUrl: './mapedit-dialog.component.html',
+  imports: [CommonModule, FormsModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent],
 })
 
-export class MapEditDialogComponent extends EdaDialogAbstract {
-
-   @ViewChild("PanelChartComponent", { static: false })
+export class MapEditDialogComponent implements OnInit {
+  @Input() controller: any;
+  @ViewChild(PanelChartComponent, { static: false })
   myPanelChartComponent: PanelChartComponent;
 
   public dialog: EdaDialog;
@@ -25,6 +28,7 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
   public baseLayer: boolean = false;
   public draggable: boolean;
   public legendPosition: string;
+  public title : string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
 
   // Memory ubication
   public zoom: number;
@@ -38,42 +42,22 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
   
   
   constructor(private mapUtilsService: MapUtilsService, private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) {
-    super();
-    
-    this.dialog = new EdaDialog({
-      show: () => this.onShow(),
-      hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`,
-    });
-    this.dialog.style = {
-      width: "80%",
-      height: "70%",
-      top: "-4em",
-      left: "1em",
-    };
+
+    console.log('EdaDialog2Component', EdaDialog2Component);
+
   }
   
-  
-  ngOnInit() {
+
+  ngOnInit(): void {
+    //Funcion llamada al abrir el mapa edit
+    console.log("OPEN MAP EDIT DIALOG");
     this.mapUtilsService.mapEditOpen();
+    this.setupMapDialog();
   }
+
 
   ngOnDestroy(): void {
     this.mapUtilsService.mapEditClose();
-  }
-
-  onShow(): void {
-    //Funcion llamada al abrir el mapa edit
-    this.zoom = this.controller.params.zoom;
-    this.coordinates = this.controller.params.coordinates;
-    this.legendPosition = this.controller.params.legendPosition;
-    this.baseLayer = this.controller.params.panelChart.config.config.baseLayer !== undefined ?
-      this.controller.params.panelChart.config.config.baseLayer : true;
-    this.color = this.controller.params.color;
-    this.logarithmicScale = this.controller.params.logarithmicScale;
-    this.draggable = this.controller.params.draggable;
-    this.panelChartConfig = this.controller.params.panelChart;
-    this.display = true;
   }
   
   renderMap() {
@@ -94,7 +78,7 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
     });
   }
 
-   onPaletteSelected() { 
+  onPaletteSelected() { 
     // Saber numero de segmentos para interpolar colores
     
     // Recuperamos paleta seleccionada y creamos colores
@@ -105,8 +89,21 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
     this.color = newColors[0].color;
     
     // Actualizar los colores del chart
-   }
+  }
    
+  setupMapDialog() {
+    this.zoom = this.controller.params.zoom;
+    this.coordinates = this.controller.params.coordinates;
+    this.legendPosition = this.controller.params.legendPosition;
+    this.baseLayer = this.controller.params.panelChart.config.config.baseLayer !== undefined ?
+    this.controller.params.panelChart.config.config.baseLayer : true;
+    this.color = this.controller.params.color;
+    this.logarithmicScale = this.controller.params.logarithmicScale;
+    this.draggable = this.controller.params.draggable;
+    this.panelChartConfig = this.controller.params.panelChart;
+    this.display = true;
+  }
+
   closeChartConfig() {
     this.onClose(EdaDialogCloseEvent.NONE);
     this.mapUtilsService.cancelChartProps();

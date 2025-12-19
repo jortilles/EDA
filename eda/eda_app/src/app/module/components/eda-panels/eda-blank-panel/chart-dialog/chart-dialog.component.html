@@ -1,213 +1,229 @@
-<eda-dialog [inject]="dialog">
-
-  <!--   <div body>
-    <div class="grid gap-4"
-      [ngClass]="{
-        'grid-cols-[1fr_1fr_1fr_3fr]': showFormatDateSection,
-        'grid-cols-[1fr_1fr_3fr]': !showFormatDateSection}
-      "> -->
-    <div body>
-
-      <div class="grid gap-4 grid-cols-2">
-        <div class="p-2 w-full h-full">
-          @if (display) {
-            <panel-chart #PanelChartComponent
-            [props]="panelChartConfig"
-            class="h-full w-full block"
-          ></panel-chart>
-          }
-        </div>
-
-        <div>
-          @if (panelChartConfig.edaChart !== 'histogram') {
-            <h6 i18n="@@addtrend" class="custom-border-b1" style="margin-top: 2em;">
-              Tendencia
-            </h6>
-
-            <div [pTooltip]="trendTooltip" tooltipPosition="left">
-              <p-inputSwitch id="switchQueryMode" class="col-1 sql-switch" [(ngModel)]="addTrend"
-                tooltipPosition="left" (onChange)="checkTrend()" [disabled]="!showTrend">
-              </p-inputSwitch>
-            </div>
-
-            <h6 i18n="@@addComparative" class="custom-border-b1" style="margin-top: 2em;">
-              Comparativa
-            </h6>
-
-            <div [pTooltip]="comparativeTooltip" tooltipPosition="left">
-              <p-inputSwitch [(ngModel)]="addComparative"
-                tooltipPosition="left"
-                [disabled]="!showComparative"
-                (onChange)="setComparative()"
-              ></p-inputSwitch>
-            </div>
-          }
-            <h6 i18n="@@showLabels" class="custom-border-b1" style="margin-top: 2em;">
-              Mostrar Etiquetas
-            </h6>
-
-            <div [pTooltip]="showLablesTooltip" tooltipPosition="left">
-              <p-inputSwitch [(ngModel)]="showLabels"
-                tooltipPosition="left"
-                (onChange)="setShowLables()"
-              ></p-inputSwitch>
-            </div>
-
-            <h6 i18n="@@showLabelsPercent" class="custom-border-b1" style="margin-top: 2em;">
-              Mostrar Etiquetas en Porcentajes
-            </h6>
-
-            <div [pTooltip]="showLablesPercentTooltip" tooltipPosition="left">
-              <p-inputSwitch [(ngModel)]="showLabelsPercent"
-                tooltipPosition="left"
-                (onChange)="setShowLablesPercent()"
-              ></p-inputSwitch>
-            </div>
-
-            <h6 i18n="@@colorsChartH6" class="custom-border-b1">
-              Colores
-          </h6>
-
-          <div class="grid grid-cols-2">
-            @for (serie of series; track serie) {
-              <div>
-                <input type="text" pInputText
-                  [value]="serie.label"
-                  disabled="true" 
-                  [style.border-color]="serie.border"
-                />
-
-                <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie)" format="hex"
-                    appendTo="body">
-                </p-colorPicker>
-
-                <input type="text" pInputText class="eda-color-pick" [(ngModel)]="serie.bg"
-                    (input)="handleInputColor(serie)" minlength="7" >
-              </div>
-            }
-          </div>
-
-        </div>
-        <!-- <panel-chart *ngIf="!!display" #PanelChartComponent [props]="panelChartConfig" style="height: 80%; width: 90%; display:block;  margin-top:5em"></panel-chart> -->
+<eda-dialog2 width="80vw" height="80vh" [header]="title" (apply)="saveChartConfig()" (close)="closeChartConfig()">
+  <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-[70vh]">
+    <!-- Chart Preview -->
+    <div class="flex-1 flex justify-center border-b md:border-b-0 md:border-r bg-slate-50" >
+      <div class="relative" [ngClass]="this.controller.params.chart.edaChart === 'radar' ? 'w-[30vw]' : 'p-3 h-full w-full content-end'">
+        @if (display) {
+          <panel-chart #PanelChartComponent [props]="panelChartConfig" class="h-[95%] w-full block"></panel-chart>
+        }
       </div>
+    </div>
 
-      <!-- <div class="col-8" style="height: 80%; ">
+    <!-- Settings -->
+    <div class=" flex-1 h-[95%] overflow-y-auto pl-6">
+      <!-- Display Tab -->
+      <div class="space-y-6 p-4 pt-0 mb-6 bg-slate-50 rounded-md">
+        <div class="space-y-4">
+          <h1 class="p-dialog-title" i18n="@@chartDisplayOptionsTitle">
+            Opciones de visualización
+          </h1>
 
-          <div class="eda-chart-panel col-8" style="height: 80%; margin-left: 6em; margin-top: 4em; background-color: var(--panel-color);">
-
-              <panel-chart *ngIf="!!display" #PanelChartComponent [props]="panelChartConfig" style="height: 80%; width: 90%; display:block;  margin-top:5em"></panel-chart>
-
-          </div>
-
-      </div>
-
-      <div  class="col-2" *ngIf='panelChartConfig.edaChart != "histogram"' >
-
-          <h6 i18n="@@addtrend" class="custom-border-b1" style="margin-top: 2em;">
-              Tendencia
-          </h6>
-
-          <div [pTooltip]="trendTooltip" tooltipPosition="left">
-              <p-inputSwitch id="switchQueryMode" class="col-1 sql-switch" [(ngModel)]="addTrend"
-                  tooltipPosition="left" (onChange)="checkTrend()" [disabled]="!showTrend">
-              </p-inputSwitch>
-          </div>
-      </div>
-      <div class="col-2" *ngIf='panelChartConfig.edaChart != "histogram"' >
-          <h6 i18n="@@addComparative" class="custom-border-b1" style="margin-top: 2em;">
-              Comparativa
-          </h6>
-
-          <div [pTooltip]="comparativeTooltip" tooltipPosition="left">
-              <p-inputSwitch id="switchQueryMode" class="col-1 sql-switch" [(ngModel)]="addComparative"
-                  tooltipPosition="left" (onChange)="setComparative()" [disabled]="!showComparative">
-              </p-inputSwitch>
-          </div>
-
-
-      </div>
-
-      <div class="col-2 col-offset-8">
-          <h6 i18n="@@showLabels" class="custom-border-b1" style="margin-top: 2em;">
-              Mostrar Etiquetas
-          </h6>
-
-          <div [pTooltip]="showLablesTooltip" tooltipPosition="left">
-              <p-inputSwitch id="switchQueryMode" class="col-1 sql-switch" [(ngModel)]="showLabels"
-                  tooltipPosition="left" (onChange)="setShowLables()" >
-              </p-inputSwitch>
-          </div>
-
-      </div>
-      <div class="col-2 col-offset-8">
-          <h6 i18n="@@showLabelsPercent" class="custom-border-b1" style="margin-top: 2em;">
-              Mostrar Etiquetas en Porcentajes
-          </h6>
-
-          <div [pTooltip]="showLablesPercentTooltip" tooltipPosition="left">
-              <p-inputSwitch id="switchQueryMode" class="col-1 sql-switch" [(ngModel)]="showLabelsPercent"
-                  tooltipPosition="left" (onChange)="setShowLablesPercent()" >
-              </p-inputSwitch>
-          </div>
-
-      </div> -->
-      
-      <!-- <div  *ngIf=showNumberOfColumns class="col-2" style="margin-top: 2em;">
-          <h6 i18n="@@histogramColum" class="custom-border-b1">
-              Columnas
-          </h6>
-      <div   *ngIf=showNumberOfColumns [pTooltip]="columnsTooltip" tooltipPosition="left">
-          <input type="number" pInputText id="columnes" name="columnes"
-          min="3" max="100" [(ngModel)]="numberOfColumns" (change)="SetNumberOfColumns()" > 
-      </div>
-      </div> -->
-
-
-
-      <!-- <div class="col-4 col-offset-8">
-
-          <h6 i18n="@@colorsChartH6" class="custom-border-b1">
-              Colores
-          </h6>
-
-          <div class="grid chart-color-selection">
-
-              <ng-container *ngFor="let serie of series; let i = index">
-
-                  <div class=" col-6 ">
-                      <input type="text" pInputText style="width: 40%" [value]="serie.label" disabled="true" 
-                          [style.border-color]="serie.border" />
-
-                      <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie)" format="hex"
-                          appendTo="body">
-                      </p-colorPicker>
-
-                      <input type="text" pInputText class="eda-color-pick" [(ngModel)]="serie.bg"
-                          (input)="handleInputColor(serie)" minlength="7" >
-
+          <div class="space-y-4 text-base">
+            @if (panelChartConfig.edaChart !== 'histogram') {
+            <!-- Tendencia -->
+            @if (showTrend) {
+            <div class="flex items-center justify-between">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-2">
+                  <label i18n="@@addtrend" for="tendencia" class="font-medium">
+                    Tendencia
+                  </label>
+                  <div class="relative group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4"></path>
+                      <path d="M12 8h.01"></path>
+                    </svg>
+                    <div
+                      class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      <span i18n="@@chartTrendOption">Mostrar línea de tendencia en el gráfico</span>
+                    </div>
                   </div>
+                </div>
+                <p class="text-md text-slate-500" i18n="@@chartTrendOptionDescription">Muestra la línea de tendencia en el gráfico</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" [(ngModel)]="addTrend" class="sr-only peer" (ngModelChange)="checkTrend()">
+                <div
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+                </div>
+              </label>
+            </div>
+            }
 
-              </ng-container>
+            <!-- Comparativa -->
+            @if (showComparative) {
+            <div class="flex items-center justify-between">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-2">
+                  <label i18n="@@addComparative" for="comparativa" class="font-medium">
+                    Comparativa
+                  </label>
+                  <div class="relative group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4"></path>
+                      <path d="M12 8h.01"></path>
+                    </svg>
+                    <div
+                      class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      <span i18n="@@chartComparationOption">Habilita la comparación con períodos anteriores</span>
+                    </div>
+                  </div>
+                </div>
+                <p class="text-md text-slate-500" i18n="@@chartComparationOptionDescription">Compara con datos de períodos anteriores</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" [(ngModel)]="addComparative" class="sr-only peer"
+                  (ngModelChange)="setComparative()">
+                <div
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+                </div>
+              </label>
+            </div>
+            }
+            }
+            <!-- Mostrar Etiquetas -->
+            <div class="flex items-center justify-between">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-2">
+                  <label i18n="@@showLabels" for="mostrarEtiquetas" class="font-medium">
+                    Mostrar Etiquetas
+                  </label>
+                  <div class="relative group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4"></path>
+                      <path d="M12 8h.01"></path>
+                    </svg>
+                    <div
+                      class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      <span i18n="@@chartLabelOption">Muestra las etiquetas de cada segmento</span>
+                    </div>
+                  </div>
+                </div>
+                <p class="text-md text-slate-500" i18n="@@chartLabelOptionDescription">Muestra el nombre de cada segmento</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" [(ngModel)]="showLabels" class="sr-only peer" (ngModelChange)="setShowLables()">
+                <div
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+                </div>
+              </label>
+            </div>
 
+            <!-- Mostrar Porcentajes -->
+            <div class="flex items-center justify-between">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-2">
+                  <label i18n="@@showLabelsPercent" for="mostrarPorcentajes" class="font-medium">
+                    Mostrar Etiquetas en Porcentajes
+                  </label>
+                  <div class="relative group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4"></path>
+                      <path d="M12 8h.01"></path>
+                    </svg>
+                    <div
+                      class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      <span i18n="@@chartLabelPercentOption">Muestra los porcentajes en las etiquetas</span>
+                    </div>
+                  </div>
+                </div>
+                <p class="text-md text-slate-500" i18n="@@chartLabelPercentOptionDescription">Muestra el valor porcentual de cada segmento</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" [(ngModel)]="showLabelsPercent" class="sr-only peer"
+                  (ngModelChange)="setShowLablesPercent()">
+                <div
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+                </div>
+              </label>
+            </div>
+            
+            <!-- Mostrar Puntos -->   
+             @if(panelChartConfig.edaChart === 'line'){
+               <div class="flex items-center justify-between">
+                 <div class="space-y-0.5">
+                   <div class="flex items-center gap-2">
+                     <label i18n="@@showPointLines" class="font-medium">
+                       Mostrar Puntos en Lineas
+                      </label>
+                      <div class="relative group">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="text-slate-400">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 16v-4"></path>
+                        <path d="M12 8h.01"></path>
+                      </svg>
+                      <div
+                      class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      <span i18n="@@chartLabelLinesOptionDescription">Muestra las líneas en los puntos</span>
+                    </div>
+                  </div>
+                </div>
+                <p class="text-md text-slate-500" i18n="@@chartLabelLinesOptionDescription">Muestra las líneas en los puntos</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" [(ngModel)]="showPointLines" class="sr-only peer"
+                (ngModelChange)="setShowLines()">
+                <div
+                class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+              </div>
+            </label>
           </div>
+        }
+          </div>
+        </div>
+      </div>
+      
+      
+      <!-- apartado de colores  -->
+
+      <div class="space-y-6  p-4 pt-0 bg-slate-50 rounded-md">
+        <div class="space-y-4">
+          <h1 i18n="@@colorsChartH6" class="p-dialog-title">Colores</h1>
+
+          <div class="grid gap-4 grid-rows-auto gap-6">
+            <div>
+              <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color del los gráficos:</h6>
+              <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm mb-6"
+                [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
+                <option [ngValue]="null" disabled hidden i18n="@@selectPalette">
+                  -- Seleccione una paleta --
+                </option>
+                @for (palette of allPalettes; track $index) {
+                <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
+                }
+              </select>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
 
-      </div> -->
+                @for (serie of series; track serie; let idx = $index, e = $even) {
+                <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
+                  <span class="font-medium">{{ serie.label }}</span>
+                  <div class="flex items-center gap-2">
+                    <input [(ngModel)]="serie.bg" (input)="handleInputColor(serie)" class="text-md text-slate-500 font-mono w-[3.5vw]">
+                    <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie)" format="hex" appendTo="body" />
+                  </div>
+                </div>
+                }
 
-
-    </div>
-
-
-    <div footer>
-      <div class="flex justify-end p-2 border-t gap-1.5">
-        <button  class="cancel-button" (click)="closeChartConfig()">
-          <i class="fa fa-times"></i>
-          <span i18n="@@cancelarBtn">Cancelar</span>
-        </button>
-        <button class="confirm-button" (click)="saveChartConfig()">
-          <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
-        </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-
-</eda-dialog>
+  </div>
+</eda-dialog2>

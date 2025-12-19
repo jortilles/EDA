@@ -59,7 +59,7 @@
         <!-- GROUPS -->
         <div *ngIf="type==='groups'" class="col-12">
           <p-multiSelect [options]="roles" [(ngModel)]="selectedRoles" [virtualScroll]="true" [itemSize]="30"
-            [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '60%' }"
+            [style]="{'vertical-align' : 'bottom', width: '100%' }"
             [panelStyle]="{minWidth:'15em'}" [maxSelectedLabels]="1" [defaultLabel]="groupsDefaultLabel">
           </p-multiSelect>
         </div>

@@ -1004,13 +1004,6 @@
           <context context-type="linenumber">59,61</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="sqlExpresionH6" datatype="html">
-        <source>Expresión SQL</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
-          <context context-type="linenumber">65,67</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="originTable" datatype="html">
         <source>Tabla origen</source>
         <context-group purpose="location">
@@ -1440,13 +1433,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.ts</context>
           <context context-type="linenumber">1284,1283</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="tiposFiltroLabel" datatype="html">
-        <source> Tipos de filtro </source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component.html</context>
-          <context context-type="linenumber">25,30</context>
         </context-group>
       </trans-unit>
       <trans-unit id="fechaLabel" datatype="html">
@@ -1965,13 +1951,6 @@
       </trans-unit>
       <trans-unit id="atributoConsulta" datatype="html">
         <source>Consulta</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/panel-utils/query-utils.ts</context>
-          <context context-type="linenumber">96</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="atributoValor" datatype="html">
-        <source>Valor</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/panel-utils/query-utils.ts</context>
           <context context-type="linenumber">96</context>
@@ -4153,18 +4132,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
           <context context-type="linenumber">59</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="avaliableMaps" datatype="html">
+      <trans-unit id="availableMaps" datatype="html">
         <source>Mapas disponibles</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/data-source-detail/mapsDialog/maps-dialog.component.html</context>
           <context context-type="linenumber">82</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="MapDatamodel" datatype="html">
-        <source>Mapas</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/module/pages/data-sources/data-source-detail/mapsDialog/maps-dialog.component.ts</context>
-          <context context-type="linenumber">38</context>
         </context-group>
       </trans-unit>
       <trans-unit id="anyCanSeeNO" datatype="html">
@@ -4317,13 +4289,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/data-source-detail/upload-file/upload-file.component.ts</context>
           <context context-type="linenumber">76</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="sqlExp" datatype="html">
-        <source>Expresión SQL</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/module/pages/data-sources/data-source-detail/viewDialog/view-dialog.component.html</context>
-          <context context-type="linenumber">23,24</context>
         </context-group>
       </trans-unit>
       <trans-unit id="generateView" datatype="html">
@@ -4755,14 +4720,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
           <context context-type="linenumber">284</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="0acf4e0f9350f920b529a38364281d337c54edfd" datatype="html">
-        <source>Cerrar</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/module/pages/groups-management/group-detail/group-detail.component.html</context>
-          <context context-type="linenumber">39</context>
-        </context-group>
-        <note priority="1" from="description">cerrarBtn</note>
-      </trans-unit>
+    
       <trans-unit id="crearGrupoLabel" datatype="html">
         <source>Crear grupo</source>
         <context-group purpose="location">
@@ -5197,13 +5155,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/users-management/users-detail/users-detail.component.ts</context>
           <context context-type="linenumber">134</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="nuevoUsuarioBtn" datatype="html">
-        <source>Crear usuario</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/module/pages/users-management/users-list/users-list.component.html</context>
-          <context context-type="linenumber">5</context>
         </context-group>
       </trans-unit>
       <trans-unit id="groups1" datatype="html">

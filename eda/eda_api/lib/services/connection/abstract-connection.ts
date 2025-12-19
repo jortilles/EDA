@@ -380,27 +380,36 @@ export abstract class AbstractConnection {
                 return acc;
               }, {});
             try {
-                return await DataSource.findOne({ $or : Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor }))  }, (err, datasource) => {
-                if (err) {
-                    throw Error(err);
+                const orConditions = Object.entries(filter).map(([key, value]) => ({ [key]: value }));
+
+                const datasource = await DataSource.findOne({ $or: orConditions });
+
+                if (!datasource) {
+                    console.log('Datasource not found for filter:', filter);
+                    return null;
                 }
+
                 return datasource;
-            });
+
             } catch (err) {
-                console.log(err)
+                console.log('Error fetching datasource:', err);
+                return null;
             }
         } else {
             try {
-            return await DataSource.findOne({ _id: id }, (err, datasource) => {
-                if (err) {
-                    throw Error(err);
+                const datasource = await DataSource.findOne({ _id: id });
+
+                if (!datasource) {
+                    throw new Error(`Datasource not found with id ${id}`);
                 }
+
                 return datasource;
-            });
-        } catch (err) {
-            console.log(err);
-            throw err;
-        }
+
+            } catch (err) {
+                console.log(err);
+                throw err;
+            }
+
         }
         
     }

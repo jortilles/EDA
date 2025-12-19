@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, inject, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, inject, OnInit, Output } from "@angular/core";
 import { FormBuilder, FormsModule, ReactiveFormsModule, UntypedFormGroup, Validators } from "@angular/forms";
 import { AlertService, DashboardService, GroupService, IGroup, SidebarService, StyleProviderService } from "@eda/services/service.index";
 import { SelectItem } from "primeng/api";
@@ -8,6 +8,7 @@ import { DropdownModule } from "primeng/dropdown";
 import { ButtonModule } from "primeng/button";
 import { MultiSelectModule } from "primeng/multiselect";
 import { SelectButtonModule } from "primeng/selectbutton";
+import { EdaDialog2Component } from "../shared-components.index";
 import * as _ from 'lodash';
 import { DataSourceNamesService } from "@eda/services/shared/datasource-names.service";
 
@@ -15,7 +16,7 @@ import { DataSourceNamesService } from "@eda/services/shared/datasource-names.se
     standalone: true,
     selector: 'app-create-dashboard',
     templateUrl: './create-dashboard.component.html',
-    imports: [SharedModule, ReactiveFormsModule, FormsModule, DropdownModule, ButtonModule, SelectButtonModule, MultiSelectModule],
+    imports: [SharedModule, ReactiveFormsModule, FormsModule, DropdownModule, ButtonModule, SelectButtonModule, MultiSelectModule, EdaDialog2Component],
 })
 export class CreateDashboardComponent implements OnInit {
     private createDashboardService = inject(CreateDashboardService);
@@ -58,7 +59,7 @@ export class CreateDashboardComponent implements OnInit {
         this.visibleTypes = [
             { label: $localize`:@@publicPanel:Publico`, value: 'public', icon: 'fa fa-fw fa-globe' },
             { label: $localize`:@@commonPanel:Común`, value: 'shared', icon: 'fa fa-fw fa-globe' },
-            { label: $localize`:@@groupPanel:Grupo`, value: 'group', icon: 'fa fa-fw fa-users' },
+            { label: $localize`:@@group:Grupo`, value: 'group', icon: 'fa fa-fw fa-users' },
             { label: $localize`:@@privatePanel:Privado`, value: 'private', icon: 'fa fa-fw fa-lock' },
         ];
 

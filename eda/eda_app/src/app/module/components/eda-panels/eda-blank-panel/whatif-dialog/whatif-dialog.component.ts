@@ -1,11 +1,21 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import * as _ from 'lodash';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 import { ConfirmationService } from "primeng/api";
+import { DropdownModule } from 'primeng/dropdown';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import * as _ from 'lodash';
 
 @Component({
+    standalone: true,
     selector: 'app-whatif-dialog',
     templateUrl: './whatif-dialog.component.html',
-    styleUrls: ['./whatif-dialog.component.css']
+    styleUrls: ['./whatif-dialog.component.css'],
+    imports: [
+        EdaDialog2Component, CommonModule, 
+        FormsModule, DropdownModule,ConfirmDialogModule
+    ]
 })
 export class WhatIfDialogComponent implements OnInit {
     @Input() currentQuery: any[] = [];

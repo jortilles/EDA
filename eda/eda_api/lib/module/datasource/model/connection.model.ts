@@ -10,9 +10,7 @@ function Connection(user, host, database, password, port, type, schema, poolLimi
     this.poolLimit=poolLimit;
     this.sid = sid;
     this.warehouse = warehouse;
-    if(ssl){
-        this.ssl = ssl;
-    }
+    ssl === 'true' ? this.ssl = true :  this.ssl = false;
     this.external = external;
 
 }

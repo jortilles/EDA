@@ -1,20 +1,22 @@
-import { UntypedFormGroup, UntypedFormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { FormGroup, ReactiveFormsModule, FormControl, Validators, FormsModule } from '@angular/forms';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { DataSourceService } from '@eda/services/service.index';
 import { SelectItem } from 'primeng/api';
 import { UploadFileComponent } from '../upload-file/upload-file.component';
-
+import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
+import { CommonModule } from '@angular/common';
 @Component({
+  standalone: true,
   selector: 'app-map-dialog',
   templateUrl: './maps-dialog.component.html',
-//   styleUrls: ['./maps-dialog.component.css']
+  imports: [EdaDialog2Component, CommonModule, ReactiveFormsModule, FormsModule, UploadFileComponent]
 })
 
 export class MapDialogComponent implements OnInit {
   public display: boolean = false;
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
 
-  public title = $localize`:@@MapDatamodel:Mapas`;
+  public title = $localize`:@@addMap:Mapas`;
 
   @ViewChild('fileUploader', { static: false }) fileUploader: UploadFileComponent;
 

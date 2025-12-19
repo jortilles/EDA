@@ -1,22 +1,27 @@
 
 import { PanelChartComponent } from './../panel-charts/panel-chart.component';
-import { Component, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { PointStyle } from 'chart.js';
 import { EdaChart } from '@eda/components/eda-chart/eda-chart';
-import { EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract } from '@eda/shared/components/shared-components.index';
+import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import * as _ from 'lodash';
 import { StyleProviderService,ChartUtilsService } from '@eda/services/service.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
-
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { ColorPickerModule } from 'primeng/colorpicker';
 
 @Component({
+    standalone: true,
     selector: 'app-chart-dialog',
-    templateUrl: './chart-dialog-v2.component.html'
+    templateUrl: './chart-dialog.component.html',
+    imports: [CommonModule, FormsModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule]
 })
 
-export class ChartDialogComponent extends EdaDialogAbstract  {
-
+export class ChartDialogComponent{
+    @Input () controller: any;
     @ViewChild('PanelChartComponent', { static: false }) panelChartComponent: PanelChartComponent;
 
     public dialog: EdaDialog;
@@ -56,19 +61,11 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     public originalSeries: any[] = [];
     public series: any[] = [];
     public id: any;
+    public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
 
     activeTab = "display"
 
     constructor(private chartUtils: ChartUtilsService,private stylesProviderService: StyleProviderService) {
-        super();
-        this.dialog = new EdaDialog({
-            show: () => this.onShow(),
-            hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-            title: $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
-        });
-
-        this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
-
   
         this.drops.pointStyles = [
             { label: 'Puntos', value: 'circle' },
@@ -99,7 +96,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         this.activeTab = tab
     }
 
-    onShow(): void {
+    ngOnInit(): void {
         this.panelChartConfig = this.controller.params.config;
         this.addTrend = this.controller.params.config.config.getConfig()['addTrend'] || false;
         this.showLabels = this.controller.params.config.config.getConfig()['showLabels'] || false;
@@ -603,7 +600,6 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
                 });
                 break;
             case 'pyramid':
-            case 'stackedbar':
             case 'radar':
             case 'stackedbar':
             case 'stackedbar100':

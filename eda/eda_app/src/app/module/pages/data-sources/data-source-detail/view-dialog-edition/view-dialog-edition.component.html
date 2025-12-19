@@ -1,0 +1,36 @@
+<eda-dialog2 header="Edición de query de la vista" width="50vw" height="60vh" [display]="display" [overflow]="'auto'"
+    [disableApply]="!confirmed" (apply)="viewDialogEditionApply()" (close)="viewDialogEditionClose()">
+
+    <div content>
+
+        <div body>
+
+            <form [formGroup]="form" class="form-horizontal form-material">
+
+                <div class="mb-4 w-full">
+                    <label for="viewSQL" class="block font-medium text-gray-700 mb-1" i18n="@@sqlExp">
+                        Expresión SQL
+                    </label>
+
+                    <textarea id="viewSQL" pInputTextarea formControlName="SQLexpression" rows="8"
+                        class="flex w-full min-h-[30vh] rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                    </textarea>
+                </div>
+
+
+                <div style="margin: 10px">
+                    <button id="viewGenerate" type="button" pButton (click)="checkView()"
+                        class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#00BFB3] text-primary-foreground hover:bg-[#00BFB3]/90 h-10 px-4 py-2"
+                        i18n-label="@@generateView" label="Generar vista" [disabled]="!ok">
+                        {{ isGenerating ? generateText.generating : generateText.generate }}
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+
+    </div>
+
+</eda-dialog2>

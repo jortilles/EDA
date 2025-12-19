@@ -1,11 +1,17 @@
 import { StyleProviderService } from '@eda/services/service.index';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
 import { EdaKnob } from "./edaKnob";
+import { Knob } from './primengKnob/knob';
+
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
 
 @Component({
+  standalone: true,
   selector: 'eda-knob',
   templateUrl: './eda-knob.component.html',
   styleUrls: ['./eda-knob.component.css'],
+  imports: [FormsModule, CommonModule, Knob]
 })
 
 export class EdaKnobComponent implements OnInit, AfterViewInit {

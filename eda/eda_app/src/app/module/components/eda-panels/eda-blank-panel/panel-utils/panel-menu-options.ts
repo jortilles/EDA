@@ -6,7 +6,7 @@ import { EdaContextMenuItem, EdaDialogController } from "@eda/shared/components/
 export const PanelOptions = {
   editQuery: (panelComponent: EdaBlankPanelComponent) => {
     return new EdaContextMenuItem({
-      label: $localize`:@@panelOptions1:Editar consulta`,
+      label: $localize`:@@EditQuery:Editar consulta`,
       icon: 'fa fa-cog',
       command: () => {
         if (panelComponent.panel.content) {
@@ -323,7 +323,7 @@ export const PanelOptions = {
         item: () => PanelOptions.editQuery(ebp),
       },
       {
-        show: true,
+        show: JSON.parse(localStorage.getItem('user'))._id  !== '135792467811111111111112',
         item: () => PanelOptions.editChart(ebp),
       },
       {

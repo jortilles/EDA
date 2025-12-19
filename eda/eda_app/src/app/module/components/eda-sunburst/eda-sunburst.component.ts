@@ -3,10 +3,15 @@ import * as d3 from 'd3'
 import { Component, AfterViewInit, Input, ViewChild, ElementRef, Output, EventEmitter} from '@angular/core'
 import { SunBurst } from './eda-sunbrust'
 
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
+
 @Component({
+  standalone: true,
   selector: 'eda-sunburst' /* tag que jo li dono  */,
   templateUrl: './eda-sunburst.component.html' /** sdf */,
-  styleUrls: ['./eda-sunburst.component.css']
+  styleUrls: ['./eda-sunburst.component.css'],
+  imports: [FormsModule, CommonModule]
 })
 export class EdaSunburstComponent implements AfterViewInit {
   @Input() inject: SunBurst
@@ -33,10 +38,11 @@ export class EdaSunburstComponent implements AfterViewInit {
     this.labels = this.generateDomain(this.data);
     this.colors = this.inject.colors?.length > 0 ? this.inject.colors
       :this.chartUtilService.generateChartColorsFromPalette(this.labels.length,this.styleProviderService.ActualChartPalette['paleta']). map(item => item.backgroundColor)
+      const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
+      this.firstColLabels = this.inject.data.values.map((row) => row[firstNonNumericColIndex]);
+      this.firstColLabels = [...new Set(this.firstColLabels)];
     this.assignedColors = this.inject.assignedColors || []; 
-    const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
-    this.firstColLabels = this.inject.data.values.map((row) => row[firstNonNumericColIndex]);
-    this.firstColLabels = [...new Set(this.firstColLabels)];
+    this.assignedColors.forEach((element, index) => {if(element.value === undefined) element.value = this.firstColLabels[index]}); // linea para cuando value es numerico
   }
 
   ngAfterViewInit () {
@@ -72,7 +78,7 @@ export class EdaSunburstComponent implements AfterViewInit {
     //Funcion de ordenación de colores de D3
     const valuesSunburst = this.assignedColors.map((item) => item.value);
     const colorsSunburst = this.assignedColors[0].color ? this.assignedColors.map(item => item.color) : this.colors;
-    const color = d3.scaleOrdinal(this.firstColLabels, colorsSunburst).unknown("#ccc");
+    const color = d3.scaleOrdinal(this.firstColLabels, colorsSunburst);
 
     let arc = d3
       .arc()
@@ -168,6 +174,7 @@ export class EdaSunburstComponent implements AfterViewInit {
       .append('g')
       .attr('fill', 'none')
       .attr('pointer-events', 'all')
+      .style("cursor", "pointer")
       .on('mouseleave', () => {
         path.attr('fill-opacity', 1)
         label.style('visibility', 'hidden')

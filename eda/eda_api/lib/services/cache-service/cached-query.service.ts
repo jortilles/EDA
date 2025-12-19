@@ -62,12 +62,12 @@ export class CachedQueryService {
         }
       })
 
-      cachedQuery.save(async (err, querySaved: ICachedQuery) => {
-        if (err) {
-          console.log(err)
-          throw new Error(`Unable to cache query`)
-        }
-      })
+      try {
+        const querySaved = await cachedQuery.save();
+      } catch (error) {
+        throw new Error(`Unable to cache query`)
+      }
+
     } catch (err) {
       console.log(err)
       throw new Error(`Unable to cache query`)
@@ -85,9 +85,9 @@ export class CachedQueryService {
           $lte: SchedulerFunctions.totLocalISOTime(limitDate)
         }
       }).exec()
-      if (res.n > 0) {
+      if (res.deletedCount && res.deletedCount > 0) {
         console.log(
-          `\n\x1b[34m=====\x1b[0m \x1b[32mCleaning service: Removed ${res.n} cached queries \x1b[0m \x1b[34m=====\x1b[0m\n`
+          `\n\x1b[34m=====\x1b[0m \x1b[32mCleaning service: Removed ${res.deletedCount} cached queries \x1b[0m \x1b[34m=====\x1b[0m\n`
         )
       }
     } catch (err) {

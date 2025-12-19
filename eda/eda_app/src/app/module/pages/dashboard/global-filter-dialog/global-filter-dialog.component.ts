@@ -4,11 +4,49 @@ import { EdaPanel } from "@eda/models/model.index";
 import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, QueryBuilderService, StyleProviderService } from "@eda/services/service.index";
 import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
 import * as _ from 'lodash';
+import { NgClass } from "@angular/common";
+import { EdaDatePickerComponent } from "@eda/shared/components/shared-components.index";
+import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
+import { DropdownModule } from "primeng/dropdown";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";  
+import { CardModule } from "primeng/card";
+import { TreeSelectModule } from "primeng/treeselect";
+import { MultiSelectModule } from "primeng/multiselect";
+import { TooltipModule } from "primeng/tooltip";
+import { TableModule } from "primeng/table";
+import { ButtonModule } from "primeng/button";
+import { CommonModule } from '@angular/common';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+
+const ANGULAR_MODULES = [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NgClass,
+    DragDropModule,
+];
+
+const PRIMENG_MODULES = [
+    DropdownModule,
+    CardModule,
+    TreeSelectModule,
+    MultiSelectModule,
+    TooltipModule,
+    TableModule,
+    ButtonModule,
+];
+
+const STANDALONE_COMPONENTS = [
+    EdaDialog2Component,
+    EdaDatePickerComponent,
+];
 
 @Component({
+    standalone: true,
     selector: 'app-global-filter-dialog',
     templateUrl: './global-filter-dialog.component.html',
-    styleUrls: ['../dashboard.component.css']
+    styleUrls: ['../dashboard.page.css'], 
+    imports: [ ANGULAR_MODULES, PRIMENG_MODULES, STANDALONE_COMPONENTS ],
 })
 export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     @Input() globalFilter: any;
@@ -23,6 +61,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     @Output() close: EventEmitter<any> = new EventEmitter<any>();
     @Output() globalFilterChange: EventEmitter<any> = new EventEmitter<any>();
+    @Output() deleteFilterEvent: EventEmitter<any> = new EventEmitter<any>();
+
 
     public display: boolean = false;
 
@@ -79,7 +119,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     };
 
     public ngOnInit(): void {
-        this.display = true;
         this.modelTables = _.cloneDeep(this.dataSource.model.tables);
         this.initGlobalFilter();
         this.formReady = true;
@@ -134,12 +173,12 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public ngOnDestroy(): void {
         this.globalFilter = undefined;
         for (const panel of this.panels) {
-            panel.content.globalFilterPaths = []
+            if(panel?.content?.globalFilterPaths)
+                panel.content.globalFilterPaths = []
         }
     }
 
     public togglePanel(panel: any): void {
-      console.log('toggle', panel, this.isPanelSelected(panel.id));
         if (!panel.avaliable) {
           console.log('not available');
           this.initPanelsLegacy(panel);
@@ -571,19 +610,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public applyToAllCheck() {
         this.applyToAll = !this.applyToAll;
 
-        console.log('this.applyToAll);', this.applyToAll);
-        console.log('this.formReady);', this.formReady);
-        console.log('globalFilter.queryMode', this.globalFilter.queryMode);
-        console.log('this.globalFilter.isdeleted', this.globalFilter.isdeleted);
-        
-        //@if (formReady && !globalFilter.isdeleted) {
-        //@if (globalFilter.queryMode == 'EDA') {
-        //@if (!applyToAll) {
-
         if (this.applyToAll){
             this.filteredPanels = this.allPanels.filter(p => p.avaliable === true);
-
-            console.log(this.filteredPanels);
 
             const selectedPanelList = this.globalFilter.panelList || [];
             for (let displayPanel of this.allPanels) {
@@ -605,6 +633,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public onDelete() {
+
         this.styleProviderService.loadedPanels = this.allPanels.length;
         // Nombre del filtro seleccionado
         const filterNameID = this.globalFilter.id;
@@ -633,6 +662,9 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 }
             }, 100);
         }
+
+        // Enviando el valor true de eliminación de un Filtro
+        this.deleteFilterEvent.emit(true);
     }
 
     public onApply(): void {

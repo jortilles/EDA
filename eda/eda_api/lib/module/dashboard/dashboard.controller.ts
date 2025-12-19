@@ -34,7 +34,7 @@ export class DashboardController {
 
 
       if (isAdmin) {
-        [publics, privates, group, shared] =  await DashboardController.getAllDashboardToAdmin(req)
+        [publics, privates, group, shared] = await DashboardController.getAllDashboardToAdmin(req)
       } else {
         group = await DashboardController.getGroupsDashboards(req)
         privates = await DashboardController.getPrivateDashboards(req)
@@ -88,7 +88,7 @@ export class DashboardController {
       const dashboards = await Dashboard.find(
         { user: req.user._id },
         'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.ds user'
-      ).populate('user','name').exec()
+      ).populate('user', 'name').exec()
       const privates = []
       for (const dashboard of dashboards) {
         if (dashboard.config.visible === 'private') {
@@ -100,7 +100,7 @@ export class DashboardController {
       }
 
       let tags: Array<any> = req.qs.tags
-      
+
       if (_.isEmpty(tags)) {
         return privates;
 
@@ -140,7 +140,7 @@ export class DashboardController {
       const dashboards = await Dashboard.find(
         { group: { $in: userGroups.map(g => g._id) } },
         'config.title config.visible group config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.ds user'
-      ).populate('user','name').exec()
+      ).populate('user', 'name').exec()
       const groupDashboards = []
       for (let i = 0, n = dashboards.length; i < n; i += 1) {
         const dashboard = dashboards[i]
@@ -192,48 +192,48 @@ export class DashboardController {
    * @param ds Datasource object to check
    * @returns true if the user can view the dashboard, false otherwise
    */
-  static iCanSeeTheDashboard(req: Request, ds: any ) :boolean{
-      let result = false;
-      if( ds.ds.metadata.model_granted_roles.length == 0){ // si no hay permisos puedo verlo.
-        result  =  true;
-      }
-      if( result == false ){
-                const user = req.user;
-                ds.ds.metadata.model_granted_roles.forEach(e => {
-                if(e.table == 'fullModel' ){
-                    if(e.users?.indexOf( user._id ) >= 0  ){ // el usuario puede ver el modelo
-                         result  = true;
-                        }
-                if(e.type ==  'anyoneCanSee' ){ // Todos pueden ver el modelo.
-                         result  = true;
-                        }
-                    if(  e.role?.length > 0 ) { // si el rol puede verlo lo ve
-                        user.role.forEach( r=> {
-                          if (  e.role.indexOf( r ) >= 0 ){
-                             result  = true;
-                          }
-                        })
-                    } 
-                    
-                }else{  // si  veo algo.
-                    if(e.permission == true ){
-                        if(e.users?.indexOf( user._id ) >= 0  ){ // el usuario puede ver el algo de alguna tabla
-                            result  = true;
-                            }
-                        if(  e.role?.length > 0 ) { // si el rol puede ver algo de alguna tabla 
-                            user.role.forEach( r=> {
-                              if (  e.role.indexOf( r ) >= 0 ){
-                                 result  = true;
-                              }
-                            })
-                        } 
-
-                      }     
-                    }
-            });
-      }
-      return result;
+  static iCanSeeTheDashboard(req: Request, ds: any): boolean {
+    let result = false;
+    if (ds.ds.metadata.model_granted_roles.length == 0) { // si no hay permisos puedo verlo.
+      result = true;
     }
+    if (result == false) {
+      const user = req.user;
+      ds.ds.metadata.model_granted_roles.forEach(e => {
+        if (e.table == 'fullModel') {
+          if (e.users?.indexOf(user._id) >= 0) { // el usuario puede ver el modelo
+            result = true;
+          }
+          if (e.type == 'anyoneCanSee') { // Todos pueden ver el modelo.
+            result = true;
+          }
+          if (e.role?.length > 0) { // si el rol puede verlo lo ve
+            user.role.forEach(r => {
+              if (e.role.indexOf(r) >= 0) {
+                result = true;
+              }
+            })
+          }
+
+        } else {  // si  veo algo.
+          if (e.permission == true) {
+            if (e.users?.indexOf(user._id) >= 0) { // el usuario puede ver el algo de alguna tabla
+              result = true;
+            }
+            if (e.role?.length > 0) { // si el rol puede ver algo de alguna tabla 
+              user.role.forEach(r => {
+                if (e.role.indexOf(r) >= 0) {
+                  result = true;
+                }
+              })
+            }
+
+          }
+        }
+      });
+    }
+    return result;
+  }
 
   /**
    * Retrieves the public dashboards the user has access to, filtering by tags if specified.
@@ -247,17 +247,17 @@ export class DashboardController {
       /*EDA{},*/
       /*Edalitics Free */  { user: req.user._id },
         'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.ds user'
-      ).populate('user','name').exec()
+      ).populate('user', 'name').exec()
       const publics = []
 
-     
+
 
       for (const dashboard of dashboards) {
         if (dashboard.config.visible === 'shared') {
-          const ds = dss.find( e=> e._id == dashboard.config.ds._id );
-          dashboard.config.ds.name =  ds.ds?.metadata?.model_name ?? 'N/A';
-          if(  this.iCanSeeTheDashboard(req, ds) == true ){
-             publics.push(dashboard);
+          const ds = dss.find(e => e._id == dashboard.config.ds._id);
+          dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+          if (this.iCanSeeTheDashboard(req, ds) == true) {
+            publics.push(dashboard);
           }
 
         }
@@ -302,7 +302,7 @@ export class DashboardController {
         /*EDA{},*/
         /*Edalitics Free */  { user: req.user._id },
         'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt'
-      ).populate('user','name').exec()
+      ).populate('user', 'name').exec()
       const shared = []
       for (const dashboard of dashboards) {
         if (dashboard.config.visible === 'public') {
@@ -358,14 +358,14 @@ export class DashboardController {
     }, {});
     try {
       //si no lleva filtro, pasamos directamente a recuperarlos todos
-      const dashboards =  JSON.stringify(filter) !== '{}'  ? 
-      await Dashboard.find({ $or : Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor }))}, 'user config.title config.visible group config.tag config.author config.createdAt config.modifiedAt config.onlyIcanEdit config.external').exec() : 
+      const dashboards = JSON.stringify(filter) !== '{}' ?
+        await Dashboard.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, 'user config.title config.visible group config.tag config.author config.createdAt config.modifiedAt config.onlyIcanEdit config.external').exec() :
         await Dashboard.find({}, 'user config.title config.visible group config.tag config.author config.createdAt config.modifiedAt config.onlyIcanEdit  config.external').exec();
       const publics = []
       const privates = []
       const groups = []
       const shared = []
-      
+
       for (const dashboard of dashboards) {
         switch (dashboard.config.visible) {
           case 'shared':
@@ -383,10 +383,10 @@ export class DashboardController {
             break
         }
       }
-      
+
       //apliquem filtrat per tags desde URL
-      let tags : Array<any> = req.qs.tags;
-      
+      let tags: Array<any> = req.qs.tags;
+
       if (_.isEmpty(tags)) {
         return [publics, privates, groups, shared];
       } else {
@@ -466,225 +466,141 @@ export class DashboardController {
         .map(dashboard => dashboard._id)
         .filter(id => id.toString() === req.params.id)
 
-      Dashboard.findOne({ _id: req.params.id }, async (err, dashboard) => {
-        if (err) {
-          console.log('Dashboard not found with this id:' + req.params.id)
-          return next(
-            new HttpException(500, 'Dashboard not found with this id')
-          )
+      try {
+        // Obtener el dashboard
+        const dashboard = await Dashboard.findById(req.params.id);
+        if (!dashboard) {
+          console.log('Dashboard not found with this id:' + req.params.id);
+          return next(new HttpException(500, 'Dashboard not found with this id'));
         }
 
         await DashboardController.initDashboardPanels(dashboard);
 
         const visibilityCheck = !['shared', 'public'].includes(dashboard.config.visible);
-
         const roleCheck =
           !userRoles.includes('EDA_ADMIN') &&
           userGroupDashboards.length === 0 &&
-          dashboard.user.toString() !== user
+          dashboard.user.toString() !== user;
 
         if (visibilityCheck && roleCheck) {
           console.log("You don't have permission " + user + ' for dashboard ' + req.params.id);
-          return next(new HttpException(500, "You don't have permission"))
+          return next(new HttpException(500, "You don't have permission"));
         }
 
-        DataSource.findById(
-          { _id: dashboard.config.ds._id },
-          (err, datasource) => {
-            if (err) {
-              return next(
-                new HttpException(500, 'Error searching the DataSource')
-              )
-            }
+        // Obtener el datasource asociado
+        const datasource = await DataSource.findById(dashboard.config.ds._id);
+        if (!datasource) {
+          return next(new HttpException(400, 'Datasource not found with id'));
+        }
 
-            if (!datasource) {
-              return next(new HttpException(400, 'Datasouce not found with id'))
-            }
-            let toJson = JSON.parse(JSON.stringify(datasource));
+        // Convertir a objeto JSON
+        const toJson = JSON.parse(JSON.stringify(datasource));
 
-            // Filtre de seguretat per les taules. Si no es te permis sobre una taula es posa com a oculta.
-            // Per si de cas es fa servir a una relació.
-            const uniquesForbiddenTables = DashboardController.getForbiddenTables(
-              toJson,
-              userGroups,
-              req.user._id
-            )
+        // Filtrar tablas y columnas prohibidas
+        const uniquesForbiddenTables = DashboardController.getForbiddenTables(toJson, userGroups, req.user._id);
+        const uniquesForbiddenColumns = DashboardController.getForbiddenColumns(toJson, userGroups, req.user._id);
 
-            // Filtre de seguretat per les columnes. Si no es te permis sobre una columna es posa com a oculta.
-            const uniquesForbiddenColumns = DashboardController.getForbiddenColumns (
-              toJson,
-              userGroups,
-              req.user._id
-            )
+        const includesAdmin = req.user.role.includes("135792467811111111111110");
 
-            const includesAdmin = req.user.role.includes("135792467811111111111110")
-
-            if (!includesAdmin) {
-
-              try {
-                // Poso taules prohivides a false
-                if (uniquesForbiddenTables.length > 0) {
-                  // Poso taules prohivides a false
-                  for (let x = 0; x < toJson.ds.model.tables.length; x++) {
-                    try {
-                      if (
-                        uniquesForbiddenTables.includes(
-                          toJson.ds.model.tables[x].table_name
-                        )
-                      ) {
-                        toJson.ds.model.tables[x].visible = false
-                      }
-                    } catch (e) {
-                      console.log('Error evaluating role permission')
-                      console.log(e)
-                    }
-                  }
-
-                  // Oculto columnes als panells
-                  for (let i = 0; i < dashboard.config.panel.length; i++) {
-                    if (dashboard.config.panel[i].content != undefined) {
-                      let MyFields = []
-                      let notAllowedColumns = []
-                      for (
-                        let c = 0;
-                        c <
-                        dashboard.config.panel[i].content.query.query.fields
-                          .length;
-                        c++
-                      ) {
-                        if (
-                          uniquesForbiddenTables.includes(
-                            dashboard.config.panel[i].content.query.query.fields[
-                              c
-                            ].table_id
-                          )
-                        ) {
-                          notAllowedColumns.push(
-                            dashboard.config.panel[i].content.query.query.fields[
-                            c
-                            ]
-                          )
-                        } else {
-                          MyFields.push(
-                            dashboard.config.panel[i].content.query.query.fields[
-                            c
-                            ]
-                          )
-                        }
-                      }
-                      if (notAllowedColumns.length > 0) {
-                        dashboard.config.panel[
-                          i
-                        ].content.query.query.fields = MyFields
-                      }
-                    }
-                  }
-                }
-              } catch (error) {
-
-                console.log('no pannels in dashboard')
-              }
-
-            }
-
-            // Se agrega false a autorelation y bridge
+        if (!includesAdmin) {
+          // Ocultar tablas prohibidas
+          if (uniquesForbiddenTables.length > 0 && toJson.ds.model.tables) {
             toJson.ds.model.tables.forEach(table => {
-              table.relations.forEach(r => {
-                if(r.autorelation == undefined){
-                  r.autorelation = false;
-                }
-                if(r.bridge == undefined){
-                  r.bridge = false;
-                }
-              });
+              if (uniquesForbiddenTables.includes(table.table_name)) {
+                table.visible = false;
+              }
             });
 
-
-            // Si tengo columnas prohividas las pongo invisibles en el modelo.
-            try{
-              if(uniquesForbiddenColumns.length > 0){
-                uniquesForbiddenColumns.forEach( fc => {
-                  toJson.ds.model.tables.filter( t=> t.table_name == fc.table  )[0].columns.filter( c=> c.column_name == fc.column)[0].visible = false ;
-                });
+            // Ocultar columnas prohibidas en paneles
+            dashboard.config.panel.forEach(panel => {
+              if (panel.content?.query?.query?.fields) {
+                panel.content.query.query.fields = panel.content.query.query.fields.filter(
+                  field => !uniquesForbiddenTables.includes(field.table_id)
+                );
               }
-            }catch(e){
-              console.log('Error handling columns permissions');
-              console.log(e);
-            }
-
-            const ds = {
-              _id: datasource._id,
-              model: toJson.ds.model,
-              name: toJson.ds.metadata.model_name
-            }
-
-            insertServerLog(
-              req,
-              'info',
-              'DashboardAccessed',
-              req.user.name,
-              dashboard._id + '--' + dashboard.config.title
-            )
-            return res.status(200).json({ ok: true, dashboard, datasource: ds })
+            });
           }
-        )
-      })
-    } catch (err) {
-      next(err)
-    }
-  }
-  
-  static async getDataSourceModel(req: Request, res: Response, next: NextFunction) {
-    const model_id = req.params.id;
-    const user = req['user']._id;
-    const userGroups = req['user'].role;
-
-    DataSource.findById(
-      { _id: model_id },
-      (err, datasource) => {
-        if (err) {
-          return next(
-            new HttpException(500, 'Error searching the DataSource')
-          )
         }
 
-        if (!datasource) {
-          return next(new HttpException(400, 'Datasouce not found with id'))
-        }
-
-        let toJson = JSON.parse(JSON.stringify(datasource))
-
-        // Filtre de seguretat per les taules. Si no es te permis sobre una taula es posa com a oculta.
-        // Per si de cas es fa servir a una relació.
-        const uniquesForbiddenTables = DashboardController.getForbiddenTables(
-          toJson,
-          userGroups,
-          req.user._id
-        )
-
-        const includesAdmin = req.user.role.includes("135792467811111111111110")
-
-        // Se agrega false a autorelation y bridge
+        // Inicializar relaciones de tablas
         toJson.ds.model.tables.forEach(table => {
           table.relations.forEach(r => {
-            if (r.autorelation == undefined) {
-              r.autorelation = false;
-            }
-            if (r.bridge == undefined) {
-              r.bridge = false;
-            }
+            r.autorelation ??= false;
+            r.bridge ??= false;
           });
+        });
+
+        // Ocultar columnas prohibidas en modelo
+        uniquesForbiddenColumns.forEach(fc => {
+          const table = toJson.ds.model.tables.find(t => t.table_name === fc.table);
+          const column = table?.columns.find(c => c.column_name === fc.column);
+          if (column) column.visible = false;
         });
 
         const ds = {
           _id: datasource._id,
           model: toJson.ds.model,
           name: toJson.ds.metadata.model_name
-        }
+        };
 
-        return res.status(200).json(ds)
+        insertServerLog(req, 'info', 'DashboardAccessed', req.user.name, dashboard._id + '--' + dashboard.config.title);
+
+        return res.status(200).json({ ok: true, dashboard, datasource: ds });
+
+      } catch (err) {
+        console.log(err);
+        return next(new HttpException(500, 'Error processing dashboard'));
       }
-    )
+
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  static async getDataSourceModel(req: Request, res: Response, next: NextFunction) {
+    const model_id = req.params.id;
+    const user = req['user']._id;
+    const userGroups = req['user'].role;
+
+    try {
+      const datasource = await DataSource.findById(req.params.id);
+
+      if (!datasource) {
+        return next(new HttpException(404, "Datasource not found with id"));
+      }
+
+      let toJson = JSON.parse(JSON.stringify(datasource));
+
+      // Filtre de seguretat per les taules
+      const uniquesForbiddenTables = DashboardController.getForbiddenTables(
+        toJson,
+        req.user.groups,
+        req.user._id
+      );
+
+      // Comprobar admin
+      const includesAdmin = req.user.role.includes("135792467811111111111110");
+
+      // Añadir valores por defecto a relaciones
+      toJson.ds.model.tables.forEach(table => {
+        table.relations.forEach(r => {
+          r.autorelation = r.autorelation ?? false;
+          r.bridge = r.bridge ?? false;
+        });
+      });
+
+      const ds = {
+        _id: datasource._id,
+        model: toJson.ds.model,
+        name: toJson.ds.metadata.model_name
+      };
+
+      return res.status(200).json(ds);
+
+    } catch (err) {
+      console.error(err);
+      next(new HttpException(500, "Error searching the DataSource"));
+    }
   }
 
   static async create(req: Request, res: Response, next: NextFunction) {
@@ -703,56 +619,47 @@ export class DashboardController {
       /**avoid dashboards without name */
       if (dashboard.config.title === null) { dashboard.config.title = '-' };
       //Save dashboard in db
-      dashboard.save((err, dashboard) => {
-        if (err) {
-          return next(
-            new HttpException(
-              400,
-              'Some error ocurred while creating the dashboard'
-            )
-          )
-        }
+      const dashboardCreated = await dashboard.save();
 
-        return res.status(201).json({ ok: true, dashboard })
-      })
+      return res.status(201).json({ ok: true, dashboard })
     } catch (err) {
-      next(err)
+      return new HttpException(400, 'Some error ocurred while creating the dashboard')
     }
   }
 
   static async update(req: Request, res: Response, next: NextFunction) {
     try {
       const body = req.body;
-      Dashboard.findById(req.params.id, (err, dashboard: IDashboard) => {
-        if (err) {
-          return next(new HttpException(500, 'Error searching the dashboard'))
-        }
 
+      try {
+        const dashboard = await Dashboard.findById(req.params.id)
         if (!dashboard) {
           return next(
             new HttpException(400, 'Dashboard not exist with this id')
           )
         }
+
         dashboard.config = body.config
         dashboard.group = body.group
         /**avoid dashboards without name */
         if (dashboard.config.title === null) { dashboard.config.title = '-' };
-        
-        
-        
-        dashboard.save((err, dashboard) => {
-          if (err) {
-            return next(new HttpException(500, 'Error updating dashboard'))
-          }
 
+        try {
+          const dashboardToUpdate = await dashboard.save();
           return res.status(200).json({ ok: true, dashboard })
-        })
-      })
-    } catch (err) {
-      next(err)
+        } catch (err) {
+          return (new HttpException(500, 'Error updating dashboard'))
+        }
+      } catch (error) {
+
+        return (new HttpException(500, 'Error searching the dashboard'))
+      }
+
+    } catch (error) {
+      return (new HttpException(500, 'Error updating dashboard'))
     }
   }
-  
+
   /**
    * Updates a specific field of a dashboard.
    * 
@@ -781,54 +688,48 @@ export class DashboardController {
         };
       }
 
-      Dashboard.findByIdAndUpdate(
+      const dashboard = await Dashboard.findByIdAndUpdate(
         id,
         { $set: updateObj },
-        { new: true, runValidators: true },
-        (err, dashboard) => {
-          if (err) {
-            return next(
-              new HttpException(
-                400,
-                'Some error occurred while updating the dashboard'
-              )
-            );
-          }
-
-          if (!dashboard) {
-            return next(
-              new HttpException(404, 'Dashboard not found with this id')
-            );
-          }
-
-          return res.status(200).json({ ok: true, dashboard });
-        }
+        { new: true, runValidators: true }
       );
+
+      if (!dashboard) {
+        return next(
+          new HttpException(404, 'Dashboard not found with this id')
+        );
+      }
+
+      return res.status(200).json({ ok: true, dashboard });
+
     } catch (err) {
-      next(err);
+      return next(
+        new HttpException(
+          400,
+          'Some error occurred while updating the dashboard'
+        )
+      );
     }
+
   }
 
   static async delete(req: Request, res: Response, next: NextFunction) {
-    let options: QueryOptions = {}
     try {
-      Dashboard.findByIdAndDelete(req.params.id, options, (err, dashboard) => {
-        if (err) {
-          return next(new HttpException(500, 'Error removing dashboard'))
-        }
+      const dashboard = await Dashboard.findByIdAndDelete(req.params.id);
 
-        if (!dashboard) {
-          return next(
-            new HttpException(400, 'Not exists dahsboard with this id')
-          )
-        }
+      if (!dashboard) {
+        return next(
+          new HttpException(400, 'Dashboard with this id does not exist')
+        );
+      }
 
-        return res.status(200).json({ ok: true, dashboard })
-      })
+      return res.status(200).json({ ok: true, dashboard });
+
     } catch (err) {
-      next(err)
+      return next(new HttpException(500, 'Error removing dashboard'));
     }
   }
+
 
   static async initDashboardPanels(dashboard: any) {
     const panels = dashboard.config.panel || [];
@@ -886,20 +787,20 @@ export class DashboardController {
     user: string
   ) {
     let forbiddenColumns = [];
-    if(dataModelObject.ds.metadata.model_granted_roles.length > 0 ){ /** SI HAY PERMISOS DEFINIDOS. SI NO, NO HAY SEGURIDAD */
-      if( dataModelObject.ds.metadata.model_granted_roles.filter( r=>r.none == true ).length > 0 ){
-        dataModelObject.ds.metadata.model_granted_roles.filter( r=>r.none == true ).forEach( c => {
-          if(  c.users?.includes(user) ){
+    if (dataModelObject.ds.metadata.model_granted_roles.length > 0) { /** SI HAY PERMISOS DEFINIDOS. SI NO, NO HAY SEGURIDAD */
+      if (dataModelObject.ds.metadata.model_granted_roles.filter(r => r.none == true).length > 0) {
+        dataModelObject.ds.metadata.model_granted_roles.filter(r => r.none == true).forEach(c => {
+          if (c.users?.includes(user)) {
             forbiddenColumns.push(c);
           }
-          userGroups.forEach( g=> { 
-            if( c.groups?.includes(g) ){
+          userGroups.forEach(g => {
+            if (c.groups?.includes(g)) {
               forbiddenColumns.push(c);
             }
           });
         });
       }
-  }
+    }
     return forbiddenColumns;
   }
 
@@ -914,13 +815,13 @@ export class DashboardController {
     user: string
   ) {
     let forbiddenTables = [];
-    if(dataModelObject.ds.metadata.model_granted_roles.length > 0 ){ /** SI HAY PERMISOS DEFINIDOS. SI NO, NO HAY SEGURIDAD */
-      if( dataModelObject.ds.metadata.model_granted_roles.filter( r=>r.type == "anyoneCanSee" && r.permission == true ).length > 0 ){
+    if (dataModelObject.ds.metadata.model_granted_roles.length > 0) { /** SI HAY PERMISOS DEFINIDOS. SI NO, NO HAY SEGURIDAD */
+      if (dataModelObject.ds.metadata.model_granted_roles.filter(r => r.type == "anyoneCanSee" && r.permission == true).length > 0) {
         // En el caso de que cualquier usuario pueda ver el modelo y tengamos un esquema benevolente
-        forbiddenTables = this.getForbiddenTablesOpen( dataModelObject, userGroups, user ); 
-      }else{
+        forbiddenTables = this.getForbiddenTablesOpen(dataModelObject, userGroups, user);
+      } else {
         // En el caso de que tan sólo pueda ver las tablas para las que tengo permiso explicito
-        forbiddenTables = this.getForbiddenTablesClose( dataModelObject, userGroups, user ); 
+        forbiddenTables = this.getForbiddenTablesClose(dataModelObject, userGroups, user);
       }
     }
     return forbiddenTables;
@@ -928,7 +829,7 @@ export class DashboardController {
 
 
 
-  
+
   /**
    *  Filtra tablas prohividas en un modelo de datos. Devuelve el listado de tablas prohividas para un usuario. 
    *  SUPONIENDO QUE PUEDE VER TODAS EN LAS QUE NO HAY SEGURIDAD Y LAS SUYAS FILTRADAS. 
@@ -948,18 +849,18 @@ export class DashboardController {
     })
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       for (
-        var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length;  i++  ) {
+        var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
         if (
           /** Si NO puedo ver la tabla */
           dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
           dataModelObject.ds.metadata.model_granted_roles[i].permission === false
         ) {
-          if ( dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined  ) {
-            for ( var j = 0; j<dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++ ) {
+          if (dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++) {
               if (
                 dataModelObject.ds.metadata.model_granted_roles[i].users[j] == user
               ) {
-                forbiddenTables.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
+                forbiddenTables.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
               }
             }
           }
@@ -982,9 +883,9 @@ export class DashboardController {
             dataModelObject.ds.metadata.model_granted_roles[i].groups !==
             undefined
           ) {
-            for ( var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length; j++ ) {
-              if ( userGroups.includes( dataModelObject.ds.metadata.model_granted_roles[i].groups[j] ) ) {
-                forbiddenTables.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length; j++) {
+              if (userGroups.includes(dataModelObject.ds.metadata.model_granted_roles[i].groups[j])) {
+                forbiddenTables.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
               }
             }
           }
@@ -997,18 +898,18 @@ export class DashboardController {
 
     /** allowed tables by security */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
-      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
         if (
           dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
           dataModelObject.ds.metadata.model_granted_roles[i].permission === true
         ) {
           if (
-            dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined ) {
-            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++ ) {
-              if ( dataModelObject.ds.metadata.model_granted_roles[i].users[j] != user  ) {
-                allowedTablesBySecurityForOthers.push(  dataModelObject.ds.metadata.model_granted_roles[i].table );
+            dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++) {
+              if (dataModelObject.ds.metadata.model_granted_roles[i].users[j] != user) {
+                allowedTablesBySecurityForOthers.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
               } else {
-                allowedTablesBySecurityForMe.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
+                allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
               }
             }
           }
@@ -1023,19 +924,19 @@ export class DashboardController {
 
     /** puedo ver la tabla porque puedo ver datos de una columna */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
-      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
         if ( /** puedo ver valores de una columna de la tabla */
           dataModelObject.ds.metadata.model_granted_roles[i].global === false &&
           dataModelObject.ds.metadata.model_granted_roles[i].none === false &&
           dataModelObject.ds.metadata.model_granted_roles[i].value.length > 0
         ) {
           if (
-            dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined ) {
-            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++ ) {
-              if ( dataModelObject.ds.metadata.model_granted_roles[i].users[j] != user  ) {
-                allowedTablesBySecurityForOthers.push(  dataModelObject.ds.metadata.model_granted_roles[i].table );
+            dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++) {
+              if (dataModelObject.ds.metadata.model_granted_roles[i].users[j] != user) {
+                allowedTablesBySecurityForOthers.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
               } else {
-                allowedTablesBySecurityForMe.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
+                allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
               }
             }
           }
@@ -1050,15 +951,15 @@ export class DashboardController {
 
     /** TAULES PERMESES PER EL GRUP */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
-      for ( var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length;  i++ ) {
-        if ( dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
-          dataModelObject.ds.metadata.model_granted_roles[i].permission === true ) {
-          if (  dataModelObject.ds.metadata.model_granted_roles[i].groups !==  undefined ) {
-            for ( var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length;  j++ ) {
-              if ( !userGroups.includes( dataModelObject.ds.metadata.model_granted_roles[i].groups[j] ) ) {
-                allowedTablesBySecurityForOthers.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
+        if (dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === true) {
+          if (dataModelObject.ds.metadata.model_granted_roles[i].groups !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length; j++) {
+              if (!userGroups.includes(dataModelObject.ds.metadata.model_granted_roles[i].groups[j])) {
+                allowedTablesBySecurityForOthers.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
               } else {
-                allowedTablesBySecurityForMe.push(  dataModelObject.ds.metadata.model_granted_roles[i].table )
+                allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table)
               }
             }
           }
@@ -1073,8 +974,8 @@ export class DashboardController {
     let uniquesForbiddenTables = forbiddenTables.filter(unique);
 
 
-    allowedTablesBySecurityForOthers = allowedTablesBySecurityForOthers.filter(  unique   )
-    allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter( unique )
+    allowedTablesBySecurityForOthers = allowedTablesBySecurityForOthers.filter(unique)
+    allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter(unique)
 
     //console.log('Tablas permitidas para otros por grupo');
     //console.log(allowedTablesBySecurityForOthers);
@@ -1086,7 +987,7 @@ export class DashboardController {
         item => item != e
       )
     })
-    uniquesForbiddenTables = uniquesForbiddenTables.concat(  allowedTablesBySecurityForOthers    );
+    uniquesForbiddenTables = uniquesForbiddenTables.concat(allowedTablesBySecurityForOthers);
     uniquesForbiddenTables = uniquesForbiddenTables.filter(unique);
 
     return uniquesForbiddenTables;
@@ -1126,63 +1027,63 @@ export class DashboardController {
     /** allowed tables by security */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       // Si el usuario puede ver todo el modelo.
-      if (dataModelObject.ds.metadata.model_granted_roles.filter(r=> r.table == 'fullModel' 
-                                                                    && r.column == 'fullModel'  
+      if (dataModelObject.ds.metadata.model_granted_roles.filter(r => r.table == 'fullModel'
+        && r.column == 'fullModel'
         && r.permission == true
         && r.users?.includes(user)
-                                                                ).length > 0 ){
+      ).length > 0) {
         // El usuairo puede ver todo.
-        allowedTablesBySecurityForMe =  _.cloneDeep(allTables);
+        allowedTablesBySecurityForMe = _.cloneDeep(allTables);
       }
       // Excepto lo que le prohibo  explicitamente.                                                         
       dataModelObject.ds.metadata.model_granted_roles.forEach(r => {
-        if(r.column == 'fullTable'   && r.users?.includes(user)  && r.permission == false   ){
-          forbiddenTables.push( r.table);
+        if (r.column == 'fullTable' && r.users?.includes(user) && r.permission == false) {
+          forbiddenTables.push(r.table);
         }
       });;
 
       // Si el grupo puede ver todo el modelo.
-      let groupCan =  0;
+      let groupCan = 0;
       userGroups.forEach(
-        group=>{
-          if (dataModelObject.ds.metadata.model_granted_roles.filter(r=> r.table == 'fullModel' 
+        group => {
+          if (dataModelObject.ds.metadata.model_granted_roles.filter(r => r.table == 'fullModel'
             && r.permission == true
             && r.groups?.includes(group)
-          ).length > 0 ){
+          ).length > 0) {
             // El grupo  puede ver todo.
             groupCan = 1;
           }
         }
       );
-      if(groupCan==1) {
+      if (groupCan == 1) {
         allowedTablesBySecurityForMe = _.cloneDeep(allTables);
       }
 
 
       // Excepto lo que le prohibo  explicitamente al grupo
       userGroups.forEach(
-        group=>{
-          const  forbidden = dataModelObject.ds.metadata.model_granted_roles.filter(r=> r.column == 'fullTable' 
-            && r.permission == false 
-            && r.groups?.includes(group) 
+        group => {
+          const forbidden = dataModelObject.ds.metadata.model_granted_roles.filter(r => r.column == 'fullTable'
+            && r.permission == false
+            && r.groups?.includes(group)
           )
-          if (forbidden.length > 0 ){
-              forbidden.forEach( r=> forbiddenTables.push( r.table));
+          if (forbidden.length > 0) {
+            forbidden.forEach(r => forbiddenTables.push(r.table));
           }
         }
       );
 
-   
-      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
+
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
         if (
           dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
           dataModelObject.ds.metadata.model_granted_roles[i].permission === true
         ) {
           if (
-            dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined ) {
-            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++ ) {
-              if ( dataModelObject.ds.metadata.model_granted_roles[i].users[j] == user  ) {
-                allowedTablesBySecurityForMe.push(  dataModelObject.ds.metadata.model_granted_roles[i].table );
+            dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++) {
+              if (dataModelObject.ds.metadata.model_granted_roles[i].users[j] == user) {
+                allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
               }
             }
           }
@@ -1193,16 +1094,16 @@ export class DashboardController {
 
     /** puedo ver la tabla porque puedo ver datos de una columna */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
-      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
         if ( /** puedo ver valores de una columna de la tabla */
           dataModelObject.ds.metadata.model_granted_roles[i].global === false &&
           dataModelObject.ds.metadata.model_granted_roles[i].none === false &&
           dataModelObject.ds.metadata.model_granted_roles[i].value.length > 0
         ) {
-          if (dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined ) {
-            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++ ) {
-              if ( dataModelObject.ds.metadata.model_granted_roles[i].users[j] == user  ) {
-                allowedTablesBySecurityForMe.push(  dataModelObject.ds.metadata.model_granted_roles[i].table );
+          if (dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++) {
+              if (dataModelObject.ds.metadata.model_granted_roles[i].users[j] == user) {
+                allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
               }
             }
           }
@@ -1214,20 +1115,20 @@ export class DashboardController {
 
     /** TAULES PERMESES PER EL GRUP */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
-      for ( var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length;  i++ ) {
-        if ( dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
-          dataModelObject.ds.metadata.model_granted_roles[i].permission === true ) {
-          if (  dataModelObject.ds.metadata.model_granted_roles[i].groups !==  undefined ) {
-            for ( var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length;  j++ ) {
-              if ( userGroups.includes( dataModelObject.ds.metadata.model_granted_roles[i].groups[j] ) ) {
-                allowedTablesBySecurityForMe.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
+        if (dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === true) {
+          if (dataModelObject.ds.metadata.model_granted_roles[i].groups !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length; j++) {
+              if (userGroups.includes(dataModelObject.ds.metadata.model_granted_roles[i].groups[j])) {
+                allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
               }
             }
           }
         }
       }
     }
-    
+
     // Check if the user has permission to view the table based on column visibility
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
@@ -1248,8 +1149,8 @@ export class DashboardController {
       }
     }
     // puedo ver todas las tablas menos las que tengo explicitamente prohibidas
-    allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter( t=> !forbiddenTables.includes(t) );
-    forbiddenTables = allTables.filter( t => !allowedTablesBySecurityForMe.includes( t )  );
+    allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter(t => !forbiddenTables.includes(t));
+    forbiddenTables = allTables.filter(t => !allowedTablesBySecurityForMe.includes(t));
     return forbiddenTables;
   }
 
@@ -1262,9 +1163,7 @@ export class DashboardController {
     try {
       let connectionProps: any;
       if (req.body.dashboard?.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
-
       const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
-      
       const dataModel = await connection.getDataSource(req.body.model_id, req.qs.properties)
       /**--------------------------------------------------------------------------------------------------------- */
       /**Security check */
@@ -1324,8 +1223,8 @@ export class DashboardController {
           mylabels.push(req.body.query.fields[c].column_name)
         }
       }
-      myQuery.queryMode = req.body.query.queryMode? req.body.query.queryMode: 'EDA'; /** lo añado siempre */
-      myQuery.rootTable = req.body.query.rootTable? req.body.query.rootTable: ''; /** lo añado siempre */
+      myQuery.queryMode = req.body.query.queryMode ? req.body.query.queryMode : 'EDA'; /** lo añado siempre */
+      myQuery.rootTable = req.body.query.rootTable ? req.body.query.rootTable : ''; /** lo añado siempre */
       myQuery.simple = req.body.query.simple;
       myQuery.queryLimit = req.body.query.queryLimit;
       myQuery.joinType = req.body.query.joinType ? req.body.query.joinType : 'inner';
@@ -1342,7 +1241,7 @@ export class DashboardController {
 
 
       /** por compatibilidad. Si no tengo el tipo de columna en el filtro lo añado */
-      if(myQuery.filters){
+      if (myQuery.filters) {
         for (const filter of myQuery.filters) {
           if (!filter.filter_column_type) {
             const filterTable = dataModelObject.ds.model.tables.find((t) => t.table_name == filter.filter_table.split('.')[0]);
@@ -1354,41 +1253,41 @@ export class DashboardController {
           }
         }
       }
-      
+
       let nullFilter = {};
       const filters = myQuery.filters;
 
 
       filters.forEach(a => {
         a.filter_elements.forEach(b => {
-          if( b.value1){
+          if (b.value1) {
             if (
-                ( b.value1.includes('null') || b.value1.includes('1900-01-01') )  
+              (b.value1.includes('null') || b.value1.includes('1900-01-01'))
               && b.value1.length > 1  /** Si tengo varios elementos  */
-                && ( a.filter_type == '=' || a.filter_type == 'in' ||  a.filter_type == 'like' || a.filter_type == 'between')
+              && (a.filter_type == '=' || a.filter_type == 'in' || a.filter_type == 'like' || a.filter_type == 'between')
             ) {
-                nullFilter =  {
+              nullFilter = {
                 filter_id: 'is_null',
                 filter_table: a.filter_table,
-                              filter_column: a.filter_column  ,
+                filter_column: a.filter_column,
                 filter_type: 'is_null',
-                              filter_elements: [{value1:['null']}],
+                filter_elements: [{ value1: ['null'] }],
                 filter_column_type: a.filter_column_type,
                 isGlobal: true,
                 applyToAll: false
               }
               b.value1 = b.value1.filter(c => c != 'null')
               filters.push(nullFilter);
-              }else  if ( ( b.value1.includes('null') || b.value1.includes('1900-01-01') ) 
+            } else if ((b.value1.includes('null') || b.value1.includes('1900-01-01'))
               && b.value1.length > 1  /** Si tengo varios elementos  */
-              && ( a.filter_type == '!=' || a.filter_type == 'not_in' ||  a.filter_type == 'not_like' )
+              && (a.filter_type == '!=' || a.filter_type == 'not_in' || a.filter_type == 'not_like')
             ) {
-                nullFilter =  {
+              nullFilter = {
                 filter_id: 'not_null',
                 filter_table: a.filter_table,
-                                filter_column: a.filter_column  ,
+                filter_column: a.filter_column,
                 filter_type: 'not_null',
-                                filter_elements: [{value1:['null']}],
+                filter_elements: [{ value1: ['null'] }],
                 filter_column_type: a.filter_column_type,
                 isGlobal: true,
                 applyToAll: false
@@ -1396,17 +1295,17 @@ export class DashboardController {
               b.value1 = b.value1.filter(c => c != 'null')
               filters.push(nullFilter);
             } else if (
-              ( b.value1.includes('null') || b.value1.includes('1900-01-01') )  
+              (b.value1.includes('null') || b.value1.includes('1900-01-01'))
               && b.value1.length == 1
-              && ( a.filter_type == '=' || a.filter_type == 'in' ||  a.filter_type == 'like' || a.filter_type == 'between') 
-              ){
-                a.filter_type='is_null';
+              && (a.filter_type == '=' || a.filter_type == 'in' || a.filter_type == 'like' || a.filter_type == 'between')
+            ) {
+              a.filter_type = 'is_null';
             } else if (
-              ( b.value1.includes('null') || b.value1.includes('1900-01-01') )  
+              (b.value1.includes('null') || b.value1.includes('1900-01-01'))
               && b.value1.length == 1
-              &&  ( a.filter_type == '!=' || a.filter_type == 'not_in' ||  a.filter_type == 'not_like') 
-            ){
-              a.filter_type='not_null';
+              && (a.filter_type == '!=' || a.filter_type == 'not_in' || a.filter_type == 'not_like')
+            ) {
+              a.filter_type = 'not_null';
             }
           }
         })
@@ -1415,8 +1314,8 @@ export class DashboardController {
       myQuery.filters = filters;
 
 
-      if(uniquesForbiddenTables.length > 0){
-        if(   myQuery.filters.filter( f=> uniquesForbiddenTables.includes( f.filter_table.split('.')[0]) ).length > 0 ){
+      if (uniquesForbiddenTables.length > 0) {
+        if (myQuery.filters.filter(f => uniquesForbiddenTables.includes(f.filter_table.split('.')[0])).length > 0) {
           console.log('you are not allowed to user this filters');
           return res.status(200).json([['noFilterAllowed'], [[]]]);
         }
@@ -1532,7 +1431,7 @@ export class DashboardController {
           } Panel:${req.body.dashboard.panel_id} DONE\n`
         )
 
-            
+
 
         return res.status(200).json(output)
 
@@ -1611,23 +1510,23 @@ export class DashboardController {
         return res.status(200).json("[['noDataAllowed'],[]]")
       }
 
-        const query = connection.BuildSqlQuery(
-          req.body.query,
-          dataModelObject,
-          req.user
-        )
+      const query = connection.BuildSqlQuery(
+        req.body.query,
+        dataModelObject,
+        req.user
+      )
 
-        /**If query is in format select foo from a, b queryBuilder returns null */
+      /**If query is in format select foo from a, b queryBuilder returns null */
       if (!query) {
-          return next(new HttpException(500,'Queries in format "select x from A, B" are not suported'));
+        return next(new HttpException(500, 'Queries in format "select x from A, B" are not suported'));
       }
 
        /* Edalitics Free  console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${formatDate(new Date())} `); */
       console.log(query)
       console.log('\n-------------------------------------------------------------------------------\n');
 
-        /**cached query */
-        let cacheEnabled =
+      /**cached query */
+      let cacheEnabled =
         dataModelObject.ds.metadata.cache_config &&
         dataModelObject.ds.metadata.cache_config.enabled
       const cachedQuery = cacheEnabled && !req.body.cleanCache
@@ -1635,85 +1534,85 @@ export class DashboardController {
         : null;
 
       if (!cachedQuery) {
-          connection.client = await connection.getclient()
-          const getResults = await connection.execSqlQuery(query);
-          let results = [];
-          const resultsRollback = [];
-          const oracleDataTypes = [];
-          let oracleEval: Boolean = true;
-          let labels: Array<string>
+        connection.client = await connection.getclient()
+        const getResults = await connection.execSqlQuery(query);
+        let results = [];
+        const resultsRollback = [];
+        const oracleDataTypes = [];
+        let oracleEval: Boolean = true;
+        let labels: Array<string>
         if (getResults.length > 0) {
-            labels = Object.keys(getResults[0]).map(i => i)
+          labels = Object.keys(getResults[0]).map(i => i)
         } else {
-            labels = ['NoData']
+          labels = ['NoData']
         }
-          // Normalize data
+        // Normalize data
 
-          for (let i = 0, n = getResults.length; i < n; i++) {
-            const r = getResults[i];
-            /** si es oracle  o alguns mysql haig de fer una merda per tornar els numeros normals. */
-            /** poso els resultats al resultat i faig una matriu de tipus de numero. també faig una copia de seguretat */
-            if (
-              dataModel.ds.connection.type == 'oracle' ||
-              dataModel.ds.connection.type == 'mysql'
-            ) {
-              const output = Object.keys(r).map(i => r[i])
-              resultsRollback.push([...output])
-              const tmpArray = []
+        for (let i = 0, n = getResults.length; i < n; i++) {
+          const r = getResults[i];
+          /** si es oracle  o alguns mysql haig de fer una merda per tornar els numeros normals. */
+          /** poso els resultats al resultat i faig una matriu de tipus de numero. també faig una copia de seguretat */
+          if (
+            dataModel.ds.connection.type == 'oracle' ||
+            dataModel.ds.connection.type == 'mysql'
+          ) {
+            const output = Object.keys(r).map(i => r[i])
+            resultsRollback.push([...output])
+            const tmpArray = []
 
             output.forEach((val, index) => {
 
               if (DashboardController.isNotNumeric(val)) {
                 tmpArray.push('NaN');
-                  if(val===null  ){
-                    output[index] =  eda_api_config.null_value;  // los valores nulos  les canvio per un espai en blanc pero que si no tinc problemes
-                    resultsRollback[i][index] =  eda_api_config.null_value; // los valores nulos  les canvio per un espai en blanc pero que si no tinc problemes
+                if (val === null) {
+                  output[index] = eda_api_config.null_value;  // los valores nulos  les canvio per un espai en blanc pero que si no tinc problemes
+                  resultsRollback[i][index] = eda_api_config.null_value; // los valores nulos  les canvio per un espai en blanc pero que si no tinc problemes
                 }
               } else {
-                  tmpArray.push('int')
-                  if(val !== null){
+                tmpArray.push('int')
+                if (val !== null) {
                   output[index] = parseFloat(val);
-                  }else{
-                    output[index] =  eda_api_config.null_value;
-                    resultsRollback[i][index] =  eda_api_config.null_value;
-                    //output[index] = null;
-                  }
-                  
+                } else {
+                  output[index] = eda_api_config.null_value;
+                  resultsRollback[i][index] = eda_api_config.null_value;
+                  //output[index] = null;
+                }
+
               }
-              })
-              oracleDataTypes.push(tmpArray)
-              results.push(output)
+            })
+            oracleDataTypes.push(tmpArray)
+            results.push(output)
           } else {
             const output = Object.keys(r).map(i => r[i]);
             output.forEach((val, index) => {
-                if(val===null  ){
-                  output[index] =  eda_api_config.null_value;// los valores nulos les canvio per un espai en blanc pero que si no tinc problemes
-                  resultsRollback[i][index] =   eda_api_config.null_value; // los valores nulos les canvio per un espai en blanc pero que si no tinc problemes
+              if (val === null) {
+                output[index] = eda_api_config.null_value;// los valores nulos les canvio per un espai en blanc pero que si no tinc problemes
+                resultsRollback[i][index] = eda_api_config.null_value; // los valores nulos les canvio per un espai en blanc pero que si no tinc problemes
               }
-              })
-              results.push(output)
-              resultsRollback.push(output)
+            })
+            results.push(output)
+            resultsRollback.push(output)
           }
         }
 
 
-          /** si tinc resultats de oracle evaluo la matriu de tipus de numero per verure si tinc enters i textos barrejats.
-           * miro cada  valor amb el seguent per baix de la matriu. */
+        /** si tinc resultats de oracle evaluo la matriu de tipus de numero per verure si tinc enters i textos barrejats.
+         * miro cada  valor amb el seguent per baix de la matriu. */
         if (oracleDataTypes.length > 1) {
           for (var i = 0; i < oracleDataTypes.length - 1; i++) {
             for (var j = 0; j < oracleDataTypes[i].length; j++) {
-              if(oracleDataTypes[j][0] === 'int' && oracleDataTypes[i][j] !== oracleDataTypes[i + 1][j]) {
+              if (oracleDataTypes[j][0] === 'int' && oracleDataTypes[i][j] !== oracleDataTypes[i + 1][j]) {
                 oracleEval = false;
               }
             }
           }
         }
 
-          /** si tinc numeros barrejats. Poso el rollback */
+        /** si tinc numeros barrejats. Poso el rollback */
         if (!oracleEval) {
           results = resultsRollback;
         } else {
-            // pongo a nulo los numeros nulos
+          // pongo a nulo los numeros nulos
           for (var i = 0; i < results.length; i++) {
             for (var j = 0; j < results[i].length; j++) {
               if (results[i][j] === eda_api_config.null_value) results[i][j] = null;
@@ -1726,22 +1625,22 @@ export class DashboardController {
           await CachedQueryService.storeQuery(req.body.model_id, query, output, 'SQL');
         }
 
-          console.log(
-            '\x1b[32m%s\x1b[0m',
-            `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
-            } Panel:${req.body.dashboard.panel_id} DONE\n`
-          )
-          //console.log('Query output');
-          //console.log(output);
-          return res.status(200).json(output)
+        console.log(
+          '\x1b[32m%s\x1b[0m',
+          `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
+          } Panel:${req.body.dashboard.panel_id} DONE\n`
+        )
+        //console.log('Query output');
+        //console.log(output);
+        return res.status(200).json(output)
       } else {
-          console.log('\x1b[36m%s\x1b[0m', '💾 Cached query 💾')
-          console.log(
-            '\x1b[32m%s\x1b[0m',
-            `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
-            } Panel:${req.body.dashboard.panel_id} DONE\n`
-          )
-          return res.status(200).json(cachedQuery.cachedQuery.response)
+        console.log('\x1b[36m%s\x1b[0m', '💾 Cached query 💾')
+        console.log(
+          '\x1b[32m%s\x1b[0m',
+          `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
+          } Panel:${req.body.dashboard.panel_id} DONE\n`
+        )
+        return res.status(200).json(cachedQuery.cachedQuery.response)
       }
 
     } catch (err) {
@@ -1761,7 +1660,7 @@ export class DashboardController {
       if (
         isNaN(val) || val.toString().indexOf('-') >= 0 || val.toString().indexOf('/') >= 0 ||
         val.toString().indexOf('|') >= 0 || val.toString().indexOf(':') >= 0 || val.toString().indexOf('T') >= 0 ||
-        val.toString().indexOf('Z') >= 0 || val.toString().indexOf('Z') >= 0 || val.toString().replace(/['"]+/g, '').length == 0 ) {
+        val.toString().indexOf('Z') >= 0 || val.toString().indexOf('Z') >= 0 || val.toString().replace(/['"]+/g, '').length == 0) {
         isNotNumeric = true;
       }
     } catch (e) {
@@ -1793,7 +1692,7 @@ export class DashboardController {
             break
           case 'users':
             permission.users.forEach(u => {
-              if ( !users.includes(u.toString()) )  users.push(u.toString());
+              if (!users.includes(u.toString())) users.push(u.toString());
             })
             break
           case 'groups':
@@ -1950,8 +1849,8 @@ export class DashboardController {
 
       const dashboards = await Dashboard.find({},
         'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt'
-      ).populate('user','name').exec()     
-      
+      ).populate('user', 'name').exec()
+
       let newName = originalDashboard.config.title + ' copy';
       while (dashboards.find(d => d.config.title === newName)) {
         newName += ' copy';
@@ -1964,7 +1863,7 @@ export class DashboardController {
           title: newName, // Append 'copy' to the title
           createdAt: new Date().toISOString(),
           modifiedAt: new Date().toISOString(),
-          author:  req.user.name
+          author: req.user.name
         },
         user: req.user._id, // Set the current user as the owner of the cloned dashboard
         group: originalDashboard.group // Maintain the same group permissions
@@ -1981,44 +1880,44 @@ export class DashboardController {
       next(new HttpException(500, 'Error cloning dashboard'));
     }
   }
-  
+
 
   static async cleanDashboardCache(req: Request, res: Response, next: NextFunction) {
-      let connectionProps: any;
-      if (req.body.dashboard?.connectionProperties !== undefined)
-        connectionProps = req.body.dashboard.connectionProperties;
+    let connectionProps: any;
+    if (req.body.dashboard?.connectionProperties !== undefined)
+      connectionProps = req.body.dashboard.connectionProperties;
 
-      const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
-      const dataModel = await connection.getDataSource(req.body.model_id);
+    const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
+    const dataModel = await connection.getDataSource(req.body.model_id);
 
-      if (!dataModel.ds.metadata.cache_config.enabled) {
-        return res.status(200).json({ ok: true });
-      }
+    if (!dataModel.ds.metadata.cache_config.enabled) {
+      return res.status(200).json({ ok: true });
+    }
 
-      /**Security check */
-      const allowed = DashboardController.securityCheck(dataModel, req.user)
-      if (!allowed) {
-        return next(
-          new HttpException(
-            500,
-            `Sorry, you are not allowed here, contact your administrator`
-          )
+    /**Security check */
+    const allowed = DashboardController.securityCheck(dataModel, req.user)
+    if (!allowed) {
+      return next(
+        new HttpException(
+          500,
+          `Sorry, you are not allowed here, contact your administrator`
         )
-      }
+      )
+    }
 
-      const dataModelObject = JSON.parse(JSON.stringify(dataModel))
+    const dataModelObject = JSON.parse(JSON.stringify(dataModel))
 
-      for (const query of req.body.queries) {
-        if (query.queryMode === 'SQL') {
-          let userSql = query.SQLexpression;
-          let hashedQuery = CachedQueryService.build(req.body.model_id, userSql, 'SQL');
-          await CachedQueryService.deleteQuery(hashedQuery);
-        } else {
-          let edaQuery = await connection.getQueryBuilded(query, dataModelObject, req.user);
-          let hashedQuery = CachedQueryService.build(req.body.model_id, edaQuery, 'EDA');
-          await CachedQueryService.deleteQuery(hashedQuery);
-        }
+    for (const query of req.body.queries) {
+      if (query.queryMode === 'SQL') {
+        let userSql = query.SQLexpression;
+        let hashedQuery = CachedQueryService.build(req.body.model_id, userSql, 'SQL');
+        await CachedQueryService.deleteQuery(hashedQuery);
+      } else {
+        let edaQuery = await connection.getQueryBuilded(query, dataModelObject, req.user);
+        let hashedQuery = CachedQueryService.build(req.body.model_id, edaQuery, 'EDA');
+        await CachedQueryService.deleteQuery(hashedQuery);
       }
+    }
 
     return res.status(200).json({ ok: true })
   }

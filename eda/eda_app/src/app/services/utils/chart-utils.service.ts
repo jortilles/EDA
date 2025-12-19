@@ -51,9 +51,9 @@ export class ChartUtilsService {
 
     public chartTypes: EdaChartType[] = [
         { label: $localize`:@@chartTypes1:Tabla de Datos`, value: 'table', subValue: 'table', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
-        { label: $localize`:@@chartTypesTableAnalized:Tabla DataQuality`, value: 'table', subValue: 'tableanalized', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes2:Tabla Cruzada`, value: 'crosstable', subValue: 'crosstable', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesTreeTable:Tabla Árbol`, value: 'treetable', subValue: 'treetable', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesTableAnalized:Tabla DataQuality`, value: 'table', subValue: 'tableanalized', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: 'KPI', value: 'kpi', subValue: 'kpi', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesKPIBAR:KPI + Gráfico de Barras`, value: 'kpibar', subValue: 'kpibar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesKPILINE:KPI + Gráfico de Lineas`, value: 'kpiline', subValue: 'kpiline', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
@@ -2301,6 +2301,25 @@ public generateChartColorsFromPalette(
         const b = bigint & 255;
         return [r, g, b];
       }
+
+
+
+      // Funcion para unificar todo tipo de inputs y que el output sea en HEX
+    public rgbOrRgbaToHex(color: string): string {
+        if(!color) return color;
+        // Si ya es hex, devolvemos tal cual
+        if (color.startsWith('#')) return color;
+
+        // Extraemos valores de RGB o RGBA
+        const match = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+
+        const r = parseInt(match[1], 10);
+        const g = parseInt(match[2], 10);
+        const b = parseInt(match[3], 10);
+
+        // Convertimos a hex
+        return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+    }
     
 
 }

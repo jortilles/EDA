@@ -12,9 +12,7 @@ import { EdaColumnPercentage } from './eda-columns/eda-column-percentage';
 import { EventEmitter } from '@angular/core';
 import { EdaColumnChart } from './eda-columns/eda-column-chart';
 import { ToastModule } from 'primeng/toast';
-import { Key } from 'protractor';
 import { values } from 'd3';
-import { title } from 'process';
 
 interface PivotTableSerieParams {
     mainCol: any, // Columna dinámica principal

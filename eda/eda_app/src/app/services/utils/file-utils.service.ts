@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { URL_SERVICES } from '../../config/config';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs/dist/exceljs.bare.min.js';
+import { saveAs } from 'file-saver';
 import * as _ from 'lodash';
+
 @Injectable()
 export class FileUtiles {
 
@@ -15,7 +17,7 @@ export class FileUtiles {
         return url;
     }
 
-    // Generador d'IDs
+    // Generador de IDs
     generateUUID() {
         let d = new Date().getTime();
         if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
@@ -28,49 +30,64 @@ export class FileUtiles {
         });
     }
 
-    exportToExcel(headerDisplay: string[], cols: any[], fileName: string) {
-        const workbook = XLSX.utils.book_new();
+    // Exportar a Excel y CSV (sin fs, compatible navegador)
+    async exportToExcel(
+        headerDisplay: string[],
+        cols: any[],
+        fileName: string
+    ) {
+        const workbook = new ExcelJS.Workbook();
 
-        const excel: any = [];
+        // Crear worksheet
+        const worksheet = workbook.addWorksheet('Sheet1');
 
-        const headers = [];
-
-        _.forEach(cols, c => {
-            _.forEach(Object.keys(c), o => {
-                if (!headers.find(e => e === o) || headers.length === 0) {
+        // Generar headers dinámicos desde cols
+        const headers: string[] = [];
+        _.forEach(cols, (c) => {
+            _.forEach(Object.keys(c), (o) => {
+                if (!headers.includes(o)) {
                     headers.push(o);
                 }
             });
         });
 
-        excel.push(headers);
+        // Sobrescribir headers con los que deseas mostrar
+        const displayHeaders = headerDisplay.length ? headerDisplay : headers;
+        worksheet.addRow(displayHeaders);
 
+        // Llenar filas con los datos
         _.forEach(cols, (col) => {
-            const item: any = [];
-
-            _.forEach(headers, h => {
+            const row: any[] = [];
+            _.forEach(headers, (h) => {
                 let text = _.get(col, h);
                 if (!_.isNil(text) && !_.isEmpty(text)) {
-                    text = text.trim();
+                    text = text.toString().trim();
                 }
-                item.push(text);
-
-                });
-            excel.push(item);
+                row.push(text);
+            });
+            worksheet.addRow(row);
         });
 
-        excel[0] = headerDisplay;
-
-        const worksheet = XLSX.utils.aoa_to_sheet(excel);
-
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-
-        XLSX.utils.sheet_to_csv(worksheet);
-
-        XLSX.writeFile(workbook, fileName + '.xlsx', {
-            bookType: 'xlsx',
+        // Generar XLSX como Blob y descargar
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         });
+        saveAs(blob, `${fileName}.xlsx`);
+
+        // Generar CSV (opcional)
+        const csvRows: string[] = [];
+        worksheet.eachRow((row) => {
+            const values: string[] = [];
+            if (Array.isArray(row.values)) {
+                for (let i = 1; i < row.values.length; i++) {
+                    const val = row.values[i];
+                    values.push(val !== undefined && val !== null ? String(val) : '');
+                }
+            }
+            csvRows.push(values.join(','));
+        });
+        const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        saveAs(csvBlob, `${fileName}.csv`);
     }
-
-
 }

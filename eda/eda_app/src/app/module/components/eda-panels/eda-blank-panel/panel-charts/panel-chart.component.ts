@@ -8,17 +8,13 @@ import { EdaTreeTable } from './../../../eda-treetable/eda-treetable.component';
 import { TreeMap } from './../../../eda-treemap/eda-treeMap';
 import { EdaD3Component } from './../../../eda-d3/eda-d3.component';
 import { TableConfig } from './chart-configuration-models/table-config';
-import {
-    Component, OnInit, Input, SimpleChanges,
-    OnChanges, ViewChild, ViewContainerRef, ComponentFactoryResolver,
-    OnDestroy, Output, EventEmitter, Self, ElementRef, NgZone
-} from '@angular/core';
-import { EdaKpiComponent } from '../../../eda-kpi/eda-kpi.component';
+import { Component, OnInit, Input, SimpleChanges, OnChanges, ViewChild, ViewContainerRef, ComponentFactoryResolver,
+    OnDestroy, Output, EventEmitter, Self, ElementRef,} from '@angular/core';
 import { EdadynamicTextComponent } from '../../../eda-dynamicText/eda-dynamicText.component';
 import { EdaTableComponent } from '../../../eda-table/eda-table.component';
 import { PanelChart } from './panel-chart';
 import { ChartUtilsService, StyleConfig, StyleProviderService } from '@eda/services/service.index';
-
+import { EdaKpiComponent } from '@eda/components/eda-kpi/eda-kpi.component';
 import { Column } from '@eda/models/model.index';
 import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
 import { EdaColumnDate } from '@eda/components/eda-table/eda-columns/eda-column-date';
@@ -42,14 +38,15 @@ import { TreeMapConfig } from './chart-configuration-models/treeMap-config';
 import { SunburstConfig } from './chart-configuration-models/sunburst-config';
 import { SankeyConfig } from './chart-configuration-models/sankey-config';
 import { ScatterConfig } from './chart-configuration-models/scatter-config';
-import { BubblechartConfig } from './chart-configuration-models/bubblechart.config';import { EdaChart } from '@eda/components/eda-chart/eda-chart';
-
-
+import { BubblechartConfig } from './chart-configuration-models/bubblechart.config';
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
 
 @Component({
+    standalone: true,
     selector: 'panel-chart',
     templateUrl: './panel-chart.component.html',
-    styleUrls: []
+    imports: [FormsModule, CommonModule]
 })
 
 export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
@@ -82,7 +79,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
 
     constructor(
-        public resolver: ComponentFactoryResolver,
         private chartUtils: ChartUtilsService,
         @Self() private ownRef: ElementRef,
         public styleProviderService: StyleProviderService) {
@@ -486,9 +482,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.entry.clear();
 
         const config = this.props.config.getConfig();
-        const factory = this.resolver.resolveComponentFactory(EdaTableComponent);
 
-        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef = this.entry.createComponent(EdaTableComponent);
         this.componentRef.instance.inject = this.initializeTable(type, config);
         this.componentRef.instance.inject.value = this.chartUtils.transformDataQueryForTable(this.props.data.labels, this.props.data.values);
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
@@ -544,8 +539,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     private createEdaKnobComponent(inject) {
         this.entry.clear();
-        const factory = this.resolver.resolveComponentFactory(EdaKnobComponent);
-        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef = this.entry.createComponent(EdaKnobComponent);
         this.componentRef.instance.inject = inject;
     }
 
@@ -579,8 +573,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     */
     private createEdaKpiComponent(inject: any) {
         this.entry.clear();
-        const factory = this.resolver.resolveComponentFactory(EdaKpiComponent);
-        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef = this.entry.createComponent(EdaKpiComponent);
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onNotify.subscribe(data => {
             const kpiConfig = new KpiConfig({ sufix: data.sufix, alertLimits: inject.alertLimits });
@@ -727,8 +720,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     */
     private createEdaKpiChartComponent(inject: any) {
         this.entry.clear();
-        const factory = this.resolver.resolveComponentFactory(EdaKpiComponent);
-        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef = this.entry.createComponent(EdaKpiComponent);
         this.componentRef.instance.inject = inject;
 
         this.componentRef.instance.onNotify.subscribe(data => {
@@ -737,10 +729,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         })
         this.configUpdated.emit(this.currentConfig);;
 
-        // this.componentRef = this.entry.createComponent(EdaChartComponent);
-        // this.componentRef.instance.inject = inject;
+        this.componentRef = this.entry.createComponent(EdaChartComponent);
+        this.componentRef.instance.inject = inject;
         // this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
-        // this.configUpdated.emit(this.currentConfig);;
+        this.configUpdated.emit(this.currentConfig);;
     }
 
 
@@ -762,8 +754,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      */
     private createEdadynamicTextComponent(inject: any) {
         this.entry.clear();
-        const factory = this.resolver.resolveComponentFactory(EdadynamicTextComponent);
-        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef = this.entry.createComponent(EdadynamicTextComponent);
         this.componentRef.instance.inject = inject;  
         this.componentRef.instance.onNotify.subscribe(data => {
             const dynamicTextConfig = new DynamicTextConfig(data.color);
@@ -836,20 +827,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     private createMapComponent(inject: EdaMap) {
         this.entry.clear();
-        const factory = this.resolver.resolveComponentFactory(EdaMapComponent);
-        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef = this.entry.createComponent(EdaMapComponent);
         this.componentRef.instance.inject = inject;
         //this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
-        
     }
     
     private createGeoJsonMapComponent(inject: EdaMap) {
         this.entry.clear();
-        const factory = this.resolver.resolveComponentFactory(EdaGeoJsonMapComponent);
-        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef = this.entry.createComponent(EdaGeoJsonMapComponent);
         this.componentRef.instance.inject = inject;
         // Revisar filtro en click 
-        //this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
+        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
     }
 
 
@@ -867,7 +855,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
         
         //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
-        this.props.config.setConfig(this.assignedColorsWork2(this.props.config.getConfig(), inject));
+        this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));
 
         
 
@@ -878,8 +866,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     private createParallelSetsComponent(inject: any) {
         this.entry.clear();
-        const factory = this.resolver.resolveComponentFactory(EdaD3Component);
-        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef = this.entry.createComponent(EdaD3Component);
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onClick.subscribe((event) => {
             this.onChartClick.emit({ ...event, query: this.props.query });
@@ -903,8 +890,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     private createFunnelComponent(inject: any) {
         this.entry.clear();
-        const factory = this.resolver.resolveComponentFactory(EdaFunnelComponent);
-        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef = this.entry.createComponent(EdaFunnelComponent);
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
 
@@ -932,8 +918,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     
     private createBubblechartComponent(inject: any) {
         this.entry.clear();
-        const factory = this.resolver.resolveComponentFactory(EdaBubblechartComponent);
-        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef = this.entry.createComponent(EdaBubblechartComponent);
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
 
@@ -958,8 +943,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     private createTreeMap(inject: any) {
         this.entry.clear();
-        const factory = this.resolver.resolveComponentFactory(EdaTreeMap);
-        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef = this.entry.createComponent(EdaTreeMap);
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
 
@@ -988,8 +972,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     private createScatter(inject: any) {
         this.entry.clear();
-        const factory = this.resolver.resolveComponentFactory(EdaScatter);
-        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef = this.entry.createComponent(EdaScatter);
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
 
@@ -1015,8 +998,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     private createSunburst(inject: any) {
         this.entry.clear();
-        const factory = this.resolver.resolveComponentFactory(EdaSunburstComponent);
-        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef = this.entry.createComponent(EdaSunburstComponent);
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
     }
@@ -1028,8 +1010,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     private createTreetable(inject: any) {
         this.entry.clear();
-        const factory = this.resolver.resolveComponentFactory(EdaTreeTable);
-        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef = this.entry.createComponent(EdaTreeTable);
         this.componentRef.instance.inject = inject; // inject como input al componente Treetable
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
     }
@@ -1066,7 +1047,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     public updateD3ChartColors(chartType: string) {
         const numberOfColors = this.componentRef.instance?.colors?.length || 1;
-        const newColors = this.chartUtils.generateRGBColorGradientScaleD3(numberOfColors, this.styleProviderService.ActualChartPalette['paleta']);
+        let newColors: Array<{ color: string }> = [];
+        if (this.styleProviderService.loadingFromPalette) {
+            // Genera colores en RGB o Hex segun la paleta
+            newColors = this.chartUtils.generateRGBColorGradientScaleD3(numberOfColors, this.styleProviderService.ActualChartPalette['paleta'])
+                .map(({ color }) => ({ color: this.chartUtils.rgbOrRgbaToHex(color) }));
+        } else {
+            return; // No hay que modificar nada
+        }
         switch (chartType) {
             case 'treeMap':
                 this.props.config.setConfig(new TreeMapConfig(newColors.map(({ color }) => color).map(color => this.chartUtils.hex2rgbD3(color))));
@@ -1090,7 +1078,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 break;
             default:
                 break;
-        }        
+        }
     }
 
     /**
@@ -1149,34 +1137,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 inject.colors[index] = inject.assignedColors[mapValues.findIndex(value => value === injectValueString)]['color'];
             }
         });
-        config = inject;
-        return config;
-    }
-
-
-    private assignedColorsWork2(config, inject) { 
-        inject.assignedColors = [];
-        const usedColors: { [key: string]: string } = {}; // mapa value → color
-        let colorIndex = 0; // solo avanza cuando aparece un nuevo valor
-
-        inject.data.values.forEach((injectValue) => {
-            // Primer string encontrado (valor del filtro)
-            const injectValueString = injectValue.find(value => typeof value === 'string');
-
-            if (!usedColors[injectValueString]) {
-                // si es la primera vez que aparece, asignar color
-                usedColors[injectValueString] = inject.colors[colorIndex] || 
-                    `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
-                colorIndex++; // avanzamos el índice SOLO para nuevos valores
-            }
-
-            // añadimos al array el valor con su color ya definido
-            inject.assignedColors.push({
-                value: injectValueString,
-                color: usedColors[injectValueString]
-            });
-        });
-
         config = inject;
         return config;
     }

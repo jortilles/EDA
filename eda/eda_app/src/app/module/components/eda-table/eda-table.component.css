@@ -97,14 +97,3 @@ th{
     color: inherit;
 }
 
-/* Estilo del panel overlay que aparece al abrir el dropdown */
-::ng-deep .p-dropdown-panel {
-    background-color: inherit; 
-}
-
-/* Items dentro del panel */
-::ng-deep .p-dropdown-panel .p-dropdown-item {
-    background-color: inherit;
-}
-
-

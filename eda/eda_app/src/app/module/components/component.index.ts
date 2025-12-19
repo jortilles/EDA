@@ -17,7 +17,6 @@ export * from './eda-d3-bubblechart/eda-bubblechart.component';
  // export * from './eda-d3/eda-d3.component';
 
 // Eda KPI
-export { EdaKpiComponent } from './eda-kpi/eda-kpi.component';
 
 // Eda dynamicText
 export { EdadynamicTextComponent } from './eda-dynamicText/eda-dynamicText.component';
@@ -32,6 +31,7 @@ export { EdaD3Component } from './eda-d3/eda-d3.component';
 // Eda Panels
 export { ColumnDialogComponent } from './eda-panels/eda-blank-panel/column-dialog/column-dialog.component';
 export { FilterDialogComponent } from './eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component';
+export { GlobalFilterDialogComponent } from '../pages/dashboard/global-filter-dialog/global-filter-dialog.component';
 export { ChartDialogComponent } from './eda-panels/eda-blank-panel/chart-dialog/chart-dialog.component';
 export { TableDialogComponent } from './eda-panels/eda-blank-panel/table-dialog/table-dialog.component';
 export { TableGradientDialogComponent } from './eda-panels/eda-blank-panel/table-dialog/gradient-dialog/gradient-dialog.component';
@@ -54,7 +54,6 @@ export { LinkDashboardsComponent } from './eda-panels/eda-blank-panel/link-dashb
 export { EdaTreeMap} from './eda-treemap/eda-treemap.component';
 export { EdaKnobComponent } from './eda-knob/eda-knob.component';
 export { KnobDialogComponent } from './eda-panels/eda-blank-panel/knob-dialog/knob-dialog.component';
-export { Knob } from './eda-knob/primengKnob/knob';
 export { FunnelDialog } from './eda-panels/eda-blank-panel/funnel-dialog/funnel-dialog.component';
 export { TreeTableDialogComponent } from './eda-panels/eda-blank-panel/tree-table-dialog/tree-table-dialog.component';
 export { BubblechartDialog } from './eda-panels/eda-blank-panel/bubblechart-dialog/bubblechart-dialog.component';

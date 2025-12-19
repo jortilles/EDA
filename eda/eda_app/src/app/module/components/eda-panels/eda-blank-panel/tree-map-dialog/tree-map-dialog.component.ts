@@ -1,17 +1,22 @@
-import { Component, ViewChild, AfterViewChecked } from '@angular/core';
+import { Component, ViewChild, AfterViewChecked, OnInit, Input } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { TreeMapConfig } from '../panel-charts/chart-configuration-models/treeMap-config';
 import { StyleProviderService,ChartUtilsService } from '@eda/services/service.index';
-
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { ColorPickerModule } from 'primeng/colorpicker';
 @Component({
+  standalone: true,
   selector: 'app-tree-map-dialog',
-  templateUrl: './tree-map-dialog.component.html'
+  templateUrl: './tree-map-dialog.component.html',
+  imports: [FormsModule, CommonModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule],
 })
 
-export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked {
-
+export class TreeMapDialog implements OnInit {
+  @Input() controller: any;
   @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
 
   public dialog: EdaDialog;
@@ -22,18 +27,8 @@ export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked
   public display: boolean = false;
   public selectedPalette: { name: string; paleta: any } | null = null;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
-
-  constructor(private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) {
-
-    super();
-
-    this.dialog = new EdaDialog({
-      show: () => this.onShow(),
-      hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
-    });
-    this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
-  }
+  public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
+  constructor(private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) {}
   ngAfterViewChecked(): void {
     if (!this.colors && this.myPanelChartComponent?.componentRef) {
       //To avoid "Expression has changed after it was checked" warning
@@ -56,7 +51,7 @@ export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked
   }
 
 
-  onShow(): void {
+  ngOnInit(): void {
     this.panelChartConfig = this.controller.params.panelChart;
     this.display = true;
   }

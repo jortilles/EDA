@@ -4,3 +4,4 @@ export const GOOGLE_CLIENT_ID = 'xxxxxxxxxxxxxx';
 export const MICROSOFT_ID = 'xxxxxxxxxxxxxx';
 export const MICROSOFT_AUTHORITY = 'xxxxxxxxxxxxxx';
 export const MICROSOFT_REDIRECT_URI = 'xxxxxxxxxxxxxx';
+export const URL_LOGOUT_SAML = 'xxxxxxxxxxxxxx';

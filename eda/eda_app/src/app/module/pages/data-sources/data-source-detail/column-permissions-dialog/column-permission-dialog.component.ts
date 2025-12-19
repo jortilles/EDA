@@ -1,13 +1,15 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { DataSourceService, QueryBuilderService, UserService, GroupService, QueryParams } from "@eda/services/service.index";
-import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
-
-
-
+import { EdaDialog, EdaDialogCloseEvent, EdaDialog2Component } from "@eda/shared/components/shared-components.index";
+import { FormsModule } from "@angular/forms";
+import { PrimengModule } from "app/core/primeng.module";
+import { MultiSelectModule } from "primeng/multiselect";
 
 @Component({
+    standalone: true,
     selector: 'app-column-permission-dialog',
-    templateUrl: './column-permission-dialog.component.html'
+    templateUrl: './column-permission-dialog.component.html',
+    imports: [EdaDialog2Component,FormsModule, PrimengModule, MultiSelectModule]
 })
 
 export class ColumnPermissionDialogComponent implements OnInit {
@@ -127,7 +129,6 @@ export class ColumnPermissionDialogComponent implements OnInit {
     this.type = type;
   }
 
-
   resetValues(){
         if(this.type === 'users') this.selectedRoles = [];
         else this.selectedUsers = [];
@@ -139,7 +140,6 @@ export class ColumnPermissionDialogComponent implements OnInit {
             this.dynamic = false;
         }
     }
-
 
     syncronizeAllNoneValuesAll(){
         if(this.all === true ){

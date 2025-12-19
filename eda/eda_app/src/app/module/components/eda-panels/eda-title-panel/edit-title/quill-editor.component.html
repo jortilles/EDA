@@ -1,5 +1,5 @@
-<eda-dialog [inject]="dialog">
-	<div body class="grid">
+<eda-dialog2 width="80vw" height="70vh" [header]="header" [overflow]="'auto'" (apply)="saveChartConfig()" (close)="closeChartConfig()">
+	<div content class="grid">
 		<div class="col-12">
 
 			<p-editor #Editor [(ngModel)]="title" [style]="{'height':'100%'}">
@@ -63,8 +63,6 @@
 						<button class="ql-image"></button>
 						<button class="ql-video"></button>
 						<button id="qlUrlImage">Url</button>
-						<!-- < class="ql-video"></> -->
-						<!-- <button class="ql-formula"></button> -->
 					</span>
 					<span class="ql-formats">
 						<button class="ql-clean"></button>
@@ -73,16 +71,4 @@
 			</p-editor>
 		</div>
 	</div>
-
-  <div footer>
-    <div class="flex justify-end p-2 border-t gap-1.5">
-      <button  class="cancel-button" (click)="closeChartConfig()">
-        <i class="fa fa-times"></i>
-        <span i18n="@@cancelarBtn">Cancelar</span>
-      </button>
-      <button class="confirm-button" (click)="saveChartConfig()">
-        <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
-      </button>
-    </div>
-  </div>
-</eda-dialog>
+</eda-dialog2>

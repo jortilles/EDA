@@ -4,17 +4,6 @@
   <div content class="p-2 space-y-6">
     <!-- Tabs -->
     <div class="grid w-full grid-cols-3 gap-3">
-      <!-- <button 
-            (click)="setDashboardTab('export')" 
-            class="flex items-center justify-center px-3 py-2 font-semibold rounded-l-md transition-colors"
-            [class.bg-[#00BFB3]]="dashboardTab() === 'export'"
-            [class.text-white]="dashboardTab() === 'export'"
-            [class.bg-gray-100]="dashboardTab() !== 'export'"
-            [class.dark:bg-gray-800]="dashboardTab() !== 'export'"
-          >
-            <eda-icon name="export" class="mr-2"></eda-icon>
-            Exportar
-          </button> -->
       <button 
         [ngClass]="{'bg-[#00BFB3] text-white': activeTab === 'properties', 'bg-gray-100': activeTab !== 'properties'}"
         class="px-3 py-2 font-semibold rounded-md transition-colors"
@@ -31,7 +20,7 @@
         [ngClass]="{'bg-[#00BFB3] text-white': activeTab === 'available', 'bg-gray-100': activeTab !== 'available'}"
         class="px-3 py-2 font-semibold rounded-md transition-colors"
         (click)="setActiveTab('available')">
-        <span i18n="@@avaliableMaps">Mapas disponibles</span>
+        <span i18n="@@availableMaps">Mapas disponibles</span>
       </button>
     </div>
 
@@ -78,7 +67,9 @@
                 formControlName="dataModelField"
                 class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]">
                 <option value="" disabled selected i18n="@@selectField">Selecciona un campo</option>
-                <option *ngFor="let field of fields" [value]="field.value">{{ field.label }}</option>
+                @for(field of fields; track field.value){
+                  <option>{{ field.label }}</option>
+                }
               </select>
             </div>
 
@@ -153,7 +144,9 @@
                 class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
                 (ngModelChange)="getColumns()">
                 <option value="" disabled selected i18n="@@selectTable">Selecciona una tabla</option>
-                <option *ngFor="let table of tables" [value]="table.value">{{ table.label }}</option>
+                @for(table of tables; track $index){
+                  <option>{{ table.label }}</option>
+                }
               </select>
             </div>
 
@@ -167,7 +160,9 @@
                 formControlName="selectedColumn"
                 class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]">
                 <option value="" disabled selected i18n="@@selectColumn">Selecciona una columna</option>
-                <option *ngFor="let column of columns" [value]="column.value">{{ column.label }}</option>
+                @for(column of columns; track column.value){
+                  <option>{{ column.label }}</option>
+                }
               </select>
             </div>
 
@@ -183,59 +178,50 @@
         </div>
 
         <!-- Linked Columns List -->
-        <div *ngIf="linkedColumns.length > 0" class="bg-white rounded-lg border p-4">
-          <div class="space-y-2">
-            <div 
-              *ngFor="let link of linkedColumns" 
-              class="flex items-center justify-between p-3 border rounded-md bg-gray-50">
-              <div class="flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link text-red-500">
-                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-                </svg>
-                <span class="text-sm text-gray-700">{{ link.table }} : {{ link.col.column_name }}</span>
-              </div>
-              <button 
-                type="button"
-                (click)="deleteLink(link)"
-                class="p-1 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-md">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x">
-                  <path d="M18 6 6 18"/>
-                  <path d="m6 6 12 12"/>
-                </svg>
-              </button>
+        @if(linkedColumns.length > 0){
+          <div class="bg-white rounded-lg border p-4">
+            <div class="space-y-2">
+              @for(link of linkedColumns; track $index){
+                <div class="flex items-center justify-between p-3 border rounded-md bg-gray-50">
+                  <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link text-red-500">
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                    </svg>
+                    <span class="text-sm text-gray-700">{{ link.table }} : {{ link.col.column_name }}</span>
+                  </div>
+                  <button 
+                    type="button"
+                    (click)="deleteLink(link)"
+                    class="p-1 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x">
+                      <path d="M18 6 6 18"/>
+                      <path d="m6 6 12 12"/>
+                    </svg>
+                  </button>
+                </div>
+              }
             </div>
           </div>
-          <!-- <div class="space-y-6">
-            <ul>
-              <div id="box_wrapper">
-                <li *ngFor="let item of linkedColumns">
-                  <i class="fa fa-close" style="color: #c0555e;" (click)="deleteLink(item)"></i>&nbsp;&nbsp;
-                  {{item.table}}
-                  :
-                  {{item.col.column_name}}
-                </li>
-              </div>
-            </ul>
-          </div> -->
-        </div>
+        }
       </div>
 
       <!-- Available Maps Tab -->
       <div [hidden]="activeTab !== 'available'" class="space-y-6">
         <div class="bg-white rounded-lg border p-4">
-          <div *ngIf="serverMaps.length > 0" class="mb-3">
-            <h3 class="text-lg font-medium flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-              </svg>
-              <span i18n="@@avaliableMaps" i18n="@@mapsAvailable">Mapas disponibles</span>
-            </h3>
-            <p class=" text-gray-500" i18n="@@mapsAvailableDescription">Mapas que están actualmente configurados y disponibles para su uso</p>
-          </div>
+          @if(serverMaps.length > 0){            
+            <div class="mb-3">
+              <h3 class="text-lg font-medium flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+                <span i18n="@@availableMaps" i18n="@@mapsAvailable">Mapas disponibles</span>
+              </h3>
+              <p class=" text-gray-500" i18n="@@mapsAvailableDescription">Mapas que están actualmente configurados y disponibles para su uso</p>
+            </div>
+          }
 
-          <!-- @for (attr of columns; track attr.name) { -->
           @for (map of serverMaps; track map) {
             <div class="flex flex-col gap-2">
               <div class="flex items-center justify-between p-3 border rounded-md bg-slate-50">
@@ -257,22 +243,19 @@
                   </svg>
                 </button>
               </div>
-
-              <!-- TODO Preview -->
-              <!-- <div class="h-[200px] mt-4 bg-slate-100 rounded-md flex items-center justify-center border border-dashed">
-                <p class=" text-gray-500">Map preview would appear here</p>
-              </div> -->
             </div>
           }
 
-          <div *ngIf="serverMaps.length === 0" class="flex flex-col items-center justify-center py-8 text-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe text-gray-300 mb-2">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-            </svg>
-            <p class="text-gray-500" i18n="@@noMapsAvailable">No hay mapas disponibles</p>
-            <p class=" text-gray-400 mt-1" i18n="@@noMapsAvailableDescription">Configurar un mapa en la pestaña Propiedades del mapa</p>
-          </div>
+          @if(serverMaps.length === 0){
+            <div class="flex flex-col items-center justify-center py-8 text-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe text-gray-300 mb-2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+              </svg>
+              <p class="text-gray-500" i18n="@@noMapsAvailable">No hay mapas disponibles</p>
+              <p class=" text-gray-400 mt-1" i18n="@@noMapsAvailableDescription">Configurar un mapa en la pestaña Propiedades del mapa</p>
+            </div>
+          }
         </div>
       </div>
     </form>

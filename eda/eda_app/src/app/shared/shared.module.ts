@@ -10,30 +10,25 @@ import { FocusOnShowDirective } from './directives/autofocus.directive';
 // Components
 import {
     EdaPageDialogComponent,
-    EdaDialogComponent,
+    // EdaDialogComponent,
     EdaDialog2Component,
     NavbarComponent,
-    EdaContextMenuComponent,
+    // EdaContextMenuComponent,
     EdaInputComponent,
-    EdaDatePickerComponent,
     EdaFieldComponent
 } from './components/shared-components.index';
 import { PrimengModule } from 'app/core/primeng.module';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
-import { GlobalFilterDialogComponent } from 'app/module/pages/dashboard/global-filter-dialog/global-filter-dialog.component';
 import { EdaListComponent } from './components/eda-list/eda-list.component';
 
 @NgModule({
     declarations: [
         EdaPageDialogComponent,
         NavbarComponent,
-        EdaDialogComponent,
-        EdaDialog2Component,
-        EdaContextMenuComponent,
+        // EdaDialogComponent,
+        // EdaContextMenuComponent,
         EdaInputComponent,
-        EdaDatePickerComponent,
         EdaFieldComponent,
-        GlobalFilterDialogComponent,
     ],
     imports: [
         PrimengModule,
@@ -46,16 +41,13 @@ import { EdaListComponent } from './components/eda-list/eda-list.component';
     exports: [
         EdaPageDialogComponent,
         NavbarComponent,
-        EdaDialogComponent,
+        // EdaDialogComponent,
         PipesModule,
-        EdaDialogComponent,
-        EdaDialog2Component,
-        EdaContextMenuComponent,
+        // EdaDialogComponent,
+        // EdaContextMenuComponent,
         EdaInputComponent,
         FocusOnShowDirective,
-        EdaDatePickerComponent,
         EdaFieldComponent,
-        GlobalFilterDialogComponent,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

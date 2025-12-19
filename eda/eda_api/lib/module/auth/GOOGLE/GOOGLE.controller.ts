@@ -52,11 +52,11 @@ export class GoogleController {
                         role: ['135792467811111111111115'],  // Edalitics FREE role por defecto
                         creation_date: new Date()
                     });
-                    userToSave.save(async (err, userSaved) => {
-                        if(err) return next(new HttpException(400, 'Some error ocurred while creating the User'));
+                    try {
+                        const userSaved = await userToSave.save();
                         Object.assign(user, userSaved);
                         user.password = ':)';
-                        token = await jwt.sign({user}, SEED, {expiresIn: 14400})
+                        token = await jwt.sign({ user }, SEED, { expiresIn: 14400 }) // 4 horas
                         return res.status(200).json({ user, token: token, id: user._id });
                     });
                     await Group.updateOne({ _id: '135792467811111111111115' }, { $addToSet: { users: userToSave._id } }).then(function () { 
@@ -68,14 +68,17 @@ export class GoogleController {
                     // Si el usuario ya esta registrado, se actualiza algunos datos.
                     userEda.name = name;
                     userEda.email = email;
-                    userEda.password = bcrypt.hashSync(jti, 10);  
-                    userEda.save(async (err, userSaved) => {
-                        if(err) return next(new HttpException(400, 'Some error ocurred while creating the User'));
+                    userEda.password = bcrypt.hashSync(jti, 10); // validar con Juanjo
+                    
+                    try {
+                        const userSaved = await userEda.save();
                         Object.assign(user, userSaved);
                         user.password = ':)';
                         token = await jwt.sign({ user }, SEED, { expiresIn: 14400 });
                         return res.status(200).json({ user, token: token, id: user._id });
-                    });
+                    } catch (error) {
+                        return (new HttpException(400, 'Some error ocurred while creating the User'));
+                    }
                 }
             } else {
                 return next(new HttpException(400, 'Usuario no verificado por Google'));

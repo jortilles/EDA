@@ -1,13 +1,16 @@
 import { ViewChild, Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { UploadFileService } from '@eda/services/utils/upload-file.service';
 import { AlertService } from '@eda/services/service.index';
+import { ProgressBarModule } from 'primeng/progressbar';
 
 
 
 @Component({
+  standalone: true,
   selector: 'app-uploadFile',
   templateUrl: './upload-fle.component.html',
-  styleUrls: ['./upload-file.component.css']
+  styleUrls: ['./upload-file.component.css'],
+  imports: [ProgressBarModule]
 })
 export class UploadFileComponent implements OnInit {
 

@@ -21,6 +21,8 @@ const bcrypt = require('bcryptjs');
 const SEED = require('../../../../config/seed').SEED;
 const ORCL = require('../../../../config/bbdd_orcl').ORCL;
 const SAMLconfig = require('../../../../config/SAMLconfig');
+const util = require("util");
+
 
 // Requerido para la conexión de la base de datos Oracle
 const oracledb = require("oracledb");
@@ -105,6 +107,12 @@ export class SAML_ORCL_Controller {
             const roles = await getRoles(email);
             let roles_ids = []; // Variable de ids del usuario que esta haciendo login
 
+            // Acceso al login, si el usuario posee un rol como mínimo en la base de datos de oracle.
+            if(roles.length === 0 ){ 
+                console.error('No se encontraron roles para el usuario ');
+                return next(new HttpException(400, 'No se encontraron roles para el usuario'));
+            }
+
             await Promise.all(
                 roles.map(async (item: any) => {
                     // Normaliza el nombre del rol
@@ -149,6 +157,7 @@ export class SAML_ORCL_Controller {
                     password: bcrypt.hashSync('135792467811111111111115', 10),
                     img: picture,
                     role: roles_ids,
+                    creation_date: new Date()
                 });
 
                 const userSaved = await userToSave.save();
@@ -362,13 +371,18 @@ function insertServerLog(req: Request, level: string, action: string, userMail: 
 }
 
 async function getRoles(email) {
+    if (!util.isDate) {
+        util.isDate = function (obj: any) {
+            return Object.prototype.toString.call(obj) === '[object Date]';
+        };
+    }
     let connection;
 
     try {
         connection = await oracledb.getConnection({
-            user: ORCL.bbdd_host,
+            user: ORCL.bbdd_user,
             password: ORCL.bbdd_pass,
-            connectString:  `${ORCL.bbdd_user}:${ORCL.bbdd_port}/${ORCL.bbdd_bbdd}`
+            connectString:  `${ORCL.bbdd_host}:${ORCL.bbdd_port}/${ORCL.bbdd_bbdd}`
         })
 
         const result = await connection.execute(

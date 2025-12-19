@@ -1,5 +1,5 @@
-import { EdaTable, EdaColumnText, EdaColumnContextMenu } from '@eda/components/component.index';
-import { Component, OnInit, OnDestroy, EventEmitter, Output } from '@angular/core';
+import { EdaTable, EdaColumnText, EdaColumnContextMenu, EdaTableComponent } from '@eda/components/component.index';
+import { Component, OnInit, OnDestroy, EventEmitter, Output, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { UntypedFormGroup } from '@angular/forms';
 import { MenuItem, SelectItem, TreeNode } from 'primeng/api';
@@ -11,14 +11,61 @@ import { EdaColumnFunction } from '@eda/components/eda-table/eda-columns/eda-col
 import * as _ from 'lodash';
 import { EdaColumnEditable } from '@eda/components/eda-table/eda-columns/eda-column-editable';
 import Swal from 'sweetalert2';
+import { PrimengModule } from 'app/core/primeng.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+
+//standalone pruebas
+import { TableEditRelationsDialogComponent } from './table-edit-relations-dialog/table-edit-relations-dialog.component';
+import { ColumnValueListDialogComponent } from './column-value-list-dialog/column-value-list-dialog.component';
+import { TableRelationsDialogComponent } from './table-relations-dialog/table-relations-dialog.component';
+import { ColumnPermissionDialogComponent } from './column-permissions-dialog/column-permission-dialog.component';
+import { CalculatedColumnDialogComponent } from './calculatedColumn-dialog/calculated-column-dialog.component';
+import { MapDialogComponent } from './mapsDialog/maps-dialog.component';
+import { ModelPermissionDialogComponent } from './model-permissions-dialog/model-permission-dialog.component';
+import { CacheDialogComponent } from './cache-dialog/cache-dialog.component';
+import { SecurityDialogComponent } from './security-dialog/security-dialog.component';
+import { AddCsvComponent } from '../data-source-list/addCSV/add-csv.component';
+import { TablePermissionDialogComponent } from './table-permissions-dialog/table-permission-dialog.component';
+import { ViewDialogEditionComponent } from './view-dialog-edition/view-dialog-edition.component';
+import { ViewDialogComponent } from './view-dialog/view-dialog.component';
+import { AddTagComponent } from '../data-source-list/add-tag/add-tag.component';
+
+// Angular Modules
+const ANGULAR_MODULES = [
+  FormsModule,
+  ReactiveFormsModule,
+  PrimengModule
+];
+
+// Standalone Components
+const STANDALONE_COMPONENTS = [  
+  TableEditRelationsDialogComponent,
+  ColumnValueListDialogComponent,
+  TableRelationsDialogComponent,
+  ColumnPermissionDialogComponent,
+  CalculatedColumnDialogComponent,
+  MapDialogComponent,
+  ModelPermissionDialogComponent,
+  CacheDialogComponent,
+  TablePermissionDialogComponent,
+  AddCsvComponent,
+  SecurityDialogComponent,
+  ViewDialogComponent,
+  ViewDialogEditionComponent,
+  AddTagComponent,
+  EdaTableComponent
+];
 
 @Component({
-    selector: 'app-data-source-detail',
-    templateUrl: './data-source-detail.component.html',
-    styleUrls: ['../data-source-list/data-source-list.component.css']
-})
+  standalone: true,
+  selector: 'app-data-source-detail',
+  templateUrl: './data-source-detail.component.html',
+  styleUrls: ['../data-source-list/data-source-list.component.css'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 
+  imports: [ANGULAR_MODULES, STANDALONE_COMPONENTS]
+})
 export class DataSourceDetailComponent implements OnInit, OnDestroy {
     @Output() onTableCreated: EventEmitter<any> = new EventEmitter();
 
@@ -78,6 +125,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public utilities: string = $localize`:@@utilities:Utilidades`;
     public hideTablesString: string = $localize`:@@hideTables:Ocultar todas las tablas`;
     public hideColumnsString: string = $localize`:@@hideColumns:Ocultar todas las columnas`;
+    public deleteViewString: string = $localize`:@@inputBorrarVista:Borrar vista`;
     public hideAllRelationsString: string = $localize`:@@hideAllRelations: Ocultar todas las relaciones`;
     public addCacheConfig:string = $localize`:@@addCacheConfig:Configurar Caché`;
     public viewsecurity:string = $localize`:@@viewsecurity:Ver configuración de seguridad`;
@@ -85,7 +133,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public addView:string = $localize`:@@addView:Añadir vista`;
     public addTagDataSource:string = $localize`:@@addTagDataSource: Añadir Tag`;
     public addCSV:string = $localize`:@@addCSV:Añadir tabla desde csv`;
-    public addRelation:string = $localize`:@@addRelationButton:Añadir relación`;
+    public addRelation:string = $localize`:@@addRelation:Añadir relación`;
     public addCalculatedCol:string = $localize`:@@addCalculatedCol:Añadir columna  calculada`;
     public addPermission:string = $localize`:@@addPermission:Añadir permiso`;
     public addValueList:string = $localize`:@@addValueList:Añadir lista de valores posibles`;
@@ -134,7 +182,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         { label: 'SnowFlake', value: 'snowflake'},
         { label: 'JsonWebService', value: 'jsonwebservice'},
         { label: 'Mongo', value: 'mongodb'},
-        { label: 'Excel', value: 'excel'}
+        { label: 'Excel', value: 'excel'},
+        { label: 'Csv', value: 'csv'}
     ];
     public selectedTipoBD: SelectItem;
 
@@ -291,7 +340,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             cols: [
                 new EdaColumnText({ field: 'origin', header: $localize`:@@originRel:Origen` }),
                 new EdaColumnText({ field: 'dest', header: $localize`:@@targetRel:Destino` }),
-                new EdaColumnText({ field: 'name', header: $localize`:@@nameRel:Nombre` }),
+                new EdaColumnText({ field: 'name', header: $localize`:@@name:Nombre` }),
                 new EdaColumnEditable({ field: 'modify', click: (relation) => this.updateRelation(relation._id)}),
                 new EdaColumnFunction({ field: 'delete', click: (relation) => this.deleteRelation(relation._id)}),
             ]
@@ -856,7 +905,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: $localize`:@@ContinueTablaQuality:Continuar`,
-            cancelButtonText: $localize`:@@CancelTablaQuality:Cancelar`,
+            cancelButtonText: $localize`:@@cancelarBtn:Cancelar`,
         }).then( (borrado) => {
             if(borrado.value){
                 // Encontrando la vista a editar:

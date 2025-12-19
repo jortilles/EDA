@@ -95,7 +95,7 @@ export const QueryUtils = {
   },
   
   transformAnalizedQueryData: (ebp: EdaBlankPanelComponent, data: any) => {
-    const labels = [$localize`:@@atributoLabel:Atributo`, $localize`:@@atributoConsulta:Consulta`, $localize`:@@atributoValor:Valor`];
+    const labels = [$localize`:@@atributoLabel:Atributo`, $localize`:@@atributoConsulta:Consulta`, $localize`:@@value:Valor`];
     const values = [];
 
     const i18n = {
@@ -110,7 +110,7 @@ export const QueryUtils = {
         "max": $localize`:@@maxLabel:Valor máximo`,
         "min": $localize`:@@minLabel:Valor mínimo`,
         "mode": $localize`:@@moda_countsLabel:Moda`,
-        "avg": $localize`:@@avgLabel:Media`,
+        "avg": $localize`:@@aggTmean:Media`,
         "median": $localize`:@@medianLabel:Mediana`,
         "median_count_bymonth": $localize`:@@median_count_bymonthLabel:Mediana por mes`,
         "max_bymonth": $localize`:@@max_bymonthLabel:Máximos por mes`,
@@ -315,7 +315,7 @@ export const QueryUtils = {
     } else {
 
       // Aparatado que inicia el initAxes en caso el ordering este vacio en la config
-      if(ebp.chartForm.controls.chart.value!==null && ebp.chartForm.controls.chart.value.subValue  == 'crosstable') {
+      if(ebp.chartForm.controls.chart.value!==null && ebp.chartForm.controls.chart.value?.subValue  == 'crosstable') {
         // Verifica un nuevo cambio en los Axes desde que se inicia la edición de la tabla cruzada
         if(!ebp.newAxesChanged && (!ebp.chartTypes.filter( grafico => grafico.subValue==='crosstable' )[0].ngIf || !ebp.chartTypes.filter( grafico => grafico.subValue==='table' )[0].ngIf)) {
 
@@ -386,6 +386,7 @@ export const QueryUtils = {
       queryLimit: ebp.queryLimit,
       joinType: ebp.joinType,
       rootTable: ebp.rootTable?.table_name,
+      groupByEnabled: ebp.groupByEnabled,
       connectionProperties: ebp.connectionProperties
     };
     return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode);

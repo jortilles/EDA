@@ -2,7 +2,9 @@ import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit, Output,
 import * as d3 from 'd3';
 import { EdaFunnel } from './eda-funnel';
 import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
-import * as dataUtils from '../../../services/utils/transform-data-utils';
+
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
 
 interface FunnelData {
   step: number;
@@ -12,9 +14,11 @@ interface FunnelData {
 
 
 @Component({
+  standalone: true,
   selector: 'eda-funnel',
   templateUrl: './eda-funnel.component.html',
-  styleUrls: []
+  styleUrls: [],
+  imports: [FormsModule, CommonModule]
 })
 
 export class EdaFunnelComponent implements AfterViewInit, OnInit {
@@ -185,6 +189,7 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
       .datum(data2)
       .attr('fill', `url(#${this.id}_temperature-gradient)`)
       .attr('d', area);
+
     svg.append('path')
       .datum(data2)
       .attr('fill',  `url(#${this.id}_temperature-gradient)`)
@@ -213,9 +218,10 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
       .attr('y', 50)
       .text(({ label }) => label)
       .attr('style', `
-          font-family: ${fontPanel};
-          font-size: 14px;
-      `)
+        font-family: ${fontPanel};
+        font-size: 14px;
+        `)
+      .style("cursor", "pointer")
       .attr("fill", colorPanel)
       .on('click', (mouseevent, data) => {
         if (this.inject.linkedDashboard) {

@@ -11,7 +11,7 @@
     [header]="inject.header" 
     [style]="inject.style"
     [dismissableMask]="true"
-    (onHide)="inject.hideContextMenu()"
+    (onHide)="allowOutsideClose = false;"
 >
     <p-panelMenu 
         [model]="inject.contextMenuItems" 

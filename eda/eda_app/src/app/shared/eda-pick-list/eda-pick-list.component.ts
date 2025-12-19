@@ -53,7 +53,7 @@ export class EdaPickListComponent {
     if (this.isSelected(item.id)) {
       newSelected = currentSelected.filter((selected) => selected.id !== item.id)
     } else {
-      newSelected = [...currentSelected, item]
+        newSelected = [item]
     }
 
     this.selectedItems.set(newSelected)

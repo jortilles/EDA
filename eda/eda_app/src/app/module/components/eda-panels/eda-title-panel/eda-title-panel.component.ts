@@ -7,12 +7,17 @@ import {SafeHtmlPipe} from './htmlSanitizer.pipe'
 import {SafeUrlPipe} from './urlSanitizer.pipe'
 import * as _ from 'lodash';
 import { environment } from 'environments/environment';
-
+import { EdaContextMenuComponent } from '@eda/shared/components/shared-components.index';
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
+import { TitleDialogComponent } from './edit-title/quill-editor.component';
 @Component({
+    standalone: true,
     selector: 'eda-title-panel',
     templateUrl: './eda-title-panel.component.html',
     styleUrls: ['./eda-title-panel.component.css'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    imports: [FormsModule, CommonModule, SafeHtmlPipe, EdaContextMenuComponent, TitleDialogComponent]
 })
 
 export class EdaTitlePanelComponent implements OnInit {
@@ -59,14 +64,6 @@ export class EdaTitlePanelComponent implements OnInit {
             header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
             contextMenuItems: [
                 new EdaContextMenuItem({
-                    label: $localize`:@@panelOptions4:Eliminar panel`,
-                    icon: 'fa fa-trash',
-                    command: () => {
-                        this.contextMenu.hideContextMenu();
-                        this.removePanel();
-                    }
-                }),
-                new EdaContextMenuItem({
                     label: $localize`:@@panelOptions2:Editar opciones del gráfico`,
                     icon: 'mdi mdi-wrench', 
                     command: () => {
@@ -86,7 +83,16 @@ export class EdaTitlePanelComponent implements OnInit {
                             }
                           });
                     }
+                }),
+                new EdaContextMenuItem({
+                    label: $localize`:@@panelOptions4:Eliminar panel`,
+                    icon: 'fa fa-trash',
+                    command: () => {
+                        this.contextMenu.hideContextMenu();
+                        this.removePanel();
+                    }
                 })
+
             ]
         });
 
