@@ -18,11 +18,13 @@ export abstract class EdaDialog2 {
     @Output() close: EventEmitter<any> = new EventEmitter();
     @Output() delete: EventEmitter<any> = new EventEmitter();
     @Output() reset: EventEmitter<any> = new EventEmitter();
+    @Output() duplicate: EventEmitter<any> = new EventEmitter();
 
 
     @Input() showApply: boolean = true;
     @Input() showClose: boolean = true;
     @Input() showReset: boolean = false;
+    @Input() showDuplicate: boolean = false;
     @Input() showDelete: boolean = false;
     @Input() disableApply: boolean = false;
 
@@ -44,6 +46,9 @@ export abstract class EdaDialog2 {
     }
     public onReset(): void {
         this.reset.emit(true);
+    }
+    public onDuplicate(): void {
+        this.duplicate.emit(true);
     }
     public onDelete(): void {
         this.delete.emit(true);

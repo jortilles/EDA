@@ -42,6 +42,7 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, AfterView
     public ifShowApply: boolean;
     public ifShowClose: boolean;
     public ifShowReset: boolean;
+    public ifShowDuplicate: boolean;
     public ifShowDeleteFilter: boolean;
 
     // Traducido automáticamente para PrimeNG
@@ -67,6 +68,7 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, AfterView
 
         this.ifShowApply = this.apply.observers.length > 0 && this.showApply;
         this.ifShowClose = this.close.observers.length > 0 && this.showClose;
+        this.ifShowDuplicate = this.duplicate.observers.length > 0 && this.showDuplicate;
         this.ifShowReset = this.reset.observers.length > 0 && this.showReset;
         this.ifShowDeleteFilter = this.delete.observers.length > 0 && this.showDelete;
     }

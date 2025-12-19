@@ -1,6 +1,6 @@
 <eda-dialog2 
 [display]="displayWindow" [header]="title" width="80vw" height="70vh" [overflow]="'auto'"
-  (apply)="onApply()" (close)="closeDialog()">
+  (apply)="onApply()" (close)="closeDialog()" [showDuplicate]=true (duplicate)="onDuplicate()">
   <!-- class="flex-1 px-6 overflow-y-auto" -->
   <div content class="p-2 space-y-6">
     <div class="grid gap-4"
@@ -214,19 +214,20 @@
       </div>
     </div>
   </div>
-
 </eda-dialog2>
 
-<eda-dialog2 *ngIf="display.duplicateColumn" [display]="display.duplicateColumn" header="Duplicar columna" width="60vw" height= "auto" (close)="onCancelDuplicateColumn()" (apply)="saveDuplicatedColumn()">
-  <div content>
-    <!-- Duplicar columna -->
-    <div class="col-12">
-      <span>
-        <label i18n="@@duplicatedColumnNameLabel" for="duplicatedColumnName" class="text-lg mr-6">
-          Nombre columna duplicada
-        </label>
-        <input pInputText id="duplicatedColumnName" [(ngModel)]="duplicatedColumnName" type="text"  />
-      </span>
+@if(display.duplicateColumn){
+  <eda-dialog2 header="Duplicar columna" width="60vw" height= "auto" (close)="onCancelDuplicateColumn()" (apply)="saveDuplicatedColumn()">
+    <div content class="p-2 space-y-6">
+      <!-- Duplicar columna -->
+      <div class="col-12">
+        <span>
+          <label i18n="@@duplicatedColumnNameLabel" for="duplicatedColumnName" class="text-lg mr-6">
+            Nombre columna duplicada
+          </label>
+          <input pInputText id="duplicatedColumnName" [(ngModel)]="duplicatedColumnName" type="text"  />
+        </span>
+      </div>
     </div>
-  </div>
-</eda-dialog2>
+  </eda-dialog2>
+}

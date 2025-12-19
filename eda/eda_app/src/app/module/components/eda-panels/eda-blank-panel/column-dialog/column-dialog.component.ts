@@ -14,7 +14,7 @@ import { EdaDialog, EdaDialogCloseEvent, EdaDialog2Component, EdaDialogAbstract,
 import { aggTypes } from 'app/config/aggretation-types';
 import * as _ from 'lodash';
 import { firstValueFrom } from 'rxjs';
-
+import { InputTextModule } from 'primeng/inputtext';
 
 const ANGULAR_MODULES = [
     FormsModule,
@@ -28,7 +28,8 @@ const ANGULAR_MODULES = [
 const PRIMENG_MODULES = [
     DropdownModule,
     InputSwitchModule,
-    TooltipModule
+    TooltipModule,
+    InputTextModule
 ];
 
 const STANDALONE_COMPONENTS = [
@@ -664,4 +665,11 @@ export class ColumnDialogComponent {
     onApply(){
         this.closeDialog();
     }
+
+    onDuplicate(){
+        console.log(this)
+        this.display.duplicateColumn = true;
+        this.duplicatedColumnName = this.selectedColumn.display_name.default + ' (Copy)';    
+    }
+
 }
