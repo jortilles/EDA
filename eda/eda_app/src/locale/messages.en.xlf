@@ -3826,6 +3826,10 @@ Once configured you can invoke it whenever you want from the button.</target>
 <source>El nombre es obligatorio</source>
 <target>Name is required</target>
 </trans-unit>
+<trans-unit id="separatorRequired">
+  <source>El separador es obligatorio</source>
+  <target>Separator is required</target>
+</trans-unit>
 <trans-unit id="type">
 <source>Tipo</source>
 <target>Type</target>
