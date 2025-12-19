@@ -44,26 +44,18 @@ export class OAUTHController {
     static async metadata(req: Request, res: Response, next: NextFunction) {
         try {
             // Recibir metadata desde la URL (query params)
-            const metadata = req.query; // /oauth/metadata?client_id=123&scope=read
-            const {code, state} = metadata;
 
-            console.log('metadata: ',metadata)
-            console.log('code: ',code)
-            console.log('state: ',state)
+            const code = req.qs?.code || req.query?.code;
+            const state = req.qs?.state || req.query?.state;
+
+            console.log('codeeeee: ',code)
+            console.log('stateeee: ',state)
 
             // O si quieres params definidos en la ruta:
             // const { id } = req.params; // /oauth/metadata/123
 
-            if (!metadata || Object.keys(metadata).length === 0) {
-                throw new HttpException(400, "Metadata no recibida");
-            }
-
             if (!code) {
                 throw new HttpException(400, "Perdida de código de autorización");
-            }
-
-            if (state !== 'authorization_code') {
-                throw new HttpException(400, "Estado invalido");
             }
 
             // Intercambiar code por token
