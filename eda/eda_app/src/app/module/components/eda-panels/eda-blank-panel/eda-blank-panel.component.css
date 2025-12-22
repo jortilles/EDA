@@ -489,8 +489,12 @@ eda-blank-panel :root {
 }
 
 .aggregation-active {
-  border: solid 2px #67757c;
+  background-color: #00BFB3;
+  color: white;
+  border-color: #00BFB3;
 }
+
+.aggregation-unactive{}
 
 .aggregation-not-posible {
   margin: 1%;

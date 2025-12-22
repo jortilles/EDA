@@ -15,7 +15,7 @@
           @for (aggregation of aggregationsTypes; track aggregation) {
             <div class="aggregation-box"
                 (click)="addAggregation(aggregation)"
-                [ngClass]="aggregation.selected === true ? 'aggregation-active' : ''">
+                [ngClass]="aggregation.selected === true ? 'aggregation-active' : 'aggregation-unactive'">
                 <span>{{getAggName(aggregation.value)}}</span>
             </div>
           }
@@ -29,7 +29,7 @@
           @for (ordenation of ordenationTypes; track ordenation) {
             <div class="aggregation-box"
               (click)="addOrdenation(ordenation)"
-              [ngClass]="ordenation.selected === true ? 'aggregation-active' : ''">
+              [ngClass]="ordenation.selected === true ? 'aggregation-active' : 'aggregation-unactive'">
               <span>{{ordenation.display_name | uppercase}}</span>
             </div>
           }
