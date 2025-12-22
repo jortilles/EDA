@@ -136,7 +136,7 @@ async function userData(access_token: any) {
 
         const response = await axios.get(userDataUrlToken, {
             params: {
-                access_token: access_token, // access_token como único parametro
+                AccessToken: encodeURIComponent(access_token), // access_token como único parametro
             }
         })
 
@@ -160,7 +160,7 @@ async function authenticationEvidence(access_token: any) {
 
         const response = await axios.get(authenticationEvidenceUrlToken, {
             params: {
-                access_token: access_token, // access_token como único parametro
+                AccessToken: encodeURIComponent(access_token), // access_token como único parametro
             }
         })
 
@@ -183,7 +183,7 @@ async function userPermissions(access_token: any) {
 
         const response = await axios.get(userPermissionsUrlToken, {
             params: {
-                access_token: access_token, // access_token como único parametro
+                AccessToken: encodeURIComponent(access_token), // access_token como único parametro
             }
         })
 
@@ -206,7 +206,7 @@ async function userPermissionsRoles(access_token: any) {
 
         const response = await axios.get(userPermissionsRolesUrlToken, {
             params: {
-                access_token: access_token, // access_token como único parametro
+                AccessToken: encodeURIComponent(access_token), // access_token como único parametro
             }
         })
 
