@@ -112,8 +112,11 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
     public items: MenuItem[];
     public user: any;
-    // public hideAllTablesBool : boolean = false;
-    // public hideAllRelationsBool : boolean = false;
+    
+    // Variables de control de estado
+    public tablesHidden: boolean = false;
+    public relationsHidden : boolean = false;
+    public columnsHidden: boolean = false;
 
     public viewDialogEdition: boolean = false;
     public viewInEdition: any
@@ -885,14 +888,17 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
 
     hideAllTables() {
+        this.tablesHidden = !this.tablesHidden;
         this.dataModelService.hideAllTables();
     }
 
     hideAllColumns(tablePanel: any) {
+        this.columnsHidden = !this.columnsHidden;
         this.dataModelService.hideAllColumns(tablePanel);
     }
 
     hideAllRelations() {
+        this.relationsHidden = !this.relationsHidden;
         this.dataModelService.hideAllRelations();
     }
 
