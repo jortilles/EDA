@@ -61,11 +61,20 @@ export class OAUTHController {
 
 
             // Agregar la configuracion de login
-
-
-
             console.log('response VALIdAP: ', response);
             console.log('access_token: ', access_token);
+
+            const userDataValue = await userData(access_token);
+            const authenticationEvidenceValue = await authenticationEvidence(access_token);
+            const userPermissionsValue = await userPermissions(access_token);
+            const userPermissionsRolesValue = await userPermissionsRoles(access_token);
+
+            console.log('RECUPERANDO TODA LA INFORMACIÓN:::: ')
+
+            console.log('userDataValue: ', userDataValue)
+            console.log('authenticationEvidenceValue: ', authenticationEvidenceValue)
+            console.log('userPermissionsValue: ', userPermissionsValue)
+            console.log('userPermissionsRolesValue: ', userPermissionsRolesValue)
 
             // Respuesta básica
             return res.status(200).json({
