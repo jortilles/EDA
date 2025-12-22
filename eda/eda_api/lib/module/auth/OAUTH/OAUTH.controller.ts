@@ -132,12 +132,13 @@ async function userData(access_token: any) {
         const userDataUrlToken = OAUTHconfig.userDataUrlToken;
 
         const response = await axios.get(userDataUrlToken, {
-            params: {
-                access_token: access_token, // access_token como único parametro
+            headers: {
+                'Authorization': `Bearer ${access_token}`,
+                'Accept': 'application/json'
             }
         })
 
-        return response; // VERIFICAR SI DEVOLVEMOS response.data
+        return response.data; // VERIFICAR SI DEVOLVEMOS response.data
     } catch (error) {
         if(axios.isAxiosError(error)) {
             console.error('Error OAuth:', error.response?.data); // VERIFICAR SI DEVOLVEMOS response.data
@@ -156,12 +157,13 @@ async function authenticationEvidence(access_token: any) {
         const authenticationEvidenceUrlToken = OAUTHconfig.authenticationEvidenceUrlToken;
 
         const response = await axios.get(authenticationEvidenceUrlToken, {
-            params: {
-                access_token: access_token, // access_token como único parametro
-            }
+                headers: { 
+                    'Authorization': `Bearer ${access_token}`,
+                    'Accept': 'application/json'
+                }
         })
 
-        return response; // VERIFICAR SI DEVOLVEMOS response.data
+        return response.data; // VERIFICAR SI DEVOLVEMOS response.data
     } catch (error) {
         if(axios.isAxiosError(error)) {
             console.error('Error OAuth:', error.response?.data); // VERIFICAR SI DEVOLVEMOS response.data
@@ -179,12 +181,13 @@ async function userPermissions(access_token: any) {
         const userPermissionsUrlToken = OAUTHconfig.userPermissionsUrlToken;
 
         const response = await axios.get(userPermissionsUrlToken, {
-            params: {
-                access_token: access_token, // access_token como único parametro
-            }
+                headers: { 
+                    'Authorization': `Bearer ${access_token}`,
+                    'Accept': 'application/json'
+                }
         })
 
-        return response; // VERIFICAR SI DEVOLVEMOS response.data
+        return response.data; // VERIFICAR SI DEVOLVEMOS response.data
     } catch (error) {
         if(axios.isAxiosError(error)) {
             console.error('Error OAuth:', error.response?.data); // VERIFICAR SI DEVOLVEMOS response.data
@@ -202,12 +205,13 @@ async function userPermissionsRoles(access_token: any) {
         const userPermissionsRolesUrlToken = OAUTHconfig.userPermissionsRolesUrlToken;
 
         const response = await axios.get(userPermissionsRolesUrlToken, {
-            params: {
-                access_token: access_token, // access_token como único parametro
+            headers: { 
+                'Authorization': `Bearer ${access_token}`,
+                'Accept': 'application/json'
             }
         })
 
-        return response; // VERIFICAR SI DEVOLVEMOS response.data
+        return response.data; // VERIFICAR SI DEVOLVEMOS response.data
     } catch (error) {
         if(axios.isAxiosError(error)) {
             console.error('Error OAuth:', error.response?.data); // VERIFICAR SI DEVOLVEMOS response.data
