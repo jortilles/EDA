@@ -46,17 +46,20 @@ export class OAUTHController {
             const code = req.qs?.code || req.query?.code;
             const state = req.qs?.state || req.query?.state;
 
+            console.log('code: ', code);
+            console.log('state: ', state);
+
             if (!code) {
                 throw new HttpException(400, "Perdida de código de autorización");
             }
-
+            
             // Respuesta de VALId AP con lo siguiente:
             
             // VALId AP - access_token
             // VALId AP - refresh_token
             // VALId AP - expires_in ==> Fijado en 1 hora = 3600 segundos
             // VALId AP - token_type
-            const response = await exchangeCodeForToken(code, state);
+            const response = await exchangeCodeForToken(code);
             const {access_token} = response;
 
 
@@ -92,7 +95,7 @@ export class OAUTHController {
 
 // Funciones de interacción  con el servidor VALId AP
 
-async function exchangeCodeForToken(code: any, state: any) {
+async function exchangeCodeForToken(code: any) {
 
     try {
         const tokenUrl = OAUTHconfig.tokenUrl;
@@ -102,7 +105,7 @@ async function exchangeCodeForToken(code: any, state: any) {
             client_id: OAUTHconfig.client_id,
             client_secret: OAUTHconfig.client_secret,
             redirect_uri: OAUTHconfig.redirect_uri,
-            grant_type: state,
+            grant_type: 'authorization_code',
         });
 
         // Petición POST Para recibir el Token de autenticación
@@ -132,13 +135,12 @@ async function userData(access_token: any) {
         const userDataUrlToken = OAUTHconfig.userDataUrlToken;
 
         const response = await axios.get(userDataUrlToken, {
-            headers: {
-                'Authorization': `Bearer ${access_token}`,
-                'Accept': 'application/json'
+            params: {
+                access_token: access_token, // access_token como único parametro
             }
         })
 
-        return response.data; // VERIFICAR SI DEVOLVEMOS response.data
+        return response; // VERIFICAR SI DEVOLVEMOS response.data
     } catch (error) {
         if(axios.isAxiosError(error)) {
             console.error('Error OAuth:', error.response?.data); // VERIFICAR SI DEVOLVEMOS response.data
@@ -157,13 +159,12 @@ async function authenticationEvidence(access_token: any) {
         const authenticationEvidenceUrlToken = OAUTHconfig.authenticationEvidenceUrlToken;
 
         const response = await axios.get(authenticationEvidenceUrlToken, {
-                headers: { 
-                    'Authorization': `Bearer ${access_token}`,
-                    'Accept': 'application/json'
-                }
+            params: {
+                access_token: access_token, // access_token como único parametro
+            }
         })
 
-        return response.data; // VERIFICAR SI DEVOLVEMOS response.data
+        return response; // VERIFICAR SI DEVOLVEMOS response.data
     } catch (error) {
         if(axios.isAxiosError(error)) {
             console.error('Error OAuth:', error.response?.data); // VERIFICAR SI DEVOLVEMOS response.data
@@ -181,13 +182,12 @@ async function userPermissions(access_token: any) {
         const userPermissionsUrlToken = OAUTHconfig.userPermissionsUrlToken;
 
         const response = await axios.get(userPermissionsUrlToken, {
-                headers: { 
-                    'Authorization': `Bearer ${access_token}`,
-                    'Accept': 'application/json'
-                }
+            params: {
+                access_token: access_token, // access_token como único parametro
+            }
         })
 
-        return response.data; // VERIFICAR SI DEVOLVEMOS response.data
+        return response; // VERIFICAR SI DEVOLVEMOS response.data
     } catch (error) {
         if(axios.isAxiosError(error)) {
             console.error('Error OAuth:', error.response?.data); // VERIFICAR SI DEVOLVEMOS response.data
@@ -205,13 +205,12 @@ async function userPermissionsRoles(access_token: any) {
         const userPermissionsRolesUrlToken = OAUTHconfig.userPermissionsRolesUrlToken;
 
         const response = await axios.get(userPermissionsRolesUrlToken, {
-            headers: { 
-                'Authorization': `Bearer ${access_token}`,
-                'Accept': 'application/json'
+            params: {
+                access_token: access_token, // access_token como único parametro
             }
         })
 
-        return response.data; // VERIFICAR SI DEVOLVEMOS response.data
+        return response; // VERIFICAR SI DEVOLVEMOS response.data
     } catch (error) {
         if(axios.isAxiosError(error)) {
             console.error('Error OAuth:', error.response?.data); // VERIFICAR SI DEVOLVEMOS response.data
