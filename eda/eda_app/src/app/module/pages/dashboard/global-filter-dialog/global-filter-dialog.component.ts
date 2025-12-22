@@ -350,12 +350,14 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public onChangeSelectedColumn(): void {
         this.aliasValue = '';
         this.globalFilter.selectedItems = [];
-        if (this.globalFilter.selectedColumn.column_type == 'date') {
-            this.loadDatesFromFilter();
-        } else {
-            this.loadColumnValues();
+        if(!this.globalFilter?.isAutocompleted){
+            if (this.globalFilter.selectedColumn.column_type == 'date') {
+                this.loadDatesFromFilter();
+            } else {
+                this.loadColumnValues();
+            }
         }
-
+        
         this.findPanelPathTables();
     }
 
