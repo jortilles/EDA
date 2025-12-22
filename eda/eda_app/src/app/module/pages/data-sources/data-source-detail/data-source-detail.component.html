@@ -537,13 +537,13 @@
           </div>
         </div>
         
-        @if (!modelPanel.connection.ssl && ['mysql', 'postgres', 'sqlserver'].includes(selectedTipoBD.value)) {
+        @if (['mysql', 'postgres', 'sqlserver'].includes(selectedTipoBD.value)) {
           <div class="mt-4 flex items-center space-x-2">
             <button 
               type="button" 
               role="switch" 
               [attr.aria-checked]="modelPanel.connection.ssl" 
-              (click)="modelPanel.connection.ssl = !modelPanel.connection.ssl;"
+              (click)="modelPanel.connection.ssl = !modelPanel.connection.ssl"
               class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50" 
               [ngClass]="{'bg-[#00BFB3]': modelPanel.connection.ssl, 'bg-input': !modelPanel.connection.ssl}"
             >
@@ -552,14 +552,13 @@
                 [ngClass]="{'translate-x-5': modelPanel.connection.ssl, 'translate-x-0': !modelPanel.connection.ssl}"
               ></span>
             </button>
-            @if (modelPanel.connection.ssl) {
-              <label class="font-medium">Conexión mediante SSL</label>
-            } @else {
-              <label i18n="@@SSLConnection" class="font-medium">Conexión sin SSL</label>
-            }
+
+            <label class="font-medium">
+              {{ modelPanel.connection.ssl ? 'Conexión mediante SSL' : 'Conexión sin SSL' }}
+            </label>
           </div>
         }
-        
+
         <div class="mt-4">
           <button 
             (click)="checkConection()" 
