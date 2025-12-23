@@ -151,7 +151,6 @@ export class DataSourceConnectionDetailPage implements OnInit {
   initForm(): void {
     this.connectionForm = this.fb.group({
       name: ["", Validators.required],
-      separator: ["", Validators.required],
       type: ["postgres", Validators.required],
       host: ["", Validators.required],
       database: ["", Validators.required],
@@ -165,7 +164,8 @@ export class DataSourceConnectionDetailPage implements OnInit {
       ssl: [false],
       sid: [1],
       poolLimit: [],
-      warehouse: []
+      warehouse: [],
+      separator: [";"],
     })
   }
 
