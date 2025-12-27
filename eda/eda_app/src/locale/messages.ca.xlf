@@ -2409,6 +2409,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Pots esborrar els panells en blanc o configurar-los</target>
 </trans-unit>
 
+<trans-unit id="AddMandatoryFilters">
+<source>Los siguientes filtros son obligatorios y no tienen valor asignado:</source>
+<target>Els següents filtres són obligatoris i no tenen valor assignat:</target>
+</trans-unit>
+
 <trans-unit id="AddFiltersWarningButton">
 <source>Entendido</source>
 <target>Entesos</target>
@@ -4308,6 +4313,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>El nombre es obligatorio</source>
         <target>El nom és obligatori</target>
       </trans-unit>
+      <trans-unit id="separatorRequired">
+        <source>El separador es obligatorio</source>
+        <target>El separador és obligatori</target>
+      </trans-unit>
       <trans-unit id="type">
         <source>Tipo</source>
         <target>Tipus</target>
@@ -5620,6 +5629,11 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="autocompleteFilter">
         <source>¿Filtro autocomplete?</source>
         <target>Filtre autocomplete?</target>
+      </trans-unit>
+
+      <trans-unit id="mandatoryFilter">
+        <source>¿Filtro autocomplete?</source>
+        <target>Filtre obligatori?</target>
       </trans-unit>
 
       <trans-unit id="globalFiltersToDF">

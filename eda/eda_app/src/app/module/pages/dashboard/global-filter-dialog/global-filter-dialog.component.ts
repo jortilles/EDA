@@ -17,6 +17,7 @@ import { TableModule } from "primeng/table";
 import { ButtonModule } from "primeng/button";
 import { CommonModule } from '@angular/common';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { AutoCompleteModule } from "primeng/autocomplete";
 
 const ANGULAR_MODULES = [
     CommonModule,
@@ -34,6 +35,7 @@ const PRIMENG_MODULES = [
     TooltipModule,
     TableModule,
     ButtonModule,
+    AutoCompleteModule
 ];
 
 const STANDALONE_COMPONENTS = [
@@ -45,13 +47,14 @@ const STANDALONE_COMPONENTS = [
     standalone: true,
     selector: 'app-global-filter-dialog',
     templateUrl: './global-filter-dialog.component.html',
-    styleUrls: ['../dashboard.page.css'], 
+    styleUrls: ['../dashboard.page.css', './global-filter-dialog.component.css'], 
     imports: [ ANGULAR_MODULES, PRIMENG_MODULES, STANDALONE_COMPONENTS ],
 })
 export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     @Input() globalFilter: any;
     @Input() globalFilterList: any[] = [];
     @Input() dataSource: any;
+    @Input() dashboard: any;
     public modelTables: any[] = [];
     @Input() panels: EdaPanel[] = [];
 
@@ -85,6 +88,9 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     public columnValues: any[] = [];
     public tableNodes: any[] = [];
+    public autoCompleteValues: string[];
+    private itemJustSelected = false;
+    public filterTimeout: any;
 
     //valors del dropdown de filtrat de visiblitat
     public publicRoHidden = [
@@ -101,6 +107,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     // Legacy 
     public applyToAll: boolean = false;
     public isAutocompleted: boolean = false;
+    public isMandatory: boolean = false;
+    public isMandatoryError: boolean = false;
     // selectedPanels: any[] = []
 
     constructor(
@@ -131,6 +139,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 isnew: true,
                 isGlobal: true,
                 isAutocompleted: false,
+                isMandatory: false,
                 queryMode: this.globalFilter.queryMode,
                 data: null,
                 selectedTable: {},
@@ -150,6 +159,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             if (this.globalFilter.queryMode == 'EDA2') this.initPanels();
             else this.initPanelsLegacy();
             this.isAutocompleted = this.globalFilter.isAutocompleted;
+            this.isMandatory = this.globalFilter.isMandatory;
             this.initTablesForFilter();
 
             const tableName = this.globalFilter.selectedTable.table_name;
@@ -168,6 +178,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         }
         // Recogemos valor del switch
         this.globalFilter.isAutocompleted = this.isAutocompleted;
+        this.globalFilter.isMandatory = this.isMandatory;
     }
 
     public ngOnDestroy(): void {
@@ -339,12 +350,14 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public onChangeSelectedColumn(): void {
         this.aliasValue = '';
         this.globalFilter.selectedItems = [];
-        if (this.globalFilter.selectedColumn.column_type == 'date') {
-            this.loadDatesFromFilter();
-        } else {
-            this.loadColumnValues();
+        if(!this.globalFilter?.isAutocompleted){
+            if (this.globalFilter.selectedColumn.column_type == 'date') {
+                this.loadDatesFromFilter();
+            } else {
+                this.loadColumnValues();
+            }
         }
-
+        
         this.findPanelPathTables();
     }
 
@@ -488,7 +501,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.globalFilter.isdeleted = true;
         }
 
-        // this.selectedValues = [];
         this.globalFilterList.splice(this.globalFilterList.indexOf(filter), 0);
     }
 
@@ -496,9 +508,9 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         let label = '';
 
         if (globalFilter.selectedColumn) {
-            label = globalFilter.selectedColumn.display_name.default;
+            label = globalFilter.selectedColumn.display_name.default ?? '';
         } else {
-            label = globalFilter.column.label;
+            label = globalFilter.column?.label ?? '';
         }
 
         return label;
@@ -526,8 +538,118 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 }
             }
         }
+        if(this.isMandatory){
+            valid = this.globalFilter.selectedItems.length > 0;  
+            this.isMandatoryError = !valid;      
+        }
 
         return valid;
+    }
+
+
+    onAddValue(event: KeyboardEvent, filter: any) {
+        // Si acaba de ocurrir una selección, no hacemos nada
+        if (this.itemJustSelected) {
+            this.itemJustSelected = false; // reset
+            return;
+        }
+        event.preventDefault(); 
+
+        if (this.autoCompleteValues && this.autoCompleteValues.length > 0) {
+            const firstItem = this.autoCompleteValues[0];
+
+            filter.selectedItems = [
+            ...(filter.selectedItems || []), firstItem
+            ];
+
+            (event.target as HTMLInputElement).value = '';
+            this.autoCompleteValues = [];
+        }
+
+    }
+
+
+public async loadFilterAutoComplete(event: any, filtro: any) {
+    const minLength = 2;
+    if (!event.query || event.query.length < minLength) {
+        this.autoCompleteValues = [];
+        return;
+    }
+
+    this.itemJustSelected = false;
+
+    const delay = 300;
+    clearTimeout(this.filterTimeout);
+
+    this.filterTimeout = setTimeout(async () => {
+        let targetTable: string;
+        let targetColumn: any;
+
+        if (filtro.selectedTable) {
+            targetTable = filtro.selectedTable.table_name;
+            targetColumn = filtro.selectedColumn;
+            targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
+        } else {
+            targetTable = filtro.table.value;
+            targetColumn = filtro.column.value;
+            targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
+        }
+
+        const queryParams = {
+            table: targetTable,
+            dataSource: this.dashboard.dataSource._id,
+            dashboard: this.dashboard.dashboardId,
+            panel: '',
+            joinType: "inner",
+            rootTable: filtro.selectedTable?.table_name || '',
+            groupByEnabled: true,
+            queryMode: filtro.queryMode,
+            forSelector: true,
+            queryLimit: 5000,
+            filters: [{
+                filter_column: filtro.selectedColumn.column_name,
+                filter_column_type: filtro.selectedColumn.column_type,
+                filter_elements: [{ value1: [event.query] }],
+                filter_id: filtro.id,
+                filter_table: filtro.selectedTable?.table_name || '',
+                filter_type: "like",
+                isGlobal: filtro.isGlobal,
+                joins: [],
+            }]
+        };
+
+        // Construir la query
+        const query = this.queryBuilderService.normalQuery([targetColumn], queryParams);
+
+        // Ejecutar la query
+        const res = await this.dashboardService.executeQuery(query).toPromise();
+
+        // Asegurarse que res[1] sea un array válido
+        const rawData = Array.isArray(res[1]) ? res[1] : [];
+
+        // Mapear solo elementos válidos
+        const data = rawData
+            .filter(item => item && item[0] !== undefined && item[0] !== null && item[0] !== '')
+            .map(item => ({ label: item[0], value: item[0] }));
+
+        // Inicializar globalFilterList si no existe
+        this.globalFilterList = this.globalFilterList || [];
+
+        // Buscar el filtro por id
+        let gfItem = this.globalFilterList.find((gf: any) => gf.id == filtro.id);
+
+        // Si no existe, crearlo
+        if (!gfItem) {
+            gfItem = { id: filtro.id, data: [] };
+        }
+
+        // Asignar solo elementos válidos
+        gfItem.data = data.length ? data : [];
+
+        // Asignar al autocomplete de forma segura
+        this.autoCompleteValues = gfItem.data.filter(item => item?.label) || [];
+
+        }, delay);
     }
 
     private clear(): void {
@@ -580,6 +702,18 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         }
     }
 
+    onItemSelected(filtro: any) {
+        // Si seleccionamos manualmente con el enter no queremos el primero 
+        this.itemJustSelected = true;
+        filtro.selectedItems = filtro.selectedItems.map((item: any) => {
+            if (item && typeof item === 'object' && 'value' in item) {
+                return item.value;
+            }
+            return item;
+        });
+        // Actualizar Global filter
+    }
+
     private findTable(tableName: string) {
         return this.modelTables.find((table: any) => table.table_name === tableName);
     }
@@ -597,9 +731,9 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                     }
                 }
 
-                str += `<strong>${node.label}</strong>`;
+                str += `<strong>${node?.label}</strong>`;
             } else {
-                str = `<strong>${node.label}</strong>`;
+                str = `<strong>${node?.label}</strong>`;
             }
         }
 
@@ -626,6 +760,10 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public autocompleteFilterCheck(filtro: any) {
         this.isAutocompleted = !this.isAutocompleted;
         this.globalFilter.isAutocompleted = this.isAutocompleted;
+    }
+    public mandatoryFilterCheck(filtro: any) {
+        this.isMandatory = !this.isMandatory;
+        this.globalFilter.isMandatory = this.isMandatory;
     }
 
     public toggleShowAlias() {
@@ -669,7 +807,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     public onApply(): void {
         if (this.validateGlobalFilter()) {
-
             if (this.globalFilter.queryMode != 'EDA2') {
                 this.globalFilter.panelList = this.filteredPanels.map((p: any) => p.id);
                 this.globalFilter.applyToAll = this.applyToAll;
@@ -686,6 +823,10 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public onClose(): void {
         this.display = false;
         this.close.emit(false);
+    }
+
+    public disableApply(): boolean {
+        return this.isMandatory && this.globalFilter.selectedItems.length < 1;
     }
 
 }

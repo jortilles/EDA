@@ -1,4 +1,4 @@
-<eda-dialog2 [header]="dialogHeader" width="60vw" height="80vh" (apply)="onApply()" 
+<eda-dialog2 [header]="dialogHeader" width="60vw" height="80vh" (apply)="onApply()" [disableApply]="disableApply()"
     [overflow]="'auto'"  [showDelete]=true (delete)="onDelete()" (close)="onClose()">
 
     <div content content class="p-6">
@@ -11,7 +11,7 @@
             </h3>
           </div>
     
-          <div class="grid grid-cols-3 items-center">
+          <div class="grid grid-cols-4 items-center">
             <div class="space-x-2 flex items-center h-max">
               <label  i18n="@@aplyToAllPanelsH5">¿Aplica a todos los paneles?</label>
               <button type="button" role="switch" [attr.aria-checked]="applyToAll" (click)="applyToAllCheck()"
@@ -34,6 +34,19 @@
                   [ngClass]="{'translate-x-5': isAutocompleted, 'translate-x-0': !isAutocompleted}"></span>
               </button>
             </div>
+
+            <div class="space-x-2 flex items-center h-max">
+              <label i18n="@@mandatoryFilter" >¿Filtro obligatorio?</label>
+              <button type="button" role="switch" [attr.aria-checked]="isMandatory"
+                (click)="mandatoryFilterCheck(this)"
+                class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"
+                [ngClass]="{'bg-[#00BFB3]': isMandatory, 'bg-input': !isMandatory}">
+                <span
+                  class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform"
+                  [ngClass]="{'translate-x-5': isMandatory, 'translate-x-0': !isMandatory}"></span>
+              </button>
+            </div>
+
             <div>
               <div class="flex flex-row space-x-1.5 items-center">
                 <label class="flex-none">{{header4}}:</label>
@@ -106,13 +119,20 @@
               />
 
               @if (globalFilter.selectedColumn?.column_type !== 'date') {
-                <p-multiSelect id="selectFilterValue" class='eda-filter-multiselect'
-                  [options]="columnValues" [(ngModel)]="globalFilter.selectedItems"
-                  [virtualScroll]="true" [itemSize]="30"
-                  [style]="{ width: '100%', height:'100%', alignItems:'center'}"
-                  [panelStyle]="{minWidth:'15em'}" [maxSelectedLabels]="1" i18n-defaultLabel="@@defaultValueLabel" defaultLabel="Valor por defecto" [loading]="loading"
-                  display="chip" appendTo="body">
-                </p-multiSelect>
+                @if(globalFilter.isAutocompleted === false){
+                  <p-multiSelect id="selectFilterValue" class='eda-filter-multiselect' [options]="columnValues"
+                    [(ngModel)]="globalFilter.selectedItems" [virtualScroll]="true" [itemSize]="30"
+                    [style]="{ width: '100%', height:'100%', alignItems:'center'}" [panelStyle]="{minWidth:'15em'}"
+                    [maxSelectedLabels]="1" i18n-defaultLabel="@@defaultValueLabel" defaultLabel="Valor por defecto" [loading]="loading"
+                    display="chip" appendTo="body">
+                  </p-multiSelect>
+                }@else{
+                  <p-autoComplete [(ngModel)]="globalFilter.selectedItems" (keydown.enter)="onAddValue($event, globalFilter)"
+                    [suggestions]="autoCompleteValues" (completeMethod)="loadFilterAutoComplete($event, globalFilter)" placeholder="abc..."
+                    [forceSelection]="false" [multiple]="true" (onSelect)="onItemSelected(globalFilter)" (onUnselect)="onItemSelected(globalFilter)"
+                    class="modern-autocomplete flex-1">
+                  </p-autoComplete>
+                }
               }
               @if (globalFilter.selectedColumn?.column_type === 'date') {
                 <eda-date-picker #myCalendar
@@ -209,11 +229,11 @@
                               </ng-template>
     
                               <ng-template let-node pTemplate="child">
-                                <span [ngClass]="checkNodeSelected(globalFilter.pathList[panel.id].selectedTableNodes, node) ? 'font-weight-bold' : ''"> {{node.label}} </span>
+                                <span [ngClass]="checkNodeSelected(globalFilter.pathList[panel.id].selectedTableNodes, node) ? 'font-weight-bold' : ''"> {{node?.label}} </span>
                               </ng-template>
     
                               <ng-template let-node pTemplate="default">
-                                <b>{{node.label}}</b>
+                                <b>{{node?.label}}</b>
                               </ng-template>
                             </p-treeSelect>
                           </td>

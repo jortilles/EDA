@@ -3768,6 +3768,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>El nombre es obligatorio</source>
         <target>Imię jest wymagane</target>
       </trans-unit>
+      <trans-unit id="separatorRequired">
+        <source>El separador es obligatorio</source>
+        <target>Separator jest wymagany</target>
+      </trans-unit>
       <trans-unit id="type">
         <source>Tipo</source>
         <target>Typ</target>
@@ -5265,6 +5269,11 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="autocompleteFilter">
         <source>¿Filtro autocomplete?</source>
         <target>Filtr autouzupełniania?</target>
+      </trans-unit>
+
+      <trans-unit id="mandatoryFilter">
+        <source>¿Filtro autocomplete?</source>
+        <target>Filtre autocomplete?</target>
       </trans-unit>
 
       <trans-unit id="globalFiltersToDF">

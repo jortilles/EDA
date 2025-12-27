@@ -438,6 +438,27 @@ export class GlobalFilterComponent implements OnInit {
         })
     }
 
+    validateFilter(){
+        if(this.checkAllMandatoryFilters().value){
+            this.dashboard.refreshPanels()
+        } else{
+            this.alertService.addError($localize`:@@AddMandatoryFilters:Los siguientes filtros son obligatorios y no tienen valor asignado:` + 'hola');
+        }
+    }
+
+    checkAllMandatoryFilters(): {value :boolean, items: any}{
+        let nonEmptyFilters: {value :boolean, items: any} = {value: true,items: []};
+        this.globalFilters.forEach(element => {
+            if(element.isMandatory && element.isMandatory === true){
+                if(element.selectedItems.length < 1){
+                    nonEmptyFilters.value = false;
+                    nonEmptyFilters.items.push(element)
+                }
+            }
+        });
+        return nonEmptyFilters;
+    }
+
     // Global Filter Dialog
     public async onGlobalFilter(apply: boolean, gf?: any): Promise<void> {
         if (!this.globalFilter && gf) {
@@ -570,12 +591,6 @@ export class GlobalFilterComponent implements OnInit {
 
                     // Apply globalFilter to linkedPanels
                     this.applyGlobalFilter(filter);
-
-                    // If filter apply to all panels and this dashboard hasn't any 'apllyToAllFilter' new 'apllyToAllFilter' is set
-                    // if (filter.applyToAll && (this.dashboard.applyToAllfilter.present === false)) {
-                    //     this.dashboard.applyToAllfilter = { present: true, refferenceTable: targetTable, id: filter.id };
-                    //     this.dashboard.updateApplyToAllFilterInPanels();
-                    // }
                 }
                 resolve();
             } catch (err) {
@@ -607,7 +622,7 @@ export class GlobalFilterComponent implements OnInit {
         if (globalFilter.selectedColumn) {
             label = globalFilter.selectedColumn.display_name.default;
         } else {
-            label = globalFilter.column.label;
+            label = globalFilter.column?.label;
         }
 
         return label;

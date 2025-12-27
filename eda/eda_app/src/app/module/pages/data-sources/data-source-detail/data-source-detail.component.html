@@ -134,10 +134,27 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2"><path d="M12 5v14M5 12h14"/></svg>
           {{addCalculatedCol}}
         </button>
-        <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
-          (click)="hideAllColumns(tablePanel)">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
-          {{hideColumnsString}}
+        <button
+          class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium
+                ring-offset-background transition-colors focus-visible:outline-none
+                focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
+                disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 border"
+          [ngClass]="{
+            'bg-[#00BFB3] hover:bg-[#00BFB3]/90 text-white border-transparent': columnsHidden,
+            'bg-white hover:bg-gray-100 text-gray-800 border-gray-300': !columnsHidden
+          }"
+          (click)="hideAllColumns(tablePanel)"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" 
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2"
+          >
+            <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+            <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+            <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+            <line x1="2" x2="22" y1="2" y2="22"/>
+          </svg>
+
+          {{ hideColumnsString }}
         </button>
       </div>
     </div>
@@ -520,13 +537,13 @@
           </div>
         </div>
         
-        @if (!modelPanel.connection.ssl && ['mysql', 'postgres', 'sqlserver'].includes(selectedTipoBD.value)) {
+        @if (['mysql', 'postgres', 'sqlserver'].includes(selectedTipoBD.value)) {
           <div class="mt-4 flex items-center space-x-2">
             <button 
               type="button" 
               role="switch" 
               [attr.aria-checked]="modelPanel.connection.ssl" 
-              (click)="modelPanel.connection.ssl = !modelPanel.connection.ssl;"
+              (click)="modelPanel.connection.ssl = !modelPanel.connection.ssl"
               class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50" 
               [ngClass]="{'bg-[#00BFB3]': modelPanel.connection.ssl, 'bg-input': !modelPanel.connection.ssl}"
             >
@@ -535,14 +552,13 @@
                 [ngClass]="{'translate-x-5': modelPanel.connection.ssl, 'translate-x-0': !modelPanel.connection.ssl}"
               ></span>
             </button>
-            @if (modelPanel.connection.ssl) {
-              <label class="font-medium">Conexión mediante SSL</label>
-            } @else {
-              <label i18n="@@SSLConnection" class="font-medium">Conexión sin SSL</label>
-            }
+
+            <label class="font-medium">
+              {{ modelPanel.connection.ssl ? 'Conexión mediante SSL' : 'Conexión sin SSL' }}
+            </label>
           </div>
         }
-        
+
         <div class="mt-4">
           <button 
             (click)="checkConection()" 
@@ -585,16 +601,51 @@
       <div class="mb-8">
         <h3 class="text-lg font-medium text-gray-700 mb-4 border-b pb-2">{{utilities}}</h3>
         <div class="flex flex-wrap gap-2">
-          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#00BFB3] hover:bg-[#00BFB3]/90 text-white  h-10 px-4 py-2"
-            (click)="hideAllTables()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
-            {{hideTablesString}}
+          <button
+            class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium
+                  ring-offset-background transition-colors focus-visible:outline-none
+                  focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
+                  disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2"
+            [ngClass]="{
+              'bg-[#00BFB3] hover:bg-[#00BFB3]/90 text-white': tablesHidden,
+              'bg-white hover:bg-gray-100 text-gray-800 border border-gray-300': !tablesHidden
+            }"
+            (click)="hideAllTables()"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"
+            >
+              <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+              <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+              <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+              <line x1="2" x2="22" y1="2" y2="22"/>
+            </svg>
+
+            {{ hideTablesString }}
           </button>
-          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#00BFB3] hover:bg-[#00BFB3]/90 text-white  h-10 px-4 py-2"
-            (click)="hideAllRelations()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
-            {{hideAllRelationsString}}
+
+          <button
+            class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium
+                  ring-offset-background transition-colors focus-visible:outline-none
+                  focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
+                  disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2"
+            [ngClass]="{
+              'bg-[#00BFB3] hover:bg-[#00BFB3]/90 text-white': relationsHidden,
+              'bg-white hover:bg-gray-100 text-gray-800 border border-gray-300': !relationsHidden
+            }"
+            (click)="hideAllRelations()"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"
+            >
+              <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+              <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+              <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+              <line x1="2" x2="22" y1="2" y2="22"/>
+            </svg>
+            {{ hideAllRelationsString }}
           </button>
+
           <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#00BFB3] hover:bg-[#00BFB3]/90 text-white  h-10 px-4 py-2"
             (click)="openCacheDialog()">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 14.14 14.14"/></svg>

@@ -1345,9 +1345,9 @@ export class DashboardController {
       console.log('\n-------------------------------------------------------------------------------\n');
 
       /**cached query */
-      let cacheEnabled = false;
-      dataModelObject.ds.metadata.cache_config &&
-        dataModelObject.ds.metadata.cache_config.enabled === true;
+      let cacheEnabled =
+        dataModelObject.ds.metadata.cache_config &&
+        dataModelObject.ds.metadata.cache_config.enabled
 
       const cachedQuery = cacheEnabled
         ? await CachedQueryService.checkQuery(req.body.model_id, query, 'EDA')

@@ -142,10 +142,10 @@ export class LinkDashboardsComponent {
 
   public filterFilters() {
     this.filters = this.filters.filter(column => column.dashboardID === <any>this.selectedDashboard);
+    console.log(this, 'this.filterFilters')
   }
 
   public handleTargetColumn() {
-
     this.targetColumn = this.selectedFilter.colname;
     this.targetTable = this.selectedFilter.table;
 
@@ -189,17 +189,21 @@ export class LinkDashboardsComponent {
 
         let disable = true;
 
-        if (!this.controller.params.modeSQL) {
+        if (!this.controller.params.modeSQL ||this.controller.params.modeSQL === undefined) {
           // No SQL mode
           for (const filter of dash.config.filters) {
-            if (filter.column) {
-              if (
-                filter.column.value.column_name === column.col &&
-                filter.table.value === column.table
-              ) {
+            const filterColumn = filter?.column ?? filter?.selectedColumn;
+            if(filterColumn === filter?.column){
+              if (filter.column.value.column_name === column.col && filter.table.value === column.table) {
                 disable = false;
               }
-            } else {
+            }
+            else if(filterColumn === filter?.selectedColumn){
+              if (filterColumn.column_name === column.col && filter.selectedTable.table_name === column.table) {
+                disable = false;
+              }
+            }
+            else {
               console.log('NO SE HA IMPLEMENTADO TODAVÍA INFORMES VINCULADOS CON EL MODO ARBOL.');
             }
           }
@@ -229,7 +233,6 @@ export class LinkDashboardsComponent {
           tempDashboards.push({ label: d.config.title, value: d._id });
         }
       }
-
       this.dasboards = tempDashboards;
       this.filters = tempFilters;
       this.cd.detectChanges();

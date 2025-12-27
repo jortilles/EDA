@@ -56,7 +56,7 @@
             <p-dropdown
               [options]="dasboards"
               [(ngModel)]="selectedDashboard"
-              [disabled]="loading === false && activateProgressBar === false"
+              [disabled]="loading === true"
               [style]="{'width': '100%'}"
               i18n-placeholder="@@fieldDashboardDashboard"
               placeholder="Dashboard"

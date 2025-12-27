@@ -3,7 +3,7 @@
   <!-- Botón Filtrar -->
   @if (globalFilters.length > 0 && (isAdmin || isDashboardCreator || filterButtonVisibility.public)) {
   <button class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md border hover:bg-gray-300"
-    [style]="styleButton" (click)="dashboard.refreshPanels()">
+    [style]="styleButton" (click)="validateFilter()">
     <i class="pi pi-filter"></i>
     <span i18n="@@filtrarH4">Filtrar</span>
   </button>
@@ -72,6 +72,7 @@
 
 @if (globalFilter) {
   <app-global-filter-dialog
+    [dashboard] = "dashboard"
     [(globalFilter)]="globalFilter"
     [globalFilterList]="globalFilters"
     [panels]="dashboard.panels"
