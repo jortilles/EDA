@@ -309,12 +309,13 @@ export class DashboardController {
       }
 
       /*Edalitics Free */ 
-      /*Edalitics Free */let common  =   '{ _id: new ObjectId("694fad8ddcb6050ca0213db8"), ';
-      /*Edalitics Free */common += 'config: { title: "Edalitics Sample Dasboard", visible: "public",tag: null,createdAt: "2025-12-27T10:42:55.432Z", modifiedAt: "2025-12-27T11:06:14.116Z",';
-      /*Edalitics Free */common += ' onlyIcanEdit: false, author: "edalitics@jortilles.com"  },  user: {  _id: new ObjectId("694fad8c3515672426f53b40"),';
-      /*Edalitics Free */common += ' name: "edalitics@jortilles.com"} }';
-      /*Edalitics Free */const edaliticsSampleDashboard = JSON.parse(common);
-      /*Edalitics Free */shared.push(edaliticsSampleDashboard);
+      /*Edalitics Free */let str  =   '{ "_id": "new ObjectId(\"694fad8ddcb6050ca0213db8\")", ';
+      /*Edalitics Free */str += '"config": { "title": "Edalitics Sample Dasboard", "visible": "public","tag: "null","createdAt": "2025-12-27T10:42:55.432Z", "modifiedAt": "2025-12-27T11:06:14.116Z",';
+      /*Edalitics Free */str += ' "onlyIcanEdit": "false", "author": "edalitics@jortilles.com"  },  "user": {  "_id": "new ObjectId(\"694fad8c3515672426f53b40\")",';
+      /*Edalitics Free */str += ' "name": "edalitics@jortilles.com"} }';
+
+      /*Edalitics Free */const smple = JSON.parse(str);
+      /*Edalitics Free */shared.push(smple);
       /*Edalitics Free */
 
       
