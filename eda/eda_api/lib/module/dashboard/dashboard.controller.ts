@@ -38,10 +38,8 @@ export class DashboardController {
       } else {
         group = await DashboardController.getGroupsDashboards(req)
         privates = await DashboardController.getPrivateDashboards(req)
-        /*EDA  publics = await DashboardController.getPublicsDashboards(req , dataSources) */
-        /*Edalitics Free */publics = await DashboardController.getPublicsDashboards(req, dataSources)
-        /*EDA shared = await DashboardController.getSharedDashboards(req) */
-        /*Edalitics Free */shared = await DashboardController.getSharedDashboards(req)
+        publics = await DashboardController.getPublicsDashboards(req, dataSources)
+        shared = await DashboardController.getSharedDashboards(req)
       }
 
       // Modificación de fecha y adición de autor si no lo tiene (informes viejos)
@@ -310,6 +308,16 @@ export class DashboardController {
         }
       }
 
+      /*Edalitics Free */ 
+      /*Edalitics Free */let common  =   '{ _id: new ObjectId("694fad8ddcb6050ca0213db8"), ';
+      /*Edalitics Free */common += 'config: { title: "Edalitics Sample Dasboard", visible: "public",tag: null,createdAt: "2025-12-27T10:42:55.432Z", modifiedAt: "2025-12-27T11:06:14.116Z",';
+      /*Edalitics Free */common += ' onlyIcanEdit: false, author: "edalitics@jortilles.com"  },  user: {  _id: new ObjectId("694fad8c3515672426f53b40"),';
+      /*Edalitics Free */common += ' name: "edalitics@jortilles.com"} }';
+      /*Edalitics Free */const edaliticsSampleDashboard = JSON.parse(common);
+      /*Edalitics Free */shared.push(edaliticsSampleDashboard);
+      /*Edalitics Free */
+
+      
       let tags: Array<any> = req.qs.tags;
 
       if (_.isEmpty(tags)) {
