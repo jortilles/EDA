@@ -100,8 +100,9 @@ export class DashboardSidebarComponent {
   inputVisible: boolean = false;
   refreshTime: number = null;
   clickFiltersEnabled: boolean = true;
-  isNotEditable: boolean = true;
-
+  onlyIcanEdit: boolean = false; // Solo yo pueedo editar. pero puedo guardar como
+  isReadOnly: boolean = false; // es un dashbaord de solo lecturas
+  isEditable; boolean = false; // puede editar el dashboard
   mostrarOpciones = false;
   mostrarFiltros = false;
   hayFiltros;
@@ -115,10 +116,10 @@ export class DashboardSidebarComponent {
     this.hayFiltros = this.dashboard.globalFilter.globalFilters.length > 0;
     this.refreshTime = this.dashboard.dashboard.config.refreshTime || null;
     this.clickFiltersEnabled = this.dashboard.dashboard.config.clickFiltersEnabled ?? true;
-    this.isNotEditable = this.dashboard.dashboard.config.onlyIcanEdit ?? true;
+    this.onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ;
+    this.isReadOnly = this.isReadOnlyCheck();
+    this.isEditable = this.isEditableCheck();
     this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
-    this.dashboard.dashboard.config.onlyIcanEdit = this.isNotEditable;
-
     const methodNames: string[] = (this as any).__proto__.__exposedMethods || [];
 
     for (const name of methodNames) {
@@ -160,25 +161,25 @@ export class DashboardSidebarComponent {
         command: () => this.onAddGlobalFilter()
 
       },
-    {
-      id: 'editFilters',
-      label: $localize`:@@dashboardSidebarEditFilter:Editar filtros`,
-      icon: "pi pi-filter",
-      command: () => this.toggleGlobalFilter(),
-      items: this.dashboard.globalFilter.globalFilters.map(f => ({
-        label: f?.selectedColumn?.description?.default || f?.column?.value?.description?.default,
-        icon: "pi pi-check",
-        command: () => this.handleSpecificFilter(f),
-      }),
-      ),
-    },
-    {
-      id: 'dependentFilters',
-      label: $localize`:@@dashboardSidebarDependentFilters:Filtros Dependientes`,
-      icon: "pi pi-sliders-h",
-      command: () => this.dependentFilters()
-      
-    },
+      {
+        id: 'editFilters',
+        label: $localize`:@@dashboardSidebarEditFilter:Editar filtros`,
+        icon: "pi pi-filter",
+        command: () => this.toggleGlobalFilter(),
+        items: this.dashboard.globalFilter.globalFilters.map(f => ({
+          label: f?.selectedColumn?.description?.default || f?.column?.value?.description?.default,
+          icon: "pi pi-check",
+          command: () => this.handleSpecificFilter(f),
+        }),
+        ),
+      },
+      {
+        id: 'dependentFilters',
+        label: $localize`:@@dashboardSidebarDependentFilters:Filtros Dependientes`,
+        icon: "pi pi-sliders-h",
+        command: () => this.dependentFilters()
+        
+      },
       {
         id: 'importPanel',
         label: $localize`:@@dashboardSidebarImportPanel:Importar panel`,
@@ -261,8 +262,8 @@ export class DashboardSidebarComponent {
       },
       {
         id: 'enableEdition',
-        label: !this.isNotEditable ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`,
-        icon: !this.isNotEditable ? "pi pi-check" : "pi pi-ban",
+        label: this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`,
+        icon: this.onlyIcanEdit ? "pi pi-check" : "pi pi-ban",
         command: () => {
           this.toggleEdit();
         }
@@ -427,7 +428,7 @@ export class DashboardSidebarComponent {
     // Actualizar el refreshTime si es necesario
     this.dashboard.dashboard.config.refreshTime = this.refreshTime || null;
     this.dashboard.dashboard.config.onlyIcanEdit = this.clickFiltersEnabled;
-    this.dashboard.dashboard.config.onlyIcanEdit = this.isNotEditable;
+    this.dashboard.dashboard.config.onlyIcanEdit = this.onlyIcanEdit;
     // Actualizar el autor 
     this.dashboard.dashboard.config.author = JSON.parse(localStorage.getItem('user')).name;
     // Guardar Dashboard
@@ -472,7 +473,7 @@ export class DashboardSidebarComponent {
           mailingAlertsEnabled: this.getMailingAlertsEnabled(),
           sendViaMailConfig: this.dashboard.sendViaMailConfig,
           author: JSON.parse(localStorage.getItem('user')).name,
-          onlyIcanEdit: this.isNotEditable, //TODO ==> Done?
+          onlyIcanEdit: this.onlyIcanEdit, //TODO ==> Done?
           styles: this.stylesProviderService.generateDefaultStyles(),
         },
         group: (newDashboard.group || []).map((g: any) => g._id),
@@ -773,11 +774,23 @@ export class DashboardSidebarComponent {
     this.dashboardService._notSaved.next(true);
   }
 
+
+  
+  public isReadOnlyCheck() {
+    const user = localStorage.getItem('user');
+    const userName = JSON.parse(user).name;
+    const imProperty = userName === this.dashboard.dashboard.config.author;
+    const isObserver = JSON.parse(user).role.includes('135792467811111111111113');
+    const onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ? this.dashboard.dashboard.config.onlyIcanEdit:false ;
+    return userName === 'edaanonim' || (onlyIcanEdit && imProperty) && isObserver;
+  }
+
+
   public isEditableCheck() {
     const user = localStorage.getItem('user');
     const userName = JSON.parse(user).name;
     const imProperty = userName === this.dashboard.dashboard.config.author
-    return userName !== 'edaanonim' && (this.dashboard.dashboard.config.onlyIcanEdit || imProperty);
+    return (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty);
   }
 
   toggleClickFilters() {
@@ -791,8 +804,6 @@ export class DashboardSidebarComponent {
     clickItem.label = this.clickFiltersEnabled ? $localize`:@@enableFilters:Click en filtros habilitado` : $localize`:@@disableFilters:Click en filtros deshabilitado`;
     clickItem.icon = this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock";
 
-    // Actualizar dashboard
-    this.dashboard.dashboard.config.onlyIcanEdit = this.clickFiltersEnabled;
   }
   
   toggleEdit() {
@@ -800,11 +811,11 @@ export class DashboardSidebarComponent {
     const clickItem = this.sidebarItems.find(item => item.id === 'enableEdition');
 
     // Alternar el estado
-    this.isNotEditable = !this.isNotEditable;
+    this.onlyIcanEdit = !this.onlyIcanEdit;
 
     // Actualizar label e icono según estado
-    clickItem.label = !this.isNotEditable ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`;
-    clickItem.icon = !this.isNotEditable ? "pi pi-check" : "pi pi-ban";
+    clickItem.label = this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`;
+    clickItem.icon = this.onlyIcanEdit ? "pi pi-check" : "pi pi-ban";
   }
 
   // FUNCIONES DE LOS EVENTOS QUE CONTROLAN EL DRAG AND DROP DE LOS FILTROS

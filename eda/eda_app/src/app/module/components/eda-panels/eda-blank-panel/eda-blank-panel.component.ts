@@ -437,8 +437,8 @@ public tableNodeExpand(event: any): void {
     isEditable() {
         const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
-        const imProperty = userName === this.dashboard.dashboard.config.author
-        return (userName !== 'edaanonim' && !this.inject.isObserver) && !this.readonly && (this.dashboard.dashboard.config.onlyIcanEdit || imProperty);
+        const imProperty = userName === this.dashboard.dashboard.config.author;
+        return (userName !== 'edaanonim' && !this.inject.isObserver) && !this.readonly && (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty);
     }
 
     isRemovable() {
@@ -587,8 +587,6 @@ public tableNodeExpand(event: any): void {
         const { query, chart, edaChart } = panelContent;
         const { modeSQL, fields, filters, queryLimit, groupByEnabled, config } = query.query;
         const queryMode = this.selectedQueryMode;
-
-        const isEditable = !this.readonly;
         const isEdaMode = queryMode && queryMode !== 'SQL';
         const isModeSqlDisabled = modeSQL === false;
 

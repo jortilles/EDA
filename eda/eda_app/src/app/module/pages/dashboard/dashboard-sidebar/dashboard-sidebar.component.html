@@ -8,7 +8,7 @@
           <h4 class="text-lg font-bold" id="dashboardName">
             {{ dashboard.title }}
           </h4>
-          @if(isEditableCheck()){
+          @if( !isReadOnly ){
           <button (click)="renameDashboard()" class="rounded-md p-2 cursor-pointer hover:bg-muted h-fit">
             <eda-icon class="pointer-events-none" name="pencil"></eda-icon>
           </button>
@@ -35,7 +35,8 @@
     <div class="bg-white px-3 pb-3 pt-2">
       <div class="flex flex-col gap-2 text-lg">
         @for (item of itemsVisibles(); track item.label) {
-        @if(isEditableCheck() || item.id === 'refreshDashboard'){
+        @if(!isReadOnly){
+        @if(isEditable || item.id === 'refreshDashboard' || item.id === 'saveAs'){
         @if (item.id === "editFilters") {
         @if(hayFiltros){
           <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
@@ -82,6 +83,7 @@
         }
         }
         }
+      }
 
         <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
           (click)="toggleOpciones()">
@@ -95,18 +97,16 @@
         @if (mostrarOpciones) {
         <div class="ml-6 flex flex-col gap-2">
           @for (item of itemsDesplegables().slice(1); track item.label) {
-          @if(isEditableCheck() || (item.id === 'downloadPDF' || item.id === 'downloadImage')){
-
-
-          <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
-            (click)="item.command()">
-            <i [class]="item.icon + ' text-gray-600'"></i>
-            <span>{{ item.label }}</span>
-            @if (item.items) {
-            <i class="pi pi-chevron-down ml-auto text-gray-400"></i>
-            }
-          </button>
-          }
+              @if(isEditable||   (item.id === 'downloadPDF' || item.id === 'downloadImage')){
+                <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
+                  (click)="item.command()">
+                  <i [class]="item.icon + ' text-gray-600'"></i>
+                  <span>{{ item.label }}</span>
+                  @if (item.items) {
+                  <i class="pi pi-chevron-down ml-auto text-gray-400"></i>
+                  }
+                </button>
+                }
           }
         </div>
         }

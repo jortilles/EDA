@@ -259,7 +259,7 @@ export class DashboardPage implements OnInit {
     const dashboard = data.dashboard;
     this.dataSource = data.datasource;
     if (dashboard?.config) {
-      this.onlyIcanEdit = dashboard.config.visible !== 'public'
+      this.onlyIcanEdit = dashboard.config.onlyIcanEdit ;
       this.dashboardId = dashboardId;
       this.dashboard = dashboard;
       this.title = dashboard.config.title;
@@ -859,7 +859,7 @@ export class DashboardPage implements OnInit {
                 clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
                 // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
                 sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig, 
-                onlyIcanEdit: this.dashboard.config.onlyIcanEdit, // NO puedo Editar dashboard --> publico con enlace
+                onlyIcanEdit: this.dashboard.config.onlyIcanEdit, //Ssólo yo puedo editar el dashboard --> publico con enlace
                 styles: this.dashboard.config.styles,
                 urls: this.dashboard.config.urls,
                 author: this.dashboard.config?.author
@@ -872,9 +872,6 @@ export class DashboardPage implements OnInit {
 
   }
 
-  isEditable(): boolean {
-    return this.dashboard.dashboard.config.isEditable
-  }
 
   public async saveDashboard() {
     // LiveDashboardTimer
