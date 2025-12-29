@@ -1091,7 +1091,7 @@ public startCountdown(seconds: number) {
   onItemChange(item: GridsterItem): void {
     if (this.panels) {
       let valor = this.getBottomMostItem();
-      this.height = ((valor.y + valor.rows  + 2 ) * 46);
+      this.height = ((valor.y + valor.rows  + 4 ) * 50);
       this.cdr.detectChanges();
     } 
   }
