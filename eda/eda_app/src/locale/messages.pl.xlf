@@ -5294,6 +5294,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Mostrar campo de origen</source>
         <target>Pokaż pole pochodzenia</target>
       </trans-unit>
+      <trans-unit id="promptOption">
+        <source>Opciones IA</source>
+        <target>Opcions IA</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

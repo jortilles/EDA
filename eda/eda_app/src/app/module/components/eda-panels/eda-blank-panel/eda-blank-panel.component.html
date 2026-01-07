@@ -339,6 +339,15 @@
                     Opciones avanzadas
                   </h3>
                 </div>
+
+                <div class="relative inline-block cols-span-1">
+                  <h3
+                    class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-[max-content]"
+                    [ngClass]="display_v.advancedSetting === 2 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
+                    (click)="display_v.advancedSetting = 2" i18n="@@promptOption">
+                    Opciones IA
+                  </h3>
+                </div>
   
               </div>
   
@@ -580,7 +589,21 @@
                 </div>
               </div>
               }
+              @else if(display_v.advancedSetting === 2) {
+              <div class="grid grid-cols-2  border rounded-lg bg-gray-50 min-h-[30vh] overflow-y-auto p-2">
+
+                  <div class=" ml-3 p-2">
+                    <h3 class="text-base font-semibold mb-4" i18n="@@FaltaAgregarElValor">¿En qué puedo ayudarte?</h3>
+                    <Prompt></Prompt>
+                  </div>
+
+                  <div class=" ml-3 p-2">
+                    <h3 class="text-base font-semibold" i18n="@@FaltaAgregarElValor">Área de muestra:</h3>
+                  </div>
+
+              </div>
               }
+            }
             </div>
           </div>
         </div>

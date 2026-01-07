@@ -5654,6 +5654,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Mostrar campo de origen</source>
         <target>Mostrar camp d'origen</target>
       </trans-unit>
+      <trans-unit id="promptOption">
+        <source>Opciones IA</source>
+        <target>Opcions IA</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

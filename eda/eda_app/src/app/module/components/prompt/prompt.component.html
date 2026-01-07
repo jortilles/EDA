@@ -1,0 +1,19 @@
+<div class="chat-wrapper">
+    <div class="chat-header">
+        <h4>Consulta: </h4>
+    </div>
+
+    <div class="chat-messages" #messagesContainer>
+        <div *ngFor="let m of messages" [ngClass]="{'msg-user': m.role==='user', 'msg-assistant': m.role==='assistant', 'msg-system': m.role==='system', 'msg-error': m.role==='error'}" class="chat-message">
+            <div class="bubble">
+                <pre class="msg-content">{{ m.content }}</pre>
+                <div class="msg-meta">{{ m.role }} · {{ m.timestamp | date:'shortTime' }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-input">
+        <textarea [(ngModel)]="inputText" (keydown)="onKeydown($event)" placeholder="Escribe un mensaje..." rows="2"></textarea>
+        <button (click)="sendMessage()" [disabled]="sending || !inputText.trim()">{{ sending ? 'Enviando...' : 'Enviar' }}</button>
+    </div>
+</div>
