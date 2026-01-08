@@ -67,14 +67,14 @@ export class ChatGptController {
         
         try {
 
+            const { text, history, data, schema, firstTime } = req.body;
+
             const openai = new OpenAI({
                 apiKey: API_KEY
             });
 
-            const { text, history, data, schema, firstTime } = req.body;
-
-            console.log('req.body:::::: ', req.body);
-
+            // PALABRAS DENEGADAS POR DEFAULT PARA OPENAI
+            // ************************************************************************************************************************* //
             const forbiddenKeywords: string[] = [ "política", "sexo", "hack", "violencia", "pornografía", "droga", "ilegal", "piratería"];
 
             function isForbidden(message: string) {
@@ -88,46 +88,49 @@ export class ChatGptController {
                     response: "No puedo responder a esa pregunta, intentelo nuevamente."
                 });
             }
+            // ************************************************************************************************************************* //
 
-            
-            // Sanitizar history: dejar solo { role, content }
+            // Sanitizar history: solo dejamos { role, content }
             const safeHistory = Array.isArray(history) ? history.map((m: any) => {
-                // content puede estar en distintos formatos en tu app, normalizamos a string
+                // content puede llegar en distintos formatos, normalizamos a string
                 let content = "";
                 if (typeof m.content === "string") content = m.content;
                 else if (m.content && typeof m.content === "object") {
-                    // si tu antigua estructura guardaba { text: '...' } o similar:
+                    // Si la estructura de content es similar a esto:  { text: '...' }:
                     content = m.content.text ?? JSON.stringify(m.content);
                 } else {
                     content = String(m.content ?? "");
                 }
 
-                // solo devolver los campos permitidos por la API
+                // Devolvemos los campos permitidos para la API
                 return {
                     role: m.role === "assistant" ? "assistant" : m.role === "system" ? "system" : "user",
-                    content: content
+                    content: content,
                 };
             }) : [];
 
-
+            // HISTORIAL DE LA CONVERSACIÓN EN SESIÓN
             const messages: any = safeHistory;            
 
+            console.log('messages ===>>> ', messages);
+            console.log('firstTime ===>>> ', firstTime);
 
+            // Se agrega este primer mensaje solo al inicio de la sessión.
             if(firstTime) {
                 
                 messages.unshift({
-                role: "system",
-                content: `You are an assistant who knows the following database structure:
-                ${JSON.stringify(schema, null, 2)} \`
+                    role: "system",
+                    content: `You are an assistant who knows the following database structure:
+                        ${JSON.stringify(schema, null, 2)} \`
 
-                When a user requests data from a table without specifying columns, you must:
-                - Include **all columns** from the table in the getFields call.
-                - Never return empty columns (columns or fields or attributes).
-                - If the table has more than 10 columns, first ask the user if they want all of them.
-                It always generates the getFields calls with exact column names according to the schema.
-                
-                You should not respond to messages containing prohibited content or out-of-context questions.
-                `
+                        When a user requests data from a table without specifying columns, you must:
+                        - Include **all columns** from the table in the getFields call.
+                        - Never return empty columns (columns or fields or attributes).
+                        - If the table has more than 10 columns, first ask the user if they want all of them.
+                        It always generates the getFields calls with exact column names according to the schema.
+                        
+                        You should not respond to messages containing prohibited content or out-of-context questions.
+                        `
                 });
 
             }
@@ -183,6 +186,7 @@ export class ChatGptController {
                 strict: true,           
             };
 
+            // Agregación de todas las funciones de llamada
             const tools: any[] = [getFieldsTool, getAllColumnsByTableNameTool];
 
             let response: any = await openai.responses.create({

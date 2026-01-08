@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
 // Componentes
 import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 
-
+// Interfaz de mensajes del chat con IA
 interface ChatMessage {
     id?: string | number;
     role: 'user' | 'assistant' | 'system' | 'error';
@@ -31,7 +31,7 @@ export class PromptComponent implements OnInit, AfterViewChecked {
     @Output() principalTable: EventEmitter<any[]> = new EventEmitter();
 
 
-    messages: ChatMessage[] = [];
+    messages: ChatMessage[] = []; // Historial de mensajes de un chat activo
     inputText = '';
     sending = false;
     schema: any[] = [] ; // Esquema de todas las tablas y sus columnas
@@ -69,37 +69,38 @@ export class PromptComponent implements OnInit, AfterViewChecked {
     sendMessage(): void {
 
         const tables = this.edaBlankPanel.tables;
+        const text = this.inputText?.trim(); //
 
-        // Primeras pruebas sin filtros
-        const params = {
-            table: '',
-            dataSource: this.edaBlankPanel.dataSource._id,
-            panel: this.edaBlankPanel.panel.id,
-            dashboard: this.edaBlankPanel.inject.dashboard_id,
-            filters: [],
-            config: null,
-            queryLimit: this.edaBlankPanel.queryLimit,
-            joinType: this.edaBlankPanel.joinType,
-            rootTable: this.edaBlankPanel.rootTable?.table_name,
-            connectionProperties: this.edaBlankPanel.connectionProperties
-        }
+        // // Primeras pruebas sin filtros
+        // const params = {
+        //     table: '',
+        //     dataSource: this.edaBlankPanel.dataSource._id,
+        //     panel: this.edaBlankPanel.panel.id,
+        //     dashboard: this.edaBlankPanel.inject.dashboard_id,
+        //     filters: [],
+        //     config: null,
+        //     queryLimit: this.edaBlankPanel.queryLimit,
+        //     joinType: this.edaBlankPanel.joinType,
+        //     rootTable: this.edaBlankPanel.rootTable?.table_name,
+        //     connectionProperties: this.edaBlankPanel.connectionProperties
+        // }
 
-
-        const text = this.inputText?.trim();
-
+        // Filtra un texto vacio.
         if (!text) return;
 
         const userMsg: ChatMessage = { role: 'user', content: text, timestamp: Date.now() };
         this.messages.push(userMsg);
-        this.inputText = '';
+        this.inputText = ''; // Una vez almacenado el texto ingresado se reinicia el input
         this.sending = true;
-
         
-        // Llamada al servicio que envía el prompt al backend / OpenAI
-        this.chatgptService.sendPrompt(text, this.messages, tables, this.schema, this.firstTime).subscribe({
+        // Llamada al servicio que envía el prompt al Backend / OpenAI
+        const messages = this.messages;
+        const schema = this.schema;
+        const firstTime = this.firstTime;
+
+        this.chatgptService.sendPrompt(text, messages, tables, schema, firstTime).subscribe({
             next: (resp) => {
                 // Esperamos que `resp` contenga la respuesta ya procesada como texto. Adapta según tu backend.
-
                 const currentQuery = resp.response.currentQuery;
                 const principalTable = resp.response.principalTable;
 
