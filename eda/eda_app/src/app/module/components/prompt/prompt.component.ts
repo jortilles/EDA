@@ -34,13 +34,14 @@ export class PromptComponent implements OnInit, AfterViewChecked {
     messages: ChatMessage[] = [];
     inputText = '';
     sending = false;
-    schema: any[] = [] ;
+    schema: any[] = [] ; // Esquema de todas las tablas y sus columnas
     firstTime: boolean = true;
 
     constructor(private chatgptService: ChatgptService) {}
 
     ngOnInit(): void {
-        this.initSchema(this.edaBlankPanel.tables)
+        const tables = this.edaBlankPanel.tables
+        this.initSchema(tables);
     }
 
     initSchema(tables: any[]) {
@@ -50,14 +51,15 @@ export class PromptComponent implements OnInit, AfterViewChecked {
             let columns = [];
             table.columns.forEach((column: any) => {
                 columns.push(column.column_name);
-            })
+            });
             schema.push({
                 table: table.table_name,
-                columns: columns
+                columns: columns,
             })
         })
 
         this.schema = schema;
+        console.log('SCHEMA ::: ', this.schema);
     }
 
     ngAfterViewChecked(): void {
@@ -124,8 +126,7 @@ export class PromptComponent implements OnInit, AfterViewChecked {
         });
     }
 
-
-    // Envia con Enter (shift+Enter para nueva línea)
+    // Envia con Enter y (shift + Enter para un salto de linea sin enviar).
     onKeydown(event: KeyboardEvent) {
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();
@@ -133,15 +134,14 @@ export class PromptComponent implements OnInit, AfterViewChecked {
         }
     }
 
-
     private scrollToBottom(): void {
         try {
             const el = this.messagesContainer?.nativeElement;
             if (el) {
                 el.scrollTop = el.scrollHeight;
             }
-        } catch (e) {
-            // ignore
+        } catch (error) {
+            console.log('Error en scrollToBottom: ', error);
         }
     }
 }
