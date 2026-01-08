@@ -1,95 +1,117 @@
-# EDA 
-After years of working with complex analytics tools, [Jortilles](http://eda.jortilles.com) decided to create the easiest reporting tool. So simple that even a five-year-old can handle it. This is [Enterprise Data Analytics](https://eda.jortilles.com/) by Jortilles! The easiest analytics tool.
+# EDALITICS
 
-![EDA Sample](https://eda.jortilles.com/wp-content/uploads/2021/01/animaged4.gif)
+Edalitics (previously Enterprise Data Analytics) is an open-source analytics and dashboarding platform created by Jortilles. Its purpose is to make data exploration and visualization extremely easy — even for non-technical users — while still offering powerful features for advanced analysts.
 
+![Edalitics Sample](https://www.edalitics.com/wp-content/uploads/2025/10/animated.gif)
 
-## Get Started.
-
-The free EDA cloud: [free.edalitics](https://free.edalitics.com) is the easiest way to get started with EDA. If you like it you can always ugrade to a  [private edalitics instance](https://www.edalitics.com/en/edalitics-3/#como-tenerlo). Edalitis is the cloud service over EDA.
-
-## Features
-  * Create amazing dashboards without technical knowledge. 
-  * If you are a pro. You always can use SQL.
-  * Tree mode queries for complex data models.
-  * Define KPIs and send email alerts.
-  * With the public dashboards you can:
-    * Share your dashboards on internet as easy as share the [url](https://demoeda.jortilles.com/es/#/public/61a0f5fdb9314109a45ff077) 
-    * Integrate your dashboards in your app and itenract with them.
-  * Define parent-child reports.
-  * Centraliza your organization's data with Row Level Security.
+Edalitics is a metadata-driven analytical tool:
+1. Create a [data model](https://youtu.be/Px709s0ftiI)
+2. Create nice [reports](https://youtu.be/RFznLe9kxHU)
 
 
-## Get EDA locally
+# Why Edalitics?
 
-### Clone EDA
+Edalitics was built with a clear mission:
+
+To be the simplest analytics system to use, even for users without technical skills. To be the faster analytital tool for advanced users.  To allow the creation of rich dashboards without writing code and in a matter of minutes.
+
+If you want to try edalitics you always can check the [free.edalitics](https://free.edalitics.com) service or run the docker:  **docker run -p 80:80 jortilles/eda:latest**  
+
+
+# Key Features
+
+* No-code dashboard creation.
+* Advanced SQL query mode for power users.
+* Tree mode to explore logical data models.
+* KPI definitions and automatic e-mail alerts.
+* Public dashboards shareable via  [url](https://demoeda.jortilles.com/es/#/public/61a0f5fdb9314109a45ff077).
+* Row Level Security (RLS) for controlled data access.
+* Clean, modern, responsive UI.
+
+# Technology Stack
+
+Edalitics is built using modern and widely adopted technologies:
+
+* Node.js, TypeScript, Angular.
+* MongoDB for metadata and configuration storage
+* A lightweight, extensible backend + intuitive frontend
+
+
+
+# Installation & Local Development
+
+You can use Edalicits as a SAS service at https://www.edaitics.com. 
+
+Or you can deploy a local instance of edalitics in your environment.  To do this you should: 
+
+## Clone the repository
 
 ```bash
 git clone github.com/jortilles/EDA.git
 ```
 
-### Configuration
+## Configure the database
 
-* EDA/eda/eda_api/config/database.config.js #to set the mongodb database. You need a local mongodb server and a database for EDA. 
+Edit the MongoDB connection in:  **EDA/eda/eda_api/config/database.config.js**
 
 ```
 module.exports = {
     url: "mongodb://127.0.0.1:27017/EDA"
 };
-
 ```
 
-* EDA/eda/eda_app/src/app/config/config.ts #to set the backend url
+## Configure the backend URL in the UI
 
+In: **EDA/eda/eda_app/src/app/config/config.ts**
 ```
-export const URL_SERVICES = '/localhost:8666'; #by default api port is 8666
-
+export const URL_SERVICES = 'http://localhost:8666';
 ```
 
-### Installation
-
-Once cloned this repository and configured just build the API and the APP.
-
+## Run the backend and frontend
+Backend API:
 ```bash
 cd EDA/eda/eda_api
 npm install
 npm start
 ```
-
+Frontend App
 ```bash
 cd EDA/eda/eda_app
 npm install
 npm start
 ```
 
-## Docker
+The application will be available in your browser at:
 
-The easiest way to run and try  EDA locally is using docker: 
+👉 http://localhost:4200
 
-```
+
+
+## 🐳 Run edalitics with Docker (recommended)
+
+This is the siplest way to run edalitics locally 
+To get the latests buld: 
+```bash
 docker run -p 80:80 jortilles/eda:latest
 ```
+To get a manual deploy: 
+```bash
+docker run -p 80:80 jortilles/eda:manual_latest
+```
 
-Once the process if finish, just go to **http://localhost**
+Then open:
 
-* The default user is: **eda@jortilles.com**
-* The default password is: **default**
-
-
-Some of the dashboads  you can do with EDA: 
-
-![EDA Sample](https://www.edalitics.com/wp-content/uploads/2023/02/SuiteCRMUserPerformance.jpeg)
-
-![EDA Samplt](https://www.edalitics.com/wp-content/uploads/2022/03/woocommerce_sales.png)
+👉 http://localhost
 
 
 
-How it works:
-1. Create a [data model](https://youtu.be/Px709s0ftiI)
-2. Create nice [reports](https://youtu.be/RFznLe9kxHU)
-3. Enjoy and share it
+Default credentials:
 
-## ⚡ One-Click Deploy
+**User:** eda@jortilles.com
+
+**Password:** default
+
+# ⚡ One-Click Deploy
 
 | Cloud Provider | Deploy Button |
 |----------------|---------------|
@@ -102,10 +124,29 @@ How it works:
 
 <sub>Generated by <a href="https://deploystack.io/c/jortilles-eda" target="_blank">DeployStack.io</a></sub>
 
-## Documentation
-You can find EDA's documentation at (http://edadoc.jortilles.com/en/index.html#/)
+
+# Documentation
+
+Full documentation, tutorials, and guides are available at:
+
+👉 http://doc.edalitics.com
 
 
+# 🤝 Contributing
 
+Contributions are welcome! You can:
 
+Report issues
+
+Submit pull requests
+
+Improve documentation
+
+Suggest new features
+
+Check the repository issues tab to get started.
+
+# 📄 License
+
+Edalitics is released under the AGPL-3.0 license.
 

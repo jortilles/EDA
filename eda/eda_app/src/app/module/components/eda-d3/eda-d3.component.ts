@@ -2,16 +2,19 @@ import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit, Output,
 import * as d3 from 'd3';
 import { sankeyLinkHorizontal } from 'd3-sankey'
 import { sankey as Sankey } from 'd3-sankey';
-import { ChartsColors } from '@eda/configs/index';
 import { EdaD3 } from './eda-d3';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
 import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
 
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
 
 @Component({
+  standalone: true,
   selector: 'eda-d3',
   templateUrl: './eda-d3.component.html',
-  styleUrls: ['./eda-d3.component.css']
+  styleUrls: ['./eda-d3.component.css'],
+  imports: [FormsModule, CommonModule]
 })
 
 export class EdaD3Component implements AfterViewInit, OnInit {

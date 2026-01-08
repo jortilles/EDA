@@ -1158,10 +1158,7 @@ export class DashboardController {
     try {
       let connectionProps: any;
       if (req.body.dashboard?.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
-
-      console.log(req.body)
       const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
-      console.log(connection)
       const dataModel = await connection.getDataSource(req.body.model_id, req.qs.properties)
       /**--------------------------------------------------------------------------------------------------------- */
       /**Security check */
@@ -1339,9 +1336,9 @@ export class DashboardController {
       console.log('\n-------------------------------------------------------------------------------\n');
 
       /**cached query */
-      let cacheEnabled = false;
-      dataModelObject.ds.metadata.cache_config &&
-        dataModelObject.ds.metadata.cache_config.enabled === true;
+      let cacheEnabled =
+        dataModelObject.ds.metadata.cache_config &&
+        dataModelObject.ds.metadata.cache_config.enabled
 
       const cachedQuery = cacheEnabled
         ? await CachedQueryService.checkQuery(req.body.model_id, query, 'EDA')

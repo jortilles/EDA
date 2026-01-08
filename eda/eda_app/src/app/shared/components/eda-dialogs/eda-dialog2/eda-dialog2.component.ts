@@ -2,9 +2,23 @@ import { Component, OnInit, OnDestroy, Input, AfterViewInit, ViewChild, ElementR
 import { EdaDialog2 } from './eda-dialog2';
 import { Dialog } from 'primeng/dialog';
 
+
+import { CommonModule } from '@angular/common';
+import { DialogModule } from 'primeng/dialog';
+import { ButtonModule } from 'primeng/button'; // si usas botones dentro del diálogo
+import { FormsModule } from '@angular/forms'; // para [(ngModel)] si lo usas
+
+
 @Component({
+    standalone: true,
     selector: 'eda-dialog2',
     templateUrl: './eda-dialog2.component.html',
+    imports: [
+        CommonModule,
+        DialogModule,
+        ButtonModule,
+        FormsModule
+    ],
     styles: `
       ::ng-deep .p-dialog .p-dialog-footer {
         padding-bottom: 0.5rem;
@@ -28,6 +42,7 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, AfterView
     public ifShowApply: boolean;
     public ifShowClose: boolean;
     public ifShowReset: boolean;
+    public ifShowDuplicate: boolean;
     public ifShowDeleteFilter: boolean;
 
     // Traducido automáticamente para PrimeNG
@@ -53,6 +68,7 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, AfterView
 
         this.ifShowApply = this.apply.observers.length > 0 && this.showApply;
         this.ifShowClose = this.close.observers.length > 0 && this.showClose;
+        this.ifShowDuplicate = this.duplicate.observers.length > 0 && this.showDuplicate;
         this.ifShowReset = this.reset.observers.length > 0 && this.showReset;
         this.ifShowDeleteFilter = this.delete.observers.length > 0 && this.showDelete;
     }

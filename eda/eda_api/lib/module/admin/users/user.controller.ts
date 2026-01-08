@@ -96,15 +96,15 @@ export class UserController {
                         userEda.password = userEda.password;
                         userEda.role = adGroupsInMongo;
                         try {
-                            const userSaved = userEda.save();
-                            Object.assign(user, userSaved);
+                            const userSaved = await userEda.save();
+                            Object.assign(user, userSaved.toObject ? userSaved.toObject() : userSaved);
                             user.password = ':)';
-                            token = await jwt.sign({ user }, SEED, { expiresIn: 14400 }); // 4 hours
+                            token = jwt.sign({ user }, SEED, { expiresIn: 14400 }); // 4 hours
 
                             // Borrem de tots els grups el usuari actualitzat
-                            await Group.updateMany({}, { $pull: { users: (await userSaved)._id } });
+                            await Group.updateMany({}, { $pull: { users: (userSaved)._id } });
                             // Introduim de nou els grups seleccionat al usuari actualitzat
-                            await Group.updateMany({ _id: { $in: adGroupsInMongo } }, { $push: { users: (await userSaved)._id } });
+                            await Group.updateMany({ _id: { $in: adGroupsInMongo } }, { $push: { users: (userSaved)._id } });
                             return res.status(200).json({ user, token: token, id: user._id });
                         } catch (error) {
                             return next(new HttpException(400, 'Some error ocurred while creating the User'));

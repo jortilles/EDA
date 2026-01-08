@@ -6,15 +6,21 @@ import { AlertService, DashboardService } from '@eda/services/service.index';
 import { ChangeDetectorRef } from '@angular/core';
 
 import * as _ from 'lodash';
-
+import { DropdownModule } from 'primeng/dropdown';
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 @Component({
+  standalone: true,
   selector: 'link-dashboards-dialog',
   templateUrl: './link-dashboards.component.html',
-  styleUrls: []
+  styleUrls: [],
+  imports: [FormsModule, CommonModule, DropdownModule, ProgressBarModule,EdaDialog2Component]
 })
 
-export class LinkDashboardsComponent extends EdaDialogAbstract {
-
+export class LinkDashboardsComponent {
+  @Input() controller: any
   @Input() fields: Array<string>;
 
   public dialog: EdaDialog;
@@ -42,50 +48,19 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
   public oldLinked: any = null;
   public unLinkString: string = $localize`:@@unlink:Desvincular del informe: `
   public noValidColumn: string = $localize`:@@NoValidCol:No hay columnas válidas`
-
+  public title : string;  
   public loading = false;
-
+  public display: boolean = false;
   constructor(
     private dashboardService: DashboardService,
     private alertService: AlertService,
-    private cd: ChangeDetectorRef // 👈 inyectamos ChangeDetectorRef
-  ) {
-    super();
-    this.dialog = new EdaDialog({
-      show: () => this.onShow(),
-      hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: $localize`:@@DashboardLink:Vincular con un informe`,
-      style: { width: '40%', height: '40%', top: '-1em', left: '1em' }
-    });
-  }
-
-
-  saveChartConfig() {
-    if (!this.noLink) {
-      const dashboard_name = this.dasboards.filter(d => d['value'] === this.selectedDashboard)[0].label;
-      //Get index -> only non numeric
-      const colIndex = this.controller.params.query
-        .map((col: any, i: number) => { return { i: i, name: col.column_name } })
-        .filter(col => col.name === this.sourceColumn)[0].i;
-
-
-      this.onClose(
-        EdaDialogCloseEvent.UPDATE,
-        new LinkedDashboardProps(this.sourceColumn, this.sourceTable, dashboard_name, <any>this.selectedDashboard, this.targetColumn, this.targetTable, colIndex)
-      );
-    } else {
-      this.onClose(
-        EdaDialogCloseEvent.UPDATE, null);
-    }
-
+    private cd: ChangeDetectorRef ) {
 
   }
 
-  closeChartConfig() {
-    this.onClose(EdaDialogCloseEvent.NONE);
-  }
-
-  onShow(): void {
+  ngOnInit(): void {
+    this.title = $localize`:@@DashboardLink:Vincular con un informe`;
+    this.display = true;
     this.oldLinked = this.controller.params.linkedDashboard ? this.controller.params.linkedDashboard.dashboardName : null;
 
     if ((this.controller.params.charttype === 'parallelSets') && !this.controller.params.modeSQL) {
@@ -135,18 +110,42 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
     }
 
   }
+
+  saveChartConfig() {
+    if (!this.noLink) {
+      const dashboard_name = this.dasboards.filter(d => d['value'] === this.selectedDashboard)[0].label;
+      //Get index -> only non numeric
+      const colIndex = this.controller.params.query
+        .map((col: any, i: number) => { return { i: i, name: col.column_name } })
+        .filter(col => col.name === this.sourceColumn)[0].i;
+
+
+      this.onClose(
+        EdaDialogCloseEvent.UPDATE,
+        new LinkedDashboardProps(this.sourceColumn, this.sourceTable, dashboard_name, <any>this.selectedDashboard, this.targetColumn, this.targetTable, colIndex)
+      );
+    } else {
+      this.onClose(
+        EdaDialogCloseEvent.UPDATE, null);
+    }
+  }
+
+  closeChartConfig() {
+    this.onClose(EdaDialogCloseEvent.NONE);
+  }
+
+  
   onClose(event: EdaDialogCloseEvent, response?: any): void {
-
+    this.display = false;
     return this.controller.close(event, response);
-
   }
 
   public filterFilters() {
     this.filters = this.filters.filter(column => column.dashboardID === <any>this.selectedDashboard);
+    console.log(this, 'this.filterFilters')
   }
 
   public handleTargetColumn() {
-
     this.targetColumn = this.selectedFilter.colname;
     this.targetTable = this.selectedFilter.table;
 
@@ -190,17 +189,21 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
         let disable = true;
 
-        if (!this.controller.params.modeSQL) {
+        if (!this.controller.params.modeSQL ||this.controller.params.modeSQL === undefined) {
           // No SQL mode
           for (const filter of dash.config.filters) {
-            if (filter.column) {
-              if (
-                filter.column.value.column_name === column.col &&
-                filter.table.value === column.table
-              ) {
+            const filterColumn = filter?.column ?? filter?.selectedColumn;
+            if(filterColumn === filter?.column){
+              if (filter.column.value.column_name === column.col && filter.table.value === column.table) {
                 disable = false;
               }
-            } else {
+            }
+            else if(filterColumn === filter?.selectedColumn){
+              if (filterColumn.column_name === column.col && filter.selectedTable.table_name === column.table) {
+                disable = false;
+              }
+            }
+            else {
               console.log('NO SE HA IMPLEMENTADO TODAVÍA INFORMES VINCULADOS CON EL MODO ARBOL.');
             }
           }
@@ -230,7 +233,6 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
           tempDashboards.push({ label: d.config.title, value: d._id });
         }
       }
-
       this.dasboards = tempDashboards;
       this.filters = tempFilters;
       this.cd.detectChanges();

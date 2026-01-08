@@ -4,16 +4,45 @@ import { Table } from 'primeng/table';
 // import { FilterUtils } from 'primeng/utils';
 import { EdaTable } from './eda-table';
 import { registerLocaleData } from '@angular/common';
-import es from '@angular/common/locales/es';
 
+import es from '@angular/common/locales/es';
 import * as _ from 'lodash';
 import { StyleService } from '@eda/services/service.index';
 import { EdaColumnChartOptions } from './eda-columns/eda-column-chart-options';
 
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TableModule } from 'primeng/table';
+import { PaginatorModule } from 'primeng/paginator';     // si usas paginator
+import { ButtonModule } from 'primeng/button';          // si tienes botones en la tabla
+import { InputTextModule } from 'primeng/inputtext';    // si usas filtros con input
+
+// tests
+import { TooltipModule } from 'primeng/tooltip'; 
+import { MultiSelectModule } from 'primeng/multiselect';
+import { ChartModule } from 'primeng/chart';
+import { EdaContextMenuComponent } from '@eda/shared/components/shared-components.index';
+import { DialogModule } from 'primeng/dialog';  // <--- importar módulo de PrimeNG
+
+
 @Component({
+    standalone: true,
     selector: 'eda-table',
     templateUrl: './eda-table.component.html',
-    styleUrls: ['./eda-table.component.css']
+    styleUrls: ['./eda-table.component.css'],
+    imports: [
+        CommonModule,
+        FormsModule,
+        TableModule,      
+        PaginatorModule, 
+        ButtonModule,
+        InputTextModule,
+        TooltipModule,
+        MultiSelectModule,
+        ChartModule,
+        EdaContextMenuComponent,
+        DialogModule,
+    ]
 })
 export class EdaTableComponent implements OnInit {
     @ViewChild('table', { static: false }) table: Table;

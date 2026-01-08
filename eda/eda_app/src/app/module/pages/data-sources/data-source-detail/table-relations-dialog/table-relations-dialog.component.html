@@ -1,9 +1,9 @@
-<eda-dialog [inject]="dialog">
-  <div body class="py-4">
+<eda-dialog2 width="50vw" height="65vh" (apply)="saveRelation()" (close)="closeDialog()" [header]="title" >
+  <div content class="py-4">
     <form [formGroup]="form">
       <div class="grid grid-cols-3 gap-3">
         <p-dropdown [options]="targetTables" formControlName="targetTable" filter="true" optionLabel="label"
-          i18n-placeholder="@@placeholderTargetTables" placeholder="tabla destino"
+          i18n-placeholder="@@placeholderTargetTables" placeholder="Tabla destino"
           id="eda_add_relation_targetTable" [style]="{'width': '100%'}" [emptyMessage]="emptyMessageTags">
         </p-dropdown>
 
@@ -25,32 +25,18 @@
 
       <div class="mt-4">
         <ul>
-          <li *ngFor="let sourceCol of selectedSourceCols; let i=index">
-            <i class="fa fa-close" style="color: #c0555e;"
-              (click)="deleteRelation(i)">
-            </i>
-            &nbsp;&nbsp;
-            {{controller.params.table.description}}.{{sourceCol.display_name.default}} ⇴
-            {{targetTable}}.{{selectedTargetCols[i].display_name.default}}
-          </li>
+          @for(sourceCol of selectedSourceCols; track $index){
+            <li>
+              <i class="fa fa-close" style="color: #c0555e;"
+                (click)="deleteRelation($index)">
+              </i>
+              &nbsp;&nbsp;
+              {{controller.params.table.description}}.{{sourceCol.display_name.default}} ⇴
+              {{targetTable}}.{{selectedTargetCols[$index].display_name.default}}
+            </li>
+          }
         </ul>
       </div>
     </form>
   </div>
-
-  <div footer class="flex justify-end p-2 border-t gap-1.5">
-    <button
-      class="cancel-button"
-      (click)="closeDialog()"
-      i18n="@@cancelarBtn">
-      Cancelar
-    </button>
-    <button
-      class="confirm-button"
-      [disabled]="selectedSourceCols.length === 0"
-      (click)="saveRelation()"
-      i18n="@@guardarBtn">
-      Confirmar
-    </button>
-  </div>
-</eda-dialog>
+</eda-dialog2>

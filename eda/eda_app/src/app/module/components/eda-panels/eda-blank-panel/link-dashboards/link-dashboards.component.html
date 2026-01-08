@@ -1,5 +1,6 @@
-<eda-dialog [inject]="dialog">
-  <div body>
+<eda-dialog2 [display]="display" i18n-header="@@dialogHeaderCustomActions" [header]="title" width="40vw" height="40vh"
+  [overflow]="'auto'" (apply)="saveChartConfig()" (close)="closeChartConfig()">
+  <div content class="p-6">
     <div style="margin: 1em;">
       <p-progressBar *ngIf="activateProgressBar" mode="indeterminate" [style]="{'height': '0.3rem'}"></p-progressBar>
     </div>
@@ -55,7 +56,7 @@
             <p-dropdown
               [options]="dasboards"
               [(ngModel)]="selectedDashboard"
-              [disabled]="loading === false && activateProgressBar === false"
+              [disabled]="loading === true"
               [style]="{'width': '100%'}"
               i18n-placeholder="@@fieldDashboardDashboard"
               placeholder="Dashboard"
@@ -135,16 +136,4 @@
       </div>
     }
   </div>
-
-  <div footer>
-    <div class="flex justify-end p-2 border-t gap-1.5">
-      <button  class="cancel-button" (click)="closeChartConfig()">
-        <i class="fa fa-times"></i>
-        <span i18n="@@cancelarBtn">Cancelar</span>
-      </button>
-      <button class="confirm-button" (click)="saveChartConfig()">
-        <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
-      </button>
-    </div>
-  </div>
-</eda-dialog>
+</eda-dialog2>

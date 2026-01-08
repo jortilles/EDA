@@ -1,32 +1,61 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, Input, ViewChild} from '@angular/core';
 import {SelectItem} from 'primeng/api';
 import {EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent, EdaDatePickerComponent} from '@eda/shared/components/shared-components.index';
 import {Column} from '@eda/models/model.index';
-import {
-    AlertService,
-    ChartUtilsService,
-    ColumnUtilsService,
-    DashboardService,
-    FilterType, QueryBuilderService,
-} from '@eda/services/service.index';
+import { CommonModule } from '@angular/common';
+import { NgClass } from '@angular/common';
+import { TooltipModule } from 'primeng/tooltip'; 
+import { InputSwitchModule } from 'primeng/inputswitch';
+
+import { AlertService, ChartUtilsService, ColumnUtilsService, DashboardService, FilterType, QueryBuilderService, } from '@eda/services/service.index';
 import * as _ from 'lodash';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';  // <-- necesario para ngModel
+import { ScrollPanelModule } from 'primeng/scrollpanel';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { DropdownModule } from 'primeng/dropdown';
+import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+
+
+const ANGULAR_MODULES = [
+    FormsModule,
+    ReactiveFormsModule,
+    CommonModule,
+    NgClass,
+    MultiSelectModule,
+    ScrollPanelModule
+];
+
+const PRIMENG_MODULES = [
+    DropdownModule,
+    InputSwitchModule,
+    TooltipModule
+];
+
+const STANDALONE_COMPONENTS = [
+    EdaDialog2Component,
+    EdaDatePickerComponent
+];
+
 
 @Component({
+    standalone: true,
     selector: 'app-filter-dialog',
     templateUrl: './filter-dialog.component.html',
-    styleUrls: ['../eda-blank-panel.component.css']
+    styleUrls: ['../eda-blank-panel.component.css'],
+    imports: [STANDALONE_COMPONENTS, ANGULAR_MODULES, PRIMENG_MODULES]
 
 })
 
-export class FilterDialogComponent extends EdaDialogAbstract {
+export class FilterDialogComponent {
 
     @ViewChild('myCalendar', { static: false }) datePicker: EdaDatePickerComponent;
-
+    @Input() controller: any;
 
     public dialog: EdaDialog;
     public selectedColumn: Column;
     public loading: boolean = true;
-
+    public title: string;
+    public displayWindow: boolean = false;
     public display = {
         between: false,
         calendar: false,
@@ -54,23 +83,14 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         private queryBuilder: QueryBuilderService,
         private alertService: AlertService
     ) {
-        super();
 
         this.filter.types = this.chartUtils.filterTypes;
 
-        this.dialog = new EdaDialog({
-            show: () => this.onShow(),
-            hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-            title: ''
-        });
-
-        this.dialog.style = { width: '50%', height: '55vh', top:"-4em", left:'1em'};
     }
 
-    onShow(): void {
+    ngOnInit(): void {
         this.selectedColumn = this.controller.params.selectedColumn;
-        const title = this.selectedColumn.display_name.default;
-        this.dialog.title = `Atributo ${title} de la entidad ${this.controller.params.table}`;
+        this.title = `Atributo ${this.selectedColumn.display_name.default} de la entidad ${this.controller.params.table}`;
         this.carrega();
     }
 
@@ -250,5 +270,9 @@ export class FilterDialogComponent extends EdaDialogAbstract {
 
     onClose(event: EdaDialogCloseEvent, response?: any): void {
         return this.controller.close(event, response);
+    }
+
+    onApply(){
+        this.closeDialog();
     }
 }

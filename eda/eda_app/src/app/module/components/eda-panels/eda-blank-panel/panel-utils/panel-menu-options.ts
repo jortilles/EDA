@@ -323,7 +323,7 @@ export const PanelOptions = {
         item: () => PanelOptions.editQuery(ebp),
       },
       {
-        show: true,
+        show: JSON.parse(localStorage.getItem('user'))._id  !== '135792467811111111111112',
         item: () => PanelOptions.editChart(ebp),
       },
       {

@@ -1,5 +1,5 @@
-<eda-dialog [inject]="dialog">
-  <div body>
+<eda-dialog2 width="50vw" height="65vh" (apply)="saveColumn()" [header]="title" (close)="closeDialog()">
+  <div content>
     <form [formGroup]="form" class="grid gap-4">
       <div class="grid gap-2">
         <label for="name"
@@ -28,19 +28,4 @@
       </div>
     </form>
   </div>
-
-  <div footer class="flex justify-end p-2 border-t gap-1.5">
-    <button
-      class="rounded-md px-4 py-2 border"
-      (click)="closeDialog()"
-      i18n="@@cancelarBtn">
-      Cancelar
-    </button>
-    <button
-      class="rounded-md px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white"
-      (click)="saveColumn()"
-      i18n="@@guardarBtn">
-      Confirmar
-    </button>
-  </div>
-</eda-dialog>
+</eda-dialog2>

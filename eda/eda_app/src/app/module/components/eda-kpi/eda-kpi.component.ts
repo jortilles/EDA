@@ -1,13 +1,19 @@
-import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef } from '@angular/core';
 import { StyleProviderService } from '@eda/services/service.index';
 import { registerLocaleData } from '@angular/common';
 import { EdaKpi } from './eda-kpi';
+import { EdaChart } from '../eda-chart/eda-chart';
 import es from '@angular/common/locales/es';
-import { EdaChartComponent } from '../component.index';
+import { EdaChartComponent } from '../eda-chart/eda-chart.component';
+
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
 
 @Component({
+    standalone: true,
     selector: 'eda-kpi',
-    templateUrl: './eda-kpi.component.html'
+    templateUrl: './eda-kpi.component.html',
+    imports: [FormsModule, CommonModule, EdaChartComponent]
 })
 
 export class EdaKpiComponent implements OnInit {
@@ -23,8 +29,6 @@ export class EdaKpiComponent implements OnInit {
     warningColor = '#ff8100';
     containerHeight: number = 20;
     containerWidth: number = 20;
-
-    showChart: boolean = true;
 
     constructor(private styleProviderService : StyleProviderService) { }
 
@@ -118,10 +122,9 @@ export class EdaKpiComponent implements OnInit {
             resultSize = resultSize / 1.8;
         }
         // Si tengo ung gráfico lo hago más pequeño
-        if (this.showChart) {
+        if (this.inject.showChart) {
             resultSize = resultSize / 1.8;
         }
-      
         return resultSize.toFixed().toString() + 'px';
     }
 

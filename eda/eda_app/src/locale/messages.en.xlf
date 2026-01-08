@@ -3826,6 +3826,10 @@ Once configured you can invoke it whenever you want from the button.</target>
 <source>El nombre es obligatorio</source>
 <target>Name is required</target>
 </trans-unit>
+<trans-unit id="separatorRequired">
+  <source>El separador es obligatorio</source>
+  <target>Separator is required</target>
+</trans-unit>
 <trans-unit id="type">
 <source>Tipo</source>
 <target>Type</target>
@@ -5472,6 +5476,11 @@ OR<ph id="5"/>
 <target>Autocomplete filter?</target>
 </trans-unit>
 
+<trans-unit id="mandatoryFilter">
+  <source>¿Filtro autocomplete?</source>
+  <target>Mandatory filter?</target>
+</trans-unit>
+
 <trans-unit id="globalFiltersToDF">
 <source>Debe disponer de filtros globales para poder avanzar con la configuración de los filtros dependientes.</source>
 <target>You must have global filters available in order to proceed with the configuration of dependent filters.</target>
@@ -5486,6 +5495,10 @@ OR<ph id="5"/>
 <source>Se ha reiniciado la configuración de los filtros dependientes</source>
 <target>The configuration of dependent filters has been reset</target>
 </trans-unit>
+  <trans-unit id="showField">
+    <source>Mostrar campo de origen</source>
+    <target>Show source field</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>

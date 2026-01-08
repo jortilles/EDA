@@ -1,17 +1,21 @@
-import { Component, ViewChild } from "@angular/core";
+import { Component, CUSTOM_ELEMENTS_SCHEMA, Input, OnInit, ViewChild } from "@angular/core";
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
 import { PanelChart } from "../panel-charts/panel-chart";
 import { PanelChartComponent } from "../panel-charts/panel-chart.component";
 import { StyleProviderService } from '@eda/services/service.index';
-
-
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
+import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
+import { ColorPickerModule } from "primeng/colorpicker";
 @Component({
+    standalone: true,
     selector: 'knob-dialog',
-    templateUrl: './knob-dialog.component.html'
+    templateUrl: './knob-dialog.component.html',
+    imports: [FormsModule, CommonModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent],
 })
 
-export class KnobDialogComponent extends EdaDialogAbstract {
-
+export class KnobDialogComponent implements OnInit {
+    @Input() controller: any;
     @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
 
     public dialog: EdaDialog;
@@ -22,20 +26,10 @@ export class KnobDialogComponent extends EdaDialogAbstract {
     public limitInQuery: boolean;
     public label: string;
     public display: boolean = false;
+  public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
+    constructor(private styleProviderService : StyleProviderService) {}
 
-    constructor(private styleProviderService : StyleProviderService) {
-        super();
-
-        this.dialog = new EdaDialog({
-            show: () => this.onShow(),
-            hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-            title: $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
-        });
-        this.dialog.style = { width: '80%', height: '70%', top: "-4em", left: '1em' };
-    }
-
-    onShow(): void {
-        this.display = true;
+    ngOnInit(): void {
         this.panelChartConfig = this.controller.params.panelChart;
 
         setTimeout(() => {

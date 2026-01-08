@@ -1,5 +1,6 @@
-<eda-dialog [inject]="dialog">
-  <div body class="grid gap-4">
+<eda-dialog2 [display]="displayWindow" [header]="title" width="80vw" height="70vh" [overflow]="'auto'"
+  (apply)="onApply()" (close)="closeDialog()">
+  <div content class="grid gap-4">
     <div class="flex flex-col mt-4 gap-4">
       <!-- Configuración de filtros -->
         <div class="grid grid-cols-[42.5%,42.5%,15%] gap-4 items-start mt-10">
@@ -142,22 +143,4 @@
         }
       </div>
     </div>
-
-    <div footer>
-      <div class="flex justify-end p-2 border-t gap-1.5">
-        <button
-          class="cancel-button"
-          (click)="closeDialog()">
-          <i class="fa fa-times"></i>
-          <span i18n="@@cancelarBtn">Cancelar</span>
-       </button>
-        <button
-          class="confirm-button"
-          [disabled]="!display.filterButton"
-          (click)="closeDialog()">
-          <i class="fa fa-check"></i>
-          <span i18n="@@guardarBtn">Confirmar</span>
-        </button>
-      </div>
-    </div>
-</eda-dialog>
+</eda-dialog2>

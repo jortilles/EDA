@@ -1,6 +1,8 @@
-<eda-dialog [inject]="dialog">
+<eda-dialog2 
+[display]="displayWindow" [header]="title" width="80vw" height="70vh" [overflow]="'auto'"
+  (apply)="onApply()" (close)="closeDialog()" [showDuplicate]=true (duplicate)="onDuplicate()">
   <!-- class="flex-1 px-6 overflow-y-auto" -->
-  <div body>
+  <div content class="p-2 space-y-6">
     <div class="grid gap-4"
       [ngClass]="{
         'grid-cols-[0.75fr_0.75fr_0.75fr_3.75fr]': showFormatDateSection,
@@ -13,7 +15,7 @@
           @for (aggregation of aggregationsTypes; track aggregation) {
             <div class="aggregation-box"
                 (click)="addAggregation(aggregation)"
-                [ngClass]="aggregation.selected === true ? 'aggregation-active' : ''">
+                [ngClass]="aggregation.selected === true ? 'aggregation-active' : 'aggregation-unactive'">
                 <span>{{getAggName(aggregation.value)}}</span>
             </div>
           }
@@ -27,7 +29,7 @@
           @for (ordenation of ordenationTypes; track ordenation) {
             <div class="aggregation-box"
               (click)="addOrdenation(ordenation)"
-              [ngClass]="ordenation.selected === true ? 'aggregation-active' : ''">
+              [ngClass]="ordenation.selected === true ? 'aggregation-active' : 'aggregation-unactive'">
               <span>{{ordenation.display_name | uppercase}}</span>
             </div>
           }
@@ -212,40 +214,20 @@
       </div>
     </div>
   </div>
-
-  <div footer>
-    <div class="flex justify-end p-2 border-t gap-1.5">
-
-      <button class="cancel-button" (click)="closeDialog()">
-        <i class="fa fa-times"></i>
-        <span i18n="@@cancelarBtn">Cancelar</span>
-      </button>
-
-      <button class="flex items-center px-4 py-2 border rounded-md" (click)="duplicateColumn()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-        </svg>
-        <span i18n="@@duplicateColumnButton">Duplicar columna</span>
-      </button>
-
-
-      <button class="confirm-button" [disabled]="!display.filterButton" (click)="closeDialog()">
-        <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
-      </button>
-    </div>
-  </div>
-</eda-dialog>
-
-<eda-dialog2 *ngIf="display.duplicateColumn" [display]="display.duplicateColumn" header="Duplicar columna" width="60vw" height= "auto" (close)="onCancelDuplicateColumn()" (apply)="saveDuplicatedColumn()">
-  <div content>
-    <!-- Duplicar columna -->
-    <div class="col-12">
-      <span>
-        <label i18n="@@duplicatedColumnNameLabel" for="duplicatedColumnName" class="text-lg mr-6">
-          Nombre columna duplicada
-        </label>
-        <input pInputText id="duplicatedColumnName" [(ngModel)]="duplicatedColumnName" type="text"  />
-      </span>
-    </div>
-  </div>
 </eda-dialog2>
+
+@if(display.duplicateColumn){
+  <eda-dialog2 header="Duplicar columna" width="60vw" height= "auto" (close)="onCancelDuplicateColumn()" (apply)="saveDuplicatedColumn()">
+    <div content class="p-2 space-y-6">
+      <!-- Duplicar columna -->
+      <div class="col-12">
+        <span>
+          <label i18n="@@duplicatedColumnNameLabel" for="duplicatedColumnName" class="text-lg mr-6">
+            Nombre columna duplicada
+          </label>
+          <input pInputText id="duplicatedColumnName" [(ngModel)]="duplicatedColumnName" type="text"  />
+        </span>
+      </div>
+    </div>
+  </eda-dialog2>
+}

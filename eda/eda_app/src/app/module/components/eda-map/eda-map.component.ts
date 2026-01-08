@@ -1,14 +1,18 @@
-import { OnInit, ChangeDetectorRef, Input, AfterViewChecked } from "@angular/core";
+import { OnInit, Input, AfterViewChecked } from "@angular/core";
 import { Component, AfterViewInit } from "@angular/core";
 import * as L from "leaflet";
 import { MapUtilsService, StyleProviderService } from "@eda/services/service.index";
 import { EdaMap } from "./eda-map";
 import { LatLngExpression } from "leaflet";
 
+import { FormsModule } from '@angular/forms'; 
+import { CommonModule } from '@angular/common';
 @Component({
+  standalone: true,
   selector: 'eda-map',
   templateUrl: './eda-map.component.html',
-  styleUrls: ['./eda-map.component.css']
+  styleUrls: ['./eda-map.component.css'],
+  imports: [FormsModule, CommonModule]
 })
 export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked {
 

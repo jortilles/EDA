@@ -206,8 +206,8 @@ export class MySqlBuilderService extends QueryBuilderService {
   }
 
   public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
-    tables: Array<any>, limit: number,  joinType: string, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any ) {
-    
+    tables: Array<any>, limit: number,  joinType: string, groupByEnabled:boolean, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any ) {
+   
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
     let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
 
@@ -240,7 +240,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
 
     // GroupBy
-    if (grouping.length > 0) {
+    if (grouping.length > 0 && ((groupByEnabled))) {
       myQuery += '\ngroup by ' + grouping.join(', ');
     }
 
@@ -270,7 +270,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     if (limit){
       myQuery += `\nlimit ${limit}`;
     }else{
-      myQuery += `\nlimit 100000`; // Por defecto limit 100000
+      myQuery += `\nlimit 1000`; // Por defecto limit 100000
     }    
 
     if (alias) {
