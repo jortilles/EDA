@@ -120,45 +120,52 @@ export class ChatGptController {
                 
                 messages.unshift({
                     role: "system",
-                    content: `You are an assistant who knows the following database structure:
+                    content: `You are an assistant who knows the following database schema:
                         ${JSON.stringify(schema, null, 2)} \`
-
-                        When a user requests data from a table without specifying columns, you must:
-                        - Include **all columns** from the table in the getFields call.
-                        - Never return empty columns (columns or fields or attributes).
-                        - If the table has more than 10 columns, first ask the user if they want all of them.
-                        It always generates the getFields calls with exact column names according to the schema.
-                        
-                        You should not respond to messages containing prohibited content or out-of-context questions.
+                        You are an assistant who helps generate a structure similar to the schema and you cannot deviate from the schema format. 
+                        When you don't have enough data, return the answer with a question demanding more clarity. 
+                        You should not answer trivial questions unrelated to the schema.
+                        You must only return table names and column names that exist EXACTLY in the provided schema.
+                        If the user uses synonyms, translations, or natural language, you must map them to existing schema names.
+                        If no valid mapping exists, return an empty result.
+                        Never invent table or column names.
                         `
                 });
 
             }
 
             // Definir en otro directorio
-            const getFieldsTool: any = {
+            // Obtencion del campo.
+            const getFieldsTool = {
                 type: "function",
                 name: "getFields",
-                description: "Returns an array of tables objects where each one contains its corresponding columns element which is an array of columns. You must check the schema",
+                description: "Extracts table names and their requested columns from the user query. Only return tables and columns that exist in the provided schema. Do not invent tables or columns.",
                 parameters: {
                     type: "object",
                     properties: {
                         tables: {
                             type: "array",
-                            description: "Array of table requests. Each element must be an object with 'table' (string) and 'columns' (array of strings). If no column is specified, you must add all the columns from the corresponding table. You must check the schema",
+                            description: "List of tables explicitly referenced in the user request.",
                             items: {
                                 type: "object",
                                 properties: {
-                                    table: { type: "string", description: "Name of the table (e.g. 'customers')" },
+                                    table: {
+                                        type: "string",
+                                        description: "Exact table name as defined in the schema. Must match exactly."
+                                    },
                                     columns: {
                                         type: "array",
-                                        description: "List of string column names. If not specified or empty, return all columns for the table. You must check the schema. You must identify tables or entities in the prompt query to match them with the columns you will return. Take also into account synonyms and possible typography mistakes. Never return empty if you dont know make a request",
-                                        items: { type: "string" }
+                                        description: "List of column names explicitly requested for this table. Only include columns that exist in the schema.",
+                                        items: {
+                                            type: "string"
+                                        },
+                                        minItems: 1
                                     }
                                 },
                                 required: ["table", "columns"],
                                 additionalProperties: false
-                            }
+                            },
+                            minItems: 1
                         }
                     },
                     required: ["tables"],
@@ -168,26 +175,26 @@ export class ChatGptController {
             };
 
 
-            const getAllColumnsByTableNameTool: any = {
-                type: "function",       // obligatorio
-                name: "getAllColumnsByTableName",
-                description: "Returns the table name. The table name must exist in the schema; synonyms and minor typos may be considered.",
-                parameters: {
-                    type: "object",
-                    properties: {
-                        table: {
-                            type: "string",
-                            description: "Name of the table, must exist in the schema",
-                        },
-                    },
-                    required: ["table"],
-                    additionalProperties: false
-                },
-                strict: true,           
-            };
+            // const getAllColumnsByTableNameTool: any = {
+            //     type: "function",       // obligatorio
+            //     name: "getAllColumnsByTableName",
+            //     description: "Returns the table name. The table name must exist in the schema; synonyms and minor typos may be considered.",
+            //     parameters: {
+            //         type: "object",
+            //         properties: {
+            //             table: {
+            //                 type: "string",
+            //                 description: "Name of the table, must exist in the schema",
+            //             },
+            //         },
+            //         required: ["table"],
+            //         additionalProperties: false
+            //     },
+            //     strict: true,           
+            // };
 
             // Agregación de todas las funciones de llamada
-            const tools: any[] = [getFieldsTool, getAllColumnsByTableNameTool];
+            const tools: any[] = [getFieldsTool];
 
             let response: any = await openai.responses.create({
                 model: MODEL,
@@ -200,6 +207,7 @@ export class ChatGptController {
             let toolResult: string | null = null;
             let currentQueryTool: any[];
 
+            console.log('toolCall: ', toolCall);
 
             if(toolCall && toolCall.name === "getFields"){
                 const args = toolCall.arguments ? JSON.parse(toolCall.arguments) : {};
@@ -208,6 +216,7 @@ export class ChatGptController {
                 const principalTable = tables[0].table
 
                 // Current Query
+
                 currentQueryTool = getFields(tables, data);
                 response.currentQuery = currentQueryTool;
                 response.principalTable =  principalTable;
