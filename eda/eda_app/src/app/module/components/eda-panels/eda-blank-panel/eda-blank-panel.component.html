@@ -289,321 +289,337 @@
   
               <!-- Advanced Settings -->
               @if(currentQuery.length > 0){
-              <div class="grid grid-cols-3 align-items-center">
-                <div class="relative inline-block cols-span-1">
-                  <div class="flex items-center gap-2">
-                    <h3 class="cursor-pointer text-lg font-bold font-sans transition-colors duration-200"
-                      [ngClass]="display_v.advancedSetting=== 0 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
-                      (click)="display_v.advancedSetting = 0" i18n="@@yourQuerySQL">
-                      Mi consulta SQL
-                    </h3>
-                    <span>
-                      <i class="pi pi-info-circle cursor-pointer text-gray-500" [pTooltip]="ptooltipViewQuery"
-                        (click)="getQuery($event)">
-                      </i>
-                    </span>
-                  </div>
-                  <!-- Contenedor de query -->
-                  @if(display_v.showQueryContainer) {
-                    <div id="query-container"
-                      class="absolute top-full left-0 mt-1 w-[35vw] h-[30vh] max-h-[80vh] bg-white z-50 shadow-lg rounded-lg p-4 border border-gray-300 flex flex-col">
-                      @if(display_v.minispinnerSQL) {
-                        <div class="flex justify-center items-center w-full min-h-[15vh]">
-                          <p-progressSpinner [style]="{width:'4vw', height:'4vw'}" strokeWidth="5"
-                            fill="#EEEEEE"></p-progressSpinner>
-                        </div>
-                      }
-                      @if(!display_v.minispinnerSQL) {
-                        <textarea class="w-full flex-1 p-2 border rounded resize-none mb-2"
-                          [(ngModel)]="queryFromServer" pInputTextarea autoResize="autoResize">
-                        </textarea>
-                        <div class="mt-2 flex gap-4">
-                          <button type="button" pButton icon="fa fa-database" class="p-button-success mt-2 w-fit"
-                            (click)="migrateQuery()" i18n-label="@@openSqlMode" label="Abrir en modo SQL">
-                          </button>
-                          <button type="button" pButton icon="pi pi-times" class="p-button-secondary mt-2 w-fit"
-                            (click)="display_v.showQueryContainer = false" i18n-label="cancelarBtn" label="Cancelar">
-                          </button>
-                        </div>
-                      }
-                    </div>
-                  }
-  
-                </div>
-  
-                <div class="relative inline-block cols-span-1">
-                  <h3
-                    class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-[max-content]"
-                    [ngClass]="display_v.advancedSetting === 1 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
-                    (click)="display_v.advancedSetting = 1" i18n="@@AdvanceOptions">
-                    Opciones avanzadas
-                  </h3>
-                </div>
-
-                <div class="relative inline-block cols-span-1">
-                  <h3
-                    class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-[max-content]"
-                    [ngClass]="display_v.advancedSetting === 2 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
-                    (click)="display_v.advancedSetting = 2" i18n="@@promptOption">
-                    Opciones IA
-                  </h3>
-                </div>
-  
-              </div>
-  
-              <!-- Query Summary -->
-              @if(display_v.advancedSetting === 0){
-              <div class="grid grid-cols-2  border rounded-lg bg-gray-50 min-h-[30vh] overflow-y-auto p-2">
-                <div class=" ml-3 p-2">
-                  <h3 class="text-base font-semibold" i18n="@@resumenAtrH6">Resumen de atributos</h3>
-                  @for (attr of currentQuery; track attr.display_name.default) {
-                  <p class="flex items-center text-medium">
-                    <strong [innerHTML]="getColumnJoins(attr)"></strong>
-                    <span>
-                      <strong> {{ getNiceTableName(attr.table_id) }} </strong>
-                      <i class="pi pi-angle-right"></i>
-                      {{attr.display_name.default}}
-                    </span>
-                    @for (aggregation of attr.aggregation_type; track aggregation.display_name) {
-                    @if (aggregation.selected && !['No', 'no'].includes(aggregation.display_name)) {
-                    &nbsp;({{aggregation.display_name}})
-                    }
-                    }
-                  </p>
-                  }
-                  <br>
-                  <h3 class="text-base font-semibold" i18n="@@resumenFiltrosPanelH6">Resumen de filtros del panel</h3>
-  
-                  @for (attr of selectedFilters; track attr) {
-                  <p class="flex items-center">
-                    <strong [innerHTML]="getFilterJoins(attr)"></strong>
-                    <span [innerHTML]="getDisplayFilterStr(attr)"></span>
-                  </p>
-                  }
-                </div>
-  
-                <div>
-                  <h3 class="text-base font-semibold" i18n="@@resumenFiltrosInformeH6">Resumen de filtros del informe
-                  </h3>
-                  @for (attr of globalFilters; track attr) {
-                  <p class="flex items-center">
-                    <strong [innerHTML]="getFilterJoins(attr)"></strong>
-                    <span [innerHTML]="getDisplayFilterStr(attr)"></span>
-                  </p>
-                  }
-                </div>
-              </div>
-              }
-              @else if(display_v.advancedSetting === 1){
-              <div class="grid grid-cols-2 border rounded-lg bg-gray-50 p-4 min-h-[30vh] overflow-y-auto">
-                <!-- Join Type -->
-                <div class="grid col-span-1 grid-rows-4 p-2">
-  
-                  <div class="grid grid-cols-4 row-span-1 items-center">
-                    <div class="col-span-2">
-                      <h3 i18n="@@joinTypeH4" class="text-base font-bold inline">
-                        Tipo de intersección:
+                <div class="grid grid-cols-3 align-items-center">
+                  <div class="relative inline-block cols-span-1">
+                    <div class="flex items-center gap-2">
+                      <h3 class="cursor-pointer text-lg font-bold font-sans transition-colors duration-200"
+                        [ngClass]="display_v.advancedSetting=== 0 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
+                        (click)="display_v.advancedSetting = 0" i18n="@@yourQuerySQL">
+                        Mi consulta SQL
                       </h3>
+                      <span>
+                        <i class="pi pi-info-circle cursor-pointer text-gray-500" [pTooltip]="ptooltipViewQuery"
+                          (click)="getQuery($event)">
+                        </i>
+                      </span>
                     </div>
-  
-                    <div class="col-span-2">
-                      <div class="flex">
-                        <button *ngFor="let type of joinTypeOptions" (click)="onJoinTypeChange(type)"
-                          [ngClass]="{'bg-[#00BFB3] text-white': joinType === type.joinType, 'bg-white text-black': joinType !== type.joinType}"
-                          class="w-[3.5vw] px-3 py-2 border rounded-lg mr-2 hover:bg-[#00BFB3] hover:text-white">
-                          {{ type.label }}
+                    <!-- Contenedor de query -->
+                    @if(display_v.showQueryContainer) {
+                      <div id="query-container"
+                        class="absolute top-full left-0 mt-1 w-[35vw] h-[30vh] max-h-[80vh] bg-white z-50 shadow-lg rounded-lg p-4 border border-gray-300 flex flex-col">
+                        @if(display_v.minispinnerSQL) {
+                          <div class="flex justify-center items-center w-full min-h-[15vh]">
+                            <p-progressSpinner [style]="{width:'4vw', height:'4vw'}" strokeWidth="5"
+                              fill="#EEEEEE"></p-progressSpinner>
+                          </div>
+                        }
+                        @if(!display_v.minispinnerSQL) {
+                          <textarea class="w-full flex-1 p-2 border rounded resize-none mb-2"
+                            [(ngModel)]="queryFromServer" pInputTextarea autoResize="autoResize">
+                          </textarea>
+                          <div class="mt-2 flex gap-4">
+                            <button type="button" pButton icon="fa fa-database" class="p-button-success mt-2 w-fit"
+                              (click)="migrateQuery()" i18n-label="@@openSqlMode" label="Abrir en modo SQL">
+                            </button>
+                            <button type="button" pButton icon="pi pi-times" class="p-button-secondary mt-2 w-fit"
+                              (click)="display_v.showQueryContainer = false" i18n-label="cancelarBtn" label="Cancelar">
+                            </button>
+                          </div>
+                        }
+                      </div>
+                    }
+    
+                  </div>
+    
+                  <div class="relative inline-block cols-span-1">
+                    <h3
+                      class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-[max-content]"
+                      [ngClass]="display_v.advancedSetting === 1 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
+                      (click)="display_v.advancedSetting = 1" i18n="@@AdvanceOptions">
+                      Opciones avanzadas
+                    </h3>
+                  </div>
+
+                  <div class="relative inline-block cols-span-1">
+                    <h3
+                      class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-[max-content]"
+                      [ngClass]="display_v.advancedSetting === 2 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
+                      (click)="display_v.advancedSetting = 2" i18n="@@promptOption">
+                      Opciones IA
+                    </h3>
+                  </div>
+    
+                </div>
+    
+                <!-- Query Summary -->
+                @if(display_v.advancedSetting === 0){
+                <div class="grid grid-cols-2  border rounded-lg bg-gray-50 min-h-[30vh] overflow-y-auto p-2">
+                  <div class=" ml-3 p-2">
+                    <h3 class="text-base font-semibold" i18n="@@resumenAtrH6">Resumen de atributos</h3>
+                    @for (attr of currentQuery; track attr.display_name.default) {
+                    <p class="flex items-center text-medium">
+                      <strong [innerHTML]="getColumnJoins(attr)"></strong>
+                      <span>
+                        <strong> {{ getNiceTableName(attr.table_id) }} </strong>
+                        <i class="pi pi-angle-right"></i>
+                        {{attr.display_name.default}}
+                      </span>
+                      @for (aggregation of attr.aggregation_type; track aggregation.display_name) {
+                      @if (aggregation.selected && !['No', 'no'].includes(aggregation.display_name)) {
+                      &nbsp;({{aggregation.display_name}})
+                      }
+                      }
+                    </p>
+                    }
+                    <br>
+                    <h3 class="text-base font-semibold" i18n="@@resumenFiltrosPanelH6">Resumen de filtros del panel</h3>
+    
+                    @for (attr of selectedFilters; track attr) {
+                    <p class="flex items-center">
+                      <strong [innerHTML]="getFilterJoins(attr)"></strong>
+                      <span [innerHTML]="getDisplayFilterStr(attr)"></span>
+                    </p>
+                    }
+                  </div>
+    
+                  <div>
+                    <h3 class="text-base font-semibold" i18n="@@resumenFiltrosInformeH6">Resumen de filtros del informe
+                    </h3>
+                    @for (attr of globalFilters; track attr) {
+                    <p class="flex items-center">
+                      <strong [innerHTML]="getFilterJoins(attr)"></strong>
+                      <span [innerHTML]="getDisplayFilterStr(attr)"></span>
+                    </p>
+                    }
+                  </div>
+                </div>
+                }
+                @else if(display_v.advancedSetting === 1){
+                <div class="grid grid-cols-2 border rounded-lg bg-gray-50 p-4 min-h-[30vh] overflow-y-auto">
+                  <!-- Join Type -->
+                  <div class="grid col-span-1 grid-rows-4 p-2">
+    
+                    <div class="grid grid-cols-4 row-span-1 items-center">
+                      <div class="col-span-2">
+                        <h3 i18n="@@joinTypeH4" class="text-base font-bold inline">
+                          Tipo de intersección:
+                        </h3>
+                      </div>
+    
+                      <div class="col-span-2">
+                        <div class="flex">
+                          <button *ngFor="let type of joinTypeOptions" (click)="onJoinTypeChange(type)"
+                            [ngClass]="{'bg-[#00BFB3] text-white': joinType === type.joinType, 'bg-white text-black': joinType !== type.joinType}"
+                            class="w-[3.5vw] px-3 py-2 border rounded-lg mr-2 hover:bg-[#00BFB3] hover:text-white">
+                            {{ type.label }}
+                          </button>
+                        </div>
+    
+                      </div>
+                    </div>
+    
+                    <div class="grid grid-cols-4 row-span-1 items-center">
+                      <div class="col-span-2">
+                        <h3 class="text-base font-bold inline"><span i18n="@@scenarios">Escenarios: </span></h3>
+                      </div>
+    
+                      <div class="col-span-2">
+    
+                        <button class="w-fit px-3 py-2 row-span-1 border rounded-lg
+                                      bg-white text-black hover:bg-[#00BFB3] hover:text-white" (click)="onWhatIfDialog()">
+                          What If?
                         </button>
                       </div>
-  
                     </div>
-                  </div>
-  
-                  <div class="grid grid-cols-4 row-span-1 items-center">
-                    <div class="col-span-2">
-                      <h3 class="text-base font-bold inline"><span i18n="@@scenarios">Escenarios: </span></h3>
-                    </div>
-  
-                    <div class="col-span-2">
-  
-                      <button class="w-fit px-3 py-2 row-span-1 border rounded-lg
-                                    bg-white text-black hover:bg-[#00BFB3] hover:text-white" (click)="onWhatIfDialog()">
-                        What If?
-                      </button>
-                    </div>
-                  </div>
-  
-                  <div class="grid grid-cols-4 items-center">
-                    <div class="col-span-2">
-                      <h3 class="text-base font-bold inline"><span i18n="@@filtrosAvanzados">Filtros avanzados: </span>
-                      </h3>
-                    </div>
-  
-                    <div class="col-span-2">
-  
-                      <button class="w-fit px-3 py-2 border rounded-lg bg-white text-black hover:bg-[#00BFB3] hover:text-white" (click)="onWhatIfDialog()">
-                        Configurar
-                      </button>
-                    </div>
-                  </div>
-
-                  <div class="grid grid-cols-4 items-center">
-                    <div class="col-span-2 ">
-                      <h3 class="text-base font-bold inline">
-                        Registros únicos (agrupación)? 
-                      </h3>
+    
+                    <div class="grid grid-cols-4 items-center">
+                      <div class="col-span-2">
+                        <h3 class="text-base font-bold inline"><span i18n="@@filtrosAvanzados">Filtros avanzados: </span>
+                        </h3>
+                      </div>
+    
+                      <div class="col-span-2">
+    
+                        <button class="w-fit px-3 py-2 border rounded-lg bg-white text-black hover:bg-[#00BFB3] hover:text-white" (click)="onWhatIfDialog()">
+                          Configurar
+                        </button>
+                      </div>
                     </div>
 
-                    <div class="col-span-2">
-                      <button
-                        type="button"
-                        [(ngModel)]="groupByEnabled"
-                        (click)="toggleGroupBy()"
-                        [ngClass]="{
-                          'bg-[#00BFB3] text-white': groupByEnabled,
-                          'bg-white text-black': !groupByEnabled
-                        }"
-                        class="w-fit px-3 py-2 border rounded-lg hover:bg-[#00BFB3] hover:text-white"
-                      >
-                        {{ groupByEnabled ? 'Si' : 'No' }}
-                      </button>
+                    <div class="grid grid-cols-4 items-center">
+                      <div class="col-span-2 ">
+                        <h3 class="text-base font-bold inline">
+                          Registros únicos (agrupación)? 
+                        </h3>
+                      </div>
+
+                      <div class="col-span-2">
+                        <button
+                          type="button"
+                          [(ngModel)]="groupByEnabled"
+                          (click)="toggleGroupBy()"
+                          [ngClass]="{
+                            'bg-[#00BFB3] text-white': groupByEnabled,
+                            'bg-white text-black': !groupByEnabled
+                          }"
+                          class="w-fit px-3 py-2 border rounded-lg hover:bg-[#00BFB3] hover:text-white"
+                        >
+                          {{ groupByEnabled ? 'Si' : 'No' }}
+                        </button>
+                      </div>
                     </div>
+    
                   </div>
-  
-                </div>
-  
-                <div class="col-span-1">
-  
-                  <div class="p-3">
-                    <h3 class="font-semibold mb-4" i18n="@@indicaciones">Indicaciones</h3>
-  
-                    <div class="w-full">
-                      <!-- General Information -->
-                      <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
-                        <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
-                          <div class="flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                              class="text-blue-500 mr-2">
-                              <circle cx="12" cy="12" r="10"></circle>
-                              <line x1="12" y1="16" x2="12" y2="12"></line>
-                              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+    
+                  <div class="col-span-1">
+    
+                    <div class="p-3">
+                      <h3 class="font-semibold mb-4" i18n="@@indicaciones">Indicaciones</h3>
+    
+                      <div class="w-full">
+                        <!-- General Information -->
+                        <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
+                          <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
+                            <div class="flex items-center">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="text-blue-500 mr-2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                              </svg>
+                              <span i18n="@@joins">Tipo de interesección</span>
+                            </div>
+                            <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
+                              xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
-                            <span i18n="@@joins">Tipo de interesección</span>
+                          </summary>
+                          <div class="text-sm text-gray-600 pl-2 pb-4 pt-2">
+                            <p class="mb-2" i18n="@@joins1">
+                              La funcionalidad de <strong>Intersección de Joins</strong> permite definir cómo se relacionan
+                              las tablas de tu consulta mediante <strong>LEFT</strong>, <strong>INNER</strong> o
+                              <strong>RIGHT JOIN</strong>. Esto te da control sobre qué registros se incluyen en el
+                              resultado, dependiendo de la presencia o ausencia de coincidencias entre las tablas.
+                            </p>
+    
+                            <h4 class="text-sm font-medium mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
+    
+                            <ul class="list-disc pl-6">
+                              <li i18n="@@joins3">
+                                Solo es posible hacer joins entre tablas definidas dentro del modelo o consulta actual.
+                              </li>
+                            </ul>
                           </div>
-                          <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
-                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </summary>
-                        <div class="text-sm text-gray-600 pl-2 pb-4 pt-2">
-                          <p class="mb-2" i18n="@@joins1">
-                            La funcionalidad de <strong>Intersección de Joins</strong> permite definir cómo se relacionan
-                            las tablas de tu consulta mediante <strong>LEFT</strong>, <strong>INNER</strong> o
-                            <strong>RIGHT JOIN</strong>. Esto te da control sobre qué registros se incluyen en el
-                            resultado, dependiendo de la presencia o ausencia de coincidencias entre las tablas.
-                          </p>
-  
-                          <h4 class="text-sm font-medium mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
-  
-                          <ul class="list-disc pl-6">
-                            <li i18n="@@joins3">
-                              Solo es posible hacer joins entre tablas definidas dentro del modelo o consulta actual.
-                            </li>
-                          </ul>
-                        </div>
-                      </details>
-  
-                      <!-- Link query and panel filters -->
-                      <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
-                        <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
-                          <div class="flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                              class="text-blue-500 mr-2">
-                              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                        </details>
+    
+                        <!-- Link query and panel filters -->
+                        <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
+                          <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
+                            <div class="flex items-center">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="text-blue-500 mr-2">
+                                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                              </svg>
+                              <span>What if</span>
+                            </div>
+                            <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
+                              xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
-                            <span>What if</span>
+                          </summary>
+                          <div class="text-sm text-gray-600 pl-2 pb-4 pt-2">
+                            <p class="mb-2" i18n="@@whatif1"> La funcionalidad <strong>What If</strong> te permite crear
+                              atributos nuevos a partir de otros atributos en tu gráfico. A estos nuevos campos se les puede
+                              aplicar una operación matemática para modificar su valor según tus necesidades, y también es
+                              posible cambiarles el nombre para identificarlos fácilmente.</p>
+                            <h4 class="text-sm font-medium mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
+    
+                            <ul class="list-disc pl-6">
+                              <li i18n="@@whatif3">
+                                Solo es posible crear nuevos atributos basados en los atributos existentes en el gráfico.
+                              </li>
+                              <li i18n="@@whatif4">
+                                Esta opción solo está disponible con atributos de tipo numérico.
+                              </li>
+                            </ul>
                           </div>
-                          <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
-                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </summary>
-                        <div class="text-sm text-gray-600 pl-2 pb-4 pt-2">
-                          <p class="mb-2" i18n="@@whatif1"> La funcionalidad <strong>What If</strong> te permite crear
-                            atributos nuevos a partir de otros atributos en tu gráfico. A estos nuevos campos se les puede
-                            aplicar una operación matemática para modificar su valor según tus necesidades, y también es
-                            posible cambiarles el nombre para identificarlos fácilmente.</p>
-                          <h4 class="text-sm font-medium mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
-  
-                          <ul class="list-disc pl-6">
-                            <li i18n="@@whatif3">
-                              Solo es posible crear nuevos atributos basados en los atributos existentes en el gráfico.
-                            </li>
-                            <li i18n="@@whatif4">
-                              Esta opción solo está disponible con atributos de tipo numérico.
-                            </li>
-                          </ul>
-                        </div>
-                      </details>
-  
-                      <!-- Examples -->
-                      <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
-                        <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
-                          <div class="flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                              class="text-blue-500 mr-2">
-                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                              <polyline points="14 2 14 8 20 8"></polyline>
-                              <line x1="16" y1="13" x2="8" y2="13"></line>
-                              <line x1="16" y1="17" x2="8" y2="17"></line>
-                              <polyline points="10 9 9 9 8 9"></polyline>
+                        </details>
+    
+                        <!-- Examples -->
+                        <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
+                          <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
+                            <div class="flex items-center">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="text-blue-500 mr-2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                              </svg>
+                              <span i18n="@@filtrosAvanzados">Filtros avanzados</span>
+                            </div>
+                            <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
+                              xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
-                            <span i18n="@@filtrosAvanzados">Filtros avanzados</span>
+                          </summary>
+                          <div class="text-sm text-gray-600 pl-2 pb-4 pt-2">
+                            <p class="mb-2" i18n="@@filtrosAvanzados1">
+                              La funcionalidad <strong>Filtros Avanzados</strong> permite relacionar los filtros globales y
+                              de panel utilizando operadores <strong>AND</strong> o <strong>OR</strong>. Esto posibilita que
+                              los filtros no solo se apliquen como un conjunto fijo de condiciones, sino que puedan
+                              interoperar entre sí según la relación definida.
+                            </p>
+                            <h4 class="text-sm font-medium mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
+    
+                            <ul class="list-disc pl-6">
+                              <li i18n="@@filtrosAvanzados3">
+                                Solo es posible usar filtros definidos dentro del dashboard actual.
+                              </li>
+                            </ul>
                           </div>
-                          <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
-                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </summary>
-                        <div class="text-sm text-gray-600 pl-2 pb-4 pt-2">
-                          <p class="mb-2" i18n="@@filtrosAvanzados1">
-                            La funcionalidad <strong>Filtros Avanzados</strong> permite relacionar los filtros globales y
-                            de panel utilizando operadores <strong>AND</strong> o <strong>OR</strong>. Esto posibilita que
-                            los filtros no solo se apliquen como un conjunto fijo de condiciones, sino que puedan
-                            interoperar entre sí según la relación definida.
-                          </p>
-                          <h4 class="text-sm font-medium mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
-  
-                          <ul class="list-disc pl-6">
-                            <li i18n="@@filtrosAvanzados3">
-                              Solo es posible usar filtros definidos dentro del dashboard actual.
-                            </li>
-                          </ul>
-                        </div>
-                      </details>
+                        </details>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+                }
+                @else if(display_v.advancedSetting === 2) {
+                <div class="grid grid-cols-2  border rounded-lg bg-gray-50 min-h-[30vh] overflow-y-auto p-2">
+
+                    <div class=" ml-3 p-2">
+                      <h3 class="text-base font-semibold mb-4" i18n="@@FaltaAgregarElValor">¿En qué puedo ayudarte?</h3>
+                      <Prompt [edaBlankPanel]="this" (newCurrentQuery)="newCurrentQueryUpdate($event)" (principalTable)="principalTableUpdate($event)"></Prompt>
+                    </div>
+
+                    <div class=" ml-3 p-2">
+                      <h3 class="text-base font-semibold" i18n="@@FaltaAgregarElValor">Área de muestra:</h3>
+                    </div>
+
+                </div>
+                }
               }
-              @else if(display_v.advancedSetting === 2) {
-              <div class="grid grid-cols-2  border rounded-lg bg-gray-50 min-h-[30vh] overflow-y-auto p-2">
 
-                  <div class=" ml-3 p-2">
-                    <h3 class="text-base font-semibold mb-4" i18n="@@FaltaAgregarElValor">¿En qué puedo ayudarte?</h3>
-                    <Prompt [edaBlankPanel]="this" ></Prompt>
-                  </div>
+              @else if(currentQuery.length === 0) {
+                <div class="grid grid-cols-2  border rounded-lg bg-gray-50 min-h-[30vh] overflow-y-auto p-2">
 
-                  <div class=" ml-3 p-2">
-                    <h3 class="text-base font-semibold" i18n="@@FaltaAgregarElValor">Área de muestra:</h3>
-                  </div>
+                    <div class=" ml-3 p-2">
+                      <h3 class="text-base font-semibold mb-4" i18n="@@FaltaAgregarElValor">¿En qué puedo ayudarte?</h3>
+                      <Prompt [edaBlankPanel]="this" (newCurrentQuery)="newCurrentQueryUpdate($event)" (principalTable)="principalTableUpdate($event)"></Prompt>
+                    </div>
 
-              </div>
+                    <div class=" ml-3 p-2">
+                      <h3 class="text-base font-semibold" i18n="@@FaltaAgregarElValor">Área de muestra:</h3>
+                    </div>
+
+                </div>
               }
-            }
+
             </div>
           </div>
         </div>

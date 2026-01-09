@@ -1892,12 +1892,31 @@ private assignLevels(nodes: any[], level = 0): void {
         }
     }
 
-applyGroupBy(): void {
-  // Lógica para activar el group by
-}
+    applyGroupBy(): void {
+    // Lógica para activar el group by
+    }
 
-removeGroupBy(): void {
-  // Lógica para desactivar el group by
-}
+    removeGroupBy(): void {
+    // Lógica para desactivar el group by
+    }
+
+    newCurrentQueryUpdate(event) {
+        this.currentQuery = event;
+    }
+
+    principalTableUpdate(event) {
+        console.log('principal::::: ', event);
+        console.log('VALORESSSS: ', this.tables);
+
+        const rootTable = this.tables.find((table: any) => {
+            return table.table_name === event;
+        })
+
+        this.columns = [];
+        this.rootTable = _.cloneDeep(rootTable);
+
+        console.log('EBP :::::::::::::::::: ', this);
+
+    }
 
 }

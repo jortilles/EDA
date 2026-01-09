@@ -40,6 +40,7 @@ export class PromptComponent implements OnInit, AfterViewChecked {
     constructor(private chatgptService: ChatgptService) {}
 
     ngOnInit(): void {
+        console.log('edaBlankPanel ::: ', this.edaBlankPanel)
         const tables = this.edaBlankPanel.tables
         this.initSchema(tables);
     }
@@ -101,8 +102,14 @@ export class PromptComponent implements OnInit, AfterViewChecked {
         this.chatgptService.sendPrompt(text, messages, tables, schema, firstTime).subscribe({
             next: (resp) => {
                 // Esperamos que `resp` contenga la respuesta ya procesada como texto. Adapta según tu backend.
+
+                console.log('COMPONENTEEEEEE RESP: ', resp);
+
                 const currentQuery = resp.response.currentQuery;
                 const principalTable = resp.response.principalTable;
+                
+                console.log('currentQuery: ', currentQuery)
+                console.log('principalTable: ', principalTable)
 
                 if(currentQuery) {
                     if( currentQuery.length !==0 ) {
