@@ -271,7 +271,7 @@ export class HomeSdaComponent implements OnInit {
       config: {
         ...dashboard.config,
         tag: Array.isArray(dashboard.config.tag)
-          ? dashboard.config.tag.map(tag => tag.trim())
+          ? dashboard.config.tag.filter(t => t).map(tag => tag.trim())
           : dashboard.config.tag
           ? [dashboard.config.tag.trim()]
           : []
