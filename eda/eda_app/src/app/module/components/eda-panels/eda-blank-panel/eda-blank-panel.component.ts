@@ -138,7 +138,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`;
     public aggregationText: string = $localize`:@@aggregationText:Agregación`;
     public textBetween: string = $localize`:@@textBetween:Entre`
-    public emptyStringString: string = $localize`:@@emptyStringTxt:Vacío` 
+    public emptyStringString: string = $localize`:@@emptyStringTxt:Vacío`
 
 
     /** Query Variables */
@@ -157,7 +157,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public temporalSortedFilters: any[] = [];
 
     public queryModes: any[] = [
-        { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
+        /* SDA CUSTOM */ { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA', disabled: true},
         { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
         { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' }
     ];
@@ -192,7 +192,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public queryFromServer: string = '';
 /* SDA CUSTOM  */    public showHiddId: boolean;
-    // join types 
+    // join types
     joinTypeOptions: any[] = [
         { icon: 'pi pi-align-left', joinType: 'left', description: 'Se mostrarán todos los registros de la tabla principal a los que el usuario tenga acceso, y los registros relacionados del resto de tablas.' },
         { icon: 'pi pi-align-center', joinType: 'inner', description: 'Solo se mostrarán los registros relacionados en ambas tablas a los que el usuario tenga acceso.' },
@@ -203,7 +203,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     /**panel chart component configuration */
     public panelChartConfig: PanelChart = new PanelChart();
-    
+
     public connectionProperties: any;
 
 
@@ -240,7 +240,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.route.queryParams.subscribe(params => {
             try {
                 if (params['cnproperties']) {
-                    this.connectionProperties = JSON.parse(decodeURIComponent(params['cnproperties'])); 
+                    this.connectionProperties = JSON.parse(decodeURIComponent(params['cnproperties']));
                 }
             } catch (err) {
                 console.error('queryParams: '+ err)
@@ -273,7 +273,7 @@ export class EdaBlankPanelComponent implements OnInit {
                     this.rootTable = contentQuery.query.rootTable;
                 }
 
-                this.sortedFilters = contentQuery.query.sortedFilters; // sortedFilters is extracted from the server 
+                this.sortedFilters = contentQuery.query.sortedFilters; // sortedFilters is extracted from the server
 
                 if (modeSQL || queryMode=='SQL') {
                     this.currentSQLQuery = contentQuery.query.SQLexpression;
@@ -435,8 +435,8 @@ export class EdaBlankPanelComponent implements OnInit {
         return out;
     }
 
-    public setTablesData = () => {        
-        const tables = TableUtils.getTablesData(this.inject.dataSource.model.tables, this.inject.applyToAllfilter);        
+    public setTablesData = () => {
+        const tables = TableUtils.getTablesData(this.inject.dataSource.model.tables, this.inject.applyToAllfilter);
         this.tables = [].concat(_.cloneDeep(tables.allTables), this.assertedTables);
         this.tablesToShow = [].concat(_.cloneDeep(tables.tablesToShow), this.assertedTables);
         this.sqlOriginTables = _.cloneDeep(tables.sqlOriginTables);
@@ -469,7 +469,7 @@ export class EdaBlankPanelComponent implements OnInit {
                         }
                         return a;
                 }));
-                
+
                 this.buildGlobalconfiguration(panelContent);
             } catch (err) {
                 this.alertService.addError(err);
@@ -610,7 +610,7 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     /**
-     * Triggers PanelChartComponent.ngOnChanges() 
+     * Triggers PanelChartComponent.ngOnChanges()
      * @param query Query object.
      * @param chartLabels data labels.
      * @param chartData data values.
@@ -637,8 +637,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public setChartProperties() {
         const config = this.panelChart.getCurrentConfig();
         //W T F F!!!!!!!!!!!=)&/=)!/(!&=)&)!=
-        if (config 
-            && ['bar', 'line', 'horizontalBar', 'polarArea', 'doughnut', 'pyramid', 'radar'].includes(config.chartType) 
+        if (config
+            && ['bar', 'line', 'horizontalBar', 'polarArea', 'doughnut', 'pyramid', 'radar'].includes(config.chartType)
             && config.chartType === this.graficos.chartType ) {
             this.graficos = this.panelChart.getCurrentConfig();
         }
@@ -651,7 +651,7 @@ export class EdaBlankPanelComponent implements OnInit {
         const config = this.panelChart.getCurrentConfig();
         if (['doughnut', 'polarArea', 'bar', 'line', 'radar'].includes(config?.chartType) ||   //NG2 CHARTS
             ['treeMap', 'sunburst', 'scatterPlot', 'funnel', 'bubblechart', 'parallelSets'].includes(this.panelChart.props.chartType) || //D3 CHARTS
-            'geoJsonMap'.includes(this.panelChart.props.chartType) || //Leaflet 
+            'geoJsonMap'.includes(this.panelChart.props.chartType) || //Leaflet
             ['table', 'crosstable', 'treetable'].includes(this.panelChart.props.chartType)) // tables
 
         {
@@ -695,7 +695,7 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     /**
-     * Changes chart type 
+     * Changes chart type
      * @param type chart type
      * @param content panel content
      */
@@ -704,7 +704,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.graphicType = type; // Update the variable type for the drag-drop component
         this.graficos = {};
 
-      	let allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);  
+      	let allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
       	this.display_v.chart = type;
         this.graficos.chartType = type;
         this.graficos.edaChart = subType;
@@ -713,7 +713,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.graficos.assignedColors = config && config.getConfig() ? config.getConfig()['assignedColors'] : null;
 
 
-        
+
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
             _.merge(_config, config||{});
@@ -740,9 +740,9 @@ export class EdaBlankPanelComponent implements OnInit {
         // Referencia a config
         const configCrossTable = this.panelChartConfig.config.getConfig()
 
-        
+
         if(subType === 'crosstable'){
-            
+
             if(config===null){
 
                 if(Object.keys(this.copyConfigCrossTable).length !== 0) {
@@ -767,7 +767,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
         }
 
-     
+
 
     }
 
@@ -801,7 +801,7 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     /**
-     * 
+     *
      */
     public onTableInputKey(event: any) {
         this.setTablesData();
@@ -825,7 +825,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     /**
      * Move column with drag and drop
-     * @param event 
+     * @param event
      */
     public drop(event: CdkDragDrop<string[]>) {
         if (event.previousContainer === event.container) {
@@ -860,7 +860,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     /**
      * Opens columnDialog
-     * @param column 
+     * @param column
      * @param isFilter is filter column or normal column
      */
     public openColumnDialog(column: Column, isFilter?: boolean): void {
@@ -922,7 +922,7 @@ export class EdaBlankPanelComponent implements OnInit {
                                 field.column_type = 'date';
                                 field.old_column_type = 'numeric';
                             }
-                        } 
+                        }
                     }
 
                     if (event === EdaDialogCloseEvent.NONE) {
@@ -1009,7 +1009,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
         if(this.sortedFilters.length !==0){
             const lastElement = this.sortedFilters[this.sortedFilters.length-1];
-    
+
             const newSortedFilter = {
                 cols: 3,
                 rows: 1,
@@ -1025,7 +1025,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 isGlobal: _filter.isGlobal,
                 value: "and",
             }
-    
+
             this.sortedFilters.push(newSortedFilter);
             this.savePanel()
         }
@@ -1123,15 +1123,15 @@ export class EdaBlankPanelComponent implements OnInit {
 
     /**
      * Set new chart properties when editionChartPanel is closed
-     * @param event 
+     * @param event
      * @param properties properties to set
      */
     public onCloseChartProperties(event, properties): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             if (properties) {
                 this.graficos = {};
-                this.graficos = _.cloneDeep(properties);                
-            
+                this.graficos = _.cloneDeep(properties);
+
                 //assignedColors se le modifica el color dependiendo de su label
                 this.graficos.assignedColors.forEach((e, index) => {
                     if (this.graficos.chartLabels.includes(e.value)) {
@@ -1139,7 +1139,7 @@ export class EdaBlankPanelComponent implements OnInit {
                         e.color = this.graficos.chartColors[0].backgroundColor[indexColor]
                     }
                 });
-        
+
                 this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors };
                 const layout =
                     new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType,
@@ -1280,7 +1280,7 @@ export class EdaBlankPanelComponent implements OnInit {
                     e.color = response.colors[indexColor]
                 }
             });
-            
+
             this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
@@ -1291,7 +1291,7 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
 
-    
+
 
 
     public onCloseScatterProperties(event, response): void {
@@ -1316,12 +1316,12 @@ export class EdaBlankPanelComponent implements OnInit {
         }
         this.scatterPlotController = undefined;
     }
-    
+
     public onCloseSunburstProperties(event: any, response: any): void {
         const chartInstance = this.panelChart?.componentRef?.instance;
         const dataDescription = chartInstance?.inject?.dataDescription;
         const otherColumns = dataDescription?.otherColumns;
-    
+
         // Validación principal para continuar
         if (otherColumns && Array.isArray(otherColumns) && otherColumns.length > 1) {
             if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
@@ -1333,24 +1333,24 @@ export class EdaBlankPanelComponent implements OnInit {
                             return found ? found.split("|")[0] : "";
                         })
                     )
-                );  
-    
-                chartInstance.assignedColors.forEach((assignedColor: any) => {    
+                );
+
+                chartInstance.assignedColors.forEach((assignedColor: any) => {
                     // Verificamos si algún valor del chart coincide con el valor del color asignado
                     const indexColor = chartValues.findIndex(value => value === assignedColor.value);
                     if (indexColor >= 0 && response.colors && response.colors[indexColor]) {
                         assignedColor.color = response.colors[indexColor];
                     }
                 });
-    
+
                 // Asignamos los nuevos colores al config
                 this.panel.content.query.output.config = {
                     colors: response.colors,
                     assignedColors: chartInstance.assignedColors
                 };
-    
+
                 const config = new ChartConfig(this.panel.content.query.output.config);
-    
+
                 this.renderChart(
                     this.currentQuery,
                     this.chartLabels,
@@ -1359,11 +1359,11 @@ export class EdaBlankPanelComponent implements OnInit {
                     this.graficos.edaChart,
                     config
                 );
-    
+
                 // Indicamos que hay cambios no guardados
                 this.dashboardService._notSaved.next(true);
             }
-        
+
         } else {
                 if(!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
                     //Recorremos todos los assignedColors que tenemos
@@ -1381,8 +1381,8 @@ export class EdaBlankPanelComponent implements OnInit {
                     this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
                     this.dashboardService._notSaved.next(true);
-                }  
-            } 
+                }
+            }
             // Fa que desapareixi el dialeg
             this.sunburstController = undefined;
     }
@@ -1439,7 +1439,7 @@ export class EdaBlankPanelComponent implements OnInit {
                     response.edaChart.assignedColors
                 );
             }
-            
+
             const config = new ChartConfig(new KpiConfig({ sufix: response.sufix, alertLimits: response.alerts, edaChart: layout }));
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, response.chartType, response.chartSubType, config);
             this.dashboardService._notSaved.next(true);
@@ -1448,7 +1448,7 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public onClosedynamicTextProperties(event, response): void {
-        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) { 
+        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             const config = new ChartConfig(response.color);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
@@ -1473,8 +1473,8 @@ export class EdaBlankPanelComponent implements OnInit {
                     || content.chart === 'scatterPlot'
                     || content.chart === 'funnel'
                     || content.chart === 'knob'
-                    || content.chart === 'sunburst' 
-                    || content.chart === 'bubblechart' 
+                    || content.chart === 'sunburst'
+                    || content.chart === 'bubblechart'
                     || content.chart === 'dynamicText')
             ) {
 
@@ -1609,13 +1609,13 @@ export class EdaBlankPanelComponent implements OnInit {
 
     /** duplicates a dashboard panel and positions it one point below the original one. */
     public duplicatePanel(): void {
-        let duplicatedPanel =   _.cloneDeep(this.panel, true); 
+        let duplicatedPanel =   _.cloneDeep(this.panel, true);
         duplicatedPanel.id = this.fileUtiles.generateUUID();
         duplicatedPanel.y = duplicatedPanel.y+1;
         this.duplicate.emit(duplicatedPanel);
     }
 
-    
+
     public removePanel(): void {
         this.remove.emit(this.panel.id);
     }
@@ -1662,6 +1662,7 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public changeQueryMode(): void {
+        console.log(this.selectedQueryMode);
         this.index = 0;
         this.currentSQLQuery = '';
         this.currentQuery = [];
@@ -1749,7 +1750,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
             const whereMessage: string = $localize`:@@whereMessage: Filtro sobre todos los registros`;
             const havingMessage: string = $localize`:@@havingMessage: Filtro sobre los resultados`;
-        
+
             // Nomenclature:  WHERE => Filtering on all records | HAVING => Filtering on results
             const filterBeforeGroupingText = filter.filterBeforeGrouping ? whereMessage : havingMessage
 
@@ -1821,7 +1822,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onCloseFilterAndOrDialog(): void {
         this.display_v.filterAndOr_dialog = false;
-    }   
+    }
 
     public disableRunQuery(): boolean {
         let disable = false;
@@ -1894,12 +1895,12 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public updateSortedFiltersColumnDialogFunction(e: any) {
-        
+
         if(e.add){
 
             if(this.sortedFilters.length !==0){
                 const lastElement = this.sortedFilters[this.sortedFilters.length-1];
-    
+
                 const newSortedFilter = {
                     cols: 3,
                     rows: 1,
@@ -1914,7 +1915,7 @@ export class EdaBlankPanelComponent implements OnInit {
                     filter_id: e.filter.filter_id,
                     value: "and",
                 }
-    
+
                 this.sortedFilters.push(newSortedFilter);
             }
 
@@ -1933,7 +1934,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
             if(this.sortedFilters.length !==0){
                 const lastElement = this.sortedFilters[this.sortedFilters.length-1];
-    
+
                 const newSortedFilter = {
                     cols: 3,
                     rows: 1,
@@ -1948,7 +1949,7 @@ export class EdaBlankPanelComponent implements OnInit {
                     filter_id: e.filter.filter_id,
                     value: "and",
                 }
-    
+
                 this.sortedFilters.push(newSortedFilter);
             }
 

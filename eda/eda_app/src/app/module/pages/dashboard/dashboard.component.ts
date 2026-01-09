@@ -54,7 +54,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public queryParams: any = {};
     public isDashboardCreator: boolean = false;
 
-    
+
   public filterButtonVisibility = {
         public : false,
         readOnly : false
@@ -175,19 +175,20 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         for (const panel of this.edaPanels) {
             if (treeQueryMode) {
                 panel.queryModes = [
+                /* SDA CUSTOM */  { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA', disabled: true },
                     { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' },
                     { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
                 ];
             } else if (standardQueryMode) {
                 panel.queryModes = [
-                    { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
+                /* SDA CUSTOM */  { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' , disabled: true},
                     { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
                 ];
             }
 
             if ((!standardQueryMode && !treeQueryMode) || this.edaPanels.length === 1) {
                 panel.queryModes = [
-                    { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
+                    /* SDA CUSTOM */ { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' , disabled: true},
                     { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
                     { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' }
                 ];
@@ -492,7 +493,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             me.alertService.addError('Error al cargar el Dashboard');
         }
     }
-    
+
     private selectedTagsForDashboard(tags, dbTags) {
         let selectedTagsForDashboard = [];
         tags.forEach((tag) => {
@@ -508,7 +509,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         });
         return selectedTagsForDashboard;
     }
-    
+
 
     private updateFilterDatesInPanels(): void {
 
@@ -576,7 +577,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.display_v.panelMode =true;
                     this.display_v.hideWheel =true;
                 }
-                
+
                 if (params["cnproperties"]) {
                     this.connectionProperties = JSON.parse(
                         decodeURIComponent(params["cnproperties"])
@@ -641,7 +642,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public reloadPanels(): void {
 
         const globalFilters = this.gFilter?.globalFilters;
-        
+
         if(globalFilters.length !== 0) {
             globalFilters.forEach(filter => {
                 this.gFilter.setGlobalEmptyFilter(filter);
@@ -833,7 +834,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         //Check de modo
         let modeEDA: boolean = !event?.data.panel.content?.query.query.modeSQL &&
         (!event?.data.panel.content?.query.query.queryMode || event?.data.panel.content?.query.query.queryMode === 'EDA')
-        
+
         //Si es modo arbol o SQL no aplica filtros
         if (event.code === "ADDFILTER" && modeEDA) {
         const data = event?.data;
@@ -854,15 +855,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 let filterToAddIndx = this.lastFilters.findIndex(element => element.filterName === chartToRemove.column.label &&
                 element.filter.table.label === chartToRemove.table.label)
                 // Borramos del global filter el filtro a borrar fromChart
-                this.gFilter.removeGlobalFilter(chartToRemove, true);            
+                this.gFilter.removeGlobalFilter(chartToRemove, true);
                 // Recuperamos el filtro correspondiente y lo eliminamos de los filtros guardados
-                if (filterToAddIndx !== -1 ) { 
+                if (filterToAddIndx !== -1 ) {
                 await this.gFilter.onGlobalFilter(this.lastFilters[filterToAddIndx].filter, table.table_name)
                 this.lastFilters.splice(filterToAddIndx, 1);
                 }
-                
+
                 // Actualizamos global filter
-                this.reloadOnGlobalFilter(); 
+                this.reloadOnGlobalFilter();
             } else {
                 //CREAMOS NUEVO FILTRO EN CHART
                 //Recuperamos filtros activos del global filter
@@ -900,10 +901,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 try { await this.gFilter.onGlobalFilter(this.chartFilter, table.table_name); this.reloadOnGlobalFilter(); }
                 catch (error) { console.log(error) }
             }
-            } 
-            
+            }
+
             // NO TENEMOS NINGUN FILTRO APLICADO EN LOS FILTROS GLOBALES DEL DASHBOARD
-            else { 
+            else {
                 // Creamos un filtro nuevo con from chart true
                 this.chartFilter = {
                 id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
@@ -1003,11 +1004,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                             }else{
 
                                this.alertService.addError($localize`:@@errorSavingDashboardPannels:Error al guardar el informe. Error en el panel: ` + this.checkPannels(body) );
- 
+
                             }
 
 
-                            
+
                         },
                         err => this.alertService.addError(err)
                     );
@@ -1257,7 +1258,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
- 
+
     /**
      * @description  Check if all pannels have data to be saved. If they are not correct return the name of the pannel
      * @param dashboard  get the dashboard to check the pannels content
@@ -1266,7 +1267,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private checkPannels(dashboard): string {
             let correct = 'true';
             dashboard.config.panel.forEach(p => {
-                if(  p.content && p.content?.query?.query.fields.length < 1  ) { 
+                if(  p.content && p.content?.query?.query.fields.length < 1  ) {
                     console.log('NO SE PUEDEN GAURDAR PANELES SIN DATOS');
                     correct = p.title;
                 }
@@ -1405,7 +1406,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     /**
-     *  Custom url actions 
+     *  Custom url actions
      */
     public openUrlsConfig() {
         const urls = this.urls;
@@ -1500,7 +1501,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         } else if (repeated) {
             this.addTag = !this.addTag;
             this.alertService.addError("Tag already existing")
-        } 
+        }
         else {
             let tag = {label: newTag, value: newTag}
             this.applyNewTag = newTag;
@@ -1618,18 +1619,18 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         if (['doughnut', 'polarArea', 'bar', 'line', 'radar',''].includes(event.data.panel.content.chart)) {  //Si el evento es de un chart de la libreria ng2Chart
           if (event.data.query.length > 2) // Si la query tiene más de dos valores en barras, necesitamos redefinir el filterBy
              return event.data.query.find((query: any) => query?.display_name?.default === event.data.query[0].display_name.default);
-          else 
-            return event.data.query.find((query: any) => query?.display_name?.default === event.data.filterBy);         
+          else
+            return event.data.query.find((query: any) => query?.display_name?.default === event.data.filterBy);
         }
         else if (['table','crosstable','treetable'].includes(event.data.panel.content.chart)) {
-            return event.data.query.find((query: any) => query?.column_name === event.data.filterBy);  
+            return event.data.query.find((query: any) => query?.column_name === event.data.filterBy);
         }
         else {
             //Si el evento es de un chart de la libreria D3Chart o Leaflet
-            return event.data.query.find((query: any) => query?.display_name?.default.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);    
+            return event.data.query.find((query: any) => query?.display_name?.default.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);
           }
-        
-      
+
+
   }
-        
+
     }

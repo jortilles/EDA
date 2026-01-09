@@ -355,6 +355,10 @@
     <source>Buscar tipo</source>
     <target>Buscar un tipo</target>
   </trans-unit>
+  <trans-unit id="modoEDAAlert" datatype="html">
+    <source>Este panel utiliza el modo EDA, que está obsoleto y dejará de funcionar futuras versiones de SinergiaDA. Por esa misma razón no se pueden hacer cambios sobre este informe. Para garantizar su funcionamiento se recomienda rehacerlo usando el <b>Modo Árbol</b>.</source>
+    <target>Este panel utiliza el modo <b>EDA</b>, que está obsoleto y dejará de funcionar futuras versiones de SinergiaDA. Por esa misma razón no se pueden hacer cambios sobre este informe. Para garantizar su funcionamiento se recomienda rehacerlo usando el <b>Modo Árbol</b>.</target>
+  </trans-unit>
   <trans-unit id="clearAllFilters" datatype="html">
     <source>Eliminar todos los filtros</source>
     <target>Eliminar todos los filtros</target>

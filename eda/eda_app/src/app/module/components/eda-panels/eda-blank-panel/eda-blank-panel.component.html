@@ -48,9 +48,14 @@
 <!-- Page Dialog -->
 <eda-page-dialog  #pdialog [inject]="{display: this.display_v.page_dialog, title:  this.panel.title.trim().length  > 0  ? panel.title : '\uD83D\uDD89'  }">
     <div (window:resize)="onResize($event)" class="grid">
+      <!-- SDA CUSTOM --> <div class="mt-3 col-md-12">
+      <!-- SDA CUSTOM -->   <div class="alert alert-danger" *ngIf="selectedQueryMode=='EDA'">
+      <!-- SDA CUSTOM -->     <span i18n="@modoEDAAlert">Este panel utiliza el modo EDA, que está obsoleto y dejará de funcionar futuras versiones de SinergiaDA. Por esa misma razón no se pueden hacer cambios sobre este informe. Para garantizar su funcionamiento se recomienda rehacerlo usando el <b>Modo Árbol</b>.</span>
+      <!-- SDA CUSTOM -->   </div>
+      <!-- SDA CUSTOM --> </div>
 
         <div id="queryModelSelector" class="col-12">
-            <p-dropdown  class="float-right" [(ngModel)]="selectedQueryMode" [options]="queryModes" (ngModelChange)="changeQueryMode()">
+          <!-- SDA CUSTOM --><p-dropdown  class="float-right" [(ngModel)]="selectedQueryMode" [options]="queryModes" optionLabel="label" optionValue="value" optionDisabled="disabled" (ngModelChange)="changeQueryMode()">
             </p-dropdown >
         </div>
 
@@ -595,12 +600,12 @@
     </div>
 
     <p-footer class="footer" appendTo="body" style="z-index: 10000;">
-        <div class="p-dialog-buttonpanel p-widget-content p-helper-clearfix text-right">
-            <button *ngIf="!hiddenButtonExecuter" type="button" pButton (click)="runManualQuery()" [disabled]="disableRunQuery()"
+      <div class="p-dialog-buttonpanel p-widget-content p-helper-clearfix text-right" >
+            <!--SDA CUSTOM --><button *ngIf="!hiddenButtonExecuter && selectedQueryMode!='EDA'" type="button" pButton (click)="runManualQuery()" [disabled]="disableRunQuery()"
                 icon="fa fa-flask" class="p-button-success ml-2" i18n-label="@@ejecutarBtn" label="Ejecutar">
             </button>
 
-            <button type="submit" pButton (click)="savePanel()" [disabled]="display_v.btnSave" icon="fa fa-check"
+            <!--SDA CUSTOM --><button *ngIf="selectedQueryMode!='EDA'" type="submit" pButton (click)="savePanel()" [disabled]="display_v.btnSave" icon="fa fa-check"
                 class="p-button ml-2" i18n-label="@@guardarBtn" label="Confirmar" id="eda_blak_panel_confirmar">
             </button>
 
