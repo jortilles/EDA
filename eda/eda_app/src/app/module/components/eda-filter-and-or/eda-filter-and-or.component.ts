@@ -1,9 +1,9 @@
-import { 
+import {
   ChangeDetectionStrategy,
-  Component, 
+  Component,
   OnInit,
   ViewEncapsulation,
-  Input, 
+  Input,
   Output,
   EventEmitter,
 } from '@angular/core';
@@ -39,7 +39,7 @@ export class EdaFilterAndOrComponent implements OnInit {
   public static reiniciarDashboard(): void {
     EdaFilterAndOrComponent.previousDashboard = null;
   }
-  
+
   @Input() selectedFilters: any[] = []; // Panel filters
   @Input() globalFilters: any[] = []; // Global filters
   @Input() tables: any[] = []; // Eda-Blank-Panel tables
@@ -50,18 +50,18 @@ export class EdaFilterAndOrComponent implements OnInit {
   dashboard: GridsterItem[];
   dashboardClone: GridsterItem[];
   itemToPush!: GridsterItemComponent;
-  selectedButton: any[]; 
+  selectedButton: any[];
   selectedButtonInitialValue: string; // Default value selected
   stringQuery: string = '';
   existeIntercambioItems: boolean = false;
   public textBetween: string = $localize`:@@textBetween:Entre`
 
 
-  constructor() { 
-    
+  constructor() {
+
     let rowHeight = 0;
     let colWidth = 0;
-    const widthScreen = window.innerWidth; // screen width 
+    const widthScreen = window.innerWidth; // screen width
 
     if (widthScreen<1370) {
       rowHeight = 27;
@@ -98,16 +98,16 @@ export class EdaFilterAndOrComponent implements OnInit {
       itemChangeCallback: (item: GridsterItem) => this.onItemChange(item),
     };
 
-    // (and & or) => values 
-    this.selectedButton = [ 
-      { label: "AND", value: "and" }, 
-      { label: "OR", value: "or" } 
-    ]; 
+    // (and & or) => values
+    this.selectedButton = [
+      { label: "AND", value: "and" },
+      { label: "OR", value: "or" }
+    ];
 
   }
 
   ngOnInit(): void {
-    
+
     const previousDashboard = EdaFilterAndOrComponent.previousDashboard;
 
     if(this.sortedFilters === undefined) this.sortedFilters = []; // if it is an old report, we define the report as empty
@@ -120,11 +120,11 @@ export class EdaFilterAndOrComponent implements OnInit {
         this.dashboardClone = _.cloneDeep(this.sortedFilters);
         this.creacionQueryFiltros(this.dashboard);
       } else {
-        if(this.sortedFilters.length !== 0) {  
+        if(this.sortedFilters.length !== 0) {
           this.dashboard = _.cloneDeep(this.sortedFilters);
           this.dashboardClone = _.cloneDeep(this.sortedFilters);
           this.creacionQueryFiltros(this.sortedFilters);
-          
+
         } else {
           this.initAndOrFilters();
         }
@@ -134,7 +134,7 @@ export class EdaFilterAndOrComponent implements OnInit {
   }
 
   initAndOrFilters () {
-    
+
     // Integration:
     this.dashboard = [];
     let k = 0; // y value, start
@@ -144,16 +144,17 @@ export class EdaFilterAndOrComponent implements OnInit {
       if(sf.filterBeforeGrouping) {
         this.dashboard.push(
           {
-            cols: 3, 
-            rows:1, 
-            y: k, 
-            x:0, 
-            filter_table: sf.filter_table, 
-            filter_column: sf.filter_column, 
-            filter_type: sf.filter_type, 
-            filter_column_type: sf.filter_column_type, 
-            filter_elements: sf.filter_elements, 
-            filter_id: sf.filter_id, 
+            cols: 3,
+            rows:1,
+            y: k,
+            x:0,
+            filter_table: sf.filter_table,
+            filter_column: sf.filter_column,
+            filter_type: sf.filter_type,
+            filter_column_type: sf.filter_column_type,
+            filter_elements: sf.filter_elements,
+/* SDA CUSTOM */            filter_codes: sf.filter_codes,
+            filter_id: sf.filter_id,
             isGlobal: sf.isGlobal,
             value: "and"
           }
@@ -170,15 +171,16 @@ export class EdaFilterAndOrComponent implements OnInit {
       if(gf.filterBeforeGrouping) {
         this.dashboard.push(
           {
-            cols: 3, 
-            rows:1, 
-            y: k + temporalLength, 
-            x: 0, 
+            cols: 3,
+            rows:1,
+            y: k + temporalLength,
+            x: 0,
             filter_table: gf.filter_table,
-            filter_column: gf.filter_column, 
-            filter_type: gf.filter_type, 
-            filter_column_type: gf.filter_column_type, 
-            filter_elements: gf.filter_elements, 
+            filter_column: gf.filter_column,
+            filter_type: gf.filter_type,
+            filter_column_type: gf.filter_column_type,
+            filter_elements: gf.filter_elements,
+/* SDA CUSTOM */            filter_codes: gf.filter_codes,
             filter_id: gf.filter_id,
             isGlobal: gf.isGlobal,
             value: "and"
@@ -204,7 +206,7 @@ export class EdaFilterAndOrComponent implements OnInit {
     let contadorIntercambioItems = 0;
     for( let i = 0; i < this.dashboard.length; i++ ) {
       if(item.x === this.dashboard[i].x && item.y === this.dashboard[i].y){
-        contadorIntercambioItems++; 
+        contadorIntercambioItems++;
       }
     }
     // Ends the iteration of the first item to be exchanged
@@ -272,7 +274,7 @@ export class EdaFilterAndOrComponent implements OnInit {
       } else {
         this.dashboard = _.cloneDeep(this.dashboardClone);
       }
-    
+
     } else {
       this.dashboard = _.cloneDeep(this.dashboardClone);
     }
@@ -332,9 +334,9 @@ export class EdaFilterAndOrComponent implements OnInit {
 
   // Function for generating the chain of nested AND/OR filters corresponding to the graphic design of the items.
   creacionQueryFiltros(dashboard: any) {
-    
+
     // Ordering the dashboard on the y-axis from lowest to highest.
-    dashboard.sort((a: any, b: any) => a.y - b.y); 
+    dashboard.sort((a: any, b: any) => a.y - b.y);
 
     // Variable containing the new string of nested AND/OR filters corresponding to the graphic design of the items.
     let stringQuery = 'where ';
@@ -345,7 +347,7 @@ export class EdaFilterAndOrComponent implements OnInit {
       const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, filter_id, isGlobal, value } = item;
 
       // Verify  (There are two filters to check ==> | not_null_nor_empty | null_nor_empty | )
-      ////////////////////////////////////////////////// filter_type ////////////////////////////////////////////////// 
+      ////////////////////////////////////////////////// filter_type //////////////////////////////////////////////////
       let filter_type_value = '';
       if(filter_type === 'not_in'){
         filter_type_value = 'not in';
@@ -363,7 +365,7 @@ export class EdaFilterAndOrComponent implements OnInit {
         }
       }
 
-      ////////////////////////////////////////////////// filter_elements ////////////////////////////////////////////////// 
+      ////////////////////////////////////////////////// filter_elements //////////////////////////////////////////////////
       let filter_elements_value = '';
 
       if(filter_elements.length === 0) {}
@@ -374,12 +376,12 @@ export class EdaFilterAndOrComponent implements OnInit {
           // Value of type text
           if(filter_column_type === 'text'){
             filter_elements_value = filter_elements_value + `'${filter_type === 'like' || filter_type === 'not_like'? '%': ''}${filter_elements[0].value1[0]}${filter_type === 'like' || filter_type === 'not_like'? '%': ''}'`;
-          } 
+          }
 
           // Value of type numeric
           if(filter_column_type === 'numeric'){
             filter_elements_value = filter_elements_value + `${filter_elements[0].value1[0]}`;
-          } 
+          }
 
         } else {
           // For several values
@@ -407,10 +409,10 @@ export class EdaFilterAndOrComponent implements OnInit {
           }
         }
       }
-      
-      /////////////////////////////////////// RESULT OF THE WHOLE STRING ////////////////////////////////////////////////// 
+
+      /////////////////////////////////////// RESULT OF THE WHOLE STRING //////////////////////////////////////////////////
       let resultado = `\"${filter_table}\".\"${filter_column}\" ${filter_type_value} ${filter_elements_value}`;
-      
+
 
       let elementosHijos = []; // Array of child items
 
@@ -477,9 +479,9 @@ export class EdaFilterAndOrComponent implements OnInit {
       if (table && table.table_name) {
           const tableName = table.display_name?.default;
           const columnName = table.columns.find((c) => c.column_name == item.filter_column)?.display_name?.default;
-          
+
           let checksum = (tableName + columnName).length;
-          const widthScreen = window.innerWidth; // screen width 
+          const widthScreen = window.innerWidth; // screen width
 
           if(checksum <= 23) {
             str = `<strong>${tableName}</strong>&nbsp>&nbsp<strong>${columnName}</strong>`;
