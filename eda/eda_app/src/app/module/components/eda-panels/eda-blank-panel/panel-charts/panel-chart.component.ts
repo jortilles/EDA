@@ -223,237 +223,224 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * @param type 
      */
     private renderEdaChart(type: string) {
-        const isbarline = this.props.edaChart === 'barline';
-        const isstacked = this.props.edaChart === 'stackedbar' || this.props.edaChart === 'stackedbar100';
+    const isbarline = this.props.edaChart === 'barline';
+    const isstacked = this.props.edaChart === 'stackedbar' || this.props.edaChart === 'stackedbar100';
 
-        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
-        const dataTypes = this.props.query.map(column => column.column_type);
-    
-        let values = _.cloneDeep(this.props.data.values);
+    const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+    const dataTypes = this.props.query.map(column => column.column_type);
 
-        /**
-        * add comparative
-        */
-        let cfg: any = this.props.config.getConfig();
-        // Si es un histogram faig aixó....        
-        if ((['histogram'].includes(this.props.edaChart))
-            && this.props.query.length === 1
-            && this.props.query.filter(field => field.column_type === 'numeric').length == 1
-        ) {
-            let newCol = { name: this.histoGramRangesTxt, index: 0 };
-            dataDescription.otherColumns.push(newCol);
-            dataDescription.numericColumns[0].index = 1
-            dataDescription.totalColumns++;
-            dataDescription.numericColumns[0].name = this.histoGramDescTxt + " " + dataDescription.numericColumns[0].name + " " + this.histoGramDescTxt2;
+    let values = _.cloneDeep(this.props.data.values);
+
+    // ---------------- ADD COMPARATIVE ----------------
+    let cfg: any = this.props.config.getConfig();
+
+    // Histograma
+    if ((['histogram'].includes(this.props.edaChart))
+        && this.props.query.length === 1
+        && this.props.query.filter(field => field.column_type === 'numeric').length == 1
+    ) {
+        let newCol = { name: this.histoGramRangesTxt, index: 0 };
+        dataDescription.otherColumns.push(newCol);
+        dataDescription.numericColumns[0].index = 1
+        dataDescription.totalColumns++;
+        dataDescription.numericColumns[0].name = this.histoGramDescTxt + " " + dataDescription.numericColumns[0].name + " " + this.histoGramDescTxt2;
+    }
+
+    // Comparatives para line/bar
+    if (!!cfg.addComparative
+        && (['line', 'bar'].includes(cfg.chartType))
+        && this.props.query.length === 2
+        && this.props.query.filter(field => field.column_type === 'date').length > 0
+        && ['month', 'week'].includes(this.props.query.filter(field => field.column_type === 'date')[0].format)) {
+
+        values = this.chartUtils.comparePeriods(this.props.data, this.props.query);
+        let types = this.props.query.map(field => field.column_type);
+        let dateIndex = types.indexOf('date');
+        dataTypes.splice(dateIndex, 0, 'date');
+        let dateCol = dataDescription.otherColumns.filter(c => c.index === dateIndex)[0];
+        let newCol = { name: dateCol.name + '_newDate', index: dateCol.index + 1 };
+        dataDescription.otherColumns.push(newCol);
+        dataDescription.totalColumns++;
+    }
+
+    // ---------------- TRANSFORM DATA ----------------
+    const chartData = this.chartUtils.transformDataQuery(
+        this.props.chartType,
+        this.props.edaChart,
+        values,
+        dataTypes,
+        dataDescription,
+        isbarline,
+        null
+    );
+    if (chartData.length == 0) {
+        chartData.push([], []);
+    }
+
+    const minMax = this.props.chartType !== 'line' ? { min: null, max: null } : this.chartUtils.getMinMax(chartData);
+    const manySeries = chartData[1]?.length > 10 ? true : false;
+
+    const styles: StyleConfig = {
+        fontFamily: this.fontFamily,
+        fontSize: this.fontSize,
+        fontColor: this.fontColor
+    };
+
+    const ticksOptions = { maxRotation: 30, minRotation: 0, labelOffset: 5, padding: 5 };
+
+    const config = this.chartUtils.initChartOptions(
+        this.props.chartType,
+        dataDescription.numericColumns[0]?.name,
+        dataDescription.otherColumns,
+        manySeries,
+        isstacked,
+        this.getDimensions(),
+        this.props.linkedDashboardProps,
+        minMax,
+        styles,
+        cfg.showLabels,
+        cfg.showLabelsPercent,
+        cfg.showPointLines,
+        cfg.numberOfColumns,
+        this.props.edaChart,
+        ticksOptions,
+        false,
+        this.styleProviderService
+    );
+
+    // ---------------- ADD TREND ----------------
+    cfg = this.props.config.getConfig();
+    if (cfg.addTrend && (cfg.chartType === 'line')) {
+        let trends = [];
+        chartData[1].forEach(serie => {
+            let trend = this.chartUtils.getTrend(serie);
+            trends.push(trend);
+        });
+        trends.forEach(trend => chartData[1].push(trend));
+    }
+
+    // ---------------- INIT CHART CONFIG ----------------
+    let chartConfig: any = {};
+    chartConfig.chartType = this.props.chartType;
+    chartConfig.edaChart = this.props.edaChart;
+    chartConfig.chartLabels = chartData[0];
+    chartConfig.chartDataset = chartData[1];
+    chartConfig.chartOptions = config.chartOptions;
+    chartConfig.chartColors = this.chartUtils.recoverChartColors(this.props.chartType, this.props.config);
+
+    // TEMPORAL: clona assignedColors para no tocar config real
+    const persistedAssignedColors = this.props.config.getConfig()['assignedColors'] || [];
+    chartConfig.assignedColors = _.cloneDeep(persistedAssignedColors);
+
+    const sortByAsCol = !this.styleProviderService.loadingFromPalette;
+    let colors = this.chartUtils.generateChartColorsFromPalette(chartConfig.chartLabels.length, this.paletaActual).flatMap(item => item.backgroundColor);
+
+    const chartColors = chartConfig.chartColors[0];
+    const assignedColors = chartConfig.assignedColors;
+
+    // ---------------- DOUGHNUT / POLAR ----------------
+    if (["doughnut", "polarArea"].includes(chartConfig.chartType)) {
+        const assignedColorMap = new Map<string, string>();
+        chartConfig.assignedColors.forEach(ac => {
+            if (!assignedColorMap.has(ac.value)) assignedColorMap.set(ac.value, ac.color);
+        });
+
+        chartData[0].forEach((label, index) => {
+            const resolvedColor = (sortByAsCol && assignedColorMap.has(label))
+                ? assignedColorMap.get(label)
+                : colors[index];
+
+            chartColors.backgroundColor[index] = resolvedColor;
+            chartColors.borderColor[index] = resolvedColor;
+        });
+
+        // PREVIEW ONLY: assignedColors temporal
+        chartConfig.assignedColors = chartData[0].map((label, index) => ({
+            value: label,
+            color: chartColors.backgroundColor[index]
+        }));
+    }
+    // ---------------- BAR / LINE / RADAR / AREA ----------------
+    else if (['bar', 'horizontalBar', 'radar', 'barline', 'line', 'area'].includes(chartConfig.edaChart)) {
+        const baseColor = sortByAsCol && chartConfig.assignedColors.length > 0
+            ? chartConfig.assignedColors[0].color
+            : colors[0];
+
+        chartColors.backgroundColor = baseColor;
+        chartColors.borderColor = baseColor;
+
+        chartConfig.assignedColors = chartConfig.chartLabels.map(label => ({
+            value: label,
+            color: baseColor
+        }));
+    }
+    // ---------------- PYRAMID / STACKED ----------------
+    else if (['pyramid', 'stackedbar', 'stackedbar100'].includes(chartConfig.edaChart)) {
+        const uniqueNames = this.props.config.getConfig()['assignedColors']?.length > 0
+            ? this.getUniqueNamesFromDataset(this.props.config.getConfig()['assignedColors'])
+            : this.getUniqueNamesFromDataset(chartConfig.chartDataset);
+
+        const colorsStacked = this.chartUtils
+            .generateChartColorsFromPalette(uniqueNames.length, this.paletaActual)
+            .flatMap(item => item.backgroundColor);
+
+        const configData2 = chartConfig.assignedColors.flatMap(item => item.label);
+
+        chartData[1].forEach((element, index) => {
+            const indexMatched = configData2.findIndex(e => e === element.label);
+            if (!sortByAsCol || indexMatched === -1) {
+                chartConfig.chartColors[index].backgroundColor = colorsStacked[index];
+                chartConfig.chartColors[index].borderColor = colorsStacked[index];
+            }
+        });
+
+        chartConfig.assignedColors = uniqueNames.map((name, idx) => ({
+            label: name,
+            color: chartConfig.chartColors[idx]?.backgroundColor || colorsStacked[idx],
+        }));
+    }
+    // ---------------- HISTOGRAM ----------------
+    else if (['histogram'].includes(chartConfig.edaChart)) {
+        if (chartConfig.chartLabels.length === 0) {
+            chartConfig.chartLabels = chartConfig.assignedColors.map(element => element.value);
+            chartConfig.chartDataset[0].data = [1];
         }
-        // si vull fer comparatives faig això....
-        if (!!cfg.addComparative
-            && (['line', 'bar'].includes(cfg.chartType))
-            && this.props.query.length === 2
-            && this.props.query.filter(field => field.column_type === 'date').length > 0
-            && ['month', 'week'].includes(this.props.query.filter(field => field.column_type === 'date')[0].format)) {
 
-            values = this.chartUtils.comparePeriods(this.props.data, this.props.query);
-            let types = this.props.query.map(field => field.column_type);
-            let dateIndex = types.indexOf('date');
-            dataTypes.splice(dateIndex, 0, 'date');
-            let dateCol = dataDescription.otherColumns.filter(c => c.index === dateIndex)[0];
-            let newCol = { name: dateCol.name + '_newDate', index: dateCol.index + 1 };
-            dataDescription.otherColumns.push(newCol);
-            dataDescription.totalColumns++;
-        }
+        const histColor = sortByAsCol && chartConfig.assignedColors.length > 0
+            ? chartConfig.assignedColors[0].color
+            : this.styleProviderService?.ActualChartPalette['paleta'][0];
 
-        // No pasamos el numero de columnas se calcula en la propia funcion
-        const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart, values, dataTypes, dataDescription, isbarline, null);
-        if (chartData.length == 0) {
-            chartData.push([], []);
-        }
-
-        const minMax = this.props.chartType !== 'line' ? { min: null, max: null } : this.chartUtils.getMinMax(chartData);
-
-        const manySeries = chartData[1]?.length > 10 ? true : false;
-        
-        const styles: StyleConfig = {
-            fontFamily: this.fontFamily,
-            fontSize: this.fontSize,
-            fontColor: this.fontColor
-        }
-
-        const ticksOptions = {
-            maxRotation: 30,
-            minRotation: 0,
-            labelOffset: 5,
-            padding: 5
+        chartConfig.chartColors[0] = {
+            backgroundColor: histColor,
+            borderColor: histColor,
+            pointBackgroundColor: histColor,
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: histColor
         };
 
-        const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0]?.name,
-            dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps,
-            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines, cfg.numberOfColumns, this.props.edaChart, ticksOptions, false, this.styleProviderService);
+        chartConfig.assignedColors.forEach(element => element.color = histColor);
+    }
 
-
-        /**Add trend datasets*/
-        cfg = this.props.config.getConfig();
-        if (cfg.addTrend && (cfg.chartType === 'line')) {
-            let trends = [];
-            chartData[1].forEach(serie => {
-                let trend = this.chartUtils.getTrend(serie);
-                trends.push(trend);
-            });
-            trends.forEach(trend => chartData[1].push(trend));
-        }
-        let chartConfig: any = {};
-        chartConfig.chartType = this.props.chartType;
-        chartConfig.edaChart = this.props.edaChart;
-        chartConfig.chartLabels = chartData[0];
-        chartConfig.chartDataset = chartData[1];
-        chartConfig.chartOptions = config.chartOptions;
-        chartConfig.chartColors = this.chartUtils.recoverChartColors(this.props.chartType, this.props.config);
-        chartConfig.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
-        
-        const sortByAsCol = !this.styleProviderService.loadingFromPalette; // Ordenado por assignedColors
-        let colors = this.chartUtils.generateChartColorsFromPalette(chartConfig.chartLabels.length, this.paletaActual).flatMap((item) => item.backgroundColor);
-    
-        const chartColors = chartConfig.chartColors[0];
-        const assignedColors = chartConfig.assignedColors;
-        const configData = chartConfig?.assignedColors.flatMap((item) => item.value);
-        const configColors = chartConfig?.assignedColors.flatMap((item) => item.color);
-
-        if (["doughnut", "polarArea"].includes(chartConfig.chartType)) {
-            chartData[0].forEach((element, index) => {
-                const indexMatched = configData.findIndex(e => e === element);
-                if (indexMatched !== -1 && sortByAsCol) {
-                    // Usa color coincidente de configColors
-                    chartColors.backgroundColor[index] = configColors[indexMatched];
-                    chartColors.borderColor[index] = configColors[indexMatched];
-                } else {
-                    // Usa color de la paleta activa
-                    const color = colors[index];
-                    chartColors.backgroundColor[index] = color;
-                    chartColors.borderColor[index] = color;
-
-                }
-                // Actualiza assignedColors para la vista previa
-                assignedColors.forEach((item, idx) => {
-                    item.color = chartColors.backgroundColor[idx];
-                });
-                
-            });
-
-
-            chartConfig.chartLabels.forEach((element, index) => {
-                //asignamos el valor de la data y color perteniente si lo tiene
-                chartConfig.assignedColors.push({
-                    value: element,
-                    color: chartColors.backgroundColor[index]
-                });
-            });
-        }else if (['bar', 'horizontalBar', 'radar', 'barline', 'line', 'area'].includes(chartConfig.edaChart)) {
-            if (sortByAsCol) {
-                    // Usa color coincidente de configColors + creación nuevo
-                    chartColors.backgroundColor = chartConfig?.assignedColors?.length > 0 ? chartConfig?.assignedColors[0].color : colors [0];
-                    chartColors.borderColor = chartConfig?.assignedColors?.length > 0 ? chartConfig?.assignedColors[0].color : colors [0];
-            } else {
-                    // Cargamos colores desde paleta 
-                    chartColors.backgroundColor = this.paletaActual[0];
-                    chartColors.borderColor = this.paletaActual[0];
-
-                    // Actualiza assignedColors para la vista previa
-                    assignedColors.forEach((item) => {
-                        item.color = chartColors.backgroundColor;
-                    });
-            } 
-            chartConfig.chartLabels.forEach((element) => {
-                //asignamos el valor de la data y color perteniente si lo tiene
-                chartConfig.assignedColors.push({
-                    value: element,
-                    color: chartColors.backgroundColor
-                });
-            });
-        }else if (['pyramid', 'stackedbar', 'stackedbar100'].includes(chartConfig.edaChart)) {
-            // Obtener nombres únicos
-            let uniqueNames;
-            if(this.props.config.getConfig()['assignedColors']?.length > 0 )
-                uniqueNames = this.getUniqueNamesFromDataset(this.props.config.getConfig()['assignedColors']);
-            else
-                uniqueNames = this.getUniqueNamesFromDataset(chartConfig.chartDataset);
-
-            // Generar paleta de colores del tamaño justo
-            let colors = this.chartUtils
-            .generateChartColorsFromPalette(uniqueNames.length, this.paletaActual).flatMap((item) => item.backgroundColor);
-            
-            // Asignar colores según sortByAsCol
-            const configData2 = chartConfig?.assignedColors.flatMap((item) => item.label);
-            
-            chartData[1].forEach((element, index) => {
-                const indexMatched = configData2.findIndex(e => e === element.label);
-                if(!sortByAsCol || indexMatched === -1 ) {
-                    // Usa la paleta activa
-                    chartConfig.chartColors[index].backgroundColor = colors[index];
-                    chartConfig.chartColors[index].borderColor = colors[index];
-                }else {
-                    // Usa assignedColors
-                    chartConfig.chartColors[index].backgroundColor = chartConfig.chartColors[index].backgroundColor;
-                    chartConfig.chartColors[index].borderColor = chartConfig.chartColors[index].backgroundColor;
-                }
-            });
-            chartConfig.assignedColors = uniqueNames.map((name, idx) => ({
-                label: name,
-                color: chartConfig.chartColors[idx]?.backgroundColor || colors[idx],
-            }));
-
-        } else if (['histogram'].includes(chartConfig.edaChart)) {
-                if (chartConfig.chartLabels.length === 0) {
-                    chartConfig.chartLabels = chartConfig.assignedColors.map(element => element.value);
-                                        chartConfig.chartDataset[0].data = [1];
-
-                }
-                if (sortByAsCol) {
-                    // Usa color coincidente de configColors
-                    const assignedColor = chartConfig?.assignedColors?.length > 0 ? chartConfig?.assignedColors[0].color : colors [0];
-
-                    chartConfig.chartColors[0] = {
-                        backgroundColor: assignedColor,
-                        borderColor: assignedColor,
-                        pointBackgroundColor: assignedColor,
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: assignedColor
-                    };
-                } else {
-                    // Usa color de la paleta activa
-                    chartConfig.chartColors[0].backgroundColor = this.styleProviderService?.ActualChartPalette['paleta'][0];
-                    chartConfig.chartColors[0].borderColor = this.styleProviderService?.ActualChartPalette['paleta'][0];
-                    
-                    // Modificar los assignedColor para que la preview coincida con el cambio
-                    chartConfig.assignedColors.forEach(element => {
-                        element.color = chartConfig.chartColors[0].backgroundColor
-                    });
-                }
-        }
-
-        
-
-
-
-            // chartColors unicamente se reflejan si estan dentro del chartDataset (esto asigna colores correctamente) 
-            if (!chartData[1][0]?.backgroundColor) {
-                chartData[1].forEach((e, i) => {
-                    try {
-                        e.backgroundColor = chartConfig.chartColors[i].backgroundColor;
-                        e.borderColor = chartConfig.chartColors[i].borderColor;
-                    } catch (err) {
-                        // si tinc una tendencia no tinc color per aquesta grafica. No hauria de ser aixi.....
-                        e.backgroundColor = this.chartUtils.generateColors(this.props.chartType)[i].backgroundColor;
-                        e.borderColor = this.chartUtils.generateColors(this.props.chartType)[i].borderColor;
-                    }
-                });
+    // ---------------- ASIGNAR COLORS A DATASET ----------------
+    if (!chartData[1][0]?.backgroundColor) {
+        chartData[1].forEach((e, i) => {
+            try {
+                e.backgroundColor = chartConfig.chartColors[i].backgroundColor;
+                e.borderColor = chartConfig.chartColors[i].borderColor;
+            } catch (err) {
+                // fallback
+                e.backgroundColor = this.chartUtils.generateColors(this.props.chartType)[i].backgroundColor;
+                e.borderColor = this.chartUtils.generateColors(this.props.chartType)[i].borderColor;
             }
-        
+        });
+    }
 
-        chartConfig.linkedDashboardProps = this.props.linkedDashboardProps;
-        this.createEdaChartComponent(chartConfig);
+    chartConfig.linkedDashboardProps = this.props.linkedDashboardProps;
 
-    }   
+    this.createEdaChartComponent(chartConfig);
+}
+
 
 
 

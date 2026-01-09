@@ -844,9 +844,19 @@ export class ChartUtilsService {
             config = config.edaChart;
         }
 
+
+        console.log('verificación colores')
+        console.log(config)
+        console.log((<ChartJsConfig>config).chartType.includes(currentChartype))
+        console.log('verificación colores')
+
         if (config && (<ChartJsConfig>config).chartType.includes(currentChartype)) {
+            console.log('i merge colors, great!!!')
+            console.log(layout)
             return this.mergeColors(layout)
         } else {
+            console.log('i generate colors, :( ')
+            console.log(currentChartype)
             return this.generateColors(currentChartype);
         }
     }
