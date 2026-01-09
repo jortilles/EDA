@@ -1,4 +1,4 @@
-<div *ngIf=" typePanel==='tabla' && tablePanel.technical_name" class="w-full mx-auto px-6">
+<div *ngIf=" typePanel==='tabla' && tablePanel.technical_name" class="w-full mx-auto px-6 overflow-auto max-h-[119vh]">
   <div class="bg-card rounded-lg border shadow-sm">
     <div class="flex flex-col space-y-1.5 p-6 border-b">
       <h3 class="text-2xl font-semibold leading-none tracking-tight" i18n="@@editModelHeaders">{{tablePanel.type ? tablePanel.name : ''}}</h3>
