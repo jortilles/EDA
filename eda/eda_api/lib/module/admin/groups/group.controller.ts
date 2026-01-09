@@ -187,7 +187,7 @@ export class GroupController {
 
         group.name = body.name
         group.users = body.users
-        group.role = 'EDA_USER_ROLE'
+        req.params.id === '135792467811111111111110' ? group.role = 'EDA_ADMIN_ROLE' : group.role = 'EDA_USER_ROLE';
 
         group.save(async (err, groupSaved: IGroup) => {
           if (err) {
