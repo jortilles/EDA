@@ -1911,12 +1911,27 @@ private assignLevels(nodes: any[], level = 0): void {
         const rootTable = this.tables.find((table: any) => {
             return table.table_name === event;
         })
-
-        this.columns = [];
+        
         this.rootTable = _.cloneDeep(rootTable);
         this.userSelectedTable = event;
 
-        console.log('EBP :::::::::::::::::: ', this);
+
+        console.log('EBP :::::======>:::::: ', this);
+
+        const currentQueryPrincipal = this.currentQuery.map((cq: any) => {
+            if(cq.table_id === event) {
+                return cq;
+            }
+        })
+
+        let columns: any[] = []
+        rootTable.columns.forEach((col: any) => {
+            if(!currentQueryPrincipal.find((cqp: any) => cqp.column_name === col.column_name)) {
+                columns.push(col);
+            }
+        })
+
+        this.columns = columns;
 
     }
 
