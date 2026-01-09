@@ -2821,85 +2821,97 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Todas</source>
 <target>All</target>
 </trans-unit>
+<trans-unit id="DatePickerToday">
+<source>Hoy</source>
+<target>Today</target>
+</trans-unit>
 <trans-unit id="DatePickerYesterday">
 <source>Ayer</source>
 <target>Yesterday</target>
 </trans-unit>
 <trans-unit id="DatePickerBeforeYesterday">
 <source>Antes de ayer</source>
-<target>Before Yesterday</target>
+<target>The day before yesterday</target>
 </trans-unit>
 <trans-unit id="DatePickerWeek">
-<source>Ésta semana</source>
-<target>This week</target>
+<source>Esta semana (hasta hoy)</source>
+<target>Current week to date</target>
 </trans-unit>
 <trans-unit id="DatePickerWeekFull">
 <source>Ésta semana al completo</source>
-<target>All this week</target>
+<target>Current week</target>
 </trans-unit>
 <trans-unit id="DatePickerLastWeek">
-<source>La semana pasada</source>
-<target>Last week</target>
+<source>La semana pasada (hasta equivalente a hoy)</source>
+<target>Last week (to the same day as today)</target>
 </trans-unit>
 <trans-unit id="DatePickerLastWeekFull">
 <source>La semana pasada completa</source>
-<target>All last week</target>
+<target>Last week</target>
 </trans-unit>
 <trans-unit id="DatePickerMonth">
-<source>Éste mes</source>
-<target>This month</target>
+<source>Este mes (hasta hoy)</source>
+<target>Current month to date</target>
+</trans-unit>
+<trans-unit id="DatePickerMonthFull">
+<source>Este mes al completo</source>
+<target>Current month</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonth">
-<source>El mes pasado</source>
-<target>Last month</target>
+<source>El mes pasado (hasta equivalente a hoy)</source>
+<target>Last month (to the same day as today)</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonthFull">
 <source>El mes pasado completo</source>
-<target>All last month</target>
+<target>Last month</target>
 </trans-unit>
 <trans-unit id="DatePickerMonthPreviousYear">
-<source>Éste mes del año pasado</source>
-<target>This month from previous year</target>
+<source>Este mes del año pasado (hasta equivalente a hoy)</source>
+<target>Same month last year (to the same day as today)</target>
 </trans-unit>
 <trans-unit id="DatePickerMonthPreviousYearFull">
 <source>Éste mes al completo del año pasado</source>
-<target>This whole month of last year</target>
+<target>Same month last year</target>
 </trans-unit>
 <trans-unit id="DatePickerYear">
-<source>Éste año</source>
-<target>This year</target>
+<source>Este año (hasta hoy)</source>
+<target>Current year to date</target>
+</trans-unit>
+<trans-unit id="DatePickerYearFull">
+<source>Este año al completo</source>
+<target>Current year</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYear">
-<source>El año pasado</source>
-<target>Last year</target>
+<source>El año pasado (hasta equivalente a hoy)</source>
+<target>Last year (to the same day as today)</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYearFull">
 <source>El año pasado, completo</source>
-<target>Last year, the whole year</target>
+<target>Last year</target>
 </trans-unit>
 <trans-unit id="DatePickerLast7">
 <source> Últimos 7 días </source>
-<target>Last 7 days </target>
+<target>Last 7 days</target>
 </trans-unit>
 <trans-unit id="DatePickerLast3">
 <source> Últimos 3 días </source>
-<target>Last 3 days </target>
+<target>Last 3 days</target>
 </trans-unit>
 <trans-unit id="DatePickerLast15">
 <source> Últimos 15 días </source>
-<target>Last 15 days </target>
+<target>Last 15 days</target>
 </trans-unit>
 <trans-unit id="DatePickerLast30">
 <source> Últimos 30 días </source>
-<target>Last 30 days </target>
+<target>Last 30 days</target>
 </trans-unit>
 <trans-unit id="DatePickerLast60">
 <source> Últimos 60 días </source>
-<target>Last 60 days </target>
+<target>Last 60 days</target>
 </trans-unit>
 <trans-unit id="DatePickerLast120">
 <source> Últimos 120 días </source>
-<target>Last 120 days </target>
+<target>Last 120 days</target>
 </trans-unit>
 <trans-unit id="DateSelectRange">
 <source>Selecciona un rango</source>

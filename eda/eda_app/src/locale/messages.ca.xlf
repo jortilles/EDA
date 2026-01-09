@@ -2844,6 +2844,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Todas</source>
 <target>Totes</target>
 </trans-unit>
+<trans-unit id="DatePickerToday">
+<source>Hoy</source>
+<target>Avui</target>
+</trans-unit>
 <trans-unit id="DatePickerYesterday">
 <source>Ayer</source>
 <target>Ahir</target>
@@ -2853,80 +2857,88 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Abans d'ahir</target>
 </trans-unit>
 <trans-unit id="DatePickerWeek">
-<source>Ésta semana</source>
-<target>Aquesta setmana</target>
+<source>Esta semana (hasta hoy)</source>
+<target>Aquesta setmana (fins avui)</target>
 </trans-unit>
 <trans-unit id="DatePickerWeekFull">
-<source>Ésta semana al completo</source>
-<target>Tota aquesta setmana</target>
+<source>Esta semana al completo</source>
+<target>Aquesta setmana</target>
 </trans-unit>
 <trans-unit id="DatePickerLastWeek">
-<source>La semana pasada</source>
-<target>La setmana passada</target>
+<source>La semana pasada (hasta equivalente a hoy)</source>
+<target>La setmana passada (fins el mateix dia que avui) </target>
 </trans-unit>
 <trans-unit id="DatePickerLastWeekFull">
 <source>La semana pasada completa</source>
-<target>Tota la setmana passada</target>
+<target>La setmana passada</target>
 </trans-unit>
 <trans-unit id="DatePickerMonth">
-<source>Éste mes</source>
+<source>Este mes (hasta hoy)</source>
+<target>Aquest mes (fins avui)</target>
+</trans-unit>
+<trans-unit id="DatePickerMonthFull">
+<source>Este mes al completo</source>
 <target>Aquest mes</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonth">
-<source>El mes pasado</source>
-<target>El mes passat</target>
+<source>El mes pasado (hasta equivalente a hoy)</source>
+<target>El mes passat (fins el mateix dia que avui) </target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonthFull">
 <source>El mes pasado completo</source>
-<target>Tot el mes passat</target>
+<target>El mes passat</target>
 </trans-unit>
 <trans-unit id="DatePickerMonthPreviousYear">
-<source>Éste mes del año pasado</source>
-<target>Aquest mes de l'any passat</target>
+<source>Este mes del año pasado (hasta equivalente a hoy)</source>
+<target>El mateix mes de l'any passat (fins el mateix dia que avui)</target>
 </trans-unit>
 <trans-unit id="DatePickerMonthPreviousYearFull">
 <source>Éste mes al completo del año pasado</source>
-<target>Aquest mes, complert, de l'any passat</target>
+<target>El mateix mes de l'any passat</target>
 </trans-unit>
 <trans-unit id="DatePickerYear">
-<source>Éste año</source>
+<source>Este año (hasta hoy)</source>
+<target>Aquest any (fins avui)</target>
+</trans-unit>
+<trans-unit id="DatePickerYearFull">
+<source>Este año al completo</source>
 <target>Aquest any</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYear">
-<source>El año pasado</source>
-<target>L'any passat</target>
+<source>El año pasado (hasta equivalente a hoy)</source>
+<target>L'any passat (fins el mateix dia que avui)</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYearFull">
 <source>El año pasado, completo</source>
-<target>L'any passat, complet</target>
+<target>L'any passat</target>
 </trans-unit>
 <trans-unit id="DatePickerLast7">
 <source> Últimos 7 días </source>
-<target>Últims 7 dies </target>
+<target>Els últims 7 dies</target>
 </trans-unit>
 <trans-unit id="DatePickerLast3">
 <source> Últimos 3 días </source>
-<target>Últims 3 dies </target>
+<target>Els últims 3 dies</target>
 </trans-unit>
 <trans-unit id="DatePickerLast15">
 <source> Últimos 15 días </source>
-<target>Últims 15 dies </target>
+<target>Els últims 15 dies</target>
 </trans-unit>
 <trans-unit id="DatePickerLast30">
 <source> Últimos 30 días </source>
-<target>Últims 30 dies </target>
+<target>Els últims 30 dies</target>
 </trans-unit>
 <trans-unit id="DatePickerLast60">
 <source> Últimos 60 días </source>
-<target>Últims 60 dies </target>
+<target>Els últims 60 dies</target>
 </trans-unit>
 <trans-unit id="DatePickerLast120">
 <source> Últimos 120 días </source>
-<target>Últims 120 dies </target>
+<target>Els últims 120 dies</target>
 </trans-unit>
 <trans-unit id="DateSelectRange">
 <source>Selecciona un rango</source>
-<target>Selecciona un rang</target>
+<target>Seleccioneu un rang</target>
 </trans-unit>
 
 <trans-unit id="inputPuerto" datatype="html">

@@ -24,30 +24,32 @@ export class EdaDatePickerComponent implements OnChanges {
 	public locale: {};
 	public firstDayOfWeek: number = 1;
 
-	public ranges: Array<SelectItem> = [
-		{ label: $localize`:@@DatePickerAll:Todas`, value: 'all' },
-		{ label: $localize`:@@DatePickerYesterday:Ayer`, value: 'yesterday' },
-		{ label: $localize`:@@DatePickerBeforeYesterday:Antes de Ayer`, value: 'beforeYesterday' },
-		{ label: $localize`:@@DatePickerWeek:Ésta semana`, value: 'weekStart' },
-		{ label: $localize`:@@DatePickerWeekFull:Ésta semana al completo`, value: 'weekStartFull' },
-		{ label: $localize`:@@DatePickerLastWeek:La semana pasada`, value: 'pastWeek' },
-		{ label: $localize`:@@DatePickerLastWeekFull:La semana pasada completa`, value: 'pastWeekFull' },
-		{ label: $localize`:@@DatePickerMonth:Éste mes`, value: 'monthStart' },
-		{ label: $localize`:@@DatePickerLastMonth:El mes pasado`, value: 'pastMonth' },
-		{ label: $localize`:@@DatePickerLastMonthFull:El mes pasado completo`, value: 'pastMonthFull' },
-		{ label: $localize`:@@DatePickerMonthPreviousYear:Éste mes del año pasado`, value: 'monthStartPreviousYear' },
-		{ label: $localize`:@@DatePickerMonthPreviousYearFull:Éste mes al completo del año pasado`, value: 'monthFullPreviousYear' },
-		{ label: $localize`:@@DatePickerYear:Éste año`, value: 'yearStart' },
-		{ label: $localize`:@@DatePickerYearPreviousYear:El año pasado`, value: 'yearStartPreviousYear' },
-		{ label: $localize`:@@DatePickerYearPreviousYearFull:El año pasado, completo`, value: 'yearStartPreviousYearFull' },
-		{ label: $localize`:@@DatePickerLast3:Últimos 3 días`, value: 'last3' },
-		{ label: $localize`:@@DatePickerLast7:Últimos 7 días`, value: 'last7' },
-		{ label: $localize`:@@DatePickerLast15:Últimos 15 días`, value: 'last15' },
-		{ label: $localize`:@@DatePickerLast30:Últimos 30 días`, value: 'last30' },
-		{ label: $localize`:@@DatePickerLast60:Últimos 60 días`, value: 'last60' },
-		{ label: $localize`:@@DatePickerLast120:Últimos 120 días`, value: 'last120' },
-		{ label: $localize`:@@DatePickerNull:Fecha nula`, value: 'null' },
-	];
+				public ranges: Array<SelectItem> = [
+					{ label: $localize`:@@DatePickerAll:Todas`, value: 'all' },
+/**SDA CUSTOM  */	{ label: $localize`:@@DatePickerToday:Hoy`, value: 'today' },
+					{ label: $localize`:@@DatePickerYesterday:Ayer`, value: 'yesterday' },
+					{ label: $localize`:@@DatePickerBeforeYesterday:Antes de Ayer`, value: 'beforeYesterday' },
+/**SDA CUSTOM  */	{ label: $localize`:@@DatePickerWeek:Esta semana (hasta hoy)`, value: 'weekStart' },
+/**SDA CUSTOM  */	{ label: $localize`:@@DatePickerWeekFull:Esta semana al completo`, value: 'weekStartFull' },
+					{ label: $localize`:@@DatePickerLastWeek:La semana pasada (hasta equivalente a hoy)`, value: 'pastWeek' },
+					{ label: $localize`:@@DatePickerLastWeekFull:La semana pasada completa`, value: 'pastWeekFull' },
+/**SDA CUSTOM  */	{ label: $localize`:@@DatePickerMonth:Este mes (hasta hoy)`, value: 'monthStart' },
+/**SDA CUSTOM  */	{ label: $localize`:@@DatePickerMonthFull:Este mes completo`, value: 'monthStartFull' },
+					{ label: $localize`:@@DatePickerLastMonth:El mes pasado (hasta equivalente a hoy)`, value: 'pastMonth' },
+					{ label: $localize`:@@DatePickerLastMonthFull:El mes pasado completo`, value: 'pastMonthFull' },
+					{ label: $localize`:@@DatePickerMonthPreviousYear:Este mes del año pasado (hasta equivalente a hoy)`, value: 'monthStartPreviousYear' },
+					{ label: $localize`:@@DatePickerMonthPreviousYearFull:Éste mes al completo del año pasado`, value: 'monthFullPreviousYear' },
+/**SDA CUSTOM  */	{ label: $localize`:@@DatePickerYear:Este año (hasta hoy)`, value: 'yearStart' },
+/**SDA CUSTOM  */	{ label: $localize`:@@DatePickerYearFull:Este año al completo`, value: 'yearStartFull' },
+/**SDA CUSTOM  */	{ label: $localize`:@@DatePickerYearPreviousYear:El año pasado (hasta equivalente a hoy)`, value: 'yearStartPreviousYear' },
+					{ label: $localize`:@@DatePickerYearPreviousYearFull:El año pasado, completo`, value: 'yearStartPreviousYearFull' },
+					{ label: $localize`:@@DatePickerLast3:Últimos 3 días`, value: 'last3' },
+					{ label: $localize`:@@DatePickerLast7:Últimos 7 días`, value: 'last7' },
+					{ label: $localize`:@@DatePickerLast15:Últimos 15 días`, value: 'last15' },
+					{ label: $localize`:@@DatePickerLast30:Últimos 30 días`, value: 'last30' },
+					{ label: $localize`:@@DatePickerLast60:Últimos 60 días`, value: 'last60' },
+					{ label: $localize`:@@DatePickerLast120:Últimos 120 días`, value: 'last120' },
+				];
 
 	public selectedRange: SelectItem;
 	public rangePlaceholder: string = $localize`:@@DateSelectRange:Selecciona un rango`;

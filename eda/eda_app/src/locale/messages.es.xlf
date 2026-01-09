@@ -2968,90 +2968,103 @@
         <source>Todas</source>
         <target>Todas</target>
       </trans-unit>
+      <trans-unit id="DatePickerToday">
+        <source>Hoy</source>
+        <target>Hoy</target>
+      </trans-unit>
       <trans-unit id="DatePickerYesterday">
         <source>Ayer</source>
         <target>Ayer</target>
       </trans-unit>
       <trans-unit id="DatePickerBeforeYesterday">
         <source>Antes de ayer</source>
-        <target>Antes de ayer</target>
+        <target>Anteayer</target>
       </trans-unit>
       <trans-unit id="DatePickerWeek">
-        <source>Ésta semana</source>
-        <target>Ésta semana</target>
+        <source>Esta semana (hasta hoy)</source>
+        <target>Esta semana (hasta hoy)</target>
       </trans-unit>
       <trans-unit id="DatePickerWeekFull">
-        <source>Ésta semana al completo</source>
-        <target>Ésta semana al completo</target>
+        <source>Esta semana al completo</source>
+        <target>Esta semana</target>
       </trans-unit>
       <trans-unit id="DatePickerLastWeek">
-        <source>La semana pasada</source>
-        <target>La semana pasada</target>
+        <source>La semana pasada (hasta equivalente a hoy)</source>
+        <target>La semana pasada (hasta el mismo día que hoy)</target>
       </trans-unit>
       <trans-unit id="DatePickerLastWeekFull">
         <source>La semana pasada completa</source>
-        <target>La semana pasada completa</target>
+        <target>La semana pasada</target>
       </trans-unit>
       <trans-unit id="DatePickerMonth">
-        <source>Éste mes</source>
-        <target>Éste mes</target>
+        <source>Este mes (hasta hoy)</source>
+        <target>Este mes (hasta hoy)</target>
       </trans-unit>
+    <trans-unit id="DatePickerMonthFull">
+      <source>Este mes al completo</source>
+      <target>Este mes</target>
+    </trans-unit>
       <trans-unit id="DatePickerLastMonth">
-        <source>El mes pasado</source>
-        <target>El mes pasado</target>
+        <source>El mes pasado (hasta equivalente a hoy)</source>
+        <target>El mes pasado (hasta el mismo día que hoy)</target>
       </trans-unit>
       <trans-unit id="DatePickerLastMonthFull">
         <source>El mes pasado completo</source>
-        <target>El mes pasado completo</target>
+        <target>El mes pasado</target>
       </trans-unit>
       <trans-unit id="DatePickerMonthPreviousYear">
-        <source>Éste mes del año pasado</source>
-        <target>Éste mes del año pasado</target>
+        <source>Este mes del año pasado (hasta equivalente a hoy)</source>
+        <target>El mismo mes del año pasado (hasta el mismo día que hoy)</target>
       </trans-unit>
 
       <trans-unit id="DatePickerMonthPreviousYearFull">
         <source>Éste mes al completo del año pasado</source>
-        <target>Éste mes al completo del año pasado</target>
+        <target>El mismo mes del año pasado</target>
       </trans-unit>
 
       <trans-unit id="DatePickerYear">
-        <source>Éste año</source>
-        <target>Éste año</target>
+        <source>Este año (hasta hoy)</source>
+        <target>Este año (hasta hoy)</target>
+      </trans-unit>
+
+      <trans-unit id="DatePickerYearFull">
+        <source>Este año al completo</source>
+        <target>Este año</target>
       </trans-unit>
 
       <trans-unit id="DatePickerYearPreviousYear">
-        <source>El año pasado</source>
-        <target>El año pasado</target>
+        <source>El año pasado (hasta equivalente a hoy)</source>
+        <target>El año pasado (hasta el mismo día que hoy)</target>
       </trans-unit>
 
       <trans-unit id="DatePickerLast7">
         <source> Últimos 7 días </source>
-        <target> Últimos 7 días </target>
+        <target>Últimos 7 días</target>
       </trans-unit>
 
       <trans-unit id="DatePickerLast3">
         <source> Últimos 3 días </source>
-        <target> Últimos 3 días </target>
+        <target>Últimos 3 días</target>
       </trans-unit>
 
       <trans-unit id="DatePickerLast15">
         <source> Últimos 15 días </source>
-        <target> Últimos 15 días </target>
+        <target>Últimos 15 días</target>
       </trans-unit>
 
       <trans-unit id="DatePickerLast30">
         <source> Últimos 30 días </source>
-        <target> Últimos 30 días </target>
+        <target>Últimos 30 días</target>
       </trans-unit>
 
       <trans-unit id="DatePickerLast60">
         <source> Últimos 60 días </source>
-        <target> Últimos 60 días </target>
+        <target>Últimos 60 días</target>
       </trans-unit>
 
       <trans-unit id="DatePickerLast120">
         <source> Últimos 120 días </source>
-        <target> Últimos 120 días </target>
+        <target>Últimos 120 días</target>
       </trans-unit>
 
       <trans-unit id="DatePickerNull">
@@ -3061,7 +3074,7 @@
 
       <trans-unit id="DateSelectRange">
         <source>Selecciona un rango</source>
-        <target>Selecciona un rango</target>
+        <target>Seleccione un rango</target>
       </trans-unit>
 
       <trans-unit id="inputPuerto" datatype="html">

@@ -12,32 +12,34 @@ export class DateUtils {
 
     /**Range dates utils */
 
-    public getRange(range: any) {
-        switch (range) {
-            case 'all': return this.allDates();
-            case 'yesterday': return this.setYesterday();
-            case 'beforeYesterday': return this.setBeforeYesterday();
-            case 'weekStart': return this.setWeekStart();
-            case 'weekStartFull': return this.setWeekStartFull();
-            case 'pastWeek': return this.setPastWeek();
-            case 'pastWeekFull': return this.setPastWeekFull();
-            case 'monthStart': return this.setMonthStart();
-            case 'pastMonth': return this.setPastMonth();
-            case 'pastMonthFull': return this.setPastMonthFull();
-            case 'monthStartPreviousYear': return this.setMonthStartPreviousYear();
-            case 'monthFullPreviousYear': return this.setMonthFullPreviousYear();
-            case 'yearStart': return this.setYearStart();
-            case 'yearStartPreviousYear': return this.setYearStartPreviousYear();
-            case 'yearStartPreviousYearFull': return this.setYearStartPreviousYearFull();
-            case 'last3': return this.setLast3();
-            case 'last7': return this.setLast7();
-            case 'last15': return this.setLast15();
-            case 'last30': return this.setLast30();
-            case 'last60': return this.setLast60();
-            case 'last120': return this.setLast120();
-            case 'null': return this.nullDate();
-        }
-    }
+            public getRange(range: any) {
+                switch (range) {
+                    case 'all': return this.allDates();
+/**SDA CUSTOM  */   case 'today': return this.setToday();
+                    case 'yesterday': return this.setYesterday();
+                    case 'beforeYesterday': return this.setBeforeYesterday();
+                    case 'weekStart': return this.setWeekStart();
+                    case 'weekStartFull': return this.setWeekStartFull();
+                    case 'pastWeek': return this.setPastWeek();
+                    case 'pastWeekFull': return this.setPastWeekFull();
+                    case 'monthStart': return this.setMonthStart();
+/**SDA CUSTOM  */   case 'monthStartFull': return this.setMonthStartFull();
+                    case 'pastMonth': return this.setPastMonth();
+                    case 'pastMonthFull': return this.setPastMonthFull();
+                    case 'monthStartPreviousYear': return this.setMonthStartPreviousYear();
+                    case 'monthFullPreviousYear': return this.setMonthFullPreviousYear();
+                    case 'yearStart': return this.setYearStart();
+/**SDA CUSTOM  */   case 'yearStartFull': return this.setYearStartFull();
+                    case 'yearStartPreviousYear': return this.setYearStartPreviousYear();
+                    case 'yearStartPreviousYearFull': return this.setYearStartPreviousYearFull();
+                    case 'last3': return this.setLast3();
+                    case 'last7': return this.setLast7();
+                    case 'last15': return this.setLast15();
+                    case 'last30': return this.setLast30();
+                    case 'last60': return this.setLast60();
+                    case 'last120': return this.setLast120();
+                }
+            }
 
     public allDates(): Array<Date> {
         const mostOldDate = moment('1939-01-01').toDate();
@@ -45,6 +47,11 @@ export class DateUtils {
         return [mostOldDate, today];
     }
 
+/**SDA CUSTOM  */    public setToday(): Array<Date> {
+/**SDA CUSTOM  */        const today = moment().toDate();
+/**SDA CUSTOM  */        return [today, today];
+/**SDA CUSTOM  */    }
+    
     public setYesterday(): Array<Date> {
         const yesterday = moment().subtract(1,'days').toDate()
         return [yesterday,yesterday];
@@ -55,11 +62,11 @@ export class DateUtils {
         return [beforeYesterday,beforeYesterday];
     }
 
-    public setWeekStart(): Array<Date> {
-        const startOnMonday = moment().startOf('isoWeek').toDate();
-        const endOnFriday = moment().startOf('isoWeek').add(4,'days').toDate();
-        return [startOnMonday,endOnFriday];
-    }
+/**SDA CUSTOM  */   public setWeekStart(): Array<Date> {
+/**SDA CUSTOM  */       const startOnMonday = moment().startOf('isoWeek').toDate();
+/**SDA CUSTOM  */       let today = new Date();
+/**SDA CUSTOM  */       return [startOnMonday,today];
+/**SDA CUSTOM  */   }
 
     /**
      * Establece el inicio y fin de la semana basado en la fecha actual de acuerdo al ISO 8601 que en todos
@@ -69,12 +76,12 @@ export class DateUtils {
      * y el segundo es el fin de la semana.
      *
     */
-    public setWeekStartFull(): Array<Date> {
-      let now = moment();
-      let start = now.clone().startOf('isoWeek').toDate();
-      let end = now.clone().endOf('isoWeek').toDate();
-      return [start, end];
-    }
+/**SDA CUSTOM  */    public setWeekStartFull(): Array<Date> {
+/**SDA CUSTOM  */      let now = moment();
+/**SDA CUSTOM  */      let start = now.clone().startOf('isoWeek').toDate();
+/**SDA CUSTOM  */      let end = now.clone().endOf('isoWeek').toDate();
+/**SDA CUSTOM  */      return [start, end];
+/**SDA CUSTOM  */    }
 
     public setPastWeek(): Array<Date> {
         const getMonday = (d: Date) => {
@@ -107,6 +114,12 @@ export class DateUtils {
         const today = moment().toDate();
         const monthStart = moment().startOf('month').toDate();
         return [monthStart, today];
+    }
+
+    public setMonthStartFull(): Array<Date> { 
+        const monthStart = moment().startOf('month').toDate();
+        const monthStartEnd = moment().endOf('month').toDate();
+        return [monthStart, monthStartEnd];
     }
 
     public setPastMonth(): Array<Date> {
@@ -144,11 +157,16 @@ export class DateUtils {
     }
 
     public setYearStart(): Array<Date> {
-       
         const yearStart = moment().startOf('year').toDate();
         const today = moment().toDate();
         return [yearStart, today];
     }
+
+/**SDA CUSTOM  */    public setYearStartFull(): Array<Date> {
+/**SDA CUSTOM  */    const yearStart = moment().startOf('year').toDate();
+/**SDA CUSTOM  */        const yearEnd = moment().endOf('year').toDate();
+/**SDA CUSTOM  */        return [yearStart, yearEnd];
+/**SDA CUSTOM  */    }
 
     public setYearStartPreviousYear(): Array<Date> {
         const pastYearStart = moment().subtract(1,'years').startOf('year').toDate();
@@ -211,11 +229,6 @@ export class DateUtils {
                 return `${ye}-${mo}-${da}`
             });
         return stringRange;
-    }
-
-
-    public nullDate() {
-        return [moment('1900-01-01').toDate(), moment('1900-01-01').toDate()];
     }
 
 }
