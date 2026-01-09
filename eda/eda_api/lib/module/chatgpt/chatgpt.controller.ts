@@ -136,36 +136,29 @@ export class ChatGptController {
 
             // Definir en otro directorio
             // Obtencion del campo.
-            const getFieldsTool = {
+            const getFieldsTool: any = {
                 type: "function",
                 name: "getFields",
-                description: "Extracts table names and their requested columns from the user query. Only return tables and columns that exist in the provided schema. Do not invent tables or columns.",
+                description: "Returns an array of tables objects where each one contains its corresponding columns element which is an array of columns. You must check the schema",
                 parameters: {
                     type: "object",
                     properties: {
                         tables: {
                             type: "array",
-                            description: "List of tables explicitly referenced in the user request.",
+                            description: "Array of table requests. Each element must be an object with 'table' (string) and 'columns' (array of strings). If no column is specified, you must add all the columns from the corresponding table. You must check the schema",
                             items: {
                                 type: "object",
                                 properties: {
-                                    table: {
-                                        type: "string",
-                                        description: "Exact table name as defined in the schema. Must match exactly."
-                                    },
+                                    table: { type: "string", description: "Name of the table (e.g. 'customers')" },
                                     columns: {
                                         type: "array",
-                                        description: "List of column names explicitly requested for this table. Only include columns that exist in the schema.",
-                                        items: {
-                                            type: "string"
-                                        },
-                                        minItems: 1
+                                        description: "List of string column names. If not specified or empty, return all columns for the table. You must check the schema. You must identify tables or entities in the prompt query to match them with the columns you will return. Take also into account synonyms and possible typography mistakes. Never return empty if you dont know make a request",
+                                        items: { type: "string" }
                                     }
                                 },
                                 required: ["table", "columns"],
                                 additionalProperties: false
-                            },
-                            minItems: 1
+                            }
                         }
                     },
                     required: ["tables"],
@@ -175,26 +168,26 @@ export class ChatGptController {
             };
 
 
-            // const getAllColumnsByTableNameTool: any = {
-            //     type: "function",       // obligatorio
-            //     name: "getAllColumnsByTableName",
-            //     description: "Returns the table name. The table name must exist in the schema; synonyms and minor typos may be considered.",
-            //     parameters: {
-            //         type: "object",
-            //         properties: {
-            //             table: {
-            //                 type: "string",
-            //                 description: "Name of the table, must exist in the schema",
-            //             },
-            //         },
-            //         required: ["table"],
-            //         additionalProperties: false
-            //     },
-            //     strict: true,           
-            // };
+            const getAllColumnsByTableNameTool: any = {
+                type: "function",       // obligatorio
+                name: "getAllColumnsByTableName",
+                description: "Returns the table name. The table name must exist in the schema; synonyms and minor typos may be considered.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        table: {
+                            type: "string",
+                            description: "Name of the table, must exist in the schema",
+                        },
+                    },
+                    required: ["table"],
+                    additionalProperties: false
+                },
+                strict: true,           
+            };
 
             // Agregación de todas las funciones de llamada
-            const tools: any[] = [getFieldsTool];
+            const tools: any[] = [getFieldsTool, getAllColumnsByTableNameTool];
 
             let response: any = await openai.responses.create({
                 model: MODEL,
@@ -202,11 +195,11 @@ export class ChatGptController {
                 tools: tools,
             })
 
-
             const toolCall: any = response.output?.find((c: any) => c.type === "function_call");
             let toolResult: string | null = null;
             let currentQueryTool: any[];
 
+            
             console.log('toolCall: ', toolCall);
 
             if(toolCall && toolCall.name === "getFields"){
@@ -220,6 +213,9 @@ export class ChatGptController {
                 currentQueryTool = getFields(tables, data);
                 response.currentQuery = currentQueryTool;
                 response.principalTable =  principalTable;
+
+                console.log('currentQueryTool: ', currentQueryTool);
+                // Agregar mas control cuando el arreglo de currentQueryTool retorna vacio
                 response.output_text = 'Se ha configurado con exito la consulta solicitada';
 
                 //  // --- 5) (Opcional) enviar el resultado de la tool de vuelta al modelo para respuesta final ---
@@ -247,9 +243,13 @@ export class ChatGptController {
 
                 // Current Query
                 currentQueryTool = getAllColumnsByTableName(tableName, data);
+                console.log('currentQueryTool: ::::::: :', currentQueryTool);
                 response.currentQuery = currentQueryTool;
                 response.principalTable =  tableName;
-                response.output_text = 'Se ha configurado con exito la consulta solicitada';
+                response.output_text = 'Se ha configurado con exito la consulta solicitada todos los valores';
+
+                // Agregar mas control cuando el arreglo de currentQueryTool retorna vacio
+
             }
 
             res.status(200).json({
