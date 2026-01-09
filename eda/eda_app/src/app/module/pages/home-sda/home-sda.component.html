@@ -82,7 +82,7 @@
               class="form-check-input"
               type="checkbox"
               [id]="'tag-' + tag.value"
-              [checked]="selectedTags.includes(tag)"
+              [checked]="isTagSelected(tag)"
               (change)="toggleTagSelection(tag)"
             />
 
@@ -139,7 +139,7 @@
               class="form-check-input"
               type="checkbox"
               [id]="'group-' + group.value"
-              [checked]="selectedGroups.includes(group)"
+              [checked]="isGroupSelected(group)"
               (change)="toggleGroupSelection(group)"
             />
             <label class="form-check-label" [for]="'group-' + group.value">
@@ -196,7 +196,7 @@
               type="checkbox"
               [id]="'type-' + type.type"
               (change)="toggleTypeSelection(type)"
-              [checked]="selectedTypes.includes(type)"
+              [checked]="isTypeSelected(type)"
             />
             <label class="form-check-label" [for]="'type-' + type.type">
               <i [class]="'fa ' + type.icon" [style.color]="type.color"></i>
@@ -223,6 +223,21 @@
       />
       <i class="fa fa-search search-icon"></i>
     </div>
+  </div>
+
+  <!-- Clear all filters button -->
+  <div class="ml-2" id="clear-filters-button">
+    <button
+      class="btn"
+      [class.btn-warning]="selectedTags.length > 0 || selectedGroups.length > 0 || selectedTypes.length > 0 || searchTerm.length > 0"
+      [class.btn-secondary]="selectedTags.length === 0 && selectedGroups.length === 0 && selectedTypes.length === 0 && searchTerm.length === 0"
+      [disabled]="selectedTags.length === 0 && selectedGroups.length === 0 && selectedTypes.length === 0 && searchTerm.length === 0"
+      (click)="clearAllFilters()"
+      i18n-title="@@clearAllFilters"
+      title="Eliminar todos los filtros"
+    >
+      <i class="mdi mdi-filter-remove"></i>
+    </button>
   </div>
 
   <div class="ml-2" id="count-indicator">

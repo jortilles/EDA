@@ -1,4 +1,17 @@
 $stic-color: #b4bc32;
+
+/* Estilos para la barra de navegación */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  // margin: 0;
+  // margin-left: -25px;
+  // margin-right: -25px;
+  // margin-top: -10px ;
+}
+
 /* Estilos generales */
 .btn-group .btn-outline-light,
 .btn-sm {

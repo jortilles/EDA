@@ -1183,8 +1183,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public getsharedURL(): string {
         const url = location.href;
         const baseURL = url.slice(0, url.indexOf('#'));
+        const panelMode = true;
 
-        return `${baseURL}#/public/${this.id}`
+        return `${baseURL}#/public/${this.id}?panelMode=${panelMode}`
     }
 
     public copyURL(): void {

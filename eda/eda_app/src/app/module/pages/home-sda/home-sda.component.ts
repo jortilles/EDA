@@ -178,6 +178,7 @@ export class HomeSdaComponent implements OnInit {
     this.ifAnonymousGetOut();
     this.setIsObserver();
     this.currentUser = JSON.parse(localStorage.getItem("user"));
+    this.loadFiltersFromStorage();
   }
 
   /**
@@ -252,7 +253,7 @@ export class HomeSdaComponent implements OnInit {
         this.initDashboardTypes();
         this.initTags();
         this.initGroups();
-        this.filterDashboards();
+        this.restoreFiltersAndApply();
 
         this.setIsObserver();
       },
@@ -468,6 +469,7 @@ public filterGroups() {
     }
 
     this.filterDashboards();
+    this.saveFiltersToStorage();
   }
 
   /**
@@ -482,6 +484,7 @@ public filterGroups() {
       this.selectedGroups.push(group);
     }
     this.filterDashboards();
+    this.saveFiltersToStorage();
   }
 
   /**
@@ -496,10 +499,12 @@ public filterGroups() {
       this.selectedTypes.push(type);
     }
     this.filterDashboards();
+    this.saveFiltersToStorage();
   }
 
   /**
-   * Filters dashboards based on selected types, tags, and groups.
+   * Filters dashboards based on selected types, tags, groups, and name search term.
+   * All filters are applied cumulatively.
    */
   public filterDashboards() {
     // Reset visibleDashboards
@@ -548,6 +553,14 @@ public filterGroups() {
         }
       });
     }
+
+    // Apply name search filter
+    if (this.searchTerm && this.searchTerm.length > 0) {
+      const normalizedSearchTerm = this.normalizeText(this.searchTerm);
+      this.visibleDashboards = this.visibleDashboards.filter(
+        db => this.normalizeText(db.config.title).indexOf(normalizedSearchTerm) >= 0
+      );
+    }
   }
 
   /**
@@ -555,9 +568,10 @@ public filterGroups() {
    * @param event The input event containing the search term
    */
   public filterTitle(event: any) {
-    this.searchTerm = event.target.value.toString().toUpperCase();
-    this.applyCurrentFilters();
+    this.searchTerm = event.target.value.toString();
+    this.filterDashboards();
     this.filteringByName = this.searchTerm.length > 1;
+    this.saveFiltersToStorage();
   }
 
   /**
@@ -615,6 +629,8 @@ public filterGroups() {
       if (valueA > valueB) return this.sortDirection === "asc" ? 1 : -1;
       return 0;
     });
+
+    this.saveFiltersToStorage();
   }
 
   /**
@@ -625,6 +641,19 @@ public filterGroups() {
    */
   private getNestedProperty(obj: any, path: string): any {
     return path.split(".").reduce((o, key) => (o && o[key] !== undefined ? o[key] : null), obj);
+  }
+
+  /**
+   * Normalizes a string by removing accents and special characters for comparison
+   * @param text The text to normalize
+   * @returns The normalized text
+   */
+  private normalizeText(text: string): string {
+    if (!text) return "";
+    return text
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toUpperCase();
   }
 
   /**
@@ -739,7 +768,7 @@ public filterGroups() {
       const href = location.href;
       const baseURL = href.slice(0, href.indexOf('#'));
 
-      const url = `${baseURL}#/public/${dashboard._id}`
+      const url = `${baseURL}#/public/${dashboard._id}?panelMode=true`
 
       navigator.clipboard.writeText(url).then(
         () => {
@@ -832,17 +861,10 @@ public filterGroups() {
 
   /**
    * Applies the current filters to the dashboard list
+   * Now simply calls filterDashboards which applies all filters cumulatively
    */
   private applyCurrentFilters(): void {
-    // Apply type, tag, and group filters
     this.filterDashboards();
-
-    // Apply text filter if it exists
-    if (this.searchTerm && this.searchTerm.length > 1) {
-      this.visibleDashboards = this.visibleDashboards.filter(
-        db => db.config.title.toUpperCase().indexOf(this.searchTerm) >= 0
-      );
-    }
   }
 
   /**
@@ -900,15 +922,168 @@ public filterGroups() {
   public clearTagFilter() {
     this.selectedTags = [];
     this.filterDashboards();
+    this.saveFiltersToStorage();
   }
 
   public clearGroupFilter() {
     this.selectedGroups = [];
     this.filterDashboards();
+    this.saveFiltersToStorage();
   }
 
   public clearTypeFilter() {
     this.selectedTypes = [];
     this.filterDashboards();
+    this.saveFiltersToStorage();
+  }
+
+  /**
+   * Checks if a tag is selected by comparing values
+   * @param tag The tag to check
+   * @returns True if the tag is selected
+   */
+  public isTagSelected(tag: any): boolean {
+    return this.selectedTags.some(t => t.value === tag.value);
+  }
+
+  /**
+   * Checks if a group is selected by comparing values
+   * @param group The group to check
+   * @returns True if the group is selected
+   */
+  public isGroupSelected(group: any): boolean {
+    return this.selectedGroups.some(g => g.value === group.value);
+  }
+
+  /**
+   * Checks if a type is selected by comparing type property
+   * @param type The type to check
+   * @returns True if the type is selected
+   */
+  public isTypeSelected(type: any): boolean {
+    return this.selectedTypes.some(t => t.type === type.type);
+  }
+
+  /**
+   * Clears all filters at once
+   */
+  public clearAllFilters(): void {
+    this.selectedTags = [];
+    this.selectedGroups = [];
+    this.selectedTypes = [];
+    this.searchTerm = "";
+    this.filterDashboards();
+    this.saveFiltersToStorage();
+  }
+
+  /**
+   * Saves the current filter state and sorting to LocalStorage
+   */
+  private saveFiltersToStorage(): void {
+    const filterState = {
+      selectedTags: this.selectedTags,
+      selectedGroups: this.selectedGroups,
+      selectedTypes: this.selectedTypes,
+      searchTerm: this.searchTerm,
+      sortColumn: this.sortColumn,
+      sortDirection: this.sortDirection
+    };
+    localStorage.setItem("dashboardFilters", JSON.stringify(filterState));
+  }
+
+  /**
+   * Loads the filter state and sorting from LocalStorage
+   */
+  private loadFiltersFromStorage(): void {
+    const savedFilters = localStorage.getItem("dashboardFilters");
+    if (savedFilters) {
+      try {
+        const filterState = JSON.parse(savedFilters);
+        this.searchTerm = filterState.searchTerm || "";
+        this.sortColumn = filterState.sortColumn || "config.title";
+        this.sortDirection = filterState.sortDirection || "asc";
+        // Note: selectedTags, selectedGroups, and selectedTypes will be restored after tags/groups are initialized
+      } catch (error) {
+        console.error("Error loading filters from storage:", error);
+      }
+    }
+  }
+
+  /**
+   * Restores the filter selections and applies them after tags, groups, and types are initialized
+   */
+  private restoreFiltersAndApply(): void {
+    const savedFilters = localStorage.getItem("dashboardFilters");
+    if (savedFilters) {
+      try {
+        const filterState = JSON.parse(savedFilters);
+
+        // Restore selected tags - Map to actual tag objects from this.tags
+        if (filterState.selectedTags && filterState.selectedTags.length > 0) {
+          this.selectedTags = [];
+          filterState.selectedTags.forEach(savedTag => {
+            const matchingTag = this.tags.find(tag => tag.value === savedTag.value);
+            if (matchingTag) {
+              this.selectedTags.push(matchingTag);
+            }
+          });
+        }
+
+        // Restore selected groups - Map to actual group objects from this.groupOptions
+        if (filterState.selectedGroups && filterState.selectedGroups.length > 0) {
+          this.selectedGroups = [];
+          filterState.selectedGroups.forEach(savedGroup => {
+            const matchingGroup = this.groupOptions.find(group => group.value === savedGroup.value);
+            if (matchingGroup) {
+              this.selectedGroups.push(matchingGroup);
+            }
+          });
+        }
+
+        // Restore selected types - Map to actual type objects from this.dashboardTypes
+        if (filterState.selectedTypes && filterState.selectedTypes.length > 0) {
+          this.selectedTypes = [];
+          filterState.selectedTypes.forEach(savedType => {
+            const matchingType = this.dashboardTypes.find(type => type.type === savedType.type);
+            if (matchingType) {
+              this.selectedTypes.push(matchingType);
+            }
+          });
+        }
+
+        // Apply all filters
+        this.applyCurrentFilters();
+
+        // Apply sorting if different from default
+        if (this.sortColumn && this.visibleDashboards.length > 0) {
+          this.visibleDashboards.sort((a, b) => {
+            let valueA = this.getNestedProperty(a, this.sortColumn);
+            let valueB = this.getNestedProperty(b, this.sortColumn);
+
+            if (this.sortColumn === "config.createdAt") {
+              valueA = valueA ? new Date(valueA).getTime() : 0;
+              valueB = valueB ? new Date(valueB).getTime() : 0;
+            }
+
+            if (this.sortColumn === "user.name") {
+              valueA = valueA || "";
+              valueB = valueB || "";
+            }
+
+            if (typeof valueA === "string") valueA = valueA.toLowerCase();
+            if (typeof valueB === "string") valueB = valueB.toLowerCase();
+
+            if (valueA < valueB) return this.sortDirection === "asc" ? -1 : 1;
+            if (valueA > valueB) return this.sortDirection === "asc" ? 1 : -1;
+            return 0;
+          });
+        }
+      } catch (error) {
+        console.error("Error restoring filters:", error);
+      }
+    } else {
+      // If no saved filters, just apply current (empty) filters
+      this.filterDashboards();
+    }
   }
 }

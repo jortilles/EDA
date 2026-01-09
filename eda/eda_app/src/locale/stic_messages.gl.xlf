@@ -355,6 +355,14 @@
     <source>Buscar tipo</source>
     <target>Buscar un tipo</target>
   </trans-unit>
+  <trans-unit id="clearAllFilters" datatype="html">
+    <source>Eliminar todos los filtros</source>
+    <target>Eliminar todos os filtros</target>
+  </trans-unit>
+  <trans-unit id="clearFilters" datatype="html">
+    <source>Eliminar filtros</source>
+    <target>Eliminar filtros</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>
