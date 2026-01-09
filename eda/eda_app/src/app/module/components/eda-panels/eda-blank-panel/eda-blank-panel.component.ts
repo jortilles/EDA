@@ -1914,6 +1914,7 @@ private assignLevels(nodes: any[], level = 0): void {
 
         this.columns = [];
         this.rootTable = _.cloneDeep(rootTable);
+        this.userSelectedTable = event;
 
         console.log('EBP :::::::::::::::::: ', this);
 
