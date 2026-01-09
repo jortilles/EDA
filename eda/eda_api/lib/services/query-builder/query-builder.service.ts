@@ -391,22 +391,28 @@ export abstract class QueryBuilderService {
                     fieldsColumn.computed_column = 'computed';
                     fieldsColumn.column_type = 'text';
         
-                    let columna = `${fieldsColumn.table_id}.${fieldsColumn.column_name}`
-        
+                    let identifiedColumn = `${fieldsColumn.table_id}.${fieldsColumn.column_name}`
+
+  /**SDA CUSTOM  */ if(fieldsColumn.joins.length !== 0) { /** fields have uniquer identifier with dots if they come form a joined table tabe.column.table.column.*/
+  /**SDA CUSTOM  */    let parts = identifiedColumn.split('.');  /** we keep the first and the last one wich are the good ones.*/
+  /**SDA CUSTOM  */    let newColumn = parts[0] + '.' + parts[parts.length - 1];
+  /**SDA CUSTOM  */    identifiedColumn = newColumn;
+  /**SDA CUSTOM  */ }
+
                     let SQLexpression = "CASE\n";
                 
                     // First case: less than the first value of the range
-                    SQLexpression += `\tWHEN ${columna} < ${fieldsColumn.ranges[0]} THEN '< ${fieldsColumn.ranges[0]}'\n`; 
+                    SQLexpression += `\tWHEN ${identifiedColumn} < ${fieldsColumn.ranges[0]} THEN '< ${fieldsColumn.ranges[0]}'\n`; 
         
                     // Middle cases: between every pair of values in the range
                     for (let i = 0; i < fieldsColumn.ranges.length - 1; i++) {
                         const lower = fieldsColumn.ranges[i];
                         const upper = fieldsColumn.ranges[i + 1] - 1;
-                        SQLexpression += `\tWHEN ${columna} >= ${lower} AND ${columna} <= ${upper} THEN ' ${lower} - ${upper}'\n`;
+                        SQLexpression += `\tWHEN ${identifiedColumn} >= ${lower} AND ${identifiedColumn} <= ${upper} THEN ' ${lower} - ${upper}'\n`;
                     }            
         
                     // Last case: greater than or equal to the last value in the range
-                    SQLexpression += `\tWHEN ${columna} >= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]} THEN '>= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]}'\n`;
+                    SQLexpression += `\tWHEN ${identifiedColumn} >= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]} THEN '>= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]}'\n`;
                     SQLexpression += "END";            
         
                     fieldsColumn.SQLexpression = SQLexpression;
@@ -416,18 +422,18 @@ export abstract class QueryBuilderService {
                     let rangesOrderExpressionNumber = 1;
                     
                     // First case:
-                    rangesOrderExpression += `\tWHEN ${columna} < ${fieldsColumn.ranges[0]} THEN ${rangesOrderExpressionNumber}\n`;
+                    rangesOrderExpression += `\tWHEN ${identifiedColumn} < ${fieldsColumn.ranges[0]} THEN ${rangesOrderExpressionNumber}\n`;
 
                     // Middle cases:
                     for(let i = 0; i<fieldsColumn.ranges.length - 1; i++) {
                         rangesOrderExpressionNumber += 1;
                         const lower = fieldsColumn.ranges[i];
                         const upper = fieldsColumn.ranges[i + 1] - 1;
-                        rangesOrderExpression += `\tWHEN ${columna} >= ${lower} AND ${columna} <= ${upper} THEN ${rangesOrderExpressionNumber}\n`;
+                        rangesOrderExpression += `\tWHEN ${identifiedColumn} >= ${lower} AND ${identifiedColumn} <= ${upper} THEN ${rangesOrderExpressionNumber}\n`;
                     }
 
                     // Last case:
-                    rangesOrderExpression += `\tWHEN ${columna} >= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]} THEN  ${rangesOrderExpressionNumber + 1}\n`;
+                    rangesOrderExpression += `\tWHEN ${identifiedColumn} >= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]} THEN  ${rangesOrderExpressionNumber + 1}\n`;
                     rangesOrderExpression += "END";
                     fieldsColumn.rangesOrderExpression = rangesOrderExpression;
 
