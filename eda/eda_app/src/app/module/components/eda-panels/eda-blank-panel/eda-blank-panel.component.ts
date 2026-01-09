@@ -1566,16 +1566,29 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table);
 
-    public removeColumn = (c: Column, list?: string, event?: Event) => {
-            // We check if when deleting a field it has a filter at selectedFilters
-        if(this.selectedFilters.some( (sf: any) => sf.filter_column === c.column_name )){
-            if(this.sortedFilters.length !==0) {
-                this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
-            }
-            this.sortedFilters = []; // resets the values ​​because one or more filters were deleted
-        }    
-        PanelInteractionUtils.removeColumn(this, c, list);
-    }
+/**SDA CUSTOM  */   public removeColumn = (c: Column, list?: string) => {
+/**SDA CUSTOM  */       // Conditions to check if we can delete the column
+/**SDA CUSTOM  */       const isNotRootColumn = !!c?.joins?.length;
+/**SDA CUSTOM  */       const rootColumnElements = this.currentQuery.filter(col => !col?.joins?.length).length;
+/**SDA CUSTOM  */       const currentQueryLength = this.currentQuery.length;
+/**SDA CUSTOM  */
+/**SDA CUSTOM  */       // We just proceed if it is not the last column of the root table
+/**SDA CUSTOM  */       if (isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
+/**SDA CUSTOM  */           // We check if when deleting a field it has a filter at selectedFilters
+                            if (this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name)) {
+                                if (this.sortedFilters.length !== 0) {
+                                    this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+                                }
+                                this.sortedFilters = []; // resets the values ​​because one or more filters were deleted
+                            }
+                            PanelInteractionUtils.removeColumn(this, c, list);
+                        }
+/**SDA CUSTOM  */       else {
+/**SDA CUSTOM  */       // We stop the event propagation to not open the attribute panel
+/**SDA CUSTOM  */           event.stopPropagation();
+/**SDA CUSTOM  */           this.alertService.addError($localize`:@@cannotRemoveLastColumn:No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.`);
+/**SDA CUSTOM  */       }
+                   }
 
     public getOptionDescription = (value: string): string => EbpUtils.getOptionDescription(value);
 

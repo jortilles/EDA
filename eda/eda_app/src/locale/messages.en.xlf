@@ -4615,6 +4615,10 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>La configuración de filtros del panel involucrado se ha reiniciado</source>
         <target>Panel filter settings have been reset</target>
       </trans-unit>
+      <trans-unit id="cannotRemoveLastColumn">
+        <source>No se puede eliminar la última columna de la tabla raíz, si esta no es la última de la consulta.</source>
+        <target>The column cannot be deleted. As long as the panel has columns from related tables, it must retain at least one column from the main table.</target>
+      </trans-unit>
       <trans-unit id="withoutFilters">
         <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
         <target>You haven't set up any filter. Use the filter panel or global filters.</target>

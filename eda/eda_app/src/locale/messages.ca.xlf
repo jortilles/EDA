@@ -4434,6 +4434,10 @@ Un cop configurada podreu invocar-la des del botó sempre que calgui.</target>
         <source>La configuración de filtros del panel involucrado se ha reiniciado</source>
         <target>La configuració de filtres del panell s'ha restablert</target>
       </trans-unit>
+      <trans-unit id="cannotRemoveLastColumn">
+        <source>No se puede eliminar la última columna de la tabla raíz, si esta no es la última de la consulta.</source>
+        <target>La columna no es pot eliminar. Mentre el panell tingui columnes de taules relacionades cal que conservi almenys una columna de la taula principal.</target>
+      </trans-unit>
       <trans-unit id="withoutFilters">
         <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
         <target>Encara no heu configurat cap filtre. Feu servir el panell de filtres o els filtres globals.</target>
