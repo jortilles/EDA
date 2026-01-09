@@ -32,7 +32,7 @@
         <panel-chart #PanelChartComponent
             [props]="panelChartConfig"
             (configUpdated)="setChartProperties()"
-            (onChartClick)="onChartClick($event)"            
+            (onChartClick)="onChartClick($event)"
             class="component" style="height: 100%; width: 100%; display:block">
         </panel-chart>
     </div>
@@ -265,7 +265,7 @@
  <!--SDA CUSTOM-->                      <i *ngIf="showHiddenColumn" class="pi pi-eye" style="font-size: 1.5rem"></i>
  <!--SDA CUSTOM-->                      <i *ngIf="!showHiddenColumn" class="pi pi-eye-slash" style="font-size: 1.5rem"></i>
  <!--SDA CUSTOM-->                  </span>
- <!--SDA CUSTOM-->              </div>    
+ <!--SDA CUSTOM-->              </div>
                             </div>
                             <div>
                                 <eda-input [inject]="inputs.findColumn"></eda-input>
@@ -437,26 +437,26 @@
                                     </p-overlayPanel>
 
 
-                                    <div class="grid">
+<!-- /**SDA CUSTOM  */ -->                   <div class="grid overflow-x-hidden">
 
                                         <div class="col-12 md:col-6 pl-2">
                                             <h5 i18n="@@resumenAtrH6">
                                                 Resumen de atributos
                                             </h5>
 
-                                            <div *ngFor="let column of currentQuery" class="d-flex align-items-center">
+<!-- /**SDA CUSTOM  */ -->                       <div *ngFor="let column of currentQuery" class="grid-item">
 
-                                                <strong class="d-flex align-items-center" [innerHTML]="getColumnJoins(column)"></strong>
+<!-- /**SDA CUSTOM  */ -->                            <strong [innerHTML]="getColumnJoins(column)"></strong>
 
-                                                <span class="d-flex align-items-center">
+<!-- /**SDA CUSTOM  */ -->                               <div class="table-name">
                                                     <strong> {{ getNiceTableName(column.table_id) }} </strong>
                                                     <i class="pi pi-angle-right"></i>
-                                                    {{column.display_name.default}}
-                                                </span>
+<!-- /**SDA CUSTOM  */ -->                                   <span>{{ column.display_name.default }}</span>
+                                                    <ng-container *ngFor="let aggregation of column.aggregation_type">
+                                                        <span *ngIf="aggregation.selected && aggregation.display_name !== 'no'" class="d-flex align-items-center" [innerHTML]="getDisplayAggregation(aggregation)"></span>
+                                                    </ng-container>
+<!-- /**SDA CUSTOM  */ -->                               </div>
 
-                                                <ng-container *ngFor="let aggregation of column.aggregation_type">
-                                                    <span *ngIf="aggregation.selected && aggregation.display_name !== 'no'" class="d-flex align-items-center" [innerHTML]="getDisplayAggregation(aggregation)"></span>
-                                                </ng-container>
 
                                             </div>
                                         </div>
@@ -466,11 +466,17 @@
                                             <h5 i18n="@@resumenFiltrosPanelH6">
                                                 Resumen de filtros del panel
                                             </h5>
-
-                                            <div *ngFor="let filter of selectedFilters" class="d-flex align-items-center">
-                                                <strong class="d-flex align-items-center" [innerHTML]="getFilterJoins(filter)"></strong>
-
-                                                <span class="d-flex align-items-center" [innerHTML]="getDisplayFilterStr(filter)"></span>
+<!-- /**SDA CUSTOM  */ -->                           <div *ngFor="let filter of selectedFilters; let index = index">
+<!-- /**SDA CUSTOM  */ -->                               <div class="filter-text">
+<!-- /**SDA CUSTOM  */ -->                                   <span class="filter-joins" [innerHTML]="getFilterJoins(filter)"></span>
+<!-- /**SDA CUSTOM  */ -->
+<!-- /**SDA CUSTOM  */ -->                                   <span class="table-name" style="margin-left: 1.5rem;">
+<!-- /**SDA CUSTOM  */ -->                                       {{ getNiceTableName(currentQuery[index + 1]?.table_id) }}
+<!-- /**SDA CUSTOM  */ -->                                       <i class="pi pi-angle-right"></i>
+<!-- /**SDA CUSTOM  */ -->                                   </span>
+<!-- /**SDA CUSTOM  */ -->
+<!-- /**SDA CUSTOM  */ -->                                   <span [innerHTML]="getDisplayFilterStr(filter)"></span>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -478,15 +484,20 @@
                                             <h5 i18n="@@resumenFiltrosInformeH6">
                                                 Resumen de filtros del informe
                                             </h5>
-
-                                            <div *ngFor="let filter of globalFilters" class="d-flex align-items-center">
-                                                <strong class="d-flex align-items-center" [innerHTML]="getFilterJoins(filter)"></strong>
-
-                                                <span class="d-flex align-items-center" [innerHTML]="getDisplayFilterStr(filter)"></span>
-                                            </div>
+<!-- /**SDA CUSTOM  */ -->                           <div *ngFor="let filter of globalFilters; let index = index">
+<!-- /**SDA CUSTOM  */ -->                               <div class="filter-text">
+<!-- /**SDA CUSTOM  */ -->                                   <span class="filter-joins" [innerHTML]="getFilterJoins(filter)"></span>
+<!-- /**SDA CUSTOM  */ -->
+<!-- /**SDA CUSTOM  */ -->                                   <span class="table-name" style="margin-left: 1.5rem;">
+<!-- /**SDA CUSTOM  */ -->                                       {{ getNiceTableName(currentQuery[index + 1]?.table_id) }}
+<!-- /**SDA CUSTOM  */ -->                                       <i class="pi pi-angle-right"></i>
+<!-- /**SDA CUSTOM  */ -->                                   </span>
+<!-- /**SDA CUSTOM  */ -->
+<!-- /**SDA CUSTOM  */ -->                                   <span [innerHTML]="getDisplayFilterStr(filter)"></span>
+<!-- /**SDA CUSTOM  */ -->                               </div>
+<!-- /**SDA CUSTOM  */ -->                           </div>
                                         </div>
                                     </div>
-                                    
                                 </div>
                             </div>
                         </div>
@@ -532,7 +543,7 @@
                                         (onChange)="changeChartTypeCheck(chartForm.value.chart.value, chartForm.value.chart.subValue, getChartStyles(chartForm.value.chart.value))
                                         "optionLabel="label"
                                         [autoDisplayFirst]="false">
-        
+
                                         <ng-template pTemplate="selectedItem">
                                             <div class="chart-item chart-item-value" *ngIf="chartForm.value.chart">
                                                 <i *ngIf="!!chartForm.value.chart.ngIf"
@@ -542,10 +553,10 @@
                                                 <span style="vertical-align:middle; margin-left: .5em">
                                                     {{chartForm.value.chart.label}}
                                                 </span>
-        
+
                                             </div>
                                         </ng-template>
-        
+
                                         <ng-template let-chart pTemplate="item">
                                             <div class="d-flex align-items-center" style="position: relative;height: 25px;"
                                                 [attr.title]="chart.tooManyData ? getTooManyDataDescription() : (chart.ngIf) ? getOptionDescription(chart.subValue) : getOptionDescriptionValid(chart.subValue) ">
@@ -553,23 +564,23 @@
                                                     [ngClass]="{'orange-alert': chart.ngIf, 'grey-alert': chart.tooManyData}">
                                                     {{getOptionIcon(chart.subValue)}}
                                                 </span>
-        
-        
+
+
                                                 <span class="ml-2 "
                                                     [ngClass]="{'texto-rallado-alert': chart.ngIf  || chart.tooManyData}">
                                                     {{chart.label}}
                                                 </span>
-        
+
                                                 <span i18n="@@tooManyValues" *ngIf='chart.tooManyData' class="edaTooManyData"> -
                                                     Demasiados valores</span>
-        
+
                                                 <span i18n="@@notAvaliable" *ngIf='chart.ngIf' class="edaTooManyData"> - No
                                                     Disponible</span>
                                             </div>
                                         </ng-template>
-        
+
                                     </p-dropdown>
-        
+
                                 </form>
                             </div>
                         </div>

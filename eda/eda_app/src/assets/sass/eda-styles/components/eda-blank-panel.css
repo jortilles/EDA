@@ -532,6 +532,32 @@ eda-blank-panel h4 {
     overflow-x: hidden;
 }
 
+/**SDA CUSTOM  */   .overflow-x-hidden {
+/**SDA CUSTOM  */       overflow-x: hidden;
+/**SDA CUSTOM  */   }
+/**SDA CUSTOM  */   
+/**SDA CUSTOM  */   .filter-joins i.pi {
+/**SDA CUSTOM  */       vertical-align: middle;
+/**SDA CUSTOM  */       margin-left: 1.5rem;
+/**SDA CUSTOM  */   }
+/**SDA CUSTOM  */
+/**SDA CUSTOM  */   .filter-text {
+/**SDA CUSTOM  */       padding-left: 1.5rem;
+/**SDA CUSTOM  */       text-indent: -1.5rem;
+/**SDA CUSTOM  */   }
+/**SDA CUSTOM  */
+/**SDA CUSTOM  */   .table-name {
+/**SDA CUSTOM  */       display: inline-flex;
+/**SDA CUSTOM  */       align-items: center;
+/**SDA CUSTOM  */       gap: 0.25rem;
+/**SDA CUSTOM  */   }
+/**SDA CUSTOM  */
+/**SDA CUSTOM  */   .table-name i.pi {
+/**SDA CUSTOM  */       display: inline-block;
+/**SDA CUSTOM  */       vertical-align: middle;
+/**SDA CUSTOM  */       margin-left: 1.5rem;
+/**SDA CUSTOM  */   }
+
 .edaChartSelector .p-dropdown-panel .p-dropdown-items-wrapper {
     overflow: auto;
     max-height: 54vh !important;
