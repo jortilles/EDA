@@ -100,7 +100,7 @@ export class MapDialogComponent implements OnInit {
   pushItem() {
     const selectedColumn = this.columnsValues.find(columnas => columnas.display_name.default === this.mapForm.value.selectedColumn);
     if (selectedColumn) {
-      this.linkedColumns.push({col: selectedColumn, table: this.mapForm.value.selectedTable});
+      this.linkedColumns.push({table: this.mapForm.value.selectedTable, col: selectedColumn});
     }
   }
 
