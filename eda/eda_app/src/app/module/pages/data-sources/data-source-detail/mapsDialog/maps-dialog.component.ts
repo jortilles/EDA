@@ -90,7 +90,7 @@ export class MapDialogComponent implements OnInit {
     const selectedTable = this.mapForm.value.selectedTable;
 
     if (selectedTable) {
-      this.columns = this.dataSourceService.getModel().filter(table => table.table_name === selectedTable)[0].columns
+      this.columns = this.dataSourceService.getModel().filter(table => table.table_name.toLowerCase() === selectedTable.toLowerCase())[0].columns
         .map(col => ({ label: col.display_name.default, value: JSON.stringify({ table: selectedTable, col: col } ) }));
     }
   }
