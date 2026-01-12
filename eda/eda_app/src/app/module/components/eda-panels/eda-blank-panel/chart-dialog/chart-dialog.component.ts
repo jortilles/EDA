@@ -38,6 +38,7 @@ export class ChartDialogComponent{
     public showLabels: boolean = false;
     public showLabelsPercent: boolean = false;
     public showPointLines: boolean = false;
+    public showPredictionLines: boolean = false;
     public selectedPalette: { name: string; paleta: any } | null = null;
     public allPalettes: any = this.stylesProviderService.ChartsPalettes;
 
@@ -102,6 +103,7 @@ export class ChartDialogComponent{
         this.showLabels = this.controller.params.config.config.getConfig()['showLabels'] || false;
         this.showLabelsPercent = this.controller.params.config.config.getConfig()['showLabelsPercent'] || false;
         this.showPointLines = this.controller.params.config.config.getConfig()['showPointLines'] || false;
+        this.showPredictionLines = this.controller.params.config.config.getConfig()['showPredictionLines'] || false;
         this.numberOfColumns = this.controller.params.config.config.getConfig()['numberOfColumns'] ||false;
         this.addComparative = this.controller.params.config.config.getConfig()['addComparative'] || false;      
         this.oldChart = _.cloneDeep(this.controller.params.chart);
@@ -361,6 +363,7 @@ export class ChartDialogComponent{
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
         config.showPointLines = this.showPointLines;
+        config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
         config.colors = this.chart.chartColors;
         properties.config = c;
@@ -399,6 +402,7 @@ export class ChartDialogComponent{
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
         config.showPointLines = this.showPointLines;
+        config.showPredictionLines = this.showPredictionLines;
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
@@ -418,6 +422,7 @@ export class ChartDialogComponent{
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
         config.showPointLines = this.showPointLines;
+        config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
         properties.config = c;
         /**Update chart */
@@ -437,6 +442,7 @@ export class ChartDialogComponent{
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
         config.showPointLines = this.showPointLines;
+        config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
         properties.config = c;
         /**Update chart */
@@ -456,6 +462,7 @@ export class ChartDialogComponent{
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
         config.showPointLines = this.showPointLines;
+        config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
         config.colors = this.chart.chartColors;
         properties.config = c;
@@ -466,6 +473,74 @@ export class ChartDialogComponent{
             this.load();
         });
 
+    }
+
+    setPredictionLines(){
+
+        const properties = this.panelChartConfig;
+        let c: ChartConfig = properties.config;
+        let config: any = c.getConfig();
+        config.showLabels = this.showLabels;
+        config.showLabelsPercent = this.showLabelsPercent;
+        config.showPointLines = this.showPointLines;
+        config.showPredictionLines = this.showPredictionLines;
+        config.numberOfColumns = this.numberOfColumns;
+        config.colors = this.chart.chartColors;
+        properties.config = c;
+        /**Update chart */
+        console.log(config)
+        /// AQUÍ HAREMOS LA NUEVA FEATURE ///
+        /// AQUÍ HAREMOS LA NUEVA FEATURE ///
+        
+        this.panelChartConfig = new PanelChart(this.panelChartConfig);
+        setTimeout(_ => {
+            this.chart = this.panelChartComponent.componentRef.instance.inject;
+            this.setupPrediction();
+            this.load();
+        });
+
+    }
+
+    setupPrediction(){
+        // Dataset a predecir 
+        const firstNumericoDataset = this.chart.chartDataset.find(dataset => dataset.data.some(value => typeof value === 'number'));
+        // LLAMADA A API
+        const prediccion = 4000;
+
+        // CREACIÓN DE SERIE
+        const newSerie: {label:string,bg:string,border:string} = {label: 'prediccion', bg: '#00FF00', border: '#00FF00'};
+        this.series.push(newSerie)
+
+        // CREACIÓN DE DATASET
+        const length = firstNumericoDataset.data.length; // Número total de elementos
+        const lastValue = firstNumericoDataset.data[length - 1]; // El valor final real para concatenar con prediccion
+
+        const newDataset: { data: any[]; label: string; backgroundColor: string; borderColor: string } = {
+            data: Array(length - 1).fill(null).concat(lastValue), // Todos null menos el último 
+            label: 'prediccion',
+            backgroundColor: '#00FF00',
+            borderColor: '#00FF00'
+        };
+
+        // Añadimos predicción al nuevo dataset
+        newDataset.data.push(prediccion);
+        // Añadimos nuevo dataset a datasets 
+        this.chart.chartDataset.push(newDataset);
+
+
+        // AÑADIR COLOR EN CHART COLORS
+        const chartColor: {backgroundColor:string, borderColor: string} = {backgroundColor: '#1CEDB1', borderColor: '#1CEDB1'};
+        this.chart.chartColors.push(chartColor)
+        
+        // AÑADIR LABEL EXTRA
+        const chartLabel: string = "2003-11"
+        this.chart.chartLabels.push(chartLabel)
+        
+        this.addSetupToChart();
+    }
+
+    addSetupToChart(){
+        
     }
 
 
@@ -623,6 +698,7 @@ export class ChartDialogComponent{
         this.controller.params.config.config.getConfig()['showLabels'] = this.chart.showLabels;
         this.controller.params.config.config.getConfig()['showLabelsPercent'] = this.chart.showLabelsPercent;
         this.controller.params.config.config.getConfig()['showPointLines'] = this.chart.showPointLines;
+        this.controller.params.config.config.getConfig()['showPredictionLines'] = this.chart.showPredictionLines;
         this.controller.params.config.config.getConfig()['numberOfColumns'] = this.chart.numberOfColumns;
         this.controller.params.config.config.getConfig()['addComparative'] = this.chart.addComparative;
     }
@@ -643,6 +719,7 @@ export class ChartDialogComponent{
         this.chart.showLabels = this.showLabels;
         this.chart.showLabelsPercent = this.showLabelsPercent;
         this.chart.showPointLines = this.showPointLines;
+        this.chart.showPredictionLines = this.showPredictionLines;
         this.chart.numberOfColumns = this.numberOfColumns;
         this.onClose(EdaDialogCloseEvent.UPDATE, this.chart);
     }
