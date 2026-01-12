@@ -42,6 +42,10 @@ export class OAUTHController {
     }
 
     static async metadata(req: Request, res: Response, next: NextFunction) {
+
+        console.log('Metadata ::::::: req ');
+        console.log(req);
+
         try {
             const code = req.qs?.code || req.query?.code;
             const state = req.qs?.state || req.query?.state;
@@ -59,20 +63,20 @@ export class OAUTHController {
             // VALId AP - refresh_token
             // VALId AP - expires_in ==> Fijado en 1 hora = 3600 segundos
             // VALId AP - token_type
+
             const response = await exchangeCodeForToken(code);
             const {access_token} = response;
-
 
             // Agregar la configuracion de login
             console.log('response VALIdAP: ', response);
             console.log('access_token: ', access_token);
 
-            const userDataValue = await userData(access_token);
-            const authenticationEvidenceValue = await authenticationEvidence(access_token);
-            const userPermissionsValue = await userPermissions(access_token);
-            const userPermissionsRolesValue = await userPermissionsRoles(access_token);
+            const userDataValue = await userData(access_token.toString());
+            const authenticationEvidenceValue = await authenticationEvidence(access_token.toString());
+            const userPermissionsValue = await userPermissions(access_token.toString());
+            const userPermissionsRolesValue = await userPermissionsRoles(access_token.toString());
 
-            console.log('RECUPERANDO TODA LA INFORMACIÓN:::: ')
+            console.log('NUEVO ==> RECUPERANDO TODA LA INFORMACIÓN:::: ')
 
             console.log('userDataValue: ', userDataValue)
             console.log('authenticationEvidenceValue: ', authenticationEvidenceValue)
@@ -129,16 +133,20 @@ async function exchangeCodeForToken(code: any) {
     }
 }
 
-async function userData(access_token: any) {
+async function userData(access_token: String) {
+    console.log('userData ... ');
+    console.log('access_token ===> ',access_token);
 
     try {
         const userDataUrlToken = OAUTHconfig.userDataUrlToken;
 
         const response = await axios.get(userDataUrlToken, {
             params: {
-                AccessToken: access_token, // access_token como único parametro
+                AccessToken: access_token.toString(), // access_token como único parametro
             }
         })
+
+        console.log('userData Response => ', response);
 
         return response.data; // VERIFICAR SI DEVOLVEMOS response.data
     } catch (error) {
@@ -153,16 +161,21 @@ async function userData(access_token: any) {
     }
 }
 
-async function authenticationEvidence(access_token: any) {
+async function authenticationEvidence(access_token: string) {
+
+    console.log('authenticationEvidence... ', authenticationEvidence);
+    console.log('access_token ===> ', access_token);
 
     try {
         const authenticationEvidenceUrlToken = OAUTHconfig.authenticationEvidenceUrlToken;
 
         const response = await axios.get(authenticationEvidenceUrlToken, {
             params: {
-                AccessToken: access_token, // access_token como único parametro
+                AccessToken: access_token.toString(), // access_token como único parametro
             }
         })
+
+        console.log('authenticationEvidence Response => ', response);
 
         return response.data; // VERIFICAR SI DEVOLVEMOS response.data
     } catch (error) {
@@ -177,17 +190,22 @@ async function authenticationEvidence(access_token: any) {
     }
 }
 
-async function userPermissions(access_token: any) {
+async function userPermissions(access_token: string) {
+    console.log('userPermissions... ', userPermissions);
+    console.log('access_token ===> ', access_token);
+
     try {
         const userPermissionsUrlToken = OAUTHconfig.userPermissionsUrlToken;
 
         const response = await axios.get(userPermissionsUrlToken, {
             params: {
-                AccessToken: access_token, // access_token como único parametro
+                AccessToken: access_token.toString(), // access_token como único parametro
             }
         })
 
-        return response.data; // VERIFICAR SI DEVOLVEMOS response.data
+	console.log('userPermissions Response => ', response);        
+
+	return response.data; // VERIFICAR SI DEVOLVEMOS response.data
     } catch (error) {
         if(axios.isAxiosError(error)) {
             console.error('Error OAuth:', error.response?.data); // VERIFICAR SI DEVOLVEMOS response.data
@@ -200,15 +218,21 @@ async function userPermissions(access_token: any) {
     }
 }
 
-async function userPermissionsRoles(access_token: any) {
+async function userPermissionsRoles(access_token: string) {
+        console.log('userPermissionsRoles... ', userPermissionsRoles);
+        console.log('access_token ===> ', access_token);    
+	
     try {
         const userPermissionsRolesUrlToken = OAUTHconfig.userPermissionsRolesUrlToken;
 
         const response = await axios.get(userPermissionsRolesUrlToken, {
             params: {
-                AccessToken: access_token, // access_token como único parametro
+                AccessToken: access_token.toString(), // access_token como único parametro
             }
         })
+
+	console.log('userPermissionsRoles Response => ', response);
+
 
         return response.data; // VERIFICAR SI DEVOLVEMOS response.data
     } catch (error) {
