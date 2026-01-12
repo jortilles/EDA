@@ -1600,9 +1600,6 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
     }
 
 
-    public showDescription(event): void {
-        this.description = event.description.default;
-    }
 
     public async getQuery($event: MouseEvent) {
     this.display_v.showQueryContainer = true;
