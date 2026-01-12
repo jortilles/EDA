@@ -1,4 +1,4 @@
-<div *ngIf=" typePanel==='tabla' && tablePanel.technical_name" class="w-full mx-auto px-6 overflow-auto max-h-[119vh]">
+<div *ngIf=" typePanel==='tabla' && tablePanel.technical_name" class="w-full mx-auto px-6">
   <div class="bg-card rounded-lg border shadow-sm">
     <div class="flex flex-col space-y-1.5 p-6 border-b">
       <h3 class="text-2xl font-semibold leading-none tracking-tight" i18n="@@editModelHeaders">{{tablePanel.type ? tablePanel.name : ''}}</h3>
@@ -600,7 +600,23 @@
       <!-- Utilities Section -->
       <div class="mb-8">
         <h3 class="text-lg font-medium text-gray-700 mb-4 border-b pb-2">{{utilities}}</h3>
-        <div class="flex flex-wrap gap-2">
+        <div class="grid grid-cols-3 gap-2">
+          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#00BFB3] hover:bg-[#00BFB3]/90 text-white  h-10 px-4 py-2"
+            (click)="openCacheDialog()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 14.14 14.14"/></svg>
+            {{addCacheConfig}}
+          </button>
+          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#00BFB3] hover:bg-[#00BFB3]/90 text-white  h-10 px-4 py-2"
+            (click)="openModelPermissionsDialog()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
+            {{addPermission}}
+          </button>
+          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#00BFB3] hover:bg-[#00BFB3]/90 text-white  h-10 px-4 py-2"
+            (click)="openSecurityDialog()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            {{viewsecurity}}
+          </button>
+
           <button
             class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium
                   ring-offset-background transition-colors focus-visible:outline-none
@@ -644,22 +660,6 @@
               <line x1="2" x2="22" y1="2" y2="22"/>
             </svg>
             {{ hideAllRelationsString }}
-          </button>
-
-          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#00BFB3] hover:bg-[#00BFB3]/90 text-white  h-10 px-4 py-2"
-            (click)="openCacheDialog()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 14.14 14.14"/></svg>
-            {{addCacheConfig}}
-          </button>
-          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#00BFB3] hover:bg-[#00BFB3]/90 text-white  h-10 px-4 py-2"
-            (click)="openModelPermissionsDialog()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
-            {{addPermission}}
-          </button>
-          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#00BFB3] hover:bg-[#00BFB3]/90 text-white  h-10 px-4 py-2"
-            (click)="openSecurityDialog()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-            {{viewsecurity}}
           </button>
         </div>
       </div>

@@ -1,5 +1,5 @@
-<div class="grid grid-cols-[3fr_7fr] gap-4 my-10 px-4">
-  <div class="rounded-lg border-r bg-background overflow-auto max-h-[119vh]">
+<div class="my-10 px-4 flex">
+  <div class="rounded-lg border-r bg-background overflow-auto max-h-[95vh] w-[30%]">
     <div class="p-4 border-b">
       <div class="flex items-center justify-between">
         <h2 class="text-lg font-semibold" i18n="@@tituloCard">Modelo de datos</h2>
@@ -54,7 +54,9 @@
       </p-tree>
     </div>
   </div>
+<div class="w-[70%]">
 
   <app-data-source-detail (onTableCreated)="reLoadModelFromDb()"></app-data-source-detail>
+</div>
   
 </div>
