@@ -23,6 +23,7 @@ export class MapDialogComponent implements OnInit {
   public fields: SelectItem[];
   public tables: SelectItem[];
   public columns: SelectItem[];
+  public columnsValues: any;
   public linkedColumns: any[] = [];
   public serverMaps: any[] = [];
   public center: any[];
@@ -92,13 +93,14 @@ export class MapDialogComponent implements OnInit {
     if (selectedTable) {
       this.columns = this.dataSourceService.getModel().filter(table => table.table_name.toLowerCase() === selectedTable.toLowerCase())[0].columns
         .map(col => ({ label: col.display_name.default, value: JSON.stringify({ table: selectedTable, col: col } ) }));
+      this.columnsValues = this.dataSourceService.getModel().filter(table => table.table_name.toLowerCase() === selectedTable.toLowerCase())[0].columns;
     }
   }
 
   pushItem() {
-    const selectedColumn = this.mapForm.value.selectedColumn;
+    const selectedColumn = this.columnsValues.find(columnas => columnas.display_name.default === this.mapForm.value.selectedColumn);
     if (selectedColumn) {
-      this.linkedColumns.push(JSON.parse(selectedColumn));
+      this.linkedColumns.push({col: selectedColumn, table: this.mapForm.value.selectedTable});
     }
   }
 
@@ -116,6 +118,7 @@ export class MapDialogComponent implements OnInit {
           linkedColumns: this.linkedColumns
         });
     }
+    console.log(this.serverMaps)
     this.onClose(
       {
         mapID: this.fileUploader.currentFile ? this.fileUploader.currentFile.file._id : null,
