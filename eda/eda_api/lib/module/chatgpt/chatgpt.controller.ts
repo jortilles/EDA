@@ -171,7 +171,7 @@ export class ChatGptController {
             const getAllColumnsByTableNameTool: any = {
                 type: "function",       // obligatorio
                 name: "getAllColumnsByTableName",
-                description: "Returns the table name. The table name must exist in the schema; synonyms and minor typos may be considered.",
+                description: "Given a user request asking for all columns, fields, or full information of a table, returns the table name. Use this function when the user asks for the columns, fields, or all data of a table. The table name must exist in the schema.",
                 parameters: {
                     type: "object",
                     properties: {
