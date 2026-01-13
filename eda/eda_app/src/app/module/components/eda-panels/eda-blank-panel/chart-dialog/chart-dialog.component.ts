@@ -501,7 +501,7 @@ export class ChartDialogComponent{
 
     }
 
-    setupPrediction(){
+    async setupPrediction(){
         // Dataset a predecir - DONE
         const firstNumericoDataset = this.chart.chartDataset.find(dataset => dataset.data.some(value => typeof value === 'number'));
         
@@ -523,21 +523,30 @@ export class ChartDialogComponent{
             borderColor: '#000000'
         };
 
-        // Añadimos predicción al nuevo dataset
-        newDataset.data.push(prediccion);
+        // Añadimos predicción al nuevo dataset -- VALOR QUE OBTENDREMOS DE ARIMA
+        newDataset.data.push(prediccion); // ARIMA - ARIMA - ARIMA
+
+        console.log(firstNumericoDataset)
+        const newData = firstNumericoDataset.data;
+        const response = await fetch('/api/arima/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ newData, steps: 1 })
+        });
+
+        const result = await response.json();
+        const prediccionarima = result.predictions[0];
+        console.log(prediccionarima)
+
         // Añadimos nuevo dataset a datasets 
         this.chart.chartDataset.push(newDataset);
-
 
         // AÑADIR COLOR EN CHART COLORS - DONE
         const chartColor: {backgroundColor:string, borderColor: string} = {backgroundColor: '#000000', borderColor: '#000000'};
         this.chart.chartColors.push(chartColor)
         
-        // AÑADIR LABEL EXTRA - TBD
-        console.log(this)
-        // formato fecha
+        // AÑADIR LABEL EXTRA - DONE
         const formatDate: string = this.panelChartConfig.query.find(query => query.column_type === 'date').format;
-        // nueva fecha a mostrar
         const chartLabel: string = this.nextInSequenceGeneric(formatDate, this.chart.chartLabels[this.chart.chartLabels.length-1])
         
         this.chart.chartLabels.push(chartLabel)
