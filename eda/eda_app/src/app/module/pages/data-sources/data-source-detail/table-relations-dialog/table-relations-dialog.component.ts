@@ -66,6 +66,18 @@ export class TableRelationsDialogComponent{
         this.form.controls.targetTable.enable();
     }
 
+    resetForm() {
+        /*
+        console.log('entro')
+        this.form = this.formBuilder.group({
+            targetTable: [null, Validators.required],
+            sourceCol: [null, Validators.required],
+            targetCol: [null, Validators.required],
+            display_name: ['', Validators.required]
+        });
+        */
+    }
+
     saveRelation() {
         if (this.form.invalid) {
             return this.alertService.addError($localize`:@@fillRequiredFields:Recuerde llenar los campos obligatorios`);
@@ -82,6 +94,7 @@ export class TableRelationsDialogComponent{
         }
     }
 
+
     getColumnsByTable() {
         this.targetCols = [];
         let tmpTable = this.form.controls.targetTable.value;
@@ -97,7 +110,7 @@ export class TableRelationsDialogComponent{
         this.selectedSourceCols.push(this.form.value.sourceCol);
         this.selectedTargetCols.push(this.form.value.targetCol);
         this.display_name = this.form.value.display_name;
-
+        this.resetForm();
     }
 
     deleteRelation(index) {
