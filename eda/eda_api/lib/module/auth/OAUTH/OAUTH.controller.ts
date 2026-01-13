@@ -235,11 +235,12 @@ async function userPermissionsRoles(access_token: string) {
         console.log('>=== access_token ===< ', access_token);    
 	
     try {
-        const userPermissionsRolesUrlToken = OAUTHconfig.userPermissionsRolesUrlToken;
+        const { client_id, userPermissionsRolesUrlToken } = OAUTHconfig;
         const response = await axios.get(userPermissionsRolesUrlToken,
             {
                 params: {
-                    AccessToken: access_token, // access_token como único parametro
+                    AccessToken: access_token, // access_token | único parametro
+                    ApplicationCode: client_id,
                 },
                 timeout: 5000 // 5 segundos
             }  
