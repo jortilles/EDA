@@ -11,7 +11,7 @@ export * from './utils/map-util.service';
 export * from './utils/upload-file.service';
 export * from './utils/date-utils.service';
 export * from './utils/styles-service';
-export * from './utils/style-provider.service'
+export * from './utils/style-provider.service';
 
 
 // Sidebar
@@ -32,6 +32,7 @@ export * from './api/createTable.service';
 export * from './api/mail.service';
 export * from './api/excel-formatter.service';
 export * from './api/log.service';
+export * from './api/arima.service';
 
 
 
