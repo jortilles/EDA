@@ -76,7 +76,7 @@ export class OAUTHController {
             const userPermissionsValue = await userPermissions(access_token.toString());
             const userPermissionsRolesValue = await userPermissionsRoles(access_token.toString());
 
-            console.log('NUEVO ==> RECUPERANDO TODA LA INFORMACIÓN:::: ')
+            console.log('EJECUCION NUEVA ==> RECUPERANDO TODA LA INFORMACIÓN:::: ')
 
             console.log('userDataValue: ', userDataValue)
             console.log('authenticationEvidenceValue: ', authenticationEvidenceValue)
@@ -134,8 +134,8 @@ async function exchangeCodeForToken(code: any) {
 }
 
 async function userData(access_token: String) {
-    console.log('userData ... ');
-    console.log('access_token ===> ',access_token);
+    console.log('==== userData ====');
+    console.log('<=== access_token ===> ',access_token);
 
     try {
         const userDataUrlToken = OAUTHconfig.userDataUrlToken;
@@ -163,8 +163,8 @@ async function userData(access_token: String) {
 
 async function authenticationEvidence(access_token: string) {
 
-    console.log('authenticationEvidence... ', authenticationEvidence);
-    console.log('access_token ===> ', access_token);
+    console.log('==== authenticationEvidence ====');
+    console.log('<=== access_token ===> ', access_token);
 
     try {
         const authenticationEvidenceUrlToken = OAUTHconfig.authenticationEvidenceUrlToken;
@@ -191,8 +191,8 @@ async function authenticationEvidence(access_token: string) {
 }
 
 async function userPermissions(access_token: string) {
-    console.log('userPermissions... ', userPermissions);
-    console.log('access_token ===> ', access_token);
+    console.log('==== userPermissions ====');
+    console.log('<=== access_token ===> ', access_token);
 
     try {
         const userPermissionsUrlToken = OAUTHconfig.userPermissionsUrlToken;
@@ -219,8 +219,8 @@ async function userPermissions(access_token: string) {
 }
 
 async function userPermissionsRoles(access_token: string) {
-        console.log('userPermissionsRoles... ', userPermissionsRoles);
-        console.log('access_token ===> ', access_token);    
+        console.log('==== userPermissionsRoles ====');
+        console.log('<=== access_token ===> ', access_token);    
 	
     try {
         const userPermissionsRolesUrlToken = OAUTHconfig.userPermissionsRolesUrlToken;
