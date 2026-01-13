@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { ColorPickerModule } from 'primeng/colorpicker';
+import { last } from 'rxjs';
 
 @Component({
     standalone: true,
@@ -488,38 +489,38 @@ export class ChartDialogComponent{
         config.colors = this.chart.chartColors;
         properties.config = c;
         /**Update chart */
-        console.log(config)
-        /// AQUÍ HAREMOS LA NUEVA FEATURE ///
-        /// AQUÍ HAREMOS LA NUEVA FEATURE ///
         
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
         setTimeout(_ => {
             this.chart = this.panelChartComponent.componentRef.instance.inject;
+            /// AQUÍ HAREMOS LA NUEVA FEATURE ///
             this.setupPrediction();
+            /// AQUÍ HAREMOS LA NUEVA FEATURE ///
             this.load();
         });
 
     }
 
     setupPrediction(){
-        // Dataset a predecir 
+        // Dataset a predecir - DONE
         const firstNumericoDataset = this.chart.chartDataset.find(dataset => dataset.data.some(value => typeof value === 'number'));
-        // LLAMADA A API
+        
+        // LLAMADA A API - TBD
         const prediccion = 4000;
 
-        // CREACIÓN DE SERIE
-        const newSerie: {label:string,bg:string,border:string} = {label: 'prediccion', bg: '#00FF00', border: '#00FF00'};
+        // CREACIÓN DE SERIE - DONE
+        const newSerie: {label:string,bg:string,border:string} = {label: 'Extended Predicction', bg: '#000000', border: '#000000'};
         this.series.push(newSerie)
 
-        // CREACIÓN DE DATASET
+        // CREACIÓN DE DATASET -- DONE
         const length = firstNumericoDataset.data.length; // Número total de elementos
         const lastValue = firstNumericoDataset.data[length - 1]; // El valor final real para concatenar con prediccion
 
         const newDataset: { data: any[]; label: string; backgroundColor: string; borderColor: string } = {
             data: Array(length - 1).fill(null).concat(lastValue), // Todos null menos el último 
-            label: 'prediccion',
-            backgroundColor: '#00FF00',
-            borderColor: '#00FF00'
+            label: 'Extended Predicction',
+            backgroundColor: '#000000',
+            borderColor: '#000000'
         };
 
         // Añadimos predicción al nuevo dataset
@@ -528,12 +529,17 @@ export class ChartDialogComponent{
         this.chart.chartDataset.push(newDataset);
 
 
-        // AÑADIR COLOR EN CHART COLORS
-        const chartColor: {backgroundColor:string, borderColor: string} = {backgroundColor: '#1CEDB1', borderColor: '#1CEDB1'};
+        // AÑADIR COLOR EN CHART COLORS - DONE
+        const chartColor: {backgroundColor:string, borderColor: string} = {backgroundColor: '#000000', borderColor: '#000000'};
         this.chart.chartColors.push(chartColor)
         
-        // AÑADIR LABEL EXTRA
-        const chartLabel: string = "2003-11"
+        // AÑADIR LABEL EXTRA - TBD
+        console.log(this)
+        // formato fecha
+        const formatDate: string = this.panelChartConfig.query.find(query => query.column_type === 'date').format;
+        // nueva fecha a mostrar
+        const chartLabel: string = this.nextInSequenceGeneric(formatDate, this.chart.chartLabels[this.chart.chartLabels.length-1])
+        
         this.chart.chartLabels.push(chartLabel)
         
         this.addSetupToChart();
@@ -543,6 +549,74 @@ export class ChartDialogComponent{
         
     }
 
+    // Suma unidades a una fecha
+    addToDate(date: Date, unit: 'day' | 'month' | 'hour' | 'minute'): Date {
+        const newDate = new Date(date); 
+        switch(unit){
+            case 'day': newDate.setDate(newDate.getDate() + 1); break;
+            case 'month': newDate.setMonth(newDate.getMonth() + 1); break;
+            case 'hour': newDate.setHours(newDate.getHours() + 1); break;
+            case 'minute': newDate.setMinutes(newDate.getMinutes() + 1); break;
+        }
+        return newDate;
+    }
+
+    // Formatea fechas a distintos formatos
+    formatDate(date: Date, format: string): string {
+        const pad = (n: number) => String(n).padStart(2,'0');
+        switch(format){
+            case 'month': return `${date.getFullYear()}-${pad(date.getMonth() + 1)}`;
+            case 'day': return date.toISOString().slice(0,10); // YYYY-MM-DD
+            case 'day_hour': return date.toISOString().replace('T',' ').slice(0,13);
+            case 'day_hour_minute': return date.toISOString().replace('T',' ').slice(0,16);
+            default: return date.toISOString();
+        }
+    }
+
+    nextInSequenceGeneric(format: string, lastValue: string): string {
+        switch(format){
+            case 'year':
+                return (Number(lastValue) + 1).toString();
+
+            case 'quarter':
+                const [y, q] = lastValue.split('-Q').map(Number);
+                const nextQ = q < 4 ? q + 1 : 1;
+                const nextY = q < 4 ? y : y + 1;
+                return `${nextY}-Q${nextQ}`;
+
+            case 'month':
+                const [year, month] = lastValue.split("-").map(Number);
+                const nextMonthDate = this.addToDate(new Date(year, month - 1, 1), 'month');
+                return this.formatDate(nextMonthDate, 'month');
+
+            case 'week':
+                const [yw, w] = lastValue.split('-W').map(Number);
+                const nextW = w < 52 ? w + 1 : 1;
+                const nextYW = w < 52 ? yw : yw + 1;
+                return `${nextYW}-${String(nextW).padStart(2,'0')}`;
+
+            case 'day':
+                const nextDay = this.addToDate(new Date(lastValue), 'day');
+                return this.formatDate(nextDay, 'day');
+
+            case 'week_day':
+                return (Number(lastValue) % 7 + 1).toString();
+
+            case 'day_hour':
+                const nextHour = this.addToDate(new Date(lastValue), 'hour');
+                return this.formatDate(nextHour, 'day_hour');
+
+            case 'day_hour_minute':
+                const nextMinute = this.addToDate(new Date(lastValue), 'minute');
+                return this.formatDate(nextMinute, 'day_hour_minute');
+
+            case 'timestamp':
+                return lastValue; 
+
+            default:
+                return '';
+        }
+    }
 
 
     rgb2hex(rgb): string {
