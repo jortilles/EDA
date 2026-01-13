@@ -43,9 +43,6 @@ export class OAUTHController {
 
     static async metadata(req: Request, res: Response, next: NextFunction) {
 
-        console.log('Metadata ::::::: req ');
-        console.log(req);
-
         try {
             const code = req.qs?.code || req.query?.code;
             const state = req.qs?.state || req.query?.state;
@@ -68,22 +65,29 @@ export class OAUTHController {
             const {access_token} = response;
 
             // Agregar la configuracion de login
-            console.log('response VALIdAP: ', response);
-            console.log('access_token: ', access_token);
+            console.log('VALIdAP RESPONSE: ', response);
+            console.log('Primer access_token: ', access_token);
 
-            const userDataValue = await userData(access_token.toString());
-            const authenticationEvidenceValue = await authenticationEvidence(access_token.toString());
-            const userPermissionsValue = await userPermissions(access_token.toString());
-            const userPermissionsRolesValue = await userPermissionsRoles(access_token.toString());
+            // Llamadas en paralelo a los datos del usuario
+            const [
+                userDataValue,
+                authenticationEvidenceValue,
+                userPermissionsValue,
+                userPermissionsRolesValue
+            ] = await Promise.all([
+                userData(access_token),
+                authenticationEvidence(access_token),
+                userPermissions(access_token),
+                userPermissionsRoles(access_token)
+            ])
 
-            console.log('EJECUCION NUEVA ==> RECUPERANDO TODA LA INFORMACIÓN:::: ')
-
-            console.log('userDataValue: ', userDataValue)
-            console.log('authenticationEvidenceValue: ', authenticationEvidenceValue)
-            console.log('userPermissionsValue: ', userPermissionsValue)
-            console.log('userPermissionsRolesValue: ', userPermissionsRolesValue)
-
-            // Respuesta básica
+            console.log('RECUPERANDO TODA LA INFORMACIÓN DEL USUARIO AUTENTICADO:::: ');
+            console.log('userDataValue: ', userDataValue);
+            console.log('authenticationEvidenceValue: ', authenticationEvidenceValue);
+            console.log('userPermissionsValue: ', userPermissionsValue);
+            console.log('userPermissionsRolesValue: ', userPermissionsRolesValue);
+            
+            // Respuesta
             return res.status(200).json({
                 ok: true,
                 access_token: access_token,
@@ -133,28 +137,31 @@ async function exchangeCodeForToken(code: any) {
     }
 }
 
-async function userData(access_token: String) {
-    console.log('==== userData ====');
-    console.log('<=== access_token ===> ',access_token);
+async function userData(access_token: string) {
+    console.log('>==== userData ====<');
+    console.log('>=== access_token ===< ',access_token);
 
     try {
         const userDataUrlToken = OAUTHconfig.userDataUrlToken;
-
-        const response = await axios.get(userDataUrlToken, {
-            params: {
-                AccessToken: access_token.toString(), // access_token como único parametro
+        const response = await axios.get(userDataUrlToken,
+            {
+                params: {
+                    AccessToken: access_token, // access_token | único parametro
+                },
+                timeout: 5000 // 5 segundos
             }
-        })
+        );
 
-        console.log('userData Response => ', response);
+        console.log('userData ==> Response: ', response);
 
         return response.data; // VERIFICAR SI DEVOLVEMOS response.data
+
     } catch (error) {
         if(axios.isAxiosError(error)) {
-            console.error('Error OAuth:', error.response?.data); // VERIFICAR SI DEVOLVEMOS response.data
+            console.error('Error OAuth userData:', error.response?.data); // VERIFICAR SI DEVOLVEMOS response.data
             throw new HttpException(
                 error.response?.status || 500,
-                'No se pudieron obtener los datos del usuario a partir del access token.'
+                'No se pudieron obtener los datos del usuario a partir del access token (userData).'
             );
         }
         throw error;
@@ -163,27 +170,30 @@ async function userData(access_token: String) {
 
 async function authenticationEvidence(access_token: string) {
 
-    console.log('==== authenticationEvidence ====');
-    console.log('<=== access_token ===> ', access_token);
+    console.log('>==== authenticationEvidence ====<');
+    console.log('>=== access_token ===< ', access_token);
 
     try {
         const authenticationEvidenceUrlToken = OAUTHconfig.authenticationEvidenceUrlToken;
-
-        const response = await axios.get(authenticationEvidenceUrlToken, {
-            params: {
-                AccessToken: access_token.toString(), // access_token como único parametro
+        const response = await axios.get(authenticationEvidenceUrlToken,
+            {
+                params: {
+                    AccessToken: access_token, // access_token | único parametro
+                },
+                timeout: 5000 // 5 segundos
             }
-        })
+        );
 
-        console.log('authenticationEvidence Response => ', response);
+        console.log('authenticationEvidence ==> Response: ', response);
 
         return response.data; // VERIFICAR SI DEVOLVEMOS response.data
+
     } catch (error) {
         if(axios.isAxiosError(error)) {
-            console.error('Error OAuth:', error.response?.data); // VERIFICAR SI DEVOLVEMOS response.data
+            console.error('Error OAuth authenticationEvidence:', error.response?.data); // VERIFICAR SI DEVOLVEMOS response.data
             throw new HttpException(
                 error.response?.status || 500,
-                'No se pudo obtener la evidencia de autenticación asociada al access token.'
+                'No se pudo obtener la evidencia de autenticación asociada al access token (authenticationEvidence).'
             );
         }
         throw error;
@@ -191,27 +201,29 @@ async function authenticationEvidence(access_token: string) {
 }
 
 async function userPermissions(access_token: string) {
-    console.log('==== userPermissions ====');
-    console.log('<=== access_token ===> ', access_token);
+    console.log('>==== userPermissions ====<');
+    console.log('>=== access_token ===< ', access_token);
 
     try {
         const userPermissionsUrlToken = OAUTHconfig.userPermissionsUrlToken;
-
         const response = await axios.get(userPermissionsUrlToken, {
-            params: {
-                AccessToken: access_token.toString(), // access_token como único parametro
+                params: {
+                    AccessToken: access_token, // access_token | único parametro
+                },
+                timeout: 5000 // 5 segundos
             }
-        })
+        )
 
 	console.log('userPermissions Response => ', response);        
 
 	return response.data; // VERIFICAR SI DEVOLVEMOS response.data
+
     } catch (error) {
         if(axios.isAxiosError(error)) {
-            console.error('Error OAuth:', error.response?.data); // VERIFICAR SI DEVOLVEMOS response.data
+            console.error('Error OAuth userPermissionsUrlToken:', error.response?.data); // VERIFICAR SI DEVOLVEMOS response.data
             throw new HttpException(
                 error.response?.status || 500,
-                'No se pudo obtener los permisos del usuario. Verifique el token de acceso..'
+                'No se pudo obtener los permisos del usuario. Verifique el token de acceso (userPermissionsUrlToken).'
             );
         }
         throw error;
@@ -219,28 +231,30 @@ async function userPermissions(access_token: string) {
 }
 
 async function userPermissionsRoles(access_token: string) {
-        console.log('==== userPermissionsRoles ====');
-        console.log('<=== access_token ===> ', access_token);    
+        console.log('>==== userPermissionsRoles ====<');
+        console.log('>=== access_token ===< ', access_token);    
 	
     try {
         const userPermissionsRolesUrlToken = OAUTHconfig.userPermissionsRolesUrlToken;
+        const response = await axios.get(userPermissionsRolesUrlToken,
+            {
+                params: {
+                    AccessToken: access_token, // access_token como único parametro
+                },
+                timeout: 5000 // 5 segundos
+            }  
+        );
 
-        const response = await axios.get(userPermissionsRolesUrlToken, {
-            params: {
-                AccessToken: access_token.toString(), // access_token como único parametro
-            }
-        })
-
-	console.log('userPermissionsRoles Response => ', response);
-
+	    console.log('userPermissionsRoles Response => ', response);
 
         return response.data; // VERIFICAR SI DEVOLVEMOS response.data
+
     } catch (error) {
         if(axios.isAxiosError(error)) {
-            console.error('Error OAuth:', error.response?.data); // VERIFICAR SI DEVOLVEMOS response.data
+            console.error('Error OAuth userPermissionsRoles:', error.response?.data); // VERIFICAR SI DEVOLVEMOS response.data
             throw new HttpException(
                 error.response?.status || 500,
-                'No se pudo obtener los roles del usuario. Verifique el token de acceso.'
+                'No se pudo obtener los roles del usuario. Verifique el token de acceso (userPermissionsRoles).'
             );
         }
         throw error;
