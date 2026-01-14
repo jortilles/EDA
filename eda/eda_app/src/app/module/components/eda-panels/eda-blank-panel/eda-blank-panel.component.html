@@ -918,7 +918,7 @@
 }
 
 @if(chartController) {
-  <app-chart-dialog [controller]="chartController"></app-chart-dialog>
+  <app-chart-dialog [dashboard]="dashboard" [controller]="chartController"></app-chart-dialog>
 }
 
 @if(mapController){

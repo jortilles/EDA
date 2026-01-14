@@ -1146,7 +1146,7 @@ public tableNodeExpand(event: any): void {
                 const layout =
                     new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType,
                     this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels,
-                    this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors, this.graficos.showPointLines));
+                    this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors, this.graficos.showPointLines, this.graficos.showPredictionLines));
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
             }
             //not saved alert message
@@ -1434,7 +1434,8 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
                     response.edaChart.showLabelsPercent,
                     response.edaChart.numberOfColumns,
                     response.edaChart.assignedColors,
-                    response.edaChart.showPointLines
+                    response.edaChart.showPointLines,
+                    response.edaChart.showPredictionLines,
                 );
             }
             

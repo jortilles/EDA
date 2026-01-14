@@ -288,7 +288,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0]?.name,
             dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps,
-            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines, cfg.numberOfColumns, this.props.edaChart, ticksOptions, false, this.styleProviderService);
+            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines, cfg.showPredictionLines, cfg.numberOfColumns, this.props.edaChart, ticksOptions, false, this.styleProviderService);
 
 
         /**Add trend datasets*/
@@ -627,7 +627,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const chartOptions = this.chartUtils.initChartOptions(
             chartType, dataDescription.numericColumns[0]?.name,
             dataDescription.otherColumns, manySeries, false, dimensions, null,
-            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines,  cfg.numberOfColumns, chartSubType, ticksOptions, false, this.styleProviderService
+            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines,cfg.showPredictionLines,  cfg.numberOfColumns, chartSubType, ticksOptions, false, this.styleProviderService
         );
         // let chartConfig: any = {};
         chartConfig.edaChart = {}

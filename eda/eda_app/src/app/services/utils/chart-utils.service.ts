@@ -1203,6 +1203,7 @@ export class ChartUtilsService {
         showLabels: boolean,
         showLabelsPercent: boolean,
         showPointLines: boolean,
+        showPredictionLines: boolean,
         numberOfColumns: number,
         chartSubType: string,
         ticksOptions: any,
