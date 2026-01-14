@@ -24,6 +24,7 @@ export class selectedRoleComponent implements OnInit {
     readonly currentYear = new Date().getFullYear().toString()
 
     selectedRole: string = '';
+    roles: any[] = [];
 
     constructor() {
 
@@ -32,12 +33,37 @@ export class selectedRoleComponent implements OnInit {
     ngOnInit(): void {
         console.log('hola .... inicio')
 
+        const hash = window.location.hash; 
+        const hashParts = hash.split('?');
+
+        console.log('hash: ', hash);
+        console.log('hashParts: ', hashParts);
+
+        if (hashParts.length > 1) {
+            const paramsString = hashParts[1];
+            const params = new URLSearchParams(paramsString);
+            const rolesParam = params.get('roles');
+
+            console.log('rolesParam:', rolesParam);
+
+            if (rolesParam) {
+                try {
+                    this.roles = JSON.parse(decodeURIComponent(rolesParam));
+                } catch (err) {
+                    console.error('Error parseando roles de la URL', err);
+                }
+            }
+        }
+
+        console.log('roles: ', this.roles);
+
     }
 
     selectedRoleEnter(role: string) {
 
         console.log('Este es el role seleccionado: ', role);
-        
+        // Generar el endpoint final para el login con el role de parametro.
+
     }
 
 }

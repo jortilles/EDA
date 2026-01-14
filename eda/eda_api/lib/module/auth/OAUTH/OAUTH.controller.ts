@@ -43,6 +43,8 @@ export class OAUTHController {
 
     static async metadata(req: Request, res: Response, next: NextFunction) {
 
+        console.log('holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+
         try {
             const code = req.qs?.code || req.query?.code;
             const state = req.qs?.state || req.query?.state;
@@ -60,6 +62,8 @@ export class OAUTHController {
             // VALId AP - refresh_token
             // VALId AP - expires_in ==> Fijado en 1 hora = 3600 segundos
             // VALId AP - token_type
+
+            //*************************************************************************** */
 
             const response = await exchangeCodeForToken(code);
             const {access_token} = response;
@@ -87,17 +91,35 @@ export class OAUTHController {
             console.log('userPermissionsValue: ', userPermissionsValue);
             console.log('userPermissionsRolesValue: ', userPermissionsRolesValue);
 
+            //*************************************************************************** */
+
 
             // Aqui es donde ya se obtuvo toda la informacion y se debe redirigir a un ventana de que posee la opcion de seleccionar el rol
             // (hay autenticacion exitosa pero aun no esta hecho el login, porque necesita el rol para hacer login)
-
-
             
-            // Respuesta
-            return res.status(200).json({
-                ok: true,
-                access_token: access_token,
-            });
+            const roles = [
+                { "code": "ADMIN2", "name": "Administrador" },
+                { "code": "AUDITOR2", "name": "Auditor" },
+                { "code": "USER2", "name": "User" }
+            ]
+
+            console.log('roles llegados: ', roles);
+
+            // Para pruebas:
+
+            // Redirigimos al frontend con roles del usuario
+
+            let rolesURL = encodeURIComponent(JSON.stringify(roles))
+
+            res.redirect(
+                `http://localhost:4200/#/selectedRole?roles=${rolesURL}`
+            );
+
+
+            // return res.status(200).json({
+            //     ok: true,
+            //     access_token: access_token,
+            // });
 
         } catch (error) {
             next(error);

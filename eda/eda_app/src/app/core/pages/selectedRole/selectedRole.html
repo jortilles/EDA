@@ -44,9 +44,10 @@
                 [(ngModel)]="selectedRole"
             >
                 <option value="" i18n="@@selectedRoleOptions" [disabled]="selectedRole !== ''">Seleccione</option>
-                <option value="ADMIN">Administrador</option>
-                <option value="AUDITOR">Auditor</option>
-                <option value="USER">Usuario</option>
+                <option *ngFor="let role of roles" [value]="role.code">
+                    {{ role.name }}
+                </option>
+
             </select>
             <button 
                 id="loginBtn" 
