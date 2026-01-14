@@ -15,6 +15,7 @@ export const coreRoutes: Routes = [
     // { path: 'login', component: LoginComponent },
     { path: 'old/login', loadComponent: () => import('./login/login').then(c => c.LoginV2Component) },
     { path: 'login', loadComponent: () => import('./login/login').then(c => c.LoginV2Component) },
+    { path: 'selectedRole', loadComponent: () => import('./selectedRole/selectedRole').then(c => c.selectedRoleComponent) },
     {path: 'custom',loadComponent: () => import('./customized-dashboard/customized-dashboard.component').then(c => c.CustomizedDashboardComponent)},
     { path: 'conditions', component: ConditionsComponent },
     { path: 'public/:dashboardID', component: AnonymousLoginComponent },

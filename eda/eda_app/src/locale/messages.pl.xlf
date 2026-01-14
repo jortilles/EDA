@@ -5294,6 +5294,18 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Mostrar campo de origen</source>
         <target>Pokaż pole pochodzenia</target>
       </trans-unit>
+      <trans-unit id="selectedRoleTitle">
+        <source>Seleccione el rol con el que iniciará sesión.</source>
+        <target>Wybierz rolę, z którą będziesz się logować.</target>
+      </trans-unit>
+      <trans-unit id="selectedRoleOptions">
+        <source>Seleccione</source>
+        <target>Wybierać</target>
+      </trans-unit>
+      <trans-unit id="selectedRoleButton">
+        <source>Ingresar</source>
+        <target>Wleźć</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

@@ -5499,6 +5499,18 @@ OR<ph id="5"/>
     <source>Mostrar campo de origen</source>
     <target>Show source field</target>
   </trans-unit>
+  <trans-unit id="selectedRoleTitle">
+    <source>Seleccione el rol con el que iniciará sesión.</source>
+    <target>Select the role you will log in with.</target>
+  </trans-unit>
+  <trans-unit id="selectedRoleOptions">
+    <source>Seleccione</source>
+    <target>Select</target>
+  </trans-unit>
+  <trans-unit id="selectedRoleButton">
+    <source>Ingresar</source>
+    <target>Enter</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>

@@ -86,6 +86,12 @@ export class OAUTHController {
             console.log('authenticationEvidenceValue: ', authenticationEvidenceValue);
             console.log('userPermissionsValue: ', userPermissionsValue);
             console.log('userPermissionsRolesValue: ', userPermissionsRolesValue);
+
+
+            // Aqui es donde ya se obtuvo toda la informacion y se debe redirigir a un ventana de que posee la opcion de seleccionar el rol
+            // (hay autenticacion exitosa pero aun no esta hecho el login, porque necesita el rol para hacer login)
+
+
             
             // Respuesta
             return res.status(200).json({

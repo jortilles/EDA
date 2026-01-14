@@ -5654,6 +5654,18 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Mostrar campo de origen</source>
         <target>Mostrar camp d'origen</target>
       </trans-unit>
+      <trans-unit id="selectedRoleTitle">
+        <source>Seleccione el rol con el que iniciará sesión.</source>
+        <target>Seleccioneu el rol amb què iniciareu sessió.</target>
+      </trans-unit>
+      <trans-unit id="selectedRoleOptions">
+        <source>Seleccione</source>
+        <target>Seleccioneu</target>
+      </trans-unit>
+      <trans-unit id="selectedRoleButton">
+        <source>Ingresar</source>
+        <target>Ingressar</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
