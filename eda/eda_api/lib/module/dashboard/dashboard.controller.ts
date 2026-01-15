@@ -1344,44 +1344,19 @@ export class DashboardController {
         ? await CachedQueryService.checkQuery(req.body.model_id, query, 'EDA')
         : null
 
+      if (req.body.query?.prediction && req.body.query.prediction === 'Arima') {
+        console.log(req.body.query)
+        console.log('mi prediction es arima')
+      } else {
+        console.log(req.body.query)
+        console.log('no tengo predcition o es none')
+      }
+
+
       if (!cachedQuery) {
         connection.client = await connection.getclient();
         const getResults = await connection.execQuery(query);
-
-
-        console.log('--------------++++------------------')
-        console.log(req.body.query)
-        console.log(req.body.query.fields.prediction)
-        console.log('---------------+++++-----------------')
-        
-        if(!req.body.query?.prediction){
-          console.log('tenemos predict')
-          // añadir nuevo campo en el field
-          // Esto añade un campo extra correctamente, aunque no se visualice
-          req.body.query.fields.push(
-            {
-              table_id: 'v_orders',
-              column_name: 'quantityordered',
-              display_name: 'Quantity orderedaaaa',
-              column_type: 'numeric',
-              old_column_type: 'numeric',
-              aggregation_type: 'sum',
-              ordenation_type: 'Desc',
-              format: null,
-              order: 1,
-              column_granted_roles: [],
-              row_granted_roles: [],
-              tableCount: 0,
-              minimumFractionDigits: 0,
-              whatif_column: false,
-              joins: []
-            }
-          )
-        }else{
-          console.log(' no tenemos predict')
-          req.body.query.prediction = 'asdhkjgsakidgfsada'
-        }
-        console.log(req.body.query)
+     
 
         let numerics = []
         /** si es oracle   o alguns mysql  haig de fer una merda per tornar els numeros normals. */

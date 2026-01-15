@@ -517,7 +517,7 @@ export class ChartDialogComponent {
         await dashboardPanel.runQueryFromDashboard(true);
         setTimeout(() => dashboardPanel.panelChart?.updateComponent(), 100);
         // Refrescar panel, es necesario ? 
-        console.log(dashboardPanel)
+
 
     }
 
