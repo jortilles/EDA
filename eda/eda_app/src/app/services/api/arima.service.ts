@@ -9,7 +9,7 @@ export class ArimaService extends ApiService {
 
   public arimaRoute = '/arima';
 
-  predict(dataset: number[], steps: number = 1): Observable<any> {
+  predict(dataset: number[], steps: number): Observable<any> {
     return this.post(`${this.arimaRoute}/predict`, { dataset, steps });
   }
 

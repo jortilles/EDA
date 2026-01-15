@@ -23,6 +23,7 @@ import { last } from 'rxjs';
 
 export class ChartDialogComponent {
     @Input() controller: any;
+    @Input() dashboard: any;
     @ViewChild('PanelChartComponent', { static: false }) panelChartComponent: PanelChartComponent;
 
     public dialog: EdaDialog;
@@ -114,6 +115,7 @@ export class ChartDialogComponent {
         this.showComparative = this.allowCoparative(this.controller.params);
         this.load();
         this.display = true;
+        console.log(this.dashboard, 'dashboard')
     }
 
 
@@ -473,6 +475,7 @@ export class ChartDialogComponent {
             this.chart = this.panelChartComponent.componentRef.instance.inject;
             this.load();
         });
+        console.log(this.dashboard)
 
     }
 
@@ -489,15 +492,32 @@ export class ChartDialogComponent {
         config.colors = this.chart.chartColors;
         properties.config = c;
         /**Update chart */
-
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
         setTimeout(_ => {
             this.chart = this.panelChartComponent.componentRef.instance.inject;
             /// AQUÍ HAREMOS LA NUEVA FEATURE ///
-            this.setupPrediction();
+            this.setupPrediction2();
             /// AQUÍ HAREMOS LA NUEVA FEATURE ///
             this.load();
         });
+
+    }
+
+    async setupPrediction2() {
+        // Buscamos el panel con el que estamos trabajando y le asignamos la predicción
+        const panelID = this.controller.params.panelId;
+        const dashboardPanel =
+            this.dashboard.edaPanels.toArray().find(cmp => cmp.panel.id === panelID);
+
+        // Añadimos prediction a la query
+        dashboardPanel.panel.content.query.query.prediction = this.showPredictionLines === true ? 'Arima' : 'None';
+
+        // Refrescar panel, es necesario ? 
+        dashboardPanel.display_v.chart = '';
+        await dashboardPanel.runQueryFromDashboard(true);
+        setTimeout(() => dashboardPanel.panelChart?.updateComponent(), 100);
+        // Refrescar panel, es necesario ? 
+        console.log(dashboardPanel)
 
     }
 
@@ -512,14 +532,13 @@ export class ChartDialogComponent {
         const datasetToPredict = firstNumericoDataset.data.filter(v => typeof v === 'number') as number[];
         console.log(datasetToPredict)
         let arimaValue: number;
-        this.arimaService.predict(datasetToPredict, 1)
-            .subscribe({
-                next: (response) => {
-                    arimaValue = response.predictions[0];
-                    console.log('Predicción ARIMA:', arimaValue);
-                },
-                error: (err) => console.error('Error al conectar con ARIMA:', err)
-            });
+        this.arimaService.predict(datasetToPredict, 2).subscribe({
+            next: (response) => {
+                arimaValue = response.predictions[0];
+                console.log('Predicción ARIMA:', response.predictions);
+            },
+            error: (err) => console.error('Error al calcular con ARIMA:', err)
+        });
 
         const newDataset: { data: any[]; label: string; backgroundColor: string; borderColor: string } = {
             data: Array(length - 1).fill(null).concat(lastValue), // Todos null menos el último 
@@ -529,8 +548,8 @@ export class ChartDialogComponent {
         };
 
         // Añadimos predicción al nuevo dataset -- VALOR QUE OBTENDREMOS DE ARIMA
-        newDataset.data.push(arimaValue); // ARIMA - ARIMA - ARIMA
-        //newDataset.data.push(7146.167158004971); // NO ARIMA - ARIMA - ARIMA
+        //newDataset.data.push(arimaValue); // ARIMA - ARIMA - ARIMA
+        newDataset.data.push(7146.167158004971); // NO ARIMA - ARIMA - ARIMA
         this.chart.chartDataset.push(newDataset);
         // CREACIÓN DE SERIE - DONE
         const newSerie: { label: string, bg: string, border: string } = { label: 'Extended Predicction', bg: '#000000', border: '#000000' };
