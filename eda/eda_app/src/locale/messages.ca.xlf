@@ -5654,6 +5654,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Mostrar campo de origen</source>
         <target>Mostrar camp d'origen</target>
       </trans-unit>
+      <trans-unit id="correctGeoJsonFormat">
+        <source>El archivo tiene un formato GeoJson válido.</source>
+        <target>El fitxer té un format GeoJson vàlid.</target>
+      </trans-unit>
+      <trans-unit id="wrongGeoJsonFormat">
+        <source>El archivo no tiene un formato GeoJson válido.</source>
+        <target>El fitxer no té un format GeoJson vàlid.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
