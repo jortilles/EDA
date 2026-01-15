@@ -5518,10 +5518,18 @@ OR<ph id="5"/>
 <source>Se ha reiniciado la configuración de los filtros dependientes</source>
 <target>The configuration of dependent filters has been reset</target>
 </trans-unit>
-  <trans-unit id="showField">
-    <source>Mostrar campo de origen</source>
-    <target>Show source field</target>
-  </trans-unit>
+<trans-unit id="showField">
+  <source>Mostrar campo de origen</source>
+  <target>Show source field</target>
+</trans-unit>
+<trans-unit id="correctGeoJsonFormat">
+  <source>El archivo tiene un formato GeoJson válido.</source>
+  <target>The file has a valid GeoJSON format.</target>
+</trans-unit>
+<trans-unit id="wrongGeoJsonFormat">
+  <source>El archivo no tiene un formato GeoJson válido.</source>
+  <target>The file does not have a valid GeoJSON format.</target>
+</trans-unit>
 
   <trans-unit id="CollectionText">
     <source>Colección creada correctamente</source>

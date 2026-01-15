@@ -167,6 +167,7 @@ menuCommand(item: any, event: MouseEvent) {
     if (baseUrl.slice(-4) == '/es/' ||
         baseUrl.slice(-4) == '/ca/' ||
         baseUrl.slice(-4) == '/pl/' ||
+        baseUrl.slice(-4) == '/fr/' ||
         baseUrl.slice(-4) == '/en/') {
         baseUrl = baseUrl.slice(0, baseUrl.length - 3)
     }
