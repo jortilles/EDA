@@ -2,7 +2,7 @@
 <xliff version="1.2"
   xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en-US" datatype="plaintext" original="ng2.template">
-    <body>
+    <>
       <trans-unit id="placeholderInputUsuario" datatype="html">
         <source>Usuario</source>
         <target>Utilisateur</target>
@@ -1757,9 +1757,33 @@ Entrer<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Mapa de Capas</source>
 <target>Carte des caps</target>
 </trans-unit>
+<trans-unit id="chartTypes12">
+<source>ParallelSets</source>
+<target>Ensembles parallèles</target>
+</trans-unit>
+<trans-unit id="chartTypes13">
+<source>Treemap</source>
+<target>Treemap</target>
+</trans-unit>
+<trans-unit id="chartTypes14">
+<source>ScatterPlot</source>
+<target>Nuage de points</target>
+</trans-unit>
 <trans-unit id="chartTypes15">
 <source>Velocímetro</source>
 <target>Compteur de vitesse</target>
+</trans-unit>
+<trans-unit id="chartTypes16">
+<source>Funnel</source>
+<target>Entonnoir</target>
+</trans-unit>
+<trans-unit id="chartTypesBubblechart">
+<source>Bubblechart</source>
+<target>Graphique à bulles</target>
+</trans-unit>
+<trans-unit id="chartTypesRadar">
+<source>Radar</source>
+<target>Radar</target>
 </trans-unit>
 
 <trans-unit id="filters1">
@@ -2830,7 +2854,7 @@ Entrer<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Faites glisser ici les attributs sur lesquels vous souhaitez effectuer un filtrage</target>
   </trans-unit>
 
-  <trans-unit id="LegendPosition">
+  <trans-unit id="legendPosition">
     <source>Posición de la leyenda</source>
     <target>Position de la légende</target>
   </trans-unit>
@@ -5668,6 +5692,87 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Cargando dashboards...</source>
         <target>Chargement des tableaux de bord...</target>
       </trans-unit>
+
+      <trans-unit id="logFileBtn">
+        <source>Logs</source>
+        <target>Logs</target>
+      </trans-unit>
+
+      <trans-unit id="logErrorFileBtn">
+        <source>Logs Error</source>
+        <target>Logs Error</target>
+      </trans-unit>
+
+      <trans-unit id="CollectionText">
+        <source>Colección creada correctamente</source>
+        <target>Collection créée correctement</target>
+      </trans-unit>
+
+      <trans-unit id="ErrorExcel">
+        <source>Cargue un archivo .xls o .xlsx</source>
+        <target>Téléversez un fichier .xls ou .xlsx</target>
+      </trans-unit>
+
+      <trans-unit id="AddMandatoryFilters">
+        <source>Los siguientes filtros son obligatorios y no tienen valor asignado:</source>
+        <target>Les filtres suivants sont obligatoires et n'ont pas de valeur attribuée:</target>
+      </trans-unit>
+
+      <trans-unit id="panelOptionsMapFilters">
+        <source>Mapear filtros</source>
+        <target>Filtres de carte</target>
+      </trans-unit>
+
+      <trans-unit id="dataExportImport">
+        <source>Data Export/Import</source>
+        <target>Exportation/importation de données</target>
+      </trans-unit>
+
+       <trans-unit id="permissionAdvancedOptions">
+        <source>Opciones avanzadas</source>
+        <target>Options avancées</target>
+      </trans-unit>
+
+      <trans-unit id="AllTagsDescription">
+        <source>Acceso a todos los elementos sin restricciones</source>
+        <target>Accès illimité à toutes les fonctionnalités</target>
+      </trans-unit>
+
+      <trans-unit id="NoneTagsDescription">
+        <source>No se muestra ningún elemento para este usuario/grupo</source>
+        <target>Aucun élément n'est affiché pour cet utilisateur/groupe</target>
+      </trans-unit>
+
+      <trans-unit id="DynamicTags">
+        <source>Dinámico</source>
+        <target>Dynamique</target>
+      </trans-unit>
+
+      <trans-unit id="DynamicTagsDescription">
+        <source>Filtrado avanzado mediante una consulta personalizada</source>
+        <target>Filtrage avancé via une requête personnalisée</target>
+      </trans-unit>
+
+      <trans-unit id="inputConsultaDinamica">
+        <source>Consulta dinámica</source>
+        <target>Requête dynamique</target>
+      </trans-unit>
+
+      <trans-unit id="placeholderConsultaDinamica">
+        <source>Introduzca la expresión dinámica…</source>
+        <target>Saisissez l'expression dynamique…</target>
+      </trans-unit>
+
+      <trans-unit id="addValueList">
+        <source>Añadir lista de valores posibles</source>
+        <target>Ajouter une liste de valeurs possibles</target>
+      </trans-unit>
+
+      <trans-unit id="addComparative">
+        <source>Comparativa</source>
+        <target>Comparatif</target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>

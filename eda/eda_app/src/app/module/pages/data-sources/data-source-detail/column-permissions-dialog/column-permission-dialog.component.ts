@@ -19,7 +19,7 @@ export class ColumnPermissionDialogComponent implements OnInit {
     @Input() controller: any;
     @Output() close: EventEmitter<any> = new EventEmitter<any>();
     
-    public title = $localize`:@@addPermissions:Añadir permiso`;
+    public title = $localize`:@@addPermission:Añadir permiso`;
  
     public dialog: EdaDialog;
 

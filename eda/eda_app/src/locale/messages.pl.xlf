@@ -1395,10 +1395,33 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Mapa de Capas</source>
 <target>Mapa warstwowa</target>
 </trans-unit>
-
+<trans-unit id="chartTypes12">
+<source>ParallelSets</source>
+<target>Zestawy równoległe</target>
+</trans-unit>
+<trans-unit id="chartTypes13">
+<source>Treemap</source>
+<target>Mapa drzewa</target>
+</trans-unit>
+<trans-unit id="chartTypes14">
+<source>ScatterPlot</source>
+<target>Wykres punktowy</target>
+</trans-unit>
 <trans-unit id="chartTypes15">
 <source>Velocímetro</source>
 <target>Wykres mierników</target>
+</trans-unit>
+<trans-unit id="chartTypes16">
+<source>Funnel</source>
+<target>Lejek</target>
+</trans-unit>
+<trans-unit id="chartTypesBubblechart">
+<source>Bubblechart</source>
+<target>Wykres bąbelkowy</target>
+</trans-unit>
+<trans-unit id="chartTypesRadar">
+<source>Radar</source>
+<target>Radar</target>
 </trans-unit>
 
 <trans-unit id="filters1">
@@ -2491,7 +2514,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Przeciągnij tutaj atrybuty, według których chcesz filtrować</target>
   </trans-unit>
 
-  <trans-unit id="LegendPosition">
+  <trans-unit id="legendPosition">
     <source>Posición de la leyenda</source>
     <target>Pozycja legendy</target>
   </trans-unit>
@@ -5293,6 +5316,170 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="showField">
         <source>Mostrar campo de origen</source>
         <target>Pokaż pole pochodzenia</target>
+      </trans-unit>
+
+      <trans-unit id="logFileBtn">
+        <source>Logs</source>
+        <target>Logs</target>
+      </trans-unit>
+
+      <trans-unit id="logErrorFileBtn">
+        <source>Logs Error</source>
+        <target>Logs Error</target>
+      </trans-unit>
+
+      <trans-unit id="CollectionText">
+        <source>Colección creada correctamente</source>
+        <target>Kolekcja utworzona poprawnie</target>
+      </trans-unit>
+
+      <trans-unit id="ErrorExcel">
+        <source>Cargue un archivo .xls o .xlsx</source>
+        <target>Prześlij plik .xls lub .xlsx</target>
+      </trans-unit>
+
+      <trans-unit id="AddMandatoryFilters">
+        <source>Los siguientes filtros son obligatorios y no tienen valor asignado:</source>
+        <target>Poniższe filtry są obowiązkowe i nie mają przypisanej wartości:</target>
+      </trans-unit>
+
+      <trans-unit id="panelOptionsMapFilters">
+        <source>Mapear filtros</source>
+        <target>Filtry mapy</target>
+      </trans-unit>
+
+      <trans-unit id="atributoLabel" datatype="html">
+        <source>Atributo</source>
+        <target>Atrybut</target>
+      </trans-unit>
+
+      <trans-unit id="atributoConsulta" datatype="html">
+        <source>Consulta</source>
+        <target>Konsultacja</target>
+      </trans-unit>
+
+      <trans-unit id="count_tablesLabel" datatype="html">
+        <source>Tablas implicadas</source>
+        <target>Zaangażowane tabele</target>
+      </trans-unit>
+
+      <trans-unit id="count_rowsLabel" datatype="html">
+        <source>Total de registros</source>
+        <target>Łączna liczba rekordów</target>
+      </trans-unit>
+
+      <trans-unit id="count_nullsLabel" datatype="html">
+        <source>Total nulos</source>
+        <target>Całkowita liczba wartości null</target>
+      </trans-unit>
+      <trans-unit id="count_emptyLabel" datatype="html">
+        <source>Total cadenas vacías</source>
+        <target>Całkowita liczba pustych ciągów</target>
+      </trans-unit>
+      <trans-unit id="count_distinctLabel" datatype="html">
+        <source>Total valores distintos</source>
+        <target>Całkowite odrębne wartości</target>
+      </trans-unit>
+      <trans-unit id="most_duplicatedLabel" datatype="html">
+        <source>Más repetido</source>
+        <target>Więcej powtórzeń</target>
+      </trans-unit>
+      <trans-unit id="least_duplicatedLabel" datatype="html">
+        <source>Menos repetido</source>
+        <target>Rzadziej powtarzane</target>
+      </trans-unit>
+      <trans-unit id="maxLabel" datatype="html">
+        <source>Valor máximo</source>
+        <target>Maksymalna wartość</target>
+      </trans-unit>
+      <trans-unit id="minLabel" datatype="html">
+        <source>Valor mínimo</source>
+        <target>Wartość minimalna</target>
+      </trans-unit>
+      <trans-unit id="moda_countsLabel" datatype="html">
+        <source>Moda</source>
+        <target>Moda</target>
+      </trans-unit>
+      <trans-unit id="medianLabel" datatype="html">
+        <source>Mediana</source>
+        <target>Mediana</target>
+      </trans-unit>
+      <trans-unit id="median_count_bymonthLabel" datatype="html">
+        <source>Mediana por mes</source>
+        <target>Mediana na miesiąc</target>
+      </trans-unit>
+      <trans-unit id="max_bymonthLabel" datatype="html">
+        <source>Máximos por mes</source>
+        <target>Maksymalnie na miesiąc</target>
+      </trans-unit>
+      <trans-unit id="min_bymonthLabel" datatype="html">
+        <source>Mínimos por mes</source>
+        <target>Minimalne kwoty na miesiąc</target>
+      </trans-unit>
+
+      <trans-unit id="chartInfo18">
+        <source>El sunburst necesita al menos una categoria y un campo numérico </source>
+        <target>Sunburst wymaga co najmniej jednej kategorii i jednego pola numerycznego </target>
+      </trans-unit>
+
+      <trans-unit id="dataExportImport">
+        <source>Data Export/Import</source>
+        <target>Eksport/Import danych</target>
+      </trans-unit>
+
+       <trans-unit id="permissionAdvancedOptions">
+        <source>Opciones avanzadas</source>
+        <target>Opcje zaawansowane</target>
+      </trans-unit>
+
+      <trans-unit id="AllTagsDescription">
+        <source>Acceso a todos los elementos sin restricciones</source>
+        <target>Nieograniczony dostęp do wszystkich funkcji</target>
+      </trans-unit>
+
+      <trans-unit id="NoneTagsDescription">
+        <source>No se muestra ningún elemento para este usuario/grupo</source>
+        <target>Dla tego użytkownika/grupy nie są wyświetlane żadne elementy</target>
+      </trans-unit>
+
+      <trans-unit id="DynamicTags">
+        <source>Dinámico</source>
+        <target>Dynamiczny</target>
+      </trans-unit>
+
+      <trans-unit id="DynamicTagsDescription">
+        <source>Filtrado avanzado mediante una consulta personalizada</source>
+        <target>Zaawansowane filtrowanie za pomocą niestandardowego zapytania</target>
+      </trans-unit>
+
+      <trans-unit id="inputConsultaDinamica">
+        <source>Consulta dinámica</source>
+        <target>Zapytanie dynamiczne</target>
+      </trans-unit>
+
+      <trans-unit id="placeholderConsultaDinamica">
+        <source>Introduzca la expresión dinámica…</source>
+        <target>Wprowadź dynamiczne wyrażenie…</target>
+      </trans-unit>
+
+      <trans-unit id="addValueList">
+        <source>Añadir lista de valores posibles</source>
+        <target>Dodaj listę możliwych wartości</target>
+      </trans-unit>
+
+      <trans-unit id="addComparative">
+        <source>Comparativa</source>
+        <target>Porównawczy</target>
+      </trans-unit>
+
+      <trans-unit id="chartTypesTableAnalized" datatype="html">
+        <source>Tabla DataQuality</source>
+        <target>Jakość danych tabeli</target>
+      </trans-unit>
+
+      <trans-unit id="chartTypes19">
+        <source>Gráfico de Barras Apiladas al 100%</source>
+        <target>Wykres słupkowy skumulowany 100%</target>
       </trans-unit>
 </body>
 </file>

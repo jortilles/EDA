@@ -1505,10 +1505,33 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <source>Mapa de Capas</source>
 <target>Layer Map</target>
 </trans-unit>
-
+<trans-unit id="chartTypes12">
+<source>ParallelSets</source>
+<target>ParallelSets</target>
+</trans-unit>
+<trans-unit id="chartTypes13">
+<source>Treemap</source>
+<target>Treemap</target>
+</trans-unit>
+<trans-unit id="chartTypes14">
+<source>ScatterPlot</source>
+<target>ScatterPlot</target>
+</trans-unit>
 <trans-unit id="chartTypes15">
 <source>Velocímetro</source>
 <target>Gauge</target>
+</trans-unit>
+<trans-unit id="chartTypes16">
+<source>Funnel</source>
+<target>Funnel</target>
+</trans-unit>
+<trans-unit id="chartTypesBubblechart">
+<source>Bubblechart</source>
+<target>Bubblechart</target>
+</trans-unit>
+<trans-unit id="chartTypesRadar">
+<source>Radar</source>
+<target>Radar</target>
 </trans-unit>
 
 <trans-unit id="filters1">
@@ -2591,7 +2614,7 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>Drag here the attributes you want to filter on</target>
 </trans-unit>
 
-<trans-unit id="LegendPosition">
+<trans-unit id="legendPosition">
 <source>Posición de la leyenda</source>
 <target>Legend position</target>
 </trans-unit>
@@ -5499,6 +5522,77 @@ OR<ph id="5"/>
     <source>Mostrar campo de origen</source>
     <target>Show source field</target>
   </trans-unit>
+
+  <trans-unit id="CollectionText">
+    <source>Colección creada correctamente</source>
+    <target>Collection created correctly</target>
+  </trans-unit>
+
+  <trans-unit id="ErrorExcel">
+    <source>Cargue un archivo .xls o .xlsx</source>
+    <target>Upload an .xls or .xlsx file</target>
+  </trans-unit>
+
+  <trans-unit id="AddMandatoryFilters">
+    <source>Los siguientes filtros son obligatorios y no tienen valor asignado:</source>
+    <target>The following filters are mandatory and have no assigned value:</target>
+  </trans-unit>
+
+  <trans-unit id="panelOptionsMapFilters">
+    <source>Mapear filtros</source>
+    <target>Map filters</target>
+  </trans-unit>
+
+  <trans-unit id="dataExportImport">
+    <source>Data Export/Import</source>
+    <target>Data Export/Import</target>
+  </trans-unit>
+
+   <trans-unit id="permissionAdvancedOptions">
+      <source>Opciones avanzadas</source>
+      <target>Advanced options</target>
+    </trans-unit>
+
+    <trans-unit id="AllTagsDescription">
+      <source>Acceso a todos los elementos sin restricciones</source>
+      <target>Unrestricted access to all features</target>
+    </trans-unit>
+
+    <trans-unit id="NoneTagsDescription">
+      <source>No se muestra ningún elemento para este usuario/grupo</source>
+      <target>No items are displayed for this user/group</target>
+    </trans-unit>
+
+    <trans-unit id="DynamicTags">
+      <source>Dinámico</source>
+      <target>Dynamic</target>
+    </trans-unit>
+    
+    <trans-unit id="DynamicTagsDescription">
+      <source>Filtrado avanzado mediante una consulta personalizada</source>
+      <target>Advanced filtering through a customized query</target>
+    </trans-unit>
+
+    <trans-unit id="inputConsultaDinamica">
+      <source>Consulta dinámica</source>
+      <target>Dynamic query</target>
+    </trans-unit>
+
+    <trans-unit id="placeholderConsultaDinamica">
+      <source>Introduzca la expresión dinámica…</source>
+      <target>Enter the dynamic expression…</target>
+    </trans-unit>
+
+    <trans-unit id="addValueList">
+        <source>Añadir lista de valores posibles</source>
+        <target>Add list of possible values</target>
+      </trans-unit>
+
+      <trans-unit id="addComparative">
+        <source>Comparativa</source>
+        <target>Comparative</target>
+      </trans-unit>
+
 </body>
 </file>
 </xliff>
