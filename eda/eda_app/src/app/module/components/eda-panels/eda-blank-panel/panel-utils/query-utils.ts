@@ -388,7 +388,7 @@ export const QueryUtils = {
       rootTable: ebp.rootTable?.table_name,
       groupByEnabled: ebp.groupByEnabled,
       connectionProperties: ebp.connectionProperties,
-      prediction: ebp.panel.content.query.query.prediction,
+      prediction: ebp.panel?.content?.query?.query?.prediction ? ebp.panel.content.query.query.prediction:'None',
     };
     return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode);
   },

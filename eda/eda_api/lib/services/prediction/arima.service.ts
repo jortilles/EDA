@@ -3,7 +3,7 @@ import ARIMA from 'arima';
 export class ArimaService {
 
     static forecast(dataset: number[], steps: number = 1): number[] {
-        console.log('hola!')
+        console.log('hola! -- empiezo arima')
         if (!Array.isArray(dataset) || dataset.length < 2) {
             throw new Error('Dataset insuficiente para predicción');
         }

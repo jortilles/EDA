@@ -223,6 +223,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * @param type 
      */
     private renderEdaChart(type: string) {
+console.log('render eda chart ', this)
+
         const isbarline = this.props.edaChart === 'barline';
         const isstacked = this.props.edaChart === 'stackedbar' || this.props.edaChart === 'stackedbar100';
 
@@ -235,6 +237,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         * add comparative
         */
         let cfg: any = this.props.config.getConfig();
+
         // Si es un histogram faig aixó....        
         if ((['histogram'].includes(this.props.edaChart))
             && this.props.query.length === 1
@@ -263,11 +266,32 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             dataDescription.totalColumns++;
         }
 
+        
+console.log('---------------------------');
+
+console.log('values', JSON.stringify(values));
+console.log('dataTypes', dataTypes);
+console.log('dataDescription', dataDescription);
+console.log('---------------------------');
+console.log('---------------------------');
+console.log('---------------------------');
+console.log('---------------------------');
+
+/**aqui  */
+        if(cfg.showPredictionLines === true){            
+        dataDescription.numericColumns.push(   { name:'prediction', index:2 } );
+        dataTypes.push('numeric');
+        }
+        values = values.map(innerArray => innerArray.map(item => item === "" ? null : item));
+
         // No pasamos el numero de columnas se calcula en la propia funcion
         const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart, values, dataTypes, dataDescription, isbarline, null);
         if (chartData.length == 0) {
             chartData.push([], []);
         }
+
+
+console.log('la puta data', chartData)
 
         const minMax = this.props.chartType !== 'line' ? { min: null, max: null } : this.chartUtils.getMinMax(chartData);
 
