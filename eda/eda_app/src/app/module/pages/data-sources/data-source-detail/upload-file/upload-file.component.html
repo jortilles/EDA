@@ -1,0 +1,32 @@
+<div class="space-y-2">
+    <div (dragenter)="handleDragIn($event, 'geojson')" (dragleave)="handleDragOut($event, 'geojson')"
+      (dragover)="handleDrag($event)" (drop)="handleDrop($event, 'geojson')"
+      class="relative mt-2 flex h-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors"
+      [class.border-[#00BFB3]]="isDraggingGeoJsonFile()" [class.bg-[#00BFB3]]="isDraggingGeoJsonFile()"
+      [class.border-gray-300]="!isDraggingGeoJsonFile()" [class.hover:border-[#00BFB3]]="!isDraggingGeoJsonFile()">
+      <input #file type="file" accept=".json,.geojson" (change)="handleFileSelect($event, 'geojson'); handleModelImport();"
+        class="absolute inset-0 z-50 h-full w-full cursor-pointer opacity-0" />
+      <div class="flex flex-col items-center justify-center text-sm">
+        @if (_geoJsonFileName()) {
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="mb-2 h-6 w-6 text-[#00BFB3]">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <p class="text-sm font-medium">{{ _geoJsonFileName() }}</p>
+        } @else {
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="mb-2 h-6 w-6 text-gray-400">
+          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+        </svg>
+        <p class="mb-1 font-medium text-gray-600">
+          <span class="text-[#00BFB3]" i18n="@@clickToUpload">Click para subir</span> 
+          <span i18n="@@dragDrop">o arrastra y suelta</span>
+        </p>
+        <p class="text-xs text-gray-500">GeoJSON / JSON (max. 10MB)</p>
+        }
+      </div>
+    </div>
+</div>

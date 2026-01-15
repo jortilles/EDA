@@ -155,6 +155,22 @@ export class IconService {
         <path d="M12 6V18M2 12H22" stroke="#C8102E" stroke-width="1.5" />
       </svg>
     `,
+    "fr-flag": `
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        [attr.class]="className"
+        fill="none"
+      >
+        <!-- Azul -->
+        <rect x="2" y="6" width="6.67" height="12" fill="#0055A4" />
+        <!-- Blanco -->
+        <rect x="8.67" y="6" width="6.66" height="12" fill="#FFFFFF" />
+        <!-- Rojo -->
+        <rect x="15.33" y="6" width="6.67" height="12" fill="#EF4135" />
+      </svg>
+    `
+    ,
     "es-flag": `
       <svg
         xmlns="http://www.w3.org/2000/svg"

@@ -1,7 +1,7 @@
-<eda-dialog2 width="50vw" height="65vh" (apply)="saveRelation()" (close)="closeDialog()" [header]="title" >
-  <div content class="py-4">
+<eda-dialog2 width="65vw" height="65vh" (apply)="saveRelation()" (close)="closeDialog()" [header]="title" >
+  <div content class="py-6">
     <form [formGroup]="form">
-      <div class="grid grid-cols-3 gap-3">
+      <div class="grid grid-cols-4 gap-4">
         <p-dropdown [options]="targetTables" formControlName="targetTable" filter="true" optionLabel="label"
           i18n-placeholder="@@placeholderTargetTables" placeholder="Tabla destino"
           id="eda_add_relation_targetTable" [style]="{'width': '100%'}" [emptyMessage]="emptyMessageTags">
@@ -16,6 +16,17 @@
           i18n-placeholder="@@placeholderTargetColumns" placeholder="Columna destino "
           id="eda_add_relation_targetCol" [style]="{'width': '100%'}" [emptyMessage]="emptyMessageTags">
         </p-dropdown>
+
+        <span class="p-float-label h-[3.2rem] w-full">
+          <input
+            id="eda_add_relation_relationName"
+            formControlName="display_name"
+            class="w-full h-full rounded-md border border-gray-300 px-3 py-2"
+            pInputText
+          />
+          <label i18n="@@placeholderRelationName">Nombre relación</label>
+        </span>
+
       </div>
 
       <button class="execute-button mt-4" (click)="addRelation()"

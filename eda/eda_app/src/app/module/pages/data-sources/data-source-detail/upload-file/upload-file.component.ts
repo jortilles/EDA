@@ -1,16 +1,16 @@
-import { ViewChild, Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { ViewChild, Component, OnInit, Output, EventEmitter, Input, signal } from '@angular/core';
 import { UploadFileService } from '@eda/services/utils/upload-file.service';
 import { AlertService } from '@eda/services/service.index';
 import { ProgressBarModule } from 'primeng/progressbar';
-
+import { IconComponent } from '@eda/shared/components/icon/icon.component';
 
 
 @Component({
   standalone: true,
   selector: 'app-uploadFile',
-  templateUrl: './upload-fle.component.html',
+  templateUrl: './upload-file.component.html',
   styleUrls: ['./upload-file.component.css'],
-  imports: [ProgressBarModule]
+  imports: [ProgressBarModule, IconComponent]
 })
 export class UploadFileComponent implements OnInit {
 
@@ -19,7 +19,9 @@ export class UploadFileComponent implements OnInit {
   @Input() route : string;
 
   public files: Set<File> = new Set();
-
+  public isDraggingGeoJsonFile = signal<boolean>(false);
+  public _geoJsonFile = signal<File | null>(null);
+  public _geoJsonFileName = signal<string>('');
   constructor(
     public uploadService: UploadFileService,
     public alertService: AlertService) { }
@@ -32,7 +34,6 @@ export class UploadFileComponent implements OnInit {
   public uploadSuccessful = false;
   public currentFile : any;
   public loadedfile : any;
-  public progressBar : Boolean = false;
 
   onFilesAdded() {
     this.files = new Set();
@@ -79,19 +80,84 @@ export class UploadFileComponent implements OnInit {
     else this.alertService.addError($localize`:@@IncorrectFile:Archivo incorrecto, verifique que el formato del archivo sea json o geojson.`);
   }
 
-  addFile() {
-    this.file.nativeElement.value = "";
-    this.file.nativeElement.click();
-  }
 
   async uploadFile() {
-    this.progressBar = true;
     this.uploadService.upload(this.loadedfile, this.route).subscribe(
       data => {
       this.currentFile = data;
       this.onFileSaved.emit('foo');
-      this.progressBar = false;
     },
-    error => { console.log('file uploading error: ', error); this.progressBar = false});
+    error => { console.log('file uploading error: ', error);});
+  }
+
+
+  // Métodos para manejar eventos de drag & drop
+  handleDrag(e: DragEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  handleDragIn(e: DragEvent, type: 'geojson' | 'json') {
+    e.preventDefault();
+    e.stopPropagation();
+    this.isDraggingGeoJsonFile.set(true);
+  }
+
+  handleDragOut(e: DragEvent, type: 'geojson') {
+    e.preventDefault();
+    e.stopPropagation();
+    this.isDraggingGeoJsonFile.set(false);
+  }
+
+  handleDrop(e: DragEvent, type: 'geojson') {
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.isDraggingGeoJsonFile.set(false);
+
+    const files = e.dataTransfer?.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+    }
+  }
+
+  handleFileSelect(e: Event, type: 'geojson' | 'json') {
+    const input = e.target as HTMLInputElement;
+    const files = input.files;
+    if (files && files.length > 0) {
+      this.handleFiles(files[0], type);
+    }
+  }
+
+  handleFiles(file: File, type: 'geojson' | 'json') {
+    this._geoJsonFileName.set(file.name);
+    this._geoJsonFile.set(file);
+  }
+
+
+  handleModelImport() {
+    if (!this._geoJsonFile()) {
+      this.alertService.addError($localize`:@@selectFileImport:Por favor selecciona un archivo para importar`)
+      return;
+    }
+
+    // Leemos el archivo y verificamos si es valido
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+      const geojson = JSON.parse(fileReader.result as string);
+
+      // revisar validación fichero
+      if (true) {
+        this.alertService.addSuccess($localize`:@@correctGeoJsonFormat:El archivo tiene un formato GeoJson válido.`)
+        this.onFilesAdded();
+        this.uploadFile();
+      } else {
+        this.alertService.addError($localize`:@@wrongGeoJsonFormat:El archivo no tiene un formato GeoJson válido.`);
+        // Clean fields
+        this._geoJsonFileName.set('');
+        this._geoJsonFile.set(null);
+      }
+    };
+    fileReader.readAsText(this._geoJsonFile());
   }
 }

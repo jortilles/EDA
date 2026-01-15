@@ -45,8 +45,8 @@
             <!-- GeoJSON Upload -->
             <div class="space-y-2">
               <label for="geojson" class="block  font-medium" i18n="@@inputMapURL">Subir archivo GeoJson (JSON)</label>
-              <div class="flex items-center gap-2">
-                <app-uploadFile #fileUploader (onFileSaved)="fileLoaded()"></app-uploadFile>
+              <div class="flex items-center gap-2 w-full">
+                <app-uploadFile #fileUploader class="w-full" (onFileSaved)="fileLoaded()"></app-uploadFile>
               </div>
             </div>
 
