@@ -427,7 +427,7 @@ export class DashboardSidebarComponent {
   private async saveDashboard() {
     // Actualizar el refreshTime si es necesario
     this.dashboard.dashboard.config.refreshTime = this.refreshTime || null;
-    this.dashboard.dashboard.config.onlyIcanEdit = this.clickFiltersEnabled;
+    this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
     this.dashboard.dashboard.config.onlyIcanEdit = this.onlyIcanEdit;
     // Actualizar el autor 
     this.dashboard.dashboard.config.author = JSON.parse(localStorage.getItem('user')).name;
@@ -799,8 +799,7 @@ export class DashboardSidebarComponent {
 
     // Alternar el estado
     this.clickFiltersEnabled = !this.clickFiltersEnabled;
-
-    // Actualizar label e icono según estado
+    this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;    // Actualizar label e icono según estado
     clickItem.label = this.clickFiltersEnabled ? $localize`:@@enableFilters:Click en filtros habilitado` : $localize`:@@disableFilters:Click en filtros deshabilitado`;
     clickItem.icon = this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock";
 
