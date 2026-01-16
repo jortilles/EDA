@@ -267,12 +267,9 @@ console.log('render eda chart ', this)
         }
 
         if(cfg.showPredictionLines === true){  
-            console.log('esto es panelchartcomponent')   
             // Añadimos la nueva serie de predicción
             dataDescription.numericColumns.push({name: $localize`:@@Prediction:Predicción`, index:2 });
             dataTypes.push('numeric');
-            values = values.map(innerArray => innerArray.map(item => item === "" ? null : item));
-        }else{
             values = values.map(innerArray => innerArray.map(item => item === "" ? null : item));
         }
 
