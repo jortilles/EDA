@@ -485,7 +485,6 @@ export class ChartDialogComponent {
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
         config.showPointLines = this.showPointLines;
-        config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
         config.colors = this.chart.chartColors;
         properties.config = c;
@@ -495,6 +494,7 @@ export class ChartDialogComponent {
             this.chart = this.panelChartComponent.componentRef.instance.inject;
             this.addPredictionMode();
             this.load();
+            config.showPredictionLines = this.showPredictionLines;
         });
 
     }
@@ -502,38 +502,36 @@ export class ChartDialogComponent {
     addPredictionMode() {
         // Buscamos el panel con el que estamos trabajando y le asignamos la predicción
         const panelID = this.controller.params.panelId;
-        const dashboardPanel =
-            this.dashboard.edaPanels.toArray().find(cmp => cmp.panel.id === panelID);
+        const dashboardPanel = this.dashboard.edaPanels.toArray().find(cmp => cmp.panel.id === panelID);
         // Añadimos prediction a la query
         dashboardPanel.panel.content.query.query.prediction = this.showPredictionLines === true ? 'Arima' : 'None';
 
-        if(this.showPredictionLines === true)
-            this.addNewPanel(dashboardPanel);
+        this.addNewPanel(dashboardPanel);
     }
 
     addNewPanel(dashboardPanel) {
         Swal.fire({
-            title: $localize`:@@AddPredictionTitle:¿Quieres añadir la predicción?`,
+            title: $localize`:@@AddPredictionTitle:¿Quieres actualizar los valores?`,
             text: $localize`:@@AddPredictionText:Puedes guardar el gráfico con o sin predicción.`,
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: $localize`:@@AddPredictionYes:Sí, guardar`,
+            confirmButtonText: $localize`:@@AddPredictionYes:Sí, actualizar`,
             cancelButtonText: $localize`:@@AddPredictionNo:No, cerrar`,
             didOpen: () => {
-            const container = document.querySelector('.swal2-container') as HTMLElement;
-            if (container) {
-                container.style.zIndex = '10000';
-            }
+                const container = document.querySelector('.swal2-container') as HTMLElement;
+                if (container) {
+                    container.style.zIndex = '10000';
+                }
             }
         }).then(async (result) => {
             if (result.isConfirmed) {
-            // Ejecutamos la query de nuevo
-            await dashboardPanel.runQueryFromDashboard(true);
-            this.saveChartConfig();
-            }else{
-                this.showPredictionLines = false;
+                // Ejecutamos la query de nuevo
+                await dashboardPanel.runQueryFromDashboard(true);
+                this.saveChartConfig();
+            } else {
+                this.showPredictionLines = !this.showPredictionLines;
             }
         });
     }
