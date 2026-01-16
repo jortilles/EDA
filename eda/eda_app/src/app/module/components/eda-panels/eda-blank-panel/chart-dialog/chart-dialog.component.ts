@@ -513,9 +513,14 @@ export class ChartDialogComponent {
         dashboardPanel.panel.content.query.query.prediction = this.showPredictionLines === true ? 'Arima' : 'None';
 
         // Refrescar panel, es necesario ? 
-        dashboardPanel.display_v.chart = '';
+
+        console.log(this)
+        console.log(dashboardPanel)
+
+        //dashboardPanel.display_v.chart = '';
         await dashboardPanel.runQueryFromDashboard(true);
-        setTimeout(() => dashboardPanel.panelChart?.updateComponent(), 100);
+        
+        // setTimeout(() => dashboardPanel.panelChart?.updateComponent(), 100);
         // Refrescar panel, es necesario ? 
 
 
@@ -700,6 +705,10 @@ export class ChartDialogComponent {
                     this.chart.chartDataset[index].borderColor = color?.bg;
                 });
                 this.resetChartConfig();
+                break;
+            case 'line':
+                this.chart.chartDataset[0].backgroundColor = this.originalSeries[0]?.bg;
+                this.chart.chartDataset[0].borderColor = this.originalSeries[0]?.bg;
                 break;
             default:
                 this.chart.chartDataset[0].backgroundColor = this.originalSeries[0]?.bg;

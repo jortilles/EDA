@@ -5515,6 +5515,10 @@ OR<ph id="5"/>
   <source>Muestra las predicción de la serie</source>
   <target>Shows the series predictions</target>
 </trans-unit>
+<trans-unit id="Prediction">
+  <source>Predicción</source>
+  <target>Prediction</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

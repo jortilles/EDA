@@ -26,7 +26,7 @@ export class TimeFormatService {
   }
 
   // Formatea fechas
-  static  formatDate(date: Date, format: string): string {
+  static formatDate(date: Date, format: string): string {
     const pad = (n: number) => String(n).padStart(2, '0');
 
     switch (format) {
@@ -43,8 +43,20 @@ export class TimeFormatService {
     }
   }
 
+  static nextInSequenceGeneric(format: string, lastValue: string, labelsReturned: number): string[] {
+    const result: string[] = [];
+    let currentValue = lastValue;
+    
+    for (let i = 0; i < labelsReturned; i++) {
+      currentValue = this.nextSingleValue(format, currentValue);
+      result.push(currentValue);
+    }
+    
+    return result;
+  }
+  
   // Obtiene el siguiente valor de una secuencia
-  static nextInSequenceGeneric(format: string, lastValue: string): string {
+  private static nextSingleValue(format: string, lastValue: string): string {
     switch (format) {
       case 'year':
         return (Number(lastValue) + 1).toString();
@@ -97,4 +109,5 @@ export class TimeFormatService {
         throw new Error(`Formato no soportado: ${format}`);
     }
   }
+
 }

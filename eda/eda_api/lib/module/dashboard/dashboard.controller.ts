@@ -1423,48 +1423,53 @@ export class DashboardController {
          */
         DashboardController.cumulativeSum(output, req.body.query)
 
-        if (req.body.query?.prediction === 'Arima') {
-            let arimaValue;
-            
-            // Obtener formato de fecha
-            const dateField = myQuery.fields.find(field => field.column_type === 'date');
-            const timeFormat = dateField?.format;
-            console.log(output[1])
-            const nextLabel = TimeFormatService.nextInSequenceGeneric(timeFormat, '2003-10');
+        if (req.body.query?.prediction === 'Arima' && req.body.output.config.chartType === 'line') {
+          const steps = 2;
+
+          // Obtener formato de fecha
+          const dateField = myQuery.fields.find(field => field.column_type === 'date');
+          const timeFormat = dateField?.format;
+          const lastDate = output[1][output[1].length - 1][0];
+
+          const nextLabels = TimeFormatService.nextInSequenceGeneric(timeFormat, lastDate, steps);
 
           // Añadir cabecera 'prediction'
           output[0].push('prediction');
 
-            const rows = output[1];
-            const lastIndex = rows.length - 1;
+          const rows = output[1];
+          const lastIndex = rows.length - 1;
 
-            // Extraer dataset numérico entero
-            const originalDataset = rows
-                .map(row => row[1])
-                .filter(val => Number.isInteger(val));
+          // Dataset numérico entero
+          const originalDataset = rows
+            .map(row => row[1])
+            .filter(val => Number.isInteger(val));
 
-            // Calcular predicción ARIMA
-            try {
-                const predictions = ArimaService.forecast(originalDataset, 2);
-                arimaValue = predictions[0];
-                console.log('Predicción ARIMA:', predictions);
-            } catch (err) {
-                console.error('Error al calcular con ARIMA:', err);
-            }
+          let predictions: number[] = [];
 
-            // Añadir columna 'prediction' a cada fila
-            rows.forEach((row, index) => {
-                row.push(index === lastIndex ? row[1] : null); // repite el valor en la última fila, null en el resto
-            });
+          try {
+            predictions = ArimaService.forecast(originalDataset, steps);
+            console.log('Predicción ARIMA:', predictions);
+          } catch (err) {
+            console.error('Error al calcular con ARIMA:', err);
+          }
 
-            // Añadir fila extra con la siguiente fecha y la predicción
-            rows.push([nextLabel, null , arimaValue]);
+          // Añadir columna 'prediction' a filas existentes
+          rows.forEach((row, index) => {
+            row.push(index === lastIndex ? row[1] : null);
+          });
 
-            console.log(output);
-            console.log('Mi prediccion es arima');
+          // Añadir filas futuras
+          nextLabels.forEach((label, index) => {
+            rows.push([ label, null, predictions[index] ?? null ]);
+          });
+
+          console.log(output);
+          console.log('Mi prediccion es arima');
+
         } else {
-            console.log('No hay prediccion o es None');
+          console.log('No hay prediccion o es None');
         }
+
 
 
         console.log(
@@ -1473,7 +1478,6 @@ export class DashboardController {
           } Panel:${req.body.dashboard.panel_id} DONE\n`
         )
 
-    console.log(output);
 
         return res.status(200).json(output)
 

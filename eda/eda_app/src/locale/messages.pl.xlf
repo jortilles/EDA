@@ -5310,6 +5310,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Muestra las predicción de la serie</source>
         <target>Pokazuje przewidywania serii</target>
       </trans-unit>
+      <trans-unit id="Prediction">
+        <source>Predicción</source>
+        <target>Predykcja</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

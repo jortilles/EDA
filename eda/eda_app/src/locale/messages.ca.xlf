@@ -5670,6 +5670,11 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Muestra las predicción de la serie</source>
         <target>Mostra les prediccions de la sèrie</target>
       </trans-unit>
+      <trans-unit id="Prediction">
+        <source>Predicción</source>
+        <target>Predicció</target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>

@@ -277,21 +277,19 @@ console.log('---------------------------');
 console.log('---------------------------');
 console.log('---------------------------');
 
-/**aqui  */
-        if(cfg.showPredictionLines === true){            
-        dataDescription.numericColumns.push(   { name:'prediction', index:2 } );
-        dataTypes.push('numeric');
+        if(cfg.showPredictionLines === true){     
+            // Añadimos la nueva serie de predicción
+            dataDescription.numericColumns.push({name: $localize`:@@Prediction:Predicción`, index:2 });
+            dataTypes.push('numeric');
+            // Transfomramos todos los '' en null para mantener la coherencia del gráfico
+            values = values.map(innerArray => innerArray.map(item => item === "" ? null : item));
         }
-        values = values.map(innerArray => innerArray.map(item => item === "" ? null : item));
 
         // No pasamos el numero de columnas se calcula en la propia funcion
         const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart, values, dataTypes, dataDescription, isbarline, null);
         if (chartData.length == 0) {
             chartData.push([], []);
         }
-
-
-console.log('la puta data', chartData)
 
         const minMax = this.props.chartType !== 'line' ? { min: null, max: null } : this.chartUtils.getMinMax(chartData);
 
@@ -319,9 +317,13 @@ console.log('la puta data', chartData)
         cfg = this.props.config.getConfig();
         if (cfg.addTrend && (cfg.chartType === 'line')) {
             let trends = [];
+            let predictionSerie = cfg.showPredictionLines; 
             chartData[1].forEach(serie => {
-                let trend = this.chartUtils.getTrend(serie);
-                trends.push(trend);
+                // No añadiremos tendencia cuando tengamos showPrectionLines y sea la ultima serie 
+                if(!predictionSerie || (predictionSerie && serie !== chartData[1][chartData[1].length -1])) {
+                    let trend = this.chartUtils.getTrend(serie);
+                    trends.push(trend);
+                }
             });
             trends.forEach(trend => chartData[1].push(trend));
         }
