@@ -277,11 +277,47 @@ console.log('---------------------------');
 console.log('---------------------------');
 console.log('---------------------------');
 
-        if(cfg.showPredictionLines === true){     
+        if(cfg.showPredictionLines === true){  
+            console.log('esto es panelchartcomponent')   
             // Añadimos la nueva serie de predicción
             dataDescription.numericColumns.push({name: $localize`:@@Prediction:Predicción`, index:2 });
             dataTypes.push('numeric');
+            
+            // HARDCODED PARA PRUEBAS
+            values = [
+                [ '2003-01', 3447, null ],
+                [ '2003-02', 1449, null ],
+                [ '2003-03', 1755, null ],
+                [ '2003-04', 1993, null ],
+                [ '2003-05', 2017, null ],
+                [ '2003-06', 1685, null ],
+                [ '2003-07', 2145, null ],
+                [ '2003-08', 1974, null ],
+                [ '2003-09', 2510, null ],
+                [ '2003-10', 5731, 5731 ],
+                [ '2003-11', null, 7146.167158004971 ],
+                [ '2003-12', null, 6952.2745255853615 ]
+            ]
+
+            // tenemos que recuperar el output de la query, porque ahi tenemos 
+            // la serie de la predicción, y luego la añadimos a values
+            
             // Transfomramos todos los '' en null para mantener la coherencia del gráfico
+            values = values.map(innerArray => innerArray.map(item => item === "" ? null : item));
+        }else{
+            values = [
+                [ '2003-01', 3447 ],
+                [ '2003-02', 1449 ],
+                [ '2003-03', 1755 ],
+                [ '2003-04', 1993 ],
+                [ '2003-05', 2017 ],
+                [ '2003-06', 1685 ],
+                [ '2003-07', 2145 ],
+                [ '2003-07', 2145 ],
+                [ '2003-08', 1974 ],
+                [ '2003-09', 2510 ],
+                [ '2003-10', 5731],
+            ]
             values = values.map(innerArray => innerArray.map(item => item === "" ? null : item));
         }
 
