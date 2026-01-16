@@ -81,6 +81,6 @@ export const DEFAULT_FONT_SIZE: number = 0;
 export const DEFAULT_TITLE_ALIGN : string = 'flex-start';
 export const DEFAULT_PANEL_TITLE_ALIGN : string = 'flex-start';
 export const EMPTY_VALUE : string = ''; // $localize`:@@EmptyValueMessage:Sin Informar` ;// Agregado valores vacios en diferentes idiomas
-export const NULL_VALUE : string = '' ;// null Agregado de null_value en diferentes idiomas
+export const NULL_VALUE : string = '' ;// null Agregado de null_value en diferentes idiomas  if you want to leave the null you can put this value: LEAVE_THE_NULL . THIS LEAVE_THE_NULL will leave the null value as null
 export const DEFAULT_PALETTE_COLOR: any = ChartsPalettes.find(palette => palette.name === "Turquesa-Rosa");
 export const FATHER_ID : number = 0; // Valor id de Padre para el componente Treetable

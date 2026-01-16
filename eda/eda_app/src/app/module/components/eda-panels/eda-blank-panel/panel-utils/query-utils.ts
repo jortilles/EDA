@@ -230,7 +230,7 @@ export const QueryUtils = {
       ebp.chartLabels = ebp.chartUtils.uniqueLabels(response[0]);   // Chart labels
       ebp.chartData = response[1].map(item => item.map(a => {
 
-        if(a === null){
+        if(a === null  && NULL_VALUE != 'LEAVE_THE_NULL'){
           return NULL_VALUE;
         }
         if(a === ''){

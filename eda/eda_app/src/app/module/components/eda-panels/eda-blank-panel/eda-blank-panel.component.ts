@@ -560,7 +560,7 @@ public tableNodeExpand(event: any): void {
             this.chartLabels = this.chartUtils.uniqueLabels(labels);
                 this.chartData = response[1].map(item => item.map(a => {
                 
-                        if(a === null){
+                        if(a === null  && NULL_VALUE != 'LEAVE_THE_NULL'){
                           return NULL_VALUE;
                         }
                         if(a === ''){
