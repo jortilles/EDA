@@ -1434,7 +1434,7 @@ export class DashboardController {
           const nextLabels = TimeFormatService.nextInSequenceGeneric(timeFormat, lastDate, steps);
 
           // Añadir cabecera 'prediction'
-          output[0].push('prediction');
+          // output[0].push('prediction');
 
           const rows = output[1];
           const lastIndex = rows.length - 1;
@@ -1465,9 +1465,6 @@ export class DashboardController {
 
           console.log(output);
           console.log('Mi prediccion es arima');
-
-        } else {
-          console.log('No hay prediccion o es None');
         }
 
 

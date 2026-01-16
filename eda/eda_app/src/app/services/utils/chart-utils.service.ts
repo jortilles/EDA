@@ -1114,7 +1114,7 @@ export class ChartUtilsService {
     }
 
     public getTrend = (values: any) => {
-
+        console.log('hola')
         let x_values = values.data.map((v, y) => y);
         let y_values = this.findLineByLeastSquares(x_values, values.data)[1];
 

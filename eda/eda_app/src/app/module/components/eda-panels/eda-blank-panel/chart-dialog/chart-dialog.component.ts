@@ -115,7 +115,6 @@ export class ChartDialogComponent {
         this.showComparative = this.allowCoparative(this.controller.params);
         this.load();
         this.display = true;
-        console.log(this.dashboard, 'dashboard')
     }
 
 
@@ -458,7 +457,6 @@ export class ChartDialogComponent {
     }
 
     setShowLines() {
-
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
         let config: any = c.getConfig();
@@ -475,8 +473,6 @@ export class ChartDialogComponent {
             this.chart = this.panelChartComponent.componentRef.instance.inject;
             this.load();
         });
-        console.log(this.dashboard)
-
     }
 
     setPredictionLines() {
@@ -495,77 +491,20 @@ export class ChartDialogComponent {
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
         setTimeout(_ => {
             this.chart = this.panelChartComponent.componentRef.instance.inject;
-            /// AQUÍ HAREMOS LA NUEVA FEATURE ///
-            this.setupPrediction2();
-            /// AQUÍ HAREMOS LA NUEVA FEATURE ///
+            this.addPredictionMode();
             this.load();
         });
 
     }
 
-    async setupPrediction2() {
+    async addPredictionMode() {
         // Buscamos el panel con el que estamos trabajando y le asignamos la predicción
         const panelID = this.controller.params.panelId;
         const dashboardPanel =
             this.dashboard.edaPanels.toArray().find(cmp => cmp.panel.id === panelID);
-
         // Añadimos prediction a la query
         dashboardPanel.panel.content.query.query.prediction = this.showPredictionLines === true ? 'Arima' : 'None';
-
-        // Refrescar panel, es necesario ? 
-
-        console.log(this)
-        console.log(dashboardPanel)
-
-        //dashboardPanel.display_v.chart = '';
-        await dashboardPanel.runQueryFromDashboard(true);
-        
-        // setTimeout(() => dashboardPanel.panelChart?.updateComponent(), 100);
-        // Refrescar panel, es necesario ? 
-
-
     }
-
-    async setupPrediction() {
-        // Dataset a predecir - DONE
-        const firstNumericoDataset = this.chart.chartDataset.find(dataset => dataset.data.some(value => typeof value === 'number'));
-
-        // LLAMADA A API - TBD
-        const length = firstNumericoDataset.data.length; // Número total de elementos
-        const lastValue = firstNumericoDataset.data[length - 1]; // El valor final real para concatenar con prediccion
-
-        const datasetToPredict = firstNumericoDataset.data.filter(v => typeof v === 'number') as number[];
-        console.log(datasetToPredict)
-        let arimaValue: number;
-        this.arimaService.predict(datasetToPredict, 2).subscribe({
-            next: (response) => {
-                arimaValue = response.predictions[0];
-                console.log('Predicción ARIMA:', response.predictions);
-            },
-            error: (err) => console.error('Error al calcular con ARIMA:', err)
-        });
-
-        const newDataset: { data: any[]; label: string; backgroundColor: string; borderColor: string } = {
-            data: Array(length - 1).fill(null).concat(lastValue), // Todos null menos el último 
-            label: 'Extended Predicction',
-            backgroundColor: '#000000',
-            borderColor: '#000000'
-        };
-
-        // Añadimos predicción al nuevo dataset -- VALOR QUE OBTENDREMOS DE ARIMA
-        //newDataset.data.push(arimaValue); // ARIMA - ARIMA - ARIMA
-        newDataset.data.push(7146.167158004971); // NO ARIMA - ARIMA - ARIMA
-        this.chart.chartDataset.push(newDataset);
-        // CREACIÓN DE SERIE - DONE
-        const newSerie: { label: string, bg: string, border: string } = { label: 'Extended Predicction', bg: '#000000', border: '#000000' };
-        this.series.push(newSerie)
-
-        // AÑADIR COLOR EN CHART COLORS - DONE
-        const chartColor: { backgroundColor: string, borderColor: string } = { backgroundColor: '#000000', borderColor: '#000000' };
-        this.chart.chartColors.push(chartColor)
-
-    }
-
 
     rgb2hex(rgb): string {
         rgb = rgb?.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
