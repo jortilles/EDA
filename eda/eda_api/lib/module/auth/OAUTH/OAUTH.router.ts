@@ -12,4 +12,6 @@ router.get('/login', OAUTHController.login);
 
 router.get('/metadata', OAUTHController.metadata);
 
+router.post('/finalLogin', OAUTHController.finalLogin);
+
 export default router;

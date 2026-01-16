@@ -1,11 +1,10 @@
-import { Component, inject, OnInit, NgZone, ViewChild, ElementRef } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Component, inject, OnInit } from '@angular/core';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { LogoImage, SubLogoImage, BackgroundImage } from '@eda/configs/index';
 import { ParticlesBackgroundComponent } from '@eda/shared/components/particles-background/particles-background';
 import { UserService } from '@eda/services/service.index';
-import { User } from '@eda/models/model.index';
 import { lastValueFrom } from 'rxjs';
 import Swal from 'sweetalert2';
 
@@ -18,12 +17,16 @@ import Swal from 'sweetalert2';
 })
 export class selectedRoleComponent implements OnInit {
 
+    private userService = inject(UserService);
+    private router = inject(Router);
+
     readonly logo = LogoImage
     readonly subLogo = SubLogoImage
     readonly backgroundImage = BackgroundImage
     readonly currentYear = new Date().getFullYear().toString()
 
     selectedRole: string = '';
+    transactionId: string = '';
     roles: any[] = [];
 
     constructor() {
@@ -31,7 +34,6 @@ export class selectedRoleComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        console.log('hola .... inicio')
 
         const hash = window.location.hash; 
         const hashParts = hash.split('?');
@@ -43,6 +45,8 @@ export class selectedRoleComponent implements OnInit {
             const paramsString = hashParts[1];
             const params = new URLSearchParams(paramsString);
             const rolesParam = params.get('roles');
+            const transactionIdParam = params.get('transactionId');
+
 
             console.log('rolesParam:', rolesParam);
 
@@ -53,17 +57,29 @@ export class selectedRoleComponent implements OnInit {
                     console.error('Error parseando roles de la URL', err);
                 }
             }
+
+            if (transactionIdParam) {
+                this.transactionId = transactionIdParam;
+            }
+
         }
 
         console.log('roles: ', this.roles);
+        console.log('transactionId: ', this.transactionId);
 
     }
 
-    selectedRoleEnter(role: string) {
+    async selectedRoleEnter(role: string) {
 
-        console.log('Este es el role seleccionado: ', role);
-        // Generar el endpoint final para el login con el role de parametro.
-
+        const transactionId = this.transactionId;
+        
+        try {
+            await lastValueFrom(this.userService.loginUrlOauthSelectedRole(role, transactionId));
+            this.router.navigate(['/home']);
+        } catch (error) {
+            Swal.fire('Error al iniciar sesión, se perdio la conexión', error.error?.message || 'Ha ocurrido un error inesperado', 'error');
+            console.error(error);
+        }
     }
 
 }

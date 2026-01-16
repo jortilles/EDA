@@ -153,6 +153,20 @@ export class UserService extends ApiService {
         }))
     }
 
+    loginUrlOauthSelectedRole(role: any, tid: any) {
+        const url = `${this.authOAUTH}/finalLogin`;
+        return this.post(url, {
+            selectedRole: role,
+            transactionId: tid
+        }, true)
+        .pipe(
+            map((res: any) => {
+                this.savingStorage(res.id, res.token, res.user);
+                return true;
+            }, (err) =>this.alertService.addError(err))
+        )
+    }
+
     credentialGoogle(respGoogle: any): Observable<any> {
         return this.post(`${this.authGOOGLE}/login`, {respGoogle: respGoogle}, true)
             .pipe(map((res:any) => {
