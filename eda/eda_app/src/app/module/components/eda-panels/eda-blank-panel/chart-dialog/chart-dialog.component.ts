@@ -5,14 +5,15 @@ import { PointStyle } from 'chart.js';
 import { EdaChart } from '@eda/components/eda-chart/eda-chart';
 import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import * as _ from 'lodash';
-import { StyleProviderService, ChartUtilsService, ArimaService } from '@eda/services/service.index';
+import { StyleProviderService, ChartUtilsService, ArimaService, AlertService } from '@eda/services/service.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { ColorPickerModule } from 'primeng/colorpicker';
-import { last } from 'rxjs';
+import { last, lastValueFrom } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
     standalone: true,
@@ -68,7 +69,9 @@ export class ChartDialogComponent {
 
     activeTab = "display"
 
-    constructor(private chartUtils: ChartUtilsService, private stylesProviderService: StyleProviderService, private arimaService: ArimaService) {
+    constructor(private chartUtils: ChartUtilsService, private stylesProviderService: StyleProviderService, private arimaService: ArimaService
+        , private alertService: AlertService
+    ) {
 
         this.drops.pointStyles = [
             { label: 'Puntos', value: 'circle' },
@@ -497,14 +500,46 @@ export class ChartDialogComponent {
 
     }
 
-    async addPredictionMode() {
+    addPredictionMode() {
         // Buscamos el panel con el que estamos trabajando y le asignamos la predicción
         const panelID = this.controller.params.panelId;
         const dashboardPanel =
             this.dashboard.edaPanels.toArray().find(cmp => cmp.panel.id === panelID);
         // Añadimos prediction a la query
         dashboardPanel.panel.content.query.query.prediction = this.showPredictionLines === true ? 'Arima' : 'None';
+
+        if(this.showPredictionLines === true)
+            this.addNewPanel(dashboardPanel);
     }
+
+    addNewPanel(dashboardPanel) {
+        Swal.fire({
+            title: $localize`:@@AddPredictionTitle:¿Quieres añadir la predicción?`,
+            text: $localize`:@@AddPredictionText:Puedes guardar el gráfico con o sin predicción.`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: $localize`:@@AddPredictionYes:Sí, guardar`,
+            cancelButtonText: $localize`:@@AddPredictionNo:No, cerrar`,
+            didOpen: () => {
+            const container = document.querySelector('.swal2-container') as HTMLElement;
+            if (container) {
+                container.style.zIndex = '10000';
+            }
+            }
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+            // Ejecutamos la query de nuevo
+            await dashboardPanel.runQueryFromDashboard(true);
+            this.saveChartConfig();
+            }else{
+                this.showPredictionLines = false;
+            }
+        });
+    }
+
+
 
     rgb2hex(rgb): string {
         rgb = rgb?.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);

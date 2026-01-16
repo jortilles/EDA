@@ -1423,13 +1423,20 @@ export class DashboardController {
          */
         DashboardController.cumulativeSum(output, req.body.query)
 
+        console.log(req.body.query?.prediction === 'Arima' && req.body.output.config.chartType === 'line')
+
         if (req.body.query?.prediction === 'Arima' && req.body.output.config.chartType === 'line') {
-          const steps = 2;
+          const steps = 3;
 
           // Obtener formato de fecha
           const dateField = myQuery.fields.find(field => field.column_type === 'date');
           const timeFormat = dateField?.format;
           const lastDate = output[1][output[1].length - 1][0];
+
+          console.log('-----------------------');
+          console.log(output);
+          console.log(lastDate);
+          console.log('-----------------------');
 
           const nextLabels = TimeFormatService.nextInSequenceGeneric(timeFormat, lastDate, steps);
 
