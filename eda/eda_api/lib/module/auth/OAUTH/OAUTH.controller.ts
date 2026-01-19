@@ -3,7 +3,7 @@ import { HttpException } from '../../global/model/index';
 import axios from 'axios';
 import qs from 'qs';
 import { v4 as uuidv4 } from 'uuid';
-// import { userDataValue, authenticationEvidenceValue, userPermissionsValue, userPermissionsRolesValue } from './dataTest'
+//import { userDataValue, authenticationEvidenceValue, userPermissionsValue, userPermissionsRolesValue } from './dataTest'
 import ServerLogService from '../../../services/server-log/server-log.service';
 import User, { IUser } from '../../admin/users/model/user.model';
 import Group, { IGroup } from '../../admin/groups/model/group.model'
@@ -256,6 +256,11 @@ export class OAUTHController {
                         user.password = ':)';
                         token = await jwt.sign({user}, SEED, {expiresIn: 14400})
 
+                        // Borramos todos los grupos del usuario actualizado
+                        await Group.updateMany({}, { $pull: { users: userSaved._id } });
+                        // Introducimos de nuevo los grupos del usuario actualizado
+                        await Group.updateMany({ _id: { $in: role_id } }, { $push: { users: userSaved._id } });
+
                         return res.status(200).json({ user, token: token, id: user._id });
                         
                     } catch (error) {
@@ -275,6 +280,12 @@ export class OAUTHController {
                         Object.assign(user, userSaved);
                         user.password = ':)';
                         token = await jwt.sign({user}, SEED, {expiresIn: 14400});
+
+                        // Borramos todos los grupos del usuario actualizado
+                        await Group.updateMany({}, { $pull: { users: (userSaved)._id } });
+                        // Introducimos de nuevo los grupos del usuario actualizado
+                        await Group.updateMany({ _id: { $in: role_id } }, { $push: { users: (userSaved)._id } });
+
                         return res.status(200).json({ user, token: token, id: user._id });
                         
                     } catch (error) {
