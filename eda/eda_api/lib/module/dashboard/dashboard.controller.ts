@@ -1350,166 +1350,134 @@ export class DashboardController {
       
 
 
-      if (!cachedQuery) {
-        connection.client = await connection.getclient();
-        const getResults = await connection.execQuery(query);
-     
+      let output;
 
-        let numerics = []
-        /** si es oracle   o alguns mysql  haig de fer una merda per tornar els numeros normals. */
-        if (
-          dataModel.ds.connection.type == 'oracle' ||
-          dataModel.ds.connection.type == 'mysql'
-        ) {
-          req.body.query.fields.forEach((e, i) => {
-            if (e.column_type == 'numeric') {
-              numerics.push('true')
-            } else {
-              numerics.push('false')
-            }
-          })
-        }
+  if (!cachedQuery) {
+    // Conexión y consulta
+    connection.client = await connection.getclient();
+    const getResults = await connection.execQuery(query);
 
-        let results = []
+    let numerics: string[] = [];
 
-        // Normalize data here i also transform oracle numbers who come as strings to real numbers
-        for (let i = 0, n = getResults.length; i < n; i++) {
-          const r = getResults[i]
-          const output = Object.keys(r).map((i, ind) => {
-            /** si es oracle  o alguns mysql haig de fer una merda per tornar els numeros normals. */
-            if (
-              dataModel.ds.connection.type == 'oracle' ||
-              dataModel.ds.connection.type == 'mysql'
-            ) {
-              if (numerics[ind] == 'true') {
-                const res = parseFloat(r[i])
-                if (isNaN(res)) {
-                  return eda_api_config.null_value;
-                } else {
-                  return res
-                }
-              } else {
-                //això es per evitar els null trec els nulls i els canvio per '' dels lavels
-                if (r[i] === null) {
-                  return eda_api_config.null_value;
-                } else {
-                  return r[i];
-                }
-              }
-            } else {
-              // trec els nulls i els canvio per eda_api_config.null_value dels lavels
-              if (numerics[ind] != 'true' && r[i] == null) {
-                return eda_api_config.null_value;
-              } else {
-                return r[i];
-              }
+    // Normalización de números si es Oracle o MySQL
+    if (dataModel.ds.connection.type == 'oracle' || dataModel.ds.connection.type == 'mysql') {
+      req.body.query.fields.forEach((e, i) => {
+        numerics.push(e.column_type === 'numeric' ? 'true' : 'false');
+      });
+    }
 
+    let results: any[] = [];
 
-            }
-
-          })
-
-          results.push(output)
-        }
-        // las etiquetas son el nombre técnico...
-        const output = [mylabels, results]
-        if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
-          CachedQueryService.storeQuery(req.body.model_id, query, output, 'EDA')
-        }
-
-        /**SUMA ACUMULATIVA ->
-         * Si hay fechas agregadas por mes o dia
-         * y el flag cumulative está activo se hace la suma acumulativa en todos los campos numéricos
-         */
-        DashboardController.cumulativeSum(output, req.body.query)
-
-        console.log(req.body.query?.prediction === 'Arima' && req.body.output.config.chartType === 'line')
-
-        if (req.body.query?.prediction === 'Arima' && req.body.output.config.chartType === 'line') {
-          const steps = 3;
-
-          // Obtener formato de fecha
-          const dateField = myQuery.fields.find(field => field.column_type === 'date');
-          const timeFormat = dateField?.format;
-          const lastDate = output[1][output[1].length - 1][0];
-
-          console.log('-----------------------');
-          console.log(output);
-          console.log(lastDate);
-          console.log('-----------------------');
-
-          const nextLabels = TimeFormatService.nextInSequenceGeneric(timeFormat, lastDate, steps);
-
-          // Añadir cabecera 'prediction'
-          // output[0].push('prediction');
-
-          const rows = output[1];
-          const lastIndex = rows.length - 1;
-
-          // Dataset numérico entero
-          const originalDataset = rows
-            .map(row => row[1])
-            .filter(val => Number.isInteger(val));
-
-          let predictions: number[] = [];
-
-          try {
-            predictions = ArimaService.forecast(originalDataset, steps);
-            console.log('Predicción ARIMA:', predictions);
-          } catch (err) {
-            console.error('Error al calcular con ARIMA:', err);
+    for (let i = 0, n = getResults.length; i < n; i++) {
+      const r = getResults[i];
+      const outputRow = Object.keys(r).map((key, ind) => {
+        if (dataModel.ds.connection.type == 'oracle' || dataModel.ds.connection.type == 'mysql') {
+          if (numerics[ind] === 'true') {
+            const res = parseFloat(r[key]);
+            return isNaN(res) ? eda_api_config.null_value : res;
+          } else {
+            return r[key] === null ? eda_api_config.null_value : r[key];
           }
-
-          // Añadir columna 'prediction' a filas existentes
-          rows.forEach((row, index) => {
-            row.push(index === lastIndex ? row[1] : null);
-          });
-
-          // Añadir filas futuras
-          nextLabels.forEach((label, index) => {
-            rows.push([ label, null, predictions[index] ?? null ]);
-          });
-
-          console.log(output);
-          console.log('Mi prediccion es arima');
+        } else {
+          // Otros DB
+          if (numerics[ind] !== 'true' && r[key] === null) {
+            return eda_api_config.null_value;
+          } else {
+            return r[key];
+          }
         }
+      });
+      results.push(outputRow);
+    }
 
+    output = [mylabels, results];
 
+    // Guardar en caché si aplica
+    if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
+      CachedQueryService.storeQuery(req.body.model_id, query, output, 'EDA');
+    }
 
-        console.log(
-          '\x1b[32m%s\x1b[0m',
-          `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
-          } Panel:${req.body.dashboard.panel_id} DONE\n`
-        )
+  } else {
+    console.log('\x1b[36m%s\x1b[0m', '💾 Cached query 💾');
+    output = cachedQuery.cachedQuery.response;
+  }
 
+  // ------------------ Procesamiento común ------------------
 
-        return res.status(200).json(output)
+  // Suma acumulativa
+  DashboardController.cumulativeSum(output, req.body.query);
 
-        /**
-         * La consulta és a la caché
-         */
-      } else {
-        /**SUMA ACUMULATIVA ->
-         * Si hay fechas agregadas por mes o dia
-         * y el flag cumulative está activo se hace la suma acumulativa en todos los campos numéricos
-         */
-        console.log('\x1b[36m%s\x1b[0m', '💾 Cached query 💾')
-        DashboardController.cumulativeSum(
-          cachedQuery.cachedQuery.response,
-          req.body.query
-        )
-        console.log(
-          '\x1b[32m%s\x1b[0m',
-          `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
-          } Panel:${req.body.dashboard.panel_id} DONE\n`
-        )
-        return res.status(200).json(cachedQuery.cachedQuery.response)
-      }
+  // ARIMA (si aplica)
+  //this.applyArimaIfNeeded(output, req.body, myQuery);
+
+  console.log(
+    '\x1b[32m%s\x1b[0m',
+    `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
+    } Panel:${req.body.dashboard.panel_id} DONE\n`
+  );
+
+  return res.status(200).json(output);
+      
     } catch (err) {
       console.log(err)
       next(new HttpException(500, 'Error quering database'))
     }
   }
+
+
+  static applyArimaIfNeeded(output, body, myQuery) {
+    if (
+      body.query?.prediction !== 'Arima' ||
+      body.output.config.chartType !== 'line'
+    ) {
+      return;
+    }
+
+    const steps = 3;
+
+    const dateField = myQuery.fields.find(
+      field => field.column_type === 'date'
+    );
+
+    if (!dateField) return;
+
+    const timeFormat = dateField.format;
+    const lastDate = output[1][output[1].length - 1][0];
+
+    const nextLabels = TimeFormatService.nextInSequenceGeneric(
+      timeFormat,
+      lastDate,
+      steps
+    );
+
+    const rows = output[1];
+    const lastIndex = rows.length - 1;
+
+    const originalDataset = rows
+      .map(row => row[1])
+      .filter(val => Number.isFinite(val));
+
+    let predictions: number[] = [];
+
+    try {
+      predictions = ArimaService.forecast(originalDataset, steps);
+    } catch (err) {
+      console.error('Error ARIMA:', err);
+      return;
+    }
+
+    // Añadir columna predictionet
+    rows.forEach((row, index) => {
+      row.push(index === lastIndex ? row[1] : null);
+    });
+
+    nextLabels.forEach((label, index) => {
+      rows.push([label, null, predictions[index] ?? null]);
+    });
+
+    console.log('Predicción ARIMA aplicada');
+  }
+
 
 
   /**
