@@ -6,7 +6,6 @@ export class ArimaController {
 
     static async predict(req: Request, res: Response, next: NextFunction) {
         try {
-            console.log('hol2a!')
             const { dataset, steps } = req.body;
 
             if (!dataset || !Array.isArray(dataset)) {
