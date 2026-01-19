@@ -30,8 +30,10 @@ export class PromptComponent implements OnInit, AfterViewChecked {
     @Output() newCurrentQuery: EventEmitter<any[]> = new EventEmitter();
     @Output() principalTable: EventEmitter<any[]> = new EventEmitter();
 
+    // Variable almacenada temporalmente en el EDA-BLANK-PANEL
+    @Input() messages: ChatMessage[];
+    @Output() messagesChange = new EventEmitter<ChatMessage[]>();
 
-    messages: ChatMessage[] = []; // Historial de mensajes de un chat activo
     inputText = '';
     sending = false;
     schema: any[] = [] ; // Esquema de todas las tablas y sus columnas
@@ -117,9 +119,10 @@ export class PromptComponent implements OnInit, AfterViewChecked {
                         this.principalTable.emit(principalTable);
                     }
                 }
-
+                
                 const text = resp.response.output_text
                 const assistantMessage: ChatMessage = { role: 'assistant', content: text ?? String(text), timestamp: Date.now() };
+                                
                 this.messages.push(assistantMessage);
                 this.sending = false;
 

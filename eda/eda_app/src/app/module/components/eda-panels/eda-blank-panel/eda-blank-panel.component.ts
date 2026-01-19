@@ -80,6 +80,14 @@ export interface IPanelAction {
     code: string;
     data: any;
 }
+
+interface ChatMessage {
+    id?: string | number;
+    role: 'user' | 'assistant' | 'system' | 'error';
+    content: string;
+    timestamp?: number;
+}
+
 const DIALOGS_COMPONENTS = [
     ChartDialogComponent,BubblechartDialog, MapCoordDialogComponent, MapEditDialogComponent,
     TreeTableDialogComponent, SunburstDialogComponent, TreeMapDialog, ScatterPlotDialog,
@@ -248,6 +256,9 @@ export class EdaBlankPanelComponent implements OnInit {
     public colorsDeepCopy: any = {};
 
     public queryFromServer: string = '';
+
+    public promptMessages: ChatMessage[] = []; // Historial de mensajes.
+
 
     // join types 
     joinTypeOptions: any[] = [
@@ -674,6 +685,9 @@ public tableNodeExpand(event: any): void {
 
         //not saved alert message
         this.dashboardService._notSaved.next(true);
+
+        // Reiniciar el chat del prompt
+        this.promptMessages = [];
 
     }
 
@@ -1113,6 +1127,9 @@ public tableNodeExpand(event: any): void {
         this.tablesToShow = this.tables;
         this.display_v.chart = '';
         this.display_v.page_dialog = false;
+
+        // Reiniciar el chat del prompt
+        this.promptMessages = [];
 
     }
 

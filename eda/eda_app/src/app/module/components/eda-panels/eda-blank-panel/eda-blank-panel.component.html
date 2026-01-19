@@ -594,7 +594,7 @@
 
                     <div class=" ml-3 p-2">
                       <h3 class="text-base font-semibold mb-4" i18n="@@FaltaAgregarElValor">¿En qué puedo ayudarte?</h3>
-                      <Prompt [edaBlankPanel]="this" (newCurrentQuery)="newCurrentQueryUpdate($event)" (principalTable)="principalTableUpdate($event)"></Prompt>
+                      <Prompt [(messages)]="promptMessages" [edaBlankPanel]="this" (newCurrentQuery)="newCurrentQueryUpdate($event)" (principalTable)="principalTableUpdate($event)"></Prompt>
                     </div>
 
                     <div class=" ml-3 p-2">
@@ -610,7 +610,7 @@
 
                     <div class=" ml-3 p-2">
                       <h3 class="text-base font-semibold mb-4" i18n="@@FaltaAgregarElValor">¿En qué puedo ayudarte?</h3>
-                      <Prompt [edaBlankPanel]="this" (newCurrentQuery)="newCurrentQueryUpdate($event)" (principalTable)="principalTableUpdate($event)"></Prompt>
+                      <Prompt [(messages)]="promptMessages" [edaBlankPanel]="this" (newCurrentQuery)="newCurrentQueryUpdate($event)" (principalTable)="principalTableUpdate($event)"></Prompt>
                     </div>
 
                     <div class=" ml-3 p-2">
