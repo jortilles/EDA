@@ -5,7 +5,7 @@ import { PointStyle } from 'chart.js';
 import { EdaChart } from '@eda/components/eda-chart/eda-chart';
 import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import * as _ from 'lodash';
-import { StyleProviderService, ChartUtilsService, ArimaService, AlertService } from '@eda/services/service.index';
+import { StyleProviderService, ChartUtilsService, AlertService } from '@eda/services/service.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
 import { CommonModule } from '@angular/common';
@@ -68,8 +68,7 @@ export class ChartDialogComponent {
 
     activeTab = "display"
 
-    constructor(private chartUtils: ChartUtilsService, private stylesProviderService: StyleProviderService, private arimaService: ArimaService
-        , private alertService: AlertService
+    constructor(private chartUtils: ChartUtilsService, private stylesProviderService: StyleProviderService, private alertService: AlertService
     ) {
 
         this.drops.pointStyles = [
