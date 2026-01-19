@@ -1408,7 +1408,7 @@ export class DashboardController {
   DashboardController.cumulativeSum(output, req.body.query);
 
   // ARIMA (si aplica)
-  //this.applyArimaIfNeeded(output, req.body, myQuery);
+  DashboardController.applyArimaIfNeeded(output, req.body, myQuery );
 
   console.log(
     '\x1b[32m%s\x1b[0m',
@@ -1423,43 +1423,37 @@ export class DashboardController {
       next(new HttpException(500, 'Error quering database'))
     }
   }
-
-
-  static applyArimaIfNeeded(output, body, myQuery) {
-    if (
-      body.query?.prediction !== 'Arima' ||
-      body.output.config.chartType !== 'line'
-    ) {
+  
+  // Formula de arima
+  static applyArimaIfNeeded(output: any, body: any, myQuery: any) {
+    // Si no tenemos arima o no estamos en linea, salimos
+    if (body.query?.prediction !== 'Arima' || body.output.config.chartType !== 'line' ) {
       return;
     }
 
+    // Número de fechas a predecir
     const steps = 3;
 
-    const dateField = myQuery.fields.find(
-      field => field.column_type === 'date'
-    );
-
-    if (!dateField) return;
-
+    // Buscamos campo de la fecha, su formato y su último valor
+    const dateField = myQuery.fields.find(field => field.column_type === 'date');
+    if (!dateField){
+      return;
+    } 
+    
     const timeFormat = dateField.format;
     const lastDate = output[1][output[1].length - 1][0];
 
-    const nextLabels = TimeFormatService.nextInSequenceGeneric(
-      timeFormat,
-      lastDate,
-      steps
-    );
+    // A partir de los datos anteriores generamos las proximas fechas
+    const nextLabels = TimeFormatService.nextInSequenceGeneric( timeFormat, lastDate, steps );
 
     const rows = output[1];
     const lastIndex = rows.length - 1;
-
-    const originalDataset = rows
-      .map(row => row[1])
-      .filter(val => Number.isFinite(val));
+    const originalDataset = rows.map(row => row[1]).filter(val => Number.isFinite(val));
 
     let predictions: number[] = [];
 
     try {
+      // Calculamos las predicciones a través del servicio ARIMA
       predictions = ArimaService.forecast(originalDataset, steps);
     } catch (err) {
       console.error('Error ARIMA:', err);
@@ -1471,13 +1465,13 @@ export class DashboardController {
       row.push(index === lastIndex ? row[1] : null);
     });
 
+    // Añadir fila de fechas
     nextLabels.forEach((label, index) => {
       rows.push([label, null, predictions[index] ?? null]);
     });
 
     console.log('Predicción ARIMA aplicada');
   }
-
 
 
   /**
@@ -1982,7 +1976,6 @@ async function setDasboardsAuthorDate(dashboards: any[]) {
     }
   }
 }
-
 
 
 
