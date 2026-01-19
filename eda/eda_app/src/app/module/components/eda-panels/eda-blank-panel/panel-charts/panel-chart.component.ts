@@ -223,6 +223,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * @param type 
      */
     private renderEdaChart(type: string) {
+console.log('render eda chart ', this)
+
         const isbarline = this.props.edaChart === 'barline';
         const isstacked = this.props.edaChart === 'stackedbar' || this.props.edaChart === 'stackedbar100';
 
@@ -235,6 +237,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         * add comparative
         */
         let cfg: any = this.props.config.getConfig();
+
         // Si es un histogram faig aixó....        
         if ((['histogram'].includes(this.props.edaChart))
             && this.props.query.length === 1
@@ -263,6 +266,13 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             dataDescription.totalColumns++;
         }
 
+        if(cfg.showPredictionLines === true){  
+            // Añadimos la nueva serie de predicción
+            dataDescription.numericColumns.push({name: $localize`:@@Prediction:Predicción`, index:2 });
+            dataTypes.push('numeric');
+            values = values.map(innerArray => innerArray.map(item => item === "" ? null : item));
+        }
+
         // No pasamos el numero de columnas se calcula en la propia funcion
         const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart, values, dataTypes, dataDescription, isbarline, null);
         if (chartData.length == 0) {
@@ -288,16 +298,20 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0]?.name,
             dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps,
-            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines, cfg.numberOfColumns, this.props.edaChart, ticksOptions, false, this.styleProviderService);
+            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines, cfg.showPredictionLines, cfg.numberOfColumns, this.props.edaChart, ticksOptions, false, this.styleProviderService);
 
 
         /**Add trend datasets*/
         cfg = this.props.config.getConfig();
         if (cfg.addTrend && (cfg.chartType === 'line')) {
             let trends = [];
+            let predictionSerie = cfg.showPredictionLines; 
             chartData[1].forEach(serie => {
-                let trend = this.chartUtils.getTrend(serie);
-                trends.push(trend);
+                // No añadiremos tendencia cuando tengamos showPrectionLines y sea la ultima serie 
+                if(!predictionSerie || (predictionSerie && serie !== chartData[1][chartData[1].length -1])) {
+                    let trend = this.chartUtils.getTrend(serie);
+                    trends.push(trend);
+                }
             });
             trends.forEach(trend => chartData[1].push(trend));
         }
@@ -627,7 +641,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const chartOptions = this.chartUtils.initChartOptions(
             chartType, dataDescription.numericColumns[0]?.name,
             dataDescription.otherColumns, manySeries, false, dimensions, null,
-            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines,  cfg.numberOfColumns, chartSubType, ticksOptions, false, this.styleProviderService
+            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines,cfg.showPredictionLines,  cfg.numberOfColumns, chartSubType, ticksOptions, false, this.styleProviderService
         );
         // let chartConfig: any = {};
         chartConfig.edaChart = {}
