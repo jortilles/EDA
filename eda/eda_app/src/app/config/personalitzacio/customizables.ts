@@ -24,11 +24,11 @@ export const ChartsColors = [
 export const ChartsPalettes = [
     {
         paleta: [
-  '#10B4BD', '#BA5EEB', '#CEEB5E', '#EB965E', '#E2B1FC',
-  '#1A78A8', '#9A4A86', '#B8D48E', '#225F9E', '#E8B07B',
-  '#3A3E86', '#D0D56A', '#6C2C6C', '#148FAD', '#A55C96',
-  '#98CACA', '#E2C86B', '#4A357A', '#AD6FA7', '#0FA7B0',
-  '#B184B9', '#A4BED3', '#8D3B78', '#A5D0B0', '#2B4C93'
+  '#10B4BD', '#1BA9C0', '#269EC3', '#3193C7', '#3C88CA',
+  '#477DCE', '#5272D2', '#5D67D6', '#685CD9', '#7351DC',
+  '#7F57D7', '#8B5DD2', '#9764CD', '#A36AC7', '#AF71C2',
+  '#BB78BD', '#C77EB8', '#D285B3', '#DE8CAE', '#EA93A9',
+  '#F29DA0', '#F7A68E', '#FAAD80', '#FCB37A', '#FDB0BA'
         ]
         , name: 'Turquesa-Rosa'
     },
@@ -43,43 +43,53 @@ export const ChartsPalettes = [
         , name: 'Turquesa-Rosa-Contraste'
     },{
         paleta: [
-  '#024873', '#F2C53D', '#0FA697', '#591202', '#2BD7E3',
-  '#FF8400', '#555555', '#A9D531', '#BF814B', '#1F9DA5',
-  '#FEB714', '#E77770', '#34956F', '#FFAE57', '#0B6FA4',
-  '#7C3AED', '#00C2A8', '#D946EF', '#22C55E', '#FB7185',
-  '#60A5FA', '#F97316', '#94A3B8', '#84CC16', '#F59E0B'
+  '#5C86A6', '#F7DB86', '#69C8BC', '#A66B5C', '#8FE7ED',
+  '#FFB56B', '#8C8C8C', '#CDE67D', '#D7B28E', '#74BFC3',
+  '#FFD080', '#F2A7A3', '#7FC4A7', '#FFD1A0', '#73A7C6',
+  '#B8A0F2', '#7BE2CF', '#F2A0EE', '#8EE0A6', '#FFB1C0',
+  '#A8CCFF', '#FFB08A', '#C3CEDD', '#C7E87D', '#FFD59A'
         ]
         , name: 'Azul-Gris'
     },
     {
         paleta:[
-    '#000000', '#1CEDB1', '#023E8A', '#00B0BA', '#1C1DED',
-    '#7A7F7B', '#1CA1ED', '#477679', '#1C5FED', '#6CBEED',
-    '#0B2B5B', '#34EBC8', '#155E75', '#2A6F97', '#3A86FF',
-    '#0EA5E9', '#22D3EE', '#14B8A6', '#0F172A', '#94A3B8',
-    '#1E40AF', '#38BDF8', '#64748B', '#06B6D4', '#0891B2'
+ '#7FEFD1', '#6FE3D6', '#7AD3E0', '#8BC6EA', '#9ABCF3',
+  '#A8B2FA', '#7AA6D9', '#5D86C9', '#476CB8', '#3353A6',
+  '#2A4A90', '#1F3F7A', '#162F5E', '#0F223F', '#0B1A2B',
+  '#2C2C2C', '#6C7A7C', '#8A989A', '#A7B3B5', '#C3CCCD',
+  '#D6DEDF', '#E6EFF0', '#B9E7E4', '#A4D8DF', '#93C6D1'
         ]
         , name: 'Verde-Gris'
     },
     {
         paleta: [
-  '#000000', '#48CAE4', '#03045E', '#90E0EF', '#023E8A',
-  '#00B4D8', '#0077B6', '#ADE8F4', '#0096C7', '#CAF0F8',
-  '#1E40AF', '#38BDF8', '#0F172A', '#60A5FA', '#155E75',
-  '#22D3EE', '#334155', '#0EA5E9', '#64748B', '#0284C7',
-  '#94A3B8', '#075985', '#7DD3FC', '#1D4ED8', '#0B2B5B'
+  '#CAF0F8', '#C0ECF6', '#B6E7F4', '#ACE3F2', '#A2DEF0',
+  '#98DAEF', '#8ED5ED', '#84D1EB', '#7ACCE9', '#70C8E7',
+  '#66C3E5', '#5CBFE3', '#52BAE1', '#48B6DF', '#3EB1DD',
+  '#34ADDB', '#2AA8D9', '#20A4D7', '#169FD5', '#0C9BD3',
+  '#0296D1', '#027BB0', '#025F8F', '#02446E', '#000000'
         ]
         , name: 'Celeste-Negro'
     },
     {
         paleta: [
-           '#CA42EB', '#4192EB', '#425EEB', '#9342EB', '#9E90EB',
-        '#5C42EB', '#2B2E7A', '#7C3AED', '#60A5FA', '#1E40AF',
-        '#C084FC', '#2563EB', '#A855F7', '#3B82F6', '#4C1D95',
-        '#93C5FD', '#6D28D9', '#1D4ED8', '#E879F9', '#0F172A',
-        '#8B5CF6', '#38BDF8', '#D8B4FE', '#312E81', '#7DD3FC'
+  '#425EEB', '#CA42EB', '#4192EB', '#9342EB', '#5C42EB',
+  '#7DD3FC', '#7C3AED', '#60A5FA', '#A855F7', '#2563EB',
+  '#C084FC', '#1D4ED8', '#D8B4FE', '#0F172A', '#93C5FD',
+  '#4C1D95', '#38BDF8', '#6D28D9', '#E879F9', '#312E81',
+  '#A78BFA', '#2DD4BF', '#F0ABFC', '#8DA2FB', '#9E90EB'
         ]
         , name: 'Azul-Violeta'
+    },
+    {
+        paleta: [
+  '#425EEB', '#00E5FF', '#CA42EB', '#00FF85', '#FF2BD6',
+  '#4192EB', '#FFB000', '#9342EB', '#FF3D00', '#5C42EB',
+  '#00C2FF', '#FF00A8', '#00FFCC', '#7C3AED', '#00FF3C',
+  '#2563EB', '#FFD400', '#A855F7', '#FF006E', '#00A8FF',
+  '#C084FC', '#00FF9A', '#FF4D8D', '#2D2AFF', '#9E90EB'
+        ]
+        , name: 'Azul-Violeta-contraste'
     },
     
 ];
