@@ -110,29 +110,33 @@ export class ChatGptController {
             }) : [];
 
             // HISTORIAL DE LA CONVERSACIÓN EN SESIÓN
-            const messages: any = safeHistory;            
+            const messages: any = [
+                { role: "system", content: CONTEXT },
+                ...(firstTime ? [{ role: "system", content: buildSystemMessage(schema) }] : []),
+                ...safeHistory
+            ];   
 
             console.log('messages ===>>> ', messages);
             console.log('firstTime ===>>> ', firstTime);
 
             // Se agrega este primer mensaje solo al inicio de la sessión.
-            if(firstTime) {
+            // if(firstTime) {
                 
-                messages.unshift({
-                    role: "system",
-                    content: `You are an assistant who knows the following database schema:
-                        ${JSON.stringify(schema, null, 2)} \`
-                        You are an assistant who helps generate a structure similar to the schema and you cannot deviate from the schema format. 
-                        When you don't have enough data, return the answer with a question demanding more clarity. 
-                        You should not answer trivial questions unrelated to the schema.
-                        You must only return table names and column names that exist EXACTLY in the provided schema.
-                        If the user uses synonyms, translations, or natural language, you must map them to existing schema names.
-                        If no valid mapping exists, return an empty result.
-                        Never invent table or column names.
-                        `
-                });
+            //     messages.unshift({
+            //         role: "system",
+            //         content: `You are an assistant who knows the following database schema:
+            //             ${JSON.stringify(schema, null, 2)} \`
+            //             You are an assistant who helps generate a structure similar to the schema and you cannot deviate from the schema format. 
+            //             When you don't have enough data, return the answer with a question demanding more clarity. 
+            //             You should not answer trivial questions unrelated to the schema.
+            //             You must only return table names and column names that exist EXACTLY in the provided schema.
+            //             If the user uses synonyms, translations, or natural language, you must map them to existing schema names.
+            //             If no valid mapping exists, return an empty result.
+            //             Never invent table or column names.
+            //             `
+            //     });
 
-            }
+            // }
 
             // Definir en otro directorio
             // Obtencion del campo.
@@ -171,7 +175,15 @@ export class ChatGptController {
             const getAllColumnsByTableNameTool: any = {
                 type: "function",       // obligatorio
                 name: "getAllColumnsByTableName",
-                description: "Given a user request asking for all columns, fields, or full information of a table, returns the table name. Use this function when the user asks for all the columns, all fields, or all data of a table. The table name must exist in the schema.",
+                description: `
+                        ONLY use this function if the user explicitly asks for ALL columns, ALL fields, 
+                        or ALL data of a table. Do NOT use it for partial column requests.
+                        Example triggers: 
+                        - "quiero todos los valores de la tabla customers"
+                        - "muéstrame todos los campos de orders"
+                        - "dame toda la información de employees"
+                        If the user doesn't explicitly ask for all values, do not call this function.
+                    `,
                 parameters: {
                     type: "object",
                     properties: {
@@ -200,7 +212,7 @@ export class ChatGptController {
             let currentQueryTool: any[];
 
             
-            console.log('toolCall: ', toolCall);
+            console.log('-----------------------toolCall-------------------------: ', toolCall);
 
             if(toolCall && toolCall.name === "getFields"){
                 const args = toolCall.arguments ? JSON.parse(toolCall.arguments) : {};
@@ -215,8 +227,15 @@ export class ChatGptController {
                 response.principalTable =  principalTable;
 
                 console.log('currentQueryTool: ', currentQueryTool);
+
+                if(currentQueryTool.length === 0) {
+                    response.output_text = 'Podrias ser mas preciso en tu consulta';
+
+                } else {
+                    response.output_text = 'Se ha configurado con exito la consulta solicitada';
+                }
+
                 // Agregar mas control cuando el arreglo de currentQueryTool retorna vacio
-                response.output_text = 'Se ha configurado con exito la consulta solicitada';
 
                 //  // --- 5) (Opcional) enviar el resultado de la tool de vuelta al modelo para respuesta final ---
                 // const followUpMessages: any = [
@@ -326,3 +345,32 @@ function getAllColumnsByTableName(tableName: any, data) {
 
     return currentQuery;    
 }
+
+
+function buildSystemMessage(schema: any) {
+    return `
+    You are an assistant that understands database schemas.
+
+    When possible, you SHOULD use the function "getFields" to return structured data.
+    However, you may also explain your reasoning in natural language.
+
+    If you mention table names and column names that exist in the schema,
+    they must match EXACTLY the schema names.
+
+    Database schema:
+    ${JSON.stringify(schema, null, 2)}`;
+}
+
+
+// return `
+// You are an assistant that understands database schemas.
+
+// When possible, you SHOULD use the function "getFields" to return structured data.
+// However, you may also explain your reasoning in natural language.
+
+// If you mention table names and column names that exist in the schema,
+// they must match EXACTLY the schema names.
+
+// Database schema:
+// ${JSON.stringify(schema, null, 2)}
+// `;
