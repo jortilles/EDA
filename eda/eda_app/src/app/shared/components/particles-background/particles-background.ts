@@ -57,7 +57,7 @@ export class ParticlesBackgroundComponent implements AfterViewInit, OnDestroy {
     }
 
     private initParticles() {
-        const particleCount = 80
+        const particleCount = 60
         const canvas = this.canvasRef.nativeElement
 
         for (let i = 0; i < particleCount; i++) {
@@ -65,8 +65,8 @@ export class ParticlesBackgroundComponent implements AfterViewInit, OnDestroy {
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
                 size: Math.random() * 6 + 2,
-                speedX: Math.random() * 0.3 - 0.15,
-                speedY: Math.random() * 0.3 - 0.15,
+                speedX: Math.random() * 0.4 - 0.15,
+                speedY: Math.random() * 0.4 - 0.15,
                 opacity: Math.random() * 0.5 + 0.2,
             })
         }
