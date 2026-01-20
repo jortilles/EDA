@@ -5601,6 +5601,26 @@ OR<ph id="5"/>
         <target>Comparative</target>
       </trans-unit>
 
+<trans-unit id="showPointLines">
+  <source>Mostrar Puntos en Lineas</source>
+  <target>Show Points on Lines</target>
+</trans-unit>
+<trans-unit id="showLinesPrediction">
+  <source>Mostrar Predicción</source>
+  <target>Show Prediction</target>
+</trans-unit>
+<trans-unit id="chartLabelLinesOptionDescription">
+  <source>Muestra las líneas en los puntos</source>
+  <target>Show the lines at the points</target>
+</trans-unit>
+<trans-unit id="chartLabelLinePredicctionOptionDescription">
+  <source>Muestra las predicción de la serie</source>
+  <target>Shows the series predictions</target>
+</trans-unit>
+<trans-unit id="Prediction">
+  <source>Predicción</source>
+  <target>Prediction</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

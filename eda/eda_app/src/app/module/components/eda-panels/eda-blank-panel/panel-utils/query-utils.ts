@@ -230,7 +230,7 @@ export const QueryUtils = {
       ebp.chartLabels = ebp.chartUtils.uniqueLabels(response[0]);   // Chart labels
       ebp.chartData = response[1].map(item => item.map(a => {
 
-        if(a === null){
+        if(a === null  && NULL_VALUE != 'LEAVE_THE_NULL'){
           return NULL_VALUE;
         }
         if(a === ''){
@@ -387,7 +387,8 @@ export const QueryUtils = {
       joinType: ebp.joinType,
       rootTable: ebp.rootTable?.table_name,
       groupByEnabled: ebp.groupByEnabled,
-      connectionProperties: ebp.connectionProperties
+      connectionProperties: ebp.connectionProperties,
+      prediction: ebp.panel?.content?.query?.query?.prediction ? ebp.panel.content.query.query.prediction:'None',
     };
     return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode);
   },
