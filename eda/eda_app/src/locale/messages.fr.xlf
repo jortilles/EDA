@@ -2,7 +2,7 @@
 <xliff version="1.2"
   xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en-US" datatype="plaintext" original="ng2.template">
-  <body>
+  <body> 
       <trans-unit id="placeholderInputUsuario" datatype="html">
         <source>Usuario</source>
         <target>Utilisateur</target>
