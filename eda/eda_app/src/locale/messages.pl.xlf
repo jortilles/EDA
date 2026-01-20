@@ -5488,6 +5488,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="chartTypes19">
         <source>Gráfico de Barras Apiladas al 100%</source>
         <target>Wykres słupkowy skumulowany 100%</target>
+      </trans-unit>
+
       <trans-unit id="showPointLines">
         <source>Mostrar Puntos en Lineas</source>
         <target>Pokaż punkty na liniach</target>
