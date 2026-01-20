@@ -3,15 +3,15 @@
 export const userDataValue = {
   status: 'ok',
   method: 'certificat',
-  identifier: '41352745R',
-  companyName: 'Diputació de Girona',
+  identifier: '41352745R', // Id => NIF DEL usuario
+  companyName: 'Diputació de Girona', // Nombre de ROL
   identifierType: '2',
   name: 'Nombre Primero',
   surnames: 'Apellido completo',
   fullname: 'Nombre Completo',
   email: 'nombre@ddgi.cat',
   certificateType: '6',
-  companyId: 'P1730000A'
+  companyId: 'P1730000A'   // ==> ID de ROL
 }
 
 export const authenticationEvidenceValue = {
@@ -32,14 +32,5 @@ export const userPermissionsRolesValue = {
    ok: true, 
    messageCode: null, 
    messageDesc: null, 
-   entity: [   { 
-      ine10: "9821920002", 
-      identifier: "XXXXXXXXX", 
-      profiles: [ 
-         {profileName: "AEAT_DADES"}, 
-         {profileName: "AEAT_IAE"}, 
-         {profileName: "AEAT_IRPF"}, 
-         {profileName: "ATC_VIEW"}, 
-      ] 
-   }] 
+   entity: null
 }
