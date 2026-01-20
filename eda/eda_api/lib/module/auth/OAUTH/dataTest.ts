@@ -3,7 +3,7 @@
 export const userDataValue = {
   status: 'ok',
   method: 'certificat',
-  identifier: '41352745R', // Id => NIF DEL usuario
+  identifier: '41352745M', // Id => NIF DEL usuario
   companyName: 'Diputació de Girona', // Nombre de ROL
   identifierType: '2',
   name: 'Nombre Primero',
@@ -11,7 +11,7 @@ export const userDataValue = {
   fullname: 'Nombre Completo',
   email: 'nombre@ddgi.cat',
   certificateType: '6',
-  companyId: 'P1730000A'   // ==> ID de ROL
+  companyId: 'P1730000M'   // ==> ID de ROL
 }
 
 export const authenticationEvidenceValue = {

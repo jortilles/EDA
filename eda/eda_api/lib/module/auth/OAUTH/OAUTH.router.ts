@@ -10,8 +10,6 @@ const router = express.Router();
 // Control de metadata
 router.get('/login', OAUTHController.login);
 
-router.get('/metadata', OAUTHController.metadata);
-
-router.post('/finalLogin', OAUTHController.finalLogin);
+router.get('/metadata', express.urlencoded({ extended: false }), OAUTHController.metadata);
 
 export default router;

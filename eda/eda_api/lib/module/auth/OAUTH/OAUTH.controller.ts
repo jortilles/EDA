@@ -2,15 +2,11 @@ import { NextFunction, Request, Response } from 'express';
 import { HttpException } from '../../global/model/index';
 import axios from 'axios';
 import qs from 'qs';
-import { v4 as uuidv4 } from 'uuid';
-//import { userDataValue, authenticationEvidenceValue, userPermissionsValue, userPermissionsRolesValue } from './dataTest'
+// import { userDataValue, authenticationEvidenceValue, userPermissionsValue, userPermissionsRolesValue } from './dataTest'
 import ServerLogService from '../../../services/server-log/server-log.service';
 import User, { IUser } from '../../admin/users/model/user.model';
 import Group, { IGroup } from '../../admin/groups/model/group.model'
 import { UserController } from '../../admin/users/user.controller';
-
-
-import { oauthTempStore } from '../../../store/oauthTempStore'
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -99,208 +95,128 @@ export class OAUTHController {
             console.log('userPermissionsRolesValue: ', userPermissionsRolesValue);
 
             //*************************************************************************** */
-
-
-            // Tratamos los roles o perfiles que posee el usuario autenticado
-            if(!userPermissionsRolesValue.entity) {
-                throw new HttpException(400, "El usuario no posee roles");
-            }
             
-            let roles = [];
-            roles = userPermissionsRolesValue.entity[0].profiles.map((perfil: any) => ({code: perfil.profileName, name: perfil.profileName}));
-
-
             //=============================================================================================== */
             //=============================================================================================== */
             //=============================================================================================== */
 
-            // ID único de transacción
-            const transactionId = uuidv4();
+            // REDIRECION PARA EL INICIO DE SESION
 
-            // Seteando los valores del usuario hasta que seleccione un rol
-            oauthTempStore.set(transactionId, {
-                access_token: 'access_token',
-                userData: userDataValue,
-                authenticationEvidence: authenticationEvidenceValue,
-                userPermissions: userPermissionsValue,
-                userPermissionsRoles: userPermissionsRolesValue,
-                roles: roles,
-                createdAt: Date.now()
-            });
-
-            console.log('roles llegados: ', roles);
-            console.log('transactionId: ', transactionId);
-            // Para pruebas:
-
-            // Redirigimos al frontend con roles del usuario
-
-            let rolesURL = encodeURIComponent(JSON.stringify(roles))
-
-            res.redirect(
-                `http://localhost:4200/#/selectedRole?roles=${rolesURL}&transactionId=${transactionId}`
-            );
-
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    static async finalLogin(req: Request, res: Response, next: NextFunction) {
-        
-        try {
-            
-            console.log('------------> INICIO DEL LOGIN FINAL <------------');
-
-            const { transactionId, selectedRole } = req.body;
-            const oauthData = oauthTempStore.get(transactionId);
-            
-            if(!oauthData) {
-                throw new HttpException(400, 'Transacción OAuth inválida o expirada');
-            }
-
-            // Recuperando la información del usuario a partir del transactionId
-            const {
-                access_token,
-                userData,
-                authenticationEvidence,
-                userPermissions,
-                userPermissionsRoles,
-                roles
-            } = oauthData;
-
-            // =============> Evaluar si es necesaro =============>
-            //***************************************************** */
-            // const roleIsValid = userPermissionsRoles.some(
-            //     (r: any) => r.code === selectedRole
-            // );
-
-            // if (!roleIsValid) {
-            //     throw new HttpException(403, 'Rol no permitido');
-            // }
-            //***************************************************** */
-            
-
-            //*****************************************************************
-            //*****************************************************************
-            //**************** INICIO DE LOGIN A LA APLICACION ****************
-            //*****************************************************************
-            //*****************************************************************
-            
-            // Limpiar la data temporal
-            oauthTempStore.delete(transactionId);
-
-            // INICIA EL PROCESO DE LOGIN
             let token: string;
-            let user: IUser = new User({ name: '', email: '', password: '', img: '', role: [] });
+            let { identifier, companyName, name, email, companyId } = userDataValue
+            let user: IUser = new User({name: '', email: '', password: '', img: '', role: []});
 
-            insertServerLog(req, 'info', 'newLogin', userData.email, 'attempt');
+            insertServerLog(req, 'info', 'newLogin', email, 'attempt');
 
-            if(userData.email != null) {
+            // Verificamos al usuario
+            if (!email) return next(new HttpException(400, 'Usuario no verificado'));
 
-                const userEda = await UserController.getUserInfoByEmail(userData.email, true);
+            const userEda = await UserController.getUserInfoByEmail(email, true);
 
-                ////////////////////////////////////////////////////////
-                /////////////// INICIO DE CREACION DE ROL //////////////
-                ////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////
+            /////////////// INICIO DE CREACION DE ROL //////////////
+            ////////////////////////////////////////////////////////
 
-                let role_id = []; // Variable role_id
+            let role_id = []; // Variable role_id
 
-                try {
-                    // Upsert: si existe devuelve el documento, si no, lo crea
-                    const groupDoc = await Group.findOneAndUpdate(
-                        { name: selectedRole }, // criterio de búsqueda
-                        {
-                            $setOnInsert: {
-                                name: selectedRole,
-                                role: selectedRole?.ROLE || selectedRole?.role || selectedRole,
-                                users: [],
-                                img: ''
-                            }
-                        },
-                        {
-                            new: true,    // devuelve el documento actualizado o recién insertado
-                            upsert: true, // crea si no existe
+            try {
+                // Upsert: si existe devuelve el documento, si no, lo crea
+                const groupDoc = await Group.findOneAndUpdate(
+                    { name: identifier }, // criterio de búsqueda
+                    {
+                        $setOnInsert: {
+                            name: companyName,
+                            role: companyId,
+                            users: [],
+                            img: ''
                         }
-                    ).exec();
-
-
-                    if (groupDoc && groupDoc._id) {
-                        role_id.push(groupDoc._id);
+                    },
+                    {
+                        new: true,    // devuelve el documento actualizado o recién insertado
+                        upsert: true, // crea si no existe
                     }
+                ).exec();
 
-                } catch (err: any) {
-                    console.error(`Error creando o actualizando grupo "${selectedRole}":`, err.message);
+                if (groupDoc && groupDoc._id) {
+                    role_id.push(groupDoc._id);
                 }
 
-                ////////////////////////////////////////////////////////
-                //////////////// FIN DE CREACION DE ROL ////////////////
-                ////////////////////////////////////////////////////////
+            } catch (err: any) {
+                console.error(`Error creando o actualizando grupo "${companyName}":`, err.message);
+            }
 
-                // usuario no resgistrado, es un usuario nuevo para hacer un nuevo registro
-                if(!userEda) {
+            ////////////////////////////////////////////////////////
+            //////////////// FIN DE CREACION DE ROL ////////////////
+            ////////////////////////////////////////////////////////
 
-                    console.log('===> USUARIO NUEVO ===>');
+            if(!userEda) {
+                console.log('===> USUARIO NUEVO ===>');
 
-                    const userToSave: IUser = new User({
-                        name: userData.name,
-                        email: userData.email,
-                        password: bcrypt.hashSync('no_serveix_de_re_pero_no_pot_ser_null', 10),
-                        img: 'imagen', // Agregar la imagen
-                        role: role_id,
-                        creation_date: new Date()
-                    });
-
-                    try {
-                        const userSaved = await userToSave.save();
-                        Object.assign(user, userSaved);
-                        user.password = ':)';
-                        token = await jwt.sign({user}, SEED, {expiresIn: 14400})
-
-                        // Borramos todos los grupos del usuario actualizado
-                        await Group.updateMany({}, { $pull: { users: userSaved._id } });
-                        // Introducimos de nuevo los grupos del usuario actualizado
-                        await Group.updateMany({ _id: { $in: role_id } }, { $push: { users: userSaved._id } });
-
-                        return res.status(200).json({ user, token: token, id: user._id });
-                        
-                    } catch (error) {
-                        return(new HttpException(400, 'Some error ocurred while creating the User'));
-                    }
-                } else {
-
-                    console.log('===> USUARIO NO ES NUEVO ===>');
-
-                    userEda.name = userData.name;
-                    userEda.email = userData.email;
-                    userEda.password = bcrypt.hashSync('no_serveix_de_re_pero_no_pot_ser_null', 10); 
-                    userEda.role = role_id;
-
-                    try {
-                        const userSaved = await userEda.save(); 
-                        Object.assign(user, userSaved);
-                        user.password = ':)';
-                        token = await jwt.sign({user}, SEED, {expiresIn: 14400});
-
-                        // Borramos todos los grupos del usuario actualizado
-                        await Group.updateMany({}, { $pull: { users: (userSaved)._id } });
-                        // Introducimos de nuevo los grupos del usuario actualizado
-                        await Group.updateMany({ _id: { $in: role_id } }, { $push: { users: (userSaved)._id } });
-
-                        return res.status(200).json({ user, token: token, id: user._id });
-                        
-                    } catch (error) {
-                        console.log('Error: ', error);
-                        return (new HttpException(400, 'Some error ocurred while creating the User'));
-                    }
-                }
+                const userToSave: IUser = new User({
+                    name: name,
+                    email: email,
+                    password: bcrypt.hashSync('no_serveix_de_re_pero_no_pot_ser_null', 10),
+                    img: 'imagen', // Agregar la imagen
+                    role: role_id,
+                    creation_date: new Date()
+                });
+                
+                const userSaved = await userToSave.save();
+                Object.assign(user, userSaved);
 
             } else {
-                return next(new HttpException(400, 'Usuario no verificado'));
+
+                console.log('===> USUARIO NO ES NUEVO ===>');
+
+                userEda.name = name;
+                userEda.email = email;
+                userEda.password = bcrypt.hashSync('no_serveix_de_re_pero_no_pot_ser_null', 10); 
+                userEda.role = role_id;
+                const userSaved = await userEda.save(); 
+                Object.assign(user, userSaved);
+            }  
+
+            user.password = ':)';
+
+            const userPayload = {
+                ...user.toObject(), // Todos los datos de usuario
+                nameDG: name, 
+                identifierDG: identifier,
+                companyNameDG: companyName,
+                companyIdDG: companyId
+            };   
+
+            token = await jwt.sign({ user: userPayload }, SEED, { expiresIn: 14400 });
+
+            // Borramos todos los grupos del usuario actualizado
+            await Group.updateMany({}, { $pull: { users: user._id } });
+            // Introducimos de nuevo los grupos del usuario actualizado
+            await Group.updateMany({ _id: { $in: role_id } }, { $push: { users: user._id } });
+
+
+            // ----------------------------- REDIRECCIÓN AL LOGIN -----------------------------
+
+            const defaultRelay = `${OAUTHconfig.urlRedirection}/#/login?next=%2Fhome`;
+            const relayRaw = (req.body as any)?.RelayState || defaultRelay;
+
+            // (Opcional) Lista accesible de orígenes para evitar open redirect
+            let relayState = relayRaw;
+            try {
+                const u = new URL(relayRaw);
+                const allowed = [`${OAUTHconfig.urlRedirection}`]; // Dominio para producción
+                if (!allowed.includes(u.origin)) relayState = defaultRelay;
+            } catch {
+                relayState = defaultRelay;
             }
-            
+
+            // Agregamos el Token en la redicción exitosa
+            const sep = relayState.includes('?') ? '&' : '?';
+            const redirectTo = `${relayState}${sep}token=${encodeURIComponent(token)}`;
+
+            return res.redirect(302, redirectTo);
+
         } catch (error) {
-            console.log('Hubo un error en el login ', error);
-            next(error);
+            return next(error);
         }
     }
 

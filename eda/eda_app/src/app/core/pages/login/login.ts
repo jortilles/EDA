@@ -119,6 +119,7 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
 
                     if(loginMethods.includes("oauth")) {
                         this.singleSignOnOauthAvailable = true;
+                        this.verifyloginOauth();
                     }
 
                     console.log('loginMethodsÑ ', loginMethods);
@@ -306,6 +307,34 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
         const qp = this.route.snapshot.queryParamMap;
         const token = qp.get('token');
         const next = qp.get('next') || '/home';
+
+        if (token) {
+            
+            try {
+                const payload = jwtDecode<any>(token);
+                const userSAML: User = payload.user;    
+                this.userService.savingStorage(userSAML._id, token, userSAML);
+            } catch (error) {
+                console.log('error', error)
+                Swal.fire('Error al iniciar sesión', error.error?.message || 'Ha ocurrido un error inesperado', 'error');
+            }
+            
+            this.router.navigate([next]);
+            return;
+        }
+    }
+
+    verifyloginOauth() {
+        // Si llega con Single Sing-On
+        const qp = this.route.snapshot.queryParamMap;
+
+        console.log('qp: ', qp);
+
+        const token = qp.get('token');
+        const next = qp.get('next') || '/home';
+
+        console.log('token: ', token)
+        console.log('next: ', next)
 
         if (token) {
             

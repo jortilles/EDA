@@ -12,4 +12,5 @@ module.exports = {
     authenticationEvidenceUrlToken: 'xxxxxxxxxxxxxxxxxxxx', // URL con token de parametro
     userPermissionsUrlToken: 'xxxxxxxxxxxxxxxxxxxx', // URL con token de parametro
     userPermissionsRolesUrlToken: 'xxxxxxxxxxxxxxxxxxxx', // URL con token de parametro
+    urlRedirection: 'xxxxxxxxxxxxxxxxxxxx' // URL de redirecion de login
 };
