@@ -171,35 +171,8 @@ export class ChatGptController {
                 strict: true
             };
 
-
-            const getAllColumnsByTableNameTool: any = {
-                type: "function",       // obligatorio
-                name: "getAllColumnsByTableName",
-                description: `
-                        ONLY use this function if the user explicitly asks for ALL columns, ALL fields, 
-                        or ALL data of a table. Do NOT use it for partial column requests.
-                        Example triggers: 
-                        - "quiero todos los valores de la tabla customers"
-                        - "muéstrame todos los campos de orders"
-                        - "dame toda la información de employees"
-                        If the user doesn't explicitly ask for all values, do not call this function.
-                    `,
-                parameters: {
-                    type: "object",
-                    properties: {
-                        table: {
-                            type: "string",
-                            description: "Name of the table, must exist in the schema",
-                        },
-                    },
-                    required: ["table"],
-                    additionalProperties: false
-                },
-                strict: true,           
-            };
-
             // Agregación de todas las funciones de llamada
-            const tools: any[] = [getFieldsTool, getAllColumnsByTableNameTool];
+            const tools: any[] = [getFieldsTool];
 
             let response: any = await openai.responses.create({
                 model: MODEL,
@@ -208,10 +181,19 @@ export class ChatGptController {
             })
 
             const toolCall: any = response.output?.find((c: any) => c.type === "function_call");
+
+            if (!toolCall) {
+
+                response.output_text = 'No pude identificar los campos necesarios. ¿Podrías reformular la consulta?';
+                return res.status(200).json({
+                    ok: false,
+                    response: response,
+                });
+            }            
+
             let toolResult: string | null = null;
             let currentQueryTool: any[];
 
-            
             console.log('-----------------------toolCall-------------------------: ', toolCall);
 
             if(toolCall && toolCall.name === "getFields"){
@@ -234,41 +216,6 @@ export class ChatGptController {
                 } else {
                     response.output_text = 'Se ha configurado con exito la consulta solicitada';
                 }
-
-                // Agregar mas control cuando el arreglo de currentQueryTool retorna vacio
-
-                //  // --- 5) (Opcional) enviar el resultado de la tool de vuelta al modelo para respuesta final ---
-                // const followUpMessages: any = [
-                //     ...safeHistory,
-                //     // registramos que hubo una llamada a tool (puedes formatearlo como prefieras)
-                //     { role: "assistant", content: `__tool_call__ ${toolCall.tool}(${JSON.stringify(toolCall.arguments)})` },
-                //     // añadir la salida de la herramienta
-                //     { role: "assistant", content: toolResult },
-                // ];
-
-                // // Segunda llamada: ahora pedimos la respuesta final del asistente
-                // response = await openai.responses.create({
-                //     model: MODEL,
-                //     input: followUpMessages,
-                //     tools, // seguir enviando metadata para permitir más tool_calls
-                // });
-            }
-
-
-            if(toolCall && toolCall.name === "getAllColumnsByTableName"){
-                const args = toolCall.arguments ? JSON.parse(toolCall.arguments) : {};
-                const tableName = args.table ?? "Unknown";
-                const tools = response.tools;
-
-                // Current Query
-                currentQueryTool = getAllColumnsByTableName(tableName, data);
-                console.log('currentQueryTool: ::::::: :', currentQueryTool);
-                response.currentQuery = currentQueryTool;
-                response.principalTable =  tableName;
-                response.output_text = 'Se ha configurado con exito la consulta solicitada todos los valores';
-
-                // Agregar mas control cuando el arreglo de currentQueryTool retorna vacio
-
             }
 
             res.status(200).json({
@@ -319,58 +266,24 @@ function getFields(tables: any[], data: any[]) {
     return currentQuery;
 }
 
-function getAllColumnsByTableName(tableName: any, data) {
-    let currentQuery: any[] = [];
-
-        const table = data.find((item: any) => item.table_name === tableName);
-
-        if(table) {
-            table.columns.forEach((col: any) => {
-
-                if(col.column_type === 'numeric') {
-                    const agg = col.aggregation_type.find((agg: any) => agg.value === 'sum');
-                    agg.selected = true;
-                }
-
-                if(col.column_type === 'text' || col.column_type === 'date') {
-                    const agg = col.aggregation_type.find((agg: any) => agg.value === 'none');
-                    agg.selected = true;
-                }
-
-                col.table_id = tableName;
-
-                currentQuery.push(col);
-            })
-        }
-
-    return currentQuery;    
-}
-
-
 function buildSystemMessage(schema: any) {
-    return `
-    You are an assistant that understands database schemas.
+  return `
+Eres un INTÉRPRETE DE CONSULTAS, no un chatbot.
 
-    When possible, you SHOULD use the function "getFields" to return structured data.
-    However, you may also explain your reasoning in natural language.
+TU ÚNICA FUNCIÓN es transformar preguntas en lenguaje natural
+en una estructura usando funciones.
 
-    If you mention table names and column names that exist in the schema,
-    they must match EXACTLY the schema names.
+REGLAS OBLIGATORIAS:
+- NUNCA devuelvas SQL
+- NUNCA expliques resultados
+- NUNCA respondas con texto descriptivo
+- SIEMPRE intenta llamar a la función "getFields"
+- SOLO puedes responder con texto SI no puedes mapear NINGÚN campo
+- JAMÁS inventes tablas o columnas
+- Usa sinónimos y contexto para inferir nombres reales
+- Si no estás seguro, AÚN ASÍ llama a getFields con lo más probable
 
-    Database schema:
-    ${JSON.stringify(schema, null, 2)}`;
+Base de datos:
+${JSON.stringify(schema, null, 2)}
+`;
 }
-
-
-// return `
-// You are an assistant that understands database schemas.
-
-// When possible, you SHOULD use the function "getFields" to return structured data.
-// However, you may also explain your reasoning in natural language.
-
-// If you mention table names and column names that exist in the schema,
-// they must match EXACTLY the schema names.
-
-// Database schema:
-// ${JSON.stringify(schema, null, 2)}
-// `;
