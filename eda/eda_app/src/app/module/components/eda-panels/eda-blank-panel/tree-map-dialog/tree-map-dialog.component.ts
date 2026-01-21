@@ -100,7 +100,7 @@ export class TreeMapDialog implements OnInit, AfterViewChecked {
 
   /** Cuando el usuario edita un color individual */
   handleInputColor(): void {
-    const colorsForConfig = this.assignedColors.map(c => c.color.toUpperCase());
+    const colorsForConfig = this.assignedColors.map(c => c.color);
 
     // Actualizar TreeMapConfig y sincronizar assignedColors
     this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(colorsForConfig));
