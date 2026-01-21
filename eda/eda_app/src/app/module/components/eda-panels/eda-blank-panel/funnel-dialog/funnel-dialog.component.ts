@@ -16,67 +16,138 @@ import { ColorPickerModule } from 'primeng/colorpicker';
 })
 
 export class FunnelDialog implements OnInit {
+
   @Input() controller: any;
-  @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
+  @ViewChild('PanelChartComponent', { static: false })
+  myPanelChartComponent: PanelChartComponent;
 
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
-  public colors: Array<string>;
-  public originalColors: string[];
-  public labels: Array<number>;
-  public display: boolean = false;
-  public selectedPalette: { name: string; paleta: any } | null = null;
+
+  /** Fuente de verdad */
+  public assignedColors: { value: string | number; color: string }[] = [];
+  private originalAssignedColors: { value: string | number; color: string }[] = [];
+
+  public labels: Array<string | number> = [];
+  public selectedPalette: { name: string; paleta: string[] } | null = null;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
-  public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
 
-  constructor(private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) {}
+  public title = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
+  public display = false;
 
-  ngAfterViewChecked(): void {
-    if (!this.colors && this.myPanelChartComponent?.componentRef) {
-      //To avoid "Expression has changed after it was checked" warning
-      setTimeout(() => {
-        this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(c => this.ChartUtilsService.rgb2hexD3(c) || c);
-        this.originalColors = [...this.colors]; // Guardar estado original aquí
-        this.labels = [0, 1];
-      }, 0);
-    }
-  }
+  constructor(
+    private stylesProviderService: StyleProviderService,
+    private chartUtils: ChartUtilsService
+  ) {}
 
   ngOnInit(): void {
     this.panelChartConfig = this.controller.params.panelChart;
     this.display = true;
   }
+
+  ngAfterViewChecked(): void {
+
+    if (!this.assignedColors.length && this.myPanelChartComponent?.componentRef) {
+
+      setTimeout(() => {
+
+        const funnelInstance =
+          this.myPanelChartComponent.componentRef.instance;
+
+        /** labels reales del funnel */
+        this.labels = funnelInstance.firstColLabels || [];
+
+        /** colores existentes */
+        const chartAssignedColors =
+          this.myPanelChartComponent.props.config.getConfig()['assignedColors'] || [];
+
+        /** sincronizar dialog ←→ chart */
+        this.assignedColors = this.labels.map(label => {
+          const match = chartAssignedColors.find(c => c.value === label);
+          return {
+            value: label,
+            color: match?.color || '#000000'
+          };
+        });
+
+        this.originalAssignedColors =
+          this.assignedColors.map(c => ({ ...c }));
+
+      }, 0);
+    }
+  }
+
   onClose(event: EdaDialogCloseEvent, response?: any): void {
-    return this.controller.close(event, response);
+    this.controller.close(event, response);
   }
 
-  saveChartConfig() {
-    this.onClose(EdaDialogCloseEvent.UPDATE, { colors: this.colors.map(color => this.ChartUtilsService.hex2rgbD3(color)) });
+  /** guardar */
+  saveChartConfig(): void {
+    const colorsForConfig = this.assignedColors.map(c => c.color);
+
+    this.myPanelChartComponent.props.config.setConfig(new FunnelConfig(this.assignedColors.map(c => c.color)));
+
+    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
+    this.myPanelChartComponent.changeChartType();
+
+    this.onClose(EdaDialogCloseEvent.UPDATE, { assignedColors: colorsForConfig });
   }
 
-  closeChartConfig() {
-    this.myPanelChartComponent.props.config.setConfig(new FunnelConfig(this.originalColors.map(c => this.ChartUtilsService.hex2rgbD3(c))));
+  /** cancelar */
+  closeChartConfig(): void {
+
+    this.assignedColors =
+      this.originalAssignedColors.map(c => ({ ...c }));
+
+    this.myPanelChartComponent.props.config.setConfig(
+      new FunnelConfig(this.assignedColors.map(c => c.color))
+    );
+
+    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] =
+      [...this.assignedColors];
+
+    this.myPanelChartComponent.changeChartType();
+
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
+  /** cambio individual */
   handleInputColor(): void {
-    this.myPanelChartComponent.props.config.setConfig(new FunnelConfig(this.colors.map(c => this.ChartUtilsService.rgb2hexD3(c) || this.ChartUtilsService.hex2rgbD3(c))));
+
+    this.myPanelChartComponent.props.config.setConfig(
+      new FunnelConfig(this.assignedColors.map(c => c.color))
+    );
+
+    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] =
+      [...this.assignedColors];
+
     this.myPanelChartComponent.changeChartType();
   }
 
-  onPaletteSelected() { 
-    // Saber numero de segmentos para interpolar colores
-    const numberOfColors = this.myPanelChartComponent.componentRef.instance.colors.length;
-    
-    // Recuperamos paleta seleccionada y creamos colores
-    this.myPanelChartComponent['chartUtils'].MyPaletteColors = this.selectedPalette['paleta']; 
-    const newColors = this.ChartUtilsService.generateRGBColorGradientScaleD3(numberOfColors, this.myPanelChartComponent['chartUtils'].MyPaletteColors);
-    
-    // Actualizar los color pickers individuales al modificar la paleta
-    this.colors = newColors.map(({ color }) => color);
-    
-    // Actualizar los colores del chart
-    this.myPanelChartComponent.props.config.setConfig(new FunnelConfig(this.colors.map(color => this.ChartUtilsService.hex2rgbD3(color))));
+  /** paleta completa */
+  onPaletteSelected(): void {
+
+    if (!this.selectedPalette) return;
+
+    const length = this.labels.length;
+    const palette = this.selectedPalette.paleta;
+
+    const newColors = Array.from({ length }, (_, i) =>
+      palette[i % palette.length]
+    );
+
+    this.assignedColors = this.labels.map((label, i) => ({
+      value: label,
+      color: newColors[i]
+    }));
+
+    this.myPanelChartComponent.props.config.setConfig(
+      new FunnelConfig(this.assignedColors.map(c => c.color))
+    );
+
+    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] =
+      [...this.assignedColors];
+
     this.myPanelChartComponent.changeChartType();
   }
 }

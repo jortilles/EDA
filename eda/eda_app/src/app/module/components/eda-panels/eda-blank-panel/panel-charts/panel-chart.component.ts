@@ -855,7 +855,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
 
     private renderParallelSets() {
-        console.log('renderParallelSets ')
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
 
         let inject: EdaD3 = new EdaD3;
@@ -888,19 +887,37 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     }
 
-    private renderFunnel() {
-
-        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
-
-        let inject: EdaD3 = new EdaD3;
-        inject.size = this.props.size;
-        inject.id = this.randomID();
-        inject.data = this.props.data;
-        inject.dataDescription = dataDescription;
-        inject.colors = this.props.config.getConfig()['colors'];
-        inject.linkedDashboard = this.props.linkedDashboardProps;
-        this.createFunnelComponent(inject);
+private renderFunnel() {
+    if (!this.props?.data?.values?.length) {
+        return;
     }
+    const dataDescription = this.chartUtils.describeData(
+        this.props.query,
+        this.props.data.labels
+    );
+
+    const inject: EdaD3 = new EdaD3();
+    inject.id = this.randomID();
+    inject.size = this.props.size;
+    inject.data = this.props.data;
+    inject.dataDescription = dataDescription;
+    inject.linkedDashboard = this.props.linkedDashboardProps;
+
+    const categoryIndex = dataDescription.otherColumns[0].index;
+    const categories = 
+    [
+        ...new Set(inject.data.values
+            .filter(row => row?.length > categoryIndex).map(row => row[categoryIndex]))
+    ];
+
+    inject.assignedColors = this.chartUtils.resolveAssignedColors( 
+        categories, this.props.config.getConfig()['assignedColors'] || [], this.paletaActual
+    );
+
+    this.props.config.setConfig({ ...this.props.config.getConfig(), assignedColors: inject.assignedColors});
+    this.createFunnelComponent(inject);
+}
+
 
     private createFunnelComponent(inject: any) {
         this.entry.clear();

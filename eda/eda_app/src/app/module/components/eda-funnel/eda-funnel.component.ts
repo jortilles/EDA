@@ -31,7 +31,7 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
   id: string;
   svg: any;
   data: any;
-  colors: Array<string>;
+  assignedColors: any[];
   firstColLabels: Array<string>;
   metricIndex: number;
   labelIndex: number;
@@ -51,19 +51,16 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
   }
 
 
-
-  ngOnInit(): void {
+ngOnInit(): void {
     this.id = `funnel_${this.inject.id}`;
-    this.data = this.inject.data;
-    this.paleta = this.styleProviderService.ActualChartPalette  !==  undefined ? this.styleProviderService.ActualChartPalette['paleta'] : this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
-    this.colors = this.inject.colors.length > 0 ? this.inject.colors :
-      this.chartUtils.generateChartColorsFromPalette(2, this.paleta).map(item => item.backgroundColor);
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.labelIndex = firstNonNumericColIndex;
+    this.data = this.inject.data;
+    this.assignedColors = this.inject.assignedColors;
     this.firstColLabels = this.data.values.map(row => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
-  }
+}
 
   ngAfterViewInit() {
     // SVG CONTAINER
@@ -110,13 +107,13 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
     let values = this.data.values;
     if (this.styleProviderService.loadingFromPalette) { 
       let paleta = this.styleProviderService.ActualChartPalette['paleta'] || this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
-      this.colors[0] = paleta[0];
-      this.colors[1] = paleta[paleta.length - 1];
+      this.assignedColors[0].color = paleta[0];
+      this.assignedColors[1].color = paleta[paleta.length - 1];
     }
 
     let labels = this.data.labels;
-    let gradient2 = this.colors[1];
-    let gradient1 = this.colors[0];
+    let gradient2 = this.assignedColors[1].color;
+    let gradient1 = this.assignedColors[0].color;
     const colorPanel = this.styleProviderService.panelFontColor.source['_value'];
     const fontPanel = this.styleProviderService.panelFontFamily.source['_value'];
 
