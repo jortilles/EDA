@@ -3,7 +3,7 @@ import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/c
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { TreeMapConfig } from '../panel-charts/chart-configuration-models/treeMap-config';
-import { StyleProviderService,ChartUtilsService } from '@eda/services/service.index';
+import { StyleProviderService, ChartUtilsService } from '@eda/services/service.index';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
@@ -14,86 +14,125 @@ import { ColorPickerModule } from 'primeng/colorpicker';
   templateUrl: './tree-map-dialog.component.html',
   imports: [FormsModule, CommonModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule],
 })
-
-export class TreeMapDialog implements OnInit {
+export class TreeMapDialog implements OnInit, AfterViewChecked {
   @Input() controller: any;
   @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
 
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
-  public colors: Array<string>;
-  private originalColors: string[] = [];
-  public labels: Array<string>;
+  public assignedColors: { value: string; color: string }[] = [];
+  private originalAssignedColors: { value: string; color: string }[] = [];
+  public labels: string[] = [];
   public display: boolean = false;
   public selectedPalette: { name: string; paleta: any } | null = null;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
   public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
-  constructor(private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) {}
-  ngAfterViewChecked(): void {
-    if (!this.colors && this.myPanelChartComponent?.componentRef) {
-      //To avoid "Expression has changed after it was checked" warning
-      setTimeout(() => {
-        //this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(color => this.ChartUtilsService.rgb2hexD3(color));
-        this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
-        const assignedColors = this.myPanelChartComponent.props.config.getConfig()['assignedColors'];
-        const colorMap: { [key: string]: { value: string; color: string } } = {};
-        assignedColors.forEach(item => colorMap[item.value] = item);
 
-        // Asigna color y label a cada valor del chart
-        const sortedAssignedColors = this.labels
-          .map(label => colorMap[label])
-          .filter((item): item is { value: string; color: string } => !!item);
-
-        this.colors = sortedAssignedColors.map(c => c.color.startsWith('rgb') ? this.ChartUtilsService.rgb2hexD3(c.color) : c.color);
-        this.originalColors = [...this.colors]; // Guardar estado original aquí
-      }, 0)
-    }
-  }
-
+  constructor(
+    private stylesProviderService: StyleProviderService,
+    private ChartUtilsService: ChartUtilsService
+  ) { }
 
   ngOnInit(): void {
     this.panelChartConfig = this.controller.params.panelChart;
     this.display = true;
   }
 
+  ngAfterViewChecked(): void {
+    if (this.assignedColors.length === 0 && this.myPanelChartComponent?.componentRef) {
+      setTimeout(() => {
+        this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
+
+        const chartAssignedColors: { value: string; color: string }[] =
+          this.myPanelChartComponent.props.config.getConfig()['assignedColors'];
+
+        const colorMap: Record<string, { value: string; color: string }> = {};
+        chartAssignedColors.forEach(item => (colorMap[item.value] = item));
+
+        // Ordenar por label
+        this.assignedColors = this.labels
+          .map(label => colorMap[label])
+          .filter((item): item is { value: string; color: string } => !!item)
+          .map(c => ({
+            value: c.value,
+            color: c.color.startsWith('rgb') ? this.ChartUtilsService.rgb2hexD3(c.color) : c.color
+          }));
+
+        // Guardar estado inicial para cancelación
+        this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
+      }, 0);
+    }
+  }
+
   onClose(event: EdaDialogCloseEvent, response?: any): void {
-    return this.controller.close(event, response);
+    this.controller.close(event, response);
   }
 
-  saveChartConfig() {
-    this.onClose(EdaDialogCloseEvent.UPDATE, {
-      colors: this.colors.map(c => c.startsWith('#') ? this.ChartUtilsService.hex2rgbD3(c) : c)
-    });
+  saveChartConfig(): void {
+    // Convertir assignedColors a string[] de colores hex o rgb para TreeMapConfig
+    const colorsForConfig = this.assignedColors.map(c =>
+      c.color.startsWith('#') ? this.ChartUtilsService.hex2rgbD3(c.color) : c.color
+    );
+
+    this.myPanelChartComponent.props.config.setConfig(
+      new TreeMapConfig(colorsForConfig)
+    );
+
+    this.onClose(EdaDialogCloseEvent.UPDATE, { colors: colorsForConfig });
   }
 
-  closeChartConfig() {
-    this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(this.originalColors.map(c => this.ChartUtilsService.hex2rgbD3(c))));
+  closeChartConfig(): void {
+    // Restaurar estado inicial
+    this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
+
+    const colorsForConfig = this.assignedColors.map(c =>
+      c.color.startsWith('#') ? this.ChartUtilsService.hex2rgbD3(c.color) : c.color
+    );
+
+    this.myPanelChartComponent.props.config.setConfig(
+      new TreeMapConfig(colorsForConfig)
+    );
+
+    this.myPanelChartComponent.changeChartType();
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
   handleInputColor(): void {
-    // Recuperar colores de assignedColor (chart)
-    const rgbColors = this.colors.map(c => this.ChartUtilsService.hex2rgbD3(c));
-    this.labels.forEach((label, i) => {
-      const match = this.myPanelChartComponent.props.config.getConfig()['assignedColors'].find(c => c.value === label);
-      if (match) match.color = rgbColors[i];
-    });
+    // Actualizar assignedColors desde el color picker
+    const rgbColors = this.assignedColors.map(c =>
+      c.color.startsWith('#') ? this.ChartUtilsService.hex2rgbD3(c.color) : c.color
+    );
+
+    // Actualizar el config del chart
+    this.myPanelChartComponent.props.config.setConfig(
+      new TreeMapConfig(rgbColors)
+    );
+
     this.myPanelChartComponent.changeChartType();
   }
 
-  onPaletteSelected() { 
-    // Saber numero de segmentos para interpolar colores
-    const numberOfColors = this.myPanelChartComponent.componentRef.instance.colors.length;
-    
-    // Recuperamos paleta seleccionada y creamos colores
-    this.myPanelChartComponent['chartUtils'].MyPaletteColors = this.selectedPalette['paleta']; 
-    const newColors = this.ChartUtilsService.generateRGBColorGradientScaleD3(numberOfColors, this.myPanelChartComponent['chartUtils'].MyPaletteColors);
-        
-    // Actualizar los color pickers individuales al modificar la paleta
-    this.colors = newColors.map(({ color }) => color);
-    
-    // Actualizar los colores del chart
-    this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(this.colors.map(color => this.ChartUtilsService.hex2rgbD3(color))));
+  onPaletteSelected(): void {
+    if (!this.selectedPalette) return;
+
+    const length = this.labels.length; // Número de colores que necesitamos
+
+    // Mapear paleta a la longitud exacta de labels
+    const newColors: string[] = [];
+    for (let i = 0; i < length; i++) {
+      newColors.push(this.selectedPalette.paleta[i % this.selectedPalette.paleta.length]);
+    }
+
+    // Actualizar assignedColors directamente
+    this.assignedColors = this.labels.map((label, i) => ({
+      value: label,
+      color: newColors[i]
+    }));
+
+    // Actualizar config con string[] de colores
+    const colorsForConfig = this.assignedColors.map(c => c.color);
+    this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(colorsForConfig));
+
     this.myPanelChartComponent.changeChartType();
   }
+
 }
