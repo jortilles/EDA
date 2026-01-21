@@ -244,7 +244,7 @@ function getFields(tables: any[], data: any[]) {
             t.columns.forEach((c: any) => {
                 const column = table.columns.find((item: any) => item.column_name === c.toLowerCase());
 
-                if(column) {
+                if(column && column.visible) {
                     column.table_id = table.table_name;
 
                     if(column.column_type === 'numeric') {
