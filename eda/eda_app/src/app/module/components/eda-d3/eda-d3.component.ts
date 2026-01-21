@@ -43,6 +43,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
 
 
   ngOnInit(): void {
+    console.log('sankey init', this.inject);
     this.id = `sankey_${this.inject.id}`;
     this.data = this.inject.data;
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;

@@ -96,7 +96,6 @@ export const ChartsConfigUtils = {
         }
       } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
       config = {
-        colors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.colors : [],
         assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : [],
       }
     } else if (ebp.panelChart.props.chartType === 'knob') {

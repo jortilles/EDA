@@ -45,6 +45,12 @@ export interface FormatDates {
     selected: boolean;
 }
 
+export interface AssignedColor {
+    value: string | number;
+    color: string;
+}
+
+
 
 @Injectable()
 export class ChartUtilsService {
@@ -2212,46 +2218,60 @@ export class ChartUtilsService {
         .join("");
     }
 
-public generateChartColorsFromPalette(
-  numberOfColors: number,
-  baseColors: string[]
-): Array<{ backgroundColor: string; borderColor: string }> {
-  if (numberOfColors === 1) {
-    const color = baseColors[0].toUpperCase();
-    return [{ backgroundColor: color, borderColor: color }];
-  }
+    public generateChartColorsFromPalette(numberOfColors: number, baseColors: string[]): 
+    Array<{ backgroundColor: string; borderColor: string }> {
+        if (numberOfColors === 1) {
+            const color = baseColors[0].toUpperCase();
+            return [{ backgroundColor: color, borderColor: color }];
+        }
 
-  const result: Array<{ backgroundColor: string; borderColor: string }> = [];
-  const numSegments = baseColors.length - 1;
-  const baseRgbColors = baseColors.map(hex => this.hex2rgbNumericD3(hex));
+        const result: Array<{ backgroundColor: string; borderColor: string }> = [];
+        const numSegments = baseColors.length - 1;
+        const baseRgbColors = baseColors.map(hex => this.hex2rgbNumericD3(hex));
 
-  for (let i = 0; i < numberOfColors; i++) {
-    const globalFactor = i / (numberOfColors - 1);
-    let segmentIndex = Math.floor(globalFactor * numSegments);
-    if (segmentIndex >= numSegments) {
-      segmentIndex = numSegments - 1;
+        for (let i = 0; i < numberOfColors; i++) {
+            const globalFactor = i / (numberOfColors - 1);
+            let segmentIndex = Math.floor(globalFactor * numSegments);
+            if (segmentIndex >= numSegments) {
+                segmentIndex = numSegments - 1;
+            }
+
+            const [r1, g1, b1] = baseRgbColors[segmentIndex];
+            const [r2, g2, b2] = baseRgbColors[segmentIndex + 1];
+
+            const localFactor = globalFactor * numSegments - segmentIndex;
+            const t = (i === numberOfColors - 1) ? 1 : localFactor;
+
+            const r_interp = r1 + t * (r2 - r1);
+            const g_interp = g1 + t * (g2 - g1);
+            const b_interp = b1 + t * (b2 - b1);
+            const interpolatedColorHex = this.rgbToHex(r_interp, g_interp, b_interp).toUpperCase();
+
+            result.push({
+                backgroundColor: interpolatedColorHex,
+                borderColor: interpolatedColorHex
+            });
+        }
+
+        return result;
     }
 
-    const [r1, g1, b1] = baseRgbColors[segmentIndex];
-    const [r2, g2, b2] = baseRgbColors[segmentIndex + 1];
+    // Metodo de prueba usado en treemap
+    public resolveAssignedColors(categories: Array<string>, previous: AssignedColor[] = [], palette): AssignedColor[] {
+        const resolved: AssignedColor[] = [...previous];
 
-    const localFactor = globalFactor * numSegments - segmentIndex;
-    const t = (i === numberOfColors - 1) ? 1 : localFactor;
+        categories.forEach((value, index) => {
+            const exists = resolved.find(c => c.value === value);
+            if (!exists) {
+                resolved.push({
+                    value,
+                    color: palette[index % palette.length]
+                });
+            }
+        });
 
-    const r_interp = r1 + t * (r2 - r1);
-    const g_interp = g1 + t * (g2 - g1);
-    const b_interp = b1 + t * (b2 - b1);
-    const interpolatedColorHex = this.rgbToHex(r_interp, g_interp, b_interp).toUpperCase();
-
-    result.push({
-      backgroundColor: interpolatedColorHex,
-      borderColor: interpolatedColorHex
-    });
-  }
-
-  return result;
-}
-
+        return resolved;
+    }
 
 
     // METODOS PARA HACER LA GENERACIÓN DE COLORES DEL TREEMAP CON PALETA, REVISAR SI SE PUEDE UNIFICAR EN UN SERVICE 

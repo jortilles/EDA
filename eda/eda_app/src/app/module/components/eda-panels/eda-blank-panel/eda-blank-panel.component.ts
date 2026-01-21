@@ -623,6 +623,7 @@ public tableNodeExpand(event: any): void {
         const chartOption = this.chartUtils.chartTypes.find(c => c.subValue === edaChart);
         this.chartForm.patchValue({ chart: chartOption });
 
+        console.log('panelContent.query.output.config', panelContent.query.output.config);
 
         const recoveredConfig = ChartsConfigUtils.recoverConfig(chart, panelContent.query.output.config);
         this.changeChartType(chart, edaChart, recoveredConfig);
@@ -783,6 +784,7 @@ public tableNodeExpand(event: any): void {
      * @param content panel content
      */
     public async changeChartType(type: string, subType: string, config?: ChartConfig) {
+        console.log('changeChartType', type, subType, config);
         // Actualizamos el tipo de variable para el componente drag-drop
         this.graphicType = type;
         this.graficos = {};
@@ -1458,7 +1460,6 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
     }
 
     public handleTabChange(event: any): void {
-
         this.index = event.index;
         if (this.index === 1) {
             const content = this.panel.content;

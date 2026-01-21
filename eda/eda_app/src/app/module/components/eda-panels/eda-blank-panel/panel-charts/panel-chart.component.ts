@@ -223,7 +223,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * @param type 
      */
     private renderEdaChart(type: string) {
-console.log('render eda chart ', this)
 
         const isbarline = this.props.edaChart === 'barline';
         const isstacked = this.props.edaChart === 'stackedbar' || this.props.edaChart === 'stackedbar100';
@@ -856,6 +855,7 @@ console.log('render eda chart ', this)
 
 
     private renderParallelSets() {
+        console.log('renderParallelSets ')
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
 
         let inject: EdaD3 = new EdaD3;
@@ -940,27 +940,28 @@ console.log('render eda chart ', this)
 
     private renderTreeMap() {
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
-        let inject: TreeMap = new TreeMap;
-        inject.size = this.props.size;
+        const inject: TreeMap = new TreeMap();
         inject.id = this.randomID();
+        inject.size = this.props.size;
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
-        const configColors = this.props.config.getConfig()['colors'];
-        inject.colors = (configColors && configColors.length > 0 && configColors) || this.chartUtils.generateChartColorsFromPalette(inject.data.values.length, this.paletaActual)
-            .map(item => item.backgroundColor);
-        inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
-        //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
-        this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));        
         inject.linkedDashboard = this.props.linkedDashboardProps;
+        const categoryIndex = dataDescription.otherColumns[0].index;
+        const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
+        // Generar assignedColors
+        inject.assignedColors = this.chartUtils.resolveAssignedColors(
+            categories, this.props.config.getConfig()['assignedColors'] || [], this.paletaActual
+        );
+        this.props.config.setConfig({ ...this.props.config.getConfig(), assignedColors: inject.assignedColors });
         this.createTreeMap(inject);
     }
+
 
     private createTreeMap(inject: any) {
         this.entry.clear();
         this.componentRef = this.entry.createComponent(EdaTreeMap);
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
-
     }
 
     private renderScatter() {
@@ -1138,6 +1139,8 @@ console.log('render eda chart ', this)
     }
 
     private assignedColorsWork(config, inject) { 
+        console.log('assignedColorsWork', config, inject);
+
         inject.data.values.forEach((injectValue, index) => {
             //Primer string encontrado(valor del filtro)
             const injectValueString = injectValue.find(value => typeof value === 'string');
