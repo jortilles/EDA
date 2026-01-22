@@ -18,8 +18,7 @@
                             [targetStyle]="{width: '100%'}" [showSourceControls]="false" [showTargetControls]="false">
                             <ng-template let-user pTemplate="item">
                                 <div class="ui-helper-clearfix">
-                                    <img [src]="user.img | image" alt="user image"
-                                        style="display:inline-block;margin:2px 0 2px 2px" width="25" height="25">
+                                    <!--SDA CUSTOM --> <i class="fa fa-user fa-2x"></i>
                                     <span style="font-size:14px;float:right;margin:15px 5px 0 0">{{user.name}}</span>
                                 </div>
                             </ng-template>

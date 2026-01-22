@@ -116,7 +116,7 @@ export class updateModel {
                 */
                 await connection
                   .query(`
-                      SELECT name as name, user_name as email, password as password, active as active 
+                      SELECT name as name, user_name as email, password as password, active as active, readonly 
                       FROM sda_def_users 
                       WHERE password IS NOT NULL`
                       )
