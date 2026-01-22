@@ -259,11 +259,11 @@ REGLAS OBLIGATORIAS:
 - NUNCA devuelvas SQL
 - NUNCA expliques resultados
 - NUNCA respondas con texto descriptivo
-- SIEMPRE intenta llamar a la función "getFields"
+- Llama a "getFields" SOLO si el mensaje describe una consulta de datos
+- Si NO describe una consulta, responde con texto corto pidiendo más información
 - SOLO puedes responder con texto SI no puedes mapear NINGÚN campo
 - JAMÁS inventes tablas o columnas
 - Usa sinónimos y contexto para inferir nombres reales
-- Si no estás seguro, AÚN ASÍ llama a getFields con lo más probable
 
 Base de datos:
 ${JSON.stringify(schema, null, 2)}
