@@ -58,6 +58,7 @@ export class MainLeftSidebarComponent {
           { lang: 'EN', label: 'English', icon: 'en-flag' },
           { lang: 'ES', label: 'Español', icon: 'es-flag' },
           { lang: 'CA', label: 'Català', icon: 'cat-flag' },
+          { lang: 'FR', label: 'Francés', icon: 'fr-flag' },
           { lang: 'PL', label: 'Polski', icon: 'pl-flag' },
         ]
       },
@@ -166,6 +167,7 @@ menuCommand(item: any, event: MouseEvent) {
     if (baseUrl.slice(-4) == '/es/' ||
         baseUrl.slice(-4) == '/ca/' ||
         baseUrl.slice(-4) == '/pl/' ||
+        baseUrl.slice(-4) == '/fr/' ||
         baseUrl.slice(-4) == '/en/') {
         baseUrl = baseUrl.slice(0, baseUrl.length - 3)
     }
@@ -173,6 +175,7 @@ menuCommand(item: any, event: MouseEvent) {
       case 'EN': window.location.href = baseUrl + 'en/#/home'; break;
       case 'CA': window.location.href = baseUrl + 'ca/#/home'; break;
       case 'ES': window.location.href = baseUrl + 'es/#/home'; break;
+      case 'FR': window.location.href = baseUrl + 'fr/#/home'; break;
       case 'PL'  : window.location.href = baseUrl + 'pl/#/home'; break;
     }
   }

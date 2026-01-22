@@ -86,12 +86,15 @@ export class DependentFilters implements OnInit {
 
             itemChangeCallback: this.onItemChange.bind(this)
         };
-        
+
+        console.log('this.dependentFilterGrid: ',this.dependentFilterGrid);        
     }
 
     initDashboard() {
         this.dependentFilterGrid = [];
         let k = 0;
+
+        console.log('this.dashboard: ', this.dashboard);
 
         this.dashboard.globalFilter.globalFilters.forEach((gf: any) => {
             this.dependentFilterGrid.push(
@@ -104,6 +107,8 @@ export class DependentFilters implements OnInit {
                     filter_column: gf.selectedColumn?.column_name || gf.column?.value?.column_name,
                     filter_type: gf.selectedColumn?.column_type || gf.column?.value?.column_type,
                     filter_id: gf.id,
+                    description_table: gf.selectedTable?.description?.default || gf.table?.label,
+                    description_column: gf.selectedColumn?.description?.default || gf.column?.label,
                 }
             );
             k++;

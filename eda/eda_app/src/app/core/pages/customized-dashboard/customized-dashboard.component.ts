@@ -19,33 +19,34 @@ import * as _ from 'lodash';
 })
 export class CustomizedDashboardComponent implements OnInit {
   public leftItems: {name:string, href:string, isStarting: boolean, icon?: any}[];
-  public : string = "https://free.edalitics.com/es/#/dashboard/67f8ef208a7621c66552d111?panelMode=true"; 
+  public : string = "https://demo.edalitics.com/es/#/public/6801ea526c2a8f2c431e9b28"; 
   ngOnInit(): void {
     // Inicialización
     this.leftItems = [
-      { name: 'Portada', href: 'custom', isStarting: true, icon: 'grafico' },
-      {name: 'Mobilitat ', href: 'custom' ,isStarting: true, icon: 'coche'},
-      {name: 'Desplaçaments ', href: 'custom' ,isStarting: false},
-      {name: 'Parc de vehicles ', href: 'custom' ,isStarting: false},
-      {name: 'Medi ambient ', href: 'custom' ,isStarting: true, icon: 'hoja'},
-      {name: 'Energia i consum ', href: 'custom' ,isStarting: false},
-      {name: 'Externalitats ', href: 'custom' ,isStarting: false},
-      {name: 'Seguretat ', href: 'custom' ,isStarting: true, icon: 'cuidado'},
-      {name: 'Delinqüència ', href: 'custom' ,isStarting: false},
-      {name: 'Viari ', href: 'custom' ,isStarting: false},
-      {name: 'Turisme ', href: 'custom' ,isStarting: true, icon: 'sombrilla'},
-      {name: 'Visitants ', href: 'custom' ,isStarting: false},
-      {name: 'Hosteleria ', href: 'custom' ,isStarting: false},
-      {name: 'Configuració ', href: 'custom' ,isStarting: true, icon: 'engranaje'},
+      {name: 'Despeses', href: 'https://demo.edalitics.com/es/#/public/6801ea2d2574871d49753812', isStarting: true, icon: 'grafico' },
+      {name: 'Actuacions Policials ', href: 'https://demo.edalitics.com/es/#/public/6801ea78baeb472cb1127d31' ,isStarting: true, icon: 'coche'},
+      {name: 'Desplaçaments ', href: 'https://demo.edalitics.com/es/#/public/6801ea526c2a8f2c431e9b28' ,isStarting: false},
+      {name: 'Parc de vehicles ', href: 'https://demo.edalitics.com/es/#/public/6801ea526c2a8f2c431e9b28' ,isStarting: false},
+      {name: 'Pressupost ', href: 'https://demo.edalitics.com/es/#/public/6801ea526c2a8f2c431e9b28' ,isStarting: true, icon: 'hoja'},
+      {name: 'Energia i consum ', href: 'https://demo.edalitics.com/es/#/public/6801ea526c2a8f2c431e9b28' ,isStarting: false},
+      {name: 'Externalitats ', href: 'https://demo.edalitics.com/es/#/public/6801ea526c2a8f2c431e9b28' ,isStarting: false},
+      {name: 'Seguretat ', href: 'https://demo.edalitics.com/es/#/public/6801ea526c2a8f2c431e9b28' ,isStarting: true, icon: 'cuidado'},
+      {name: 'Delinqüència ', href: 'https://demo.edalitics.com/es/#/public/6801ea526c2a8f2c431e9b28' ,isStarting: false},
+      {name: 'Viari ', href: 'https://demo.edalitics.com/es/#/public/6801ea526c2a8f2c431e9b28' ,isStarting: false},
+      {name: 'Turisme ', href: 'https://demo.edalitics.com/es/#/public/6801ea526c2a8f2c431e9b28' ,isStarting: true, icon: 'sombrilla'},
+      {name: 'Visitants ', href: 'https://demo.edalitics.com/es/#/public/6801ea526c2a8f2c431e9b28' ,isStarting: false},
+      {name: 'Hosteleria ', href: 'https://demo.edalitics.com/es/#/public/6801ea526c2a8f2c431e9b28' ,isStarting: false},
+      {name: 'Configuració ', href: 'https://demo.edalitics.com/es/#/public/6801ea526c2a8f2c431e9b28' ,isStarting: true, icon: 'engranaje'},
     ]
   }
 
 
-changeSrc() {
+changeSrc(href: string) {
+  console.log(href)
   const iframe = document.getElementById('showDashboard') as HTMLIFrameElement;
   if (iframe) {
-    const baseUrl = 'https://eda3.edalitics.com/es/#/public/68d54b212a5c413d371bc8ee?panelMode=true';
-    iframe.src = baseUrl + '?refresh=' + Date.now();
+    const baseUrl = href + '?panelMode=true'
+    iframe.src = baseUrl + '&refresh=' + Date.now();
   }
 }
 

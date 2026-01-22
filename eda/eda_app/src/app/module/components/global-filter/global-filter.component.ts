@@ -261,6 +261,7 @@ export class GlobalFilterComponent implements OnInit {
                     dashboard: dashboardId,
                     panel: '',
                     joinType: "inner",
+                    prediction: 'None',
                     rootTable: filterItem.selectedTable.table_name,
                     queryMode: filterItem.queryMode,
                     forSelector: true,
@@ -439,10 +440,11 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     validateFilter(){
-        if(this.checkAllMandatoryFilters().value){
+        const mandatoryFilters: {value :boolean, items: any} = this.checkAllMandatoryFilters(); 
+        if(mandatoryFilters.value){
             this.dashboard.refreshPanels()
         } else{
-            this.alertService.addError($localize`:@@AddMandatoryFilters:Los siguientes filtros son obligatorios y no tienen valor asignado:` + 'hola');
+            this.alertService.addError($localize`:@@AddMandatoryFilters:Los siguientes filtros son obligatorios y no tienen valor asignado:` + mandatoryFilters.items);
         }
     }
 
@@ -452,7 +454,7 @@ export class GlobalFilterComponent implements OnInit {
             if(element.isMandatory && element.isMandatory === true){
                 if(element.selectedItems.length < 1){
                     nonEmptyFilters.value = false;
-                    nonEmptyFilters.items.push(element)
+                    nonEmptyFilters.items.push(element.selectedColumn.display_name.default);
                 }
             }
         });
@@ -858,6 +860,7 @@ export class GlobalFilterComponent implements OnInit {
                 panel: '',
                 joinType: "inner",
                 rootTable:filtro.selectedTable.table_name,
+                prediction: 'None',
                 groupByEnabled: true,
                 queryMode: filtro.queryMode,
                 forSelector: true,

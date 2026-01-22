@@ -16,7 +16,7 @@ export class TablePermissionDialogComponent implements OnInit {
     @Input() table: any;
     @Output() close: EventEmitter<any> = new EventEmitter<any>();
     
-    public title = $localize`:@@addPermissions:Añadir permiso`;
+    public title = $localize`:@@addPermission:Añadir permiso`;
 
     public dialog: EdaDialog;
 
@@ -49,7 +49,7 @@ export class TablePermissionDialogComponent implements OnInit {
         // this.dialog = new EdaDialog({
         //     show: () => this.onShow(),
         //     hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-        //     title: $localize`:@@addPermissions:Añadir permiso`
+        //     title: $localize`:@@addPermission:Añadir permiso`
         // });
 
         // this.dialog.style = { width: '40%', height:'65%', top:"-4em", left:'1em'};

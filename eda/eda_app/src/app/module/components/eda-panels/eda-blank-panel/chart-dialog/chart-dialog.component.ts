@@ -5,13 +5,14 @@ import { PointStyle } from 'chart.js';
 import { EdaChart } from '@eda/components/eda-chart/eda-chart';
 import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import * as _ from 'lodash';
-import { StyleProviderService,ChartUtilsService } from '@eda/services/service.index';
+import { StyleProviderService, ChartUtilsService, AlertService } from '@eda/services/service.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { ColorPickerModule } from 'primeng/colorpicker';
+import Swal from 'sweetalert2';
 
 @Component({
     standalone: true,
@@ -20,8 +21,9 @@ import { ColorPickerModule } from 'primeng/colorpicker';
     imports: [CommonModule, FormsModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule]
 })
 
-export class ChartDialogComponent{
-    @Input () controller: any;
+export class ChartDialogComponent {
+    @Input() controller: any;
+    @Input() dashboard: any;
     @ViewChild('PanelChartComponent', { static: false }) panelChartComponent: PanelChartComponent;
 
     public dialog: EdaDialog;
@@ -38,6 +40,7 @@ export class ChartDialogComponent{
     public showLabels: boolean = false;
     public showLabelsPercent: boolean = false;
     public showPointLines: boolean = false;
+    public showPredictionLines: boolean = false;
     public selectedPalette: { name: string; paleta: any } | null = null;
     public allPalettes: any = this.stylesProviderService.ChartsPalettes;
 
@@ -65,8 +68,9 @@ export class ChartDialogComponent{
 
     activeTab = "display"
 
-    constructor(private chartUtils: ChartUtilsService,private stylesProviderService: StyleProviderService) {
-  
+    constructor(private chartUtils: ChartUtilsService, private stylesProviderService: StyleProviderService, private alertService: AlertService
+    ) {
+
         this.drops.pointStyles = [
             { label: 'Puntos', value: 'circle' },
             { label: 'Triangulos', value: 'triangle' },
@@ -102,16 +106,17 @@ export class ChartDialogComponent{
         this.showLabels = this.controller.params.config.config.getConfig()['showLabels'] || false;
         this.showLabelsPercent = this.controller.params.config.config.getConfig()['showLabelsPercent'] || false;
         this.showPointLines = this.controller.params.config.config.getConfig()['showPointLines'] || false;
-        this.numberOfColumns = this.controller.params.config.config.getConfig()['numberOfColumns'] ||false;
-        this.addComparative = this.controller.params.config.config.getConfig()['addComparative'] || false;      
+        this.showPredictionLines = this.controller.params.config.config.getConfig()['showPredictionLines'] || false;
+        this.numberOfColumns = this.controller.params.config.config.getConfig()['numberOfColumns'] || false;
+        this.addComparative = this.controller.params.config.config.getConfig()['addComparative'] || false;
         this.oldChart = _.cloneDeep(this.controller.params.chart);
         this.chart = this.controller.params.chart;
         this.showTrend = this.chart.chartType === 'line';
-        this.showNumberOfColumns =  this.controller.params.chart.edaChart ==='histogram';
-        this.showComparative =  this.allowCoparative(this.controller.params);
+        this.showNumberOfColumns = this.controller.params.chart.edaChart === 'histogram';
+        this.showComparative = this.allowCoparative(this.controller.params);
         this.load();
         this.display = true;
-     }
+    }
 
 
 
@@ -135,13 +140,13 @@ export class ChartDialogComponent{
                 break;
             case 'histogram':
                 if (!this.series.length) {
-                        const bgColor = this.normalizeColor(this.chart.chartDataset[0].backgroundColor);
-                        this.series = [{
-                            label: this.chart.chartDataset[0].label,
-                            bg: bgColor,
-                            border: '#10B4CD'
-                        }];
-                    }
+                    const bgColor = this.normalizeColor(this.chart.chartDataset[0].backgroundColor);
+                    this.series = [{
+                        label: this.chart.chartDataset[0].label,
+                        bg: bgColor,
+                        border: '#10B4CD'
+                    }];
+                }
 
                 this.chart.chartColors = this.series.map(s => ({
                     backgroundColor: s.bg,
@@ -152,7 +157,7 @@ export class ChartDialogComponent{
                     ...d,
                     ...this.chart.chartColors[i]
                 }));
-                break; 
+                break;
             default:
                 if (!this.series.length) {
                     this.series = this.chart.chartDataset.map((d, i) => ({
@@ -179,18 +184,18 @@ export class ChartDialogComponent{
     }
 
 
-     resolveBackgroundColor(dataset: any, index: number): string {
+    resolveBackgroundColor(dataset: any, index: number): string {
         if (typeof dataset.backgroundColor === 'string') {
             return /^rgb/i.test(dataset.backgroundColor)
-            ? this.rgb2hex(dataset.backgroundColor)
-            : dataset.backgroundColor;
-         }
-         //return this.chart.chartColors[index];
-         return this.stylesProviderService.ActualChartPalette !== undefined ? this.stylesProviderService.ActualChartPalette['paleta'][index] :
-             this.stylesProviderService.DEFAULT_PALETTE_COLOR['paleta'][index];
+                ? this.rgb2hex(dataset.backgroundColor)
+                : dataset.backgroundColor;
+        }
+        //return this.chart.chartColors[index];
+        return this.stylesProviderService.ActualChartPalette !== undefined ? this.stylesProviderService.ActualChartPalette['paleta'][index] :
+            this.stylesProviderService.DEFAULT_PALETTE_COLOR['paleta'][index];
     }
 
-   
+
 
 
     handleInputColor(event) {
@@ -207,19 +212,19 @@ export class ChartDialogComponent{
                     }
                     newDatasets.push(dataset[i]);
                 }
-                
-            }else {
-                
+
+            } else {
+
                 for (let i = 0, n = dataset.length; i < n; i += 1) {
                     if (dataset[i].label === event.label) {
                         dataset[i].backgroundColor = this.hex2rgb(event.bg, 90);
                         dataset[i].borderColor = this.hex2rgb(event.bg, 100);
-                        this.chart.chartColors[i] = _.pick(dataset[i], [ 'backgroundColor', 'borderColor']);
+                        this.chart.chartColors[i] = _.pick(dataset[i], ['backgroundColor', 'borderColor']);
                     } else {
                         if (!_.isArray(dataset[i].backgroundColor)) {
                             dataset[i].backgroundColor = this.chart.chartColors[i].backgroundColor;
                             dataset[i].borderColor = this.chart.chartColors[i].backgroundColor;
-                            this.chart.chartColors[i] = _.pick(dataset[i], [  'backgroundColor', 'borderColor']);
+                            this.chart.chartColors[i] = _.pick(dataset[i], ['backgroundColor', 'borderColor']);
                         } else {
                             if (this.chart.chartLabels) {
                                 const labels = this.chart.chartLabels;
@@ -276,7 +281,7 @@ export class ChartDialogComponent{
         this.panelChartComponent.componentRef.instance.inject = this.chart;
         this.panelChartComponent.componentRef.instance.updateChart();
     }
-    
+
     onPaletteSelected() {
         const paletteBase = this.selectedPalette['paleta'];
         const chartType = this.chart['edaChart'];
@@ -339,8 +344,8 @@ export class ChartDialogComponent{
             dataset.borderColor = newColors[0].borderColor;
 
             this.chart.chartColors = [{
-            backgroundColor: [dataset.backgroundColor],
-            borderColor: [dataset.borderColor]
+                backgroundColor: [dataset.backgroundColor],
+                borderColor: [dataset.borderColor]
             }];
 
             // Modificar series, paleta lateral
@@ -354,17 +359,18 @@ export class ChartDialogComponent{
     }
 
 
-    SetNumberOfColumns(){
+    SetNumberOfColumns() {
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
         let config: any = c.getConfig();
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
         config.showPointLines = this.showPointLines;
+        config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
         config.colors = this.chart.chartColors;
         properties.config = c;
-        /**Update chart */  
+        /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
         setTimeout(_ => {
             this.chart = this.panelChartComponent.componentRef.instance.inject;
@@ -388,7 +394,7 @@ export class ChartDialogComponent{
         });
     }
 
-    setComparative(){
+    setComparative() {
 
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
@@ -399,6 +405,7 @@ export class ChartDialogComponent{
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
         config.showPointLines = this.showPointLines;
+        config.showPredictionLines = this.showPredictionLines;
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
@@ -410,7 +417,7 @@ export class ChartDialogComponent{
     }
 
 
-    setShowLablesPercent(){
+    setShowLablesPercent() {
 
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
@@ -418,25 +425,7 @@ export class ChartDialogComponent{
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
         config.showPointLines = this.showPointLines;
-        config.numberOfColumns = this.numberOfColumns;
-        properties.config = c;
-        /**Update chart */
-        this.panelChartConfig = new PanelChart(this.panelChartConfig);
-        setTimeout(_ => {
-            this.chart = this.panelChartComponent.componentRef.instance.inject;
-            this.load();
-        });
-
-    }
-    
-    setShowLables(){
-
-        const properties = this.panelChartConfig;
-        let c: ChartConfig = properties.config;
-        let config: any = c.getConfig();
-        config.showLabels = this.showLabels;
-        config.showLabelsPercent = this.showLabelsPercent;
-        config.showPointLines = this.showPointLines;
+        config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
         properties.config = c;
         /**Update chart */
@@ -448,7 +437,46 @@ export class ChartDialogComponent{
 
     }
 
-    setShowLines(){
+    setShowLables() {
+
+        const properties = this.panelChartConfig;
+        let c: ChartConfig = properties.config;
+        let config: any = c.getConfig();
+        config.showLabels = this.showLabels;
+        config.showLabelsPercent = this.showLabelsPercent;
+        config.showPointLines = this.showPointLines;
+        config.showPredictionLines = this.showPredictionLines;
+        config.numberOfColumns = this.numberOfColumns;
+        properties.config = c;
+        /**Update chart */
+        this.panelChartConfig = new PanelChart(this.panelChartConfig);
+        setTimeout(_ => {
+            this.chart = this.panelChartComponent.componentRef.instance.inject;
+            this.load();
+        });
+
+    }
+
+    setShowLines() {
+        const properties = this.panelChartConfig;
+        let c: ChartConfig = properties.config;
+        let config: any = c.getConfig();
+        config.showLabels = this.showLabels;
+        config.showLabelsPercent = this.showLabelsPercent;
+        config.showPointLines = this.showPointLines;
+        config.showPredictionLines = this.showPredictionLines;
+        config.numberOfColumns = this.numberOfColumns;
+        config.colors = this.chart.chartColors;
+        properties.config = c;
+        /**Update chart */
+        this.panelChartConfig = new PanelChart(this.panelChartConfig);
+        setTimeout(_ => {
+            this.chart = this.panelChartComponent.componentRef.instance.inject;
+            this.load();
+        });
+    }
+
+    setPredictionLines() {
 
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
@@ -463,9 +491,48 @@ export class ChartDialogComponent{
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
         setTimeout(_ => {
             this.chart = this.panelChartComponent.componentRef.instance.inject;
+            this.addPredictionMode();
             this.load();
+            config.showPredictionLines = this.showPredictionLines;
         });
 
+    }
+
+    addPredictionMode() {
+        // Buscamos el panel con el que estamos trabajando y le asignamos la predicción
+        const panelID = this.controller.params.panelId;
+        const dashboardPanel = this.dashboard.edaPanels.toArray().find(cmp => cmp.panel.id === panelID);
+        // Añadimos prediction a la query
+        dashboardPanel.panel.content.query.query.prediction = this.showPredictionLines === true ? 'Arima' : 'None';
+
+        this.addNewPanel(dashboardPanel);
+    }
+
+    addNewPanel(dashboardPanel) {
+        Swal.fire({
+            title: $localize`:@@AddPredictionTitle:¿Quieres actualizar los valores?`,
+            text: $localize`:@@AddPredictionText:Puedes guardar el gráfico con o sin predicción.`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: $localize`:@@AddPredictionYes:Sí, actualizar`,
+            cancelButtonText: $localize`:@@AddPredictionNo:No, cerrar`,
+            didOpen: () => {
+                const container = document.querySelector('.swal2-container') as HTMLElement;
+                if (container) {
+                    container.style.zIndex = '10000';
+                }
+            }
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                // Ejecutamos la query de nuevo
+                await dashboardPanel.runQueryFromDashboard(true);
+                this.saveChartConfig();
+            } else {
+                this.showPredictionLines = !this.showPredictionLines;
+            }
+        });
     }
 
 
@@ -516,11 +583,11 @@ export class ChartDialogComponent{
             const dataset = this.chart.chartDataset;
             for (let i = 0, n = dataset.length; i < n; i += 1) {
 
-               // dataset[i].hoverBackgroundColor = this.chart.chartColors[i].backgroundColor;
+                // dataset[i].hoverBackgroundColor = this.chart.chartColors[i].backgroundColor;
                 //dataset[i].hoverBorderColor = 'rgb(255,255,255)';
                 dataset[i].backgroundColor = this.chart.chartColors[i]?.backgroundColor;
                 dataset[i].borderColor = this.chart.chartColors[i]?.backgroundColor;
-                this.chart.chartColors[i] = _.pick(dataset[i], [  'backgroundColor', 'borderColor']);
+                this.chart.chartColors[i] = _.pick(dataset[i], ['backgroundColor', 'borderColor']);
 
                 newDatasets.push(dataset[i]);
             }
@@ -529,27 +596,27 @@ export class ChartDialogComponent{
         }
     }
 
-    allowCoparative(params){
+    allowCoparative(params) {
 
         let monthformat = false;
         const haveDate = params.config.query.filter(field => field.column_type === 'date').length > 0 //there is a date
-        if(haveDate){
+        if (haveDate) {
             monthformat = ['month', 'week'].includes(params.config.query.filter(field => field.column_type === 'date')[0].format);
         }
         const chartAllowed = ['line', 'bar'].includes(params.config.chartType);
         const onlyTwoCols = params.config.query.length === 2;
 
         const aggregation =
-        params.config.query.filter(col => col.column_type === 'numeric')
-        .map(col => col.aggregation_type
-            .filter(agg => agg.selected === true && agg.value !== 'none')
-            .map(agg => agg.selected))
-            .reduce((a, b) => a || b, false)[0];
+            params.config.query.filter(col => col.column_type === 'numeric')
+                .map(col => col.aggregation_type
+                    .filter(agg => agg.selected === true && agg.value !== 'none')
+                    .map(agg => agg.selected))
+                .reduce((a, b) => a || b, false)[0];
 
 
         return haveDate && chartAllowed && onlyTwoCols && monthformat && aggregation;
 
-    } 
+    }
 
     onChangeDirection() {
     }
@@ -585,7 +652,7 @@ export class ChartDialogComponent{
                     .join('')
             );
         }
-        return color ;
+        return color;
     }
 
     // Funcion para resetear el valor de las series si se cierra
@@ -609,6 +676,10 @@ export class ChartDialogComponent{
                 });
                 this.resetChartConfig();
                 break;
+            case 'line':
+                this.chart.chartDataset[0].backgroundColor = this.originalSeries[0]?.bg;
+                this.chart.chartDataset[0].borderColor = this.originalSeries[0]?.bg;
+                break;
             default:
                 this.chart.chartDataset[0].backgroundColor = this.originalSeries[0]?.bg;
                 this.chart.chartDataset[0].borderColor = this.originalSeries[0]?.bg;
@@ -618,11 +689,12 @@ export class ChartDialogComponent{
         }
     }
 
-    resetChartConfig(){
+    resetChartConfig() {
         this.controller.params.config.config.getConfig()['addTrend'] = this.chart.addTrend;
         this.controller.params.config.config.getConfig()['showLabels'] = this.chart.showLabels;
         this.controller.params.config.config.getConfig()['showLabelsPercent'] = this.chart.showLabelsPercent;
         this.controller.params.config.config.getConfig()['showPointLines'] = this.chart.showPointLines;
+        this.controller.params.config.config.getConfig()['showPredictionLines'] = this.chart.showPredictionLines;
         this.controller.params.config.config.getConfig()['numberOfColumns'] = this.chart.numberOfColumns;
         this.controller.params.config.config.getConfig()['addComparative'] = this.chart.addComparative;
     }
@@ -643,6 +715,7 @@ export class ChartDialogComponent{
         this.chart.showLabels = this.showLabels;
         this.chart.showLabelsPercent = this.showLabelsPercent;
         this.chart.showPointLines = this.showPointLines;
+        this.chart.showPredictionLines = this.showPredictionLines;
         this.chart.numberOfColumns = this.numberOfColumns;
         this.onClose(EdaDialogCloseEvent.UPDATE, this.chart);
     }

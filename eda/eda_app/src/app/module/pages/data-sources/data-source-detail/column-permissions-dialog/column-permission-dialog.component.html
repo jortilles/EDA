@@ -1,4 +1,4 @@
-<eda-dialog2 width="50vw" height="100vh" (apply)="savePermission()" [header]="title" (close)="closeDialog()">
+<eda-dialog2 width="50vw" height="100vh" (apply)="savePermission()" [header]="title" (close)="closeDialog()" [overflow]="'auto'">
 
   <div content class="p-2 space-y-6">
 
@@ -121,7 +121,7 @@
               Consulta dinámica
             </label>
             <input pInputText type="text" [(ngModel)]="dynamicQuery"
-              class="w-full p-2 border border-gray-300 rounded-md" placeholder="Introduzca la expresión dinámica…">
+              class="w-full p-2 border border-gray-300 rounded-md" i18n-placeholder="@@placeholderConsultaDinamica" placeholder="Introduzca la expresión dinámica…">
           </div>
         </div>
       </div>

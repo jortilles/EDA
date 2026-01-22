@@ -22,6 +22,7 @@ export class EdaChart {
     showLabels:boolean;
     showLabelsPercent:boolean;
     showPointLines:boolean;
+    showPredictionLines:boolean;
     numberOfColumns: number;
 
     constructor() { }

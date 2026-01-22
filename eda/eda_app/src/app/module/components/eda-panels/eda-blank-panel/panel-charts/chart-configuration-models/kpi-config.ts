@@ -15,6 +15,7 @@ export class KpiConfig {
             init?.edaChart?.numberOfColumns || 0,
             init?.edaChart?.assignedColors || [],
             init?.edaChart?.showPointLines || false,
+            init?.edaChart?.showPredictionLines || false,
         );
         
         Object.assign(this, init);

@@ -7,7 +7,6 @@ import { DataSourceNamesService } from '@eda/services/shared/datasource-names.se
 import { DropdownModule } from 'primeng/dropdown';
 import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
-import { DomSanitizer } from '@angular/platform-browser';
 import { AlertService } from '@eda/services/service.index';
 
 
