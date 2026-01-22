@@ -116,28 +116,6 @@ export class ChatGptController {
                 ...safeHistory
             ];   
 
-            console.log('messages ===>>> ', messages);
-            console.log('firstTime ===>>> ', firstTime);
-
-            // Se agrega este primer mensaje solo al inicio de la sessión.
-            // if(firstTime) {
-                
-            //     messages.unshift({
-            //         role: "system",
-            //         content: `You are an assistant who knows the following database schema:
-            //             ${JSON.stringify(schema, null, 2)} \`
-            //             You are an assistant who helps generate a structure similar to the schema and you cannot deviate from the schema format. 
-            //             When you don't have enough data, return the answer with a question demanding more clarity. 
-            //             You should not answer trivial questions unrelated to the schema.
-            //             You must only return table names and column names that exist EXACTLY in the provided schema.
-            //             If the user uses synonyms, translations, or natural language, you must map them to existing schema names.
-            //             If no valid mapping exists, return an empty result.
-            //             Never invent table or column names.
-            //             `
-            //     });
-
-            // }
-
             // Definir en otro directorio
             // Obtencion del campo.
             const getFieldsTool: any = {
@@ -194,6 +172,7 @@ export class ChatGptController {
             let toolResult: string | null = null;
             let currentQueryTool: any[];
 
+            console.log('---------------------------------------------------------------------');
             console.log('-----------------------toolCall-------------------------: ', toolCall);
 
             if(toolCall && toolCall.name === "getFields"){
