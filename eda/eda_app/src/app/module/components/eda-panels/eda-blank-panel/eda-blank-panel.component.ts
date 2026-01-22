@@ -1922,9 +1922,6 @@ private assignLevels(nodes: any[], level = 0): void {
     }
 
     principalTableUpdate(event) {
-        console.log('principal::::: ', event);
-        console.log('VALORESSSS: ', this.tables);
-
         const rootTable = this.tables.find((table: any) => {
             return table.table_name === event;
         })
@@ -1932,24 +1929,18 @@ private assignLevels(nodes: any[], level = 0): void {
         this.rootTable = _.cloneDeep(rootTable);
         this.userSelectedTable = event;
 
-
-        console.log('EBP :::::======>:::::: ', this);
-
-        const currentQueryPrincipal = this.currentQuery.map((cq: any) => {
-            if(cq.table_id === event) {
-                return cq;
-            }
-        })
+        const currentQueryPrincipal = this.currentQuery.find(
+            (cq: any) => cq.table_id === event
+        );
 
         let columns: any[] = []
-        rootTable.columns.forEach((col: any) => {
-            if(!currentQueryPrincipal.find((cqp: any) => cqp.column_name === col.column_name)) {
-                columns.push(col);
+        columns = rootTable.columns.filter((col: any) => {
+            if((currentQueryPrincipal.column_name !== col.column_name) && col.visible) {
+                return col
             }
         })
 
         this.columns = columns;
-
     }
 
 }
