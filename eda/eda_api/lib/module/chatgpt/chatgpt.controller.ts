@@ -112,9 +112,12 @@ export class ChatGptController {
             // HISTORIAL DE LA CONVERSACIÓN EN SESIÓN
             const messages: any = [
                 { role: "system", content: CONTEXT },
-                ...(firstTime ? [{ role: "system", content: buildSystemMessage(schema) }] : []),
+                { role: "system", content: buildSystemMessage(schema)},
                 ...safeHistory
             ];   
+
+
+
 
             // Definir en otro directorio
             // Obtencion del campo.
