@@ -858,22 +858,20 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
 
         let inject: EdaD3 = new EdaD3;
-        inject.size = this.props.size;
         inject.id = this.randomID();
+        inject.size = this.props.size;
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
-        const configColors = this.props.config.getConfig()['colors'];
-        inject.colors = configColors.length > 0 ? configColors
-            : this.chartUtils.generateChartColorsFromPalette(inject.data.values.length, this.paletaActual).map(item => item.backgroundColor);
-        inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+        const categoryIndex = dataDescription.otherColumns[0].index;
+        const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
         
         //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
-        this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));
-
+        inject.assignedColors = this.chartUtils.resolveAssignedColors(
+            categories, this.props.config.getConfig()['assignedColors'] || [], this.paletaActual
+        );
         
-
-        inject.linkedDashboard = this.props.linkedDashboardProps;
-        // aqui ya esta jodido
+        this.props.config.setConfig({ ...this.props.config.getConfig(), assignedColors: inject.assignedColors });
         this.createParallelSetsComponent(inject);
     }
 
