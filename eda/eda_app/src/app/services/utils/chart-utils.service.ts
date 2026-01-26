@@ -834,67 +834,47 @@ export class ChartUtilsService {
 
 
 
-//REPLACE
-
-
-    /**
-     * Check if actual config is compatible with actual chart and returns a valid color configuration
-     * @param currentChartype
-     * @param layout
-     */
-
-    public recoverChartColors(currentChartype: string, layout: ChartConfig) {
-        let config = layout.getConfig();
-
-        if (config instanceof KpiConfig) {
-            config = config.edaChart;
+/**
+ * Genera chartColors en formato Chart.js desde assignedColors
+ * @param assignedColors - Array de {value, color}
+ * @param chartType - Tipo de chart
+ * @returns chartColors en formato esperado por Chart.js
+ */
+    public generateChartColorsFromAssignedColors(assignedColors: AssignedColor[], chartType: string): any[] {
+        
+        if (!assignedColors || assignedColors.length === 0) {
+            console.warn('generateChartColorsFromAssignedColors: No hay assignedColors');
+            return [];
         }
-
-        if (config && (<ChartJsConfig>config).chartType.includes(currentChartype)) {
-            return this.mergeColors(layout)
-        } else {
-            return this.generateColors(currentChartype);
-        }
-    }
-
-    public generateColors(type: string) {
-        type = type.replace('kpi', '');
-
+        
+        const type = chartType.replace('kpi', '');
+        
         switch (type) {
-            case 'doughnut': return EdaChartComponent.generatePiecolors();
-            case 'polarArea': return EdaChartComponent.generatePiecolors();
-            case 'bar': return EdaChartComponent.generateChartColors();
-            case 'radar': return EdaChartComponent.generateChartColors();
-            case 'line': return EdaChartComponent.generateChartColors();
-            case 'horizontalBar': return EdaChartComponent.generateChartColors();
-            case 'histogram': return EdaChartComponent.generateChartColors();
+            case 'doughnut':
+            case 'polarArea':
+                // Formato: [{backgroundColor: [...], borderColor: [...]}]
+                return [{
+                    backgroundColor: assignedColors.map(c => c.color),
+                    borderColor: assignedColors.map(c => c.color)
+                }];
+                
+            case 'histogram':
+                // Histogram usa solo el primer color
+                return [{
+                    backgroundColor: assignedColors[0].color,
+                    borderColor: assignedColors[0].color
+                }];
+                
+            default:
+                // Bar, Line, Radar, Stacked, etc.
+                return assignedColors.map(c => ({
+                    backgroundColor: c.color,
+                    borderColor: c.color,
+                    pointBackgroundColor: c.color,
+                    pointBorderColor: c.color
+                }));
         }
-    }
-
-      public mergeColors(layout: ChartConfig) {
-        let config = layout.getConfig();
-
-        if (config instanceof KpiConfig) {
-            config = config.edaChart;
-        }
-
-        if (!(<ChartJsConfig>config).colors) {
-            return this.generateColors((<ChartJsConfig>config).chartType);
-        }
-
-        if ((<ChartJsConfig>config).chartType === 'doughnut' || (<ChartJsConfig>config).chartType === 'polarArea') {
-            let edaColors = EdaChartComponent.generatePiecolors();
-
-            (<ChartJsConfig>config).colors[0]['backgroundColor'].forEach((element, i) => {
-                edaColors[0].backgroundColor[i] = element;
-            });
-
-            (<ChartJsConfig>config).colors[0]['backgroundColor'] = edaColors[0].backgroundColor;
-
-        }
-
-        return (<ChartJsConfig>config).colors;
-    }
+    }   
 
     // Funciones de transformaciones de codigos de colores
     private toHex(c: number): string {
@@ -917,21 +897,6 @@ export class ChartUtilsService {
 
     public rgbToHex(r: number, g: number, b: number): string {
         return `#${this.toHex(r)}${this.toHex(g)}${this.toHex(b)}`;
-    }
-
-    public rgbaToHex(rgbaString: string): string {
-        const parts = rgbaString.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d*\.?\d+))?\)$/);
-        if (!parts) { return '#000000'; }
-        const r = parseInt(parts[1], 10);
-        const g = parseInt(parts[2], 10);
-        const b = parseInt(parts[3], 10);
-        return this.rgbToHex(r, g, b);
-    }
-
-    public hexToRgbaString(hex: string, opacity: number): string {
-        const [r, g, b] = this.hex2rgb(hex); // 
-        const alpha = Math.max(0, Math.min(1, opacity / 100));
-        return `rgba(${Math.round(r)},${Math.round(g)},${Math.round(b)},${alpha.toFixed(2)})`;
     }
 
     public describeData(currentQuery: any, labels: any) {
@@ -962,7 +927,6 @@ export class ChartUtilsService {
         });
         return out;
     }
-
 
     public pretifyLabels(columns: Array<Column>, labels: Array<string>) {
         let names = [];

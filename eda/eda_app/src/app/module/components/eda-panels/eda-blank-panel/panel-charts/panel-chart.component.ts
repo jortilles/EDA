@@ -41,6 +41,7 @@ import { ScatterConfig } from './chart-configuration-models/scatter-config';
 import { BubblechartConfig } from './chart-configuration-models/bubblechart.config';
 import { FormsModule } from '@angular/forms'; 
 import { CommonModule } from '@angular/common';
+import { FunnelConfig } from './chart-configuration-models/funnel.config';
 
 @Component({
     standalone: true,
@@ -209,7 +210,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * @param type table or crosstable
      */
     private renderEdaTable(type) {
-
         if (type === 'table') {
             this.createEdatableComponent(type);
         }
@@ -222,33 +222,19 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * Renders edaChartComponent
      * @param type 
      */
-    private renderEdaChart(type: string) {
-
-        const isbarline = this.props.edaChart === 'barline';
-        const isstacked = this.props.edaChart === 'stackedbar' || this.props.edaChart === 'stackedbar100';
-
-        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
-        const dataTypes = this.props.query.map(column => column.column_type);
-    
+    private renderEdaChart(subType: string) {
         let values = _.cloneDeep(this.props.data.values);
+        const dataTypes = this.props.query.map(col => col.column_type);
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        const isstacked = _.includes(['stackedbar', 'stackedbar100', 'pyramid'], this.props.edaChart);
+        const isbarline = this.props.edaChart === 'barline';
 
-        /**
-        * add comparative
-        */
-        let cfg: any = this.props.config.getConfig();
-
-        // Si es un histogram faig aixó....        
-        if ((['histogram'].includes(this.props.edaChart))
-            && this.props.query.length === 1
-            && this.props.query.filter(field => field.column_type === 'numeric').length == 1
-        ) {
-            let newCol = { name: this.histoGramRangesTxt, index: 0 };
-            dataDescription.otherColumns.push(newCol);
-            dataDescription.numericColumns[0].index = 1
-            dataDescription.totalColumns++;
+        if (this.props.chartType === 'bar' && this.props.edaChart === 'histogram') {
             dataDescription.numericColumns[0].name = this.histoGramDescTxt + " " + dataDescription.numericColumns[0].name + " " + this.histoGramDescTxt2;
         }
-        // si vull fer comparatives faig això....
+        
+        let cfg: any = this.props.config.getConfig();
+        // COMPARATIVAS
         if (!!cfg.addComparative
             && (['line', 'bar'].includes(cfg.chartType))
             && this.props.query.length === 2
@@ -264,7 +250,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             dataDescription.otherColumns.push(newCol);
             dataDescription.totalColumns++;
         }
-
+        // PREDICTION LINES
         if(cfg.showPredictionLines === true){  
             // Añadimos la nueva serie de predicción
             dataDescription.numericColumns.push({name: $localize`:@@Prediction:Predicción`, index:2 });
@@ -299,9 +285,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps,
             minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines, cfg.showPredictionLines, cfg.numberOfColumns, this.props.edaChart, ticksOptions, false, this.styleProviderService);
 
-
-        /**Add trend datasets*/
-        cfg = this.props.config.getConfig();
+        // TENDECNIAS
         if (cfg.addTrend && (cfg.chartType === 'line')) {
             let trends = [];
             let predictionSerie = cfg.showPredictionLines; 
@@ -314,162 +298,85 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             });
             trends.forEach(trend => chartData[1].push(trend));
         }
+                
         let chartConfig: any = {};
         chartConfig.chartType = this.props.chartType;
         chartConfig.edaChart = this.props.edaChart;
         chartConfig.chartLabels = chartData[0];
         chartConfig.chartDataset = chartData[1];
         chartConfig.chartOptions = config.chartOptions;
-        chartConfig.chartColors = this.chartUtils.recoverChartColors(this.props.chartType, this.props.config);
-        chartConfig.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
-        
-        const sortByAsCol = !this.styleProviderService.loadingFromPalette; // Ordenado por assignedColors
-        let colors = this.chartUtils.generateChartColorsFromPalette(chartConfig.chartLabels.length, this.paletaActual).flatMap((item) => item.backgroundColor);
-    
-        const chartColors = chartConfig.chartColors[0];
-        const assignedColors = chartConfig.assignedColors;
-        const configData = chartConfig?.assignedColors.flatMap((item) => item.value);
-        const configColors = chartConfig?.assignedColors.flatMap((item) => item.color);
 
-        if (["doughnut", "polarArea"].includes(chartConfig.chartType)) {
-            chartData[0].forEach((element, index) => {
-                const indexMatched = configData.findIndex(e => e === element);
-                if (indexMatched !== -1 && sortByAsCol) {
-                    // Usa color coincidente de configColors
-                    chartColors.backgroundColor[index] = configColors[indexMatched];
-                    chartColors.borderColor[index] = configColors[indexMatched];
-                } else {
-                    // Usa color de la paleta activa
-                    const color = colors[index];
-                    chartColors.backgroundColor[index] = color;
-                    chartColors.borderColor[index] = color;
+        // Leer assignedColors del config (si existen)
+        let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
 
-                }
-                // Actualiza assignedColors para la vista previa
-                assignedColors.forEach((item, idx) => {
-                    item.color = chartColors.backgroundColor[idx];
-                });
-                
-            });
-
-
-            chartConfig.chartLabels.forEach((element, index) => {
-                //asignamos el valor de la data y color perteniente si lo tiene
-                chartConfig.assignedColors.push({
-                    value: element,
-                    color: chartColors.backgroundColor[index]
-                });
-            });
-        }else if (['bar', 'horizontalBar', 'radar', 'barline', 'line', 'area'].includes(chartConfig.edaChart)) {
-            if (sortByAsCol) {
-                    // Usa color coincidente de configColors + creación nuevo
-                    chartColors.backgroundColor = chartConfig?.assignedColors?.length > 0 ? chartConfig?.assignedColors[0].color : colors [0];
-                    chartColors.borderColor = chartConfig?.assignedColors?.length > 0 ? chartConfig?.assignedColors[0].color : colors [0];
-            } else {
-                    // Cargamos colores desde paleta 
-                    chartColors.backgroundColor = this.paletaActual[0];
-                    chartColors.borderColor = this.paletaActual[0];
-
-                    // Actualiza assignedColors para la vista previa
-                    assignedColors.forEach((item) => {
-                        item.color = chartColors.backgroundColor;
-                    });
-            } 
-            chartConfig.chartLabels.forEach((element) => {
-                //asignamos el valor de la data y color perteniente si lo tiene
-                chartConfig.assignedColors.push({
-                    value: element,
-                    color: chartColors.backgroundColor
-                });
-            });
-        }else if (['pyramid', 'stackedbar', 'stackedbar100'].includes(chartConfig.edaChart)) {
-            // Obtener nombres únicos
-            let uniqueNames;
-            if(this.props.config.getConfig()['assignedColors']?.length > 0 )
-                uniqueNames = this.getUniqueNamesFromDataset(this.props.config.getConfig()['assignedColors']);
-            else
-                uniqueNames = this.getUniqueNamesFromDataset(chartConfig.chartDataset);
-
-            // Generar paleta de colores del tamaño justo
-            let colors = this.chartUtils
-            .generateChartColorsFromPalette(uniqueNames.length, this.paletaActual).flatMap((item) => item.backgroundColor);
+        // Si NO hay assignedColors, generarlos desde la paleta
+        if (assignedColors.length === 0) {
+            // Obtener labels según tipo de chart
+            const labels = this.getLabelsForChartType(chartConfig);
             
-            // Asignar colores según sortByAsCol
-            const configData2 = chartConfig?.assignedColors.flatMap((item) => item.label);
-            
-            chartData[1].forEach((element, index) => {
-                const indexMatched = configData2.findIndex(e => e === element.label);
-                if(!sortByAsCol || indexMatched === -1 ) {
-                    // Usa la paleta activa
-                    chartConfig.chartColors[index].backgroundColor = colors[index];
-                    chartConfig.chartColors[index].borderColor = colors[index];
-                }else {
-                    // Usa assignedColors
-                    chartConfig.chartColors[index].backgroundColor = chartConfig.chartColors[index].backgroundColor;
-                    chartConfig.chartColors[index].borderColor = chartConfig.chartColors[index].backgroundColor;
+            // Generar assignedColors usando la paleta actual
+            assignedColors = this.chartUtils.resolveAssignedColors(labels, [], this.paletaActual);
+            // Guardar en config para persistencia
+            this.props.config.getConfig()['assignedColors'] = assignedColors;
+        } 
+
+        // Asignar al chartConfig
+        chartConfig.assignedColors = assignedColors;
+
+        // Generar chartColors en formato Chart.js desde assignedColors
+        chartConfig.chartColors = this.chartUtils.generateChartColorsFromAssignedColors(
+            assignedColors,
+            this.props.chartType
+        );
+
+        // Aplicar backgroundColor y borderColor a los datasets
+        // chartColors únicamente se reflejan si están dentro del chartDataset
+        if (!chartData[1][0]?.backgroundColor) {
+            chartData[1].forEach((dataset, i) => {
+                try {
+                    dataset.backgroundColor = chartConfig.chartColors[i]?.backgroundColor;
+                    dataset.borderColor = chartConfig.chartColors[i]?.borderColor;
+                } catch (err) {
+                    // Si hay una tendencia sin color asignado, usar color por defecto de la paleta
+                    const fallbackColor = this.paletaActual[i % this.paletaActual.length];
+                    dataset.backgroundColor = fallbackColor;
+                    dataset.borderColor = fallbackColor;
                 }
             });
-            chartConfig.assignedColors = uniqueNames.map((name, idx) => ({
-                label: name,
-                color: chartConfig.chartColors[idx]?.backgroundColor || colors[idx],
-            }));
-
-        } else if (['histogram'].includes(chartConfig.edaChart)) {
-                if (chartConfig.chartLabels.length === 0) {
-                    chartConfig.chartLabels = chartConfig.assignedColors.map(element => element.value);
-                                        chartConfig.chartDataset[0].data = [1];
-
-                }
-                if (sortByAsCol) {
-                    // Usa color coincidente de configColors
-                    const assignedColor = chartConfig?.assignedColors?.length > 0 ? chartConfig?.assignedColors[0].color : colors [0];
-
-                    chartConfig.chartColors[0] = {
-                        backgroundColor: assignedColor,
-                        borderColor: assignedColor,
-                        pointBackgroundColor: assignedColor,
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: assignedColor
-                    };
-                } else {
-                    // Usa color de la paleta activa
-                    chartConfig.chartColors[0].backgroundColor = this.styleProviderService?.ActualChartPalette['paleta'][0];
-                    chartConfig.chartColors[0].borderColor = this.styleProviderService?.ActualChartPalette['paleta'][0];
-                    
-                    // Modificar los assignedColor para que la preview coincida con el cambio
-                    chartConfig.assignedColors.forEach(element => {
-                        element.color = chartConfig.chartColors[0].backgroundColor
-                    });
-                }
         }
-
-        
-
-
-
-            // chartColors unicamente se reflejan si estan dentro del chartDataset (esto asigna colores correctamente) 
-            if (!chartData[1][0]?.backgroundColor) {
-                chartData[1].forEach((e, i) => {
-                    try {
-                        e.backgroundColor = chartConfig.chartColors[i].backgroundColor;
-                        e.borderColor = chartConfig.chartColors[i].borderColor;
-                    } catch (err) {
-                        // si tinc una tendencia no tinc color per aquesta grafica. No hauria de ser aixi.....
-                        e.backgroundColor = this.chartUtils.generateColors(this.props.chartType)[i].backgroundColor;
-                        e.borderColor = this.chartUtils.generateColors(this.props.chartType)[i].borderColor;
-                    }
-                });
-            }
-        
 
         chartConfig.linkedDashboardProps = this.props.linkedDashboardProps;
         this.createEdaChartComponent(chartConfig);
-
-    }   
-
+    }
 
 
+    /**
+     * Obtiene los labels apropiados según el tipo de chart
+     * Para crear assignedColors correctamente
+     */
+    private getLabelsForChartType(chartConfig: any): string[] {
+        const type = chartConfig.chartType;
+        const edaChart = chartConfig.edaChart;
+        
+        switch (type) {
+            case 'doughnut':
+            case 'polarArea':
+                // Los colores van por categoría (labels del eje X)
+                return chartConfig.chartLabels || [];
+                
+            case 'bar':
+                if (edaChart === 'histogram') {
+                    // Histogram solo tiene un dataset/color
+                    return chartConfig.chartDataset && chartConfig.chartDataset[0] 
+                        ? [chartConfig.chartDataset[0].label || 'Histogram'] 
+                        : ['Histogram'];
+                }
+            default:
+                // Bar, Line, Radar, Stacked, etc.
+                // Los colores van por serie (datasets)
+                return chartConfig.chartDataset?.map(d => d.label || '') || [];
+        }
+    }
 
     /**
      * Creates a chart component
@@ -478,9 +385,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     private createEdaChartComponent(inject: any) {
         this.currentConfig = inject;
         this.entry.clear();
-        /** Deprecado en angular 13 */
-        //const factory = this.resolver.resolveComponentFactory(EdaChartComponent);
-        /** JUANJO MIRA ESTO*/
         this.componentRef = this.entry.createComponent(EdaChartComponent);
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
@@ -650,10 +554,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.edaChart.chartLabels = chartData[0];
         chartConfig.edaChart.chartDataset = chartData[1];
         chartConfig.edaChart.chartOptions = chartOptions.chartOptions;
-        chartConfig.edaChart.chartColors = this.chartUtils.recoverChartColors(
-            this.props.chartType,
-            this.props.config
-        );
+
         
         // Determinar color base del gráfico paleta / asCol
         const { styleProviderService, props } = this;
@@ -885,37 +786,32 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     }
 
-private renderFunnel() {
-    if (!this.props?.data?.values?.length) {
-        return;
+    private renderFunnel() {
+        if (!this.props?.data?.values?.length) {
+            return;
+        }
+        
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        const inject: EdaD3 = new EdaD3();
+        inject.id = this.randomID();
+        inject.size = this.props.size;
+        inject.data = this.props.data;
+        inject.dataDescription = dataDescription;
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+
+        // Inicializar con colores por defecto o usar los existentes
+        const existingColors = this.props.config.getConfig()['assignedColors'] || [];
+        console.log(existingColors)
+
+        inject.assignedColors = [
+            {value: 'start', color: existingColors[0]?.color || this.paletaActual[0]},
+            {value: 'end', color: existingColors[1]?.color || this.paletaActual[this.paletaActual.length - 1],}
+        ];
+
+        // Guardar los colores en la configuración
+        this.props.config.setConfig({ ...this.props.config.getConfig(), assignedColors: inject.assignedColors});
+        this.createFunnelComponent(inject);
     }
-    const dataDescription = this.chartUtils.describeData(
-        this.props.query,
-        this.props.data.labels
-    );
-
-    const inject: EdaD3 = new EdaD3();
-    inject.id = this.randomID();
-    inject.size = this.props.size;
-    inject.data = this.props.data;
-    inject.dataDescription = dataDescription;
-    inject.linkedDashboard = this.props.linkedDashboardProps;
-
-    const categoryIndex = dataDescription.otherColumns[0].index;
-    const categories = 
-    [
-        ...new Set(inject.data.values
-            .filter(row => row?.length > categoryIndex).map(row => row[categoryIndex]))
-    ];
-
-    inject.assignedColors = this.chartUtils.resolveAssignedColors( 
-        categories, this.props.config.getConfig()['assignedColors'] || [], this.paletaActual
-    );
-
-    this.props.config.setConfig({ ...this.props.config.getConfig(), assignedColors: inject.assignedColors});
-    this.createFunnelComponent(inject);
-}
-
 
     private createFunnelComponent(inject: any) {
         this.entry.clear();
@@ -996,7 +892,6 @@ private renderFunnel() {
         );
 
         this.props.config.setConfig({ ...this.props.config.getConfig(), assignedColors: inject.assignedColors });
-
         this.createScatter(inject);
     }
 
@@ -1067,7 +962,7 @@ private renderFunnel() {
                 if (['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'pyramid', 'radar'].includes(this.props.chartType)) {
                     this.componentRef.instance?.updateChart();
                 }
-                else if (['treeMap', 'sunburst', 'parallelSets', 'bubblechart', 'scatterPlot'].includes(this.props.chartType)) { 
+                else if (['treeMap', 'sunburst','funnel', 'parallelSets', 'bubblechart', 'scatterPlot'].includes(this.props.chartType)) { 
                     this.updateD3ChartColors(this.props.chartType)
                 }
             } catch(err) {
@@ -1077,22 +972,21 @@ private renderFunnel() {
     }
 
     public updateD3ChartColors(chartType: string) {
-        const numberOfColors = this.componentRef.instance?.colors?.length || 1;
         let newColors: Array<{ color: string }> = [];
+        let palette = this.styleProviderService?.ActualChartPalette?.['paleta'];
         if (this.styleProviderService.loadingFromPalette) {
-            // Genera colores en RGB o Hex segun la paleta
-            newColors = this.chartUtils.generateRGBColorGradientScaleD3(numberOfColors, this.styleProviderService.ActualChartPalette['paleta'])
-                .map(({ color }) => ({ color: this.chartUtils.rgbOrRgbaToHex(color) }));
+            // Genera colores en Hex segun la paleta
+            for (let i = 0; i < length; i++) {newColors.push(palette[i % palette.length]);}
         } else {
             return; // No hay que modificar nada
         }
         switch (chartType) {
             case 'treeMap':
-                this.props.config.setConfig(new TreeMapConfig(newColors.map(({ color }) => color).map(color => this.chartUtils.hex2rgbD3(color))));
+                this.props.config.setConfig(new TreeMapConfig(newColors.map(({ color }) => color)));
                 this.renderTreeMap();
                 break;
             case 'sunburst':
-                this.props.config.setConfig(new SunburstConfig(newColors.map(({ color }) => color).map(color => this.chartUtils.hex2rgbD3(color))));
+                this.props.config.setConfig(new SunburstConfig(newColors.map(({ color }) => color)));
                 this.renderSunburst();
                 break;
             case 'parallelSets':
@@ -1103,8 +997,12 @@ private renderFunnel() {
                 this.props.config.setConfig(new ScatterConfig(newColors.map(({ color }) => color)));
                 this.renderScatter();
                 break;
+            case 'funnel':
+                this.props.config.setConfig(new FunnelConfig(newColors.map(({ color }) => color)));
+                this.renderFunnel();
+                break;
             case 'bubblechart':
-                this.props.config.setConfig(new BubblechartConfig(newColors.map(({ color }) => color).map(color => this.chartUtils.hex2rgbD3(color))));
+                this.props.config.setConfig(new BubblechartConfig(newColors.map(({ color }) => color)));
                 this.renderBubblechart();
                 break;
             default:
@@ -1182,45 +1080,6 @@ private renderFunnel() {
         const uniqueNames = [...new Set(allNames)];
 
         return uniqueNames;
-    }
-
-
-    getColors (dataLength, colors) {
-        const colorsLength = colors.length
-        let outputColors: Array<any> = colors
-
-        if (dataLength > colorsLength) {
-            let repeat = Math.ceil(dataLength / colorsLength)
-            for (let i = 0; i < repeat - 1; i++) {
-                outputColors = [...outputColors, ...colors]
-            }
-        }
-        return outputColors
-        .filter((_, index) => index < dataLength)
-        .map(color => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`)
-    }
-
-    encontrarBackgroundColor(obj) {
-        if (!obj || typeof obj !== "object") return null;
-
-        if (obj.backgroundColor && typeof obj.backgroundColor === "string") {
-            return obj.backgroundColor;
-        }
-
-        // Buscar en la propiedad backgroundColor si es otro objeto
-        if (obj.backgroundColor && typeof obj.backgroundColor === "object") {
-            return this.encontrarBackgroundColor(obj.backgroundColor);
-        }
-
-        // Buscar en otras propiedades si existe
-        for (let key in obj) {
-            if (typeof obj[key] === "object") {
-            const resultado = this.encontrarBackgroundColor(obj[key]);
-            if (resultado) return resultado;
-            }
-        }
-
-        return null;
     }
 
     /**

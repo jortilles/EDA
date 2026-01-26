@@ -21,49 +21,7 @@ export class EdaChartComponent implements OnInit, AfterViewInit {
 
     public update: boolean;
     public chartPlugins = [  ChartDataLabels  ];
-    public static defaultChartColors: any[] = EdaChartComponent.generateChartColors();
-    public static defaultPieColors: any[] = EdaChartComponent.generatePiecolors();
-
-    public static generateChartColors(iterations?: number) {
-        let MAX_ITERATIONS = 200;
-        let out = [];
-        let col = ChartsColors;
-
-        for (let i = 0; i < MAX_ITERATIONS; i += 10) {
-            for (let j = 0; j < col.length; j++) {
-                out.push(
-                    {
-                        backgroundColor: `rgba(${(col[j][0] + i) % 255}, ${(col[j][1] + i) % 255}, ${(Math.abs(col[j][2] + i)) % 255}, 0.9)`,
-                        borderColor: `rgba(${(col[j][0] + i) % 255}, ${(col[j][1] + i) % 255}, ${(Math.abs(col[j][2] + i)) % 255}, 1)`,
-                        pointBackgroundColor: `rgba(${(col[j][0] + i) % 255}, ${(col[j][1] + i) % 255}, ${(Math.abs(col[j][2] + i)) % 255}, 0.9)`,
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: `rgba(${(col[j][0] + i) % 255}, ${(col[j][1] + i) % 255}, ${(col[j][2] - i) % 255}, 0.9)`
-
-                    }
-                )
-            }
-        }
-        return out;
-    }
-
-    public static generatePiecolors() {
-
-        let MAX_ITERATIONS = 1000;
-        let out = [{ backgroundColor: [], borderColor: [] }];
-        let col = ChartsColors;
-
-        for (let i = 0; i < MAX_ITERATIONS; i += 50) {
-
-            for (let j = 0; j < col.length; j++) {
-                out[0].backgroundColor.push(
-                    `rgba(${(col[j][0] + i) % 255}, ${(col[j][1] + i) % 255}, ${(Math.abs(col[j][2] + i)) % 255}, 0.8)`);
-                out[0].borderColor.push(`rgba(255,255,255,1)`)
-            }
-        }
-        return out;
-
-    }
+    
 
     constructor() {
         this.update = true;
@@ -102,9 +60,6 @@ export class EdaChartComponent implements OnInit, AfterViewInit {
             })
         }
     }
-
-
-    chartHovered(event: any): void { }
 
     updateChartOptions(options: any) {
         this.update = false;
