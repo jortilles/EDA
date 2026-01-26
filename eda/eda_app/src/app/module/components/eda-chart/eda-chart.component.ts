@@ -2,7 +2,6 @@ import { Component, OnInit, Input, ViewChild, AfterViewInit, Output, EventEmitte
 import { EdaChart } from './eda-chart';
 import { BaseChartDirective } from 'ng2-charts';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { ChartsColors } from '@eda/configs/index';
 import { FormsModule } from '@angular/forms'; 
 import { CommonModule } from '@angular/common';
 import { NgChartsModule } from 'ng2-charts';
