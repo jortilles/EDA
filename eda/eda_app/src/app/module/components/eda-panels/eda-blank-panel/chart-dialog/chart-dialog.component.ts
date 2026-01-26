@@ -146,6 +146,29 @@ export class ChartDialogComponent {
         this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
     }
 
+    loadChartTypeProperties() {
+        const type: any = this.chart.chartType;
+        switch (type) {
+
+            case 'bar':
+                if (_.startsWith(this.chart.chartType, 'bar')) {
+                    this.direction = { label: 'Vertical', value: 'bar' };
+                }
+                break;
+            case 'horizontalBar':
+                this.direction = { label: 'Horizontal', value: 'horizontalBar' };
+                break;
+            case 'line':
+                this.pointStyle = _.find(this.drops.pointStyles, key =>
+                    key.value === _.get(this.chart.chartOptions, 'elements.point.pointStyle')
+                );
+                break;
+            case 'doughnut':
+            case 'polarArea':
+                break;
+        }
+    }
+
     // Obtener labels según tipo de chart
     private getChartLabels(): string[] {
         const type = this.chart['edaChart'];
@@ -160,171 +183,8 @@ export class ChartDialogComponent {
         }
     }
 
-    // Obtener color por defecto según índice
-    private getDefaultColor(index: number): string {
-        const palette = this.stylesProviderService.ActualChartPalette?.['paleta'];
-        return palette[index % palette.length];
-    }
 
-    // Aplicar assignedColors al chart según su tipo
-    private applyColorsToChart(): void {
-    const type = this.chart['edaChart'];
-    
-    switch (type) {
-        case 'doughnut':
-        case 'polarArea':
-            // Asegurar que chartColors existe
-            if (!this.chart.chartColors || !Array.isArray(this.chart.chartColors)) {
-                this.chart.chartColors = [];
-            }
-            if (!this.chart.chartColors[0]) {
-                this.chart.chartColors[0] = { backgroundColor: [], borderColor: [] };
-            }
-            
-            // Aplicar colores
-            this.chart.chartColors[0].backgroundColor = this.assignedColors.map(c => c.color);
-            this.chart.chartColors[0].borderColor = this.assignedColors.map(c => c.color);
-            
-            // También actualizar en chartData si existe
-            if (this.chart.chartData?.datasets?.[0]) {
-                this.chart.chartData.datasets[0].backgroundColor = this.chart.chartColors[0].backgroundColor;
-                this.chart.chartData.datasets[0].borderColor = this.chart.chartColors[0].borderColor;
-            }
-            break;
-            
-        case 'histogram':
-            if (this.assignedColors.length > 0) {
-                const color = this.assignedColors[0].color;
-                
-                this.chart.chartColors = [{
-                    backgroundColor: color,
-                    borderColor: color
-                }];
-                
-                if (this.chart.chartDataset?.[0]) {
-                    this.chart.chartDataset[0] = {
-                        ...this.chart.chartDataset[0],
-                        backgroundColor: color,
-                        borderColor: color
-                    };
-                }
-            }
-            break;
-            
-        default:
-            // Bar, Line, Radar, Stacked, etc.
-            
-            // Crear nuevos datasets con los colores actualizados
-            if (this.chart.chartDataset && Array.isArray(this.chart.chartDataset)) {
-                this.chart.chartDataset = this.chart.chartDataset.map((dataset, index) => {
-                    if (this.assignedColors[index]) {
-                        return {
-                            ...dataset,
-                            backgroundColor: this.assignedColors[index].color,
-                            borderColor: this.assignedColors[index].color,
-                            pointBackgroundColor: this.assignedColors[index].color,
-                            pointBorderColor: this.assignedColors[index].color
-                        };
-                    }
-                    return dataset;
-                });
-            }
-            
-            // Actualizar chartColors
-            this.chart.chartColors = this.assignedColors.map(c => ({
-                backgroundColor: c.color,
-                borderColor: c.color,
-                pointBackgroundColor: c.color,
-                pointBorderColor: c.color
-            }));
-            
-            break;
-    }
-}
-
-    // Método simplificado para cambios de color
-    handleInputColor(): void {
-        // Aplicar assignedColors al chart
-        this.applyColorsToChart();
-        
-        // Re-renderizar
-        if (this.panelChartComponent?.componentRef?.instance) {
-            this.panelChartComponent.componentRef.instance.inject = this.chart;
-            this.panelChartComponent.componentRef.instance.updateChart();
-        }
-        this.updateChartView();
-    }
-
-    private updateChartView(): void {
-        if (!this.panelChartComponent?.componentRef?.instance) {
-            console.error('No hay componentRef disponible');
-            return;
-        }
-
-        const chartInstance = this.panelChartComponent.componentRef.instance;
-        const type = this.chart['edaChart'];
-        
-
-        // Actualizar inject y forzar detección de cambios
-        chartInstance.inject = { ...this.chart };
-        
-        //  Actualizar directamente el chart de Chart.js
-        if (chartInstance.edaChart?.chart) {
-            const chartJs = chartInstance.edaChart.chart;
-            
-            switch (type) {
-                case 'doughnut':
-                case 'polarArea':
-                    // Para doughnut/polarArea, actualizar el dataset
-                    if (chartJs.data.datasets[0]) {
-                        chartJs.data.datasets[0].backgroundColor = this.chart.chartColors[0].backgroundColor;
-                        chartJs.data.datasets[0].borderColor = this.chart.chartColors[0].borderColor;
-                    }
-                    break;
-                    
-                default:
-                    // Para otros charts, actualizar cada dataset
-                    this.chart.chartDataset.forEach((dataset, index) => {
-                        if (chartJs.data.datasets[index]) {
-                            chartJs.data.datasets[index].backgroundColor = dataset.backgroundColor;
-                            chartJs.data.datasets[index].borderColor = dataset.borderColor;
-                        }
-                    });
-                    break;
-            }
-            
-            // Forzar actualización
-            chartJs.update(); 
-        }
-        
-        // Llamar al método updateChart del componente
-        if (chartInstance.updateChart) {
-            chartInstance.updateChart();
-        }
-    }
-
-
-    // Aplicar paleta
-    onPaletteSelected(): void {
-        if (!this.selectedPalette) return;
-        const palette = this.selectedPalette.paleta;
-        const numColors = this.assignedColors.length;
-        
-        // Generar colores interpolados de la paleta
-        const newColors: string[] = [];
-        for (let i = 0; i < numColors; i++) {
-        newColors.push(palette[i % palette.length]);
-        }
-            
-        // Actualizar assignedColors
-        this.assignedColors = this.assignedColors.map((item, index) => ({
-            value: item.value,
-            color: newColors[index]
-        }));
-        // Aplicar y re-renderizar
-        this.handleInputColor();
-        this.updateChartView();
-    }
+    // METODOS QUE ACTUALIZAN LA CONFIGURACION DEL GRAFICO
 
     SetNumberOfColumns() {
         const properties = this.panelChartConfig;
@@ -403,6 +263,29 @@ export class ChartDialogComponent {
         });
 
     }
+
+    allowCoparative(params) {
+
+        let monthformat = false;
+        const haveDate = params.config.query.filter(field => field.column_type === 'date').length > 0 //there is a date
+        if (haveDate) {
+            monthformat = ['month', 'week'].includes(params.config.query.filter(field => field.column_type === 'date')[0].format);
+        }
+        const chartAllowed = ['line', 'bar'].includes(params.config.chartType);
+        const onlyTwoCols = params.config.query.length === 2;
+
+        const aggregation =
+            params.config.query.filter(col => col.column_type === 'numeric')
+                .map(col => col.aggregation_type
+                    .filter(agg => agg.selected === true && agg.value !== 'none')
+                    .map(agg => agg.selected))
+                .reduce((a, b) => a || b, false)[0];
+
+
+        return haveDate && chartAllowed && onlyTwoCols && monthformat && aggregation;
+
+    }
+
 
     setShowLables() {
 
@@ -503,6 +386,169 @@ export class ChartDialogComponent {
     }
 
 
+    // METODOS QUE GESTIONAN LOS COLORES DEL GRAFICO
+
+    // Obtener color por defecto según índice
+    private getDefaultColor(index: number): string {
+        const palette = this.stylesProviderService.ActualChartPalette?.['paleta'];
+        return palette[index % palette.length];
+    }
+
+    // Aplicar assignedColors al chart según su tipo
+    private applyColorsToChart(): void {
+        const type = this.chart['edaChart'];
+        
+        switch (type) {
+        case 'doughnut':
+        case 'polarArea':
+            // Actualizar chartColors
+            this.chart.chartColors[0].backgroundColor = this.assignedColors.map(c => c.color);
+            this.chart.chartColors[0].borderColor = this.assignedColors.map(c => c.color);
+            
+            // Actualizar chartDataset 
+            if (this.chart.chartDataset && this.chart.chartDataset[0]) {
+                this.chart.chartDataset[0] = {
+                    ...this.chart.chartDataset[0],
+                    backgroundColor: [...this.chart.chartColors[0].backgroundColor],
+                    borderColor: [...this.chart.chartColors[0].borderColor]
+                };
+            }
+            break;
+                
+            case 'histogram':
+                if (this.assignedColors.length > 0) {
+                    const color = this.assignedColors[0].color;
+                    
+                    this.chart.chartColors = [{
+                        backgroundColor: color,
+                        borderColor: color
+                    }];
+                    
+                    if (this.chart.chartDataset?.[0]) {
+                        this.chart.chartDataset[0] = {
+                            ...this.chart.chartDataset[0],
+                            backgroundColor: color,
+                            borderColor: color
+                        };
+                    }
+                }
+                break;
+                
+            default:
+                // Bar, Line, Radar, Stacked, etc.
+                // Crear nuevos datasets con los colores actualizados
+                if (this.chart.chartDataset && Array.isArray(this.chart.chartDataset)) {
+                    this.chart.chartDataset = this.chart.chartDataset.map((dataset, index) => {
+                        if (this.assignedColors[index]) {
+                            return {
+                                ...dataset,
+                                backgroundColor: this.assignedColors[index].color,
+                                borderColor: this.assignedColors[index].color,
+                                pointBackgroundColor: this.assignedColors[index].color,
+                                pointBorderColor: this.assignedColors[index].color
+                            };
+                        }
+                        return dataset;
+                    });
+                }
+                
+                // Actualizar chartColors
+                this.chart.chartColors = this.assignedColors.map(c => ({
+                    backgroundColor: c.color,
+                    borderColor: c.color,
+                    pointBackgroundColor: c.color,
+                    pointBorderColor: c.color
+                }));
+                
+                break;
+        }
+    }
+
+    // Método simplificado para cambios de color
+    handleInputColor(): void {
+        // Aplicar assignedColors al chart
+        this.applyColorsToChart();
+        
+        // Re-renderizar
+        if (this.panelChartComponent?.componentRef?.instance) {
+            this.panelChartComponent.componentRef.instance.inject = this.chart;
+            this.panelChartComponent.componentRef.instance.updateChart();
+        }
+        this.updateChartView();
+    }
+
+    private updateChartView(): void {
+        if (!this.panelChartComponent?.componentRef?.instance) {
+            console.error('No hay componentRef disponible');
+            return;
+        }
+
+        const chartInstance = this.panelChartComponent.componentRef.instance;
+        const type = this.chart['edaChart'];
+        
+
+        // Actualizar inject y forzar detección de cambios
+        chartInstance.inject = { ...this.chart };
+        
+        //  Actualizar directamente el chart de Chart.js
+        if (chartInstance.edaChart?.chart) {
+            const chartJs = chartInstance.edaChart.chart;
+            
+            switch (type) {
+                case 'doughnut':
+                case 'polarArea':
+                    // Para doughnut/polarArea, actualizar el dataset
+                    if (chartJs.data.datasets[0]) {
+                        chartJs.data.datasets[0].backgroundColor = this.chart.chartColors[0].backgroundColor;
+                        chartJs.data.datasets[0].borderColor = this.chart.chartColors[0].borderColor;
+                    }
+                    break;
+                    
+                default:
+                    // Para otros charts, actualizar cada dataset
+                    this.chart.chartDataset.forEach((dataset, index) => {
+                        if (chartJs.data.datasets[index]) {
+                            chartJs.data.datasets[index].backgroundColor = dataset.backgroundColor;
+                            chartJs.data.datasets[index].borderColor = dataset.borderColor;
+                        }
+                    });
+                    break;
+            }
+            
+            // Forzar actualización
+            chartJs.update(); 
+        }
+        
+        // Llamar al método updateChart del componente
+        if (chartInstance.updateChart) {
+            chartInstance.updateChart();
+        }
+    }
+
+
+    // Aplicar paleta
+    onPaletteSelected(): void {
+        if (!this.selectedPalette) return;
+        const palette = this.selectedPalette.paleta;
+        const numColors = this.assignedColors.length;
+        
+        // Generar colores interpolados de la paleta
+        const newColors: string[] = [];
+        for (let i = 0; i < numColors; i++) {
+        newColors.push(palette[i % palette.length]);
+        }
+            
+        // Actualizar assignedColors
+        this.assignedColors = this.assignedColors.map((item, index) => ({
+            value: item.value,
+            color: newColors[index]
+        }));
+        // Aplicar y re-renderizar
+        this.handleInputColor();
+    }
+
+    
+
 
     rgb2hex(rgb): string {
         rgb = rgb?.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
@@ -521,85 +567,7 @@ export class ChartDialogComponent {
         return 'rgba(' + r + ',' + g + ',' + b + ',' + opacity / 100 + ')';
     }
 
-    loadChartTypeProperties() {
-        const type: any = this.chart.chartType;
-        switch (type) {
-
-            case 'bar':
-                if (_.startsWith(this.chart.chartType, 'bar')) {
-                    this.direction = { label: 'Vertical', value: 'bar' };
-                }
-                break;
-            case 'horizontalBar':
-                this.direction = { label: 'Horizontal', value: 'horizontalBar' };
-                break;
-            case 'line':
-                this.pointStyle = _.find(this.drops.pointStyles, key =>
-                    key.value === _.get(this.chart.chartOptions, 'elements.point.pointStyle')
-                );
-                break;
-            case 'doughnut':
-            case 'polarArea':
-                break;
-        }
-    }
-
-    uniformizeStyle() {
-        if (this.chart.chartDataset) {
-            const newDatasets = [];
-            const dataset = this.chart.chartDataset;
-            for (let i = 0, n = dataset.length; i < n; i += 1) {
-
-                // dataset[i].hoverBackgroundColor = this.chart.chartColors[i].backgroundColor;
-                dataset[i].backgroundColor = this.chart.chartColors[i]?.backgroundColor;
-                dataset[i].borderColor = this.chart.chartColors[i]?.backgroundColor;
-                this.chart.chartColors[i] = _.pick(dataset[i], ['backgroundColor', 'borderColor']);
-
-                newDatasets.push(dataset[i]);
-            }
-            this.chart.chartDataset = newDatasets;
-            this.panelChartComponent.componentRef.instance.inject = this.chart;
-        }
-    }
-
-    allowCoparative(params) {
-
-        let monthformat = false;
-        const haveDate = params.config.query.filter(field => field.column_type === 'date').length > 0 //there is a date
-        if (haveDate) {
-            monthformat = ['month', 'week'].includes(params.config.query.filter(field => field.column_type === 'date')[0].format);
-        }
-        const chartAllowed = ['line', 'bar'].includes(params.config.chartType);
-        const onlyTwoCols = params.config.query.length === 2;
-
-        const aggregation =
-            params.config.query.filter(col => col.column_type === 'numeric')
-                .map(col => col.aggregation_type
-                    .filter(agg => agg.selected === true && agg.value !== 'none')
-                    .map(agg => agg.selected))
-                .reduce((a, b) => a || b, false)[0];
-
-
-        return haveDate && chartAllowed && onlyTwoCols && monthformat && aggregation;
-
-    }
-
-
-    onChangePointStyles(newStyle: PointStyle) {
-        this.pointStyle = _.find(this.drops.pointStyles, o => o.value = newStyle);
-        this.chart.chartOptions.elements.point.pointStyle = newStyle;
-    }
-
-
-    resetChartConfig() {
-        this.controller.params.config.config.getConfig()['addTrend'] = this.chart.addTrend;
-        this.controller.params.config.config.getConfig()['showLabels'] = this.chart.showLabels;
-        this.controller.params.config.config.getConfig()['showLabelsPercent'] = this.chart.showLabelsPercent;
-        this.controller.params.config.config.getConfig()['showPointLines'] = this.chart.showPointLines;
-        this.controller.params.config.config.getConfig()['showPredictionLines'] = this.chart.showPredictionLines;
-        this.controller.params.config.config.getConfig()['numberOfColumns'] = this.chart.numberOfColumns;
-        this.controller.params.config.config.getConfig()['addComparative'] = this.chart.addComparative;
-    }
+    // METODOS DE GUARDAR/CANCELAR CONFIGURACION
 
     saveChartConfig() {
         // Aplicar colores finales
@@ -629,9 +597,19 @@ export class ChartDialogComponent {
         this.onClose(EdaDialogCloseEvent.UPDATE, this.chart);
     }
 
+    resetChartConfig() {
+        this.controller.params.config.config.getConfig()['addTrend'] = this.chart.addTrend;
+        this.controller.params.config.config.getConfig()['showLabels'] = this.chart.showLabels;
+        this.controller.params.config.config.getConfig()['showLabelsPercent'] = this.chart.showLabelsPercent;
+        this.controller.params.config.config.getConfig()['showPointLines'] = this.chart.showPointLines;
+        this.controller.params.config.config.getConfig()['showPredictionLines'] = this.chart.showPredictionLines;
+        this.controller.params.config.config.getConfig()['numberOfColumns'] = this.chart.numberOfColumns;
+        this.controller.params.config.config.getConfig()['addComparative'] = this.chart.addComparative;
+    }
 
     closeChartConfig() {
         // Restaurar colores originales
+        this.resetChartConfig();
         this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
         this.applyColorsToChart();
         this.onClose(EdaDialogCloseEvent.NONE, this.oldChart);
