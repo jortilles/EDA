@@ -1041,7 +1041,7 @@ export class DashboardController {
 
       // Si el grupo puede ver todo el modelo.
       let groupCan = 0;
-      userGroups.forEach(
+      userGroups?.forEach(
         group => {
           if (dataModelObject.ds.metadata.model_granted_roles.filter(r => r.table == 'fullModel'
             && r.permission == true
@@ -1058,7 +1058,7 @@ export class DashboardController {
 
 
       // Excepto lo que le prohibo  explicitamente al grupo
-      userGroups.forEach(
+      userGroups?.forEach(
         group => {
           const forbidden = dataModelObject.ds.metadata.model_granted_roles.filter(r => r.column == 'fullTable'
             && r.permission == false
