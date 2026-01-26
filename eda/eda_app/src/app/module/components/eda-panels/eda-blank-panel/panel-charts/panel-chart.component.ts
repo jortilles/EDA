@@ -1052,36 +1052,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     }
 
-    private assignedColorsWork(config, inject) { 
-        console.log('assignedColorsWork', config, inject);
-
-        inject.data.values.forEach((injectValue, index) => {
-            //Primer string encontrado(valor del filtro)
-            const injectValueString = injectValue.find(value => typeof value === 'string');
-            if (!config || !config['assignedColors']?.some(item => item.value === injectValueString)) { 
-                inject.assignedColors.push({
-                    value: injectValueString, color: inject.colors[index] ||
-                    `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`
-                });
-            } else {
-                let mapValues = inject.assignedColors.map(item => item.value);
-                inject.colors[index] = inject.assignedColors[mapValues.findIndex(value => value === injectValueString)]['color'];
-            }
-        });
-        config = inject;
-        return config;
-    }
-    
-    private getUniqueNamesFromDataset(chartDataset) {  
-        // Extraer solo los labels
-        const allNames = chartDataset.map(dataset => dataset.label);
-
-        // Crear set para obtener únicos
-        const uniqueNames = [...new Set(allNames)];
-
-        return uniqueNames;
-    }
-
     /**
      * @return current chart config
      */

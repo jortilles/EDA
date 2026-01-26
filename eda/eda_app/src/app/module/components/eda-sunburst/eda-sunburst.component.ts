@@ -23,7 +23,6 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
   id: string
   svg: any
   data: any
-  colors: Array<string>
   assignedColors: any[];
   labels: Array<string>
   firstColLabels: Array<string>;
@@ -95,7 +94,7 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
       
     //Funcion de ordenación de colores de D3
     const valuesSunburst = this.assignedColors.map((item) => item.value);
-    const colorsSunburst = this.assignedColors[0].color ? this.assignedColors.map(item => item.color) : this.colors;
+    const colorsSunburst = this.assignedColors.map(item => item.color);
     const color = d3.scaleOrdinal(this.firstColLabels, colorsSunburst);
 
     let arc = d3
