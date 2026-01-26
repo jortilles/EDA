@@ -1012,17 +1012,18 @@ private renderFunnel() {
     private renderSunburst() {
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
         let inject: SunBurst = new SunBurst;
-        inject.size = this.props.size;
         inject.id = this.randomID();
+        inject.size = this.props.size;
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
-        const configColors = this.props.config.getConfig()['colors'];
-        inject.colors = (configColors && configColors.length > 0 && configColors) || this.chartUtils.generateChartColorsFromPalette(inject.data.values.length, this.paletaActual)
-            .map(item => item.backgroundColor);
-        inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
-        //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
-        this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));
         inject.linkedDashboard = this.props.linkedDashboardProps;
+        const categoryIndex = dataDescription.otherColumns[0].index;
+        const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
+        //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
+        inject.assignedColors = this.chartUtils.resolveAssignedColors(
+            categories, this.props.config.getConfig()['assignedColors'] || [], this.paletaActual
+        );      
+        this.props.config.setConfig({ ...this.props.config.getConfig(), assignedColors: inject.assignedColors });
         this.createSunburst(inject);
     }
 

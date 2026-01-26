@@ -1,6 +1,6 @@
 import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
 import * as d3 from 'd3'
-import { Component, AfterViewInit, Input, ViewChild, ElementRef, Output, EventEmitter} from '@angular/core'
+import { Component, AfterViewInit, Input, ViewChild, ElementRef, Output, EventEmitter, OnDestroy} from '@angular/core'
 import { SunBurst } from './eda-sunbrust'
 
 import { FormsModule } from '@angular/forms'; 
@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./eda-sunburst.component.css'],
   imports: [FormsModule, CommonModule]
 })
-export class EdaSunburstComponent implements AfterViewInit {
+export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
   @Input() inject: SunBurst
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef
   @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
@@ -30,42 +30,60 @@ export class EdaSunburstComponent implements AfterViewInit {
   width: number
   heigth: number
   metricIndex: number
-  constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService) {}
+  resizeObserver!: ResizeObserver; 
+  
+  constructor(private chartUtilService: ChartUtilsService, private styleProviderService: StyleProviderService) { }
+
   ngOnInit(): void {
-    this.id = `sunburst_${this.inject.id}` ;
+    this.id = `sunburst_${this.inject.id}`;
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     this.data = this.formatData(this.inject.data, this.inject.dataDescription);
     this.labels = this.generateDomain(this.data);
-    this.colors = this.inject.colors?.length > 0 ? this.inject.colors
-      :this.chartUtilService.generateChartColorsFromPalette(this.labels.length,this.styleProviderService.ActualChartPalette['paleta']). map(item => item.backgroundColor)
-      const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
-      this.firstColLabels = this.inject.data.values.map((row) => row[firstNonNumericColIndex]);
-      this.firstColLabels = [...new Set(this.firstColLabels)];
-    this.assignedColors = this.inject.assignedColors || []; 
-    this.assignedColors.forEach((element, index) => {if(element.value === undefined) element.value = this.firstColLabels[index]}); // linea para cuando value es numerico
+    const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
+    this.firstColLabels = this.inject.data.values.map((row) => row[firstNonNumericColIndex]);
+    this.firstColLabels = [...new Set(this.firstColLabels)];
+    this.assignedColors = this.inject.assignedColors;
   }
 
-  ngAfterViewInit () {
-    if (this.svg) this.svg.remove()
-    let id = `#${this.id}`
-    this.svg = d3.select(id)
-    if (
-      this.svg._groups[0][0] !== null &&
-      this.svgContainer.nativeElement.clientHeight > 0
-    ) {
-      this.draw()
+  ngAfterViewInit() {
+    const container = this.svgContainer.nativeElement as HTMLElement;
+
+    // Crear SVG
+    this.svg = d3.select(container).append('svg');
+
+    this.resizeObserver = new ResizeObserver(entries => {
+      let id = `#${this.id}`;
+      this.svg = d3.select(id);
+      if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
+        this.draw();
+      }
+    });
+    this.resizeObserver.observe(container);
+
+    // Dibujar inicialmente
+    if (this.svg) this.svg.remove();
+    let id = `#${this.id}`;
+    this.svg = d3.select(id);
+    if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
+      this.draw();
     }
-
   }
+
   ngOnDestroy(): void {
     if (this.div)
       this.div.remove();
+    if (this.resizeObserver)
+      this.resizeObserver.disconnect();
   }
+
   draw() {
-    const svg = this.svg
-    const width = this.svgContainer.nativeElement.clientWidth - 40
-    //const height = this.svgContainer.nativeElement.clientHeight - 20
-    let radius = width / 2
+    // Limpiar SVG antes de redibujar (evita acumulación)
+    this.svg.selectAll('*').remove();
+    
+    const svg = this.svg;
+    const width = this.svgContainer.nativeElement.clientWidth - 40;
+    let radius = width / 2;
+    
     /** copio els objectes del d3  */
     let partition = data =>
       d3.partition().size([2 * Math.PI, radius * radius])(
@@ -128,8 +146,6 @@ export class EdaSunburstComponent implements AfterViewInit {
 
     svg
       .attr('viewBox', `${-radius} ${-radius} ${width} ${width}`)
-     // .style('max-width', `${width}px`)
-    // .style('font', '12px sans-serif')
 
     const path = svg
       .append('g')

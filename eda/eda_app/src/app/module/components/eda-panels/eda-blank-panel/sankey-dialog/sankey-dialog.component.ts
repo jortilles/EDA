@@ -60,7 +60,7 @@ export class SankeyDialog implements OnInit, AfterViewChecked {
           const match = chartAssignedColors.find(c => c.value === label);
           return {
             value: label,
-            color: match?.color ?? '#000000'
+            color: match?.color
           };
         });
 
@@ -78,9 +78,7 @@ export class SankeyDialog implements OnInit, AfterViewChecked {
   /** GUARDAR */
   saveChartConfig(): void {
     this.syncChart();
-    this.onClose(EdaDialogCloseEvent.UPDATE, {
-      colors: this.assignedColors.map(c => c.color)
-    });
+    this.onClose(EdaDialogCloseEvent.UPDATE, {colors: this.assignedColors.map(c => c.color)});
   }
 
   /** CANCELAR */
@@ -117,22 +115,14 @@ export class SankeyDialog implements OnInit, AfterViewChecked {
 
   /*sincroniza todo */
   private syncChart(): void {
-
     const labelColorMap: Record<string, string> = {};
-    this.assignedColors.forEach(c => {
-      labelColorMap[c.value] = c.color;
-    });
+    this.assignedColors.forEach(c => {labelColorMap[c.value] = c.color;});
 
     // Sankey necesita colores según data.values
     const colorsForChart = this.values.map(v => labelColorMap[v[0] as string]);
 
-    this.myPanelChartComponent.props.config.setConfig(
-      new SankeyConfig([...new Set(colorsForChart)])
-    );
-
-    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] =
-      [...this.assignedColors];
-
+    this.myPanelChartComponent.props.config.setConfig(new SankeyConfig([...new Set(colorsForChart)]));
+    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
     this.myPanelChartComponent.changeChartType();
   }
 }
