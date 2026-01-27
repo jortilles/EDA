@@ -5489,6 +5489,27 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Gráfico de Barras Apiladas al 100%</source>
         <target>Wykres słupkowy skumulowany 100%</target>
       </trans-unit>
+
+      <trans-unit id="showPointLines">
+        <source>Mostrar Puntos en Lineas</source>
+        <target>Pokaż punkty na liniach</target>
+      </trans-unit>
+      <trans-unit id="showLinesPrediction">
+        <source>Mostrar Predicción</source>
+        <target>Pokaż prognozę</target>
+      </trans-unit>
+      <trans-unit id="chartLabelLinesOptionDescription">
+        <source>Muestra las líneas en los puntos</source>
+        <target>Pokaż linie w punktach</target>
+      </trans-unit>
+      <trans-unit id="chartLabelLinePredicctionOptionDescription">
+        <source>Muestra las predicción de la serie</source>
+        <target>Pokazuje przewidywania serii</target>
+      </trans-unit>
+      <trans-unit id="Prediction">
+        <source>Predicción</source>
+        <target>Predykcja</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

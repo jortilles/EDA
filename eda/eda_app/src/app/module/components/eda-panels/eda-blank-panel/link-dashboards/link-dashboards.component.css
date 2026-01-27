@@ -1,0 +1,8 @@
+:host ::ng-deep .unlink-chip:hover {
+  background-color: #ffe5e5;
+  color: #b00000;
+}
+
+:host ::ng-deep .unlink-chip:hover .p-chip-remove-icon {
+  color: #b00000;
+}

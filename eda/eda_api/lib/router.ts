@@ -11,6 +11,7 @@ import DocuRouter from './routes/api/api-docs'
 import ExcelRouter from './module/excel/excel-sheet.router';
 import ThirdPartyRouter from './module/thirdParty/thirdParty.router';
 import ChatGptRouter from './module/chatgpt/chatgpt.router';
+import ArimaRouter from './module/predictions/predictions.router';
 import AuthRouter from './module/auth/auth.router';
 
 const router = express.Router();
@@ -36,6 +37,8 @@ router.use('/excel-sheets',ExcelRouter);
 router.use('/tp', ThirdPartyRouter);
 
 router.use('/chatgpt', ChatGptRouter);
+
+router.use('/arima', ArimaRouter);  
 
 router.use('/auth', AuthRouter);
 

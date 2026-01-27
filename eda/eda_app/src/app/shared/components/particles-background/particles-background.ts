@@ -57,7 +57,7 @@ export class ParticlesBackgroundComponent implements AfterViewInit, OnDestroy {
     }
 
     private initParticles() {
-        const particleCount = 80
+        const particleCount = 100
         const canvas = this.canvasRef.nativeElement
 
         for (let i = 0; i < particleCount; i++) {

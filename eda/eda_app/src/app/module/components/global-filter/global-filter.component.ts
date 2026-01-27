@@ -200,28 +200,32 @@ export class GlobalFilterComponent implements OnInit {
         // Aplicando los filtros dependientes si existe un ordenamiento configurado
         if(this.orderDependentFilters.length !==0) this.applyingDependentFilter(filter, this.globalFilters);
 
+        // Verificando si tenemos filtros para mapear, que fueron importados en el nuevo dashboard
         this.dashboard.edaPanels.forEach((ebp: EdaBlankPanelComponent) => {
+
             const filterMap = ebp.panel.globalFilterMap || [];
-         if (filter.panelList.includes(ebp.panel.id)) {
-                const filterApplied = ebp.globalFilters.find((gf: any) => gf.filter_id === filter.id);
 
-                if (filterApplied) {
-                    filterApplied.filter_elements = this.globalFilterService.assertGlobalFilterItems(filter);
-                } else {
-                    const formatedFilter = this.globalFilterService.formatFilter(filter);
-                    ebp.assertGlobalFilter(formatedFilter);
+            if (filter.panelList.includes(ebp.panel.id)) {
+                    const filterApplied = ebp.globalFilters.find((gf: any) => gf.filter_id === filter.id);
+
+                    if (filterApplied) {
+                        filterApplied.filter_elements = this.globalFilterService.assertGlobalFilterItems(filter);
+                    } else {
+                        const formatedFilter = this.globalFilterService.formatFilter(filter);
+                        ebp.assertGlobalFilter(formatedFilter);
+                    }
+
+                } else if (filterMap.length) {  // Sección donde mapeamos filtros importados
+
+                    const map = filterMap.find((f) => f.targetId == filter.id);
+                    const panelFilter = ebp.globalFilters.find(gf => gf.filter_id === map?.sourceId);
+                    const items = this.globalFilterService.formatFilter(filter);
+                    if (panelFilter?.filter_elements) {
+                        panelFilter.filter_elements = items.filter_elements; // Copiando los items seleccionados
+                    }
+
+                    ebp.assertGlobalFilter(panelFilter);
                 }
-
-            } else if (filterMap.length) {
-
-                const map = filterMap.find((f) => f.targetId == filter.id);
-                const panelFilter = ebp.globalFilters.find(filter => filter.filter_id === map?.sourceId);
-                const items = this.globalFilterService.formatFilter(filter);
-                if (panelFilter?.filter_elements)
-                    panelFilter.filter_elements = items;
-
-                ebp.assertGlobalFilter(items);
-            }
         })
     }
 
@@ -261,6 +265,7 @@ export class GlobalFilterComponent implements OnInit {
                     dashboard: dashboardId,
                     panel: '',
                     joinType: "inner",
+                    prediction: 'None',
                     rootTable: filterItem.selectedTable.table_name,
                     queryMode: filterItem.queryMode,
                     forSelector: true,
@@ -859,6 +864,7 @@ export class GlobalFilterComponent implements OnInit {
                 panel: '',
                 joinType: "inner",
                 rootTable:filtro.selectedTable.table_name,
+                prediction: 'None',
                 groupByEnabled: true,
                 queryMode: filtro.queryMode,
                 forSelector: true,

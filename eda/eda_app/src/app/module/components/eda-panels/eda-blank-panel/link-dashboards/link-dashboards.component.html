@@ -125,14 +125,14 @@
       </div>
     }
 
-    @if (oldLinked) {
-      <div class="grid space-y-4">
-        <h6>{{unLinkString}} {{oldLinked}} </h6>
-        <p-inputSwitch
-          id="switchQueryMode"
-          [(ngModel)]="noLink"
-          tooltipPosition="left">
-        </p-inputSwitch>
+    @if (!noLink) {
+      <div class="grid space-y-4 mt-6">
+        <p-chip
+          label="{{unLinkString}} {{oldLinked}}"
+          removable="true"
+          (onRemove)="noLink = true;"
+          >
+        </p-chip>
       </div>
     }
   </div>

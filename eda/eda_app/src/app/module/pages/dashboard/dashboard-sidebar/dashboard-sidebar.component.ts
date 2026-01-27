@@ -584,7 +584,7 @@ export class DashboardSidebarComponent {
           await lastValueFrom(this.dashboardService.deleteDashboard(dashboardId));
 
           // La app se direcciona al home EDA
-          this.router.navigate(['/']).then(() => {
+          this.router.navigate(['/home']).then(() => {
             window.location.reload();
           });
         } catch (err) {
