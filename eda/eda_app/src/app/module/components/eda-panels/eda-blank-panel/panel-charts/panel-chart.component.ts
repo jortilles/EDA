@@ -682,57 +682,43 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.labels = this.props.query.map(field => field.display_name.default);
         inject.maps = this.props.maps;
         inject.query = this.props.query;
-        inject.draggable = this.props.draggable;
-        inject.zoom = this.props.zoom;
-        inject.coordinates = this.props.coordinates;
-
-        try {
-            inject.coordinates = this.props.config['config']['coordinates'];                
-        }catch{
-            inject.coordinates = null ;
-        }
-        try {
-            if (true) {
-                inject.zoom = this.props.config["config"]["zoom"];
-            } else {}
-        }catch{}
-        try{
-            if (type === "geoJsonMap") {
-                inject.color = this.props.config.getConfig() !== undefined && !this.styleProviderService.loadingFromPalette
-                    ? this.props.config["config"]["color"]
-                    : this.chartUtils.generateChartColorsFromPalette(1, this.paletaActual)[0].backgroundColor;
-                inject.baseLayer = this.props.config['config']['baseLayer'];
-            } else {
-                let fromPaleta = this.props.config.getConfig() === undefined;
-                inject.initialColor = !fromPaleta ? this.props.config.getConfig()["initialColor"] : this.chartUtils.generateChartColorsFromPalette(2, this.paletaActual).at(-1).backgroundColor;
-                inject.finalColor = !fromPaleta ? this.props.config.getConfig()["finalColor"] : this.chartUtils.generateChartColorsFromPalette(2, this.paletaActual)[0].backgroundColor;
-                
-                inject.baseLayer = true;
-            }
-        } catch {
-            inject.color =  this.styleProviderService.ActualChartPalette['paleta'][0];
-        }
-        try{
-            inject.logarithmicScale = this.props.config['config']['logarithmicScale']  ;
-        }catch{
-            inject.logarithmicScale =  false;
-        }
-        try {
-            if (type === "geoJsonMap") {
-                inject.legendPosition = this.props.config['config']['legendPosition']  ;
-            }
-        }catch{
-            inject.legendPosition =  'bottomleft';
-        }
-        try{
-            inject.draggable = this.props.config['config']['draggable'];
-        }catch{
-            inject.draggable = true;
-        }
-        
         inject.linkedDashboard = this.props.linkedDashboardProps;
+
+        // Obtener config
+        const config = this.props.config.getConfig() || {};
+
+        // Coordinates
+        inject.coordinates = config['coordinates'] || this.props.coordinates || null;
+
+        // Zoom
+        inject.zoom = config['zoom'] || this.props.zoom || 5;
+
+        // Draggable
+        inject.draggable = config['draggable'] !== undefined ? config['draggable'] : (this.props.draggable !== undefined ? this.props.draggable : true);
+
+        // Base Layer
+        inject.baseLayer = config['baseLayer'] !== undefined ? config['baseLayer'] : true;
+
+        // Logarithmic Scale
+        inject.logarithmicScale = config['logarithmicScale'] || false;
+
+        // Legend Position
+        inject.legendPosition = config['legendPosition'] || 'bottomleft';
+
+        // Cargar assignedColors
+        let assignedColors = config['assignedColors'];
+
+        if (!assignedColors || !Array.isArray(assignedColors) || assignedColors.length === 0) {
+            const defaultColor = this.paletaActual[0];
+            assignedColors = [{ value: 'Color', color: defaultColor }];
+            // Guardar los colores por defecto
+            config['assignedColors'] = assignedColors;
+        }
+
+        inject.assignedColors = assignedColors;
+
         if (type === 'coordinatesMap') {
-            this.createMapComponent(inject)
+            this.createMapComponent(inject);
         } else {
             this.createGeoJsonMapComponent(inject);
         }

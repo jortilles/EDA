@@ -1171,23 +1171,36 @@ public tableNodeExpand(event: any): void {
         this.tableController = undefined;
     }
 
-public onCloseMapProperties(event, response: { color: string, logarithmicScale: boolean, legendPosition: string, baseLayer: boolean, draggable: boolean, zoom:number, coordinates: Array<Array<number>> }): void {
+    public onCloseMapProperties(event, response: {
+        logarithmicScale: boolean,
+        legendPosition: string,
+        baseLayer: boolean,
+        draggable: boolean,
+        zoom: number,
+        coordinates: Array<Array<number>>,
+        assignedColors: any[],
+        color?: string
+    }): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            this.panel.content.query.output.config.color = response.color;
-            this.panel.content.query.output.config.logarithmicScale = response.logarithmicScale;
-            this.panel.content.query.output.config.legendPosition = response.legendPosition;
-            this.panel.content.query.output.config.baseLayer = response.baseLayer;
-            this.panel.content.query.output.config.baseLayer = response.baseLayer;
-            this.panel.content.query.output.config.draggable = response.draggable;
-            this.panel.content.query.output.config.zoom = response.zoom;
-            this.panel.content.query.output.config.coordinates =
-              response.coordinates;
+            this.panel.content.query.output.config = {
+                ...this.panel.content.query.output.config,
+                assignedColors: response.assignedColors,
+                color: response.color, // legacy
+                logarithmicScale: response.logarithmicScale,
+                legendPosition: response.legendPosition,
+                baseLayer: response.baseLayer,
+                draggable: response.draggable,
+                zoom: response.zoom,
+                coordinates: response.coordinates
+            };
+
             const config = new ChartConfig(this.panel.content.query.output.config);
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+            this.renderChart( this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService._notSaved.next(true);
         }
         this.mapController = undefined;
     }
+        
     public onCloseMapCoordProperties(event, response: { initialColor: string, finalColor: string, logarithmicScale: boolean, draggable: boolean, zoom:number, coordinates: Array<Array<number>> }): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             this.panel.content.query.output.config.initialColor = response.initialColor;

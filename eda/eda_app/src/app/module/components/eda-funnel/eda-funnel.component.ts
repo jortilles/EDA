@@ -95,8 +95,6 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit, OnDestroy {
 // Reemplazar desde la línea 94
 
 draw() {
-    console.log('🔍 assignedColors en draw():', this.assignedColors);
-
   // Borrado inicial de otros charts 
   this.svg.selectAll('*').remove();
 

@@ -33,7 +33,6 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
   constructor(private styleProviderService: StyleProviderService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    console.log(this);
     this.paleta = this.styleProviderService.ActualChartPalette;
 
     // Obtener color desde assignedColors

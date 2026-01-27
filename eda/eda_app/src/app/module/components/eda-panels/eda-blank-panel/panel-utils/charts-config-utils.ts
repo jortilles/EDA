@@ -65,19 +65,17 @@ export const ChartsConfigUtils = {
       config = {
         color: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.color : ebp.panelChart.props.config.getConfig()['color']
       }
-    }  else if (ebp.panelChart.props.chartType === 'geoJsonMap') {
-
+    } else if (ebp.panelChart.props.chartType === 'geoJsonMap') {
       config = {
         zoom: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.zoom : null,
         coordinates: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.coordinates : null,
         logarithmicScale: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.logarithmicScale : null,
         baseLayer: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.baseLayer : null,
         legendPosition: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.legendPosition : null,
-        color: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.color : null,
+        assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : null,
         draggable: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.draggable : null,
-        
       }
-    } else if(ebp.panelChart.props.chartType === 'treetable') {
+    } else if (ebp.panelChart.props.chartType === 'treetable') {
       config = {
         chartType: ebp.panelChart.props.chartType,
         editedTreeTable: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['editedTreeTable'] : false,
