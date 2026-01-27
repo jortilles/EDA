@@ -4210,7 +4210,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
           <context context-type="linenumber">42</context>
         </context-group>
       </trans-unit>
-      </trans-unit>
       <trans-unit id="placeholderTargetTables" datatype="html">
         <source>tabla destino</source>
         <context-group purpose="location">

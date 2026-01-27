@@ -5653,16 +5653,6 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <target>SID</target>
       </trans-unit>
 
-      <trans-unit id="excel10mb">
-        <source>EXCEL (max. 10MB)</source>
-        <target>EXCEL (max. 10MB)</target>
-      </trans-unit>
-        
-      <trans-unit id="json10mb">
-        <source>JSON (max. 10MB)</source>
-        <target>JSON (max. 10MB)</target>
-      </trans-unit>
-
       <trans-unit id="databaseExample">
         <source>database.example.com</source>
         <target>base_de_données.exemple.com</target>

@@ -2043,7 +2043,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="IncorrectForm2">
 <source>Formulario incorrecto, revise los campos.</source>
-<target>Nieprawidłowy formularz. Proszę sprawdzić wymagane pola.</target>
+<target>Nieprawidłowy formularz, proszę sprawdzić wymagane pola.</target>
 </trans-unit>
 
 <trans-unit id="ImportantMessage">

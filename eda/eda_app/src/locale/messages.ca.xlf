@@ -2395,7 +2395,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="IncorrectForm2">
 <source>Formulario incorrecto, revise los campos.</source>
-<target>Formulari incorrecte. Revisa els camps obligatoris.</target>
+<target>Formulari incorrecte, revisa els camps.</target>
 </trans-unit>
 
 <trans-unit id="ImportantMessage">
