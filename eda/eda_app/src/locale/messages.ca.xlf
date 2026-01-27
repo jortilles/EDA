@@ -4852,8 +4852,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 </trans-unit>
 
 <trans-unit id="connectDashboardPanel">
-  <source>Conecta los filtros entre el dashboard y el panel</source>
-  <target>Connecta els filtres entre el dashboard i el panell</target>
+  <source>Conecta los filtros entre el dashboard y el panel, (los únicos filtros de panel que se visualizan son aquellos cuyo tipo de filtro es IN)</source>
+  <target>Connecta els filtres entre el tauler i el panell (els únics filtres de panell que es visualitzen són aquells el tipus de filtre dels quals és IN)</target>
 </trans-unit>
 
 <trans-unit id="mapFilters">

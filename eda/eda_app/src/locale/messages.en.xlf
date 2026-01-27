@@ -4464,8 +4464,8 @@ Once configured you can invoke it whenever you want from the button.</target>
 </trans-unit>
 
 <trans-unit id="connectDashboardPanel">
-<source>Conecta los filtros entre el dashboard y el panel</source>
-<target>Connect filters between the dashboard and the panel</target>
+  <source>Conecta los filtros entre el dashboard y el panel, (los únicos filtros de panel que se visualizan son aquellos cuyo tipo de filtro es IN)</source>
+  <target>Connect the filters between the dashboard and the panel (the only panel filters that are displayed are those whose filter type is IN)</target>
 </trans-unit>
 
 <trans-unit id="mapFilters">
