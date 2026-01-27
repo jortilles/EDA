@@ -55,7 +55,7 @@
           <eda-filter-mapper [panel]="panelsFilters" [dashboardFilter]="dashboardFilters"  [dashboard]="dashboard" [panelFilters]="_filterMapper[activeTab].panelFilters" [dashboardFilters]="_filterMapper[activeTab].dashboardFilters" [(connections)]="_filterMapper[activeTab].connections" >
             <div header>
               <h1 class="text-2xl font-bold text-gray-900 mb-1" i18n="@@mapFilters">Mapear Filtros </h1>
-              <p class="text-gray-600 mb-3" i18n="@@connectDashboardPanel">Conecta los filtros entre el dashboard y el panel</p>
+              <p class="text-gray-600 mb-3" i18n="@@connectDashboardPanel">Conecta los filtros entre el dashboard y el panel, (los únicos filtros de panel que se visualizan son aquellos cuyo tipo de filtro es IN)</p>
             </div>
           </eda-filter-mapper>
         }

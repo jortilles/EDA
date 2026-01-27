@@ -4808,8 +4808,8 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 </trans-unit>
 
 <trans-unit id="connectDashboardPanel">
-  <source>Conecta los filtros entre el dashboard y el panel</source>
-  <target>Connectez les filtres entre le tableau de bord et le panneau</target>
+  <source>Conecta los filtros entre el dashboard y el panel, (los únicos filtros de panel que se visualizan son aquellos cuyo tipo de filtro es IN)</source>
+  <target>Connectez les filtres entre le tableau de bord et le panneau (les seuls filtres de panneau affichés sont ceux dont le type de filtre est IN)</target>
 </trans-unit>
 
 <trans-unit id="mapFilters">
