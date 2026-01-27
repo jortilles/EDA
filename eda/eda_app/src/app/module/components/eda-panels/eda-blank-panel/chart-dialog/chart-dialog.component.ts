@@ -449,16 +449,18 @@ export class ChartDialogComponent {
                 
             default:
                 // Bar, Line, Radar, Stacked, etc.
-                // Crear nuevos datasets con los colores actualizados
-                if (this.chart.chartDataset && Array.isArray(this.chart.chartDataset)) {
-                    this.chart.chartDataset = this.chart.chartDataset.map((dataset, index) => {
-                        if (this.assignedColors[index]) {
+                if (this.chart.chartDataset.length > 0 && Array.isArray(this.chart.chartDataset)) {
+                    this.chart.chartDataset = this.chart.chartDataset.map((dataset) => {
+                        // Buscar el color correspondiente al label de este dataset
+                        const colorConfig = this.assignedColors.find(c => c.value === dataset.label);
+                        
+                        if (colorConfig) {
                             return {
                                 ...dataset,
-                                backgroundColor: this.assignedColors[index].color,
-                                borderColor: this.assignedColors[index].color,
-                                pointBackgroundColor: this.assignedColors[index].color,
-                                pointBorderColor: this.assignedColors[index].color
+                                backgroundColor: colorConfig.color,
+                                borderColor: colorConfig.color,
+                                pointBackgroundColor: colorConfig.color,
+                                pointBorderColor: colorConfig.color
                             };
                         }
                         return dataset;
@@ -586,9 +588,10 @@ export class ChartDialogComponent {
         // Aplicar colores finales
         this.applyColorsToChart();
         
-        // Guardar assignedColors en config
+        // Guardar assignedColors en config y chart
+        this.chart['assignedColors'] = [...this.assignedColors];
         this.controller.params.config.config.getConfig()['assignedColors'] = [...this.assignedColors];
-        
+
         // Guardar otras opciones
         this.chart.addTrend = this.addTrend;
         this.chart.addComparative = this.addComparative;
