@@ -220,11 +220,21 @@ export class GlobalFilterComponent implements OnInit {
                     const map = filterMap.find((f) => f.targetId == filter.id);
                     const panelFilter = ebp.globalFilters.find(gf => gf.filter_id === map?.sourceId);
                     const items = this.globalFilterService.formatFilter(filter);
-                    if (panelFilter?.filter_elements) {
-                        panelFilter.filter_elements = items.filter_elements; // Copiando los items seleccionados
+
+                    // Si el filtro importado es de panel => selectedFilter
+                    if(!panelFilter) {
+                        const selectedFilter = ebp.selectedFilters.find(gf => gf.filter_id === map?.sourceId);
+                        if(selectedFilter?.filter_elements) {
+                            selectedFilter.filter_elements = items.filter_elements; // Copiando los items seleccionados
+                        }
+
+                    } else {
+                        if (panelFilter?.filter_elements) {
+                            panelFilter.filter_elements = items.filter_elements; // Copiando los items seleccionados
+                            ebp.assertGlobalFilter(panelFilter);
+                        }
                     }
 
-                    ebp.assertGlobalFilter(panelFilter);
                 }
         })
     }
