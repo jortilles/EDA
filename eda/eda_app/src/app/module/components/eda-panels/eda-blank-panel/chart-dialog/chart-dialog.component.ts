@@ -116,6 +116,7 @@ export class ChartDialogComponent {
         this.showComparative = this.allowCoparative(this.controller.params);
         this.load();
         this.display = true;
+        console.log(this)
     }
 
     load() {
@@ -126,19 +127,24 @@ export class ChartDialogComponent {
     loadChartColors() {
         // Recuperar assignedColors guardados en config
         const existingColors = this.controller.params.config.config.getConfig()['assignedColors'] || [];
-        
+        console.log(existingColors)
         // Obtener los labels según el tipo de chart
         const labels = this.getChartLabels();
         
         // Crear assignedColors mapeando labels a colores
         this.assignedColors = labels.map((label, index) => {
             const match = existingColors.find(c => c.value === label);
+            console.log(match, 'match');
             return {
                 value: label,
                 color: match?.color || this.getDefaultColor(index)
             };
         });
         
+        
+        console.log(JSON.stringify(this.assignedColors), 'assignedColors');
+        console.log((this.assignedColors), 'assignedColors');
+
         // Aplicar los colores al chart
         this.applyColorsToChart();
         

@@ -1,13 +1,14 @@
-import { Component, ViewChild, OnInit, Input } from '@angular/core';
+import { Component, ViewChild, OnInit, Input, AfterViewChecked } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { FunnelConfig } from '../panel-charts/chart-configuration-models/funnel.config';
-import { StyleProviderService,ChartUtilsService } from '@eda/services/service.index';
-import { FormsModule } from '@angular/forms'; 
+import { StyleProviderService, ChartUtilsService } from '@eda/services/service.index';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { ColorPickerModule } from 'primeng/colorpicker';
+
 @Component({
   standalone: true,
   selector: 'app-funnel-dialog',
@@ -15,20 +16,20 @@ import { ColorPickerModule } from 'primeng/colorpicker';
   imports: [FormsModule, CommonModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent],
 })
 
-export class FunnelDialog implements OnInit {
+export class FunnelDialog implements OnInit, AfterViewChecked {
 
   @Input() controller: any;
   @ViewChild('PanelChartComponent', { static: false })
   myPanelChartComponent: PanelChartComponent;
 
-  public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
 
-  /** Fuente de verdad */
-  public assignedColors: { value: string | number; color: string }[] = [];
-  private originalAssignedColors: { value: string | number; color: string }[] = [];
+  public assignedColors: { value: string; color: string }[] = [
+    { value: 'start', color: '#000000' },
+    { value: 'end', color: '#000000' }
+  ];
+  private originalAssignedColors: { value: string; color: string }[] = [];
 
-  public labels: Array<string | number> = [];
   public selectedPalette: { name: string; paleta: string[] } | null = null;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
 
@@ -46,32 +47,21 @@ export class FunnelDialog implements OnInit {
   }
 
   ngAfterViewChecked(): void {
-
-    if (!this.assignedColors.length && this.myPanelChartComponent?.componentRef) {
+    // Solo actualizar si los colores aún son los valores por defecto
+    if (this.assignedColors[0].color === '#000000' && this.assignedColors[1].color === '#000000' && this.myPanelChartComponent?.componentRef) {
 
       setTimeout(() => {
+        /* Obtener colores existentes del chart */
+        const chartAssignedColors = this.myPanelChartComponent.props.config.getConfig()['assignedColors'] || [];
 
-        const funnelInstance =
-          this.myPanelChartComponent.componentRef.instance;
-
-        /** labels reales del funnel */
-        this.labels = funnelInstance.firstColLabels || [];
-
-        /** colores existentes */
-        const chartAssignedColors =
-          this.myPanelChartComponent.props.config.getConfig()['assignedColors'] || [];
-
-        /** sincronizar dialog ←→ chart */
-        this.assignedColors = this.labels.map(label => {
-          const match = chartAssignedColors.find(c => c.value === label);
-          return {
-            value: label,
-            color: match?.color || '#000000'
-          };
-        });
-
-        this.originalAssignedColors =
-          this.assignedColors.map(c => ({ ...c }));
+        /* Actualizar con los colores reales del chart */
+        if (chartAssignedColors.length >= 2) {
+          this.assignedColors = [
+            { value: 'start', color: chartAssignedColors[0]?.color},
+            { value: 'end', color: chartAssignedColors[1]?.color}
+          ];
+          this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
+        }
 
       }, 0);
     }
@@ -81,73 +71,51 @@ export class FunnelDialog implements OnInit {
     this.controller.close(event, response);
   }
 
-  /** guardar */
+  /** GUARDAR */
   saveChartConfig(): void {
     const colorsForConfig = this.assignedColors.map(c => c.color);
-
-    this.myPanelChartComponent.props.config.setConfig(new FunnelConfig(this.assignedColors.map(c => c.color)));
-
+    this.myPanelChartComponent.props.config.setConfig(new FunnelConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
     this.myPanelChartComponent.changeChartType();
 
-    this.onClose(EdaDialogCloseEvent.UPDATE, { assignedColors: colorsForConfig });
+    this.onClose(EdaDialogCloseEvent.UPDATE, { colors: colorsForConfig });
   }
 
-  /** cancelar */
+
+  /** CANCELAR */
   closeChartConfig(): void {
+    this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
 
-    this.assignedColors =
-      this.originalAssignedColors.map(c => ({ ...c }));
-
-    this.myPanelChartComponent.props.config.setConfig(
-      new FunnelConfig(this.assignedColors.map(c => c.color))
-    );
-
-    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] =
-      [...this.assignedColors];
-
+    const colorsForConfig = this.assignedColors.map(c => c.color);
+    this.myPanelChartComponent.props.config.setConfig(new FunnelConfig(colorsForConfig));
+    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
     this.myPanelChartComponent.changeChartType();
 
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
-  /** cambio individual */
+  /** COLOR PICKER */
   handleInputColor(): void {
+    const colorsForConfig = this.assignedColors.map(c => c.color);
 
-    this.myPanelChartComponent.props.config.setConfig(
-      new FunnelConfig(this.assignedColors.map(c => c.color))
-    );
-
-    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] =
-      [...this.assignedColors];
-
+    this.myPanelChartComponent.props.config.setConfig(new FunnelConfig(colorsForConfig));
+    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
     this.myPanelChartComponent.changeChartType();
   }
 
-  /** paleta completa */
+  /* PALETA */
   onPaletteSelected(): void {
-
     if (!this.selectedPalette) return;
-
-    const length = this.labels.length;
     const palette = this.selectedPalette.paleta;
+    
+    /* Aplicar primer y último color de la paleta */
+    this.assignedColors = [
+      {value: 'start', color: palette[0]},
+      {value: 'end', color: palette[palette.length - 1]}
+    ];
 
-    const newColors = Array.from({ length }, (_, i) =>
-      palette[i % palette.length]
-    );
-
-    this.assignedColors = this.labels.map((label, i) => ({
-      value: label,
-      color: newColors[i]
-    }));
-
-    this.myPanelChartComponent.props.config.setConfig(
-      new FunnelConfig(this.assignedColors.map(c => c.color))
-    );
-
-    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] =
-      [...this.assignedColors];
-
+    // Actualizar color del chart
+    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
     this.myPanelChartComponent.changeChartType();
   }
 }
