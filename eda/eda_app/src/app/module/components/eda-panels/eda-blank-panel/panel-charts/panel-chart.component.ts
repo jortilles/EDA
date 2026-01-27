@@ -789,7 +789,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (!this.props?.data?.values?.length) {
             return;
         }
-        
+
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
         const inject: EdaD3 = new EdaD3();
         inject.id = this.randomID();
@@ -798,17 +798,22 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.dataDescription = dataDescription;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
-        // Inicializar con colores por defecto o usar los existentes
-        const existingColors = this.props.config.getConfig()['assignedColors'] || [];
-        console.log(existingColors)
+        // Obtener colores guardados
+        let assignedColors = this.props.config.getConfig()['assignedColors'];
 
-        inject.assignedColors = [
-            {value: 'start', color: existingColors[0]?.color || this.paletaActual[0]},
-            {value: 'end', color: existingColors[1]?.color || this.paletaActual[this.paletaActual.length - 1],}
-        ];
+        // Si no hay colores guardados o están incompletos, crear defaults
+        if (!assignedColors || !Array.isArray(assignedColors) || assignedColors.length < 2) {
+            assignedColors = [
+                { value: 'start', color: this.paletaActual[0] },
+                { value: 'end', color: this.paletaActual[this.paletaActual.length - 1] }
+            ];
 
-        // Guardar los colores en la configuración
-        this.props.config.setConfig({ ...this.props.config.getConfig(), assignedColors: inject.assignedColors});
+            // SOLO guardar si no existían antes
+            this.props.config.getConfig()['assignedColors'] = assignedColors;
+        }
+        // Usar los colores (ya sean guardados o defaults)
+        inject.assignedColors = assignedColors;
+
         this.createFunnelComponent(inject);
     }
 
@@ -816,8 +821,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.entry.clear();
         this.componentRef = this.entry.createComponent(EdaFunnelComponent);
         this.componentRef.instance.inject = inject;
-        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
-
+        this.componentRef.instance.onClick.subscribe((event) => 
+            this.onChartClick.emit({...event, query: this.props.query})
+        );
     }
 
     private renderBubblechart() {

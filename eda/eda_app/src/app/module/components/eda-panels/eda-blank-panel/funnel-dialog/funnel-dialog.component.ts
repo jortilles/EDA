@@ -39,7 +39,7 @@ export class FunnelDialog implements OnInit, AfterViewChecked {
   constructor(
     private stylesProviderService: StyleProviderService,
     private chartUtils: ChartUtilsService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.panelChartConfig = this.controller.params.panelChart;
@@ -57,8 +57,8 @@ export class FunnelDialog implements OnInit, AfterViewChecked {
         /* Actualizar con los colores reales del chart */
         if (chartAssignedColors.length >= 2) {
           this.assignedColors = [
-            { value: 'start', color: chartAssignedColors[0]?.color},
-            { value: 'end', color: chartAssignedColors[1]?.color}
+            { value: 'Inicio', color: chartAssignedColors[0]?.color },
+            { value: 'Fin', color: chartAssignedColors[1]?.color }
           ];
           this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
         }
@@ -71,18 +71,19 @@ export class FunnelDialog implements OnInit, AfterViewChecked {
     this.controller.close(event, response);
   }
 
-  /** GUARDAR */
+  /* GUARDAR */
   saveChartConfig(): void {
-    const colorsForConfig = this.assignedColors.map(c => c.color);
-    this.myPanelChartComponent.props.config.setConfig(new FunnelConfig(colorsForConfig));
-    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
+    // Guardar assignedColors en el config
+    const config = this.myPanelChartComponent.props.config.getConfig();
+    config['assignedColors'] = [...this.assignedColors];
     this.myPanelChartComponent.changeChartType();
 
-    this.onClose(EdaDialogCloseEvent.UPDATE, { colors: colorsForConfig });
+    // Enviar tanto colors como assignedColors en el response
+    this.onClose(EdaDialogCloseEvent.UPDATE, { assignedColors: [...this.assignedColors] });
   }
 
 
-  /** CANCELAR */
+  /* CANCELAR */
   closeChartConfig(): void {
     this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
 
@@ -90,11 +91,10 @@ export class FunnelDialog implements OnInit, AfterViewChecked {
     this.myPanelChartComponent.props.config.setConfig(new FunnelConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
     this.myPanelChartComponent.changeChartType();
-
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
-  /** COLOR PICKER */
+  /* COLOR PICKER */
   handleInputColor(): void {
     const colorsForConfig = this.assignedColors.map(c => c.color);
 
@@ -107,11 +107,11 @@ export class FunnelDialog implements OnInit, AfterViewChecked {
   onPaletteSelected(): void {
     if (!this.selectedPalette) return;
     const palette = this.selectedPalette.paleta;
-    
+
     /* Aplicar primer y último color de la paleta */
     this.assignedColors = [
-      {value: 'start', color: palette[0]},
-      {value: 'end', color: palette[palette.length - 1]}
+      { value: 'start', color: palette[0] },
+      { value: 'end', color: palette[palette.length - 1] }
     ];
 
     // Actualizar color del chart

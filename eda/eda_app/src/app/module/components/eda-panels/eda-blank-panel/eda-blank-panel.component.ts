@@ -1261,11 +1261,15 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
 
     public onCloseFunnelProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            this.panel.content.query.output.config = { colors: response.colors };
+            // NO sobrescribir todo el config, solo actualizar lo necesario
+            this.panel.content.query.output.config = {
+                ...this.panel.content.query.output.config, // Mantener el config existente
+                assignedColors: response.assignedColors // Añadir assignedColors
+            };
+            
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService._notSaved.next(true);
-
         }
         this.funnelController = undefined;
     }
