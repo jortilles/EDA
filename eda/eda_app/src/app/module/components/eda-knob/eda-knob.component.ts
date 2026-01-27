@@ -22,19 +22,29 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
 
   size: number;
   color: string;
+  assignedColors: string;
   limits: Array<number>;
   value: number;
   comprareValue: number;
   class: string;
   resizeObserver!: ResizeObserver;
-  paleta : any;
+  paleta: any;
 
-
-  constructor(private styleProviderService : StyleProviderService, private cdr: ChangeDetectorRef) { }
+  constructor(private styleProviderService: StyleProviderService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    this.paleta = this.styleProviderService.ActualChartPalette  !==  undefined ? this.styleProviderService.ActualChartPalette['paleta'] : this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
-    this.color = this.inject.color ? this.inject.color : this.paleta[0];
+    console.log(this);
+    this.paleta = this.styleProviderService.ActualChartPalette;
+
+    // Obtener color desde assignedColors
+    this.assignedColors = this.inject.assignedColors;
+    if (this.assignedColors && this.assignedColors.length > 0) {
+      this.color = this.assignedColors[0]['color'];
+    } else {
+      // Si no hay assignedColors, usar paleta por defecto
+      this.color = this.paleta[0];
+    }
+    
     this.value = this.inject.data.values[0][0];
     this.limits = this.getLimits();
     this.comprareValue = this.inject.data.values[0][1] ? this.inject.data.values[0][1] : this.limits[1];
@@ -47,72 +57,65 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
     }
   }
 
-
   ngAfterViewInit(): void {
-  // Subimos dos niveles para encontrar el contenedor
-  const realParent = this.parentDiv.nativeElement.parentElement.parentElement as HTMLElement;
+    // Subimos dos niveles para encontrar el contenedor
+    const realParent = this.parentDiv.nativeElement.parentElement.parentElement as HTMLElement;
 
-  // Crear ResizeObserver para redimensisonar el chart
-  this.resizeObserver = new ResizeObserver(entries => {
-    const { width: w, height: h } = entries[0].contentRect;
+    // Crear ResizeObserver para redimensionar el chart
+    this.resizeObserver = new ResizeObserver(entries => {
+      const { width: w, height: h } = entries[0].contentRect;
+      if (w > 0 && h > 0) {
+        let val = w <= h ? w : h;
+        val = parseInt((val / 1.2).toFixed());
+        this.size = val;
+        this.applyTextStyle();
+        this.cdr.detectChanges();
+      }
+    });
+    
+    this.resizeObserver.observe(realParent);
+
+    const w = realParent.offsetWidth;
+    const h = realParent.offsetHeight;
     if (w > 0 && h > 0) {
       let val = w <= h ? w : h;
       val = parseInt((val / 1.2).toFixed());
       this.size = val;
       this.applyTextStyle();
-      this.cdr.detectChanges();   // Evitar error en consola
+      this.cdr.detectChanges();
     }
-  });
-  // Resize 
-  this.resizeObserver.observe(realParent);
-
-  const w = realParent.offsetWidth;
-  const h = realParent.offsetHeight;
-  if (w > 0 && h > 0) {
-    let val = w <= h ? w : h;
-    val = parseInt((val / 1.2).toFixed());
-    this.size = val;
-    this.applyTextStyle();
-    this.cdr.detectChanges();   // Evitar error en consola
-  }
-}
-
-private applyTextStyle(): void {
-  const parent = this.parentDiv?.nativeElement;
-  const color = this.styleProviderService.panelFontColor.source['_value'];
-  const fontFamily = this.styleProviderService.panelFontFamily.source['_value'];
-
-  // Texto central del knob
-  const centerText = parent?.querySelector('.p-knob-text');
-  if (centerText) {
-    centerText.style.setProperty('color', color, 'important');
-    centerText.style.setProperty('font-family', fontFamily, 'important');
   }
 
-  // Todos los textos dentro de SVGs (min y max)
-  const svgTexts = parent?.querySelectorAll('svg text');
-  svgTexts?.forEach(el => {
-    el.setAttribute('fill', color);
-    el.style.setProperty('fill', color, 'important'); 
-    el.style.setProperty('font-family', fontFamily, 'important');
-  });
-}
+  private applyTextStyle(): void {
+    const parent = this.parentDiv?.nativeElement;
+    const color = this.styleProviderService.panelFontColor.source['_value'];
+    const fontFamily = this.styleProviderService.panelFontFamily.source['_value'];
+
+    // Texto central del knob
+    const centerText = parent?.querySelector('.p-knob-text');
+    if (centerText) {
+      centerText.style.setProperty('color', color, 'important');
+      centerText.style.setProperty('font-family', fontFamily, 'important');
+    }
+
+    // Todos los textos dentro de SVGs (min y max)
+    const svgTexts = parent?.querySelectorAll('svg text');
+    svgTexts?.forEach(el => {
+      el.setAttribute('fill', color);
+      el.style.setProperty('fill', color, 'important'); 
+      el.style.setProperty('font-family', fontFamily, 'important');
+    });
+  }
 
   public getLimits() {
-
     let limits = [];
 
     if (this.inject.dataDescription.numericColumns.length === 2) {
-
       limits = [0, this.inject.data.values[0][1]];
-
     } else {
-
       if (this.inject.limits) {
         limits = this.inject.limits;
-      }
-      else {
-
+      } else {
         let n = parseInt(this.inject.data.values[0][0]);
         let count = 1;
 
@@ -121,26 +124,21 @@ private applyTextStyle(): void {
           count *= 10;
         }
 
-       limits = [0, count]
-
+        limits = [0, count];
       }
-
     }
-    if(limits[1] < this.value) limits[1] = this.value;
+    
+    if (limits[1] < this.value) limits[1] = this.value;
     return limits;
-
   }
 
   getStyle() {
     return {
-      'color': this.styleProviderService.panelFontColor.source['_value'], 'font-family': this.styleProviderService.panelFontFamily.source['_value'],
-      'justify-items': 'center', 'display': 'block'
-    }
+      'color': this.styleProviderService.panelFontColor.source['_value'], 
+      'font-family': this.styleProviderService.panelFontFamily.source['_value'],
+      'justify-items': 'center', 
+      'display': 'block'
+    };
   }
 
-  getColor() {
-    if (this.styleProviderService.loadingFromPalette || this.styleProviderService.palKnob)
-      this.color = this.paleta[0]; 
-    return this.color;
-  }
 }
