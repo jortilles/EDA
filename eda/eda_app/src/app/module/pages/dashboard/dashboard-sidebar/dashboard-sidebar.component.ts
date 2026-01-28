@@ -509,12 +509,23 @@ export class DashboardSidebarComponent {
   }
 
   public saveStyles(newStyles: any) {
-    this.isEditStyleDialogVisible = false;
-    this.dashboard.dashboard.config.styles = newStyles;
-    this.ChartUtilsService.MyPaletteColors = newStyles.palette?.paleta || this.ChartUtilsService.MyPaletteColors;
-    this.dashboard.assignStyles();
-    this.dashboard.refreshPanels();
-
+      this.isEditStyleDialogVisible = false;
+      this.dashboard.dashboard.config.styles = newStyles;
+      this.ChartUtilsService.MyPaletteColors = newStyles.palette?.paleta || this.ChartUtilsService.MyPaletteColors;
+      this.dashboard.assignStyles();
+      
+      setTimeout(() => {
+          this.dashboard.edaPanels.forEach((panel, index) => {
+              if (panel.panelChart) {
+                  try {
+                      panel.panelChart.updateComponent();
+                  } catch (error) {
+                      console.error(`Error al actualizar panel:`, error);
+                  }
+              }
+          });
+          this.dashboard.refreshPanels();
+      }, 100);
   }
 
   public closeVisibleModal() {

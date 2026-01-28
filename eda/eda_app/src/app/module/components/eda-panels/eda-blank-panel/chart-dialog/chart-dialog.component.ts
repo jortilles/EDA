@@ -267,9 +267,11 @@ export class ChartDialogComponent {
         config.showPointLines = this.showPointLines;
         config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
+        config.colors = this.chart.chartColors.map(color => color.backgroundColor);
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
+        console.log(this.panelChartComponent.componentRef.instance)
         setTimeout(_ => {
             this.chart = this.panelChartComponent.componentRef.instance.inject;
             this.load();

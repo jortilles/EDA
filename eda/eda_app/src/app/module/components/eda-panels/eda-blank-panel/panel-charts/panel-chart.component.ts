@@ -42,6 +42,9 @@ import { BubblechartConfig } from './chart-configuration-models/bubblechart.conf
 import { FormsModule } from '@angular/forms'; 
 import { CommonModule } from '@angular/common';
 import { FunnelConfig } from './chart-configuration-models/funnel.config';
+import { KnobConfig } from './chart-configuration-models/knob-config';
+import { MapConfig } from './chart-configuration-models/map-config';
+import { ChartJsConfig } from './chart-configuration-models/chart-js-config';
 
 @Component({
     standalone: true,
@@ -308,7 +311,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         // Leer assignedColors del config (si existen)
         let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
-
+    
         // Si NO hay assignedColors, generarlos desde la paleta
         if (assignedColors.length === 0) {
             // Obtener labels según tipo de chart
@@ -979,50 +982,126 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public updateComponent() {
         if (this.componentRef && !['table', 'crosstable'].includes(this.props.chartType)) {
             try {
+                // Charts ChartJS
                 if (['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'pyramid', 'radar'].includes(this.props.chartType)) {
-                    this.componentRef.instance?.updateChart();
+                    this.updateChartJSColors();
                 }
-                else if (['treeMap', 'sunburst','funnel', 'parallelSets', 'bubblechart', 'scatterPlot'].includes(this.props.chartType)) { 
-                    this.updateD3ChartColors(this.props.chartType)
+                // KPI
+                else if (this.props.chartType.includes('kpi')) {
+                    this.updateKPIColors();
                 }
-            } catch(err) {
-                console.error(err);
+                // Charts D3
+                else if (['treeMap', 'knob', 'sunburst', 'funnel', 'parallelSets', 'bubblechart', 'scatterPlot'].includes(this.props.chartType)) {
+                    this.updateD3ChartColors(this.props.chartType);
+                }
+                // Maps
+                else if (['geoJsonMap', 'coordinatesMap'].includes(this.props.chartType)) {
+                    this.updateMapColors();
+                }
+            } catch (err) {
+                console.error('Error en updateComponent:', err);
             }
         }
     }
 
-    public updateD3ChartColors(chartType: string) {
-        let newColors: Array<{ color: string }> = [];
-        let palette = this.styleProviderService?.ActualChartPalette?.['paleta'];
-        if (this.styleProviderService.loadingFromPalette) {
-            // Genera colores en Hex segun la paleta
-            for (let i = 0; i < length; i++) {newColors.push(palette[i % palette.length]);}
-        } else {
-            return; // No hay que modificar nada
+    public updateChartJSColors() {
+        // Leer el config interno
+        const config = this.props.config.getConfig();
+
+        if (!config || !config['assignedColors']) {
+            return;
         }
+
+        const assignedColors = config['assignedColors'];
+
+        // Forzar que el config se "refresque" haciendo un spread del objeto
+        const refreshedConfig = { ...config };
+        refreshedConfig['assignedColors'] = [...assignedColors];
+
+        // Destruir componente
+        if (this.componentRef) {
+            this.componentRef.destroy();
+            this.componentRef = null;
+        }
+
+        // Re-renderizar
+        this.renderEdaChart(this.props.edaChart);
+    }
+
+    public updateKPIColors() {
+        const config = this.props.config.getConfig();
+        const assignedColors = config['assignedColors'];
+
+        this.props.config.setConfig(new KpiConfig(assignedColors));
+        // Re-renderizar KPI desde cero
+        this.renderEdaKpiChart();
+    }
+
+    public updateMapColors() {
+        // Setup variables de  datos
+        const config = this.props.config.getConfig();
+        const assignedColors = config['assignedColors'];
+        if (assignedColors && Array.isArray(assignedColors) && assignedColors.length > 0) {
+            // Recuperamos los colores que pertoquen depende del mapa
+            if (this.props.chartType === 'geoJsonMap') {
+                config['color'] = assignedColors[0].color;
+            } else if (this.props.chartType === 'coordinatesMap') {
+                config['initialColor'] = assignedColors[0]?.color;
+                config['finalColor'] = assignedColors[1]?.color;
+            }
+
+            // Preservar todos los valores existentes
+            this.props.config.setConfig(new MapConfig(
+                config['coordinates'],
+                config['zoom'],
+                config['logarithmicScale'],
+                config['legendPosition'] || 'bottomleft',
+                config['color'] || assignedColors[0]?.color,
+                config['draggable'] !== undefined ? config['draggable'] : true
+            ));
+        }
+        // Re-renderizar el mapa
+        this.renderMap(this.props.chartType);
+    }
+
+    public updateD3ChartColors(chartType: string) {
+        const config = this.props.config.getConfig();
+        const assignedColors = config['assignedColors'];
+
+        if (!assignedColors || !Array.isArray(assignedColors) || assignedColors.length === 0) {
+            return;
+        }
+
+        // Extraer solo los colores del array assignedColors
+        const colors = assignedColors.map(item => item.color);
+
         switch (chartType) {
             case 'treeMap':
-                this.props.config.setConfig(new TreeMapConfig(newColors.map(({ color }) => color)));
+                this.props.config.setConfig(new TreeMapConfig(colors));
                 this.renderTreeMap();
                 break;
             case 'sunburst':
-                this.props.config.setConfig(new SunburstConfig(newColors.map(({ color }) => color)));
+                this.props.config.setConfig(new SunburstConfig(colors));
                 this.renderSunburst();
                 break;
             case 'parallelSets':
-                this.props.config.setConfig(new SankeyConfig(newColors.map(({ color }) => color)));
+                this.props.config.setConfig(new SankeyConfig(colors));
                 this.renderParallelSets();
                 break;
             case 'scatterPlot':
-                this.props.config.setConfig(new ScatterConfig(newColors.map(({ color }) => color)));
+                this.props.config.setConfig(new ScatterConfig(colors));
                 this.renderScatter();
                 break;
             case 'funnel':
-                this.props.config.setConfig(new FunnelConfig(newColors.map(({ color }) => color)));
+                this.props.config.setConfig(new FunnelConfig(colors));
                 this.renderFunnel();
                 break;
+            case 'knob':
+                this.props.config.setConfig(new KnobConfig(colors[0], this.props.config.getConfig()['limits']));
+                this.renderKnob();
+                break;
             case 'bubblechart':
-                this.props.config.setConfig(new BubblechartConfig(newColors.map(({ color }) => color)));
+                this.props.config.setConfig(new BubblechartConfig(colors));
                 this.renderBubblechart();
                 break;
             default:
