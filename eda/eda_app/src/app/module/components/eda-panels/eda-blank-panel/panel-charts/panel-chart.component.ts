@@ -705,16 +705,38 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         // Legend Position
         inject.legendPosition = config['legendPosition'] || 'bottomleft';
 
-        // Cargar assignedColors
+        // Cargar assignedColors según el tipo de mapa
         let assignedColors = config['assignedColors'];
 
+        // Crear defaults colors según el tipo de mapa
         if (!assignedColors || !Array.isArray(assignedColors) || assignedColors.length === 0) {
-            const defaultColor = this.paletaActual[0];
-            assignedColors = [{ value: 'Color', color: defaultColor }];
+            if (type === 'geoJsonMap') {
+                // geoJsonMap: un solo color
+                assignedColors = [
+                    {value: 'start', color: this.paletaActual[0]}
+                ];
+            } else {
+                // coordinatesMap: gradiente de dos colores
+                assignedColors = [
+                    {value: 'start', color: this.paletaActual[this.paletaActual.length - 1]},
+                    {value: 'end', color: this.paletaActual[0]}
+                ];
+            }
             // Guardar los colores por defecto
             config['assignedColors'] = assignedColors;
+        } else {
+            // Verificar que tenga el número correcto de colores según el tipo
+            if (type === 'geoJsonMap' && assignedColors.length !== 1) {
+                assignedColors = [assignedColors[0] || {value: 'start', color: this.paletaActual[0]}];
+                config['assignedColors'] = assignedColors;
+            } else if (type === 'coordinatesMap' && assignedColors.length < 2) {
+                assignedColors = [
+                    assignedColors[0] || {value: 'start', color: this.paletaActual[this.paletaActual.length - 1]},
+                    {value: 'end', color: this.paletaActual[0]}
+                ];
+                config['assignedColors'] = assignedColors;
+            }
         }
-
         inject.assignedColors = assignedColors;
 
         if (type === 'coordinatesMap') {

@@ -83,16 +83,15 @@ export const ChartsConfigUtils = {
         leafLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['leafLabels'] : [],
       }
 
-    }  else if (ebp.panelChart.props.chartType === 'coordinatesMap') {
+    } else if (ebp.panelChart.props.chartType === 'coordinatesMap') {
       config = {
-        zoom: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.zoom : null,
-        coordinates: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.coordinates : null,
-        logarithmicScale: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.logarithmicScale : null,
-        initialColor: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.initialColor : null,
-        finalColor: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.finalColor : null,
-        draggable: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.draggable : null,
-        }
-      } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
+          zoom: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.zoom : null,
+          coordinates: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.coordinates : null,
+          logarithmicScale: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.logarithmicScale : null,
+          assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : null,
+          draggable: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.draggable : null,
+      }
+    } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
       config = {
         assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : [],
       }
