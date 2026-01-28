@@ -501,123 +501,130 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * Renders a KPIComponent
     */
     private renderEdaKpiChart() {
-        // Chart Config
-        const chartType = this.props.chartType.split('kpi')[1];
-        const chartSubType = this.props.edaChart.split('kpi')[1];
-        const cfg: any = this.props.config.getConfig();
-        
-        const chartConfig: any = {};
-        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
-        const dataTypes = this.props.query.map((column: any) => column.column_type);
+    // Chart Config
+    const chartType = this.props.chartType.split('kpi')[1];
+    const chartSubType = this.props.edaChart.split('kpi')[1];
+    const cfg: any = this.props.config.getConfig();
     
-        let values = _.cloneDeep(this.props.data.values);
+    const chartConfig: any = {};
+    const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+    const dataTypes = this.props.query.map((column: any) => column.column_type);
 
-        const chartData = this.chartUtils.transformDataQuery(chartType, chartSubType,  values, dataTypes, dataDescription, false, cfg.numberOfColumns);
+    let values = _.cloneDeep(this.props.data.values);
 
-        if (chartData.length == 0) {
-            chartData.push([], []);
-        }
+    const chartData = this.chartUtils.transformDataQuery(chartType, chartSubType, values, dataTypes, dataDescription, false, cfg.numberOfColumns);
 
-        const minMax = chartType !== 'line' ? { min: null, max: null } : this.chartUtils.getMinMax(chartData);
-
-        const manySeries = chartData[1]?.length > 10 ? true : false;
-
-        const styles:StyleConfig = {
-            fontFamily: this.fontFamily,
-            fontSize: this.fontSize,
-            fontColor: this.fontColor
-        }
-        
-        const dimensions = this.getDimensions();
-        dimensions.height = !dimensions.height ? 255 : dimensions.height;
-        dimensions.width = !dimensions.width ? 1300 : dimensions.width;
- 
-        const ticksOptions = {
-            xTicksLimit: 3,
-            yTicksLimit: 0,
-            maxRotation: 1,
-            minRotation: 1,
-            labelOffset: 40,
-            padding: -2
-        };
-        const chartOptions = this.chartUtils.initChartOptions(
-            chartType, dataDescription.numericColumns[0]?.name,
-            dataDescription.otherColumns, manySeries, false, dimensions, null,
-            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines,cfg.showPredictionLines,  cfg.numberOfColumns, chartSubType, ticksOptions, false, this.styleProviderService
-        );
-        // let chartConfig: any = {};
-        chartConfig.edaChart = {}
-        chartConfig.showChart = true;
-        chartConfig.edaChart.edaChart = chartSubType;
-        chartConfig.edaChart.chartType = chartType;
-        chartConfig.edaChart.chartLabels = chartData[0];
-        chartConfig.edaChart.chartDataset = chartData[1];
-        chartConfig.edaChart.chartOptions = chartOptions.chartOptions;
-
-        
-        // Determinar color base del gráfico paleta / asCol
-        const { styleProviderService, props } = this;
-
-        const paletteColor = styleProviderService?.ActualChartPalette?.['paleta']?.[0];
-        const configColor = props.config.getConfig()?.['edaChart']?.colors?.[0]?.backgroundColor;
-        const defaultColor = styleProviderService?.DEFAULT_PALETTE_COLOR?.['paleta']?.[0];
-
-        let baseColor: string | undefined;
-
-        if (styleProviderService.loadingFromPalette) {
-            baseColor = paletteColor ?? defaultColor;
-        } else {
-            baseColor = configColor ?? paletteColor ?? defaultColor;
-        }
-
-        // Asignar colores a la configuración
-        chartConfig.edaChart.chartColors[0].backgroundColor = baseColor;
-        chartConfig.edaChart.chartDataset[0] = {
-            ...chartConfig.edaChart.chartDataset[0],
-            backgroundColor: baseColor,
-            borderColor: baseColor
-        };
-
-        
-        // KPI Config
-        let kpiValue: number;
-        let kpiLabel = this.props.query.find((c: any) => c.column_type == 'numeric')?.display_name?.default;
-        let decimals = this.props.query.find((c: any) => c.column_type == 'numeric')?.minimumFractionDigits;
-        let agg = this.props.query.find((c: any) => c.column_type == 'numeric')?.aggregation_type.find( (e: any) => e.selected == true )?.value;
-
-
-        if (chartData[1][0]?.data) {
-            /* no se hace esto porque no tiene sentido 
-            if(agg == 'avg' ){       kpiValue = _.avg(chartData[1][0]?.data);
-            }else if(agg == 'max' ){ kpiValue = _.max(chartData[1][0]?.data);
-            }else if(agg == 'avg' ){ kpiValue = _.sum(chartData[1][0]?.data);
-            }else if(agg == 'min' ){ kpiValue = _.min(chartData[1][0]?.data);
-            }else{                   kpiValue = _.sum(chartData[1][0]?.data);  } */
-            
-            kpiValue = _.sum(chartData[1][0]?.data);
-            if( this.countDecimals(kpiValue) >decimals ){
-                kpiValue = Number(kpiValue.toFixed(decimals)) ;
-            }
-             
-        }
-        
-        chartConfig.chartType = this.props.chartType;
-        chartConfig.value = kpiValue;
-        chartConfig.header = kpiLabel;
-
-        const propsConfig: any = this.props.config;
-        const alertLimits = propsConfig?.config?.alertLimits || [];
-
-        if (propsConfig) {
-            chartConfig.sufix = (<KpiConfig>propsConfig.getConfig())?.sufix || '';
-            chartConfig.alertLimits = alertLimits;
-        } else {
-            chartConfig.sufix = '';
-            chartConfig.alertLimits = [];
-        }
-
-        this.createEdaKpiChartComponent(chartConfig);
+    if (chartData.length == 0) {
+        chartData.push([], []);
     }
+
+    const minMax = chartType !== 'line' ? { min: null, max: null } : this.chartUtils.getMinMax(chartData);
+
+    const manySeries = chartData[1]?.length > 10 ? true : false;
+
+    const styles: StyleConfig = {
+        fontFamily: this.fontFamily,
+        fontSize: this.fontSize,
+        fontColor: this.fontColor
+    }
+    
+    const dimensions = this.getDimensions();
+    dimensions.height = !dimensions.height ? 255 : dimensions.height;
+    dimensions.width = !dimensions.width ? 1300 : dimensions.width;
+
+    const ticksOptions = {
+        xTicksLimit: 3,
+        yTicksLimit: 0,
+        maxRotation: 1,
+        minRotation: 1,
+        labelOffset: 40,
+        padding: -2
+    };
+
+    const chartOptions = this.chartUtils.initChartOptions(
+        chartType, dataDescription.numericColumns[0]?.name,
+        dataDescription.otherColumns, manySeries, false, dimensions, null,
+        minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines, cfg.showPredictionLines, cfg.numberOfColumns, chartSubType, ticksOptions, false, this.styleProviderService
+    );
+
+    // Inicializar chartConfig
+    chartConfig.edaChart = {}
+    chartConfig.showChart = true;
+    chartConfig.edaChart.edaChart = chartSubType;
+    chartConfig.edaChart.chartType = chartType;
+    chartConfig.edaChart.chartLabels = chartData[0];
+    chartConfig.edaChart.chartDataset = chartData[1];
+    chartConfig.edaChart.chartOptions = chartOptions.chartOptions;
+    chartConfig.edaChart.chartColors = []; // Inicializar chartColors
+
+    // Cargar assignedColors o usar colores por defecto
+    const existingColors = cfg['assignedColors'] || [];
+    let assignedColors = [];
+
+    if (existingColors.length > 0) {
+        // Usar colores guardados
+        assignedColors = existingColors;
+    } else {
+        // Crear colores por defecto desde el dataset
+        const paletteColor = this.styleProviderService?.ActualChartPalette?.['paleta']?.[0] || 
+                            this.styleProviderService?.DEFAULT_PALETTE_COLOR?.['paleta']?.[0];
+        
+        assignedColors = chartData[1].map((dataset, index) => ({
+            value: dataset.label || `Series ${index + 1}`,
+            color: this.paletaActual[index % this.paletaActual.length] || paletteColor
+        }));
+
+        // Guardar assignedColors por defecto
+        cfg['assignedColors'] = assignedColors;
+    }
+
+    // Aplicar colores al dataset
+    for (let i = 0; i < chartData[1].length; i++) {
+        const colorConfig = assignedColors[i];
+        if (colorConfig) {
+            chartConfig.edaChart.chartDataset[i] = {
+                ...chartConfig.edaChart.chartDataset[i],
+                backgroundColor: colorConfig.color,
+                borderColor: colorConfig.color
+            };
+            
+            chartConfig.edaChart.chartColors.push({
+                backgroundColor: colorConfig.color,
+                borderColor: colorConfig.color
+            });
+        }
+    }
+
+    // KPI Config
+    let kpiValue: number;
+    let kpiLabel = this.props.query.find((c: any) => c.column_type == 'numeric')?.display_name?.default;
+    let decimals = this.props.query.find((c: any) => c.column_type == 'numeric')?.minimumFractionDigits;
+    let agg = this.props.query.find((c: any) => c.column_type == 'numeric')?.aggregation_type.find((e: any) => e.selected == true)?.value;
+
+    if (chartData[1][0]?.data) {
+        kpiValue = _.sum(chartData[1][0]?.data);
+        if (this.countDecimals(kpiValue) > decimals) {
+            kpiValue = Number(kpiValue.toFixed(decimals));
+        }
+    }
+    
+    chartConfig.chartType = this.props.chartType;
+    chartConfig.value = kpiValue;
+    chartConfig.header = kpiLabel;
+
+    const propsConfig: any = this.props.config;
+    const alertLimits = propsConfig?.config?.alertLimits || [];
+
+    if (propsConfig) {
+        chartConfig.sufix = (<KpiConfig>propsConfig.getConfig())?.sufix || '';
+        chartConfig.alertLimits = alertLimits;
+    } else {
+        chartConfig.sufix = '';
+        chartConfig.alertLimits = [];
+    }
+
+    this.createEdaKpiChartComponent(chartConfig);
+}
     /**
      * cuenta los decimales de los números.
      */

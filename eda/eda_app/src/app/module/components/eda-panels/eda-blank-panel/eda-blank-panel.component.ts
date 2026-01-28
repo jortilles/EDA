@@ -1443,36 +1443,56 @@ public tableNodeExpand(event: any): void {
     }
 
     public onCloseKpiProperties(event, response): void {
-        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            this.panel.content.query.output.config.alertLimits = response.alerts;
-            this.panel.content.query.output.config.sufix = response.sufix;
+    if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+        // Usar spread operator para mantener el config existente
+        this.panel.content.query.output.config = {
+            ...this.panel.content.query.output.config,
+            assignedColors: response.assignedColors,  // ✅ Guardar assignedColors
+            alertLimits: response.alerts,
+            sufix: response.sufix
+        };
 
-            let layout: any;
-            if (response.edaChart) {
-                this.panel.content.query.output.config.colors = response.edaChart.chartColors;
-                this.panel.content.query.output.config.chartType = response.chartType;
-                this.panel.content.query.output.config.chartSubType = response.chartSubType;
+        let layout: any;
+        if (response.edaChart) {
+            this.panel.content.query.output.config.colors = response.edaChart.chartColors;
+            this.panel.content.query.output.config.chartType = response.chartType;
+            this.panel.content.query.output.config.chartSubType = response.chartSubType;
 
-                layout = new ChartJsConfig(
-                    response.edaChart.chartColors,
-                    response.edaChart.chartType,
-                    response.edaChart.addTrend,
-                    response.edaChart.addComparative,
-                    response.edaChart.showLabels,
-                    response.edaChart.showLabelsPercent,
-                    response.edaChart.numberOfColumns,
-                    response.edaChart.assignedColors,
-                    response.edaChart.showPointLines,
-                    response.edaChart.showPredictionLines,
-                );
-            }
-            
-            const config = new ChartConfig(new KpiConfig({ sufix: response.sufix, alertLimits: response.alerts, edaChart: layout }));
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, response.chartType, response.chartSubType, config);
-            this.dashboardService._notSaved.next(true);
+            layout = new ChartJsConfig(
+                response.edaChart.chartColors,
+                response.edaChart.chartType,
+                response.edaChart.addTrend,
+                response.edaChart.addComparative,
+                response.edaChart.showLabels,
+                response.edaChart.showLabelsPercent,
+                response.edaChart.numberOfColumns,
+                response.assignedColors,  //  Pasar assignedColors desde response, no desde edaChart
+                response.edaChart.showPointLines,
+                response.edaChart.showPredictionLines,
+            );
         }
-        this.kpiController = undefined;
+        
+        const config = new ChartConfig(
+            new KpiConfig({ 
+                sufix: response.sufix, 
+                alertLimits: response.alerts, 
+                edaChart: layout,
+                assignedColors: response.assignedColors  //  Añadir assignedColors al KpiConfig
+            })
+        );
+        
+        this.renderChart(
+            this.currentQuery, 
+            this.chartLabels, 
+            this.chartData, 
+            response.chartType, 
+            response.chartSubType, 
+            config
+        );
+        this.dashboardService._notSaved.next(true);
     }
+    this.kpiController = undefined;
+}
 
     public onClosedynamicTextProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) { 

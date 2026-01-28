@@ -50,17 +50,15 @@ export const ChartsConfigUtils = {
       config = {
         sufix: ebp.panelChart.componentRef.instance.inject.sufix,
         alertLimits: ebp.panelChart.componentRef.instance.inject.alertLimits,
+        assignedColors: ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || null,  // Guardar assignedColors
         edaChart: {}
       }
 
-        if (kpiChart?.hasOwnProperty('edaChart') ) {
-            config.edaChart.colors = kpiChart.chartColors;
-            config.edaChart.chartType = ebp.panelChart.props.chartType;
-
-        // colors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['colors'] : [], 
-        // chartType: ebp.panelChart.props.chartType, 
+      if (kpiChart?.hasOwnProperty('edaChart')) {
+        config.edaChart.colors = kpiChart.chartColors;
+        config.edaChart.chartType = ebp.panelChart.props.chartType;
+        config.edaChart.assignedColors = ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || null;  // ambién en edaChart
       }
-
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'dynamicText') {
       config = {
         color: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.color : ebp.panelChart.props.config.getConfig()['color']
