@@ -5792,6 +5792,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Número de decimales</source>
         <target>Nombre de decimals</target>
       </trans-unit>
+      <trans-unit id="typeSelectorAggregation">
+        <source>Agregación</source>
+        <target>Agregació</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

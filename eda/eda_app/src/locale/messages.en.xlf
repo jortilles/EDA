@@ -5633,6 +5633,10 @@ OR<ph id="5"/>
   <source>Número de decimales</source>
   <target>Number of decimals</target>
 </trans-unit>
+<trans-unit id="typeSelectorAggregation">
+  <source>Agregación</source>
+  <target>Aggregation</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

@@ -5773,6 +5773,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Número de decimales</source>
         <target>Nombre de décimales</target>
       </trans-unit>
+      <trans-unit id="typeSelectorAggregation">
+        <source>Agregación</source>
+        <target>Agrégation</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

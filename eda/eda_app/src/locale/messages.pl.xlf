@@ -5522,6 +5522,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Número de decimales</source>
         <target>Liczba miejsc dziesiętnych</target>
       </trans-unit>
+      <trans-unit id="typeSelectorAggregation">
+        <source>Agregación</source>
+        <target>Agregacja</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>
