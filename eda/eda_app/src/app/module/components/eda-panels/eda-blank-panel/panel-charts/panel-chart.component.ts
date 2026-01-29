@@ -1093,7 +1093,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 this.renderScatter();
                 break;
             case 'funnel':
-                this.props.config.setConfig(new FunnelConfig(colors));
+                this.props.config.setConfig(new FunnelConfig(assignedColors));
                 this.renderFunnel();
                 break;
             case 'knob':
