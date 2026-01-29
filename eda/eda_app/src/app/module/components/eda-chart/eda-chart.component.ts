@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, AfterViewInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, AfterViewInit, Output, EventEmitter, NgZone } from '@angular/core';
 import { EdaChart } from './eda-chart';
 import { BaseChartDirective } from 'ng2-charts';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -22,7 +22,7 @@ export class EdaChartComponent implements OnInit, AfterViewInit {
     public chartPlugins = [  ChartDataLabels  ];
     
 
-    constructor() {
+    constructor(private zone: NgZone) {
         this.update = true;
     }
 
@@ -54,7 +54,9 @@ export class EdaChartComponent implements OnInit, AfterViewInit {
                     window.open(url, "_blank");
                 }else{
                     //lanzo el filtro
-                    this.onClick.emit({ inx: point.index, label, value, filterBy })
+                    this.zone.run(() => {
+                        this.onClick.emit({ inx: point.index, label, value, filterBy });
+                    });
                 }
             })
         }

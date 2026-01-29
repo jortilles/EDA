@@ -45,6 +45,7 @@ import { FunnelConfig } from './chart-configuration-models/funnel.config';
 import { KnobConfig } from './chart-configuration-models/knob-config';
 import { MapConfig } from './chart-configuration-models/map-config';
 import { ChartJsConfig } from './chart-configuration-models/chart-js-config';
+import { Subscription } from 'rxjs';
 
 @Component({
     standalone: true,
@@ -75,6 +76,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public fontFamily: string;
     public fontSize: number;
     public paletaActual 
+    private chartClickSubscription: Subscription;
 
 
     public histoGramRangesTxt: string = $localize`:@@histoGramRangesTxt:Rango`;
@@ -390,7 +392,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.entry.clear();
         this.componentRef = this.entry.createComponent(EdaChartComponent);
         this.componentRef.instance.inject = inject;
-        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
+        this.chartClickSubscription = this.componentRef.instance.onClick.subscribe(
+            (event) => this.onChartClick.emit({...event, query: this.props.query})
+        );
         this.configUpdated.emit(this.currentConfig);
     }
 
@@ -1005,28 +1009,40 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     public updateChartJSColors() {
-        // Leer el config interno
-        const config = this.props.config.getConfig();
+    const config = this.props.config.getConfig();
+    const assignedColors = config['assignedColors'];
 
-        if (!config || !config['assignedColors']) {
-            return;
+    if (!assignedColors?.length) {
+        return;
+    }
+
+    // 1️¡cancelar suscripción Angular
+    if (this.chartClickSubscription) {
+        this.chartClickSubscription.unsubscribe();
+        this.chartClickSubscription = null;
+    }
+
+    const chartInstance = this.componentRef?.instance?.chart;
+
+    if (chartInstance) {
+        try {
+            chartInstance.destroy();
+        } catch (e) {
+            console.warn('Error al destruir chart', e);
         }
+    }
 
-        const assignedColors = config['assignedColors'];
-
-        // Forzar que el config se "refresque" haciendo un spread del objeto
-        const refreshedConfig = { ...config };
-        refreshedConfig['assignedColors'] = [...assignedColors];
-
-        // Destruir componente
+    setTimeout(() => {
+        // 3️destruir componente
         if (this.componentRef) {
             this.componentRef.destroy();
             this.componentRef = null;
         }
 
-        // Re-renderizar
+        // recrear
         this.renderEdaChart(this.props.edaChart);
-    }
+    });
+}
 
     public updateKPIColors() {
         const config = this.props.config.getConfig();
@@ -1097,7 +1113,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 this.renderFunnel();
                 break;
             case 'knob':
-                this.props.config.setConfig(new KnobConfig(colors[0], this.props.config.getConfig()['limits']));
+                this.props.config.setConfig(new KnobConfig(
+                    assignedColors[0]?.color,config['limits']));
                 this.renderKnob();
                 break;
             case 'bubblechart':

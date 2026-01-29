@@ -778,8 +778,8 @@ export class DashboardPage implements OnInit {
         setTimeout(() => {
           let btn = document.getElementById('dashFilterBtn');
           if (btn) btn.click();
-          else this.refreshPanels();
-        }, 500);
+          else this.refreshPanelsOthersCharts();
+        }, 100);
       }
     }
     this.setPanelsQueryMode();
@@ -871,6 +871,63 @@ export class DashboardPage implements OnInit {
           }
 
   }
+
+  // Metodo a revisar, este solo refresh a los paneles que no son js
+  refreshPanelsOthersCharts() {
+    this.edaPanels.forEach(async (panel) => {
+        console.log('refrescando panel', panel);
+        
+        if (panel.currentQuery.length > 0) {
+            const chartType = panel.graphicType;
+            const isChartJS = ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'pyramid', 'radar', 'knob'].includes(chartType);
+            
+            // Solo re-ejecutar query para charts NO ChartJS
+            if (!isChartJS) {
+                console.log(`   ├─ Re-ejecutando query para ${chartType}`);
+                panel.display_v.chart = '';
+                await panel.runQueryFromDashboard(true);
+            } else {
+                console.log(`   ├─ Saltando query para ChartJS: ${chartType}`);
+            }
+            
+            // Siempre llamar a updateComponent para aplicar nuevos colores
+            setTimeout(() => panel.panelChart?.updateComponent(), 100);
+        }
+    });
+    
+    // LiveDashboardTimer
+    let isvalid = true;
+    const emptyQuery = this.edaPanels.some((panel) => panel.currentQuery.length === 0);
+
+    if (emptyQuery) isvalid = false;
+
+    if (!isvalid) {
+        this.alertService.addError($localize`:@@SaveWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`)
+    } else {
+        this.triggerTimer();
+        const body = {
+            config: {
+                title: this.title,
+                panel: [],
+                ds: { _id: this.dataSource._id },
+                filters: this.cleanFiltersData(),
+                applyToAllfilter: this.applyToAllfilter,
+                visible: this.dashboard.config.visible,
+                tag: this.selectedTags,
+                refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
+                clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
+                sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig, 
+                onlyIcanEdit: this.dashboard.config.onlyIcanEdit,
+                styles: this.dashboard.config.styles,
+                urls: this.dashboard.config.urls,
+                author: this.dashboard.config?.author
+            },
+            group: this.dashboard.group ? _.map(this.dashboard.group) : undefined,
+        }
+    
+        body.config.panel = this.savePanels();
+    }
+}
 
 
   public async saveDashboard() {
