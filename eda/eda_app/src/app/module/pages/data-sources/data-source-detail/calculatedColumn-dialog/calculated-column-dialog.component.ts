@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent,EdaDialog2Component } from '@eda/shared/components/shared-components.index';
-import { AlertService} from '@eda/services/service.index';
+import { AlertService, DataSourceService, QueryBuilderService, QueryParams, SpinnerService} from '@eda/services/service.index';
 import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule, FormsModule} from '@angular/forms';
 import { SelectItem } from 'primeng/api';
 import { EditColumnPanel } from '@eda/models/data-source-model/data-source-models';
@@ -25,6 +25,9 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
   // Aggregation Types
   public aggTypes: SelectItem[] = aggTypes;
 
+  // Table Name
+  public tableName = "";
+
   public columnPanel: EditColumnPanel;
 
   // Types
@@ -45,13 +48,24 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
     { value: "none", display_name: "No", display: true },
   ]
 
-  public final_aggregation_type: any[] = [];
+  public final_aggregation_type: any[] = [
+    { value: "sum", display_name: "Suma" },
+    { value: "avg", display_name: "Media" },
+    { value: "max", display_name: "Máximo" },
+    { value: "min", display_name: "Mínimo" },
+    { value: "count", display_name: "Cuenta Valores" },
+    { value: "count_distinct", display_name: "Valores Distintos" },
+    { value: "none", display_name: "No" },
+  ];
 
   public selectedcolumnType = 'numeric';
 
   constructor(
     private formBuilder: UntypedFormBuilder,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private spinnerService: SpinnerService,
+    public dataModelService: DataSourceService,
+    private queryBuilderService: QueryBuilderService
   ) {
     super();
 
@@ -66,8 +80,6 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
       colSqlExpression: [null, Validators.required],
       colDecimalNumber: [0],
     });
-
-    console.log('aggTypes: ', aggTypes);
 
   }
 
@@ -115,8 +127,44 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
     }
   }
 
-  hola(){
-    console.log('hiiiii')
+  checkCalculatedColumn(){
+
+    if(this.form.invalid) {
+      return this.alertService.addError($localize`:@@mandatoryFields:Recuerde llenar los campos obligatorios`);
+    } else {
+
+      console.log('final_aggregation_type: ', this.final_aggregation_type);
+
+      const columnCheck: any = {
+        SQLexpression: this.form.value.colSqlExpression,
+        aggregation_type: this.selectedcolumnType === 'numeric' ? this.final_aggregation_type : [{ value: "none", display_name: "No" }],
+        column_granted_roles: [],
+        column_name: "computed test",
+        column_type: this.selectedcolumnType,
+        computed_column: "computed",
+        description: {default: "computed test", localized: []},
+        display_name: {default: "computed test", localized: []},
+        minimumFractionDigits: this.form.value.colDecimalNumber,
+        row_granted_roles: [],
+        visible: true,
+      }
+
+      this.spinnerService.on();
+
+      this.tableName = this.controller.params.table.technical_name;
+
+      const queryParams: QueryParams = {
+          table: this.tableName,
+          dataSource: this.dataModelService.model_id,
+      };
+      const query = this.queryBuilderService.simpleQuery(columnCheck, queryParams);
+        this.dataModelService.executeQuery(query).subscribe(
+            res => { this.alertService.addSuccess($localize`:@@CorrectQuery:Consulta correcta`); this.spinnerService.off() },
+            err => { this.alertService.addError($localize`:@@IncorrectQuery:Consulta incorrecta`); this.spinnerService.off() }
+        );
+
+    }
+
   }
 
   updateAgg(type?: any) {

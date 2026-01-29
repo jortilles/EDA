@@ -608,12 +608,12 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.update();
     }
 
-
-
     checkCalculatedColumn(columnPanel: EditColumnPanel) {
 
         console.log('.... COMPROBACIÓN ....')
         console.log('columnPanel: ', columnPanel);
+
+        debugger;
 
         this.spinnerService.on();
         const table = this.dataModelService.getTable(columnPanel);
@@ -623,7 +623,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             table: table.table_name,
             dataSource: this.dataModelService.model_id,
         };
-        
+
         const query = this.queryBuilderService.simpleQuery(column, queryParams);
         this.dataModelService.executeQuery(query).subscribe(
             res => { this.alertService.addSuccess($localize`:@@CorrectQuery:Consulta correcta`); this.spinnerService.off() },
@@ -631,6 +631,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         );
         
     }
+
     checkConection() {
         this.spinnerService.on();
         let connection = this.modelPanel.connection;
