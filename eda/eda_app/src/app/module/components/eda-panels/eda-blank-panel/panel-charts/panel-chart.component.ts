@@ -1112,11 +1112,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 this.props.config.setConfig(new FunnelConfig(assignedColors));
                 this.renderFunnel();
                 break;
-            case 'knob':
-                this.props.config.setConfig(new KnobConfig(
-                    assignedColors[0]?.color,config['limits']));
-                this.renderKnob();
-                break;
+            // case 'knob': // Knob deshabilitado por ahora porque no funciona
+            //     this.props.config.setConfig(new KnobConfig(
+            //         assignedColors[0]?.color,config['limits']));
+            //     this.renderKnob();
+            //     break;
             case 'bubblechart':
                 this.props.config.setConfig(new BubblechartConfig(colors));
                 this.renderBubblechart();
