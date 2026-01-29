@@ -5510,6 +5510,18 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Predicción</source>
         <target>Predykcja</target>
       </trans-unit>
+      <trans-unit id="sqlExpressionCalculatedField">
+        <source>Expresión SQL</source>
+        <target>Wyrażenie SQL</target>
+      </trans-unit>
+      <trans-unit id="typeSelectorText">
+        <source>Tipo de columna</source>
+        <target>Typ kolumny</target>
+      </trans-unit>
+      <trans-unit id="decimalNumberText">
+        <source>Número de decimales</source>
+        <target>Liczba miejsc dziesiętnych</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

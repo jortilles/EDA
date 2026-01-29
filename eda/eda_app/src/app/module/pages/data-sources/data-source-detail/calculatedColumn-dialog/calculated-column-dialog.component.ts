@@ -1,15 +1,16 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent,EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { AlertService} from '@eda/services/service.index';
 import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule, FormsModule} from '@angular/forms';
-
+import { SelectItem } from 'primeng/api';
 
 @Component({
   standalone: true,
   selector: 'app-calculated-column-dialog',
   templateUrl: './calculated-column-dialog.component.html',
   styleUrls: ['../../../../../../assets/sass/eda-styles/components/dialog-component.css'],
-  imports: [ReactiveFormsModule, EdaDialog2Component, FormsModule]
+  imports: [ReactiveFormsModule, EdaDialog2Component, FormsModule, CommonModule]
 })
 
 export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
@@ -17,6 +18,16 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
   public dialog: EdaDialog;
   public form: UntypedFormGroup;
   public title = $localize`:@@addCalculatedColTitle:Añadir columna calculada a la tabla `;
+
+  // Types
+  public columnTypes: SelectItem[] = [
+      { label: 'text', value: 'text' },
+      { label: 'numeric', value: 'numeric' },
+      { label: 'date', value: 'date' },
+      { label: 'coordinate', value: 'coordinate' }
+  ];
+
+  public selectedcolumnType = 'numeric';
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -31,7 +42,10 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
 
     this.form = this.formBuilder.group({
       colName: [null, Validators.required],
-      description: [null, Validators.required]
+      description: [null, Validators.required],
+      sqlExpression: [null, Validators.required],
+      typeSelector: [null, Validators.required],
+      decimalNumber: [null, Validators.required],
     });
   }
   onShow(): void {
@@ -65,6 +79,23 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
 
       };
       this.onClose(EdaDialogCloseEvent.NEW, { column: column, table_name: this.controller.params.table.technical_name });
+    }
+  }
+
+
+  onTypeChange(event: any) {
+
+    console.log("event: ", event);
+    this.selectedcolumnType = event.value;
+
+    const ctrl = this.form.get('decimalNumber');
+    if (!ctrl) return;
+
+    if (event.value === 'numeric') {
+      ctrl.enable();
+    } else {
+      ctrl.reset();
+      ctrl.disable();
     }
   }
 }

@@ -5780,7 +5780,18 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Predicción</source>
         <target>Predicció</target>
       </trans-unit>
-
+      <trans-unit id="sqlExpressionCalculatedField">
+        <source>Expresión SQL</source>
+        <target>Expressió SQL</target>
+      </trans-unit>
+      <trans-unit id="typeSelectorText">
+        <source>Tipo de columna</source>
+        <target>Tipus de columna</target>
+      </trans-unit>
+      <trans-unit id="decimalNumberText">
+        <source>Número de decimales</source>
+        <target>Nombre de decimals</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

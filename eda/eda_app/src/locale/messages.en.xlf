@@ -5621,6 +5621,18 @@ OR<ph id="5"/>
   <source>Predicción</source>
   <target>Prediction</target>
 </trans-unit>
+<trans-unit id="sqlExpressionCalculatedField">
+  <source>Expresión SQL</source>
+  <target>SQL Expression</target>
+</trans-unit>
+<trans-unit id="typeSelectorText">
+  <source>Tipo de columna</source>
+  <target>Column type</target>
+</trans-unit>
+<trans-unit id="decimalNumberText">
+  <source>Número de decimales</source>
+  <target>Number of decimals</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

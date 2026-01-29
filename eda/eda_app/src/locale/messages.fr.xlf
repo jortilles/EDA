@@ -5761,7 +5761,18 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Comparativa</source>
         <target>Comparatif</target>
       </trans-unit>
-
+      <trans-unit id="sqlExpressionCalculatedField">
+        <source>Expresión SQL</source>
+        <target>Expression SQL</target>
+      </trans-unit>
+      <trans-unit id="typeSelectorText">
+        <source>Tipo de columna</source>
+        <target>Type de colonne</target>
+      </trans-unit>
+      <trans-unit id="decimalNumberText">
+        <source>Número de decimales</source>
+        <target>Nombre de décimales</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
