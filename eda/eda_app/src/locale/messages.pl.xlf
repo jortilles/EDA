@@ -5526,6 +5526,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Agregación</source>
         <target>Agregacja</target>
       </trans-unit>
+      <trans-unit id="CheckExpression">
+        <source>Comprobar expresión</source>
+        <target>Sprawdź wyrażenie</target>
+      </trans-unit>      
 </body>
 </file>
 </xliff>

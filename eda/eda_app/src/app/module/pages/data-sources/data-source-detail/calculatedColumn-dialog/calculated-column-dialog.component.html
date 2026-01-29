@@ -1,8 +1,6 @@
 <eda-dialog2 
   width="50vw" 
   height="65vh" 
-  (apply)="saveColumn()" 
-  (close)="closeDialog()"
   [header]="title" 
 >
 
@@ -61,11 +59,10 @@
             *ngFor="let type of columnTypes"
             type="button"
             (click)="onTypeChange(type)"
-            [class.bg-blue-600]="selectedcolumnType === type.value"
-            [class.text-white]="selectedcolumnType === type.value"
-            [class.border-gray-300]="selectedcolumnType !== type.value"
-            [class.bg-white]="selectedcolumnType !== type.value"
-            class="flex-1 h-10 px-3 py-2 border rounded-md text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition"
+            [ngClass]="selectedcolumnType === type.value
+              ? 'bg-[#00BFB3] text-white border-[#00BFB3]'
+              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'"
+            class="w-full px-4 py-2 font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
           >
             {{ type.label }}
           </button>
@@ -83,12 +80,11 @@
           <button
             *ngFor="let type of aggregation_type_cases"
             type="button"
-            (click)="updateAgg(type.value)" 
-            [class.bg-blue-600]="type.display"
-            [class.text-white]="type.display"
-            [class.border-gray-300]="!type.display"
-            [class.bg-white]="!type.display"
-            class="w-full px-4 py-2 font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2" 
+            (click)="updateAgg(type.value)"
+            class="w-full px-4 py-2 font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            [ngClass]="type.display
+              ? 'bg-[#00BFB3] text-white border-[#00BFB3]'
+              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'"
           >
             {{ type.display_name }}
           </button>
@@ -113,5 +109,30 @@
 
     </form>
   </div>
+
+  <ng-container footer>
+
+    <button class="cancel-button" (click)="closeDialog()">
+      <i class="fa fa-times"></i>
+      <span i18n="@@cancelarBtn">
+        Cancelar
+      </span>
+    </button>
+
+    <button class="execute-button" (click)="hola()">
+      <i class="fa fa-cogs"></i>
+      <span i18n="@@CheckExpression">
+        Comprobar expresión
+      </span>
+    </button>
+
+    <button class="confirm-button" (click)="saveColumn();">
+      <i class="fa fa-check"></i>
+      <span i18n="@@guardarBtn">
+        Confirmar
+      </span>
+    </button>
+
+  </ng-container>
 
 </eda-dialog2>

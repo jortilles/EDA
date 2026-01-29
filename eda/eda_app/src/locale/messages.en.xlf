@@ -5637,6 +5637,10 @@ OR<ph id="5"/>
   <source>Agregación</source>
   <target>Aggregation</target>
 </trans-unit>
+<trans-unit id="CheckExpression">
+  <source>Comprobar expresión</source>
+  <target>Check expression</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

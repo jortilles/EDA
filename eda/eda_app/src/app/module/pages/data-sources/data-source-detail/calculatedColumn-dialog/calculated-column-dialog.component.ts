@@ -115,6 +115,10 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
     }
   }
 
+  hola(){
+    console.log('hiiiii')
+  }
+
   updateAgg(type?: any) {
 
     console.log('type: ', type);

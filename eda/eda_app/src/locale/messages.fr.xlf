@@ -5777,6 +5777,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Agregación</source>
         <target>Agrégation</target>
       </trans-unit>
+      <trans-unit id="CheckExpression">
+        <source>Comprobar expresión</source>
+        <target>Vérifier l'expression</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
