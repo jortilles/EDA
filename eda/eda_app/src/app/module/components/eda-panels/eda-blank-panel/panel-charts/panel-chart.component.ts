@@ -900,11 +900,40 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.linkedDashboard = this.props.linkedDashboardProps;
         const categoryIndex = dataDescription.otherColumns[0].index;
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
-        // Generar assignedColors
-        inject.assignedColors = this.chartUtils.resolveAssignedColors(
-            categories, this.props.config.getConfig()['assignedColors'] || [], this.paletaActual
-        );
-        this.props.config.setConfig({ ...this.props.config.getConfig(), assignedColors: inject.assignedColors });
+        
+        // Intentar leer de múltiples fuentes
+        const savedAssignedColors = 
+            this.props.config.getConfig()['assignedColors'] || this.props['assignedColors'] || [];
+        
+        
+        let assignedColors;
+        if (savedAssignedColors.length > 0) {
+            assignedColors = categories.map((category, index) => {
+                const found = savedAssignedColors.find(ac => ac.value === category);
+                if (found) {
+                    return found;
+                } else {
+                    return {
+                        value: category,
+                        color: this.paletaActual[index % this.paletaActual.length]
+                    };
+                }
+            });
+        } else {
+            assignedColors = this.chartUtils.resolveAssignedColors(
+                categories, [], this.paletaActual
+            );
+        }
+        inject.assignedColors = assignedColors;
+        
+        // Guardar en ambos lugares
+        this.props['assignedColors'] = assignedColors;
+        
+        // Guardar en config
+        const currentConfig = this.props.config.getConfig();
+        currentConfig['assignedColors'] = assignedColors;
+        this.props.config.setConfig(currentConfig);
+        
         this.createTreeMap(inject);
     }
 
