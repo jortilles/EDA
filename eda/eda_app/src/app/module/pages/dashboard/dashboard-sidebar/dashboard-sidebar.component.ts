@@ -789,8 +789,10 @@ export class DashboardSidebarComponent {
   public isEditableCheck() {
     const user = localStorage.getItem('user');
     const userName = JSON.parse(user).name;
+    const userRole = JSON.parse(user).role;
+    const isAdmin = userRole.includes('135792467811111111111110');
     const imProperty = userName === this.dashboard.dashboard.config.author
-    return (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty);
+    return (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty || isAdmin );
   }
 
   toggleClickFilters() {

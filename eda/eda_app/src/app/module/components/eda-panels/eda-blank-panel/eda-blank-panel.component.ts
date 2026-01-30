@@ -437,8 +437,10 @@ public tableNodeExpand(event: any): void {
     isEditable() {
         const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
+        const userRole = JSON.parse(user).role;
+        const isAdmin = userRole.includes('135792467811111111111110');
         const imProperty = userName === this.dashboard.dashboard.config.author;
-        return (userName !== 'edaanonim' && !this.inject.isObserver) && !this.readonly && (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty);
+        return (userName !== 'edaanonim' && !this.inject.isObserver) && !this.readonly && (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty || isAdmin);
     }
 
     isRemovable() {
