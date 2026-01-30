@@ -52,6 +52,17 @@ export class ChartDialogComponent {
     public showLablesPercentTooltip = $localize`:@@showLablesPercentTooltip:Mostrar o ocultar las etiquetas en porcentaje sobre los gráficos`
     public columnsTooltip = $localize`:@@columnsTooltip:Elige cuantas columnas quieres mostrar`
     
+    // Guardar los valores originales de los labels
+    private originalLabelValues: {
+        addTrend: boolean;
+        showLabels: boolean;
+        showLabelsPercent: boolean;
+        showPointLines: boolean;
+        showPredictionLines: boolean;
+        numberOfColumns: number;
+        addComparative: boolean;
+    };
+
     public drops = {
         pointStyles: [],
         pointSizes: [],
@@ -109,6 +120,18 @@ export class ChartDialogComponent {
         this.showPredictionLines = this.controller.params.config.config.getConfig()['showPredictionLines'] || false;
         this.numberOfColumns = this.controller.params.config.config.getConfig()['numberOfColumns'] || false;
         this.addComparative = this.controller.params.config.config.getConfig()['addComparative'] || false;
+
+        // NUEVO: Guardar valores originales de labels
+        this.originalLabelValues = {
+            addTrend: this.addTrend,
+            showLabels: this.showLabels,
+            showLabelsPercent: this.showLabelsPercent,
+            showPointLines: this.showPointLines,
+            showPredictionLines: this.showPredictionLines,
+            numberOfColumns: this.numberOfColumns,
+            addComparative: this.addComparative
+        };
+
         this.oldChart = _.cloneDeep(this.controller.params.chart);
         this.chart = this.controller.params.chart;
         this.showTrend = this.chart.chartType === 'line';
@@ -156,7 +179,7 @@ export class ChartDialogComponent {
         this.applyColorsToChart();
         
         // Guardar preview para cancelar
-        this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
+        this.originalAssignedColors = _.cloneDeep(this.assignedColors);
     }
 
     loadChartTypeProperties() {
@@ -584,26 +607,6 @@ export class ChartDialogComponent {
         this.handleInputColor();
     }
 
-    
-
-
-    rgb2hex(rgb): string {
-        rgb = rgb?.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
-        return (rgb && rgb.length === 4) ? '#' +
-            ('0' + parseInt(rgb[1], 10).toString(16)).slice(-2) +
-            ('0' + parseInt(rgb[2], 10).toString(16)).slice(-2) +
-            ('0' + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';
-    }
-
-    hex2rgb(hex, opacity = 100): string {
-        hex = hex.replace('#', '');
-        const r = parseInt(hex.substring(0, 2), 16);
-        const g = parseInt(hex.substring(2, 4), 16);
-        const b = parseInt(hex.substring(4, 6), 16);
-
-        return 'rgba(' + r + ',' + g + ',' + b + ',' + opacity / 100 + ')';
-    }
-
     // METODOS DE GUARDAR/CANCELAR CONFIGURACION
 
     saveChartConfig() {
@@ -636,19 +639,29 @@ export class ChartDialogComponent {
     }
 
     resetChartConfig() {
-        this.controller.params.config.config.getConfig()['addTrend'] = this.chart.addTrend;
-        this.controller.params.config.config.getConfig()['showLabels'] = this.chart.showLabels;
-        this.controller.params.config.config.getConfig()['showLabelsPercent'] = this.chart.showLabelsPercent;
-        this.controller.params.config.config.getConfig()['showPointLines'] = this.chart.showPointLines;
-        this.controller.params.config.config.getConfig()['showPredictionLines'] = this.chart.showPredictionLines;
-        this.controller.params.config.config.getConfig()['numberOfColumns'] = this.chart.numberOfColumns;
-        this.controller.params.config.config.getConfig()['addComparative'] = this.chart.addComparative;
+        // Restaurar valores originales de labels
+        this.addTrend = this.originalLabelValues.addTrend;
+        this.showLabels = this.originalLabelValues.showLabels;
+        this.showLabelsPercent = this.originalLabelValues.showLabelsPercent;
+        this.showPointLines = this.originalLabelValues.showPointLines;
+        this.showPredictionLines = this.originalLabelValues.showPredictionLines;
+        this.numberOfColumns = this.originalLabelValues.numberOfColumns;
+        this.addComparative = this.originalLabelValues.addComparative;
+        
+        // Restaurar en config
+        this.controller.params.config.config.getConfig()['addTrend'] = this.originalLabelValues.addTrend;
+        this.controller.params.config.config.getConfig()['showLabels'] = this.originalLabelValues.showLabels;
+        this.controller.params.config.config.getConfig()['showLabelsPercent'] = this.originalLabelValues.showLabelsPercent;
+        this.controller.params.config.config.getConfig()['showPointLines'] = this.originalLabelValues.showPointLines;
+        this.controller.params.config.config.getConfig()['showPredictionLines'] = this.originalLabelValues.showPredictionLines;
+        this.controller.params.config.config.getConfig()['numberOfColumns'] = this.originalLabelValues.numberOfColumns;
+        this.controller.params.config.config.getConfig()['addComparative'] = this.originalLabelValues.addComparative;
+        this.controller.params.config.config.getConfig()['assignedColors'] = this.assignedColors = _.cloneDeep(this.originalAssignedColors);
     }
 
     closeChartConfig() {
         // Restaurar colores originales
         this.resetChartConfig();
-        this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
         this.applyColorsToChart();
         this.onClose(EdaDialogCloseEvent.NONE, this.oldChart);
     }
