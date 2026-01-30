@@ -1153,7 +1153,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * @param paletaActual - Paleta de colores a usar como fallback
      * @returns Array de assignedColors correctamente mapeados
      */
-    
+
     private resolveAndPersistColors(categories: string[], props: any, paletaActual: string[]): { value: string; color: string }[] {
         // Leer assignedColors de múltiples fuentes (con fallback)
         const savedAssignedColors = props.config.getConfig()['assignedColors'] || props.assignedColors || [];
@@ -1176,6 +1176,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             });
         }
         
+        if (!assignedColors || assignedColors.length === 0) {
+            console.warn('⚠️ Fallback: creando assignedColors mínimo');
+            assignedColors = [{ value: 'default', color: paletaActual[0] || '#10B4BD' }];
+        }
+
         // Persistir en múltiples lugares
         props.assignedColors = assignedColors; // Backup en props
         const currentConfig = props.config.getConfig();
