@@ -208,8 +208,10 @@ export class ChartDialogComponent {
         config.showPointLines = this.showPointLines;
         config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
-        config.colors = this.chart.chartColors;
-        properties.config = c;
+        config.assignedColors = config.assignedColors.map((assigned, index) => {
+            assigned.color = this.chart.chartColors.map(color => color.backgroundColor[index])[0];
+            return assigned;
+        });        properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
         setTimeout(_ => {
@@ -223,8 +225,11 @@ export class ChartDialogComponent {
         let c: ChartConfig = properties.config;
         let config: any = c.getConfig();
         config.addTrend = this.addTrend;
-        config.colors = this.chart.chartColors;
         config.numberOfColumns = this.numberOfColumns;
+        config.assignedColors = config.assignedColors.map((assigned, index) => {
+            assigned.color = this.chart.chartColors.map(color => color.backgroundColor[index])[0];
+            return assigned;
+        });
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
@@ -240,12 +245,15 @@ export class ChartDialogComponent {
         let c: ChartConfig = properties.config;
         let config: any = c.getConfig();
         config.addComparative = this.addComparative;
-        config.colors = this.chart.chartColors;
         config.numberOfColumns = this.numberOfColumns;
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
         config.showPointLines = this.showPointLines;
         config.showPredictionLines = this.showPredictionLines;
+        config.assignedColors = config.assignedColors.map((assigned, index) => {
+            assigned.color = this.chart.chartColors.map(color => color.backgroundColor[index])[0];
+            return assigned;
+        });
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
@@ -258,7 +266,6 @@ export class ChartDialogComponent {
 
 
     setShowLablesPercent() {
-
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
         let config: any = c.getConfig();
@@ -267,7 +274,10 @@ export class ChartDialogComponent {
         config.showPointLines = this.showPointLines;
         config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
-        config.colors = this.chart.chartColors.map(color => color.backgroundColor);
+        config.assignedColors = config.assignedColors.map((assigned, index) => {
+            assigned.color = this.chart.chartColors.map(color => color.backgroundColor[index])[0];
+            return assigned;
+        });        
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
@@ -312,6 +322,10 @@ export class ChartDialogComponent {
         config.showPointLines = this.showPointLines;
         config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
+        config.assignedColors = config.assignedColors.map((assigned, index) => {
+            assigned.color = this.chart.chartColors.map(color => color.backgroundColor[index])[0];
+            return assigned;
+        });
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
@@ -331,7 +345,10 @@ export class ChartDialogComponent {
         config.showPointLines = this.showPointLines;
         config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
-        config.colors = this.chart.chartColors;
+        config.assignedColors = config.assignedColors.map((assigned, index) => {
+            assigned.color = this.chart.chartColors.map(color => color.backgroundColor[index])[0];
+            return assigned;
+        });
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
@@ -350,7 +367,10 @@ export class ChartDialogComponent {
         config.showLabelsPercent = this.showLabelsPercent;
         config.showPointLines = this.showPointLines;
         config.numberOfColumns = this.numberOfColumns;
-        config.colors = this.chart.chartColors;
+        config.assignedColors = config.assignedColors.map((assigned, index) => {
+            assigned.color = this.chart.chartColors.map(color => color.backgroundColor[index])[0];
+            return assigned;
+        });
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
