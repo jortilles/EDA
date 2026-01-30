@@ -611,7 +611,7 @@ export class DashboardPage implements OnInit {
             }
 
             // Creamos un filtro nuevo con from chart true
-            this.chartFilter = this.createChartFilter(table, column, data.label, config);
+            this.chartFilter = await this.createChartFilter(table, column, data.label, config);
             // Control de filtros para filtros parciales
             data.panel.content.query.query?.filters.push(this.createChartFilter(table, column, data.label, config))
 
@@ -656,18 +656,26 @@ export class DashboardPage implements OnInit {
   // FUNCIONES DE FILTROS DINAMICOS
 
   createChartFilter(table: any, column: any, dataLabel: string, config: any): any {
-    return {
-        id: `${table.table_name}_${column.column_name}`,
-        isGlobal: true,
-        isAutocompleted: config.isAutocompleted ?? false,
-        applyToAll: config.applyToAll ?? true,
-        panelList: config.panelList.map((p) => p.id),
-        table: { label: table.display_name.default, value: table.table_name },
-        column: { label: column.display_name.default, value: column },
-        selectedItems: [dataLabel],
-        fromChart: true
+    const filter = {
+      id: `${table.table_name}_${column.column_name}`,
+      filter_id: `${table.table_name}_${column.column_name}`, 
+      isGlobal: true,
+      isAutocompleted: config.isAutocompleted ?? false,
+      applyToAll: config.applyToAll ?? true,
+      panelList: config.panelList.map((p) => p.id),
+      table: { label: table.display_name.default, value: table.table_name },
+      column: { 
+          label: column.display_name?.default || column.column_name, 
+          value: column
+      },
+      selectedItems: [dataLabel],
+      fromChart: true,
+      visible: 'public',
+      data: []
     };
-}
+    
+    return filter;
+  }
 
   deleteDynamicFilter(chartToRemove: any, table: any, filterName: any) {
     // Borramos el filtro existente
