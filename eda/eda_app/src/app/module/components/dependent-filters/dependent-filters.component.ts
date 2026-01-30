@@ -86,15 +86,12 @@ export class DependentFilters implements OnInit {
 
             itemChangeCallback: this.onItemChange.bind(this)
         };
-
-        console.log('this.dependentFilterGrid: ',this.dependentFilterGrid);        
+        
     }
 
     initDashboard() {
         this.dependentFilterGrid = [];
         let k = 0;
-
-        console.log('this.dashboard: ', this.dashboard);
 
         this.dashboard.globalFilter.globalFilters.forEach((gf: any) => {
             this.dependentFilterGrid.push(

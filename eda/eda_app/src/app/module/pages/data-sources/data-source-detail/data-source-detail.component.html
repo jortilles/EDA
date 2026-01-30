@@ -239,25 +239,23 @@
       </div>
       
       <!-- Aggregation -->
-      @if (columnPanel.computed_column === 'no') {
-        <div class="mb-4">
-          <label class="block font-medium text-gray-700 mb-2" i18n="@@agregacionh5">
-            Agregación
-          </label>
-          <div class="flex flex-wrap gap-2">
-            @for (type of aggTypes; track type.value) {
-              <button 
-                type="button" 
-                (click)="updateAgg(type.value)" 
-                class="px-4 py-2 font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2" 
-                [ngClass]="columnPanel.aggregation_type.includes(type.value) ? 'bg-[#00BFB3] text-white border-[#00BFB3]' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'"
-              >
-                {{ type.label }}
-              </button>
-            }
-          </div>
+      <div class="mb-4">
+        <label class="block font-medium text-gray-700 mb-2" i18n="@@agregacionh5">
+          Agregación
+        </label>
+        <div class="flex flex-wrap gap-2">
+          @for (type of aggTypes; track type.value) {
+            <button 
+              type="button" 
+              (click)="updateAgg(type.value)" 
+              class="px-4 py-2 font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2" 
+              [ngClass]="columnPanel.aggregation_type.includes(type.value) ? 'bg-[#00BFB3] text-white border-[#00BFB3]' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'"
+            >
+              {{ type.label }}
+            </button>
+          }
         </div>
-      }
+      </div>
 
       
       <!-- Decimal Places -->

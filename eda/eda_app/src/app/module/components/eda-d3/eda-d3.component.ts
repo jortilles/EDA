@@ -45,14 +45,12 @@ export class EdaD3Component implements AfterViewInit, OnInit {
   ngOnInit(): void {
     this.id = `sankey_${this.inject.id}`;
     this.data = this.inject.data;
-    const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
-    this.firstColLabels = this.data.values.map(row => row[firstNonNumericColIndex]);
-    this.firstColLabels = [...new Set(this.firstColLabels)];
-    this.colors = this.inject.colors?.length > 0 ? this.inject.colors :
-    this.chartUtilService.generateChartColorsFromPalette(this.firstColLabels?.length, this.styleProviderService.ActualChartPalette['paleta']).map(item => item.backgroundColor);
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
-    this.assignedColors = this.inject.assignedColors || []; 
-    this.assignedColors.forEach((element, index) => {if(element.value === undefined) element.value = this.firstColLabels[index]}); // linea para cuando value es numerico
+    const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
+    this.firstColLabels = this.inject.data.values.map(row => row[firstNonNumericColIndex]);
+    this.firstColLabels = [...new Set(this.firstColLabels)];
+    this.assignedColors = this.inject.assignedColors;
+
   }
 
   ngAfterViewInit() {

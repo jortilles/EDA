@@ -19,7 +19,7 @@ import * as _ from 'lodash';
 })
 export class CustomizedDashboardComponent implements OnInit {
   public leftItems: {name:string, href:string, isStarting: boolean, icon?: any}[];
-  public : string = "https://demo.edalitics.com/es/#/public/6801ea526c2a8f2c431e9b28"; 
+  public : string = "https://demo.edalitics.com/es/#/public/6801ea526c2a8f2c431e9b28s"; 
   ngOnInit(): void {
     // Inicialización
     this.leftItems = [
@@ -41,11 +41,10 @@ export class CustomizedDashboardComponent implements OnInit {
   }
 
 
-changeSrc(href: string) {
-  console.log(href)
+changeSrc(href: string): void {
   const iframe = document.getElementById('showDashboard') as HTMLIFrameElement;
   if (iframe) {
-    const baseUrl = href + '?panelMode=true'
+    const baseUrl = href + '?panelMode=true';
     iframe.src = baseUrl + '&refresh=' + Date.now();
   }
 }

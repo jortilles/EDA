@@ -1,6 +1,6 @@
 export const ChartsColors = [
     [2,72,115],
-    [15,166,151],
+    [240, 1 ,1],
     [242, 197, 61],
     [191, 129, 75],
     [89, 18, 2],
@@ -32,16 +32,16 @@ export const ChartsPalettes = [
         ]
         , name: 'Turquesa-Rosa'
     },
-        {
+    {
         paleta: [
-  '#19D4DE', '#D07BFF', '#D8FF5E', '#FFB06B', '#F1C2FF',
-  '#36B6FF', '#FF5CCB', '#7CFFB2', '#5B7CFF', '#FFD34D',
-  '#00F5D4', '#FF6B6B', '#A3FF3E', '#7A5CFF', '#4DE6FF',
-  '#FF8AD4', '#B6A6FF', '#9EFFC2', '#FFC48A', '#5CF2C7',
-  '#C8FF8A', '#FFA6E8', '#8DEBFF', '#FFE36A', '#9D7BFF'
+            '#19D4DE', '#D07BFF', '#D8FF5E', '#FFB06B', '#F1C2FF',
+            '#36B6FF', '#FF5CCB', '#7CFFB2', '#5B7CFF', '#FFD34D',
+            '#00F5D4', '#FF6B6B', '#A3FF3E', '#7A5CFF', '#4DE6FF',
+            '#FF8AD4', '#B6A6FF', '#9EFFC2', '#FFC48A', '#5CF2C7',
+            '#C8FF8A', '#FFA6E8', '#8DEBFF', '#FFE36A', '#9D7BFF'
         ]
         , name: 'Turquesa-Rosa-Contraste'
-    },{
+    }, {
         paleta: [
   '#5C86A6', '#F7DB86', '#69C8BC', '#A66B5C', '#8FE7ED',
   '#FFB56B', '#8C8C8C', '#CDE67D', '#D7B28E', '#74BFC3',
@@ -112,9 +112,9 @@ export const DEFAULT_PANEL_COLOR: string = '#ffffff';
 export const DEFAULT_FONT_COLOR: string = '#455a64'
 export const DEFAULT_FONT_FAMILY: string = 'Montserrat';  /* THIS MUST BE SET ALSO IN  \eda_app\src\assets\sass\css\custom.css */
 export const DEFAULT_FONT_SIZE: number = 0;
-export const DEFAULT_TITLE_ALIGN : string = 'flex-start';
-export const DEFAULT_PANEL_TITLE_ALIGN : string = 'flex-start';
-export const EMPTY_VALUE : string = ''; // $localize`:@@EmptyValueMessage:Sin Informar` ;// Agregado valores vacios en diferentes idiomas
-export const NULL_VALUE : string = '' ;// null Agregado de null_value en diferentes idiomas  if you want to leave the null you can put this value: LEAVE_THE_NULL . THIS LEAVE_THE_NULL will leave the null value as null
+export const DEFAULT_TITLE_ALIGN: string = 'flex-start';
+export const DEFAULT_PANEL_TITLE_ALIGN: string = 'flex-start';
+export const EMPTY_VALUE: string = ''; // $localize`:@@EmptyValueMessage:Sin Informar` ;// Agregado valores vacios en diferentes idiomas
+export const NULL_VALUE: string = '';// null Agregado de null_value en diferentes idiomas  if you want to leave the null you can put this value: LEAVE_THE_NULL . THIS LEAVE_THE_NULL will leave the null value as null
 export const DEFAULT_PALETTE_COLOR: any = ChartsPalettes.find(palette => palette.name === "Turquesa-Rosa");
-export const FATHER_ID : number = 0; // Valor id de Padre para el componente Treetable
+export const FATHER_ID: number = 0; // Valor id de Padre para el componente Treetable
