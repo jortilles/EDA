@@ -1155,40 +1155,78 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      */
 
     private resolveAndPersistColors(categories: string[], props: any, paletaActual: string[]): { value: string; color: string }[] {
-        // Leer assignedColors de múltiples fuentes (con fallback)
-        const savedAssignedColors = props.config.getConfig()['assignedColors'] || props.assignedColors || [];
-        let assignedColors: { value: string; color: string }[];
+    
+    // Validar inputs
+    if (!categories || categories.length === 0) {
+        console.warn('⚠️ resolveAndPersistColors: categories vacías');
+        categories = ['default'];
+    }
+    
+    if (!paletaActual || paletaActual.length === 0) {
+        console.warn('⚠️ resolveAndPersistColors: paletaActual vacía');
+        paletaActual = ['#10B4BD', '#1CEDB1', '#023E8A'];
+    }
+    
+    const savedAssignedColors = 
+        props.config.getConfig()['assignedColors'] || 
+        props.assignedColors || 
+        [];
+    
+    let assignedColors: { value: string; color: string }[];
+    
+    // Si ya existen colores guardados Y las categorías coinciden, 
+    // NO regenerar (evita el loop de regeneración)
+    if (savedAssignedColors.length > 0) {
+        // Verificar si las categorías son las mismas
+        const savedValues = savedAssignedColors.map(ac => ac.value).sort();
+        const currentValues = categories.slice().sort();
+        const sameCategoriesCount = savedValues.length === currentValues.length;
         
-        // Mapear o generar colores
-        if (savedAssignedColors.length > 0) {
-            // Mapear colores basándose en las categorías actuales (por VALOR, no índice)
+        // Si tienen el mismo número de categorías, asumir que son los mismos datos
+        // y simplemente mapear los colores existentes
+        if (sameCategoriesCount) {
             assignedColors = categories.map((category, index) => {
                 const found = savedAssignedColors.find(ac => ac.value === category);
-                if (found) {
-                    return found; // Usar color guardado
-                } else {
-                    // Nueva categoría, asignar color de la paleta
-                    return {
-                        value: category,
-                        color: paletaActual[index % paletaActual.length]
-                    };
-                }
+                return found || {
+                    value: category,
+                    color: paletaActual[index % paletaActual.length]
+                };
+            });
+        } else {
+            // Las categorías cambiaron (filtro aplicado), mapear lo que se pueda
+            assignedColors = categories.map((category, index) => {
+                const found = savedAssignedColors.find(ac => ac.value === category);
+                return found || {
+                    value: category,
+                    color: paletaActual[index % paletaActual.length]
+                };
             });
         }
-        
-        if (!assignedColors || assignedColors.length === 0) {
-            console.warn('⚠️ Fallback: creando assignedColors mínimo');
-            assignedColors = [{ value: 'default', color: paletaActual[0] || '#10B4BD' }];
-        }
-
-        // Persistir en múltiples lugares
-        props.assignedColors = assignedColors; // Backup en props
+    } 
+    
+    // Validación final
+    if (!assignedColors || assignedColors.length === 0) {
+        console.warn('⚠️ Fallback: creando assignedColors mínimo');
+        assignedColors = categories.map((cat, idx) => ({
+            value: cat,
+            color: paletaActual[idx % paletaActual.length]
+        }));
+    }
+    
+    
+    // SOLO persistir si realmente cambió algo
+    // Comparar con lo guardado para evitar escrituras innecesarias --> esto viene dado por el doble render
+    const needsUpdate = JSON.stringify(savedAssignedColors) !== JSON.stringify(assignedColors);
+    
+    if (needsUpdate) {
+        props.assignedColors = assignedColors;
         const currentConfig = props.config.getConfig();
         currentConfig['assignedColors'] = assignedColors;
         props.config.setConfig(currentConfig);
-        
-        return assignedColors;
     }
+    
+    return assignedColors;
+}
 
     private resolveAndPersistGradientColors(props: any, paletaActual: string[]): { value: string; color: string }[] {
         // Leer de múltiples fuentes
