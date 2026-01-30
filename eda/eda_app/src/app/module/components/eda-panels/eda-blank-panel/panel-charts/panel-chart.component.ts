@@ -803,13 +803,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.linkedDashboard = this.props.linkedDashboardProps;
         const categoryIndex = dataDescription.otherColumns[0].index;
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
-        
-        //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
-        inject.assignedColors = this.chartUtils.resolveAssignedColors(
-            categories, this.props.config.getConfig()['assignedColors'] || [], this.paletaActual
-        );
-        
-        this.props.config.setConfig({ ...this.props.config.getConfig(), assignedColors: inject.assignedColors });
+        inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
         this.createParallelSetsComponent(inject);
     }
 
@@ -835,23 +829,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
         inject.linkedDashboard = this.props.linkedDashboardProps;
-
-        // Obtener colores guardados
-        let assignedColors = this.props.config.getConfig()['assignedColors'];
-
-        // Si no hay colores guardados o están incompletos, crear defaults
-        if (!assignedColors || !Array.isArray(assignedColors) || assignedColors.length < 2) {
-            assignedColors = [
-                { value: 'start', color: this.paletaActual[0] },
-                { value: 'end', color: this.paletaActual[this.paletaActual.length - 1] }
-            ];
-
-            // SOLO guardar si no existían antes
-            this.props.config.getConfig()['assignedColors'] = assignedColors;
-        }
-        // Usar los colores (ya sean guardados o defaults)
-        inject.assignedColors = assignedColors;
-
+        inject.assignedColors = this.resolveAndPersistGradientColors(this.props, this.paletaActual);
         this.createFunnelComponent(inject);
     }
 
@@ -874,11 +852,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.linkedDashboard = this.props.linkedDashboardProps;
         const categoryIndex = dataDescription.otherColumns[0].index;
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
-        //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
-        inject.assignedColors = this.chartUtils.resolveAssignedColors(
-            categories, this.props.config.getConfig()['assignedColors'] || [], this.paletaActual
-        );
-        this.props.config.setConfig({ ...this.props.config.getConfig(), assignedColors: inject.assignedColors });
+        inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
         this.createBubblechartComponent(inject);
     }
     
@@ -898,41 +872,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
         inject.linkedDashboard = this.props.linkedDashboardProps;
+        
         const categoryIndex = dataDescription.otherColumns[0].index;
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
-        
-        // Intentar leer de múltiples fuentes
-        const savedAssignedColors = 
-            this.props.config.getConfig()['assignedColors'] || this.props['assignedColors'] || [];
-        
-        
-        let assignedColors;
-        if (savedAssignedColors.length > 0) {
-            assignedColors = categories.map((category, index) => {
-                const found = savedAssignedColors.find(ac => ac.value === category);
-                if (found) {
-                    return found;
-                } else {
-                    return {
-                        value: category,
-                        color: this.paletaActual[index % this.paletaActual.length]
-                    };
-                }
-            });
-        } else {
-            assignedColors = this.chartUtils.resolveAssignedColors(
-                categories, [], this.paletaActual
-            );
-        }
-        inject.assignedColors = assignedColors;
-        
-        // Guardar en ambos lugares
-        this.props['assignedColors'] = assignedColors;
-        
-        // Guardar en config
-        const currentConfig = this.props.config.getConfig();
-        currentConfig['assignedColors'] = assignedColors;
-        this.props.config.setConfig(currentConfig);
+        inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
         
         this.createTreeMap(inject);
     }
@@ -954,16 +897,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;        
         inject.linkedDashboard = this.props.linkedDashboardProps;
-        
         const categoryIndex = dataDescription.otherColumns[0].index;
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
-        
-        //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
-        inject.assignedColors = this.chartUtils.resolveAssignedColors(
-            categories, this.props.config.getConfig()['assignedColors'] || [], this.paletaActual
-        );
-
-        this.props.config.setConfig({ ...this.props.config.getConfig(), assignedColors: inject.assignedColors });
+        inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
         this.createScatter(inject);
     }
 
@@ -986,11 +922,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.linkedDashboard = this.props.linkedDashboardProps;
         const categoryIndex = dataDescription.otherColumns[0].index;
         const categories = [...new Set(inject.data.values.map(row => row[categoryIndex]))];
-        //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
-        inject.assignedColors = this.chartUtils.resolveAssignedColors(
-            categories, this.props.config.getConfig()['assignedColors'] || [], this.paletaActual
-        );      
-        this.props.config.setConfig({ ...this.props.config.getConfig(), assignedColors: inject.assignedColors });
+        inject.assignedColors = this.resolveAndPersistColors(categories, this.props, this.paletaActual);
         this.createSunburst(inject);
     }
 
@@ -1211,6 +1143,74 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             return new EdaTable({ cols: tableColumns, pivot: true, ...configs });
         }
 
+    }
+
+
+    /**
+     * Resuelve y persiste los colores asignados para un chart
+     * @param categories - Array de categorías/labels actuales del chart
+     * @param props - Props del chart (debe tener config y assignedColors)
+     * @param paletaActual - Paleta de colores a usar como fallback
+     * @returns Array de assignedColors correctamente mapeados
+     */
+    
+    private resolveAndPersistColors(categories: string[], props: any, paletaActual: string[]): { value: string; color: string }[] {
+        // Leer assignedColors de múltiples fuentes (con fallback)
+        const savedAssignedColors = props.config.getConfig()['assignedColors'] || props.assignedColors || [];
+        let assignedColors: { value: string; color: string }[];
+        
+        // Mapear o generar colores
+        if (savedAssignedColors.length > 0) {
+            // Mapear colores basándose en las categorías actuales (por VALOR, no índice)
+            assignedColors = categories.map((category, index) => {
+                const found = savedAssignedColors.find(ac => ac.value === category);
+                if (found) {
+                    return found; // Usar color guardado
+                } else {
+                    // Nueva categoría, asignar color de la paleta
+                    return {
+                        value: category,
+                        color: paletaActual[index % paletaActual.length]
+                    };
+                }
+            });
+        }
+        
+        // Persistir en múltiples lugares
+        props.assignedColors = assignedColors; // Backup en props
+        const currentConfig = props.config.getConfig();
+        currentConfig['assignedColors'] = assignedColors;
+        props.config.setConfig(currentConfig);
+        
+        return assignedColors;
+    }
+
+    private resolveAndPersistGradientColors(props: any, paletaActual: string[]): { value: string; color: string }[] {
+        // Leer de múltiples fuentes
+        const savedAssignedColors = props.config.getConfig()['assignedColors'] || props.assignedColors || [];
+        let assignedColors: { value: string; color: string }[];
+        
+        if (savedAssignedColors.length >= 2) {
+            const startColor = savedAssignedColors.find(ac => ac.value === 'start');
+            const endColor = savedAssignedColors.find(ac => ac.value === 'end');
+            
+            assignedColors = [
+                startColor || { value: 'start', color: savedAssignedColors[0]?.color || paletaActual[0] },
+                endColor || { value: 'end', color: savedAssignedColors[1]?.color || paletaActual[paletaActual.length - 1] }
+            ];
+        } else {
+            assignedColors = [
+                { value: 'start', color: paletaActual[0] },
+                { value: 'end', color: paletaActual[paletaActual.length - 1] }
+            ];
+        }
+        
+        // Persistir en ambos lugares
+        props.assignedColors = assignedColors;
+        const currentConfig = props.config.getConfig();
+        currentConfig['assignedColors'] = assignedColors;
+        props.config.setConfig(currentConfig);
+        return assignedColors;
     }
 
     /**
