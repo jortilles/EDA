@@ -334,7 +334,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 } else {
                     // Si es un label nuevo (no estaba en assignedColors), usar color de la paleta
                     const fallbackColor = this.paletaActual[index % this.paletaActual.length];
-                    console.warn(`No se encontró color para "${label}", usando fallback: ${fallbackColor}`);
                     return { value: label, color: fallbackColor };
                 }
             });
@@ -963,12 +962,13 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public updateComponent() {
         if (this.componentRef && !['table', 'crosstable'].includes(this.props.chartType)) {
             try {
+                console.log(this.props.chartType)
                 // Charts ChartJS
                 if (['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'pyramid', 'radar'].includes(this.props.chartType)) {
                     this.updateChartJSColors();
                 }
                 // KPI
-                else if (this.props.chartType.includes('kpi')) {
+                else if (['kpibar', 'kpiline', 'kpiarea'].includes(this.props.chartType)) {
                     this.updateKPIColors();
                 }
                 // Charts D3
@@ -1158,12 +1158,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     
     // Validar inputs
     if (!categories || categories.length === 0) {
-        console.warn('⚠️ resolveAndPersistColors: categories vacías');
         categories = ['default'];
     }
     
     if (!paletaActual || paletaActual.length === 0) {
-        console.warn('⚠️ resolveAndPersistColors: paletaActual vacía');
         paletaActual = ['#10B4BD', '#1CEDB1', '#023E8A'];
     }
     
@@ -1206,7 +1204,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     
     // Validación final
     if (!assignedColors || assignedColors.length === 0) {
-        console.warn('⚠️ Fallback: creando assignedColors mínimo');
         assignedColors = categories.map((cat, idx) => ({
             value: cat,
             color: paletaActual[idx % paletaActual.length]
