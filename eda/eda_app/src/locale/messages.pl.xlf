@@ -4328,8 +4328,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
 </trans-unit>
 
 <trans-unit id="connectDashboardPanel">
-  <source>Conecta los filtros entre el dashboard y el panel</source>
-  <target>Podłącz filtry pomiędzy deską rozdzielczą a panelem</target>
+  <source>Conecta los filtros entre el dashboard y el panel, (los únicos filtros de panel que se visualizan son aquellos cuyo tipo de filtro es IN)</source>
+  <target>Połącz filtry między pulpitem a panelem (wyświetlane są tylko filtry panelu, których typ filtra to IN)</target>
 </trans-unit>
 
 <trans-unit id="mapFilters">

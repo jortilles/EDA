@@ -156,13 +156,14 @@ export class ImportPanelDialog implements OnInit {
       const panelFilters = panel.content.query.query.filters || [];
       const dashFilters = this.dashboard.globalFilter.globalFilters;
 
-      this.panelsFilters = panelFilters;
+      // Solo utilizamos los filtros de panel que utilizan tipo de filtro 'in'
+      this.panelsFilters = panelFilters.filter((f: any) => (f.isGlobal || (f.filter_type === 'in')));
       this.dashboardFilters = dashFilters;
 
       if (!this._filterMapper[panelId]) {
         this._filterMapper[panelId] = {
           connections: [],
-          panelFilters: panelFilters.filter((f: any) => f.isGlobal).map((f: any) => ({ id: f.filter_id, label: f.filter_column, type: f.filter_column_type || 'text' })),
+          panelFilters: panelFilters.filter((f: any) => (f.isGlobal || (f.filter_type === 'in'))).map((f: any) => ({ id: f.filter_id, label: f.filter_column, type: f.filter_column_type || 'text' })),
           dashboardFilters: dashFilters.map((f: any) => ({ id: f.id, label: `${f.selectedColumn?.display_name?.default} (${f.selectedTable?.display_name?.default})`, type: f.filter_column_type || 'text' }))
         };
       }
