@@ -257,13 +257,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
         // PREDICTION LINES
         if(cfg.showPredictionLines === true){  
-            // Añadimos la nueva serie de predicción
             dataDescription.numericColumns.push({name: $localize`:@@Prediction:Predicción`, index:2 });
             dataTypes.push('numeric');
             values = values.map(innerArray => innerArray.map(item => item === "" ? null : item));
         }
 
-        // No pasamos el numero de columnas se calcula en la propia funcion
         const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart, values, dataTypes, dataDescription, isbarline, null);
         if (chartData.length == 0) {
             chartData.push([], []);
@@ -295,7 +293,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             let trends = [];
             let predictionSerie = cfg.showPredictionLines; 
             chartData[1].forEach(serie => {
-                // No añadiremos tendencia cuando tengamos showPrectionLines y sea la ultima serie 
                 if(!predictionSerie || (predictionSerie && serie !== chartData[1][chartData[1].length -1])) {
                     let trend = this.chartUtils.getTrend(serie);
                     trends.push(trend);
@@ -310,39 +307,58 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.chartLabels = chartData[0];
         chartConfig.chartDataset = chartData[1];
         chartConfig.chartOptions = config.chartOptions;
-
+        
         // Leer assignedColors del config (si existen)
         let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
-    
+
+        // Obtener los labels actuales del chart (después de aplicar filtros)
+        const currentLabels = this.getLabelsForChartType(chartConfig);
+        
         // Si NO hay assignedColors, generarlos desde la paleta
         if (assignedColors.length === 0) {
-            // Obtener labels según tipo de chart
-            const labels = this.getLabelsForChartType(chartConfig);
-            
-            // Generar assignedColors usando la paleta actual
-            assignedColors = this.chartUtils.resolveAssignedColors(labels, [], this.paletaActual);
-            // Guardar en config para persistencia
+            assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
             this.props.config.getConfig()['assignedColors'] = assignedColors;
-        } 
+        } else {
+            // Mapear assignedColors a los labels actuales
+            // Crear un Map para búsqueda rápida por valor
+            const colorMap = new Map(assignedColors.map(ac => [ac.value, ac.color]));
+            
+            // Mapear colores basándose en los labels ACTUALES
+            const mappedAssignedColors = currentLabels.map((label, index) => {
+                // Buscar el color asignado para este label
+                const assignedColor = colorMap.get(label);
+                
+                if (assignedColor) {
+                    // Si existe un color asignado para este label, usarlo
+                    return { value: label, color: assignedColor };
+                } else {
+                    // Si es un label nuevo (no estaba en assignedColors), usar color de la paleta
+                    const fallbackColor = this.paletaActual[index % this.paletaActual.length];
+                    console.warn(`No se encontró color para "${label}", usando fallback: ${fallbackColor}`);
+                    return { value: label, color: fallbackColor };
+                }
+            });
+            
+            // Actualizar assignedColors con los colores mapeados
+            assignedColors = mappedAssignedColors;
+        }
 
         // Asignar al chartConfig
         chartConfig.assignedColors = assignedColors;
 
-        // Generar chartColors en formato Chart.js desde assignedColors
+        // Generar chartColors en formato Chart.js desde assignedColors MAPEADOS
         chartConfig.chartColors = this.chartUtils.generateChartColorsFromAssignedColors(
-            assignedColors,
+            assignedColors, 
             this.props.chartType
         );
 
         // Aplicar backgroundColor y borderColor a los datasets
-        // chartColors únicamente se reflejan si están dentro del chartDataset
         if (!chartData[1][0]?.backgroundColor) {
             chartData[1].forEach((dataset, i) => {
                 try {
                     dataset.backgroundColor = chartConfig.chartColors[i]?.backgroundColor;
                     dataset.borderColor = chartConfig.chartColors[i]?.borderColor;
                 } catch (err) {
-                    // Si hay una tendencia sin color asignado, usar color por defecto de la paleta
                     const fallbackColor = this.paletaActual[i % this.paletaActual.length];
                     dataset.backgroundColor = fallbackColor;
                     dataset.borderColor = fallbackColor;

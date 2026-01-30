@@ -797,7 +797,16 @@ public tableNodeExpand(event: any): void {
 
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
+            
+            // Preservar assignedColors antes del merge
+            const savedAssignedColors = config && config.getConfig() ? config.getConfig()['assignedColors'] : null;
+
             _.merge(_config, config||{});
+            
+            // Restaurar assignedColors después del merge
+            if (savedAssignedColors) {
+                _config.getConfig()['assignedColors'] = savedAssignedColors;
+            }
 
             if (subType=='tableanalized') {
                 try {
@@ -817,15 +826,12 @@ public tableNodeExpand(event: any): void {
 
         // Controlar si se ejecuta una tabla cruzada
         // Se verifica si la longitud de la variable axes
-
         // Referencia a config
         const configCrossTable = this.panelChartConfig.config.getConfig()
 
         
         if(subType === 'crosstable'){
-            
             if(config===null){
-
                 if(Object.keys(this.copyConfigCrossTable).length !== 0) {
                     this.axes = this.copyConfigCrossTable['ordering'][0].axes;
                     configCrossTable['ordering'] = [{axes: this.axes}];
@@ -833,7 +839,6 @@ public tableNodeExpand(event: any): void {
                     this.axes = this.initAxes(this.currentQuery);
                     configCrossTable['ordering'] = [{axes: this.axes}];
                 }
-
             } else {
                 if(config['config']['ordering'] === undefined) {
                     this.axes = this.initAxes(this.currentQuery);
@@ -845,9 +850,7 @@ public tableNodeExpand(event: any): void {
                     }
                 }
             }
-
         }
-
     }
 
     /**

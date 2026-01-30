@@ -139,7 +139,6 @@ export class ChartDialogComponent {
         this.showComparative = this.allowCoparative(this.controller.params);
         this.load();
         this.display = true;
-        console.log(this)
     }
 
     load() {
@@ -304,7 +303,6 @@ export class ChartDialogComponent {
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
-        console.log(this.panelChartComponent.componentRef.instance)
         setTimeout(_ => {
             this.chart = this.panelChartComponent.componentRef.instance.inject;
             this.load();
