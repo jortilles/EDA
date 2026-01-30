@@ -32,8 +32,8 @@
             <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
               <span class="font-medium">{{ item }}</span>
               <div class="flex items-center gap-2">
-                <input [(ngModel)]="colors[idx]" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
-                <p-colorPicker [(ngModel)]="colors[idx]" (onChange)="handleInputColor()" format="hex" appendTo="body" />
+                <input [(ngModel)]="assignedColors[idx].color" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
+                <p-colorPicker [(ngModel)]="assignedColors[idx].color" (onChange)="handleInputColor()" format="hex" appendTo="body" />
               </div>
             </div>
             }
