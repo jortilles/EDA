@@ -145,6 +145,8 @@ export class OAUTHController {
                 console.error(`Error creando o actualizando grupo "${companyName}":`, err.message);
             }
 
+            console.log('role_id: ', role_id);
+
             ////////////////////////////////////////////////////////
             //////////////// FIN DE CREACION DE ROL ////////////////
             ////////////////////////////////////////////////////////
@@ -168,6 +170,8 @@ export class OAUTHController {
 
                 console.log('===> USUARIO NO ES NUEVO ===>');
 
+                console.log('userEda: ', userEda);
+
                 userEda.name = name;
                 userEda.email = email;
                 userEda.password = bcrypt.hashSync('no_serveix_de_re_pero_no_pot_ser_null', 10); 
@@ -186,6 +190,8 @@ export class OAUTHController {
                 companyIdDG: companyId
             };   
 
+            console.log('userPayload ===> ', userPayload);
+
             token = await jwt.sign({ user: userPayload }, SEED, { expiresIn: 14400 });
 
             // Borramos todos los grupos del usuario actualizado
@@ -196,6 +202,7 @@ export class OAUTHController {
 
             // ----------------------------- REDIRECCIÓN AL LOGIN -----------------------------
 
+            // const defaultRelay = `http://localhost:4200/#/login?next=%2Fhome`;
             const defaultRelay = `${OAUTHconfig.urlRedirection}/#/login?next=%2Fhome`;
             const relayRaw = (req.body as any)?.RelayState || defaultRelay;
 

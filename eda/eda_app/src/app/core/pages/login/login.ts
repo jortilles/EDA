@@ -122,7 +122,7 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
                         this.verifyloginOauth();
                     }
 
-                    console.log('loginMethodsÑ ', loginMethods);
+                    console.log('loginMethods ===>', loginMethods);
                     
                     return;
                 }
@@ -327,12 +327,10 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
     verifyloginOauth() {
         // Si llega con Single Sing-On
         const qp = this.route.snapshot.queryParamMap;
-
-        console.log('qp: ', qp);
-
         const token = qp.get('token');
         const next = qp.get('next') || '/home';
-
+        
+        console.log('qp: ', qp);
         console.log('token: ', token)
         console.log('next: ', next)
 
