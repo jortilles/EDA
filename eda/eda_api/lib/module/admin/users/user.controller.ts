@@ -387,9 +387,10 @@ export class UserController {
 
 
     static async delete(req: Request, res: Response, next: NextFunction) {
-        let options: QueryOptions = {};
+
         try {
-            const userRemoved = await User.findByIdAndDelete();
+            const {id} = req.params; // id del usuario que se desea eliminar
+            const userRemoved = await User.findByIdAndDelete(id);
 
             if (!userRemoved) {
                 return next(new HttpException(400, 'Not exists user with this id'));
