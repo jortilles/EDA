@@ -1432,7 +1432,7 @@ export class DashboardController {
     }
 
     // Número de fechas a predecir
-    const steps = 2;
+    const steps = 3;
 
     // Buscamos campo de la fecha, su formato y su último valor
     const dateField = myQuery.fields.find(field => field.column_type === 'date');
