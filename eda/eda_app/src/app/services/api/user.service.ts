@@ -224,13 +224,10 @@ export class UserService extends ApiService {
 
     /** Logout user and clean localstorage */
     logout() {
-        console.log('Logout por default')
         this.user = null;
         this.token = '';
-
         localStorage.removeItem('user');
         localStorage.removeItem('token');
-
         this.router.navigate(['/login']);
     }
 

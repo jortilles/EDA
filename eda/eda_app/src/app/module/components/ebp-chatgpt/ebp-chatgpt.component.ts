@@ -30,8 +30,6 @@ export class EbpChatgptComponent implements OnInit, AfterViewChecked{
   constructor(private chatgptService: ChatgptService) {}
 
   ngOnInit(): void {
-    console.log('Inicio del componente ...')
-    console.log('recibiendo la data: ', this.dataChatGpt);
   }
 
   ngAfterViewChecked() {
@@ -56,7 +54,6 @@ export class EbpChatgptComponent implements OnInit, AfterViewChecked{
     this.chatgptService.responseChatGpt(input).subscribe({
       next: (response) => {
 
-        console.log('resupesta: ', response);
         const content = response.response.choices[0].message?.content;
         this.messages.push({ sender: 'bot', content: content });
         this.loading = false;
@@ -84,7 +81,6 @@ export class EbpChatgptComponent implements OnInit, AfterViewChecked{
 
   public onApply() {
     this.display = false;
-    console.log('confirmando ....')
     this.close.emit($localize`:@@emittingValues:Emitiendo este valor`);
   }
 
@@ -93,7 +89,6 @@ export class EbpChatgptComponent implements OnInit, AfterViewChecked{
   }
 
   public onClose(): void {
-    console.log('cancelando ....')
     this.display = false;
     this.close.emit($localize`:@@emittingCancelValues: Emitiendo este valor de cancelar`);
   }

@@ -70,9 +70,7 @@ async function bootstrap() {
         { provide: MSAL_INSTANCE, useFactory: MSALInstanceFactory },
         MsalService
       );
-      console.log('MSAL se inicializa: Microsoft SSO habilitado');
     } else {
-      console.log('MSAL no se inicializa: Microsoft SSO no habilitado');
       // Opcional: agregar un provider dummy para evitar NullInjectorError
       providers.push({
         provide: MsalService,
