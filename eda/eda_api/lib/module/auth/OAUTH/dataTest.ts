@@ -1,4 +1,5 @@
 
+// Data Dummy para pruebas con el servidor de Girona
 
 export const userDataValue = {
   status: 'ok',

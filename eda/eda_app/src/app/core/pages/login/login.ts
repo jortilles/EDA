@@ -121,8 +121,6 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
                         this.singleSignOnOauthAvailable = true;
                         this.verifyloginOauth();
                     }
-
-                    console.log('loginMethods ===>', loginMethods);
                     
                     return;
                 }
@@ -165,7 +163,6 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
     // Login Microsoft
     async loginMicrosoft() {
         try {
-            console.log('window.crypto:', window?.crypto);
             await this.msalService.instance.initialize();
 
             this.msalService.loginPopup({
@@ -325,21 +322,16 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
     }
 
     verifyloginOauth() {
-        // Si llega con Single Sing-On
         const qp = this.route.snapshot.queryParamMap;
         const token = qp.get('token');
         const next = qp.get('next') || '/home';
-        
-        console.log('qp: ', qp);
-        console.log('token: ', token)
-        console.log('next: ', next)
 
         if (token) {
             
             try {
                 const payload = jwtDecode<any>(token);
-                const userSAML: User = payload.user;    
-                this.userService.savingStorage(userSAML._id, token, userSAML);
+                const userOAUTH: User = payload.user;    
+                this.userService.savingStorage(userOAUTH._id, token, userOAUTH);
             } catch (error) {
                 console.log('error', error)
                 Swal.fire('Error al iniciar sesión', error.error?.message || 'Ha ocurrido un error inesperado', 'error');

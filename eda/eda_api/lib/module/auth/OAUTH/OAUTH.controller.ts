@@ -58,22 +58,12 @@ export class OAUTHController {
                 throw new HttpException(400, "Perdida de código de autorización");
             }
             
-            console.log('code: ', code);
-            console.log('state: ', state);
-            
             //=============================================================================================== */
             //=============================================================================================== */
             //=============================================================================================== */
-
-
-            // //*************************************************************************** */
 
             const response = await exchangeCodeForToken(code);
             const {access_token} = response;
-
-            // Agregar la configuracion de login
-            console.log('VALIdAP RESPONSE: ', response);
-            console.log('Primer access_token: ', access_token);
 
             // Llamadas en paralelo a los datos del usuario
             const [
@@ -87,14 +77,6 @@ export class OAUTHController {
                 userPermissions(access_token),
                 userPermissionsRoles(access_token)
             ])
-
-            console.log('RECUPERANDO TODA LA INFORMACIÓN DEL USUARIO AUTENTICADO:::: ');
-            console.log('userDataValue: ', userDataValue);
-            console.log('authenticationEvidenceValue: ', authenticationEvidenceValue);
-            console.log('userPermissionsValue: ', userPermissionsValue);
-            console.log('userPermissionsRolesValue: ', userPermissionsRolesValue);
-
-            //*************************************************************************** */
             
             //=============================================================================================== */
             //=============================================================================================== */
@@ -145,15 +127,11 @@ export class OAUTHController {
                 console.error(`Error creando o actualizando grupo "${companyName}":`, err.message);
             }
 
-            console.log('role_id: ', role_id);
-
             ////////////////////////////////////////////////////////
             //////////////// FIN DE CREACION DE ROL ////////////////
             ////////////////////////////////////////////////////////
 
             if(!userEda) {
-                console.log('===> USUARIO NUEVO ===>');
-
                 const userToSave: IUser = new User({
                     name: name,
                     email: email,
@@ -167,11 +145,6 @@ export class OAUTHController {
                 Object.assign(user, userSaved);
 
             } else {
-
-                console.log('===> USUARIO NO ES NUEVO ===>');
-
-                console.log('userEda: ', userEda);
-
                 userEda.name = name;
                 userEda.email = email;
                 userEda.password = bcrypt.hashSync('no_serveix_de_re_pero_no_pot_ser_null', 10); 
@@ -190,8 +163,6 @@ export class OAUTHController {
                 companyIdDG: companyId
             };   
 
-            console.log('userPayload ===> ', userPayload);
-
             token = await jwt.sign({ user: userPayload }, SEED, { expiresIn: 14400 });
 
             // Borramos todos los grupos del usuario actualizado
@@ -202,7 +173,7 @@ export class OAUTHController {
 
             // ----------------------------- REDIRECCIÓN AL LOGIN -----------------------------
 
-            // const defaultRelay = `http://localhost:4200/#/login?next=%2Fhome`;
+            // const defaultRelay = `http://localhost:4200/#/login?next=%2Fhome`; // Para pruebas locales
             const defaultRelay = `${OAUTHconfig.urlRedirection}/#/login?next=%2Fhome`;
             const relayRaw = (req.body as any)?.RelayState || defaultRelay;
 
@@ -266,9 +237,6 @@ async function exchangeCodeForToken(code: any) {
 }
 
 async function userData(access_token: string) {
-    console.log('>==== userData ====<');
-    console.log('>=== access_token ===< ',access_token);
-
     try {
         const userDataUrlToken = OAUTHconfig.userDataUrlToken;
         const response = await axios.get(userDataUrlToken,
@@ -279,8 +247,6 @@ async function userData(access_token: string) {
                 timeout: 5000 // 5 segundos
             }
         );
-
-        console.log('userData ==> Response: ', response);
 
         return response.data; // VERIFICAR SI DEVOLVEMOS response.data
 
@@ -297,10 +263,6 @@ async function userData(access_token: string) {
 }
 
 async function authenticationEvidence(access_token: string) {
-
-    console.log('>==== authenticationEvidence ====<');
-    console.log('>=== access_token ===< ', access_token);
-
     try {
         const authenticationEvidenceUrlToken = OAUTHconfig.authenticationEvidenceUrlToken;
         const response = await axios.get(authenticationEvidenceUrlToken,
@@ -311,8 +273,6 @@ async function authenticationEvidence(access_token: string) {
                 timeout: 5000 // 5 segundos
             }
         );
-
-        console.log('authenticationEvidence ==> Response: ', response);
 
         return response.data; // VERIFICAR SI DEVOLVEMOS response.data
 
@@ -329,9 +289,6 @@ async function authenticationEvidence(access_token: string) {
 }
 
 async function userPermissions(access_token: string) {
-    console.log('>==== userPermissions ====<');
-    console.log('>=== access_token ===< ', access_token);
-
     try {
         const userPermissionsUrlToken = OAUTHconfig.userPermissionsUrlToken;
         const response = await axios.get(userPermissionsUrlToken, {
@@ -341,8 +298,6 @@ async function userPermissions(access_token: string) {
                 timeout: 5000 // 5 segundos
             }
         )
-
-	console.log('userPermissions Response => ', response);        
 
 	return response.data; // VERIFICAR SI DEVOLVEMOS response.data
 
@@ -358,10 +313,7 @@ async function userPermissions(access_token: string) {
     }
 }
 
-async function userPermissionsRoles(access_token: string) {
-        console.log('>==== userPermissionsRoles ====<');
-        console.log('>=== access_token ===< ', access_token);    
-	
+async function userPermissionsRoles(access_token: string) {	
     try {
         const { client_id, userPermissionsRolesUrlToken } = OAUTHconfig;
         const response = await axios.get(userPermissionsRolesUrlToken,
@@ -373,8 +325,6 @@ async function userPermissionsRoles(access_token: string) {
                 timeout: 5000 // 5 segundos
             }  
         );
-
-	    console.log('userPermissionsRoles Response => ', response);
 
         return response.data; // VERIFICAR SI DEVOLVEMOS response.data
 
