@@ -71,7 +71,11 @@ export class DashboardTagModal implements OnInit {
 
   public onApply() {
     this.display = false;
-    this.close.emit(this.selectedTags);
+    // Normalizar selectedTags: convertir objetos a strings
+    const normalizedTags = this.selectedTags.map(tag =>
+      typeof tag === 'string' ? tag : tag.value || tag.label
+    );
+    this.close.emit(normalizedTags);
     this.alertService.addSuccess($localize`:@@tagAssigned:Etiqueta asignada correctamente`);
   }
 
