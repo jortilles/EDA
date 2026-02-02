@@ -139,7 +139,7 @@ export class GlobalFilterComponent implements OnInit {
     private setFiltersVisibility(): void {
         for (const filter of this.globalFilters) {
             if (!filter.hasOwnProperty("visible")) {
-                filter.visible = 'public';
+                filter.visible = 'common';
             }
         }
     }
@@ -150,12 +150,12 @@ export class GlobalFilterComponent implements OnInit {
         if (!this.isDashboardCreator || !this.isAdmin) {
             myFilters = myFilters.filter((f: any) => {
                 return (f.visible != "hidden" && f.visible == "readOnly") ||
-                    (f.visible != "hidden" && f.visible == "public")
+                    (f.visible != "hidden" && f.visible == "common")
             });
         }
 
         myFilters.forEach(a => {
-            if (a.visible == "public") {
+            if (a.visible == "common") {
                 this.filterButtonVisibility.public = true;
             } else if (a.visible == "readOnly") {
                 this.filterButtonVisibility.readOnly = true;
@@ -832,7 +832,7 @@ export class GlobalFilterComponent implements OnInit {
 
         if (!this.isAdmin && !this.isDashboardCreator && filter.visible === 'readOnly') {
             disabled = true;
-        } else if (this.isAdmin || this.isDashboardCreator || filter.visible === 'public') {
+        } else if (this.isAdmin || this.isDashboardCreator || filter.visible === 'common') {
             disabled = false;
         }
 

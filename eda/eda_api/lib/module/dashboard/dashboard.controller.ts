@@ -18,6 +18,18 @@ const eda_api_config = require('../../../config/eda_api_config');
 export class DashboardController {
 
   /**
+   * Normalizes legacy visibility values to new values
+   * @param dashboard Dashboard to normalize
+   */
+  private static normalizeVisibility(dashboard: any): void {
+    if (dashboard.config.visible === 'public') {
+      dashboard.config.visible = 'common';
+    } else if (dashboard.config.visible === 'shared') {
+      dashboard.config.visible = 'open';
+    }
+  }
+
+  /**
    * Retrieves all dashboards available to the current user, classifying them as private, group, public, and shared.
    * @param req Express Request with user information
    * @param res Express Response to send the result
@@ -91,6 +103,9 @@ export class DashboardController {
       ).populate('user', 'name').exec()
       const privates = []
       for (const dashboard of dashboards) {
+        // Normalize legacy visibility values
+        DashboardController.normalizeVisibility(dashboard);
+
         if (dashboard.config.visible === 'private') {
           // Obtain the name of the data source
           dashboard.config.ds.name = (await DataSource.findById(dashboard.config.ds._id, 'ds.metadata.model_name').exec())?.ds?.metadata?.model_name ?? 'N/A';
@@ -144,6 +159,9 @@ export class DashboardController {
       const groupDashboards = []
       for (let i = 0, n = dashboards.length; i < n; i += 1) {
         const dashboard = dashboards[i]
+        // Normalize legacy visibility values
+        DashboardController.normalizeVisibility(dashboard);
+
         for (const dashboardGroup of dashboard.group) {
           for (const userGroup of userGroups) {
             if (
@@ -252,7 +270,10 @@ export class DashboardController {
 
 
       for (const dashboard of dashboards) {
-        if (dashboard.config.visible === 'shared') {
+        // Normalize legacy visibility values
+        DashboardController.normalizeVisibility(dashboard);
+
+        if (dashboard.config.visible === 'open') {
           const ds = dss.find(e => e._id == dashboard.config.ds._id);
           dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
           if (this.iCanSeeTheDashboard(req, ds) == true) {
@@ -302,7 +323,10 @@ export class DashboardController {
       ).populate('user', 'name').exec()
       const shared = []
       for (const dashboard of dashboards) {
-        if (dashboard.config.visible === 'public') {
+        // Normalize legacy visibility values
+        DashboardController.normalizeVisibility(dashboard);
+
+        if (dashboard.config.visible === 'common') {
           shared.push(dashboard)
         }
       }
@@ -364,8 +388,11 @@ export class DashboardController {
       const shared = []
 
       for (const dashboard of dashboards) {
+        // Normalize legacy visibility values
+        DashboardController.normalizeVisibility(dashboard);
+
         switch (dashboard.config.visible) {
-          case 'shared':
+          case 'open':
             publics.push(dashboard)
             break
           case 'private':
@@ -375,7 +402,7 @@ export class DashboardController {
             dashboard.group = await Group.find({ _id: dashboard.group }).exec()
             groups.push(dashboard)
             break
-          case 'public':
+          case 'common':
             shared.push(dashboard)
             break
         }
@@ -471,9 +498,12 @@ export class DashboardController {
           return next(new HttpException(500, 'Dashboard not found with this id'));
         }
 
+        // Normalize legacy visibility values
+        DashboardController.normalizeVisibility(dashboard);
+
         await DashboardController.initDashboardPanels(dashboard);
 
-        const visibilityCheck = !['shared', 'public'].includes(dashboard.config.visible);
+        const visibilityCheck = !['open', 'common'].includes(dashboard.config.visible);
         const roleCheck =
           !userRoles.includes('EDA_ADMIN') &&
           userGroupDashboards.length === 0 &&
