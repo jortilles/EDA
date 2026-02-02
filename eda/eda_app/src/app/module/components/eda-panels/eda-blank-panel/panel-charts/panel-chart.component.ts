@@ -962,7 +962,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public updateComponent() {
         if (this.componentRef && !['table', 'crosstable'].includes(this.props.chartType)) {
             try {
-                console.log(this.props.chartType)
                 // Charts ChartJS
                 if (['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'pyramid', 'radar'].includes(this.props.chartType)) {
                     this.updateChartJSColors();

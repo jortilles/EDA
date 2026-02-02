@@ -1,19 +1,12 @@
-<div class="flex flex-col h-full rounded-lg p-6 bg-white " >
+<div class="flex flex-col h-full rounded-lg p-2 justify-center bg-white " >
     <!-- Header -->
-    <div class="flex justify-end items-center mb-2 drag-handler" >
-        <i class="pi pi-ellipsis-v cursor-pointer" (click)="contextMenu.showContextMenu($event)"></i>
-        <!-- <p-button icon="pi pi-ellipsis-v" styleClass="p-button-text" (click)="contextMenu.showContextMenu($event)"></p-button> -->
-    </div>
-
-    <div
-      class="flex items-center justify-center flex-grow overflow-y-auto rounded-lg bg-gray-50 ">
-      
-      <div class="eda-title-panel" [innerHTML]="panel.title | sanitizeHtml"></div>
-
+    <div class="flex justify-end place-content-center items-center drag-handler" >
+        <div class="flex items-center justify-center flex-grow overflow-y-auto rounded-lg bg-gray-50 ">
+          <div class="eda-title-panel" [innerHTML]="panel.title | sanitizeHtml"></div>
+        </div>
+        <i class="pi pi-ellipsis-v cursor-pointer mr-4" (click)="contextMenu.showContextMenu($event)"></i>
     </div>
 </div>
-
-
 
 <eda-context-menu [inject]="contextMenu"></eda-context-menu>
 <app-title-dialog *ngIf="editTittleController" [controller]="editTittleController"> </app-title-dialog>
