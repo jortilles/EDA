@@ -1,5 +1,5 @@
 // Angular
-import { Component, Input, Output, EventEmitter, ViewChild, OnInit, inject, computed, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, OnInit, inject, computed, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { DragDropModule, CdkDrag, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
@@ -286,7 +286,8 @@ export class EdaBlankPanelComponent implements OnInit {
         public spinnerService: SpinnerService,
         public groupService: GroupService,
         public userService: UserService,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private cdr: ChangeDetectorRef,
     ) {
         this.initializeBlankPanelUtils();
         this.initializeInputs();
@@ -317,14 +318,14 @@ export class EdaBlankPanelComponent implements OnInit {
         this.assignLevels(this.tableNodes, 0);
 
         await this.setTablesData();
-        
+
         /**If panel comes from server */
         if (this.panel.content) {
-            try{
+            try {
                 const contentQuery = this.panel.content.query;
 
                 // Compatibilitzar dashboard antics sense queryMode informat
-                const modeSQL = contentQuery.query.modeSQL; 
+                const modeSQL = contentQuery.query.modeSQL;
                 let queryMode = contentQuery.query.queryMode;
 
                 if (!queryMode) {
@@ -337,14 +338,12 @@ export class EdaBlankPanelComponent implements OnInit {
                     this.rootTable = contentQuery.query.rootTable;
                 }
 
-                if (modeSQL || queryMode=='SQL') {
-                    this.currentSQLQuery = contentQuery.query.SQLexpression;
-
-                    this.sqlOriginTable = this.tables.filter(t => t.table_name === contentQuery.query.fields[0].table_id)
-                        .map(table => ({ label: table.display_name.default, value: table.table_name }))[0];
-                }
-
-                this.loadChartsData(this.panel.content);
+            if (modeSQL || queryMode == 'SQL') {
+                this.currentSQLQuery = contentQuery.query.SQLexpression;
+                this.sqlOriginTable = this.sqlOriginTables.find(t => t.value === contentQuery.query.fields[0].table_id);
+                this.cdr.detectChanges();
+            }
+            this.loadChartsData(this.panel.content);
             } catch(e){
                 console.error('Error loading panel conent: ');
                 throw e;
@@ -1946,6 +1945,10 @@ applyGroupBy(): void {
 
 removeGroupBy(): void {
   // Lógica para desactivar el group by
+}
+
+trackByTable(index: number, table: any): any {
+    return table.value;
 }
 
 }
