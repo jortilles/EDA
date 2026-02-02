@@ -1,5 +1,5 @@
-import { EdaDialogCloseEvent, EdaDialog} from "@eda/shared/components/shared-components.index";
-import { Component, Input, ViewChild } from "@angular/core";
+import { EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
+import { Component, Input, ViewChild, OnInit, AfterViewChecked } from "@angular/core";
 import { PanelChartComponent } from "../panel-charts/panel-chart.component";
 import { PanelChart } from "../panel-charts/panel-chart";
 import { MapUtilsService, StyleProviderService, ChartUtilsService } from "@eda/services/service.index";
@@ -13,21 +13,23 @@ import { ColorPickerModule } from 'primeng/colorpicker';
   selector: "app-mapcoordedit-dialog",
   templateUrl: "./mapcoord-dialog.component.html",
   imports: [CommonModule, FormsModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent]
-  })
-export class MapCoordDialogComponent {
+})
+export class MapCoordDialogComponent implements OnInit, AfterViewChecked {
   @Input() controller: any;
   @ViewChild("PanelChartComponent", { static: false })
   myPanelChartComponent: PanelChartComponent;
 
-  public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
+  public assignedColors: Array<{value: string, color: string}> = [
+    {value: 'start', color: '#000000'},
+    {value: 'end', color: '#000000'}
+  ];
+  private originalAssignedColors: Array<{value: string, color: string}> = [];
 
-  public initialColor: string = "";
-  public finalColor: string = "";
   public logarithmicScale: boolean = false;
   public draggable: boolean;
 
-  // Memory ubication
+  // Memory location
   public zoom: number;
   public coordinates: Array<Array<number>>;
 
@@ -36,34 +38,106 @@ export class MapCoordDialogComponent {
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
 
   public display: boolean = false;
-  public title : string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
-  constructor(private mapUtilsService: MapUtilsService, private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) {}
+  public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
+  private colorsLoaded: boolean = false;
+
+  // Getters para compatibilidad con el template
+  get initialColor(): string {
+    return this.assignedColors[0]?.color || '#000000';
+  }
+  set initialColor(value: string) {
+    if (this.assignedColors[0]) {
+      this.assignedColors[0].color = value;
+    }
+  }
+
+  get finalColor(): string {
+    return this.assignedColors[1]?.color || '#000000';
+  }
+  set finalColor(value: string) {
+    if (this.assignedColors[1]) {
+      this.assignedColors[1].color = value;
+    }
+  }
+
+  constructor(
+    private mapUtilsService: MapUtilsService, 
+    private stylesProviderService: StyleProviderService, 
+    private ChartUtilsService: ChartUtilsService
+  ) {}
 
   ngOnInit() {
-    //Funcion llamada al abrir el mapa edit
     this.mapUtilsService.mapEditOpen();
     this.setupMapDialog();
+  }
+
+  ngAfterViewChecked(): void {
+    if (!this.colorsLoaded && this.assignedColors[0].color === '#000000' && this.myPanelChartComponent?.componentRef) {
+      setTimeout(() => {
+        this.loadColors();
+        this.colorsLoaded = true;
+      }, 0);
+    }
   }
 
   ngOnDestroy(): void {
     this.mapUtilsService.mapEditClose();
   }
 
+  loadColors(): void {
+    const leafletMap = this.myPanelChartComponent.componentRef.instance;
+    
+    if (leafletMap?.assignedColors && leafletMap.assignedColors.length >= 2) {
+      this.assignedColors = [
+        {value: 'start', color: leafletMap.assignedColors[0].color},
+        {value: 'end', color: leafletMap.assignedColors[1].color}
+      ];
+    }
+    
+    this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
+  }
+
+  setupMapDialog() {
+    this.zoom = this.controller.params.zoom;
+    this.coordinates = this.controller.params.coordinates;
+    this.panelChartConfig = this.controller.params.panelChart;
+    this.logarithmicScale = this.controller.params.logarithmicScale;
+    this.draggable = this.controller.params.draggable;
+    this.display = true;
+  }
+
   saveChartConfig() {
+    const colors = this.assignedColors.map(c => c.color);
+    
     this.onClose(EdaDialogCloseEvent.UPDATE, {
-      initialColor: this.initialColor,
-      finalColor: this.finalColor,
+      assignedColors: [...this.assignedColors],
+      initialColor: colors[0], // Para compatibilidad
+      finalColor: colors[1],   // Para compatibilidad
       logarithmicScale: this.logarithmicScale,
       draggable: this.draggable,
       zoom: this.myPanelChartComponent.componentRef.instance.inject.zoom,
-      coordinates:this.myPanelChartComponent.componentRef.instance.inject.coordinates,
+      coordinates: this.myPanelChartComponent.componentRef.instance.inject.coordinates,
     });
   }
 
+  closeChartConfig() {
+    // Restaurar colores originales
+    this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
+    const leafletMap = this.myPanelChartComponent.componentRef.instance;
+    if (leafletMap?.reDrawCircles) {
+      const colors = this.assignedColors.map(c => c.color);
+      leafletMap.reDrawCircles(colors);
+    }
+    
+    this.onClose(EdaDialogCloseEvent.NONE);
+    this.mapUtilsService.cancelChartProps();
+  }
+
   handleInputColor() {
-    if (this.initialColor.length > 6 && this.finalColor.length > 6) {
+    if (this.assignedColors[0]?.color?.length >= 6 && this.assignedColors[1]?.color?.length >= 6) {
       const leafletMap = this.myPanelChartComponent.componentRef.instance;
-      leafletMap.reDrawCircles([this.initialColor, this.finalColor]);
+      const colors = this.assignedColors.map(c => c.color);
+      leafletMap.reDrawCircles(colors);
     }
   }
 
@@ -72,74 +146,26 @@ export class MapCoordDialogComponent {
     leafletMap.changeScale(this.logarithmicScale);
   }
 
-  setupMapDialog() {
-    this.zoom = this.controller.params.zoom;
-    this.coordinates = this.controller.params.coordinates;
-    this.initialColor = this.controller.params.initialColor;
-    this.finalColor = this.controller.params.finalColor;
-    this.panelChartConfig = this.controller.params.panelChart;
-
-    // Revisar como mejorar esto
-    try {
-      this.panelChartConfig.config.getConfig()['initialColor'] = this.initialColor;
-      this.panelChartConfig.config.getConfig()['finalColor'] = this.finalColor;
-    } catch (error) {}
-
-    this.logarithmicScale = this.controller.params.logarithmicScale;
-    this.draggable = this.controller.params.draggable;
-    this.display = true;
-  }
-
   nullMouseOptions() {
     const leafletMap = this.myPanelChartComponent.componentRef.instance;
     leafletMap.switchNoMouse(this.draggable);
   }
 
-  closeChartConfig() {
-    this.onClose(EdaDialogCloseEvent.NONE);
-    this.mapUtilsService.cancelChartProps();
-  }
-
-
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     return this.controller.close(event, response);
   }
 
-  rgb2hex(rgb): string {
-    rgb = rgb.match(
-      /^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i
-    );
-    return rgb && rgb.length === 4
-      ? "#" +
-          ("0" + parseInt(rgb[1], 10).toString(16)).slice(-2) +
-          ("0" + parseInt(rgb[2], 10).toString(16)).slice(-2) +
-          ("0" + parseInt(rgb[3], 10).toString(16)).slice(-2)
-      : "";
-  }
-
-  hex2rgb(hex, opacity = 100): string {
-    hex = hex.replace("#", "");
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
-
-    return "rgba(" + r + "," + g + "," + b + "," + opacity / 100 + ")";
-  }
-
   onPaletteSelected() { 
-    // Saber numero de segmentos para interpolar colores
+    if (!this.selectedPalette) return;
+    const palette = this.selectedPalette.paleta;
     
-    // Recuperamos paleta seleccionada y creamos colores
-    this.myPanelChartComponent['chartUtils'].MyPaletteColors = this.selectedPalette['paleta']; 
-    const newColors = this.ChartUtilsService.generateRGBColorGradientScaleD3(2, this.myPanelChartComponent['chartUtils'].MyPaletteColors);
-    
-    // Actualizar los color pickers individuales al modificar la paleta
-    let colors = [newColors[0].color, newColors[newColors.length-1].color];
-    this.initialColor = colors[1];
-    this.finalColor = colors[0];
+    // Aplicar primer y último color de la paleta
+    this.assignedColors = [
+      {value: 'start', color: palette[palette.length - 1]},
+      {value: 'end', color: palette[0]}
+    ];
 
-    // Actualizar los colores del chart
-    const leafletMap = this.myPanelChartComponent.componentRef.instance;
-    leafletMap.reDrawCircles([this.initialColor, this.finalColor]);
+    // Actualizar colores del mapa
+    this.handleInputColor();
   }
 }

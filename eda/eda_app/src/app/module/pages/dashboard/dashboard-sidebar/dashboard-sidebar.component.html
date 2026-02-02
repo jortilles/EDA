@@ -35,55 +35,55 @@
     <div class="bg-white px-3 pb-3 pt-2">
       <div class="flex flex-col gap-2 text-lg">
         @for (item of itemsVisibles(); track item.label) {
-        @if(!isReadOnly){
-        @if(isEditable || item.id === 'refreshDashboard' || item.id === 'saveAs'){
-        @if (item.id === "editFilters") {
-        @if(hayFiltros){
-          <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
-            (click)="item.command()">
-            <i [class]="item.icon + ' text-gray-600'"></i>
-            <span>{{ item.label }}</span>
-            <i class="pi pi-chevron-down ml-auto text-gray-400"
-              [style.transform]="mostrarFiltros ? 'rotate(180deg)' : 'rotate(0deg)'"
-              style="transition: transform 0.3s"></i>
-          </button>
-          @if (item.items && mostrarFiltros) {
-            <div class="ml-6 flex flex-col gap-2" cdkDropList [cdkDropListData]="item.items" (cdkDropListDropped)="drop($event)"
-              (cdkDropListDropped)="onDrop($event)">
+          @if(!isReadOnly){
+            @if(isEditable || item.id === 'refreshDashboard'){
+              @if (item.id === "editFilters") {
+                @if(hayFiltros){
+                  <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
+                    (click)="item.command()">
+                    <i [class]="item.icon + ' text-gray-600'"></i>
+                    <span>{{ item.label }}</span>
+                    <i class="pi pi-chevron-down ml-auto text-gray-400"
+                      [style.transform]="mostrarFiltros ? 'rotate(180deg)' : 'rotate(0deg)'"
+                      style="transition: transform 0.3s"></i>
+                  </button>
+                  @if (item.items && mostrarFiltros) {
+                    <div class="ml-6 flex flex-col gap-2" cdkDropList [cdkDropListData]="item.items" (cdkDropListDropped)="drop($event)"
+                      (cdkDropListDropped)="onDrop($event)">
 
-              @for (subItem of item.items; track subItem.label) {
-              <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors" cdkDrag
-                (click)="subItem.command()">
-                <i [class]="subItem.icon + ' text-gray-600'"></i>
-                <span>{{ subItem.label }}</span>
-                <i class="pi" [class.pi-check]="subItem.active" [class.pi-square-o]="!subItem.active" ml-auto></i>
-              </button>
+                      @for (subItem of item.items; track subItem.label) {
+                      <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors" cdkDrag
+                        (click)="subItem.command()">
+                        <i [class]="subItem.icon + ' text-gray-600'"></i>
+                        <span>{{ subItem.label }}</span>
+                        <i class="pi" [class.pi-check]="subItem.active" [class.pi-square-o]="!subItem.active" ml-auto></i>
+                      </button>
+                      }
+                    </div>
+                    }
+                  }
+                }
+                @else{
+                  <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
+                    (click)="item.command()">
+                    <i [class]="item.icon + ' text-gray-600'"></i>
+                    <span>{{ item.label }}</span>
+                    @if (item.items) {
+                    <i class="pi pi-chevron-down ml-auto text-gray-400"
+                      [style.transform]="inputVisible ? 'rotate(180deg)' : 'rotate(0deg)'" style="transition: transform 0.3s"></i>
+                    }
+                  </button>
+                  @if (item.id === "liveDashboard" || item.id === "newFilter") {
+                    @if (item.id === "liveDashboard" && inputVisible) {
+                      <input type="number" [value]="refreshTime" (input)="refreshTime = $any($event.target).value"
+                        class="w-full mt-1 px-2 py-1 border rounded-md" placeholder="Seconds_to_refresh" />
+                    }
+                    <hr class="my-2" />
+                  }
+                }
               }
-            </div>
             }
-          }
-        }
-        @else{
-        <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
-          (click)="item.command()">
-          <i [class]="item.icon + ' text-gray-600'"></i>
-          <span>{{ item.label }}</span>
-          @if (item.items) {
-          <i class="pi pi-chevron-down ml-auto text-gray-400"
-            [style.transform]="inputVisible ? 'rotate(180deg)' : 'rotate(0deg)'" style="transition: transform 0.3s"></i>
-          }
-        </button>
-        @if (item.id === "liveDashboard" || item.id === "newFilter") {
-        @if (item.id === "liveDashboard" && inputVisible) {
-        <input type="number" [value]="refreshTime" (input)="refreshTime = $any($event.target).value"
-          class="w-full mt-1 px-2 py-1 border rounded-md" placeholder="Seconds_to_refresh" />
-        }
-        <hr class="my-2" />
-        }
-        }
-        }
-        }
-      }
+         }
 
         <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
           (click)="toggleOpciones()">
@@ -95,20 +95,20 @@
         </button>
 
         @if (mostrarOpciones) {
-        <div class="ml-6 flex flex-col gap-2">
-          @for (item of itemsDesplegables().slice(1); track item.label) {
-              @if(isEditable||   (item.id === 'downloadPDF' || item.id === 'downloadImage')){
-                <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
-                  (click)="item.command()">
-                  <i [class]="item.icon + ' text-gray-600'"></i>
-                  <span>{{ item.label }}</span>
-                  @if (item.items) {
-                  <i class="pi pi-chevron-down ml-auto text-gray-400"></i>
-                  }
-                </button>
+          <div class="ml-6 flex flex-col gap-2">
+            @for (item of itemsDesplegables().slice(1); track item.label) {
+                @if(isEditable && !isReadOnly || (item.id === 'downloadPDF' || item.id === 'downloadImage')){
+                  <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
+                    (click)="item.command()">
+                    <i [class]="item.icon + ' text-gray-600'"></i>
+                    <span>{{ item.label }}</span>
+                    @if (item.items) {
+                      <i class="pi pi-chevron-down ml-auto text-gray-400"></i>
+                    }
+                  </button>
                 }
-          }
-        </div>
+            }
+          </div>
         }
       </div>
     </div>
@@ -117,41 +117,37 @@
 
 <!-- Overlay Backdrop -->
 @if (isPopoverVisible) {
-<div class="overlay-backdrop" (click)="hidePopover()"></div>
+  <div class="overlay-backdrop" (click)="hidePopover()"></div>
 }
 
 @if (isSaveAsDialogVisible) {
-<app-dashboard-save-as (close)="saveDashboardAs($event)"></app-dashboard-save-as>
+  <app-dashboard-save-as (close)="saveDashboardAs($event)"></app-dashboard-save-as>
 }
 
 @if (isTagModalVisible) {
-<app-dashboard-tag-modal [dashboard]="dashboard" (close)="closeTagModal($event)"></app-dashboard-tag-modal>
+  <app-dashboard-tag-modal [dashboard]="dashboard" (close)="closeTagModal($event)"></app-dashboard-tag-modal>
 }
 
 @if(isEditStyleDialogVisible){
-<app-dashboard-edit-style [dashboard]="dashboard" (apply)="saveStyles($event)"
-  (close)="closeStyles()"></app-dashboard-edit-style>
+  <app-dashboard-edit-style [dashboard]="dashboard" (apply)="saveStyles($event)" (close)="closeStyles()"></app-dashboard-edit-style>
 }
 
 @if(isCustomActionDialogVisible){
-<app-dashboard-custom-action [dashboard]="dashboard" (apply)="saveCustomAction($event)"
-  (close)="closeCustomAction()"></app-dashboard-custom-action>
+  <app-dashboard-custom-action [dashboard]="dashboard" (apply)="saveCustomAction($event)" (close)="closeCustomAction()"></app-dashboard-custom-action>
 }
 
 @if(isMailConfigDialogVisible){
-<app-dashboard-mail-config [dashboard]="dashboard" (apply)="saveMailConfig($event)"
-  (close)="closeMailConfig()"></app-dashboard-mail-config>
+  <app-dashboard-mail-config [dashboard]="dashboard" (apply)="saveMailConfig($event)" (close)="closeMailConfig()"></app-dashboard-mail-config>
 }
 
 @if(isVisibleModalVisible){
-<app-dashboard-visible [dashboard]="dashboard" (apply)="saveVisibleModal($event)"
-  (close)="closeVisibleModal()"></app-dashboard-visible>
+  <app-dashboard-visible [dashboard]="dashboard" (apply)="saveVisibleModal($event)" (close)="closeVisibleModal()"></app-dashboard-visible>
 }
 
 @if (isImportPanelVisible) {
-<app-import-panel [dashboard]="dashboard" (close)="closeImportPanelModal($event)"></app-import-panel>
+  <app-import-panel [dashboard]="dashboard" (close)="closeImportPanelModal($event)"></app-import-panel>
 }
 
 @if (isDependentFiltersVisible) {
-<app-dependent-filters [dashboard]="dashboard" (close)="closeDependentFilters($event)"></app-dependent-filters>  
+  <app-dependent-filters [dashboard]="dashboard" (close)="closeDependentFilters($event)"></app-dependent-filters>  
 }

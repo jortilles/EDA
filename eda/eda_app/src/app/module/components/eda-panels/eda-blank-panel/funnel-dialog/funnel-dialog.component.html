@@ -27,20 +27,25 @@
             }
           </select>
           <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase tracking-wider">Colors</h3>
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            @for (item of labels; track item; let idx = $index, e = $even) {
-              <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
-                @if(idx === 0){
-                <span class="text-md text-slate-500" i18n="@@Initial">Inicio</span>
-                }@else {
-                <span class="text-md text-slate-500" i18n="@@Final">Final</span>
-                }                
-                <div class="flex items-center gap-2">
-                  <input [(ngModel)]="colors[idx]" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
-                  <p-colorPicker [(ngModel)]="colors[idx]" (onChange)="handleInputColor()" format="hex" appendTo="body" />
-                </div>
+            <!-- Color Inicio -->
+            <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+              <span class="font-medium" i18n="@@Initial">Inicio</span>
+              <div class="flex items-center gap-2">
+                <input [(ngModel)]="assignedColors[0].color" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
+                <p-colorPicker [(ngModel)]="assignedColors[0].color" (onChange)="handleInputColor()" format="hex" appendTo="body" />
               </div>
-              }
+            </div>
+
+            <!-- Color Final -->
+            <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+              <span class="font-medium" i18n="@@Final">Final</span>
+              <div class="flex items-center gap-2">
+                <input [(ngModel)]="assignedColors[1].color" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
+                <p-colorPicker [(ngModel)]="assignedColors[1].color" (onChange)="handleInputColor()" format="hex" appendTo="body" />
+              </div>
+            </div>
           </div>
         </div>
       </div>

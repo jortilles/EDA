@@ -2021,8 +2021,8 @@
 </trans-unit>
 
 <trans-unit id="direccionMail" datatype="html">
-<source>Dirección Email</source>
-<target>Adresse email</target>
+<source>Dirección Email / Usuario</source>
+<target>Adresse email / Utilisateur</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
   <context context-type="linenumber">22</context>

@@ -50,34 +50,30 @@ export const ChartsConfigUtils = {
       config = {
         sufix: ebp.panelChart.componentRef.instance.inject.sufix,
         alertLimits: ebp.panelChart.componentRef.instance.inject.alertLimits,
+        assignedColors: ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || null,  // Guardar assignedColors
         edaChart: {}
       }
 
-        if (kpiChart?.hasOwnProperty('edaChart') ) {
-            config.edaChart.colors = kpiChart.chartColors;
-            config.edaChart.chartType = ebp.panelChart.props.chartType;
-
-        // colors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['colors'] : [], 
-        // chartType: ebp.panelChart.props.chartType, 
+      if (kpiChart?.hasOwnProperty('edaChart')) {
+        config.edaChart.colors = kpiChart.chartColors;
+        config.edaChart.chartType = ebp.panelChart.props.chartType;
+        config.edaChart.assignedColors = ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || null;  // ambién en edaChart
       }
-
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'dynamicText') {
       config = {
         color: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.color : ebp.panelChart.props.config.getConfig()['color']
       }
-    }  else if (ebp.panelChart.props.chartType === 'geoJsonMap') {
-
+    } else if (ebp.panelChart.props.chartType === 'geoJsonMap') {
       config = {
         zoom: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.zoom : null,
         coordinates: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.coordinates : null,
         logarithmicScale: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.logarithmicScale : null,
         baseLayer: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.baseLayer : null,
         legendPosition: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.legendPosition : null,
-        color: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.color : null,
+        assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : null,
         draggable: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.draggable : null,
-        
       }
-    } else if(ebp.panelChart.props.chartType === 'treetable') {
+    } else if (ebp.panelChart.props.chartType === 'treetable') {
       config = {
         chartType: ebp.panelChart.props.chartType,
         editedTreeTable: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['editedTreeTable'] : false,
@@ -85,30 +81,27 @@ export const ChartsConfigUtils = {
         leafLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['leafLabels'] : [],
       }
 
-    }  else if (ebp.panelChart.props.chartType === 'coordinatesMap') {
+    } else if (ebp.panelChart.props.chartType === 'coordinatesMap') {
       config = {
-        zoom: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.zoom : null,
-        coordinates: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.coordinates : null,
-        logarithmicScale: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.logarithmicScale : null,
-        initialColor: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.initialColor : null,
-        finalColor: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.finalColor : null,
-        draggable: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.draggable : null,
-        }
-      } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
+          zoom: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.zoom : null,
+          coordinates: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.coordinates : null,
+          logarithmicScale: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.logarithmicScale : null,
+          assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : null,
+          draggable: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.draggable : null,
+      }
+    } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
       config = {
-        colors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.colors : [],
         assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : [],
       }
     } else if (ebp.panelChart.props.chartType === 'knob') {
 
       config = {
-        color: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.color : ebp.panelChart.props.config.getConfig()['color'],
+        assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : ebp.panelChart.props.config.getConfig()['assignedColors'],
         limits: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.limits : ebp.panelChart.props.config.getConfig()['limits']
       };
     } else {
       // Chart.js
       config = {
-        colors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['colors'] : [],
         chartType: ebp.panelChart.props.chartType,
         addTrend: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addTrend'] : false,
         addComparative: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addComparative'] : false,

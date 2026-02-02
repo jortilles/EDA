@@ -1673,8 +1673,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="direccionMail" datatype="html">
-<source>Dirección Email</source>
-<target>Adres e-mail</target>
+<source>Dirección Email / Usuario</source>
+<target>Adres e-mail / użytkownik </target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
   <context context-type="linenumber">22</context>
