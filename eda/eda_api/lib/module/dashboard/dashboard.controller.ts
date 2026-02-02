@@ -17,17 +17,6 @@ const cache_config = require('../../../config/cache.config')
 const eda_api_config = require('../../../config/eda_api_config');
 export class DashboardController {
 
-  /**
-   * Normalizes legacy visibility values to new values
-   * @param dashboard Dashboard to normalize
-   */
-  private static normalizeVisibility(dashboard: any): void {
-    if (dashboard.config.visible === 'public') {
-      dashboard.config.visible = 'common';
-    } else if (dashboard.config.visible === 'shared') {
-      dashboard.config.visible = 'open';
-    }
-  }
 
   /**
    * Retrieves all dashboards available to the current user, classifying them as private, group, public, and shared.
@@ -1963,6 +1952,19 @@ export class DashboardController {
 
     return res.status(200).json({ ok: true })
   }
+
+    /**
+   * Normalizes legacy visibility values to new values
+   * @param dashboard Dashboard to normalize
+   */
+  private static normalizeVisibility(dashboard: any): void {
+    if (dashboard.config.visible === 'public') {
+      dashboard.config.visible = 'common';
+    } else if (dashboard.config.visible === 'shared') {
+      dashboard.config.visible = 'open';
+    }
+  }
+
 }
 
 function insertServerLog(
