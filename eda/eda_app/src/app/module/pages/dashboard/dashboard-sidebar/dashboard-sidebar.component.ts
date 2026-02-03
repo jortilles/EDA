@@ -570,8 +570,12 @@ export class DashboardSidebarComponent {
 
   public closeTagModal(tags: any[]) {
     this.isTagModalVisible = false;
-    this.dashboard.selectedTags = tags;
-    this.dashboard.dashboard.config.tag = tags;
+    // Normalizar tags a array de strings
+    const normalizedTags = tags ? tags.map(tag =>
+      typeof tag === 'string' ? tag : tag.value || tag.label
+    ) : [];
+    this.dashboard.selectedTags = normalizedTags;
+    this.dashboard.dashboard.config.tag = normalizedTags;
   }
 
   public removeDashboard() {
