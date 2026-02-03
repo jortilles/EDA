@@ -641,6 +641,20 @@ export class DashboardController {
         /**avoid dashboards without name */
         if (dashboard.config.title === null) { dashboard.config.title = '-' };
 
+        // Normalize tags to always be an array of strings
+        if (dashboard.config.tag) {
+          const rawTags: any = dashboard.config.tag;
+          if (!Array.isArray(rawTags)) {
+            // If it's not an array, convert it to an array
+            dashboard.config.tag = [typeof rawTags === 'string' ? rawTags : (rawTags.value || rawTags.label || String(rawTags))];
+          } else {
+            // Ensure all elements are strings
+            dashboard.config.tag = rawTags.map((tag: any) =>
+              typeof tag === 'string' ? tag : (tag.value || tag.label || String(tag))
+            );
+          }
+        }
+
         try {
           const dashboardToUpdate = await dashboard.save();
           return res.status(200).json({ ok: true, dashboard })

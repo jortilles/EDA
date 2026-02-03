@@ -19,7 +19,7 @@ interface IDashboardConfig {
     panel: any[];
     onlyIcanEdit: boolean;
     styles:any;
-    tag: any; //  EDA's tags
+    tag: string[]; //  EDA's tags (array of strings)
     external?: any; // external tags  to filter the dashboard
     urls:any; // urls to call from the dashboard.  url actions
 }
