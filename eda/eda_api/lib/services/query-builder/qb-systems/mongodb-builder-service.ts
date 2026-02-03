@@ -231,14 +231,37 @@ export class MongoDBBuilderService {
             }
         }
 
+        // Construir el stage de ordenación
+        const sortStage: any = {};
+        let hasSorting = false;
+
+        // Revisamos cada columna
+        for (const column of fields) {
+            // Si la columna tiene tipo de ordenación y además es diferente de NO
+            if (column.ordenation_type && column.ordenation_type !== 'No') {
+                // Si la columna tiene aggregation_type === 'none', está en _id después del $group
+                // Si tiene agregación, está en el nivel raíz
+                const sortField = column.aggregation_type === 'none' 
+                    ? `_id.${column.column_name}`: column.column_name;
+
+                sortStage[sortField] = column.ordenation_type === 'Asc' ? 1 : -1;
+                hasSorting = true;
+            }
+        }
+
+        // Construir el pipeline en el orden correcto: group -> sort -> limit
+        const pipelineStages: any[] = [pipeline];
+
+        if (hasSorting) {
+            pipelineStages.push({ $sort: sortStage });
+        }
+
+        pipelineStages.push({ $limit: this.limit });
+
         return {
             aggregations,
             dateProjection,
-            pipeline: [
-                pipeline,
-                {$limit: this.limit} // agregando limite
-            ],
-
+            pipeline: pipelineStages,
         }
     }
 
