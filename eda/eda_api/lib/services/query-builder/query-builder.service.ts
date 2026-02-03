@@ -933,15 +933,23 @@ export abstract class QueryBuilderService {
             Object.values(register).forEach((value: any, i) => {
                 const type = queryData.columns[i].type;
                 if (type === 'text') {
-                    row += `'${value.replace(/'/g, "''")}',`;
+                    if (value === null || value === undefined || value === '') {
+                        row += `null,`;
+                    } else {
+                        row += `'${value.replace(/'/g, "''")}',`;
+                    }
                 } else if (type === 'timestamp') {
-                    let date = value ? `TO_TIMESTAMP('${value}', '${queryData.columns[i].format}'),` : `${null},`
+                    let date = value ? `TO_TIMESTAMP('${value}', '${queryData.columns[i].format}'),` : `null,`
                     row += `${date}`;
                 } else {
-                    value = queryData.columns[i].separator === ',' ? parseFloat(value.replace(".", "").replace(",", "."))
-                        : parseFloat(value.replace(",", ""));
-                    value = value ? value : null;
-                    row += `${value},`;
+                    if (value === null || value === undefined || value === '') {
+                        row += `null,`;
+                    } else {
+                        value = queryData.columns[i].separator === ',' ? parseFloat(value.replace(".", "").replace(",", "."))
+                            : parseFloat(value.replace(",", ""));
+                        value = value ? value : null;
+                        row += `${value},`;
+                    }
                 }
             });
             row = row.slice(0, -1);

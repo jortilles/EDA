@@ -143,7 +143,6 @@ export class ChartDialogComponent {
 
     load() {
         this.loadChartTypeProperties();
-        this.loadChartColors();
     }
 
     loadChartColors() {
@@ -230,10 +229,8 @@ export class ChartDialogComponent {
         config.showPointLines = this.showPointLines;
         config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
-        config.assignedColors = config.assignedColors.map((assigned, index) => {
-            assigned.color = this.chart.chartColors.map(color => color.backgroundColor[index])[0];
-            return assigned;
-        });        properties.config = c;
+
+        properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
         setTimeout(_ => {
@@ -248,10 +245,7 @@ export class ChartDialogComponent {
         let config: any = c.getConfig();
         config.addTrend = this.addTrend;
         config.numberOfColumns = this.numberOfColumns;
-        config.assignedColors = config.assignedColors.map((assigned, index) => {
-            assigned.color = this.chart.chartColors.map(color => color.backgroundColor[index])[0];
-            return assigned;
-        });
+
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
@@ -272,10 +266,7 @@ export class ChartDialogComponent {
         config.showLabelsPercent = this.showLabelsPercent;
         config.showPointLines = this.showPointLines;
         config.showPredictionLines = this.showPredictionLines;
-        config.assignedColors = config.assignedColors.map((assigned, index) => {
-            assigned.color = this.chart.chartColors.map(color => color.backgroundColor[index])[0];
-            return assigned;
-        });
+
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
@@ -296,10 +287,7 @@ export class ChartDialogComponent {
         config.showPointLines = this.showPointLines;
         config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
-        config.assignedColors = config.assignedColors.map((assigned, index) => {
-            assigned.color = this.chart.chartColors.map(color => color.backgroundColor[index])[0];
-            return assigned;
-        });        
+      
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
@@ -366,10 +354,7 @@ export class ChartDialogComponent {
         config.showPointLines = this.showPointLines;
         config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
-        config.assignedColors = config.assignedColors.map((assigned, index) => {
-            assigned.color = this.chart.chartColors.map(color => color.backgroundColor[index])[0];
-            return assigned;
-        });
+
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
@@ -388,10 +373,7 @@ export class ChartDialogComponent {
         config.showLabelsPercent = this.showLabelsPercent;
         config.showPointLines = this.showPointLines;
         config.numberOfColumns = this.numberOfColumns;
-        config.assignedColors = config.assignedColors.map((assigned, index) => {
-            assigned.color = this.chart.chartColors.map(color => color.backgroundColor[index])[0];
-            return assigned;
-        });
+
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
@@ -526,6 +508,7 @@ export class ChartDialogComponent {
     handleInputColor(): void {
         // Aplicar assignedColors al chart
         this.applyColorsToChart();
+        this.loadChartColors();
         
         // Re-renderizar
         if (this.panelChartComponent?.componentRef?.instance) {
@@ -533,6 +516,7 @@ export class ChartDialogComponent {
             this.panelChartComponent.componentRef.instance.updateChart();
         }
         this.updateChartView();
+
     }
 
     private updateChartView(): void {
@@ -603,6 +587,8 @@ export class ChartDialogComponent {
         }));
         // Aplicar y re-renderizar
         this.handleInputColor();
+        const properties = this.panelChartConfig;
+        let c: ChartConfig = properties.config;    
     }
 
     // METODOS DE GUARDAR/CANCELAR CONFIGURACION
