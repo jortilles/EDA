@@ -138,6 +138,7 @@ export class ChartDialogComponent {
         this.showNumberOfColumns = this.controller.params.chart.edaChart === 'histogram';
         this.showComparative = this.allowCoparative(this.controller.params);
         this.load();
+        this.loadChartColors();
         this.display = true;
     }
 
@@ -287,7 +288,7 @@ export class ChartDialogComponent {
         config.showPointLines = this.showPointLines;
         config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
-      
+
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
@@ -331,10 +332,7 @@ export class ChartDialogComponent {
         config.showPointLines = this.showPointLines;
         config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
-        config.assignedColors = config.assignedColors.map((assigned, index) => {
-            assigned.color = this.chart.chartColors.map(color => color.backgroundColor[index])[0];
-            return assigned;
-        });
+
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
@@ -508,8 +506,10 @@ export class ChartDialogComponent {
     handleInputColor(): void {
         // Aplicar assignedColors al chart
         this.applyColorsToChart();
-        this.loadChartColors();
-        
+
+        // Guardar los colores en el config para que persistan cuando se recargue el chart
+        this.controller.params.config.config.getConfig()['assignedColors'] = [...this.assignedColors];
+
         // Re-renderizar
         if (this.panelChartComponent?.componentRef?.instance) {
             this.panelChartComponent.componentRef.instance.inject = this.chart;
