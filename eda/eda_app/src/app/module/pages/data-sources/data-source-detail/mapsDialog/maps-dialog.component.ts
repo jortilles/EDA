@@ -118,7 +118,6 @@ export class MapDialogComponent implements OnInit {
           linkedColumns: this.linkedColumns
         });
     }
-    console.log(this.serverMaps)
     this.onClose(
       {
         mapID: this.fileUploader.currentFile ? this.fileUploader.currentFile.file._id : null,

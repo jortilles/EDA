@@ -42,9 +42,9 @@ export class DashboardTagModal implements OnInit {
     if(!Array.isArray(this.selectedTags)){
       this.selectedTags = [this.selectedTags];
     } 
-    
+  
     // Añadir valores de tag que vengan importados
-    this.tags.push(...this.selectedTags.map(tag => ({label: tag,value: tag})));
+    this.tags.push(...this.selectedTags.filter(  (tag): tag is string => typeof tag === "string").map(tag => ({label: tag,value: tag})));
 
     // Eliminar duplicados por 'label' por si sí estan guardados en local y no repetirlos
     this.tags = Array.from(new Map(this.tags.map(item => [item.label, item])).values());

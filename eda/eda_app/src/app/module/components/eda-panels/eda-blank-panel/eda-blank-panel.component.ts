@@ -1,5 +1,5 @@
 // Angular
-import { Component, Input, Output, EventEmitter, ViewChild, OnInit, inject, computed, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, OnInit, inject, computed, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { DragDropModule, CdkDrag, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
@@ -286,7 +286,8 @@ export class EdaBlankPanelComponent implements OnInit {
         public spinnerService: SpinnerService,
         public groupService: GroupService,
         public userService: UserService,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private cdr: ChangeDetectorRef,
     ) {
         this.initializeBlankPanelUtils();
         this.initializeInputs();
@@ -317,14 +318,14 @@ export class EdaBlankPanelComponent implements OnInit {
         this.assignLevels(this.tableNodes, 0);
 
         await this.setTablesData();
-        
+
         /**If panel comes from server */
         if (this.panel.content) {
-            try{
+            try {
                 const contentQuery = this.panel.content.query;
 
                 // Compatibilitzar dashboard antics sense queryMode informat
-                const modeSQL = contentQuery.query.modeSQL; 
+                const modeSQL = contentQuery.query.modeSQL;
                 let queryMode = contentQuery.query.queryMode;
 
                 if (!queryMode) {
@@ -337,14 +338,12 @@ export class EdaBlankPanelComponent implements OnInit {
                     this.rootTable = contentQuery.query.rootTable;
                 }
 
-                if (modeSQL || queryMode=='SQL') {
-                    this.currentSQLQuery = contentQuery.query.SQLexpression;
-
-                    this.sqlOriginTable = this.tables.filter(t => t.table_name === contentQuery.query.fields[0].table_id)
-                        .map(table => ({ label: table.display_name.default, value: table.table_name }))[0];
-                }
-
-                this.loadChartsData(this.panel.content);
+            if (modeSQL || queryMode == 'SQL') {
+                this.currentSQLQuery = contentQuery.query.SQLexpression;
+                this.sqlOriginTable = this.sqlOriginTables.find(t => t.value === contentQuery.query.fields[0].table_id);
+                this.cdr.detectChanges();
+            }
+            this.loadChartsData(this.panel.content);
             } catch(e){
                 console.error('Error loading panel conent: ');
                 throw e;
@@ -437,8 +436,10 @@ public tableNodeExpand(event: any): void {
     isEditable() {
         const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
+        const userRole = JSON.parse(user).role;
+        const isAdmin = userRole.includes('135792467811111111111110');
         const imProperty = userName === this.dashboard.dashboard.config.author;
-        return (userName !== 'edaanonim' && !this.inject.isObserver) && !this.readonly && (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty);
+        return (userName !== 'edaanonim' && !this.inject.isObserver) && !this.readonly && (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty || isAdmin);
     }
 
     isRemovable() {
@@ -623,7 +624,6 @@ public tableNodeExpand(event: any): void {
         const chartOption = this.chartUtils.chartTypes.find(c => c.subValue === edaChart);
         this.chartForm.patchValue({ chart: chartOption });
 
-
         const recoveredConfig = ChartsConfigUtils.recoverConfig(chart, panelContent.query.output.config);
         this.changeChartType(chart, edaChart, recoveredConfig);
 
@@ -798,7 +798,16 @@ public tableNodeExpand(event: any): void {
 
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
+            
+            // Preservar assignedColors antes del merge
+            const savedAssignedColors = config && config.getConfig() ? config.getConfig()['assignedColors'] : null;
+
             _.merge(_config, config||{});
+            
+            // Restaurar assignedColors después del merge
+            if (savedAssignedColors) {
+                _config.getConfig()['assignedColors'] = savedAssignedColors;
+            }
 
             if (subType=='tableanalized') {
                 try {
@@ -818,15 +827,12 @@ public tableNodeExpand(event: any): void {
 
         // Controlar si se ejecuta una tabla cruzada
         // Se verifica si la longitud de la variable axes
-
         // Referencia a config
         const configCrossTable = this.panelChartConfig.config.getConfig()
 
         
         if(subType === 'crosstable'){
-            
             if(config===null){
-
                 if(Object.keys(this.copyConfigCrossTable).length !== 0) {
                     this.axes = this.copyConfigCrossTable['ordering'][0].axes;
                     configCrossTable['ordering'] = [{axes: this.axes}];
@@ -834,7 +840,6 @@ public tableNodeExpand(event: any): void {
                     this.axes = this.initAxes(this.currentQuery);
                     configCrossTable['ordering'] = [{axes: this.axes}];
                 }
-
             } else {
                 if(config['config']['ordering'] === undefined) {
                     this.axes = this.initAxes(this.currentQuery);
@@ -846,9 +851,7 @@ public tableNodeExpand(event: any): void {
                     }
                 }
             }
-
         }
-
     }
 
     /**
@@ -1172,34 +1175,58 @@ public tableNodeExpand(event: any): void {
         this.tableController = undefined;
     }
 
-public onCloseMapProperties(event, response: { color: string, logarithmicScale: boolean, legendPosition: string, baseLayer: boolean, draggable: boolean, zoom:number, coordinates: Array<Array<number>> }): void {
+    public onCloseMapProperties(event, response: {
+        logarithmicScale: boolean,
+        legendPosition: string,
+        baseLayer: boolean,
+        draggable: boolean,
+        zoom: number,
+        coordinates: Array<Array<number>>,
+        assignedColors: any[],
+        color?: string
+    }): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            this.panel.content.query.output.config.color = response.color;
-            this.panel.content.query.output.config.logarithmicScale = response.logarithmicScale;
-            this.panel.content.query.output.config.legendPosition = response.legendPosition;
-            this.panel.content.query.output.config.baseLayer = response.baseLayer;
-            this.panel.content.query.output.config.baseLayer = response.baseLayer;
-            this.panel.content.query.output.config.draggable = response.draggable;
-            this.panel.content.query.output.config.zoom = response.zoom;
-            this.panel.content.query.output.config.coordinates =
-              response.coordinates;
+            this.panel.content.query.output.config = {
+                ...this.panel.content.query.output.config,
+                assignedColors: response.assignedColors,
+                color: response.color, // legacy
+                logarithmicScale: response.logarithmicScale,
+                legendPosition: response.legendPosition,
+                baseLayer: response.baseLayer,
+                draggable: response.draggable,
+                zoom: response.zoom,
+                coordinates: response.coordinates
+            };
+
             const config = new ChartConfig(this.panel.content.query.output.config);
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+            this.renderChart( this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService._notSaved.next(true);
         }
         this.mapController = undefined;
     }
-    public onCloseMapCoordProperties(event, response: { initialColor: string, finalColor: string, logarithmicScale: boolean, draggable: boolean, zoom:number, coordinates: Array<Array<number>> }): void {
+        
+    public onCloseMapCoordProperties(event, response: { 
+        assignedColors: any[],
+        initialColor?: string,  // Para compatibilidad legacy
+        finalColor?: string,    // Para compatibilidad legacy
+        logarithmicScale: boolean, 
+        draggable: boolean, 
+        zoom: number, 
+        coordinates: Array<Array<number>> 
+    }): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            this.panel.content.query.output.config.initialColor = response.initialColor;
-            this.panel.content.query.output.config.finalColor = response.finalColor;
-            this.panel.content.query.output.config.logarithmicScale = response.logarithmicScale;
-            this.panel.content.query.output.config.draggable = response.draggable;
-            this.panel.content.query.output.config.zoom = response.zoom;
-            this.panel.content.query.output.config.coordinates =
-              response.coordinates;
+            this.panel.content.query.output.config = {
+                ...this.panel.content.query.output.config,
+                assignedColors: response.assignedColors, 
+                logarithmicScale: response.logarithmicScale,
+                draggable: response.draggable,
+                zoom: response.zoom,
+                coordinates: response.coordinates
+            };
+            
             const config = new ChartConfig(this.panel.content.query.output.config);
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, 
+                this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService._notSaved.next(true);
         }
         this.mapCoordController = undefined;
@@ -1262,11 +1289,15 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
 
     public onCloseFunnelProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            this.panel.content.query.output.config = { colors: response.colors };
+            // NO sobrescribir todo el config, solo actualizar lo necesario
+            this.panel.content.query.output.config = {
+                ...this.panel.content.query.output.config, // Mantener el config existente
+                assignedColors: response.assignedColors // Añadir assignedColors
+            };
+            
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService._notSaved.next(true);
-
         }
         this.funnelController = undefined;
     }
@@ -1416,36 +1447,56 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
     }
 
     public onCloseKpiProperties(event, response): void {
-        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            this.panel.content.query.output.config.alertLimits = response.alerts;
-            this.panel.content.query.output.config.sufix = response.sufix;
+    if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+        // Usar spread operator para mantener el config existente
+        this.panel.content.query.output.config = {
+            ...this.panel.content.query.output.config,
+            assignedColors: response.assignedColors,  // ✅ Guardar assignedColors
+            alertLimits: response.alerts,
+            sufix: response.sufix
+        };
 
-            let layout: any;
-            if (response.edaChart) {
-                this.panel.content.query.output.config.colors = response.edaChart.chartColors;
-                this.panel.content.query.output.config.chartType = response.chartType;
-                this.panel.content.query.output.config.chartSubType = response.chartSubType;
+        let layout: any;
+        if (response.edaChart) {
+            this.panel.content.query.output.config.colors = response.edaChart.chartColors;
+            this.panel.content.query.output.config.chartType = response.chartType;
+            this.panel.content.query.output.config.chartSubType = response.chartSubType;
 
-                layout = new ChartJsConfig(
-                    response.edaChart.chartColors,
-                    response.edaChart.chartType,
-                    response.edaChart.addTrend,
-                    response.edaChart.addComparative,
-                    response.edaChart.showLabels,
-                    response.edaChart.showLabelsPercent,
-                    response.edaChart.numberOfColumns,
-                    response.edaChart.assignedColors,
-                    response.edaChart.showPointLines,
-                    response.edaChart.showPredictionLines,
-                );
-            }
-            
-            const config = new ChartConfig(new KpiConfig({ sufix: response.sufix, alertLimits: response.alerts, edaChart: layout }));
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, response.chartType, response.chartSubType, config);
-            this.dashboardService._notSaved.next(true);
+            layout = new ChartJsConfig(
+                response.edaChart.chartColors,
+                response.edaChart.chartType,
+                response.edaChart.addTrend,
+                response.edaChart.addComparative,
+                response.edaChart.showLabels,
+                response.edaChart.showLabelsPercent,
+                response.edaChart.numberOfColumns,
+                response.assignedColors,  //  Pasar assignedColors desde response, no desde edaChart
+                response.edaChart.showPointLines,
+                response.edaChart.showPredictionLines,
+            );
         }
-        this.kpiController = undefined;
+        
+        const config = new ChartConfig(
+            new KpiConfig({ 
+                sufix: response.sufix, 
+                alertLimits: response.alerts, 
+                edaChart: layout,
+                assignedColors: response.assignedColors  //  Añadir assignedColors al KpiConfig
+            })
+        );
+        
+        this.renderChart(
+            this.currentQuery, 
+            this.chartLabels, 
+            this.chartData, 
+            response.chartType, 
+            response.chartSubType, 
+            config
+        );
+        this.dashboardService._notSaved.next(true);
     }
+    this.kpiController = undefined;
+}
 
     public onClosedynamicTextProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) { 
@@ -1458,7 +1509,6 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
     }
 
     public handleTabChange(event: any): void {
-
         this.index = event.index;
         if (this.index === 1) {
             const content = this.panel.content;
@@ -1745,7 +1795,6 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
     }
 
     public closeChatGpt(event: any) {
-        console.log('el Valor a llegado y es: ', event);
         this.isVisibleEbpChatGpt = false;
     } 
 
@@ -1895,6 +1944,10 @@ applyGroupBy(): void {
 
 removeGroupBy(): void {
   // Lógica para desactivar el group by
+}
+
+trackByTable(index: number, table: any): any {
+    return table.value;
 }
 
 }

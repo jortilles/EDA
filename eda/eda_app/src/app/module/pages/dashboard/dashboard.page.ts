@@ -509,138 +509,39 @@ export class DashboardPage implements OnInit {
   }
 
   public async onPanelAction(event: IPanelAction): Promise<void> {
-    //Check de modo
     let modeEDA = false;
-    const panel = event?.data?.panel
-    
-    // Check de filtros en click habilitados
+    const panel = event?.data?.panel;
     const filtersEnabled: boolean = this.dashboard.config.clickFiltersEnabled;
-    
-    // Check si el panel es importado
     const isImportedPanel: boolean = panel?.globalFilterMap;
 
     if (panel) {
       modeEDA = !event?.data.panel.content?.query?.query.modeSQL &&
-        (!event?.data.panel.content.query.query.queryMode || event?.data.panel.content.query.query.queryMode === 'EDA')
+        (!event?.data.panel.content.query.query.queryMode || event?.data.panel.content.query.query.queryMode === 'EDA');
     }
-    //Si es modo arbol o SQL no aplica filtros
+
     if (modeEDA && event.code === "ADDFILTER" && this.validateDashboard('GLOBALFILTER') && filtersEnabled && !isImportedPanel) {
       this.alertService.addSuccess($localize`:@@filteredReportMessage:Por favor, espera un momento mientras procesamos la selección.`);
       const data = event?.data;
-      const panel = event?.data?.panel;
-      let column: any;
-      column = this.getCorrectColumnFiltered(event)
+      let column: any = this.getCorrectColumnFiltered(event);
       const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
+
       if (column && table) {
         this.edaPanels.forEach(panel => {
           if (panel.panelChart) panel.panelChart.updateComponent();
         });
+
         let config = this.setPanelsToFilter(panel);
-        let anyChartToRemove: boolean;
+        let existingFilter = this.globalFilter.globalFilters.find(f =>
+          this.getChartClicked(f, table.table_name, column.column_name) &&
+          f.panelList.includes(panel.content.query.dashboard.panel_id)
+        );
 
-        //TENEMOS ALGUN FILTRO APLICADO EN LOS FILTROS GLOBALES DEL DASHBOARD
-        if (this.globalFilter.globalFilters && this.globalFilter.globalFilters.length > 0) {
-
-          //Buscamos si hay un filtro que existe igual al que acabamos de clicar, y de la misma tabla
-          let chartToRemove = this.globalFilter.globalFilters.find(f =>
-            this.getChartClicked(f, table.table_name, column.column_name, data.label) && f.panelList.includes(panel.content.query.dashboard.panel_id)
-          );
-          anyChartToRemove = !!chartToRemove; // true si encontró algún chart
-
-          // Control origen de los datos 
-          let filterName = chartToRemove?.column?.label ?? chartToRemove?.selectedColumn?.colum ?? "default";
-
-          // Comprobamos si el filtro que queremos crear ya esta aplicado en el chart
-          let makeNewFilter: boolean = this.isFilterAppliedToChart(anyChartToRemove, data);
-
-          // EL FILTRO CON EL QUE QUEREMOS TRABAJAR EXISTE
-          if (chartToRemove) {
-            if (makeNewFilter) {
-              // Creamos un filtro nuevo con from chart true
-              this.chartFilter = this.createChartFilter(table, column, data.label, config);
-              // Control de filtros para filtros parciales
-              data.panel.content.query.query?.filters.push(this.createChartFilter(table, column, data.label, config))
-
-              //Añadimos filtros nuevos
-              try {
-                await this.globalFilter.onGlobalFilterAuto(this.chartFilter, table.table_name);
-              }
-              catch (error) { }
-            }
-
-            else if (chartToRemove.selectedItems.length === 1) { // TENEMOS SOLO UN VALOR ACTUAL EN EL FILTRO
-              const existingFilter = this.lastMultipleFilters.find(f => f.filterName === filterName);// Buscar si existe auxiliarmente en lastMultipleFilters
-              if (existingFilter) { this.recoverDynamicFilter(chartToRemove, existingFilter, filterName); }// Si el filtro esta en lastMultipleFilters, lo recuperamos
-              else { this.deleteDynamicFilter(chartToRemove, table, filterName); }// Si no esta en lastMultipleFilters, lo borramos
-            }
-
-            else { // TENEMOS MAS DE UN VALOR ACTUAL EN EL FILTRO
-              // GUARDAMOS EL ORIGINAL EN LASTMULTIPLEFILTERS
-              this.lastMultipleFilters.push({
-                filterName: filterName,
-                filter: { ...chartToRemove }
-              });
-
-              // Filtramos el valor clicado
-              chartToRemove.selectedItems = chartToRemove.selectedItems.filter((item) => item === data.label);
-              this.globalFilter.applyGlobalFilter(chartToRemove);
-            }
-
-            // Actualizamos global filter
-            this.reloadOnGlobalFilter();
-          }
-          // EL FILTRO CON EL QUE QUEREMOS TRABAJAR NO EXISTE
-          else {
-            //CREAMOS NUEVO FILTRO EN CHART
-            //Recuperamos filtros activos del global filter
-            let actualFilter = this.globalFilter.globalFilters.filter(
-              (f) => f.table?.value === table.table_name && f.column?.value.column_name === column.column_name
-            )[0];
-            if (actualFilter) {
-              //Si last filters no tiene uno con la misma label lo guardamos
-              if (!this.lastFilters.includes(actualFilter)) {
-                this.lastFilters.push({ filterName: actualFilter.column.label, filter: actualFilter });
-              } else {
-                //Si label es igual lo remplazamos
-                if (this.lastFilters.includes(actualFilter.column.label)) {
-                  let filterToRemoveIndx = this.lastFilters.findIndex(element => element.filterName === actualFilter.column.label)
-                  this.lastFilters.splice(filterToRemoveIndx, 1);
-                  this.lastFilters.push(({ filterName: actualFilter.column.label, filter: actualFilter }));
-                }
-              }
-            }
-
-            // Creamos un filtro nuevo con from chart true
-            this.chartFilter = this.createChartFilter(table, column, data.label, config);
-            // Control de filtros para filtros parciales
-            data.panel.content.query.query?.filters.push(this.createChartFilter(table, column, data.label, config))
-
-            //Borramos filtros activos del global filter, pero los mantenemos guardados
-            for (const element of this.lastFilters) {
-              this.globalFilter.removeGlobalFilter(element.filter, true);
-            }
-            //Añadimos filtros nuevos
-            try {
-              await this.globalFilter.onGlobalFilterAuto(this.chartFilter, table.table_name);
-              this.reloadOnGlobalFilter();
-            }
-            catch (error) {
-              console.log(error)
-            }
-          }
+        if (existingFilter) {
+          await this.handleExistingFilter(existingFilter, data, table, column);
+        } else {
+          await this.handleNewFilter(table, column, data, config);
         }
 
-        // NO TENEMOS NINGUN FILTRO APLICADO EN LOS FILTROS GLOBALES DEL DASHBOARD
-        else {
-          // Creamos un filtro nuevo con from chart true
-          this.chartFilter = this.createChartFilter(table, column, data.label, config);
-          // Control de filtros para filtros parciales
-          data.panel.content.query.query?.filters.push(this.createChartFilter(table, column, data.label, config))
-
-          // Esperamos a que se apliquen los filtros, para luego recargar el global filter
-          await this.globalFilter.onGlobalFilterAuto(this.chartFilter, table.table_name);
-          this.reloadOnGlobalFilter();
-        }
         this.edaPanels.forEach(panel => {
           if (panel.panelChart) panel.panelChart.updateComponent();
         });
@@ -652,22 +553,178 @@ export class DashboardPage implements OnInit {
     }
   }
 
+  // FUNCIONES DE FILTROS DINAMICOS 
+  // FUNCIONES DE FILTROS DINAMICOS 
 
-  // FUNCIONES DE FILTROS DINAMICOS
+   //Maneja el caso cuando ya existe un filtro
+  private async handleExistingFilter(existingFilter: any, data: any, table: any, column: any): Promise<void> {
+    const filterName = existingFilter.column?.label || existingFilter.selectedColumn?.display_name?.default ||"default";
+    
+    if (existingFilter.selectedItems.length === 0) { // Filtro existente vacio
+      this.handleEmptyFilter(existingFilter, data);
+    } else if (existingFilter.selectedItems.length === 1) { // Filtro existente 1 valor
+      await this.handleSingleValueFilter(existingFilter, filterName, data, table, column);
+    } else { // Filtro existente con valores
+      this.handleMultipleValuesFilter(existingFilter, filterName, data);
+    }
+  }
+
+   // CASO: Filtro vacío → Añadir el valor
+  private handleEmptyFilter(existingFilter: any, data: any): void {
+    existingFilter.selectedItems = [data.label];
+    this.globalFilter.applyGlobalFilter(existingFilter);
+    this.reloadOnGlobalFilter();
+  }
+
+   // CASO: Filtro con 1 solo valor
+  private async handleSingleValueFilter(existingFilter: any, filterName: string, data: any, table: any, column: any ): Promise<void> {
+    const backupFilter = this.lastMultipleFilters.find(f => f.filterName === filterName);
+
+    if (backupFilter) { // Tenemos valor previo del filtro
+      this.restoreFilterFromBackup(existingFilter, filterName, backupFilter);
+    } else { // No tenemos valor previo
+      await this.removeOrClearFilter(existingFilter, data, table, column);
+    }
+  }
+
+   // Restaura el filtro desde el backup guardado
+  private restoreFilterFromBackup(existingFilter: any, filterName: string, backupFilter: any): void {
+    existingFilter.selectedItems = [...backupFilter.filter.selectedItems];
+    this.lastMultipleFilters = this.lastMultipleFilters.filter(f => f.filterName !== filterName);
+    this.globalFilter.applyGlobalFilter(existingFilter);
+    this.reloadOnGlobalFilter();
+  }
+
+   // Elimina o vacía el filtro según sea fromChart o no
+  private async removeOrClearFilter(existingFilter: any, data: any, table: any, column: any): Promise<void> {
+    if (existingFilter.fromChart) {
+      await this.deleteFilterCompletely(existingFilter, data, table, column);
+    } else {
+      this.clearFilterValues(existingFilter);
+    }
+  }
+
+   // Elimina completamente un filtro fromChart
+  private async deleteFilterCompletely(existingFilter: any, data: any, table: any, column: any): Promise<void> {
+    const filterTable = existingFilter.selectedTable?.table_name || existingFilter.table?.value;
+    const filterColumn = existingFilter.selectedColumn?.column_name || existingFilter.column?.value?.column_name;
+
+    // Limpiar filtro de todos los paneles
+    this.cleanFilterFromAllPanels(filterTable, filterColumn);
+
+    // Limpiar del panel actual
+    this.cleanFilterFromPanel(data.panel, filterTable, filterColumn);
+
+    // Eliminar del globalFilter
+    this.globalFilter.removeGlobalFilter(existingFilter, true);
+    this.reloadOnGlobalFilter();
+  }
+
+   // Limpia el filtro de todos los paneles del dashboard
+  private cleanFilterFromAllPanels(filterTable: string, filterColumn: string): void {
+    this.edaPanels['_results'].forEach(p => {
+      // Limpiar de panel.content
+      if (p.panel?.content?.query?.query?.filters) {
+        p.panel.content.query.query.filters = p.panel.content.query.query.filters.filter(
+          f => !(f.filter_table === filterTable && f.filter_column === filterColumn)
+        );
+      }
+
+      // Limpiar de inject.content
+      if (p.inject?.content?.query?.query?.filters) {
+        p.inject.content.query.query.filters = p.inject.content.query.query.filters.filter(
+          f => !(f.filter_table === filterTable && f.filter_column === filterColumn)
+        );
+      }
+
+      // Limpiar de globalFilters del panel
+      if (p.globalFilters && Array.isArray(p.globalFilters)) {
+        p.globalFilters = p.globalFilters.filter(
+          f => !(
+            (f.filter_table === filterTable && f.filter_column === filterColumn) ||
+            (f.table?.value === filterTable && f.column?.value?.column_name === filterColumn)
+          )
+        );
+      }
+
+      // Limpiar de panelChart.inject si existe
+      if (p.panelChart?.inject?.content?.query?.query?.filters) {
+        p.panelChart.inject.content.query.query.filters = p.panelChart.inject.content.query.query.filters.filter(
+          f => !(f.filter_table === filterTable && f.filter_column === filterColumn)
+        );
+      }
+    });
+  }
+
+   // Limpia el filtro de un panel específico
+  private cleanFilterFromPanel(panel: any, filterTable: string, filterColumn: string): void {
+    if (panel?.content?.query?.query?.filters) {
+      panel.content.query.query.filters = panel.content.query.query.filters.filter(
+        f => !(f.filter_table === filterTable && f.filter_column === filterColumn)
+      );
+    }
+  }
+
+   // Vacía los valores de un filtro sin eliminarlo (para filtros NO fromChart)
+  private clearFilterValues(existingFilter: any): void {
+    existingFilter.selectedItems = [];
+    this.globalFilter.applyGlobalFilter(existingFilter);
+    this.reloadOnGlobalFilter();
+  }
+
+   // CASO: Filtro con múltiples valores → Guardar backup y filtrar por uno solo
+  private handleMultipleValuesFilter(existingFilter: any, filterName: string, data: any): void {
+    // Guardar backup si no existe
+    if (!this.lastMultipleFilters.find(f => f.filterName === filterName)) {
+      this.lastMultipleFilters.push({
+        filterName: filterName,
+        filter: JSON.parse(JSON.stringify(existingFilter))
+      });
+    }
+
+    // Filtrar solo por el valor clickeado
+    existingFilter.selectedItems = [data.label];
+    this.globalFilter.applyGlobalFilter(existingFilter);
+    this.reloadOnGlobalFilter();
+  }
+
+   // Crea un nuevo filtro cuando no existe
+  private async handleNewFilter(table: any, column: any, data: any, config: any): Promise<void> {
+    this.chartFilter = this.createChartFilter(table, column, data.label, config);
+    data.panel.content.query.query?.filters.push(
+      this.createChartFilter(table, column, data.label, config)
+    );
+
+    try {
+      await this.globalFilter.onGlobalFilterAuto(this.chartFilter, table.table_name);
+      this.reloadOnGlobalFilter();
+    } catch (error) {
+      console.error('Error creando filtro:', error);
+    }
+  }
+
 
   createChartFilter(table: any, column: any, dataLabel: string, config: any): any {
-    return {
-        id: `${table.table_name}_${column.column_name}`,
-        isGlobal: true,
-        isAutocompleted: config.isAutocompleted ?? false,
-        applyToAll: config.applyToAll ?? true,
-        panelList: config.panelList.map((p) => p.id),
-        table: { label: table.display_name.default, value: table.table_name },
-        column: { label: column.display_name.default, value: column },
-        selectedItems: [dataLabel],
-        fromChart: true
+    const filter = {
+      id: `${table.table_name}_${column.column_name}`,
+      filter_id: `${table.table_name}_${column.column_name}`, 
+      isGlobal: true,
+      isAutocompleted: config.isAutocompleted ?? false,
+      applyToAll: config.applyToAll ?? true,
+      panelList: config.panelList.map((p) => p.id),
+      table: { label: table.display_name.default, value: table.table_name },
+      column: { 
+          label: column.display_name?.default || column.column_name, 
+          value: column
+      },
+      selectedItems: [dataLabel],
+      fromChart: true,
+      visible: 'public',
+      data: []
     };
-}
+    
+    return filter;
+  }
 
   deleteDynamicFilter(chartToRemove: any, table: any, filterName: any) {
     // Borramos el filtro existente
@@ -778,8 +835,8 @@ export class DashboardPage implements OnInit {
         setTimeout(() => {
           let btn = document.getElementById('dashFilterBtn');
           if (btn) btn.click();
-          else this.refreshPanels();
-        }, 500);
+          else this.refreshPanelsOthersCharts();
+        }, 100);
       }
     }
     this.setPanelsQueryMode();
@@ -871,6 +928,58 @@ export class DashboardPage implements OnInit {
           }
 
   }
+
+  // Metodo a revisar, este solo refresh a los paneles que no son js
+  refreshPanelsOthersCharts() {
+    this.edaPanels.forEach(async (panel) => {
+        if (panel.currentQuery.length > 0) {
+            const chartType = panel.graphicType;
+            const isChartJS = ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'pyramid', 'radar', 'knob'].includes(chartType);
+            
+            // Solo re-ejecutar query para charts NO ChartJS
+            if (!isChartJS) {
+                panel.display_v.chart = '';
+                await panel.runQueryFromDashboard(true);
+            } 
+            
+            // Siempre llamar a updateComponent para aplicar nuevos colores
+            setTimeout(() => panel.panelChart?.updateComponent(), 100);
+        }
+    });
+    
+    // LiveDashboardTimer
+    let isvalid = true;
+    const emptyQuery = this.edaPanels.some((panel) => panel.currentQuery.length === 0);
+
+    if (emptyQuery) isvalid = false;
+
+    if (!isvalid) {
+        this.alertService.addError($localize`:@@SaveWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`)
+    } else {
+        this.triggerTimer();
+        const body = {
+            config: {
+                title: this.title,
+                panel: [],
+                ds: { _id: this.dataSource._id },
+                filters: this.cleanFiltersData(),
+                applyToAllfilter: this.applyToAllfilter,
+                visible: this.dashboard.config.visible,
+                tag: this.selectedTags,
+                refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
+                clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
+                sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig, 
+                onlyIcanEdit: this.dashboard.config.onlyIcanEdit,
+                styles: this.dashboard.config.styles,
+                urls: this.dashboard.config.urls,
+                author: this.dashboard.config?.author
+            },
+            group: this.dashboard.group ? _.map(this.dashboard.group) : undefined,
+        }
+    
+        body.config.panel = this.savePanels();
+    }
+}
 
 
   public async saveDashboard() {
@@ -1119,40 +1228,38 @@ public startCountdown(seconds: number) {
   }
 
 
-// --- Función para detectar el filtro clicado ---
-private getChartClicked(f: any, tableName: string, columnName: string, label: any): boolean {
-  const norm = (val: any) =>
-    val?.toString()
-      ?.normalize("NFD")
-      ?.replace(/[\u0300-\u036f]/g, "")
-      ?.toLowerCase()
-      ?.trim();
+// Función para detectar el filtro clicado
+  private getChartClicked(f: any, tableName: string, columnName: string, label?: any): boolean {
+    const norm = (val: any) => val?.toString()?.normalize("NFD")?.replace(/[\u0300-\u036f]/g, "")?.toLowerCase()?.trim();
 
-  const newTable = norm(f.selectedTable?.table_name);
-  const newColumn = norm(f.selectedColumn?.column_name);
-  const oldTable = norm(f.table?.value);
-  const oldColumn = norm(f.column?.value?.column_name);
+    const newTable = norm(f.selectedTable?.table_name);
+    const newColumn = norm(f.selectedColumn?.column_name);
+    const oldTable = norm(f.table?.value);
+    const oldColumn = norm(f.column?.value?.column_name);
 
-  const targetTable = norm(tableName);
-  const targetColumn = norm(columnName);
-  const targetLabel = norm(label);
+    const targetTable = norm(tableName);
+    const targetColumn = norm(columnName);
 
-  const tableMatch = newTable === targetTable || oldTable === targetTable;
-  const columnMatch = newColumn === targetColumn || oldColumn === targetColumn;
+    const tableMatch = newTable === targetTable || oldTable === targetTable;
+    const columnMatch = newColumn === targetColumn || oldColumn === targetColumn;
 
-  let labelMatch = false;
+    // Si no se proporciona label, solo verificar tabla y columna
+    if (!label) {
+      return tableMatch && columnMatch;
+    }
 
+    // Si se proporciona label, también verificar que coincida
+    const targetLabel = norm(label);
+    let labelMatch = false;
 
-
-  if (Array.isArray(f.selectedItems)) {
-    f.selectedItems.forEach((item, i) => {
-      const normItem = norm(item);
-      const includes = normItem?.includes(targetLabel);
-      if (includes) labelMatch = true;
-    });
-  } 
-
-  return tableMatch && columnMatch && labelMatch;
-}
-
+    if (Array.isArray(f.selectedItems)) {
+      f.selectedItems.forEach((item) => {
+        const normItem = norm(item);
+        if (normItem === targetLabel) {
+          labelMatch = true;
+        }
+      });
+    }
+    return tableMatch && columnMatch && labelMatch;
+  }
 }

@@ -156,7 +156,6 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
     // Login Microsoft
     async loginMicrosoft() {
         try {
-            console.log('window.crypto:', window?.crypto);
             await this.msalService.instance.initialize();
 
             this.msalService.loginPopup({
