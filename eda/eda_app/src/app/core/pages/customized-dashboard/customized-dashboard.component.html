@@ -3,7 +3,7 @@
     <div class="flex pt-4 flex-col w-[15%] gap-4 bg-[#96adb5]">
         <!-- Imagen superior -->
         <div class="h-1/8 flex items-center justify-center">
-            <img src="assets/images/datapolis.svg" alt="">
+            <!-- img src="assets/images/datapolis.svg" alt="" -->
         </div>
 
         <!-- Listado -->
@@ -14,7 +14,7 @@
                         @if (item.isStarting) {
                             <div class="flex items-center">
                                 <eda-icon [name]="item.icon" class="h-6" />
-                                <a (click)="changeSrc()" class="btn">{{ item.name }}</a>
+                                <a (click)="changeSrc(item.href)" class="btn">{{ item.name }}</a>
                             </div>
                         }@else{
                             <a  class="btn ml-[10%]">{{ item.name }}</a>
@@ -33,6 +33,6 @@
     </div>
 
     <div class="flex-1 border">
-        <iframe src='https://eda3.edalitics.com/es/#/public/68d54b212a5c413d371bc8ee?panelMode=true' class="w-full h-full" id="showDashboard" frameborder="0"></iframe>
+        <iframe src='https://demo.edalitics.com/es/#/public/6801ea526c2a8f2c431e9b28?panelMode=true' class="w-full h-full" id="showDashboard" frameborder="0"></iframe>
     </div>
 </div>

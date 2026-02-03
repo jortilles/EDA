@@ -4,6 +4,6 @@ export class EdaFunnel {
   id : string;
   data : { labels: any[], values: any[]; };
   dataDescription : any;
-  colors : Array<string>;
   linkedDashboard : LinkedDashboardProps;
+  assignedColors: any[];
 }

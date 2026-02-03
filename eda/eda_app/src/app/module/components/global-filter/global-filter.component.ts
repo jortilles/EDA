@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit } from "@angular/core";
+import { Component, inject, Input, OnInit, ChangeDetectorRef } from "@angular/core";
 import { AlertService, DashboardService, GlobalFiltersService, QueryBuilderService, UserService } from "@eda/services/service.index";
 import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
 import { EdaDialogController } from "@eda/shared/components/shared-components.index";
@@ -84,6 +84,7 @@ export class GlobalFilterComponent implements OnInit {
         private alertService: AlertService,
         private userService: UserService,
         private destroyRef: DestroyRef,
+        private cdr: ChangeDetectorRef,
     ) { }
 
     public ngOnInit(): void {
@@ -200,28 +201,42 @@ export class GlobalFilterComponent implements OnInit {
         // Aplicando los filtros dependientes si existe un ordenamiento configurado
         if(this.orderDependentFilters.length !==0) this.applyingDependentFilter(filter, this.globalFilters);
 
+        // Verificando si tenemos filtros para mapear, que fueron importados en el nuevo dashboard
         this.dashboard.edaPanels.forEach((ebp: EdaBlankPanelComponent) => {
+
             const filterMap = ebp.panel.globalFilterMap || [];
-         if (filter.panelList.includes(ebp.panel.id)) {
-                const filterApplied = ebp.globalFilters.find((gf: any) => gf.filter_id === filter.id);
 
-                if (filterApplied) {
-                    filterApplied.filter_elements = this.globalFilterService.assertGlobalFilterItems(filter);
-                } else {
-                    const formatedFilter = this.globalFilterService.formatFilter(filter);
-                    ebp.assertGlobalFilter(formatedFilter);
+            if (filter.panelList.includes(ebp.panel.id)) {
+                    const filterApplied = ebp.globalFilters.find((gf: any) => gf.filter_id === filter.id);
+
+                    if (filterApplied) {
+                        filterApplied.filter_elements = this.globalFilterService.assertGlobalFilterItems(filter);
+                    } else {
+                        const formatedFilter = this.globalFilterService.formatFilter(filter);
+                        ebp.assertGlobalFilter(formatedFilter);
+                    }
+
+                } else if (filterMap.length) {  // Sección donde mapeamos filtros importados
+
+                    const map = filterMap.find((f) => f.targetId == filter.id);
+                    const panelFilter = ebp.globalFilters.find(gf => gf.filter_id === map?.sourceId);
+                    const items = this.globalFilterService.formatFilter(filter);
+
+                    // Si el filtro importado es de panel => selectedFilter
+                    if(!panelFilter) {
+                        const selectedFilter = ebp.selectedFilters.find(gf => gf.filter_id === map?.sourceId);
+                        if(selectedFilter?.filter_elements) {
+                            selectedFilter.filter_elements = items.filter_elements; // Copiando los items seleccionados
+                        }
+
+                    } else {
+                        if (panelFilter?.filter_elements) {
+                            panelFilter.filter_elements = items.filter_elements; // Copiando los items seleccionados
+                            ebp.assertGlobalFilter(panelFilter);
+                        }
+                    }
+
                 }
-
-            } else if (filterMap.length) {
-
-                const map = filterMap.find((f) => f.targetId == filter.id);
-                const panelFilter = ebp.globalFilters.find(filter => filter.filter_id === map?.sourceId);
-                const items = this.globalFilterService.formatFilter(filter);
-                if (panelFilter?.filter_elements)
-                    panelFilter.filter_elements = items;
-
-                ebp.assertGlobalFilter(items);
-            }
         })
     }
 
@@ -261,6 +276,7 @@ export class GlobalFilterComponent implements OnInit {
                     dashboard: dashboardId,
                     panel: '',
                     joinType: "inner",
+                    prediction: 'None',
                     rootTable: filterItem.selectedTable.table_name,
                     queryMode: filterItem.queryMode,
                     forSelector: true,
@@ -394,50 +410,47 @@ export class GlobalFilterComponent implements OnInit {
         }
     }
     // Legacy Global Filter
-    public async onGlobalFilterAuto(filter: any, targetTable: string): Promise<void> {
-        return new Promise<void>(async (resolve, reject) => {
-            try {
-                this.loading = true;
-                if (filter.isdeleted) {
-                    // Borramos filter 
-                    filter.selectedItems = [];
-                    this.applyGlobalFilter(filter);
-                    this.removeGlobalFilter(filter);
+   public async onGlobalFilterAuto(filter: any, targetTable: string): Promise<void> {
+    return new Promise<void>(async (resolve, reject) => {
+        try {
+            this.loading = true;
+            if (filter.isdeleted) {
+                filter.selectedItems = [];
+                this.applyGlobalFilter(filter);
+                this.removeGlobalFilter(filter);
+            } else {
+                let existFilter = await this.globalFilters.find((f) => f.id === filter.id);
+
+                if (existFilter) {
+                    existFilter.selectedItems = filter.selectedItems;
                 } else {
-                    // Creamos filtro
-                    let existFilter = await this.globalFilters.find((f) => f.id === filter.id);
-
-                    if (existFilter) {
-                        existFilter.selectedItems = filter.selectedItems;
-                    } else {
-                        this.globalFilters.push(filter);
-                    }
-
-                    // Load Filter dropdwons option s
-                    if (filter.column.value.column_type === 'date' && filter.selectedItems.length > 0) {
-                        this.loadDatesFromFilter(filter);
-                    } else {
-                        await this.loadGlobalFiltersData(filter);
-                    }
-
-                    // Apply globalFilter to linkedPanels
-                    this.applyGlobalFilter(filter);
-
-                    // If filter apply to all panels and this dashboard hasn't any 'apllyToAllFilter' new 'apllyToAllFilter' is set
-                    if (filter.applyToAll && (this.dashboard.applyToAllfilter.present === false)) {
-                        this.dashboard.applyToAllfilter = { present: true, refferenceTable: targetTable, id: filter.id };
-                        this.dashboard.updateApplyToAllFilterInPanels();
-                    }
+                    this.globalFilters.push(filter);
+                    this.cdr.detectChanges();
                 }
-                this.loading = false;
-                resolve();
-            } catch (err) {
-                console.log(err)
-                reject(err);
-            }
-        })
-    }
 
+                // Load Filter dropdowns options
+                if (filter.column?.value?.column_type === 'date' && filter.selectedItems.length > 0) {
+                    this.loadDatesFromFilter(filter);
+                } else {
+                    await this.loadGlobalFiltersData(filter);
+                    this.cdr.detectChanges();
+                }
+
+                this.applyGlobalFilter(filter);
+
+                if (filter.applyToAll && (this.dashboard.applyToAllfilter.present === false)) {
+                    this.dashboard.applyToAllfilter = { present: true, refferenceTable: targetTable, id: filter.id };
+                    this.dashboard.updateApplyToAllFilterInPanels();
+                }
+            }
+            this.loading = false;
+            resolve();
+        } catch (err) {
+            console.log(err)
+            reject(err);
+        }
+    })
+}
     validateFilter(){
         const mandatoryFilters: {value :boolean, items: any} = this.checkAllMandatoryFilters(); 
         if(mandatoryFilters.value){
@@ -770,7 +783,12 @@ export class GlobalFilterComponent implements OnInit {
             }
             
             const data = res[1].filter(item => !!item[0] || item[0] == '').map(item => ({ label: item[0], value: item[0] }));
-            this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = data;
+            // En la línea 774, ANTES de asignar:
+            const foundFilter = this.globalFilters.find((gf: any) => gf.id == globalFilter.id);
+
+            if (foundFilter) {
+                foundFilter.data = data;
+            }
         } catch (err) {
             this.alertService.addError(err);
             throw err;
@@ -859,6 +877,7 @@ export class GlobalFilterComponent implements OnInit {
                 panel: '',
                 joinType: "inner",
                 rootTable:filtro.selectedTable.table_name,
+                prediction: 'None',
                 groupByEnabled: true,
                 queryMode: filtro.queryMode,
                 forSelector: true,

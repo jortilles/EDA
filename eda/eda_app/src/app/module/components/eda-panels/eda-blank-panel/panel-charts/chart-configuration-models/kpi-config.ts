@@ -2,6 +2,7 @@ import { ChartJsConfig } from "./chart-js-config";
 
 export class KpiConfig {
     sufix: string = '';
+    assignedColors: any[] = [];
     alertLimits: any[] = [];
     edaChart: ChartJsConfig;
     constructor(init?: Partial<KpiConfig>) {
@@ -15,6 +16,7 @@ export class KpiConfig {
             init?.edaChart?.numberOfColumns || 0,
             init?.edaChart?.assignedColors || [],
             init?.edaChart?.showPointLines || false,
+            init?.edaChart?.showPredictionLines || false,
         );
         
         Object.assign(this, init);

@@ -2,7 +2,7 @@
 <xliff version="1.2"
   xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en-US" datatype="plaintext" original="ng2.template">
-    <body>
+  <body> 
       <trans-unit id="placeholderInputUsuario" datatype="html">
         <source>Usuario</source>
         <target>Utilisateur</target>
@@ -34,36 +34,25 @@
       <target> Je suis d'accord avec le <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
           termes<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
       </target>
-      <context-group purpose="location">
-        <context context-type="sourcefile">app/core/pages/register/register.component.html</context>
-        <context context-type="linenumber">42</context>
-      </context-group>
       </trans-unit>
   <trans-unit id="haveAccount" datatype="html">
     <source>
 							¿Tienes una cuenta? <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
-    <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>
-Ingresa ahora<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
-  <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
-</source>
-<target>
+        <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>
+    Ingresa ahora<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
+      <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
+    </source>
+    <target>
 							Avez-vous un compte ? <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
-<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>
-Entrer<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
-<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
-</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/core/pages/register/register.component.html</context>
-<context context-type="linenumber">54</context>
-</context-group>
+      <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>
+      Entrer<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
+      <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
+      </target>
 </trans-unit>
+
 <trans-unit id="sidebarProfile" datatype="html">
 <source>Perfil</source>
 <target>Profil</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
-<context context-type="linenumber">42</context>
-</context-group>
 </trans-unit>
 
 <trans-unit id="logsManagement" datatype="html">
@@ -1757,9 +1746,33 @@ Entrer<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Mapa de Capas</source>
 <target>Carte des caps</target>
 </trans-unit>
+<trans-unit id="chartTypes12">
+<source>ParallelSets</source>
+<target>Ensembles parallèles</target>
+</trans-unit>
+<trans-unit id="chartTypes13">
+<source>Treemap</source>
+<target>Treemap</target>
+</trans-unit>
+<trans-unit id="chartTypes14">
+<source>ScatterPlot</source>
+<target>Nuage de points</target>
+</trans-unit>
 <trans-unit id="chartTypes15">
 <source>Velocímetro</source>
 <target>Compteur de vitesse</target>
+</trans-unit>
+<trans-unit id="chartTypes16">
+<source>Funnel</source>
+<target>Entonnoir</target>
+</trans-unit>
+<trans-unit id="chartTypesBubblechart">
+<source>Bubblechart</source>
+<target>Graphique à bulles</target>
+</trans-unit>
+<trans-unit id="chartTypesRadar">
+<source>Radar</source>
+<target>Radar</target>
 </trans-unit>
 
 <trans-unit id="filters1">
@@ -2008,8 +2021,8 @@ Entrer<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="direccionMail" datatype="html">
-<source>Dirección Email</source>
-<target>Adresse email</target>
+<source>Dirección Email / Usuario</source>
+<target>Adresse email / Utilisateur</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
   <context context-type="linenumber">22</context>
@@ -2830,7 +2843,7 @@ Entrer<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Faites glisser ici les attributs sur lesquels vous souhaitez effectuer un filtrage</target>
   </trans-unit>
 
-  <trans-unit id="LegendPosition">
+  <trans-unit id="legendPosition">
     <source>Posición de la leyenda</source>
     <target>Position de la légende</target>
   </trans-unit>
@@ -4795,8 +4808,8 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 </trans-unit>
 
 <trans-unit id="connectDashboardPanel">
-  <source>Conecta los filtros entre el dashboard y el panel</source>
-  <target>Connectez les filtres entre le tableau de bord et le panneau</target>
+  <source>Conecta los filtros entre el dashboard y el panel, (los únicos filtros de panel que se visualizan son aquellos cuyo tipo de filtro es IN)</source>
+  <target>Connectez les filtres entre le tableau de bord et le panneau (les seuls filtres de panneau affichés sont ceux dont le type de filtre est IN)</target>
 </trans-unit>
 
 <trans-unit id="mapFilters">
@@ -5510,7 +5523,7 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       </trans-unit>
 
       <trans-unit id="viewEditionTitle">
-        <source>Edición de la Vista</source>
+        <source>Edición de la Vista</source>/
         <target>Voir l'édition</target>
       </trans-unit>
 
@@ -5668,6 +5681,87 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Cargando dashboards...</source>
         <target>Chargement des tableaux de bord...</target>
       </trans-unit>
+
+      <trans-unit id="logFileBtn">
+        <source>Logs</source>
+        <target>Logs</target>
+      </trans-unit>
+
+      <trans-unit id="logErrorFileBtn">
+        <source>Logs Error</source>
+        <target>Logs Error</target>
+      </trans-unit>
+
+      <trans-unit id="CollectionText">
+        <source>Colección creada correctamente</source>
+        <target>Collection créée correctement</target>
+      </trans-unit>
+
+      <trans-unit id="ErrorExcel">
+        <source>Cargue un archivo .xls o .xlsx</source>
+        <target>Téléversez un fichier .xls ou .xlsx</target>
+      </trans-unit>
+
+      <trans-unit id="AddMandatoryFilters">
+        <source>Los siguientes filtros son obligatorios y no tienen valor asignado:</source>
+        <target>Les filtres suivants sont obligatoires et n'ont pas de valeur attribuée:</target>
+      </trans-unit>
+
+      <trans-unit id="panelOptionsMapFilters">
+        <source>Mapear filtros</source>
+        <target>Filtres de carte</target>
+      </trans-unit>
+
+      <trans-unit id="dataExportImport">
+        <source>Data Export/Import</source>
+        <target>Exportation/importation de données</target>
+      </trans-unit>
+
+       <trans-unit id="permissionAdvancedOptions">
+        <source>Opciones avanzadas</source>
+        <target>Options avancées</target>
+      </trans-unit>
+
+      <trans-unit id="AllTagsDescription">
+        <source>Acceso a todos los elementos sin restricciones</source>
+        <target>Accès illimité à toutes les fonctionnalités</target>
+      </trans-unit>
+
+      <trans-unit id="NoneTagsDescription">
+        <source>No se muestra ningún elemento para este usuario/grupo</source>
+        <target>Aucun élément n'est affiché pour cet utilisateur/groupe</target>
+      </trans-unit>
+
+      <trans-unit id="DynamicTags">
+        <source>Dinámico</source>
+        <target>Dynamique</target>
+      </trans-unit>
+
+      <trans-unit id="DynamicTagsDescription">
+        <source>Filtrado avanzado mediante una consulta personalizada</source>
+        <target>Filtrage avancé via une requête personnalisée</target>
+      </trans-unit>
+
+      <trans-unit id="inputConsultaDinamica">
+        <source>Consulta dinámica</source>
+        <target>Requête dynamique</target>
+      </trans-unit>
+
+      <trans-unit id="placeholderConsultaDinamica">
+        <source>Introduzca la expresión dinámica…</source>
+        <target>Saisissez l'expression dynamique…</target>
+      </trans-unit>
+
+      <trans-unit id="addValueList">
+        <source>Añadir lista de valores posibles</source>
+        <target>Ajouter une liste de valeurs possibles</target>
+      </trans-unit>
+
+      <trans-unit id="addComparative">
+        <source>Comparativa</source>
+        <target>Comparatif</target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>

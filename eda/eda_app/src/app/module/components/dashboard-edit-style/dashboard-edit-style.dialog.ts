@@ -202,43 +202,105 @@ export class DashboardEditStyleDialog {
 		};
 	}
 
-	public saveConfig(): void {
-		// this.dashBoardStyles.fontFamily = this.selectedFont.value;
-		this.stylesProviderService.loadedPanels = this.dashboard.dashboard.config?.panel?.length;
-		this.stylesProviderService.loadingFromPalette = true;
-		const response: DashboardStyles = {
-			stylesApplied: true,
-			backgroundColor: this.backgroundColor,
-			panelColor: this.panelColor,
-			titleAlign: this.alignDasboardTitle,
-			panelTitleAlign: this.alignPanelTitle,
-			customCss: this.css,
-			title: {
-				fontFamily: this.selectedTitleFont,
-				fontSize: this.titleFontSize,
-				fontColor: this.titleFontColor
-			},
-			filters: {
-				fontFamily: this.selectedFiltersFont,
-				fontSize: this.filtersFontSize,
-				fontColor: this.filtersFontColor
-			},
-			panelTitle: {
-				fontFamily: this.selectedPanelTitleFont,
-				fontSize: this.panelTitleFontSize,
-				fontColor: this.panelTitleFontColor
-			},
-			panelContent: {
-				fontFamily: this.selectedPanelFont,
-				fontSize: this.panelFontSize,
-				fontColor: this.panelFontColor
-			},
-			palette: this.selectedPalette
-		}
-		this.stylesProviderService.setStyles(response)
-		this.stylesProviderService.palKnob = true;
-		this.apply.emit(response);
-	}
+	private applyPaletteToAllCharts(): void {
+    if (!this.selectedPalette || !this.dashboard?.dashboard?.config?.panel) {
+        return;
+    }
+
+    const newPalette = this.selectedPalette.paleta;
+
+    // Iterar sobre todos los paneles
+    this.dashboard.dashboard.config.panel.forEach(panel => {
+        const config = panel.content?.query?.output?.config;
+        if (!config) {
+            return;
+        }
+
+        // Si NO tiene assignedColors, necesitamos crearlos
+        if (!config.assignedColors || !Array.isArray(config.assignedColors) || config.assignedColors.length === 0) {
+            
+            // Determinar cuántos colores necesita según el tipo de chart
+            const chartType = panel.content?.chart;
+            let numColors = 1; // Por defecto 1 color
+            
+            // Para charts que necesitan múltiples colores, intentar inferir de los datos
+            if (['bar', 'line', 'doughnut', 'treeMap', 'sunburst', 'funnel'].includes(chartType)) {
+                // Intentar contar desde los datos disponibles
+                const labels = panel.content?.query?.output?.labels || [];
+                const data = panel.content?.query?.output?.data?.values || [];
+                
+                if (data.length > 0 && Array.isArray(data[0])) {
+                    numColors = data.length; // Número de series
+                } else if (labels.length > 1) {
+                    numColors = labels.length;
+                }
+            }
+            
+            // Crear assignedColors con valores genéricos
+            config.assignedColors = Array.from({ length: Math.max(numColors, 1) }, (_, i) => ({
+                value: `Series ${i + 1}`,
+                color: newPalette[i % newPalette.length]
+            }));
+            
+            return; // Ya están asignados los nuevos colores
+        }
+
+        // Si YA tiene assignedColors, actualizarlos
+
+        config.assignedColors = config.assignedColors.map((item, index) => ({
+            value: item.value,
+            color: newPalette[index % newPalette.length]
+        }));
+
+		const edaPanel = this.dashboard.edaPanels['_results'].find(p => p.panel.id === panel.id);
+        if (edaPanel?.panelChart?.props?.config) {
+            const internalConfig = edaPanel.panelChart.props.config.getConfig();
+            if (internalConfig) {
+                // Actualizar assignedColors por referencia
+                internalConfig['assignedColors'] = config.assignedColors;
+            }
+        }
+
+    });
+}
+
+public saveConfig(): void {
+    // Aplicar paleta a todos los charts del dashboard
+    this.applyPaletteToAllCharts();
+    
+    const response: DashboardStyles = {
+        stylesApplied: true,
+        backgroundColor: this.backgroundColor,
+        panelColor: this.panelColor,
+        titleAlign: this.alignDasboardTitle,
+        panelTitleAlign: this.alignPanelTitle,
+        customCss: this.css,
+        title: {
+            fontFamily: this.selectedTitleFont,
+            fontSize: this.titleFontSize,
+            fontColor: this.titleFontColor
+        },
+        filters: {
+            fontFamily: this.selectedFiltersFont,
+            fontSize: this.filtersFontSize,
+            fontColor: this.filtersFontColor
+        },
+        panelTitle: {
+            fontFamily: this.selectedPanelTitleFont,
+            fontSize: this.panelTitleFontSize,
+            fontColor: this.panelTitleFontColor
+        },
+        panelContent: {
+            fontFamily: this.selectedPanelFont,
+            fontSize: this.panelFontSize,
+            fontColor: this.panelFontColor
+        },
+        palette: this.selectedPalette
+    }
+    
+    this.stylesProviderService.setStyles(response);
+    this.apply.emit(response);
+}
 
 	public resetStyles() {
 		this.assignValues(this.stylesProviderService.generateDefaultStyles());

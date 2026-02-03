@@ -1757,9 +1757,33 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Mapa de Capas</source>
 <target>Mapa de Capes</target>
 </trans-unit>
+<trans-unit id="chartTypes12">
+<source>ParallelSets</source>
+<target>Conjunts paral·lels</target>
+</trans-unit>
+<trans-unit id="chartTypes13">
+<source>Treemap</source>
+<target>Mapa d'arbre</target>
+</trans-unit>
+<trans-unit id="chartTypes14">
+<source>ScatterPlot</source>
+<target>Diagrama de dispersió</target>
+</trans-unit>
 <trans-unit id="chartTypes15">
 <source>Velocímetro</source>
 <target>Velocímetre</target>
+</trans-unit>
+<trans-unit id="chartTypes16">
+<source>Funnel</source>
+<target>Embut</target>
+</trans-unit>
+<trans-unit id="chartTypesBubblechart">
+<source>Bubblechart</source>
+<target>Gràfic de bombolles</target>
+</trans-unit>
+<trans-unit id="chartTypesRadar">
+<source>Radar</source>
+<target>Radar</target>
 </trans-unit>
 
 <trans-unit id="filters1">
@@ -2009,8 +2033,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="direccionMail" datatype="html">
-<source>Dirección Email</source>
-<target>Direcció email</target>
+<source>Dirección Email / Usuario</source>
+<target>Direcció email / Usuari</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
   <context context-type="linenumber">22</context>
@@ -2407,11 +2431,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="AddFiltersWarningText">
 <source>Puedes borrar los paneles en blanco o configurarlos</source>
 <target>Pots esborrar els panells en blanc o configurar-los</target>
-</trans-unit>
-
-<trans-unit id="AddMandatoryFilters">
-<source>Los siguientes filtros son obligatorios y no tienen valor asignado:</source>
-<target>Els següents filtres són obligatoris i no tenen valor assignat:</target>
 </trans-unit>
 
 <trans-unit id="AddFiltersWarningButton">
@@ -2846,7 +2865,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Arrossega aquí els atributs sobre els que vols filtrar </target>
   </trans-unit>
 
-  <trans-unit id="LegendPosition">
+  <trans-unit id="legendPosition">
     <source>Posición de la leyenda</source>
     <target>Posició de la llegenda </target>
   </trans-unit>
@@ -4050,7 +4069,7 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Activar funciones del mouse</source>
         <target>Activar funcions del mouse</target>       
       </trans-unit>
-        <trans-unit id="chartTypesTableAnalized" datatype="html">
+      <trans-unit id="chartTypesTableAnalized" datatype="html">
         <source>Tabla DataQuality</source>
         <target>Taula DataQuality</target>
       </trans-unit>
@@ -4833,8 +4852,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 </trans-unit>
 
 <trans-unit id="connectDashboardPanel">
-  <source>Conecta los filtros entre el dashboard y el panel</source>
-  <target>Connecta els filtres entre el dashboard i el panell</target>
+  <source>Conecta los filtros entre el dashboard y el panel, (los únicos filtros de panel que se visualizan son aquellos cuyo tipo de filtro es IN)</source>
+  <target>Connecta els filtres entre el tauler i el panell (els únics filtres de panell que es visualitzen són aquells el tipus de filtre dels quals és IN)</target>
 </trans-unit>
 
 <trans-unit id="mapFilters">
@@ -5662,6 +5681,106 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>El archivo no tiene un formato GeoJson válido.</source>
         <target>El fitxer no té un format GeoJson vàlid.</target>
       </trans-unit>
+      <trans-unit id="logFileBtn">
+        <source>Logs</source>
+        <target>Logs</target>
+      </trans-unit>
+
+      <trans-unit id="logErrorFileBtn">
+        <source>Logs Error</source>
+        <target>Logs Error</target>
+      </trans-unit>
+
+      <trans-unit id="CollectionText">
+        <source>Colección creada correctamente</source>
+        <target>Col·lecció creada correctament</target>
+      </trans-unit>
+
+      <trans-unit id="ErrorExcel">
+        <source>Cargue un archivo .xls o .xlsx</source>
+        <target>Carregueu un fitxer .xls o .xlsx</target>
+      </trans-unit>
+
+      <trans-unit id="AddMandatoryFilters">
+        <source>Los siguientes filtros son obligatorios y no tienen valor asignado:</source>
+        <target>Els filtres següents són obligatoris i no tenen valor assignat:</target>
+      </trans-unit>
+
+      <trans-unit id="panelOptionsMapFilters">
+        <source>Mapear filtros</source>
+        <target>Mapejar filtres</target>
+      </trans-unit>
+
+      <trans-unit id="dataExportImport">
+        <source>Data Export/Import</source>
+        <target>Exportació/Importació de dades</target>
+      </trans-unit>
+
+      <trans-unit id="permissionAdvancedOptions">
+        <source>Opciones avanzadas</source>
+        <target>Opcions avançades</target>
+      </trans-unit>
+
+      <trans-unit id="AllTagsDescription">
+        <source>Acceso a todos los elementos sin restricciones</source>
+        <target>Accés a tots els elements sense restriccions</target>
+      </trans-unit>
+
+      <trans-unit id="NoneTagsDescription">
+        <source>No se muestra ningún elemento para este usuario/grupo</source>
+        <target>No es mostra cap element per a aquest usuari/grup</target>
+      </trans-unit>
+
+      <trans-unit id="DynamicTags">
+        <source>Dinámico</source>
+        <target>Dinàmic</target>
+      </trans-unit>
+
+      <trans-unit id="DynamicTagsDescription">
+        <source>Filtrado avanzado mediante una consulta personalizada</source>
+        <target>Filtratge avançat mitjançant una consulta personalitzada</target>
+      </trans-unit>
+
+      <trans-unit id="inputConsultaDinamica">
+        <source>Consulta dinámica</source>
+        <target>Consulta dinàmica</target>
+      </trans-unit>
+
+      <trans-unit id="placeholderConsultaDinamica">
+        <source>Introduzca la expresión dinámica…</source>
+        <target>Introduïu l'expressió dinàmica…</target>
+      </trans-unit>
+
+      <trans-unit id="addValueList">
+        <source>Añadir lista de valores posibles</source>
+        <target>Afegir llista de valors possibles</target>
+      </trans-unit>
+
+      <trans-unit id="addComparative">
+        <source>Comparativa</source>
+        <target>Comparativa</target>
+      </trans-unit>
+      <trans-unit id="showPointLines">
+        <source>Mostrar Puntos en Lineas</source>
+        <target>Mostrar Punts en Linies</target>
+      </trans-unit>
+      <trans-unit id="showLinesPrediction">
+        <source>Mostrar Predicción</source>
+        <target>Mostrar Predicció</target>
+      </trans-unit>
+      <trans-unit id="chartLabelLinesOptionDescription">
+        <source>Muestra las líneas en los puntos</source>
+        <target>Mostrar les línies als punts</target>
+      </trans-unit>
+      <trans-unit id="chartLabelLinePredicctionOptionDescription">
+        <source>Muestra las predicción de la serie</source>
+        <target>Mostrar les prediccions de la sèrie</target>
+      </trans-unit>
+      <trans-unit id="Prediction">
+        <source>Predicción</source>
+        <target>Predicció</target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>

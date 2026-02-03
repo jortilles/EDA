@@ -1,7 +1,6 @@
 
 import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
-import { ChartsColors } from '@eda/configs/index';
 import * as d3 from 'd3';
 import { TreeMap } from "./eda-treeMap";
 import * as _ from 'lodash';
@@ -47,10 +46,9 @@ export class EdaTreeMap implements AfterViewInit {
     this.firstColLabels = this.inject.data.values.map((row) => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
     this.data = this.formatData(this.inject.data);
-    this.colors = this.inject.colors.length > 0 ? this.inject.colors :
-    this.chartUtilService.generateChartColorsFromPalette(this.firstColLabels.length, this.styleProviderService.ActualChartPalette['paleta']).map(item => item.backgroundColor);    
-    this.assignedColors = this.inject.assignedColors || [];
-    this.assignedColors.forEach((element, index) => {if(element.value === undefined) element.value = this.firstColLabels[index]}); // linea para cuando value es numerico
+    this.assignedColors = this.inject.assignedColors;
+    // Revisar esto si es necesario
+    //this.assignedColors.forEach((element, index) => {if(element.value === undefined) element.value = this.firstColLabels[index]}); // linea para cuando value es numerico
   }
 
   ngOnDestroy(): void {

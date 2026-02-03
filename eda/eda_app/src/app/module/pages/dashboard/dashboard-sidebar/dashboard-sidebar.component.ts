@@ -427,7 +427,7 @@ export class DashboardSidebarComponent {
   private async saveDashboard() {
     // Actualizar el refreshTime si es necesario
     this.dashboard.dashboard.config.refreshTime = this.refreshTime || null;
-    this.dashboard.dashboard.config.onlyIcanEdit = this.clickFiltersEnabled;
+    this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
     this.dashboard.dashboard.config.onlyIcanEdit = this.onlyIcanEdit;
     // Actualizar el autor 
     this.dashboard.dashboard.config.author = JSON.parse(localStorage.getItem('user')).name;
@@ -509,12 +509,23 @@ export class DashboardSidebarComponent {
   }
 
   public saveStyles(newStyles: any) {
-    this.isEditStyleDialogVisible = false;
-    this.dashboard.dashboard.config.styles = newStyles;
-    this.ChartUtilsService.MyPaletteColors = newStyles.palette?.paleta || this.ChartUtilsService.MyPaletteColors;
-    this.dashboard.assignStyles();
-    this.dashboard.refreshPanels();
-
+      this.isEditStyleDialogVisible = false;
+      this.dashboard.dashboard.config.styles = newStyles;
+      this.ChartUtilsService.MyPaletteColors = newStyles.palette?.paleta || this.ChartUtilsService.MyPaletteColors;
+      this.dashboard.assignStyles();
+      
+      setTimeout(() => {
+          this.dashboard.edaPanels.forEach((panel, index) => {
+              if (panel.panelChart) {
+                  try {
+                      panel.panelChart.updateComponent();
+                  } catch (error) {
+                      console.error(`Error al actualizar panel:`, error);
+                  }
+              }
+          });
+          this.dashboard.refreshPanels();
+      }, 100);
   }
 
   public closeVisibleModal() {
@@ -584,7 +595,7 @@ export class DashboardSidebarComponent {
           await lastValueFrom(this.dashboardService.deleteDashboard(dashboardId));
 
           // La app se direcciona al home EDA
-          this.router.navigate(['/']).then(() => {
+          this.router.navigate(['/home']).then(() => {
             window.location.reload();
           });
         } catch (err) {
@@ -789,8 +800,10 @@ export class DashboardSidebarComponent {
   public isEditableCheck() {
     const user = localStorage.getItem('user');
     const userName = JSON.parse(user).name;
+    const userRole = JSON.parse(user).role;
+    const isAdmin = userRole.includes('135792467811111111111110');
     const imProperty = userName === this.dashboard.dashboard.config.author
-    return (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty);
+    return (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty || isAdmin );
   }
 
   toggleClickFilters() {
@@ -799,8 +812,7 @@ export class DashboardSidebarComponent {
 
     // Alternar el estado
     this.clickFiltersEnabled = !this.clickFiltersEnabled;
-
-    // Actualizar label e icono según estado
+    this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;    // Actualizar label e icono según estado
     clickItem.label = this.clickFiltersEnabled ? $localize`:@@enableFilters:Click en filtros habilitado` : $localize`:@@disableFilters:Click en filtros deshabilitado`;
     clickItem.icon = this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock";
 
