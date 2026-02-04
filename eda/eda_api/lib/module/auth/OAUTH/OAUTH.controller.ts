@@ -78,6 +78,11 @@ export class OAUTHController {
                 userPermissionsRoles(access_token)
             ])
             
+            console.log('userDataValue: ', userDataValue);
+            console.log('authenticationEvidenceValue: ', authenticationEvidenceValue);
+            console.log('userPermissionsValue: ', userPermissionsValue);
+            console.log('userPermissionsRolesValue: ', userPermissionsRolesValue);
+
             //=============================================================================================== */
             //=============================================================================================== */
             //=============================================================================================== */
@@ -89,6 +94,8 @@ export class OAUTHController {
             let user: IUser = new User({name: '', email: '', password: '', img: '', role: []});
 
             insertServerLog(req, 'info', 'newLogin', email, 'attempt');
+
+            console.log('email identificación: ', email);
 
             // Verificamos al usuario
             if (!email) return next(new HttpException(400, 'Usuario no verificado'));
