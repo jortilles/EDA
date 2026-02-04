@@ -156,7 +156,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         { label: 'text', value: 'text' },
         { label: 'numeric', value: 'numeric' },
         { label: 'date', value: 'date' },
-        { label: 'coordinate', value: 'coordinate' }
+        { label: 'coordinate', value: 'coordinate' },
+        { label: 'html', value: 'html' }
     ];
     public selectedcolumnType: any;
 
