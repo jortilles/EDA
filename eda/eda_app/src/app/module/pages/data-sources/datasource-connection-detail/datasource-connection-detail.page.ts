@@ -117,6 +117,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
       { label: 'integer', value: "integer" },
       { label: 'numeric', value: "numeric" },
       { label: 'coordinate', value: "coordinate" },
+      { label: 'html', value: "html" },
       { label: 'boolean', value: "boolean" },
       { label: 'date', value: "timestamp" },
     ];

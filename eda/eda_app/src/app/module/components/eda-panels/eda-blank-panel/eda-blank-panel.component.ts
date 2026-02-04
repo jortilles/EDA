@@ -1895,7 +1895,8 @@ private assignLevels(nodes: any[], level = 0): void {
         const icons = {
             numeric: 'mdi-numeric',//'text-blue-500',
             date: 'mdi-calendar-text', //text-green-500',
-            text: 'mdi-alphabetical' //'text-orange-500' 
+            text: 'mdi-alphabetical', //'text-orange-500' 
+            html: 'mdi-language-html5' //'text-orange-500' 
         };
         return icons[type as keyof typeof icons] || '';
     }
