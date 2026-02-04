@@ -97,10 +97,14 @@ export class EdaTableComponent implements OnInit {
         } else {
             let filterBy = colname;
             let label = item;
-            //lanzo el filtro para los dos tipos de tablas
-        if(typeof label !== 'number')
-            this.onClick.emit({ label, filterBy })
-        }
+            // Buscar el tipo de columna para verificar si es html
+            const col = this.inject.cols.find(c => c.field === colname);
+            const colType = col ? col.type : null;
+            
+            // No emitir evento para columnas numéricas ni HTML
+            if (typeof label !== 'number' && colType !== 'EdaColumnHtml') {
+                this.onClick.emit({ label, filterBy });
+            }}
     }
 
     getTooltip = (col: any) => {
