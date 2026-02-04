@@ -96,6 +96,9 @@ export class ColumnPermissionDialogComponent implements OnInit {
     }
 
     savePermission() {
+
+        console.log('<--- Permisos a nivel de Columna --->')
+
         let permissionFilter = {};
 
         // Determinar el valor basándose en las opciones seleccionadas
@@ -114,6 +117,9 @@ export class ColumnPermissionDialogComponent implements OnInit {
             value = this.selectedValues;
         }
 
+        console.log(this.table.technical_name)
+        console.log(this.column.column_name)
+
         if (this.type === 'users') {
             permissionFilter = {
                 users: this.selectedUsers.map(usr => usr._id),
@@ -123,7 +129,7 @@ export class ColumnPermissionDialogComponent implements OnInit {
                 none: this.none ? true : false,
                 table: this.table.technical_name,
                 column: this.column.column_name,
-                global: true,
+                global: false,
                 permission: this.permission ? true : false,
                 type: 'users'
             };
@@ -137,11 +143,13 @@ export class ColumnPermissionDialogComponent implements OnInit {
                 none: this.none ? true : false,
                 table: this.table.technical_name,
                 column: this.column.column_name,
-                global: true,
+                global: false,
                 permission: this.permission,
                 type: 'groups'
             };
         }
+
+        console.log('permissionFilter', permissionFilter)
         this.onClose(EdaDialogCloseEvent.NEW, permissionFilter);
     }
 

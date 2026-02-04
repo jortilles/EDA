@@ -79,15 +79,17 @@ export class TablePermissionDialogComponent implements OnInit {
     }
 
     savePermission() {
+        console.log('<--- Permisos a nivel de Tabla --->')
         let permissionFilter = {};
-
+        console.log(this)
+        if(this.type===''){this.closeDialog()}
         if (this.anyoneCanSee === true) {
             permissionFilter = {
                 users: ["(~ => All)"],
                 usersName: ["(~ => All)"],
                 none: this.none ? true : false,
-                table: "fullModel",
-                column: "fullModel",
+                table: this.table.technical_name,
+                column: "fullTable",
                 global: true,
                 permission: this.anyoneCanSee ? true : false,
                 type: 'anyoneCanSee'

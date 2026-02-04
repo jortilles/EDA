@@ -476,8 +476,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 this.permissions.forEach(permission => {
 
                     const table = this.dataModelService.getTable(this.columnPanel);
-                    console.log('hola')
-                    console.log(permission)
                     if (this.columnPanel.technical_name === permission.column && table.table_name === permission.table && permission.column != "fullTable" ) {
                         // Formatear el valor para mostrarlo correctamente
                         let displayValue = '';
@@ -894,6 +892,10 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
 
     closeModelPermissionsDialog(response: any) {
+
+        console.log('response: ', response);
+        debugger;
+
         if (response) {
             this.dataModelService.addPermission(response);
             this.update();
