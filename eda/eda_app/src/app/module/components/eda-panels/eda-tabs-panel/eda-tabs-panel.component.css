@@ -1,0 +1,13 @@
+.tab-button {
+    background: transparent;
+    outline: none;
+    box-shadow: none;
+}
+
+.tab-button:hover {
+    transform: translateY(-1px);
+}
+
+.tab-button:active {
+    transform: translateY(0);
+}

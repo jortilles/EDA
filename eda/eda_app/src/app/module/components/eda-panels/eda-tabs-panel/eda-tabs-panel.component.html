@@ -1,0 +1,49 @@
+<div class="flex flex-col h-full rounded-lg p-2 bg-white" [ngStyle]="getTabStyle()">
+    <!-- Header with menu -->
+    <div class="flex justify-end items-center drag-handler mb-2">
+        <div class="flex-grow"></div>
+        <i *ngIf="display.editMode" class="pi pi-ellipsis-v cursor-pointer mr-2" (click)="contextMenu.showContextMenu($event)"></i>
+    </div>
+
+    <!-- Tabs container -->
+    <div class="flex flex-wrap gap-2 items-center justify-center overflow-x-auto">
+        <!-- Loading state -->
+        <div *ngIf="isLoading" class="text-gray-500 text-sm">
+            <i class="pi pi-spin pi-spinner mr-2"></i>
+            Cargando...
+        </div>
+
+        <!-- Empty state -->
+        <div *ngIf="!isLoading && filteredDashboards.length === 0" class="text-gray-400 text-sm text-center p-4">
+            <i class="pi pi-info-circle mr-2"></i>
+            <span *ngIf="!panel.selectedTags || panel.selectedTags.length === 0">
+                Configura los tags para mostrar dashboards
+            </span>
+            <span *ngIf="panel.selectedTags && panel.selectedTags.length > 0">
+                No hay dashboards con los tags seleccionados
+            </span>
+        </div>
+
+        <!-- Dashboard tabs -->
+        <button *ngFor="let dashboard of filteredDashboards"
+            class="tab-button px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:opacity-80 cursor-pointer border-b-2 border-transparent hover:border-current"
+            [ngStyle]="getTabStyle()"
+            (mouseenter)="$event.target.style.borderBottomColor = panel.tabStyle?.activeColor || '#00bfb3'"
+            (mouseleave)="$event.target.style.borderBottomColor = 'transparent'"
+            (click)="openDashboard(dashboard)">
+            <i class="pi pi-external-link mr-2 text-xs"></i>
+            {{ dashboard.title }}
+        </button>
+    </div>
+
+    <!-- Selected tags indicator -->
+    <div *ngIf="panel.selectedTags && panel.selectedTags.length > 0" class="flex flex-wrap gap-1 mt-2 justify-center">
+        <span *ngFor="let tag of panel.selectedTags"
+            class="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
+            {{ tag }}
+        </span>
+    </div>
+</div>
+
+<eda-context-menu [inject]="contextMenu"></eda-context-menu>
+<app-edit-tabs-dialog *ngIf="editTabsController" [controller]="editTabsController"></app-edit-tabs-dialog>
