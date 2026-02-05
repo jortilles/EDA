@@ -1795,7 +1795,6 @@ public tableNodeExpand(event: any): void {
     }
 
     public closeChatGpt(event: any) {
-        console.log('el Valor a llegado y es: ', event);
         this.isVisibleEbpChatGpt = false;
     } 
 

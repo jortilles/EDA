@@ -55,10 +55,19 @@ export function MSALInstanceFactory(): IPublicClientApplication {
 async function bootstrap() {
   try {
     // Obtenemos el tipo de login desde el backend
-    const resp = await fetch(`${API}/auth/typeLogin`);
-    const data = await resp.json();
-
-    const loginMethods: string[] = data?.response?.options?.elements || [];
+    let loginMethods: string[] = [];
+    
+    try {
+      const resp = await fetch(`${API}/auth/typeLogin`);
+      if (resp.ok) {
+        const data = await resp.json();
+        loginMethods = data?.response?.options?.elements || [];
+      }
+    } catch (fetchError) {
+      console.warn('No se pudo conectar a la API. Usando configuración por defecto.', fetchError);
+      // Valor por defecto si la API no responde
+      loginMethods = [];
+    }
 
     // Providers base
     const providers: Provider = [...(appConfig.providers || [])];

@@ -667,7 +667,6 @@ export class ColumnDialogComponent {
     }
 
     onDuplicate(){
-        console.log(this)
         this.display.duplicateColumn = true;
         this.duplicatedColumnName = this.selectedColumn.display_name.default + ' (Copy)';    
     }

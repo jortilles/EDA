@@ -172,7 +172,6 @@ export class AddCsvComponent implements OnInit {
     }
 
     const BATCH_SIZE = 1000;
-    console.log('csvRecords: ', this.csvRecords);
     const batches = Math.ceil(this.csvRecords.length / BATCH_SIZE);
 
     try {

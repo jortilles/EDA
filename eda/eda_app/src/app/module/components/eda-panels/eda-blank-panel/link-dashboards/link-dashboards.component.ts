@@ -115,8 +115,6 @@ export class LinkDashboardsComponent {
   }
 
   saveChartConfig() {
-    console.log(this.oldLinked);
-    console.log(this.noLink);
 
     try {
       if (!this.noLink) {
@@ -153,7 +151,6 @@ export class LinkDashboardsComponent {
 
   public filterFilters() {
     this.filters = this.filters.filter(column => column.dashboardID === <any>this.selectedDashboard);
-    console.log(this, 'this.filterFilters')
   }
 
   public handleTargetColumn() {
