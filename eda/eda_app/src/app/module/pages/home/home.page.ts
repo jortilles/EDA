@@ -117,8 +117,8 @@ public handleTagSelect(option: any): void {
 
   if (isSelected) {
     // Eliminar tag
-    this.selectedTags.set({"label":"Todos","value":"Todos"});
-    sessionStorage.setItem("activeTags", JSON.stringify({"label":"Todos","value":"Todos"}));
+    this.selectedTags.set({"label":$localize`:@@AllTags:Todos`,"value":$localize`:@@AllTags:Todos`});
+    sessionStorage.setItem("activeTags", JSON.stringify({"label":$localize`:@@AllTags:Todos`,"value":$localize`:@@AllTags:Todos`}));
   } else {
     // Añadir tag
     this.selectedTags.set(option);
@@ -177,7 +177,22 @@ public handleTagSelect(option: any): void {
   private checkTagsIntoReports(reports, tags) {
     return reports.filter(db => {
         const tag = db.config?.tag;
-        return tags.includes($localize`:@@NoTag:Sin Etiqueta`) ? (tag === null || tags.includes(tag)): tags.includes(tag) && tag != '';
+
+        // Si no tiene tag y el filtro es "Sin Etiqueta"
+        if (tags.includes($localize`:@@NoTag:Sin Etiqueta`)) {
+          return tag === null || tag === undefined || tag === '';
+        }
+
+        // Si el tag no existe, no mostrar
+        if (!tag || tag === '') return false;
+
+        // Normalizar el tag a array de strings
+        const tagArray = Array.isArray(tag)
+          ? tag.map(t => typeof t === 'string' ? t : t.value || t.label)
+          : [typeof tag === 'string' ? tag : tag.value || tag.label];
+
+        // Verificar si alguno de los tags del dashboard está en los filtros seleccionados
+        return tagArray.some(t => tags.includes(t));
     });
   }
 

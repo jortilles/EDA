@@ -20,6 +20,7 @@ export class ExcelSheetController {
         try {
             const excelName = req.body?.name, optimize = req.body?.optimize, cacheAllowed = req.body?.allowCache;
             let excelFields = req.body?.fields;
+            const columnsConfig = req.body?.columnsConfig; // Configuración de columnas del usuario
 
 
             if (!excelName || !excelFields) {
@@ -84,7 +85,7 @@ export class ExcelSheetController {
                 }
             }
 
-            await this.ExcelCollectionToDataSource(excelName, excelFields, optimize, cacheAllowed, res, next);
+            await this.ExcelCollectionToDataSource(excelName, excelFields, optimize, cacheAllowed, columnsConfig, res, next);
         } catch (error) {
             console.error('Error al crear o actualizar el ExcelSheet:', error);
             next(new HttpException(500, 'Error al crear o actualizar el ExcelSheet'));
@@ -104,27 +105,36 @@ export class ExcelSheetController {
         }
     }
 
-    static async ExcelCollectionToDataSource(excelName, excelFields, optimized, cacheAllowed, res: Response, next: NextFunction) {
+    static async ExcelCollectionToDataSource(excelName, excelFields, optimized, cacheAllowed, columnsConfig, res: Response, next: NextFunction) {
         try {
             //Declaramos un objeto que va a contener los tipos y nombres de los campos del Excel
             const propertiesAndTypes = {};
-            excelFields.forEach(object => {
-                Object.entries(object).forEach(([property, value]) => {
 
-                    if (!isNaN(Number(value))) {
-                        propertiesAndTypes[property] = 'numeric';
-                    } else {
-                        const isDateValue = DateUtil.convertDate(value);
-
-                        if (isDateValue) {
-                            propertiesAndTypes[property] = 'date';
-                        } else if (typeof value === 'string') {
-                            propertiesAndTypes[property] = 'text';
-                        }
-                    }
-
+            // Si hay configuración de columnas del usuario, usarla en lugar de detectar automáticamente
+            if (columnsConfig && Array.isArray(columnsConfig)) {
+                columnsConfig.forEach(col => {
+                    propertiesAndTypes[col.field] = col.type;
                 });
-            });
+            } else {
+                // Detección automática (para Excel o si no hay configuración)
+                excelFields.forEach(object => {
+                    Object.entries(object).forEach(([property, value]) => {
+
+                        if (!isNaN(Number(value))) {
+                            propertiesAndTypes[property] = 'numeric';
+                        } else {
+                            const isDateValue = DateUtil.convertDate(value);
+
+                            if (isDateValue) {
+                                propertiesAndTypes[property] = 'date';
+                            } else if (typeof value === 'string') {
+                                propertiesAndTypes[property] = 'text';
+                            }
+                        }
+
+                    });
+                });
+            }
             const propertiesAndTypesArray = Object.entries(propertiesAndTypes).map(([name, type]) => ({ name, type })), columnsEntry = [];
             //Mapeado de las columnas
             propertiesAndTypesArray.forEach((column) => {

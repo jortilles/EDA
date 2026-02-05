@@ -169,7 +169,7 @@ export class SnowflakeConnection extends AbstractConnection {
 
     if (column.column_type === 'numeric') {
       column.aggregation_type = AggregationTypes.getValuesForNumbers();
-    } else if (column.column_type === 'text') {
+    } else if (column.column_type === 'text' || column.column_type === 'html') {
         column.aggregation_type = AggregationTypes.getValuesForText();
     } else {
         column.aggregation_type = AggregationTypes.getValuesForOthers();

@@ -20,6 +20,7 @@ import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component
 import { EdaColumnDate } from '@eda/components/eda-table/eda-columns/eda-column-date';
 import { EdaColumnNumber } from '@eda/components/eda-table/eda-columns/eda-column-number';
 import { EdaColumnText } from '@eda/components/eda-table/eda-columns/eda-column-text';
+import { EdaColumnHtml } from '@eda/components/eda-table/eda-columns/eda-column-html';
 import { EdaTable } from '@eda/components/eda-table/eda-table';
 import { KpiConfig } from './chart-configuration-models/kpi-config';
 import { DynamicTextConfig } from './chart-configuration-models/dynamicText-config';
@@ -1123,11 +1124,13 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
                 const label = this.props.data.labels[i];
                 const r: Column = this.props.query[i];
-    
+
                 if (_.isEqual(r.column_type, 'date')) {
                     tableColumns.push(new EdaColumnDate({ header: r.display_name.default, field: label, description: r.description.default }));
                 } else if (_.isEqual(r.column_type, 'numeric')) {
                     tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default , decimals: r.minimumFractionDigits}))
+                } else if (_.isEqual(r.column_type, 'html')) {
+                    tableColumns.push(new EdaColumnHtml({ header: r.display_name.default, field: label, description: r.description.default }));
                 } else if (_.isEqual(r.column_type, 'text')) {
                     tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default }));
                 } else if (_.isEqual(r.column_type, 'coordinate')) {
