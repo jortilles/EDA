@@ -386,7 +386,7 @@ export class DashboardSidebarComponent {
   public onAddTitle(): void {
     let panel = new EdaTitlePanel({
       id: this.fileUtils.generateUUID(),
-      title: 'Titulo',
+      title: 'Titulo Panel',
       type: EdaPanelType.TITLE,
       w: 20,
       h: 1,
