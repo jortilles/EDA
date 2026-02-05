@@ -97,8 +97,11 @@ export class OAUTHController {
 
             console.log('email identificación: ', email);
 
-            // Verificamos al usuario
-            if (!email) return next(new HttpException(400, 'Usuario no verificado'));
+            // Verificamos el email o el identifier del usuario
+            if (!email && !identifier) return next(new HttpException(400, 'Usuario no verificado'));
+
+            // Usamos identifier como fallback si email no existe
+            email = email || identifier;
 
             const userEda = await UserController.getUserInfoByEmail(email, true);
 
