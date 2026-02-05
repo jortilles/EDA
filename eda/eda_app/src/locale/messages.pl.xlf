@@ -5510,6 +5510,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Predicción</source>
         <target>Predykcja</target>
       </trans-unit>
+      <trans-unit id="TabsPanelConfig">
+        <source>CONFIGURACION DE PESTAÑAS</source>
+        <target>KONFIGURACJA ZAKŁADEK</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

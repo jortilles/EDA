@@ -145,7 +145,7 @@ export class EdaTabsPanelComponent implements OnInit {
             header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
             contextMenuItems: [
                 new EdaContextMenuItem({
-                    label: $localize`:@@tabsPanelConfig:Configurar pestanas`,
+                    label: $localize`:@@tabsPanelConfig:CONFIGURACION DE PESTAÑAS`,
                     icon: 'mdi mdi-wrench',
                     command: () => {
                         this.contextMenu.hideContextMenu();
@@ -198,15 +198,15 @@ export class EdaTabsPanelComponent implements OnInit {
 
     public getTabStyle(): any {
         return {
-            'background-color': this.panel.tabStyle?.backgroundColor || '#ffffff',
-            'color': this.panel.tabStyle?.textColor || '#333333'
+            'background-color': this.panel.tabStyle?.backgroundColor,
+            'color': this.panel.tabStyle?.textColor
         };
     }
 
     public getActiveTabStyle(): any {
         return {
-            'border-bottom-color': this.panel.tabStyle?.activeColor || '#00bfb3',
-            'color': this.panel.tabStyle?.activeColor || '#00bfb3'
+            'border-bottom-color': this.panel.tabStyle?.activeColor,
+            'color': this.panel.tabStyle?.activeColor
         };
     }
 }

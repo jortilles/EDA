@@ -5780,6 +5780,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Predicción</source>
         <target>Predicció</target>
       </trans-unit>
+      <trans-unit id="TabsPanelConfig">
+        <source>CONFIGURACION DE PESTAÑAS</source>
+        <target>CONFIGUTACIÓ DE PESTANYES</target>
+      </trans-unit>
 
     </body>
   </file>

@@ -3,7 +3,7 @@ import { OverlayModule } from "primeng/overlay";
 import { OverlayPanel, OverlayPanelModule } from "primeng/overlaypanel";
 import { DashboardPage } from "../dashboard.page";
 import { AlertService, DashboardService, FileUtiles, SpinnerService, StyleProviderService, ChartUtilsService } from "@eda/services/service.index";
-import { EdaPanel, EdaPanelType, EdaTitlePanel } from "@eda/models/model.index";
+import { EdaPanel, EdaPanelType, EdaTitlePanel, EdaTabsPanel } from "@eda/models/model.index";
 import { lastValueFrom } from "rxjs";
 import { Router } from "@angular/router";
 import domtoimage from 'dom-to-image';
@@ -153,6 +153,12 @@ export class DashboardSidebarComponent {
         label: $localize`:@@dashboardSidebarNewText:Nuevo texto`,
         icon: "pi pi-file-edit",
         command: () => this.onAddTitle()
+      },
+      {
+        id: 'newTabs',
+        label: $localize`:@@dashboardSidebarNewTabs:Nuevo panel de pestanas`,
+        icon: "pi pi-folder",
+        command: () => this.onAddTabsPanel()
       },
       {
         id: 'newFilter',
@@ -396,6 +402,31 @@ export class DashboardSidebarComponent {
       dragAndDrop: true,
       fontsize: '22px',
       color: '#000000'
+    });
+
+    this.dashboard.panels.push(panel);
+    this.hidePopover();
+  }
+
+  public onAddTabsPanel(): void {
+    let panel = new EdaTabsPanel({
+      id: this.fileUtils.generateUUID(),
+      title: 'Tabs',
+      type: EdaPanelType.TABS,
+      w: 40,
+      h: 3,
+      cols: 40,
+      rows: 3,
+      resizable: true,
+      dragAndDrop: true,
+      selectedTags: [],
+      selectedDashboardIds: [],
+      excludedDashboardIds: [],
+      tabStyle: {
+        backgroundColor: '#ffffff',
+        textColor: '#333333',
+        activeColor: '#00bfb3'
+      }
     });
 
     this.dashboard.panels.push(panel);
