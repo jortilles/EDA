@@ -42,6 +42,9 @@ export class EditTabsDialogComponent implements OnInit {
 
     public header = $localize`:@@TabsPanelConfig:CONFIGURACION DE PESTAÑAS`;
 
+    // Tab activa
+    public activeTab: number = 0;
+
     // Dashboards disponibles
     public allDashboards: DashboardOption[] = [];
     public availableTags: any[] = [];
