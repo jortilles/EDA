@@ -17,7 +17,7 @@ import { FormsModule } from '@angular/forms';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 import { CommonModule } from '@angular/common';
 import { ChatgptService } from '@eda/services/api/chatgpt.service';
-import { EdaTitlePanelComponent } from '@eda/components/component.index';
+import { EdaTitlePanelComponent, EdaTabsPanelComponent } from '@eda/components/component.index';
 
 // Imports del sidebar
 import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.service';
@@ -64,7 +64,8 @@ const STANDALONE_COMPONENTS = [
   FilterDialogComponent,
   ImportPanelDialog,
   DependentFilters,
-  EdaTitlePanelComponent
+  EdaTitlePanelComponent,
+  EdaTabsPanelComponent
 ]
 @Component({
   selector: 'app-v2-dashboard-page',

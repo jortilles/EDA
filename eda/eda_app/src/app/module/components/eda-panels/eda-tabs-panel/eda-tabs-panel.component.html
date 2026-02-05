@@ -1,12 +1,13 @@
 <div class="flex flex-col h-full rounded-lg p-2 bg-white" [ngStyle]="getTabStyle()">
     <!-- Header with menu -->
     <div class="flex justify-end items-center drag-handler mb-2">
+        <a class="ml-8"> DASHBOARD TABS </a>
         <div class="flex-grow"></div>
         <i *ngIf="display.editMode" class="pi pi-ellipsis-v cursor-pointer mr-2" (click)="contextMenu.showContextMenu($event)"></i>
     </div>
 
     <!-- Tabs container -->
-    <div class="flex flex-wrap gap-2 items-center justify-center overflow-x-auto">
+    <div class="flex flex-wrap gap-2 pt-4 pb-4 items-center justify-center overflow-x-auto bg-red-50 overflow-hidden">
         <!-- Loading state -->
         <div *ngIf="isLoading" class="text-gray-500 text-sm">
             <i class="pi pi-spin pi-spinner mr-2"></i>
@@ -37,12 +38,12 @@
     </div>
 
     <!-- Selected tags indicator -->
-    <div *ngIf="panel.selectedTags && panel.selectedTags.length > 0" class="flex flex-wrap gap-1 mt-2 justify-center">
+    <!-- <div *ngIf="panel.selectedTags && panel.selectedTags.length > 0" class="flex flex-wrap gap-1 mt-2 justify-center">
         <span *ngFor="let tag of panel.selectedTags"
             class="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
             {{ tag }}
         </span>
-    </div>
+    </div> -->
 </div>
 
 <eda-context-menu [inject]="contextMenu"></eda-context-menu>
