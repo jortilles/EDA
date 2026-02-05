@@ -553,6 +553,16 @@ export class DashboardController {
         });
 
         // Ocultar columnas prohibidas en modelo
+
+        console.log('================================================>');
+        // console.log('toJson.ds.model ::: ', toJson.ds.model);
+
+        // uniquesForbiddenColumns = [
+        //   { table: "customers", column: "country"},
+        //   { table: "customers", column: "phone"},
+        //   { table: "customers", column: "city"},
+        // ]
+
         uniquesForbiddenColumns.forEach(fc => {
           const table = toJson.ds.model.tables.find(t => t.table_name === fc.table);
           const column = table?.columns.find(c => c.column_name === fc.column);
@@ -823,14 +833,14 @@ export class DashboardController {
     user: string
   ) {
 
-    console.log('holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaholaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-    console.log('dataModelObject: ', dataModelObject);
-    console.log('userGroups: ', userGroups);
-    console.log('user: ', user);
-    console.log('dataModelObject.ds.model.tables   :::::::::  ');
-    console.log(dataModelObject.ds.model.tables);
-    console.log('holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaholaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-
+    // console.log('holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaholaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+    // console.log('dataModelObject: ', dataModelObject);
+    // console.log('userGroups: ', userGroups);
+    // console.log('user: ', user);
+    // console.log('::::::::: dataModelObject.ds :::::::::');
+    // console.log(dataModelObject.ds);
+    // // console.log(dataModelObject.ds.model.tables);
+    // console.log('holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaholaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
 
     let forbiddenColumns = [];
 
@@ -1228,6 +1238,9 @@ export class DashboardController {
    *  Filtra tablas prohividas en un modelo de datos. Devuelve el listado de tablas prohividas para un usuario. 
    *  SUPONIENDO QUE PUEDE VER SOLO AQUELLAS TABLAS PARA LAS QUE TIENE PERMISO EXPLICITO.
    */
+
+  
+
   static getForbiddenColumnsClose(
     dataModelObject: any,
     userGroups: Array<String>,
@@ -1243,6 +1256,17 @@ export class DashboardController {
      * 
      * 
      */
+
+
+      // uniquesForbiddenColumns = [
+      //   { table: "customers", column: "country"},
+      //   { table: "customers", column: "phone"},
+      //   { table: "customers", column: "city"},
+      // ]
+
+    console.log('dataModelObject <=> ', dataModelObject);
+    console.log('userGroups <=> ', userGroups);
+    console.log('user <=> ', user);
 
     const allTables = [];
     let allowedTablesBySecurityForMe = [];
