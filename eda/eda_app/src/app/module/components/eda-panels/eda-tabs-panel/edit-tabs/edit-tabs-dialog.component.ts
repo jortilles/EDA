@@ -3,22 +3,15 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { ColorPickerModule } from 'primeng/colorpicker';
-import { ListboxModule } from 'primeng/listbox';
-import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { EdaDialog2Component, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
+import { DashboardPrivacy } from '@eda/models/dashboard-models/eda-tabs-panel';
 
 interface DashboardOption {
     id: string;
     title: string;
     tags: string[];
-}
-
-interface SelectedDashboard {
-    id: string;
-    title: string;
-    source: 'manual' | 'tag';
+    privacy: DashboardPrivacy;
 }
 
 @Component({
@@ -31,79 +24,58 @@ interface SelectedDashboard {
         DialogModule,
         EdaDialog2Component,
         MultiSelectModule,
-        ColorPickerModule,
-        ListboxModule,
-        ButtonModule,
         InputTextModule
     ]
 })
 export class EditTabsDialogComponent implements OnInit {
     @Input() controller: any;
 
-    public header = $localize`:@@TabsPanelConfig:CONFIGURACION DE PESTAÑAS`;
+    public header = $localize`:@@TabsPanelConfig:Configuración de pestañas`;
 
-    // Tab activa
-    public activeTab: number = 0;
-
-    // Dashboards disponibles
     public allDashboards: DashboardOption[] = [];
     public availableTags: any[] = [];
 
-    // Selecciones
-    public selectedTags: string[] = [];
-    public manuallySelectedIds: string[] = [];
-    public excludedIds: string[] = [];
+    public filterTags: string[] = [];
+    public filterPrivacy: DashboardPrivacy[] = [];
+    public selectedDashboardIds: string[] = [];
 
-    // Para búsqueda
-    public searchTerm: string = '';
+    public privacyOptions = [
+        { label: 'Público', value: 'public' as DashboardPrivacy },
+        { label: 'Compartido', value: 'shared' as DashboardPrivacy },
+        { label: 'Privado', value: 'private' as DashboardPrivacy },
+        { label: 'Grupo', value: 'group' as DashboardPrivacy }
+    ];
 
-    // Estilos
-    public tabStyle: {
-        backgroundColor: string;
-        textColor: string;
-        activeColor: string;
-    };
+    // Dashboards disponibles filtrados (excluyendo los ya seleccionados)
+    public get availableDashboards(): DashboardOption[] {
+        const hasTags = this.filterTags.length > 0;
+        const hasPrivacy = this.filterPrivacy.length > 0;
 
-    // Dashboards combinados resultado
-    public get combinedDashboards(): SelectedDashboard[] {
-        const result: SelectedDashboard[] = [];
-        const addedIds = new Set<string>();
+        // Si no hay filtros, no mostrar nada
+        if (!hasTags && !hasPrivacy) return [];
 
-        // Añadir dashboards manuales
-        for (const id of this.manuallySelectedIds) {
-            if (!this.excludedIds.includes(id)) {
-                const db = this.allDashboards.find(d => d.id === id);
-                if (db && !addedIds.has(id)) {
-                    result.push({ id: db.id, title: db.title, source: 'manual' });
-                    addedIds.add(id);
-                }
+        return this.allDashboards.filter(db => {
+            // Excluir los ya seleccionados
+            if (this.selectedDashboardIds.includes(db.id)) return false;
+
+            // Si solo filtras por tags → privacidad = todos
+            // Si solo filtras por privacidad → tags = todos
+            // Si filtras por ambos → OR
+            const matchesTag = hasTags ? db.tags.some(tag => this.filterTags.includes(tag)) : true;
+            const matchesPrivacy = hasPrivacy ? this.filterPrivacy.includes(db.privacy) : true;
+
+            if (hasTags && hasPrivacy) {
+                return matchesTag || matchesPrivacy;
             }
-        }
-
-        // Añadir dashboards por tag
-        if (this.selectedTags.length > 0) {
-            for (const db of this.allDashboards) {
-                if (!addedIds.has(db.id) && !this.excludedIds.includes(db.id)) {
-                    const hasMatchingTag = db.tags.some(tag => this.selectedTags.includes(tag));
-                    if (hasMatchingTag) {
-                        result.push({ id: db.id, title: db.title, source: 'tag' });
-                        addedIds.add(db.id);
-                    }
-                }
-            }
-        }
-
-        return result;
+            return matchesTag && matchesPrivacy;
+        });
     }
 
-    // Dashboards filtrados para selección manual
-    public get filteredDashboards(): DashboardOption[] {
-        let filtered = this.allDashboards;
-        if (this.searchTerm) {
-            const term = this.searchTerm.toLowerCase();
-            filtered = filtered.filter(db => db.title.toLowerCase().includes(term));
-        }
-        return filtered;
+    // Dashboards seleccionados con su info
+    public get selectedDashboards(): DashboardOption[] {
+        return this.selectedDashboardIds
+            .map(id => this.allDashboards.find(db => db.id === id))
+            .filter(db => !!db);
     }
 
     ngOnInit(): void {
@@ -112,47 +84,21 @@ export class EditTabsDialogComponent implements OnInit {
             label: tag,
             value: tag
         }));
-        this.selectedTags = this.controller.params.selectedTags || [];
-        this.manuallySelectedIds = this.controller.params.selectedDashboardIds || [];
-        this.excludedIds = this.controller.params.excludedDashboardIds || [];
-        this.tabStyle = this.controller.params.tabStyle || {
-            backgroundColor: '#ffffff',
-            textColor: '#333333',
-            activeColor: '#00bfb3'
-        };
+        this.selectedDashboardIds = [...(this.controller.params.selectedDashboardIds || [])];
     }
 
-    public toggleManualDashboard(dashboard: DashboardOption): void {
-        const index = this.manuallySelectedIds.indexOf(dashboard.id);
-        if (index > -1) {
-            this.manuallySelectedIds.splice(index, 1);
-        } else {
-            this.manuallySelectedIds.push(dashboard.id);
-            // Si estaba excluido, quitarlo de excluidos
-            const excludedIndex = this.excludedIds.indexOf(dashboard.id);
-            if (excludedIndex > -1) {
-                this.excludedIds.splice(excludedIndex, 1);
-            }
+    public addDashboard(db: DashboardOption): void {
+        if (!this.selectedDashboardIds.includes(db.id)) {
+            this.selectedDashboardIds.push(db.id);
         }
     }
 
-    public isManuallySelected(id: string): boolean {
-        return this.manuallySelectedIds.includes(id);
+    public removeDashboard(db: DashboardOption): void {
+        this.selectedDashboardIds = this.selectedDashboardIds.filter(id => id !== db.id);
     }
 
-    public removeDashboard(dashboard: SelectedDashboard): void {
-        if (dashboard.source === 'manual') {
-            // Quitar de selección manual
-            const index = this.manuallySelectedIds.indexOf(dashboard.id);
-            if (index > -1) {
-                this.manuallySelectedIds.splice(index, 1);
-            }
-        } else {
-            // Añadir a excluidos
-            if (!this.excludedIds.includes(dashboard.id)) {
-                this.excludedIds.push(dashboard.id);
-            }
-        }
+    public getPrivacyLabel(privacy: DashboardPrivacy): string {
+        return this.privacyOptions.find(o => o.value === privacy)?.label || privacy;
     }
 
     public onClose(event: EdaDialogCloseEvent, response?: any): void {
@@ -161,10 +107,7 @@ export class EditTabsDialogComponent implements OnInit {
 
     public saveConfig(): void {
         this.onClose(EdaDialogCloseEvent.UPDATE, {
-            selectedTags: this.selectedTags,
-            selectedDashboardIds: this.manuallySelectedIds,
-            excludedDashboardIds: this.excludedIds,
-            tabStyle: this.tabStyle
+            selectedDashboardIds: this.selectedDashboardIds
         });
     }
 

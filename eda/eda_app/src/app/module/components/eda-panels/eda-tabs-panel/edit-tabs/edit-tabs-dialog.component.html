@@ -1,156 +1,87 @@
 <eda-dialog2 width="65%" height="70%" [header]="header" [overflow]="'visible'" (apply)="saveConfig()" (close)="closeConfig()">
-    <div content class="p-4">
-        <!-- Tabs header -->
-        <div class="flex mb-4 space-x-4">
-            <h3 (click)="activeTab = 0"
-                class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200"
-                [ngClass]="activeTab === 0 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'">
-                Dashboards
-            </h3>
-            <h3 (click)="activeTab = 1"
-                class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200"
-                [ngClass]="activeTab === 1 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'">
-                Estilos
-            </h3>
+    <div content class="flex flex-col gap-4 p-4">
+        <!-- Filtros de búsqueda -->
+        <div class="grid grid-cols-2 gap-4">
+            <div class="border rounded-lg p-3">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="pi pi-lock mr-2"></i>
+                    Filtrar por Privacidad
+                </label>
+                <p-multiSelect
+                    [options]="privacyOptions"
+                    [(ngModel)]="filterPrivacy"
+                    placeholder="Todos los niveles"
+                    styleClass="w-full">
+                </p-multiSelect>
+            </div>
+
+            <div class="border rounded-lg p-3">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="pi pi-tags mr-2"></i>
+                    Filtrar por Tags
+                </label>
+                <p-multiSelect
+                    [options]="availableTags"
+                    [(ngModel)]="filterTags"
+                    placeholder="Todos los tags"
+                    [filter]="true"
+                    filterPlaceholder="Buscar tag..."
+                    styleClass="w-full">
+                </p-multiSelect>
+            </div>
         </div>
 
-        <!-- Tab 1: Dashboards -->
-        @if (activeTab === 0) {
-            <!-- Panel dividido: Izquierda (Manual) | Derecha (Tags) -->
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                    <!-- Columna Izquierda: Selección Manual de Dashboards -->
-                    <div class="border rounded-lg p-3">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="pi pi-list mr-2"></i>
-                            Seleccionar Dashboards
-                        </label>
+        <!-- Dashboards disponibles (resultado del filtro) -->
+        <div class="border rounded-lg p-3">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="pi pi-search mr-2"></i>
+                Dashboards disponibles ({{ availableDashboards.length }})
+            </label>
 
-                        <!-- Buscador -->
-                        <div class="mb-3">
-                            <input type="text"
-                                pInputText
-                                [(ngModel)]="searchTerm"
-                                placeholder="Buscar dashboard..."
-                                class="w-full p-2 border rounded">
-                        </div>
-
-                        <!-- Lista de dashboards -->
-                        <div class="max-h-48 overflow-y-auto border rounded">
-                            <div *ngFor="let db of filteredDashboards"
-                                class="flex items-center p-2 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
-                                (click)="toggleManualDashboard(db)"
-                                [class.bg-teal-50]="isManuallySelected(db.id)">
-                                <i class="pi mr-2"
-                                    [class.pi-check-square]="isManuallySelected(db.id)"
-                                    [class.text-teal-600]="isManuallySelected(db.id)"
-                                    [class.pi-square]="!isManuallySelected(db.id)"
-                                    [class.text-gray-400]="!isManuallySelected(db.id)">
-                                </i>
-                                <span class="text-sm truncate flex-grow">{{ db.title }}</span>
-                                <span *ngIf="db.tags.length > 0" class="text-xs text-gray-400 ml-2">
-                                </span>
-                            </div>
-                            <div *ngIf="filteredDashboards.length === 0" class="p-4 text-center text-gray-400 text-sm">
-                                No se encontraron dashboards
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Columna Derecha: Selección por Tags -->
-                    <div class="border rounded-lg p-3">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="pi pi-tags mr-2"></i>
-                            Seleccionar por Tags
-                        </label>
-
-                        <p-multiSelect
-                            [options]="availableTags"
-                            [(ngModel)]="selectedTags"
-                            placeholder="Selecciona tags..."
-                            [filter]="true"
-                            filterPlaceholder="Buscar tag..."
-                            styleClass="w-full">
-                        </p-multiSelect>
-
-                        <!-- Tags seleccionados -->
-                        <div *ngIf="selectedTags.length > 0" class="mt-3 flex flex-wrap gap-1">
-                            <span *ngFor="let tag of selectedTags"
-                                class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-teal-100 text-teal-700">
-                                <i class="pi pi-tag mr-1 text-xs"></i>
-                                {{ tag }}
-                            </span>
-                        </div>
-                    </div>
+            <div class="h-[20vh] overflow-y-auto">
+                <div *ngIf="filterTags.length === 0 && filterPrivacy.length === 0" class="text-center text-gray-400 py-3">
+                    <p class="text-sm">Usa los filtros para buscar dashboards</p>
                 </div>
 
-                <!-- Resumen de Dashboards Seleccionados -->
-                <div class="border rounded-lg p-3">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="pi pi-check-circle mr-2"></i>
-                        Dashboards en el panel ({{ combinedDashboards.length }})
-                    </label>
-
-                    <div *ngIf="combinedDashboards.length === 0" class="text-center text-gray-400 py-4">
-                        <i class="pi pi-inbox text-2xl mb-2"></i>
-                        <p class="text-sm">No hay dashboards seleccionados</p>
-                    </div>
-
-                    <div *ngIf="combinedDashboards.length > 0" class="max-h-40 overflow-y-auto">
-                        <div *ngFor="let db of combinedDashboards"
-                            class="flex items-center justify-between p-2 hover:bg-gray-50 border-b last:border-b-0">
-                            <div class="flex items-center">
-                                <span class="text-sm">{{ db.title }}</span>
-                            </div>
-                            <button type="button"
-                                class="text-red-500 hover:text-red-700 hover:bg-red-50 rounded p-1"
-                                (click)="removeDashboard(db)"
-                                title="Eliminar">
-                                <i class="pi pi-times"></i>
-                            </button>
-                        </div>
-                    </div>
+                <div *ngIf="(filterTags.length > 0 || filterPrivacy.length > 0) && availableDashboards.length === 0" class="text-center text-gray-400 py-3">
+                    <p class="text-sm">No hay dashboards que coincidan con los filtros</p>
                 </div>
-        }
 
-        <!-- Tab 2: Estilos -->
-        @if (activeTab === 1) {
-            <div>
-                    <div class="grid grid-cols-3 gap-4">
-                        <!-- Background color -->
-                        <div class="flex flex-col items-center">
-                            <label class="text-xs text-gray-600 mb-2">Fondo</label>
-                            <p-colorPicker [(ngModel)]="tabStyle.backgroundColor" [inline]="false"></p-colorPicker>
-                        </div>
-
-                        <!-- Text color -->
-                        <div class="flex flex-col items-center">
-                            <label class="text-xs text-gray-600 mb-2">Texto</label>
-                            <p-colorPicker [(ngModel)]="tabStyle.textColor" [inline]="false"></p-colorPicker>
-                        </div>
-
-                        <!-- Active color -->
-                        <div class="flex flex-col items-center">
-                            <label class="text-xs text-gray-600 mb-2">Activo</label>
-                            <p-colorPicker [(ngModel)]="tabStyle.activeColor" [inline]="false"></p-colorPicker>
-                        </div>
+                <div *ngFor="let db of availableDashboards"
+                    class="flex items-center justify-between p-2 hover:bg-gray-50 border-b last:border-b-0 cursor-pointer"
+                    (click)="addDashboard(db)">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm">{{ db.title }}</span>
+                        <span class="text-xs text-gray-400">{{ getPrivacyLabel(db.privacy) }}</span>
                     </div>
-
-                    <!-- Preview -->
-                    <div class="mt-4">
-                        <label class="block text-xs text-gray-600 mb-2">Vista previa</label>
-                        <div class="flex gap-2 p-3 rounded-lg" [style.background-color]="tabStyle.backgroundColor">
-                            <span class="px-3 py-1 rounded border-b-2 text-sm"
-                                [style.color]="tabStyle.activeColor"
-                                [style.border-color]="tabStyle.activeColor">
-                                Dashboard 1
-                            </span>
-                            <span class="px-3 py-1 rounded text-sm"
-                                [style.color]="tabStyle.textColor">
-                                Dashboard 2
-                            </span>
-                        </div>
-                    </div>
+                    <i class="pi pi-plus text-teal-600 text-sm"></i>
                 </div>
-        }
+            </div>
+        </div>
+
+        <!-- Dashboards seleccionados -->
+        <div class="border rounded-lg p-3">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="pi pi-check-circle mr-2"></i>
+                Dashboards seleccionados ({{ selectedDashboards.length }})
+            </label>
+
+            <div class="h-[20vh] overflow-y-auto">
+                <div *ngIf="selectedDashboards.length === 0" class="text-center text-gray-400 py-3">
+                    <i class="pi pi-inbox text-2xl mb-2"></i>
+                    <p class="text-sm">Añade dashboards desde la lista de disponibles</p>
+                </div>
+
+                <div *ngFor="let db of selectedDashboards"
+                    class="flex items-center justify-between p-2 hover:bg-gray-50 border-b last:border-b-0">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm">{{ db.title }}</span>
+                        <span class="text-xs text-gray-400">{{ getPrivacyLabel(db.privacy) }}</span>
+                    </div>
+                    <i class="pi pi-times text-red-500 cursor-pointer text-sm hover:text-red-700"
+                        (click)="removeDashboard(db)"></i>
+                </div>
+            </div>
+        </div>
     </div>
 </eda-dialog2>

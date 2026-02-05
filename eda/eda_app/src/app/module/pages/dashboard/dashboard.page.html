@@ -53,6 +53,7 @@
 
           @if (panel.type===2) {
           <eda-tabs-panel #edaPanel [id]="panel.id" [panel]="panel" [inject]="injectEdaPanel"
+            [globalFilters]="globalFilter?.globalFilters || []"
             (remove)="onRemovePanel($event)">
           </eda-tabs-panel>
           }

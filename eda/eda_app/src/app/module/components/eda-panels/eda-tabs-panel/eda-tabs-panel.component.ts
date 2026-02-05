@@ -6,6 +6,7 @@ import { lastValueFrom } from 'rxjs';
 import * as _ from 'lodash';
 
 import { InjectEdaPanel, EdaTabsPanel } from '@eda/models/model.index';
+import { DashboardPrivacy } from '@eda/models/dashboard-models/eda-tabs-panel';
 import { DashboardService } from '@eda/services/api/dashboard.service';
 import { EdaContextMenu, EdaContextMenuItem, EdaDialogCloseEvent, EdaDialogController } from '@eda/shared/components/shared-components.index';
 import { EdaContextMenuComponent } from '@eda/shared/components/shared-components.index';
@@ -15,7 +16,7 @@ interface DashboardTab {
     id: string;
     title: string;
     tags: string[];
-    source?: 'manual' | 'tag';
+    privacy: DashboardPrivacy;
 }
 
 @Component({
@@ -29,6 +30,7 @@ export class EdaTabsPanelComponent implements OnInit {
     @Input() id: string;
     @Input() panel: EdaTabsPanel;
     @Input() inject: InjectEdaPanel;
+    @Input() globalFilters: any[] = [];
     @Output() remove: EventEmitter<any> = new EventEmitter();
 
     contextMenu: EdaContextMenu;
@@ -59,18 +61,20 @@ export class EdaTabsPanelComponent implements OnInit {
             this.isLoading = true;
             const response = await lastValueFrom(this.dashboardService.getDashboards());
 
-            const allDashboards = [
-                ...(response.publics || []),
-                ...(response.shared || []),
-                ...(response.dashboards || []),
-                ...(response.group || [])
-            ];
+            const mapDashboards = (list: any[], privacy: DashboardPrivacy): DashboardTab[] =>
+                (list || []).map(db => ({
+                    id: db._id,
+                    title: db.config?.title,
+                    tags: this.normalizeTags(db.config?.tag),
+                    privacy
+                }));
 
-            this.allDashboards = allDashboards.map(db => ({
-                id: db._id,
-                title: db.config?.title,
-                tags: this.normalizeTags(db.config?.tag)
-            }));
+            this.allDashboards = [
+                ...mapDashboards(response.publics, 'public'),
+                ...mapDashboards(response.shared, 'shared'),
+                ...mapDashboards(response.dashboards, 'private'),
+                ...mapDashboards(response.group, 'group')
+            ];
 
             this.availableTags = this.extractUniqueTags(this.allDashboards);
             this.filterDashboards();
@@ -95,42 +99,29 @@ export class EdaTabsPanelComponent implements OnInit {
     }
 
     private filterDashboards(): void {
-        const result: DashboardTab[] = [];
-        const addedIds = new Set<string>();
-        const excludedIds = this.panel.excludedDashboardIds || [];
-
-        // Añadir dashboards seleccionados manualmente
-        const manualIds = this.panel.selectedDashboardIds || [];
-        for (const id of manualIds) {
-            if (!excludedIds.includes(id)) {
-                const db = this.allDashboards.find(d => d.id === id);
-                if (db && !addedIds.has(id)) {
-                    result.push({ ...db, source: 'manual' });
-                    addedIds.add(id);
-                }
-            }
-        }
-
-        // Añadir dashboards por tag
-        const selectedTags = this.panel.selectedTags || [];
-        if (selectedTags.length > 0) {
-            for (const db of this.allDashboards) {
-                if (!addedIds.has(db.id) && !excludedIds.includes(db.id)) {
-                    const hasMatchingTag = db.tags.some(tag => selectedTags.includes(tag));
-                    if (hasMatchingTag) {
-                        result.push({ ...db, source: 'tag' });
-                        addedIds.add(db.id);
-                    }
-                }
-            }
-        }
-
-        this.filteredDashboards = result;
+        const selectedIds = this.panel.selectedDashboardIds || [];
+        this.filteredDashboards = selectedIds
+            .map(id => this.allDashboards.find(db => db.id === id))
+            .filter(db => !!db);
     }
 
     public openDashboard(dashboard: DashboardTab): void {
         const urlTree = this.router.createUrlTree(['/dashboard', dashboard.id]);
-        const relativeUrl = this.router.serializeUrl(urlTree);
+        let relativeUrl = this.router.serializeUrl(urlTree);
+
+        // Si hay filtros globales con valores seleccionados, los añadimos como query params
+        const activeFilters = (this.globalFilters || []).filter(f => f.selectedItems && f.selectedItems.length > 0);
+
+        if (activeFilters.length > 0) {
+            const params = activeFilters.map(f => {
+                const table = f.selectedTable?.table_name || f.table?.value;
+                const column = f.selectedColumn?.column_name || f.column?.value?.column_name;
+                const values = f.selectedItems.join('|');
+                return `${table}.${column}=${values}`;
+            });
+            relativeUrl += '?' + params.join('&');
+        }
+
         window.open('#' + relativeUrl, '_blank');
     }
 
@@ -145,33 +136,19 @@ export class EdaTabsPanelComponent implements OnInit {
             header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
             contextMenuItems: [
                 new EdaContextMenuItem({
-                    label: $localize`:@@tabsPanelConfig:CONFIGURACION DE PESTAÑAS`,
+                    label: $localize`:@@tabsPanelConfig:Configuración de pestañas`,
                     icon: 'mdi mdi-wrench',
                     command: () => {
                         this.contextMenu.hideContextMenu();
                         this.editTabsController = new EdaDialogController({
                             params: {
-                                allDashboards: this.allDashboards.map(db => ({
-                                    id: db.id,
-                                    title: db.title,
-                                    tags: db.tags
-                                })),
-                                selectedTags: [...(this.panel.selectedTags || [])],
+                                allDashboards: this.allDashboards,
                                 selectedDashboardIds: [...(this.panel.selectedDashboardIds || [])],
-                                excludedDashboardIds: [...(this.panel.excludedDashboardIds || [])],
-                                availableTags: this.availableTags,
-                                tabStyle: { ...(this.panel.tabStyle || {
-                                    backgroundColor: '#ffffff',
-                                    textColor: '#333333',
-                                    activeColor: '#00bfb3'
-                                })}
+                                availableTags: this.availableTags
                             },
                             close: (event, response) => {
                                 if (!_.isEqual(event, EdaDialogCloseEvent.NONE) && response) {
-                                    this.panel.selectedTags = response.selectedTags;
                                     this.panel.selectedDashboardIds = response.selectedDashboardIds;
-                                    this.panel.excludedDashboardIds = response.excludedDashboardIds;
-                                    this.panel.tabStyle = response.tabStyle;
                                     this.filterDashboards();
                                     this.dashboardService._notSaved.next(true);
                                 }
@@ -194,19 +171,5 @@ export class EdaTabsPanelComponent implements OnInit {
 
     public removePanel(): void {
         this.remove.emit(this.panel.id);
-    }
-
-    public getTabStyle(): any {
-        return {
-            'background-color': this.panel.tabStyle?.backgroundColor,
-            'color': this.panel.tabStyle?.textColor
-        };
-    }
-
-    public getActiveTabStyle(): any {
-        return {
-            'border-bottom-color': this.panel.tabStyle?.activeColor,
-            'color': this.panel.tabStyle?.activeColor
-        };
     }
 }

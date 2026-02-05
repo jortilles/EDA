@@ -144,9 +144,16 @@ export class DashboardSidebarComponent {
     this.sidebarItems = [
       {
         id: 'newPanel',
-        label: $localize`:@@newPanelTitle:Nuevo Panel`,
+        label: $localize`:@@newPanelTitle:Nuevo panel`,
         icon: "pi pi-plus-circle",
         command: () => this.onAddWidget()
+      },
+      {
+        id: 'newFilter',
+        label: $localize`:@@dashboardSidebarNewFilter:Nuevo filtro`,
+        icon: "pi pi-filter",
+        command: () => this.onAddGlobalFilter()
+
       },
       {
         id: 'newText',
@@ -156,16 +163,9 @@ export class DashboardSidebarComponent {
       },
       {
         id: 'newTabs',
-        label: $localize`:@@dashboardSidebarNewTabs:Nuevo panel de pestanas`,
+        label: $localize`:@@dashboardSidebarNewTabs:Nuevo navegador`,
         icon: "pi pi-folder",
         command: () => this.onAddTabsPanel()
-      },
-      {
-        id: 'newFilter',
-        label: $localize`:@@dashboardSidebarNewFilter:Nuevo filtro`,
-        icon: "pi pi-filter",
-        command: () => this.onAddGlobalFilter()
-
       },
       {
         id: 'editFilters',
@@ -181,7 +181,7 @@ export class DashboardSidebarComponent {
       },
       {
         id: 'dependentFilters',
-        label: $localize`:@@dashboardSidebarDependentFilters:Filtros Dependientes`,
+        label: $localize`:@@dashboardSidebarDependentFilters:Filtros dependientes`,
         icon: "pi pi-sliders-h",
         command: () => this.dependentFilters()
         
@@ -419,14 +419,7 @@ export class DashboardSidebarComponent {
       rows: 3,
       resizable: true,
       dragAndDrop: true,
-      selectedTags: [],
-      selectedDashboardIds: [],
-      excludedDashboardIds: [],
-      tabStyle: {
-        backgroundColor: '#ffffff',
-        textColor: '#333333',
-        activeColor: '#00bfb3'
-      }
+
     });
 
     this.dashboard.panels.push(panel);
