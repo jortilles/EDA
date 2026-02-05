@@ -7,12 +7,14 @@
                     <i class="pi pi-lock mr-2"></i>
                     Filtrar por Privacidad
                 </label>
-                <p-multiSelect
+                <p-dropdown
                     [options]="privacyOptions"
                     [(ngModel)]="filterPrivacy"
-                    placeholder="Todos los niveles"
+                    (onChange)="onPrivacyChange()"
+                    placeholder="Todos"
+                    [showClear]="true"
                     styleClass="w-full">
-                </p-multiSelect>
+                </p-dropdown>
             </div>
 
             <div class="border rounded-lg p-3">
@@ -20,14 +22,16 @@
                     <i class="pi pi-tags mr-2"></i>
                     Filtrar por Tags
                 </label>
-                <p-multiSelect
+                <p-dropdown
                     [options]="availableTags"
-                    [(ngModel)]="filterTags"
-                    placeholder="Todos los tags"
+                    [(ngModel)]="filterTag"
+                    (onChange)="onTagChange()"
+                    placeholder="Todos"
+                    [showClear]="true"
                     [filter]="true"
                     filterPlaceholder="Buscar tag..."
                     styleClass="w-full">
-                </p-multiSelect>
+                </p-dropdown>
             </div>
         </div>
 
@@ -39,11 +43,11 @@
             </label>
 
             <div class="h-[20vh] overflow-y-auto">
-                <div *ngIf="filterTags.length === 0 && filterPrivacy.length === 0" class="text-center text-gray-400 py-3">
+                <div *ngIf="!filterTag && !filterPrivacy" class="text-center text-gray-400 py-3">
                     <p class="text-sm">Usa los filtros para buscar dashboards</p>
                 </div>
 
-                <div *ngIf="(filterTags.length > 0 || filterPrivacy.length > 0) && availableDashboards.length === 0" class="text-center text-gray-400 py-3">
+                <div *ngIf="(filterTag || filterPrivacy) && availableDashboards.length === 0" class="text-center text-gray-400 py-3">
                     <p class="text-sm">No hay dashboards que coincidan con los filtros</p>
                 </div>
 
@@ -52,7 +56,12 @@
                     (click)="addDashboard(db)">
                     <div class="flex items-center gap-2">
                         <span class="text-sm">{{ db.title }}</span>
-                        <span class="text-xs text-gray-400">{{ getPrivacyLabel(db.privacy) }}</span>
+                        @if(filterPrivacy?.length > 0){
+                            <span class="text-xs text-gray-400">{{ getPrivacyLabel(db.privacy) }}</span>
+                        }
+                        @else{
+                            <span class="text-xs text-gray-400">{{ filterTag }}</span>
+                        }
                     </div>
                     <i class="pi pi-plus text-teal-600 text-sm"></i>
                 </div>
@@ -76,7 +85,6 @@
                     class="flex items-center justify-between p-2 hover:bg-gray-50 border-b last:border-b-0">
                     <div class="flex items-center gap-2">
                         <span class="text-sm">{{ db.title }}</span>
-                        <span class="text-xs text-gray-400">{{ getPrivacyLabel(db.privacy) }}</span>
                     </div>
                     <i class="pi pi-times text-red-500 cursor-pointer text-sm hover:text-red-700"
                         (click)="removeDashboard(db)"></i>

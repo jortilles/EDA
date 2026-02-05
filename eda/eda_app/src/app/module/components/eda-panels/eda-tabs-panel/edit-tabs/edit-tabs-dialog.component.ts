@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
-import { MultiSelectModule } from 'primeng/multiselect';
+import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { EdaDialog2Component, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { DashboardPrivacy } from '@eda/models/dashboard-models/eda-tabs-panel';
@@ -23,7 +23,7 @@ interface DashboardOption {
         CommonModule,
         DialogModule,
         EdaDialog2Component,
-        MultiSelectModule,
+        DropdownModule,
         InputTextModule
     ]
 })
@@ -35,8 +35,8 @@ export class EditTabsDialogComponent implements OnInit {
     public allDashboards: DashboardOption[] = [];
     public availableTags: any[] = [];
 
-    public filterTags: string[] = [];
-    public filterPrivacy: DashboardPrivacy[] = [];
+    public filterTag: string = null;
+    public filterPrivacy: DashboardPrivacy = null;
     public selectedDashboardIds: string[] = [];
 
     public privacyOptions = [
@@ -46,32 +46,19 @@ export class EditTabsDialogComponent implements OnInit {
         { label: 'Grupo', value: 'group' as DashboardPrivacy }
     ];
 
-    // Dashboards disponibles filtrados (excluyendo los ya seleccionados)
     public get availableDashboards(): DashboardOption[] {
-        const hasTags = this.filterTags.length > 0;
-        const hasPrivacy = this.filterPrivacy.length > 0;
-
-        // Si no hay filtros, no mostrar nada
-        if (!hasTags && !hasPrivacy) return [];
+        if (!this.filterTag && !this.filterPrivacy) return [];
 
         return this.allDashboards.filter(db => {
-            // Excluir los ya seleccionados
             if (this.selectedDashboardIds.includes(db.id)) return false;
 
-            // Si solo filtras por tags → privacidad = todos
-            // Si solo filtras por privacidad → tags = todos
-            // Si filtras por ambos → OR
-            const matchesTag = hasTags ? db.tags.some(tag => this.filterTags.includes(tag)) : true;
-            const matchesPrivacy = hasPrivacy ? this.filterPrivacy.includes(db.privacy) : true;
-
-            if (hasTags && hasPrivacy) {
-                return matchesTag || matchesPrivacy;
+            if (this.filterTag) {
+                return db.tags.includes(this.filterTag);
             }
-            return matchesTag && matchesPrivacy;
+            return db.privacy === this.filterPrivacy;
         });
     }
 
-    // Dashboards seleccionados con su info
     public get selectedDashboards(): DashboardOption[] {
         return this.selectedDashboardIds
             .map(id => this.allDashboards.find(db => db.id === id))
@@ -85,6 +72,18 @@ export class EditTabsDialogComponent implements OnInit {
             value: tag
         }));
         this.selectedDashboardIds = [...(this.controller.params.selectedDashboardIds || [])];
+    }
+
+    public onPrivacyChange(): void {
+        if (this.filterPrivacy) {
+            this.filterTag = null;
+        }
+    }
+
+    public onTagChange(): void {
+        if (this.filterTag) {
+            this.filterPrivacy = null;
+        }
     }
 
     public addDashboard(db: DashboardOption): void {

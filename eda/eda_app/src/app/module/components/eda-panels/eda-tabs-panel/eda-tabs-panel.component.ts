@@ -31,6 +31,8 @@ export class EdaTabsPanelComponent implements OnInit {
     @Input() panel: EdaTabsPanel;
     @Input() inject: InjectEdaPanel;
     @Input() globalFilters: any[] = [];
+    @Input() panelContent: any = {};
+    @Input() panelText: any = {};
     @Output() remove: EventEmitter<any> = new EventEmitter();
 
     contextMenu: EdaContextMenu;
