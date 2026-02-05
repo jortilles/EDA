@@ -19,7 +19,7 @@
 
           <!-- Si NO tiene autocomplete → estilo antiguo -->
           @if(!filter.isAutocompleted || filter.isAutocompleted === false) {
-            <div class="flex max-w-10">
+            <div class="flex">
               <div class="filter-label flex items-center gap-2">
                 <span [ngClass]="{'italic': !filter.applyToAll}" class="text-sm text-gray-500"
                   [style.color]="styleButton.color" [style.font-size]="styleButton.fontSize"
@@ -33,10 +33,10 @@
                 (onRemove)="removeGlobalFilter(filter, true)" (onDatesChanges)="processPickerEvent($event, filter)">
               </eda-date-picker>
               } @else {
-              <p-multiSelect [style]="styleButton"  [options]="filter.data" [(ngModel)]="filter.selectedItems"
+              <p-multiSelect [style]="styleButton" [options]="filter.data" [(ngModel)]="filter.selectedItems"
                 [virtualScroll]="true" [defaultLabel]="getFilterLabel(filter)" [disabled]="disableGlobalFilter(filter)"
                 [virtualScrollItemSize]="30" [loading]="loading" i18n-placeholder="@@Cargando" [placeholder]="placeholderText"
-                (onChange)="setGlobalFilterItems(filter)">
+                panelStyleClass="multiselect-auto-width" (onChange)="setGlobalFilterItems(filter)">
               </p-multiSelect>
               }
             </div>
