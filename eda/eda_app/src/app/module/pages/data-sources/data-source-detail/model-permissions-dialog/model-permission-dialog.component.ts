@@ -69,11 +69,9 @@ export class ModelPermissionDialogComponent implements OnInit {
   }
 
   savePermission() {
-    console.log('<--- Permisos a nivel de Modelo --->')
-    debugger;
     
     let permissionFilter = {};
-
+    
     if (this.anyoneCanSee === true) {
       permissionFilter = {
         users: ["(~ => All)"],
