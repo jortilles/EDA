@@ -226,7 +226,6 @@ export const QueryUtils = {
 
       // Execute query
       const response = await QueryUtils.switchAndRun(ebp, query);
-      //console.log('response :::: --->',response)
       ebp.chartLabels = ebp.chartUtils.uniqueLabels(response[0]);   // Chart labels
       ebp.chartData = response[1].map(item => item.map(a => {
 

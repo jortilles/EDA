@@ -66,12 +66,21 @@
                             <!-- ngSwitch TEXT -->
                                     
                             <ng-container *ngSwitchCase="'EdaColumnText'">
-                                <div *ngIf="inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field" [pTooltip]="getLinkTooltip(col)" [innerHTML]="lodash.get(rowData, col.field)">
+                                <div *ngIf="inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field" [pTooltip]="getLinkTooltip(col)">
                                     {{ lodash.get(rowData, col.field) }}
                                 </div>
 
-                                <div *ngIf="!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field" [innerHTML]="lodash.get(rowData, col.field)">
+                                <div *ngIf="!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field">
                                     {{ lodash.get(rowData, col.field) }}
+                                </div>
+                            </ng-container>
+                            
+                            <!-- ngSwitch HTML -->
+                            <ng-container *ngSwitchCase="'EdaColumnHtml'">
+                                <div *ngIf="inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field" [pTooltip]="getLinkTooltip(col)" [innerHTML]="getSafeHtml(lodash.get(rowData, col.field))">
+                                </div>
+
+                                <div *ngIf="!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field" [innerHTML]="getSafeHtml(lodash.get(rowData, col.field))">
                                 </div>
 
                             </ng-container>

@@ -326,7 +326,6 @@
                 Separador <span class="text-red-500">*</span>
               </label>
               <input id="separator" type="text" formControlName="separator" placeholder="Separador del modelo"
-                [(ngModel)]="delimiter"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
                 [class.border-red-500]="connectionForm.get('separator')?.invalid && connectionForm.get('separator')?.touched"
                 (keyup)="retryCsvWithNewSeparator()" />
@@ -339,10 +338,10 @@
             <div (dragenter)="handleDragIn($event, 'csv')" (dragleave)="handleDragOut($event, 'csv')"
               (dragover)="handleDrag($event)" (drop)="handleDrop($event, 'csv')"
               class="relative mt-2 flex h-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors"
-              [class.border-[#00BFB3]]="isDraggingCsvFile() && delimiter"
-              [class.bg-[#00BFB3]]="isDraggingCsvFile() && delimiter"
-              [class.border-gray-300]="!isDraggingCsvFile() || !delimiter"
-              [class.hover:border-[#00BFB3]]="delimiter && !isDraggingCsvFile()">
+              [class.border-[#00BFB3]]="isDraggingCsvFile() && connectionForm.get('separator')?.value"
+              [class.bg-[#00BFB3]]="isDraggingCsvFile() && connectionForm.get('separator')?.value"
+              [class.border-gray-300]="!isDraggingCsvFile() || !connectionForm.get('separator')?.value"
+              [class.hover:border-[#00BFB3]]="connectionForm.get('separator')?.value && !isDraggingCsvFile()">
               <input type="file" #file (change)="handleFileSelect($event, 'csv'); onFilesAdded()"
                 class="absolute inset-0 z-50 h-full w-full cursor-pointer opacity-0"
                 accept=".csv" />

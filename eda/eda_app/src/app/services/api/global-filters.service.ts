@@ -156,7 +156,6 @@ export class GlobalFiltersService {
             const firstPanelRelatedTables = this.findRelatedTables(tables, rootPanel);
 
             filteredPanels.forEach((panel: any) => {
-                console.log('forEachPanel ->>>', panel)
                 let panelIncluded = true;
                 panel.active = panel.active || true;
                 panel.avaliable = panel.avaliable || true;

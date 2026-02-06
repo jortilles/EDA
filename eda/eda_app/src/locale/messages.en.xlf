@@ -51,10 +51,6 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <source>Perfil</source>
 <target>Profile</target>
 </trans-unit>
-<trans-unit id="logsManagement">
-<source>Gestión de logs</source>
-<target>Log management</target>
-</trans-unit>
 <trans-unit id="sidebarGroupManagement" datatype="html">
 <source>Gestión de Grupos</source>
 <target>Groups management</target>
@@ -2147,6 +2143,11 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>Wrong form. Review the required fields.</target>
 </trans-unit>
 
+<trans-unit id="IncorrectForm2">
+<source>Formulario incorrecto, revise los campos.</source>
+<target>Formulari incorrecte, revisa els camps.</target>
+</trans-unit>
+
 <trans-unit id="ImportantMessage">
 <source>Importante</source>
 <target>Important</target>
@@ -4153,6 +4154,10 @@ Once configured you can invoke it whenever you want from the button.</target>
 <source>Crear DataSource</source>
 <target>Create DataSource</target>
 </trans-unit>
+<trans-unit id="foundDatasource">
+  <source>fuentes de datos encontradas</source>
+  <target>source of data found</target>
+</trans-unit>
 <trans-unit id="profileSubtitle">
 <source>Administra tu información personal y preferencias de cuenta</source>
 <target>Manage your personal information and account preferences</target>
@@ -5270,6 +5275,10 @@ Once configured you can invoke it whenever you want from the button.</target>
 <trans-unit id="filteredReportMessage">
 <source>Por favor, espera un momento mientras procesamos la selección.</source>
 <target>Please wait a moment while we process your selection.</target>
+</trans-unit>
+<trans-unit id="GroupCreated">
+  <source>Grupo creado</source>
+  <target>Group created</target>
 </trans-unit>
 <trans-unit id="logsManagement">
 <source>Gestión de logs</source>
