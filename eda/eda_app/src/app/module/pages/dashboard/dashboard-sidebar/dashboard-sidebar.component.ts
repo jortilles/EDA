@@ -414,9 +414,9 @@ export class DashboardSidebarComponent {
       title: 'Tabs',
       type: EdaPanelType.TABS,
       w: 40,
-      h: 3,
+      h: 2,
       cols: 40,
-      rows: 3,
+      rows: 2,
       resizable: true,
       dragAndDrop: true,
 
