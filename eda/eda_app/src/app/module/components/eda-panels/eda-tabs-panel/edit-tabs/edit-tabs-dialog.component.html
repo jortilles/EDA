@@ -11,8 +11,7 @@
                     [options]="privacyOptions"
                     [(ngModel)]="filterPrivacy"
                     (onChange)="onPrivacyChange()"
-                    placeholder="Todos"
-                    [showClear]="true"
+                    placeholder="Seleccionar..."
                     styleClass="w-full">
                 </p-dropdown>
             </div>
@@ -26,8 +25,7 @@
                     [options]="availableTags"
                     [(ngModel)]="filterTag"
                     (onChange)="onTagChange()"
-                    placeholder="Todos"
-                    [showClear]="true"
+                    placeholder="Seleccionar..."
                     [filter]="true"
                     filterPlaceholder="Buscar tag..."
                     styleClass="w-full">
@@ -81,13 +79,17 @@
                     <p class="text-sm">Añade dashboards desde la lista de disponibles</p>
                 </div>
 
-                <div *ngFor="let db of selectedDashboards"
-                    class="flex items-center justify-between p-2 hover:bg-gray-50 border-b last:border-b-0">
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm">{{ db.title }}</span>
+                <div cdkDropList (cdkDropListDropped)="drop($event)">
+                    <div *ngFor="let db of selectedDashboards"
+                        cdkDrag
+                        class="flex items-center justify-between p-2 hover:bg-gray-50 border-b last:border-b-0 cursor-move">
+                        <div class="flex items-center gap-2">
+                            <i class="pi pi-bars text-gray-400 text-xs"></i>
+                            <span class="text-sm">{{ db.title }}</span>
+                        </div>
+                        <i class="pi pi-times text-red-500 cursor-pointer text-sm hover:text-red-700"
+                            (click)="removeDashboard(db)"></i>
                     </div>
-                    <i class="pi pi-times text-red-500 cursor-pointer text-sm hover:text-red-700"
-                        (click)="removeDashboard(db)"></i>
                 </div>
             </div>
         </div>

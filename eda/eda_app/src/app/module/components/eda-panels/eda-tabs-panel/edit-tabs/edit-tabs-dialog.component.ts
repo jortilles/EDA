@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
+import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { EdaDialog2Component, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { DashboardPrivacy } from '@eda/models/dashboard-models/eda-tabs-panel';
 
@@ -24,7 +25,8 @@ interface DashboardOption {
         DialogModule,
         EdaDialog2Component,
         DropdownModule,
-        InputTextModule
+        InputTextModule,
+        DragDropModule
     ]
 })
 export class EditTabsDialogComponent implements OnInit {
@@ -36,10 +38,11 @@ export class EditTabsDialogComponent implements OnInit {
     public availableTags: any[] = [];
 
     public filterTag: string = null;
-    public filterPrivacy: DashboardPrivacy = null;
+    public filterPrivacy: DashboardPrivacy | 'all' = 'public';
     public selectedDashboardIds: string[] = [];
 
     public privacyOptions = [
+        { label: 'Todos', value: 'all' as const },
         { label: 'Público', value: 'public' as DashboardPrivacy },
         { label: 'Compartido', value: 'shared' as DashboardPrivacy },
         { label: 'Privado', value: 'private' as DashboardPrivacy },
@@ -53,7 +56,11 @@ export class EditTabsDialogComponent implements OnInit {
             if (this.selectedDashboardIds.includes(db.id)) return false;
 
             if (this.filterTag) {
+                if (this.filterTag === 'all') return true;
                 return db.tags.includes(this.filterTag);
+            }
+            if (this.filterPrivacy === 'all') {
+                return true;
             }
             return db.privacy === this.filterPrivacy;
         });
@@ -67,10 +74,11 @@ export class EditTabsDialogComponent implements OnInit {
 
     ngOnInit(): void {
         this.allDashboards = this.controller.params.allDashboards || [];
-        this.availableTags = (this.controller.params.availableTags || []).map(tag => ({
+        const tags = (this.controller.params.availableTags || []).map(tag => ({
             label: tag,
             value: tag
         }));
+        this.availableTags = [{ label: 'Todos', value: 'all' }, ...tags];
         this.selectedDashboardIds = [...(this.controller.params.selectedDashboardIds || [])];
     }
 
@@ -94,6 +102,10 @@ export class EditTabsDialogComponent implements OnInit {
 
     public removeDashboard(db: DashboardOption): void {
         this.selectedDashboardIds = this.selectedDashboardIds.filter(id => id !== db.id);
+    }
+
+    public drop(event: CdkDragDrop<string[]>): void {
+        moveItemInArray(this.selectedDashboardIds, event.previousIndex, event.currentIndex);
     }
 
     public getPrivacyLabel(privacy: DashboardPrivacy): string {
