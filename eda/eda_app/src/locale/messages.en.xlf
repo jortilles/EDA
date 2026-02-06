@@ -5630,6 +5630,10 @@ OR<ph id="5"/>
   <source>Predicción</source>
   <target>Prediction</target>
 </trans-unit>
+<trans-unit id="TabsPanelConfig">
+  <source>CONFIGURACION DE PESTAÑAS</source>
+  <target>TAB CONFIGURATION</target>
+</trans-unit>
 </body>
 </file>
 </xliff>
