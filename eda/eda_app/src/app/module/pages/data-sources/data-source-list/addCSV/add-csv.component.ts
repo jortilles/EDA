@@ -180,7 +180,7 @@ export class AddCsvComponent implements OnInit {
 
       for (let i = 0; i < batches; i++) {
         const rows = this.csvRecords.slice(start, start + BATCH_SIZE);
-        start = start + BATCH_SIZE + 1;
+        start = start + BATCH_SIZE;
         const insertBody = {
           query: {
             tableName: `from_csv_${this.tableName.replace(/[^\w\s]/gi, '').replace(/ /gi, '_')}`,

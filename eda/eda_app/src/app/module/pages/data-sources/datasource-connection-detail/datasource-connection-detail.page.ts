@@ -117,6 +117,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
       { label: 'integer', value: "integer" },
       { label: 'numeric', value: "numeric" },
       { label: 'coordinate', value: "coordinate" },
+      { label: 'html', value: "html" },
       { label: 'boolean', value: "boolean" },
       { label: 'date', value: "timestamp" },
     ];
@@ -361,14 +362,22 @@ export class DataSourceConnectionDetailPage implements OnInit {
 
     const value = this.connectionForm.value;
     if (!value.name) {
-      this.alertService.addError("No name provided");
-    } else if (Object.keys(this.csvFileData).length > 0) {
+      this.spinnerService.off();
+      this.alertService.addError($localize`:@@noNameProvided:Debe proporcionar un nombre para el datasource`);
+    } else if (!this.csvFileData || this.csvFileData.length === 0) {
+      this.spinnerService.off();
+      this.alertService.addError($localize`:@@noCsvData:Debe cargar un archivo CSV primero`);
+    } else if (!this.csvColumns || this.csvColumns.length === 0) {
+      this.spinnerService.off();
+      this.alertService.addError($localize`:@@noCsvColumns:No se detectaron columnas en el archivo CSV. Verifique el separador.`);
+    } else {
       try {
         const fileData = {
           name: value.name,
           fields: this.csvFileData,
           optimize: value.optimize,
-          allowCache: value.allowCache
+          allowCache: value.allowCache,
+          columnsConfig: this.csvColumns // Enviar configuración de columnas
         };
 
         const res = await lastValueFrom(this.excelFormatterService.addNewCollectionFromJSON(fileData));
@@ -485,7 +494,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     }
   }
 
-  retryCsvWithNewSeparator() {
+  async retryCsvWithNewSeparator() {
     const input = this.fileInput?.nativeElement;
     if (!input) {
       return;
@@ -497,44 +506,82 @@ export class DataSourceConnectionDetailPage implements OnInit {
     }
 
     const file = files[0];
-    this.parseCsv(file);
-  }
 
-  parseCsv(file: File) {
+    // Obtener el separador del formulario
     const separator = this.connectionForm.get('separator')?.value || ';';
-    const reader = new FileReader();
 
-    reader.onload = () => {
-      const text = reader.result as string;
+    try {
+      // Re-parsear el CSV con el nuevo separador
+      this.csvRecords = await lastValueFrom(this.ngxCsvParser.parse(file, { header: true, delimiter: separator }));
 
-      const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-
-      if (lines.length === 0) {
-        this.csvColumns = [];
+      if (!this.csvRecords || this.csvRecords.length === 0) {
+        this.alertService.addError($localize`:@@emptyCsvFile:El archivo CSV está vacío o no se pudo leer con este separador`);
         return;
       }
 
-      const headers = lines[0].split(separator);
+      this.csvHeaders = Object.keys(this.csvRecords[0]);
+      const types = this.getTypes(this.csvHeaders, this.csvRecords);
+      this.csvFileData = this.csvRecords;
+      this.csvColumns = [];
+      this.csvHeaders.forEach((header: string, h: number) => {
+        let row = { field: header };
+        for (let i = 0; i < 3; i++) {
+          if (i === 0) {
+            row[this.names[i]] = types[h]; // type
+          } else if (i === 1) {
+            row[this.names[i]] = ''; // format
+          } else {
+            row[this.names[i]] = ','; // separator decimal por defecto (coma)
+          }
+        }
+        this.csvColumns.push(row);
+      });
+      this.cdr.detectChanges();
+    } catch (err) {
+      console.error('Error parsing CSV:', err);
+      this.alertService.addError($localize`:@@errorParseCsv:Error al parsear el archivo CSV con el separador especificado`);
+    }
+  }
 
-      // Mapear filas; si field vacío, le ponemos nombre genérico
-      const rows = headers.map((header, i) => {
-        const fieldName = header?.trim() || `column_${i + 1}`;
-        return {
-          field: fieldName,
-          type: 'string',
-          format: '',
-          separator: '.'
-        };
+  async parseCsv(file: File) {
+    const separator = this.connectionForm.get('separator')?.value || ';';
+
+    try {
+      // Parsear con ngxCsvParser para mantener consistencia
+      this.csvRecords = await lastValueFrom(this.ngxCsvParser.parse(file, { header: true, delimiter: separator }));
+
+      if (!this.csvRecords || this.csvRecords.length === 0) {
+        this.csvColumns = [];
+        this.csvFileData = [];
+        return;
+      }
+
+      this.csvHeaders = Object.keys(this.csvRecords[0]);
+      const types = this.getTypes(this.csvHeaders, this.csvRecords);
+      this.csvFileData = this.csvRecords;
+      this.csvColumns = [];
+
+      this.csvHeaders.forEach((header: string, h: number) => {
+        let row = { field: header };
+        for (let i = 0; i < 3; i++) {
+          if (i === 0) {
+            row[this.names[i]] = types[h]; // type
+          } else if (i === 1) {
+            row[this.names[i]] = ''; // format
+          } else {
+            row[this.names[i]] = ','; // separator decimal por defecto (coma)
+          }
+        }
+        this.csvColumns.push(row);
       });
 
-      this.csvColumns = rows;
-    };
-
-    reader.onerror = (err) => {
+      this.cdr.detectChanges();
+    } catch (err) {
+      console.error('Error parsing CSV:', err);
       this.csvColumns = [];
-    };
-
-    reader.readAsText(file);
+      this.csvFileData = [];
+      this.alertService.addError($localize`:@@errorParseCsv:Error al parsear el archivo CSV. Verifica el separador.`);
+    }
   }
 
   handleFiles(file: File, type: 'bigquery' | 'excel' | 'csv') {
@@ -562,25 +609,44 @@ export class DataSourceConnectionDetailPage implements OnInit {
 
   async onFilesAdded() {
     const file = this.file.nativeElement.files[0];
+    if (!file) {
+      return;
+    }
+
     try {
-      // Si no tiene separador le añado para que no salte un error
-      if(!this.delimiter)
-        this.delimiter = ';';
-      this.csvRecords = await this.ngxCsvParser.parse(file, { header: true, delimiter: this.delimiter }).pipe().toPromise();
+      // Obtener el separador del formulario (no sobrescribir si ya existe)
+      const separator = this.connectionForm.get('separator')?.value || ';';
+
+      this.csvRecords = await lastValueFrom(this.ngxCsvParser.parse(file, { header: true, delimiter: separator }));
+
+      if (!this.csvRecords || this.csvRecords.length === 0) {
+        this.alertService.addError($localize`:@@emptyCsvFile:El archivo CSV está vacío o no se pudo leer`);
+        return;
+      }
+
       this.csvHeaders = Object.keys(this.csvRecords[0]);
       const types = this.getTypes(this.csvHeaders, this.csvRecords);
       this.csvFileData = this.csvRecords;
-      this.csvHeaders.forEach((header, h) => {
+      this.csvColumns = [];
+
+      this.csvHeaders.forEach((header: string, h: number) => {
         let row = { field: header };
         for (let i = 0; i < 3; i++) {
-          row[this.names[i]] = i === 0 ? types[h] : '';
+          if (i === 0) {
+            row[this.names[i]] = types[h]; // type
+          } else if (i === 1) {
+            row[this.names[i]] = ''; // format
+          } else {
+            row[this.names[i]] = ','; // separator decimal por defecto (coma)
+          }
         }
-        this.csvColumns = [];
         this.csvColumns.push(row);
       });
 
+      this.cdr.detectChanges();
     } catch (err) {
-      console.log(err);
+      console.error('Error parsing CSV:', err);
+      this.alertService.addError($localize`:@@errorParseCsv:Error al parsear el archivo CSV. Verifique el separador y formato del archivo.`);
     }
   }
 
