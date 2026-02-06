@@ -54,7 +54,7 @@
           @if (panel.type===2) {
           <eda-tabs-panel #edaPanel [id]="panel.id" [panel]="panel" [inject]="injectEdaPanel"
             [globalFilters]="globalFilter?.globalFilters || []"
-            [panelContent]="panelContent" [panelText]="panelTitle"
+            [panelTabAlign]="panelTabAlign" [panelText]="panelTabText"
             (remove)="onRemovePanel($event)">
           </eda-tabs-panel>
           }

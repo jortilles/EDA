@@ -102,6 +102,8 @@ export class DashboardPage implements OnInit {
   public reportPanel: any;
   public backgroundColor: any;
   public panelTitle: any;
+  public panelTabText: any;
+  public panelTabAlign: any;
   public panelContent: any;
   public availableChatGpt: any = false;
   public height: number = 1000;
@@ -384,6 +386,21 @@ export class DashboardPage implements OnInit {
     this.panelContent = {
       background: this.dashboard.config.styles.panelColor,
     };
+
+    // Texto de los tabs (como panelTitle pero con display:block y text-align)
+    this.panelTabText = {
+      background: this.dashboard.config.styles.panelColor,
+      color: this.dashboard.config.styles.panelTitle.fontColor,
+      'font-size': (20 + this.dashboard.config.styles.panelTitle.fontSize * 3) + 'px',
+      'font-family': this.dashboard.config.styles.panelTitle.fontFamily,
+    };
+
+    this.panelTabAlign = {
+      'text-align': this.dashboard.config.styles.panelTitleAlign === 'center' ? 'center'
+                    : this.dashboard.config.styles.panelTitleAlign === 'flex-end' ? 'right'
+                    : 'left'
+    };
+
     this.stylesProviderService.ActualChartPalette = this.dashboard.config.styles.palette;
   }
 
