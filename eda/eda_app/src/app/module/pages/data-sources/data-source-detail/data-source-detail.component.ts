@@ -610,12 +610,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
 
     checkCalculatedColumn(columnPanel: EditColumnPanel) {
-
-        console.log('.... COMPROBACIÓN ....')
-        console.log('columnPanel: ', columnPanel);
-
-        debugger;
-
         this.spinnerService.on();
         const table = this.dataModelService.getTable(columnPanel);
         const column = table.columns.filter(col => col.column_name === columnPanel.technical_name)[0];
