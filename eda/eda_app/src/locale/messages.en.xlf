@@ -5630,6 +5630,38 @@ OR<ph id="5"/>
   <source>Predicción</source>
   <target>Prediction</target>
 </trans-unit>
+<trans-unit id="ModelRestrictionAccess">
+  <source>Modelo con acceso restringido</source>
+  <target>Model with restricted access</target>
+</trans-unit>
+<trans-unit id="ModelRestrictionAccessMessageOption">
+  <source>Desactivar para habilitar el acceso a todos los usuarios</source>
+  <target>Disable to enable access for all users</target>
+</trans-unit>
+<trans-unit id="ModelActivationAccess">
+  <source>Modelo con acceso para todos los usuarios</source>
+  <target>Model with access for all users</target>
+</trans-unit>
+<trans-unit id="ModelActivationAccessMessageOption">
+  <source>Activar para limitar el acceso solo a usuarios o grupos autorizados</source>
+  <target>Enable to restrict access to authorized users or groups only</target>
+</trans-unit>
+<trans-unit id="tableRestrictionAccess">
+  <source>Los usuarios y grupos configurados tendrán acceso autorizado a la tabla: </source>
+  <target>Configured users and groups will have authorized access to the table: </target>
+</trans-unit>
+<trans-unit id="tableRestrictionAccessMessageOption">
+  <source>Desactivar para habilitar el acceso a todos los usuarios</source>
+  <target>Disable to enable access for all users</target>
+</trans-unit>
+<trans-unit id="tableActivationAccess">
+  <source>Los usuarios y grupos configurados NO tendrán acceso a la tabla: </source>
+  <target>Configured users and groups will NOT have access to the table: </target>
+</trans-unit>
+<trans-unit id="tableActivationAccessMessageOption">
+  <source>Activar para habilitar un acceso restringido</source>
+  <target>Enable to allow restricted access</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

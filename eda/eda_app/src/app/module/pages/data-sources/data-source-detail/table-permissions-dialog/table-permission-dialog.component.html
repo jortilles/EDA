@@ -23,10 +23,10 @@
           <div class="space-y-1">
             @if(permission) {
               <h3 class="font-medium text-gray-900" i18n="@@tableRestrictionAccess">Los usuarios y grupos configurados tendrán acceso autorizado a la tabla: <span class="font-bold">{{table.description}}</span></h3>
-              <!-- <p class="text-gray-600" i18n="@@tableRestrictionAccessMessageOption">Desactivar para habilitar el acceso a todos los usuarios</p> -->
+              <p class="text-gray-600" i18n="@@tableRestrictionAccessMessageOption">Desactivar para habilitar el acceso a todos los usuarios</p>
             } @else {
-              <h3 class="font-medium text-gray-900" i18n="@@tableRestrictionAccess">Los usuarios y grupos configurados <span class="font-bold">NO</span> tendrán acceso a la tabla: <span class="font-bold">{{table.description}}</span></h3>
-              <!-- <p class="text-gray-600" i18n="@@tableRestrictionAccessMessageOption">Desactivar para habilitar el acceso a todos los usuarios</p> -->
+              <h3 class="font-medium text-gray-900" i18n="@@tableActivationAccess">Los usuarios y grupos configurados NO tendrán acceso a la tabla: <span class="font-bold">{{table.description}}</span></h3>
+              <p class="text-gray-600" i18n="@@tableActivationAccessMessageOption">Activar para habilitar un acceso restringido</p>
             }
           </div>
 
@@ -34,7 +34,7 @@
             type="button" 
             role="switch" 
             [attr.aria-checked]="!permission"
-            (click)="permissionsEdition()"
+            (click)="permission = !permission"
             class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50" 
             [ngClass]="{'bg-[#00BFB3]': permission, 'bg-input': !permission}"
           >

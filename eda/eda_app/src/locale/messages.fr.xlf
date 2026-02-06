@@ -5752,6 +5752,38 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <target>Comparatif</target>
       </trans-unit>
 
+      <trans-unit id="ModelRestrictionAccess">
+        <source>Modelo con acceso restringido</source>
+        <target>Modèle à accès restreint</target>
+      </trans-unit>
+      <trans-unit id="ModelRestrictionAccessMessageOption">
+        <source>Desactivar para habilitar el acceso a todos los usuarios</source>
+        <target>Désactiver pour permettre l'accès à tous les utilisateurs</target>
+      </trans-unit>
+      <trans-unit id="ModelActivationAccess">
+        <source>Modelo con acceso para todos los usuarios</source>
+        <target>Modèle accessible à tous les utilisateurs</target>
+      </trans-unit>
+      <trans-unit id="ModelActivationAccessMessageOption">
+        <source>Activar para limitar el acceso solo a usuarios o grupos autorizados</source>
+        <target>Activer pour limiter l'accès uniquement aux utilisateurs ou groupes autorisés</target>
+      </trans-unit>
+      <trans-unit id="tableRestrictionAccess">
+        <source>Los usuarios y grupos configurados tendrán acceso autorizado a la tabla: </source>
+        <target>Les utilisateurs et groupes configurés auront un accès autorisé à la table: </target>
+      </trans-unit>
+      <trans-unit id="tableRestrictionAccessMessageOption">
+        <source>Desactivar para habilitar el acceso a todos los usuarios</source>
+        <target>Désactiver pour permettre l'accès à tous les utilisateurs</target>
+      </trans-unit>
+      <trans-unit id="tableActivationAccess">
+        <source>Los usuarios y grupos configurados NO tendrán acceso a la tabla: </source>
+        <target>Les utilisateurs et groupes configurés n'auront PAS accès à la table: </target>
+      </trans-unit>
+      <trans-unit id="tableActivationAccessMessageOption">
+        <source>Activar para habilitar un acceso restringido</source>
+        <target>Activer pour permettre un accès restreint</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -554,15 +554,6 @@ export class DashboardController {
 
         // Ocultar columnas prohibidas en modelo
 
-        console.log('================================================>');
-        // console.log('toJson.ds.model ::: ', toJson.ds.model);
-
-        // uniquesForbiddenColumns = [
-        //   { table: "customers", column: "country"},
-        //   { table: "customers", column: "phone"},
-        //   { table: "customers", column: "city"},
-        // ]
-
         uniquesForbiddenColumns.forEach(fc => {
           const table = toJson.ds.model.tables.find(t => t.table_name === fc.table);
           const column = table?.columns.find(c => c.column_name === fc.column);
@@ -833,29 +824,15 @@ export class DashboardController {
     user: string
   ) {
 
-    // console.log('holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaholaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-    // console.log('dataModelObject: ', dataModelObject);
-    // console.log('userGroups: ', userGroups);
-    // console.log('user: ', user);
-    // console.log('::::::::: dataModelObject.ds :::::::::');
-    // console.log(dataModelObject.ds);
-    // // console.log(dataModelObject.ds.model.tables);
-    // console.log('holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaholaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-
     let forbiddenColumns = [];
 
     if (dataModelObject.ds.metadata.model_granted_roles.length > 0) { /** SI HAY PERMISOS DEFINIDOS. SI NO, NO HAY SEGURIDAD */
       if (dataModelObject.ds.metadata.model_granted_roles.filter(r => r.type == "anyoneCanSee" && r.permission == true).length > 0) {
         // En el caso de que cualquier usuario pueda ver el modelo y tengamos un esquema benevolente
-
-        
-        console.log('hola 1')
         forbiddenColumns = this.getForbiddenColumnsOpen(dataModelObject, userGroups, user);
       } else {
-        console.log('hola 2')
         // En el caso de que tan sólo pueda ver las columnas para las que tengo permiso explicito
         forbiddenColumns = this.getForbiddenColumnsClose(dataModelObject, userGroups, user);
-        console.log('forbiddenColumns: ', 'forbiddenColumns');
       }
     }
     return forbiddenColumns;

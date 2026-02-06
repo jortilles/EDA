@@ -125,11 +125,4 @@ export class TablePermissionDialogComponent implements OnInit {
         this.close.emit(response);
     }
 
-    permissionsEdition() {
-
-        this.permission = !this.permission;
-
-        console.log('permission: ',this.permission)
-
-    }
 }
