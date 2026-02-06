@@ -33,6 +33,7 @@ export class EdaTabsPanelComponent implements OnInit {
     @Input() globalFilters: any[] = [];
     @Input() panelContent: any = {};
     @Input() panelText: any = {};
+    @Input() panelTabAlign: any = {};
     @Output() remove: EventEmitter<any> = new EventEmitter();
 
     contextMenu: EdaContextMenu;
