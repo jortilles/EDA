@@ -23,8 +23,13 @@
       <div class="p-3">
         <div class="flex items-center justify-between">
           <div class="space-y-1">
-            <h3 class="font-medium text-gray-900" i18n="@@restrictionAccess">Restringir Acceso</h3>
-            <p class="text-gray-600" i18n="@@restrictionAccessDescription">Activar para limitar el acceso solo a usuarios autorizados</p>
+            @if(!anyoneCanSee) {
+              <h3 class="font-medium text-gray-900" i18n="@@ModelrestrictionAccess">Modelo con acceso restringido</h3>
+              <p class="text-gray-600" i18n="@@ModelrestrictionAccessMessageOption">Desactivar para habilitar el acceso a todos los usuarios</p>
+            } @else {
+              <h3 class="font-medium text-gray-900" i18n="@@ModelActivationAccess">Modelo con acceso para todos los usuarios</h3>
+              <p class="text-gray-600" i18n="@@ModelActivationAccessMessageOption">Activar para limitar el acceso solo a usuarios o grupos autorizados</p>
+            }
           </div>
 
           <button 
