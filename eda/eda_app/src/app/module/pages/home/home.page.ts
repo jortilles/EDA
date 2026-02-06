@@ -208,6 +208,15 @@ public handleTagSelect(option: any): void {
     }
   }
 
+  copyReport(report: any) {
+    // Obtener la URL actual
+    const currentUrl = window.location.href;
+    // Eliminar la parte 'home' de la URL si existe i construir la nueva URL apuntando a dashboard/{id}
+    const dashboardUrl = `${currentUrl.replace(/\/home\/?$/, '')}/public/${report._id}`;
+    // Copiar al portapapeles
+    navigator.clipboard.writeText(dashboardUrl)
+  }
+
   // Activar modo edición de un reporte
   renameReport(report: any) {
     //Reseteo de variables
