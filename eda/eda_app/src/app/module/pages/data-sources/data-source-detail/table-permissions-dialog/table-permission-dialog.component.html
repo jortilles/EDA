@@ -4,12 +4,12 @@
    <div content class="p-2 space-y-6">
     <div class="p-3 border-b border-gray-200">
       @if (!anyoneCanSee) {
-        <p class="text-gray-600 leading-relaxed" i18n="@@anyCanSeeNoTable">
+        <p class="text-lg text-gray-600 leading-relaxed" i18n="@@anyCanSeeNoTable">
           Define quién puede acceder y ver esta tabla. Solo los usuarios y grupos explícitamente autorizados tendrán
           acceso.
         </p>
       } @else {
-        <p class="text-gray-600 leading-relaxed" i18n="@@anyCanSeeYesTable">
+        <p class="text-lg text-gray-600 leading-relaxed" i18n="@@anyCanSeeYesTable">
           Cualquier usuario puede ver la tabla.
           Los filtros de seguridad se definen a nivel de tabla y columna concreta.
         </p>
@@ -22,11 +22,11 @@
         <div class="flex items-center justify-between">
           <div class="space-y-1">
             @if(permission) {
-              <h3 class="font-medium text-gray-900" i18n="@@tableRestrictionAccess">Los usuarios y grupos configurados tendrán acceso autorizado a la tabla: <span class="font-bold">{{table.description}}</span></h3>
-              <p class="text-gray-600" i18n="@@tableRestrictionAccessMessageOption">Desactivar para habilitar el acceso a todos los usuarios</p>
+              <h3 class="text-lg font-medium text-gray-900" i18n="@@tableRestrictionAccess">Los usuarios y grupos configurados tendrán acceso autorizado a la tabla: <span class="font-bold">{{table.description}}</span></h3>
+              <p class="text-base text-gray-600" i18n="@@tableRestrictionAccessMessageOption">Desactivar para habilitar el acceso a todos los usuarios</p>
             } @else {
-              <h3 class="font-medium text-gray-900" i18n="@@tableActivationAccess">Los usuarios y grupos configurados NO tendrán acceso a la tabla: <span class="font-bold">{{table.description}}</span></h3>
-              <p class="text-gray-600" i18n="@@tableActivationAccessMessageOption">Activar para habilitar un acceso restringido</p>
+              <h3 class="text-lg font-medium text-gray-900" i18n="@@tableActivationAccess">Los usuarios y grupos configurados NO tendrán acceso a la tabla: <span class="font-bold">{{table.description}}</span></h3>
+              <p class="text-base text-gray-600" i18n="@@tableActivationAccessMessageOption">Activar para habilitar un acceso restringido</p>
             }
           </div>
 
@@ -52,8 +52,8 @@
       <!-- Permission Type Selection -->
       <div class="bg-gray-50 rounded-lg border border-gray-200">
         <div class="p-3 border-b border-gray-200">
-          <h3 class="text-base font-medium text-gray-900" i18n="@@permissionType">Tipo de Permisos</h3>
-          <p class=" text-gray-600" i18n="@@permissionTypeDescription">Selecciona cómo quieres gestionar los permisos</p>
+          <h3 class="text-xl font-medium text-gray-900" i18n="@@permissionType">Tipo de Permisos</h3>
+          <p class="text-base text-gray-600" i18n="@@permissionTypeDescription">Selecciona cómo quieres gestionar los permisos</p>
         </div>
         <div class="p-3 space-y-4">
           <!-- User Permissions Radio -->
@@ -69,8 +69,8 @@
                   d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
               </svg>
               <div>
-                <div class="font-medium text-gray-900" i18n="@@permissionTypeUser">Permisos por Usuario</div>
-                <div class=" text-gray-600" i18n="@@permissionTypeUserDescription">Asignar permisos individualmente a usuarios específicos</div>
+                <div class="text-base font-medium text-gray-900" i18n="@@permissionTypeUser">Permisos por Usuario</div>
+                <div class="text-sm text-gray-600" i18n="@@permissionTypeUserDescription">Asignar permisos individualmente a usuarios específicos</div>
               </div>
             </label>
           </div>
@@ -89,15 +89,15 @@
                 </path>
               </svg>
               <div>
-                <div class="font-medium text-gray-900" i18n="@@permissionTypeGroup">Permisos por Grupo</div>
-                <div class=" text-gray-600" i18n="@@permissionTypeGroupDescription">Asignar permisos a grupos de usuarios</div>
+                <div class="text-base font-medium text-gray-900" i18n="@@permissionTypeGroup">Permisos por Grupo</div>
+                <div class="text-sm text-gray-600" i18n="@@permissionTypeGroupDescription">Asignar permisos a grupos de usuarios</div>
               </div>
             </label>
           </div>
 
           <!-- User Selection -->
           <div class="space-y-3 mt-4" *ngIf="type === 'users'">
-            <label class=" font-medium text-gray-900" i18n="@@selectUsers">Seleccionar Usuarios</label>
+            <label class="text-base font-medium text-gray-900" i18n="@@selectUsers">Seleccionar Usuarios</label>
             <p-multiSelect
               [(ngModel)]="selectedUsers"
               [options]="users"
@@ -112,7 +112,7 @@
 
           <!-- Group Selection -->
           <div class="space-y-3 mt-4" *ngIf="type === 'groups'">
-            <label class=" font-medium text-gray-900" i18n="@@selectGroups">Seleccionar Grupos</label>
+            <label class="text-base font-medium text-gray-900" i18n="@@selectGroups">Seleccionar Grupos</label>
             <p-multiSelect
               [(ngModel)]="selectedRoles"
               [options]="roles"
