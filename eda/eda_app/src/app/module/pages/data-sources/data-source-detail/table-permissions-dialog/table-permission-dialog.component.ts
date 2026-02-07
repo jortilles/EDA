@@ -42,18 +42,11 @@ export class TablePermissionDialogComponent implements OnInit {
 
     /* filterProps */
 
-    constructor(public dataSourceService: DataSourceService,
-                private userService: UserService,
-                private groupService: GroupService) {
-
-        // this.dialog = new EdaDialog({
-        //     show: () => this.onShow(),
-        //     hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-        //     title: $localize`:@@addPermission:Añadir permiso`
-        // });
-
-        // this.dialog.style = { width: '40%', height:'65%', top:"-4em", left:'1em'};
-    }
+    constructor(
+        public dataSourceService: DataSourceService,
+        private userService: UserService,
+        private groupService: GroupService
+    ) {}
 
     ngOnInit() {
         this.load();
@@ -80,46 +73,31 @@ export class TablePermissionDialogComponent implements OnInit {
 
     savePermission() {
         let permissionFilter = {};
-
-        if (this.anyoneCanSee === true) {
+        if (this.type === 'users') {
             permissionFilter = {
-                users: ["(~ => All)"],
-                usersName: ["(~ => All)"],
+                users: this.selectedUsers.map(usr => usr._id),
+                usersName: this.selectedUsers.map(usr => usr.name),
                 none: this.none ? true : false,
-                table: "fullModel",
-                column: "fullModel",
+                table: this.table.technical_name,
+                column: "fullTable",
                 global: true,
-                permission: this.anyoneCanSee ? true : false,
-                type: 'anyoneCanSee'
+                permission: this.permission ? true : false,
+                type: 'users'
             };
-        } else {
-
-
-            if (this.type === 'users') {
-                permissionFilter = {
-                    users: this.selectedUsers.map(usr => usr._id),
-                    usersName: this.selectedUsers.map(usr => usr.name),
-                    none: this.none ? true : false,
-                    table: this.table.technical_name,
-                    column: "fullTable",
-                    global: true,
-                    permission: this.permission ? true : false,
-                    type: 'users'
-                };
-            }
-            else if (this.type === 'groups') {
-                permissionFilter = {
-                    groups: this.selectedRoles.map(usr => usr._id),
-                    groupsName: this.selectedRoles.map(usr => usr.name),
-                    none: this.none ? true : false,
-                    table: this.table.technical_name,
-                    column: "fullTable",
-                    global: true,
-                    permission: this.permission,
-                    type: 'groups'
-                };
-            }
         }
+        else if (this.type === 'groups') {
+            permissionFilter = {
+                groups: this.selectedRoles.map(usr => usr._id),
+                groupsName: this.selectedRoles.map(usr => usr.name),
+                none: this.none ? true : false,
+                table: this.table.technical_name,
+                column: "fullTable",
+                global: true,
+                permission: this.permission,
+                type: 'groups'
+            };
+        }
+        
         this.onClose(permissionFilter);
     }
 
@@ -142,5 +120,6 @@ export class TablePermissionDialogComponent implements OnInit {
     onClose(response?: any): void {
         this.display = false;
         this.close.emit(response);
-      }
+    }
+
 }

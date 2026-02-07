@@ -5785,6 +5785,38 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>CONFIGUTACIÓ DE PESTANYES</target>
       </trans-unit>
 
+      <trans-unit id="ModelRestrictionAccess">
+        <source>Modelo con acceso restringido</source>
+        <target>Model amb accés restringit</target>
+      </trans-unit>
+      <trans-unit id="ModelRestrictionAccessMessageOption">
+        <source>Desactivar para habilitar el acceso a todos los usuarios</source>
+        <target>Desactivar per habilitar l'accés a tots els usuaris</target>
+      </trans-unit>
+      <trans-unit id="ModelActivationAccess">
+        <source>Modelo con acceso para todos los usuarios</source>
+        <target>Model amb accés per a tots els usuaris</target>
+      </trans-unit>
+      <trans-unit id="ModelActivationAccessMessageOption">
+        <source>Activar para limitar el acceso solo a usuarios o grupos autorizados</source>
+        <target>Activar per limitar l'accés només a usuaris o grups autoritzats</target>
+      </trans-unit>
+      <trans-unit id="tableRestrictionAccess">
+        <source>Los usuarios y grupos configurados tendrán acceso autorizado a la tabla: </source>
+        <target>Els usuaris i grups configurats tindran accés autoritzat a la taula: </target>
+      </trans-unit>
+      <trans-unit id="tableRestrictionAccessMessageOption">
+        <source>Desactivar para habilitar el acceso a todos los usuarios</source>
+        <target>Desactivar per habilitar l'accés a tots els usuaris</target>
+      </trans-unit>
+      <trans-unit id="tableActivationAccess">
+        <source>Los usuarios y grupos configurados NO tendrán acceso a la tabla: </source>
+        <target>Els usuaris i grups configurats NO tindran accés a la taula: </target>
+      </trans-unit>
+      <trans-unit id="tableActivationAccessMessageOption">
+        <source>Activar para habilitar un acceso restringido</source>
+        <target>Activar per habilitar un accés restringit</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

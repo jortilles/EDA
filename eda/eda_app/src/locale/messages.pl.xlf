@@ -5514,6 +5514,38 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>CONFIGURACION DE PESTAÑAS</source>
         <target>KONFIGURACJA ZAKŁADEK</target>
       </trans-unit>
+      <trans-unit id="ModelRestrictionAccess">
+        <source>Modelo con acceso restringido</source>
+        <target>Model z ograniczonym dostępem</target>
+      </trans-unit>
+      <trans-unit id="ModelRestrictionAccessMessageOption">
+        <source>Desactivar para habilitar el acceso a todos los usuarios</source>
+        <target>Wyłączyć, aby umożliwić dostęp wszystkim użytkownikom</target>
+      </trans-unit>
+      <trans-unit id="ModelActivationAccess">
+        <source>Modelo con acceso para todos los usuarios</source>
+        <target>Model z dostępem dla wszystkich użytkowników</target>
+      </trans-unit>
+      <trans-unit id="ModelActivationAccessMessageOption">
+        <source>Activar para limitar el acceso solo a usuarios o grupos autorizados</source>
+        <target>Włączyć, aby ograniczyć dostęp tylko do upoważnionych użytkowników lub grup</target>
+      </trans-unit>
+      <trans-unit id="tableRestrictionAccess">
+        <source>Los usuarios y grupos configurados tendrán acceso autorizado a la tabla: </source>
+        <target>Skonfigurowani użytkownicy i grupy będą mieć autoryzowany dostęp do tabeli: </target>
+      </trans-unit>
+      <trans-unit id="tableRestrictionAccessMessageOption">
+        <source>Desactivar para habilitar el acceso a todos los usuarios</source>
+        <target>Wyłączyć, aby umożliwić dostęp wszystkim użytkownikom</target>
+      </trans-unit>
+      <trans-unit id="tableActivationAccess">
+        <source>Los usuarios y grupos configurados NO tendrán acceso a la tabla: </source>
+        <target>Skonfigurowani użytkownicy i grupy NIE będą mieć dostępu do tabeli: </target>
+      </trans-unit>
+      <trans-unit id="tableActivationAccessMessageOption">
+        <source>Activar para habilitar un acceso restringido</source>
+        <target>Włączyć, aby umożliwić dostęp ograniczony</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>
