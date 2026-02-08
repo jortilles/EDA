@@ -6,12 +6,12 @@
   <div content class="p-2 space-y-6">
     <div class="p-3 border-b border-gray-200">
       @if (!anyoneCanSee) {
-        <p class="text-gray-600 leading-relaxed" i18n="@@anyCanSeeNO">
+        <p class="text-lg text-gray-600 leading-relaxed" i18n="@@anyCanSeeNO">
           Define quién puede acceder y ver este modelo. Solo los usuarios y grupos explícitamente autorizados tendrán
           acceso.
         </p>
       } @else {
-        <p class="text-gray-600 leading-relaxed" i18n="@@anyCanSeeYES">
+        <p class="text-lg text-gray-600 leading-relaxed" i18n="@@anyCanSeeYES">
           Cualquier usuario puede ver el modelo.
           Los filtros de seguridad se definen a nivel de tabla y columna concreta.
         </p>
@@ -23,8 +23,13 @@
       <div class="p-3">
         <div class="flex items-center justify-between">
           <div class="space-y-1">
-            <h3 class="font-medium text-gray-900" i18n="@@restrictionAccess">Restringir Acceso</h3>
-            <p class="text-gray-600" i18n="@@restrictionAccessDescription">Activar para limitar el acceso solo a usuarios autorizados</p>
+            @if(!anyoneCanSee) {
+              <h3 class="text-lg font-medium text-gray-900" i18n="@@ModelRestrictionAccess">Modelo con acceso restringido</h3>
+              <p class="text-base text-gray-600" i18n="@@ModelRestrictionAccessMessageOption">Desactivar para habilitar el acceso a todos los usuarios</p>
+            } @else {
+              <h3 class="text-lg font-medium text-gray-900" i18n="@@ModelActivationAccess">Modelo con acceso para todos los usuarios</h3>
+              <p class="text-base text-gray-600" i18n="@@ModelActivationAccessMessageOption">Activar para limitar el acceso solo a usuarios o grupos autorizados</p>
+            }
           </div>
 
           <button 
@@ -48,8 +53,8 @@
       <!-- Permission Type Selection -->
       <div class="bg-gray-50 rounded-lg border border-gray-200">
         <div class="p-3 border-b border-gray-200">
-          <h3 class="text-base font-medium text-gray-900" i18n="@@permissionType">Tipo de Permisos</h3>
-          <p class=" text-gray-600" i18n="@@permissionTypeDescription">Selecciona cómo quieres gestionar los permisos</p>
+          <h3 class="text-xl font-medium text-gray-900" i18n="@@permissionType">Tipo de Permisos</h3>
+          <p class="text-base text-gray-600" i18n="@@permissionTypeDescription">Selecciona cómo quieres gestionar los permisos</p>
         </div>
         <div class="p-3 space-y-4">
           <!-- User Permissions Radio -->
@@ -65,8 +70,8 @@
                   d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
               </svg>
               <div>
-                <div class="font-medium text-gray-900" i18n="@@permissionTypeUser">Permisos por Usuario</div>
-                <div class=" text-gray-600" i18n="@@permissionTypeUserDescription">Asignar permisos individualmente a usuarios específicos</div>
+                <div class="text-base font-medium text-gray-900" i18n="@@permissionTypeUser">Permisos por Usuario</div>
+                <div class="text-sm text-gray-600" i18n="@@permissionTypeUserDescription">Asignar permisos individualmente a usuarios específicos</div>
               </div>
             </label>
           </div>
@@ -85,15 +90,15 @@
                 </path>
               </svg>
               <div>
-                <div class="font-medium text-gray-900" i18n="@@permissionTypeGroup">Permisos por Grupo</div>
-                <div class=" text-gray-600" i18n="@@permissionTypeGroupDescription">Asignar permisos a grupos de usuarios</div>
+                <div class="text-base font-medium text-gray-900" i18n="@@permissionTypeGroup">Permisos por Grupo</div>
+                <div class="text-sm text-gray-600" i18n="@@permissionTypeGroupDescription">Asignar permisos a grupos de usuarios</div>
               </div>
             </label>
           </div>
 
           <!-- User Selection -->
           <div class="space-y-3 mt-4" *ngIf="type === 'users'">
-            <label class=" font-medium text-gray-900" i18n="@@selectUsers">Seleccionar Usuarios</label>
+            <label class="text-base font-medium text-gray-900" i18n="@@selectUsers">Seleccionar Usuarios</label>
             <p-multiSelect
               [(ngModel)]="selectedUsers"
               [options]="users"
@@ -108,7 +113,7 @@
 
           <!-- Group Selection -->
           <div class="space-y-3 mt-4" *ngIf="type === 'groups'">
-            <label class=" font-medium text-gray-900" i18n="@@selectGroups">Seleccionar Grupos</label>
+            <label class="text-base font-medium text-gray-900" i18n="@@selectGroups">Seleccionar Grupos</label>
             <p-multiSelect
               [(ngModel)]="selectedRoles"
               [options]="roles"

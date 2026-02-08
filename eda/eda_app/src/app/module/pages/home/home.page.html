@@ -83,30 +83,38 @@
           (keydown.escape)="handleEditing('cancel', report)" (click)="$event.stopPropagation()" autofocus />
         }
       </div>
-      <div class="flex items-center justify-between border-t px-4 py-2">
-        <div class="flex items-center gap-2 text-sm text-muted-foreground">
+      <div class="grid grid-cols-3 items-center border-t px-4 py-2 gap-2">
+        <div class="text-sm text-muted-foreground truncate min-w-0">
           @if (report.config?.author && report.config?.author != 'Undefined') {
-          <span>{{report.config.author}}</span>
-          }
-          @if (report.config?.modifiedAt) {
-          <span>{{report.config.modifiedAt}} </span>
+          <span class="truncate block" [title]="report.config.author">{{report.config.author}}</span>
           }
         </div>
-        <div class="flex items-center gap-2">
+        <div class="text-sm text-muted-foreground text-center">
+          @if (report.config?.modifiedAt) {
+          <span>{{report.config.modifiedAt}}</span>
+          }
+        </div>
+        <div class="flex items-center justify-end">
+          @if(report.config.visible=='shared' || report.config.visible=='open' ){
+            <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="copyReport(report)">
+              <eda-icon name="export" class="mr-1"></eda-icon>
+            </button>
+          }
+
           @if (!isEditing || editingReportId !== report._id) {
-          <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="renameReport(report)">
-            <eda-icon name="pencil" class="mr-2"></eda-icon>
+          <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="renameReport(report)">
+            <eda-icon name="pencil" class="mr-1"></eda-icon>
           </button>
           }@else {
-          <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="handleEditing('done', report)">
-            <eda-icon name="check" class="mr-2"></eda-icon>
+          <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="handleEditing('done', report)">
+            <eda-icon name="check" class="mr-1"></eda-icon>
           </button>
           }
 
-          <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="cloneReport(report)">
+          <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="cloneReport(report)">
             <eda-icon name="document-duplicated"></eda-icon>
           </button>
-          <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="deleteReport(report)">
+          <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="deleteReport(report)">
             <eda-icon name="bin"></eda-icon>
           </button>
         </div>

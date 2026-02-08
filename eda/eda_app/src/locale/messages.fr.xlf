@@ -5642,16 +5642,6 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <target>SID</target>
       </trans-unit>
 
-      <trans-unit id="excel10mb">
-        <source>EXCEL (max. 10MB)</source>
-        <target>EXCEL (max. 10MB)</target>
-      </trans-unit>
-        
-      <trans-unit id="json10mb">
-        <source>JSON (max. 10MB)</source>
-        <target>JSON (max. 10MB)</target>
-      </trans-unit>
-
       <trans-unit id="databaseExample">
         <source>database.example.com</source>
         <target>base_de_données.exemple.com</target>
@@ -5761,7 +5751,72 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Comparativa</source>
         <target>Comparatif</target>
       </trans-unit>
+      <trans-unit id="chartTypesTableAnalized" datatype="html">
+        <source>Tabla DataQuality</source>
+        <target>Tableau de qualité des données</target>
+      </trans-unit>
 
+      <trans-unit id="chartTypes19">
+        <source>Gráfico de Barras Apiladas al 100%</source>
+        <target>Graphique à barres empilées à 100 %</target>
+      </trans-unit>
+
+      <trans-unit id="showPointLines">
+        <source>Mostrar Puntos en Lineas</source>
+        <target>Afficher les points sur les lignes</target>
+      </trans-unit>
+      <trans-unit id="showLinesPrediction">
+        <source>Mostrar Predicción</source>
+        <target>Afficher la prédiction</target>
+      </trans-unit>
+      <trans-unit id="chartLabelLinesOptionDescription">
+        <source>Muestra las líneas en los puntos</source>
+        <target>Représentez les lignes aux points</target>
+      </trans-unit>
+      <trans-unit id="chartLabelLinePredicctionOptionDescription">
+        <source>Muestra las predicción de la serie</source>
+        <target>Affiche les prédictions de la série</target>
+      </trans-unit>
+      <trans-unit id="Prediction">
+        <source>Predicción</source>
+        <target>Prédiction</target>
+      </trans-unit>
+      <trans-unit id="TabsPanelConfig">
+        <source>CONFIGURACION DE PESTAÑAS</source>
+        <target>CONFIGURATION DES ONGLETS</target>
+      </trans-unit>
+      <trans-unit id="ModelRestrictionAccess">
+        <source>Modelo con acceso restringido</source>
+        <target>Modèle à accès restreint</target>
+      </trans-unit>
+      <trans-unit id="ModelRestrictionAccessMessageOption">
+        <source>Desactivar para habilitar el acceso a todos los usuarios</source>
+        <target>Désactiver pour permettre l'accès à tous les utilisateurs</target>
+      </trans-unit>
+      <trans-unit id="ModelActivationAccess">
+        <source>Modelo con acceso para todos los usuarios</source>
+        <target>Modèle accessible à tous les utilisateurs</target>
+      </trans-unit>
+      <trans-unit id="ModelActivationAccessMessageOption">
+        <source>Activar para limitar el acceso solo a usuarios o grupos autorizados</source>
+        <target>Activer pour limiter l'accès uniquement aux utilisateurs ou groupes autorisés</target>
+      </trans-unit>
+      <trans-unit id="tableRestrictionAccess">
+        <source>Los usuarios y grupos configurados tendrán acceso autorizado a la tabla: </source>
+        <target>Les utilisateurs et groupes configurés auront un accès autorisé à la table: </target>
+      </trans-unit>
+      <trans-unit id="tableRestrictionAccessMessageOption">
+        <source>Desactivar para habilitar el acceso a todos los usuarios</source>
+        <target>Désactiver pour permettre l'accès à tous les utilisateurs</target>
+      </trans-unit>
+      <trans-unit id="tableActivationAccess">
+        <source>Los usuarios y grupos configurados NO tendrán acceso a la tabla: </source>
+        <target>Les utilisateurs et groupes configurés n'auront PAS accès à la table: </target>
+      </trans-unit>
+      <trans-unit id="tableActivationAccessMessageOption">
+        <source>Activar para habilitar un acceso restringido</source>
+        <target>Activer pour permettre un accès restreint</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

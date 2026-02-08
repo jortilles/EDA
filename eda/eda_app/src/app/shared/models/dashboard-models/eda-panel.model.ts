@@ -2,7 +2,8 @@ import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel
 
 export enum EdaPanelType {
     BLANK,
-    TITLE
+    TITLE,
+    TABS
 }
 
 export class EdaPanel {

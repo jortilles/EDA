@@ -114,7 +114,8 @@ export class GlobalFilterComponent implements OnInit {
 
     public async initGlobalFilters(filters: any[]): Promise<void> {
         this.globalFilters = _.cloneDeep(filters);
-        // this.isDashboardCreator = this.dashboard.isDashboardCreator;
+        const userName = JSON.parse(localStorage.getItem('user'))?.name;
+        this.isDashboardCreator = userName === this.dashboard.dashboard?.config?.author;
         this.setFiltersVisibility();
         this.setFilterButtonVisibilty();
         await this.fillFiltersData();
@@ -139,7 +140,7 @@ export class GlobalFilterComponent implements OnInit {
     private setFiltersVisibility(): void {
         for (const filter of this.globalFilters) {
             if (!filter.hasOwnProperty("visible")) {
-                filter.visible = 'public';
+                filter.visible = 'common';
             }
         }
     }
@@ -832,7 +833,7 @@ export class GlobalFilterComponent implements OnInit {
 
         if (!this.isAdmin && !this.isDashboardCreator && filter.visible === 'readOnly') {
             disabled = true;
-        } else if (this.isAdmin || this.isDashboardCreator || filter.visible === 'public') {
+        } else if (this.isAdmin || this.isDashboardCreator || filter.visible === 'common') {
             disabled = false;
         }
 

@@ -51,6 +51,14 @@
           </eda-title-panel>
           }
 
+          @if (panel.type===2) {
+          <eda-tabs-panel #edaPanel [id]="panel.id" [panel]="panel" [inject]="injectEdaPanel"
+            [globalFilters]="globalFilter?.globalFilters || []"
+            [panelTabAlign]="panelTabAlign" [panelText]="panelTabText"
+            (remove)="onRemovePanel($event)">
+          </eda-tabs-panel>
+          }
+
         </gridster-item>
         }
       </gridster>

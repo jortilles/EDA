@@ -1,4 +1,5 @@
 import { Component, ViewChild, Input, ElementRef, OnInit, Output, EventEmitter } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { StyleProviderService } from '@eda/services/service.index';
 import { Table } from 'primeng/table';
 // import { FilterUtils } from 'primeng/utils';
@@ -56,7 +57,12 @@ export class EdaTableComponent implements OnInit {
     public colors = {};
     public styles = {};
 
-    constructor(private elementRef: ElementRef, private styleService: StyleService, private styleProviderService : StyleProviderService) {
+    constructor(
+        private elementRef: ElementRef,
+        private styleService: StyleService,
+        private styleProviderService: StyleProviderService,
+        private sanitizer: DomSanitizer
+    ) {
         registerLocaleData(es);
         /** Definim les caracteristiques del gràfic dintre de la taula.......................... */
         this.chartOptions = EdaColumnChartOptions;
@@ -91,10 +97,14 @@ export class EdaTableComponent implements OnInit {
         } else {
             let filterBy = colname;
             let label = item;
-            //lanzo el filtro para los dos tipos de tablas
-        if(typeof label !== 'number')
-            this.onClick.emit({ label, filterBy })
-        }
+            // Buscar el tipo de columna para verificar si es html
+            const col = this.inject.cols.find(c => c.field === colname);
+            const colType = col ? col.type : null;
+            
+            // No emitir evento para columnas numéricas ni HTML
+            if (typeof label !== 'number' && colType !== 'EdaColumnHtml') {
+                this.onClick.emit({ label, filterBy });
+            }}
     }
 
     getTooltip = (col: any) => {
@@ -104,6 +114,11 @@ export class EdaTableComponent implements OnInit {
 
     getLinkTooltip(col) {
         return `${col.header} column linked to:\n${this.inject.linkedDashboardProps.dashboardName}`;
+    }
+
+    getSafeHtml(html: string): SafeHtml {
+        if (!html) return '';
+        return this.sanitizer.bypassSecurityTrustHtml(html);
     }
 
     getStyleClass(col, rowData) {
