@@ -93,15 +93,10 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
   }
 
   closeDialog() {
-    console.log('.... CANCELANDO ....')
-
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
   saveColumn() {
-
-    console.log('.... CONFIRMANDO ....')
-    console.log('this.form: ', this.form);
 
     if (this.form.invalid) {
       return this.alertService.addError($localize`:@@mandatoryFields:Recuerde llenar los campos obligatorios`);
@@ -121,8 +116,6 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
         visible: true
       };
 
-      console.log('Generación => column: ', column);
-
       this.onClose(EdaDialogCloseEvent.NEW, { column: column, table_name: this.controller.params.table.technical_name });
     }
   }
@@ -132,9 +125,6 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
     if(this.form.invalid) {
       return this.alertService.addError($localize`:@@mandatoryFields:Recuerde llenar los campos obligatorios`);
     } else {
-
-      console.log('final_aggregation_type: ', this.final_aggregation_type);
-
       const columnCheck: any = {
         SQLexpression: this.form.value.colSqlExpression,
         aggregation_type: this.selectedcolumnType === 'numeric' ? this.final_aggregation_type : [{ value: "none", display_name: "No" }],
@@ -169,7 +159,6 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
 
   updateAgg(type?: any) {
 
-    console.log('type: ', type);
     const aggItem = this.aggregation_type_cases.find((item: any) => item.value === type);
 
     if(aggItem.display) {
@@ -184,22 +173,10 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
         display_name: item.display_name
       }
     })
-
-    console.log('this.aggregation_type_cases: ', this.aggregation_type_cases)
-    console.log('this.final_aggregation_type: ', this.final_aggregation_type)
-
-
-    // const inx = this.columnPanel.aggregation_type.indexOf(type);
-    // if (inx != -1) {
-    //     this.columnPanel.aggregation_type.splice(inx,1);
-    // } else {
-    //     this.columnPanel.aggregation_type.push(type);
-    // }
   }
 
   onTypeChange(event: any) {
 
-    console.log("event: ", event);
     this.selectedcolumnType = event.value;
 
     const ctrl = this.form.get('decimalNumber');
