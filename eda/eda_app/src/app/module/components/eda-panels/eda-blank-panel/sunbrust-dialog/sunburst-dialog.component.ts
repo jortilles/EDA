@@ -1,112 +1,156 @@
-import { Component,  Input,  OnInit,  ViewChild } from "@angular/core";
+import { Component, Input, OnInit, ViewChild, AfterViewChecked } from "@angular/core";
 import { EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
 import { SunburstConfig } from "../panel-charts/chart-configuration-models/sunburst-config";
 import { PanelChart } from "../panel-charts/panel-chart";
 import { PanelChartComponent } from "../panel-charts/panel-chart.component";
-import { StyleProviderService,ChartUtilsService } from '@eda/services/service.index';
+import { StyleProviderService, ChartUtilsService } from "@eda/services/service.index";
 
-import { FormsModule } from '@angular/forms'; 
-import { CommonModule } from '@angular/common';
+import { FormsModule } from "@angular/forms";
+import { CommonModule } from "@angular/common";
 import { ColorPickerModule } from "primeng/colorpicker";
 import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
+
 @Component({
   standalone: true,
-  selector: 'sunburst-dialog',
-  templateUrl: './sunburst-dialog.component.html',
+  selector: "sunburst-dialog",
+  templateUrl: "./sunburst-dialog.component.html",
   imports: [FormsModule, CommonModule, PanelChartComponent, EdaDialog2Component, ColorPickerModule]
 })
+export class SunburstDialogComponent implements OnInit, AfterViewChecked {
 
-export class SunburstDialogComponent implements OnInit {
-  @Input() controller: any
-  @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
+  @Input() controller: any;
+  @ViewChild("PanelChartComponent", { static: false })
+  myPanelChartComponent: PanelChartComponent;
 
   public panelChartConfig: PanelChart = new PanelChart();
-  public colors: Array<string>;
-  private originalColors: string[] = [];
-  public labels: Array<string>;
-  public display:boolean=false;
-  public selectedPalette: { name: string; paleta: any } | null = null;
-  public allPalettes: any = this.stylesProviderService.ChartsPalettes;
-  public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
-  constructor(private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) {}
 
-  ngAfterViewChecked(): void {
-    if (!this.colors && this.myPanelChartComponent?.componentRef) {
-      //To avoid "Expression has changed after it was checked" warning
-      setTimeout(() => {
-        this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
-        let colorMap: { [key: string]: { value: string; color: string } } = {};
-        // Recuperamos valores de assignedColor {label: , color:}
-        this.myPanelChartComponent.props.config.getConfig()['assignedColors'].forEach(item => {
-          colorMap[item.value] = item;
-        });
-        // Asignamos el mismo color a los que tienen el mismo label
-        const sortedAssignedColors = this.labels
-          .map(label => colorMap[label])
-          .filter((item): item is { value: string; color: string } => !!item);
-        // Transformación para los colorPicker del dialog
-        this.colors = sortedAssignedColors.map(c => c.color.startsWith('rgb') ? this.ChartUtilsService.rgb2hexD3(c.color) : c.color);
-        this.originalColors = [...this.colors]; // Guardar estado original aquí
-      }, 0)
-    }
-  }
+  /** Fuente única de verdad */
+  public assignedColors: { value: string; color: string }[] = [];
+  private originalAssignedColors: { value: string; color: string }[] = [];
+
+  public labels: string[] = [];
+  public display = false;
+
+  public selectedPalette: { name: string; paleta: string[] } | null = null;
+  public allPalettes = this.stylesProviderService.ChartsPalettes;
+
+  public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
+
+  constructor(
+    private stylesProviderService: StyleProviderService,
+    private chartUtils: ChartUtilsService
+  ) { }
 
   ngOnInit(): void {
     this.panelChartConfig = this.controller.params.panelChart;
     this.display = true;
   }
+
+  ngAfterViewChecked(): void {
+    if (!this.assignedColors.length && this.myPanelChartComponent?.componentRef) {
+      setTimeout(() => {
+
+        // Obtener labels del componente renderizado
+        this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
+
+        // Obtener colores asignados existentes o array vacío
+        const chartAssignedColors =
+          this.myPanelChartComponent.props.config.getConfig()['assignedColors'] || [];
+
+        // Siempre crear assignedColors, aunque no existan previamente
+        this.assignedColors = this.labels.map(label => {
+          const match = chartAssignedColors.find(c => c.value === label);
+          return {
+            value: label,
+            color: match?.color
+          };
+        });
+
+        // Snapshot para cancelar cambios
+        this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
+
+      }, 0);
+    }
+  }
+
+  /* Cierra el diálogo */
   onClose(event: EdaDialogCloseEvent, response?: any): void {
-    return this.controller.close(event, response);
+    this.controller.close(event, response);
   }
 
-  saveChartConfig() {
-    this.onClose(EdaDialogCloseEvent.UPDATE, {
-      colors: this.colors.map(c => c.startsWith('#') ? this.ChartUtilsService.hex2rgbD3(c) : c)
-    });
+  /** GUARDAR */
+  saveChartConfig(): void {
+    const colorsForConfig = this.assignedColors.map(c => c.color);
+
+    this.myPanelChartComponent.props.config.setConfig(
+      new SunburstConfig(colorsForConfig)
+    );
+
+    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] =
+      [...this.assignedColors];
+
+    this.myPanelChartComponent.changeChartType();
+
+    this.onClose(EdaDialogCloseEvent.UPDATE, { colors: colorsForConfig });
   }
 
-  closeChartConfig() {
-    this.myPanelChartComponent.props.config.setConfig(new SunburstConfig(this.originalColors.map(c => this.ChartUtilsService.hex2rgbD3(c))));
+  /** CANCELAR */
+  closeChartConfig(): void {
+    this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
+
+    const colorsForConfig = this.assignedColors.map(c => c.color);
+
+    this.myPanelChartComponent.props.config.setConfig(
+      new SunburstConfig(colorsForConfig)
+    );
+
+    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] =
+      [...this.assignedColors];
+
+    this.myPanelChartComponent.changeChartType();
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
-  handleInputColor() {
-    // Mapeo colores únicos a valores repetidos en data.values (para sunburst)
-    const colorMap: Record<string, string> = {};
-    let colorIndex = 0;
-    this.myPanelChartComponent.props.config.getConfig()['data'].values.forEach(item => {
-      const value = item[0];
-      if (!colorMap[value]) {
-        colorMap[value] = this.colors[colorIndex++];
-      }
-    });
-   
-    // Actualizar temporalmente los colores según colorMap
-    this.myPanelChartComponent.props.config.getConfig()['assignedColors'].forEach(element => {
-      if (colorMap[element.value]) {
-        element.color = colorMap[element.value];
-      }
-    });
+  /** COLOR PICKER */
+  handleInputColor(): void {
+    const colorsForConfig = this.assignedColors.map(c => c.color);
+
+    this.myPanelChartComponent.props.config.setConfig(
+      new SunburstConfig(colorsForConfig)
+    );
+
+    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] =
+      [...this.assignedColors];
+
     this.myPanelChartComponent.changeChartType();
   }
 
-  labePrettify(label){
-    return label.replaceAll('|+-+|', ' - ') + ': ';
-  } 
+  /** PALETA */
+  onPaletteSelected(): void {
+    if (!this.selectedPalette) return;
 
-  onPaletteSelected() { 
-        // Saber numero de segmentos para interpolar colores
-        const numberOfColors = this.myPanelChartComponent.componentRef.instance.colors.length;
-        
-        // Recuperamos paleta seleccionada y creamos colores
-        this.myPanelChartComponent['chartUtils'].MyPaletteColors = this.selectedPalette['paleta']; 
-        const newColors = this.ChartUtilsService.generateRGBColorGradientScaleD3(numberOfColors, this.myPanelChartComponent['chartUtils'].MyPaletteColors);
-        
-        // Actualizar los color pickers individuales al modificar la paleta
-        this.colors = newColors.map(({ color }) => color);
-        
-        // Actualizar los colores del chart
-        this.myPanelChartComponent.props.config.setConfig(new SunburstConfig(this.colors.map(color => this.ChartUtilsService.hex2rgbD3(color))));
-        this.myPanelChartComponent.changeChartType();
+    const length = this.labels.length;
+    const palette = this.selectedPalette.paleta;
+
+    const newColors: string[] = [];
+    for (let i = 0; i < length; i++) {
+      newColors.push(palette[i % palette.length]);
+    }
+
+    this.assignedColors = this.labels.map((label, i) => ({
+      value: label,
+      color: newColors[i]
+    }));
+
+    const colorsForConfig = this.assignedColors.map(c => c.color);
+
+    this.myPanelChartComponent.props.config.setConfig(
+      new SunburstConfig(colorsForConfig)
+    );
+
+    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] =
+      [...this.assignedColors];
+
+    this.myPanelChartComponent.changeChartType();
   }
 }

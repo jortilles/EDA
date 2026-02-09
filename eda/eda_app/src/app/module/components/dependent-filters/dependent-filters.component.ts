@@ -104,6 +104,8 @@ export class DependentFilters implements OnInit {
                     filter_column: gf.selectedColumn?.column_name || gf.column?.value?.column_name,
                     filter_type: gf.selectedColumn?.column_type || gf.column?.value?.column_type,
                     filter_id: gf.id,
+                    description_table: gf.selectedTable?.description?.default || gf.table?.label,
+                    description_column: gf.selectedColumn?.description?.default || gf.column?.label,
                 }
             );
             k++;

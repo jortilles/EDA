@@ -1516,17 +1516,47 @@ pre {
 
 
 
-/* .p-datatable-thead tr{
-    background:  #e9ecef !important;
-  }
-  .p-datatable .p-datatable-thead > tr > th{
-    background: #e9ecef !important;
+/* CUSTOMIZABLE DATATABLE Y TREETABLE STYLES */
+
+/* .p-datatable .p-datatable-thead > tr > th {
+    background-color: #A8113C !important;
+    color: #000000 !important;
+} */
+
+/* texto del título */
+/* .p-datatable .p-datatable-thead > tr > th .p-column-title {
+    background-color: transparent !important;
+} */
+
+/* sortable */
+/* .p-datatable .p-sortable-column,
+.p-datatable .p-sortable-column * {
+    background-color: transparent !important;
+    color: #ffffff !important;
+} */
+
+/* icono de ordenación */
+/* .p-datatable .p-sortable-column-icon {
+    color: #ffffff !important;
+} */
+/* 
+.p-datatable .p-sortable-column:hover,
+.p-datatable .p-sortable-column:hover * {
+    color: #000000 !important;
+}
+
+.p-treetable .p-treetable-thead > tr > th{
+    background: #A8113C  !important;
     border: 1px solid #fff;
-  } */
+    cursor: default;
+  }
 
-
-
-
+.p-treetable .p-treetable-thead > tr > th .header-title{
+    color: #ffffff;
+}
+.p-treetable .p-treetable-thead > tr > th:hover .header-title{
+    color: #000000;
+} */
 
 
 

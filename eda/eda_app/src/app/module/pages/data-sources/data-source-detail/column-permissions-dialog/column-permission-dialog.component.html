@@ -1,12 +1,12 @@
-<eda-dialog2 width="50vw" height="100vh" (apply)="savePermission()" [header]="title" (close)="closeDialog()">
+<eda-dialog2 width="50vw" height="100vh" (apply)="savePermission()" [header]="title" (close)="closeDialog()" [overflow]="'auto'">
 
   <div content class="p-2 space-y-6">
 
     <!-- Permission Type Selection -->
     <div class="bg-gray-50 rounded-lg border border-gray-200">
       <div class="p-3 border-b border-gray-200">
-        <h3 class="text-base font-medium text-gray-900" i18n="@@permissionType">Tipo de Permisos</h3>
-        <p class=" text-gray-600" i18n="@@permissionTypeDescription">Selecciona cómo quieres gestionar los permisos</p>
+        <h3 class="text-xl font-medium text-gray-900" i18n="@@permissionType">Tipo de Permisos</h3>
+        <p class="text-base text-gray-600" i18n="@@permissionTypeDescription">Selecciona cómo quieres gestionar los permisos</p>
       </div>
       <div class="p-3 space-y-4">
         <!-- User Permissions Radio -->
@@ -21,8 +21,8 @@
                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
             </svg>
             <div>
-              <div class="font-medium text-gray-900" i18n="@@permissionTypeUser">Permisos por Usuario</div>
-              <div class=" text-gray-600" i18n="@@permissionTypeUserDescription">Asignar permisos individualmente a
+              <div class="text-base font-medium text-gray-900" i18n="@@permissionTypeUser">Permisos por Usuario</div>
+              <div class="text-sm text-gray-600" i18n="@@permissionTypeUserDescription">Asignar permisos individualmente a
                 usuarios específicos</div>
             </div>
           </label>
@@ -41,8 +41,8 @@
               </path>
             </svg>
             <div>
-              <div class="font-medium text-gray-900" i18n="@@permissionTypeGroup">Permisos por Grupo</div>
-              <div class=" text-gray-600" i18n="@@permissionTypeGroupDescription">Asignar permisos a grupos de usuarios
+              <div class="text-base font-medium text-gray-900" i18n="@@permissionTypeGroup">Permisos por Grupo</div>
+              <div class="text-sm text-gray-600" i18n="@@permissionTypeGroupDescription">Asignar permisos a grupos de usuarios
               </div>
             </div>
           </label>
@@ -75,14 +75,14 @@
         <!-- SWITCHES Y DINÁMICO -->
         <div *ngIf="type" class="mt-5 bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-4">
 
-          <h3 class="text-sm font-medium text-gray-700" i18n="@@permissionAdvancedOptions">
+          <h3 class="text-base font-medium text-gray-700" i18n="@@permissionAdvancedOptions">
             Opciones avanzadas
           </h3>
 
           <!-- Switch: Todos -->
           <div class="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-3">
             <div>
-              <div class="font-medium text-gray-900" i18n="@@AllTags">Todos</div>
+              <div class="text-base font-medium text-gray-900" i18n="@@AllTags">Todos</div>
               <p class="text-sm text-gray-600" i18n="@@AllTagsDescription">
                 Acceso a todos los elementos sin restricciones
               </p>
@@ -94,7 +94,7 @@
           <!-- Switch: Ninguno -->
           <div class="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-3">
             <div>
-              <div class="font-medium text-gray-900" i18n="@@NoneTags">Ninguno</div>
+              <div class="text-base font-medium text-gray-900" i18n="@@NoneTags">Ninguno</div>
               <p class="text-sm text-gray-600" i18n="@@NoneTagsDescription">
                 No se muestra ningún elemento para este usuario/grupo
               </p>
@@ -106,7 +106,7 @@
           <!-- Switch: Dinámico -->
           <div class="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-3">
             <div>
-              <div class="font-medium text-gray-900" i18n="@@DynamicTags">Dinámico</div>
+              <div class="text-base font-medium text-gray-900" i18n="@@DynamicTags">Dinámico</div>
               <p class="text-sm text-gray-600" i18n="@@DynamicTagsDescription">
                 Filtrado avanzado mediante una consulta personalizada
               </p>
@@ -117,11 +117,11 @@
 
           <!-- Input Dinámico -->
           <div *ngIf="dynamic" class="mt-3">
-            <label class="block text-sm font-semibold text-gray-900 mb-1" i18n="@@inputConsultaDinamica">
+            <label class="block text-base font-semibold text-gray-900 mb-1" i18n="@@inputConsultaDinamica">
               Consulta dinámica
             </label>
             <input pInputText type="text" [(ngModel)]="dynamicQuery"
-              class="w-full p-2 border border-gray-300 rounded-md" placeholder="Introduzca la expresión dinámica…">
+              class="w-full p-2 border border-gray-300 rounded-md" i18n-placeholder="@@placeholderConsultaDinamica" placeholder="Introduzca la expresión dinámica…">
           </div>
         </div>
       </div>

@@ -23,7 +23,8 @@ export interface Query {
         groupByEnabled: boolean,
         joinType: string,
         forSelector?: boolean,
-        rootTable: string
+        rootTable: string,
+        prediction?: string, 
 
     };
     output: {

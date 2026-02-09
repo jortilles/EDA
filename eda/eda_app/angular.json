@@ -9,7 +9,8 @@
         "locales": {
           "en": "src/locale/messages.en.xlf",
           "ca": "src/locale/messages.ca.xlf",
-          "pl": "src/locale/messages.pl.xlf"
+          "pl": "src/locale/messages.pl.xlf",
+          "fr": "src/locale/messages.fr.xlf"
         }
       },
       "projectType": "application",

@@ -532,7 +532,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
     addLinkedToMapColumns(columns:Array<any>, linkedMap: string){
         let tmp_model = this.getModel();
         columns.forEach(column => {
-            let table = tmp_model.filter(table => table.table_name === column.table)[0];
+            let table = tmp_model.filter(table => table.table_name.toLowerCase() === column.table.toLowerCase())[0];
             table.columns.filter(col => col.column_name === column.col.column_name)[0].linkedMap = linkedMap;
         });
        this._databaseModel.next(tmp_model);

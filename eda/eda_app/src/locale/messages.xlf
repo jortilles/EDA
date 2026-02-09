@@ -137,7 +137,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="direccionMail" datatype="html">
-        <source>Dirección Email</source>
+        <source>Dirección Email / Usuario</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/pages/login/login.component.html</context>
           <context context-type="linenumber">21</context>
@@ -1666,7 +1666,7 @@
           <context context-type="linenumber">37,39</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="LegendPosition" datatype="html">
+      <trans-unit id="legendPosition" datatype="html">
         <source> Posición de la leyenda </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/maps-dialog/mapedit-dialog.component.html</context>
@@ -1885,8 +1885,8 @@
           <context context-type="linenumber">95</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="2568433539181003059" datatype="html">
-        <source>@@removeColumnGlobalFilter:No se puede eliminar la columna porque hay vinculado un Filtro</source>
+      <trans-unit id="removeColumnGlobalFilter" datatype="html">
+        <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/panel-utils/panel-interaction-utils.ts</context>
           <context context-type="linenumber">704</context>
@@ -3575,7 +3575,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
           <context context-type="linenumber">139,141</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="possibleValuesList" datatype="html">
+      <trans-unit id="" datatype="html">
         <source> Valores para filtro: </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
@@ -3934,32 +3934,11 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
           <context context-type="linenumber">72</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="5059714273737054423" datatype="html">
-        <source>@@possibleValuesList: Tabla y columna asociadas </source>
+      <trans-unit id="possibleValuesList" datatype="html">
+        <source>Tabla y columna asociadas </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/data-source-detail/data-source-detail.component.ts</context>
           <context context-type="linenumber">73</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="4378571352831900328" datatype="html">
-        <source>@@possibleValuesListTable: Tabla </source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/module/pages/data-sources/data-source-detail/data-source-detail.component.ts</context>
-          <context context-type="linenumber">74</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="6372104314313781382" datatype="html">
-        <source>@@possibleValuesListID: Id de la columna</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/module/pages/data-sources/data-source-detail/data-source-detail.component.ts</context>
-          <context context-type="linenumber">75</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="3194609423931903572" datatype="html">
-        <source>@@possibleValuesListDescription: Descripción de la columna</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/module/pages/data-sources/data-source-detail/data-source-detail.component.ts</context>
-          <context context-type="linenumber">76</context>
         </context-group>
       </trans-unit>
       <trans-unit id="userTable" datatype="html">
@@ -4229,13 +4208,6 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/pages/data-sources/data-source-detail/table-permissions-dialog/table-permission-dialog.component.html</context>
           <context context-type="linenumber">42</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="addPermissions" datatype="html">
-        <source>Añadir permiso</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/module/pages/data-sources/data-source-detail/table-permissions-dialog/table-permission-dialog.component.ts</context>
-          <context context-type="linenumber">48</context>
         </context-group>
       </trans-unit>
       <trans-unit id="placeholderTargetTables" datatype="html">

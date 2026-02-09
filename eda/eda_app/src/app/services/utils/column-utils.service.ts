@@ -98,6 +98,9 @@ export class ColumnUtilsService {
             case 'numeric':
                 inputType = 'number';
                 break;
+            case 'html':
+                inputType = 'html';
+                break;
             case 'date':
                 inputType = 'date';
                 break;

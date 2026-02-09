@@ -16,7 +16,6 @@ import { UrlsActionComponent } from './dashboard/urls-action/urls-action.compone
 // Routes
 import { PAGES_ROUTES } from './pages.routes';
 import { SaveAsDialogComponent } from './dashboard/saveAsDialog/save-as-dialog.component';
-import { EditStylesDialogComponent } from './dashboard/edit-styles-dialog/edit-styles.dialog.component';
 import { PrimengModule } from 'app/core/primeng.module';
 
 
@@ -35,7 +34,6 @@ import { PrimengModule } from 'app/core/primeng.module';
         AlertsManagementComponent,
         DashboardMailDialogComponent,
         SaveAsDialogComponent,
-        EditStylesDialogComponent,
         UrlsActionComponent
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]

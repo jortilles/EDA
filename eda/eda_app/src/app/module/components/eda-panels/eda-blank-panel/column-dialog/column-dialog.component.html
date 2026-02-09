@@ -123,7 +123,7 @@
                 [(ngModel)]="filterValue.value1"
                 [virtualScroll]="true"
                 [itemSize]="34"
-                [filter]="false"
+                [filter]="true"
                 [style]="{width:'100%'}"
                 [panelStyle]="{minWidth:'100%'}"
                 (onChange)="handleValidForm({value1: filterValue.value1})"
@@ -149,7 +149,7 @@
             @if (filter.switch) {
             <span class="p-float-label h-[3.2rem] [&_.p-multiselect-label-container]:h-[3.05rem] [&_.p-multiselect-label-container]:flex [&_.p-multiselect-label-container]:items-center">
               <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value2" [virtualScroll]="true" [itemSize]="34"
-                [filter]="false" [style]="{width:'100%'}" [panelStyle]="{minWidth:'100%'}"
+                [filter]="true" [style]="{width:'100%'}" [panelStyle]="{minWidth:'100%'}"
                 (onChange)="handleValidForm({value2: filterValue.value2})" i18n-defaultLabel="@@groupSelect" defaultLabel="Selecciona..."
                 [selectionLimit]="limitSelectionFields" id="float-input2">
               </p-multiSelect>

@@ -4,7 +4,8 @@ import { Component, Input } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { AlertService, DashboardService } from '@eda/services/service.index';
 import { ChangeDetectorRef } from '@angular/core';
-
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { ChipModule } from 'primeng/chip';
 import * as _ from 'lodash';
 import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule } from '@angular/forms'; 
@@ -16,7 +17,7 @@ import { EdaDialog2Component } from '@eda/shared/components/shared-components.in
   selector: 'link-dashboards-dialog',
   templateUrl: './link-dashboards.component.html',
   styleUrls: [],
-  imports: [FormsModule, CommonModule, DropdownModule, ProgressBarModule,EdaDialog2Component]
+  imports: [FormsModule, CommonModule, DropdownModule, ProgressBarModule,EdaDialog2Component,ChipModule]
 })
 
 export class LinkDashboardsComponent {
@@ -48,6 +49,7 @@ export class LinkDashboardsComponent {
   public oldLinked: any = null;
   public unLinkString: string = $localize`:@@unlink:Desvincular del informe: `
   public noValidColumn: string = $localize`:@@NoValidCol:No hay columnas válidas`
+  
   public title : string;  
   public loading = false;
   public display: boolean = false;
@@ -62,6 +64,7 @@ export class LinkDashboardsComponent {
     this.title = $localize`:@@DashboardLink:Vincular con un informe`;
     this.display = true;
     this.oldLinked = this.controller.params.linkedDashboard ? this.controller.params.linkedDashboard.dashboardName : null;
+    this.noLink = this.oldLinked ? false : true;
 
     if ((this.controller.params.charttype === 'parallelSets') && !this.controller.params.modeSQL) {
 
@@ -112,21 +115,27 @@ export class LinkDashboardsComponent {
   }
 
   saveChartConfig() {
-    if (!this.noLink) {
-      const dashboard_name = this.dasboards.filter(d => d['value'] === this.selectedDashboard)[0].label;
-      //Get index -> only non numeric
-      const colIndex = this.controller.params.query
-        .map((col: any, i: number) => { return { i: i, name: col.column_name } })
-        .filter(col => col.name === this.sourceColumn)[0].i;
+
+    try {
+      if (!this.noLink) {
+        const dashboard_name = this.dasboards.filter(d => d['value'] === this.selectedDashboard)[0].label;
+        //Get index -> only non numeric
+        const colIndex = this.controller.params.query
+          .map((col: any, i: number) => { return { i: i, name: col.column_name } })
+          .filter(col => col.name === this.sourceColumn)[0].i;
 
 
-      this.onClose(
-        EdaDialogCloseEvent.UPDATE,
-        new LinkedDashboardProps(this.sourceColumn, this.sourceTable, dashboard_name, <any>this.selectedDashboard, this.targetColumn, this.targetTable, colIndex)
-      );
-    } else {
-      this.onClose(
-        EdaDialogCloseEvent.UPDATE, null);
+        this.onClose(
+          EdaDialogCloseEvent.UPDATE,
+          new LinkedDashboardProps(this.sourceColumn, this.sourceTable, dashboard_name, <any>this.selectedDashboard, this.targetColumn, this.targetTable, colIndex)
+        );
+      } else {
+        this.onClose(EdaDialogCloseEvent.UPDATE, null);
+      }
+    } catch (error) {
+      console.error('Error en saveChartConfig:', error);
+      // Si ocurre cualquier error, hacemos lo mismo que el else
+      this.onClose(EdaDialogCloseEvent.NONE, null);
     }
   }
 
@@ -142,7 +151,6 @@ export class LinkDashboardsComponent {
 
   public filterFilters() {
     this.filters = this.filters.filter(column => column.dashboardID === <any>this.selectedDashboard);
-    console.log(this, 'this.filterFilters')
   }
 
   public handleTargetColumn() {

@@ -19,7 +19,7 @@ export class ColumnPermissionDialogComponent implements OnInit {
     @Input() controller: any;
     @Output() close: EventEmitter<any> = new EventEmitter<any>();
     
-    public title = $localize`:@@addPermissions:Añadir permiso`;
+    public title = $localize`:@@addPermission:Añadir permiso`;
  
     public dialog: EdaDialog;
 
@@ -96,32 +96,55 @@ export class ColumnPermissionDialogComponent implements OnInit {
     }
 
     savePermission() {
+
+
         let permissionFilter = {};
 
-            if (this.type === 'users') {
-                permissionFilter = {
-                    users: this.selectedUsers.map(usr => usr._id),
-                    usersName: this.selectedUsers.map(usr => usr.name),
-                    none: this.none ? true : false,
-                    table: this.table.technical_name,
-                    column: "fullTable",
-                    global: true,
-                    permission: this.permission ? true : false,
-                    type: 'users'
-                };
-            }
-            else if (this.type === 'groups') {
-                permissionFilter = {
-                    groups: this.selectedRoles.map(usr => usr._id),
-                    groupsName: this.selectedRoles.map(usr => usr.name),
-                    none: this.none ? true : false,
-                    table: this.table.technical_name,
-                    column: "fullTable",
-                    global: true,
-                    permission: this.permission,
-                    type: 'groups'
-                };
-            }
+        // Determinar el valor basándose en las opciones seleccionadas
+        let value;
+        let isDynamic = false;
+
+        if (this.all) {
+            value = ["(~ => All)"];
+        } else if (this.none) {
+            value = ["(x => None)"];
+        } else if (this.dynamic) {
+            value = [this.dynamicQuery];
+            isDynamic = true;
+        } else {
+            value = this.selectedValues;
+        }
+
+
+        if (this.type === 'users') {
+            permissionFilter = {
+                users: this.selectedUsers.map(usr => usr._id),
+                usersName: this.selectedUsers.map(usr => usr.name),
+                value: value,
+                dynamic: isDynamic,
+                none: this.none ? true : false,
+                table: this.table.technical_name,
+                column: this.column.column_name,
+                global: false,
+                permission: this.permission ? true : false,
+                type: 'users'
+            };
+        }
+        else if (this.type === 'groups') {
+            permissionFilter = {
+                groups: this.selectedRoles.map(usr => usr._id),
+                groupsName: this.selectedRoles.map(usr => usr.name),
+                value: value,
+                dynamic: isDynamic,
+                none: this.none ? true : false,
+                table: this.table.technical_name,
+                column: this.column.column_name,
+                global: false,
+                permission: this.permission,
+                type: 'groups'
+            };
+        }
+
         this.onClose(EdaDialogCloseEvent.NEW, permissionFilter);
     }
 

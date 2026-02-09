@@ -3,7 +3,7 @@ import { OverlayModule } from "primeng/overlay";
 import { OverlayPanel, OverlayPanelModule } from "primeng/overlaypanel";
 import { DashboardPage } from "../dashboard.page";
 import { AlertService, DashboardService, FileUtiles, SpinnerService, StyleProviderService, ChartUtilsService } from "@eda/services/service.index";
-import { EdaPanel, EdaPanelType, EdaTitlePanel } from "@eda/models/model.index";
+import { EdaPanel, EdaPanelType, EdaTitlePanel, EdaTabsPanel } from "@eda/models/model.index";
 import { lastValueFrom } from "rxjs";
 import { Router } from "@angular/router";
 import domtoimage from 'dom-to-image';
@@ -144,9 +144,16 @@ export class DashboardSidebarComponent {
     this.sidebarItems = [
       {
         id: 'newPanel',
-        label: $localize`:@@newPanelTitle:Nuevo Panel`,
+        label: $localize`:@@newPanelTitle:Nuevo panel`,
         icon: "pi pi-plus-circle",
         command: () => this.onAddWidget()
+      },
+      {
+        id: 'newFilter',
+        label: $localize`:@@dashboardSidebarNewFilter:Nuevo filtro`,
+        icon: "pi pi-filter",
+        command: () => this.onAddGlobalFilter()
+
       },
       {
         id: 'newText',
@@ -155,11 +162,10 @@ export class DashboardSidebarComponent {
         command: () => this.onAddTitle()
       },
       {
-        id: 'newFilter',
-        label: $localize`:@@dashboardSidebarNewFilter:Nuevo filtro`,
-        icon: "pi pi-filter",
-        command: () => this.onAddGlobalFilter()
-
+        id: 'newTabs',
+        label: $localize`:@@dashboardSidebarNewTabs:Nuevo navegador`,
+        icon: "pi pi-folder",
+        command: () => this.onAddTabsPanel()
       },
       {
         id: 'editFilters',
@@ -175,7 +181,7 @@ export class DashboardSidebarComponent {
       },
       {
         id: 'dependentFilters',
-        label: $localize`:@@dashboardSidebarDependentFilters:Filtros Dependientes`,
+        label: $localize`:@@dashboardSidebarDependentFilters:Filtros dependientes`,
         icon: "pi pi-sliders-h",
         command: () => this.dependentFilters()
         
@@ -386,7 +392,7 @@ export class DashboardSidebarComponent {
   public onAddTitle(): void {
     let panel = new EdaTitlePanel({
       id: this.fileUtils.generateUUID(),
-      title: 'Titulo',
+      title: 'Titulo Panel',
       type: EdaPanelType.TITLE,
       w: 20,
       h: 1,
@@ -396,6 +402,24 @@ export class DashboardSidebarComponent {
       dragAndDrop: true,
       fontsize: '22px',
       color: '#000000'
+    });
+
+    this.dashboard.panels.push(panel);
+    this.hidePopover();
+  }
+
+  public onAddTabsPanel(): void {
+    let panel = new EdaTabsPanel({
+      id: this.fileUtils.generateUUID(),
+      title: 'Tabs',
+      type: EdaPanelType.TABS,
+      w: 40,
+      h: 2,
+      cols: 40,
+      rows: 2,
+      resizable: true,
+      dragAndDrop: true,
+
     });
 
     this.dashboard.panels.push(panel);
@@ -427,7 +451,7 @@ export class DashboardSidebarComponent {
   private async saveDashboard() {
     // Actualizar el refreshTime si es necesario
     this.dashboard.dashboard.config.refreshTime = this.refreshTime || null;
-    this.dashboard.dashboard.config.onlyIcanEdit = this.clickFiltersEnabled;
+    this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
     this.dashboard.dashboard.config.onlyIcanEdit = this.onlyIcanEdit;
     // Actualizar el autor 
     this.dashboard.dashboard.config.author = JSON.parse(localStorage.getItem('user')).name;
@@ -509,12 +533,23 @@ export class DashboardSidebarComponent {
   }
 
   public saveStyles(newStyles: any) {
-    this.isEditStyleDialogVisible = false;
-    this.dashboard.dashboard.config.styles = newStyles;
-    this.ChartUtilsService.MyPaletteColors = newStyles.palette?.paleta || this.ChartUtilsService.MyPaletteColors;
-    this.dashboard.assignStyles();
-    this.dashboard.refreshPanels();
-
+      this.isEditStyleDialogVisible = false;
+      this.dashboard.dashboard.config.styles = newStyles;
+      this.ChartUtilsService.MyPaletteColors = newStyles.palette?.paleta || this.ChartUtilsService.MyPaletteColors;
+      this.dashboard.assignStyles();
+      
+      setTimeout(() => {
+          this.dashboard.edaPanels.forEach((panel, index) => {
+              if (panel.panelChart) {
+                  try {
+                      panel.panelChart.updateComponent();
+                  } catch (error) {
+                      console.error(`Error al actualizar panel:`, error);
+                  }
+              }
+          });
+          this.dashboard.refreshPanels();
+      }, 100);
   }
 
   public closeVisibleModal() {
@@ -559,8 +594,12 @@ export class DashboardSidebarComponent {
 
   public closeTagModal(tags: any[]) {
     this.isTagModalVisible = false;
-    this.dashboard.selectedTags = tags;
-    this.dashboard.dashboard.config.tag = tags;
+    // Normalizar tags a array de strings
+    const normalizedTags = tags ? tags.map(tag =>
+      typeof tag === 'string' ? tag : tag.value || tag.label
+    ) : [];
+    this.dashboard.selectedTags = normalizedTags;
+    this.dashboard.dashboard.config.tag = normalizedTags;
   }
 
   public removeDashboard() {
@@ -584,7 +623,7 @@ export class DashboardSidebarComponent {
           await lastValueFrom(this.dashboardService.deleteDashboard(dashboardId));
 
           // La app se direcciona al home EDA
-          this.router.navigate(['/']).then(() => {
+          this.router.navigate(['/home']).then(() => {
             window.location.reload();
           });
         } catch (err) {
@@ -789,8 +828,10 @@ export class DashboardSidebarComponent {
   public isEditableCheck() {
     const user = localStorage.getItem('user');
     const userName = JSON.parse(user).name;
+    const userRole = JSON.parse(user).role;
+    const isAdmin = userRole.includes('135792467811111111111110');
     const imProperty = userName === this.dashboard.dashboard.config.author
-    return (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty);
+    return (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty || isAdmin );
   }
 
   toggleClickFilters() {
@@ -799,8 +840,7 @@ export class DashboardSidebarComponent {
 
     // Alternar el estado
     this.clickFiltersEnabled = !this.clickFiltersEnabled;
-
-    // Actualizar label e icono según estado
+    this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;    // Actualizar label e icono según estado
     clickItem.label = this.clickFiltersEnabled ? $localize`:@@enableFilters:Click en filtros habilitado` : $localize`:@@disableFilters:Click en filtros deshabilitado`;
     clickItem.icon = this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock";
 
