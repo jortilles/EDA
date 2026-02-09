@@ -8,7 +8,7 @@ export class MongoDBBuilderService {
     public user: string;
     public limit: number;
 
-    constructor(queryTODO: any, dataModel: any, user: any, limit: number = 100) {
+    constructor(queryTODO: any, dataModel: any, user: any, limit: number = 5000) {
         this.queryTODO = queryTODO;
         this.dataModel = dataModel;
         this.user = user._id;

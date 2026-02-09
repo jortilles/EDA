@@ -29,7 +29,12 @@
 /* filtro individual */
 .filter-card {
   flex: 0 0 auto;
-  width: 15vw;
+  max-width: 12.5vw;
+}
+
+/* filtro sin autocomplete (multiselect) */
+::ng-deep .p-multiselect {
+  max-width: 12.5vw;
 }
 
 /*****************/
