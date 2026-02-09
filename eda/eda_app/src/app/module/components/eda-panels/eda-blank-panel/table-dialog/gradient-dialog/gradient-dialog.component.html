@@ -1,28 +1,74 @@
-<eda-dialog2  [header]="title" width="40vw" height="40vh" [overflow]="'auto'" (apply)="saveGradientConfig()" (close)="closeDialog()">
+<eda-dialog2 [header]="title" width="40vw" height="50vh" [overflow]="'auto'" (apply)="saveGradientConfig()" (close)="closeDialog()">
   <div content class="flex flex-col flex-1 overflow-hidden h-full">
-    <h5 i18n="@@colorsChartH6" class="custom-border-b1">
-      Colores
-    </h5>
-  
-    <div class="chart-color-selection w-1/5 mt-4">
-      <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
-        <span class="font-medium">Min</span>
-        <div class="flex items-center gap-2">
-          <span class="text-md text-slate-500 font-mono">{{ min }}</span>
-          <p-colorPicker [(ngModel)]="min" [disabled]="noStyle" format="hex" appendTo="body" />
-        </div>
-      </div>
-    </div>
 
-    <div class="chart-color-selection w-1/5 mt-4">
-      <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
-        <span class="font-medium">Max</span>
-        <div class="flex items-center gap-2">
-          <span class="text-md text-slate-500 font-mono">{{ max }}</span>
-          <p-colorPicker [(ngModel)]="max" [disabled]="noStyle" format="hex" appendTo="body" />
+    <p-tabView [(activeIndex)]="activeTabIndex">
+
+      <!-- Tab 1: Gradiente de color -->
+      <p-tabPanel header="Gradiente de color" i18n-header="@@gradientTab">
+        <div class="chart-color-selection mt-4" style="min-width: 250px;">
+          <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+            <span class="font-medium">Min</span>
+            <div class="flex items-center gap-2">
+              <input class="text-md text-right text-slate-500 font-mono"[(ngModel)]="min">
+              <p-colorPicker [(ngModel)]="min" [disabled]="noStyle" format="hex" appendTo="body" />
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+
+        <div class="chart-color-selection mt-4" style="min-width: 250px;">
+          <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+            <span class="font-medium">Max</span>
+            <div class="flex items-center gap-2">
+              <input class="text-md text-right text-slate-500 font-mono"[(ngModel)]="max">
+              <p-colorPicker [(ngModel)]="max" [disabled]="noStyle" format="hex" appendTo="body" />
+            </div>
+          </div>
+        </div>
+      </p-tabPanel>
+
+      <!-- Tab 2: Codigo semaforico -->
+      <p-tabPanel header="Código semafórico" i18n-header="@@semaphoreTab">
+        <div class="chart-color-selection mt-4" style="min-width: 300px;">
+          <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+            <div>
+              <span class="font-medium mr-4" i18n="@@aboveThreshold">{{controller.params.col.header}} es mayor que:</span>
+              <p-inputNumber [(ngModel)]="value1" [disabled]="noStyle" mode="decimal"
+              [minFractionDigits]="0" [maxFractionDigits]="4" />
+            </div>
+            <div class="flex items-center gap-2">
+              <input class="text-md text-right text-slate-500 font-mono"[(ngModel)]="color1">
+              <p-colorPicker [(ngModel)]="color1" [disabled]="noStyle" format="hex" appendTo="body" />
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-color-selection mt-4" style="min-width: 300px;">
+          <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+            <span class="font-medium" i18n="@@betweenThresholds">{{controller.params.col.header}} mayor que {{value2}} y menor que {{value1}}</span>
+            <div class="flex items-center gap-2">
+              <input class="text-md text-right text-slate-500 font-mono"[(ngModel)]="color2">
+              <p-colorPicker [(ngModel)]="color2" [disabled]="noStyle" format="hex" appendTo="body" />
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-color-selection mt-4" style="min-width: 300px;">
+          <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+            <div>
+              <span class="font-medium mr-4" i18n="@@belowThreshold">{{controller.params.col.header}} es menor que: </span>
+              <p-inputNumber [(ngModel)]="value2" [disabled]="noStyle" mode="decimal"
+              [minFractionDigits]="0" [maxFractionDigits]="4" />
+            </div>
+            <div class="flex items-center gap-2">
+              <input class="text-md text-right text-slate-500 font-mono"[(ngModel)]="color3">
+              <p-colorPicker [(ngModel)]="color3" [disabled]="noStyle" format="hex" appendTo="body" />
+            </div>
+          </div>
+        </div>
+
+      </p-tabPanel>
+
+    </p-tabView>
 
     <div class="mb-1" style="margin-top: 2em;">
       <h6 i18n="@@noStyle">Sin estilo</h6>
