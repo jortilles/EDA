@@ -5784,6 +5784,50 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>CONFIGURACION DE PESTAÑAS</source>
         <target>CONFIGUTACIÓ DE PESTANYES</target>
       </trans-unit>
+      <trans-unit id="tabsDashboardSettings">
+        <source>Configura las pestañas para mostrar dashboards</source>
+        <target>Configura les pestanyes per mostrar dashboards</target>
+      </trans-unit>
+
+      <trans-unit id="filterByPrivacy">
+        <source>Filtrar por Privacidad</source>
+        <target>Filtrar per Privadesa</target>
+      </trans-unit>
+
+      <trans-unit id="filterByTags">
+        <source>Filtrar por Tags</source>
+        <target>Filtrar per Tags</target>
+      </trans-unit>
+
+      <trans-unit id="selectEditTabs">
+        <source>Seleccionar...</source>
+        <target>Seleccionar...</target>
+      </trans-unit>
+
+      <trans-unit id="searchTag">
+        <source>Buscar tag...</source>
+        <target>Buscar tag...</target>
+      </trans-unit>
+
+      <trans-unit id="filterSearchDashboards">
+        <source>Usa los filtros para buscar dashboards</source>
+        <target>Fes servir els filtres per buscar dashboards</target>
+      </trans-unit>
+
+      <trans-unit id="noCoincidenceDashFilters">
+        <source>No hay dashboards que coincidan con los filtros</source>
+        <target>No hi ha dashboards que coincideixin amb els filtres</target>
+      </trans-unit>
+
+      <trans-unit id="addDashListAvailable">
+        <source>Añade dashboards desde la lista de disponibles</source>
+        <target>Afegeix dashboards des de la llista de disponibles</target>
+      </trans-unit>
+
+      <trans-unit id="filterOptions">
+        <source>Opciones del filtro:</source>
+        <target>Opcions del filtre:</target>
+      </trans-unit>
 
     </body>
   </file>

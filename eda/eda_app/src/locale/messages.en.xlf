@@ -5634,6 +5634,42 @@ OR<ph id="5"/>
   <source>CONFIGURACION DE PESTAÑAS</source>
   <target>TAB CONFIGURATION</target>
 </trans-unit>
+<trans-unit id="tabsDashboardSettings">
+  <source>Configura las pestañas para mostrar dashboards</source>
+  <target>Configure the tabs to display dashboards</target>
+</trans-unit>
+<trans-unit id="filterByPrivacy">
+  <source>Filtrar por Privacidad</source>
+  <target>Filter by Privacy</target>
+</trans-unit>
+<trans-unit id="filterByTags">
+  <source>Filtrar por Tags</source>
+  <target>Filter by Tags</target>
+</trans-unit>
+<trans-unit id="selectEditTabs">
+  <source>Seleccionar...</source>
+  <target>Select...</target>
+</trans-unit>
+<trans-unit id="searchTag">
+  <source>Buscar tag...</source>
+  <target>Search tag...</target>
+</trans-unit>
+<trans-unit id="filterSearchDashboards">
+  <source>Usa los filtros para buscar dashboards</source>
+  <target>Use the filters to search for dashboards</target>
+</trans-unit>
+<trans-unit id="noCoincidenceDashFilters">
+  <source>No hay dashboards que coincidan con los filtros</source>
+  <target>There are no dashboards that match the filters</target>
+</trans-unit>
+<trans-unit id="addDashListAvailable">
+  <source>Añade dashboards desde la lista de disponibles</source>
+  <target>Add dashboards from the available list</target>
+</trans-unit>
+<trans-unit id="filterOptions">
+  <source>Opciones del filtro:</source>
+  <target>Filter options:</target>
+</trans-unit>
 </body>
 </file>
 </xliff>
