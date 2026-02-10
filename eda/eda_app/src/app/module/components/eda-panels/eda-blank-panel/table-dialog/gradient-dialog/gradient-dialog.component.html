@@ -1,4 +1,4 @@
-<eda-dialog2 [header]="title" width="40vw" height="50vh" [overflow]="'auto'" (apply)="saveGradientConfig()" (close)="closeDialog()">
+<eda-dialog2 [header]="title" width="40vw" height="50vh" [overflow]="'auto'" (apply)="saveGradientConfig()" (close)="closeDialog()" (notstyles)="saveGradientConfig(true)" [showNotStyles]=true>
   <div content class="flex flex-col flex-1 overflow-hidden h-full">
 
     <p-tabView [(activeIndex)]="activeTabIndex">
@@ -69,13 +69,6 @@
       </p-tabPanel>
 
     </p-tabView>
-
-    <div class="mb-1" style="margin-top: 2em;">
-      <h6 i18n="@@noStyle">Sin estilo</h6>
-      <p-inputSwitch id="switchQueryMode" class="col-1 sql-switch" #switchMode [(ngModel)]="noStyle"
-        tooltipPosition="left">
-      </p-inputSwitch>
-    </div>
 
   </div>
 

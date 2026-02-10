@@ -52,6 +52,12 @@
                    <span i18n="@@deleteFilters">Eliminar</span>
                 </button>
             }
+            @if (ifNoStyles) {
+                <button class="execute-button w-[6vw] text-center" (click)="onNotStyles()">
+                   <i class="fa fa-paint-brush"></i>
+                   <span i18n="@@deleteFilters">Sin estilos</span>
+                </button>
+            }
             
             <button *ngIf="ifShowApply" class="confirm-button" [disabled]="disableApply" (click)="onApply()">
                 <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>

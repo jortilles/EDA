@@ -64,9 +64,9 @@ export class TableGradientDialogComponent implements OnInit{
     return this.controller.close(event, response);
   }
 
-  saveGradientConfig(){
+  saveGradientConfig(notStyles ?: boolean){
     // Si no tenemos estilos da igual el tab
-    if (this.noStyle) {
+    if (this.noStyle || notStyles) {
       this.onClose(EdaDialogCloseEvent.UPDATE, { col: this.controller.params.col.field, noStyle: true });
       return; //cancelamos la asignación de colores a posterior
     }
