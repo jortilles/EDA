@@ -208,7 +208,7 @@
       @if (columnPanel.computed_column !== 'no') {
         <div class="mb-4">
           <label for="sqlExpression" class="block font-medium text-gray-700 mb-1" i18n="@@sqlExpColumn">
-            Expresión SQL (Debe incluir la agregación)
+            Expresión SQL
           </label>
           <input 
             id="sqlExpression" 
@@ -375,7 +375,7 @@
 
       @if (columnPanel.SQLexpression) {
         <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#00BFB3] hover:bg-[#00BFB3]/90 text-white  h-10 px-4 py-2"
-          (click)="checkCalculatedColumn(columnPanel)">
+          (click)="checkCalculatedColumn(columnPanel)" i18n="@@CheckExpression">
           Comprobar expresión
         </button>
       }

@@ -290,13 +290,21 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
       // Aqui se manejan las columnas calculadas
       if (el.computed_column === 'computed') {
         if(el.column_type=='text'){
-          columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
+          if(el.aggregation_type === 'none') { columns.push(` ${el.SQLexpression} as "${el.display_name}"`);}
+          else if(el.aggregation_type === 'count_distinct') {columns.push(` count( distinct ${el.SQLexpression} ) as "${el.display_name}"`);}
+          else {columns.push(` ${el.aggregation_type}(${el.SQLexpression}) as "${el.display_name}"`);}
         }else if(el.column_type=='numeric'){
-          columns.push(` CAST( ${el.SQLexpression} ${whatIfExpression}  AS DECIMAL(32, ${el.minimumFractionDigits}))  as "${el.display_name}"`);
+          if(el.aggregation_type === 'none') { columns.push(` CAST( ${el.SQLexpression} ${whatIfExpression}  AS DECIMAL(32, ${el.minimumFractionDigits})) as "${el.display_name}"`);}
+          else if(el.aggregation_type === 'count_distinct') { columns.push(` CAST( count( distinct( ${el.SQLexpression} ${whatIfExpression})) AS DECIMAL(32, ${el.minimumFractionDigits})) as "${el.display_name}"`);}
+          else {columns.push(` CAST( ${el.aggregation_type}(${el.SQLexpression} ${whatIfExpression}) AS DECIMAL(32, ${el.minimumFractionDigits})) as "${el.display_name}"`);}
         }else if(el.column_type=='date'){
-          columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
+          if(el.aggregation_type === 'none') { columns.push(` ${el.SQLexpression} as "${el.display_name}"`);}
+          else if(el.aggregation_type === 'count_distinct') { columns.push(` count( distinct ${el.SQLexpression}) as "${el.display_name}"`);}
+          else { columns.push(` ${el.aggregation_type}(${el.SQLexpression}) as "${el.display_name}"`);}
         }else if(el.column_type=='coordinate'){
-          columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
+          if(el.aggregation_type === 'none') { columns.push(` ${el.SQLexpression} as "${el.display_name}"`);}
+          else if(el.aggregation_type === 'count_distinct') { columns.push(` count( distinct ${el.SQLexpression}) as "${el.display_name}"`);}
+          else {columns.push(` ${el.aggregation_type}(${el.SQLexpression}) as "${el.display_name}"`);}
         }
         // GROUP BY
         if (el.format) {
