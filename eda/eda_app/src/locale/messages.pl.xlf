@@ -5545,6 +5545,42 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="tableActivationAccessMessageOption">
         <source>Activar para habilitar un acceso restringido</source>
         <target>Włączyć, aby umożliwić dostęp ograniczony</target>
+        </trans-unit>
+      <trans-unit id="tabsDashboardSettings">
+        <source>Configura las pestañas para mostrar dashboards</source>
+        <target>Skonfiguruj karty, aby wyświetlić pulpity nawigacyjne</target>
+      </trans-unit>
+      <trans-unit id="filterByPrivacy">
+        <source>Filtrar por Privacidad</source>
+        <target>Filtruj według prywatnościa</target>
+      </trans-unit>
+      <trans-unit id="filterByTags">
+        <source>Filtrar por Tags</source>
+        <target>Filtruj według tagóws</target>
+      </trans-unit>
+      <trans-unit id="selectEditTabs">
+        <source>Seleccionar...</source>
+        <target>Wybierać...</target>
+      </trans-unit>
+      <trans-unit id="searchTag">
+        <source>Buscar tag...</source>
+        <target>Wyszukaj tag...</target>
+      </trans-unit>
+      <trans-unit id="filterSearchDashboards">
+        <source>Usa los filtros para buscar dashboards</source>
+        <target>Użyj filtrów, aby wyszukać pulpity nawigacyjne</target>
+      </trans-unit>
+      <trans-unit id="noCoincidenceDashFilters">
+        <source>No hay dashboards que coincidan con los filtros</source>
+        <target>Brak pulpitów nawigacyjnych, które spełniają kryteria filtrów</target>
+      </trans-unit>
+      <trans-unit id="addDashListAvailable">
+        <source>Añade dashboards desde la lista de disponibles</source>
+        <target>Dodaj pulpity nawigacyjne z dostępnej listy</target>
+      </trans-unit>
+      <trans-unit id="filterOptions">
+        <source>Opciones del filtro:</source>
+        <target>Opcje filtrowania:</target>
       </trans-unit>
 </body>
 </file>
