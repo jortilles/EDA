@@ -68,8 +68,8 @@ export class EdaTableComponent implements OnInit {
         this.chartOptions = EdaColumnChartOptions;
     }
     ngOnInit(): void {
-        
-        
+
+
         if(this?.inject?.styles && !this.inject.pivot){
             this.applyStyles(this.inject.styles)
         }else if(this?.inject?.styles && this.inject.pivot){
@@ -119,6 +119,20 @@ export class EdaTableComponent implements OnInit {
     getSafeHtml(html: string): SafeHtml {
         if (!html) return '';
         return this.sanitizer.bypassSecurityTrustHtml(html);
+    }
+
+    handleHtmlClick(event: MouseEvent) {
+        event.stopPropagation();
+        const target = event.target as HTMLElement;
+        // Con pointer-events:none en <a>, los clics siempre aterrizan en el <div>, por lo que se busca <a> en los elementos secundarios.
+        const anchor = target.querySelector('a') as HTMLAnchorElement;
+        if (anchor) {
+            const href = anchor.getAttribute('href');
+            const anchorTarget = anchor.getAttribute('target');
+            if (href) {
+                window.open(href, anchorTarget || '_self');
+            }
+        }
     }
 
     getStyleClass(col, rowData) {
