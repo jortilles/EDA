@@ -5578,7 +5578,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Opciones del filtro:</source>
         <target>Opcje filtrowania:</target>
       </trans-unit>
-      </trans-unit>
       <trans-unit id="sqlExpressionCalculatedField">
         <source>Expresión SQL</source>
         <target>Wyrażenie SQL</target>
