@@ -44,6 +44,7 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, AfterView
     public ifShowReset: boolean;
     public ifShowDuplicate: boolean;
     public ifShowDeleteFilter: boolean;
+    public ifNoStyles: boolean;
 
     // Traducido automáticamente para PrimeNG
     get translatedBreakpoints(): Record<string, string> {
@@ -71,6 +72,7 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, AfterView
         this.ifShowDuplicate = this.duplicate.observers.length > 0 && this.showDuplicate;
         this.ifShowReset = this.reset.observers.length > 0 && this.showReset;
         this.ifShowDeleteFilter = this.delete.observers.length > 0 && this.showDelete;
+        this.ifNoStyles = this.notstyles.observers.length > 0 && this.showNotStyles;
     }
 
     ngAfterViewInit(): void {

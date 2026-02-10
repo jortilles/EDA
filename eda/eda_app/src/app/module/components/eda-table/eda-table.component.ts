@@ -123,20 +123,31 @@ export class EdaTableComponent implements OnInit {
 
     getStyleClass(col, rowData) {
         if (this.styles[col.field]) {
-
-            let cellClass = null;
+            const styleEntry = this.styles[col.field];
             let field = col.field;
-            if(this.inject.pivot) field = this.styles[col.field].value;
+            if(this.inject.pivot) field = styleEntry.value;
 
             field = this.getNiceName(field);
-            
-            if(!parseFloat(rowData[col.field])) cellClass = null;
-            else if (parseFloat(rowData[col.field]) < parseFloat(this.styles[col.field].ranges[0])) cellClass = `table-gradient-${field}-${0}`
-            else if (parseFloat(rowData[col.field]) < parseFloat(this.styles[col.field].ranges[1])) cellClass = `table-gradient-${field}-${1}`;
-            else if (parseFloat(rowData[col.field]) < parseFloat(this.styles[col.field].ranges[2])) cellClass = `table-gradient-${field}-${2}`;
-            else if (parseFloat(rowData[col.field]) < parseFloat(this.styles[col.field].ranges[3])) cellClass = `table-gradient-${field}-${3}`;
+
+            const cellValue = parseFloat(rowData[col.field]);
+            if (isNaN(cellValue)) return null;
+
+            // Si es semaforo devolveremos uno de los 3 colores
+            if (styleEntry.type === 'semaphore') {
+                if (cellValue > styleEntry.value1) return `table-semaphore-${field}-0`;
+                else if (cellValue >= styleEntry.value2) return `table-semaphore-${field}-1`;
+                else return `table-semaphore-${field}-2`;
+            }
+
+            // Si es gradiente devolveremos uno de los 5 rangos que generamos
+            let cellClass = null;
+            if (cellValue < parseFloat(styleEntry.ranges[0])) cellClass = `table-gradient-${field}-${0}`
+            else if (cellValue < parseFloat(styleEntry.ranges[1])) cellClass = `table-gradient-${field}-${1}`;
+            else if (cellValue < parseFloat(styleEntry.ranges[2])) cellClass = `table-gradient-${field}-${2}`;
+            else if (cellValue < parseFloat(styleEntry.ranges[3])) cellClass = `table-gradient-${field}-${3}`;
             else  cellClass = `table-gradient-${field}-${4}`;
 
+            // Devolvemos la clase de estilo que queremos aplicar a la columna
             return cellClass;
         }
         return null;
@@ -153,133 +164,202 @@ export class EdaTableComponent implements OnInit {
     }
 
     public applyStyles(styles: Array<any>) {
-
-        const fields = styles.map(style => style.col);
+        // Verificamos que tipo de limites numericos estamos trantado
+        const gradientStyles = styles.filter(s => !s.type || s.type === 'gradient');
+        const semaphoreStyles = styles.filter(s => s.type === 'semaphore');
         const limits = {};
 
         //Initialize 
-        fields.forEach(field => {
-            limits[field] = { min: Infinity, max: -Infinity, rangeValue: 0, ranges: []};
-        });
-
-        //Set values
-        this.inject.value.forEach(row => {
+        // Si los estilos que entran son gradientes...
+        if (gradientStyles.length > 0) {
+            const fields = gradientStyles.map(style => style.col);
 
             fields.forEach(field => {
-                if (parseFloat(row[field]) > limits[field].max) limits[field].max = parseFloat(row[field]);
-                if (parseFloat(row[field]) < limits[field].min) limits[field].min = parseFloat(row[field]);
+                limits[field] = { min: Infinity, max: -Infinity, rangeValue: 0, ranges: []};
             });
 
-        });
+        //Set values
+            this.inject.value.forEach(row => {
+
+                fields.forEach(field => {
+                    if (parseFloat(row[field]) > limits[field].max) limits[field].max = parseFloat(row[field]);
+                    if (parseFloat(row[field]) < limits[field].min) limits[field].min = parseFloat(row[field]);
+                });
+
+            });
         //console.log(limits);
 
         //Set ranges
-        fields.forEach(field => {
-            limits[field].rangeValue = (limits[field].max - limits[field].min) / 5;
-            let downLimit = limits[field].min;
-            for (let i = 0; i < 5; i++) {
-                let value = downLimit + limits[field].rangeValue
-                limits[field].ranges.push(value);
-                downLimit = value;
-            }
-        });
-
-
-        Object.keys(limits).forEach((key, i) => {
-
-            const colors = this.generateColor(styles[i].max, styles[i].min, 5);
-  
-            colors.forEach((color, i) => {
-                const name = this.getNiceName(key)
-                this.elementRef.nativeElement.style.setProperty(`--table-gradient-bg-color-${name}-${i}`, `#${color} `);
-                this.styleService.setStyles(`.table-gradient-${name}-${i}`, 
-                {
-                    // color:'',
-                    borderWidth: '1px ',
-                    borderStyle: 'solid ',
-                    borderColor: 'white ',
-                    backgroundColor:`var(--table-gradient-bg-color-${name}-${i}) `,
-                });
+            fields.forEach(field => {
+                limits[field].rangeValue = (limits[field].max - limits[field].min) / 5;
+                let downLimit = limits[field].min;
+                for (let i = 0; i < 5; i++) {
+                    let value = downLimit + limits[field].rangeValue
+                    limits[field].ranges.push(value);
+                    downLimit = value;
+                }
             });
 
-        })
 
+            Object.keys(limits).forEach((key, i) => {
+
+                const colors = this.generateColor(gradientStyles[i].max, gradientStyles[i].min, 5);
+
+                colors.forEach((color, i) => {
+                    const name = this.getNiceName(key)
+                    this.elementRef.nativeElement.style.setProperty(`--table-gradient-bg-color-${name}-${i}`, `#${color} `);
+                    this.styleService.setStyles(`.table-gradient-${name}-${i}`,
+                    {
+                        // color:'',
+                        borderWidth: '1px ',
+                        borderStyle: 'solid ',
+                        borderColor: 'white ',
+                        backgroundColor:`var(--table-gradient-bg-color-${name}-${i}) `,
+                    });
+                });
+            });
+            
+        }
+
+        // Si los estilos que entran son SEMAFORICOS<...
+        if (semaphoreStyles.length > 0) {
+            semaphoreStyles.forEach(style => {
+                const field = style.col;
+                const name = this.getNiceName(field);
+
+                limits[field] = {
+                    type: 'semaphore',
+                    value1: style.value1,
+                    value2: style.value2
+                };
+
+                const semaphoreColors = [style.color1, style.color2, style.color3];
+                semaphoreColors.forEach((color, i) => {
+                    const hexColor = color.startsWith('#') ? color : `#${color}`;
+                    this.elementRef.nativeElement.style.setProperty(`--table-semaphore-bg-color-${name}-${i}`, hexColor);
+                    this.styleService.setStyles(`.table-semaphore-${name}-${i}`,
+                    {
+                        borderWidth: '1px ',
+                        borderStyle: 'solid ',
+                        borderColor: 'white ',
+                        backgroundColor:`var(--table-semaphore-bg-color-${name}-${i}) `,
+                    });
+                });
+            });
+        }
+
+        // Devlolvemos los limites para luego saber que color aplicar
         this.styles = limits;
 
     }
 
     applyPivotSyles(styles){
-        const fields = styles.map(style => style.col);
-        const limits = {};
+        const gradientStyles = styles.filter(s => !s.type || s.type === 'gradient');
+        const semaphoreStyles = styles.filter(s => s.type === 'semaphore');
+        // Si los estilos que entran son gradientes...
+        if (gradientStyles.length > 0) {
+            const fields = gradientStyles.map(style => style.col);
+            const limits = {};
 
-        //Initialize 
-        fields.forEach(field => {
-            limits[field] = { min: Infinity, max: -Infinity, rangeValue: 0, ranges: [], cols:styles.filter(s => s.col === field)[0].cols  };
-        });
-
-        //Set values
-        this.inject.value.forEach(row => {
-
+            //Initialize 
             fields.forEach(field => {
+                limits[field] = { min: Infinity, max: -Infinity, rangeValue: 0, ranges: [], cols:gradientStyles.filter(s => s.col === field)[0].cols  };
+            });
 
-                let style = styles.filter(style => style.col === field)[0];
+           //Set values
+            this.inject.value.forEach(row => {
 
-                style.cols.forEach(col => {
+                fields.forEach(field => {
 
-                    if (parseFloat(row[col]) > limits[field].max) limits[field].max = parseFloat(row[col]);
-                    if (parseFloat(row[col]) < limits[field].min) limits[field].min = parseFloat(row[col]);
-                });
+                    let style = gradientStyles.filter(style => style.col === field)[0];
+                    
+                    style.cols.forEach(col => {
+
+                        if (parseFloat(row[col]) > limits[field].max) limits[field].max = parseFloat(row[col]);
+                        if (parseFloat(row[col]) < limits[field].min) limits[field].min = parseFloat(row[col]);
+                    });
                 
-            });
-
-        });
-
-        //Set ranges
-        fields.forEach(field => {
-            limits[field].rangeValue = (limits[field].max - limits[field].min) / 5;
-            let downLimit = limits[field].min;
-            for (let i = 0; i < 5; i++) {
-                let value = downLimit + limits[field].rangeValue
-                limits[field].ranges.push(value);
-                downLimit = value;
-            }
-        });
-
-        Object.keys(limits).forEach((key, i) => {
-
-            const colors = this.generateColor(styles[i].max, styles[i].min, 5);
-  
-            colors.forEach((color, i) => {
-                const name = this.getNiceName(key)
-                this.elementRef.nativeElement.style.setProperty(`--table-gradient-bg-color-${name}-${i}`, `#${color}`);
-                this.styleService.setStyles(`.table-gradient-${name}-${i}`, 
-                {
-                    // color:'',
-                    borderWidth: '1px ',
-                    borderStyle: 'solid ',
-                    borderColor: 'white ',
-                    backgroundColor:`var(--table-gradient-bg-color-${name}-${i})`,
                 });
+
             });
 
-        });
-        let tmpStyles = {};
-
-        Object.keys(limits).forEach(key => {
-
-            const value = limits[key]
-
-            value.cols.forEach(col => {
-                tmpStyles[col] = {
-                    max:value.max,
-                    min:value.min,
-                    rangeValue:value.rangeValue,
-                    ranges:value.ranges,
-                    value:key
+            //Set ranges
+            fields.forEach(field => {
+                limits[field].rangeValue = (limits[field].max - limits[field].min) / 5;
+                let downLimit = limits[field].min;
+                for (let i = 0; i < 5; i++) {
+                    let value = downLimit + limits[field].rangeValue
+                    limits[field].ranges.push(value);
+                    downLimit = value;
                 }
             });
 
-        });
+            Object.keys(limits).forEach((key, i) => {
+
+                const colors = this.generateColor(gradientStyles[i].max, gradientStyles[i].min, 5);
+                colors.forEach((color, i) => {
+                    const name = this.getNiceName(key)
+                    this.elementRef.nativeElement.style.setProperty(`--table-gradient-bg-color-${name}-${i}`, `#${color}`);
+                    this.styleService.setStyles(`.table-gradient-${name}-${i}`,
+                    {
+                        borderWidth: '1px ',
+                        borderStyle: 'solid ',
+                        borderColor: 'white ',
+                        backgroundColor:`var(--table-gradient-bg-color-${name}-${i})`,
+                    });
+                });
+
+            });
+            let tmpStyles = {};
+
+            Object.keys(limits).forEach(key => {
+
+                const value = limits[key]
+
+                value.cols.forEach(col => {
+                    tmpStyles[col] = {
+                        max:value.max,
+                        min:value.min,
+                        rangeValue:value.rangeValue,
+                        ranges:value.ranges,
+                        value:key
+                    }
+                });
+            });
+        }
+
+        let tmpStyles = {};
+        // Aplicamos estilos si es semaforico
+        if (semaphoreStyles.length > 0) {
+            semaphoreStyles.forEach(style => {
+                const name = this.getNiceName(style.col);
+
+                const semaphoreColors = [style.color1, style.color2, style.color3];
+                semaphoreColors.forEach((color, i) => {
+                    const hexColor = color.startsWith('#') ? color : `#${color}`;
+                    this.elementRef.nativeElement.style.setProperty(`--table-semaphore-bg-color-${name}-${i}`, hexColor);
+                    this.styleService.setStyles(`.table-semaphore-${name}-${i}`,
+                    {
+                        borderWidth: '1px ',
+                        borderStyle: 'solid ',
+                        borderColor: 'white ',
+                        backgroundColor:`var(--table-semaphore-bg-color-${name}-${i})`,
+                    });
+                });
+
+                if (style.cols) {
+                    style.cols.forEach(col => {
+                        tmpStyles[col] = {
+                            type: 'semaphore',
+                            value1: style.value1,
+                            value2: style.value2,
+                            value: style.col
+                        };
+                    });
+                }
+            });
+        }
+
         this.styles = tmpStyles;
 
     }
