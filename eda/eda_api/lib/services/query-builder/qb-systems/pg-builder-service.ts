@@ -495,7 +495,6 @@ export class PgBuilderService extends QueryBuilderService {
 
       el.minimumFractionDigits = el.minimumFractionDigits || 0;
 
-      console.log('el :::: ', el);
 
       // Aqui se manejan las columnas calculadascount_nulls
       if (el.computed_column === 'computed') {
