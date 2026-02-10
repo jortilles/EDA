@@ -1061,12 +1061,8 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>Add relation</target>
 </trans-unit>
 <trans-unit id="inputTipoColumna" datatype="html">
-<source>
-                Tipo de columna
-</source>
-<target>
-                Column type
-</target>
+<source>Tipo de columna</source>
+<target>Column type</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
 <context context-type="linenumber">80</context>
@@ -1880,8 +1876,8 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 
 
 <trans-unit id="sqlExpColumn" datatype="html">
-<source>Expresión SQL (Debe incluir la agregación)</source>
-<target>SQL expression (Must include aggregation)</target>
+<source>Expresión SQL</source>
+<target>SQL expression</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
 <context context-type="linenumber">103</context>
@@ -5665,6 +5661,62 @@ OR<ph id="5"/>
 <trans-unit id="tableActivationAccessMessageOption">
   <source>Activar para habilitar un acceso restringido</source>
   <target>Enable to allow restricted access</target>
+</trans-unit>
+<trans-unit id="tabsDashboardSettings">
+  <source>Configura las pestañas para mostrar dashboards</source>
+  <target>Configure the tabs to display dashboards</target>
+</trans-unit>
+<trans-unit id="filterByPrivacy">
+  <source>Filtrar por Privacidad</source>
+  <target>Filter by Privacy</target>
+</trans-unit>
+<trans-unit id="filterByTags">
+  <source>Filtrar por Tags</source>
+  <target>Filter by Tags</target>
+</trans-unit>
+<trans-unit id="selectEditTabs">
+  <source>Seleccionar...</source>
+  <target>Select...</target>
+</trans-unit>
+<trans-unit id="searchTag">
+  <source>Buscar tag...</source>
+  <target>Search tag...</target>
+</trans-unit>
+<trans-unit id="filterSearchDashboards">
+  <source>Usa los filtros para buscar dashboards</source>
+  <target>Use the filters to search for dashboards</target>
+</trans-unit>
+<trans-unit id="noCoincidenceDashFilters">
+  <source>No hay dashboards que coincidan con los filtros</source>
+  <target>There are no dashboards that match the filters</target>
+</trans-unit>
+<trans-unit id="addDashListAvailable">
+  <source>Añade dashboards desde la lista de disponibles</source>
+  <target>Add dashboards from the available list</target>
+</trans-unit>
+<trans-unit id="filterOptions">
+  <source>Opciones del filtro:</source>
+  <target>Filter options:</target>
+  </trans-unit>
+<trans-unit id="sqlExpressionCalculatedField">
+  <source>Expresión SQL</source>
+  <target>SQL Expression</target>
+</trans-unit>
+<trans-unit id="typeSelectorText">
+  <source>Tipo de columna</source>
+  <target>Column type</target>
+</trans-unit>
+<trans-unit id="decimalNumberText">
+  <source>Número de decimales</source>
+  <target>Number of decimals</target>
+</trans-unit>
+<trans-unit id="typeSelectorAggregation">
+  <source>Agregación</source>
+  <target>Aggregation</target>
+</trans-unit>
+<trans-unit id="CheckExpression">
+  <source>Comprobar expresión</source>
+  <target>Check expression</target>
 </trans-unit>
 </body>
 </file>

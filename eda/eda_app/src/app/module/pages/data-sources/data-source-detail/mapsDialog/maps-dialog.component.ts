@@ -42,7 +42,7 @@ export class MapDialogComponent implements OnInit {
 
   constructor(private dataSourceService: DataSourceService) {
     this.mapForm.get('selectedTable')!.valueChanges.subscribe(valor => {
-      this.getColumns();
+      this.getColumns(valor);
     });
   }
 
@@ -87,13 +87,16 @@ export class MapDialogComponent implements OnInit {
     this.center = [centerX, centerY];
   }
 
-  getColumns() {
-    const selectedTable = this.mapForm.value.selectedTable;
+  getColumns(selectedTable: string) {
 
     if (selectedTable) {
-      this.columns = this.dataSourceService.getModel().filter(table => table.table_name.toLowerCase() === selectedTable.toLowerCase())[0].columns
-        .map(col => ({ label: col.display_name.default, value: JSON.stringify({ table: selectedTable, col: col } ) }));
-      this.columnsValues = this.dataSourceService.getModel().filter(table => table.table_name.toLowerCase() === selectedTable.toLowerCase())[0].columns;
+      const match = this.dataSourceService.getModel().filter(table => table.table_name.toLowerCase() === selectedTable.toLowerCase());
+
+      if (match.length > 0) {
+        this.columns = match[0].columns
+          .map(col => ({ label: col.display_name.default, value: JSON.stringify({ table: selectedTable, col: col } ) }));
+        this.columnsValues = match[0].columns;
+      }
     }
   }
 

@@ -3,7 +3,7 @@
         <!-- Filtros de búsqueda -->
         <div class="grid grid-cols-2 gap-4">
             <div class="border rounded-lg p-3">
-                <label class="block text-sm font-medium text-gray-700 mb-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2" i18n="@@filterByPrivacy">
                     <i class="pi pi-lock mr-2"></i>
                     Filtrar por Privacidad
                 </label>
@@ -11,13 +11,14 @@
                     [options]="privacyOptions"
                     [(ngModel)]="filterPrivacy"
                     (onChange)="onPrivacyChange()"
+                    i18n-placeholder="@@selectEditTabs"
                     placeholder="Seleccionar..."
                     styleClass="w-full">
                 </p-dropdown>
             </div>
 
             <div class="border rounded-lg p-3">
-                <label class="block text-sm font-medium text-gray-700 mb-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2" i18n="@@filterByTags">
                     <i class="pi pi-tags mr-2"></i>
                     Filtrar por Tags
                 </label>
@@ -25,8 +26,10 @@
                     [options]="availableTags"
                     [(ngModel)]="filterTag"
                     (onChange)="onTagChange()"
+                    i18n-placeholder="@@selectEditTabs"
                     placeholder="Seleccionar..."
                     [filter]="true"
+                    i18n-filterPlaceholder="@@searchTag"
                     filterPlaceholder="Buscar tag..."
                     styleClass="w-full">
                 </p-dropdown>
@@ -42,11 +45,11 @@
 
             <div class="h-[20vh] overflow-y-auto">
                 <div *ngIf="!filterTag && !filterPrivacy" class="text-center text-gray-400 py-3">
-                    <p class="text-sm">Usa los filtros para buscar dashboards</p>
+                    <p class="text-sm" i18n="@@filterSearchDashboards">Usa los filtros para buscar dashboards</p>
                 </div>
 
                 <div *ngIf="(filterTag || filterPrivacy) && availableDashboards.length === 0" class="text-center text-gray-400 py-3">
-                    <p class="text-sm">No hay dashboards que coincidan con los filtros</p>
+                    <p class="text-sm" i18n="@@noCoincidenceDashFilters">No hay dashboards que coincidan con los filtros</p>
                 </div>
 
                 <div *ngFor="let db of availableDashboards"
@@ -76,7 +79,7 @@
             <div class="h-[20vh] overflow-y-auto">
                 <div *ngIf="selectedDashboards.length === 0" class="text-center text-gray-400 py-3">
                     <i class="pi pi-inbox text-2xl mb-2"></i>
-                    <p class="text-sm">Añade dashboards desde la lista de disponibles</p>
+                    <p class="text-sm" i18n="@@addDashListAvailable">Añade dashboards desde la lista de disponibles</p>
                 </div>
 
                 <div cdkDropList (cdkDropListDropped)="drop($event)">

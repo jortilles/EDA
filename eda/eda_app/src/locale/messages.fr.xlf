@@ -2120,8 +2120,8 @@
 </trans-unit>
 
 <trans-unit id="sqlExpColumn" datatype="html">
-<source>Expresión SQL (Debe incluir la agregación)</source>
-<target>Expression SQL (doit inclure une agrégation)</target>
+<source>Expresión SQL</source>
+<target>Expression SQL</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
   <context context-type="linenumber">103</context>
@@ -5816,6 +5816,63 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="tableActivationAccessMessageOption">
         <source>Activar para habilitar un acceso restringido</source>
         <target>Activer pour permettre un accès restreint</target>
+      </trans-unit>
+      <trans-unit id="tabsDashboardSettings">
+        <source>Configura las pestañas para mostrar dashboards</source>
+        <target>Configurez les onglets pour afficher les tableaux de bord</target>
+      </trans-unit>
+      <trans-unit id="filterByPrivacy">
+        <source>Filtrar por Privacidad</source>
+        <target>Filtrer par confidentialité</target>
+      </trans-unit>
+      <trans-unit id="filterByTags">
+        <source>Filtrar por Tags</source>
+        <target>Filtrer par étiquettes</target>
+      </trans-unit>
+      <trans-unit id="selectEditTabs">
+        <source>Seleccionar...</source>
+        <target>Sélectionner...</target>
+      </trans-unit>
+      <trans-unit id="searchTag">
+        <source>Buscar tag...</source>
+        <target>Balise de recherche...</target>
+      </trans-unit>
+      <trans-unit id="filterSearchDashboards">
+        <source>Usa los filtros para buscar dashboards</source>
+        <target>Utilisez les filtres pour rechercher des tableaux de bord.</target>
+      </trans-unit>
+      <trans-unit id="noCoincidenceDashFilters">
+        <source>No hay dashboards que coincidan con los filtros</source>
+        <target>Aucun tableau de bord ne correspond aux filtres</target>
+      </trans-unit>
+      <trans-unit id="addDashListAvailable">
+        <source>Añade dashboards desde la lista de disponibles</source>
+        <target>Ajoutez des tableaux de bord à partir de la liste disponible</target>
+      </trans-unit>
+      <trans-unit id="filterOptions">
+        <source>Opciones del filtro:</source>
+        <target>Options de filtrage:</target>
+      </trans-unit>
+
+      <trans-unit id="sqlExpressionCalculatedField">
+        <source>Expresión SQL</source>
+        <target>Expression SQL</target>
+      </trans-unit>
+      <trans-unit id="typeSelectorText">
+        <source>Tipo de columna</source>
+        <target>Type de colonne</target>
+      </trans-unit>
+      <trans-unit id="decimalNumberText">
+        <source>Número de decimales</source>
+        <target>Nombre de décimales</target>
+      </trans-unit>
+      <trans-unit id="typeSelectorAggregation">
+        <source>Agregación</source>
+        <target>Agrégation</target>
+      </trans-unit>
+      <trans-unit id="CheckExpression">
+        <source>Comprobar expresión</source>
+        <target>Vérifier l'expression</target>
       </trans-unit>
     </body>
   </file>

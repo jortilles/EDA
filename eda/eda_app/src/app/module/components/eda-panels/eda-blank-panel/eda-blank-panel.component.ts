@@ -594,22 +594,23 @@ public tableNodeExpand(event: any): void {
         // Sólo procesar si no estamos en modo SQL ni readonly! 
         if (isEdaMode || isModeSqlDisabled) {
             if (queryMode === 'EDA2') {
-                this.rootTable = this.tables.find(t => t.table_name === this.rootTable);
+            this.rootTable = this.tables.find(t => t.table_name === this.rootTable);
 
-                for (const column of fields) {
-                        PanelInteractionUtils.assertTable(this, column);
-                    }
-
-                    PanelInteractionUtils.handleCurrentQuery2(this);
-                    this.reloadTablesData();
-                    PanelInteractionUtils.loadTableNodes(this);
-
-                    this.userSelectedTable = undefined;
-                    this.columns = [];
-                } else {
-                    PanelInteractionUtils.handleCurrentQuery(this);
-                this.columns = this.columns.filter(c => !c.isdeleted);
+            for (const column of fields) {
+                    PanelInteractionUtils.assertTable(this, column);
                 }
+
+                PanelInteractionUtils.handleCurrentQuery2(this);
+                this.reloadTablesData();
+                PanelInteractionUtils.loadTableNodes(this);
+
+                this.userSelectedTable = undefined;
+                this.columns = [];
+            } else {
+                this.rootTable = null; // no root table in EDA mode
+                PanelInteractionUtils.handleCurrentQuery(this);
+            this.columns = this.columns.filter(c => !c.isdeleted);
+            }
         }
 
         // Configuración global del panel
@@ -1107,7 +1108,12 @@ public tableNodeExpand(event: any): void {
             const modeSQL = this.panelDeepCopy.query.query.modeSQL;
 
             this.selectedQueryMode = _.isNil(queryMode) ? (modeSQL ? 'SQL' : 'EDA') : queryMode;
-            this.rootTable = this.panelDeepCopy.rootTable;
+            
+            if(this.selectedQueryMode == 'EDA2'){
+                this.rootTable = this.panelDeepCopy.rootTable;
+            }
+            
+            
         }
 
         this.loadChartsData(this.panelDeepCopy);

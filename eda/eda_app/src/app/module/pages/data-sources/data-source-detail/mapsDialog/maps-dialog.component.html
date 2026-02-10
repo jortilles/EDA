@@ -68,7 +68,7 @@
                 class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]">
                 <option value="" disabled selected i18n="@@selectField">Selecciona un campo</option>
                 @for(field of fields; track field.value){
-                  <option>{{ field.label }}</option>
+                  <option [value]="field.value">{{ field.label }}</option>
                 }
               </select>
             </div>
@@ -141,11 +141,10 @@
               <select 
                 id="table" 
                 formControlName="selectedTable"
-                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
-                (ngModelChange)="getColumns()">
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]">
                 <option value="" disabled selected i18n="@@selectTable">Selecciona una tabla</option>
                 @for(table of tables; track $index){
-                  <option>{{ table.label }}</option>
+                  <option [value]="table.value">{{ table.label }}</option>
                 }
               </select>
             </div>
@@ -161,7 +160,7 @@
                 class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]">
                 <option value="" disabled selected i18n="@@selectColumn">Selecciona una columna</option>
                 @for(column of columns; track column.value){
-                  <option>{{ column.label }}</option>
+                  <option [value]="column.label">{{ column.label }}</option>
                 }
               </select>
             </div>

@@ -1609,7 +1609,7 @@ export class DashboardController {
         }
       }
       myQuery.queryMode = req.body.query.queryMode ? req.body.query.queryMode : 'EDA'; /** lo añado siempre */
-      myQuery.rootTable = req.body.query.rootTable ? req.body.query.rootTable : ''; /** lo añado siempre */
+      myQuery.rootTable = myQuery.queryMode == 'EDA2' && req.body.query.rootTable ? req.body.query.rootTable : ''; /** lo añado siempre  pero solo para las consulas EDA2*/
       myQuery.simple = req.body.query.simple;
       myQuery.queryLimit = req.body.query.queryLimit;
       myQuery.joinType = req.body.query.joinType ? req.body.query.joinType : 'inner';
