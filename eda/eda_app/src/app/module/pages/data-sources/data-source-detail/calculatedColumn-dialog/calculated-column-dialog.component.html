@@ -1,31 +1,138 @@
-<eda-dialog2 width="50vw" height="65vh" (apply)="saveColumn()" [header]="title" (close)="closeDialog()">
+<eda-dialog2 
+  width="50vw" 
+  height="82vh" 
+  [header]="title" 
+>
+
   <div content>
     <form [formGroup]="form" class="grid gap-4">
+
       <div class="grid gap-2">
-        <label for="name"
+        <label for="eda_colname"
           i18n="@@inputNombre"
           class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         >
           Nombre <span class="text-red-500">*</span>
         </label>
-        <input id="name" value="Customers"
+        <input id="eda_colname"
           formControlName="colName"
           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         />
       </div>
+
       <div class="grid gap-2">
-        <label
-          for="description"
+        <label for="eda_description"
           i18n="@@inputDescripcion"
           class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         >
-          Descripción
+          Descripción <span class="text-red-500">*</span>
         </label>
-        <textarea id="description"
-          formControlName="description"  
+        <input id="eda_description"
+          formControlName="colDescription"
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        />
+      </div>
+
+      <div class="grid gap-2">
+        <label
+          for="eda_sqlExpression"
+          i18n="@@sqlExpressionCalculatedField"
+          class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Expresión SQL <span class="text-red-500">*</span>
+        </label>
+        <textarea id="eda_sqlExpression"
+          formControlName="colSqlExpression"  
           class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
         </textarea>
       </div>
+
+      <div class="grid gap-2">
+        <label for="eda_typeSelector"
+          i18n="@@typeSelectorText"
+          class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Tipo de columna <span class="text-red-500">*</span>
+        </label>
+        <div id="eda_typeSelector" class="flex gap-2">
+          <button
+            *ngFor="let type of columnTypes"
+            type="button"
+            (click)="onTypeChange(type)"
+            [ngClass]="selectedcolumnType === type.value
+              ? 'bg-[#00BFB3] text-white border-[#00BFB3]'
+              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'"
+            class="w-full px-4 py-2 font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          >
+            {{ type.label }}
+          </button>
+        </div>
+      </div>
+
+      <div class="grid gap-2" *ngIf="selectedcolumnType==='numeric'">
+        <label for="eda_typeAggregation"
+          i18n="@@typeSelectorAggregation"
+          class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Agregación <span class="text-red-500">*</span>
+        </label>
+        <div id="eda_typeAggregation" class="flex gap-2">
+          <button
+            *ngFor="let type of aggregation_type_cases"
+            type="button"
+            (click)="updateAgg(type.value)"
+            class="w-full px-4 py-2 font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            [ngClass]="type.display
+              ? 'bg-[#00BFB3] text-white border-[#00BFB3]'
+              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'"
+          >
+            {{ type.display_name }}
+          </button>
+        </div>
+      </div>
+
+      <div class="grid gap-2" *ngIf="selectedcolumnType==='numeric'">
+        <label for="eda_decimalNumber"
+          i18n="@@decimalNumberText"
+          class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Número de decimales <span class="text-red-500">*</span>
+        </label>
+        <input 
+          id="eda_decimalNumber" 
+          type="number" 
+          size="50" 
+          formControlName="colDecimalNumber" 
+          class="h-10 rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-40"
+        >
+      </div>
+
     </form>
   </div>
+
+  <ng-container footer>
+
+    <button class="cancel-button" (click)="closeDialog()">
+      <i class="fa fa-times"></i>
+      <span i18n="@@cancelarBtn">
+        Cancelar
+      </span>
+    </button>
+
+    <button class="execute-button w-auto p-5 text-center" (click)="checkCalculatedColumn()">
+      <i class="fa fa-cogs"></i>
+      <span i18n="@@CheckExpression" class="whitespace-nowrap pr-4">
+        Comprobar expresión
+      </span>
+    </button>
+
+    <button class="confirm-button" (click)="saveColumn();">
+      <i class="fa fa-check"></i>
+      <span i18n="@@guardarBtn">
+        Confirmar
+      </span>
+    </button>
+
+  </ng-container>
+
 </eda-dialog2>

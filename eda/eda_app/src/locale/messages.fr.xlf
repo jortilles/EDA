@@ -2120,8 +2120,8 @@
 </trans-unit>
 
 <trans-unit id="sqlExpColumn" datatype="html">
-<source>Expresión SQL (Debe incluir la agregación)</source>
-<target>Expression SQL (doit inclure une agrégation)</target>
+<source>Expresión SQL</source>
+<target>Expression SQL</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
   <context context-type="linenumber">103</context>
@@ -5854,6 +5854,26 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <target>Options de filtrage:</target>
       </trans-unit>
 
+      <trans-unit id="sqlExpressionCalculatedField">
+        <source>Expresión SQL</source>
+        <target>Expression SQL</target>
+      </trans-unit>
+      <trans-unit id="typeSelectorText">
+        <source>Tipo de columna</source>
+        <target>Type de colonne</target>
+      </trans-unit>
+      <trans-unit id="decimalNumberText">
+        <source>Número de decimales</source>
+        <target>Nombre de décimales</target>
+      </trans-unit>
+      <trans-unit id="typeSelectorAggregation">
+        <source>Agregación</source>
+        <target>Agrégation</target>
+      </trans-unit>
+      <trans-unit id="CheckExpression">
+        <source>Comprobar expresión</source>
+        <target>Vérifier l'expression</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

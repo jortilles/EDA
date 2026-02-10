@@ -967,12 +967,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="inputTipoColumna" datatype="html">
-<source>
-                Tipo de columna
-</source>
-<target>
-                Rodzaj kolumny
-</target>
+<source>Tipo de columna</source>
+<target>Rodzaj kolumny</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
 <context context-type="linenumber">80</context>
@@ -1781,8 +1777,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="sqlExpColumn" datatype="html">
-<source>Expresión SQL (Debe incluir la agregación)</source>
-<target>Wyrażenia SQL (Musi zawierać agregacje)</target>
+<source>Expresión SQL</source>
+<target>Wyrażenia SQL</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
   <context context-type="linenumber">103</context>
@@ -5582,6 +5578,27 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Opciones del filtro:</source>
         <target>Opcje filtrowania:</target>
       </trans-unit>
+      </trans-unit>
+      <trans-unit id="sqlExpressionCalculatedField">
+        <source>Expresión SQL</source>
+        <target>Wyrażenie SQL</target>
+      </trans-unit>
+      <trans-unit id="typeSelectorText">
+        <source>Tipo de columna</source>
+        <target>Typ kolumny</target>
+      </trans-unit>
+      <trans-unit id="decimalNumberText">
+        <source>Número de decimales</source>
+        <target>Liczba miejsc dziesiętnych</target>
+      </trans-unit>
+      <trans-unit id="typeSelectorAggregation">
+        <source>Agregación</source>
+        <target>Agregacja</target>
+      </trans-unit>
+      <trans-unit id="CheckExpression">
+        <source>Comprobar expresión</source>
+        <target>Sprawdź wyrażenie</target>
+      </trans-unit>      
 </body>
 </file>
 </xliff>

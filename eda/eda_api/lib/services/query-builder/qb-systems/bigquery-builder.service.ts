@@ -303,13 +303,21 @@ export class BigQueryBuilderService extends QueryBuilderService {
       // Aqui se manejan las columnas calculadas
       if (el.computed_column === 'computed') {
         if(el.column_type=='text'){
-          columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
+          if(el.aggregation_type === 'none') { columns.push(` ${el.SQLexpression} as "${el.display_name}"`);}
+          else if(el.aggregation_type === 'count_distinct') {columns.push(` count( distinct ${el.SQLexpression} ) as "${el.display_name}"`);}
+          else {columns.push(` ${el.aggregation_type}(${el.SQLexpression}) as "${el.display_name}"`);}
         }else if(el.column_type=='numeric'){
-          columns.push(` ROUND(  CAST( ${el.SQLexpression}  as numeric)  ${whatIfExpression} , ${el.minimumFractionDigits})  as "${el.display_name}"`);
+          if(el.aggregation_type === 'none') { columns.push(` ROUND(  CAST( ${el.SQLexpression}  as numeric)  ${whatIfExpression} , ${el.minimumFractionDigits})  as "${el.display_name}"`);}
+          else if(el.aggregation_type === 'count_distinct') { columns.push(` ROUND( CAST( count( distinct( ${el.SQLexpression} ${whatIfExpression})) as numeric) , ${el.minimumFractionDigits})   as "${el.display_name}"`);}
+          else {columns.push(` ROUND( CAST( ${el.aggregation_type}(${el.SQLexpression} ${whatIfExpression}) as numeric) , ${el.minimumFractionDigits})   as "${el.display_name}"`);}
         }else if(el.column_type=='date'){
-          columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
+          if(el.aggregation_type === 'none') { columns.push(` ${el.SQLexpression} as "${el.display_name}"`);}
+          else if(el.aggregation_type === 'count_distinct') { columns.push(` count( distinct ${el.SQLexpression}) as "${el.display_name}"`);}
+          else { columns.push(` ${el.aggregation_type}(${el.SQLexpression}) as "${el.display_name}"`);}
         }else if(el.column_type=='coordinate'){
-          columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
+          if(el.aggregation_type === 'none') { columns.push(` ${el.SQLexpression} as "${el.display_name}"`);}
+          else if(el.aggregation_type === 'count_distinct') { columns.push(` count( distinct ${el.SQLexpression}) as "${el.display_name}"`);}
+          else {columns.push(` ${el.aggregation_type}(${el.SQLexpression}) as "${el.display_name}"`);}
         }
         // GROUP BY
         if (el.format) {
