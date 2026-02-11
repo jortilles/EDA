@@ -85,7 +85,7 @@ export class PgBuilderService extends QueryBuilderService {
         querys[diplayName].push(`SELECT COUNT( * ) AS "count_rows" FROM ${col.table_id}`);
 
 
-      if (col.column_type == 'text') {
+        if(col.column_type=='text' || col.column_type=='html'  ){
         // COUNT NULLS
         querys[diplayName].push(`SELECT SUM(CASE WHEN "main"."${col.column_name}" IS NULL THEN 1 ELSE 0 END) AS "count_nulls" FROM ${mainQuery}`);
         // COUNT EMPTY
@@ -498,7 +498,7 @@ export class PgBuilderService extends QueryBuilderService {
 
       // Aqui se manejan las columnas calculadascount_nulls
       if (el.computed_column === 'computed') {
-        if(el.column_type=='text'){
+        if(el.column_type=='text' || el.column_type=='html'  ){
           if(el.aggregation_type === 'none') { columns.push(` ${el.SQLexpression} as "${el.display_name}"`);}
           else if(el.aggregation_type === 'count_distinct') {columns.push(` count( distinct ${el.SQLexpression} ) as "${el.display_name}"`);}
           else {columns.push(` ${el.aggregation_type}(${el.SQLexpression}) as "${el.display_name}"`);}
@@ -795,7 +795,7 @@ public getHavingColname(column: any){
     if (!Array.isArray(filter)) {
       switch (columnType) {
         case 'text': return `'${filter}'`;
-        //case 'text': return `'${filter}'`;
+        case 'html': return `'${filter}'`;
         case 'numeric': return filter;
         case 'date': return `to_date('${filter}','YYYY-MM-DD')`
       }
@@ -813,6 +813,7 @@ public getHavingColname(column: any){
         if(f == '(x => None)'){
           switch (columnType) {
             case 'text': str = `'(x => None)'  `;   break; 
+            case 'html': str = `'(x => None)'  `;   break; 
             case 'numeric': str =  'null  ';   break; 
             case 'date': str =  `to_date('4092-01-01','YYYY-MM-DD')  `;   break; 
           }
@@ -834,7 +835,7 @@ public getHavingColname(column: any){
     if (!Array.isArray(filter)) {
       switch (columnType) {
         case 'text': return `'${filter}'`;
-        //case 'text': return `'${filter}'`;
+        case 'html': return `'${filter}'`;
         case 'numeric': return filter;
         case 'date': return `to_timestamp('${filter} 23:59:59','YYYY-MM-DD  HH24:MI:SS')`
       }

@@ -100,7 +100,7 @@ export class MongoDBBuilderService {
         //TO HAVING CLAUSE 
         const havingFilters = this.queryTODO.filters.filter((f: any) => {
             const column = columns.find((c: any) => c.table_id === f.filter_table && f.filter_column === c.column_name);
-            f.column_type = column?.column_type || 'text';
+            f.column_type = column?.column_type || 'text' || 'html';
 
             if (column && column?.column_type == 'numeric' && column?.aggregation_type !== 'none') {
                 return true;
@@ -292,7 +292,7 @@ export class MongoDBBuilderService {
         if (!Array.isArray(filter)) {
             switch (columnType) {
                 case 'text': return `'${filter}'`;
-                //case 'text': return `'${filter}'`;
+                case 'html': return `'${filter}'`;
                 case 'numeric': return filter;
                 case 'date': return `to_date('${filter}','YYYY-MM-DD')`
             }
@@ -310,6 +310,7 @@ export class MongoDBBuilderService {
                 if (f == '(x => None)') {
                     switch (columnType) {
                         case 'text': str = `'(x => None)'  `; break;
+                        case 'html': str = `'(x => None)'  `;   break; 
                         case 'numeric': str = 'null  '; break;
                         case 'date': str = `to_date('4092-01-01','YYYY-MM-DD')  `; break;
                     }
@@ -331,7 +332,7 @@ export class MongoDBBuilderService {
         if (!Array.isArray(filter)) {
             switch (columnType) {
                 case 'text': return `'${filter}'`;
-                //case 'text': return `'${filter}'`;
+                case 'html': return `'${filter}'`;
                 case 'numeric': return filter;
                 case 'date': return `to_timestamp('${filter} 23:59:59','YYYY-MM-DD  HH24:MI:SS')`
             }

@@ -289,7 +289,7 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
         
       // Aqui se manejan las columnas calculadas
       if (el.computed_column === 'computed') {
-        if(el.column_type=='text'){
+        if(el.column_type=='text' || el.column_type=='html'  ){
           if(el.aggregation_type === 'none') { columns.push(` ${el.SQLexpression} as "${el.display_name}"`);}
           else if(el.aggregation_type === 'count_distinct') {columns.push(` count( distinct ${el.SQLexpression} ) as "${el.display_name}"`);}
           else {columns.push(` ${el.aggregation_type}(${el.SQLexpression}) as "${el.display_name}"`);}
@@ -579,7 +579,7 @@ public filterToString(filterObject: any ) {
     if (!Array.isArray(filter)) {
       switch (columnType) {
         case 'text': return `'${filter}'`;
-        //case 'text': return `'${filter}'`;
+        case 'html': return `'${filter}'`;
         case 'numeric': return filter;
         case 'date': return `CAST('${filter}' as date)`
       }
@@ -605,7 +605,7 @@ public filterToString(filterObject: any ) {
     if (!Array.isArray(filter)) {
       switch (columnType) {
         case 'text': return `'${filter}'`;
-        //case 'text': return `'${filter}'`;
+        case 'html': return `'${filter}'`;
         case 'numeric': return filter; 
         case 'date': return `TO_TIMESTAMP('${filter} 23:59:59' , 'YYYY-MM-DD HH24:MI:SS')`   
       }
@@ -623,6 +623,7 @@ public filterToString(filterObject: any ) {
         if(f == '(x => None)'){
           switch (columnType) {
             case 'text': str = `'(x => None)'  `;   break; 
+            case 'html': str = `'(x => None)'  `;   break; 
             case 'numeric': str =  'null  ';   break; 
             case 'date': str =  `to_date('4092-01-01','YYYY-MM-DD')  `;   break; 
           }
