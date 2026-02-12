@@ -41,6 +41,7 @@ export class ChartDialogComponent {
     public showLabelsPercent: boolean = false;
     public showPointLines: boolean = false;
     public showPredictionLines: boolean = false;
+    public predictionMethod: string = 'Arima';
     public selectedPalette: { name: string; paleta: any } | null = null;
     public allPalettes: any = this.stylesProviderService.ChartsPalettes;
     public assignedColors: { value: string; color: string }[] = [];
@@ -118,6 +119,7 @@ export class ChartDialogComponent {
         this.showLabelsPercent = this.controller.params.config.config.getConfig()['showLabelsPercent'] || false;
         this.showPointLines = this.controller.params.config.config.getConfig()['showPointLines'] || false;
         this.showPredictionLines = this.controller.params.config.config.getConfig()['showPredictionLines'] || false;
+        this.predictionMethod = this.controller.params.config.config.getConfig()['predictionMethod'] || 'Arima'; // Valor iniciado en el dropdown
         this.numberOfColumns = this.controller.params.config.config.getConfig()['numberOfColumns'] || false;
         this.addComparative = this.controller.params.config.config.getConfig()['addComparative'] || false;
 
@@ -389,9 +391,15 @@ export class ChartDialogComponent {
         const panelID = this.controller.params.panelId;
         const dashboardPanel = this.dashboard.edaPanels.toArray().find(cmp => cmp.panel.id === panelID);
         // Añadimos prediction a la query
-        dashboardPanel.panel.content.query.query.prediction = this.showPredictionLines === true ? 'Arima' : 'None';
+        dashboardPanel.panel.content.query.query.prediction = this.showPredictionLines === true ? this.predictionMethod : 'None';
 
         this.addNewPanel(dashboardPanel);
+    }
+
+    onPredictionMethodChange() {
+        if (this.showPredictionLines) {
+            this.addPredictionMode();
+        }
     }
 
     addNewPanel(dashboardPanel) {
@@ -616,9 +624,10 @@ export class ChartDialogComponent {
         this.controller.params.config.config.getConfig()['showLabelsPercent'] = this.showLabelsPercent;
         this.controller.params.config.config.getConfig()['showPointLines'] = this.showPointLines;
         this.controller.params.config.config.getConfig()['showPredictionLines'] = this.showPredictionLines;
+        this.controller.params.config.config.getConfig()['predictionMethod'] = this.predictionMethod;
         this.controller.params.config.config.getConfig()['numberOfColumns'] = this.numberOfColumns;
         this.controller.params.config.config.getConfig()['addComparative'] = this.addComparative;
-        
+
         this.onClose(EdaDialogCloseEvent.UPDATE, this.chart);
     }
 

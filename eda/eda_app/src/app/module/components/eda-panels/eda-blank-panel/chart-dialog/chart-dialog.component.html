@@ -213,6 +213,21 @@
                 </div>
               </label>
             </div>
+
+            @if (showPredictionLines) {
+            <div class="flex items-center justify-between">
+              <div class="space-y-0.5">
+                <label i18n="@@predictionMethodLabel" class="font-medium">
+                  Método de predicción
+                </label>
+              </div>
+              <select [(ngModel)]="predictionMethod" (ngModelChange)="onPredictionMethodChange()"
+                class="px-3 py-1.5 text-sm border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]">
+                <option value="Arima">ARIMA</option>
+                <option value="Tensorflow">TensorFlow (LSTM)</option>
+              </select>
+            </div>
+            }
             }
           </div>
         </div>
