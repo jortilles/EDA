@@ -8,6 +8,7 @@ import Group from '../admin/groups/model/group.model'
 import formatDate from '../../services/date-format/date-format.service'
 import { CachedQueryService } from '../../services/cache-service/cached-query.service'
 import { ArimaService } from '../../services/prediction/arima.service'
+import { TensorflowService } from '../../services/prediction/tensorflow.service'
 import { TimeFormatService } from '../../services/time-format/time-format.service'
 import { QueryOptions } from 'mongoose'
 import ServerLogService from '../../services/server-log/server-log.service'
@@ -1797,8 +1798,10 @@ export class DashboardController {
   // Suma acumulativa
   DashboardController.cumulativeSum(output, req.body.query);
 
-  // ARIMA (si aplica)
-  DashboardController.applyArimaIfNeeded(output, req.body, myQuery );
+  // Revisar si hay predicción y el tipo
+  if(req.body.query?.prediction && req.body.query?.prediction !== 'None' && req.body.output?.config?.chartType === 'line'){
+    await DashboardController.setupPrediction(output, req.body, myQuery)
+  }
 
   console.log(
     '\x1b[32m%s\x1b[0m',
@@ -1814,13 +1817,8 @@ export class DashboardController {
     }
   }
   
-  // Formula de arima
-  static applyArimaIfNeeded(output: any, body: any, myQuery: any) {
-    // Si no tenemos arima o no estamos en linea, salimos
-    if (body.query?.prediction !== 'Arima' || body.output.config.chartType !== 'line' ) {
-      return;
-    }
 
+  static async setupPrediction(output: any, body: any, myQuery: any){
     // Número de fechas a predecir
     const steps = 3;
 
@@ -1829,7 +1827,7 @@ export class DashboardController {
     if (!dateField){
       return;
     } 
-    
+
     const timeFormat = dateField.format;
     const lastDate = output[1][output[1].length - 1][0];
 
@@ -1841,28 +1839,63 @@ export class DashboardController {
     const originalDataset = rows.map(row => row[1]).filter(val => Number.isFinite(val));
 
     let predictions: number[] = [];
+    const setup = {steps: steps, rows: rows, lastIndex: lastIndex, nextLabels: nextLabels}
 
+    switch(body.query?.prediction){
+        case 'Arima':
+          await DashboardController.applyArimaPredicction(
+            predictions, originalDataset, setup);
+          break;
+        case 'Tensorflow':
+          await DashboardController.applyTensorflowPredicction(predictions, originalDataset, setup);
+          break;
+      }
+  }
+
+  // Formula de arima
+  static applyArimaPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels}) {
     try {
       // Calculamos las predicciones a través del servicio ARIMA
-      predictions = ArimaService.forecast(originalDataset, steps);
+      predictions = ArimaService.forecast(originalDataset, setup.steps);
     } catch (err) {
       console.error('Error ARIMA:', err);
       return;
     }
 
     // Añadir columna predictionet
-    rows.forEach((row, index) => {
-      row.push(index === lastIndex ? row[1] : null);
+    setup.rows.forEach((row, index) => {
+      row.push(index === setup.lastIndex ? row[1] : null);
     });
 
     // Añadir fila de fechas
-    nextLabels.forEach((label, index) => {
-      rows.push([label, null, predictions[index] ?? null]);
+    setup.nextLabels.forEach((label, index) => {
+      setup.rows.push([label, null, predictions[index] ?? null]);
     });
 
     console.log('Predicción ARIMA aplicada');
   }
 
+  // Predicción con TensorFlow
+  static async applyTensorflowPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels}) {
+    try {
+      predictions = await TensorflowService.forecast(originalDataset, setup.steps);
+    } catch (err) {
+      console.error('Error TensorFlow:', err);
+      return;
+    }
+
+    // Añadir columna predicción
+    setup.rows.forEach((row, index) => {
+      row.push(index === setup.lastIndex ? row[1] : null);
+    });
+
+    // Añadir filas de fechas futuras
+    setup.nextLabels.forEach((label, index) => {
+      setup.rows.push([label, null, predictions[index] ?? null]);
+    });
+
+    console.log('Predicción TensorFlow aplicada');
+  }
 
   /**
    * Executa una consulta SQL  per un dashboard
