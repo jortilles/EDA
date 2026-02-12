@@ -535,7 +535,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       // Calculated columns are managed here
       if (el.computed_column === 'computed') {
-        if(el.column_type=='text'){
+        if(el.column_type=='text' || el.column_type=='html'  ){
           if(el.aggregation_type === 'none') { columns.push(` ${el.SQLexpression} as \`${el.display_name}\``);}
           else if(el.aggregation_type === 'count_distinct') {columns.push(` count( distinct ${el.SQLexpression} ) as \`${el.display_name}\``);}
           else {columns.push(` ${el.aggregation_type}(${el.SQLexpression}) as \`${el.display_name}\``);}
