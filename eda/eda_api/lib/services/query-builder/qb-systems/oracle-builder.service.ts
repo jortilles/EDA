@@ -262,7 +262,33 @@ export class OracleBuilderService extends QueryBuilderService {
   }
 
 
-  
+    private getDateFormat(SQLexpression: string, fomrat: string): string {
+    let result = '';
+    switch (fomrat) {
+      case 'year': result = `DATE_FORMAT(${SQLexpression} , '%Y') `;
+        break;
+      case 'quarter': result = `concat( concat( year(${SQLexpression}),'-Q' ),  quarter(${SQLexpression} ) ) `;
+        break;
+      case 'month': result = `DATE_FORMAT(${SQLexpression} , '%Y-%m')`;
+        break;
+      case 'week': result = `DATE_FORMAT(${SQLexpression} , '%x-%v') `;
+        break;
+      case 'day': result = `DATE_FORMAT(${SQLexpression} , '%Y-%m-%d') `;
+        break;
+      case 'week_day': result = `TRUNC(" ${SQLexpression} ") - TRUNC(" ${SQLexpression} ", 'IW') + 1`;
+        break;
+      case 'day_hour': result = `DATE_FORMAT(${SQLexpression} , '%Y-%m-%d %H') `;
+        break;
+      case 'day_hour_minute': result = `DATE_FORMAT(${SQLexpression} , '%Y-%m-%d %H:%i') `;
+        break;
+      case 'timestamp': result = `DATE_FORMAT(${SQLexpression} , '%Y-%m-%d %H:%i:%s') `;
+        break;
+      default: result = `DATE_FORMAT(${SQLexpression} , '%Y-%m-%d') `;
+        break;
+    }
+    return result;
+  }
+
   public getSeparedColumns(origin: string, dest: string[]) {
     const columns = [];
     const grouping = [];
@@ -294,40 +320,20 @@ export class OracleBuilderService extends QueryBuilderService {
           else if(el.aggregation_type === 'count_distinct') { columns.push(` ROUND( CAST( count( distinct( ${el.SQLexpression} ${whatIfExpression})) as NUMBER) , ${el.minimumFractionDigits})   as "${el.display_name}"`);}
           else {columns.push(` ROUND( CAST( ${el.aggregation_type}(${el.SQLexpression} ${whatIfExpression}) as NUMBER) , ${el.minimumFractionDigits})   as "${el.display_name}"`);}
         }else if(el.column_type=='date'){
-          if(el.aggregation_type === 'none') { columns.push(` ${el.SQLexpression} as "${el.display_name}"`);}
-          else if(el.aggregation_type === 'count_distinct') { columns.push(` count( distinct ${el.SQLexpression}) as "${el.display_name}"`);}
-          else { columns.push(` ${el.aggregation_type}(${el.SQLexpression}) as "${el.display_name}"`);}
+          if(el.aggregation_type === 'none') { columns.push(` ${this.getDateFormat(el.SQLexpression, el.format)} as "${el.display_name}"`);}
+          else if(el.aggregation_type === 'count_distinct') { columns.push(` count( distinct ${this.getDateFormat(el.SQLexpression, el.format) }) as "${el.display_name}"`);}
+          else { columns.push(` ${el.aggregation_type}(${this.getDateFormat(el.SQLexpression, el.format) }) as "${el.display_name}"`);}
         }else if(el.column_type=='coordinate'){
           if(el.aggregation_type === 'none') { columns.push(` ${el.SQLexpression} as "${el.display_name}"`);}
           else if(el.aggregation_type === 'count_distinct') { columns.push(` count( distinct ${el.SQLexpression}) as "${el.display_name}"`);}
           else {columns.push(` ${el.aggregation_type}(${el.SQLexpression}) as "${el.display_name}"`);}
         }
         // GROUP BY
-        if (el.format) {
-          if (_.isEqual(el.format, 'year')) {
-            grouping.push(`to_char(" ${el.SQLexpression} ", 'YYYY')`);
-          } else if (_.isEqual(el.format, 'quarter')) {
-            grouping.push(`to_char(" ${el.SQLexpression} ", 'YYYY-"Q"Q') `);
-          } else if (_.isEqual(el.format, 'month')) {
-            grouping.push(`to_char(" ${el.SQLexpression} ", 'YYYY-MM')`);
-          } else if (_.isEqual(el.format, 'week')) {
-            grouping.push(`to_char(" ${el.SQLexpression} ", 'IYYY-IW')`);
-          } else if (_.isEqual(el.format, 'day')) {
-            grouping.push(`to_char(" ${el.SQLexpression} ", 'YYYY-MM-DD')`);
-          } else if (_.isEqual(el.format, 'day_hour')) {
-            grouping.push(`to_char(" ${el.SQLexpression} ", 'YYYY-MM-DD HH')  `);
-          } else if (_.isEqual(el.format, 'day_hour_minute')) {
-            grouping.push(`to_char(" ${el.SQLexpression} ", 'YYYY-MM-DD HH:MI')  `);
-          } else if (_.isEqual(el.format, 'timestamp')) {
-            grouping.push(`to_char(" ${el.SQLexpression} ", 'YYYY-MM-DD HH:MI:SS')`);
-          } else if (_.isEqual(el.format, 'week_day')) {
-            grouping.push(`to_char(" ${el.SQLexpression} ", 'ID')`);
-          } else if (_.isEqual(el.format, 'No')) {
-            grouping.push(`" ${el.SQLexpression} `);
-          }
+        if (el.column_type === 'date') {
+           grouping.push(this.getDateFormat(el.SQLexpression, el.format) );
         } else {
-          if( el.column_type != 'numeric' ){ // Computed colums require agrregations for numeric
-            grouping.push(` ${el.SQLexpression} `);
+          if( el.aggregation_type === 'none') {
+            grouping.push(` (${el.SQLexpression}) `);
           }
         }
 
@@ -342,58 +348,14 @@ export class OracleBuilderService extends QueryBuilderService {
         } else {
           if (el.column_type === 'numeric') {
             columns.push(`ROUND(${table_column} ${whatIfExpression}, ${el.minimumFractionDigits})  as "${el.display_name}"`);
-          } else if (el.column_type === 'date') {
-            if (el.format) {
-              if (_.isEqual(el.format, 'year')) {
-                columns.push(`to_char(${table_column}, 'YYYY') as "${el.display_name}"`);
-              } else if (_.isEqual(el.format, 'quarter')) {
-                columns.push(`to_char(${table_column}, 'YYYY-"Q"Q') as "${el.display_name}"`);
-              } else if (_.isEqual(el.format, 'month')) {
-                columns.push(`to_char(${table_column}, 'YYYY-MM') as "${el.display_name}"`);
-              } else if (_.isEqual(el.format, 'week')) {
-                columns.push(`to_char(${table_column}, 'IYYY-IW') as "${el.display_name}"`);
-              } else if (_.isEqual(el.format, 'week_day')) {
-                columns.push(`to_char(${table_column}, 'D') as "${el.display_name}"`);
-              } else if (_.isEqual(el.format, 'day')) {
-                columns.push(`to_char(${table_column}, 'YYYY-MM-DD') as "${el.display_name}"`);
-              }else if (_.isEqual(el.format, 'day_hour')) {
-                columns.push(`to_char(${table_column}, 'YYYY-MM-DD HH24') as "${el.display_name}"`);
-              }else if (_.isEqual(el.format, 'day_hour_minute')) {
-                columns.push(`to_char(${table_column}, 'YYYY-MM-DD HH24:MI') as "${el.display_name}"`);
-              }else if (_.isEqual(el.format, 'timestamp')) {
-                columns.push(`to_char(${table_column}, 'YYYY-MM-DD HH24:MI:SS') as "${el.display_name}"`);
-              }    else if (_.isEqual(el.format, 'No')) {
-                columns.push(`to_char(${table_column}, 'YYYY-MM-DD') as "${el.display_name}"`);
-              }
-            } else {
-              columns.push(`to_char(${table_column}, 'YYYY-MM-DD') as "${el.display_name}"`);
-            }
+            } else if (el.column_type === 'date') {
+             columns.push( this.getDateFormat(table_column, el.format)  + ` as \`${el.display_name}\``);
           } else {
             columns.push(`${table_column} as "${el.display_name}"`);
           }
           // GROUP BY
-          if (el.format) {
-            if (_.isEqual(el.format, 'year')) {
-              grouping.push(`to_char(${table_column}, 'YYYY')`);
-            } else if (_.isEqual(el.format, 'quarter')) {
-              grouping.push(`to_char(${table_column}, 'YYYY-"Q"Q')`);
-            } else if (_.isEqual(el.format, 'month')) {
-              grouping.push(`to_char(${table_column}, 'YYYY-MM')`);
-            } else if (_.isEqual(el.format, 'week')) {
-              grouping.push(`to_char(${table_column}, 'IYYY-IW')`);
-            } else if (_.isEqual(el.format, 'week_day')) {
-              grouping.push(`to_char(${table_column}, 'D')`);
-            } else if (_.isEqual(el.format, 'day')) {
-              grouping.push(`to_char(${table_column}, 'YYYY-MM-DD')`);
-            }else if (_.isEqual(el.format, 'day_hour')) {
-              grouping.push(`to_char(${table_column}, 'YYYY-MM-DD HH24') `);
-            }else if (_.isEqual(el.format, 'day_hour_minute')) {
-              grouping.push(`to_char(${table_column}, 'YYYY-MM-DD HH24:MI')  `);
-            } else if (_.isEqual(el.format, 'timestamp')) {
-              grouping.push(`to_char(${table_column}, 'YYYY-MM-DD HH24:MI:SS')`);
-            } else if (_.isEqual(el.format, 'No')) {
-              grouping.push(`${table_column}`);
-            }
+          if (el.column_type === 'date') {
+            grouping.push(this.getDateFormat(table_column, el.format) );
           } else {
 
             //  Si es una única columna numérica no se agrega.
