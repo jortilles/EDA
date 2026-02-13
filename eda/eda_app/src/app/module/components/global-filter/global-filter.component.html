@@ -1,4 +1,4 @@
-<div class="flex flex-wrap items-center gap-4 mb-2 ml-1 w-full">
+<div class="flex flex-wrap items-center gap-4 mb-2 ml-1">
 
   <!-- Botón Filtrar -->
   @if (globalFilters.length > 0 && (isAdmin || isDashboardCreator || filterButtonVisibility.public)) {
@@ -9,10 +9,10 @@
   </button>
   }
 
-  <div class="flex flex-wrap items-start gap-4 mt-2 mb-2 ml-1 w-full">
+  <div class="flex flex-wrap items-start gap-4 mt-2 mb-2 ml-1">
 
     <!-- Contenedor general con scroll -->
-    <div class="filters-container items-center flex flex-wrap gap-4 p-3 rounded-lg w-full bg-transparent">
+    <div class="filters-container items-center flex flex-wrap gap-4 p-3 rounded-lg bg-transparent">
 
       @for (filter of globalFilters; track filter.filter_id) {
         @if (isAdmin || isDashboardCreator || ['public', 'readOnly'].includes(filter.visible)) {
@@ -43,8 +43,8 @@
           }@else{
             <!-- Si tiene autocomplete -> estilo moderno -->
             <div
-              class="filter-card flex flex-col gap-2 rounded-lg p-3 mr-8">
-              <div class="filter-row flex items-center gap-2 w-full">
+              class="filter-card flex flex-col gap-2 rounded-lg p-3">
+              <div class="filter-row flex items-center">
                 <span [ngClass]="{'italic': !filter.applyToAll}" class="text-sm text-gray-700"
                   [style.color]="styleButton.color" [style.font-size]="styleButton.fontSize"
                   [style.font-family]="styleButton.fontFamily">
