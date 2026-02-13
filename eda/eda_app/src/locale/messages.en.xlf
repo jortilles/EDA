@@ -5630,6 +5630,10 @@ OR<ph id="5"/>
   <source>CONFIGURACION DE PESTAÑAS</source>
   <target>TAB CONFIGURATION</target>
 </trans-unit>
+<trans-unit id="TabsPanelConfig2">
+  <source>Configuración de pestañas</source>
+  <target>Tab configuration</target>
+</trans-unit>
 <trans-unit id="ModelRestrictionAccess">
   <source>Modelo con acceso restringido</source>
   <target>Model with restricted access</target>
@@ -5681,6 +5685,14 @@ OR<ph id="5"/>
 <trans-unit id="searchTag">
   <source>Buscar tag...</source>
   <target>Search tag...</target>
+</trans-unit>
+<trans-unit id="dashboardsSelected">
+  <source>Dashboards seleccionados</source>
+  <target>Selected Dashboards</target>
+</trans-unit>
+<trans-unit id="dashboardsAvailable">
+  <source>Dashboards disponibles</source>
+  <target>Available Dashboards</target>
 </trans-unit>
 <trans-unit id="filterSearchDashboards">
   <source>Usa los filtros para buscar dashboards</source>

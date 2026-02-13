@@ -5510,6 +5510,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>CONFIGURACION DE PESTAÑAS</source>
         <target>KONFIGURACJA ZAKŁADEK</target>
       </trans-unit>
+      <trans-unit id="TabsPanelConfig2">
+        <source>Configuración de pestañas</source>
+        <target>konfiguracja zakładek</target>
+      </trans-unit>
       <trans-unit id="ModelRestrictionAccess">
         <source>Modelo con acceso restringido</source>
         <target>Model z ograniczonym dostępem</target>
@@ -5561,6 +5565,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="searchTag">
         <source>Buscar tag...</source>
         <target>Wyszukaj tag...</target>
+      </trans-unit>
+      <trans-unit id="dashboardsSelected">
+        <source>Dashboards seleccionados</source>
+        <target>Wybrane pulpity nawigacyjne</target>
+      </trans-unit>
+      <trans-unit id="dashboardsAvailable">
+        <source>Dashboards disponibles</source>
+        <target>Dostępne pulpity nawigacyjne</target>
       </trans-unit>
       <trans-unit id="filterSearchDashboards">
         <source>Usa los filtros para buscar dashboards</source>

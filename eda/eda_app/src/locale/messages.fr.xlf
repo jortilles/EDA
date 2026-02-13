@@ -5785,6 +5785,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>CONFIGURACION DE PESTAÑAS</source>
         <target>CONFIGURATION DES ONGLETS</target>
       </trans-unit>
+      <trans-unit id="TabsPanelConfig2">
+        <source>Configuración de pestañas</source>
+        <target>Configuration des onglets</target>
+      </trans-unit>
       <trans-unit id="ModelRestrictionAccess">
         <source>Modelo con acceso restringido</source>
         <target>Modèle à accès restreint</target>
@@ -5836,6 +5840,14 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="searchTag">
         <source>Buscar tag...</source>
         <target>Balise de recherche...</target>
+      </trans-unit>
+      <trans-unit id="dashboardsSelected">
+        <source>Dashboards seleccionados</source>
+        <target>Tableaux de bord sélectionnés</target>
+      </trans-unit>
+      <trans-unit id="dashboardsAvailable">
+        <source>Dashboards disponibles</source>
+        <target>Tableaux de bord disponibles</target>
       </trans-unit>
       <trans-unit id="filterSearchDashboards">
         <source>Usa los filtros para buscar dashboards</source>
