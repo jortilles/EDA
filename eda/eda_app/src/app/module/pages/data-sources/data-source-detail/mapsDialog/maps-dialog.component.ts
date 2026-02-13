@@ -95,7 +95,8 @@ export class MapDialogComponent implements OnInit {
       if (match.length > 0) {
         this.columns = match[0].columns
           .map(col => ({ label: col.display_name.default, value: JSON.stringify({ table: selectedTable, col: col } ) }));
-        this.columnsValues = match[0].columns;
+          this.columns.sort((a, b) => a.label.localeCompare(b.label));
+          this.columnsValues = match[0].columns;
       }
     }
   }
