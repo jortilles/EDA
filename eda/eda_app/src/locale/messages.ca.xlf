@@ -5813,6 +5813,16 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Buscar tag...</target>
       </trans-unit>
 
+      <trans-unit id="dashboardsSelected">
+        <source>Dashboards seleccionados</source>
+        <target>Dashboards seleccionats</target>
+      </trans-unit>
+
+      <trans-unit id="dashboardsAvailable">
+        <source>Dashboards disponibles</source>
+        <target>Dashboards disponibles</target>
+      </trans-unit>
+
       <trans-unit id="filterSearchDashboards">
         <source>Usa los filtros para buscar dashboards</source>
         <target>Fes servir els filtres per buscar dashboards</target>

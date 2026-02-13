@@ -5686,6 +5686,14 @@ OR<ph id="5"/>
   <source>Buscar tag...</source>
   <target>Search tag...</target>
 </trans-unit>
+<trans-unit id="dashboardsSelected">
+  <source>Dashboards seleccionados</source>
+  <target>Selected Dashboards</target>
+</trans-unit>
+<trans-unit id="dashboardsAvailable">
+  <source>Dashboards disponibles</source>
+  <target>Available Dashboards</target>
+</trans-unit>
 <trans-unit id="filterSearchDashboards">
   <source>Usa los filtros para buscar dashboards</source>
   <target>Use the filters to search for dashboards</target>

@@ -5566,6 +5566,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Buscar tag...</source>
         <target>Wyszukaj tag...</target>
       </trans-unit>
+      <trans-unit id="dashboardsSelected">
+        <source>Dashboards seleccionados</source>
+        <target>Wybrane pulpity nawigacyjne</target>
+      </trans-unit>
+      <trans-unit id="dashboardsAvailable">
+        <source>Dashboards disponibles</source>
+        <target>Dostępne pulpity nawigacyjne</target>
+      </trans-unit>
       <trans-unit id="filterSearchDashboards">
         <source>Usa los filtros para buscar dashboards</source>
         <target>Użyj filtrów, aby wyszukać pulpity nawigacyjne</target>
