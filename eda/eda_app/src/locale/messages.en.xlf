@@ -5630,6 +5630,10 @@ OR<ph id="5"/>
   <source>CONFIGURACION DE PESTAÑAS</source>
   <target>TAB CONFIGURATION</target>
 </trans-unit>
+<trans-unit id="TabsPanelConfig2">
+  <source>Configuración de pestañas</source>
+  <target>Tab configuration</target>
+</trans-unit>
 <trans-unit id="ModelRestrictionAccess">
   <source>Modelo con acceso restringido</source>
   <target>Model with restricted access</target>

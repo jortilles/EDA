@@ -5785,6 +5785,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>CONFIGURACION DE PESTAÑAS</source>
         <target>CONFIGURATION DES ONGLETS</target>
       </trans-unit>
+      <trans-unit id="TabsPanelConfig2">
+        <source>Configuración de pestañas</source>
+        <target>Configuration des onglets</target>
+      </trans-unit>
       <trans-unit id="ModelRestrictionAccess">
         <source>Modelo con acceso restringido</source>
         <target>Modèle à accès restreint</target>

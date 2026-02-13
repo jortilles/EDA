@@ -5510,6 +5510,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>CONFIGURACION DE PESTAÑAS</source>
         <target>KONFIGURACJA ZAKŁADEK</target>
       </trans-unit>
+      <trans-unit id="TabsPanelConfig2">
+        <source>Configuración de pestañas</source>
+        <target>konfiguracja zakładek</target>
+      </trans-unit>
       <trans-unit id="ModelRestrictionAccess">
         <source>Modelo con acceso restringido</source>
         <target>Model z ograniczonym dostępem</target>
