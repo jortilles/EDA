@@ -75,19 +75,19 @@ export class FileUtiles {
         });
         saveAs(blob, `${fileName}.xlsx`);
 
-        // Generar CSV (opcional)
-        const csvRows: string[] = [];
-        worksheet.eachRow((row) => {
-            const values: string[] = [];
-            if (Array.isArray(row.values)) {
-                for (let i = 1; i < row.values.length; i++) {
-                    const val = row.values[i];
-                    values.push(val !== undefined && val !== null ? String(val) : '');
-                }
-            }
-            csvRows.push(values.join(','));
-        });
-        const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
-        saveAs(csvBlob, `${fileName}.csv`);
+        // Generar CSV deshabilitado
+        // const csvRows: string[] = [];
+        // worksheet.eachRow((row) => {
+        //     const values: string[] = [];
+        //     if (Array.isArray(row.values)) {
+        //         for (let i = 1; i < row.values.length; i++) {
+        //             const val = row.values[i];
+        //             values.push(val !== undefined && val !== null ? String(val) : '');
+        //         }
+        //     }
+        //     csvRows.push(values.join(','));
+        // });
+        // const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        // saveAs(csvBlob, `${fileName}.csv`);
     }
 }
