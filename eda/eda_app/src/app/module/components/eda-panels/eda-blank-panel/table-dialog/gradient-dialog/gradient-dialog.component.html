@@ -31,7 +31,7 @@
         <div class="chart-color-selection mt-4" style="min-width: 300px;">
           <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
             <div>
-              <span class="font-medium mr-4" i18n="@@aboveThreshold">{{controller.params.col.header}} es mayor que:</span>
+              <span class="font-medium mr-4">{{controller.params.col.header}} <span i18n="@@aboveThreshold">es mayor que:</span></span>
               <p-inputNumber [(ngModel)]="value1" [disabled]="noStyle" mode="decimal"
               [minFractionDigits]="0" [maxFractionDigits]="4" />
             </div>
@@ -44,7 +44,7 @@
 
         <div class="chart-color-selection mt-4" style="min-width: 300px;">
           <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
-            <span class="font-medium" i18n="@@betweenThresholds">{{controller.params.col.header}} mayor que {{value2}} y menor que {{value1}}</span>
+            <span class="font-medium">{{controller.params.col.header}} <span i18n="@@betweenThresholds">mayor que</span> {{value2}} <span i18n="@@betweenThresholds2">y menor que</span> {{value1}}</span>
             <div class="flex items-center gap-2">
               <input class="text-md text-right text-slate-500 font-mono"[(ngModel)]="color2">
               <p-colorPicker [(ngModel)]="color2" [disabled]="noStyle" format="hex" appendTo="body" />
@@ -55,7 +55,7 @@
         <div class="chart-color-selection mt-4" style="min-width: 300px;">
           <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
             <div>
-              <span class="font-medium mr-4" i18n="@@belowThreshold">{{controller.params.col.header}} es menor que: </span>
+              <span class="font-medium mr-4">{{controller.params.col.header}} <span  i18n="@@belowThreshold">es menor que:</span> </span>
               <p-inputNumber [(ngModel)]="value2" [disabled]="noStyle" mode="decimal"
               [minFractionDigits]="0" [maxFractionDigits]="4" />
             </div>

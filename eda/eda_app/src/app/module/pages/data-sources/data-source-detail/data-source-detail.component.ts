@@ -146,10 +146,10 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public valueListSourceTabla = $localize`:@@valueListSourceTabla:Tabla relacionada`;
     public valueListSourceID = $localize`:@@valueListSourceID:Id de la columna relacionada`;
     public valueListSourceDescripcion = $localize`:@@valueListSourceDescripcion:Descripción dfe la columna relacionada`;
-    public possibleValueList = $localize`@@possibleValuesList: Tabla y columna asociadas `
-    public possibleValueListTable = $localize`@@possibleValuesListTable: Tabla `
-    public possibleValuesListID =  $localize`@@possibleValuesListID: Id de la columna`
-    public possibleValuesListDescription = $localize`@@possibleValuesListDescription: Descripción de la columna`
+    public possibleValueList = $localize`:@@possibleValuesList: Tabla y columna asociadas `
+    public possibleValueListTable = $localize`:@@possibleValuesListTable: Tabla `
+    public possibleValuesListID =  $localize`:@@possibleValuesListID: Id de la columna`
+    public possibleValuesListDescription = $localize`:@@possibleValuesListDescription: Descripción de la columna`
 
     // Types
     public columnTypes: SelectItem[] = [

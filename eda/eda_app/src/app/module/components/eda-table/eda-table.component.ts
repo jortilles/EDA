@@ -270,6 +270,7 @@ export class EdaTableComponent implements OnInit {
     applyPivotSyles(styles){
         const gradientStyles = styles.filter(s => !s.type || s.type === 'gradient');
         const semaphoreStyles = styles.filter(s => s.type === 'semaphore');
+        let tmpStyles = {};
         // Si los estilos que entran son gradientes...
         if (gradientStyles.length > 0) {
             const fields = gradientStyles.map(style => style.col);
@@ -324,7 +325,6 @@ export class EdaTableComponent implements OnInit {
                 });
 
             });
-            let tmpStyles = {};
 
             Object.keys(limits).forEach(key => {
 
@@ -342,7 +342,6 @@ export class EdaTableComponent implements OnInit {
             });
         }
 
-        let tmpStyles = {};
         // Aplicamos estilos si es semaforico
         if (semaphoreStyles.length > 0) {
             semaphoreStyles.forEach(style => {

@@ -8,6 +8,7 @@ export interface IGroup {
     role: {label: string, value: string};
     img?: File;
     users: User[];
+    source?: string;
 }
 
 @Injectable({

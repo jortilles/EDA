@@ -2079,8 +2079,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="possibleValuesListTable" datatype="html">
-<source>Tabla:</source>
-<target>Taula:</target>
+<source>Tabla</source>
+<target>Taula</target>
 </trans-unit>
 
 
@@ -2100,8 +2100,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="possibleValuesListID" datatype="html">
-<source>Id Columna:</source>
-<target>Id Columna:</target>
+<source>Id de la columna</source>
+<target>Id de la columna</target>
 </trans-unit>
 
 <trans-unit id="valueListSourceDescripcion" datatype="html">
@@ -2110,11 +2110,9 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="possibleValuesListDescription" datatype="html">
-<source>Columna descripción:</source>
-<target>Columna descripció:</target>
+<source>Descripción de la columna</source>
+<target>Descripció de la columna</target>
 </trans-unit>
-
-
 
 <trans-unit id="columnaCalculada" datatype="html">
 <source> Nueva columna calculada </source>
@@ -4137,6 +4135,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Mínimos por mes</source>
         <target>Mínims per mes</target>
       </trans-unit>
+      <trans-unit id="chartTypesTreeTable">
+        <source>Tabla Árbol</source>
+        <target>Taula Arbre</target>
+      </trans-unit>
 
       <trans-unit id="NameTablaQuality">
         <source>Tabla DataQuality</source>
@@ -5938,6 +5940,110 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="DatePickerNextYear">
         <source>Próximo año</source>
         <target>Proper any</target>
+      </trans-unit>
+      <trans-unit id="noNameProvided">
+        <source>Debe proporcionar un nombre para el datasource</source>
+        <target>Heu de proporcionar un nom per al datasource</target>
+      </trans-unit>
+      <trans-unit id="noCsvData">
+        <source>Debe cargar un archivo CSV primero</source>
+        <target>Heu de carregar un fitxer CSV primer</target>
+      </trans-unit>
+      <trans-unit id="noCsvColumns">
+        <source>No se detectaron columnas en el archivo CSV. Verifique el separador.</source>
+        <target>No s'han detectat columnes al fitxer CSV. Verifiqueu el separador.</target>
+      </trans-unit>
+      <trans-unit id="emptyCsvFile">
+        <source>El archivo CSV está vacío o no se pudo leer con este separador</source>
+        <target>El fitxer CSV és buit o no s'ha pogut llegir amb aquest separador</target>
+      </trans-unit>
+      <trans-unit id="emptyCsvFile2">
+        <source>El archivo CSV está vacío o no se pudo leer</source>
+        <target>El fitxer CSV és buit o no s'ha pogut llegir</target>
+      </trans-unit>
+      <trans-unit id="errorParseCsv">
+        <source>Error al parsear el archivo CSV con el separador especificado</source>
+        <target>Error en parsejar el fitxer CSV amb el separador especificat</target>
+      </trans-unit>
+      <trans-unit id="errorParseCsv2">
+        <source>Error al parsear el archivo CSV. Verifica el separador.</source>
+        <target>Error en parsejar el fitxer CSV. Verifica el separador.</target>
+      </trans-unit>
+      <trans-unit id="errorParseCsv3">
+        <source>Error al parsear el archivo CSV. Verifique el separador y formato del archivo.</source>
+        <target>Error en parsejar el fitxer CSV. Verifiqueu el separador i format del fitxer.</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarNewTabs">
+        <source>Nuevo navegador</source>
+        <target>Nou navegador</target>
+      </trans-unit>
+      <trans-unit id="anyCanSeeNoTable">
+        <source>Define quién puede acceder y ver esta tabla. Solo los usuarios y grupos explícitamente autorizados tendrán
+          acceso.</source>
+        <target>Defineix qui hi pot accedir i veure aquesta taula. Només els usuaris i grups explícitament autoritzats tindran 
+          accés.</target>
+      </trans-unit>
+      <trans-unit id="anyCanSeeYesTable">
+        <source>Cualquier usuario puede ver la tabla.
+          Los filtros de seguridad se definen a nivel de tabla y columna concreta.</source>
+        <target>Qualsevol usuari pot veure la taula. 
+          Els filtres de seguretat es defineixen a nivell de taula i columna concreta.</target>
+      </trans-unit>
+      <trans-unit id="AddPredictionTitle">
+        <source>¿Quieres actualizar los valores?</source>
+        <target>Voleu actualitzar els valors?</target>
+      </trans-unit>
+      <trans-unit id="AddPredictionText">
+        <source>Puedes guardar el gráfico con o sin predicción.</source>
+        <target>Pots desar el gràfic amb predicció o sense.</target>
+      </trans-unit>
+      <trans-unit id="AddPredictionYes">
+        <source>Sí, actualizar</source>
+        <target>Sí, actualitzar</target>
+      </trans-unit>
+      <trans-unit id="AddPredictionNo">
+        <source>No, cerrar</source>
+        <target>No, tancar</target>
+      </trans-unit>
+      <trans-unit id="showLines">
+        <source>Mostrar Líneas de Puntos</source>
+        <target>Mostra Línies de Punts</target>
+      </trans-unit>
+      <trans-unit id="chartLabelLineOptionDescription">
+        <source>Muestra líneas conectando los puntos</source>
+        <target>Mostra línies connectant els punts</target>
+      </trans-unit>
+      <trans-unit id="chartLabelLineOptionDescription2">
+        <source>Conecta los puntos con líneas</source>
+        <target>Connecta els punts amb línies</target>
+      </trans-unit>
+      <trans-unit id="chartLabelLinePredictionOptionDescription">
+        <source>Muestra la predicción de la serie</source>
+        <target>Mostra la predicció de la sèrie</target>
+      </trans-unit>
+      <trans-unit id="gradientTab">
+        <source>Gradiente de color</source>
+        <target>Gradient de color</target>
+      </trans-unit>
+      <trans-unit id="semaphoreTab">
+        <source>Código semafórico</source>
+        <target>Codi semafòric</target>
+      </trans-unit>
+      <trans-unit id="aboveThreshold">
+        <source>es mayor que:</source>
+        <target>és més gran que:</target>
+      </trans-unit>
+      <trans-unit id="betweenThresholds">
+        <source>mayor que:</source>
+        <target>més gran que:</target>
+      </trans-unit>
+      <trans-unit id="betweenThresholds2">
+        <source>y menor que</source>
+        <target>i menor que</target>
+      </trans-unit>
+      <trans-unit id="belowThreshold">
+        <source>es menor que:</source>
+        <target>és menor que:</target>
       </trans-unit>
     </body>
   </file>

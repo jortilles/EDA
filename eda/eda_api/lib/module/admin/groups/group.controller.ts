@@ -141,7 +141,8 @@ export class GroupController {
         name: body.name,
         role: body.role.value,
         users: body.users,
-        img: body.img
+        img: body.img,
+        source: body.source
       })
       // return res.status(201).json({ok: true});
       try {

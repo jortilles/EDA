@@ -1821,8 +1821,8 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 </trans-unit>
 
 <trans-unit id="possibleValuesListTable" datatype="html">
-<source>Tabla:</source>
-<target>Table:</target>
+<source>Tabla</source>
+<target>Table</target>
 </trans-unit>
 
 <trans-unit id="valueListSourceHeader" datatype="html">
@@ -1841,8 +1841,8 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 </trans-unit>
 
 <trans-unit id="possibleValuesListID" datatype="html">
-<source>Id Columna:</source>
-<target>Column Id:</target>
+<source>Id de la columna</source>
+<target>Column ID</target>
 </trans-unit>
 
 <trans-unit id="valueListSourceDescripcion" datatype="html">
@@ -1852,7 +1852,7 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 
 
 <trans-unit id="possibleValuesListDescription" datatype="html">
-<source>Columna descripción</source>
+<source>Descripción de la columna</source>
 <target>Column description</target>
 </trans-unit>
 
@@ -5276,6 +5276,18 @@ Once configured you can invoke it whenever you want from the button.</target>
   <source>Grupo creado</source>
   <target>Group created</target>
 </trans-unit>
+<trans-unit id="GroupDeletedOk">
+  <source>El grupo a sido eliminado correctamente</source>
+  <target>The group has been successfully deleted.</target>
+</trans-unit>
+<trans-unit id="GroupUpdated">
+  <source>Grupo actualizado</source>
+  <target>Updated group</target>
+</trans-unit>
+<trans-unit id="UpdatedGroupError">
+  <source>El grupo no se ha podido actualizar</source>
+  <target>The group could not be updated</target>
+</trans-unit>
 <trans-unit id="logsManagement">
 <source>Gestión de logs</source>
 <target>Logs management</target>
@@ -5773,6 +5785,109 @@ OR<ph id="5"/>
 <trans-unit id="DatePickerNextYear">
   <source>Próximo año</source>
   <target>Next year</target>
+</trans-unit>
+<trans-unit id="noNameProvided">
+  <source>Debe proporcionar un nombre para el datasource</source>
+  <target>You must provide a name for the data source</target>
+</trans-unit>
+<trans-unit id="noCsvData">
+  <source>Debe cargar un archivo CSV primero</source>
+  <target>You must upload a CSV file first</target>
+</trans-unit>
+ <trans-unit id="noCsvColumns">
+  <source>No se detectaron columnas en el archivo CSV. Verifique el separador.</source>
+  <target>No columns were detected in the CSV file. Please check the separator.</target>
+</trans-unit>
+<trans-unit id="emptyCsvFile">
+  <source>El archivo CSV está vacío o no se pudo leer con este separador</source>
+  <target>The CSV file is empty or could not be read with this separator.</target>
+</trans-unit>
+<trans-unit id="emptyCsvFile2">
+  <source>El archivo CSV está vacío o no se pudo leer</source>
+  <target>The CSV file is empty or could not be read</target>
+</trans-unit>
+<trans-unit id="errorParseCsv">
+  <source>Error al parsear el archivo CSV con el separador especificado</source>
+  <target>Error parsing CSV file with specified separator</target>
+</trans-unit>
+<trans-unit id="errorParseCsv2">
+  <source>Error al parsear el archivo CSV. Verifica el separador.</source>
+  <target>Error parsing CSV file. Check the separator.</target>
+</trans-unit>
+<trans-unit id="errorParseCsv3">
+  <source>Error al parsear el archivo CSV. Verifique el separador y formato del archivo.</source>
+  <target>Error parsing CSV file. Please check the file separator and format.</target>
+</trans-unit>
+<trans-unit id="dashboardSidebarNewTabs">
+  <source>Nuevo navegador</source>
+  <target>New browser</target>
+</trans-unit>
+<trans-unit id="anyCanSeeNoTable">
+  <source>Define quién puede acceder y ver esta tabla. Solo los usuarios y grupos explícitamente autorizados tendrán
+    acceso.</source>
+  <target>Define who can access and view this table. Only explicitly authorized users and groups will have access.</target>
+</trans-unit>
+<trans-unit id="anyCanSeeYesTable">
+  <source>Cualquier usuario puede ver la tabla.
+    Los filtros de seguridad se definen a nivel de tabla y columna concreta.</source>
+  <target>Any user can view the table.
+    Security filters are defined at the table and specific column level.</target>
+</trans-unit>
+<trans-unit id="AddPredictionTitle">
+  <source>¿Quieres actualizar los valores?</source>
+  <target>Do you want to update the values?</target>
+</trans-unit>
+<trans-unit id="AddPredictionText">
+  <source>Puedes guardar el gráfico con o sin predicción.</source>
+  <target>You can save the chart with or without the prediction.</target>
+</trans-unit>
+<trans-unit id="AddPredictionYes">
+  <source>Sí, actualizar</source>
+  <target>Yes, update</target>
+</trans-unit>
+<trans-unit id="AddPredictionNo">
+  <source>No, cerrar</source>
+  <target>No, close</target>
+</trans-unit>
+<trans-unit id="showLines">
+  <source>Mostrar Líneas de Puntos</source>
+  <target>Show Dotted Lines</target>
+</trans-unit>
+<trans-unit id="chartLabelLineOptionDescription">
+  <source>Muestra líneas conectando los puntos</source>
+  <target>Show lines connecting the dots</target>
+</trans-unit>
+<trans-unit id="chartLabelLineOptionDescription2">
+  <source>Conecta los puntos con líneas</source>
+  <target>Connect the dots with lines</target>
+</trans-unit>
+<trans-unit id="chartLabelLinePredictionOptionDescription">
+  <source>Muestra la predicción de la serie</source>
+  <target>Show the series prediction</target>
+</trans-unit>
+<trans-unit id="gradientTab">
+  <source>Gradiente de color</source>
+  <target>Color gradient</target>
+</trans-unit>
+<trans-unit id="semaphoreTab">
+  <source>Código semafórico</source>
+  <target>Traffic light code</target>
+</trans-unit>
+<trans-unit id="aboveThreshold">
+  <source>es mayor que:</source>
+  <target>is greater than:</target>
+</trans-unit>
+<trans-unit id="betweenThresholds">
+  <source>mayor que</source>
+  <target>greater than</target>
+</trans-unit>
+<trans-unit id="betweenThresholds2">
+  <source>y menor que</source>
+  <target>and less than</target>
+</trans-unit>
+<trans-unit id="belowThreshold">
+  <source>es menor que:</source>
+  <target>is less than:</target>
 </trans-unit>
 </body>
 </file>
