@@ -2237,28 +2237,28 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>W tym miesiącu (do dziś)</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonth">
-<source>El mes pasado</source>
-<target>Ostatni miesiąc</target>
+<source>El mes pasado (hasta equivalente a hoy)</source>
+<target>W zeszłym miesiącu (do odpowiednika dzisiejszego dnia)</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonthFull">
 <source>El mes pasado completo</source>
 <target>Wszytsko z zeszłego miesiąca</target>
 </trans-unit>
 <trans-unit id="DatePickerMonthPreviousYear">
-<source>Éste mes del año pasado</source>
-<target>Ten miesiąc w zeszłym roku</target>
+<source>Este mes del año pasado (hasta equivalente a hoy)</source>
+<target>Ten miesiąc w zeszłym roku (do odpowiednika dzisiejszego dnia)</target>
 </trans-unit>
 <trans-unit id="DatePickerMonthPreviousYearFull">
-<source>Éste mes al completo del año pasado</source>
+<source>Este mes al completo del año pasado</source>
 <target>Ten miesiąc w zeszłym roku</target>
 </trans-unit>
 <trans-unit id="DatePickerYear">
-<source>Éste año</source>
-<target>Ten rok</target>
+<source>Este año (hasta hoy)</source>
+<target>W tym roku (do dziś)</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYear">
-<source>El año pasado</source>
-<target>Zeszły rok</target>
+<source>El año pasado (hasta equivalente a hoy)</source>
+<target>W zeszłym roku (do odpowiednika dzisiejszego dnia)</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYearFull">
 <source>El año pasado, completo</source>
@@ -5617,6 +5617,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="DatePickerMonthFull">
         <source>Este mes completo</source>
         <target>Pełny ten miesiąc</target>
+      </trans-unit>
+      <trans-unit id="DatePickerYearFull">
+        <source>Este año al completo</source>
+        <target>Pełny ten rok</target>
       </trans-unit>
 </body>
 </file>

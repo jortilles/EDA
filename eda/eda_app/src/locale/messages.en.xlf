@@ -2338,28 +2338,28 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>This month (until today)</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonth">
-<source>El mes pasado</source>
-<target>Last month</target>
+<source>El mes pasado (hasta equivalente a hoy)</source>
+<target>Last month (up to the equivalent of today)</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonthFull">
 <source>El mes pasado completo</source>
 <target>All last month</target>
 </trans-unit>
 <trans-unit id="DatePickerMonthPreviousYear">
-<source>Éste mes del año pasado</source>
-<target>This month from previous year</target>
+<source>Este mes del año pasado (hasta equivalente a hoy)</source>
+<target>This month last year (up to the equivalent of today)</target>
 </trans-unit>
 <trans-unit id="DatePickerMonthPreviousYearFull">
-<source>Éste mes al completo del año pasado</source>
+<source>Este mes al completo del año pasado</source>
 <target>This whole month of last year</target>
 </trans-unit>
 <trans-unit id="DatePickerYear">
-<source>Éste año</source>
-<target>This year</target>
+<source>Este año (hasta hoy)</source>
+<target>This year (until today)</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYear">
-<source>El año pasado</source>
-<target>Last year</target>
+<source>El año pasado (hasta equivalente a hoy)</source>
+<target>Last year (up to the equivalent of today)</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYearFull">
 <source>El año pasado, completo</source>
@@ -5737,6 +5737,10 @@ OR<ph id="5"/>
 <trans-unit id="DatePickerMonthFull">
   <source>Este mes completo</source>
   <target>This full month</target>
+</trans-unit>
+<trans-unit id="DatePickerYearFull">
+  <source>Este año al completo</source>
+  <target>This full year</target>
 </trans-unit>
 </body>
 </file>

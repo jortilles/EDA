@@ -2591,28 +2591,28 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Aquest mes (fins avui)</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonth">
-<source>El mes pasado</source>
-<target>El mes passat</target>
+<source>El mes pasado (hasta equivalente a hoy)</source>
+<target>El mes passat (fins a l'equivalent d'avui)</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonthFull">
 <source>El mes pasado completo</source>
 <target>Tot el mes passat</target>
 </trans-unit>
 <trans-unit id="DatePickerMonthPreviousYear">
-<source>Éste mes del año pasado</source>
-<target>Aquest mes de l'any passat</target>
+<source>Este mes del año pasado (hasta equivalente a hoy)</source>
+<target>Aquest mes de l'any passat (fins a l'equivalent d'avui)</target>
 </trans-unit>
 <trans-unit id="DatePickerMonthPreviousYearFull">
-<source>Éste mes al completo del año pasado</source>
+<source>Este mes al completo del año pasado</source>
 <target>Aquest mes, complert, de l'any passat</target>
 </trans-unit>
 <trans-unit id="DatePickerYear">
-<source>Éste año</source>
-<target>Aquest any</target>
+<source>Este año (hasta hoy)</source>
+<target>Aquest any (fins avui)</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYear">
-<source>El año pasado</source>
-<target>L'any passat</target>
+<source>El año pasado (hasta equivalente a hoy)</source>
+<target>L'any passat (fins a l'equivalent d'avui)</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYearFull">
 <source>El año pasado, completo</source>
@@ -5902,6 +5902,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="DatePickerMonthFull">
         <source>Este mes completo</source>
         <target>Aquest mes complet</target>
+      </trans-unit>
+      <trans-unit id="DatePickerYearFull">
+        <source>Este año al completo</source>
+        <target>Aquest any complet</target>
       </trans-unit>
     </body>
   </file>
