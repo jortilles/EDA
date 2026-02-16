@@ -79,39 +79,39 @@ export class MainLeftSidebarComponent {
     ]
   };
 
-  if (this.userService.isAdmin || this.userService.isDataSourceCreator) {
-    plusSection.items.push({ path: '/admin/data-source/new', label: $localize`:@@addDatasource: Crear fuente de datos`, icon: 'plus' });
+    if (this.userService.isAdmin || this.userService.isDataSourceCreator) {
+      plusSection.items.push({ path: '/admin/data-source/new', label: $localize`:@@addDatasource: Crear fuente de datos`, icon: 'plus' });
+    }
+    
+
+    const moleculaSection: NavItem = {
+      icon: 'molecula',
+      items: []
+    };
+
+    if (this.userService.isAdmin) {
+      moleculaSection.items.unshift(
+        { path: '/admin/users', label: $localize`:@@adminUsers:Gestión de usuarios`, icon: 'users' },
+        { path: '/admin/groups', label: $localize`:@@adminGroupsTitle:Gestión de grupos`, icon: 'rectangle-group' },
+        { path: '/admin/data-source', label: $localize`:@@adminDatasource:Gestión de fuentes de datos`, icon: 'rectangle-group' },
+        { path: '/admin/models/import-export', label: $localize`:@@dataExportImport:Data Export/Import`, icon: 'arrow-down-on-square-stack' },
+        { path: '/admin/email-settings', label: $localize`:@@adminEmail:Gestión de email`, icon: 'at-symbol' },
+        { path: '/logs', label: $localize`:@@logsManagement:Gestión de logs`, icon: 'clipboard-document-list' },
+      );
+    } else if (this.userService.isDataSourceCreator) {
+      moleculaSection.items.unshift(
+        { path: '/admin/data-source', label: $localize`:@@adminDatasource:Gestión de fuentes de datos`, icon: 'rectangle-group' },
+      );
+    }
+
+    // Asignamos las secciones al navItems
+    this.navItems = [
+      ...baseNav.slice(0, 1), // home
+      plusSection,             // create menu
+      ...((this.userService.isAdmin || this.userService.isDataSourceCreator) ? [moleculaSection] : []), // gestion
+      ...baseNav.slice(1),    // settings, about, logout
+    ];
   }
-
-  const moleculaSection: NavItem = {
-    icon: 'molecula',
-    items: [
-      { path: '/logs', label: $localize`:@@logsManagement:Gestión de logs`, icon: 'clipboard-document-list' },
-    ]
-  };
-
-  if (this.userService.isAdmin) {
-    moleculaSection.items.unshift(
-      { path: '/admin/users', label: $localize`:@@adminUsers:Gestión de usuarios`, icon: 'users' },
-      { path: '/admin/groups', label: $localize`:@@adminGroupsTitle:Gestión de grupos`, icon: 'rectangle-group' },
-      { path: '/admin/data-source', label: $localize`:@@adminDatasource:Gestión de fuentes de datos`, icon: 'rectangle-group' },
-      { path: '/admin/models/import-export', label: $localize`:@@dataExportImport:Data Export/Import`, icon: 'arrow-down-on-square-stack' },
-      { path: '/admin/email-settings', label: $localize`:@@adminEmail:Gestión de email`, icon: 'at-symbol' },
-    );
-  } else if (this.userService.isDataSourceCreator) {
-    moleculaSection.items.unshift(
-      { path: '/admin/data-source', label: $localize`:@@adminDatasource:Gestión de fuentes de datos`, icon: 'rectangle-group' },
-    );
-  }
-
-  // Asignamos las secciones al navItems
-  this.navItems = [
-    ...baseNav.slice(0, 1), // home
-    plusSection,
-    moleculaSection,
-    ...baseNav.slice(1),    // settings, about, logout
-  ];
-}
 
   showOverlay(item: NavItem) {
     if (item.hideTimeout) {

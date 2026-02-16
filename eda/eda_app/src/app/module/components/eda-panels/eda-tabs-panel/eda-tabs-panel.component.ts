@@ -139,7 +139,7 @@ export class EdaTabsPanelComponent implements OnInit {
             header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
             contextMenuItems: [
                 new EdaContextMenuItem({
-                    label: $localize`:@@tabsPanelConfig:Configuración de pestañas`,
+                    label: $localize`:@@TabsPanelConfig2:Configuración de pestañas`,
                     icon: 'mdi mdi-wrench',
                     command: () => {
                         this.contextMenu.hideContextMenu();

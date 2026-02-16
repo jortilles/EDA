@@ -1,52 +1,100 @@
 export const ChartsPalettes = [
     {
         paleta: [
-            '#10B4BD', '#1BA9C0', '#269EC3', '#3193C7', '#3C88CA',
-            '#477DCE', '#5272D2', '#5D67D6', '#685CD9', '#7351DC',
-            '#7F57D7', '#8B5DD2', '#9764CD', '#A36AC7', '#AF71C2',
-            '#BB78BD', '#C77EB8', '#D285B3', '#DE8CAE', '#EA93A9',
-            '#F29DA0', '#F7A68E', '#FAAD80', '#FCB37A', '#FDB0BA'
-        ]
-        , name: 'Turquesa-Rosa'
+  '#10B4BD',
+  '#3C88CA',
+  '#685CD9',
+  '#8B5DD2',
+  '#A36AC7',
+  '#BB78BD',
+  '#D285B3',
+  '#EA93A9',
+  '#F7A68E',
+  '#FCB37A',
+  '#FDB0BA',
+  '#FBBFA6',
+  '#F9C98F',
+  '#F6D278',
+  '#ECE45A'
+]
+        , name: 'Gradiente'
     },
     {
         paleta: [
-            '#19D4DE', '#D07BFF', '#D8FF5E', '#FFB06B', '#F1C2FF',
-            '#36B6FF', '#FF5CCB', '#7CFFB2', '#5B7CFF', '#FFD34D',
-            '#00F5D4', '#FF6B6B', '#A3FF3E', '#7A5CFF', '#4DE6FF',
-            '#FF8AD4', '#B6A6FF', '#9EFFC2', '#FFC48A', '#5CF2C7',
-            '#C8FF8A', '#FFA6E8', '#8DEBFF', '#FFE36A', '#9D7BFF'
+  '#6ECBD3', // cian suave
+  '#C59BEF', // lavanda
+  '#DCEB8E', // verde pastel claro
+  '#F2B98E', // melocotón suave
+  '#E4C7F5', // lila claro
+  '#79BDEB', // azul cielo
+  '#E89BCB', // rosa suave
+  '#A8E6C1', // verde menta
+  '#879CEB', // azul lavanda
+  '#F2CF8C', // amarillo suave
+  '#7EDBD1', // turquesa claro
+  '#F29C9C', // coral pastel
+  '#C6E88E', // verde lima suave
+  '#9C8EEB', // violeta suave
+  '#8FD8F2', // azul hielo
+  '#F2A8D8', // rosa empolvado
+  '#C3B6F2', // malva claro
+  '#B8EED1', // verde agua
+  '#F4C7A1', // albaricoque
+  '#8FE3D0', // menta azulada
+  '#D9F0A3', // pistacho claro
+  '#F5B8E4', // rosa claro
+  '#A8E1F2', // celeste pastel
+  '#F4DA8E', // amarillo mantequilla
+  '#B19CF2'  // violeta claro final
         ]
-        , name: 'Turquesa-Rosa-Contraste'
+        , name: 'Contraste'
     }, {
         paleta: [
             '#5C86A6', '#F7DB86', '#69C8BC', '#A66B5C', '#8FE7ED',
             '#FFB56B', '#8C8C8C', '#CDE67D', '#D7B28E', '#74BFC3',
-            '#FFD080', '#F2A7A3', '#7FC4A7', '#FFD1A0', '#73A7C6',
+            '#050504', '#F2A7A3', '#7FC4A7', '#FFD1A0', '#73A7C6',
             '#B8A0F2', '#7BE2CF', '#F2A0EE', '#8EE0A6', '#FFB1C0',
             '#A8CCFF', '#FFB08A', '#C3CEDD', '#C7E87D', '#FFD59A'
         ]
-        , name: 'Azul-Gris'
+        , name: 'Nocturna'
     },
     {
         paleta: [
             '#7FEFD1', '#6FE3D6', '#7AD3E0', '#8BC6EA', '#9ABCF3',
-            '#A8B2FA', '#7AA6D9', '#5D86C9', '#476CB8', '#3353A6',
-            '#2A4A90', '#1F3F7A', '#162F5E', '#0F223F', '#0B1A2B',
-            '#2C2C2C', '#6C7A7C', '#8A989A', '#A7B3B5', '#C3CCCD',
-            '#D6DEDF', '#E6EFF0', '#B9E7E4', '#A4D8DF', '#93C6D1'
+            '#7AA6D9', '#5D86C9', '#476CB8', '#3353A6','#2A4A90',
+             '#1F3F7A', '#162F5E', '#0F223F', '#0B1A2B','#2C2C2C',
+             '#6C7A7C', '#8A989A', '#A7B3B5', '#C3CCCD', '#D6DEDF',
+            '#E6EFF0', '#B9E7E4', '#A4D8DF', '#93C6D1'
         ]
-        , name: 'Verde-Gris'
+        , name: 'Menta'
     },
     {
         paleta: [
-            '#CAF0F8', '#C0ECF6', '#B6E7F4', '#ACE3F2', '#A2DEF0',
-            '#98DAEF', '#8ED5ED', '#84D1EB', '#7ACCE9', '#70C8E7',
-            '#66C3E5', '#5CBFE3', '#52BAE1', '#48B6DF', '#3EB1DD',
-            '#34ADDB', '#2AA8D9', '#20A4D7', '#169FD5', '#0C9BD3',
-            '#0296D1', '#027BB0', '#025F8F', '#02446E', '#000000'
+  '#025F8F',
+  '#027BB0',
+  '#0296D1',
+  '#0C9BD3',
+  '#169FD5',
+  '#20A4D7',
+  '#2AA8D9',
+  '#34ADDB',
+  '#3EB1DD',
+  '#48B6DF',
+  '#52BAE1',
+  '#5CBFE3',
+  '#66C3E5',
+  '#70C8E7',
+  '#7ACCE9',
+  '#84D1EB',
+  '#8ED5ED',
+  '#98DAEF',
+  '#A2DEF0',
+  '#ACE3F2',
+  '#B6E7F4',
+  '#C0ECF6',
+  '#CAF0F8'
         ]
-        , name: 'Celeste-Negro'
+        , name: 'Celeste'
     },
     {
         paleta: [
@@ -56,7 +104,7 @@ export const ChartsPalettes = [
             '#4C1D95', '#38BDF8', '#6D28D9', '#E879F9', '#312E81',
             '#A78BFA', '#2DD4BF', '#F0ABFC', '#8DA2FB', '#9E90EB'
         ]
-        , name: 'Azul-Violeta'
+        , name: 'psique'
     },
     {
         paleta: [
@@ -66,7 +114,7 @@ export const ChartsPalettes = [
             '#2563EB', '#FFD400', '#A855F7', '#FF006E', '#00A8FF',
             '#C084FC', '#00FF9A', '#FF4D8D', '#2D2AFF', '#9E90EB'
         ]
-        , name: 'Azul-Violeta-contraste'
+        , name: 'solido'
     },
 
 ];
@@ -93,5 +141,5 @@ export const DEFAULT_TITLE_ALIGN: string = 'flex-start';
 export const DEFAULT_PANEL_TITLE_ALIGN: string = 'flex-start';
 export const EMPTY_VALUE: string = ''; // $localize`:@@EmptyValueMessage:Sin Informar` ;// Agregado valores vacios en diferentes idiomas
 export const NULL_VALUE: string = '';// null Agregado de null_value en diferentes idiomas  if you want to leave the null you can put this value: LEAVE_THE_NULL . THIS LEAVE_THE_NULL will leave the null value as null
-export const DEFAULT_PALETTE_COLOR: any = ChartsPalettes.find(palette => palette.name === "Turquesa-Rosa");
+export const DEFAULT_PALETTE_COLOR: any = ChartsPalettes.find(palette => palette.name === "Gradiente");
 export const FATHER_ID: number = 0; // Valor id de Padre para el componente Treetable

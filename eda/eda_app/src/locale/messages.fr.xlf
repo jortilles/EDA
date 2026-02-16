@@ -2554,48 +2554,48 @@
 <target>Avant-hier</target>
 </trans-unit>
 <trans-unit id="DatePickerWeek">
-<source>Ésta semana</source>
-<target>Cette semaine</target>
+<source>Esta semana (hasta hoy)</source>
+<target>Cette semaine (jusqu'à aujourd'hui)</target>
 </trans-unit>
 <trans-unit id="DatePickerWeekFull">
-<source>Ésta semana al completo</source>
-<target>Toute cette semaine</target>
+<source>Esta semana</source>
+<target>Cette semaine</target>
 </trans-unit>
 <trans-unit id="DatePickerLastWeek">
+<source>La semana pasada (hasta equivalente a hoy)</source>
+<target>La semaine dernière (jusqu'à l'équivalent d'aujourd'hui)</target>
+</trans-unit>
+<trans-unit id="DatePickerLastWeekFull">
 <source>La semana pasada</source>
 <target>La semaine dernière</target>
 </trans-unit>
-<trans-unit id="DatePickerLastWeekFull">
-<source>La semana pasada completa</source>
-<target>La semaine dernière s'est terminée</target>
-</trans-unit>
 <trans-unit id="DatePickerMonth">
-<source>Éste mes</source>
-<target>Ce mois-ci</target>
+<source>Este mes (hasta hoy)</source>
+<target>Ce mois-ci (jusqu'à aujourd'hui)</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonth">
-<source>El mes pasado</source>
-<target>Mois dernier</target>
+<source>El mes pasado (hasta equivalente a hoy)</source>
+<target>Le mois dernier (jusqu'à l'équivalent d'aujourd'hui)</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonthFull">
 <source>El mes pasado completo</source>
 <target>Mois dernier</target>
 </trans-unit>
 <trans-unit id="DatePickerMonthPreviousYear">
-<source>Éste mes del año pasado</source>
-<target>Ce mois-ci de l'année dernière</target>
+<source>Este mes del año pasado (hasta equivalente a hoy)</source>
+<target>Ce mois de l'année dernière (jusqu'à l'équivalent d'aujourd'hui)</target>
 </trans-unit>
 <trans-unit id="DatePickerMonthPreviousYearFull">
-<source>Éste mes al completo del año pasado</source>
+<source>Este mes al completo del año pasado</source>
 <target>Tout ce mois de l'année dernière</target>
 </trans-unit>
 <trans-unit id="DatePickerYear">
-<source>Éste año</source>
-<target>Cette année</target>
+<source>Este año (hasta hoy)</source>
+<target>Cette année (jusqu'à aujourd'hui)</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYear">
-<source>El año pasado</source>
-<target>L'année dernière</target>
+<source>El año pasado (hasta equivalente a hoy)</source>
+<target>L'année dernière (jusqu'à l'équivalent d'aujourd'hui)</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYearFull">
 <source>El año pasado, completo</source>
@@ -5785,6 +5785,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>CONFIGURACION DE PESTAÑAS</source>
         <target>CONFIGURATION DES ONGLETS</target>
       </trans-unit>
+      <trans-unit id="TabsPanelConfig2">
+        <source>Configuración de pestañas</source>
+        <target>Configuration des onglets</target>
+      </trans-unit>
       <trans-unit id="ModelRestrictionAccess">
         <source>Modelo con acceso restringido</source>
         <target>Modèle à accès restreint</target>
@@ -5837,6 +5841,14 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Buscar tag...</source>
         <target>Balise de recherche...</target>
       </trans-unit>
+      <trans-unit id="dashboardsSelected">
+        <source>Dashboards seleccionados</source>
+        <target>Tableaux de bord sélectionnés</target>
+      </trans-unit>
+      <trans-unit id="dashboardsAvailable">
+        <source>Dashboards disponibles</source>
+        <target>Tableaux de bord disponibles</target>
+      </trans-unit>
       <trans-unit id="filterSearchDashboards">
         <source>Usa los filtros para buscar dashboards</source>
         <target>Utilisez les filtres pour rechercher des tableaux de bord.</target>
@@ -5873,6 +5885,50 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="CheckExpression">
         <source>Comprobar expresión</source>
         <target>Vérifier l'expression</target>
+      </trans-unit>
+      <trans-unit id="DatePickerToday">
+        <source>Hoy</source>
+        <target>Aujourd'hui</target>
+      </trans-unit>
+      <trans-unit id="DatePickerMonthFull">
+        <source>Este mes completo</source>
+        <target>Ce mois complet</target>
+      </trans-unit>
+      <trans-unit id="panelOptionsExportTo">
+        <source>Exportar a </source>
+        <target>Exporter vers </target>
+      </trans-unit>
+      <trans-unit id="DatePickerYearFull">
+        <source>Este año al completo</source>
+        <target>Cette année complète</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNextMonth">
+        <source>Próximo mes</source>
+        <target>Le mois prochain</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNextWeek">
+        <source>Próxima semana</source>
+        <target>La semaine prochaine</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext30">
+        <source>Próximos 30 días</source>
+        <target>Les 30 prochains jours</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext60">
+        <source>Próximos 60 días</source>
+        <target>Les 60 prochains jours</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext90">
+        <source>Próximos 90 días</source>
+        <target>Les 90 prochains jours</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNextQuarter">
+        <source>Próximo trimestre</source>
+        <target>Le trimestre prochain</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNextYear">
+        <source>Próximo año</source>
+        <target>L'année prochaine</target>
       </trans-unit>
     </body>
   </file>
