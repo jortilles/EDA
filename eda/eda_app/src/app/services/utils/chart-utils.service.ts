@@ -1227,9 +1227,10 @@ export class ChartUtilsService {
             }
         };
 
-        const maxTicksLimit = ticksOptions.xTicksLimit !== null ? ticksOptions.xTicksLimit : (size.width < 200 ? 5 + variador : size.width < 400 ? 12 + variador : size.width < 600 ? 25 + variador : 40 + variador);
+        const maxTicksLimit = ticksOptions.hasOwnProperty("xTicksLimit") && ticksOptions.xTicksLimit !== null ? ticksOptions.xTicksLimit : (size.width < 200 ? 4 + variador : size.width < 450 ? 10 + variador : size.width < 600 ? 20 + variador : size.width < 800 ? 30 + variador : size.width < 1000 ? 40 + variador : 40 + variador);
         const maxTicksLimitHorizontal = size.height < 200 ? 5 + variador : size.height < 400 ? 12 + variador : size.height < 600 ? 25 + variador : 40 + variador;
-        const maxTicksLimitY = ticksOptions.yTicksLimit !== null ? ticksOptions.yTicksLimit : (size.height < 100 ? 1  : size.height < 150 ? 2 : size.height < 200 ? 4 :  size.height < 250 ? 5 :  size.height < 300 ? 6 :  size.height < 350 ? 8: 10);
+        const maxTicksLimitY =  ticksOptions.hasOwnProperty("yTicksLimit") && ticksOptions.yTicksLimit !== null ? ticksOptions.yTicksLimit : (size.height < 100 ? 1  : size.height < 150 ? 2 : size.height < 200 ? 3 :  size.height < 250 ? 4 :  size.height < 300 ? 5 :  size.height < 350 ? 6: 6);
+
         
         /** Defineixo les propietats en funció del tipus de gràfic. */
         let dataLabelsObjt={}
