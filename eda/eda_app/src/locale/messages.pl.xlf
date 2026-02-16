@@ -5618,6 +5618,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Este mes completo</source>
         <target>Pełny ten miesiąc</target>
       </trans-unit>
+      <trans-unit id="panelOptionsExportTo">
+        <source>Exportar a </source>
+        <target>Eksportuj do </target>
+      </trans-unit>
       <trans-unit id="DatePickerYearFull">
         <source>Este año al completo</source>
         <target>Pełny ten rok</target>

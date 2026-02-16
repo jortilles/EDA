@@ -5894,6 +5894,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Este mes completo</source>
         <target>Ce mois complet</target>
       </trans-unit>
+      <trans-unit id="panelOptionsExportTo">
+        <source>Exportar a </source>
+        <target>Exporter vers </target>
+      </trans-unit>
       <trans-unit id="DatePickerYearFull">
         <source>Este año al completo</source>
         <target>Cette année complète</target>

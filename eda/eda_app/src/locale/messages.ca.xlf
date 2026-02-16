@@ -5903,6 +5903,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Este mes completo</source>
         <target>Aquest mes complet</target>
       </trans-unit>
+      <trans-unit id="panelOptionsExportTo">
+        <source>Exportar a </source>
+        <target>Exportar a </target>
+      </trans-unit>
       <trans-unit id="DatePickerYearFull">
         <source>Este año al completo</source>
         <target>Aquest any complet</target>

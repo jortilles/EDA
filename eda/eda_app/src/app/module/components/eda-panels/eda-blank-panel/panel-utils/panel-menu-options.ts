@@ -243,10 +243,16 @@ export const PanelOptions = {
   },
   exportExcel: (panelComponent: EdaBlankPanelComponent) => {
     return new EdaContextMenuItem({
-      label: $localize`:@@panelOptions3:Exportar a Excel`,
+      // Revisar como implementar con traducción para que solo se traduzca "Exportar a" y no las opciones de formato
+      label: $localize`:@@panelOptionsExportTo:Exportar a ` + `<span class="export-option"><u>Excel</u></span> / <span class="export-option"><u>CSV</u></span>`,
+      escape: false, // Necesario para que se renderice el HTML en la etiqueta del menú
       icon: 'mdi mdi-file',
-      command: () => PanelOptions.readyToExport(panelComponent, 'excel')
-    });
+      command: (event: any) => {
+        const text = event?.originalEvent?.target?.textContent?.trim()?.toLowerCase();
+        const format = text === 'csv' ? 'csv' : 'excel';
+        PanelOptions.readyToExport(panelComponent, format);
+      }
+    } as any);
   },
   duplicatePanel: (panelComponent: EdaBlankPanelComponent) => {
     return new EdaContextMenuItem({
@@ -277,6 +283,9 @@ export const PanelOptions = {
 
     if (_.isEqual(fileType, 'excel')) {
       panelComponent.fileUtiles.exportToExcel(headers, cols, panelComponent.panel.title);
+    }
+    if (_.isEqual(fileType, 'csv')) {
+      panelComponent.fileUtiles.exportToCsv(headers, cols, panelComponent.panel.title);
     }
 
     panelComponent.contextMenu.hideContextMenu();
