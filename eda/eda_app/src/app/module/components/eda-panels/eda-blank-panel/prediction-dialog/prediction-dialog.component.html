@@ -1,0 +1,42 @@
+<p-dialog
+    [header]="'Configuración de Predicción'"
+    i18n-header="@@predictionConfigTitle"
+    [(visible)]="visible"
+    [modal]="true"
+    [closable]="false"
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{width: '30vw'}"
+    appendTo="body">
+
+    <div class="p-4 space-y-4">
+        <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700" i18n="@@predictionMethodLabel">
+                Método de predicción
+            </label>
+            <select
+                [(ngModel)]="selectedMethod"
+                class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#00BFB3]">
+                <option value="Arima">ARIMA</option>
+                <option value="Tensorflow">TensorFlow (LSTM)</option>
+            </select>
+        </div>
+
+        <p class="text-md text-slate-500" i18n="@@predictionConfigDescription">
+            Se ejecutará la consulta con la predicción seleccionada y se guardarán los cambios.
+        </p>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <div class="flex justify-end gap-2 p-2">
+            <button class="cancel-button" (click)="onCancel()">
+                <i class="fa fa-times"></i>
+                <span i18n="@@cancelarBtn">Cancelar</span>
+            </button>
+            <button class="confirm-button" (click)="onConfirm()">
+                <i class="fa fa-check"></i>
+                <span i18n="@@confirmarBtn">Confirmar</span>
+            </button>
+        </div>
+    </ng-template>
+</p-dialog>

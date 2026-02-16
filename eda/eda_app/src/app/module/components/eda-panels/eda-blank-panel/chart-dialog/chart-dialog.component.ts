@@ -12,13 +12,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { ColorPickerModule } from 'primeng/colorpicker';
-import Swal from 'sweetalert2';
+import { PredictionDialogComponent } from '../prediction-dialog/prediction-dialog.component';
 
 @Component({
     standalone: true,
     selector: 'app-chart-dialog',
     templateUrl: './chart-dialog.component.html',
-    imports: [CommonModule, FormsModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule]
+    imports: [CommonModule, FormsModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule, PredictionDialogComponent]
 })
 
 export class ChartDialogComponent {
@@ -41,6 +41,7 @@ export class ChartDialogComponent {
     public showLabelsPercent: boolean = false;
     public showPointLines: boolean = false;
     public showPredictionLines: boolean = false;
+    public showPredictionDialog: boolean = false;
     public predictionMethod: string = 'Arima';
     public selectedPalette: { name: string; paleta: any } | null = null;
     public allPalettes: any = this.stylesProviderService.ChartsPalettes;
@@ -365,7 +366,20 @@ export class ChartDialogComponent {
     }
 
     setPredictionLines() {
+        if (this.showPredictionLines) {
+            // Toggle ON -> abrir dialog de configuración de predicción
+            this.showPredictionDialog = true;
+        } else {
+            // Toggle OFF -> desactivar predicción directamente
+            this.applyPrediction('None');
+        }
+    }
 
+    async confirmPrediction(selectedMethod: string) {
+        this.showPredictionDialog = false;
+        this.predictionMethod = selectedMethod;
+
+        // Actualizar config del chart
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
         let config: any = c.getConfig();
@@ -373,60 +387,45 @@ export class ChartDialogComponent {
         config.showLabelsPercent = this.showLabelsPercent;
         config.showPointLines = this.showPointLines;
         config.numberOfColumns = this.numberOfColumns;
+        config.showPredictionLines = this.showPredictionLines;
 
         properties.config = c;
-        /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
-        setTimeout(_ => {
-            this.chart = this.panelChartComponent.componentRef.instance.inject;
-            this.addPredictionMode();
-            this.load();
-            config.showPredictionLines = this.showPredictionLines;
-        });
 
-    }
-
-    addPredictionMode() {
-        // Buscamos el panel con el que estamos trabajando y le asignamos la predicción
+        // Setear predicción en la query del panel
         const panelID = this.controller.params.panelId;
         const dashboardPanel = this.dashboard.edaPanels.toArray().find(cmp => cmp.panel.id === panelID);
-        // Añadimos prediction a la query
-        dashboardPanel.panel.content.query.query.prediction = this.showPredictionLines === true ? this.predictionMethod : 'None';
+        dashboardPanel.panel.content.query.query.prediction = this.predictionMethod;
 
-        this.addNewPanel(dashboardPanel);
+        // Ejecutar query y guardar config
+        await dashboardPanel.runQueryFromDashboard(true);
+        this.saveChartConfig();
     }
 
-    onPredictionMethodChange() {
-        if (this.showPredictionLines) {
-            this.addPredictionMode();
-        }
+    cancelPrediction() {
+        this.showPredictionDialog = false;
+        this.showPredictionLines = false;
     }
 
-    addNewPanel(dashboardPanel) {
-        Swal.fire({
-            title: $localize`:@@AddPredictionTitle:¿Quieres actualizar los valores?`,
-            text: $localize`:@@AddPredictionText:Puedes guardar el gráfico con o sin predicción.`,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: $localize`:@@AddPredictionYes:Sí, actualizar`,
-            cancelButtonText: $localize`:@@AddPredictionNo:No, cerrar`,
-            didOpen: () => {
-                const container = document.querySelector('.swal2-container') as HTMLElement;
-                if (container) {
-                    container.style.zIndex = '10000';
-                }
-            }
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                // Ejecutamos la query de nuevo
-                await dashboardPanel.runQueryFromDashboard(true);
-                this.saveChartConfig();
-            } else {
-                this.showPredictionLines = !this.showPredictionLines;
-            }
-        });
+    private async applyPrediction(type: string) {
+        const properties = this.panelChartConfig;
+        let c: ChartConfig = properties.config;
+        let config: any = c.getConfig();
+        config.showLabels = this.showLabels;
+        config.showLabelsPercent = this.showLabelsPercent;
+        config.showPointLines = this.showPointLines;
+        config.numberOfColumns = this.numberOfColumns;
+        config.showPredictionLines = this.showPredictionLines;
+
+        properties.config = c;
+        this.panelChartConfig = new PanelChart(this.panelChartConfig);
+
+        const panelID = this.controller.params.panelId;
+        const dashboardPanel = this.dashboard.edaPanels.toArray().find(cmp => cmp.panel.id === panelID);
+        dashboardPanel.panel.content.query.query.prediction = type;
+
+        await dashboardPanel.runQueryFromDashboard(true);
+        this.saveChartConfig();
     }
 
 
