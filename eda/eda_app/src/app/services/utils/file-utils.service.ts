@@ -30,12 +30,8 @@ export class FileUtiles {
         });
     }
 
-    // Exportar a Excel y CSV (sin fs, compatible navegador)
-    async exportToExcel(
-        headerDisplay: string[],
-        cols: any[],
-        fileName: string
-    ) {
+    // Exportar a Excel (sin fs, compatible navegador)
+    async exportToExcel(headerDisplay: string[], cols: any[], fileName: string) {
         const workbook = new ExcelJS.Workbook();
 
         // Crear worksheet
@@ -74,20 +70,54 @@ export class FileUtiles {
             type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         });
         saveAs(blob, `${fileName}.xlsx`);
+    }
 
-        // Generar CSV deshabilitado
-        // const csvRows: string[] = [];
-        // worksheet.eachRow((row) => {
-        //     const values: string[] = [];
-        //     if (Array.isArray(row.values)) {
-        //         for (let i = 1; i < row.values.length; i++) {
-        //             const val = row.values[i];
-        //             values.push(val !== undefined && val !== null ? String(val) : '');
-        //         }
-        //     }
-        //     csvRows.push(values.join(','));
-        // });
-        // const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
-        // saveAs(csvBlob, `${fileName}.csv`);
+    // Exportar a CSV (sin fs, compatible navegador)
+    async exportToCsv(headerDisplay: string[], cols: any[], fileName: string) {
+        const workbook = new ExcelJS.Workbook();
+
+        // Crear worksheet
+        const worksheet = workbook.addWorksheet('Sheet1');
+
+        // Generar headers dinámicos desde cols
+        const headers: string[] = [];
+        _.forEach(cols, (c) => {
+            _.forEach(Object.keys(c), (o) => {
+                if (!headers.includes(o)) {
+                    headers.push(o);
+                }
+            });
+        });
+
+        // Sobrescribir headers con los que deseas mostrar
+        const displayHeaders = headerDisplay.length ? headerDisplay : headers;
+        worksheet.addRow(displayHeaders);
+
+        // Llenar filas con los datos
+        _.forEach(cols, (col) => {
+            const row: any[] = [];
+            _.forEach(headers, (h) => {
+                let text = _.get(col, h);
+                if (!_.isNil(text) && !_.isEmpty(text)) {
+                    text = text.toString().trim();
+                }
+                row.push(text);
+            });
+            worksheet.addRow(row);
+        });
+
+        const csvRows: string[] = [];
+        worksheet.eachRow((row) => {
+            const values: string[] = [];
+            if (Array.isArray(row.values)) {
+                for (let i = 1; i < row.values.length; i++) {
+                    const val = row.values[i];
+                    values.push(val !== undefined && val !== null ? String(val) : '');
+                }
+            }
+            csvRows.push(values.join(','));
+        });
+        const csvBlob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        saveAs(csvBlob, `${fileName}.csv`);
     }
 }
