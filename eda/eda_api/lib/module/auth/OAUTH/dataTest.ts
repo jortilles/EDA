@@ -4,15 +4,15 @@
 export const userDataValue = {
   status: 'ok',
   method: 'certificat',
-  identifier: '41352745M', // Id => NIF DEL usuario
-  companyName: 'Diputació de Girona', // Nombre de ROL
+  identifier: '47782720H', // Id => NIF DEL usuario
+  companyName: 'Casa del Marques', // Nombre de ROL
   identifierType: '2',
-  name: 'Nombre Primero',
-  surnames: 'Apellido completo',
-  fullname: 'Nombre Completo',
-  email: 'nombre@ddgi.cat',
+  name: 'Alex Fabricio',
+  surnames: 'Romero Gutierrez',
+  fullname: 'Alex Fabricio Romero Gutierrez',
+  email: 'alex_romero@marques.cat',
   certificateType: '6',
-  companyId: 'P1730000M'   // ==> ID de ROL
+  companyId: 'P1230000M'   // ==> ID de ROL
 }
 
 export const authenticationEvidenceValue = {

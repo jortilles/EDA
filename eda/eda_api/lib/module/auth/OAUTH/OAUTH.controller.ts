@@ -7,6 +7,7 @@ import ServerLogService from '../../../services/server-log/server-log.service';
 import User, { IUser } from '../../admin/users/model/user.model';
 import Group, { IGroup } from '../../admin/groups/model/group.model'
 import { UserController } from '../../admin/users/user.controller';
+import _ = require('lodash');
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -90,7 +91,7 @@ export class OAUTHController {
             // REDIRECION PARA EL INICIO DE SESION
 
             let token: string;
-            let { identifier, companyName, name, email, companyId } = userDataValue
+            let { identifier, companyName, name, email, companyId, fullname } = userDataValue
             let user: IUser = new User({name: '', email: '', password: '', img: '', role: []});
 
             insertServerLog(req, 'info', 'newLogin', email, 'attempt');
@@ -104,12 +105,28 @@ export class OAUTHController {
             email = email || identifier;
 
             const userEda = await UserController.getUserInfoByEmail(email, true);
+            
+            // Recuperar todos los grupos
+            const groups = await Group.find({});
+
+            // Extraemos los ids de todos los grupos del usuario
+            const userRoleIds = userEda.role.map(id => id.toString());
+
+            // Obtenemos todos los grupos con source = 'EDA'
+            const groupsSourceEDA = groups.filter((g: any) => g._doc.source === 'EDA');
+
+            // Match de los resultados userRoleIds y groupsSourceEDA
+            const matchedGroups = groupsSourceEDA.filter(group =>
+                userRoleIds.includes(group._id.toString())
+            );
+
+            console.log('Grupos Match: ', matchedGroups);
 
             ////////////////////////////////////////////////////////
             /////////////// INICIO DE CREACION DE ROL //////////////
             ////////////////////////////////////////////////////////
 
-            let role_id = []; // Variable role_id
+            let role_id = _.cloneDeep(matchedGroups); // Variable role_id
 
             try {
                 // Upsert: si existe devuelve el documento, si no, lo crea
@@ -143,7 +160,7 @@ export class OAUTHController {
 
             if(!userEda) {
                 const userToSave: IUser = new User({
-                    name: name,
+                    name: fullname,
                     email: email,
                     password: bcrypt.hashSync('no_serveix_de_re_pero_no_pot_ser_null', 10),
                     img: 'imagen', // Agregar la imagen
@@ -155,7 +172,7 @@ export class OAUTHController {
                 Object.assign(user, userSaved);
 
             } else {
-                userEda.name = name;
+                userEda.name = fullname;
                 userEda.email = email;
                 userEda.password = bcrypt.hashSync('no_serveix_de_re_pero_no_pot_ser_null', 10); 
                 userEda.role = role_id;
@@ -167,7 +184,7 @@ export class OAUTHController {
 
             const userPayload = {
                 ...user.toObject(), // Todos los datos de usuario
-                nameDG: name, 
+                nameDG: fullname, 
                 identifierDG: identifier,
                 companyNameDG: companyName,
                 companyIdDG: companyId
