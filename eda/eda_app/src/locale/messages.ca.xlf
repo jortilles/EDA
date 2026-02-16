@@ -2571,24 +2571,24 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Abans d'ahir</target>
 </trans-unit>
 <trans-unit id="DatePickerWeek">
-<source>Ésta semana</source>
-<target>Aquesta setmana</target>
+<source>Esta semana (hasta hoy)</source>
+<target>Aquesta setmana (fins avui)</target>
 </trans-unit>
 <trans-unit id="DatePickerWeekFull">
-<source>Ésta semana al completo</source>
-<target>Tota aquesta setmana</target>
+<source>Esta semana</source>
+<target>Aquesta setmana</target>
 </trans-unit>
 <trans-unit id="DatePickerLastWeek">
+<source>La semana pasada (hasta equivalente a hoy)</source>
+<target>La setmana passada (fins a l'equivalent d'avui)</target>
+</trans-unit>
+<trans-unit id="DatePickerLastWeekFull">
 <source>La semana pasada</source>
 <target>La setmana passada</target>
 </trans-unit>
-<trans-unit id="DatePickerLastWeekFull">
-<source>La semana pasada completa</source>
-<target>Tota la setmana passada</target>
-</trans-unit>
 <trans-unit id="DatePickerMonth">
-<source>Éste mes</source>
-<target>Aquest mes</target>
+<source>Este mes (hasta hoy)</source>
+<target>Aquest mes (fins avui)</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonth">
 <source>El mes pasado</source>
@@ -5894,6 +5894,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="CheckExpression">
         <source>Comprobar expresión</source>
         <target>Comprovar expressió</target>
+      </trans-unit>
+      <trans-unit id="DatePickerToday">
+        <source>Hoy</source>
+        <target>Avui</target>
+      </trans-unit>
+      <trans-unit id="DatePickerMonthFull">
+        <source>Este mes completo</source>
+        <target>Aquest mes complet</target>
       </trans-unit>
     </body>
   </file>

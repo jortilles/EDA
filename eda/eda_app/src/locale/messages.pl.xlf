@@ -2217,24 +2217,24 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Przed wczoraj</target>
 </trans-unit>
 <trans-unit id="DatePickerWeek">
-<source>Ésta semana</source>
-<target>Ten tydzień</target>
+<source>Esta semana (hasta hoy)</source>
+<target>W tym tygodniu (do dziś)</target>
 </trans-unit>
 <trans-unit id="DatePickerWeekFull">
-<source>Ésta semana al completo</source>
-<target>Cały ten tydzień</target>
+<source>Esta semana</source>
+<target>W tym tygodniu</target>
 </trans-unit>
 <trans-unit id="DatePickerLastWeek">
-<source>La semana pasada</source>
-<target>Zeszły tydzień</target>
+<source>La semana pasada (hasta equivalente a hoy)</source>
+<target>W zeszłym tygodniu (do odpowiednika dzisiejszego dnia)</target>
 </trans-unit>
 <trans-unit id="DatePickerLastWeekFull">
-<source>La semana pasada completa</source>
-<target>Cały zeszły tydzień</target>
+<source>La semana pasada</source>
+<target>W zeszłym tygodniu</target>
 </trans-unit>
 <trans-unit id="DatePickerMonth">
-<source>Éste mes</source>
-<target>Ten miesiąc</target>
+<source>Este mes (hasta hoy)</source>
+<target>W tym miesiącu (do dziś)</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonth">
 <source>El mes pasado</source>
@@ -5610,6 +5610,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Comprobar expresión</source>
         <target>Sprawdź wyrażenie</target>
       </trans-unit>      
+      <trans-unit id="DatePickerToday">
+        <source>Hoy</source>
+        <target>Dziś</target>
+      </trans-unit>
+      <trans-unit id="DatePickerMonthFull">
+        <source>Este mes completo</source>
+        <target>Pełny ten miesiąc</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

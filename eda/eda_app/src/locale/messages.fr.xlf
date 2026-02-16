@@ -2554,24 +2554,24 @@
 <target>Avant-hier</target>
 </trans-unit>
 <trans-unit id="DatePickerWeek">
-<source>Ésta semana</source>
-<target>Cette semaine</target>
+<source>Esta semana (hasta hoy)</source>
+<target>Cette semaine (jusqu'à aujourd'hui)</target>
 </trans-unit>
 <trans-unit id="DatePickerWeekFull">
-<source>Ésta semana al completo</source>
-<target>Toute cette semaine</target>
+<source>Esta semana</source>
+<target>Cette semaine</target>
 </trans-unit>
 <trans-unit id="DatePickerLastWeek">
+<source>La semana pasada (hasta equivalente a hoy)</source>
+<target>La semaine dernière (jusqu'à l'équivalent d'aujourd'hui)</target>
+</trans-unit>
+<trans-unit id="DatePickerLastWeekFull">
 <source>La semana pasada</source>
 <target>La semaine dernière</target>
 </trans-unit>
-<trans-unit id="DatePickerLastWeekFull">
-<source>La semana pasada completa</source>
-<target>La semaine dernière s'est terminée</target>
-</trans-unit>
 <trans-unit id="DatePickerMonth">
-<source>Éste mes</source>
-<target>Ce mois-ci</target>
+<source>Este mes (hasta hoy)</source>
+<target>Ce mois-ci (jusqu'à aujourd'hui)</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonth">
 <source>El mes pasado</source>
@@ -5885,6 +5885,14 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="CheckExpression">
         <source>Comprobar expresión</source>
         <target>Vérifier l'expression</target>
+      </trans-unit>
+      <trans-unit id="DatePickerToday">
+        <source>Hoy</source>
+        <target>Aujourd'hui</target>
+      </trans-unit>
+      <trans-unit id="DatePickerMonthFull">
+        <source>Este mes completo</source>
+        <target>Ce mois complet</target>
       </trans-unit>
     </body>
   </file>

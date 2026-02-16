@@ -2318,24 +2318,24 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>Before Yesterday</target>
 </trans-unit>
 <trans-unit id="DatePickerWeek">
-<source>Ésta semana</source>
-<target>This week</target>
+<source>Esta semana (hasta hoy)</source>
+<target>This week (until today)</target>
 </trans-unit>
 <trans-unit id="DatePickerWeekFull">
-<source>Ésta semana al completo</source>
-<target>All this week</target>
+<source>Esta semana</source>
+<target>This week</target>
 </trans-unit>
 <trans-unit id="DatePickerLastWeek">
+<source>La semana pasada (hasta equivalente a hoy)</source>
+<target>Last week (up to the equivalent of today)</target>
+</trans-unit>
+<trans-unit id="DatePickerLastWeekFull">
 <source>La semana pasada</source>
 <target>Last week</target>
 </trans-unit>
-<trans-unit id="DatePickerLastWeekFull">
-<source>La semana pasada completa</source>
-<target>All last week</target>
-</trans-unit>
 <trans-unit id="DatePickerMonth">
-<source>Éste mes</source>
-<target>This month</target>
+<source>Este mes (hasta hoy)</source>
+<target>This month (until today)</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonth">
 <source>El mes pasado</source>
@@ -5729,6 +5729,14 @@ OR<ph id="5"/>
 <trans-unit id="CheckExpression">
   <source>Comprobar expresión</source>
   <target>Check expression</target>
+</trans-unit>
+<trans-unit id="DatePickerToday">
+  <source>Hoy</source>
+  <target>Today</target>
+</trans-unit>
+<trans-unit id="DatePickerMonthFull">
+  <source>Este mes completo</source>
+  <target>This full month</target>
 </trans-unit>
 </body>
 </file>

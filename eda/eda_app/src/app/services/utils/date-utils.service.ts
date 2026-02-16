@@ -15,6 +15,7 @@ export class DateUtils {
     public getRange(range: any) {
         switch (range) {
             case 'all': return this.allDates();
+            case 'today': return this.setToday();
             case 'yesterday': return this.setYesterday();
             case 'beforeYesterday': return this.setBeforeYesterday();
             case 'weekStart': return this.setWeekStart();
@@ -22,6 +23,7 @@ export class DateUtils {
             case 'pastWeek': return this.setPastWeek();
             case 'pastWeekFull': return this.setPastWeekFull();
             case 'monthStart': return this.setMonthStart();
+            case 'monthStartFull': return this.setMonthStartFull();
             case 'pastMonth': return this.setPastMonth();
             case 'pastMonthFull': return this.setPastMonthFull();
             case 'monthStartPreviousYear': return this.setMonthStartPreviousYear();
@@ -45,6 +47,11 @@ export class DateUtils {
         return [mostOldDate, today];
     }
 
+    public setToday(): Array<Date> {
+        const today = moment().toDate();
+        return [today, today];
+    }
+
     public setYesterday(): Array<Date> {
         const yesterday = moment().subtract(1,'days').toDate()
         return [yesterday,yesterday];
@@ -57,8 +64,8 @@ export class DateUtils {
 
     public setWeekStart(): Array<Date> {
         const startOnMonday = moment().startOf('isoWeek').toDate();
-        const endOnFriday = moment().startOf('isoWeek').add(4,'days').toDate();
-        return [startOnMonday,endOnFriday];
+        let today = new Date();
+        return [startOnMonday,today];
     }
 
     /**
@@ -107,6 +114,12 @@ export class DateUtils {
         const today = moment().toDate();
         const monthStart = moment().startOf('month').toDate();
         return [monthStart, today];
+    }
+    
+    public setMonthStartFull(): Array<Date> { 
+        const monthStart = moment().startOf('month').toDate();
+        const monthStartEnd = moment().endOf('month').toDate();
+        return [monthStart, monthStartEnd];
     }
 
     public setPastMonth(): Array<Date> {
