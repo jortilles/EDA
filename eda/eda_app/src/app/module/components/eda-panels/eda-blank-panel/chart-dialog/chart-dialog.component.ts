@@ -5,7 +5,7 @@ import { PointStyle } from 'chart.js';
 import { EdaChart } from '@eda/components/eda-chart/eda-chart';
 import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import * as _ from 'lodash';
-import { StyleProviderService, ChartUtilsService, AlertService } from '@eda/services/service.index';
+import { StyleProviderService, ChartUtilsService, AlertService, SpinnerService } from '@eda/services/service.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
 import { CommonModule } from '@angular/common';
@@ -82,8 +82,9 @@ export class ChartDialogComponent {
 
     activeTab = "display"
 
-    constructor(private chartUtils: ChartUtilsService, private stylesProviderService: StyleProviderService, 
-        private alertService: AlertService
+    constructor(private chartUtils: ChartUtilsService, private stylesProviderService: StyleProviderService,
+        private alertService: AlertService,
+        private spinnerService: SpinnerService
     ) {
         this.drops.pointStyles = [
             { label: 'Puntos', value: 'circle' },
@@ -402,6 +403,9 @@ export class ChartDialogComponent {
         this.showPredictionDialog = false;
         this.predictionMethod = selectedMethod;
 
+        // Mostrar spinner mientras se ejecuta la preddción
+        this.spinnerService.on();
+
         // Actualizar config del chart
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;
@@ -422,6 +426,8 @@ export class ChartDialogComponent {
 
         // Ejecutar query y guardar config
         await dashboardPanel.runQueryFromDashboard(true);
+        // retiramos el spinner cuando tenemos el calculo acabado
+        this.spinnerService.off();
         this.saveChartConfig();
     }
 
