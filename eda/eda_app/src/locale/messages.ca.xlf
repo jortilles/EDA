@@ -5911,6 +5911,34 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Este año al completo</source>
         <target>Aquest any complet</target>
       </trans-unit>
+      <trans-unit id="DatePickerNextMonth">
+        <source>Próximo mes</source>
+        <target>Proper mes</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNextWeek">
+        <source>Próxima semana</source>
+        <target>Proper setmana</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext30">
+        <source>Próximos 30 días</source>
+        <target>Properes 30 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext60">
+        <source>Próximos 60 días</source>
+        <target>Properes 60 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext90">
+        <source>Próximos 90 días</source>
+        <target>Properes 90 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNextQuarter">
+        <source>Próximo trimestre</source>
+        <target>Proper trimestre</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNextYear">
+        <source>Próximo año</source>
+        <target>Proper any</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

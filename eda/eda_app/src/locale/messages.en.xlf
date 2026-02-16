@@ -5746,6 +5746,34 @@ OR<ph id="5"/>
   <source>Este año al completo</source>
   <target>This full year</target>
 </trans-unit>
+<trans-unit id="DatePickerNextMonth">
+  <source>Próximo mes</source>
+  <target>Next month</target>
+</trans-unit>
+<trans-unit id="DatePickerNextWeek">
+  <source>Próxima semana</source>
+  <target>Next week</target>
+</trans-unit>
+<trans-unit id="DatePickerNext30">
+  <source>Próximos 30 días</source>
+  <target>Next 30 days</target>
+</trans-unit>
+<trans-unit id="DatePickerNext60">
+  <source>Próximos 60 días</source>
+  <target>Next 60 days</target>
+</trans-unit>
+<trans-unit id="DatePickerNext90">
+  <source>Próximos 90 días</source>
+  <target>Next 90 days</target>
+</trans-unit>
+<trans-unit id="DatePickerNextQuarter">
+  <source>Próximo trimestre</source>
+  <target>Next quarter</target>
+</trans-unit>
+<trans-unit id="DatePickerNextYear">
+  <source>Próximo año</source>
+  <target>Next year</target>
+</trans-unit>
 </body>
 </file>
 </xliff>
