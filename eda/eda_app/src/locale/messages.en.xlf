@@ -5738,6 +5738,10 @@ OR<ph id="5"/>
   <source>Este mes completo</source>
   <target>This full month</target>
 </trans-unit>
+<trans-unit id="panelOptionsExportTo">
+  <source>Exportar a </source>
+  <target>Export to </target>
+</trans-unit>
 </body>
 </file>
 </xliff>

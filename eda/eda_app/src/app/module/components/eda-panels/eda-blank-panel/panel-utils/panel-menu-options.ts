@@ -244,7 +244,7 @@ export const PanelOptions = {
   exportExcel: (panelComponent: EdaBlankPanelComponent) => {
     return new EdaContextMenuItem({
       // Revisar como implementar con traducción para que solo se traduzca "Exportar a" y no las opciones de formato
-      label: `Exportar a <span class="export-option"><u>Excel</u></span> / <span class="export-option"><u>CSV</u></span>`,
+      label: $localize`:@@panelOptionsExportTo:Exportar a ` + `<span class="export-option"><u>Excel</u></span> / <span class="export-option"><u>CSV</u></span>`,
       escape: false, // Necesario para que se renderice el HTML en la etiqueta del menú
       icon: 'mdi mdi-file',
       command: (event: any) => {
