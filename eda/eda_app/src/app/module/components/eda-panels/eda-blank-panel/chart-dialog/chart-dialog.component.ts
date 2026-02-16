@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { PredictionDialogComponent } from '../prediction-dialog/prediction-dialog.component';
+import Swal from 'sweetalert2';
 
 @Component({
     standalone: true,
@@ -370,8 +371,30 @@ export class ChartDialogComponent {
             // Toggle ON -> abrir dialog de configuración de predicción
             this.showPredictionDialog = true;
         } else {
-            // Toggle OFF -> desactivar predicción directamente
-            this.applyPrediction('None');
+            // Toggle OFF -> confirmar con Swal antes de quitar la predicción
+            Swal.fire({
+                title: $localize`:@@RemovePredictionTitle:¿Quieres quitar la predicción?`,
+                text: $localize`:@@RemovePredictionText:Se quitará la predicción y se ejecutará la consulta del gráfico.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: $localize`:@@RemovePredictionYes:Sí, quitar`,
+                cancelButtonText: $localize`:@@RemovePredictionNo:No, mantener`,
+                didOpen: () => {
+                    const container = document.querySelector('.swal2-container') as HTMLElement;
+                    if (container) {
+                        container.style.zIndex = '10000';
+                    }
+                }
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    await this.applyPrediction('None');
+                } else {
+                    // Canceló -> volver el switch a ON
+                    this.showPredictionLines = true;
+                }
+            });
         }
     }
 
