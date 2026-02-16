@@ -61,6 +61,13 @@ export class EdaDatePickerComponent implements OnChanges {
 		{ label: $localize`:@@DatePickerLast30:Últimos 30 días`, value: 'last30' },
 		{ label: $localize`:@@DatePickerLast60:Últimos 60 días`, value: 'last60' },
 		{ label: $localize`:@@DatePickerLast120:Últimos 120 días`, value: 'last120' },
+		{ label: $localize`:@@DatePickerNextMonth:Próximo mes`, value: 'nextMonth' },
+		{ label: $localize`:@@DatePickerNextWeek:Próxima semana`, value: 'nextWeek' },
+		{ label: $localize`:@@DatePickerNext30:Próximos 30 días`, value: 'next30' },
+		{ label: $localize`:@@DatePickerNext60:Próximos 60 días`, value: 'next60' },
+		{ label: $localize`:@@DatePickerNext90:Próximos 90 días`, value: 'next90' },
+		{ label: $localize`:@@DatePickerNextQuarter:Próximo trimestre`, value: 'nextQuarter' },
+		{ label: $localize`:@@DatePickerNextYear:Próximo año`, value: 'nextYear' },		
 		{ label: $localize`:@@DatePickerNull:Fecha nula`, value: 'null' },
 	];
 
