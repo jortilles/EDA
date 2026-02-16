@@ -164,13 +164,18 @@ handleEditGroup(group: Group) {
 
   onApplyGroupDetail() {
     this.showGroupDetail = false;
+
+    // Por defecto es EDA_USER_ROLE
+    this.selectedGroup.role = 'EDA_USER_ROLE';
+
     // Reconversión para guardar solo sus IDs
     if (this.selectedGroup.isnew) { //Estamos creando grupo  
       let group: IGroup = {
         name: this.selectedGroup.name,
         role: { label: this.selectedGroup.name, value: this.selectedGroup.role },
         users: this.selectedGroup.users,
-      }
+        source: "EDA", // Esto sirve para distinguir de los grupos creados por EDA de los que vienen por SSO (OAUTH, SAML, GOOGLE, MICROSOFT, ETC)
+      }      
 
       this.groupService.insertGroup(group).subscribe(
         res => {
