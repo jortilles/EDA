@@ -2067,8 +2067,8 @@
 </trans-unit>
 
 <trans-unit id="possibleValuesListTable" datatype="html">
-<source>Tabla:</source>
-<target>Tableau:</target>
+<source>Tabla</source>
+<target>Tableau</target>
 </trans-unit>
 
 <trans-unit id="valueListSourceHeader" datatype="html">
@@ -2087,7 +2087,7 @@
 </trans-unit>
 
 <trans-unit id="possibleValuesListID" datatype="html">
-<source>Id Columna:</source>
+<source>Id de la columna</source>
 <target>ID de colonne:</target>
 </trans-unit>
 
@@ -2097,8 +2097,8 @@
 </trans-unit>
 
 <trans-unit id="possibleValuesListDescription" datatype="html">
-<source>Columna descripción:</source>
-<target>Description de la colonne:</target>
+<source>Descripción de la columna</source>
+<target>Description de la colonne</target>
 </trans-unit>
 
 <trans-unit id="columnaCalculada" datatype="html">
@@ -4098,6 +4098,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Mínimos por mes</source>
         <target>Montant minimum par mois</target>
       </trans-unit>
+      <trans-unit id="chartTypesTreeTable">
+        <source>Tabla Árbol</source>
+        <target>Table arborescente</target>
+      </trans-unit>
 
       <trans-unit id="NameTablaQuality">
         <source>Tabla DataQuality</source>
@@ -5621,6 +5625,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Se ha reiniciado la configuración de los filtros dependientes</source>
         <target>La configuration des filtres dépendants a été réinitialisée</target>
       </trans-unit>
+      <trans-unit id="showField">
+        <source>Mostrar campo de origen</source>
+        <target>Afficher le champ source</target>
+      </trans-unit>
 
       <trans-unit id="schemaTableDB">
         <source>e.g., schema:public,table:users</source>
@@ -5901,6 +5909,109 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="DatePickerYearFull">
         <source>Este año al completo</source>
         <target>Cette année complète</target>
+      </trans-unit>
+      <trans-unit id="noNameProvided">
+        <source>Debe proporcionar un nombre para el datasource</source>
+        <target>Vous devez fournir un nom pour la source de données</target>
+      </trans-unit>
+      <trans-unit id="noCsvData">
+        <source>Debe cargar un archivo CSV primero</source>
+        <target>Vous devez d'abord télécharger un fichier CSV</target>
+      </trans-unit>
+       <trans-unit id="noCsvColumns">
+        <source>No se detectaron columnas en el archivo CSV. Verifique el separador.</source>
+        <target>Aucune colonne n'a été détectée dans le fichier CSV. Veuillez vérifier le séparateur.</target>
+      </trans-unit>
+      <trans-unit id="emptyCsvFile">
+        <source>El archivo CSV está vacío o no se pudo leer con este separador</source>
+        <target>Le fichier CSV est vide ou n'a pas pu être lu avec ce séparateur.</target>
+      </trans-unit>
+      <trans-unit id="emptyCsvFile2">
+        <source>El archivo CSV está vacío o no se pudo leer</source>
+        <target>Le fichier CSV est vide ou illisible</target>
+      </trans-unit>
+      <trans-unit id="errorParseCsv">
+        <source>Error al parsear el archivo CSV con el separador especificado</source>
+        <target>Erreur lors de l'analyse du fichier CSV avec le séparateur spécifié</target>
+      </trans-unit>
+      <trans-unit id="errorParseCsv2">
+        <source>Error al parsear el archivo CSV. Verifica el separador.</source>
+        <target>Erreur lors de l'analyse du fichier CSV. Vérifiez le séparateur.</target>
+      </trans-unit>
+      <trans-unit id="errorParseCsv3">
+        <source>Error al parsear el archivo CSV. Verifique el separador y formato del archivo.</source>
+        <target>Erreur lors de l'analyse du fichier CSV. Veuillez vérifier le séparateur et le format du fichier.</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarNewTabs">
+        <source>Nuevo navegador</source>
+        <target>Nouveau navigateur</target>
+      </trans-unit>
+      <trans-unit id="anyCanSeeNoTable">
+        <source>Define quién puede acceder y ver esta tabla. Solo los usuarios y grupos explícitamente autorizados tendrán
+          acceso.</source>
+        <target>Définissez qui peut accéder à ce tableau et le consulter. Seuls les utilisateurs et les groupes explicitement autorisés y auront accès.</target>
+      </trans-unit>
+      <trans-unit id="anyCanSeeYesTable">
+        <source>Cualquier usuario puede ver la tabla.
+          Los filtros de seguridad se definen a nivel de tabla y columna concreta.</source>
+        <target>Tout utilisateur peut consulter le tableau.
+          Des filtres de sécurité sont définis au niveau du tableau et de chaque colonne.</target>
+      </trans-unit>
+      <trans-unit id="AddPredictionTitle">
+        <source>¿Quieres actualizar los valores?</source>
+        <target>Souhaitez-vous mettre à jour les valeurs ?</target>
+      </trans-unit>
+      <trans-unit id="AddPredictionText">
+        <source>Puedes guardar el gráfico con o sin predicción.</source>
+        <target>Vous pouvez enregistrer le graphique avec ou sans la prédiction.</target>
+      </trans-unit>
+      <trans-unit id="AddPredictionYes">
+        <source>Sí, actualizar</source>
+        <target>Oui, mise à jour</target>
+      </trans-unit>
+      <trans-unit id="AddPredictionNo">
+        <source>No, cerrar</source>
+        <target>Non, près</target>
+      </trans-unit>
+      <trans-unit id="showLines">
+        <source>Mostrar Líneas de Puntos</source>
+        <target>Afficher les lignes pointillées</target>
+      </trans-unit>
+      <trans-unit id="chartLabelLineOptionDescription">
+        <source>Muestra líneas conectando los puntos</source>
+        <target>Tracez des lignes reliant les points</target>
+      </trans-unit>
+      <trans-unit id="chartLabelLineOptionDescription2">
+        <source>Conecta los puntos con líneas</source>
+        <target>Reliez les points par des lignes</target>
+      </trans-unit> 
+      <trans-unit id="chartLabelLinePredictionOptionDescription">
+        <source>Muestra la predicción de la serie</source>
+        <target>Afficher la prédiction de la série</target>
+      </trans-unit>
+      <trans-unit id="gradientTab">
+        <source>Gradiente de color</source>
+        <target>Dégradé de couleurs</target>
+      </trans-unit>
+       <trans-unit id="semaphoreTab">
+        <source>Código semafórico</source>
+        <target>Code des feux de circulation</target>
+      </trans-unit>
+      <trans-unit id="aboveThreshold">
+        <source>es mayor que:</source>
+        <target>est supérieur à :</target>
+      </trans-unit>
+      <trans-unit id="betweenThresholds">
+        <source>mayor que:</source>
+        <target>supérieur à :</target>
+      </trans-unit>
+      <trans-unit id="betweenThresholds2">
+        <source>y menor que</source>
+        <target>et moins de</target>
+      </trans-unit>
+      <trans-unit id="belowThreshold">
+        <source>es menor que:</source>
+        <target>est inférieur à:</target>
       </trans-unit>
     </body>
   </file>

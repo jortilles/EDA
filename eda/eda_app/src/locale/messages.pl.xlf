@@ -1724,8 +1724,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="possibleValuesListTable" datatype="html">
-<source>Tabla:</source>
-<target>Tablica:</target>
+<source>Tabla</source>
+<target>Tablica</target>
 </trans-unit>
 
 <trans-unit id="valueListSourceHeader" datatype="html">
@@ -1744,8 +1744,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="possibleValuesListID" datatype="html">
-<source>Id Columna</source>
-<target>kolumna identyfikatora</target>
+<source>Id de la columna</source>
+<target>Identyfikator kolumny</target>
 </trans-unit>
 
 <trans-unit id="valueListSourceDescripcion" datatype="html">
@@ -1754,7 +1754,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="possibleValuesListDescription" datatype="html">
-<source>Columna descripción</source>
+<source>Descripción de la columna</source>
 <target>Opis kolumny</target>
 </trans-unit>
 
@@ -5625,6 +5625,109 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="DatePickerYearFull">
         <source>Este año al completo</source>
         <target>Pełny ten rok</target>
+      </trans-unit>
+      <trans-unit id="noNameProvided">
+        <source>Debe proporcionar un nombre para el datasource</source>
+        <target>Musisz podać nazwę źródła danych</target>
+      </trans-unit>
+      <trans-unit id="noCsvData">
+        <source>Debe cargar un archivo CSV primero</source>
+        <target>Najpierw musisz przesłać plik CSV</target>
+      </trans-unit>
+       <trans-unit id="noCsvColumns">
+        <source>No se detectaron columnas en el archivo CSV. Verifique el separador.</source>
+        <target>W pliku CSV nie wykryto żadnych kolumn. Sprawdź separator.</target>
+      </trans-unit>
+      <trans-unit id="emptyCsvFile">
+        <source>El archivo CSV está vacío o no se pudo leer con este separador</source>
+        <target>Plik CSV jest pusty lub nie można go odczytać przy użyciu tego separatora.</target>
+      </trans-unit>
+      <trans-unit id="emptyCsvFile2">
+        <source>El archivo CSV está vacío o no se pudo leer</source>
+        <target>Plik CSV jest pusty lub nie można go odczytać</target>
+      </trans-unit>
+      <trans-unit id="errorParseCsv">
+        <source>Error al parsear el archivo CSV con el separador especificado</source>
+        <target>Błąd podczas analizowania pliku CSV z określonym separatorem</target>
+      </trans-unit>
+      <trans-unit id="errorParseCsv2">
+        <source>Error al parsear el archivo CSV. Verifica el separador.</source>
+        <target>Błąd podczas parsowania pliku CSV. Sprawdź separator.</target>
+      </trans-unit>
+      <trans-unit id="errorParseCsv3">
+        <source>Error al parsear el archivo CSV. Verifique el separador y formato del archivo.</source>
+        <target>Wystąpił błąd podczas parsowania pliku CSV. Sprawdź separator i format pliku.</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarNewTabs">
+        <source>Nuevo navegador</source>
+        <target>Nowa przeglądarka</target>
+      </trans-unit>
+      <trans-unit id="anyCanSeeNoTable">
+        <source>Define quién puede acceder y ver esta tabla. Solo los usuarios y grupos explícitamente autorizados tendrán
+          acceso.</source>
+        <target>Zdefiniuj, kto może uzyskać dostęp do tej tabeli i ją przeglądać. Dostęp będą mieli tylko wyraźnie autoryzowani użytkownicy i grupy.</target>
+      </trans-unit>
+      <trans-unit id="anyCanSeeYesTable">
+        <source>Cualquier usuario puede ver la tabla.
+          Los filtros de seguridad se definen a nivel de tabla y columna concreta.</source>
+        <target>Każdy użytkownik może przeglądać tabelę.
+          Filtry bezpieczeństwa są definiowane na poziomie tabeli i konkretnej kolumny.</target>
+      </trans-unit>
+      <trans-unit id="AddPredictionTitle">
+        <source>¿Quieres actualizar los valores?</source>
+        <target>Czy chcesz zaktualizować wartości?</target>
+      </trans-unit>
+      <trans-unit id="AddPredictionText">
+        <source>Puedes guardar el gráfico con o sin predicción.</source>
+        <target>Możesz zapisać wykres z prognozą lub bez niej.</target>
+      </trans-unit>
+      <trans-unit id="AddPredictionYes">
+        <source>Sí, actualizar</source>
+        <target>Tak, aktualizacja</target>
+      </trans-unit>
+      <trans-unit id="AddPredictionNo">
+        <source>No, cerrar</source>
+        <target>Nie, blisko</target>
+      </trans-unit>
+      <trans-unit id="showLines">
+        <source>Mostrar Líneas de Puntos</source>
+        <target>Pokaż linie przerywane</target>
+      </trans-unit>
+      <trans-unit id="chartLabelLineOptionDescription">
+        <source>Muestra líneas conectando los puntos</source>
+        <target>Pokaż linie łączące kropki</target>
+      </trans-unit>
+      <trans-unit id="chartLabelLineOptionDescription2">
+        <source>Conecta los puntos con líneas</source>
+        <target>Połącz kropki liniami</target>
+      </trans-unit>
+      <trans-unit id="chartLabelLinePredictionOptionDescription">
+        <source>Muestra la predicción de la serie</source>
+        <target>Pokaż prognozę serii</target>
+      </trans-unit>
+      <trans-unit id="gradientTab">
+        <source>Gradiente de color</source>
+        <target>Gradient kolorów</target>
+      </trans-unit>
+       <trans-unit id="semaphoreTab">
+        <source>Código semafórico</source>
+        <target>Kod sygnalizacji świetlnej</target>
+      </trans-unit>
+      <trans-unit id="aboveThreshold">
+        <source>es mayor que:</source>
+        <target>jest większe niż:</target>
+      </trans-unit>
+      <trans-unit id="betweenThresholds">
+        <source>mayor que:</source>
+        <target>większy niż:</target>
+      </trans-unit>
+      <trans-unit id="betweenThresholds2">
+        <source>y menor que</source>
+        <target>i mniej niż</target>
+      </trans-unit>
+      <trans-unit id="belowThreshold">
+        <source>es menor que:</source>
+        <target>jest mniejsze niż:</target>
       </trans-unit>
 </body>
 </file>
