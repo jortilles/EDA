@@ -1322,6 +1322,12 @@ pre {
         display: flex !important;
     }
 
+    /* modificar */ 
+    h2 {
+        line-height: 20px;
+        font-size: 1.1rem;
+    }
+
 }
 
 /*-- ============================================================== 
@@ -1355,6 +1361,12 @@ pre {
         flex-wrap: nowrap !important;
         -webkit-flex-wrap: nowrap !important;
     }
+        /* modificar */ 
+    h2 {
+        line-height: 16px;
+        font-size: 1rem;
+    }
+
 }
 
 
