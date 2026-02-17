@@ -141,6 +141,9 @@ export class EdaBlankPanelComponent implements OnInit {
     public treeTableController: EdaDialogController;
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
+
+    public screenWidth: number = window.innerWidth;
+
     public dataSource: any;
     public isImported: boolean = false;
     public readonly: boolean = false;
@@ -1543,6 +1546,7 @@ public tableNodeExpand(event: any): void {
 
     public onResize(event) {
         this.display_v.responsive = event.currentTarget.innerWidth <= 1440;
+        this.screenWidth = event.currentTarget.innerWidth;
     }
 
     /** Run query From dashboard component */
