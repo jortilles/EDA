@@ -1372,14 +1372,14 @@ pre {
 
 
 /*-- ============================================================== 
-  Ipad & above all(768px) 
+  movil vertical(500px) 
   ============================================================== */
-@media (max-width: 401px) {
+@media (max-width: 500px) {
 
         /* modificar */ 
     h2 {
-        line-height: 14px;
-        font-size: 0.7rem;
+        line-height: 12spx;
+        font-size: 0.6rem;
     }
 
 }
