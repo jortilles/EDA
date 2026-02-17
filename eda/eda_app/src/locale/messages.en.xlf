@@ -5897,6 +5897,10 @@ OR<ph id="5"/>
     <source>Opciones IA</source>
     <target>Opcions IA</target>
   </trans-unit>
+  <trans-unit id="askTheAIText">
+    <source>Consulta con la IA</source>
+    <target>Ask the AI</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>

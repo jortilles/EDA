@@ -6050,5 +6050,9 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Opcions IA</target>
       </trans-unit>
     </body>
+    <trans-unit id="askTheAIText">
+      <source>Consulta con la IA</source>
+      <target>Consulta amb la IA</target>
+    </trans-unit>
   </file>
 </xliff>

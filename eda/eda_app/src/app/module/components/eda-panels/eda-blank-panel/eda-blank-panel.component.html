@@ -451,6 +451,17 @@
                           Opciones avanzadas
                         </h3>
                       </div>
+
+                      <div class="relative inline-block cols-span-1">
+                        <h3
+                          class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-[max-content]"
+                          [ngClass]="display_v.advancedSetting === 2 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
+                          (click)="display_v.advancedSetting = 2" 
+                          i18n="@@askTheAIText"
+                        >
+                          Consulta con la IA
+                        </h3>
+                      </div>
                     </div>
       
                     <!-- Query Summary -->

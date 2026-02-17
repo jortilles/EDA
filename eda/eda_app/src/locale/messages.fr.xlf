@@ -6041,6 +6041,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>es menor que:</source>
         <target>est inférieur à:</target>
       </trans-unit>
+      <trans-unit id="askTheAIText">
+        <source>Consulta con la IA</source>
+        <target>Consultation avec l'IA</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
