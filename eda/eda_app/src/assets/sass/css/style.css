@@ -1333,7 +1333,7 @@ pre {
 /*-- ============================================================== 
   Ipad & above all(768px) 
   ============================================================== */
-@media (min-width: 768px) {
+@media (max-width: 768px) {
 
     /*This is for the breeadcrumd*/
     .page-titles .breadcrumb {
@@ -1364,10 +1364,11 @@ pre {
         /* modificar */ 
     h2 {
         line-height: 15px;
-        font-size: 0.9rem;
+        font-size: 0.8rem;
     }
 
 }
+
 
 
 
