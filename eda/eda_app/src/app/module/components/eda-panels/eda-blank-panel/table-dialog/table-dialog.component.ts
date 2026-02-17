@@ -299,31 +299,32 @@ export class TableDialogComponent{
   }
 
   private onCloseGradientController(event, response, col?) {
+    try {
+      if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
 
-    if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+        this.styles = this.styles.filter(style => style.col !== response.col);
 
-      this.styles = this.styles.filter(style => style.col !== response.col);      
-
-      if (!response.noStyle) {
-        if (this.controller.params.panelChart.chartType === 'table') {
-          this.styles.push(response);
-        } else {
-          response.col = col.header;
-          response.cols = col.col
-          this.styles.push(response);
+        if (!response.noStyle) {
+          if (this.controller.params.panelChart.chartType === 'table') {
+            this.styles.push(response);
+          } else {
+            response.col = col.header;
+            response.cols = col.col
+            this.styles.push(response);
+          }
         }
       }
+      if (!this.myPanelChartComponent.componentRef.instance.inject.pivot) {
+
+        this.myPanelChartComponent.componentRef.instance.applyStyles(this.styles);
+
+      } else {
+
+        this.myPanelChartComponent.componentRef.instance.applyPivotSyles(this.styles);
+      }
+    } finally {
+      this.gradientMenuController = undefined;
     }
-    if (!this.myPanelChartComponent.componentRef.instance.inject.pivot) {
-
-      this.myPanelChartComponent.componentRef.instance.applyStyles(this.styles);
-
-    } else {
-
-      this.myPanelChartComponent.componentRef.instance.applyPivotSyles(this.styles);
-
-    }
-    this.gradientMenuController = undefined;
   }
 
   private setItems() {

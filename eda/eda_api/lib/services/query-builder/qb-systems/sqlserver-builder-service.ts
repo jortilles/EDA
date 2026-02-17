@@ -268,6 +268,34 @@ export class SQLserviceBuilderService extends QueryBuilderService {
   }
 
 
+  private getDateFormat(SQLexpression: string, fomrat: string): string {
+    let result = '';
+    switch (fomrat) {
+      case 'year': result = `FORMAT(CAST(${SQLexpression}  AS DATE), 'yyyy' )` ;
+        break;
+      case 'quarter': result = `FORMAT(CAST(${SQLexpression}  AS DATE), 'yyyy-Q' )`;
+        break;
+      case 'month': result = `FORMAT(CAST(${SQLexpression}  AS DATE), 'yyyy-MM' )`;
+        break;
+      case 'week': result = `DATEPART(week, CAST(${SQLexpression}  AS DATE))`;
+        break;
+      case 'day': result = `FORMAT(CAST(${SQLexpression}  AS DATE), 'yyyy-MM-dd' )`;
+        break;
+      case 'week_day': result = `DATEPART(weekday, CAST(${SQLexpression}  AS DATE))`;
+        break;
+      case 'day_hour': result = `FORMAT(CAST(${SQLexpression}  AS DATE), 'yyyy-MM-dd HH' ) `;
+        break;
+      case 'day_hour_minute': result = `FORMAT(CAST(${SQLexpression}  AS DATE), 'yyyy-MM-dd HH:mm' ) `;
+        break;
+      case 'timestamp': result = `FORMAT(CAST(${SQLexpression}  AS DATE), 'yyyy-MM-dd HH:mm:ss' )`;
+        break;
+      default: result = `FORMAT(CAST(${SQLexpression}  AS DATE), 'yyyy-MM-dd' )`;
+        break;
+    }
+    return result;
+  }
+
+
   public getSeparedColumns(origin: string, dest: string[]) {
     const columns = [];
     const grouping = [];
@@ -290,41 +318,29 @@ export class SQLserviceBuilderService extends QueryBuilderService {
 
       // Aqui se manejan las columnas calculadas
       if (el.computed_column === 'computed') {
-        if(el.column_type=='text'){
-          columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
+        if(el.column_type=='text' || el.column_type=='html'  ){
+          if(el.aggregation_type === 'none') { columns.push(` ${el.SQLexpression} as [${el.display_name}]`);}
+          else if(el.aggregation_type === 'count_distinct') {columns.push(` count( distinct ${el.SQLexpression} ) as [${el.display_name}]`);}
+          else {columns.push(` ${el.aggregation_type}(${el.SQLexpression}) as [${el.display_name}]`);}
         }else if(el.column_type=='numeric'){
-          columns.push(` CAST( ${el.SQLexpression} ${whatIfExpression} AS DECIMAL(32, ${el.minimumFractionDigits}))   as "${el.display_name}"`);
+          if(el.aggregation_type === 'none') { columns.push(` cast( ${el.SQLexpression} ${whatIfExpression} as decimal(32,${el.minimumFractionDigits}))   as [${el.display_name}]`);}
+          else if(el.aggregation_type === 'count_distinct') { columns.push(` cast( count( distinct( ${el.SQLexpression} ${whatIfExpression})) as decimal(32,${el.minimumFractionDigits}))   as [${el.display_name}]`);}
+          else {columns.push(` cast( ${el.aggregation_type}(${el.SQLexpression} ${whatIfExpression}) as decimal(32,${el.minimumFractionDigits}))   as [${el.display_name}]`);}
         }else if(el.column_type=='date'){
-          columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
+          if(el.aggregation_type === 'none') { columns.push(` ${this.getDateFormat(el.SQLexpression, el.format)} as [${el.display_name}]`);}
+          else if(el.aggregation_type === 'count_distinct') { columns.push(` count( distinct ${this.getDateFormat(el.SQLexpression, el.format)} ) as [${el.display_name}]`);}
+          else { columns.push(` ${el.aggregation_type}(${this.getDateFormat(el.SQLexpression, el.format)} ) as [${el.display_name}]`);}
         }else if(el.column_type=='coordinate'){
-          columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
+          if(el.aggregation_type === 'none') { columns.push(` ${el.SQLexpression} as [${el.display_name}]`);}
+          else if(el.aggregation_type === 'count_distinct') { columns.push(` count( distinct ${el.SQLexpression}) as [${el.display_name}]`);}
+          else {columns.push(` ${el.aggregation_type}(${el.SQLexpression}) as [${el.display_name}]`);}
         }
-        // GROUP BY
-        if (el.format) {
-          if (_.isEqual(el.format, 'year')) {
-            grouping.push(`FORMAT(CAST(${el.SQLexpression}  AS DATE), 'yyyy' )`);
-          } else if (_.isEqual(el.format, 'quarter')) {
-            grouping.push(`FORMAT(CAST(${el.SQLexpression}  AS DATE), 'yyyy-Q' )`);
-          } else if (_.isEqual(el.format, 'month')) {
-            grouping.push(`FORMAT(CAST(${el.SQLexpression}  AS DATE), 'yyyy-MM' )`);
-          } else if (_.isEqual(el.format, 'week')) {
-            grouping.push(`DATEPART(week, CAST(${el.SQLexpression}  AS DATE))`);
-          } else if (_.isEqual(el.format, 'week_day')) {
-            grouping.push(`DATEPART(weekday, CAST(${el.SQLexpression}  AS DATE))`);
-          } else if (_.isEqual(el.format, 'day')) {
-            grouping.push(`FORMAT(CAST(${el.SQLexpression}  AS DATE), 'yyyy-MM-dd' )`);
-          }  else if (_.isEqual(el.format, 'day_hour')) {
-            grouping.push(`FORMAT(CAST(${el.SQLexpression}  AS DATE), 'yyyy-MM-dd HH' ) `);
-          }  else if (_.isEqual(el.format, 'day_hour_minute')) {
-            grouping.push(`FORMAT(CAST(${el.SQLexpression}  AS DATE), 'yyyy-MM-dd HH:mm' ) `);
-          }  else if (_.isEqual(el.format, 'timestamp')) {
-            grouping.push(`FORMAT(CAST(${el.SQLexpression}  AS DATE), 'yyyy-MM-dd HH:mm:ss' )`);
-          } else if (_.isEqual(el.format, 'No')) {
-            grouping.push(`${el.SQLexpression} `);
-          }
+       // GROUP BY
+        if (el.column_type === 'date') {
+           grouping.push(this.getDateFormat(el.SQLexpression, el.format) );
         } else {
-          if( el.column_type != 'numeric' ){ // Computed colums require agrregations for numeric
-            grouping.push(` ${el.SQLexpression} `);
+          if( el.aggregation_type === 'none') {
+            grouping.push(` (${el.SQLexpression}) `);
           }
         }
 
@@ -338,63 +354,19 @@ export class SQLserviceBuilderService extends QueryBuilderService {
         } else {
           if (el.column_type === 'numeric') {
             columns.push(`CAST(${table_column} ${whatIfExpression} AS DECIMAL(32, ${el.minimumFractionDigits}))  "${el.display_name}"`);
-          } else if (el.column_type === 'date') {
-            if (el.format) {
-              if (_.isEqual(el.format, 'year')) {
-                columns.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy' ) as "${el.display_name}"`);
-              } else if (_.isEqual(el.format, 'quarter')) {
-                columns.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-Q' ) as "${el.display_name}"`);
-              } else if (_.isEqual(el.format, 'month')) {
-                columns.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM' ) as "${el.display_name}"`);
-              } else if (_.isEqual(el.format, 'week')) {
-                columns.push(`DATEPART(week, CAST(${table_column} AS DATE)) as "${el.display_name}"`);
-              } else if (_.isEqual(el.format, 'week_day')) {
-                columns.push(`DATEPART(weekday, CAST(${table_column} AS DATE) ) as "${el.display_name}"`);
-              } else if (_.isEqual(el.format, 'day')) {
-                columns.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
-              }  else if (_.isEqual(el.format, 'day_hour')) {
-                columns.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM-dd HH' ) as "${el.display_name}"`);
-              }  else if (_.isEqual(el.format, 'day_hour_minute')) {
-                columns.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM-dd HH:mm' ) as "${el.display_name}"`);
-              }  else if (_.isEqual(el.format, 'timestamp')) {
-                columns.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM-dd HH:mm:ss' ) as "${el.display_name}"`);
-              }else if (_.isEqual(el.format, 'No')) {
-                columns.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
-              }
-            } else {
-              columns.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
-            }
+                  } else if (el.column_type === 'date') {
+             columns.push( this.getDateFormat(table_column, el.format)  + ` as \`${el.display_name}\``);
           } else {
             columns.push(`${table_column} as "${el.display_name}"`);
           }
 
           // GROUP BY
-          if (el.format) {
-            if (_.isEqual(el.format, 'year')) {
-              grouping.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy' )`);
-            } else if (_.isEqual(el.format, 'quarter')) {
-              grouping.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-Q' )`);
-            } else if (_.isEqual(el.format, 'month')) {
-              grouping.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM' )`);
-            } else if (_.isEqual(el.format, 'week')) {
-              grouping.push(`DATEPART(week, CAST(${table_column} AS DATE))`);
-            } else if (_.isEqual(el.format, 'week_day')) {
-              grouping.push(`DATEPART(weekday, CAST(${table_column} AS DATE))`);
-            } else if (_.isEqual(el.format, 'day')) {
-              grouping.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM-dd' )`);
-            }  else if (_.isEqual(el.format, 'day_hour')) {
-              grouping.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM-dd HH' ) `);
-            }  else if (_.isEqual(el.format, 'day_hour_minute')) {
-              grouping.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM-dd HH:mm' ) `);
-            }  else if (_.isEqual(el.format, 'timestamp')) {
-              grouping.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM-dd HH:mm:ss' )`);
-            } else if (_.isEqual(el.format, 'No')) {
-              grouping.push(`${table_column}`);
-            }
+          if (el.column_type === 'date') {
+            grouping.push(this.getDateFormat(table_column, el.format) );
           } else {
             //  Si es una única columna numérica no se agrega.
             if(  this.queryTODO.fields.length > 1  ||  el.column_type != 'numeric'  ||  // las columnas numericas que no se agregan
-              ( el.column_type == 'numeric'  && el.aggregation_type == 'none' ) ){ // a no ser que se diga que no se agrega
+               ( el.column_type == 'numeric'  && el.aggregation_type == 'none' ) ){ // a no ser que se diga que no se agrega
                 grouping.push(`${table_column}`);
             }
           }
@@ -578,7 +550,7 @@ public processFilter(filter: any, columnType: string) {
   if (!Array.isArray(filter)) {
     switch (columnType) {
       case 'text': return `'${filter}'`;
-      //case 'text': return `'${filter}'`;
+      case 'html': return `'${filter}'`;
       case 'numeric': return filter;
       case 'date': return `CAST('${filter}' as date)`
     }
@@ -596,6 +568,7 @@ public processFilter(filter: any, columnType: string) {
       if(f == '(x => None)'){
         switch (columnType) {
           case 'text': str = `'(x => None)'  `;   break; 
+          case 'html': str = `'(x => None)'  `;   break; 
           case 'numeric': str =  'null  ';   break; 
           case 'date': str =  `to_date('4092-01-01','YYYY-MM-DD')  `;   break; 
         }
@@ -617,7 +590,7 @@ public processFilter(filter: any, columnType: string) {
     if (!Array.isArray(filter)) {
       switch (columnType) {
         case 'text': return `'${filter}'`;
-        //case 'text': return `'${filter}'`;
+        case 'html': return `'${filter}'`;
         case 'numeric': return filter;
         case 'date': return `CAST('${filter} 23:59:59' as datetime)`
       }

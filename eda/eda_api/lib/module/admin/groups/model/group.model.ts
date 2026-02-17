@@ -7,6 +7,7 @@ export interface IGroup extends mongoose.Document {
     role: string;
     users: any[];
     img: string;
+    source: string;
 }
 
 const roles = {
@@ -19,6 +20,7 @@ const GroupSchema = new mongoose.Schema({
     role: { type: String, required: true, enum: roles },
     users: [{ type: mongoose.Types.ObjectId, ref: 'User' }],
     img: { type: String, required: false },
+    source: { type: String, required: false },
 });
 
 GroupSchema.plugin(uniqueValidator, { message: 'Ya existe un grupo con este {PATH}' });

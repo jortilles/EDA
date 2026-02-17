@@ -73,6 +73,13 @@ th{
 
 
 
+/* Links inside HTML columns: disable native click so the div handler manages navigation */
+::ng-deep .p-datatable td a {
+    pointer-events: none;
+    color: #007ad9;
+    cursor: pointer;
+}
+
 /* Aplica estilo al contenedor del footer */
 .eda-table ::ng-deep .p-datatable-footer {
     background-color: inherit; 

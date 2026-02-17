@@ -2,14 +2,26 @@ import { Component, Input, ViewChild } from '@angular/core';
 import { EdaDialog, EdaDialog2Component, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { Editor } from 'primeng/editor';
 import { DomSanitizer } from '@angular/platform-browser';
-import { DialogModule } from 'primeng/dialog'; 
+import { DialogModule } from 'primeng/dialog';
 import { PanelChartComponent } from '../../eda-blank-panel/panel-charts/panel-chart.component';
 import { EdaContextMenuComponent } from '@eda/shared/components/shared-components.index';
 import * as _ from 'lodash';
 import { EditorModule } from 'primeng/editor';
+import Quill from 'quill';
 
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+
+// Override Quill Link to open in same tab instead of new tab
+const Link = Quill.import('formats/link') as any;
+class SameTabLink extends Link {
+	static create(value: string) {
+		const node = super.create(value);
+		node.removeAttribute('target');
+		return node;
+	}
+}
+Quill.register('formats/link', SameTabLink, true);
 @Component({
 	standalone: true,
 	selector: 'app-title-dialog',

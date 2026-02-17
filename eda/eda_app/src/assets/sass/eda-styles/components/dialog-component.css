@@ -2,3 +2,10 @@
   border-bottom: solid 1px #80808061;
   margin: 5px;
 }
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  width: 24px;   /* ancho del spinner */
+  height: 24px;  /* alto del spinner */
+  cursor: pointer;
+}

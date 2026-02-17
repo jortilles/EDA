@@ -26,7 +26,7 @@ import { IconService } from '@eda/services/utils/icons.service';
 })
 export class IconComponent {
     @Input() name!: string;
-    @Input() size: 'sm' | 'default' | 'lg' = 'default';
+    @Input() size: 'sm' | 'default' | 'lg' = 'lg';
     // @Input() class!: string;
 
     private iconService = inject(IconService);

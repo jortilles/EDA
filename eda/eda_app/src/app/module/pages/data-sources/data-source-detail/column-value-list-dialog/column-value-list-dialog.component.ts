@@ -52,7 +52,7 @@ export class ColumnValueListDialogComponent{
         this.targetTables = this.dataSourceService.getModel().map(t => {
             const item: SelectItem = { label: t.display_name.default, value: t };
             return item;
-        });
+        }).sort((a, b) => a.label.localeCompare(b.label));
     }
 
     getColumnsByTable() {

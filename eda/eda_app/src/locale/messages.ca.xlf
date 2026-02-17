@@ -2079,8 +2079,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="possibleValuesListTable" datatype="html">
-<source>Tabla:</source>
-<target>Taula:</target>
+<source>Tabla</source>
+<target>Taula</target>
 </trans-unit>
 
 
@@ -2100,8 +2100,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="possibleValuesListID" datatype="html">
-<source>Id Columna:</source>
-<target>Id Columna:</target>
+<source>Id de la columna</source>
+<target>Id de la columna</target>
 </trans-unit>
 
 <trans-unit id="valueListSourceDescripcion" datatype="html">
@@ -2110,11 +2110,9 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="possibleValuesListDescription" datatype="html">
-<source>Columna descripción:</source>
-<target>Columna descripció:</target>
+<source>Descripción de la columna</source>
+<target>Descripció de la columna</target>
 </trans-unit>
-
-
 
 <trans-unit id="columnaCalculada" datatype="html">
 <source> Nueva columna calculada </source>
@@ -2135,8 +2133,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="sqlExpColumn" datatype="html">
-<source>Expresión SQL (Debe incluir la agregación)</source>
-<target>Expressió SQL (Ha d'incloure l'agregació)</target>
+<source>Expresión SQL</source>
+<target>Expressió SQL</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
   <context context-type="linenumber">103</context>
@@ -2571,48 +2569,48 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Abans d'ahir</target>
 </trans-unit>
 <trans-unit id="DatePickerWeek">
-<source>Ésta semana</source>
-<target>Aquesta setmana</target>
+<source>Esta semana (hasta hoy)</source>
+<target>Aquesta setmana (fins avui)</target>
 </trans-unit>
 <trans-unit id="DatePickerWeekFull">
-<source>Ésta semana al completo</source>
-<target>Tota aquesta setmana</target>
+<source>Esta semana</source>
+<target>Aquesta setmana</target>
 </trans-unit>
 <trans-unit id="DatePickerLastWeek">
+<source>La semana pasada (hasta equivalente a hoy)</source>
+<target>La setmana passada (fins a l'equivalent d'avui)</target>
+</trans-unit>
+<trans-unit id="DatePickerLastWeekFull">
 <source>La semana pasada</source>
 <target>La setmana passada</target>
 </trans-unit>
-<trans-unit id="DatePickerLastWeekFull">
-<source>La semana pasada completa</source>
-<target>Tota la setmana passada</target>
-</trans-unit>
 <trans-unit id="DatePickerMonth">
-<source>Éste mes</source>
-<target>Aquest mes</target>
+<source>Este mes (hasta hoy)</source>
+<target>Aquest mes (fins avui)</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonth">
-<source>El mes pasado</source>
-<target>El mes passat</target>
+<source>El mes pasado (hasta equivalente a hoy)</source>
+<target>El mes passat (fins a l'equivalent d'avui)</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonthFull">
 <source>El mes pasado completo</source>
 <target>Tot el mes passat</target>
 </trans-unit>
 <trans-unit id="DatePickerMonthPreviousYear">
-<source>Éste mes del año pasado</source>
-<target>Aquest mes de l'any passat</target>
+<source>Este mes del año pasado (hasta equivalente a hoy)</source>
+<target>Aquest mes de l'any passat (fins a l'equivalent d'avui)</target>
 </trans-unit>
 <trans-unit id="DatePickerMonthPreviousYearFull">
-<source>Éste mes al completo del año pasado</source>
+<source>Este mes al completo del año pasado</source>
 <target>Aquest mes, complert, de l'any passat</target>
 </trans-unit>
 <trans-unit id="DatePickerYear">
-<source>Éste año</source>
-<target>Aquest any</target>
+<source>Este año (hasta hoy)</source>
+<target>Aquest any (fins avui)</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYear">
-<source>El año pasado</source>
-<target>L'any passat</target>
+<source>El año pasado (hasta equivalente a hoy)</source>
+<target>L'any passat (fins a l'equivalent d'avui)</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYearFull">
 <source>El año pasado, completo</source>
@@ -4136,6 +4134,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="min_bymonthLabel" datatype="html">
         <source>Mínimos por mes</source>
         <target>Mínims per mes</target>
+      </trans-unit>
+      <trans-unit id="chartTypesTreeTable">
+        <source>Tabla Árbol</source>
+        <target>Taula Arbre</target>
       </trans-unit>
 
       <trans-unit id="NameTablaQuality">
@@ -5782,7 +5784,65 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       </trans-unit>
       <trans-unit id="TabsPanelConfig">
         <source>CONFIGURACION DE PESTAÑAS</source>
-        <target>CONFIGUTACIÓ DE PESTANYES</target>
+        <target>CONFIGURACIÓ DE PESTANYES</target>
+      </trans-unit>
+      <trans-unit id="TabsPanelConfig2">
+        <source>Configuración de pestañas</source>
+        <target>Configuració de pestanyes</target>
+      </trans-unit>
+      <trans-unit id="tabsDashboardSettings">
+        <source>Configura las pestañas para mostrar dashboards</source>
+        <target>Configura les pestanyes per mostrar dashboards</target>
+      </trans-unit>
+
+      <trans-unit id="filterByPrivacy">
+        <source>Filtrar por Privacidad</source>
+        <target>Filtrar per Privadesa</target>
+      </trans-unit>
+
+      <trans-unit id="filterByTags">
+        <source>Filtrar por Tags</source>
+        <target>Filtrar per Tags</target>
+      </trans-unit>
+
+      <trans-unit id="selectEditTabs">
+        <source>Seleccionar...</source>
+        <target>Seleccionar...</target>
+      </trans-unit>
+
+      <trans-unit id="searchTag">
+        <source>Buscar tag...</source>
+        <target>Buscar tag...</target>
+      </trans-unit>
+
+      <trans-unit id="dashboardsSelected">
+        <source>Dashboards seleccionados</source>
+        <target>Dashboards seleccionats</target>
+      </trans-unit>
+
+      <trans-unit id="dashboardsAvailable">
+        <source>Dashboards disponibles</source>
+        <target>Dashboards disponibles</target>
+      </trans-unit>
+
+      <trans-unit id="filterSearchDashboards">
+        <source>Usa los filtros para buscar dashboards</source>
+        <target>Fes servir els filtres per buscar dashboards</target>
+      </trans-unit>
+
+      <trans-unit id="noCoincidenceDashFilters">
+        <source>No hay dashboards que coincidan con los filtros</source>
+        <target>No hi ha dashboards que coincideixin amb els filtres</target>
+      </trans-unit>
+
+      <trans-unit id="addDashListAvailable">
+        <source>Añade dashboards desde la lista de disponibles</source>
+        <target>Afegeix dashboards des de la llista de disponibles</target>
+      </trans-unit>
+
+      <trans-unit id="filterOptions">
+        <source>Opciones del filtro:</source>
+        <target>Opcions del filtre:</target>
       </trans-unit>
 
       <trans-unit id="ModelRestrictionAccess">
@@ -5816,6 +5876,174 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="tableActivationAccessMessageOption">
         <source>Activar para habilitar un acceso restringido</source>
         <target>Activar per habilitar un accés restringit</target>
+      </trans-unit>
+      <trans-unit id="sqlExpressionCalculatedField">
+        <source>Expresión SQL</source>
+        <target>Expressió SQL</target>
+      </trans-unit>
+      <trans-unit id="typeSelectorText">
+        <source>Tipo de columna</source>
+        <target>Tipus de columna</target>
+      </trans-unit>
+      <trans-unit id="decimalNumberText">
+        <source>Número de decimales</source>
+        <target>Nombre de decimals</target>
+      </trans-unit>
+      <trans-unit id="typeSelectorAggregation">
+        <source>Agregación</source>
+        <target>Agregació</target>
+      </trans-unit>
+      <trans-unit id="CheckExpression">
+        <source>Comprobar expresión</source>
+        <target>Comprovar expressió</target>
+      </trans-unit>
+      <trans-unit id="DatePickerToday">
+        <source>Hoy</source>
+        <target>Avui</target>
+      </trans-unit>
+      <trans-unit id="DatePickerMonthFull">
+        <source>Este mes completo</source>
+        <target>Aquest mes complet</target>
+      </trans-unit>
+      <trans-unit id="panelOptionsExportTo">
+        <source>Exportar a </source>
+        <target>Exportar a </target>
+      </trans-unit>
+      <trans-unit id="DatePickerYearFull">
+        <source>Este año al completo</source>
+        <target>Aquest any complet</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNextMonth">
+        <source>Próximo mes</source>
+        <target>Proper mes</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNextWeek">
+        <source>Próxima semana</source>
+        <target>Proper setmana</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext30">
+        <source>Próximos 30 días</source>
+        <target>Properes 30 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext60">
+        <source>Próximos 60 días</source>
+        <target>Properes 60 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext90">
+        <source>Próximos 90 días</source>
+        <target>Properes 90 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNextQuarter">
+        <source>Próximo trimestre</source>
+        <target>Proper trimestre</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNextYear">
+        <source>Próximo año</source>
+        <target>Proper any</target>
+      </trans-unit>
+      <trans-unit id="noNameProvided">
+        <source>Debe proporcionar un nombre para el datasource</source>
+        <target>Heu de proporcionar un nom per al datasource</target>
+      </trans-unit>
+      <trans-unit id="noCsvData">
+        <source>Debe cargar un archivo CSV primero</source>
+        <target>Heu de carregar un fitxer CSV primer</target>
+      </trans-unit>
+      <trans-unit id="noCsvColumns">
+        <source>No se detectaron columnas en el archivo CSV. Verifique el separador.</source>
+        <target>No s'han detectat columnes al fitxer CSV. Verifiqueu el separador.</target>
+      </trans-unit>
+      <trans-unit id="emptyCsvFile">
+        <source>El archivo CSV está vacío o no se pudo leer con este separador</source>
+        <target>El fitxer CSV és buit o no s'ha pogut llegir amb aquest separador</target>
+      </trans-unit>
+      <trans-unit id="emptyCsvFile2">
+        <source>El archivo CSV está vacío o no se pudo leer</source>
+        <target>El fitxer CSV és buit o no s'ha pogut llegir</target>
+      </trans-unit>
+      <trans-unit id="errorParseCsv">
+        <source>Error al parsear el archivo CSV con el separador especificado</source>
+        <target>Error en parsejar el fitxer CSV amb el separador especificat</target>
+      </trans-unit>
+      <trans-unit id="errorParseCsv2">
+        <source>Error al parsear el archivo CSV. Verifica el separador.</source>
+        <target>Error en parsejar el fitxer CSV. Verifica el separador.</target>
+      </trans-unit>
+      <trans-unit id="errorParseCsv3">
+        <source>Error al parsear el archivo CSV. Verifique el separador y formato del archivo.</source>
+        <target>Error en parsejar el fitxer CSV. Verifiqueu el separador i format del fitxer.</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarNewTabs">
+        <source>Nuevo navegador</source>
+        <target>Nou navegador</target>
+      </trans-unit>
+      <trans-unit id="anyCanSeeNoTable">
+        <source>Define quién puede acceder y ver esta tabla. Solo los usuarios y grupos explícitamente autorizados tendrán
+          acceso.</source>
+        <target>Defineix qui hi pot accedir i veure aquesta taula. Només els usuaris i grups explícitament autoritzats tindran 
+          accés.</target>
+      </trans-unit>
+      <trans-unit id="anyCanSeeYesTable">
+        <source>Cualquier usuario puede ver la tabla.
+          Los filtros de seguridad se definen a nivel de tabla y columna concreta.</source>
+        <target>Qualsevol usuari pot veure la taula. 
+          Els filtres de seguretat es defineixen a nivell de taula i columna concreta.</target>
+      </trans-unit>
+      <trans-unit id="AddPredictionTitle">
+        <source>¿Quieres actualizar los valores?</source>
+        <target>Voleu actualitzar els valors?</target>
+      </trans-unit>
+      <trans-unit id="AddPredictionText">
+        <source>Puedes guardar el gráfico con o sin predicción.</source>
+        <target>Pots desar el gràfic amb predicció o sense.</target>
+      </trans-unit>
+      <trans-unit id="AddPredictionYes">
+        <source>Sí, actualizar</source>
+        <target>Sí, actualitzar</target>
+      </trans-unit>
+      <trans-unit id="AddPredictionNo">
+        <source>No, cerrar</source>
+        <target>No, tancar</target>
+      </trans-unit>
+      <trans-unit id="showLines">
+        <source>Mostrar Líneas de Puntos</source>
+        <target>Mostra Línies de Punts</target>
+      </trans-unit>
+      <trans-unit id="chartLabelLineOptionDescription">
+        <source>Muestra líneas conectando los puntos</source>
+        <target>Mostra línies connectant els punts</target>
+      </trans-unit>
+      <trans-unit id="chartLabelLineOptionDescription2">
+        <source>Conecta los puntos con líneas</source>
+        <target>Connecta els punts amb línies</target>
+      </trans-unit>
+      <trans-unit id="chartLabelLinePredictionOptionDescription">
+        <source>Muestra la predicción de la serie</source>
+        <target>Mostra la predicció de la sèrie</target>
+      </trans-unit>
+      <trans-unit id="gradientTab">
+        <source>Gradiente de color</source>
+        <target>Gradient de color</target>
+      </trans-unit>
+      <trans-unit id="semaphoreTab">
+        <source>Código semafórico</source>
+        <target>Codi semafòric</target>
+      </trans-unit>
+      <trans-unit id="aboveThreshold">
+        <source>es mayor que:</source>
+        <target>és més gran que:</target>
+      </trans-unit>
+      <trans-unit id="betweenThresholds">
+        <source>mayor que:</source>
+        <target>més gran que:</target>
+      </trans-unit>
+      <trans-unit id="betweenThresholds2">
+        <source>y menor que</source>
+        <target>i menor que</target>
+      </trans-unit>
+      <trans-unit id="belowThreshold">
+        <source>es menor que:</source>
+        <target>és menor que:</target>
       </trans-unit>
       <trans-unit id="promptOption">
         <source>Opciones IA</source>

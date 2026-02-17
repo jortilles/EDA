@@ -67,7 +67,6 @@ export class MysqlConnection extends AbstractConnection {
 
     async tryConnection(): Promise<any> {
         try {
-            console.log(this.config)
             return new Promise((resolve, reject) => {
                 let mySqlConn = {}
                 if (this.config.ssl && (this.config.ssl === 'true')) {
