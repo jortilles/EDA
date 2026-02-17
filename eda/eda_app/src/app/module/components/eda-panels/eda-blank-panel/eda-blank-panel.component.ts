@@ -1,5 +1,5 @@
 // Angular
-import { Component, Input, Output, EventEmitter, ViewChild, OnInit, OnDestroy, inject, computed, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, HostListener } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, OnInit, inject, computed, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { DragDropModule, CdkDrag, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
@@ -141,6 +141,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public treeTableController: EdaDialogController;
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
+
+    public screenWidth: number = window.innerWidth;
 
     public dataSource: any;
     public isImported: boolean = false;
@@ -1544,6 +1546,7 @@ public tableNodeExpand(event: any): void {
 
     public onResize(event) {
         this.display_v.responsive = event.currentTarget.innerWidth <= 1440;
+        this.screenWidth = event.currentTarget.innerWidth;
     }
 
     /** Run query From dashboard component */
