@@ -1324,8 +1324,8 @@ pre {
 
     /* modificar */ 
     h2 {
-        line-height: 20px;
-        font-size: 1.1rem;
+        line-height: 18px;
+        font-size: 1rem;
     }
 
 }
@@ -1363,8 +1363,8 @@ pre {
     }
         /* modificar */ 
     h2 {
-        line-height: 16px;
-        font-size: 1rem;
+        line-height: 15px;
+        font-size: 0.9rem;
     }
 
 }
