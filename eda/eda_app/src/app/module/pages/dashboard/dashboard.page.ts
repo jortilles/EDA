@@ -250,10 +250,21 @@ export class DashboardPage implements OnInit {
 
     const cols = this.gridsterOptions.minCols!;
     const width = container.clientWidth;
-    const cellSize = Math.floor(width / cols);
-
-    this.gridsterOptions.fixedRowHeight = cellSize;
-    this.gridsterOptions.api?.optionsChanged();
+    const mobileBreakpoint = this.gridsterOptions.mobileBreakpoint || 640;
+    //Si la visión es en movil. Gridsted pone los elementos apilados.
+    //https://github.com/tiberiuzuld/angular-gridster2/blob/master/src/assets/gridTypes.md
+    if (width < mobileBreakpoint) {
+      // En modo móvil: altura fija por celda para que los paneles tengan un tamaño razonable
+      this.gridsterOptions.fixedRowHeight = 60;
+    } else {
+      let cellSize = Math.floor(width / cols);
+      if(cellSize < 20){
+        // si estoy muy ajustado le doy un poco de altura.
+        cellSize = 50;
+      }
+      this.gridsterOptions.fixedRowHeight = cellSize;
+    }
+   this.gridsterOptions.api?.optionsChanged();
   }
 
   public async loadDashboard() {
