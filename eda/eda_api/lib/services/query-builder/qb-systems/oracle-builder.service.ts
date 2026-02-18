@@ -349,7 +349,7 @@ export class OracleBuilderService extends QueryBuilderService {
           if (el.column_type === 'numeric') {
             columns.push(`ROUND(${table_column} ${whatIfExpression}, ${el.minimumFractionDigits})  as "${el.display_name}"`);
             } else if (el.column_type === 'date') {
-             columns.push( this.getDateFormat(table_column, el.format)  + ` as \`${el.display_name}\``);
+             columns.push( this.getDateFormat(table_column, el.format)  + ` as "${el.display_name}"`);
           } else {
             columns.push(`${table_column} as "${el.display_name}"`);
           }
