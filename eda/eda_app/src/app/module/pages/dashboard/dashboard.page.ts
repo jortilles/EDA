@@ -255,12 +255,12 @@ export class DashboardPage implements OnInit {
     //https://github.com/tiberiuzuld/angular-gridster2/blob/master/src/assets/gridTypes.md
     if (width < mobileBreakpoint) {
       // En modo móvil: altura fija por celda para que los paneles tengan un tamaño razonable
-      this.gridsterOptions.fixedRowHeight = 60;
+      this.gridsterOptions.fixedRowHeight = 150;
     } else {
       let cellSize = Math.floor(width / cols);
       if(cellSize < 20){
         // si estoy muy ajustado le doy un poco de altura.
-        cellSize = 50;
+        cellSize = 80;
       }
       this.gridsterOptions.fixedRowHeight = cellSize;
     }
