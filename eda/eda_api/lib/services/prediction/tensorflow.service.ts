@@ -2,7 +2,7 @@ import * as tf from '@tensorflow/tfjs';
 
 export class TensorflowService {
 
-    static async forecast(dataset: number[], steps: number): Promise<number[]> {
+    static async forecast(dataset: number[], steps: number, tfParams?: {epochs: number, lookback: number, learningRate: number, referenceColumns?: string[]}, referenceDatasets?: number[][]): Promise<number[]> {
         if (!Array.isArray(dataset) || dataset.length < 4) {
             throw new Error('Dataset insuficiente para predicción (mínimo 4 valores)');
         }
@@ -11,8 +11,13 @@ export class TensorflowService {
             throw new Error('Dataset contiene valores inválidos');
         }
 
+        // Si se proporcionan parámetros manuales, usar SOLO LSTM sin fallback
+        if (tfParams) {
+            return await TensorflowService.lstmForecast(dataset, steps, tfParams, referenceDatasets);
+        }
+
         try {
-            return await TensorflowService.lstmForecast(dataset, steps);
+            return await TensorflowService.lstmForecast(dataset, steps, tfParams, referenceDatasets);
         } catch (err) {
             console.warn('LSTM falló, usando red densa como fallback:', err.message);
             try {
@@ -24,42 +29,62 @@ export class TensorflowService {
         }
     }
 
-    private static async lstmForecast(dataset: number[], steps: number): Promise<number[]> {
-        const { normalized, min, max } = TensorflowService.normalize(dataset);
-        const windowSize = Math.min(Math.max(3, Math.floor(dataset.length / 3)), 10);
+    private static async lstmForecast(dataset: number[], steps: number, tfParams?: {epochs: number, lookback: number, learningRate: number}, referenceDatasets?: number[][]): Promise<number[]> {
+        const useMultivariate = referenceDatasets && referenceDatasets.length > 0;
+        const numFeatures = 1 + (useMultivariate ? referenceDatasets.length : 0);
+
+        // Normalizar target
+        const { normalized: normTarget, min, max } = TensorflowService.normalize(dataset);
+
+        // Normalizar cada columna de referencia independientemente
+        const normRefs: number[][] = useMultivariate
+            ? referenceDatasets.map(ref => TensorflowService.normalize(ref).normalized)
+            : [];
+
+        const windowSize = tfParams?.lookback
+            ? Math.min(tfParams.lookback, dataset.length - 1)
+            : Math.min(Math.max(3, Math.floor(dataset.length / 3)), 10);
 
         if (dataset.length < windowSize + 1) {
             throw new Error('Dataset demasiado corto para ventana LSTM');
         }
 
-        // Crear ventana deslizante
-        const xs: number[][] = [];
+        // Crear ventanas deslizantes multivariantes
+        // Cada muestra: [windowSize][numFeatures]
+        const xs: number[][][] = [];
         const ys: number[] = [];
-        for (let i = 0; i <= normalized.length - windowSize - 1; i++) {
-            xs.push(normalized.slice(i, i + windowSize));
-            ys.push(normalized[i + windowSize]);
+
+        for (let i = 0; i <= normTarget.length - windowSize - 1; i++) {
+            const windowVectors: number[][] = [];
+            for (let t = i; t < i + windowSize; t++) {
+                const vec = [normTarget[t]];
+                normRefs.forEach(ref => vec.push(ref[t]));
+                windowVectors.push(vec);
+            }
+            xs.push(windowVectors);
+            ys.push(normTarget[i + windowSize]);
         }
 
-        // Tensores: [samples, timesteps, features=1]
-        const inputTensor = tf.tensor3d(xs.map(x => x.map(v => [v])));
+        // Tensores: [samples, timesteps, numFeatures]
+        const inputTensor = tf.tensor3d(xs);
         const outputTensor = tf.tensor2d(ys.map(y => [y]));
 
         // Modelo LSTM
         const model = tf.sequential();
         model.add(tf.layers.lstm({
             units: 32,
-            inputShape: [windowSize, 1],
+            inputShape: [windowSize, numFeatures],
             returnSequences: false
         }));
         model.add(tf.layers.dense({ units: 1 }));
 
         model.compile({
-            optimizer: tf.train.adam(0.01),
+            optimizer: tf.train.adam(tfParams?.learningRate || 0.01),
             loss: 'meanSquaredError'
         });
 
         // Entrenar
-        const epochs = Math.min(50, Math.max(20, Math.floor(200 / xs.length)));
+        const epochs = tfParams?.epochs || Math.min(50, Math.max(20, Math.floor(200 / xs.length)));
         await model.fit(inputTensor, outputTensor, {
             epochs,
             batchSize: Math.min(32, xs.length),
@@ -68,14 +93,27 @@ export class TensorflowService {
 
         // Predecir iterativamente
         const predictions: number[] = [];
-        let currentWindow = normalized.slice(-windowSize);
+
+        // Ventana actual: [windowSize][numFeatures]
+        let currentWindow: number[][] = normTarget.slice(-windowSize).map((v, i) => {
+            const vec = [v];
+            normRefs.forEach(ref => vec.push(ref[ref.length - windowSize + i]));
+            return vec;
+        });
+
+        // Últimos valores conocidos de las refs (extrapolación constante)
+        const lastRefValues: number[] = normRefs.map(ref => ref[ref.length - 1]);
 
         for (let i = 0; i < steps; i++) {
-            const input = tf.tensor3d([currentWindow.map(v => [v])]);
+            const input = tf.tensor3d([currentWindow]);
             const pred = model.predict(input) as tf.Tensor;
             const value = pred.dataSync()[0];
             predictions.push(value);
-            currentWindow = [...currentWindow.slice(1), value];
+
+            // Deslizar ventana: nuevo vector con predicción del target + últimos valores de referencia
+            const newVec = [value, ...lastRefValues];
+            currentWindow = [...currentWindow.slice(1), newVec];
+
             input.dispose();
             pred.dispose();
         }
@@ -85,7 +123,7 @@ export class TensorflowService {
         outputTensor.dispose();
         model.dispose();
 
-        // Desnormalizar y validar
+        // Desnormalizar y validar (solo el target)
         const denormalized = TensorflowService.denormalize(predictions, min, max);
         return TensorflowService.validatePredictions(denormalized, dataset);
     }
@@ -161,7 +199,7 @@ export class TensorflowService {
         const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
         const last = dataset[dataset.length - 1];
 
-        return Array.from({ length: steps }, (_, i) => Math.round(last + slope * (i + 1)));
+        return Array.from({ length: steps }, (_, i) => Math.round((last + slope * (i + 1)) * 100) / 100);
     }
 
     private static normalize(data: number[]): { normalized: number[], min: number, max: number } {
@@ -189,6 +227,6 @@ export class TensorflowService {
             return Math.max(minData - range * 0.5, Math.min(maxData + range * 0.5, pred));
         });
 
-        return validated.map(pred => Math.round(pred));
+        return validated.map(pred => Math.round(pred * 100) / 100);
     }
 }
