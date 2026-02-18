@@ -258,9 +258,9 @@ export class DashboardPage implements OnInit {
       this.gridsterOptions.fixedRowHeight = 150;
     } else {
       let cellSize = Math.floor(width / cols);
-      if(cellSize < 20){
+      if(cellSize < 30){
         // si estoy muy ajustado le doy un poco de altura.
-        cellSize = 80;
+        cellSize = 30;
       }
       this.gridsterOptions.fixedRowHeight = cellSize;
     }
