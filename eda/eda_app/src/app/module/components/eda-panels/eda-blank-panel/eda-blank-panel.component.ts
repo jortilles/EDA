@@ -142,7 +142,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
 
-    public screenWidth: number = window.innerWidth;
+    // public screenWidth: number = window.innerWidth;  Se usa para mostrar el ancho de pantalla para debug.
 
     public dataSource: any;
     public isImported: boolean = false;
@@ -1546,7 +1546,7 @@ public tableNodeExpand(event: any): void {
 
     public onResize(event) {
         this.display_v.responsive = event.currentTarget.innerWidth <= 1440;
-        this.screenWidth = event.currentTarget.innerWidth;
+        //this.screenWidth = event.currentTarget.innerWidth;
     }
 
     /** Run query From dashboard component */
