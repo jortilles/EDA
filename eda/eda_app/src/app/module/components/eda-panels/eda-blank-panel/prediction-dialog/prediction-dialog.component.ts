@@ -33,7 +33,7 @@ export class PredictionDialogComponent {
     @Output() confirm = new EventEmitter<PredictionConfig>();
     @Output() cancel = new EventEmitter<void>();
 
-    public selectedMethod: string;
+    public selectedMethod: string = 'None';
 
     // setup de configuración inicial
     public steps: number = 3;
