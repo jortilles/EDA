@@ -1800,7 +1800,7 @@ export class DashboardController {
 
   // Revisar si hay predicción y el tipo
   if(req.body.query?.prediction && req.body.query?.prediction !== 'None' && req.body.output?.config?.chartType === 'line'){
-    await DashboardController.setupPrediction(output, req.body, myQuery)
+    await DashboardController.setupPrediction(output, req.body, myQuery, connection, dataModelObject, req.user)
   }
 
   console.log(
@@ -1818,15 +1818,16 @@ export class DashboardController {
   }
   
 
-  static async setupPrediction(output: any, body: any, myQuery: any){
-    // Número de fechas a predecir
-    const steps = 3;
+  static async setupPrediction(output: any, body: any, myQuery: any, connection?: any, dataModelObject?: any, user?: any){
+    // Leer configuración de predicción del body
+    const predictionConfig = body.query?.predictionConfig || {};
+    const steps = predictionConfig.steps || 3;
 
     // Buscamos campo de la fecha, su formato y su último valor
     const dateField = myQuery.fields.find(field => field.column_type === 'date');
     if (!dateField){
       return;
-    } 
+    }
 
     const timeFormat = dateField.format;
     const lastDate = output[1][output[1].length - 1][0];
@@ -1844,25 +1845,117 @@ export class DashboardController {
     switch(body.query?.prediction){
         case 'Arima':
           await DashboardController.applyArimaPredicction(
-            predictions, originalDataset, setup);
+            predictions, originalDataset, setup, predictionConfig.arimaParams);
           break;
         case 'Tensorflow':
-          await DashboardController.applyTensorflowPredicction(predictions, originalDataset, setup);
+          // Construir datasets de referencia para predicción multivariante
+          // referenceColumns ahora es [{table_name, column_name, display_name}]
+          const referenceColumns: {table_name: string, column_name: string, display_name: string}[] =
+            predictionConfig.tensorflowParams?.referenceColumns || [];
+          let referenceDatasets: number[][] = [];
+
+          if (referenceColumns.length > 0 && connection && dataModelObject) {
+            try {
+              referenceDatasets = await DashboardController.fetchReferenceDatasets(
+                referenceColumns, dateField, myQuery, connection, dataModelObject, user, body.query?.queryLimit
+              );
+            } catch (err) {
+              console.warn('[Prediction] Error fetching reference datasets, falling back to univariate:', err.message);
+              referenceDatasets = [];
+            }
+          }
+
+          await DashboardController.applyTensorflowPredicction(
+            predictions, originalDataset, setup, predictionConfig.tensorflowParams, referenceDatasets);
           break;
       }
   }
 
+  // encontrar los datasets de las columnas de referencia para la predicción multivariante con TensorFlow. Cada dataset es un array de números alineado con el campo de fecha.
+  static async fetchReferenceDatasets(referenceColumns: {table_name: string, column_name: string}[],
+    dateField: any, myQuery: any, connection: any, dataModelObject: any, user: any, queryLimit?: number ): Promise<number[][]> {
+    const referenceDatasets: number[][] = [];
+
+    for (const refCol of referenceColumns) {
+      // Encontrar tablas
+      const table = dataModelObject.ds?.model?.tables?.find(t => t.table_name === refCol.table_name);
+      if (!table) {
+        console.warn(`[Prediction] Reference table not found: ${refCol.table_name}`);
+        continue;
+      }
+      // Encontrar columnas
+      const colDef = table.columns?.find(c => c.column_name === refCol.column_name);
+      if (!colDef) {
+        console.warn(`[Prediction] Reference column not found: ${refCol.column_name} in ${refCol.table_name}`);
+        continue;
+      }
+
+      // Build a query with the same date field + this reference column
+      const refQuery = {
+        fields: [
+          { ...dateField },  // Same date field as main query for alignment
+          {
+            column_name: colDef.column_name,
+            column_type: colDef.column_type || 'numeric',
+            table_id: refCol.table_name,
+            display_name: colDef.display_name?.default || colDef.column_name,
+            order: 0,
+            aggregation_type: 'sum',
+          }
+        ],
+        filters: myQuery.filters || [],
+        queryMode: myQuery.queryMode || 'EDA',
+        simple: myQuery.simple,
+        joinType: myQuery.joinType || 'inner',
+      };
+
+      try {
+        const refQueryBuilt = await connection.getQueryBuilded(refQuery, dataModelObject, user, queryLimit);
+        connection.client = await connection.getclient();
+        const refResults = await connection.execQuery(refQueryBuilt);
+
+        // Extract numeric values from results (column index 1 = the reference column)
+        let dataset: number[];
+        if (Array.isArray(refResults) && refResults.length > 0) {
+          if (Array.isArray(refResults[0])) {
+            // MongoDB format: already arrays
+            dataset = refResults.map(row => row[1]).filter(val => Number.isFinite(val));
+          } else {
+            // SQL format: objects
+            const keys = Object.keys(refResults[0]);
+            const valueKey = keys[1]; // Second column is the numeric value
+            dataset = refResults.map(row => {
+              const val = parseFloat(row[valueKey]);
+              return isNaN(val) ? null : val;
+            }).filter(val => val !== null && Number.isFinite(val));
+          }
+        }
+
+        if (dataset && dataset.length > 0) {
+          referenceDatasets.push(dataset);
+          console.log(`[Prediction] Reference column ${refCol.table_name}.${refCol.column_name}: ${dataset.length} values`);
+        } else {
+          console.warn(`[Prediction] No data for reference column ${refCol.table_name}.${refCol.column_name}`);
+        }
+      } catch (err) {
+        console.warn(`[Prediction] Failed to fetch reference column ${refCol.table_name}.${refCol.column_name}:`, err.message);
+      }
+    }
+
+    return referenceDatasets;
+  }
+
   // Formula de arima
-  static applyArimaPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels}) {
+  static applyArimaPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels}, arimaParams?: {p: number, d: number, q: number}) {
     try {
       // Calculamos las predicciones a través del servicio ARIMA
-      predictions = ArimaService.forecast(originalDataset, setup.steps);
+      predictions = ArimaService.forecast(originalDataset, setup.steps, arimaParams);
     } catch (err) {
       console.error('Error ARIMA:', err);
       return;
     }
 
-    // Añadir columna predictionet
+    // Añadir columna predicción
     setup.rows.forEach((row, index) => {
       row.push(index === setup.lastIndex ? row[1] : null);
     });
@@ -1872,13 +1965,12 @@ export class DashboardController {
       setup.rows.push([label, null, predictions[index] ?? null]);
     });
 
-    console.log('Predicción ARIMA aplicada');
   }
 
   // Predicción con TensorFlow
-  static async applyTensorflowPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels}) {
+  static async applyTensorflowPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels}, tfParams?: any, referenceDatasets?: number[][]) {
     try {
-      predictions = await TensorflowService.forecast(originalDataset, setup.steps);
+      predictions = await TensorflowService.forecast(originalDataset, setup.steps, tfParams, referenceDatasets);
     } catch (err) {
       console.error('Error TensorFlow:', err);
       return;
@@ -1894,7 +1986,6 @@ export class DashboardController {
       setup.rows.push([label, null, predictions[index] ?? null]);
     });
 
-    console.log('Predicción TensorFlow aplicada');
   }
 
   /**
