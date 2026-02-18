@@ -484,7 +484,6 @@ export class DashboardController {
         // Obtener el dashboard
         const dashboard = await Dashboard.findById(req.params.id);
         if (!dashboard) {
-          console.log('Dashboard not found with this id:' + req.params.id);
           return next(new HttpException(500, 'Dashboard not found with this id'));
         }
 
@@ -500,7 +499,6 @@ export class DashboardController {
           dashboard.user.toString() !== user;
 
         if (visibilityCheck && roleCheck) {
-          console.log("You don't have permission " + user + ' for dashboard ' + req.params.id);
           return next(new HttpException(500, "You don't have permission"));
         }
 
@@ -1933,7 +1931,6 @@ export class DashboardController {
 
         if (dataset && dataset.length > 0) {
           referenceDatasets.push(dataset);
-          console.log(`[Prediction] Reference column ${refCol.table_name}.${refCol.column_name}: ${dataset.length} values`);
         } else {
           console.warn(`[Prediction] No data for reference column ${refCol.table_name}.${refCol.column_name}`);
         }
