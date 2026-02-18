@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { ColorPickerModule } from 'primeng/colorpicker';
-import { PredictionDialogComponent } from '../prediction-dialog/prediction-dialog.component';
+import { PredictionDialogComponent, PredictionConfig } from '../prediction-dialog/prediction-dialog.component';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -399,9 +399,16 @@ export class ChartDialogComponent {
         }
     }
 
-    async confirmPrediction(selectedMethod: string) {
+    get modelTables(): any[] {
+        const panelID = this.controller.params.panelId;
+        const dashboardPanel = this.dashboard?.edaPanels?.toArray().find(cmp => cmp.panel.id === panelID);
+        if (!dashboardPanel?.dataSource?.model?.tables) return [];
+        return dashboardPanel.dataSource.model.tables.filter(t => t.visible !== false);
+    }
+
+    async confirmPrediction(predictionConfig: PredictionConfig) {
         this.showPredictionDialog = false;
-        this.predictionMethod = selectedMethod;
+        this.predictionMethod = predictionConfig.method;
 
         // Mostrar spinner mientras se ejecuta la preddción
         this.spinnerService.on();
@@ -419,10 +426,15 @@ export class ChartDialogComponent {
         properties.config = c;
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
 
-        // Setear predicción en la query del panel
+        // Setear predicción y configuración en la query del panel
         const panelID = this.controller.params.panelId;
         const dashboardPanel = this.dashboard.edaPanels.toArray().find(cmp => cmp.panel.id === panelID);
-        dashboardPanel.panel.content.query.query.prediction = this.predictionMethod;
+        dashboardPanel.panel.content.query.query.prediction = predictionConfig.method;
+        dashboardPanel.panel.content.query.query.predictionConfig = {
+            steps: predictionConfig.steps,
+            arimaParams: predictionConfig.arimaParams,
+            tensorflowParams: predictionConfig.tensorflowParams,
+        };
 
         // Ejecutar query y guardar config
         await dashboardPanel.runQueryFromDashboard(true);
