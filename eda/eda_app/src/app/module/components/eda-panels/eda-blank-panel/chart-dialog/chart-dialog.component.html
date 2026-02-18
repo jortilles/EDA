@@ -267,6 +267,8 @@
 </eda-dialog2>
 
 <!-- Prediction Configuration Dialog -->
-<app-prediction-dialog 
-  [(visible)]="showPredictionDialog" [predictionMethod]="predictionMethod" (confirm)="confirmPrediction($event)" (cancel)="cancelPrediction()">
-</app-prediction-dialog>
+@if (showPredictionDialog) {
+  <app-prediction-dialog
+    [(visible)]="showPredictionDialog" [predictionMethod]="predictionMethod" [modelTables]="modelTables" (confirm)="confirmPrediction($event)" (cancel)="cancelPrediction()">
+  </app-prediction-dialog>
+}
