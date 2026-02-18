@@ -2,7 +2,11 @@ import * as tf from '@tensorflow/tfjs';
 
 export class TensorflowService {
 
-    static async forecast(dataset: number[], steps: number, tfParams?: {epochs: number, lookback: number, learningRate: number, referenceColumns?: string[]}, referenceDatasets?: number[][]): Promise<number[]> {
+    /**
+     * Punto de entrada principal.
+     * Decide si usar params manuales (LSTM fijo) o automáticos (con fallback).
+     */
+    static async forecast(dataset: number[], steps: number, tfParams?: {epochs: number, lookback: number, learningRate: number}, referenceDatasets?: number[][]): Promise<number[]> {
         if (!Array.isArray(dataset) || dataset.length < 4) {
             throw new Error('Dataset insuficiente para predicción (mínimo 4 valores)');
         }
@@ -11,11 +15,12 @@ export class TensorflowService {
             throw new Error('Dataset contiene valores inválidos');
         }
 
-        // Si se proporcionan parámetros manuales, usar SOLO LSTM sin fallback
+        // Con params manuales: LSTM directo, sin fallback
         if (tfParams) {
             return await TensorflowService.lstmForecast(dataset, steps, tfParams, referenceDatasets);
         }
 
+        // Sin params: LSTM → red densa → tendencia lineal
         try {
             return await TensorflowService.lstmForecast(dataset, steps, tfParams, referenceDatasets);
         } catch (err) {
@@ -29,6 +34,14 @@ export class TensorflowService {
         }
     }
 
+    /**
+     * Modelo LSTM (Long Short-Term Memory).
+     * Si se pasan referenceDatasets, entrena un modelo multivariante:
+     * cada timestep tiene tantos features como (1 + nº columnas de referencia).
+     * La predicción del target se hace iterativamente: cada predicción
+     * se añade a la ventana para predecir el siguiente paso.
+     * Para las referencias, se repite el último valor conocido (extrapolación constante).
+     */
     private static async lstmForecast(dataset: number[], steps: number, tfParams?: {epochs: number, lookback: number, learningRate: number}, referenceDatasets?: number[][]): Promise<number[]> {
         const useMultivariate = referenceDatasets && referenceDatasets.length > 0;
         const numFeatures = 1 + (useMultivariate ? referenceDatasets.length : 0);
@@ -128,6 +141,11 @@ export class TensorflowService {
         return TensorflowService.validatePredictions(denormalized, dataset);
     }
 
+    /**
+     * Fallback 1: Red neuronal densa simple (univariante).
+     * Arquitectura: Dense(16, relu) → Dense(8, relu) → Dense(1)
+     * Más ligera que LSTM y sin dependencia de orden temporal explícita.
+     */
     private static async denseForecast(dataset: number[], steps: number): Promise<number[]> {
         const { normalized, min, max } = TensorflowService.normalize(dataset);
         const windowSize = Math.min(Math.max(2, Math.floor(dataset.length / 3)), 8);
@@ -187,6 +205,11 @@ export class TensorflowService {
         return TensorflowService.validatePredictions(denormalized, dataset);
     }
 
+    /**
+     * Fallback 2: Tendencia lineal por mínimos cuadrados.
+     * Último recurso si tanto LSTM como red densa fallan.
+     * Calcula la pendiente sobre los últimos 10 puntos y proyecta linealmente.
+     */
     private static linearFallback(dataset: number[], steps: number): number[] {
         const windowSize = Math.min(10, dataset.length);
         const recentData = dataset.slice(-windowSize);

@@ -1821,7 +1821,7 @@ export class DashboardController {
     const predictionConfig = body.query?.predictionConfig || {};
     const steps = predictionConfig.steps || 3;
 
-    // Buscamos campo de la fecha, su formato y su último valor
+    // Buscamos campo de la fecha — sin él no podemos generar fechas futuras
     const dateField = myQuery.fields.find(field => field.column_type === 'date');
     if (!dateField){
       return;
@@ -1830,11 +1830,12 @@ export class DashboardController {
     const timeFormat = dateField.format;
     const lastDate = output[1][output[1].length - 1][0];
 
-    // A partir de los datos anteriores generamos las proximas fechas
+    // Generamos las próximas fechas en el mismo formato que las existentes (mes, semana, día...)
     const nextLabels = TimeFormatService.nextInSequenceGeneric( timeFormat, lastDate, steps );
 
     const rows = output[1];
     const lastIndex = rows.length - 1;
+    // Dataset numérico: solo la columna de valores (índice 1), descartando nulos/infinitos
     const originalDataset = rows.map(row => row[1]).filter(val => Number.isFinite(val));
 
     let predictions: number[] = [];
@@ -1842,6 +1843,7 @@ export class DashboardController {
 
     switch(body.query?.prediction){
         case 'Arima':
+          // arimaParams puede ser undefined (usará configs automáticas) o {p,d,q} manual
           await DashboardController.applyArimaPredicction(
             predictions, originalDataset, setup, predictionConfig.arimaParams);
           break;
@@ -1854,6 +1856,8 @@ export class DashboardController {
 
           if (referenceColumns.length > 0 && connection && dataModelObject) {
             try {
+              // Para cada columna de referencia lanzamos una query auxiliar
+              // alineada con el mismo campo de fecha
               referenceDatasets = await DashboardController.fetchReferenceDatasets(
                 referenceColumns, dateField, myQuery, connection, dataModelObject, user, body.query?.queryLimit
               );
@@ -1863,6 +1867,7 @@ export class DashboardController {
             }
           }
 
+          // tfParams puede ser undefined o {epochs, lookback, learningRate}
           await DashboardController.applyTensorflowPredicction(
             predictions, originalDataset, setup, predictionConfig.tensorflowParams, referenceDatasets);
           break;
@@ -1945,19 +1950,19 @@ export class DashboardController {
   // Formula de arima
   static applyArimaPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels}, arimaParams?: {p: number, d: number, q: number}) {
     try {
-      // Calculamos las predicciones a través del servicio ARIMA
       predictions = ArimaService.forecast(originalDataset, setup.steps, arimaParams);
     } catch (err) {
       console.error('Error ARIMA:', err);
       return;
     }
 
-    // Añadir columna predicción
+    // Añadir columna predicción a las filas existentes
+    // Solo el último punto real tiene valor para "unir" visualmente ambas líneas
     setup.rows.forEach((row, index) => {
       row.push(index === setup.lastIndex ? row[1] : null);
     });
 
-    // Añadir fila de fechas
+    // Añadir filas de fechas futuras con los valores predichos
     setup.nextLabels.forEach((label, index) => {
       setup.rows.push([label, null, predictions[index] ?? null]);
     });
@@ -1973,12 +1978,12 @@ export class DashboardController {
       return;
     }
 
-    // Añadir columna predicción
+    // Añadir columna predicción a las filas existentes
     setup.rows.forEach((row, index) => {
       row.push(index === setup.lastIndex ? row[1] : null);
     });
 
-    // Añadir filas de fechas futuras
+    // Añadir filas de fechas futuras con los valores predichos
     setup.nextLabels.forEach((label, index) => {
       setup.rows.push([label, null, predictions[index] ?? null]);
     });

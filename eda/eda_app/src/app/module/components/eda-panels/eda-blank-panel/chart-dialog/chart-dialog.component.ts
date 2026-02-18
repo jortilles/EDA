@@ -399,6 +399,7 @@ export class ChartDialogComponent {
         }
     }
 
+    // Devuelve las tablas visibles del modelo de datos del panel.
     get modelTables(): any[] {
         const panelID = this.controller.params.panelId;
         const dashboardPanel = this.dashboard?.edaPanels?.toArray().find(cmp => cmp.panel.id === panelID);
@@ -410,7 +411,7 @@ export class ChartDialogComponent {
         this.showPredictionDialog = false;
         this.predictionMethod = predictionConfig.method;
 
-        // Mostrar spinner mientras se ejecuta la preddción
+        // Mostrar spinner mientras se ejecuta la predicción
         this.spinnerService.on();
 
         // Actualizar config del chart
@@ -443,11 +444,16 @@ export class ChartDialogComponent {
         this.saveChartConfig();
     }
 
+    /** El usuario canceló el diálogo: cierra y vuelve el toggle a OFF */
     cancelPrediction() {
         this.showPredictionDialog = false;
         this.showPredictionLines = false;
     }
 
+    /**
+     * Actualiza la config del chart, escribe el tipo en la query del panel
+     * y relanza la query.
+     */
     private async applyPrediction(type: string) {
         const properties = this.panelChartConfig;
         let c: ChartConfig = properties.config;

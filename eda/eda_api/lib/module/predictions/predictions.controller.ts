@@ -24,7 +24,6 @@ export class PredictionsController {
             });
 
         } catch (err) {
-            console.error(err);
             next(new HttpException(500, 'Error generando predicción ARIMA'));
         }
     }
@@ -46,7 +45,6 @@ export class PredictionsController {
             });
 
         } catch (err) {
-            console.error(err);
             next(new HttpException(500, 'Error generando predicción TensorFlow'));
         }
     }
