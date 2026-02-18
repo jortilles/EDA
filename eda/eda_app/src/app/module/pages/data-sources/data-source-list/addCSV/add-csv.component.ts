@@ -204,17 +204,8 @@ export class AddCsvComponent implements OnInit {
   }
 
   retryCsvWithNewSeparator() {
-    const input = this.fileInput?.nativeElement;
-    if (!input) {
-      return;
-    }
-
-    const files = input.files;
-    if (!files || files.length === 0) {
-      return;
-    }
-
-    const file = files[0];
+    const file = this._csvFile();
+    if (!file) return;
     this.parseCsv(file);
   }
   // Métodos para manejar eventos de drag & drop
@@ -223,31 +214,34 @@ export class AddCsvComponent implements OnInit {
     e.stopPropagation();
   }
 
-  handleDragIn(e: DragEvent, type: 'bigquery' | 'excel' | 'csv') {
+  handleDragIn(e: DragEvent, type: 'csv') {
     e.preventDefault();
     e.stopPropagation();
-    this.isDraggingExcelFile.set(true);
+    this.isDraggingCsvFile.set(true);
   }
 
-  handleDragOut(e: DragEvent, type: 'bigquery' | 'excel' | 'csv') {
+  handleDragOut(e: DragEvent, type: 'csv') {
     e.preventDefault();
     e.stopPropagation();
-      this.isDraggingExcelFile.set(false);
+    this.isDraggingCsvFile.set(false);
   }
 
-  handleDrop(e: DragEvent, type: 'bigquery' | 'excel' | 'csv') {
+  handleDrop(e: DragEvent, type: 'csv') {
     e.preventDefault();
     e.stopPropagation();
-
-      this.isDraggingExcelFile.set(false);
+    this.isDraggingCsvFile.set(false);
 
     const files = e.dataTransfer?.files;
     if (files && files.length > 0) {
       const file = files[0];
+      this._csvFileName.set(file.name);
+      this._csvFile.set(file);
+      if (!this.delimiter) this.delimiter = ';';
+      this.parseCsv(file);
     }
   }
 
-  handleFileSelect(e: Event, type: 'bigquery' | 'excel' | 'csv') {
+  handleFileSelect(e: Event, type:'csv') {
     const input = e.target as HTMLInputElement;
     const files = input.files;
     if (files && files.length > 0) {
@@ -255,7 +249,7 @@ export class AddCsvComponent implements OnInit {
     }
   }
 
-    handleFiles(file: File, type: 'bigquery' | 'excel' | 'csv') {
+    handleFiles(file: File, type:'csv') {
       this._csvFileName.set(file.name);
       this._csvFile.set(file);
   }
@@ -266,30 +260,37 @@ export class AddCsvComponent implements OnInit {
 
     reader.onload = () => {
       const text = reader.result as string;
-
       const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
 
-      if(this.delimiter === '')
-        return
-      
-      this.csvColumns = [];
-      const headers = lines[0].split(this.delimiter);
+      if (!this.delimiter) return;
 
-      // Mapear filas; si field vacío, le ponemos nombre genérico
-      const rows = headers.map((header, i) => {
-        const fieldName = header?.trim() || `column_${i + 1}`;
-        return {
-          field: fieldName,
-          type: 'string',
-          format: '',
-          separator: '.'
-        };
+      // Extraer cabeceras; si alguna está vacía, le ponemos nombre genérico
+      const headers = lines[0].split(this.delimiter).map((h, i) => h.trim() || `column_${i + 1}`);
+
+      // Parsear todas las filas de datos como objetos {header: value}
+      // para que csvRecords quede actualizado con el nuevo delimitador
+      const records = lines.slice(1).map(line => {
+        const values = line.split(this.delimiter);
+        const record: any = {};
+        headers.forEach((header, i) => { record[header] = values[i]?.trim() ?? ''; });
+        return record;
       });
 
-      this.csvColumns = rows;
+      this.csvRecords = records;
+      this.csvHeaders = headers;
+      const types = this.getTypes(headers, records);
+
+      this.csvColumns = [];
+      headers.forEach((header, h) => {
+        let row = { field: header };
+        for (let i = 0; i < 3; i++) {
+          row[this.names[i]] = i === 0 ? types[h] : '';
+        }
+        this.csvColumns.push(row);
+      });
     };
 
-    reader.onerror = (err) => {
+    reader.onerror = () => {
       this.csvColumns = [];
     };
 
