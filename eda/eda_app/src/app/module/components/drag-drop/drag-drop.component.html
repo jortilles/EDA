@@ -14,7 +14,9 @@
               </h6>
 
               <div class="list-1" cdkDropList [cdkDropListData]="itemX" (cdkDropListDropped)="drop($event)">
-                <p *ngIf="itemX.length < 1" class="item-message">{{messageItemCrosstable}}</p>
+                @if(itemX.length < 1){
+                  <p class="item-message">{{messageItemCrosstable}}</p>
+                }
 
                 <div *ngFor="let item of itemX" class="box-1" cdkDrag>
 
