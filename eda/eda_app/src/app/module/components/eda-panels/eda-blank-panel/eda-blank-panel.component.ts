@@ -1623,6 +1623,11 @@ public tableNodeExpand(event: any): void {
     * Runs actual query when execute button is pressed to check for heavy queries
     */
     public runManualQuery = () => {
+
+        // debugger;
+        console.log('EBP =====> currentQuery: ', this.currentQuery)
+        console.log('EBP =====> ', this)
+
         const chartType = this.panelChart?.props?.chartType || '';
 
         if (chartType == 'crosstable' && this.indextab === 1) {
@@ -1977,29 +1982,35 @@ private assignLevels(nodes: any[], level = 0): void {
     }
 
     principalTableUpdate(event) {
+
+
+        const {principalTable, currentQuery} = event
+
         const rootTable = this.tables.find((table: any) => {
-            return table.table_name === event;
+            return table.table_name === principalTable;
         })
         
         this.rootTable = _.cloneDeep(rootTable);
-        this.userSelectedTable = event;
+        this.userSelectedTable = principalTable;
 
-        const currentQueryPrincipal = this.currentQuery.find(
-            (cq: any) => cq.table_id === event
-        );
+        // const currentQueryPrincipal = currentQuery.find(
+        //     (cq: any) => cq.table_id === principalTable
+        // );
 
+        // columns = rootTable.columns.filter((col: any) => {
+            //     if((currentQueryPrincipal.column_name !== col.column_name) && col.visible) {
+                //         return col
+                //     }
+                // })
+                
         let columns: any[] = []
-        columns = rootTable.columns.filter((col: any) => {
-            if((currentQueryPrincipal.column_name !== col.column_name) && col.visible) {
-                return col
-            }
-        })
+        columns = rootTable.columns.filter((col: any) => !currentQuery.some((e: any) => e.column_name === col.column_name))
 
         this.columns = columns;
     }
 
-trackByTable(index: number, table: any): any {
-    return table.value;
-}
+    trackByTable(index: number, table: any): any {
+        return table.value;
+    }
 
 }

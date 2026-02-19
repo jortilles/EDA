@@ -28,7 +28,7 @@ export class PromptComponent implements OnInit, AfterViewChecked {
     @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
     @Input() edaBlankPanel: EdaBlankPanelComponent;
     @Output() newCurrentQuery: EventEmitter<any[]> = new EventEmitter();
-    @Output() principalTable: EventEmitter<any[]> = new EventEmitter();
+    @Output() principalTable: EventEmitter<any> = new EventEmitter();
 
     // Variable almacenada temporalmente en el EDA-BLANK-PANEL
     @Input() messages: ChatMessage[];
@@ -70,7 +70,7 @@ export class PromptComponent implements OnInit, AfterViewChecked {
 
     sendMessage(): void {
 
-        const tables = this.edaBlankPanel.tables;
+        const data = this.edaBlankPanel.tables; // tablas
         const text = this.inputText?.trim(); //
 
         // // Primeras pruebas sin filtros
@@ -96,26 +96,27 @@ export class PromptComponent implements OnInit, AfterViewChecked {
         this.sending = true;
         
         // Llamada al servicio que envía el prompt al Backend / OpenAI
-        const messages = this.messages;
+        const histoty = this.messages;
         const schema = this.schema;
         const firstTime = this.firstTime;
 
-        this.chatgptService.sendPrompt(text, messages, tables, schema, firstTime).subscribe({
+        this.chatgptService.sendPrompt(text, histoty, data, schema, firstTime).subscribe({
             next: (resp) => {
                 // Esperamos que `resp` contenga la respuesta ya procesada como texto. Adapta según tu backend.
 
-                console.log('PROMPT =>', resp);
+                // console.log('PROMPT =>', resp);
 
                 const currentQuery = resp.response.currentQuery;
                 const principalTable = resp.response.principalTable;
                 
+                console.log('----------- COMPONENTE -----------')
                 console.log('currentQuery: ', currentQuery)
                 console.log('principalTable: ', principalTable)
 
                 if(currentQuery) {
                     if( currentQuery.length !==0 ) {
                         this.newCurrentQuery.emit(currentQuery);
-                        this.principalTable.emit(principalTable);
+                        this.principalTable.emit({principalTable, currentQuery});
                     }
                 }
                 
