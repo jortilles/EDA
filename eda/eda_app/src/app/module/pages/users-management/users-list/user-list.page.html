@@ -56,31 +56,32 @@
   </div>
 </div>
 
-
-<eda-dialog2 *ngIf="showUserDetail"
-  [display]="showUserDetail"
-  [header]="!selectedUser.isnew ? updateUserTitle : addUserTitle"
-  width="50vw" height="75vh"
-  (close)="showUserDetail = false;"
-  (apply)="onApplyUserDetail()">
+@if(showUserDetail){
+  <eda-dialog2
+    [display]="showUserDetail"
+    [header]="!selectedUser.isnew ? updateUserTitle : addUserTitle"
+    width="50vw" height="75vh"
+    (close)="showUserDetail = false;"
+    (apply)="onApplyUserDetail()">
+    
+    <div content>
+      <div class="mt-4">
+        <label class="block text-sm font-medium" i18n="@@name">Nombre</label>
+        <input [(ngModel)]="selectedUserApply.name" class="w-full border p-2 rounded mt-1" />
   
-  <div content>
-    <div class="mt-4">
-      <label class="block text-sm font-medium" i18n="@@name">Nombre</label>
-      <input [(ngModel)]="selectedUserApply.name" class="w-full border p-2 rounded mt-1" />
-
-      <label class="block text-sm font-medium mt-2" i18n="@@email">Correo</label>
-      <input [(ngModel)]="selectedUserApply.email" class="w-full border p-2 rounded mt-1" />
-
-      <label class="block text-sm font-medium mt-2" i18n="@@password">Contraseña</label>
-      <input type="password" [(ngModel)]="selectedUserApply.password" class="w-full border p-2 rounded mt-1" />
-
-      <label class="block text-sm font-medium mt-2" i18n="@@group">Grupo</label>
-      <p-multiSelect [(ngModel)]="selectedUserApply.role" [options]="groups" optionLabel="name" optionValue="name" i18n-defaultLabel="@@groupSelect"
-        defaultLabel="Selecciona..."
-        [style]="{width: '100%'}"
-        class="w-full border rounded mt-2">
-      </p-multiSelect>
-  </div>
-</div>
-</eda-dialog2>
+        <label class="block text-sm font-medium mt-2" i18n="@@email">Correo</label>
+        <input [(ngModel)]="selectedUserApply.email" class="w-full border p-2 rounded mt-1" />
+  
+        <label class="block text-sm font-medium mt-2" i18n="@@password">Contraseña</label>
+        <input type="password" [(ngModel)]="selectedUserApply.password" class="w-full border p-2 rounded mt-1" />
+  
+        <label class="block text-sm font-medium mt-2" i18n="@@group">Grupo</label>
+        <p-multiSelect [(ngModel)]="selectedUserApply.role" [options]="groups" optionLabel="name" optionValue="name" i18n-defaultLabel="@@groupSelect"
+          defaultLabel="Selecciona..."
+          [style]="{width: '100%'}"
+          class="w-full border rounded mt-2">
+        </p-multiSelect>
+      </div>
+    </div>
+  </eda-dialog2>
+}
