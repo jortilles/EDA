@@ -27,7 +27,9 @@
         <div class="mb-6 text-center">
             <div class="flex items-center justify-center mb-2">
                 <img [src]="logo" alt="logo" class="max-w-[70px]"/>
-                <img *ngIf="subLogo" [src]="subLogo" alt="logo" class="max-w-[275px]"/>
+                @if(subLogo){
+                    <img [src]="subLogo" alt="logo" class="max-w-[275px]"/>
+                }
             </div>
         </div>
 
@@ -133,7 +135,7 @@
         }
 
         @if(singleSignOnGoogleAvailable) {
-            <div *ngIf="singleSignOnGoogleAvailable" class="container-google">
+            <div class="container-google">
                 <div #googleBtn id="google-btn" style="margin-bottom: 15px; "></div>
             </div>
         }
