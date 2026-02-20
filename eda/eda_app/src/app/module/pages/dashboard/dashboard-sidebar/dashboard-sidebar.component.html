@@ -75,7 +75,7 @@
                   </button>
                   @if (item.id === "liveDashboard" || item.id === "newTabs") {
                     @if (item.id === "liveDashboard" && inputVisible) {
-                      <input type="number" [value]="refreshTime" (input)="refreshTime = $any($event.target).value"
+                      <input type="number" [value]="refreshTime" (input)="refreshTime = Number($any($event.target).value)"
                         class="w-full mt-1 px-2 py-1 border rounded-md" placeholder="Seconds_to_refresh" />
                     }
                     <hr class="my-2" />
