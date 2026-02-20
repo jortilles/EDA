@@ -96,34 +96,38 @@
           </div>
 
           <!-- User Selection -->
-          <div class="space-y-3 mt-4" *ngIf="type === 'users'">
-            <label class="text-base font-medium text-gray-900" i18n="@@selectUsers">Seleccionar Usuarios</label>
-            <p-multiSelect
-              [(ngModel)]="selectedUsers"
-              [options]="users"
-              [style]="{ width: '100%' }"
-              [itemSize]="30"
-              [virtualScroll]="true"
-              [maxSelectedLabels]="3"
-              [defaultLabel]="usersDefaultLabel"
-              appendTo="body">
-            </p-multiSelect>
-          </div>
+          @if(type === 'users'){
+            <div class="space-y-3 mt-4">
+              <label class="text-base font-medium text-gray-900" i18n="@@selectUsers">Seleccionar Usuarios</label>
+              <p-multiSelect
+                [(ngModel)]="selectedUsers"
+                [options]="users"
+                [style]="{ width: '100%' }"
+                [itemSize]="30"
+                [virtualScroll]="true"
+                [maxSelectedLabels]="3"
+                [defaultLabel]="usersDefaultLabel"
+                appendTo="body">
+              </p-multiSelect>
+            </div>
+          } 
 
           <!-- Group Selection -->
-          <div class="space-y-3 mt-4" *ngIf="type === 'groups'">
-            <label class="text-base font-medium text-gray-900" i18n="@@selectGroups">Seleccionar Grupos</label>
-            <p-multiSelect
-              [(ngModel)]="selectedRoles"
-              [options]="roles"
-              [itemSize]="30"
-              [virtualScroll]="true"
-              [style]="{ width: '100%' }"
-              [maxSelectedLabels]="3"
-              [defaultLabel]="groupsDefaultLabel"
-              appendTo="body">
-            </p-multiSelect>
-          </div>
+          @if(type === 'groups'){
+            <div class="space-y-3 mt-4">
+              <label class="text-base font-medium text-gray-900" i18n="@@selectGroups">Seleccionar Grupos</label>
+              <p-multiSelect
+                [(ngModel)]="selectedRoles"
+                [options]="roles"
+                [itemSize]="30"
+                [virtualScroll]="true"
+                [style]="{ width: '100%' }"
+                [maxSelectedLabels]="3"
+                [defaultLabel]="groupsDefaultLabel"
+                appendTo="body">
+              </p-multiSelect>
+            </div>
+          }
         </div>
       </div>
     }
