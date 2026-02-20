@@ -105,28 +105,39 @@ export class OAUTHController {
             email = email || identifier;
 
             const userEda = await UserController.getUserInfoByEmail(email, true);
+
+            console.log('userEda: ', userEda);
+
+            let role_id: any; // Variable role_id
+
+            if(!userEda) {
+                role_id = [];
+            } else {
+
+                // Recuperar todos los grupos
+                const groups = await Group.find({});
+    
+                // Extraemos los ids de todos los grupos del usuario
+                const userRoleIds = userEda.role.map(id => id.toString());
+    
+                // Obtenemos todos los grupos con source = 'EDA'
+                const groupsSourceEDA = groups.filter((g: any) => g._doc.source === 'EDA');
+    
+                // Match de los resultados userRoleIds y groupsSourceEDA
+                const matchedGroups = groupsSourceEDA.filter(group =>
+                    userRoleIds.includes(group._id.toString())
+                );
+
+                console.log('matchedGroups: ', matchedGroups);
+                role_id = _.cloneDeep(matchedGroups);
+
+            }
             
-            // Recuperar todos los grupos
-            const groups = await Group.find({});
-
-            // Extraemos los ids de todos los grupos del usuario
-            const userRoleIds = userEda.role.map(id => id.toString());
-
-            // Obtenemos todos los grupos con source = 'EDA'
-            const groupsSourceEDA = groups.filter((g: any) => g._doc.source === 'EDA');
-
-            // Match de los resultados userRoleIds y groupsSourceEDA
-            const matchedGroups = groupsSourceEDA.filter(group =>
-                userRoleIds.includes(group._id.toString())
-            );
-
-            console.log('Grupos Match: ', matchedGroups);
+            console.log('role_id: ', role_id);
 
             ////////////////////////////////////////////////////////
             /////////////// INICIO DE CREACION DE ROL //////////////
             ////////////////////////////////////////////////////////
-
-            let role_id = _.cloneDeep(matchedGroups); // Variable role_id
 
             try {
                 // Upsert: si existe devuelve el documento, si no, lo crea
