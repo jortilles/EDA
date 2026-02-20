@@ -30,36 +30,4 @@ export class PromptUtil {
         `;
     }
 
-    public static getFields(tables: any[], data: any[]) {
-
-        let currentQuery: any[] = [];
-
-        tables.forEach((t: any) => {
-            const table = data.find((item: any) => item.table_name === t.table.toLowerCase());
-            if(table) {
-                t.columns.forEach((c: any) => {
-                    const column = table.columns.find((item: any) => item.column_name.toLowerCase().trim() == c.toLowerCase().trim());  
-
-                    if(column && column.visible) {
-                        column.table_id = table.table_name;
-
-                        if(column.column_type === 'numeric') {
-                            const agg = column.aggregation_type.find((agg: any) => agg.value === 'sum');
-                            agg.selected = true;
-                        }
-
-                        if(column.column_type === 'text' || column.column_type === 'date') {
-                            const agg = column.aggregation_type.find((agg: any) => agg.value === 'none');
-                            agg.selected = true;
-                        }
-
-                        currentQuery.push(column);
-                    }
-                })
-            }
-        })
-        
-        return currentQuery;
-    }
-
 }

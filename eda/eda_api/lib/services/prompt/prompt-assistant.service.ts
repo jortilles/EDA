@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { API_KEY, MODEL, CONTEXT } from '../../../config/chatgpt.config';
 import { PromptUtil } from '../../utils/promp.util';
+import QueryFieldResolver from '../../services/prompt/query/query-resolver.service'
 
 
 interface PromptParameters {
@@ -126,7 +127,7 @@ export class PromptService {
             const principalTable = tables[0].table
 
             // Generando un nuevo currentQuery.
-            currentQueryTool = PromptUtil.getFields(tables, data);
+            currentQueryTool = QueryFieldResolver.getFields(tables, data);
             response.currentQuery = currentQueryTool;
             response.principalTable =  principalTable;
 
