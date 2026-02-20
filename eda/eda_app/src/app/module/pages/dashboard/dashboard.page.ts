@@ -202,6 +202,8 @@ export class DashboardPage implements OnInit {
     this.stylesProviderService.setStyles(this.stylesProviderService.generateDefaultStyles())
     this.stylesProviderService.loadingFromPalette = false;
     this.stopRefresh = true;
+    this.dashboard.config.stopRefresh = true;
+    clearInterval(this.countdownInterval);
       if (this.edaPanelsSubscription) {
           this.edaPanelsSubscription.unsubscribe();
       }
@@ -1140,20 +1142,24 @@ public startCountdown(seconds: number) {
 
   triggerTimer() {
 
-    this.stopRefresh = !this.stopRefresh;
+    // Si hay tiempo config lo paramos
+    this.dashboard.config.stopRefresh = true;
+    clearInterval(this.countdownInterval);
 
     //Give time to stop counter if any
     setTimeout(() => {
-        if (!this.refreshTime) this.stopRefresh = true;
-        else if (this.refreshTime) this.stopRefresh = false;
-
-        if (this.refreshTime && this.refreshTime < 5) this.refreshTime = 5;
-
-        this.startCountdown(this.refreshTime);
-
-    }, 2000)
-
-  } 
+        const refreshTime = this.dashboard.config.refreshTime;
+        // si no hay tiempo de refresh, no lanzamos el contador
+        if (!refreshTime) {
+            this.dashboard.config.stopRefresh = true;
+            return;
+        }
+        // si el tiempo de refresh es menor a 5 segundos, lo ponemos a 5 segundos         if (refreshTime < 5) this.dashboard.config.refreshTime = 5;
+        this.dashboard.config.stopRefresh = false;
+        // lanzamos el contador
+        this.startCountdown(this.dashboard.config.refreshTime);
+    }, 2000);
+  }
 
   public validateDashboard(action: string): boolean {
     let isvalid = true;
