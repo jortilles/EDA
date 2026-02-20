@@ -72,12 +72,11 @@ export class ChatGptController {
 
             console.log('<====================> INICIAMOS <====================>')
             // console.log('text: ', text);
-            console.log('history: ', history);
+            // console.log('history: ', history);
             // console.log('data: ', data);
             // console.log('schema: ', schema);
             // console.log('firstTime: ', firstTime);
 
-            console.log('HASTA AQUI BIEN ..........................................')
 
             const response = await PromptService.processPrompt({
                 text,
