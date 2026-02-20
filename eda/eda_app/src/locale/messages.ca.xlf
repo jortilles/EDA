@@ -5652,11 +5652,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Filtre autocomplete?</target>
       </trans-unit>
 
-      <trans-unit id="mandatoryFilter">
-        <source>¿Filtro autocomplete?</source>
-        <target>Filtre obligatori?</target>
-      </trans-unit>
-
       <trans-unit id="globalFiltersToDF">
         <source>Debe disponer de filtros globales para poder avanzar con la configuración de los filtros dependientes.</source>
         <target>Heu de disposar de filtres globals per poder avançar amb la configuració dels filtres dependents.</target>
@@ -6044,6 +6039,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="belowThreshold">
         <source>es menor que:</source>
         <target>és menor que:</target>
+      </trans-unit>
+      <trans-unit id="mandatoryFilter">
+        <source>¿Filtro obligatorio?</source>
+        <target>Filtre obligatori?</target>
+      </trans-unit>
+      <trans-unit id="email">
+        <source>Correo</source>
+        <target>Correu</target>
       </trans-unit>
       <trans-unit id="promptOption">
         <source>Opciones IA</source>

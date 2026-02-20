@@ -5290,11 +5290,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Filtr autouzupełniania?</target>
       </trans-unit>
 
-      <trans-unit id="mandatoryFilter">
-        <source>¿Filtro autocomplete?</source>
-        <target>Filtre autocomplete?</target>
-      </trans-unit>
-
       <trans-unit id="globalFiltersToDF">
         <source>Debe disponer de filtros globales para poder avanzar con la configuración de los filtros dependientes.</source>
         <target>Aby móc kontynuować konfigurację filtrów zależnych, musisz mieć dostępne filtry globalne.</target>
@@ -5756,6 +5751,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="belowThreshold">
         <source>es menor que:</source>
         <target>jest mniejsze niż:</target>
+      </trans-unit>
+      <trans-unit id="mandatoryFilter">
+        <source>¿Filtro obligatorio?</source>
+        <target>Filtr obowiązkowy?</target>
+      </trans-unit>
+      <trans-unit id="email">
+        <source>Correo</source>
+        <target>Poczta</target>
       </trans-unit>
       <trans-unit id="promptOption">
         <source>Opciones IA</source>

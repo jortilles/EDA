@@ -4295,6 +4295,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>El nombre es obligatorio</source>
         <target>Le nom est requis</target>
       </trans-unit>
+      <trans-unit id="separatorRequired">
+        <source>El separador es obligatorio</source>
+        <target>Le séparateur est nécessaire</target>
+      </trans-unit>
       <trans-unit id="type">
         <source>Tipo</source>
         <target>Gars</target>
@@ -5629,7 +5633,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Mostrar campo de origen</source>
         <target>Afficher le champ source</target>
       </trans-unit>
-
+      <trans-unit id="correctGeoJsonFormat">
+        <source>El archivo tiene un formato GeoJson válido.</source>
+        <target>Le fichier possède un format GeoJSON valide.</target>
+      </trans-unit>
       <trans-unit id="schemaTableDB">
         <source>e.g., schema:public,table:users</source>
         <target>e.x., schéma:public, table:utilisateurs</target>
@@ -6040,6 +6047,14 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="belowThreshold">
         <source>es menor que:</source>
         <target>est inférieur à:</target>
+      </trans-unit>
+      <trans-unit id="mandatoryFilter">
+        <source>¿Filtro obligatorio?</source>
+        <target>Filtre obligatoire?</target>
+      </trans-unit>
+      <trans-unit id="email">
+        <source>Correo</source>
+        <target>E-mail</target>
       </trans-unit>
       <trans-unit id="askTheAIText">
         <source>Consulta con la IA</source>
