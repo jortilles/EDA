@@ -265,25 +265,25 @@ export class OracleBuilderService extends QueryBuilderService {
     private getDateFormat(SQLexpression: string, fomrat: string): string {
     let result = '';
     switch (fomrat) {
-      case 'year': result = `DATE_FORMAT(${SQLexpression} , '%Y') `;
+      case 'year': result = `to_char(${SQLexpression}, 'YYYY') ` ;
         break;
-      case 'quarter': result = `concat( concat( year(${SQLexpression}),'-Q' ),  quarter(${SQLexpression} ) ) `;
+      case 'quarter': result = `to_char(${SQLexpression}, 'YYYY-"Q"Q') `;
         break;
-      case 'month': result = `DATE_FORMAT(${SQLexpression} , '%Y-%m')`;
+      case 'month': result = `to_char(${SQLexpression}, 'YYYY-MM')`;
         break;
-      case 'week': result = `DATE_FORMAT(${SQLexpression} , '%x-%v') `;
+      case 'week': result = `to_char(${SQLexpression}, 'IYYY-IW') `;
         break;
-      case 'day': result = `DATE_FORMAT(${SQLexpression} , '%Y-%m-%d') `;
+      case 'day': result = `to_char(${SQLexpression}, 'YYYY-MM-DD') `;
         break;
-      case 'week_day': result = `TRUNC(" ${SQLexpression} ") - TRUNC(" ${SQLexpression} ", 'IW') + 1`;
+      case 'week_day': result = `to_char(${SQLexpression}, 'D')`;
         break;
-      case 'day_hour': result = `DATE_FORMAT(${SQLexpression} , '%Y-%m-%d %H') `;
+      case 'day_hour': result = `to_char(${SQLexpression}, 'YYYY-MM-DD HH24') `;
         break;
-      case 'day_hour_minute': result = `DATE_FORMAT(${SQLexpression} , '%Y-%m-%d %H:%i') `;
+      case 'day_hour_minute': result = `to_char(${SQLexpression}, 'YYYY-MM-DD HH24:MI')`;
         break;
-      case 'timestamp': result = `DATE_FORMAT(${SQLexpression} , '%Y-%m-%d %H:%i:%s') `;
+      case 'timestamp': result = `to_char(${SQLexpression}, 'YYYY-MM-DD HH24:MI:SS')  `;
         break;
-      default: result = `DATE_FORMAT(${SQLexpression} , '%Y-%m-%d') `;
+      default: result = `to_char(${SQLexpression}, 'YYYY-MM-DD') `;
         break;
     }
     return result;
