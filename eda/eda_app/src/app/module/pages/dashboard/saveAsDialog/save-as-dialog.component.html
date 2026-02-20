@@ -15,10 +15,12 @@
                       (onChange)="handleSelectedBtn($event)"></p-selectButton>
               </div>
 
-              <div class="col-12 " *ngIf="display.groups">
-                  <p-multiSelect id="float-grups" formControlName="group" [options]="grups" [filter]="false"
-                      optionLabel="name" i18n-defaultLabel="@@multiSelectDefaultLabel" defaultLabel="Selecciona un grupo *"></p-multiSelect>
-              </div>
+              @if(display.groups){
+                <div class="col-12 ">
+                    <p-multiSelect id="float-grups" formControlName="group" [options]="grups" [filter]="false"
+                        optionLabel="name" i18n-defaultLabel="@@multiSelectDefaultLabel" defaultLabel="Selecciona un grupo *"></p-multiSelect>
+                </div>
+              }
           </div>
 
       </form>
