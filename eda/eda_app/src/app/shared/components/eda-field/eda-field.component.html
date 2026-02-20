@@ -1,21 +1,25 @@
-<ng-container *ngIf="viewMode == 'vertical'">
-    <div class="form-group row">
-        <label class="{{labelCols}}">{{label}}</label>
+@if(viewMode == 'vertical'){
+    <ng-container>
+        <div class="form-group row">
+            <label class="{{labelCols}}">{{label}}</label>
 
-        <div class="{{cols}}">
-            <ng-content></ng-content>
+            <div class="{{cols}}">
+                <ng-content></ng-content>
+            </div>
+
         </div>
+    </ng-container>
+}
 
-    </div>
-</ng-container>
-
-<ng-container *ngIf="viewMode == 'horizontal'">
-    <div class="form-group row" [ngClass]="customClass" [style.clear]="'both'">
-        <label class="{{labelCols}} control-label edaFieldLabel">
-            {{label}}
-        </label>
-        <div class="{{cols}}">
-            <ng-content></ng-content>
+@if(viewMode == 'horizontal'){
+    <ng-container>
+        <div class="form-group row" [ngClass]="customClass" [style.clear]="'both'">
+            <label class="{{labelCols}} control-label edaFieldLabel">
+                {{label}}
+            </label>
+            <div class="{{cols}}">
+                <ng-content></ng-content>
+            </div>
         </div>
-    </div>
-</ng-container>
+    </ng-container>
+}
