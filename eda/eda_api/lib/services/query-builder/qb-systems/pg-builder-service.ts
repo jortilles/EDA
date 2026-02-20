@@ -474,25 +474,25 @@ export class PgBuilderService extends QueryBuilderService {
   private getDateFormat(SQLexpression: string, fomrat: string): string {
     let result = '';
     switch (fomrat) {
-      case 'year': result = `to_char(" ${SQLexpression} ", 'YYYY')`;
+      case 'year': result = `to_char( ${SQLexpression} , 'YYYY')`;
         break;
-      case 'quarter': result = `to_char(" ${SQLexpression} ", 'YYYY-"Q"Q') `;
+      case 'quarter': result = `to_char( ${SQLexpression} , 'YYYY-"Q"Q') `;
         break;
-      case 'month': result = `to_char(" ${SQLexpression} ", 'YYYY-MM')`;
+      case 'month': result = `to_char( ${SQLexpression} , 'YYYY-MM')`;
         break;
-      case 'week': result = `to_char(" ${SQLexpression} ", 'IYYY-IW')`;
+      case 'week': result = `to_char( ${SQLexpression} , 'IYYY-IW')`;
         break;
-      case 'day': result = `to_char(" ${SQLexpression} ", 'YYYY-MM-DD')`;
+      case 'day': result = `to_char( ${SQLexpression} , 'YYYY-MM-DD')`;
         break;
-      case 'week_day': result = `EXTRACT(ISODOW FROM " ${SQLexpression} ") `;
+      case 'week_day': result = `EXTRACT(ISODOW FROM  ${SQLexpression} ) `;
         break;
-      case 'day_hour': result = `to_char(" ${SQLexpression} ", 'YYYY-MM-DD HH')  `;
+      case 'day_hour': result = `to_char( ${SQLexpression} , 'YYYY-MM-DD HH')  `;
         break;
-      case 'day_hour_minute': result = `to_char(" ${SQLexpression} ", 'YYYY-MM-DD HH:MI')  `;
+      case 'day_hour_minute': result = `to_char( ${SQLexpression} , 'YYYY-MM-DD HH:MI')  `;
         break;
-      case 'timestamp': result = `to_char(" ${SQLexpression} ", 'YYYY-MM-DD HH:MI:SS')`;
+      case 'timestamp': result = `to_char( ${SQLexpression} , 'YYYY-MM-DD HH:MI:SS')`;
         break;
-      default: result = `to_char(" ${SQLexpression} ", 'YYYY-MM-DD')`;
+      default: result = `to_char( ${SQLexpression} , 'YYYY-MM-DD')`;
         break;
     }
 
@@ -567,7 +567,7 @@ export class PgBuilderService extends QueryBuilderService {
           if (el.column_type === 'numeric') {
             columns.push(`ROUND(${table_column}::numeric, ${el.minimumFractionDigits})::float ${whatIfExpression} as "${el.display_name}"`);
           } else if (el.column_type === 'date') {
-             columns.push( this.getDateFormat(table_column, el.format)  + ` as \`${el.display_name}\``);
+             columns.push( this.getDateFormat(table_column, el.format)  + ` as "${el.display_name}"`);
           } else {
             columns.push(`${table_column} as "${el.display_name}"`);
           }
