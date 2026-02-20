@@ -21,3 +21,13 @@
   flex-grow: 1; /* Permite que este div ocupe todo el espacio disponible */
   overflow: auto; /* (Opcional) Agrega scroll si el contenido es muy grande */
 }
+
+
+@media (max-width: 500px) {
+  gridster, gridster-item {
+    height: auto !important;
+  }
+  gridster-item .gridster-item-content {
+    min-height: 100px !important; /* suficiente para hacerlas más altas */
+  }
+}

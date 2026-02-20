@@ -249,8 +249,20 @@ export class MongoDBBuilderService {
             }
         }
 
-        // Construir el pipeline en el orden correcto: group -> sort -> limit
+        // Redondear campos numéricos agregados a 2 decimales
+        const roundFields: any = {};
+        for (const column of fields) {
+            if (column.aggregation_type !== 'none' && column.aggregation_type !== 'count_distinct') {
+                roundFields[column.column_name] = { $round: [`$${column.column_name}`, column.minimumFractionDigits || 0] };
+            }
+        }
+
+        // Construir el pipeline en el orden correcto: group -> round -> sort -> limit
         const pipelineStages: any[] = [pipeline];
+
+        if (Object.keys(roundFields).length > 0) {
+            pipelineStages.push({ $addFields: roundFields });
+        }
 
         if (hasSorting) {
             pipelineStages.push({ $sort: sortStage });

@@ -15,7 +15,7 @@
     <table class="w-full">
       <thead class="bg-gray-100">
         <tr>
-          <th (click)="handleSort('email')" class="text-left cursor-pointer p-3" i18n="@@email">Email</th>
+          <th (click)="handleSort('email')" class="text-left cursor-pointer p-3" i18n="@@email">Correo</th>
           <th (click)="handleSort('name')" class="text-left cursor-pointer p-3" i18n="@@name">Nombre</th>
           <th (click)="handleSort('role')" class="text-left cursor-pointer p-3" i18n="@@group">Grupo</th>
           <th class="p-3 text-right" i18n="@@actions">Acciones</th>
@@ -69,7 +69,7 @@
       <label class="block text-sm font-medium" i18n="@@name">Nombre</label>
       <input [(ngModel)]="selectedUserApply.name" class="w-full border p-2 rounded mt-1" />
 
-      <label class="block text-sm font-medium mt-2" i18n="@@email">Email</label>
+      <label class="block text-sm font-medium mt-2" i18n="@@email">Correo</label>
       <input [(ngModel)]="selectedUserApply.email" class="w-full border p-2 rounded mt-1" />
 
       <label class="block text-sm font-medium mt-2" i18n="@@password">Contraseña</label>

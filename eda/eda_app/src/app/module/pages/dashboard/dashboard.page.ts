@@ -250,10 +250,21 @@ export class DashboardPage implements OnInit {
 
     const cols = this.gridsterOptions.minCols!;
     const width = container.clientWidth;
-    const cellSize = Math.floor(width / cols);
-
-    this.gridsterOptions.fixedRowHeight = cellSize;
-    this.gridsterOptions.api?.optionsChanged();
+    const mobileBreakpoint = this.gridsterOptions.mobileBreakpoint || 640;
+    //Si la visión es en movil. Gridsted pone los elementos apilados.
+    //https://github.com/tiberiuzuld/angular-gridster2/blob/master/src/assets/gridTypes.md
+    if (width < mobileBreakpoint) {
+      // En modo móvil: altura fija por celda para que los paneles tengan un tamaño razonable
+      this.gridsterOptions.fixedRowHeight = 150;
+    } else {
+      let cellSize = Math.floor(width / cols);
+      if(cellSize < 30){
+        // si estoy muy ajustado le doy un poco de altura.
+        cellSize = 30;
+      }
+      this.gridsterOptions.fixedRowHeight = cellSize;
+    }
+   this.gridsterOptions.api?.optionsChanged();
   }
 
   public async loadDashboard() {
@@ -1172,9 +1183,17 @@ public startCountdown(seconds: number) {
 
   public getCorrectColumnFiltered(event): string {
     const chartType = event.data?.panel?.content?.chart;
+    const edaChart = event.data?.panel?.content?.edaChart;
     const queries = event.data?.query || [];
     const filterBy = event.data?.filterBy;
     if (['doughnut', 'polarArea', 'bar', 'line', 'radar'].includes(chartType)) {
+      if (edaChart === 'stackedbar100') {
+        // Para stackedbar100, un label es un valor, no una columna de la tabla, no puede ser filterby.
+        // La ultima columna de texto es el valor que buscamos
+        const textColumns = queries.filter(q => q.column_type === 'text');
+        // si hay dos columnas de texto, la segunda es el valor, si no, la primera(y unica) es el valor
+        return textColumns.length > 1 ? textColumns[1] : textColumns[0];
+      }
       const queryFiltered = queries.find(q => q.display_name?.default === filterBy);
       if (queryFiltered?.column_type === 'numeric') {
         return queries.find(q => q.column_type === 'text');
