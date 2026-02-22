@@ -1,6 +1,5 @@
 import { Directive, EventEmitter, Input, Output } from "@angular/core";
 
-
 @Directive()
 export abstract class EdaDialog2 {
     @Input() display: boolean = false;
@@ -20,6 +19,7 @@ export abstract class EdaDialog2 {
     @Output() reset: EventEmitter<any> = new EventEmitter();
     @Output() duplicate: EventEmitter<any> = new EventEmitter();
     @Output() notstyles: EventEmitter<any> = new EventEmitter();
+    @Output() nextstep: EventEmitter<any> = new EventEmitter();
 
 
     @Input() showApply: boolean = true;
@@ -29,6 +29,7 @@ export abstract class EdaDialog2 {
     @Input() showNotStyles: boolean = false;
     @Input() showDelete: boolean = false;
     @Input() disableApply: boolean = false;
+    @Input() showNextStep: boolean = false;
 
     // Mapa estándar de siglas a píxeles
     protected sizeMap: Record<string, string> = {
@@ -42,7 +43,6 @@ export abstract class EdaDialog2 {
     public onApply(): void {
         this.apply.emit(true);
     }
-
     public onClose(): void {
         this.close.emit(false);
     }
@@ -58,5 +58,7 @@ export abstract class EdaDialog2 {
     public onNotStyles(): void {
         this.notstyles.emit(true);
     }
-
+    public onNextStep(): void {
+        this.nextstep.emit(true);
+    }
 }

@@ -45,6 +45,7 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, AfterView
     public ifShowDuplicate: boolean;
     public ifShowDeleteFilter: boolean;
     public ifNoStyles: boolean;
+    public ifShowNextStep: boolean;
 
     // Traducido automáticamente para PrimeNG
     get translatedBreakpoints(): Record<string, string> {
