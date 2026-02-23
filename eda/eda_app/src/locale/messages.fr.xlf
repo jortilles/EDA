@@ -5874,6 +5874,18 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Comprobar expresión</source>
         <target>Vérifier l'expression</target>
       </trans-unit>
+      <trans-unit id="nextStepBtn">
+        <source>Siguiente paso</source>
+        <target>Prochaine étape</target>
+      </trans-unit>
+      <trans-unit id="openInNewTab">
+        <source>Abrir en nueva pestaña</source>
+        <target>Ouvrir dans un nouvel onglet</target>
+      </trans-unit>
+      <trans-unit id="openInSameTab">
+        <source>Abrir en misma pestaña</source>
+        <target>Ouvrir dans le même onglet</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

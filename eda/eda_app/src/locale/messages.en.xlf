@@ -5718,6 +5718,18 @@ OR<ph id="5"/>
   <source>Comprobar expresión</source>
   <target>Check expression</target>
 </trans-unit>
+<trans-unit id="nextStepBtn">
+  <source>Siguiente paso</source>
+  <target>Next step</target>
+</trans-unit>
+<trans-unit id="openInNewTab">
+  <source>Abrir en nueva pestaña</source>
+  <target>Open in new tab</target>
+</trans-unit>
+<trans-unit id="openInSameTab">
+  <source>Abrir en misma pestaña</source>
+  <target>Open in same tab</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

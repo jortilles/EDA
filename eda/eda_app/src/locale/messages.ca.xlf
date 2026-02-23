@@ -5881,6 +5881,18 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Comprobar expresión</source>
         <target>Comprovar expressió</target>
       </trans-unit>
+      <trans-unit id="nextStepBtn">
+        <source>Siguiente paso</source>
+        <target>Següent pas</target>
+      </trans-unit>
+      <trans-unit id="openInNewTab">
+        <source>Abrir en nueva pestaña</source>
+        <target>Obrir en nova pestanya</target>
+      </trans-unit>
+      <trans-unit id="openInSameTab">
+        <source>Abrir en misma pestaña</source>
+        <target>Obrir en mateixa pestanya</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
