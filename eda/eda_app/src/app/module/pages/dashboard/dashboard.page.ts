@@ -270,14 +270,6 @@ export class DashboardPage implements OnInit {
     this.gridsterOptions.api?.optionsChanged();
   }
 
-  private sortPanelsForMobile(): void {
-    if (!this.panels?.length) return;
-    const isMobile = window.innerWidth < (this.gridsterOptions.mobileBreakpoint || 640);
-    if (isMobile) {
-      this.panels.sort((a, b) => Math.floor(a.y / 10) - Math.floor(b.y / 10) || Math.floor(a.x / 10) - Math.floor(b.x / 10));
-    }
-  }
-
   public async loadDashboard() {
     const dashboardId = this.route.snapshot.paramMap.get('id');
     const data = await lastValueFrom(this.dashboardService.getDashboard(dashboardId));
@@ -1253,14 +1245,15 @@ public startCountdown(seconds: number) {
   // Función que cambia el valor de la altura del gridster cada vez que hay un cambio en el elemento
   onItemChange(item: GridsterItem): void {
     if (this.panels) {
-      let valor = this.getBottomMostItem();
       const rowHeight = this.gridsterOptions.fixedRowHeight || 150;
       const isMobile = window.innerWidth < (this.gridsterOptions.mobileBreakpoint || 640);
-      const padding = isMobile ? 1 : 4;
-      const extra = isMobile ? 0 : 250;
-      this.height = ((valor.y + valor.rows + padding) * rowHeight) + extra;
-      if(isMobile) this.height = this.height / 2.5;
-      this.cdr.detectChanges();
+      if (isMobile) {
+        this.updateMobileHeight();
+      } else {
+        let valor = this.getBottomMostItem();
+        this.height = ((valor.y + valor.rows + 4) * rowHeight) + 250;
+        this.cdr.detectChanges();
+      }
     }
   }
 
@@ -1320,5 +1313,29 @@ public startCountdown(seconds: number) {
       });
     }
     return tableMatch && columnMatch && labelMatch;
+  }
+
+  // Funciones auxiliares para mobile 
+  private updateMobileHeight(): void {
+    const interval = setInterval(() => {
+      if (this.stylesProviderService.loadedPanels <= 0) {
+        clearInterval(interval);
+        const gridsterEl = document.querySelector('gridster') as HTMLElement;
+        if (gridsterEl) {
+          this.height = gridsterEl.offsetHeight + 50;
+          this.cdr.detectChanges();
+        }
+      }
+    }, 100);
+    setTimeout(() => clearInterval(interval), 15000);
+  }
+  
+  private sortPanelsForMobile(): void {
+    if (!this.panels?.length) return;
+    const isMobile = window.innerWidth < (this.gridsterOptions.mobileBreakpoint || 640);
+    if (isMobile) {
+      this.panels.sort((a, b) => Math.floor(a.y / 10) - Math.floor(b.y / 10) || Math.floor(a.x / 10) - Math.floor(b.x / 10));
+      this.updateMobileHeight();
+    }
   }
 }
