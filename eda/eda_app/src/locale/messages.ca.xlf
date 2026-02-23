@@ -6047,6 +6047,17 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="email">
         <source>Correo</source>
         <target>Correu</target>
+      <trans-unit id="nextStepBtn">
+        <source>Siguiente paso</source>
+        <target>Següent pas</target>
+      </trans-unit>
+      <trans-unit id="openInNewTab">
+        <source>Abrir en NUEVA pestaña</source>
+        <target>Obrir en NOVA pestanya</target>
+      </trans-unit>
+      <trans-unit id="openInSameTab">
+        <source>Abrir en MISMA pestaña</source>
+        <target>Obrir en MATEIXA pestanya</target>
       </trans-unit>
     </body>
   </file>

@@ -6055,6 +6055,17 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="email">
         <source>Correo</source>
         <target>E-mail</target>
+      <trans-unit id="nextStepBtn">
+        <source>Siguiente paso</source>
+        <target>Prochaine étape</target>
+      </trans-unit>
+      <trans-unit id="openInNewTab">
+        <source>Abrir en NUEVA pestaña</source>
+        <target>Ouvrir dans un NOUVEL onglet</target>
+      </trans-unit>
+      <trans-unit id="openInSameTab">
+        <source>Abrir en MISMA pestaña</source>
+        <target>Ouvrir dans le MÊME onglet</target>
       </trans-unit>
     </body>
   </file>

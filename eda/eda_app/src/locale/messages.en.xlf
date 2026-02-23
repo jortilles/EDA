@@ -5891,6 +5891,17 @@ OR<ph id="5"/>
 <trans-unit id="email">
   <source>Correo</source>
   <target>E-mail</target>
+<trans-unit id="nextStepBtn">
+  <source>Siguiente paso</source>
+  <target>Next step</target>
+</trans-unit>
+<trans-unit id="openInNewTab">
+  <source>Abrir en NUEVA pestaña</source>
+  <target>Open in NEW tab</target>
+</trans-unit>
+<trans-unit id="openInSameTab">
+  <source>Abrir en MISMA pestaña</source>
+  <target>Open in SAME tab</target>
 </trans-unit>
 </body>
 </file>

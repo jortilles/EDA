@@ -62,6 +62,23 @@
                    <span i18n="@@deleteFilters">Quitar estilos</span>
                 </button>
             }
+            @if (ifShowNextStep) {
+                <button class="execute-button w-[8vw] text-center" [disabled]="disableNextStep" (click)="onNextStep()">
+                   <i class="fa fa-arrow-right"></i>
+                   <span i18n="@@nextStepBtn">Siguiente paso</span>
+                </button>
+            }
+            @if (ifShowSwitchRedirecction) {
+                @if(!isOpeningNewTab){
+                    <button class="execute-button w-[10vw] justify-center" (click)="onSwitchRedirecction()">
+                        <span i18n="@@openInNewTabBtn">Abrir en NUEVA pestaña</span>
+                    </button>
+                }@else{
+                    <button class="execute-button w-[10vw] justify-center" (click)="onSwitchRedirecction()">
+                        <span i18n="@@openInSameTabBtn">Abrir en MISMA pestaña</span>
+                    </button>
+                }
+            }
             
             @if(ifShowApply){
                 <button class="confirm-button" [disabled]="disableApply" (click)="onApply()">

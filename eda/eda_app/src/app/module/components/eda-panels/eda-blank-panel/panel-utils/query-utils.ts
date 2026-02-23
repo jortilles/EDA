@@ -399,6 +399,7 @@ export const QueryUtils = {
       groupByEnabled: ebp.groupByEnabled,
       connectionProperties: ebp.connectionProperties,
       prediction: ebp.panel?.content?.query?.query?.prediction ? ebp.panel.content.query.query.prediction:'None',
+      predictionConfig: ebp.panel?.content?.query?.query?.predictionConfig || undefined,
     };
     return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode);
   },
