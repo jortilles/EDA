@@ -112,8 +112,9 @@ export class TimeFormatService {
         return lastValue;
 
       default:
-        throw new Error(`Formato no soportado: ${format}`);
-    }
+        const nextDay = this.addToDate(this.parseDate(lastValue, format), 'day');
+        return this.formatDate(nextDay, format);
+      }
   }
 
   private static parseDate(lastValue: string, format: string): Date {
