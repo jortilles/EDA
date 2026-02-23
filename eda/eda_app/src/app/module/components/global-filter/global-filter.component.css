@@ -31,7 +31,7 @@
 /* contiene todos los filtros*/
 .filters-container {
   display: ruby;
-  max-width: 75vw;
+  max-width: 70vw;
   flex-wrap: wrap;
   align-content: flex-start;
   gap: 1rem;
@@ -75,6 +75,14 @@
 ::ng-deep .p-multiselect {
   max-width: 10vw;
   min-width: 10vw;
+}
+
+/* flecha tooltip de filtro */
+::ng-deep .p-overlaypanel:before {
+  border: solid transparent !important;
+  border-bottom-color: #ffffff !important;
+  border-width: 10px !important;
+  margin-left: -10px !important;
 }
 
 /*****************/
