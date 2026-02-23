@@ -5723,12 +5723,12 @@ OR<ph id="5"/>
   <target>Next step</target>
 </trans-unit>
 <trans-unit id="openInNewTab">
-  <source>Abrir en nueva pestaña</source>
-  <target>Open in new tab</target>
+  <source>Abrir en NUEVA pestaña</source>
+  <target>Open in NEW tab</target>
 </trans-unit>
 <trans-unit id="openInSameTab">
-  <source>Abrir en misma pestaña</source>
-  <target>Open in same tab</target>
+  <source>Abrir en MISMA pestaña</source>
+  <target>Open in SAME tab</target>
 </trans-unit>
 </body>
 </file>

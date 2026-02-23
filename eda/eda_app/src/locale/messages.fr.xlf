@@ -5879,12 +5879,12 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <target>Prochaine étape</target>
       </trans-unit>
       <trans-unit id="openInNewTab">
-        <source>Abrir en nueva pestaña</source>
-        <target>Ouvrir dans un nouvel onglet</target>
+        <source>Abrir en NUEVA pestaña</source>
+        <target>Ouvrir dans un NOUVEL onglet</target>
       </trans-unit>
       <trans-unit id="openInSameTab">
-        <source>Abrir en misma pestaña</source>
-        <target>Ouvrir dans le même onglet</target>
+        <source>Abrir en MISMA pestaña</source>
+        <target>Ouvrir dans le MÊME onglet</target>
       </trans-unit>
     </body>
   </file>

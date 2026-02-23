@@ -5603,12 +5603,12 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Następny krok</target>
       </trans-unit>   
       <trans-unit id="openInNewTab">
-        <source>Abrir en nueva pestaña</source>
-        <target>Otwórz w nowej karcie</target>
+        <source>Abrir en NUEVA pestaña</source>
+        <target>Otwórz w NOWEJ karcie</target>
       </trans-unit>
       <trans-unit id="openInSameTab">
-        <source>Abrir en misma pestaña</source>
-        <target>Otwórz w tej samej karcie</target>
+        <source>Abrir en MISMA pestaña</source>
+        <target>Otwórz w tej SAMEJ karcie</target>
       </trans-unit>   
 </body>
 </file>

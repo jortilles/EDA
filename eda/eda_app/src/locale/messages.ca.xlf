@@ -5886,12 +5886,12 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Següent pas</target>
       </trans-unit>
       <trans-unit id="openInNewTab">
-        <source>Abrir en nueva pestaña</source>
-        <target>Obrir en nova pestanya</target>
+        <source>Abrir en NUEVA pestaña</source>
+        <target>Obrir en NOVA pestanya</target>
       </trans-unit>
       <trans-unit id="openInSameTab">
-        <source>Abrir en misma pestaña</source>
-        <target>Obrir en mateixa pestanya</target>
+        <source>Abrir en MISMA pestaña</source>
+        <target>Obrir en MATEIXA pestanya</target>
       </trans-unit>
     </body>
   </file>
