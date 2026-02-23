@@ -3,6 +3,7 @@ import { AlertService, DashboardService, GlobalFiltersService, QueryBuilderServi
 import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
 import { EdaDialogController } from "@eda/shared/components/shared-components.index";
 import { EdaBlankPanelComponent } from "@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component";
+import { OverlayPanel, OverlayPanelModule } from "primeng/overlaypanel";
 import * as _ from 'lodash';
 import { DashboardPage } from "app/module/pages/dashboard/dashboard.page";
 import { MultiSelectModule } from "primeng/multiselect";
@@ -30,7 +31,8 @@ const PRIMENG_MODULES = [
     DropdownModule,
     InputSwitchModule,
     ScrollPanelModule,
-    AutoCompleteModule
+    AutoCompleteModule,
+    OverlayPanelModule
 ];
 
 const DIALOGS_COMPONENTS = [
@@ -74,7 +76,12 @@ export class GlobalFilterComponent implements OnInit {
     public datePickerConfigs: {} = {};
 
     public filtrar: string = $localize`:@@filterButtonDashboard:Filtrar`;
-    autoCompleteValues: string[];
+    public resumen: string = $localize`:@@filterSummary:Resumen de filtros`;
+    private tooltipHideTimeout: any;
+    // flag para ver ultimo panel
+    private lastPanel: any;
+
+    public autoCompleteValues: string[];
     public filterTimeout: any;
 
     constructor(
@@ -940,5 +947,32 @@ export class GlobalFilterComponent implements OnInit {
         }
 
         this.onItemSelected(filter);
+    }
+
+    // This method have the same functionality as the chip in global filter, but this one is for the tooltip
+    public removeFilterItem(filter: any, item: any): void {
+        filter.selectedItems = filter.selectedItems.filter((i: any) => i !== item);
+        this.setGlobalFilterItems(filter);
+    }
+
+    // Method to show the filter tooltip
+    public showFilterTooltip(event: MouseEvent, op: any, filter?: any): void {
+    // If the filter doesn't have selected values, the tooltip won't be shown    
+        if (filter && (!filter.selectedIdValues || filter.selectedIdValues.length === 0)) return;
+    // If there is some active timeout to hide the tooltip, it will be cleared 
+        if (this.tooltipHideTimeout && this.lastPanel === filter.id) {
+           clearTimeout(this.tooltipHideTimeout);
+           this.tooltipHideTimeout = null;
+        }
+        this.lastPanel = filter.id;
+        op?.show(event);
+    }
+    // Method to hide the filter tooltip
+    public hideFilterTooltip(op: any): void {
+    // A timeout is set to avoid the tooltip to be hidden when the user is moving the mouse from the filter item to the tooltip
+        this.tooltipHideTimeout = setTimeout(() => {
+            op?.hide();
+            this.tooltipHideTimeout = null;
+        }, 150);
     }
 }
