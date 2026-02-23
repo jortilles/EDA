@@ -125,7 +125,11 @@ export class EdaTabsPanelComponent implements OnInit {
             relativeUrl += '?' + params.join('&');
         }
 
-        window.open('#' + relativeUrl, '_blank');
+        if (!this.panel.openInNewTab) {
+            window.open('#' + relativeUrl, '_blank');
+        } else {
+            window.open('#' + relativeUrl, '_self');
+        }
     }
 
     public setEditMode(): void {
@@ -147,11 +151,13 @@ export class EdaTabsPanelComponent implements OnInit {
                             params: {
                                 allDashboards: this.allDashboards,
                                 selectedDashboardIds: [...(this.panel.selectedDashboardIds || [])],
-                                availableTags: this.availableTags
+                                availableTags: this.availableTags,
+                                isOpeningNewTab: this.panel.openInNewTab || false
                             },
                             close: (event, response) => {
                                 if (!_.isEqual(event, EdaDialogCloseEvent.NONE) && response) {
                                     this.panel.selectedDashboardIds = response.selectedDashboardIds;
+                                    this.panel.openInNewTab = response.isOpeningNewTab;
                                     this.filterDashboards();
                                     this.dashboardService._notSaved.next(true);
                                 }
