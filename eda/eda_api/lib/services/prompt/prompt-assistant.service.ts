@@ -77,7 +77,7 @@ export class PromptService {
                                 table: { type: "string", description: "Name of the table (e.g. 'customers')" },
                                 columns: {
                                     type: "array",
-                                    description: "List of string column names. If not specified or empty, return all columns for the table. You must check the schema. You must identify tables or entities in the prompt query to match them with the columns you will return. Take also into account synonyms and possible typography mistakes. Never return empty if you dont know make a request",
+                                    description: "Arrays of string column names. If not specified or empty, return all columns for the table. You must check the schema. You must identify tables or entities in the prompt query to match them with the columns you will return. Take also into account synonyms and possible typography mistakes. Never return empty if you dont know make a request",
                                     items: { type: "string" }
                                 }
                             },
@@ -89,14 +89,54 @@ export class PromptService {
                 required: ["tables"],
                 additionalProperties: false
             },
-            strict: true
+            strict: true,
+            auto_call: { type: "always" }
+        };
+
+        const getFiltersTool: any = {
+            type: "function",
+            name: "getFilters",
+            description: "Creates multiple filters for different fields. All fields are defined in the schema",
+            parameters: {
+                type: "object",
+                properties: {
+                    filters: {
+                        type: "array",
+                        description: "Array of elements, where each element has a field and its corresponding values",
+                        items: {
+                            type: "object",
+                            properties: {
+                                field: {
+                                    type: "string",
+                                    description: "Name of the field"
+                                },
+                                values: {
+                                    type: "array",
+                                    description: "Array of the filter elements",
+                                    items: {
+                                        anyOf: [
+                                            { type: "string" },
+                                            { type: "number" }
+                                        ],
+                                        description: "Element of the field"
+                                    }
+                                }
+                            },
+                            required: ["field", "values"],
+                            additionalProperties: false
+                        }
+                    }
+                },
+                required: ["filters"],
+                additionalProperties: false
+            }
         };
 
         // Creacion de la instancia de openAI
         const openai = new OpenAI({ apiKey: API_KEY });
 
         // Agregación de todas las funciones de llamada
-        const tools: any[] = [getFieldsTool];
+        const tools: any[] = [getFieldsTool, getFiltersTool];
 
         // Consulta a la api de openAI
         let response: any = await openai.responses.create({
@@ -105,10 +145,15 @@ export class PromptService {
             tools: tools,
         })
 
+        // console.log('response: ', response);
+
+
         // recepcionamos el toolCall => podria estar undefined
+        const toolCallOutput: any[] = response.output;
         const toolCall: any = response.output?.find((c: any) => c.type === "function_call");
 
-        console.log('toolCall: ', toolCall);
+        // console.log('toolCallOutput: ', toolCallOutput);
+        console.log('response ::::::::::::::::::::::: ', response);
         
         // Verificamos si tenemos que responder con un function calling, sino devolvemos la consulta
         if (!toolCall) {

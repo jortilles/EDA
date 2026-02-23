@@ -43,6 +43,12 @@ export class PromptComponent implements OnInit, AfterViewChecked {
 
     ngOnInit(): void {
         const tables = this.edaBlankPanel.tables
+
+        console.log('MIRAAAAAAAAAAAAAAAAAAA')
+        console.log('selectedFilters: ', this.edaBlankPanel.selectedFilters)
+
+        debugger;
+
         this.initSchema(tables);
     }
 
@@ -72,20 +78,6 @@ export class PromptComponent implements OnInit, AfterViewChecked {
 
         const data = this.edaBlankPanel.tables; // tablas
         const text = this.inputText?.trim(); //
-
-        // // Primeras pruebas sin filtros
-        // const params = {
-        //     table: '',
-        //     dataSource: this.edaBlankPanel.dataSource._id,
-        //     panel: this.edaBlankPanel.panel.id,
-        //     dashboard: this.edaBlankPanel.inject.dashboard_id,
-        //     filters: [],
-        //     config: null,
-        //     queryLimit: this.edaBlankPanel.queryLimit,
-        //     joinType: this.edaBlankPanel.joinType,
-        //     rootTable: this.edaBlankPanel.rootTable?.table_name,
-        //     connectionProperties: this.edaBlankPanel.connectionProperties
-        // }
 
         // Filtra un texto vacio.
         if (!text) return;

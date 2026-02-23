@@ -86,8 +86,6 @@ export class ChatGptController {
                 firstTime
             });
 
-            console.log('llega response: ', response);
-
             res.status(200).json({
                 ok: true,
                 response
