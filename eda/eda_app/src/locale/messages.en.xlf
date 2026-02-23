@@ -5891,6 +5891,7 @@ OR<ph id="5"/>
 <trans-unit id="email">
   <source>Correo</source>
   <target>E-mail</target>
+</trans-unit>
 <trans-unit id="nextStepBtn">
   <source>Siguiente paso</source>
   <target>Next step</target>
