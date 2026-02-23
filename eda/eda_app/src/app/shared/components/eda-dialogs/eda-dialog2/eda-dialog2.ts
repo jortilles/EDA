@@ -30,6 +30,7 @@ export abstract class EdaDialog2 {
     @Input() showDelete: boolean = false;
     @Input() disableApply: boolean = false;
     @Input() showNextStep: boolean = false;
+    @Input() disableNextStep: boolean = false;
 
     // Mapa estándar de siglas a píxeles
     protected sizeMap: Record<string, string> = {
