@@ -327,6 +327,7 @@ export class EdaBlankPanelComponent implements OnInit {
         }
     }
 
+    // ngOnInit
     async ngOnInit() {
         this.index = 0;
         this.readonly = this.panel.readonly;
