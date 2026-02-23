@@ -37,15 +37,16 @@
                 accept=".csv" />
 
               <div class="flex flex-col items-center justify-center text-sm">
-                <div *ngIf="_csvFileName(); else noFile">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="mb-2 h-6 w-6 text-[#00BFB3]">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
-                  <p class="text-sm font-medium">{{ _csvFileName() }}</p>
-                </div>
-                <ng-template #noFile>
+                @if(_csvFileName()){
+                  <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="mb-2 h-6 w-6 text-[#00BFB3]">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <p class="text-sm font-medium">{{ _csvFileName() }}</p>
+                  </div>
+                } @else{
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                     class="mb-2 h-6 w-6 text-gray-400">
@@ -56,7 +57,7 @@
                     <span class="text-[#00BFB3]">Click para subir</span> o arrastra y suelta
                   </p>
                   <p class="text-xs text-gray-500">CSV (max. 10MB)</p>
-                </ng-template>
+                }
               </div>
             </div>
 
