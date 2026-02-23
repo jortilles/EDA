@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import { API_KEY, MODEL, CONTEXT } from '../../../config/chatgpt.config';
-import { PromptUtil } from '../../utils/promp.util';
+import { PromptUtil } from '../../utils/prompt.util';
 import QueryFieldResolver from '../../services/prompt/query/query-resolver.service'
 
 
