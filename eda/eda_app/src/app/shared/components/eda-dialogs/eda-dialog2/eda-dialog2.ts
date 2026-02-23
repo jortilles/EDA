@@ -20,6 +20,7 @@ export abstract class EdaDialog2 {
     @Output() duplicate: EventEmitter<any> = new EventEmitter();
     @Output() notstyles: EventEmitter<any> = new EventEmitter();
     @Output() nextstep: EventEmitter<any> = new EventEmitter();
+    @Output() switchredirecction: EventEmitter<any> = new EventEmitter();
 
 
     @Input() showApply: boolean = true;
@@ -28,6 +29,7 @@ export abstract class EdaDialog2 {
     @Input() showDuplicate: boolean = false;
     @Input() showNotStyles: boolean = false;
     @Input() showDelete: boolean = false;
+    @Input() showRedirecction: boolean = false;
     @Input() disableApply: boolean = false;
     @Input() showNextStep: boolean = false;
     @Input() disableNextStep: boolean = false;
@@ -61,5 +63,8 @@ export abstract class EdaDialog2 {
     }
     public onNextStep(): void {
         this.nextstep.emit(true);
+    }
+    public onSwitchRedirecction(): void {
+        this.switchredirecction.emit(true);
     }
 }
