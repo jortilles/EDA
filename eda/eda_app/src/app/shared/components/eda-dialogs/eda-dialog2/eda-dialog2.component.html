@@ -59,7 +59,7 @@
                 </button>
             }
             @if (ifShowNextStep) {
-                <button class="execute-button w-[7vw] text-center" (click)="onNextStep()">
+                <button class="execute-button w-[8vw] text-center" [disabled]="disableNextStep" (click)="onNextStep()">
                    <i class="fa fa-arrow-right"></i>
                    <span i18n="@@nextStepBtn">Siguiente paso</span>
                 </button>
