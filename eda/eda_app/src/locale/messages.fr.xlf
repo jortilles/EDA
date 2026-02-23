@@ -6055,6 +6055,7 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="email">
         <source>Correo</source>
         <target>E-mail</target>
+      </trans-unit>
       <trans-unit id="nextStepBtn">
         <source>Siguiente paso</source>
         <target>Prochaine étape</target>
