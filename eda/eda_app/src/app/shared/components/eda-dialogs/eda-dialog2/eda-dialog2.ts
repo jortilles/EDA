@@ -30,6 +30,7 @@ export abstract class EdaDialog2 {
     @Input() showNotStyles: boolean = false;
     @Input() showDelete: boolean = false;
     @Input() showRedirecction: boolean = false;
+    @Input() isOpeningNewTab: boolean = false;
     @Input() disableApply: boolean = false;
     @Input() showNextStep: boolean = false;
     @Input() disableNextStep: boolean = false;

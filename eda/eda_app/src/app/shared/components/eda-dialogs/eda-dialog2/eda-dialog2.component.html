@@ -64,6 +64,17 @@
                    <span i18n="@@nextStepBtn">Siguiente paso</span>
                 </button>
             }
+            @if (ifShowSwitchRedirecction) {
+                @if(!isOpeningNewTab){
+                    <button class="execute-button w-[10vw] justify-center" (click)="onSwitchRedirecction()">
+                        <span i18n="@@openInNewTabBtn">Abrir en nueva pestaña</span>
+                    </button>
+                }@else{
+                    <button class="execute-button w-[10vw] justify-center" (click)="onSwitchRedirecction()">
+                        <span i18n="@@openInSameTabBtn">Abrir en misma pestaña</span>
+                    </button>
+                }
+            }
             
             <button *ngIf="ifShowApply" class="confirm-button" [disabled]="disableApply" (click)="onApply()">
                 <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
