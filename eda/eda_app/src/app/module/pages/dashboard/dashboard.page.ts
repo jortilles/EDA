@@ -266,7 +266,16 @@ export class DashboardPage implements OnInit {
       }
       this.gridsterOptions.fixedRowHeight = cellSize;
     }
-   this.gridsterOptions.api?.optionsChanged();
+    this.sortPanelsForMobile();
+    this.gridsterOptions.api?.optionsChanged();
+  }
+
+  private sortPanelsForMobile(): void {
+    if (!this.panels?.length) return;
+    const isMobile = window.innerWidth < (this.gridsterOptions.mobileBreakpoint || 640);
+    if (isMobile) {
+      this.panels.sort((a, b) => Math.floor(a.y / 10) - Math.floor(b.y / 10) || Math.floor(a.x / 10) - Math.floor(b.x / 10));
+    }
   }
 
   public async loadDashboard() {
@@ -283,6 +292,7 @@ export class DashboardPage implements OnInit {
       this.globalFilter?.initOrderDependentFilters(dashboard.config.orderDependentFilters || []); // Filtros dependientes
       this.globalFilter?.initGlobalFilters(dashboard.config.filters || []);// Filtres del dashboard
       this.initPanels(dashboard);
+      this.sortPanelsForMobile();
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
       this.getUrlParams();
       this.globalFilter.findGlobalFilterByUrlParams(this.queryParams);
@@ -497,7 +507,8 @@ export class DashboardPage implements OnInit {
     }
 
     let valor = this.getBottomMostItem();
-    this.height = valor !== undefined ? (valor.y + valor.rows + 2) * 32 : 750;
+    const rowHeight = this.gridsterOptions.fixedRowHeight || 150;
+    this.height = valor !== undefined ? (valor.y + valor.rows + 4) * rowHeight + 150 : 750;
     this.cdr.detectChanges();
     this.stylesProviderService.loadedPanels--;
   }
@@ -1243,9 +1254,14 @@ public startCountdown(seconds: number) {
   onItemChange(item: GridsterItem): void {
     if (this.panels) {
       let valor = this.getBottomMostItem();
-      this.height = ((valor.y + valor.rows  + 4 ) * 50);
+      const rowHeight = this.gridsterOptions.fixedRowHeight || 150;
+      const isMobile = window.innerWidth < (this.gridsterOptions.mobileBreakpoint || 640);
+      const padding = isMobile ? 1 : 4;
+      const extra = isMobile ? 0 : 250;
+      this.height = ((valor.y + valor.rows + padding) * rowHeight) + extra;
+      if(isMobile) this.height = this.height / 2.5;
       this.cdr.detectChanges();
-    } 
+    }
   }
 
 
