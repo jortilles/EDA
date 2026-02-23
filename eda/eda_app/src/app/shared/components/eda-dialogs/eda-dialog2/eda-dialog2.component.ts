@@ -46,6 +46,7 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnChanges
     public ifShowDeleteFilter: boolean;
     public ifNoStyles: boolean;
     public ifShowNextStep: boolean;
+    public ifShowSwitchRedirecction: boolean;
 
     // Traducido automáticamente para PrimeNG
     get translatedBreakpoints(): Record<string, string> {
@@ -58,8 +59,6 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnChanges
         }
         return result;
     }
-
-
 
     constructor(private cd: ChangeDetectorRef) {
         super();
@@ -75,6 +74,7 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnChanges
         this.ifShowDeleteFilter = this.delete.observers.length > 0 && this.showDelete;
         this.ifNoStyles = this.notstyles.observers.length > 0 && this.showNotStyles;
         this.ifShowNextStep = this.nextstep.observers.length > 0 && this.showNextStep;
+        this.ifShowSwitchRedirecction = this.switchredirecction.observers.length > 0 && this.showNextStep;
     }
 
     public ngOnChanges(changes: SimpleChanges): void {
