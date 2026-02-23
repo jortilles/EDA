@@ -213,6 +213,7 @@
                 </div>
               </label>
             </div>
+
             }
           </div>
         </div>
@@ -264,3 +265,10 @@
     </div>
   </div>
 </eda-dialog2>
+
+<!-- Prediction Configuration Dialog -->
+@if (showPredictionDialog) {
+  <app-prediction-dialog
+    [(visible)]="showPredictionDialog" [predictionMethod]="predictionMethod" [modelTables]="modelTables" (confirm)="confirmPrediction($event)" (cancel)="cancelPrediction()">
+  </app-prediction-dialog>
+}

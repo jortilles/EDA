@@ -217,25 +217,27 @@
                           </button>
                         </td>
                           <td style="width: 60%;">
-                            <p-treeSelect *ngIf="globalFilter.pathList[panel.id]" 
-                              [(ngModel)]="globalFilter.pathList[panel.id].selectedTableNodes"
-                              [options]="panel.content.globalFilterPaths"
-                              (onNodeExpand)="onNodeExpand(panel, $event)"
-                              (onNodeSelect)="onNodeSelect(panel, $event)" appendTo="body"
-                              [disabled]="!panel.active || !panel.avaliable">
-    
-                              <ng-template pTemplate="value">
-                                <span class="d-flex align-items-center" [innerHTML]="getDisplayPathStr(globalFilter.pathList[panel.id].selectedTableNodes)"></span>
-                              </ng-template>
-    
-                              <ng-template let-node pTemplate="child">
-                                <span [ngClass]="checkNodeSelected(globalFilter.pathList[panel.id].selectedTableNodes, node) ? 'font-weight-bold' : ''"> {{node?.label}} </span>
-                              </ng-template>
-    
-                              <ng-template let-node pTemplate="default">
-                                <b>{{node?.label}}</b>
-                              </ng-template>
-                            </p-treeSelect>
+                            @if(globalFilter.pathList[panel.id]){
+                              <p-treeSelect 
+                                [(ngModel)]="globalFilter.pathList[panel.id].selectedTableNodes"
+                                [options]="panel.content.globalFilterPaths"
+                                (onNodeExpand)="onNodeExpand(panel, $event)"
+                                (onNodeSelect)="onNodeSelect(panel, $event)" appendTo="body"
+                                [disabled]="!panel.active || !panel.avaliable">
+      
+                                <ng-template pTemplate="value">
+                                  <span class="d-flex align-items-center" [innerHTML]="getDisplayPathStr(globalFilter.pathList[panel.id].selectedTableNodes)"></span>
+                                </ng-template>
+      
+                                <ng-template let-node pTemplate="child">
+                                  <span [ngClass]="checkNodeSelected(globalFilter.pathList[panel.id].selectedTableNodes, node) ? 'font-weight-bold' : ''"> {{node?.label}} </span>
+                                </ng-template>
+      
+                                <ng-template let-node pTemplate="default">
+                                  <b>{{node?.label}}</b>
+                                </ng-template>
+                              </p-treeSelect>
+                            }
                           </td>
                       </tr>
                     </ng-template>
@@ -262,20 +264,24 @@
 
         <div class="row mt-4">
             <div class="col-12">
-                <p-card *ngIf="formReady" [header]="posicion">
+              @if(formReady){
+                <p-card [header]="posicion">
                     <div cdkDropList cdkDropListOrientation="horizontal" class="select-list"
                         [cdkDropListData]="globalFilterList" (cdkDropListDropped)="onReorderFilter($event)">
                         <ng-container *ngFor="let filter of globalFilterList">
-                            <div *ngIf="!filter.isdeleted" class="select-box col-3 col-md-2 p-1" cdkDrag>
+                          @if(!filter.isdeleted){
+                            <div class="select-box col-3 col-md-2 p-1" cdkDrag>
                                 <span class="close-thin pointer" (click)="removeFilter(filter)"></span>
                                 <!-- [ngClass]="(selectedFilter.table==filter.table) && (selectedFilter.column.label==filter.column.label)?'edaEmfasis':''" -->
                                 <span class="text-center">
                                     {{getFilterLabel(filter)}}
                                 </span>
                             </div>
+                          }  
                         </ng-container>
                     </div>
                 </p-card>
+              }  
             </div>
         </div>
     </div>

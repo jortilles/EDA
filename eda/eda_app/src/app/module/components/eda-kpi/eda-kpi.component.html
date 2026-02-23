@@ -1,22 +1,26 @@
-<ng-container *ngIf="!inject.showChart" >
+@if(!inject.showChart){
+  <ng-container>
     <div #kpiContainer class="w-100 h-100 d-flex justify-content-center text-center text-wrap">
         <ng-container *ngTemplateOutlet="kpiValueContainer;"></ng-container>
     </div>
 </ng-container>
+}
 
-<ng-container *ngIf="inject.showChart">
-  <div class="flex flex-col w-full h-full overflow-hidden">
+@if(inject.showChart){
+  <ng-container>
+    <div class="flex flex-col w-full h-full overflow-hidden">
 
-    <div #kpiContainer class="flex flex-col justify-center items-center text-center text-wrap">
-      <ng-container *ngTemplateOutlet="kpiValueContainer;"></ng-container>
+      <div #kpiContainer class="flex flex-col justify-center items-center text-center text-wrap">
+        <ng-container *ngTemplateOutlet="kpiValueContainer;"></ng-container>
+      </div>
+
+      <div class="w-full overflow-hidden" style="flex-grow: 1; min-height: 70px;">
+        <eda-chart #EdaChart [inject]="inject.edaChart" class="h-full w-full"></eda-chart>
+      </div>
+
     </div>
-
-    <div class="w-full overflow-hidden" style="flex-grow: 1; min-height: 70px;">
-      <eda-chart #EdaChart [inject]="inject.edaChart" class="h-full w-full"></eda-chart>
-    </div>
-
-  </div>
-</ng-container>
+  </ng-container>
+  } 
 
 <ng-template #kpiValueContainer>
     <div #sufixContainer class="pointer" title="Añadir unidades">
@@ -24,11 +28,12 @@
             {{inject.value | number:'1.0-10':'es' }} {{inject.sufix}}
         </div>
 
-        <div *ngIf="!!sufixClick" class="ui-inputgroup w-100">
+        @if(!!sufixClick){
+          <div class="ui-inputgroup w-100">
           <input type="text" pInputText [(ngModel)]="inject.sufix" (focusout)="setSufix()" 
             (keydown.enter)="setSufix()" name="unidades" autofocusOnShow
-            class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3] text-base"
-          />
+            class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3] text-base"/>
         </div>
+        }
     </div>
 </ng-template>

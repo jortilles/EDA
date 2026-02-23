@@ -334,6 +334,18 @@ export const PanelInteractionUtils = {
                         duplicatedColumn.format = contentColumn.hasOwnProperty("format")?contentColumn.format:null ; // Agregando el Formato
                         PanelInteractionUtils.handleAggregationType4DuplicatedColumns(ebp, duplicatedColumn);
                         // Moc la columna directament perque es una duplicada.... o no....
+
+                        // column_type Agregando los old_column_type
+                        duplicatedColumn.aggregation_type.forEach((agg: any) => {
+                          if(agg.selected) {
+                            if(agg.value === 'count' || agg.value === 'count_distinct') {
+                              duplicatedColumn.column_type = 'numeric'
+                              duplicatedColumn.old_column_type = contentColumn.old_column_type;
+                              return 
+                            } 
+                          }
+                        })
+
                         ebp.currentQuery.push(duplicatedColumn);
                     }
                 }

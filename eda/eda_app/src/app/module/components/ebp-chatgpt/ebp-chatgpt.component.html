@@ -32,9 +32,11 @@
           </div>
 
           <!-- Indicador de carga -->
-          <div *ngIf="loading" class="text-gray-500 text-base italic animate-pulse self-start pl-14 break-words max-w-[70%] overflow-x-hidden">
+          @if(loading){
+            <div class="text-gray-500 text-base italic animate-pulse self-start pl-14 break-words max-w-[70%] overflow-x-hidden">
             <span i18n="@@escribiendo">Escribiendo...</span>
           </div>
+          }
         </div>
 
         <!-- Formulario fijo abajo -->

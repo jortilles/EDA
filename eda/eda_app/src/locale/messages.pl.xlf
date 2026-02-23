@@ -5760,14 +5760,18 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Correo</source>
         <target>Poczta</target>
       </trans-unit>
-      <trans-unit id="promptOption">
-        <source>Opciones IA</source>
-        <target>Opcions IA</target>
+      <trans-unit id="nextStepBtn">
+        <source>Siguiente paso</source>
+        <target>Następny krok</target>
+      </trans-unit>   
+      <trans-unit id="openInNewTab">
+        <source>Abrir en NUEVA pestaña</source>
+        <target>Otwórz w NOWEJ karcie</target>
       </trans-unit>
-      <trans-unit id="askTheAIText">
-        <source>Consulta con la IA</source>
-        <target>Konsultacja z AI</target>
-      </trans-unit>
+      <trans-unit id="openInSameTab">
+        <source>Abrir en MISMA pestaña</source>
+        <target>Otwórz w tej SAMEJ karcie</target>
+      </trans-unit>   
 </body>
 </file>
 </xliff>

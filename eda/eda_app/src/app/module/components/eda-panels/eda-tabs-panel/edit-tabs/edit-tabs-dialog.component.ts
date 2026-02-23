@@ -41,6 +41,8 @@ export class EditTabsDialogComponent implements OnInit {
     public filterPrivacy: DashboardPrivacy | 'all' = 'public';
     public selectedDashboardIds: string[] = [];
 
+    public isOpeningNewTab: boolean = false;
+
     public privacyOptions = [
         { label: 'Todos', value: 'all' as const },
         { label: 'Público', value: 'public' as DashboardPrivacy },
@@ -80,6 +82,7 @@ export class EditTabsDialogComponent implements OnInit {
         }));
         this.availableTags = [{ label: 'Todos', value: 'all' }, ...tags];
         this.selectedDashboardIds = [...(this.controller.params.selectedDashboardIds || [])];
+        this.isOpeningNewTab = this.controller.params.isOpeningNewTab || false;
     }
 
     public onPrivacyChange(): void {
@@ -118,11 +121,16 @@ export class EditTabsDialogComponent implements OnInit {
 
     public saveConfig(): void {
         this.onClose(EdaDialogCloseEvent.UPDATE, {
-            selectedDashboardIds: this.selectedDashboardIds
+            selectedDashboardIds: this.selectedDashboardIds,
+            isOpeningNewTab: this.isOpeningNewTab
         });
     }
 
     public closeConfig(): void {
         this.onClose(EdaDialogCloseEvent.NONE);
+    }
+
+    switchMode(): void {
+        this.isOpeningNewTab = !this.isOpeningNewTab;
     }
 }

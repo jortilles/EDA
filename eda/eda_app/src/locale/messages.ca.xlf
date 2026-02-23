@@ -4320,7 +4320,7 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       </trans-unit>
       <trans-unit id="DataModelDB">
         <source>Configurar nuevo orígen de datos</source>
-        <target>Configurar nouva font de dades</target>
+        <target>Configurar nova font de dades</target>
       </trans-unit>
       <trans-unit id="newDataSourceDescription">
         <source>Conéctese a su base de datos para comenzar a consultar y visualizar sus datos</source>
@@ -5822,7 +5822,7 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 
       <trans-unit id="filterSearchDashboards">
         <source>Usa los filtros para buscar dashboards</source>
-        <target>Fes servir els filtres per buscar dashboards</target>
+        <target>Fes servir els filtres per cercar dashboards</target>
       </trans-unit>
 
       <trans-unit id="noCoincidenceDashFilters">
@@ -6047,6 +6047,17 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="email">
         <source>Correo</source>
         <target>Correu</target>
+      <trans-unit id="nextStepBtn">
+        <source>Siguiente paso</source>
+        <target>Següent pas</target>
+      </trans-unit>
+      <trans-unit id="openInNewTab">
+        <source>Abrir en NUEVA pestaña</source>
+        <target>Obrir en NOVA pestanya</target>
+      </trans-unit>
+      <trans-unit id="openInSameTab">
+        <source>Abrir en MISMA pestaña</source>
+        <target>Obrir en MATEIXA pestanya</target>
       </trans-unit>
       <trans-unit id="promptOption">
         <source>Opciones IA</source>
