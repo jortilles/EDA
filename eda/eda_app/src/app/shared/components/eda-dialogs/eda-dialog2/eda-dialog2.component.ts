@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, AfterViewInit, ViewChild, ElementRef, ContentChild, AfterContentInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, OnChanges, SimpleChanges, Input, AfterViewInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { EdaDialog2 } from './eda-dialog2';
 import { Dialog } from 'primeng/dialog';
 
@@ -31,7 +31,7 @@ import { FormsModule } from '@angular/forms'; // para [(ngModel)] si lo usas
       }
     `
 })
-export class EdaDialog2Component extends EdaDialog2 implements OnInit, AfterViewInit, OnDestroy {
+export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnChanges, AfterViewInit, OnDestroy {
     @ViewChild('dialogRef') dialogRef!: Dialog;
     @ViewChild('contentWrapper') contentWrapper!: ElementRef;
     @Input() overflow: string = 'hidden';
@@ -74,6 +74,13 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, AfterView
         this.ifShowReset = this.reset.observers.length > 0 && this.showReset;
         this.ifShowDeleteFilter = this.delete.observers.length > 0 && this.showDelete;
         this.ifNoStyles = this.notstyles.observers.length > 0 && this.showNotStyles;
+        this.ifShowNextStep = this.nextstep.observers.length > 0 && this.showNextStep;
+    }
+
+    public ngOnChanges(changes: SimpleChanges): void {
+        if (changes['showNextStep']) {
+            this.ifShowNextStep = this.nextstep.observers.length > 0 && this.showNextStep;
+        }
     }
 
     ngAfterViewInit(): void {
