@@ -55,16 +55,17 @@
                   <ng-template pTemplate>
                     <div (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)"
                          class="max-h-[30vh] overflow-auto min-w-[20vw] max-w-[30vw]">
-                           <span>{{ resumen }}</span>
-                               <div *ngFor="let item of filter.selectedItems" class="filter-tooltip-container
-                                bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white font-bold px-4 py-2 rounded flex items-center"> <!-- colores eda text -->
-                                   <span class="customMultiselect filters-size filter-tooltip-text">
-                                       {{ item }}
-                                           <button type="button" class=" pi pi-times-circle filter-tooltip-button"
-                                               (click)="removeFilterItem(filter, item)">
-                                           </button>
-                                   </span>
-                               </div>
+                        <span>{{ resumen }}</span>
+                          @for (item of filter.selectedItems; track item) {
+                            <div class="filter-tooltip-container bg-[white]  px-4 py-2 rounded flex items-center mr-1">
+                                <span class="customMultiselect filters-size filter-tooltip-text">
+                                    {{ item }}
+                                        <button type="button" class=" pi pi-times-circle filter-tooltip-button"
+                                            (click)="removeFilterItem(filter, item)">
+                                        </button>
+                                </span>
+                            </div>
+                          }
                     </div>
                   </ng-template>
               </p-overlayPanel>
@@ -96,14 +97,16 @@
                        <div class="max-h-[30vh] overflow-auto min-w-[20vw] max-w-[30vw]"
                             (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)">
                            <span>{{ resumen }}</span>
-                               <div *ngFor="let item of filter.selectedItems" class="filter-tooltip-container">
-                                   <span class="customMultiselect filters-size filter-tooltip-text">
-                                       {{ item }}
-                                           <button type="button" class=" pi pi-times-circle filter-tooltip-button"
-                                               (click)="removeFilterItem(filter, item)">
-                                           </button>
-                                   </span>
-                               </div>
+                              @for (item of filter.selectedItems; track item) {
+                                <div class="filter-tooltip-container bg-[white]  px-4 py-2 rounded flex items-center mr-1">
+                                    <span class="customMultiselect filters-size filter-tooltip-text">
+                                        {{ item }}
+                                            <button type="button" class=" pi pi-times-circle filter-tooltip-button"
+                                                (click)="removeFilterItem(filter, item)">
+                                            </button>
+                                    </span>
+                                </div>
+                              }
                        </div>
                   </ng-template>
                 </p-overlayPanel>
