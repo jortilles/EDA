@@ -451,6 +451,13 @@ public tableNodeExpand(event: any): void {
         return (userName !== 'edaanonim' && !this.inject.isObserver);
     }
 
+    public whatIfOperatorOptions: any[] = [
+        { label: 'Sumar', value: '+' },
+        { label: 'Restar', value: '-' },
+        { label: 'Multiplicar', value: '*' },
+        { label: 'Dividir', value: '/' }
+    ];
+
     public showWhatIfSection(): boolean {
         return this.currentQuery.some((query: any) => query.whatif_column);
     }
