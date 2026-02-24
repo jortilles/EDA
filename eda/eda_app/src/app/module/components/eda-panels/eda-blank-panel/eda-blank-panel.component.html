@@ -18,28 +18,14 @@
 
   <!-- WhatIf inline section -->
   @if (showWhatIfSection()) {
-    <div class="flex flex-wrap items-center gap-2 px-1 py-1 mb-1 bg-[#00BFB3]/10 border border-[#00BFB3]/30 rounded-md">
-      <span class="text-xs font-semibold text-[#00BFB3] uppercase tracking-wide whitespace-nowrap">What If</span>
-      @for (col of getWhatIfColumns(); track col) {
-        <div class="flex items-center gap-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded px-2 py-0.5">
-          <span class="text-xs text-gray-700 dark:text-gray-300 whitespace-nowrap max-w-[120px] truncate">{{ col.display_name.default }}</span>
-          <select
-            [(ngModel)]="col.whatif.operator"
-            class="text-xs border-0 bg-transparent text-gray-700 dark:text-gray-300 focus:outline-none cursor-pointer">
-            <option *ngFor="let opt of whatIfOperatorOptions" [value]="opt.value">{{ opt.label }}</option>
-          </select>
-          <input
-            type="number"
-            [(ngModel)]="col.whatif.value"
-            class="text-xs w-16 border border-gray-200 dark:border-gray-600 rounded px-1 py-0.5 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-[#00BFB3]" />
-        </div>
-      }
-      <button
-        (click)="runWhatIfQuery()"
-        class="text-xs px-2 py-1 rounded bg-[#00BFB3] text-white hover:bg-[#00a89d] transition-colors whitespace-nowrap">
-        Aplicar
-      </button>
-    </div>
+                <label class="panel-title">What if:</label>
+            <div *ngFor="let column of getWhatIfColumns()">
+                <span style="font-weight: bold;">{{column.display_name.default}}</span>
+                <input type="number" pInputText [(ngModel)]="column.whatif.value"
+                    (keydown.enter)="runWhatIfQuery(column)"
+                    style="margin-left: 5px; width: 50px; padding: 0;">
+                <button type="button" pButton pRipple icon="pi pi-refresh" class="p-button-outlined" style="width: 20px; padding: 0; border: 0;" (click)="runWhatIfQuery(column)"></button>
+            </div>
   }
 
   <div class="flex items-center justify-center flex-grow overflow-y-auto rounded-lg bg-gray-50" [class.spinner-panel]="display_v.minispinner">
