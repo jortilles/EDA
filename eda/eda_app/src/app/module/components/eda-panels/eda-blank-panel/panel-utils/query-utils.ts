@@ -58,16 +58,22 @@ export const QueryUtils = {
         types.fill(null);
         for (let row = 0; row < response[1].length; row++) {
           response[1][row].forEach((field, i) => {
-            if (types[i] === null) {
+            if (types[i] === null || types[i] === 'text') {
               if (typeof field === 'number') {
                 types[i] = 'numeric';
               } else if (typeof field === 'string') {
-                types[i] = 'text';
+                // Revisión de etiquetas html
+                if (/<[a-z][\s\S]*>/i.test(field)) {
+                  types[i] = 'html';
+                } else if (types[i] === null) {
+                  types[i] = 'text';
+                }
               }
             }
           });
           if (!types.includes(null)) {
-            break;
+            const hasTextColumns = types.includes('text');
+            if (!hasTextColumns) break;
           }
         }
 
@@ -158,12 +164,17 @@ export const QueryUtils = {
       const [headers, rows] = response;
 
       const types = headers.map((_, i) => {
+        let foundString = false;
         for (const row of rows) {
           const field = row[i];
           if (typeof field === 'number') return 'numeric';
-          if (typeof field === 'string') return 'text';
+          if (typeof field === 'string') {
+            // Revisión de etiquetas html
+            if (/<[a-z][\s\S]*>/i.test(field)) return 'html';
+            foundString = true;
+          }
         }
-        return null;
+        return foundString ? 'text' : null;
       });
 
       ebp.currentQuery = headers.map((header, i) =>
@@ -388,6 +399,7 @@ export const QueryUtils = {
       groupByEnabled: ebp.groupByEnabled,
       connectionProperties: ebp.connectionProperties,
       prediction: ebp.panel?.content?.query?.query?.prediction ? ebp.panel.content.query.query.prediction:'None',
+      predictionConfig: ebp.panel?.content?.query?.query?.predictionConfig || undefined,
     };
     return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode);
   },

@@ -8,7 +8,7 @@ export class MongoDBBuilderService {
     public user: string;
     public limit: number;
 
-    constructor(queryTODO: any, dataModel: any, user: any, limit: number = 100) {
+    constructor(queryTODO: any, dataModel: any, user: any, limit: number = 5000) {
         this.queryTODO = queryTODO;
         this.dataModel = dataModel;
         this.user = user._id;
@@ -100,7 +100,7 @@ export class MongoDBBuilderService {
         //TO HAVING CLAUSE 
         const havingFilters = this.queryTODO.filters.filter((f: any) => {
             const column = columns.find((c: any) => c.table_id === f.filter_table && f.filter_column === c.column_name);
-            f.column_type = column?.column_type || 'text';
+            f.column_type = column?.column_type || 'text' || 'html';
 
             if (column && column?.column_type == 'numeric' && column?.aggregation_type !== 'none') {
                 return true;
@@ -249,8 +249,20 @@ export class MongoDBBuilderService {
             }
         }
 
-        // Construir el pipeline en el orden correcto: group -> sort -> limit
+        // Redondear campos numéricos agregados a 2 decimales
+        const roundFields: any = {};
+        for (const column of fields) {
+            if (column.aggregation_type !== 'none' && column.aggregation_type !== 'count_distinct') {
+                roundFields[column.column_name] = { $round: [`$${column.column_name}`, column.minimumFractionDigits || 0] };
+            }
+        }
+
+        // Construir el pipeline en el orden correcto: group -> round -> sort -> limit
         const pipelineStages: any[] = [pipeline];
+
+        if (Object.keys(roundFields).length > 0) {
+            pipelineStages.push({ $addFields: roundFields });
+        }
 
         if (hasSorting) {
             pipelineStages.push({ $sort: sortStage });
@@ -292,7 +304,7 @@ export class MongoDBBuilderService {
         if (!Array.isArray(filter)) {
             switch (columnType) {
                 case 'text': return `'${filter}'`;
-                //case 'text': return `'${filter}'`;
+                case 'html': return `'${filter}'`;
                 case 'numeric': return filter;
                 case 'date': return `to_date('${filter}','YYYY-MM-DD')`
             }
@@ -310,6 +322,7 @@ export class MongoDBBuilderService {
                 if (f == '(x => None)') {
                     switch (columnType) {
                         case 'text': str = `'(x => None)'  `; break;
+                        case 'html': str = `'(x => None)'  `;   break; 
                         case 'numeric': str = 'null  '; break;
                         case 'date': str = `to_date('4092-01-01','YYYY-MM-DD')  `; break;
                     }
@@ -331,7 +344,7 @@ export class MongoDBBuilderService {
         if (!Array.isArray(filter)) {
             switch (columnType) {
                 case 'text': return `'${filter}'`;
-                //case 'text': return `'${filter}'`;
+                case 'html': return `'${filter}'`;
                 case 'numeric': return filter;
                 case 'date': return `to_timestamp('${filter} 23:59:59','YYYY-MM-DD  HH24:MI:SS')`
             }

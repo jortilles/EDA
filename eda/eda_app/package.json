@@ -1,6 +1,6 @@
 {
   "name": "app-eda",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve -o --configuration=ca",

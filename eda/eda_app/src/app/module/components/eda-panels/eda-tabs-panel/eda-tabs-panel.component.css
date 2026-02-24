@@ -1,0 +1,18 @@
+:host {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.tab-button {
+    outline: none;
+    box-shadow: none;
+}
+
+.tab-button:hover {
+    transform: translateY(-1px);
+}
+
+.tab-button:active {
+    transform: translateY(0);
+}

@@ -1322,12 +1322,18 @@ pre {
         display: flex !important;
     }
 
+    /* modificar */ 
+    h2 {
+        line-height: 18px;
+        font-size: 1rem;
+    }
+
 }
 
 /*-- ============================================================== 
   Ipad & above all(768px) 
   ============================================================== */
-@media (min-width: 768px) {
+@media (max-width: 768px) {
 
     /*This is for the breeadcrumd*/
     .page-titles .breadcrumb {
@@ -1355,7 +1361,29 @@ pre {
         flex-wrap: nowrap !important;
         -webkit-flex-wrap: nowrap !important;
     }
+        /* modificar */ 
+    h2 {
+        font-size: 1rem !important;
+    }
+
 }
+
+
+
+/*-- ============================================================== 
+  movil vertical(500px) 
+  ============================================================== */
+@media (max-width: 500px) {
+
+        /* modificar */ 
+    h2 {
+        font-size: 0.9rem !important;
+    }
+
+}
+
+
+
 
 
 
@@ -1726,7 +1754,7 @@ pre {
       font-size: 11px;
     }
     .p-component {
-      font-size: 0.8rem;
+      font-size: 0.9rem;
     }
     .p-card .p-card-title {
       font-size: 0.8rem;

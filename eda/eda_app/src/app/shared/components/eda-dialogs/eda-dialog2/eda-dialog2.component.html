@@ -12,9 +12,11 @@
     [style]="{width, height}"
     appendTo="body">
 
-    <ng-template pTemplate="header" *ngIf="!header">
-        <ng-content select="[header]"></ng-content>
-    </ng-template>
+    @if(!header){
+        <ng-template pTemplate="header">
+            <ng-content select="[header]"></ng-content>
+        </ng-template>
+    }
 
     <ng-template pTemplate="content">
          <div #contentWrapper>
@@ -27,10 +29,12 @@
         <div class="flex justify-end p-2 border-t gap-1.5">
             <ng-content select="[footer]"></ng-content>
             
-            <button *ngIf="ifShowClose" class="cancel-button" (click)="onClose()">
-               <i class="fa fa-times"></i>
-               <span i18n="@@cancelarBtn">Cancelar</span>
-            </button>
+            @if(ifShowClose){
+                <button class="cancel-button" (click)="onClose()">
+                    <i class="fa fa-times"></i>
+                    <span i18n="@@cancelarBtn">Cancelar</span>
+                </button>
+            }
             
             @if(ifShowReset){
                 <button class="execute-button" (click)="onReset()">
@@ -52,10 +56,35 @@
                    <span i18n="@@deleteFilters">Eliminar</span>
                 </button>
             }
+            @if (ifNoStyles) {
+                <button class="execute-button w-[7vw] text-center" (click)="onNotStyles()">
+                   <i class="fa fa-paint-brush"></i>
+                   <span i18n="@@deleteFilters">Quitar estilos</span>
+                </button>
+            }
+            @if (ifShowNextStep) {
+                <button class="execute-button w-[8vw] text-center" [disabled]="disableNextStep" (click)="onNextStep()">
+                   <i class="fa fa-arrow-right"></i>
+                   <span i18n="@@nextStepBtn">Siguiente paso</span>
+                </button>
+            }
+            @if (ifShowSwitchRedirecction) {
+                @if(!isOpeningNewTab){
+                    <button class="execute-button w-[10vw] justify-center" (click)="onSwitchRedirecction()">
+                        <span i18n="@@openInNewTabBtn">Abrir en NUEVA pestaña</span>
+                    </button>
+                }@else{
+                    <button class="execute-button w-[10vw] justify-center" (click)="onSwitchRedirecction()">
+                        <span i18n="@@openInSameTabBtn">Abrir en MISMA pestaña</span>
+                    </button>
+                }
+            }
             
-            <button *ngIf="ifShowApply" class="confirm-button" [disabled]="disableApply" (click)="onApply()">
-                <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
-            </button>
+            @if(ifShowApply){
+                <button class="confirm-button" [disabled]="disableApply" (click)="onApply()">
+                    <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
+                </button>
+            }
         </div>
     </ng-template>
 

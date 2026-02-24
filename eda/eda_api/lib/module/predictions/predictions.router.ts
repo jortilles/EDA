@@ -1,9 +1,10 @@
 import * as express from 'express';
-import { ArimaController } from './predictions.controller';
+import { PredictionsController } from './predictions.controller';
 import { authGuard } from '../../guards/auth-guard'; // opcional
 
 const router = express.Router();
 
-router.post('/predict', authGuard, ArimaController.predict);
+router.post('/predict', authGuard, PredictionsController.predictArima);
+router.post('/tensorflow/predict', authGuard, PredictionsController.predictTensorflow);
 
 export default router;

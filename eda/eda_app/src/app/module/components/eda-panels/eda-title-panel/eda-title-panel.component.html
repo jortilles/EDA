@@ -9,4 +9,6 @@
 </div>
 
 <eda-context-menu [inject]="contextMenu"></eda-context-menu>
-<app-title-dialog *ngIf="editTittleController" [controller]="editTittleController"> </app-title-dialog>
+@if(editTittleController){
+    <app-title-dialog [controller]="editTittleController"> </app-title-dialog>
+}

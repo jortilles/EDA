@@ -32,7 +32,7 @@
           <!-- Submenu Overlay -->
           @if (item.showOverlay && item.items?.length) {
             <!-- bg-white rounded-lg shadow-lg py-2 w-56 transform translate-x-4 -->
-            <div class="absolute left-full top-0 ml-2 py-2 w-56 bg-white rounded-lg shadow-lg z-50"
+            <div class="absolute left-full top-0 ml-2 py-2 w-[18vw] min-w-[200px] bg-white rounded-lg shadow-lg z-50 text-base font-medium"
               (mouseenter)="showOverlay(item)"
               (mouseleave)="hideOverlay(item)"
             >

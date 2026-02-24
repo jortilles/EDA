@@ -22,11 +22,11 @@
       </div>
 
       <!-- Filters Section -->
-      <div class="flex justify-between items-center">
+      <div class="flex flex-wrap justify-between items-center gap-2">
         <app-v2-global-filter #globalFilter [dashboard]="this"></app-v2-global-filter>
 
         @if (notSaved) {
-          <p-message severity="warn" i18n-text="@@notSavedChanges" text="Hay cambios sin guardar..." styleClass="w-full"></p-message>
+          <p-message severity="warn" i18n-text="@@notSavedChanges" text="Hay cambios sin guardar..." styleClass="whitespace-nowrap"></p-message>
         }
       </div>
     </div>
@@ -49,6 +49,14 @@
           <eda-title-panel #edaPanel [id]="panel.id" [panel]="panel" [inject]="injectEdaPanel"
             (remove)="onRemovePanel($event)" (duplicate)="onDuplicatePanel($event)" class="eda-text-panel">
           </eda-title-panel>
+          }
+
+          @if (panel.type===2) {
+          <eda-tabs-panel #edaPanel [id]="panel.id" [panel]="panel" [inject]="injectEdaPanel"
+            [globalFilters]="globalFilter?.globalFilters || []"
+            [panelTabAlign]="panelTabAlign" [panelText]="panelTabText"
+            (remove)="onRemovePanel($event)">
+          </eda-tabs-panel>
           }
 
         </gridster-item>

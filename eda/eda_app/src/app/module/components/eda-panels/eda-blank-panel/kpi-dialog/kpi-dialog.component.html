@@ -65,12 +65,12 @@
         <div class="grid gap-6">
           <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
             <div class="px-4 py-3 border-b bg-white">
-              <h3 class="font-medium text-slate-800 flex items-center gap-2" i18n="@@setNewAlert">
+              <h3 class="font-medium text-slate-800 flex items-center gap-2">
                 <span
                   class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">
                   1
                 </span>
-                Configurar nueva alerta
+                <span i18n="@@setNewAlert">Configurar nueva alerta</span>
               </h3>
             </div>
 
@@ -158,14 +158,15 @@
             </div>
           </div>
 
-          <div *ngIf="alerts.length > 0" class="bg-white rounded-lg border overflow-hidden">
+          @if(alerts.length > 0){
+            <div class="bg-white rounded-lg border overflow-hidden">
             <div class="px-4 py-3 border-b bg-gradient-to-r from-slate-50 to-slate-100">
-              <h3 class="font-medium text-slate-800 flex items-center gap-2" i18n="@@alertsConfigured">
+              <h3 class="font-medium text-slate-800 flex items-center gap-2">
                 <span
                   class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">
                   2
                 </span>
-                Alertas configuradas ({{alerts.length}})
+                <span i18n="@@alertsConfigured">Alertas configuradas</span> ({{alerts.length}})
               </h3>
             </div>
             <div class="overflow-hidden">
@@ -219,8 +220,11 @@
               Las alertas se aplicarán en orden de creación. Haga clic en el botón X para eliminar una alerta.
             </div>
           </div>
+          }
+          
 
-          <div *ngIf="alerts.length === 0" class="bg-white rounded-lg border p-8 text-center">
+          @if(alerts.length === 0){
+            <div class="bg-white rounded-lg border p-8 text-center">
             <div class="mx-auto w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-3">
               <span class="text-slate-400 text-xl">!</span>
             </div>
@@ -229,6 +233,7 @@
               Configure una alerta usando el formulario de arriba para visualizar cambios en el gráfico.
             </p>
           </div>
+          }
         </div>
       </div>
       }

@@ -15,10 +15,12 @@
         <p-radioButton name="groupname" value="days" [label]="daysSTR" [(ngModel)]="units">
         </p-radioButton>
       </div>
-      <div class="col-12" *ngIf="units==='days'">
-        <p i18n="@@at"> A las </p>
-        <p-calendar [timeOnly]="true" [(ngModel)]="hours"></p-calendar>
-      </div>
+      @if(units==='days'){
+        <div class="col-12">
+          <p i18n="@@at"> A las </p>
+          <p-calendar [timeOnly]="true" [(ngModel)]="hours"></p-calendar>
+        </div>
+      }
       <div class="col-12">
         <p-radioButton name="groupname" value="hours" [label]="hoursSTR" [(ngModel)]="units">
         </p-radioButton>
@@ -47,8 +49,12 @@
   </div>
 
   <div class="col-12">
-    <h6 *ngIf="!enabled" i18n="@@noMail">Sin alertas de correo</h6>
-    <h6 *ngIf="enabled" i18n="@@opcionMail">Enviar per email</h6>
+    @if(!enabled){
+      <h6 i18n="@@noMail">Sin alertas de correo</h6>
+    }
+    @if(enabled){
+      <h6 i18n="@@opcionMail">Enviar per email</h6>
+    }
     <p-inputSwitch id="switchCache" class="col-1" [(ngModel)]="enabled" tooltipPosition="left">
     </p-inputSwitch>
   </div>

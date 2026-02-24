@@ -2,6 +2,18 @@
   content: "\00a0"; /* 1 espacio */
 }
 
+/* nombre de filtro largo -> truncar con ... */
+.filter-label,
+.filter-row > span {
+  display: inline-block;
+  align-content: center;
+  text-align: end;
+  min-width: fit-content;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* Input de date picker */
 ::ng-deep eda-date-picker input {
   height: 40px;
@@ -18,7 +30,8 @@
 
 /* contiene todos los filtros*/
 .filters-container {
-  display: flex;
+  display: ruby;
+  max-width: 80vw;
   flex-wrap: wrap;
   align-content: flex-start;
   gap: 1rem;
@@ -29,7 +42,12 @@
 /* filtro individual */
 .filter-card {
   flex: 0 0 auto;
-  width: 15vw;
+}
+
+/* filtro sin autocomplete (multiselect) */
+::ng-deep .p-multiselect {
+  max-width: 10vw;
+  min-width: 10vw;
 }
 
 /*****************/

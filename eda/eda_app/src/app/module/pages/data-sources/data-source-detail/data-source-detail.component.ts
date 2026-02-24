@@ -146,10 +146,10 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public valueListSourceTabla = $localize`:@@valueListSourceTabla:Tabla relacionada`;
     public valueListSourceID = $localize`:@@valueListSourceID:Id de la columna relacionada`;
     public valueListSourceDescripcion = $localize`:@@valueListSourceDescripcion:Descripción dfe la columna relacionada`;
-    public possibleValueList = $localize`@@possibleValuesList: Tabla y columna asociadas `
-    public possibleValueListTable = $localize`@@possibleValuesListTable: Tabla `
-    public possibleValuesListID =  $localize`@@possibleValuesListID: Id de la columna`
-    public possibleValuesListDescription = $localize`@@possibleValuesListDescription: Descripción de la columna`
+    public possibleValueList = $localize`:@@possibleValuesList: Tabla y columna asociadas `
+    public possibleValueListTable = $localize`:@@possibleValuesListTable: Tabla `
+    public possibleValuesListID =  $localize`:@@possibleValuesListID: Id de la columna`
+    public possibleValuesListDescription = $localize`:@@possibleValuesListDescription: Descripción de la columna`
 
     // Types
     public columnTypes: SelectItem[] = [
@@ -221,27 +221,29 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 contextMenuItems: [
                     new EdaContextMenuItem({
                         label: 'ELIMINAR', command: () => {
-
-                            let elem : any =  this.permissionsColumn.getContextMenuRow();
-
-                            try {
-                                elem = this.permissionsColumn.getContextMenuRow()._id?.reduce((a, b)=> a + b) ;
-                            } catch (e) {
-                            }
-
-                            const dynValue = this.modelPanel.metadata.model_granted_roles.filter(r => r.value !== undefined)
-                            .filter(r => r.value !== "(x => None)" && r.value !== "(~ => All)")
-                            .filter(r => r.value != elem.value );
-
-                            const users = this.modelPanel.metadata.model_granted_roles.filter(r => r.users !== undefined && r.users.length > 0  )
-                            .filter(r => r.users.reduce((a, b)=> a + b) !== elem);
-
-                            const groups = this.modelPanel.metadata.model_granted_roles.filter(r => r.groups !== undefined && r.groups.length > 0  )
-                            .filter(r => r.groups.reduce((a, b)=> a + b) !== elem);
                             let tmpPermissions = [];
-                            dynValue.forEach(dyn => tmpPermissions.push(dyn))
-                            groups.forEach(group => tmpPermissions.push(group));
-                            users.forEach(user => tmpPermissions.push(user));
+                            const row = this.permissionsColumn.getContextMenuRow();
+                            const table = this.dataModelService.getTable(this.columnPanel);
+
+                            if (row.user) {
+                                // Eliminar permiso de usuario
+                                const usersTmp = row._id;
+                                const mdgTmp = this.modelPanel.metadata.model_granted_roles.find(
+                                    r => r.table === table.table_name &&
+                                         r.column === this.columnPanel.technical_name &&
+                                         r.users === usersTmp
+                                );
+                                tmpPermissions = this.modelPanel.metadata.model_granted_roles.filter(a => a !== mdgTmp);
+                            } else if (row.group) {
+                                // Eliminar permiso de grupo
+                                const groupTmp = row._id;
+                                const mdgTmp = this.modelPanel.metadata.model_granted_roles.find(
+                                    r => r.table === table.table_name &&
+                                         r.column === this.columnPanel.technical_name &&
+                                         r.groups === groupTmp
+                                );
+                                tmpPermissions = this.modelPanel.metadata.model_granted_roles.filter(a => a !== mdgTmp);
+                            }
 
                             this.modelPanel.metadata.model_granted_roles = tmpPermissions;
                             this.update();
@@ -257,7 +259,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 new EdaColumnText({ field: 'value', header: $localize`:@@valueTable:VALOR` }),
             ]
         });
-
 
 
         this.permissionTable = new EdaTable({
@@ -476,13 +477,26 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 this.permissions.forEach(permission => {
 
                     const table = this.dataModelService.getTable(this.columnPanel);
-
                     if (this.columnPanel.technical_name === permission.column && table.table_name === permission.table && permission.column != "fullTable" ) {
+                        // Formatear el valor para mostrarlo correctamente
+                        let displayValue = '';
+                        if (permission.value && Array.isArray(permission.value)) {
+                            if (permission.value[0] === '(~ => All)') {
+                                displayValue = 'Todos';
+                            } else if (permission.value[0] === '(x => None)') {
+                                displayValue = 'Ninguno';
+                            } else if (permission.dynamic) {
+                                displayValue = 'Dinámico: ' + permission.value[0];
+                            } else {
+                                displayValue = permission.value.join(', ');
+                            }
+                        }
+
                         this.permissionsColumn.value.push(
                             {
                                 user: permission.usersName,
                                 group: permission.groupsName,
-                                value: permission.value,
+                                value: displayValue,
                                 _id: permission.users || permission.groups
                             }
                         );
@@ -609,31 +623,24 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.update();
     }
 
-
-
     checkCalculatedColumn(columnPanel: EditColumnPanel) {
         this.spinnerService.on();
         const table = this.dataModelService.getTable(columnPanel);
         const column = table.columns.filter(col => col.column_name === columnPanel.technical_name)[0];
-        const agg = ['sum', 'max', 'min', 'avg', 'count', 'distinct'];
-        let exists = 0;
-        agg.forEach(e => { if (column.SQLexpression.toString().toLowerCase().indexOf(e) >= 0) { exists = 1; } });
 
-        if (exists == 0 && column.column_type == 'numeric' ) {
-            this.alertService.addError($localize`:@@IncorrectQueryAgg:Debes incluir la agregación (distinct, sum, max, min, etc)`);
-            this.spinnerService.off()
-        } else {
-            const queryParams: QueryParams = {
-                table: table.table_name,
-                dataSource: this.dataModelService.model_id,
-            };
-            const query = this.queryBuilderService.simpleQuery(column, queryParams);
-            this.dataModelService.executeQuery(query).subscribe(
-                res => { this.alertService.addSuccess($localize`:@@CorrectQuery:Consulta correcta`); this.spinnerService.off() },
-                err => { this.alertService.addError($localize`:@@IncorrectQuery:Consulta incorrecta`); this.spinnerService.off() }
-            );
-        }
+        const queryParams: QueryParams = {
+            table: table.table_name,
+            dataSource: this.dataModelService.model_id,
+        };
+
+        const query = this.queryBuilderService.simpleQuery(column, queryParams);
+        this.dataModelService.executeQuery(query).subscribe(
+            res => { this.alertService.addSuccess($localize`:@@CorrectQuery:Consulta correcta`); this.spinnerService.off() },
+            err => { this.alertService.addError($localize`:@@IncorrectQuery:Consulta incorrecta`); this.spinnerService.off() }
+        );
+        
     }
+
     checkConection() {
         this.spinnerService.on();
         let connection = this.modelPanel.connection;

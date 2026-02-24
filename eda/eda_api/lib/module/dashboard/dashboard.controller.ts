@@ -8,6 +8,7 @@ import Group from '../admin/groups/model/group.model'
 import formatDate from '../../services/date-format/date-format.service'
 import { CachedQueryService } from '../../services/cache-service/cached-query.service'
 import { ArimaService } from '../../services/prediction/arima.service'
+import { TensorflowService } from '../../services/prediction/tensorflow.service'
 import { TimeFormatService } from '../../services/time-format/time-format.service'
 import { QueryOptions } from 'mongoose'
 import ServerLogService from '../../services/server-log/server-log.service'
@@ -496,7 +497,6 @@ export class DashboardController {
         // Obtener el dashboard
         const dashboard = await Dashboard.findById(req.params.id);
         if (!dashboard) {
-          console.log('Dashboard not found with this id:' + req.params.id);
           return next(new HttpException(500, 'Dashboard not found with this id'));
         }
 
@@ -512,7 +512,6 @@ export class DashboardController {
           dashboard.user.toString() !== user;
 
         if (visibilityCheck && roleCheck) {
-          console.log("You don't have permission " + user + ' for dashboard ' + req.params.id);
           return next(new HttpException(500, "You don't have permission"));
         }
 
@@ -560,6 +559,7 @@ export class DashboardController {
         });
 
         // Ocultar columnas prohibidas en modelo
+
         uniquesForbiddenColumns.forEach(fc => {
           const table = toJson.ds.model.tables.find(t => t.table_name === fc.table);
           const column = table?.columns.find(c => c.column_name === fc.column);
@@ -829,19 +829,16 @@ export class DashboardController {
     userGroups: Array<String>,
     user: string
   ) {
+
     let forbiddenColumns = [];
+
     if (dataModelObject.ds.metadata.model_granted_roles.length > 0) { /** SI HAY PERMISOS DEFINIDOS. SI NO, NO HAY SEGURIDAD */
-      if (dataModelObject.ds.metadata.model_granted_roles.filter(r => r.none == true).length > 0) {
-        dataModelObject.ds.metadata.model_granted_roles.filter(r => r.none == true).forEach(c => {
-          if (c.users?.includes(user)) {
-            forbiddenColumns.push(c);
-          }
-          userGroups.forEach(g => {
-            if (c.groups?.includes(g)) {
-              forbiddenColumns.push(c);
-            }
-          });
-        });
+      if (dataModelObject.ds.metadata.model_granted_roles.filter(r => r.type == "anyoneCanSee" && r.permission == true).length > 0) {
+        // En el caso de que cualquier usuario pueda ver el modelo y tengamos un esquema benevolente
+        forbiddenColumns = this.getForbiddenColumnsOpen(dataModelObject, userGroups, user);
+      } else {
+        // En el caso de que tan sólo pueda ver las columnas para las que tengo permiso explicito
+        forbiddenColumns = this.getForbiddenColumnsClose(dataModelObject, userGroups, user);
       }
     }
     return forbiddenColumns;
@@ -871,6 +868,188 @@ export class DashboardController {
   }
 
 
+
+/**
+   *  Filtra tablas prohividas en un modelo de datos. Devuelve el listado de tablas prohividas para un usuario. 
+   *  SUPONIENDO QUE PUEDE VER TODAS EN LAS QUE NO HAY SEGURIDAD Y LAS SUYAS FILTRADAS. 
+   *  TAN SÓLO NO VE AQUELLAS EN LAS QUE SE LE HA NEGADO EL ACCESO.
+   */
+  static getForbiddenColumnsOpen(
+    dataModelObject: any,
+    userGroups: Array<String>,
+    user: string
+  ) {
+
+
+
+        // if (dataModelObject.ds.metadata.model_granted_roles.length > 0) { /** SI HAY PERMISOS DEFINIDOS. SI NO, NO HAY SEGURIDAD */
+    //   if (dataModelObject.ds.metadata.model_granted_roles.filter(r => r.none == true).length > 0) {
+    //     dataModelObject.ds.metadata.model_granted_roles.filter(r => r.none == true).forEach(c => {
+    //       if (c.users?.includes(user)) {
+    //         forbiddenColumns.push(c);
+    //       }
+    //       userGroups.forEach(g => {
+    //         if (c.groups?.includes(g)) {
+    //           forbiddenColumns.push(c);
+    //         }
+    //       });
+    //     });
+    //   }
+    // }
+
+
+    let forbiddenTables = [];
+    const allTables = [];
+    let allowedTablesBySecurityForOthers = []; // Si otros lo ven. Yo no lo puedo ver (en modelos exclusivos)
+    let allowedTablesBySecurityForMe = [];
+    dataModelObject.ds.model.tables.forEach(e => {
+      allTables.push(e.table_name)
+    })
+    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      for (
+        var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
+        if (
+          /** Si NO puedo ver la tabla */
+          dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === false
+        ) {
+          if (dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++) {
+              if (
+                dataModelObject.ds.metadata.model_granted_roles[i].users[j] == user
+              ) {
+                forbiddenTables.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    /** TAULES OCULTES PER EL GRUP */
+    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      for (
+        var i = 0;
+        i < dataModelObject.ds.metadata.model_granted_roles.length;
+        i++
+      ) {
+        if (
+          dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === false
+        ) {
+          if (
+            dataModelObject.ds.metadata.model_granted_roles[i].groups !==
+            undefined
+          ) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length; j++) {
+              if (userGroups.includes(dataModelObject.ds.metadata.model_granted_roles[i].groups[j])) {
+                forbiddenTables.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
+              }
+            }
+          }
+        }
+      }
+    }
+    //console.log('Tablas prohividas para el grupo');
+    //console.log(forbiddenTables);
+
+
+    /** allowed tables by security */
+    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
+        if (
+          dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === true
+        ) {
+          if (
+            dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++) {
+              if (dataModelObject.ds.metadata.model_granted_roles[i].users[j] != user) {
+                allowedTablesBySecurityForOthers.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
+              } else {
+                allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    //console.log('Tablas permitidas para otros');
+    //console.log(allowedTablesBySecurityForOthers);
+    //console.log('Tablas permitidas para mi');
+    //console.log(allowedTablesBySecurityForMe);
+
+    /** puedo ver la tabla porque puedo ver datos de una columna */
+    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
+        if ( /** puedo ver valores de una columna de la tabla */
+          dataModelObject.ds.metadata.model_granted_roles[i].global === false &&
+          dataModelObject.ds.metadata.model_granted_roles[i].none === false &&
+          dataModelObject.ds.metadata.model_granted_roles[i].value.length > 0
+        ) {
+          if (
+            dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++) {
+              if (dataModelObject.ds.metadata.model_granted_roles[i].users[j] != user) {
+                allowedTablesBySecurityForOthers.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
+              } else {
+                allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    //console.log('Tablas permitidas para otros');
+    //console.log(allowedTablesBySecurityForOthers);
+    //console.log('Tablas permitidas para mi');
+    //console.log(allowedTablesBySecurityForMe);
+
+    /** TAULES PERMESES PER EL GRUP */
+    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
+        if (dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === true) {
+          if (dataModelObject.ds.metadata.model_granted_roles[i].groups !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length; j++) {
+              if (!userGroups.includes(dataModelObject.ds.metadata.model_granted_roles[i].groups[j])) {
+                allowedTablesBySecurityForOthers.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
+              } else {
+                allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table)
+              }
+            }
+          }
+        }
+      }
+    }
+
+    const unique = (value, index, self) => {
+      return self.indexOf(value) === index
+    }
+
+    let uniquesForbiddenTables = forbiddenTables.filter(unique);
+
+
+    allowedTablesBySecurityForOthers = allowedTablesBySecurityForOthers.filter(unique)
+    allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter(unique)
+
+    //console.log('Tablas permitidas para otros por grupo');
+    //console.log(allowedTablesBySecurityForOthers);
+    //console.log('Tablas permitidas para mi');
+    //console.log(allowedTablesBySecurityForMe);
+
+    allowedTablesBySecurityForMe.forEach(e => {
+      allowedTablesBySecurityForOthers = allowedTablesBySecurityForOthers.filter(
+        item => item != e
+      )
+    })
+    uniquesForbiddenTables = uniquesForbiddenTables.concat(allowedTablesBySecurityForOthers);
+    uniquesForbiddenTables = uniquesForbiddenTables.filter(unique);
+
+    return uniquesForbiddenTables;
+  }
 
 
   /**
@@ -1038,6 +1217,172 @@ export class DashboardController {
 
 
 
+  /**
+   *  Filtra tablas prohividas en un modelo de datos. Devuelve el listado de tablas prohividas para un usuario. 
+   *  SUPONIENDO QUE PUEDE VER SOLO AQUELLAS TABLAS PARA LAS QUE TIENE PERMISO EXPLICITO.
+   */
+
+  
+
+  static getForbiddenColumnsClose(
+    dataModelObject: any,
+    userGroups: Array<String>,
+    user: string
+  ) {
+
+    /**
+     * Lógica del proceso: cojo todas las tablas .
+     * Recupero las tablas que puedo ver explicitamente y quto las que por algún motivo no  puedo ver.
+     * Las tablas prohividas son las que están en el listado todas las tablas y no están permitidas explicitamente 
+     * 
+     * puedo ver todas las tablas menos las que tengo explicitamente prohibida
+     * 
+     * 
+     */
+
+
+
+    const allTables = [];
+    let allowedTablesBySecurityForMe = [];
+    let forbiddenTables = [];
+    dataModelObject.ds.model.tables.forEach(e => {
+      allTables.push(e.table_name)
+    })
+
+    // Aqui marco las tablas que si que puedo ver. El resto están prohividas
+    /** allowed tables by security */
+    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      // Si el usuario puede ver todo el modelo.
+      if (dataModelObject.ds.metadata.model_granted_roles.filter(r => r.table == 'fullModel'
+        && r.column == 'fullModel'
+        && r.permission == true
+        && r.users?.includes(user)
+      ).length > 0) {
+        // El usuairo puede ver todo.
+        allowedTablesBySecurityForMe = _.cloneDeep(allTables);
+      }
+      // Excepto lo que le prohibo  explicitamente.                                                         
+      dataModelObject.ds.metadata.model_granted_roles.forEach(r => {
+        if (r.column == 'fullTable' && r.users?.includes(user) && r.permission == false) {
+          forbiddenTables.push(r.table);
+        }
+      });;
+
+      // Si el grupo puede ver todo el modelo.
+      let groupCan = 0;
+      userGroups?.forEach(
+        group => {
+          if (dataModelObject.ds.metadata.model_granted_roles.filter(r => r.table == 'fullModel'
+            && r.permission == true
+            && r.groups?.includes(group)
+          ).length > 0) {
+            // El grupo  puede ver todo.
+            groupCan = 1;
+          }
+        }
+      );
+      if (groupCan == 1) {
+        allowedTablesBySecurityForMe = _.cloneDeep(allTables);
+      }
+
+
+      // Excepto lo que le prohibo  explicitamente al grupo
+      userGroups?.forEach(
+        group => {
+          const forbidden = dataModelObject.ds.metadata.model_granted_roles.filter(r => r.column == 'fullTable'
+            && r.permission == false
+            && r.groups?.includes(group)
+          )
+          if (forbidden.length > 0) {
+            forbidden.forEach(r => forbiddenTables.push(r.table));
+          }
+        }
+      );
+
+
+
+      // esto es para los usuarios.
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
+        if (
+          dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === true
+        ) {
+          if (
+            dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++) {
+              if (dataModelObject.ds.metadata.model_granted_roles[i].users[j] == user) {
+                allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
+              }
+            }
+          }
+        }
+      }
+    }
+    //console.log('Tablas que el usuario puede ver', allowedTablesBySecurityForMe );
+
+    /** puedo ver la tabla porque puedo ver datos de una columna */
+    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
+        if ( /** puedo ver valores de una columna de la tabla */
+          dataModelObject.ds.metadata.model_granted_roles[i].global === false &&
+          dataModelObject.ds.metadata.model_granted_roles[i].none === false &&
+          dataModelObject.ds.metadata.model_granted_roles[i].value.length > 0
+        ) {
+          if (dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++) {
+              if (dataModelObject.ds.metadata.model_granted_roles[i].users[j] == user) {
+                allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
+              }
+            }
+          }
+        }
+      }
+    }
+    //console.log('Tablas PERMITIDAS   para el usuario porque pueden ver una columna',allowedTablesBySecurityForMe );
+
+
+    /** TAULES PERMESES PER EL GRUP */
+    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
+        if (dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === true) {
+          if (dataModelObject.ds.metadata.model_granted_roles[i].groups !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length; j++) {
+              if (userGroups.includes(dataModelObject.ds.metadata.model_granted_roles[i].groups[j])) {
+                allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Check if the user has permission to view the table based on column visibility
+    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
+        // Verify if the user has access to at least one column in the table
+        if (
+          dataModelObject.ds.metadata.model_granted_roles[i].global === false &&
+          dataModelObject.ds.metadata.model_granted_roles[i].none === false &&
+          dataModelObject.ds.metadata.model_granted_roles[i].value.length > 0
+        ) {
+          if (dataModelObject.ds.metadata.model_granted_roles[i].groups !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length; j++) {
+              if (userGroups.includes(dataModelObject.ds.metadata.model_granted_roles[i].groups[j])) {
+                allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
+              }
+            }
+          }
+        }
+      }
+    }
+    // puedo ver todas las tablas menos las que tengo explicitamente prohibidas
+    allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter(t => !forbiddenTables.includes(t));
+    forbiddenTables = allTables.filter(t => !allowedTablesBySecurityForMe.includes(t));
+    return forbiddenTables;
+  }
+
+
 
   /**
    *  Filtra tablas prohividas en un modelo de datos. Devuelve el listado de tablas prohividas para un usuario. 
@@ -1117,6 +1462,8 @@ export class DashboardController {
       );
 
 
+
+      // esto es para los usuarios.
       for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
         if (
           dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
@@ -1219,8 +1566,15 @@ export class DashboardController {
           )
         )
       }
-      const dataModelObject = JSON.parse(JSON.stringify(dataModel))
-      /** Forbidden tables  */
+
+
+
+
+      const dataModelObject = JSON.parse(JSON.stringify(dataModel));
+
+
+
+      /** Forbidden tables   tengo todas las tablas que están prohividas para mi. */
       let uniquesForbiddenTables = DashboardController.getForbiddenTables(
         dataModelObject,
         req['user'].role,
@@ -1267,10 +1621,12 @@ export class DashboardController {
         }
       }
       myQuery.queryMode = req.body.query.queryMode ? req.body.query.queryMode : 'EDA'; /** lo añado siempre */
-      myQuery.rootTable = req.body.query.rootTable ? req.body.query.rootTable : ''; /** lo añado siempre */
+      myQuery.rootTable = myQuery.queryMode == 'EDA2' && req.body.query.rootTable ? req.body.query.rootTable : ''; /** lo añado siempre  pero solo para las consulas EDA2*/
       myQuery.simple = req.body.query.simple;
       myQuery.queryLimit = req.body.query.queryLimit;
       myQuery.joinType = req.body.query.joinType ? req.body.query.joinType : 'inner';
+
+      // console.log('myQuery: ', myQuery);
 
       if (myQuery.fields.length == 0) {
         console.log('you cannot see any data');
@@ -1457,8 +1813,10 @@ export class DashboardController {
   // Suma acumulativa
   DashboardController.cumulativeSum(output, req.body.query);
 
-  // ARIMA (si aplica)
-  DashboardController.applyArimaIfNeeded(output, req.body, myQuery );
+  // Revisar si hay predicción y el tipo
+  if(req.body.query?.prediction && req.body.query?.prediction !== 'None' && req.body.output?.config?.chartType === 'line'){
+    await DashboardController.setupPrediction(output, req.body, myQuery, connection, dataModelObject, req.user)
+  }
 
   console.log(
     '\x1b[32m%s\x1b[0m',
@@ -1474,55 +1832,180 @@ export class DashboardController {
     }
   }
   
-  // Formula de arima
-  static applyArimaIfNeeded(output: any, body: any, myQuery: any) {
-    // Si no tenemos arima o no estamos en linea, salimos
-    if (body.query?.prediction !== 'Arima' || body.output.config.chartType !== 'line' ) {
-      return;
-    }
 
-    // Número de fechas a predecir
-    const steps = 3;
+  static async setupPrediction(output: any, body: any, myQuery: any, connection?: any, dataModelObject?: any, user?: any){
+    // Leer configuración de predicción del body
+    const predictionConfig = body.query?.predictionConfig || {};
+    const steps = predictionConfig.steps || 3;
 
-    // Buscamos campo de la fecha, su formato y su último valor
+    // Buscamos campo de la fecha — sin él no podemos generar fechas futuras
     const dateField = myQuery.fields.find(field => field.column_type === 'date');
     if (!dateField){
       return;
-    } 
-    
+    }
+
     const timeFormat = dateField.format;
     const lastDate = output[1][output[1].length - 1][0];
 
-    // A partir de los datos anteriores generamos las proximas fechas
+    // Generamos las próximas fechas en el mismo formato que las existentes (mes, semana, día...)
     const nextLabels = TimeFormatService.nextInSequenceGeneric( timeFormat, lastDate, steps );
 
     const rows = output[1];
     const lastIndex = rows.length - 1;
+    // Dataset numérico: solo la columna de valores (índice 1), descartando nulos/infinitos
     const originalDataset = rows.map(row => row[1]).filter(val => Number.isFinite(val));
 
     let predictions: number[] = [];
+    const setup = {steps: steps, rows: rows, lastIndex: lastIndex, nextLabels: nextLabels}
 
+    switch(body.query?.prediction){
+        case 'Arima':
+          // arimaParams puede ser undefined (usará configs automáticas) o {p,d,q} manual
+          await DashboardController.applyArimaPredicction(
+            predictions, originalDataset, setup, predictionConfig.arimaParams);
+          break;
+        case 'Tensorflow':
+          // Construir datasets de referencia para predicción multivariante
+          // referenceColumns ahora es [{table_name, column_name, display_name}]
+          const referenceColumns: {table_name: string, column_name: string, display_name: string}[] =
+            predictionConfig.tensorflowParams?.referenceColumns || [];
+          let referenceDatasets: number[][] = [];
+
+          if (referenceColumns.length > 0 && connection && dataModelObject) {
+            try {
+              // Para cada columna de referencia lanzamos una query auxiliar
+              // alineada con el mismo campo de fecha
+              referenceDatasets = await DashboardController.fetchReferenceDatasets(
+                referenceColumns, dateField, myQuery, connection, dataModelObject, user, body.query?.queryLimit
+              );
+            } catch (err) {
+              console.warn('[Prediction] Error fetching reference datasets, falling back to univariate:', err.message);
+              referenceDatasets = [];
+            }
+          }
+
+          // tfParams puede ser undefined o {epochs, lookback, learningRate}
+          await DashboardController.applyTensorflowPredicction(
+            predictions, originalDataset, setup, predictionConfig.tensorflowParams, referenceDatasets);
+          break;
+      }
+  }
+
+  // encontrar los datasets de las columnas de referencia para la predicción multivariante con TensorFlow. Cada dataset es un array de números alineado con el campo de fecha.
+  static async fetchReferenceDatasets(referenceColumns: {table_name: string, column_name: string}[],
+    dateField: any, myQuery: any, connection: any, dataModelObject: any, user: any, queryLimit?: number ): Promise<number[][]> {
+    const referenceDatasets: number[][] = [];
+
+    for (const refCol of referenceColumns) {
+      // Encontrar tablas
+      const table = dataModelObject.ds?.model?.tables?.find(t => t.table_name === refCol.table_name);
+      if (!table) {
+        console.warn(`[Prediction] Reference table not found: ${refCol.table_name}`);
+        continue;
+      }
+      // Encontrar columnas
+      const colDef = table.columns?.find(c => c.column_name === refCol.column_name);
+      if (!colDef) {
+        console.warn(`[Prediction] Reference column not found: ${refCol.column_name} in ${refCol.table_name}`);
+        continue;
+      }
+
+      // Build a query with the same date field + this reference column
+      const refQuery = {
+        fields: [
+          { ...dateField },  // Same date field as main query for alignment
+          {
+            column_name: colDef.column_name,
+            column_type: colDef.column_type || 'numeric',
+            table_id: refCol.table_name,
+            display_name: colDef.display_name?.default || colDef.column_name,
+            order: 0,
+            aggregation_type: 'sum',
+          }
+        ],
+        filters: myQuery.filters || [],
+        queryMode: myQuery.queryMode || 'EDA',
+        simple: myQuery.simple,
+        joinType: myQuery.joinType || 'inner',
+      };
+
+      try {
+        const refQueryBuilt = await connection.getQueryBuilded(refQuery, dataModelObject, user, queryLimit);
+        connection.client = await connection.getclient();
+        const refResults = await connection.execQuery(refQueryBuilt);
+
+        // Extract numeric values from results (column index 1 = the reference column)
+        let dataset: number[];
+        if (Array.isArray(refResults) && refResults.length > 0) {
+          if (Array.isArray(refResults[0])) {
+            // MongoDB format: already arrays
+            dataset = refResults.map(row => row[1]).filter(val => Number.isFinite(val));
+          } else {
+            // SQL format: objects
+            const keys = Object.keys(refResults[0]);
+            const valueKey = keys[1]; // Second column is the numeric value
+            dataset = refResults.map(row => {
+              const val = parseFloat(row[valueKey]);
+              return isNaN(val) ? null : val;
+            }).filter(val => val !== null && Number.isFinite(val));
+          }
+        }
+
+        if (dataset && dataset.length > 0) {
+          referenceDatasets.push(dataset);
+        } else {
+          console.warn(`[Prediction] No data for reference column ${refCol.table_name}.${refCol.column_name}`);
+        }
+      } catch (err) {
+        console.warn(`[Prediction] Failed to fetch reference column ${refCol.table_name}.${refCol.column_name}:`, err.message);
+      }
+    }
+
+    return referenceDatasets;
+  }
+
+  // Formula de arima
+  static applyArimaPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels}, arimaParams?: {p: number, d: number, q: number}) {
     try {
-      // Calculamos las predicciones a través del servicio ARIMA
-      predictions = ArimaService.forecast(originalDataset, steps);
+      predictions = ArimaService.forecast(originalDataset, setup.steps, arimaParams);
     } catch (err) {
       console.error('Error ARIMA:', err);
       return;
     }
 
-    // Añadir columna predictionet
-    rows.forEach((row, index) => {
-      row.push(index === lastIndex ? row[1] : null);
+    // Añadir columna predicción a las filas existentes
+    // Solo el último punto real tiene valor para "unir" visualmente ambas líneas
+    setup.rows.forEach((row, index) => {
+      row.push(index === setup.lastIndex ? row[1] : null);
     });
 
-    // Añadir fila de fechas
-    nextLabels.forEach((label, index) => {
-      rows.push([label, null, predictions[index] ?? null]);
+    // Añadir filas de fechas futuras con los valores predichos
+    setup.nextLabels.forEach((label, index) => {
+      setup.rows.push([label, null, predictions[index] ?? null]);
     });
 
-    console.log('Predicción ARIMA aplicada');
   }
 
+  // Predicción con TensorFlow
+  static async applyTensorflowPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels}, tfParams?: any, referenceDatasets?: number[][]) {
+    try {
+      predictions = await TensorflowService.forecast(originalDataset, setup.steps, tfParams, referenceDatasets);
+    } catch (err) {
+      console.error('Error TensorFlow:', err);
+      return;
+    }
+
+    // Añadir columna predicción a las filas existentes
+    setup.rows.forEach((row, index) => {
+      row.push(index === setup.lastIndex ? row[1] : null);
+    });
+
+    // Añadir filas de fechas futuras con los valores predichos
+    setup.nextLabels.forEach((label, index) => {
+      setup.rows.push([label, null, predictions[index] ?? null]);
+    });
+
+  }
 
   /**
    * Executa una consulta SQL  per un dashboard

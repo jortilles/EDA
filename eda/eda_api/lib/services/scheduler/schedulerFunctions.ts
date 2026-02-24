@@ -51,7 +51,6 @@ export class SchedulerFunctions {
       console.log('Actualizando caché a las : ' + date)
             return true;
     }else{
-      console.log('No se ha actualizado la caché');
       return false;
       }
       

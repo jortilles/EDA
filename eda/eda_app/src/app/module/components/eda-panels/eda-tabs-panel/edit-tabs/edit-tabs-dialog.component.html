@@ -1,0 +1,106 @@
+<eda-dialog2 width="50%" height="70%" [header]="header" [overflow]="'visible'" (apply)="saveConfig()" (close)="closeConfig()" (switchredirecction)="switchMode()" [showRedirecction]="true" [isOpeningNewTab]="isOpeningNewTab">
+    <div content class="flex flex-col gap-4 p-4">
+        <!-- Filtros de búsqueda -->
+        <div class="grid grid-cols-2 gap-4">
+            <div class="border rounded-lg p-3">
+                <label class="block text-sm font-medium text-gray-700 mb-2" i18n="@@filterByPrivacy">
+                    <i class="pi pi-lock mr-2"></i>
+                    Filtrar por Privacidad
+                </label>
+                <p-dropdown
+                    [options]="privacyOptions"
+                    [(ngModel)]="filterPrivacy"
+                    (onChange)="onPrivacyChange()"
+                    i18n-placeholder="@@selectEditTabs"
+                    placeholder="Seleccionar..."
+                    styleClass="w-full">
+                </p-dropdown>
+            </div>
+
+            <div class="border rounded-lg p-3">
+                <label class="block text-sm font-medium text-gray-700 mb-2" i18n="@@filterByTags">
+                    <i class="pi pi-tags mr-2"></i>
+                    Filtrar por Tags
+                </label>
+                <p-dropdown
+                    [options]="availableTags"
+                    [(ngModel)]="filterTag"
+                    (onChange)="onTagChange()"
+                    i18n-placeholder="@@selectEditTabs"
+                    placeholder="Seleccionar..."
+                    [filter]="true"
+                    i18n-filterPlaceholder="@@searchTag"
+                    filterPlaceholder="Buscar tag..."
+                    styleClass="w-full">
+                </p-dropdown>
+            </div>
+        </div>
+
+        <!-- Dashboards disponibles (resultado del filtro) -->
+        <div class="border rounded-lg p-3">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="pi pi-search mr-2"></i>
+                <span i18n="@@dashboardsAvailable">Dashboards disponibles</span> ({{ availableDashboards.length }})
+            </label>
+
+            <div class="h-[20vh] overflow-y-auto">
+                @if(!filterTag && !filterPrivacy){
+                    <div class="text-center text-gray-400 py-3">
+                        <p class="text-sm" i18n="@@filterSearchDashboards">Usa los filtros para buscar dashboards</p>
+                    </div>
+                }
+
+                @if((filterTag || filterPrivacy) && availableDashboards.length === 0){
+                    <div class="text-center text-gray-400 py-3">
+                        <p class="text-sm" i18n="@@noCoincidenceDashFilters">No hay dashboards que coincidan con los filtros</p>
+                    </div>
+                }
+
+                <div *ngFor="let db of availableDashboards"
+                    class="flex items-center justify-between p-2 hover:bg-gray-50 border-b last:border-b-0 cursor-pointer"
+                    (click)="addDashboard(db)">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm">{{ db.title }}</span>
+                        @if(filterPrivacy?.length > 0){
+                            <span class="text-xs text-gray-400">{{ getPrivacyLabel(db.privacy) }}</span>
+                        }
+                        @else{
+                            <span class="text-xs text-gray-400">{{ filterTag }}</span>
+                        }
+                    </div>
+                    <i class="pi pi-plus text-teal-600 text-sm"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboards seleccionados -->
+        <div class="border rounded-lg p-3">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="pi pi-check-circle mr-2"></i>
+                <span i18n="@@dashboardsSelected">Dashboards seleccionados</span> ({{ selectedDashboards.length }})
+            </label>
+
+            <div class="h-[20vh] overflow-y-auto">
+                @if(selectedDashboards.length === 0){
+                    <div class="text-center text-gray-400 py-3">
+                        <i class="pi pi-inbox text-2xl mb-2"></i>
+                        <p class="text-sm" i18n="@@addDashListAvailable">Añade dashboards desde la lista de disponibles</p>
+                    </div>
+                }
+
+                <div cdkDropList (cdkDropListDropped)="drop($event)">
+                    <div *ngFor="let db of selectedDashboards"
+                        cdkDrag
+                        class="flex items-center justify-between p-2 hover:bg-gray-50 border-b last:border-b-0 cursor-move">
+                        <div class="flex items-center gap-2">
+                            <i class="pi pi-bars text-gray-400 text-xs"></i>
+                            <span class="text-sm">{{ db.title }}</span>
+                        </div>
+                        <i class="pi pi-times text-red-500 cursor-pointer text-sm hover:text-red-700"
+                            (click)="removeDashboard(db)"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</eda-dialog2>

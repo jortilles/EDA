@@ -67,7 +67,7 @@ export class SaveAsDialogComponent extends EdaDialogAbstract {
             this.grups = res;
 
             if (this.grups.length === 0) {
-                this.visibleTypes.splice(1, 1);
+                this.visibleTypes = this.visibleTypes.filter(v => v.value !== 'group');
             }
         }, err => {
             this.alertService.addError(err)

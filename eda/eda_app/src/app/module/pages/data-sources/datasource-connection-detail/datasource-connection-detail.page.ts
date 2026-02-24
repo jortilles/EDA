@@ -580,7 +580,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
       console.error('Error parsing CSV:', err);
       this.csvColumns = [];
       this.csvFileData = [];
-      this.alertService.addError($localize`:@@errorParseCsv:Error al parsear el archivo CSV. Verifica el separador.`);
+      this.alertService.addError($localize`:@@errorParseCsv2:Error al parsear el archivo CSV. Verifica el separador.`);
     }
   }
 
@@ -620,7 +620,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
       this.csvRecords = await lastValueFrom(this.ngxCsvParser.parse(file, { header: true, delimiter: separator }));
 
       if (!this.csvRecords || this.csvRecords.length === 0) {
-        this.alertService.addError($localize`:@@emptyCsvFile:El archivo CSV está vacío o no se pudo leer`);
+        this.alertService.addError($localize`:@@emptyCsvFile2:El archivo CSV está vacío o no se pudo leer`);
         return;
       }
 
@@ -646,7 +646,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
       this.cdr.detectChanges();
     } catch (err) {
       console.error('Error parsing CSV:', err);
-      this.alertService.addError($localize`:@@errorParseCsv:Error al parsear el archivo CSV. Verifique el separador y formato del archivo.`);
+      this.alertService.addError($localize`:@@errorParseCsv3:Error al parsear el archivo CSV. Verifique el separador y formato del archivo.`);
     }
   }
 

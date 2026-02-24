@@ -967,12 +967,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="inputTipoColumna" datatype="html">
-<source>
-                Tipo de columna
-</source>
-<target>
-                Rodzaj kolumny
-</target>
+<source>Tipo de columna</source>
+<target>Rodzaj kolumny</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
 <context context-type="linenumber">80</context>
@@ -1728,8 +1724,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="possibleValuesListTable" datatype="html">
-<source>Tabla:</source>
-<target>Tablica:</target>
+<source>Tabla</source>
+<target>Tablica</target>
 </trans-unit>
 
 <trans-unit id="valueListSourceHeader" datatype="html">
@@ -1748,8 +1744,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="possibleValuesListID" datatype="html">
-<source>Id Columna</source>
-<target>kolumna identyfikatora</target>
+<source>Id de la columna</source>
+<target>Identyfikator kolumny</target>
 </trans-unit>
 
 <trans-unit id="valueListSourceDescripcion" datatype="html">
@@ -1758,7 +1754,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="possibleValuesListDescription" datatype="html">
-<source>Columna descripción</source>
+<source>Descripción de la columna</source>
 <target>Opis kolumny</target>
 </trans-unit>
 
@@ -1781,8 +1777,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="sqlExpColumn" datatype="html">
-<source>Expresión SQL (Debe incluir la agregación)</source>
-<target>Wyrażenia SQL (Musi zawierać agregacje)</target>
+<source>Expresión SQL</source>
+<target>Wyrażenia SQL</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
   <context context-type="linenumber">103</context>
@@ -2221,48 +2217,48 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Przed wczoraj</target>
 </trans-unit>
 <trans-unit id="DatePickerWeek">
-<source>Ésta semana</source>
-<target>Ten tydzień</target>
+<source>Esta semana (hasta hoy)</source>
+<target>W tym tygodniu (do dziś)</target>
 </trans-unit>
 <trans-unit id="DatePickerWeekFull">
-<source>Ésta semana al completo</source>
-<target>Cały ten tydzień</target>
+<source>Esta semana</source>
+<target>W tym tygodniu</target>
 </trans-unit>
 <trans-unit id="DatePickerLastWeek">
-<source>La semana pasada</source>
-<target>Zeszły tydzień</target>
+<source>La semana pasada (hasta equivalente a hoy)</source>
+<target>W zeszłym tygodniu (do odpowiednika dzisiejszego dnia)</target>
 </trans-unit>
 <trans-unit id="DatePickerLastWeekFull">
-<source>La semana pasada completa</source>
-<target>Cały zeszły tydzień</target>
+<source>La semana pasada</source>
+<target>W zeszłym tygodniu</target>
 </trans-unit>
 <trans-unit id="DatePickerMonth">
-<source>Éste mes</source>
-<target>Ten miesiąc</target>
+<source>Este mes (hasta hoy)</source>
+<target>W tym miesiącu (do dziś)</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonth">
-<source>El mes pasado</source>
-<target>Ostatni miesiąc</target>
+<source>El mes pasado (hasta equivalente a hoy)</source>
+<target>W zeszłym miesiącu (do odpowiednika dzisiejszego dnia)</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonthFull">
 <source>El mes pasado completo</source>
 <target>Wszytsko z zeszłego miesiąca</target>
 </trans-unit>
 <trans-unit id="DatePickerMonthPreviousYear">
-<source>Éste mes del año pasado</source>
-<target>Ten miesiąc w zeszłym roku</target>
+<source>Este mes del año pasado (hasta equivalente a hoy)</source>
+<target>Ten miesiąc w zeszłym roku (do odpowiednika dzisiejszego dnia)</target>
 </trans-unit>
 <trans-unit id="DatePickerMonthPreviousYearFull">
-<source>Éste mes al completo del año pasado</source>
+<source>Este mes al completo del año pasado</source>
 <target>Ten miesiąc w zeszłym roku</target>
 </trans-unit>
 <trans-unit id="DatePickerYear">
-<source>Éste año</source>
-<target>Ten rok</target>
+<source>Este año (hasta hoy)</source>
+<target>W tym roku (do dziś)</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYear">
-<source>El año pasado</source>
-<target>Zeszły rok</target>
+<source>El año pasado (hasta equivalente a hoy)</source>
+<target>W zeszłym roku (do odpowiednika dzisiejszego dnia)</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYearFull">
 <source>El año pasado, completo</source>
@@ -5294,11 +5290,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Filtr autouzupełniania?</target>
       </trans-unit>
 
-      <trans-unit id="mandatoryFilter">
-        <source>¿Filtro autocomplete?</source>
-        <target>Filtre autocomplete?</target>
-      </trans-unit>
-
       <trans-unit id="globalFiltersToDF">
         <source>Debe disponer de filtros globales para poder avanzar con la configuración de los filtros dependientes.</source>
         <target>Aby móc kontynuować konfigurację filtrów zależnych, musisz mieć dostępne filtry globalne.</target>
@@ -5510,6 +5501,277 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Predicción</source>
         <target>Predykcja</target>
       </trans-unit>
+      <trans-unit id="TabsPanelConfig">
+        <source>CONFIGURACION DE PESTAÑAS</source>
+        <target>KONFIGURACJA ZAKŁADEK</target>
+      </trans-unit>
+      <trans-unit id="TabsPanelConfig2">
+        <source>Configuración de pestañas</source>
+        <target>konfiguracja zakładek</target>
+      </trans-unit>
+      <trans-unit id="ModelRestrictionAccess">
+        <source>Modelo con acceso restringido</source>
+        <target>Model z ograniczonym dostępem</target>
+      </trans-unit>
+      <trans-unit id="ModelRestrictionAccessMessageOption">
+        <source>Desactivar para habilitar el acceso a todos los usuarios</source>
+        <target>Wyłączyć, aby umożliwić dostęp wszystkim użytkownikom</target>
+      </trans-unit>
+      <trans-unit id="ModelActivationAccess">
+        <source>Modelo con acceso para todos los usuarios</source>
+        <target>Model z dostępem dla wszystkich użytkowników</target>
+      </trans-unit>
+      <trans-unit id="ModelActivationAccessMessageOption">
+        <source>Activar para limitar el acceso solo a usuarios o grupos autorizados</source>
+        <target>Włączyć, aby ograniczyć dostęp tylko do upoważnionych użytkowników lub grup</target>
+      </trans-unit>
+      <trans-unit id="tableRestrictionAccess">
+        <source>Los usuarios y grupos configurados tendrán acceso autorizado a la tabla: </source>
+        <target>Skonfigurowani użytkownicy i grupy będą mieć autoryzowany dostęp do tabeli: </target>
+      </trans-unit>
+      <trans-unit id="tableRestrictionAccessMessageOption">
+        <source>Desactivar para habilitar el acceso a todos los usuarios</source>
+        <target>Wyłączyć, aby umożliwić dostęp wszystkim użytkownikom</target>
+      </trans-unit>
+      <trans-unit id="tableActivationAccess">
+        <source>Los usuarios y grupos configurados NO tendrán acceso a la tabla: </source>
+        <target>Skonfigurowani użytkownicy i grupy NIE będą mieć dostępu do tabeli: </target>
+      </trans-unit>
+      <trans-unit id="tableActivationAccessMessageOption">
+        <source>Activar para habilitar un acceso restringido</source>
+        <target>Włączyć, aby umożliwić dostęp ograniczony</target>
+        </trans-unit>
+      <trans-unit id="tabsDashboardSettings">
+        <source>Configura las pestañas para mostrar dashboards</source>
+        <target>Skonfiguruj karty, aby wyświetlić pulpity nawigacyjne</target>
+      </trans-unit>
+      <trans-unit id="filterByPrivacy">
+        <source>Filtrar por Privacidad</source>
+        <target>Filtruj według prywatnościa</target>
+      </trans-unit>
+      <trans-unit id="filterByTags">
+        <source>Filtrar por Tags</source>
+        <target>Filtruj według tagóws</target>
+      </trans-unit>
+      <trans-unit id="selectEditTabs">
+        <source>Seleccionar...</source>
+        <target>Wybierać...</target>
+      </trans-unit>
+      <trans-unit id="searchTag">
+        <source>Buscar tag...</source>
+        <target>Wyszukaj tag...</target>
+      </trans-unit>
+      <trans-unit id="dashboardsSelected">
+        <source>Dashboards seleccionados</source>
+        <target>Wybrane pulpity nawigacyjne</target>
+      </trans-unit>
+      <trans-unit id="dashboardsAvailable">
+        <source>Dashboards disponibles</source>
+        <target>Dostępne pulpity nawigacyjne</target>
+      </trans-unit>
+      <trans-unit id="filterSearchDashboards">
+        <source>Usa los filtros para buscar dashboards</source>
+        <target>Użyj filtrów, aby wyszukać pulpity nawigacyjne</target>
+      </trans-unit>
+      <trans-unit id="noCoincidenceDashFilters">
+        <source>No hay dashboards que coincidan con los filtros</source>
+        <target>Brak pulpitów nawigacyjnych, które spełniają kryteria filtrów</target>
+      </trans-unit>
+      <trans-unit id="addDashListAvailable">
+        <source>Añade dashboards desde la lista de disponibles</source>
+        <target>Dodaj pulpity nawigacyjne z dostępnej listy</target>
+      </trans-unit>
+      <trans-unit id="filterOptions">
+        <source>Opciones del filtro:</source>
+        <target>Opcje filtrowania:</target>
+      </trans-unit>
+      <trans-unit id="sqlExpressionCalculatedField">
+        <source>Expresión SQL</source>
+        <target>Wyrażenie SQL</target>
+      </trans-unit>
+      <trans-unit id="typeSelectorText">
+        <source>Tipo de columna</source>
+        <target>Typ kolumny</target>
+      </trans-unit>
+      <trans-unit id="decimalNumberText">
+        <source>Número de decimales</source>
+        <target>Liczba miejsc dziesiętnych</target>
+      </trans-unit>
+      <trans-unit id="typeSelectorAggregation">
+        <source>Agregación</source>
+        <target>Agregacja</target>
+      </trans-unit>
+      <trans-unit id="CheckExpression">
+        <source>Comprobar expresión</source>
+        <target>Sprawdź wyrażenie</target>
+      </trans-unit>      
+      <trans-unit id="DatePickerToday">
+        <source>Hoy</source>
+        <target>Dziś</target>
+      </trans-unit>
+      <trans-unit id="DatePickerMonthFull">
+        <source>Este mes completo</source>
+        <target>Pełny ten miesiąc</target>
+      </trans-unit>
+      <trans-unit id="panelOptionsExportTo">
+        <source>Exportar a </source>
+        <target>Eksportuj do </target>
+      </trans-unit>
+      <trans-unit id="DatePickerYearFull">
+        <source>Este año al completo</source>
+        <target>Pełny ten rok</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNextMonth">
+        <source>Próximo mes</source>
+        <target>W przyszłym miesiącu</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNextWeek">
+        <source>Próxima semana</source>
+        <target>W przyszłym tygodniu</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext30">
+        <source>Próximos 30 días</source>
+        <target>Następne 30 dni</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext60">
+        <source>Próximos 60 días</source>
+        <target>Następne 60 dni</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext90">
+        <source>Próximos 90 días</source>
+        <target>Następne 90 dni</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNextQuarter">
+        <source>Próximo trimestre</source>
+        <target>Następny kwartał</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNextYear">
+        <source>Próximo año</source>
+        <target>W przyszłym roku</target>
+      </trans-unit>
+      <trans-unit id="noNameProvided">
+        <source>Debe proporcionar un nombre para el datasource</source>
+        <target>Musisz podać nazwę źródła danych</target>
+      </trans-unit>
+      <trans-unit id="noCsvData">
+        <source>Debe cargar un archivo CSV primero</source>
+        <target>Najpierw musisz przesłać plik CSV</target>
+      </trans-unit>
+       <trans-unit id="noCsvColumns">
+        <source>No se detectaron columnas en el archivo CSV. Verifique el separador.</source>
+        <target>W pliku CSV nie wykryto żadnych kolumn. Sprawdź separator.</target>
+      </trans-unit>
+      <trans-unit id="emptyCsvFile">
+        <source>El archivo CSV está vacío o no se pudo leer con este separador</source>
+        <target>Plik CSV jest pusty lub nie można go odczytać przy użyciu tego separatora.</target>
+      </trans-unit>
+      <trans-unit id="emptyCsvFile2">
+        <source>El archivo CSV está vacío o no se pudo leer</source>
+        <target>Plik CSV jest pusty lub nie można go odczytać</target>
+      </trans-unit>
+      <trans-unit id="errorParseCsv">
+        <source>Error al parsear el archivo CSV con el separador especificado</source>
+        <target>Błąd podczas analizowania pliku CSV z określonym separatorem</target>
+      </trans-unit>
+      <trans-unit id="errorParseCsv2">
+        <source>Error al parsear el archivo CSV. Verifica el separador.</source>
+        <target>Błąd podczas parsowania pliku CSV. Sprawdź separator.</target>
+      </trans-unit>
+      <trans-unit id="errorParseCsv3">
+        <source>Error al parsear el archivo CSV. Verifique el separador y formato del archivo.</source>
+        <target>Wystąpił błąd podczas parsowania pliku CSV. Sprawdź separator i format pliku.</target>
+      </trans-unit>
+      <trans-unit id="dashboardSidebarNewTabs">
+        <source>Nuevo navegador</source>
+        <target>Nowa przeglądarka</target>
+      </trans-unit>
+      <trans-unit id="anyCanSeeNoTable">
+        <source>Define quién puede acceder y ver esta tabla. Solo los usuarios y grupos explícitamente autorizados tendrán
+          acceso.</source>
+        <target>Zdefiniuj, kto może uzyskać dostęp do tej tabeli i ją przeglądać. Dostęp będą mieli tylko wyraźnie autoryzowani użytkownicy i grupy.</target>
+      </trans-unit>
+      <trans-unit id="anyCanSeeYesTable">
+        <source>Cualquier usuario puede ver la tabla.
+          Los filtros de seguridad se definen a nivel de tabla y columna concreta.</source>
+        <target>Każdy użytkownik może przeglądać tabelę.
+          Filtry bezpieczeństwa są definiowane na poziomie tabeli i konkretnej kolumny.</target>
+      </trans-unit>
+      <trans-unit id="AddPredictionTitle">
+        <source>¿Quieres actualizar los valores?</source>
+        <target>Czy chcesz zaktualizować wartości?</target>
+      </trans-unit>
+      <trans-unit id="AddPredictionText">
+        <source>Puedes guardar el gráfico con o sin predicción.</source>
+        <target>Możesz zapisać wykres z prognozą lub bez niej.</target>
+      </trans-unit>
+      <trans-unit id="AddPredictionYes">
+        <source>Sí, actualizar</source>
+        <target>Tak, aktualizacja</target>
+      </trans-unit>
+      <trans-unit id="AddPredictionNo">
+        <source>No, cerrar</source>
+        <target>Nie, blisko</target>
+      </trans-unit>
+      <trans-unit id="showLines">
+        <source>Mostrar Líneas de Puntos</source>
+        <target>Pokaż linie przerywane</target>
+      </trans-unit>
+      <trans-unit id="chartLabelLineOptionDescription">
+        <source>Muestra líneas conectando los puntos</source>
+        <target>Pokaż linie łączące kropki</target>
+      </trans-unit>
+      <trans-unit id="chartLabelLineOptionDescription2">
+        <source>Conecta los puntos con líneas</source>
+        <target>Połącz kropki liniami</target>
+      </trans-unit>
+      <trans-unit id="chartLabelLinePredictionOptionDescription">
+        <source>Muestra la predicción de la serie</source>
+        <target>Pokaż prognozę serii</target>
+      </trans-unit>
+      <trans-unit id="gradientTab">
+        <source>Gradiente de color</source>
+        <target>Gradient kolorów</target>
+      </trans-unit>
+       <trans-unit id="semaphoreTab">
+        <source>Código semafórico</source>
+        <target>Kod sygnalizacji świetlnej</target>
+      </trans-unit>
+      <trans-unit id="aboveThreshold">
+        <source>es mayor que:</source>
+        <target>jest większe niż:</target>
+      </trans-unit>
+      <trans-unit id="betweenThresholds">
+        <source>mayor que:</source>
+        <target>większy niż:</target>
+      </trans-unit>
+      <trans-unit id="betweenThresholds2">
+        <source>y menor que</source>
+        <target>i mniej niż</target>
+      </trans-unit>
+      <trans-unit id="belowThreshold">
+        <source>es menor que:</source>
+        <target>jest mniejsze niż:</target>
+      </trans-unit>
+      <trans-unit id="mandatoryFilter">
+        <source>¿Filtro obligatorio?</source>
+        <target>Filtr obowiązkowy?</target>
+      </trans-unit>
+      <trans-unit id="email">
+        <source>Correo</source>
+        <target>Poczta</target>
+      </trans-unit>
+      <trans-unit id="nextStepBtn">
+        <source>Siguiente paso</source>
+        <target>Następny krok</target>
+      </trans-unit>   
+      <trans-unit id="openInNewTab">
+        <source>Abrir en NUEVA pestaña</source>
+        <target>Otwórz w NOWEJ karcie</target>
+      </trans-unit>
+      <trans-unit id="openInSameTab">
+        <source>Abrir en MISMA pestaña</source>
+        <target>Otwórz w tej SAMEJ karcie</target>
+      </trans-unit>   
 </body>
 </file>
 </xliff>

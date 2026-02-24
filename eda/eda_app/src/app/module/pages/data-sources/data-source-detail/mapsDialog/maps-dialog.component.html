@@ -1,22 +1,17 @@
 <eda-dialog2 [display]="display" [header]="title" width="60vw" height="80vh" [overflow]="'auto'"
-  (apply)="saveMap()" (close)="closeDialog()">
+  (apply)="saveMap()" (close)="closeDialog()" [disableApply]="!canConfirm"  
+  (nextstep)="nextStep()" [showNextStep]="activeTab === 'step1'" [disableNextStep]="!canGoNext">
 
   <div content class="p-2 space-y-6">
-    <!-- Tabs -->
-    <div class="grid w-full grid-cols-3 gap-3">
-      <button 
-        [ngClass]="{'bg-[#00BFB3] text-white': activeTab === 'properties', 'bg-gray-100': activeTab !== 'properties'}"
+    <!-- Tabs (2 pestañas: propiedades+columnas fusionadas, y mapas disponibles) -->
+    <div class="grid w-full grid-cols-2 gap-3">
+      <button
+        [ngClass]="{'bg-[#00BFB3] text-white': activeTab === 'step1' || activeTab === 'step2', 'bg-gray-100': activeTab === 'available'}"
         class="px-3 py-2 font-semibold rounded-md transition-colors"
-        (click)="setActiveTab('properties')">
+        (click)="setActiveTab('step1')">
         <span i18n="@@inputMapTables">Propiedades del mapa</span>
       </button>
-      <button 
-        [ngClass]="{'bg-[#00BFB3] text-white': activeTab === 'columns', 'bg-gray-100': activeTab !== 'columns'}"
-        class="px-3 py-2 font-semibold rounded-md transition-colors"
-        (click)="setActiveTab('columns')">
-        <span i18n="@@inputMapColumnsText">Vincular columnas al mapa</span>
-      </button>
-      <button 
+      <button
         [ngClass]="{'bg-[#00BFB3] text-white': activeTab === 'available', 'bg-gray-100': activeTab !== 'available'}"
         class="px-3 py-2 font-semibold rounded-md transition-colors"
         (click)="setActiveTab('available')">
@@ -26,8 +21,8 @@
 
     <!-- Tab Content -->
     <form [formGroup]="mapForm">
-      <!-- Map Properties Tab -->
-      <div [hidden]="activeTab !== 'properties'" class="space-y-6">
+      <!-- Step 1: Map Properties -->
+      <div [hidden]="activeTab !== 'step1'" class="space-y-6">
         <div class="bg-white rounded-lg border p-4">
           <div class="mb-3">
             <h3 class="text-lg font-medium flex items-center gap-2">
@@ -62,13 +57,13 @@
                 </svg>
                 <span i18n="@@inputMapField">Campo a usar para vincular el modelo con el mapa</span>
               </label>
-              <select 
-                id="datamodel" 
+              <select
+                id="datamodel"
                 formControlName="dataModelField"
                 class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]">
                 <option value="" disabled selected i18n="@@selectField">Selecciona un campo</option>
                 @for(field of fields; track field.value){
-                  <option>{{ field.label }}</option>
+                  <option [value]="field.value">{{ field.label }}</option>
                 }
               </select>
             </div>
@@ -76,11 +71,11 @@
             <!-- Map Name -->
             <div class="space-y-2">
               <label for="map-name" class="block  font-medium" i18n="@@inputMapName">Nombre del mapa</label>
-              <input 
-                type="text" 
-                id="map-name" 
+              <input
+                type="text"
+                id="map-name"
                 formControlName="mapName"
-                placeholder="Enter a descriptive name for your map" 
+                placeholder="Enter a descriptive name for your map"
                 class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]">
             </div>
 
@@ -95,18 +90,18 @@
               </label>
               <p class=" text-gray-500" i18n="@@inputxDescription">Si desconoces las coordenadas del centro las calcularemos automáticamente</p>
               <div class="grid grid-cols-2 gap-2">
-                <input 
-                  type="text" 
-                  id="latitude" 
+                <input
+                  type="text"
+                  id="latitude"
                   formControlName="latitude"
-                  placeholder="Latitude (e.g. 40.7128)" 
+                  placeholder="Latitude (e.g. 40.7128)"
                   class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
                 >
-                <input 
-                  type="text" 
-                  id="longitude" 
+                <input
+                  type="text"
+                  id="longitude"
                   formControlName="longitude"
-                  placeholder="Longitude (e.g. -74.0060)" 
+                  placeholder="Longitude (e.g. -74.0060)"
                   class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
                 >
               </div>
@@ -115,8 +110,8 @@
         </div>
       </div>
 
-      <!-- Link Columns Tab -->
-      <div [hidden]="activeTab !== 'columns'" class="space-y-6">
+      <!-- Step 2: Link Columns -->
+      <div [hidden]="activeTab !== 'step2'" class="space-y-6">
         <div class="bg-white rounded-lg border p-4">
           <div class="mb-3">
             <h3 class="text-lg font-medium flex items-center gap-2">
@@ -138,14 +133,13 @@
                 </svg>
                 <span i18n="@@inputMapTables">Tablas</span>
               </label>
-              <select 
-                id="table" 
+              <select
+                id="table"
                 formControlName="selectedTable"
-                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
-                (ngModelChange)="getColumns()">
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]">
                 <option value="" disabled selected i18n="@@selectTable">Selecciona una tabla</option>
                 @for(table of tables; track $index){
-                  <option>{{ table.label }}</option>
+                  <option [value]="table.value">{{ table.label }}</option>
                 }
               </select>
             </div>
@@ -155,20 +149,20 @@
               <label for="column" class="block  font-medium">
                 <span i18n="@@inputMapColumns">Columnas</span>
               </label>
-              <select 
-                id="column" 
+              <select
+                id="column"
                 formControlName="selectedColumn"
                 class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]">
                 <option value="" disabled selected i18n="@@selectColumn">Selecciona una columna</option>
                 @for(column of columns; track column.value){
-                  <option>{{ column.label }}</option>
+                  <option [value]="column.label">{{ column.label }}</option>
                 }
               </select>
             </div>
 
             <!-- Link Button -->
             <div class="pt-4">
-              <button 
+              <button
                 (click)="pushItem()"
                 class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md  font-medium">
                 <span i18n="@@linkColumn">Vincular columna</span>
@@ -190,7 +184,7 @@
                     </svg>
                     <span class="text-sm text-gray-700">{{ link.table }} : {{ link.col.column_name }}</span>
                   </div>
-                  <button 
+                  <button
                     type="button"
                     (click)="deleteLink(link)"
                     class="p-1 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-md">
@@ -209,7 +203,7 @@
       <!-- Available Maps Tab -->
       <div [hidden]="activeTab !== 'available'" class="space-y-6">
         <div class="bg-white rounded-lg border p-4">
-          @if(serverMaps.length > 0){            
+          @if(serverMaps.length > 0){
             <div class="mb-3">
               <h3 class="text-lg font-medium flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe">
@@ -234,7 +228,7 @@
                     ]
                  </span>
                 </div>
-                <button 
+                <button
                   (click)="removeMap(map)"
                   class="p-1 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-md">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x">

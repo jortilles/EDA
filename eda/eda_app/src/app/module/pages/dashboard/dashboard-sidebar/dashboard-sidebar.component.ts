@@ -3,7 +3,7 @@ import { OverlayModule } from "primeng/overlay";
 import { OverlayPanel, OverlayPanelModule } from "primeng/overlaypanel";
 import { DashboardPage } from "../dashboard.page";
 import { AlertService, DashboardService, FileUtiles, SpinnerService, StyleProviderService, ChartUtilsService } from "@eda/services/service.index";
-import { EdaPanel, EdaPanelType, EdaTitlePanel } from "@eda/models/model.index";
+import { EdaPanel, EdaPanelType, EdaTitlePanel, EdaTabsPanel } from "@eda/models/model.index";
 import { lastValueFrom } from "rxjs";
 import { Router } from "@angular/router";
 import domtoimage from 'dom-to-image';
@@ -144,9 +144,16 @@ export class DashboardSidebarComponent {
     this.sidebarItems = [
       {
         id: 'newPanel',
-        label: $localize`:@@newPanelTitle:Nuevo Panel`,
+        label: $localize`:@@newPanelTitle:Nuevo panel`,
         icon: "pi pi-plus-circle",
         command: () => this.onAddWidget()
+      },
+      {
+        id: 'newFilter',
+        label: $localize`:@@dashboardSidebarNewFilter:Nuevo filtro`,
+        icon: "pi pi-filter",
+        command: () => this.onAddGlobalFilter()
+
       },
       {
         id: 'newText',
@@ -155,11 +162,10 @@ export class DashboardSidebarComponent {
         command: () => this.onAddTitle()
       },
       {
-        id: 'newFilter',
-        label: $localize`:@@dashboardSidebarNewFilter:Nuevo filtro`,
-        icon: "pi pi-filter",
-        command: () => this.onAddGlobalFilter()
-
+        id: 'newTabs',
+        label: $localize`:@@dashboardSidebarNewTabs:Nuevo navegador`,
+        icon: "pi pi-folder",
+        command: () => this.onAddTabsPanel()
       },
       {
         id: 'editFilters',
@@ -175,7 +181,7 @@ export class DashboardSidebarComponent {
       },
       {
         id: 'dependentFilters',
-        label: $localize`:@@dashboardSidebarDependentFilters:Filtros Dependientes`,
+        label: $localize`:@@dashboardSidebarDependentFilters:Filtros dependientes`,
         icon: "pi pi-sliders-h",
         command: () => this.dependentFilters()
         
@@ -396,6 +402,24 @@ export class DashboardSidebarComponent {
       dragAndDrop: true,
       fontsize: '22px',
       color: '#000000'
+    });
+
+    this.dashboard.panels.push(panel);
+    this.hidePopover();
+  }
+
+  public onAddTabsPanel(): void {
+    let panel = new EdaTabsPanel({
+      id: this.fileUtils.generateUUID(),
+      title: 'Tabs',
+      type: EdaPanelType.TABS,
+      w: 40,
+      h: 2,
+      cols: 40,
+      rows: 2,
+      resizable: true,
+      dragAndDrop: true,
+
     });
 
     this.dashboard.panels.push(panel);

@@ -17,7 +17,7 @@ import { FormsModule } from '@angular/forms';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 import { CommonModule } from '@angular/common';
 import { ChatgptService } from '@eda/services/api/chatgpt.service';
-import { EdaTitlePanelComponent } from '@eda/components/component.index';
+import { EdaTitlePanelComponent, EdaTabsPanelComponent } from '@eda/components/component.index';
 
 // Imports del sidebar
 import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.service';
@@ -64,7 +64,8 @@ const STANDALONE_COMPONENTS = [
   FilterDialogComponent,
   ImportPanelDialog,
   DependentFilters,
-  EdaTitlePanelComponent
+  EdaTitlePanelComponent,
+  EdaTabsPanelComponent
 ]
 @Component({
   selector: 'app-v2-dashboard-page',
@@ -101,6 +102,8 @@ export class DashboardPage implements OnInit {
   public reportPanel: any;
   public backgroundColor: any;
   public panelTitle: any;
+  public panelTabText: any;
+  public panelTabAlign: any;
   public panelContent: any;
   public availableChatGpt: any = false;
   public height: number = 1000;
@@ -199,6 +202,8 @@ export class DashboardPage implements OnInit {
     this.stylesProviderService.setStyles(this.stylesProviderService.generateDefaultStyles())
     this.stylesProviderService.loadingFromPalette = false;
     this.stopRefresh = true;
+    this.dashboard.config.stopRefresh = true;
+    clearInterval(this.countdownInterval);
       if (this.edaPanelsSubscription) {
           this.edaPanelsSubscription.unsubscribe();
       }
@@ -247,10 +252,21 @@ export class DashboardPage implements OnInit {
 
     const cols = this.gridsterOptions.minCols!;
     const width = container.clientWidth;
-    const cellSize = Math.floor(width / cols);
-
-    this.gridsterOptions.fixedRowHeight = cellSize;
-    this.gridsterOptions.api?.optionsChanged();
+    const mobileBreakpoint = this.gridsterOptions.mobileBreakpoint || 640;
+    //Si la visión es en movil. Gridsted pone los elementos apilados.
+    //https://github.com/tiberiuzuld/angular-gridster2/blob/master/src/assets/gridTypes.md
+    if (width < mobileBreakpoint) {
+      // En modo móvil: altura fija por celda para que los paneles tengan un tamaño razonable
+      this.gridsterOptions.fixedRowHeight = 100;
+    } else {
+      let cellSize = Math.floor(width / cols);
+      if(cellSize < 30){
+        // si estoy muy ajustado le doy un poco de altura.
+        cellSize = 30;
+      }
+      this.gridsterOptions.fixedRowHeight = cellSize;
+    }
+   this.gridsterOptions.api?.optionsChanged();
   }
 
   public async loadDashboard() {
@@ -383,6 +399,21 @@ export class DashboardPage implements OnInit {
     this.panelContent = {
       background: this.dashboard.config.styles.panelColor,
     };
+
+    // Texto de los tabs (como panelTitle pero con display:block y text-align)
+    this.panelTabText = {
+      background: this.dashboard.config.styles.panelColor,
+      color: this.dashboard.config.styles.panelTitle.fontColor,
+      'font-size': (20 + this.dashboard.config.styles.panelTitle.fontSize * 3) + 'px',
+      'font-family': this.dashboard.config.styles.panelTitle.fontFamily,
+    };
+
+    this.panelTabAlign = {
+      'text-align': this.dashboard.config.styles.panelTitleAlign === 'center' ? 'center'
+                    : this.dashboard.config.styles.panelTitleAlign === 'flex-end' ? 'right'
+                    : 'left'
+    };
+
     this.stylesProviderService.ActualChartPalette = this.dashboard.config.styles.palette;
   }
 
@@ -1122,20 +1153,24 @@ public startCountdown(seconds: number) {
 
   triggerTimer() {
 
-    this.stopRefresh = !this.stopRefresh;
+    // Si hay tiempo config lo paramos
+    this.dashboard.config.stopRefresh = true;
+    clearInterval(this.countdownInterval);
 
     //Give time to stop counter if any
     setTimeout(() => {
-        if (!this.refreshTime) this.stopRefresh = true;
-        else if (this.refreshTime) this.stopRefresh = false;
-
-        if (this.refreshTime && this.refreshTime < 5) this.refreshTime = 5;
-
-        this.startCountdown(this.refreshTime);
-
-    }, 2000)
-
-  } 
+        const refreshTime = this.dashboard.config.refreshTime;
+        // si no hay tiempo de refresh, no lanzamos el contador
+        if (!refreshTime) {
+            this.dashboard.config.stopRefresh = true;
+            return;
+        }
+        // si el tiempo de refresh es menor a 5 segundos, lo ponemos a 5 segundos         if (refreshTime < 5) this.dashboard.config.refreshTime = 5;
+        this.dashboard.config.stopRefresh = false;
+        // lanzamos el contador
+        this.startCountdown(this.dashboard.config.refreshTime);
+    }, 2000);
+  }
 
   public validateDashboard(action: string): boolean {
     let isvalid = true;
@@ -1154,9 +1189,17 @@ public startCountdown(seconds: number) {
 
   public getCorrectColumnFiltered(event): string {
     const chartType = event.data?.panel?.content?.chart;
+    const edaChart = event.data?.panel?.content?.edaChart;
     const queries = event.data?.query || [];
     const filterBy = event.data?.filterBy;
     if (['doughnut', 'polarArea', 'bar', 'line', 'radar'].includes(chartType)) {
+      if (edaChart === 'stackedbar100') {
+        // Para stackedbar100, un label es un valor, no una columna de la tabla, no puede ser filterby.
+        // La ultima columna de texto es el valor que buscamos
+        const textColumns = queries.filter(q => q.column_type === 'text');
+        // si hay dos columnas de texto, la segunda es el valor, si no, la primera(y unica) es el valor
+        return textColumns.length > 1 ? textColumns[1] : textColumns[0];
+      }
       const queryFiltered = queries.find(q => q.display_name?.default === filterBy);
       if (queryFiltered?.column_type === 'numeric') {
         return queries.find(q => q.column_type === 'text');

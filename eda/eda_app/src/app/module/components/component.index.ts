@@ -37,6 +37,7 @@ export { TableDialogComponent } from './eda-panels/eda-blank-panel/table-dialog/
 export { TableGradientDialogComponent } from './eda-panels/eda-blank-panel/table-dialog/gradient-dialog/gradient-dialog.component';
 export { EdaDashboardPanelComponent } from './eda-panels/eda-dashboard-panel/eda-dashboard-panel.component';
 export { EdaTitlePanelComponent } from './eda-panels/eda-title-panel/eda-title-panel.component';
+export { EdaTabsPanelComponent } from './eda-panels/eda-tabs-panel/eda-tabs-panel.component';
 export { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe'
 export { SafeUrlPipe } from './eda-panels/eda-title-panel/urlSanitizer.pipe'
 export { TitleDialogComponent } from './eda-panels/eda-title-panel/edit-title/quill-editor.component'

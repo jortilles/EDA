@@ -1,17 +1,23 @@
 <span [class]="inject.divClass">
 
-    <i *ngIf="inject.icon" [class]="inject.icon"></i>
+    @if(inject.icon){
+        <i [class]="inject.icon"></i>
+    }
 
-    <ng-container *ngIf="_isEdaInputText(inject)">
+    @if(_isEdaInputText(inject)){
+        <ng-container>
 
-        <input #reference #in="ngModel" [attr.id]="inject.id ? inject.id : null" [name]="inject.name" [(ngModel)]="inject.ngModel"
-            [class]="inject.inputClass" [disabled]="inject.disabled" [required]="inject.required"
-            [readonly]="inject.readonly" (change)="inject.onChange($event)" (keyup)="inject.onKeyUp($event)" (focusout)="inject.onFocusOut($event)">
+            <input #reference #in="ngModel" [attr.id]="inject.id ? inject.id : null" [name]="inject.name" [(ngModel)]="inject.ngModel"
+                [class]="inject.inputClass" [disabled]="inject.disabled" [required]="inject.required"
+                [readonly]="inject.readonly" (change)="inject.onChange($event)" (keyup)="inject.onKeyUp($event)" (focusout)="inject.onFocusOut($event)">
 
-    </ng-container>
+        </ng-container>
+    }
 
-    <label *ngIf="inject.showLabel" [for]="inject.id">
-        {{ inject.label }}
-    </label>
+    @if(inject.showLabel){
+        <label [for]="inject.id">
+            {{ inject.label }}
+        </label>
+    }
 
 </span>

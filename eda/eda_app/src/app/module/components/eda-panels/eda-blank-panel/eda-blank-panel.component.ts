@@ -142,6 +142,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
 
+    // public screenWidth: number = window.innerWidth;  Se usa para mostrar el ancho de pantalla para debug.
+
     public dataSource: any;
     public isImported: boolean = false;
     public readonly: boolean = false;
@@ -312,6 +314,7 @@ export class EdaBlankPanelComponent implements OnInit {
         }
     }
 
+    // ngOnInit
     async ngOnInit() {
         this.index = 0;
         this.readonly = this.panel.readonly;
@@ -594,22 +597,23 @@ public tableNodeExpand(event: any): void {
         // Sólo procesar si no estamos en modo SQL ni readonly! 
         if (isEdaMode || isModeSqlDisabled) {
             if (queryMode === 'EDA2') {
-                this.rootTable = this.tables.find(t => t.table_name === this.rootTable);
+            this.rootTable = this.tables.find(t => t.table_name === this.rootTable);
 
-                for (const column of fields) {
-                        PanelInteractionUtils.assertTable(this, column);
-                    }
-
-                    PanelInteractionUtils.handleCurrentQuery2(this);
-                    this.reloadTablesData();
-                    PanelInteractionUtils.loadTableNodes(this);
-
-                    this.userSelectedTable = undefined;
-                    this.columns = [];
-                } else {
-                    PanelInteractionUtils.handleCurrentQuery(this);
-                this.columns = this.columns.filter(c => !c.isdeleted);
+            for (const column of fields) {
+                    PanelInteractionUtils.assertTable(this, column);
                 }
+
+                PanelInteractionUtils.handleCurrentQuery2(this);
+                this.reloadTablesData();
+                PanelInteractionUtils.loadTableNodes(this);
+
+                this.userSelectedTable = undefined;
+                this.columns = [];
+            } else {
+                this.rootTable = null; // no root table in EDA mode
+                PanelInteractionUtils.handleCurrentQuery(this);
+            this.columns = this.columns.filter(c => !c.isdeleted);
+            }
         }
 
         // Configuración global del panel
@@ -1107,7 +1111,12 @@ public tableNodeExpand(event: any): void {
             const modeSQL = this.panelDeepCopy.query.query.modeSQL;
 
             this.selectedQueryMode = _.isNil(queryMode) ? (modeSQL ? 'SQL' : 'EDA') : queryMode;
-            this.rootTable = this.panelDeepCopy.rootTable;
+            
+            if(this.selectedQueryMode == 'EDA2'){
+                this.rootTable = this.panelDeepCopy.rootTable;
+            }
+            
+            
         }
 
         this.loadChartsData(this.panelDeepCopy);
@@ -1538,6 +1547,7 @@ public tableNodeExpand(event: any): void {
 
     public onResize(event) {
         this.display_v.responsive = event.currentTarget.innerWidth <= 1440;
+        //this.screenWidth = event.currentTarget.innerWidth;
     }
 
     /** Run query From dashboard component */

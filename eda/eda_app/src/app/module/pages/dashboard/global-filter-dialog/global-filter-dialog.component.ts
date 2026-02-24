@@ -368,7 +368,9 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             .filter((col: any) => col.visible === true)
             .forEach((col: any) => this.columns.push(col));
 
-        this.columns.sort((a, b) => a.value < b.value ? -1 : a.value > b.value ? 1 : 0);
+        
+            //this.columns.sort((a, b) => a.value < b.value ? -1 : a.value > b.value ? 1 : 0);
+        this.columns.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
     }
 
     public async loadColumnValues() {
