@@ -1253,7 +1253,7 @@ pre {
 /* modificar */ 
     h2 {
         line-height: 25px;
-        font-size: 1.25rem;
+        font-size: 1.4rem !important;
     }
     
     h3 {
