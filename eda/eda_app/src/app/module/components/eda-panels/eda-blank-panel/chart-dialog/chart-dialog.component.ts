@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { ColorPickerModule } from 'primeng/colorpicker';
-import { PredictionDialogComponent, PredictionConfig } from '../prediction-dialog/prediction-dialog.component';
+import { PredictionDialogComponent, PredictionConfig, QueryColumn } from '../prediction-dialog/prediction-dialog.component';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -405,6 +405,19 @@ export class ChartDialogComponent {
         const dashboardPanel = this.dashboard?.edaPanels?.toArray().find(cmp => cmp.panel.id === panelID);
         if (!dashboardPanel?.dataSource?.model?.tables) return [];
         return dashboardPanel.dataSource.model.tables.filter(t => t.visible !== false);
+    }
+
+    /** Devuelve las columnas numéricas del query actual para el selector de columna objetivo de TensorFlow */
+    get queryNumericColumns(): QueryColumn[] {
+        const queryFields: any[] = this.controller?.params?.config?.query;
+        if (!queryFields) return [];
+        return queryFields
+            .filter(f => f.column_type === 'numeric')
+            .map(f => ({
+                column_name: f.column_name,
+                table_id: f.table_id,
+                display_name: typeof f.display_name === 'object' ? (f.display_name.default || f.column_name) : (f.display_name || f.column_name)
+            }));
     }
 
     async confirmPrediction(predictionConfig: PredictionConfig) {
