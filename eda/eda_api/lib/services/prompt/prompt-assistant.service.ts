@@ -64,7 +64,21 @@ export class PromptService {
         const getFieldsTool: any = {
             type: "function",
             name: "getFields",
-            description: "Returns an array of tables objects where each one contains its corresponding columns element which is an array of columns. You must check the schema",
+            description: `
+            Returns an array of table objects with their corresponding columns.
+            Rules:
+            - Always return columns for the requested tables.
+            - If the user does not specify columns, return all columns for the table from the schema.
+            - Use synonyms or context in the user query to match table and column names in the schema.
+            - Never return an empty columns array; if unsure, return all columns.
+            - Example output:
+            [
+            {
+                "table": "city",
+                "columns": ["name", "population", "country"]
+            }
+            ]
+            `,
             parameters: {
                 type: "object",
                 properties: {
