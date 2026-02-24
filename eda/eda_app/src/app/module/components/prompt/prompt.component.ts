@@ -47,7 +47,7 @@ export class PromptComponent implements OnInit, AfterViewChecked {
         console.log('MIRAAAAAAAAAAAAAAAAAAA')
         console.log('selectedFilters: ', this.edaBlankPanel.selectedFilters)
 
-        debugger;
+        // debugger;
 
         this.initSchema(tables);
     }

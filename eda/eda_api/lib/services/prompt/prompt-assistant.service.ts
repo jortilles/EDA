@@ -169,11 +169,10 @@ export class PromptService {
         const toolGetFields: any = response.output?.find((tool: any) => tool.type === "function_call" && tool.name === "getFields");
         const toolGetFilters: any = response.output?.find((tool: any) => tool.type === "function_call" && tool.name === "getFilters");
 
-
         // console.log('toolCallOutput ::::::::::::::::::::::: ', toolCallOutput);
         console.log('toolGetFields ::::::::::::::::::::::: ', toolGetFields);
         console.log('toolGetFilters ::::::::::::::::::::::: ', toolGetFilters);
-        
+
         // Verificamos si tenemos que responder con un function calling, sino devolvemos la consulta
         if (!toolGetFields) { // Si entramos por aqui devolvemos el response para darle otro analisis posterior
             response.output_text = 'No pude identificar los campos necesarios. ¿Podrías reformular la consulta?'; // Esto se va a eliminar 
@@ -182,24 +181,27 @@ export class PromptService {
 
         let currentQueryTool: any[];
 
-        if(toolCall && toolCall.name === "getFields"){
-            const args = toolCall.arguments ? JSON.parse(toolCall.arguments) : {};
+        if(toolGetFields.name === "getFields"){
+            const args = toolGetFields.arguments ? JSON.parse(toolGetFields.arguments) : {};
             const tables = args.tables ?? "Unknown";
-            const tools = response.tools;
             const principalTable = tables[0].table
 
             // Generando un nuevo currentQuery.
             currentQueryTool = QueryFieldResolver.getFields(tables, data);
+
+            // Subida de valores
             response.currentQuery = currentQueryTool;
             response.principalTable =  principalTable;
-
-            //console.log('currentQueryTool: ', currentQueryTool);
 
             if(currentQueryTool.length === 0) {
                 response.output_text = 'Podrias ser mas preciso en tu consulta';
             } else {
                 response.output_text = 'Se ha configurado con exito la consulta solicitada';
             }
+        }
+
+        if(toolGetFilters.name === "getFilters") {
+            console.log('Filtrossss....')
         }
 
         return response;
