@@ -71,11 +71,18 @@ export class PromptService {
             - If the user does not specify columns, return all columns for the table from the schema.
             - Use synonyms or context in the user query to match table and column names in the schema.
             - Never return an empty columns array; if unsure, return all columns.
+            - Do not return duplicated columns for the same table.
             - Example output:
             [
             {
-                "table": "city",
-                "columns": ["name", "population", "country"]
+                "table": "customers",
+                "columns": [
+                    { "column": "name", "column_type": "text" },
+                    { "column": "population", "column_type": "numeric" },
+                    { "column": "country", "column_type": "text" },
+                    { "column": "orderDate", "column_type": "date" },
+                    { "column": "map", "column_type": "coordinate" }
+                ]
             }
             ]
             `,
@@ -84,15 +91,31 @@ export class PromptService {
                 properties: {
                     tables: {
                         type: "array",
-                        description: "Array of table requests. Each element must be an object with 'table' (string) and 'columns' (array of strings). If no column is specified, you must add all the columns from the corresponding table. You must check the schema",
+                        description: "Array of table requests. Each element must be an object with 'table' (string) and 'columns' (array of objects). If no column is specified, you must add all the columns from the corresponding table. You must check the schema",
                         items: {
                             type: "object",
                             properties: {
                                 table: { type: "string", description: "Name of the table (e.g. 'customers')" },
                                 columns: {
                                     type: "array",
-                                    description: "Arrays of string column names. If not specified or empty, return all columns for the table. You must check the schema. You must identify tables or entities in the prompt query to match them with the columns you will return. Take also into account synonyms and possible typography mistakes. Never return empty if you dont know make a request",
-                                    items: { type: "string" }
+                                    minItems: 1,
+                                    description: "Array of column objects. If not specified or empty, return all columns for the table. You must check the schema. You must identify tables or entities in the prompt query to match them with the columns you will return. Take also into account synonyms and possible typography mistakes.",
+                                    items: { 
+                                        type: "object",
+                                        properties: {
+                                            column: {
+                                                type: "string",
+                                                description: "Column or field of the table defined in the schema"
+                                            },
+                                            column_type: {
+                                                type: "string",
+                                                description: "Type of the column or field",
+                                                enum: ["text", "numeric", "date", "coordinate"]
+                                            }
+                                        },
+                                        required: ['column', "column_type"],
+                                        additionalProperties: false
+                                    }
                                 }
                             },
                             required: ["table", "columns"],
@@ -189,6 +212,9 @@ export class PromptService {
             const tables = args.tables ?? "Unknown";
             const principalTable = tables[0].table
 
+            // console.log('tables: ', tables);
+            // console.log('principalTable: ', principalTable);
+
             // Generando un nuevo currentQuery.
             const currentQueryTool = QueryResolver.getFields(tables, data);
 
@@ -203,10 +229,20 @@ export class PromptService {
             }
         }
 
-        if(toolGetFilters.name === "getFilters") {
-            console.log('Filtrossss....')  
-            const args = toolGetFilters.arguments ? JSON.parse(toolGetFilters.arguments) : {};
-            const filters = args.filters ?? "Unknown";
+        if(toolGetFilters?.name === "getFilters") {
+            let args: any = {};
+
+            try {
+                args = toolGetFilters.arguments ? JSON.parse(toolGetFilters.arguments) : {};
+            } catch (error) {
+                console.error("Invalid getFilters arguments:", toolGetFilters.arguments);
+                response.filters = [];
+                return response;
+            }
+
+            const filters = Array.isArray(args.filters) ? args.filters : [];
+
+            if (filters.length === 0) response.filters = [];
             
             // Gererando el arreglo de filtros
             const filtersTool = QueryResolver.getFilters(filters);

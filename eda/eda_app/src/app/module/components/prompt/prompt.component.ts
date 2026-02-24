@@ -44,7 +44,7 @@ export class PromptComponent implements OnInit, AfterViewChecked {
     ngOnInit(): void {
         const tables = this.edaBlankPanel.tables
 
-        console.log('MIRAAAAAAAAAAAAAAAAAAA')
+        console.log('MIRAAAAAAAAAAAAAAAAAAA => tables: ', tables);
         console.log('selectedFilters: ', this.edaBlankPanel.selectedFilters)
 
         // debugger;
@@ -58,7 +58,10 @@ export class PromptComponent implements OnInit, AfterViewChecked {
         tables.forEach((table: any) => {
             let columns = [];
             table.columns.forEach((column: any) => {
-                columns.push(column.column_name);
+                columns.push({
+                    column: column.column_name,
+                    column_type: column.column_type,
+                });
             });
             schema.push({
                 table: table.table_name,

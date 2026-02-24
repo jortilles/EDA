@@ -8,21 +8,13 @@ export default class QueryResolver {
 
         tables.forEach((t: any) => {
 
-            const table = data.find(
-                (item: any) =>
-                    item.table_name.toLowerCase().trim() ===
-                    t.table.toLowerCase().trim()
-            );
+            const table = data.find( (item: any) => item.table_name.toLowerCase().trim() === t.table.toLowerCase().trim() );
 
             if (!table) return;
 
             t.columns.forEach((c: any) => {
 
-                const column = table.columns.find(
-                    (item: any) =>
-                        item.column_name.toLowerCase().trim() ===
-                        c.toLowerCase().trim()
-                );
+                const column = table.columns.find( (item: any) => item.column_name.toLowerCase().trim() === c.column.toLowerCase().trim() );
 
                 if (!column || !column.visible) return;
 
