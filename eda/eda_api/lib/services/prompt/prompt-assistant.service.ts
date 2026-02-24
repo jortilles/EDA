@@ -163,20 +163,23 @@ export class PromptService {
 
 
         // recepcionamos el toolCall => podria estar undefined
-        const toolCallOutput: any[] = response.output;
+        // const toolCallOutput: any[] = response.output;
         const toolCall: any = response.output?.find((c: any) => c.type === "function_call");
 
-        // console.log('toolCallOutput: ', toolCallOutput);
-        console.log('response ::::::::::::::::::::::: ', response);
+        const toolGetFields: any = response.output?.find((tool: any) => tool.type === "function_call" && tool.name === "getFields");
+        const toolGetFilters: any = response.output?.find((tool: any) => tool.type === "function_call" && tool.name === "getFilters");
+
+
+        // console.log('toolCallOutput ::::::::::::::::::::::: ', toolCallOutput);
+        console.log('toolGetFields ::::::::::::::::::::::: ', toolGetFields);
+        console.log('toolGetFilters ::::::::::::::::::::::: ', toolGetFilters);
         
         // Verificamos si tenemos que responder con un function calling, sino devolvemos la consulta
-        if (!toolCall) {
-            // Si entramos por aqui devolvemos el response para darle otro analisis posterior
+        if (!toolGetFields) { // Si entramos por aqui devolvemos el response para darle otro analisis posterior
             response.output_text = 'No pude identificar los campos necesarios. ¿Podrías reformular la consulta?'; // Esto se va a eliminar 
-            return response
+            return response;
         }
 
-        let toolResult: string | null = null;
         let currentQueryTool: any[];
 
         if(toolCall && toolCall.name === "getFields"){
