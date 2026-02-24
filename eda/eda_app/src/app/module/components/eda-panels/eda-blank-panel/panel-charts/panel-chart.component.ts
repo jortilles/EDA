@@ -257,8 +257,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             dataDescription.totalColumns++;
         }
         // PREDICTION LINES
-        if(cfg.showPredictionLines === true){  
-            dataDescription.numericColumns.push({name: $localize`:@@Prediction:Predicción`, index:2 });
+        if(cfg.showPredictionLines === true){
+            // El índice de la columna de predicción es el último de las filas, ahora puede haber mas de una linea
+            const predictionIndex = values?.length > 0 && values[0]?.length > 0 ? values[0].length - 1 : 2;
+            dataDescription.numericColumns.push({name: $localize`:@@Prediction:Predicción`, index: predictionIndex });
             dataTypes.push('numeric');
             values = values.map(innerArray => innerArray.map(item => item === "" ? null : item));
         }
