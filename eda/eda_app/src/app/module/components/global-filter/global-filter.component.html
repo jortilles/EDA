@@ -53,10 +53,11 @@
               </p-multiSelect>
               <p-overlayPanel #op appendTo="body" >
                   <ng-template pTemplate>
-                       <div class="max-h-[30vh] overflow-auto min-w-[20vw] max-w-[30vw]">
-                           <div (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)" >
+                    <div (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)"
+                         class="max-h-[30vh] overflow-auto min-w-[20vw] max-w-[30vw]">
                            <span>{{ resumen }}</span>
-                               <div *ngFor="let item of filter.selectedItems" class="filter-tooltip-container">
+                               <div *ngFor="let item of filter.selectedItems" class="filter-tooltip-container
+                                bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white font-bold px-4 py-2 rounded flex items-center"> <!-- colores eda text -->
                                    <span class="customMultiselect filters-size filter-tooltip-text">
                                        {{ item }}
                                            <button type="button" class=" pi pi-times-circle filter-tooltip-button"
@@ -64,8 +65,7 @@
                                            </button>
                                    </span>
                                </div>
-                           </div>
-                       </div>
+                    </div>
                   </ng-template>
               </p-overlayPanel>
             }
@@ -93,8 +93,8 @@
                 </p-autoComplete>
                 <p-overlayPanel #op appendTo="body">
                   <ng-template pTemplate>
-                       <div class="max-h-[30vh] overflow-auto min-w-[20vw] max-w-[30vw]">
-                           <div (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)">
+                       <div class="max-h-[30vh] overflow-auto min-w-[20vw] max-w-[30vw]"
+                            (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)">
                            <span>{{ resumen }}</span>
                                <div *ngFor="let item of filter.selectedItems" class="filter-tooltip-container">
                                    <span class="customMultiselect filters-size filter-tooltip-text">
@@ -104,7 +104,6 @@
                                            </button>
                                    </span>
                                </div>
-                           </div>
                        </div>
                   </ng-template>
                 </p-overlayPanel>
