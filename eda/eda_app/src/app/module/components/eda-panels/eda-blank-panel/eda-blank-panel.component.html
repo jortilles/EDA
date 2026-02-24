@@ -48,7 +48,7 @@
 </div>
 
 @if(display_v.page_dialog) {
-  <eda-dialog2 [display]="display_v.page_dialog" width="90vw" [ngStyle]="panelContent" [overflow]="'auto'" height="100vh">
+  <eda-dialog2 [display]="display_v.page_dialog" width="95vw" [ngStyle]="panelContent" [overflow]="'auto'" height="100vh">
 
     <!-- Header -->
     <div header class="w-full flex items-center justify-between px-2 py-2">
@@ -284,7 +284,7 @@
                       Mostrar los siguientes atributos:
                     </h3>
                     <div 
-                      class="flex gap-1 rounded-lg border p-2 min-h-[25px]  w-auto h-auto select-list bg-green-100"
+                      class="flex gap-1 rounded-lg border p-2 min-h-[25px] overflow-y-auto w-auto h-auto select-list bg-green-100"
                       cdkDropList 
                       #selectList="cdkDropList" 
                       cdkDropListOrientation="horizontal"
@@ -294,7 +294,7 @@
                     >
                       @for (attr of currentQuery; track attr) {
                         <div
-                          class="flex justify-start items-center gap-2 rounded-md px-3 py-2 font-bold bg-muted/50 cursor-move z-10 bg-white p-2 select-box text-center"
+                          class="flex justify-start items-center gap-2 rounded-md px-3 py-2 font-bold bg-muted/50 cursor-move z-10 bg-white p-2 select-box text-center "
                           (click)="openColumnDialog(attr)"
                           [cdkDragData]="columns" 
                           cdkDrag
