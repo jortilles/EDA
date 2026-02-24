@@ -1,5 +1,5 @@
 
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EdaDialog2Component } from '@eda/shared/components/eda-dialogs/eda-dialog2/eda-dialog2.component';
@@ -28,13 +28,12 @@ export interface PredictionConfig {
     templateUrl: './prediction-dialog.component.html',
     imports: [CommonModule, FormsModule, EdaDialog2Component]
 })
-export class PredictionDialogComponent {
+export class PredictionDialogComponent implements OnInit {
 
     @Input() visible: boolean = false;
     /** Método activo en el panel (viene de chart-dialog para pre-seleccionarlo) */
     @Input() predictionMethod;
     /** Tablas del modelo de datos, usadas para elegir columnas de referencia (TF multivariante) */
-    @Input() modelTables: any[] = [];
 
     @Output() visibleChange = new EventEmitter<boolean>();
     /** Emite el PredictionConfig al confirmar → lo recoge chart-dialog.confirmPrediction() */
@@ -42,6 +41,11 @@ export class PredictionDialogComponent {
     @Output() cancel = new EventEmitter<void>();
 
     public selectedMethod: string = 'None';
+
+
+    ngOnInit(): void {
+        console.log('PredictionDialogComponent initialized with predictionMethod:', this);
+    }
 
     // Parámetros básicos
     public steps: number = 3;
@@ -61,10 +65,7 @@ export class PredictionDialogComponent {
 
     /** Al cambiar tabla, recarga las columnas numéricas visibles de esa tabla */
     onTableChange() {
-        this.selectedColumn = '';
-        const table = this.modelTables.find(t => t.table_name === this.selectedTable);
-        this.availableColumns = table
-            ? table.columns.filter(c => c.visible !== false && c.column_type === 'numeric'): [];
+
     }
 
     /** Añade la columna seleccionada a la lista de referencias (evita duplicados) */
@@ -92,9 +93,8 @@ export class PredictionDialogComponent {
         this.referenceColumns.splice(index, 1);
     }
 
-    getTableDisplayName(tableName: string): string {
-        const table = this.modelTables.find(t => t.table_name === tableName);
-        return table?.display_name?.default || tableName;
+    getTableDisplayName(tableName: string) {
+
     }
 
     /**
