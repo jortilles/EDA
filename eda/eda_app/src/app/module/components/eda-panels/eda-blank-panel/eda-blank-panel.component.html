@@ -9,14 +9,14 @@
 
     <!-- WhatIf inline section -->
     @if (showWhatIfSection()) {
-      <div class="inline-flex outlined rounded-md border bg-gray-100 pl-2" 
+      <div class="inline-flex outlined rounded-md border bg-gray-100 pl-2 " 
         (mousedown)="$event.stopPropagation()">
-        <label class="panel-title">What if: </label>
+        <label class="panel-title font-base">What if: </label>
         @for(column of getWhatIfColumns(); track column.display_name.default) {
           <div class="flex items-center">
-            <span class="font-bold ml-2"> {{column.display_name.default}}</span>
+            <span class="font-bold ml-4"> {{column.display_name.default}}</span>
             <input type="number" pInputText [(ngModel)]="column.whatif.value"
-                (keydown.enter)="runWhatIfQuery(column)" class="ml-2 w-12">
+                (keydown.enter)="runWhatIfQuery(column)" class="ml-2 w-14">
           </div>
         }
         <button type="button" pButton pRipple icon="pi pi-refresh" class="p-button-outlined w-[20px]" 
