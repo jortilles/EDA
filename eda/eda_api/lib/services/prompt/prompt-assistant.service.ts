@@ -122,7 +122,7 @@ export class PromptService {
                             properties: {
                                 field: {
                                     type: "string",
-                                    description: "Name of the field"
+                                    description: "Name of the field, all the fiels are defined in the schema"
                                 },
                                 values: {
                                     type: "array",
@@ -134,9 +134,14 @@ export class PromptService {
                                         ],
                                         description: "Element of the field"
                                     }
+                                },
+                                filter_type: {
+                                    type: "string",
+                                    description: "Type of filter to apply",
+                                    enum: [ "=", "!=", ">", "<", ">=", "<=", "between", "in", "not in", "not null", "not null and !=''", "null or = ''" ]
                                 }
                             },
-                            required: ["field", "values"],
+                            required: ["field", "values", "filter_type"],
                             additionalProperties: false
                         }
                     }
@@ -201,7 +206,7 @@ export class PromptService {
         }
 
         if(toolGetFilters.name === "getFilters") {
-            console.log('Filtrossss....')
+            console.log('Filtrossss....')   
         }
 
         return response;
