@@ -479,7 +479,7 @@ public tableNodeExpand(event: any): void {
 */
 
             await this.runQueryFromDashboard(true);
-            this.panelChart.updateComponent();
+           // this.panelChart.updateComponent();
         } catch (err) {
             throw err;
         }
