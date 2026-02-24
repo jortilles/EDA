@@ -207,26 +207,41 @@ export class PromptService {
             return response;
         }
 
-        if(toolGetFields.name === "getFields"){
-            const args = toolGetFields.arguments ? JSON.parse(toolGetFields.arguments) : {};
-            const tables = args.tables ?? "Unknown";
-            const principalTable = tables[0].table
+        if(toolGetFields?.name === "getFields"){
 
-            // console.log('tables: ', tables);
-            // console.log('principalTable: ', principalTable);
+            let args: any = {};
+
+            try {
+                args = toolGetFields.arguments ? JSON.parse(toolGetFields.arguments) : {};
+            } catch (error) {
+                console.error("Invalid getFields arguments:", toolGetFields.arguments);
+                console.log("Error:", error);
+                response.output_text = 'No se pudieron procesar los campos solicitados. Por favor, reformula la consulta.';
+                return response;
+            }
+
+            //  Validamos que args.tables sea un arreglo
+            const tables = Array.isArray(args.tables) ? args.tables : [];
+
+            if (tables.length === 0) {
+                response.currentQuery = [];
+                response.principalTable = null;
+                response.output_text = 'No se encontraron tablas en la consulta. Por favor, especifica la tabla.';
+                return response;
+            }
+
+            // Extraemos la tabla principal de toda la consulta 
+            const principalTable = tables[0].table ?? null;
 
             // Generando un nuevo currentQuery.
             const currentQueryTool = QueryResolver.getFields(tables, data);
 
-            // Subida de valores
+            // Agregado al response el currentQuery y principalTable 
             response.currentQuery = currentQueryTool;
             response.principalTable =  principalTable;
 
-            if(currentQueryTool.length === 0) {
-                response.output_text = 'Podrias ser mas preciso en tu consulta';
-            } else {
-                response.output_text = 'Se ha configurado con exito la consulta solicitada';
-            }
+            // Mensaje de salida
+            response.output_text = currentQueryTool.length === 0 ? 'Podrías ser más preciso en tu consulta.': 'Se ha configurado con éxito la consulta solicitada.';
         }
 
         if(toolGetFilters?.name === "getFilters") {
@@ -236,6 +251,7 @@ export class PromptService {
                 args = toolGetFilters.arguments ? JSON.parse(toolGetFilters.arguments) : {};
             } catch (error) {
                 console.error("Invalid getFilters arguments:", toolGetFilters.arguments);
+                console.log("Error:", error);
                 response.filters = [];
                 return response;
             }

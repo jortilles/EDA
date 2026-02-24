@@ -44,3 +44,24 @@ background: #fff;
 .chat-input { display: flex; gap: 8px; padding: 10px; border-top: 1px solid #eee; }
 .chat-input textarea { flex: 1 1 auto; resize: vertical; padding: 8px; border-radius: 6px; border: 1px solid #ddd; }
 .chat-input button { padding: 8px 14px; border-radius: 6px; border: none; cursor: pointer; }
+
+
+
+/* Estilos de el boton de copiado */
+.copy-btn {
+    outline: none;       /* Quita el borde de focus */
+    border: none;        /* Quita cualquier borde si lo tuviera */
+    background: transparent; /* Si quieres que el botón sea solo icono */
+    cursor: pointer;     /* Cambia el cursor a pointer */
+}
+
+/* Opcional: quitar highlight al hacer click en mobile */
+.copy-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Opcional: quitar selección de texto al hacer click */
+.copy-btn::selection {
+    background: transparent;
+}

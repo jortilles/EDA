@@ -150,4 +150,13 @@ export class PromptComponent implements OnInit, AfterViewChecked {
             console.log('Error en scrollToBottom: ', error);
         }
     }
+    
+    copyMessage(text: string) {
+        navigator.clipboard.writeText(text).then(() => {
+            console.log('Mensaje copiado al portapapeles!');
+            // Opcional: mostrar un mensaje de éxito temporal
+        }).catch(err => {
+            console.error('Error al copiar:', err);
+        });
+    }
 }
