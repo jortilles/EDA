@@ -497,7 +497,7 @@ export class DashboardPage implements OnInit {
     }
 
     let valor = this.getBottomMostItem();
-    this.height = valor !== undefined ? (valor.y + valor.rows + 2) * 32 : 750;
+    this.height = valor !== undefined ? (valor.y + valor.rows + 4) * 50 : 750;
     this.cdr.detectChanges();
     this.stylesProviderService.loadedPanels--;
   }
