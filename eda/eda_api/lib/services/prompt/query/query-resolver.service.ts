@@ -1,4 +1,6 @@
-export default class QueryFieldResolver {
+
+// Servicio de generacion de Arreglos y Objetos para la asistencia del usurio
+export default class QueryResolver {
 
     static getFields(tables: any[], data: any[]) {
 
@@ -44,6 +46,19 @@ export default class QueryFieldResolver {
         });
 
         return currentQuery;
+    }
+
+    static getFilters(filters: any[]) {
+        
+        console.log('getFilters ..... recibido:  ', filters);
+
+        return [
+            { filtro1: "filtro dummy 1" },
+            { filtro2: "filtro dummy 2" },
+            { filtro3: "filtro dummy 3" },
+        ]
+
+
     }
 
 }

@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import { API_KEY, MODEL, CONTEXT } from '../../../config/chatgpt.config';
 import { PromptUtil } from '../../utils/prompt.util';
-import QueryFieldResolver from '../../services/prompt/query/query-resolver.service'
+import QueryResolver from '../../services/prompt/query/query-resolver.service'
 
 
 interface PromptParameters {
@@ -184,15 +184,13 @@ export class PromptService {
             return response;
         }
 
-        let currentQueryTool: any[];
-
         if(toolGetFields.name === "getFields"){
             const args = toolGetFields.arguments ? JSON.parse(toolGetFields.arguments) : {};
             const tables = args.tables ?? "Unknown";
             const principalTable = tables[0].table
 
             // Generando un nuevo currentQuery.
-            currentQueryTool = QueryFieldResolver.getFields(tables, data);
+            const currentQueryTool = QueryResolver.getFields(tables, data);
 
             // Subida de valores
             response.currentQuery = currentQueryTool;
@@ -206,7 +204,21 @@ export class PromptService {
         }
 
         if(toolGetFilters.name === "getFilters") {
-            console.log('Filtrossss....')   
+            console.log('Filtrossss....')  
+            const args = toolGetFilters.arguments ? JSON.parse(toolGetFilters.arguments) : {};
+            const filters = args.filters ?? "Unknown";
+            
+            // Gererando el arreglo de filtros
+            const filtersTool = QueryResolver.getFilters(filters);
+
+            // Subida de los filtros a la respuesta
+            response.filters = filtersTool;
+            
+            // if(filtersTool.length === 0) {
+            //     response.output_text = 'Podrias ser mas preciso en tu consulta';
+            // } else {
+            //     response.output_text = 'Se ha configurado con exito la consulta solicitada';
+            // }
         }
 
         return response;
