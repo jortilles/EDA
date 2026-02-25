@@ -1835,42 +1835,50 @@ export class DashboardController {
 
     const rows = output[1];
     const lastIndex = rows.length - 1;
-    // Dataset numérico: solo la columna de valores (índice 1), descartando nulos/infinitos
-    const originalDataset = rows.map(row => row[1]).filter(val => Number.isFinite(val));
 
     let predictions: number[] = [];
-    const setup = {steps: steps, rows: rows, lastIndex: lastIndex, nextLabels: nextLabels}
+
+    // Determinar índice de la columna objetivo (común a ambos métodos)
+    const targetColumnSpec = predictionConfig.targetColumn;
+    let targetIndex = 1; // por defecto: primera columna numérica tras la fecha
+    if (targetColumnSpec) {
+      const idx = myQuery.fields.findIndex(f =>
+        f.column_name === targetColumnSpec.column_name && f.table_id === targetColumnSpec.table_id
+      );
+      if (idx >= 0) targetIndex = idx;
+    }
 
     switch(body.query?.prediction){
-        case 'Arima':
+        case 'Arima': {
+          const originalDataset = rows.map(row => row[targetIndex]).filter(val => Number.isFinite(val));
+          const setup = {steps, rows, lastIndex, nextLabels};
           // arimaParams puede ser undefined (usará configs automáticas) o {p,d,q} manual
-          await DashboardController.applyArimaPredicction(
-            predictions, originalDataset, setup, predictionConfig.arimaParams);
+          DashboardController.applyArimaPredicction(
+            predictions, originalDataset, setup, predictionConfig.arimaParams, targetIndex);
           break;
-        case 'Tensorflow':
-          // Construir datasets de referencia para predicción multivariante
-          // referenceColumns ahora es [{table_name, column_name, display_name}]
-          const referenceColumns: {table_name: string, column_name: string, display_name: string}[] =
-            predictionConfig.tensorflowParams?.referenceColumns || [];
-          let referenceDatasets: number[][] = [];
+        }
+        case 'Tensorflow': {
+          // Dataset objetivo
+          const originalDataset = rows.map(row => row[targetIndex]).filter(val => Number.isFinite(val));
 
-          if (referenceColumns.length > 0 && connection && dataModelObject) {
-            try {
-              // Para cada columna de referencia lanzamos una query auxiliar
-              // alineada con el mismo campo de fecha
-              referenceDatasets = await DashboardController.fetchReferenceDatasets(
-                referenceColumns, dateField, myQuery, connection, dataModelObject, user, body.query?.queryLimit
-              );
-            } catch (err) {
-              console.warn('[Prediction] Error fetching reference datasets, falling back to univariate:', err.message);
-              referenceDatasets = [];
+          // Extraer referenceDatasets directamente de las filas del resultado (todas las columnas numéricas excepto la objetivo)
+          const referenceDatasets: number[][] = [];
+          for (let i = 0; i < myQuery.fields.length; i++) {
+            if (i === targetIndex) continue;
+            if (myQuery.fields[i].column_type === 'numeric') {
+              const refData = rows.map(row => row[i]).filter((val): val is number => Number.isFinite(val));
+              if (refData.length >= 4) {
+                referenceDatasets.push(refData);
+              }
             }
           }
 
+          const setup = {steps, rows, lastIndex, nextLabels};
           // tfParams puede ser undefined o {epochs, lookback, learningRate}
           await DashboardController.applyTensorflowPredicction(
-            predictions, originalDataset, setup, predictionConfig.tensorflowParams, referenceDatasets);
+            predictions, originalDataset, setup, predictionConfig.tensorflowParams, referenceDatasets, targetIndex);
           break;
+        }
       }
   }
 
@@ -1948,7 +1956,7 @@ export class DashboardController {
   }
 
   // Formula de arima
-  static applyArimaPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels}, arimaParams?: {p: number, d: number, q: number}) {
+  static applyArimaPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels}, arimaParams?: {p: number, d: number, q: number}, targetIndex: number = 1) {
     try {
       predictions = ArimaService.forecast(originalDataset, setup.steps, arimaParams);
     } catch (err) {
@@ -1956,21 +1964,26 @@ export class DashboardController {
       return;
     }
 
-    // Añadir columna predicción a las filas existentes
-    // Solo el último punto real tiene valor para "unir" visualmente ambas líneas
+    // Añadir columna de predicción a las filas históricas
+    // Solo el último punto real tiene valor para conectar visualmente ambas líneas
     setup.rows.forEach((row, index) => {
-      row.push(index === setup.lastIndex ? row[1] : null);
+      row.push(index === setup.lastIndex ? row[targetIndex] : null);
     });
 
-    // Añadir filas de fechas futuras con los valores predichos
+    // Filas futuras: misma cantidad de columnas que las históricas,
+    // solo fecha (índice 0) y predicción (último índice) con valores; el resto null
+    const numCols = setup.rows[0].length;
     setup.nextLabels.forEach((label, index) => {
-      setup.rows.push([label, null, predictions[index] ?? null]);
+      const newRow = new Array(numCols).fill(null);
+      newRow[0] = label;
+      newRow[numCols - 1] = predictions[index] ?? null;
+      setup.rows.push(newRow);
     });
 
   }
 
   // Predicción con TensorFlow
-  static async applyTensorflowPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels}, tfParams?: any, referenceDatasets?: number[][]) {
+  static async applyTensorflowPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels}, tfParams?: any, referenceDatasets?: number[][], targetIndex: number = 1) {
     try {
       predictions = await TensorflowService.forecast(originalDataset, setup.steps, tfParams, referenceDatasets);
     } catch (err) {
@@ -1978,14 +1991,19 @@ export class DashboardController {
       return;
     }
 
-    // Añadir columna predicción a las filas existentes
+    // Añadir columna de predicción a las filas históricas (join visual en el último punto real)
     setup.rows.forEach((row, index) => {
-      row.push(index === setup.lastIndex ? row[1] : null);
+      row.push(index === setup.lastIndex ? row[targetIndex] : null);
     });
 
-    // Añadir filas de fechas futuras con los valores predichos
+    // Filas futuras: misma cantidad de columnas que las históricas,
+    // solo fecha (índice 0) y predicción (último índice) con valores; el resto null
+    const numCols = setup.rows[0].length;
     setup.nextLabels.forEach((label, index) => {
-      setup.rows.push([label, null, predictions[index] ?? null]);
+      const newRow = new Array(numCols).fill(null);
+      newRow[0] = label;
+      newRow[numCols - 1] = predictions[index] ?? null;
+      setup.rows.push(newRow);
     });
 
   }
