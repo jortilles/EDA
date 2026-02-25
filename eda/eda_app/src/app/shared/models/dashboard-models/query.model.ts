@@ -27,8 +27,9 @@ export interface Query {
         prediction?: string,
         predictionConfig?: {
             steps?: number,
+            targetColumn?: { column_name: string, table_id: string },
             arimaParams?: { p: number, d: number, q: number },
-            tensorflowParams?: { epochs: number, lookback: number, learningRate: number, referenceColumns?: { table_name: string, column_name: string, display_name: string }[] },
+            tensorflowParams?: { epochs: number, lookback: number, learningRate: number },
         },
 
     };

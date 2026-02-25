@@ -1,5 +1,5 @@
 
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EdaDialog2Component } from '@eda/shared/components/eda-dialogs/eda-dialog2/eda-dialog2.component';
@@ -18,8 +18,9 @@ export interface QueryColumn {
 export interface PredictionConfig {
     method: string;
     steps: number;
+    targetColumn?: { column_name: string; table_id: string };
     arimaParams?: { p: number; d: number; q: number };
-    tensorflowParams?: { epochs: number; lookback: number; learningRate: number; targetColumn?: { column_name: string; table_id: string } };
+    tensorflowParams?: { epochs: number; lookback: number; learningRate: number };
 }
 
 @Component({
@@ -34,7 +35,17 @@ export class PredictionDialogComponent {
     /** Método activo en el panel (viene de chart-dialog para pre-seleccionarlo) */
     @Input() predictionMethod;
     /** Columnas numéricas del query actual para elegir cuál predecir */
-    @Input() queryColumns: QueryColumn[] = [];
+    @Input() set queryColumns(cols: QueryColumn[]) {
+        this._queryColumns = cols ?? [];
+        if (!this._queryColumns.length) { this.targetColumn = null; return; }
+        // Solo actualizar si la selección actual ya no está en la nueva lista
+        const stillValid = this.targetColumn
+            ? this._queryColumns.some(c => c.column_name === this.targetColumn!.column_name && c.table_id === this.targetColumn!.table_id)
+            : false;
+        if (!stillValid) this.targetColumn = this._queryColumns[0];
+    }
+    get queryColumns(): QueryColumn[] { return this._queryColumns; }
+    private _queryColumns: QueryColumn[] = [];
 
     @Output() visibleChange = new EventEmitter<boolean>();
     /** Emite el PredictionConfig al confirmar → lo recoge chart-dialog.confirmPrediction() */
@@ -63,6 +74,11 @@ export class PredictionDialogComponent {
             steps: this.steps,
         };
 
+        // Columna objetivo — común a ambos métodos
+        if (this.targetColumn) {
+            config.targetColumn = { column_name: this.targetColumn.column_name, table_id: this.targetColumn.table_id };
+        }
+
         if (this.selectedMethod === 'Arima') {
             // Parámetros manuales p/d/q solo si el usuario activó la config avanzada
             if (this.advancedConfig) {
@@ -70,15 +86,8 @@ export class PredictionDialogComponent {
             }
         } else if (this.selectedMethod === 'Tensorflow') {
             // Incluir epochs/lookback/learningRate si hay config avanzada
-            const tfParams: any = this.advancedConfig
-                ? { ...this.tensorflowParams }
-                : {};
-            // Incluir columnas de referencia si se añadieron (predicción multivariante)
-            if (this.targetColumn) {
-                tfParams.targetColumn = { column_name: this.targetColumn.column_name, table_id: this.targetColumn.table_id };
-            }
-            if (Object.keys(tfParams).length > 0) {
-                config.tensorflowParams = tfParams;
+            if (this.advancedConfig) {
+                config.tensorflowParams = { ...this.tensorflowParams };
             }
         }
 
