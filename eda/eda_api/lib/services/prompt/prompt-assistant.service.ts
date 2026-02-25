@@ -133,19 +133,19 @@ export class PromptService {
         const getFiltersTool: any = {
             type: "function",
             name: "getFilters",
-            description: "Creates multiple filters for different fields. All fields are defined in the schema",
+            description: "Creates multiple filters for different columns or fields. All columns or fields are defined in the schema",
             parameters: {
                 type: "object",
                 properties: {
                     filters: {
                         type: "array",
-                        description: "Array of elements, where each element has a field and its corresponding values",
+                        description: "Array of elements, where each element has a column or field and its corresponding values",
                         items: {
                             type: "object",
                             properties: {
-                                field: {
+                                column: {
                                     type: "string",
-                                    description: "Name of the field, all the fiels are defined in the schema"
+                                    description: "Name of the column or field, all the columns or fiels are defined in the schema"
                                 },
                                 values: {
                                     type: "array",
@@ -155,7 +155,7 @@ export class PromptService {
                                             { type: "string" },
                                             { type: "number" }
                                         ],
-                                        description: "Element of the field"
+                                        description: "Element of the column or field"
                                     }
                                 },
                                 filter_type: {
@@ -164,7 +164,7 @@ export class PromptService {
                                     enum: [ "=", "!=", ">", "<", ">=", "<=", "between", "in", "not in", "not null", "not null and !=''", "null or = ''" ]
                                 }
                             },
-                            required: ["field", "values", "filter_type"],
+                            required: ["column", "values", "filter_type"],
                             additionalProperties: false
                         }
                     }
