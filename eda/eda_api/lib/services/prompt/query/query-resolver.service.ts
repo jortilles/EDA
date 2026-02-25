@@ -1,3 +1,5 @@
+// import { generateUUID } from '../../../utils/prompt.util' 
+
 
 // Servicio de generacion de Arreglos y Objetos para la asistencia del usurio
 export default class QueryResolver {
@@ -42,7 +44,14 @@ export default class QueryResolver {
 
     static getFilters(filters: any[]) {
         
-        console.log('getFilters ..... recibido:  ', filters);
+        console.log('filterssssssssssss : ', filters);
+        
+        let selectedFilters: any[] = [];
+
+        // filters.forEach(((filter: any) => {
+
+        // }))
+
 
         return [
             { filtro1: "filtro dummy 1" },
