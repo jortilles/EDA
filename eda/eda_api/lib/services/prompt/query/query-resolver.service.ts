@@ -1,5 +1,4 @@
-// import { generateUUID } from '../../../utils/prompt.util' 
-
+import { PromptUtil } from '../../../utils/prompt.util' 
 
 // Servicio de generacion de Arreglos y Objetos para la asistencia del usurio
 export default class QueryResolver {
@@ -48,18 +47,25 @@ export default class QueryResolver {
         
         let selectedFilters: any[] = [];
 
-        // filters.forEach(((filter: any) => {
+        filters.forEach(((filter: any) => {
 
-        // }))
+            const filterObject = {
+                isGlobal: false,
+                filter_id: PromptUtil.generateUUID(),
+                filter_table: filter.table,
+                filter_column: filter.column,
+                filter_column_type: filter.column_type,
+                filter_type: filter.filter_type,
+                filter_elements: filter.values,
+                selectedRange: null,
+                autorelation: null, 
+                joins: []                
+            }
 
+            selectedFilters.push(filterObject);
+        }))
 
-        return [
-            { filtro1: "filtro dummy 1" },
-            { filtro2: "filtro dummy 2" },
-            { filtro3: "filtro dummy 3" },
-        ]
-
-
+        return selectedFilters;
     }
 
 }

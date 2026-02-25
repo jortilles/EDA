@@ -143,9 +143,18 @@ export class PromptService {
                         items: {
                             type: "object",
                             properties: {
+                                table: {
+                                    type: "string",
+                                    description: "Name of the table to which the column belongs; all tables are defined in the schema"
+                                },
                                 column: {
                                     type: "string",
                                     description: "Name of the column or field, all the columns or fiels are defined in the schema"
+                                },
+                                column_type: {
+                                    type: "string",
+                                    description: "Type of the column or field, the type could be: text, number, date or coordinate",
+                                    enum: ["text", "numeric", "date", "coordinate"]
                                 },
                                 values: {
                                     type: "array",
@@ -164,7 +173,7 @@ export class PromptService {
                                     enum: [ "=", "!=", ">", "<", ">=", "<=", "between", "in", "not in", "not null", "not null and !=''", "null or = ''" ]
                                 }
                             },
-                            required: ["column", "values", "filter_type"],
+                            required: ["table", "column", "values", "filter_type"],
                             additionalProperties: false
                         }
                     }
@@ -264,7 +273,7 @@ export class PromptService {
             const filtersTool = QueryResolver.getFilters(filters);
 
             // Subida de los filtros a la respuesta
-            response.filters = filtersTool;
+            response.selectedFilters = filtersTool;
             
             // if(filtersTool.length === 0) {
             //     response.output_text = 'Podrias ser mas preciso en tu consulta';
