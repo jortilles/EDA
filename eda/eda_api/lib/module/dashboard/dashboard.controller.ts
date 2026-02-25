@@ -1838,27 +1838,26 @@ export class DashboardController {
 
     let predictions: number[] = [];
 
+    // Determinar índice de la columna objetivo (común a ambos métodos)
+    const targetColumnSpec = predictionConfig.targetColumn;
+    let targetIndex = 1; // por defecto: primera columna numérica tras la fecha
+    if (targetColumnSpec) {
+      const idx = myQuery.fields.findIndex(f =>
+        f.column_name === targetColumnSpec.column_name && f.table_id === targetColumnSpec.table_id
+      );
+      if (idx >= 0) targetIndex = idx;
+    }
+
     switch(body.query?.prediction){
         case 'Arima': {
-          // Dataset numérico: primera columna numérica (índice 1), descartando nulos/infinitos
-          const originalDataset = rows.map(row => row[1]).filter(val => Number.isFinite(val));
+          const originalDataset = rows.map(row => row[targetIndex]).filter(val => Number.isFinite(val));
           const setup = {steps, rows, lastIndex, nextLabels};
           // arimaParams puede ser undefined (usará configs automáticas) o {p,d,q} manual
-          await DashboardController.applyArimaPredicction(
-            predictions, originalDataset, setup, predictionConfig.arimaParams);
+          DashboardController.applyArimaPredicction(
+            predictions, originalDataset, setup, predictionConfig.arimaParams, targetIndex);
           break;
         }
         case 'Tensorflow': {
-          // Determinar índice de la columna objetivo (targetColumn)
-          const targetColumnSpec = predictionConfig.tensorflowParams?.targetColumn;
-          let targetIndex = 1; // por defecto: primera columna numérica tras la fecha
-          if (targetColumnSpec) {
-            const idx = myQuery.fields.findIndex(f =>
-              f.column_name === targetColumnSpec.column_name && f.table_id === targetColumnSpec.table_id
-            );
-            if (idx >= 0) targetIndex = idx;
-          }
-
           // Dataset objetivo
           const originalDataset = rows.map(row => row[targetIndex]).filter(val => Number.isFinite(val));
 
@@ -1957,7 +1956,7 @@ export class DashboardController {
   }
 
   // Formula de arima
-  static applyArimaPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels}, arimaParams?: {p: number, d: number, q: number}) {
+  static applyArimaPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels}, arimaParams?: {p: number, d: number, q: number}, targetIndex: number = 1) {
     try {
       predictions = ArimaService.forecast(originalDataset, setup.steps, arimaParams);
     } catch (err) {
@@ -1968,7 +1967,7 @@ export class DashboardController {
     // Añadir columna de predicción a las filas históricas
     // Solo el último punto real tiene valor para conectar visualmente ambas líneas
     setup.rows.forEach((row, index) => {
-      row.push(index === setup.lastIndex ? row[1] : null);
+      row.push(index === setup.lastIndex ? row[targetIndex] : null);
     });
 
     // Filas futuras: misma cantidad de columnas que las históricas,

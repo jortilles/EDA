@@ -446,14 +446,17 @@ export class ChartDialogComponent {
         dashboardPanel.panel.content.query.query.prediction = predictionConfig.method;
         dashboardPanel.panel.content.query.query.predictionConfig = {
             steps: predictionConfig.steps,
+            targetColumn: predictionConfig.targetColumn,
             arimaParams: predictionConfig.arimaParams,
             tensorflowParams: predictionConfig.tensorflowParams,
         };
 
         // Ejecutar query y guardar config
-        await dashboardPanel.runQueryFromDashboard(true);
-        // retiramos el spinner cuando tenemos el calculo acabado
-        this.spinnerService.off();
+        try {
+            await dashboardPanel.runQueryFromDashboard(true);
+        } finally {
+            this.spinnerService.off();
+        }
         this.saveChartConfig();
     }
 
