@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { SharedModule } from "@eda/shared/shared.module";
 import { ChatgptService } from '@eda/services/api/chatgpt.service';
 import { FormsModule } from '@angular/forms';
@@ -13,6 +13,7 @@ interface ChatMessage {
     role: 'user' | 'assistant' | 'system' | 'error';
     content: string;
     timestamp?: number;
+    copied?: boolean;
 }
 
 
@@ -23,7 +24,7 @@ imports: [SharedModule, FormsModule, CommonModule],
 templateUrl: './prompt.component.html',
 styleUrls: ['./prompt.component.css']
 })
-export class PromptComponent implements OnInit, AfterViewChecked {
+export class PromptComponent implements OnInit {
 
     @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
     @Input() edaBlankPanel: EdaBlankPanelComponent;
@@ -38,6 +39,9 @@ export class PromptComponent implements OnInit, AfterViewChecked {
     sending = false;
     schema: any[] = [] ; // Esquema de todas las tablas y sus columnas
     firstTime: boolean = true;
+    private shouldAutoScroll: boolean = false;
+    loading: boolean = false;
+    isCopied: boolean = false;
 
     constructor(private chatgptService: ChatgptService) {}
 
@@ -73,9 +77,9 @@ export class PromptComponent implements OnInit, AfterViewChecked {
         console.log('SCHEMA ::: ', this.schema);
     }
 
-    ngAfterViewChecked(): void {
-        this.scrollToBottom();
-    }
+    // ngAfterViewChecked(): void {
+    //     this.scrollToBottom();
+    // }
 
     sendMessage(): void {
 
@@ -87,6 +91,15 @@ export class PromptComponent implements OnInit, AfterViewChecked {
 
         const userMsg: ChatMessage = { role: 'user', content: text, timestamp: Date.now() };
         this.messages.push(userMsg);
+
+        
+        this.loading = true;
+        this.isCopied = false;
+
+        // Autoscroll cuando enviamos los mensajes
+        this.shouldAutoScroll = true;
+        this.scrollToBottom()
+
         this.inputText = ''; // Una vez almacenado el texto ingresado se reinicia el input
         this.sending = true;
         
@@ -121,12 +134,19 @@ export class PromptComponent implements OnInit, AfterViewChecked {
                 this.messages.push(assistantMessage);
                 this.sending = false;
 
+                this.loading = false;
+
+                // Autoscroll cuando recibimos los mensajes
+                this.shouldAutoScroll = true;
+                this.scrollToBottom()
+
                 // Cambiamos a false despues de la primera consulta
                 this.firstTime = false;
             },
             error: (err) => {
                 console.error('Error al enviar prompt:', err);
                 this.messages.push({ role: 'error', content: 'Error al obtener respuesta. Intenta de nuevo.', timestamp: Date.now() });
+                this.loading = false;
                 this.sending = false;
             }
         });
@@ -140,21 +160,23 @@ export class PromptComponent implements OnInit, AfterViewChecked {
         }
     }
 
-    private scrollToBottom(): void {
-        try {
+    scrollToBottom(): void {
+        if (!this.shouldAutoScroll) return;
+
+        setTimeout(() => {
             const el = this.messagesContainer?.nativeElement;
             if (el) {
-                el.scrollTop = el.scrollHeight;
+            el.scrollTop = el.scrollHeight;
             }
-        } catch (error) {
-            console.log('Error en scrollToBottom: ', error);
-        }
+
+            this.shouldAutoScroll = false;
+        });
     }
     
-    copyMessage(text: string) {
-        navigator.clipboard.writeText(text).then(() => {
-            console.log('Mensaje copiado al portapapeles!');
-            // Opcional: mostrar un mensaje de éxito temporal
+    copyMessage(message: ChatMessage) {
+        navigator.clipboard.writeText(message.content).then(() => {
+            this.messages.forEach(m => m.copied = false);
+            message.copied = true;
         }).catch(err => {
             console.error('Error al copiar:', err);
         });
