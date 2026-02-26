@@ -1981,12 +1981,11 @@ private assignLevels(nodes: any[], level = 0): void {
     // Lógica para desactivar el group by
     }
 
-    newCurrentQueryUpdate(event) {
+    newCurrentQueryUpdate(event: any) {
         this.currentQuery = event;
     }
 
-    principalTableUpdate(event) {
-
+    principalTableUpdate(event: any) {
 
         const {principalTable, currentQuery} = event
 
@@ -2011,6 +2010,10 @@ private assignLevels(nodes: any[], level = 0): void {
         columns = rootTable.columns.filter((col: any) => !currentQuery.some((e: any) => e.column_name === col.column_name))
 
         this.columns = columns;
+    }
+
+    newSelectedFiltersUpdate(event: any) {
+        console.log('event llegado .... ', event);
     }
 
     trackByTable(index: number, table: any): any {

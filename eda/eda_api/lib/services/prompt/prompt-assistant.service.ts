@@ -68,9 +68,8 @@ export class PromptService {
             Returns an array of table objects with their corresponding columns.
             Rules:
             - Always return columns for the requested tables.
-            - If the user does not specify columns, return all columns for the table from the schema.
             - Use synonyms or context in the user query to match table and column names in the schema.
-            - Never return an empty columns array; if unsure, return all columns.
+            - Never return an empty columns array.
             - Do not return duplicated columns for the same table.
             - Example output:
             [
@@ -91,7 +90,7 @@ export class PromptService {
                 properties: {
                     tables: {
                         type: "array",
-                        description: "Array of table requests. Each element must be an object with 'table' (string) and 'columns' (array of objects). If no column is specified, you must add all the columns from the corresponding table. You must check the schema",
+                        description: "Array of tables. Each element must be an object with 'table' (string) and 'columns' (array of objects). You must check the schema",
                         items: {
                             type: "object",
                             properties: {
@@ -99,7 +98,7 @@ export class PromptService {
                                 columns: {
                                     type: "array",
                                     minItems: 1,
-                                    description: "Array of column objects. If not specified or empty, return all columns for the table. You must check the schema. You must identify tables or entities in the prompt query to match them with the columns you will return. Take also into account synonyms and possible typography mistakes.",
+                                    description: "Array of column objects. never return an empty array of columns. You must check the schema. You must identify tables or fields in the prompt query to match them with the columns you will return. Take also into account synonyms and possible typography mistakes.",
                                     items: { 
                                         type: "object",
                                         properties: {
@@ -271,6 +270,7 @@ export class PromptService {
             
             // Gererando el arreglo de filtros
             const filtersTool = QueryResolver.getFilters(filters);
+
 
             // Subida de los filtros a la respuesta
             response.selectedFilters = filtersTool;

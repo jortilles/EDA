@@ -29,6 +29,7 @@ export class PromptComponent implements OnInit {
     @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
     @Input() edaBlankPanel: EdaBlankPanelComponent;
     @Output() newCurrentQuery: EventEmitter<any[]> = new EventEmitter();
+    @Output() newSelectedFilters: EventEmitter<any[]> = new EventEmitter();
     @Output() principalTable: EventEmitter<any> = new EventEmitter();
 
     // Variable almacenada temporalmente en el EDA-BLANK-PANEL
@@ -116,15 +117,18 @@ export class PromptComponent implements OnInit {
 
                 const currentQuery = resp.response.currentQuery;
                 const principalTable = resp.response.principalTable;
+                const selectedFilters = resp.response.selectedFilters;
                 
-                console.log('----------- COMPONENTE -----------')
-                console.log('currentQuery: ', currentQuery)
-                console.log('principalTable: ', principalTable)
+                console.log('----------- LLEGADA DE COMPONENTE -----------');
+                console.log('--> currentQuery: ', currentQuery);
+                console.log('--> principalTable: ', principalTable);
+                console.log('--> selectedFilters: ', selectedFilters);
 
                 if(currentQuery) {
                     if( currentQuery.length !==0 ) {
                         this.newCurrentQuery.emit(currentQuery);
                         this.principalTable.emit({principalTable, currentQuery});
+                        this.newSelectedFilters.emit(selectedFilters);
                     }
                 }
                 
@@ -132,8 +136,8 @@ export class PromptComponent implements OnInit {
                 const assistantMessage: ChatMessage = { role: 'assistant', content: text ?? String(text), timestamp: Date.now() };
                                 
                 this.messages.push(assistantMessage);
-                this.sending = false;
 
+                this.sending = false;
                 this.loading = false;
 
                 // Autoscroll cuando recibimos los mensajes
