@@ -86,16 +86,16 @@ export default class QueryResolver {
                     } else if(filter.filter_type === "between") {
                         filterElements = [
                             {
-                                value1: filter.values[0],
-                                value2: filter.values[1]
+                                value1: [filter.values[0]],
+                                value2: [filter.values[1]]
                             }
                         ]
                     }
                 } else if(filter.column_type === 'date'){
                     filterElements = [
                         {
-                            value1: filter.values[0],
-                            value2: filter.values[1]
+                            value1: [filter.values[0]],
+                            value2: [filter.values[1]]
                         }
                     ]
                 }
