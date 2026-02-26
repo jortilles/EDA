@@ -32,18 +32,40 @@
             </div>
 
             @if (advancedConfig) {
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-gray-700" i18n="@@predictionStepsLabel">
+                        Pasos a predecir
+                    </label>
+                    <input type="number" [(ngModel)]="steps" min="1" max="50"
+                        class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#00BFB3]" />
+                    <span class="text-xs text-gray-400" i18n="@@predictionStepsDesc">Número de periodos futuros a
+                        predecir</span>
+                </div>
+                <!-- Selector de columna objetivo (solo TensorFlow con varias columnas numéricas) -->
+                
+                    <div class="space-y-2">
+                            <label class="text-sm font-medium text-gray-700" i18n="@@tfTargetColumnLabel">
+                                Columna a predecir
+                            </label>
+                            <select [(ngModel)]="targetColumn" [compareWith]="compareColumns"
+                                class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#00BFB3]">
+                            @for (col of queryColumns; track col.column_name) {
+                                <option [ngValue]="col">{{ col.display_name }}</option>
+                            }
+                            </select>
+                        @if (selectedMethod === 'Tensorflow') {
+                            <span class="text-xs text-gray-400" i18n="@@tfTargetColumnDesc">
+                                Las demás columnas numéricas se usarán automáticamente como variables de referencia
+                            </span>
+                        } @else {
+                            <span class="text-xs text-gray-400" i18n="@@arimaTargetColumnDesc">
+                                Columna numérica a predecir
+                            </span>
+                        }
+                    </div>
                 @if (selectedMethod === 'Arima') {
                     <!-- Steps a predecir -->
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-gray-700" i18n="@@predictionStepsLabel">
-                            Pasos a predecir
-                        </label>
-                        <input type="number" [(ngModel)]="steps" min="1" max="50"
-                            class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#00BFB3]" />
-                        <span class="text-xs text-gray-400" i18n="@@predictionStepsDesc">Número de periodos futuros a
-                            predecir</span>
-                    </div>
-                    <h4 class="text-sm font-semibold text-gray-700 mb-1">Variables ARIMA</h4>
+                    <h4 class="text-sm font-semibold text-gray-700 mb-1 mt-3">Variables ARIMA</h4>
                     <span class="text-xs italic text-gray-400 mb-2">Formula ARIMA(p, d, q)</span>
                     <div class="grid grid-cols-[auto_1fr_auto] items-center gap-x-3 gap-y-3 mt-2">
                         <label class="text-sm text-gray-600">p (AR)</label>
@@ -62,18 +84,9 @@
                         <span class="text-xs text-gray-400" i18n="@@arimaParamQDesc">Orden media móvil</span>
                     </div>
                 } @else if (selectedMethod === 'Tensorflow') {
-                    <!-- Steps a predecir -->
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-gray-700" i18n="@@predictionStepsLabel">
-                            Pasos a predecir
-                        </label>
-                        <input type="number" [(ngModel)]="steps" min="1" max="50"
-                            class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#00BFB3]" />
-                        <span class="text-xs text-gray-400" i18n="@@predictionStepsDesc">Número de periodos futuros a
-                            predecir</span>
-                    </div>
-                    <h4 class="text-sm font-semibold text-gray-700 mb-1" i18n="@@tensorflowVariablesTitle">Variables TensorFlow
-                        (LSTM)</h4>
+                    
+                    <h4 class="text-sm font-semibold text-gray-700 mb-1 mt-3" i18n="@@tensorflowVariablesTitle">Variables TensorFlow (LSTM)</h4>
+
                     <div class="grid grid-cols-[auto_1fr_auto] items-center gap-x-3 gap-y-3 mt-2">
                         <label class="text-sm text-gray-600" i18n="@@tfEpochsLabel">Épocas</label>
                         <input type="number" [(ngModel)]="tensorflowParams.epochs" min="1" max="1000"
@@ -91,69 +104,7 @@
                         <span class="text-xs text-gray-400" i18n="@@tfLrDesc">Tasa de aprendizaje</span>
                     </div>
 
-                    <!-- Switch columnas de referencia -->
-                    <div class="border-t border-gray-200 pt-4 mt-4">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="space-y-0.5">
-                                <label class="text-sm font-medium text-gray-700" i18n="@@referenceColumnsLabel">Columnas de referencia</label>
-                                <p class="text-xs text-gray-400" i18n="@@referenceColumnsDesc">Añadir columnas numéricas como variables de entrada al LSTM</p>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" [(ngModel)]="showReferenceColumns" class="sr-only peer">
-                                <div
-                                    class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
-                                </div>
-                            </label>
-                        </div>
 
-                        @if (showReferenceColumns) {
-                        <!-- Double dropdown + add button -->
-                        <div class="flex items-end gap-2">
-                            <div class="flex-1">
-                                <label class="text-xs text-gray-500 mb-1 block">Tabla</label>
-                                <select [(ngModel)]="selectedTable" (ngModelChange)="onTableChange()"
-                                    class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#00BFB3]">
-                                    <option value="">-- Selecciona la tabla --</option>
-                                    @for (table of modelTables; track table.table_name) {
-                                        <option [value]="table.table_name">{{ table.display_name?.default || table.table_name }}</option>
-                                    }
-                                </select>
-                            </div>
-                            <div class="flex-1">
-                                <label class="text-xs text-gray-500 mb-1 block">Columna</label>
-                                <select [(ngModel)]="selectedColumn" [disabled]="!selectedTable"
-                                    class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#00BFB3] disabled:opacity-50">
-                                    <option value="">-- Selecciona la columna --</option>
-                                    @for (col of availableColumns; track col.column_name) {
-                                        <option [value]="col.column_name">{{ col.display_name?.default || col.column_name }}</option>
-                                    }
-                                </select>
-                            </div>
-                            <button (click)="addReferenceColumn()" [disabled]="!selectedTable || !selectedColumn"
-                                class="rounded-md bg-[#00BFB3] px-3 py-2 text-sm text-white hover:bg-[#00a89e] disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap">
-                                + Añadir
-                            </button>
-                        </div>
-
-                        <!-- List of added reference columns with scroll -->
-                        @if (referenceColumns.length > 0) {
-                        <div class="mt-3 space-y-1 max-h-28 overflow-y-auto">
-                            @for (rc of referenceColumns; track rc.column_name; let i = $index) {
-                            <div class="flex items-center justify-between bg-gray-50 rounded-md px-3 py-2 text-sm">
-                                <span class="text-gray-700">
-                                    <span class="text-gray-400">{{ getTableDisplayName(rc.table_name) }} &rarr;</span>
-                                    {{ rc.display_name }}
-                                </span>
-                                <button (click)="removeReferenceColumn(i)"
-                                    class="text-red-400 hover:text-red-600 text-xs font-medium ml-2">
-                                    Eliminar
-                                </button>
-                            </div>
-                            }
-                        </div>
-                        }
-                        }
-                    </div>
                 }
             }
             <p class="text-md text-slate-500 mt-4" i18n="@@predictionConfigDescription">

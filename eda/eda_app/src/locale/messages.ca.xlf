@@ -6060,6 +6060,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Abrir en MISMA pestaña</source>
         <target>Obrir en MATEIXA pestanya</target>
       </trans-unit>
+      <trans-unit id="filterSummary">
+        <source>Resumen de filtros</source>
+        <target>Resum de filtres</target>
+      </trans-unit>
+      <trans-unit id="globalFilterSelectedItemsLabel">
+        <source>{0} items seleccionados</source>
+        <target>{0} elements seleccionats</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

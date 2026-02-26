@@ -474,8 +474,13 @@ export class EdaTable {
                         border: '',
                         type: col.type
                     });
-            }
-            else {
+            } else if (col.type === "EdaColumnPercentage") {
+                const numericField = col.field.slice(0, -1);
+                const globalSum = this._value.reduce((acc, row) => acc + (row[numericField] === '' ? 0 : parseFloat(row[numericField]) || 0), 0);
+                const pageSum = partialRow[numericField] || 0;
+                const pct = globalSum !== 0 ? (pageSum / globalSum * 100).toFixed(2) + '%' : ' ~ ';
+                this.partialTotalsRow.push({ data: pct, style: "right", class: "sub-total-row", border: '', type: col.type });
+            } else {
                 if (firstNonNumericRow) {
                     this.partialTotalsRow.push({ data: `${this.SubTotals} `, border: " ", class: 'sub-total-row-header', type: col.type });
                     firstNonNumericRow = false;
@@ -540,8 +545,9 @@ export class EdaTable {
                         border: '',
                         type: col.type
                     });
-            } 
-            else {
+            } else if (col.type === "EdaColumnPercentage") {
+                this.totalsRow.push({ data: "100.00%", style: "right", class: "total-row", border: '', type: col.type });
+            } else {
                 if (firstNonNumericRow) {
                     this.totalsRow.push({ data: `${this.Totals} `, border: " ", class: 'total-row-header', type: col.type });
                     firstNonNumericRow = false;
@@ -615,9 +621,9 @@ export class EdaTable {
 
         //esta primera iteración con this.noRepetitions en false se hace para devolver las palabras repetidas al diálogo.
         //Es una secuencia similar a la de quitar los valores, pero opuesta.
-        if (!this.noRepetitions && this.noRepetitions !== undefined ) {
+        if (!this.noRepetitions && this.noRepetitions !== undefined && !this.resultAsPecentage && !this.onlyPercentages) {
             // si no he tocado nada, dejo el valor origintal
-           this.value = _.cloneDeep(this.origValues); 
+           this.value = _.cloneDeep(this.origValues);
         }  else if (!this.noRepetitions && ( this.resultAsPecentage || this.onlyPercentages)) {
             // si  quiero repetidos pero tengo porcentajes....
            //separamos valores de claves
@@ -626,20 +632,21 @@ export class EdaTable {
            let labels = this.extractLabels(this.value)
            labels.shift(); //borramos el primer objeto.
            let output = [];
-           // ESTO SE HACE PARA EVITAR REPETIDOS EN LA TABLA. SI UN CAMPO TIENE UNA COLUMNA QUE SE REPITE 
+           // ESTO SE HACE PARA EVITAR REPETIDOS EN LA TABLA. SI UN CAMPO TIENE UNA COLUMNA QUE SE REPITE
 
            for (let i = 0; i < values.length; i += 1) {
                const obj = [];
                for (let e = 0; e < values[i].length; e += 1) {
-                    if( ! ['EdaColumnPercentage', 'EdaColumnNumber'].includes(  this.cols[e].type ) ) {
+                    const col = this.cols.find(c => c.field === labels[e]);
+                    if (!col || !['EdaColumnPercentage', 'EdaColumnNumber'].includes(col.type)) {
                         obj[labels[e]] =  this.origValues[i][labels[e]];
                     }else{
                         obj[labels[e]] = values[i][e];
                     }
               }
-               output.push(obj);   
+               output.push(obj);
              }
-           this.value = output;  
+           this.value = output;
 
         }else {
             //separamos valores de claves
