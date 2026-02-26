@@ -53,35 +53,53 @@ export default class QueryResolver {
             if(
                 filter.filter_type === "not_null" || 
                 filter.filter_type === "not_null_nor_empty" || 
-                filter.filter_type === "null_or_empty") 
-                {
+                filter.filter_type === "null_or_empty"
+            ) {
                     filterElements = [];
             } else if(
-                filter.filter_type === "=" ||
-                filter.filter_type === "!=" ||
-                filter.filter_type === ">" ||
-                filter.filter_type === "<" ||
-                filter.filter_type === ">=" ||
-                filter.filter_type === "<=" ||
                 filter.filter_type === "in" ||
-                filter.filter_type === "not_in" ||
-                filter.filter_type === "like" ||
-                filter.filter_type === "not_like" 
+                filter.filter_type === "not_in"
             ) {
                 filterElements = [
                     {
                         value1: filter.values
                     }
-                ]
-            } else if(
-                filter.filter_type === "between"
-            ) {
-                filterElements = [
-                    {
-                        value1: filter.values[0],
-                        value2: filter.values[1]
+                ]                
+            } else {
+
+                if(filter.column_type === 'text' || filter.column_type === 'numeric') {
+                    if(
+                        filter.filter_type === "=" ||
+                        filter.filter_type === "!=" ||
+                        filter.filter_type === ">" ||
+                        filter.filter_type === "<" ||
+                        filter.filter_type === ">=" ||
+                        filter.filter_type === "<=" ||
+                        filter.filter_type === "like" ||
+                        filter.filter_type === "not_like" 
+                    ) {
+                        filterElements = [
+                            {
+                                value1: filter.values
+                            }
+                        ]
+                    } else if(filter.filter_type === "between") {
+                        filterElements = [
+                            {
+                                value1: filter.values[0],
+                                value2: filter.values[1]
+                            }
+                        ]
                     }
-                ]
+                } else if(filter.column_type === 'date'){
+                    filterElements = [
+                        {
+                            value1: filter.values[0],
+                            value2: filter.values[1]
+                        }
+                    ]
+                }
+
             }
 
             const filterObject = {
