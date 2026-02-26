@@ -3467,37 +3467,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
 <context context-type="linenumber">4</context>
 </context-group>
-  </trans-unit>
-
-  <trans-unit id="filters13">
-    <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
-    <target>WARTOŚCI NIE NULL ANI PUSTE (not null and != '')</target>
-  </trans-unit>
-
-  <trans-unit id="filters14">
-    <source>VALORES NULOS O VACÍOS (null or = '')</source>
-    <target>WARTOŚCI NULL LUB PUSTE (null lub = '')</target>
-  </trans-unit>
-
-  <trans-unit id="aliasValuePh">
-    <source>Alias del filtro (opcional)</source>
-    <target>Filtruj alias (opcjonalnie)</target>
-  </trans-unit>
-
-  <trans-unit id="noDataAllowed">
-    <source>Este panel no está disponible por falta de permisos</source>
-    <target>Ten Panel nie jest dostępny ze względu na brak uprawnień</target>
-  </trans-unit>
-
-  <trans-unit id="noFilterAllowed">
-    <source>Este panel no está disponible por falta de permisos en un filtro</source>
-    <target>Ten panel jest niedostępny ze względu na brak uprawnień do filtra</target>
-  </trans-unit>
-
-<trans-unit id="DatePickerYearPreviousYearFull">
-  <source>El año pasado, completo</source>
-  <target>W zeszłym roku, kompletne</target>
 </trans-unit>
+
 
 <trans-unit id="firstAboutParagraphSpan" datatype="html">
   <source>  
@@ -3689,19 +3660,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>KPI + Wykres warstwowy</target>
       </trans-unit>
 
-  
-<trans-unit id="aplicarBtn">
-  <source>Aplicar</source>
-  <target>Stosować</target>
-</trans-unit>
-  <trans-unit id="disenoTablaCruzada">
-    <source>Diseño de la tabla cruzada: </source>
-    <target>Projektowanie stołów krzyżowych: </target>
-  </trans-unit>
-  <trans-unit id="messageItemCrosstable">
-    <source>Este eje debe contener al menos un elemento</source>
-    <target>Oś ta musi zawierać co najmniej jeden element</target>
-  </trans-unit>
   <trans-unit id="noMouseH6">
         <source>Activar funciones del mouse</source>
         <target>Aktywuj funkcje myszy</target>
@@ -4193,16 +4151,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <target>Pokazuje wartość procentową każdego segmentu</target>
 </trans-unit>
 
-<trans-unit id="chartLabelLinesOptionDescription">
-  <source>Muestra las líneas en los puntos</source>
-  <target>Pokaż linie w punktach</target>
-</trans-unit>
-
-<trans-unit id="panelOptions6">
-  <source>Pregunte a la IA</source>
-  <target>Zapytaj AI</target>
-</trans-unit>
-
 <trans-unit id="aboutEdaP1">
   <source>Una aplicación web de código libre que permite realizar informes gráficos e interactivos de forma sencilla.</source>
   <target>Otwarta aplikacja internetowa umożliwiająca łatwe tworzenie graficznych i interaktywnych raportów.</target>
@@ -4630,12 +4578,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
 <source>Configure una alerta usando el formulario de arriba para visualizar cambios en el gráfico.</source>
 <target>Aby wyświetlić zmiany na wykresie, skonfiguruj alert za pomocą formularza powyżej.</target>
 </trans-unit>
-
-<trans-unit id="panelOptions6">
-  <source>Pregunte a la IA</source>
-  <target>Zapytaj AI</target>
-</trans-unit>
-
 
 <trans-unit id="dashboardSidebarNewText">
   <source>Nuevo texto</source>
@@ -5093,15 +5035,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Ruta incorrecta para el filtro seleccionado</source>
         <target>Nieprawidłowa ścieżka dla wybranego filtra</target>
       </trans-unit>
-
-      <trans-unit id="PanelModeSelectorSQL">
-        <source>Modo SQL</source>
-        <target>Tryb SQL</target>
-      </trans-unit>
-      <trans-unit id="PanelModeSelectorTree">
-        <source>Modo Árbol</source>
-        <target>Tryb drzewa</target>
-      </trans-unit>
       <trans-unit id="filters13">
         <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
         <target>WARTOŚCI NOR NULL NOR EMPTY (nie null i != '')</target>
@@ -5121,10 +5054,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="noFilterAllowed">
         <source>Este panel no está disponible por falta de permisos en un filtro</source>
         <target>Ten panel jest niedostępny z powodu braku uprawnień do filtru. Raport otwiera się w trybie tylko do odczytu.</target>
-      </trans-unit>
-      <trans-unit id="DatePickerYearPreviousYearFull">
-        <source>El año pasado, completo</source>
-        <target>W zeszłym roku, kompletne</target>
       </trans-unit>
       <trans-unit id="whereMessage">
         <source>Filtro sobre todos los registros</source>

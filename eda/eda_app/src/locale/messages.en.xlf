@@ -4332,12 +4332,6 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Displays the percentage value of each segment</target>
 </trans-unit>
 
-
-<trans-unit id="chartLabelLinesOptionDescription">
-<source>Muestra las líneas en los puntos</source>
-<target>Shows the lines at the points</target>
-</trans-unit>
-
 <trans-unit id="panelOptions6">
 <source>Pregunte a la IA</source>
 <target>Ask the IA</target>

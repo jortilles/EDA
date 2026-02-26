@@ -5771,10 +5771,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Mostrar Predicción</source>
         <target>Mostrar Predicció</target>
       </trans-unit>
-      <trans-unit id="chartLabelLinesOptionDescription">
-        <source>Muestra las líneas en los puntos</source>
-        <target>Mostrar les línies als punts</target>
-      </trans-unit>
       <trans-unit id="chartLabelLinePredicctionOptionDescription">
         <source>Muestra las predicción de la serie</source>
         <target>Mostrar les prediccions de la sèrie</target>

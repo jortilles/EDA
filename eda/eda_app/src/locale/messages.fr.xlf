@@ -4685,11 +4685,6 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Il indique la valeur en pourcentage de chaque segment</target>
 </trans-unit>
 
-<trans-unit id="chartLabelLinesOptionDescription">
-  <source>Muestra las líneas en los puntos</source>
-  <target>Représentez les lignes aux points</target>
-</trans-unit>
-
 <trans-unit id="panelOptions6">
   <source>Pregunte a la IA</source>
   <target>Demandez à l'IA</target>
@@ -5636,6 +5631,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="correctGeoJsonFormat">
         <source>El archivo tiene un formato GeoJson válido.</source>
         <target>Le fichier possède un format GeoJSON valide.</target>
+      </trans-unit>
+      <trans-unit id="wrongGeoJsonFormat">
+        <source>El archivo no tiene un formato GeoJson válido.</source>
+        <target>Le fichier n'est pas au format GeoJSON valide.</target>
       </trans-unit>
       <trans-unit id="schemaTableDB">
         <source>e.g., schema:public,table:users</source>
