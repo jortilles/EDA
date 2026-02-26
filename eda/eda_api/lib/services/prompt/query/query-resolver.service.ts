@@ -67,7 +67,7 @@ export default class QueryResolver {
                 ]                
             } else {
 
-                if(filter.column_type === 'text' || filter.column_type === 'numeric') {
+                if(filter.column_type === 'text' || filter.column_type === 'numeric' || filter.column_type === 'coordinate') {
                     if(
                         filter.filter_type === "=" ||
                         filter.filter_type === "!=" ||
@@ -76,7 +76,7 @@ export default class QueryResolver {
                         filter.filter_type === ">=" ||
                         filter.filter_type === "<=" ||
                         filter.filter_type === "like" ||
-                        filter.filter_type === "not_like" 
+                        filter.filter_type === "not_like"
                     ) {
                         filterElements = [
                             {

@@ -3,13 +3,15 @@ import { API_KEY, MODEL, CONTEXT } from '../../../config/chatgpt.config';
 import { PromptUtil } from '../../utils/prompt.util';
 import QueryResolver from '../../services/prompt/query/query-resolver.service'
 
+// Singleton: una sola instancia reutilizada por todas las llamadas
+const openai = new OpenAI({ apiKey: API_KEY });
 
 interface PromptParameters {
-    text: string, 
-    history: any[], 
-    data: any[], 
-    schema: any[], 
-    firstTime?: boolean 
+    text: string,
+    history: any[],
+    data: any[],
+    schema: any[],
+    firstTime?: boolean
 }
 
 export class PromptService {
@@ -45,12 +47,12 @@ export class PromptService {
         }) : [];
 
 
-        // Agregamos el contexto y hacemos la consulta con todo el historial
+        // System prompt unificado + historial previo + mensaje actual del usuario
         const messages: any = [
-            { role: "system", content: CONTEXT },
-            { role: "system", content: PromptUtil.buildSystemMessage(schema)},
-            ...safeHistory
-        ];   
+            { role: "system", content: `${CONTEXT}\n\n${PromptUtil.buildSystemMessage(schema)}` },
+            ...safeHistory,
+            { role: "user", content: text }
+        ];
 
         // console.log('safeHistory: ', safeHistory);
         // console.log('messages: ', messages);
@@ -126,7 +128,6 @@ export class PromptService {
                 additionalProperties: false
             },
             strict: true,
-            auto_call: { type: "always" }
         };
 
         const getFiltersTool: any = {
@@ -172,18 +173,16 @@ export class PromptService {
                                     enum: [ "=", "!=", ">", "<", ">=", "<=", "between", "in", "not_in", "like", "not_like", "not_null", "not_null_nor_empty", "null_or_empty" ]
                                 }
                             },
-                            required: ["table", "column", "values", "filter_type"],
+                            required: ["table", "column", "column_type", "values", "filter_type"],
                             additionalProperties: false
                         }
                     }
                 },
                 required: ["filters"],
                 additionalProperties: false
-            }
+            },
+            strict: true,
         };
-
-        // Creacion de la instancia de openAI
-        const openai = new OpenAI({ apiKey: API_KEY });
 
         // Agregación de todas las funciones de llamada
         const tools: any[] = [getFieldsTool, getFiltersTool];
@@ -193,14 +192,11 @@ export class PromptService {
             model: MODEL,
             input: messages,
             tools: tools,
+            tool_choice: "required",
         })
 
         // console.log('response: ', response);
 
-
-        // recepcionamos el toolCall => podria estar undefined
-        // const toolCallOutput: any[] = response.output;
-        const toolCall: any = response.output?.find((c: any) => c.type === "function_call");
 
         const toolGetFields: any = response.output?.find((tool: any) => tool.type === "function_call" && tool.name === "getFields");
         const toolGetFilters: any = response.output?.find((tool: any) => tool.type === "function_call" && tool.name === "getFilters");
@@ -209,14 +205,19 @@ export class PromptService {
         console.log('toolGetFields ::::::::::::::::::::::: ', toolGetFields);
         console.log('toolGetFilters ::::::::::::::::::::::: ', toolGetFilters);
 
-        // Verificamos si tenemos que responder con un function calling, sino devolvemos la consulta
-        if (!toolGetFields) { // Si entramos por aqui devolvemos el response para darle otro analisis posterior
-            response.output_text = 'No pude identificar los campos necesarios. ¿Podrías reformular la consulta?'; // Esto se va a eliminar 
-            return response;
+        if (!toolGetFields) {
+            return { output_text: 'No pude identificar los campos necesarios. ¿Podrías reformular la consulta?' };
         }
 
-        if(toolGetFields?.name === "getFields"){
+        // Objeto de resultado propio, sin mutar el response de OpenAI
+        const result: any = {
+            output_text: '',
+            currentQuery: [],
+            principalTable: null,
+            selectedFilters: []
+        };
 
+        if (toolGetFields) {
             let args: any = {};
 
             try {
@@ -224,35 +225,24 @@ export class PromptService {
             } catch (error) {
                 console.error("Invalid getFields arguments:", toolGetFields.arguments);
                 console.log("Error:", error);
-                response.output_text = 'No se pudieron procesar los campos solicitados. Por favor, reformula la consulta.';
-                return response;
+                return { output_text: 'No se pudieron procesar los campos solicitados. Por favor, reformula la consulta.' };
             }
 
-            //  Validamos que args.tables sea un arreglo
             const tables = Array.isArray(args.tables) ? args.tables : [];
 
             if (tables.length === 0) {
-                response.currentQuery = [];
-                response.principalTable = null;
-                response.output_text = 'No se encontraron tablas en la consulta. Por favor, especifica la tabla.';
-                return response;
+                return { output_text: 'No se encontraron tablas en la consulta. Por favor, especifica la tabla.', currentQuery: [], principalTable: null, selectedFilters: [] };
             }
 
-            // Extraemos la tabla principal de toda la consulta 
             const principalTable = tables[0].table ?? null;
-
-            // Generando un nuevo currentQuery.
             const currentQueryTool = QueryResolver.getFields(tables, data);
 
-            // Agregado al response el currentQuery y principalTable 
-            response.currentQuery = currentQueryTool;
-            response.principalTable =  principalTable;
-
-            // Mensaje de salida
-            response.output_text = currentQueryTool.length === 0 ? 'Podrías ser más preciso en tu consulta.': 'Se ha configurado con éxito la consulta solicitada.';
+            result.currentQuery = currentQueryTool;
+            result.principalTable = principalTable;
+            result.output_text = currentQueryTool.length === 0 ? 'Podrías ser más preciso en tu consulta.' : 'Se ha configurado con éxito la consulta solicitada.';
         }
 
-        if(toolGetFilters?.name === "getFilters") {
+        if (toolGetFilters) {
             let args: any = {};
 
             try {
@@ -260,29 +250,15 @@ export class PromptService {
             } catch (error) {
                 console.error("Invalid getFilters arguments:", toolGetFilters.arguments);
                 console.log("Error:", error);
-                response.filters = [];
-                return response;
+                result.selectedFilters = [];
+                return result;
             }
 
             const filters = Array.isArray(args.filters) ? args.filters : [];
-
-            if (filters.length === 0) response.filters = [];
-            
-            // Gererando el arreglo de filtros
-            const filtersTool = QueryResolver.getFilters(filters);
-
-
-            // Subida de los filtros a la respuesta
-            response.selectedFilters = filtersTool;
-            
-            // if(filtersTool.length === 0) {
-            //     response.output_text = 'Podrias ser mas preciso en tu consulta';
-            // } else {
-            //     response.output_text = 'Se ha configurado con exito la consulta solicitada';
-            // }
+            result.selectedFilters = filters.length === 0 ? [] : QueryResolver.getFilters(filters);
         }
 
-        return response;
+        return result;
 
     }
 
