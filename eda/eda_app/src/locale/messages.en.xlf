@@ -5916,6 +5916,14 @@ OR<ph id="5"/>
     <source>Consulta con la IA</source>
     <target>Ask the AI</target>
   </trans-unit>
+<trans-unit id="filterSummary">
+  <source>Resumen de filtros</source>
+  <target>Filters Summary</target>
+</trans-unit>
+<trans-unit id="globalFilterSelectedItemsLabel">
+  <source>{0} items seleccionados</source>
+  <target>{0} items selected</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

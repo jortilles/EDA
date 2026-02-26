@@ -5772,6 +5772,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Abrir en MISMA pestaña</source>
         <target>Otwórz w tej SAMEJ karcie</target>
       </trans-unit>   
+      <trans-unit id="filterSummary">
+        <source>Resumen de filtros</source>
+        <target>Podsumowanie filtrów</target>
+      </trans-unit>
+      <trans-unit id="globalFilterSelectedItemsLabel">
+        <source>{0} items seleccionados</source>
+        <target>{0} wybranych elementów</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

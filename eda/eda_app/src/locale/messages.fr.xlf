@@ -6072,6 +6072,14 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Consulta con la IA</source>
         <target>Consultation avec l'IA</target>
       </trans-unit>
+      <trans-unit id="filterSummary">
+        <source>Resumen de filtros</source>
+        <target>Résumé des filtres</target>
+      </trans-unit>
+      <trans-unit id="globalFilterSelectedItemsLabel">
+        <source>{0} items seleccionados</source>
+        <target>{0} articles sélectionnés</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

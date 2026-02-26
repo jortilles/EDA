@@ -269,6 +269,6 @@
 <!-- Prediction Configuration Dialog -->
 @if (showPredictionDialog) {
   <app-prediction-dialog
-    [(visible)]="showPredictionDialog" [predictionMethod]="predictionMethod" [modelTables]="modelTables" (confirm)="confirmPrediction($event)" (cancel)="cancelPrediction()">
+    [(visible)]="showPredictionDialog" [predictionMethod]="predictionMethod" [queryColumns]="queryNumericColumns" (confirm)="confirmPrediction($event)" (cancel)="cancelPrediction()">
   </app-prediction-dialog>
 }
