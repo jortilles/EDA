@@ -169,7 +169,7 @@ export class PromptService {
                                 filter_type: {
                                     type: "string",
                                     description: "Type of filter to apply",
-                                    enum: [ "=", "!=", ">", "<", ">=", "<=", "between", "in", "not in", "not null", "not null and !=''", "null or = ''" ]
+                                    enum: [ "=", "!=", ">", "<", ">=", "<=", "between", "in", "not_in", "like", "not_like", "not_null", "not_null_nor_empty", "null_or_empty" ]
                                 }
                             },
                             required: ["table", "column", "values", "filter_type"],

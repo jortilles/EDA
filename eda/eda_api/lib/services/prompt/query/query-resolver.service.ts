@@ -48,6 +48,41 @@ export default class QueryResolver {
         let selectedFilters: any[] = [];
 
         filters.forEach(((filter: any) => {
+            let filterElements: any;
+            
+            if(
+                filter.filter_type === "not_null" || 
+                filter.filter_type === "not_null_nor_empty" || 
+                filter.filter_type === "null_or_empty") 
+                {
+                    filterElements = [];
+            } else if(
+                filter.filter_type === "=" ||
+                filter.filter_type === "!=" ||
+                filter.filter_type === ">" ||
+                filter.filter_type === "<" ||
+                filter.filter_type === ">=" ||
+                filter.filter_type === "<=" ||
+                filter.filter_type === "in" ||
+                filter.filter_type === "not_in" ||
+                filter.filter_type === "like" ||
+                filter.filter_type === "not_like" 
+            ) {
+                filterElements = [
+                    {
+                        value1: filter.values
+                    }
+                ]
+            } else if(
+                filter.filter_type === "between"
+            ) {
+                filterElements = [
+                    {
+                        value1: filter.values[0],
+                        value2: filter.values[1]
+                    }
+                ]
+            }
 
             const filterObject = {
                 isGlobal: false,
@@ -56,7 +91,7 @@ export default class QueryResolver {
                 filter_column: filter.column,
                 filter_column_type: filter.column_type,
                 filter_type: filter.filter_type,
-                filter_elements: filter.values,
+                filter_elements: filterElements,
                 selectedRange: null,
                 autorelation: null, 
                 joins: []                
