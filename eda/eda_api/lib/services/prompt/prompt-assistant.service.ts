@@ -169,7 +169,22 @@ export class PromptService {
                                 },
                                 filter_type: {
                                     type: "string",
-                                    description: "Type of filter to apply",
+                                    description: `
+                                        Type of filter to apply => Options:
+                                        - "=": exact match (e.g. country = 'Spain')
+                                        - "!=": not equal (e.g. status != 'inactive')
+                                        - ">": greater than (e.g. age > 30)
+                                        - "<": less than (e.g. price < 100)
+                                        - ">=": greater than or equal
+                                        - "<=": less than or equal
+                                        - "between": value is within a range, requires two values (e.g. date between '2024-01-01' and '2024-12-31')
+                                        - "in": value matches any in a list (e.g. country in ['Spain', 'France'])
+                                        - "not_in": value does not matches with the elements of the list (e.g. country not in ['Italy', 'Germany'])
+                                        - "not_like": partial text does not match
+                                        - "like": partial text match, use when the user writes a partial name or uses 'contains' / 'starts with' (e.g. name like 'Mar')
+                                        - "not_null": field has a value (is not null)
+                                        - "not_null_nor_empty": field is not null and not an empty
+                                        - "null_or_empty": field is null or empty`,
                                     enum: [ "=", "!=", ">", "<", ">=", "<=", "between", "in", "not_in", "like", "not_like", "not_null", "not_null_nor_empty", "null_or_empty" ]
                                 }
                             },
