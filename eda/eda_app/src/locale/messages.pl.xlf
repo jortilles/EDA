@@ -5317,6 +5317,11 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Plik nie ma prawidłowego formatu GeoJSON.</target>
       </trans-unit>
 
+      <trans-unit id="loadingDashboards">
+        <source>Cargando dashboards...</source>
+        <target>Ładowanie pulpitów nawigacyjnych...</target>
+      </trans-unit>
+
       <trans-unit id="logFileBtn">
         <source>Logs</source>
         <target>Logs</target>

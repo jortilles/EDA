@@ -5292,6 +5292,10 @@ Once configured you can invoke it whenever you want from the button.</target>
 <source>Gestión de logs</source>
 <target>Logs management</target>
 </trans-unit>
+<trans-unit id="loadingDashboards">
+  <source>Cargando dashboards...</source>
+  <target>Loading dashbboards...</target>
+</trans-unit>
 <trans-unit id="logFileBtn">
 <source>Logs</source>
 <target>Logs</target>

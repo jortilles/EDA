@@ -5678,6 +5678,12 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>El archivo no tiene un formato GeoJson válido.</source>
         <target>El fitxer no té un format GeoJson vàlid.</target>
       </trans-unit>
+
+      <trans-unit id="loadingDashboards">
+        <source>Cargando dashboards...</source>
+        <target>Carregant dashboards...</target>
+      </trans-unit>
+
       <trans-unit id="logFileBtn">
         <source>Logs</source>
         <target>Logs</target>
