@@ -5769,6 +5769,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Mostrar Predicción</source>
         <target>Afficher la prédiction</target>
       </trans-unit>
+      <trans-unit id="removePrediction">
+        <source>Quitar Predicción</source>
+        <target>Supprimer la prédiction</target>
+      </trans-unit>
       <trans-unit id="chartLabelLinesOptionDescription">
         <source>Muestra las líneas en los puntos</source>
         <target>Représentez les lignes aux points</target>

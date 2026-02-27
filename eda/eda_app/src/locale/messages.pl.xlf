@@ -5494,6 +5494,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Mostrar Predicción</source>
         <target>Pokaż prognozę</target>
       </trans-unit>
+      <trans-unit id="removePrediction">
+        <source>Quitar Predicción</source>
+        <target>Usuń prognozę</target>
+      </trans-unit>
       <trans-unit id="chartLabelLinesOptionDescription">
         <source>Muestra las líneas en los puntos</source>
         <target>Pokaż linie w punktach</target>

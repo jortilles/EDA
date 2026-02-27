@@ -5614,6 +5614,10 @@ OR<ph id="5"/>
   <source>Mostrar Predicción</source>
   <target>Show Prediction</target>
 </trans-unit>
+<trans-unit id="removePrediction">
+  <source>Quitar Predicción</source>
+  <target>Remove Prediction</target>
+</trans-unit>
 <trans-unit id="chartLabelLinesOptionDescription">
   <source>Muestra las líneas en los puntos</source>
   <target>Show the lines at the points</target>

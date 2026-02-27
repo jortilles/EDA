@@ -5768,6 +5768,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Mostrar Predicción</source>
         <target>Mostrar Predicció</target>
       </trans-unit>
+      <trans-unit id="removePrediction">
+        <source>Quitar Predicción</source>
+        <target>Eliminar Predicció</target>
+      </trans-unit>
       <trans-unit id="chartLabelLinesOptionDescription">
         <source>Muestra las líneas en los puntos</source>
         <target>Mostrar les línies als punts</target>
