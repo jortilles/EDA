@@ -217,18 +217,18 @@ export class PromptService {
             model: MODEL,
             input: messages,
             tools: tools,
-            tool_choice: "auto",
+            tool_choice: "required",
         })
+
+        // console.log('response: ', response);
+
 
         const toolGetFields: any = response.output?.find((tool: any) => tool.type === "function_call" && tool.name === "getFields");
         const toolGetFilters: any = response.output?.find((tool: any) => tool.type === "function_call" && tool.name === "getFilters");
 
-        // Si OpenAI no llamó ninguna función, es una respuesta conversacional
-        if (!toolGetFields && !toolGetFilters) {
-            const textOutput = response.output?.find((item: any) => item.type === "message");
-            const conversationalText = textOutput?.content?.[0]?.text ?? textOutput?.content ?? 'No pude entender la consulta. ¿Podrías reformularla?';
-            return { output_text: conversationalText, currentQuery: [], principalTable: null, selectedFilters: [], filteredColumns: [] };
-        }
+        // console.log('toolCallOutput ::::::::::::::::::::::: ', toolCallOutput);
+        console.log('toolGetFields ::::::::::::::::::::::: ', toolGetFields);
+        console.log('toolGetFilters ::::::::::::::::::::::: ', toolGetFilters);
 
         if (!toolGetFields) {
             return { output_text: 'No pude identificar los campos necesarios. ¿Podrías reformular la consulta?' };
