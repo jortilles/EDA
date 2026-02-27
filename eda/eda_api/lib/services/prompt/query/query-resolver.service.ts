@@ -115,9 +115,12 @@ export default class QueryResolver {
 
     static getFilteredColumns(filters: any[], currentQuery: any[]) {
 
-        let filtredColumns: any[] = [];
+        let filteredColumns: any[] = [];
 
         filters.forEach((filter: any) => {
+
+            console.log('filter: ', filter);
+
             if(!currentQuery.some((column: any) => column.table_id === filter.table && column.column_name === filter.column)) {
                 let aggregation_type: any = {}
 
@@ -145,7 +148,7 @@ export default class QueryResolver {
                     ]
                 }
 
-                filtredColumns.push({
+                filteredColumns.push({
                     aggregation_type: aggregation_type,
                     column_granted_roles: [],
                     column_name: filter.column,
@@ -167,7 +170,7 @@ export default class QueryResolver {
             }
         })        
 
-        return filtredColumns;
+        return filteredColumns;
     }
 
 }

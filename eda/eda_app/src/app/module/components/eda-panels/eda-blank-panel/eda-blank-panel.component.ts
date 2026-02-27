@@ -2014,7 +2014,10 @@ private assignLevels(nodes: any[], level = 0): void {
 
     newSelectedFiltersUpdate(event: any) {
         const {filteredColumns, selectedFilters} = event
-        console.log('event llegado .... ', event);
+        console.log('EVENTTTTTTTTT .... ', event);
+        console.log('filteredColumns .... ', filteredColumns);
+        console.log('selectedFilters .... ', selectedFilters);
+
         console.log('selectedFilters ===> ', this.selectedFilters)
         console.log('filtredColumns ===> ', this.filtredColumns)
 
