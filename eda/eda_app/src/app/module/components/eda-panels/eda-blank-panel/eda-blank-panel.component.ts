@@ -2013,7 +2013,15 @@ private assignLevels(nodes: any[], level = 0): void {
     }
 
     newSelectedFiltersUpdate(event: any) {
+        const {filteredColumns, selectedFilters} = event
         console.log('event llegado .... ', event);
+        console.log('selectedFilters ===> ', this.selectedFilters)
+        console.log('filtredColumns ===> ', this.filtredColumns)
+
+        this.selectedFilters = _.cloneDeep(selectedFilters)
+        this.filtredColumns = _.cloneDeep(filteredColumns)
+
+        // debugger;
     }
 
     trackByTable(index: number, table: any): any {

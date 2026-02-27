@@ -29,7 +29,7 @@ export class PromptComponent implements OnInit {
     @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
     @Input() edaBlankPanel: EdaBlankPanelComponent;
     @Output() newCurrentQuery: EventEmitter<any[]> = new EventEmitter();
-    @Output() newSelectedFilters: EventEmitter<any[]> = new EventEmitter();
+    @Output() newSelectedFilters: EventEmitter<any> = new EventEmitter();
     @Output() principalTable: EventEmitter<any> = new EventEmitter();
 
     // Variable almacenada temporalmente en el EDA-BLANK-PANEL
@@ -49,6 +49,7 @@ export class PromptComponent implements OnInit {
     ngOnInit(): void {
         const tables = this.edaBlankPanel.tables
 
+        console.log('MIRAAAAAAAAAAAAAAAAAAA => EBP: ', this.edaBlankPanel);
         console.log('MIRAAAAAAAAAAAAAAAAAAA => tables: ', tables);
         console.log('selectedFilters: ', this.edaBlankPanel.selectedFilters)
 
@@ -118,17 +119,19 @@ export class PromptComponent implements OnInit {
                 const currentQuery = resp.response.currentQuery;
                 const principalTable = resp.response.principalTable;
                 const selectedFilters = resp.response.selectedFilters;
+                const filteredColumns = resp.response.filteredColumns;
                 
                 console.log('----------- LLEGADA DE COMPONENTE -----------');
                 console.log('--> currentQuery: ', currentQuery);
                 console.log('--> principalTable: ', principalTable);
                 console.log('--> selectedFilters: ', selectedFilters);
+                console.log('--> filteredColumns: ', filteredColumns);
 
                 if(currentQuery) {
                     if( currentQuery.length !==0 ) {
                         this.newCurrentQuery.emit(currentQuery);
                         this.principalTable.emit({principalTable, currentQuery});
-                        this.newSelectedFilters.emit(selectedFilters);
+                        this.newSelectedFilters.emit({selectedFilters, filteredColumns});
                     }
                 }
                 

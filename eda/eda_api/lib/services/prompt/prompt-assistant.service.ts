@@ -229,7 +229,8 @@ export class PromptService {
             output_text: '',
             currentQuery: [],
             principalTable: null,
-            selectedFilters: []
+            selectedFilters: [],
+            filteredColumns: [],
         };
 
         if (toolGetFields) {
@@ -266,11 +267,14 @@ export class PromptService {
                 console.error("Invalid getFilters arguments:", toolGetFilters.arguments);
                 console.log("Error:", error);
                 result.selectedFilters = [];
+                result.filteredColumns = [];
                 return result;
             }
 
             const filters = Array.isArray(args.filters) ? args.filters : [];
+            const currenQuery = result.currentQuery;
             result.selectedFilters = filters.length === 0 ? [] : QueryResolver.getFilters(filters);
+            result.filteredColumns = filters.length === 0 ? [] : QueryResolver.getFilteredColumns(filters, currenQuery);
         }
 
         return result;

@@ -43,8 +43,6 @@ export default class QueryResolver {
 
     static getFilters(filters: any[]) {
         
-        console.log('filterssssssssssss : ', filters);
-        
         let selectedFilters: any[] = [];
 
         filters.forEach(((filter: any) => {
@@ -61,9 +59,7 @@ export default class QueryResolver {
                 filter.filter_type === "not_in"
             ) {
                 filterElements = [
-                    {
-                        value1: filter.values
-                    }
+                    { value1: filter.values }
                 ]                
             } else {
 
@@ -79,24 +75,20 @@ export default class QueryResolver {
                         filter.filter_type === "not_like"
                     ) {
                         filterElements = [
-                            {
-                                value1: filter.values
-                            }
+                            { value1: filter.values }
                         ]
                     } else if(filter.filter_type === "between") {
                         filterElements = [
-                            {
-                                value1: [filter.values[0]],
-                                value2: [filter.values[1]]
-                            }
+                            { value1: [filter.values[0]] },
+                            { value2: [filter.values[1]] }
                         ]
                     }
                 } else if(filter.column_type === 'date'){
                     filterElements = [
-                        {
-                            value1: [filter.values[0]],
-                            value2: [filter.values[1]]
-                        }
+                        [
+                            { value1: [filter.values[0]] },
+                            { value2: [filter.values[1]] }
+                        ]
                     ]
                 }
 
@@ -119,6 +111,63 @@ export default class QueryResolver {
         }))
 
         return selectedFilters;
+    }
+
+    static getFilteredColumns(filters: any[], currentQuery: any[]) {
+
+        let filtredColumns: any[] = [];
+
+        filters.forEach((filter: any) => {
+            if(!currentQuery.some((column: any) => column.table_id === filter.table && column.column_name === filter.column)) {
+                let aggregation_type: any = {}
+
+                if(filter.column_type === 'text') {
+                    aggregation_type = [
+                        { value: "count", display_name: "Cuenta Valores" },
+                        { value: "count_distinct", display_name: "Valores Distintos" },
+                        { value: "none", display_name: "No" },
+                    ]
+
+                } else if(filter.column_type === 'number') {
+                    aggregation_type = [
+                        { value: "sum", display_name: "Suma" },
+                        { value: "avg", display_name: "Media" },
+                        { value: "max", display_name: "Máximo" },
+                        { value: "min", display_name: "Mínimo" },
+                        { value: "count", display_name: "Cuenta Valores" },
+                        { value: "count_distinct", display_name: "Valores Distintos" },
+                        { value: "none", display_name: "No" },
+                    ]
+
+                } else if(filter.column_type === 'date' || filter.column_type === 'coordinate') {
+                    aggregation_type = [
+                        { value: "none", display_name: "No" },
+                    ]
+                }
+
+                filtredColumns.push({
+                    aggregation_type: aggregation_type,
+                    column_granted_roles: [],
+                    column_name: filter.column,
+                    column_type: filter.column_type,
+                    description: {
+                        default: filter.column,
+                        localized: [],
+                    },
+                    display_name: {
+                        default: filter.column,
+                        localized: [],
+                    },
+                    minimumFractionDigits: null,
+                    row_granted_roles: [],
+                    tableCount: 0,
+                    table_id: filter.table,
+                    visible: true,
+                })
+            }
+        })        
+
+        return filtredColumns;
     }
 
 }
