@@ -16,3 +16,12 @@
 @if(gradientMenuController){
   <eda-table-gradient-dialog  [controller]="gradientMenuController"></eda-table-gradient-dialog>
 }
+@if(showPredictionDialog){
+  <app-prediction-dialog
+    [(visible)]="showPredictionDialog"
+    [predictionMethod]="predictionMethod"
+    [queryColumns]="queryNumericColumns"
+    (confirm)="confirmPrediction($event)"
+    (cancel)="cancelPrediction()">
+  </app-prediction-dialog>
+}

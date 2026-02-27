@@ -7,23 +7,25 @@ import * as _ from 'lodash';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
-import { StyleProviderService } from '@eda/services/service.index';
+import { StyleProviderService, SpinnerService } from '@eda/services/service.index';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { MenubarModule } from 'primeng/menubar';
 import { TableGradientDialogComponent } from './gradient-dialog/gradient-dialog.component';
+import { PredictionDialogComponent, PredictionConfig, QueryColumn } from '../prediction-dialog/prediction-dialog.component';
 
 @Component({
   standalone: true,
   selector: 'app-table-dialog',
   templateUrl: './table-dialog.component.html',
   styleUrls: ['../../../../../../assets/sass/eda-styles/components/table-dialog.component.css'],
-  imports: [CommonModule, FormsModule, EdaDialog2Component, MenubarModule, TableGradientDialogComponent, PanelChartComponent]
+  imports: [CommonModule, FormsModule, EdaDialog2Component, MenubarModule, TableGradientDialogComponent, PanelChartComponent, PredictionDialogComponent]
 })
 
 export class TableDialogComponent{
   @Input() controller: any;
+  @Input() dashboard: any;
   @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
 
   public dialog: EdaDialog;
@@ -73,7 +75,14 @@ export class TableDialogComponent{
   public display: boolean = false;
   public title: string = this.tableTitleDialog;
 
-  constructor(private styleProviderService : StyleProviderService) {}
+  public showPredictionDialog: boolean = false;
+  public showPredictionCol: boolean = false;
+  public predictionMethod: string = 'Arima';
+
+  public addPrediction: string = $localize`:@@showLinesPrediction:Mostrar Predicción`;
+  public removePrediction: string = $localize`:@@removePrediction:Quitar Predicción`;
+
+  constructor(private styleProviderService: StyleProviderService, private spinnerService: SpinnerService) {}
 
   setChartProperties() {
     this.setCols();
@@ -276,6 +285,66 @@ export class TableDialogComponent{
     this.setItems(); // Aqui se busca la modificación de colores
   }
 
+  get queryNumericColumns(): QueryColumn[] {
+    const panelID = this.controller?.params?.panelId;
+    if (!panelID || !this.dashboard) return [];
+    const dashboardPanel = this.dashboard.edaPanels?.toArray().find((cmp: any) => cmp.panel.id === panelID);
+    const fields: any[] = dashboardPanel?.panel?.content?.query?.query?.fields;
+    if (!fields) return [];
+    return fields
+      .filter((f: any) => f.column_type === 'numeric')
+      .map((f: any) => ({
+        column_name: f.column_name,
+        table_id: f.table_id,
+        display_name: f.display_name?.default || f.column_name
+      }));
+  }
+
+  setPredictionCol() {
+    if (this.showPredictionCol) {
+      this.showPredictionDialog = true;
+    } else {
+      const panelID = this.controller?.params?.panelId;
+      const dashboardPanel = this.dashboard?.edaPanels?.toArray().find((cmp: any) => cmp.panel.id === panelID);
+      if (dashboardPanel) {
+        dashboardPanel.panel.content.query.query.prediction = 'None';
+        dashboardPanel.panel.content.query.query.predictionConfig = null;
+        dashboardPanel.runQueryFromDashboard(true);
+      }
+      this.setItems();
+    }
+  }
+
+  async confirmPrediction(predictionConfig: PredictionConfig) {
+    this.showPredictionDialog = false;
+    this.predictionMethod = predictionConfig.method;
+    this.spinnerService.on();
+    const panelID = this.controller?.params?.panelId;
+    const dashboardPanel = this.dashboard?.edaPanels?.toArray().find((cmp: any) => cmp.panel.id === panelID);
+    if (dashboardPanel) {
+      dashboardPanel.panel.content.query.query.prediction = predictionConfig.method;
+      dashboardPanel.panel.content.query.query.predictionConfig = {
+        steps: predictionConfig.steps,
+        targetColumn: predictionConfig.targetColumn,
+        arimaParams: predictionConfig.arimaParams,
+        tensorflowParams: predictionConfig.tensorflowParams,
+      };
+      try {
+        await dashboardPanel.runQueryFromDashboard(true);
+      } finally {
+        this.spinnerService.off();
+      }
+    } else {
+      this.spinnerService.off();
+    }
+    this.setItems();
+  }
+
+  cancelPrediction() {
+    this.showPredictionDialog = false;
+    this.showPredictionCol = false;
+  }
+
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     return this.controller.close(event, response);
   }
@@ -387,10 +456,18 @@ export class TableDialogComponent{
           icon: "pi pi-list",
           items: [
             {
-              label: this.negativeNumbers !== true ? this.withoutNegativeNumbers : this.withNegativeNumbers,   
+              label: this.negativeNumbers !== true ? this.withoutNegativeNumbers : this.withNegativeNumbers,
               command: () => this.noNegativeNumbers()
             }
           ]
+        },
+        {
+          label: this.showPredictionCol ? this.removePrediction : this.addPrediction,
+          icon: "pi pi-chart-line",
+          command: () => {
+            this.showPredictionCol = !this.showPredictionCol;
+            this.setPredictionCol();
+          }
         }
       ]
     } else {

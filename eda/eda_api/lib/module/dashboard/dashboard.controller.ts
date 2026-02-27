@@ -1797,7 +1797,7 @@ export class DashboardController {
   DashboardController.cumulativeSum(output, req.body.query);
 
   // Revisar si hay predicción y el tipo
-  if(req.body.query?.prediction && req.body.query?.prediction !== 'None' && req.body.output?.config?.chartType === 'line'){
+  if(req.body.query?.prediction && req.body.query?.prediction !== 'None' && ['line','area','table'].includes(req.body.output?.config?.chartType)) {
     await DashboardController.setupPrediction(output, req.body, myQuery, connection, dataModelObject, req.user)
   }
 
@@ -1838,6 +1838,8 @@ export class DashboardController {
 
     let predictions: number[] = [];
 
+    const isTable = body.output?.config?.chartType === 'table';
+
     // Determinar índice de la columna objetivo (común a ambos métodos)
     const targetColumnSpec = predictionConfig.targetColumn;
     let targetIndex = 1; // por defecto: primera columna numérica tras la fecha
@@ -1851,7 +1853,7 @@ export class DashboardController {
     switch(body.query?.prediction){
         case 'Arima': {
           const originalDataset = rows.map(row => row[targetIndex]).filter(val => Number.isFinite(val));
-          const setup = {steps, rows, lastIndex, nextLabels};
+          const setup = {steps, rows, lastIndex, nextLabels, isTable, labels: output[0]};
           // arimaParams puede ser undefined (usará configs automáticas) o {p,d,q} manual
           DashboardController.applyArimaPredicction(
             predictions, originalDataset, setup, predictionConfig.arimaParams, targetIndex);
@@ -1873,7 +1875,7 @@ export class DashboardController {
             }
           }
 
-          const setup = {steps, rows, lastIndex, nextLabels};
+          const setup = {steps, rows, lastIndex, nextLabels, isTable, labels: output[0]};
           // tfParams puede ser undefined o {epochs, lookback, learningRate}
           await DashboardController.applyTensorflowPredicction(
             predictions, originalDataset, setup, predictionConfig.tensorflowParams, referenceDatasets, targetIndex);
@@ -1956,7 +1958,7 @@ export class DashboardController {
   }
 
   // Formula de arima
-  static applyArimaPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels}, arimaParams?: {p: number, d: number, q: number}, targetIndex: number = 1) {
+  static applyArimaPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels:any[],isTable?:boolean,labels?:any[]}, arimaParams?: {p: number, d: number, q: number}, targetIndex: number = 1) {
     try {
       predictions = ArimaService.forecast(originalDataset, setup.steps, arimaParams);
     } catch (err) {
@@ -1964,26 +1966,39 @@ export class DashboardController {
       return;
     }
 
-    // Añadir columna de predicción a las filas históricas
-    // Solo el último punto real tiene valor para conectar visualmente ambas líneas
-    setup.rows.forEach((row, index) => {
-      row.push(index === setup.lastIndex ? row[targetIndex] : null);
-    });
+    if (setup.isTable) {
+      // Para tablas: añadir columna extra "Predicción" (histórico = 0, predichos = valor real)
+      setup.rows.forEach((row: any[]) => {
+        row.push(0);
+      });
+      if (setup.labels) setup.labels.push('Predicción');
+      const numColsWithPred = setup.rows[0].length;
+      setup.nextLabels.forEach((label, index) => {
+        const newRow = new Array(numColsWithPred).fill(null);
+        newRow[0] = label;
+        newRow[numColsWithPred - 1] = predictions[index] ?? null;
+        setup.rows.push(newRow);
+      });
+    } else {
+      const numCols = setup.rows[0].length;
+      // Para gráficos: añadir columna extra de predicción para serie visual separada
+      // Solo el último punto real tiene valor para conectar visualmente ambas líneas
+      setup.rows.forEach((row, index) => {
+        row.push(index === setup.lastIndex ? row[targetIndex] : null);
+      });
 
-    // Filas futuras: misma cantidad de columnas que las históricas,
-    // solo fecha (índice 0) y predicción (último índice) con valores; el resto null
-    const numCols = setup.rows[0].length;
-    setup.nextLabels.forEach((label, index) => {
-      const newRow = new Array(numCols).fill(null);
-      newRow[0] = label;
-      newRow[numCols - 1] = predictions[index] ?? null;
-      setup.rows.push(newRow);
-    });
-
+      const numColsWithPred = numCols + 1;
+      setup.nextLabels.forEach((label, index) => {
+        const newRow = new Array(numColsWithPred).fill(null);
+        newRow[0] = label;
+        newRow[numColsWithPred - 1] = predictions[index] ?? null;
+        setup.rows.push(newRow);
+      });
+    }
   }
 
   // Predicción con TensorFlow
-  static async applyTensorflowPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels}, tfParams?: any, referenceDatasets?: number[][], targetIndex: number = 1) {
+  static async applyTensorflowPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels:any[],isTable?:boolean,labels?:any[]}, tfParams?: any, referenceDatasets?: number[][], targetIndex: number = 1) {
     try {
       predictions = await TensorflowService.forecast(originalDataset, setup.steps, tfParams, referenceDatasets);
     } catch (err) {
@@ -1991,21 +2006,36 @@ export class DashboardController {
       return;
     }
 
-    // Añadir columna de predicción a las filas históricas (join visual en el último punto real)
-    setup.rows.forEach((row, index) => {
-      row.push(index === setup.lastIndex ? row[targetIndex] : null);
-    });
-
-    // Filas futuras: misma cantidad de columnas que las históricas,
-    // solo fecha (índice 0) y predicción (último índice) con valores; el resto null
     const numCols = setup.rows[0].length;
-    setup.nextLabels.forEach((label, index) => {
-      const newRow = new Array(numCols).fill(null);
-      newRow[0] = label;
-      newRow[numCols - 1] = predictions[index] ?? null;
-      setup.rows.push(newRow);
-    });
 
+    if (setup.isTable) {
+      // Para tablas: añadir columna extra "Predicción" (histórico = 0, predichos = valor real)
+      setup.rows.forEach(row => {
+        row.push(0);
+      });
+      if (setup.labels) setup.labels.push('Predicción');
+      const numColsWithPred = setup.rows[0].length;
+      setup.nextLabels.forEach((label, index) => {
+        const newRow = new Array(numColsWithPred).fill(null);
+        newRow[0] = label;
+        newRow[numColsWithPred - 1] = predictions[index] ?? null;
+        setup.rows.push(newRow);
+      });
+    } else {
+      // Para gráficos: añadir columna extra de predicción para serie visual separada
+      // Solo el último punto real tiene valor para conectar visualmente ambas líneas
+      setup.rows.forEach((row, index) => {
+        row.push(index === setup.lastIndex ? row[targetIndex] : null);
+      });
+
+      const numColsWithPred = setup.rows[0].length;
+      setup.nextLabels.forEach((label, index) => {
+        const newRow = new Array(numColsWithPred).fill(null);
+        newRow[0] = label;
+        newRow[numColsWithPred - 1] = predictions[index] ?? null;
+        setup.rows.push(newRow);
+      });
+    }
   }
 
   /**
