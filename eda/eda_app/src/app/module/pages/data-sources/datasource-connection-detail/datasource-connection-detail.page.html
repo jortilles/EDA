@@ -546,7 +546,7 @@
               </div>
 
               <!-- SSL Connection Option -->
-              @if (['postgres', 'mysql','sqlserver'].includes(connectionForm.get('type')?.value)) {
+              @if (['postgres', 'mysql','sqlserver','clickhouse'].includes(connectionForm.get('type')?.value)) {
               <div class="flex items-start space-x-2">
                 <div class="flex h-5 items-center">
                   <input id="sslConnection" type="checkbox" formControlName="ssl"

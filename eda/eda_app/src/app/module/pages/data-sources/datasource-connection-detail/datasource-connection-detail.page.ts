@@ -60,6 +60,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     { label: 'Oracle', value: 'oracle', port: 1521 },
     { label: 'BigQuery', value: 'bigquery', port: null },
     { label: 'SnowFlake', value: 'snowflake', port: null },
+    { label: 'ClickHouse', value: 'clickhouse', port: 8123 },
     { label: 'jsonWebService', value: 'jsonwebservice' },
     { label: 'Mongo', value: 'mongo', port: 27017 },
     { label: 'Excel', value: 'excel', port: 27017 },
