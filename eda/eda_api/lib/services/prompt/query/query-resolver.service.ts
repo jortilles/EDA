@@ -45,8 +45,8 @@ export default class QueryResolver {
         
         let selectedFilters: any[] = [];
 
-        filters.forEach(((filter: any) => {
-            let filterElements: any;
+        filters.forEach((filter: any) => {
+            let filterElements: any[] = [];
             
             if(
                 filter.filter_type === "not_null" || 
@@ -85,11 +85,9 @@ export default class QueryResolver {
                     }
                 } else if(filter.column_type === 'date'){
                     filterElements = [
-                        [
                             { value1: [filter.values[0]] },
                             { value2: [filter.values[1]] }
                         ]
-                    ]
                 }
 
             }
@@ -108,7 +106,7 @@ export default class QueryResolver {
             }
 
             selectedFilters.push(filterObject);
-        }))
+        })
 
         return selectedFilters;
     }
@@ -122,7 +120,7 @@ export default class QueryResolver {
             console.log('filter: ', filter);
 
             if(!currentQuery.some((column: any) => column.table_id === filter.table && column.column_name === filter.column)) {
-                let aggregation_type: any = {}
+                let aggregation_type: any[] = [];
 
                 if(filter.column_type === 'text') {
                     aggregation_type = [
