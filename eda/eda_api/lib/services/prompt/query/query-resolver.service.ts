@@ -128,7 +128,7 @@ export default class QueryResolver {
                         { value: "none", display_name: "No" },
                     ]
 
-                } else if(filter.column_type === 'number') {
+                } else if(filter.column_type === 'numeric') {
                     aggregation_type = [
                         { value: "sum", display_name: "Suma" },
                         { value: "avg", display_name: "Media" },

@@ -20,12 +20,12 @@ export class PromptUtil {
     getFields — REQUIRED whenever the message describes what data the user wants to see.
 
     getFilters — REQUIRED whenever the message includes ANY condition, restriction, or selection criteria.
-      Words and patterns that ALWAYS trigger getFilters:
-      · partial text      → "that contain", "that start with", "that include", "whose name is", "that end with"
-      · comparison        → "greater than", "less than", "equal to", "not equal to", "between X and Y"
-      · list of values    → "that are X or Y", "only X", "except X", "that are not"
-      · nullability       → "that have a value", "that are not empty", "with no data"
-      · date              → "from the year", "in January", "from", "until", "in the month of"
+      Words and patterns that ALWAYS trigger getFilters (English / Spanish):
+      · partial text      → "that contain" / "que contiene", "that start with" / "que empieza por", "whose name is" / "cuyo nombre es"
+      · comparison        → "greater than" / "mayor que", "less than" / "menor que", "equal to" / "igual a", "not equal to" / "distinto de", "between X and Y" / "entre X e Y"
+      · list of values    → "that are X or Y" / "que sean X o Y", "only X" / "solo X", "except X" / "excepto X", "that are not" / "que no sean"
+      · nullability       → "that have a value" / "que tienen valor", "that are not empty" / "que no están vacíos", "with no data" / "sin datos"
+      · date              → "from the year" / "del año", "in January" / "en enero", "from" / "desde", "until" / "hasta", "in the month of" / "en el mes de"
 
     If ALL functions apply, you MUST call them in the SAME response.
 

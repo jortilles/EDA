@@ -133,7 +133,17 @@ export class PromptService {
         const getFiltersTool: any = {
             type: "function",
             name: "getFilters",
-            description: "Creates multiple filters for different columns or fields. All columns or fields are defined in the schema",
+            description: `
+            IMPORTANT: This tool MUST be called whenever the user query contains any filtering condition, comparison, restriction, or specific value constraint.
+            Trigger patterns (call getFilters if ANY of these appear):
+            - Comparisons: "menor que" / "less than", "mayor que" / "greater than", "igual a" / "equal to", "distinto de" / "not equal to"
+            - Ranges: "entre X e Y" / "between X and Y"
+            - Specific values: "solo X" / "only X", "excepto X" / "except X", "que sean X o Y" / "that are X or Y"
+            - Text matching: "que contiene" / "that contains", "que empieza por" / "that starts with"
+            - Nullability: "que tienen valor" / "that have a value", "que no están vacíos" / "not empty", "sin datos" / "with no data"
+            - Dates: "del año" / "from the year", "desde" / "from", "hasta" / "until", "en enero" / "in January"
+            Creates filter objects for each condition found. All columns and tables are defined in the schema.
+            `,
             parameters: {
                 type: "object",
                 properties: {
