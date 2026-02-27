@@ -2,7 +2,9 @@
   [overflow]="'auto'" (apply)="saveChartConfig()" (close)="closeChartConfig()">
   <div content class="p-6">
     <div style="margin: 1em;">
-      <p-progressBar *ngIf="activateProgressBar" mode="indeterminate" [style]="{'height': '0.3rem'}"></p-progressBar>
+      @if(activateProgressBar){
+        <p-progressBar mode="indeterminate" [style]="{'height': '0.3rem'}"></p-progressBar>
+      }
     </div>
 
     <!-- CASE chart + edaquery -->

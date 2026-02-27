@@ -31,7 +31,7 @@
 /* contiene todos los filtros*/
 .filters-container {
   display: ruby;
-  max-width: 80vw;
+  max-width: 70vw;
   flex-wrap: wrap;
   align-content: flex-start;
   gap: 1rem;
@@ -39,6 +39,39 @@
   scrollbar-color: #cbd5e1 transparent;
 }
 
+
+.filter-tooltip-button{
+    color: #7E8490;
+    background: transparent;
+    border: none;
+    height: 1.5rem;
+    width: 1.5rem;
+    float: right;
+    cursor: pointer;
+}
+
+.filter-tooltip-button:hover{
+  transition: color 0.3s ease;
+    color: red;
+}
+.filter-tooltip-text{
+    padding: 2px 6px; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    white-space: nowrap;
+}
+.filter-tooltip-container{
+    display: grid; 
+    grid-template-columns: 100% 10%; 
+    align-items: center; 
+    padding: 0.25rem; 
+    gap: 4px;
+}
+
+.filter-tooltip-container:hover{
+  transition: color 0.2s ease;;
+  background-color: #e5e7eb;
+}
 /* filtro individual */
 .filter-card {
   flex: 0 0 auto;
@@ -48,6 +81,14 @@
 ::ng-deep .p-multiselect {
   max-width: 10vw;
   min-width: 10vw;
+}
+
+/* flecha tooltip de filtro */
+::ng-deep .p-overlaypanel:before {
+  border: solid transparent !important;
+  border-bottom-color: #ffffff !important;
+  border-width: 10px !important;
+  margin-left: -10px !important;
 }
 
 /*****************/

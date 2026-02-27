@@ -2,7 +2,6 @@ import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef }
 import { StyleProviderService } from '@eda/services/service.index';
 import { registerLocaleData } from '@angular/common';
 import { EdaKpi } from './eda-kpi';
-import { EdaChart } from '../eda-chart/eda-chart';
 import es from '@angular/common/locales/es';
 import { EdaChartComponent } from '../eda-chart/eda-chart.component';
 
@@ -124,6 +123,10 @@ export class EdaKpiComponent implements OnInit {
         // Si tengo ung gráfico lo hago más pequeño
         if (this.inject.showChart) {
             resultSize = resultSize / 1.8;
+        }
+        const isMobile = window.innerWidth < 640;
+        if(isMobile) {
+            resultSize = 40;
         }
         return resultSize.toFixed().toString() + 'px';
     }

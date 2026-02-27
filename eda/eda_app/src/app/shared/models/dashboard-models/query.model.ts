@@ -24,7 +24,13 @@ export interface Query {
         joinType: string,
         forSelector?: boolean,
         rootTable: string,
-        prediction?: string, 
+        prediction?: string,
+        predictionConfig?: {
+            steps?: number,
+            targetColumn?: { column_name: string, table_id: string },
+            arimaParams?: { p: number, d: number, q: number },
+            tensorflowParams?: { epochs: number, lookback: number, learningRate: number },
+        },
 
     };
     output: {

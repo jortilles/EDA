@@ -8,6 +8,7 @@ import Group from '../admin/groups/model/group.model'
 import formatDate from '../../services/date-format/date-format.service'
 import { CachedQueryService } from '../../services/cache-service/cached-query.service'
 import { ArimaService } from '../../services/prediction/arima.service'
+import { TensorflowService } from '../../services/prediction/tensorflow.service'
 import { TimeFormatService } from '../../services/time-format/time-format.service'
 import { QueryOptions } from 'mongoose'
 import ServerLogService from '../../services/server-log/server-log.service'
@@ -483,7 +484,6 @@ export class DashboardController {
         // Obtener el dashboard
         const dashboard = await Dashboard.findById(req.params.id);
         if (!dashboard) {
-          console.log('Dashboard not found with this id:' + req.params.id);
           return next(new HttpException(500, 'Dashboard not found with this id'));
         }
 
@@ -499,7 +499,6 @@ export class DashboardController {
           dashboard.user.toString() !== user;
 
         if (visibilityCheck && roleCheck) {
-          console.log("You don't have permission " + user + ' for dashboard ' + req.params.id);
           return next(new HttpException(500, "You don't have permission"));
         }
 
@@ -1797,8 +1796,10 @@ export class DashboardController {
   // Suma acumulativa
   DashboardController.cumulativeSum(output, req.body.query);
 
-  // ARIMA (si aplica)
-  DashboardController.applyArimaIfNeeded(output, req.body, myQuery );
+  // Revisar si hay predicción y el tipo
+  if(req.body.query?.prediction && req.body.query?.prediction !== 'None' && req.body.output?.config?.chartType === 'line'){
+    await DashboardController.setupPrediction(output, req.body, myQuery, connection, dataModelObject, req.user)
+  }
 
   console.log(
     '\x1b[32m%s\x1b[0m',
@@ -1814,55 +1815,198 @@ export class DashboardController {
     }
   }
   
-  // Formula de arima
-  static applyArimaIfNeeded(output: any, body: any, myQuery: any) {
-    // Si no tenemos arima o no estamos en linea, salimos
-    if (body.query?.prediction !== 'Arima' || body.output.config.chartType !== 'line' ) {
-      return;
-    }
 
-    // Número de fechas a predecir
-    const steps = 3;
+  static async setupPrediction(output: any, body: any, myQuery: any, connection?: any, dataModelObject?: any, user?: any){
+    // Leer configuración de predicción del body
+    const predictionConfig = body.query?.predictionConfig || {};
+    const steps = predictionConfig.steps || 3;
 
-    // Buscamos campo de la fecha, su formato y su último valor
+    // Buscamos campo de la fecha — sin él no podemos generar fechas futuras
     const dateField = myQuery.fields.find(field => field.column_type === 'date');
     if (!dateField){
       return;
-    } 
-    
+    }
+
     const timeFormat = dateField.format;
     const lastDate = output[1][output[1].length - 1][0];
 
-    // A partir de los datos anteriores generamos las proximas fechas
+    // Generamos las próximas fechas en el mismo formato que las existentes (mes, semana, día...)
     const nextLabels = TimeFormatService.nextInSequenceGeneric( timeFormat, lastDate, steps );
 
     const rows = output[1];
     const lastIndex = rows.length - 1;
-    const originalDataset = rows.map(row => row[1]).filter(val => Number.isFinite(val));
 
     let predictions: number[] = [];
 
+    // Determinar índice de la columna objetivo (común a ambos métodos)
+    const targetColumnSpec = predictionConfig.targetColumn;
+    let targetIndex = 1; // por defecto: primera columna numérica tras la fecha
+    if (targetColumnSpec) {
+      const idx = myQuery.fields.findIndex(f =>
+        f.column_name === targetColumnSpec.column_name && f.table_id === targetColumnSpec.table_id
+      );
+      if (idx >= 0) targetIndex = idx;
+    }
+
+    switch(body.query?.prediction){
+        case 'Arima': {
+          const originalDataset = rows.map(row => row[targetIndex]).filter(val => Number.isFinite(val));
+          const setup = {steps, rows, lastIndex, nextLabels};
+          // arimaParams puede ser undefined (usará configs automáticas) o {p,d,q} manual
+          DashboardController.applyArimaPredicction(
+            predictions, originalDataset, setup, predictionConfig.arimaParams, targetIndex);
+          break;
+        }
+        case 'Tensorflow': {
+          // Dataset objetivo
+          const originalDataset = rows.map(row => row[targetIndex]).filter(val => Number.isFinite(val));
+
+          // Extraer referenceDatasets directamente de las filas del resultado (todas las columnas numéricas excepto la objetivo)
+          const referenceDatasets: number[][] = [];
+          for (let i = 0; i < myQuery.fields.length; i++) {
+            if (i === targetIndex) continue;
+            if (myQuery.fields[i].column_type === 'numeric') {
+              const refData = rows.map(row => row[i]).filter((val): val is number => Number.isFinite(val));
+              if (refData.length >= 4) {
+                referenceDatasets.push(refData);
+              }
+            }
+          }
+
+          const setup = {steps, rows, lastIndex, nextLabels};
+          // tfParams puede ser undefined o {epochs, lookback, learningRate}
+          await DashboardController.applyTensorflowPredicction(
+            predictions, originalDataset, setup, predictionConfig.tensorflowParams, referenceDatasets, targetIndex);
+          break;
+        }
+      }
+  }
+
+  // encontrar los datasets de las columnas de referencia para la predicción multivariante con TensorFlow. Cada dataset es un array de números alineado con el campo de fecha.
+  static async fetchReferenceDatasets(referenceColumns: {table_name: string, column_name: string}[],
+    dateField: any, myQuery: any, connection: any, dataModelObject: any, user: any, queryLimit?: number ): Promise<number[][]> {
+    const referenceDatasets: number[][] = [];
+
+    for (const refCol of referenceColumns) {
+      // Encontrar tablas
+      const table = dataModelObject.ds?.model?.tables?.find(t => t.table_name === refCol.table_name);
+      if (!table) {
+        console.warn(`[Prediction] Reference table not found: ${refCol.table_name}`);
+        continue;
+      }
+      // Encontrar columnas
+      const colDef = table.columns?.find(c => c.column_name === refCol.column_name);
+      if (!colDef) {
+        console.warn(`[Prediction] Reference column not found: ${refCol.column_name} in ${refCol.table_name}`);
+        continue;
+      }
+
+      // Build a query with the same date field + this reference column
+      const refQuery = {
+        fields: [
+          { ...dateField },  // Same date field as main query for alignment
+          {
+            column_name: colDef.column_name,
+            column_type: colDef.column_type || 'numeric',
+            table_id: refCol.table_name,
+            display_name: colDef.display_name?.default || colDef.column_name,
+            order: 0,
+            aggregation_type: 'sum',
+          }
+        ],
+        filters: myQuery.filters || [],
+        queryMode: myQuery.queryMode || 'EDA',
+        simple: myQuery.simple,
+        joinType: myQuery.joinType || 'inner',
+      };
+
+      try {
+        const refQueryBuilt = await connection.getQueryBuilded(refQuery, dataModelObject, user, queryLimit);
+        connection.client = await connection.getclient();
+        const refResults = await connection.execQuery(refQueryBuilt);
+
+        // Extract numeric values from results (column index 1 = the reference column)
+        let dataset: number[];
+        if (Array.isArray(refResults) && refResults.length > 0) {
+          if (Array.isArray(refResults[0])) {
+            // MongoDB format: already arrays
+            dataset = refResults.map(row => row[1]).filter(val => Number.isFinite(val));
+          } else {
+            // SQL format: objects
+            const keys = Object.keys(refResults[0]);
+            const valueKey = keys[1]; // Second column is the numeric value
+            dataset = refResults.map(row => {
+              const val = parseFloat(row[valueKey]);
+              return isNaN(val) ? null : val;
+            }).filter(val => val !== null && Number.isFinite(val));
+          }
+        }
+
+        if (dataset && dataset.length > 0) {
+          referenceDatasets.push(dataset);
+        } else {
+          console.warn(`[Prediction] No data for reference column ${refCol.table_name}.${refCol.column_name}`);
+        }
+      } catch (err) {
+        console.warn(`[Prediction] Failed to fetch reference column ${refCol.table_name}.${refCol.column_name}:`, err.message);
+      }
+    }
+
+    return referenceDatasets;
+  }
+
+  // Formula de arima
+  static applyArimaPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels}, arimaParams?: {p: number, d: number, q: number}, targetIndex: number = 1) {
     try {
-      // Calculamos las predicciones a través del servicio ARIMA
-      predictions = ArimaService.forecast(originalDataset, steps);
+      predictions = ArimaService.forecast(originalDataset, setup.steps, arimaParams);
     } catch (err) {
       console.error('Error ARIMA:', err);
       return;
     }
 
-    // Añadir columna predictionet
-    rows.forEach((row, index) => {
-      row.push(index === lastIndex ? row[1] : null);
+    // Añadir columna de predicción a las filas históricas
+    // Solo el último punto real tiene valor para conectar visualmente ambas líneas
+    setup.rows.forEach((row, index) => {
+      row.push(index === setup.lastIndex ? row[targetIndex] : null);
     });
 
-    // Añadir fila de fechas
-    nextLabels.forEach((label, index) => {
-      rows.push([label, null, predictions[index] ?? null]);
+    // Filas futuras: misma cantidad de columnas que las históricas,
+    // solo fecha (índice 0) y predicción (último índice) con valores; el resto null
+    const numCols = setup.rows[0].length;
+    setup.nextLabels.forEach((label, index) => {
+      const newRow = new Array(numCols).fill(null);
+      newRow[0] = label;
+      newRow[numCols - 1] = predictions[index] ?? null;
+      setup.rows.push(newRow);
     });
 
-    console.log('Predicción ARIMA aplicada');
   }
 
+  // Predicción con TensorFlow
+  static async applyTensorflowPredicction(predictions: number[], originalDataset: any, setup: {steps,rows,lastIndex,nextLabels}, tfParams?: any, referenceDatasets?: number[][], targetIndex: number = 1) {
+    try {
+      predictions = await TensorflowService.forecast(originalDataset, setup.steps, tfParams, referenceDatasets);
+    } catch (err) {
+      console.error('Error TensorFlow:', err);
+      return;
+    }
+
+    // Añadir columna de predicción a las filas históricas (join visual en el último punto real)
+    setup.rows.forEach((row, index) => {
+      row.push(index === setup.lastIndex ? row[targetIndex] : null);
+    });
+
+    // Filas futuras: misma cantidad de columnas que las históricas,
+    // solo fecha (índice 0) y predicción (último índice) con valores; el resto null
+    const numCols = setup.rows[0].length;
+    setup.nextLabels.forEach((label, index) => {
+      const newRow = new Array(numCols).fill(null);
+      newRow[0] = label;
+      newRow[numCols - 1] = predictions[index] ?? null;
+      setup.rows.push(newRow);
+    });
+
+  }
 
   /**
    * Executa una consulta SQL  per un dashboard

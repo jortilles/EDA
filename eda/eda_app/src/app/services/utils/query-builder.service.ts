@@ -14,6 +14,7 @@ export interface QueryParams {
     joinType?:string;
     groupByEnabled?: boolean,
     prediction?: string,
+    predictionConfig?: any,
     forSelector?: boolean;
     connectionProperties?: any;
     rootTable?: string;
@@ -141,6 +142,7 @@ export class QueryBuilderService extends ApiService {
                 queryLimit : params.queryLimit,
                 groupByEnabled: params.groupByEnabled,
                 prediction: params.prediction,
+                predictionConfig: params.predictionConfig,
                 joinType: params.joinType,
                 forSelector: params.forSelector,
                 rootTable: params.rootTable,

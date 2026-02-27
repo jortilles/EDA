@@ -160,8 +160,12 @@
               class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-gray-800 dark:focus-visible:ring-[#00BFB3] bg-[#00BFB3] text-white hover:bg-[#00BFB3]/90 h-10 px-4 py-2 w-full"
               [disabled]="!profileImage() || isUploading()"
             >
-              <span *ngIf="isUploading()" i18n="@@uploadingProfilePic">Subiendo...</span>
-              <span *ngIf="!isUploading()" i18n="@@updateProfilePic">Actualizar foto</span>
+              @if(isUploading()){
+                <span i18n="@@uploadingProfilePic">Subiendo...</span>
+              }
+              @if(!isUploading()){
+                <span i18n="@@updateProfilePic">Actualizar foto</span>
+              }
             </button>
           </div>
         </div>

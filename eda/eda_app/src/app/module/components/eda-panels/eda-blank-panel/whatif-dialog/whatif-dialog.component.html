@@ -91,25 +91,27 @@
       </div>
 
       <!-- CurrentQuery -->
-      <div *ngIf="currentQuery.length > 0" class="mt-2 bg-gray-50 dark:bg-gray-700 rounded-md border border-gray-200 dark:border-gray-600 min-h-52 overflow-y-auto">
-        <div class="p-3 flex flex-wrap gap-2">
-          <ng-container *ngFor="let column of currentQuery">
-            @if (column?.whatif_column) {
-              <div 
-                class="inline-flex items-center rounded-full bg-gray-200 dark:bg-gray-600 px-3 py-1 text-sm text-gray-800 dark:text-gray-200">
-                {{column.display_name.default}}
-                <button 
-                  (click)="removeWhatIfColumn(column)" 
-                  class="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-                  <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                  </svg>
-                </button>
-              </div>
-            }
-          </ng-container>
+      @if(currentQuery.length > 0){
+        <div class="mt-2 bg-gray-50 dark:bg-gray-700 rounded-md border border-gray-200 dark:border-gray-600 min-h-52 overflow-y-auto">
+          <div class="p-3 flex flex-wrap gap-2">
+            <ng-container *ngFor="let column of currentQuery">
+              @if (column?.whatif_column) {
+                <div 
+                  class="inline-flex items-center rounded-full bg-gray-200 dark:bg-gray-600 px-3 py-1 text-sm text-gray-800 dark:text-gray-200">
+                  {{column.display_name.default}}
+                  <button 
+                    (click)="removeWhatIfColumn(column)" 
+                    class="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  </button>
+                </div>
+              }
+            </ng-container>
+          </div>
         </div>
-      </div>
+      }
     </div>
 
 </eda-dialog2>

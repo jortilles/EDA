@@ -202,6 +202,8 @@ export class DashboardPage implements OnInit {
     this.stylesProviderService.setStyles(this.stylesProviderService.generateDefaultStyles())
     this.stylesProviderService.loadingFromPalette = false;
     this.stopRefresh = true;
+    this.dashboard.config.stopRefresh = true;
+    clearInterval(this.countdownInterval);
       if (this.edaPanelsSubscription) {
           this.edaPanelsSubscription.unsubscribe();
       }
@@ -255,7 +257,7 @@ export class DashboardPage implements OnInit {
     //https://github.com/tiberiuzuld/angular-gridster2/blob/master/src/assets/gridTypes.md
     if (width < mobileBreakpoint) {
       // En modo móvil: altura fija por celda para que los paneles tengan un tamaño razonable
-      this.gridsterOptions.fixedRowHeight = 150;
+      this.gridsterOptions.fixedRowHeight = 100;
     } else {
       let cellSize = Math.floor(width / cols);
       if(cellSize < 30){
@@ -264,7 +266,8 @@ export class DashboardPage implements OnInit {
       }
       this.gridsterOptions.fixedRowHeight = cellSize;
     }
-   this.gridsterOptions.api?.optionsChanged();
+    this.sortPanelsForMobile();
+    this.gridsterOptions.api?.optionsChanged();
   }
 
   public async loadDashboard() {
@@ -281,6 +284,7 @@ export class DashboardPage implements OnInit {
       this.globalFilter?.initOrderDependentFilters(dashboard.config.orderDependentFilters || []); // Filtros dependientes
       this.globalFilter?.initGlobalFilters(dashboard.config.filters || []);// Filtres del dashboard
       this.initPanels(dashboard);
+      this.sortPanelsForMobile();
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
       this.getUrlParams();
       this.globalFilter.findGlobalFilterByUrlParams(this.queryParams);
@@ -495,7 +499,8 @@ export class DashboardPage implements OnInit {
     }
 
     let valor = this.getBottomMostItem();
-    this.height = valor !== undefined ? (valor.y + valor.rows + 2) * 32 : 750;
+    const rowHeight = this.gridsterOptions.fixedRowHeight || 150;
+    this.height = valor !== undefined ? (valor.y + valor.rows + 4) * rowHeight + 150 : 750;
     this.cdr.detectChanges();
     this.stylesProviderService.loadedPanels--;
   }
@@ -1151,20 +1156,24 @@ public startCountdown(seconds: number) {
 
   triggerTimer() {
 
-    this.stopRefresh = !this.stopRefresh;
+    // Si hay tiempo config lo paramos
+    this.dashboard.config.stopRefresh = true;
+    clearInterval(this.countdownInterval);
 
     //Give time to stop counter if any
     setTimeout(() => {
-        if (!this.refreshTime) this.stopRefresh = true;
-        else if (this.refreshTime) this.stopRefresh = false;
-
-        if (this.refreshTime && this.refreshTime < 5) this.refreshTime = 5;
-
-        this.startCountdown(this.refreshTime);
-
-    }, 2000)
-
-  } 
+        const refreshTime = this.dashboard.config.refreshTime;
+        // si no hay tiempo de refresh, no lanzamos el contador
+        if (!refreshTime) {
+            this.dashboard.config.stopRefresh = true;
+            return;
+        }
+        // si el tiempo de refresh es menor a 5 segundos, lo ponemos a 5 segundos         if (refreshTime < 5) this.dashboard.config.refreshTime = 5;
+        this.dashboard.config.stopRefresh = false;
+        // lanzamos el contador
+        this.startCountdown(this.dashboard.config.refreshTime);
+    }, 2000);
+  }
 
   public validateDashboard(action: string): boolean {
     let isvalid = true;
@@ -1236,10 +1245,16 @@ public startCountdown(seconds: number) {
   // Función que cambia el valor de la altura del gridster cada vez que hay un cambio en el elemento
   onItemChange(item: GridsterItem): void {
     if (this.panels) {
-      let valor = this.getBottomMostItem();
-      this.height = ((valor.y + valor.rows  + 4 ) * 50);
-      this.cdr.detectChanges();
-    } 
+      const rowHeight = this.gridsterOptions.fixedRowHeight || 150;
+      const isMobile = window.innerWidth < (this.gridsterOptions.mobileBreakpoint || 640);
+      if (isMobile) {
+        this.updateMobileHeight();
+      } else {
+        let valor = this.getBottomMostItem();
+        this.height = ((valor.y + valor.rows + 4) * rowHeight) + 250;
+        this.cdr.detectChanges();
+      }
+    }
   }
 
 
@@ -1298,5 +1313,29 @@ public startCountdown(seconds: number) {
       });
     }
     return tableMatch && columnMatch && labelMatch;
+  }
+
+  // Funciones auxiliares para mobile 
+  private updateMobileHeight(): void {
+    const interval = setInterval(() => {
+      if (this.stylesProviderService.loadedPanels <= 0) {
+        clearInterval(interval);
+        const gridsterEl = document.querySelector('gridster') as HTMLElement;
+        if (gridsterEl) {
+          this.height = gridsterEl.offsetHeight + 50;
+          this.cdr.detectChanges();
+        }
+      }
+    }, 100);
+    setTimeout(() => clearInterval(interval), 15000);
+  }
+  
+  private sortPanelsForMobile(): void {
+    if (!this.panels?.length) return;
+    const isMobile = window.innerWidth < (this.gridsterOptions.mobileBreakpoint || 640);
+    if (isMobile) {
+      this.panels.sort((a, b) => Math.floor(a.y / 10) - Math.floor(b.y / 10) || Math.floor(a.x / 10) - Math.floor(b.x / 10));
+      this.updateMobileHeight();
+    }
   }
 }

@@ -33,12 +33,43 @@
                 (onRemove)="removeGlobalFilter(filter, true)" (onDatesChanges)="processPickerEvent($event, filter)">
               </eda-date-picker>
               } @else {
-              <p-multiSelect [style]="styleButton" [options]="filter.data" [(ngModel)]="filter.selectedItems"
-                [virtualScroll]="true" [defaultLabel]="getFilterLabel(filter)" [disabled]="disableGlobalFilter(filter)"
-                [virtualScrollItemSize]="30" [loading]="loading" i18n-placeholder="@@Cargando" [placeholder]="placeholderText"
-                panelStyleClass="multiselect-auto-width" (onChange)="setGlobalFilterItems(filter)">
+              <p-multiSelect 
+                [style]="styleButton" 
+                [options]="filter.data" 
+                [(ngModel)]="filter.selectedItems"
+                [virtualScroll]="true" 
+                i18n-selectedItemsLabel="@@globalFilterSelectedItemsLabel" selectedItemsLabel="{0} items seleccionados"
+                [defaultLabel]="getFilterLabel(filter)" 
+                [disabled]="disableGlobalFilter(filter)"
+                [virtualScrollItemSize]="30" 
+                [loading]="loading" 
+                i18n-placeholder="@@Cargando" 
+                [placeholder]="placeholderText"
+                panelStyleClass="multiselect-auto-width" 
+                (onChange)="setGlobalFilterItems(filter)"
+                (mouseenter)="showFilterTooltip($event, op, filter)"
+                (mouseleave)="hideFilterTooltip(op)"
+                (onClick)="hideFilterTooltip(op)">              
               </p-multiSelect>
-              }
+              <p-overlayPanel #op appendTo="body" >
+                  <ng-template pTemplate>
+                    <div (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)"
+                         class="max-h-[30vh] overflow-auto min-w-[20vw] max-w-[30vw]">
+                        <span>{{ resumen }}</span>
+                          @for (item of filter.selectedItems; track item) {
+                            <div class="filter-tooltip-container bg-[white]  px-4 py-2 rounded flex items-center mr-1">
+                                <span class="customMultiselect filters-size filter-tooltip-text">
+                                    {{ item }}
+                                        <button type="button" class=" pi pi-times-circle filter-tooltip-button"
+                                            (click)="removeFilterItem(filter, item)">
+                                        </button>
+                                </span>
+                            </div>
+                          }
+                    </div>
+                  </ng-template>
+              </p-overlayPanel>
+            }
             </div>
           }@else{
             <!-- Si tiene autocomplete -> estilo moderno -->
@@ -58,8 +89,27 @@
                 } @else {
                 <p-autoComplete [(ngModel)]="filter.selectedItems" (keydown.enter)="onAddValue($event, filter)" [suggestions]="autoCompleteValues"
                   (completeMethod)="loadFilterAutoComplete($event, filter)" placeholder="abc..." [forceSelection]="false"
-                  [multiple]="true" (onSelect)="onItemSelected(filter)" (onUnselect) ="onItemSelected(filter)" class="modern-autocomplete flex-1">
+                  [multiple]="true" (onSelect)="onItemSelected(filter)" (onUnselect) ="onItemSelected(filter)" class="modern-autocomplete flex-1"
+                  (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)" (onClick)="hideFilterTooltip(op)">
                 </p-autoComplete>
+                <p-overlayPanel #op appendTo="body">
+                  <ng-template pTemplate>
+                       <div class="max-h-[30vh] overflow-auto min-w-[20vw] max-w-[30vw]"
+                            (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)">
+                           <span>{{ resumen }}</span>
+                              @for (item of filter.selectedItems; track item) {
+                                <div class="filter-tooltip-container bg-[white]  px-4 py-2 rounded flex items-center mr-1">
+                                    <span class="customMultiselect filters-size filter-tooltip-text">
+                                        {{ item }}
+                                            <button type="button" class=" pi pi-times-circle filter-tooltip-button"
+                                                (click)="removeFilterItem(filter, item)">
+                                            </button>
+                                    </span>
+                                </div>
+                              }
+                       </div>
+                  </ng-template>
+                </p-overlayPanel>
                 }
               </div>
             </div>

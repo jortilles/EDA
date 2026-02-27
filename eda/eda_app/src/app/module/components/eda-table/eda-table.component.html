@@ -5,18 +5,23 @@
         styleClass="p-datatable-striped" [ngStyle]="getStyle()">
 
         <!-- Search -->
-        <ng-template pTemplate="caption" *ngIf="inject.search">
-            <div class="text-right">
-                <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
-                <input type="text" pInputText size="50" i18n-placeholder="@@buscar"  placeholder="Buscar" [disabled]="inject.value.length === 0" (input)="table.filterGlobal($event.target.value, 'contains')">
-            </div>
-        </ng-template>
+         @if(inject.search){
+            <ng-template pTemplate="caption">
+                <div class="text-right">
+                    <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                    <input type="text" pInputText size="50" i18n-placeholder="@@buscar"  placeholder="Buscar" [disabled]="inject.value.length === 0" (input)="table.filterGlobal($event.target.value, 'contains')">
+                </div>
+            </ng-template>
+         }
+        
 
         <!-- Header -->
         <ng-template pTemplate="header" let-columns>
             <tr class="header-invisible" style="visibility: collapse!important" >
                 <ng-container *ngFor="let col of inject.cols">
-                    <th *ngIf="col.visible === true" [width]="col.width"></th>
+                    @if(col.visible === true){
+                        <th [width]="col.width"></th>
+                    }
                 </ng-container>
             </tr>
 
@@ -25,35 +30,49 @@
                 (click)="inject.onHeaderClick(label)" [pTooltip]="getTooltip(label)" style="text-align:center"  >
                     <div class="flex items-center">
                         {{label.title}}
-                        <p-sortIcon *ngIf="label.sortable"  ></p-sortIcon>
+                        @if(label.sortable){
+                            <p-sortIcon ></p-sortIcon>
+                        }
                     </div>
                 </th>
             </tr>
 
 
-            <tr *ngIf="!inject.pivot" class="header-title">
-                <ng-container *ngFor="let col of inject.cols">
-                    <th *ngIf="col.type && col.visible" [pSortableColumn]="col.field" [class]="col.styleClass" [pTooltip]="getTooltip(col)"  [ngStyle]="getStyle()"
-                        [width]="col.width" [attr.rowspan]="col.rowspan">
-                        <div class="flex items-center "  [ngStyle]="getStyle()">
-                            {{col.header}}
-                            <p-sortIcon *ngIf="col.sortable" [field]="col.field"  [ngStyle]="getStyle()"></p-sortIcon>
-                        </div>
-                    </th>
-                </ng-container>
-            </tr>
-            <tr class="header-filter" *ngIf="verifyFilter()">
-                <ng-container *ngFor="let col of inject.cols">
-                    <th>
-                        <ng-container *ngIf="col.filter" [ngSwitch]="col.filter.type">
-                            <ng-container *ngSwitchCase="'EdaColumnFilterMultiSelect'">
-                                <p-multiSelect [showHeader]="true" defaultLabel="Tot" [(ngModel)]="col.filter.ngModel" [options]="col.filter.options" [style]="col.filter.style" (onChange)="_tableFilter(table, $event.value, col)" appendTo="body">
-                                </p-multiSelect>
-                            </ng-container>
-                        </ng-container>
-                    </th>
-                </ng-container>
-            </tr>
+            @if(!inject.pivot){
+                <tr class="header-title">
+                    <ng-container *ngFor="let col of inject.cols">
+                        @if(col.type && col.visible){
+                            <th [pSortableColumn]="col.field" [class]="col.styleClass" [pTooltip]="getTooltip(col)"  [ngStyle]="getStyle()"
+                                [width]="col.width" [attr.rowspan]="col.rowspan">
+                                <div class="flex items-center "  [ngStyle]="getStyle()">
+                                    {{col.header}}
+                                    @if(col.sortable){
+                                        <p-sortIcon [field]="col.field"  [ngStyle]="getStyle()"></p-sortIcon>
+                                    }
+                                </div>
+                            </th>
+                        }
+                    </ng-container>
+                </tr>
+            }
+
+            @if(verifyFilter()){
+                <tr class="header-filter">
+                    <ng-container *ngFor="let col of inject.cols">
+                        <th>
+                            @if(col.filter){
+                                <ng-container [ngSwitch]="col.filter.type">
+                                    <ng-container *ngSwitchCase="'EdaColumnFilterMultiSelect'">
+                                        <p-multiSelect [showHeader]="true" defaultLabel="Tot" [(ngModel)]="col.filter.ngModel" [options]="col.filter.options" [style]="col.filter.style" (onChange)="_tableFilter(table, $event.value, col)" appendTo="body">
+                                        </p-multiSelect>
+                                    </ng-container>
+                                </ng-container>
+                            }
+                        </th>
+                    </ng-container>
+                </tr>
+            }
+            
         </ng-template>
 
         <!-- COLUMN CONTENT -->
@@ -61,88 +80,109 @@
         <ng-template pTemplate="body" let-rowData let-columns="columns">
             <tr>
                 <ng-container *ngFor="let col of inject.cols">
-                    <td *ngIf="col.visible===true" [class]="col.styleClass" [width]="col.width" (click)="handleClick(lodash.get(rowData, col.field), col.field )" style="cursor: pointer; height: 35px;" [ngClass]="getStyleClass(col, rowData)" [ngStyle]="getStyle()">
-                        <ng-container [ngSwitch]="col.type">
-                            <!-- ngSwitch TEXT -->
-                                    
-                            <ng-container *ngSwitchCase="'EdaColumnText'">
-                                <div *ngIf="inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field" [pTooltip]="getLinkTooltip(col)">
+                    @if(col.visible===true){
+                        <td [class]="col.styleClass" [width]="col.width" (click)="handleClick(lodash.get(rowData, col.field), col.field )" style="cursor: pointer; height: 35px;" [ngClass]="getStyleClass(col, rowData)" [ngStyle]="getStyle()">
+                            <ng-container [ngSwitch]="col.type">
+                                <!-- ngSwitch TEXT -->
+                                        
+                                <ng-container *ngSwitchCase="'EdaColumnText'">
+                                    @if(inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field){
+                                        <div [pTooltip]="getLinkTooltip(col)">
+                                            {{ lodash.get(rowData, col.field) }}
+                                        </div>
+                                    }
+
+                                    @if(!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field){
+                                        <div>
+                                            {{ lodash.get(rowData, col.field) }}
+                                        </div>
+                                    }
+                                </ng-container>
+                                
+                                <!-- ngSwitch HTML -->
+                                <ng-container *ngSwitchCase="'EdaColumnHtml'">
+                                    @if(inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field){
+                                        <div [pTooltip]="getLinkTooltip(col)" [innerHTML]="getSafeHtml(lodash.get(rowData, col.field))" (click)="handleHtmlClick($event)"></div>
+                                    }
+
+                                    @if(!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field){
+                                        <div [innerHTML]="getSafeHtml(lodash.get(rowData, col.field))" (click)="handleHtmlClick($event)"></div>
+                                    }
+
+                                </ng-container>
+                                <!-- ngSwitch NUMBER -->
+                                <ng-container *ngSwitchCase="'EdaColumnNumber'">
+                                    <span [ngStyle]="{'color': getColor(lodash.get(rowData, col.field))}">
+                                        {{ lodash.get(rowData, col.field) | number:'1.0-10':'es' }}
+                                    </span>
+                                </ng-container>
+                                <!-- ngSwitch NUMBER -->
+                                <ng-container *ngSwitchCase="'EdaColumnDate'">
+                                    <!-- {{ lodash.get(rowData, col.field) }} -->
+                                    @if(inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field){
+                                        <div [pTooltip]="getLinkTooltip(col)">
+                                            {{ lodash.get(rowData, col.field) }}
+                                        </div>
+                                    }
+
+                                    @if(!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field){
+                                        <div>
+                                            {{ lodash.get(rowData, col.field) }}
+                                        </div>
+                                    }
+                                </ng-container>
+                                <ng-container *ngSwitchCase="'EdaColumnPercentage'">
                                     {{ lodash.get(rowData, col.field) }}
-                                </div>
+                                </ng-container>
+                                <!-- ngSwitch CONTXET MENU -->
+                                <ng-container *ngSwitchCase="'EdaColumnContextMenu'">
+                                    <i class="fa fa-cog btn pl-1" (click)="inject._showContextMenu(rowData)"></i>
+                                </ng-container>
+                                <ng-container *ngSwitchCase="'EdaColumnFunction'">
+                                    <i class="fa fa-trash btn pl-1" (click)="col.click(rowData)"></i>
+                                </ng-container>
+                                <ng-container *ngSwitchCase="'EdaColumnEditable'">
+                                    <td><i class="fa fa-pencil btn pl-1" (click)="col.click(rowData)"></i></td>
+                                </ng-container>
+                                <ng-container *ngSwitchCase="'EdaColumnChart'">
 
-                                <div *ngIf="!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field">
-                                    {{ lodash.get(rowData, col.field) }}
-                                </div>
-                            </ng-container>
-                            
-                            <!-- ngSwitch HTML -->
-                            <ng-container *ngSwitchCase="'EdaColumnHtml'">
-                                <div *ngIf="inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field" [pTooltip]="getLinkTooltip(col)" [innerHTML]="getSafeHtml(lodash.get(rowData, col.field))" (click)="handleHtmlClick($event)">
-                                </div>
+                                    <p-chart type="line" [data]="lodash.get(rowData, col.field)" width="90%" height="20%" [options]="chartOptions"></p-chart>
 
-                                <div *ngIf="!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field" [innerHTML]="getSafeHtml(lodash.get(rowData, col.field))" (click)="handleHtmlClick($event)">
-                                </div>
-
+                                </ng-container>
                             </ng-container>
-                            <!-- ngSwitch NUMBER -->
-                            <ng-container *ngSwitchCase="'EdaColumnNumber'">
-                                <span [ngStyle]="{'color': getColor(lodash.get(rowData, col.field))}">
-                                    {{ lodash.get(rowData, col.field) | number:'1.0-10':'es' }}
-                                </span>
-                            </ng-container>
-                            <!-- ngSwitch NUMBER -->
-                            <ng-container *ngSwitchCase="'EdaColumnDate'">
-                                <!-- {{ lodash.get(rowData, col.field) }} -->
-                                <div *ngIf="inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field" [pTooltip]="getLinkTooltip(col)">
-                                    {{ lodash.get(rowData, col.field) }}
-                                </div>
-
-                                <div *ngIf="!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field">
-                                    {{ lodash.get(rowData, col.field) }}
-                                </div>
-                            </ng-container>
-                            <ng-container *ngSwitchCase="'EdaColumnPercentage'">
-                                {{ lodash.get(rowData, col.field) }}
-                            </ng-container>
-                            <!-- ngSwitch CONTXET MENU -->
-                            <ng-container *ngSwitchCase="'EdaColumnContextMenu'">
-                                <i class="fa fa-cog btn pl-1" (click)="inject._showContextMenu(rowData)"></i>
-                            </ng-container>
-                            <ng-container *ngSwitchCase="'EdaColumnFunction'">
-                                <i class="fa fa-trash btn pl-1" (click)="col.click(rowData)"></i>
-                            </ng-container>
-                            <ng-container *ngSwitchCase="'EdaColumnEditable'">
-                                <td><i class="fa fa-pencil btn pl-1" (click)="col.click(rowData)"></i></td>
-                            </ng-container>
-                            <ng-container *ngSwitchCase="'EdaColumnChart'">
-
-                                <p-chart type="line" [data]="lodash.get(rowData, col.field)" width="90%" height="20%" [options]="chartOptions"></p-chart>
-
-                            </ng-container>
-                        </ng-container>
-                    </td>
+                        </td>
+                    }
                 </ng-container>
             </tr>
         </ng-template>
 
         <ng-template pTemplate="footer" id="totalsFooter" >
-            <tr *ngIf="inject.withColSubTotals">
-                <td *ngFor="let column of  inject.partialTotalsRow" [style.text-align]=column.style [style.border]=column.border style="padding: 0.571em 0.857em;" [class]=column.class>
-                    {{column.data}}
-                </td>
-            </tr>
-            <tr *ngIf="inject.withColTotals">
-                <td *ngFor="let column of  inject.totalsRow" [style.text-align]=column.style [style.border]=column.border style="padding: 0.571em 0.857em;" [ngStyle]="getStyle()" [class]=column.class>
-                    {{column.data}}
-                </td>
-            </tr>
+            @if(inject.withColSubTotals){
+                <tr>
+                    <td *ngFor="let column of  inject.partialTotalsRow" [style.text-align]=column.style [style.border]=column.border style="padding: 0.571em 0.857em;" [class]=column.class>
+                        {{column.data}}
+                    </td>
+                </tr>
+            }
+            @if(inject.withColTotals){
+                <tr>
+                    <td *ngFor="let column of  inject.totalsRow" [style.text-align]=column.style [style.border]=column.border style="padding: 0.571em 0.857em;" [ngStyle]="getStyle()" [class]=column.class>
+                        {{column.data}}
+                    </td>
+                </tr>
+            }
 
         </ng-template>
 
         <ng-template pTemplate="summary" >
             <div class="ui-helper-clearfix">
-                <span i18n="@@registers1" *ngIf="table.filteredValue != undefined" style="margin-top: -0.5em;" class="items-length float-right" [ngStyle]="getStyle()">{{ table.filteredValue.length }} registros</span>
-                <span i18n="@@registers2" *ngIf="!table.filteredValue && table.value.length" style="margin-top: -0.5em;" class="items-length float-right" [ngStyle]="getStyle()">{{ table.value.length }} registros</span>
+                @if(table.filteredValue != undefined){
+                    <span i18n="@@registers1" style="margin-top: -0.5em;" class="items-length float-right" [ngStyle]="getStyle()">{{ table.filteredValue.length }} registros</span>
+                }
+                @if(!table.filteredValue && table.value.length){
+                    <span i18n="@@registers2" style="margin-top: -0.5em;" class="items-length float-right" [ngStyle]="getStyle()">{{ table.value.length }} registros</span>
+                }
+                
             </div>
         </ng-template>
 

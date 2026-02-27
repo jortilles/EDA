@@ -314,6 +314,7 @@ export class EdaBlankPanelComponent implements OnInit {
         }
     }
 
+    // ngOnInit
     async ngOnInit() {
         this.index = 0;
         this.readonly = this.panel.readonly;
@@ -478,7 +479,7 @@ public tableNodeExpand(event: any): void {
 */
 
             await this.runQueryFromDashboard(true);
-            this.panelChart.updateComponent();
+           // this.panelChart.updateComponent();
         } catch (err) {
             throw err;
         }
