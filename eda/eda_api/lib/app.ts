@@ -4,7 +4,7 @@ import fileUpload from 'express-fileupload';
 import { NextFunction, Request, Response } from 'express';
 import { callInterceptor } from './services/call-interceptor';
 import errorMiddleware from './middleware/error.middleware';
-
+import cluster from 'cluster';
 
 import Router from './router';
 
@@ -49,8 +49,10 @@ class App {
         // File Upload
         this.app.use(fileUpload());
 
-        //jobs
-        EdaScheduler.initJobs();
+        // Jobs: solo en el primer worker para evitar ejecuciones duplicadas en cluster
+        if (cluster.isMaster || (cluster.worker && cluster.worker.id === 1)) {
+            EdaScheduler.initJobs();
+        }
     }
 
     private mongoSetup(): void {

@@ -6,6 +6,7 @@
     "scripts": {
         "start": "nodemon",
         "start:forever": "npm run build && forever start -c node ./dist/server.js",
+        "start:cluster": "npm run build && node ./dist/server.js",
         "start:pm2": "npm run build && pm2 start ./dist/server.js  -i max  --name eda3   ",
         "edalitics": "npm run build && pm2 start ./dist/server.js --name eda3   ",
         "edapi": "forever start -c node ./dist/server.js",
