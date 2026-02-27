@@ -426,6 +426,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const config = this.props.config.getConfig();
 
         this.componentRef = this.entry.createComponent(EdaTableComponent);
+        // Si los valores tienen más columnas que labels (p.ej. predicción en modo línea convertida a tabla), añadir el label extra
+        const rowLen = this.props.data.values?.[0]?.length || 0;
+        while (this.props.data.labels.length < rowLen) {
+            this.props.data.labels.push($localize`:@@Prediction:Predicción`);
+        }
         this.componentRef.instance.inject = this.initializeTable(type, config);
         this.componentRef.instance.inject.value = this.chartUtils.transformDataQueryForTable(this.props.data.labels, this.props.data.values);
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
@@ -1138,6 +1143,13 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 } else if (_.isEqual(r.column_type, 'coordinate')) {
                     tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default }));
                 }
+            }
+            // Columnas extra añadidas por el backend (ej. predicción) que no están en el query original
+            // entra si tiene prediccion
+            console.log(this)
+            for (let i = this.props.query.length; i < this.props.data.labels.length; i++) {
+                const label = this.props.data.labels[i];
+                tableColumns.push(new EdaColumnNumber({ header: label, field: label, description: label }));
             }
         }
 

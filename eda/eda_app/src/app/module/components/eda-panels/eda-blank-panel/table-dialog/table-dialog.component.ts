@@ -14,6 +14,7 @@ import { EdaDialog2Component } from '@eda/shared/components/shared-components.in
 import { MenubarModule } from 'primeng/menubar';
 import { TableGradientDialogComponent } from './gradient-dialog/gradient-dialog.component';
 import { PredictionDialogComponent, PredictionConfig, QueryColumn } from '../prediction-dialog/prediction-dialog.component';
+import { QueryUtils } from '../panel-utils/query-utils';
 
 @Component({
   standalone: true,
@@ -79,6 +80,9 @@ export class TableDialogComponent{
   public showPredictionCol: boolean = false;
   public predictionMethod: string = 'Arima';
 
+  private originalPrediction: string;
+  private pendingPrediction: PredictionConfig | null = null;
+
   public addPrediction: string = $localize`:@@showLinesPrediction:Mostrar Predicción`;
   public removePrediction: string = $localize`:@@removePrediction:Quitar Predicción`;
 
@@ -108,6 +112,15 @@ export class TableDialogComponent{
         new TableConfig(false, false, 5, false, false, false, false, null, null, null, false, false, [])
       )
     }
+    // Leer el estado actual de predicción del panel
+    const panelID = this.controller?.params?.panelId;
+    const dashboardPanel = this.dashboard?.edaPanels?.toArray().find((cmp: any) => cmp.panel.id === panelID);
+    const existingPrediction = dashboardPanel?.panel?.content?.query?.query?.prediction;
+    this.showPredictionCol = !!(existingPrediction && existingPrediction !== 'None');
+    if (this.showPredictionCol) {
+      this.predictionMethod = existingPrediction;
+    }
+    this.originalPrediction = dashboardPanel?.panel?.content?.query?.query?.prediction;
     this.setItems();
   }
 
@@ -304,12 +317,10 @@ export class TableDialogComponent{
     if (this.showPredictionCol) {
       this.showPredictionDialog = true;
     } else {
-      const panelID = this.controller?.params?.panelId;
-      const dashboardPanel = this.dashboard?.edaPanels?.toArray().find((cmp: any) => cmp.panel.id === panelID);
-      if (dashboardPanel) {
-        dashboardPanel.panel.content.query.query.prediction = 'None';
-        dashboardPanel.panel.content.query.query.predictionConfig = null;
-        dashboardPanel.runQueryFromDashboard(true);
+      this.pendingPrediction = null;
+      // Si había predicción activa, recargar la preview sin predicción
+      if (this.originalPrediction && this.originalPrediction !== 'None') {
+        this.runPreviewQuery(null);
       }
       this.setItems();
     }
@@ -318,26 +329,49 @@ export class TableDialogComponent{
   async confirmPrediction(predictionConfig: PredictionConfig) {
     this.showPredictionDialog = false;
     this.predictionMethod = predictionConfig.method;
-    this.spinnerService.on();
+    this.pendingPrediction = predictionConfig;
+    await this.runPreviewQuery(predictionConfig);
+    this.setItems();
+  }
+
+  private async runPreviewQuery(pred: PredictionConfig | null) {
     const panelID = this.controller?.params?.panelId;
     const dashboardPanel = this.dashboard?.edaPanels?.toArray().find((cmp: any) => cmp.panel.id === panelID);
-    if (dashboardPanel) {
-      dashboardPanel.panel.content.query.query.prediction = predictionConfig.method;
-      dashboardPanel.panel.content.query.query.predictionConfig = {
-        steps: predictionConfig.steps,
-        targetColumn: predictionConfig.targetColumn,
-        arimaParams: predictionConfig.arimaParams,
-        tensorflowParams: predictionConfig.tensorflowParams,
-      };
-      try {
-        await dashboardPanel.runQueryFromDashboard(true);
-      } finally {
-        this.spinnerService.off();
-      }
-    } else {
+    if (!dashboardPanel) return;
+
+    this.spinnerService.on();
+    try {
+      // Setear temporalmente la predicción para construir la query
+      const origPred = dashboardPanel.panel.content.query.query.prediction;
+      const origPredConfig = dashboardPanel.panel.content.query.query.predictionConfig;
+
+      dashboardPanel.panel.content.query.query.prediction = pred ? pred.method : 'None';
+      dashboardPanel.panel.content.query.query.predictionConfig = pred ? {
+        steps: pred.steps,
+        targetColumn: pred.targetColumn,
+        arimaParams: pred.arimaParams,
+        tensorflowParams: pred.tensorflowParams,
+      } : null;
+
+      const query = QueryUtils.switchAndBuildQuery(dashboardPanel);
+
+      // Revertir inmediatamente (sincrónico, antes del await)
+      dashboardPanel.panel.content.query.query.prediction = origPred;
+      dashboardPanel.panel.content.query.query.predictionConfig = origPredConfig;
+
+      // Ejecutar la query directamente sin pasar por runQueryFromDashboard
+      const response = await dashboardPanel.dashboardService.executeQuery(query).toPromise();
+      const chartLabels = dashboardPanel.chartUtils.uniqueLabels(response[0]);
+      const chartData = response[1];
+
+      // Actualizar solo la preview del dialog
+      this.panelChartConfig = new PanelChart({
+        ...this.panelChartConfig,
+        data: { labels: chartLabels, values: chartData },
+      });
+    } finally {
       this.spinnerService.off();
     }
-    this.setItems();
   }
 
   cancelPrediction() {
@@ -348,8 +382,8 @@ export class TableDialogComponent{
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     return this.controller.close(event, response);
   }
-  
-  saveChartConfig() {
+
+  async saveChartConfig() {
     const config = (<TableConfig>this.panelChartConfig.config.getConfig());
     const rows = config.visibleRows;
     const sortedSerie = config.sortedSerie;
@@ -357,8 +391,36 @@ export class TableDialogComponent{
     const styles = this.styles;
 
     const properties = new TableConfig(this.onlyPercentages, this.resultAsPecentage, rows,
-      this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles, 
-      this.noRepetitions,this.negativeNumbers, this.ordering);
+      this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles,
+      this.noRepetitions, this.negativeNumbers, this.ordering);
+
+    // Aplicar cambios de predicción al dashboard solo al confirmar
+    const panelID = this.controller?.params?.panelId;
+    const dashboardPanel = this.dashboard?.edaPanels?.toArray().find((cmp: any) => cmp.panel.id === panelID);
+    const hadPrediction = !!(this.originalPrediction && this.originalPrediction !== 'None');
+    const predictionChanged = (this.showPredictionCol && this.pendingPrediction !== null) ||
+                              (!this.showPredictionCol && hadPrediction);
+
+    if (dashboardPanel && predictionChanged) {
+      if (this.showPredictionCol && this.pendingPrediction) {
+        dashboardPanel.panel.content.query.query.prediction = this.pendingPrediction.method;
+        dashboardPanel.panel.content.query.query.predictionConfig = {
+          steps: this.pendingPrediction.steps,
+          targetColumn: this.pendingPrediction.targetColumn,
+          arimaParams: this.pendingPrediction.arimaParams,
+          tensorflowParams: this.pendingPrediction.tensorflowParams,
+        };
+      } else {
+        dashboardPanel.panel.content.query.query.prediction = 'None';
+        dashboardPanel.panel.content.query.query.predictionConfig = null;
+      }
+      this.spinnerService.on();
+      try {
+        await dashboardPanel.runQueryFromDashboard(true);
+      } finally {
+        this.spinnerService.off();
+      }
+    }
 
     this.onClose(EdaDialogCloseEvent.UPDATE, properties);
   }
