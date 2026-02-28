@@ -1,5 +1,5 @@
-<eda-dialog2 [header]="'Configuración de Predicción'" [display]="visible" width="35vw" height="auto" [overflow]="'auto'"
-    (apply)="onConfirm()" (close)="onCancel()">
+<eda-dialog2 header="Configuración de Predicción" i18n-header="@@predictionDialogTitle" [display]="visible" width="35vw" height="auto" [overflow]="'auto'"
+    [disableApply]="!isValid" (apply)="onConfirm()" (close)="onCancel()">
     <div content class="flex flex-col gap-4 p-4">
         <!-- Método de predicción -->
         <div class="space-y-2">
@@ -8,30 +8,14 @@
             </label>
             <select [(ngModel)]="selectedMethod"
                 class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#00BFB3]">
-                <option value="None">-- Selecciona el método de predicción --</option>
+                <option value="None" i18n="@@predictionMethodNone">-- Selecciona el método de predicción --</option>
                 <option value="Arima">ARIMA</option>
                 <option value="Tensorflow">TensorFlow</option>
             </select>
         </div>
         <!-- Switch Configuración avanzada -->
         @if (selectedMethod !== 'None' && selectedMethod) {
-        <div class="border-t border-gray-200 pt-4">
-            <div class="flex items-center justify-between mb-4">
-                <div class="space-y-0.5">
-                    <label class="text-sm font-medium text-gray-700" i18n="@@advancedConfigLabel">Configuración
-                        avanzada</label>
-                    <p class="text-xs text-gray-400" i18n="@@advancedConfigDesc">Personalizar los parámetros del modelo
-                    </p>
-                </div>
-                <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" [(ngModel)]="advancedConfig" class="sr-only peer">
-                    <div
-                        class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
-                    </div>
-                </label>
-            </div>
-
-            @if (advancedConfig) {
+            <div class="pt-2">
                 <div class="space-y-2">
                     <label class="text-sm font-medium text-gray-700" i18n="@@predictionStepsLabel">
                         Pasos a predecir
@@ -42,66 +26,158 @@
                         predecir</span>
                 </div>
                 <!-- Selector de columna objetivo (solo TensorFlow con varias columnas numéricas) -->
-                
-                    <div class="space-y-2">
-                            <label class="text-sm font-medium text-gray-700" i18n="@@tfTargetColumnLabel">
-                                Columna a predecir
-                            </label>
-                            <select [(ngModel)]="targetColumn" [compareWith]="compareColumns"
-                                class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#00BFB3]">
-                            @for (col of queryColumns; track col.column_name) {
-                                <option [ngValue]="col">{{ col.display_name }}</option>
-                            }
-                            </select>
-                        @if (selectedMethod === 'Tensorflow') {
-                            <span class="text-xs text-gray-400" i18n="@@tfTargetColumnDesc">
-                                Las demás columnas numéricas se usarán automáticamente como variables de referencia
-                            </span>
-                        } @else {
-                            <span class="text-xs text-gray-400" i18n="@@arimaTargetColumnDesc">
-                                Columna numérica a predecir
-                            </span>
+                <div class="space-y-2 pt-2">
+                    <label class="text-sm font-medium text-gray-700" i18n="@@tfTargetColumnLabel">
+                        Columna a predecir
+                    </label>
+                    <select [(ngModel)]="targetColumn" [compareWith]="compareColumns"
+                        class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#00BFB3]">
+                        @for (col of queryColumns; track col.column_name) {
+                            <option [ngValue]="col">{{ col.display_name }}</option>
                         }
+                    </select>
+                    @if (selectedMethod === 'Tensorflow') {
+                        <span class="text-xs text-gray-400" i18n="@@tfTargetColumnDesc">
+                            Las demás columnas numéricas se usarán automáticamente como variables de referencia
+                        </span>
+                    } @else {
+                        <span class="text-xs text-gray-400" i18n="@@arimaTargetColumnDesc">
+                            Columna numérica a predecir
+                        </span>
+                    }
+                </div>
+            <div class="flex items-center justify-between mt-6 border-t border-gray-200 pt-2">
+                <div class="space-y-0.5">
+                    <label class="text-sm font-medium text-gray-700" i18n="@@advancedConfigLabel">Configuración
+                        avanzada</label>
+                    <p class="text-xs text-gray-400" i18n="@@advancedConfigDesc">Personalizar los parámetros del modelo</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" [(ngModel)]="advancedConfig" class="sr-only peer">
+                    <div
+                        class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
                     </div>
+                </label>
+            </div>
+
+            @if (advancedConfig) {
                 @if (selectedMethod === 'Arima') {
                     <!-- Steps a predecir -->
-                    <h4 class="text-sm font-semibold text-gray-700 mb-1 mt-3">Variables ARIMA</h4>
-                    <span class="text-xs italic text-gray-400 mb-2">Formula ARIMA(p, d, q)</span>
-                    <div class="grid grid-cols-[auto_1fr_auto] items-center gap-x-3 gap-y-3 mt-2">
-                        <label class="text-sm text-gray-600">p (AR)</label>
+                    <h4 class="text-sm font-semibold text-gray-700 mb-1 mt-3" i18n="@@arimaVariablesTitle">Variables ARIMA</h4>
+                    <span class="text-xs italic text-gray-400 mb-2" i18n="@@arimaFormula">Formula ARIMA(p, d, q)</span>
+                    <div class="grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-3 mt-2">
+                        <div class="flex items-center gap-1">
+                            <label class="text-sm text-gray-600">p (AR)</label>
+                            <div class="relative group">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="text-slate-400 cursor-help">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M12 16v-4"></path>
+                                    <path d="M12 8h.01"></path>
+                                </svg>
+                                <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-60 p-2 bg-slate-800 text-white text-xs rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity z-10">
+                                    <span i18n="@@arimaParamPTooltip">Número de términos autoregresivos. Indica cuántos valores pasados de la serie influyen en el valor actual.</span>
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" [(ngModel)]="arimaParams.p" min="0" max="10" step="1"
                             class="rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#00BFB3]" />
-                        <span class="text-xs text-gray-400" i18n="@@arimaParamPDesc">Orden autoregresivo</span>
 
-                        <label class="text-sm text-gray-600">d (I)</label>
+                        <div class="flex items-center gap-1">
+                            <label class="text-sm text-gray-600">d (I)</label>
+                            <div class="relative group">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="text-slate-400 cursor-help">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M12 16v-4"></path>
+                                    <path d="M12 8h.01"></path>
+                                </svg>
+                                <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-60 p-2 bg-slate-800 text-white text-xs rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity z-10">
+                                    <span i18n="@@arimaParamDTooltip">Número de veces que se diferencia la serie para hacerla estacionaria. Normalmente 0, 1 o 2.</span>
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" [(ngModel)]="arimaParams.d" min="0" max="10" step="1"
                             class="rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#00BFB3]" />
-                        <span class="text-xs text-gray-400" i18n="@@arimaParamDDesc">Orden de diferenciación</span>
 
-                        <label class="text-sm text-gray-600">q (MA)</label>
+                        <div class="flex items-center gap-1">
+                            <label class="text-sm text-gray-600">q (MA)</label>
+                            <div class="relative group">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="text-slate-400 cursor-help">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M12 16v-4"></path>
+                                    <path d="M12 8h.01"></path>
+                                </svg>
+                                <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-60 p-2 bg-slate-800 text-white text-xs rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity z-10">
+                                    <span i18n="@@arimaParamQTooltip">Número de términos de media móvil. Indica cuántos errores pasados influyen en el valor actual.</span>
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" [(ngModel)]="arimaParams.q" min="0" max="10" step="1"
                             class="rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#00BFB3]" />
-                        <span class="text-xs text-gray-400" i18n="@@arimaParamQDesc">Orden media móvil</span>
                     </div>
                 } @else if (selectedMethod === 'Tensorflow') {
                     
                     <h4 class="text-sm font-semibold text-gray-700 mb-1 mt-3" i18n="@@tensorflowVariablesTitle">Variables TensorFlow (LSTM)</h4>
 
-                    <div class="grid grid-cols-[auto_1fr_auto] items-center gap-x-3 gap-y-3 mt-2">
-                        <label class="text-sm text-gray-600" i18n="@@tfEpochsLabel">Épocas</label>
+                    <div class="grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-3 mt-2">
+                        <div class="flex items-center gap-1">
+                            <label class="text-sm text-gray-600" i18n="@@tfEpochsLabel">Épocas</label>
+                            <div class="relative group">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="text-slate-400 cursor-help">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M12 16v-4"></path>
+                                    <path d="M12 8h.01"></path>
+                                </svg>
+                                <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-60 p-2 bg-slate-800 text-white text-xs rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity z-10">
+                                    <span i18n="@@tfEpochsTooltip">Número de veces que el modelo recorre el conjunto de datos completo durante el entrenamiento. Más épocas pueden mejorar la precisión pero aumentan el tiempo de entrenamiento.</span>
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" [(ngModel)]="tensorflowParams.epochs" min="1" max="1000"
                             class="rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#00BFB3]" />
-                        <span class="text-xs text-gray-400" i18n="@@tfEpochsDesc">Iteraciones de entrenamiento</span>
 
-                        <label class="text-sm text-gray-600" i18n="@@tfLookbackLabel">Lookback</label>
+                        <div class="flex items-center gap-1">
+                            <label class="text-sm text-gray-600" i18n="@@tfLookbackLabel">Lookback</label>
+                            <div class="relative group">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="text-slate-400 cursor-help">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M12 16v-4"></path>
+                                    <path d="M12 8h.01"></path>
+                                </svg>
+                                <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-60 p-2 bg-slate-800 text-white text-xs rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity z-10">
+                                    <span i18n="@@tfLookbackTooltip">Número de pasos de tiempo pasados que el modelo usa como entrada para predecir el siguiente valor. Un valor mayor captura más contexto histórico.</span>
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" [(ngModel)]="tensorflowParams.lookback" min="1" max="100"
                             class="rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#00BFB3]" />
-                        <span class="text-xs text-gray-400" i18n="@@tfLookbackDesc">Ventana de datos históricos</span>
 
-                        <label class="text-sm text-gray-600" i18n="@@tfLrLabel">Learning rate</label>
+                        <div class="flex items-center gap-1">
+                            <label class="text-sm text-gray-600" i18n="@@tfLrLabel">Learning rate</label>
+                            <div class="relative group">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="text-slate-400 cursor-help">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M12 16v-4"></path>
+                                    <path d="M12 8h.01"></path>
+                                </svg>
+                                <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-60 p-2 bg-slate-800 text-white text-xs rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity z-10">
+                                    <span i18n="@@tfLrTooltip">Velocidad a la que el modelo actualiza sus pesos durante el entrenamiento. Valores pequeños son más estables pero aprenden más lento; valores grandes aprenden rápido pero pueden ser inestables.</span>
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" [(ngModel)]="tensorflowParams.learningRate" min="0.0001" max="1" step="0.001"
                             class="rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#00BFB3]" />
-                        <span class="text-xs text-gray-400" i18n="@@tfLrDesc">Tasa de aprendizaje</span>
                     </div>
 
 

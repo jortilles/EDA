@@ -5489,6 +5489,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Mostrar Predicción</source>
         <target>Pokaż prognozę</target>
       </trans-unit>
+      <trans-unit id="removePrediction">
+        <source>Quitar Predicción</source>
+        <target>Usuń prognozę</target>
+      </trans-unit>
       <trans-unit id="chartLabelLinesOptionDescription">
         <source>Muestra las líneas en los puntos</source>
         <target>Pokaż linie w punktach</target>
@@ -5771,6 +5775,99 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="openInSameTab">
         <source>Abrir en MISMA pestaña</source>
         <target>Otwórz w tej SAMEJ karcie</target>
+      </trans-unit>
+      <trans-unit id="predictionDialogTitle">
+        <source>Configuración de Predicción</source>
+        <target>Konfiguracja Predykcji</target>
+      </trans-unit>
+      <trans-unit id="predictionMethodLabel">
+        <source>Método de predicción</source>
+        <target>Metoda predykcji</target>
+      </trans-unit>
+      <trans-unit id="predictionMethodNone">
+        <source>-- Selecciona el método de predicción --</source>
+        <target>-- Wybierz metodę predykcji --</target>
+      </trans-unit>
+      <trans-unit id="predictionStepsLabel">
+        <source>Pasos a predecir</source>
+        <target>Kroki do przewidzenia</target>
+      </trans-unit>
+      <trans-unit id="predictionStepsDesc">
+        <source>Número de periodos futuros a predecir</source>
+        <target>Liczba przyszłych okresów do przewidzenia</target>
+      </trans-unit>
+      <trans-unit id="tfTargetColumnLabel">
+        <source>Columna a predecir</source>
+        <target>Kolumna do przewidzenia</target>
+      </trans-unit>
+      <trans-unit id="tfTargetColumnDesc">
+        <source>Las demás columnas numéricas se usarán automáticamente como variables de referencia</source>
+        <target>Pozostałe kolumny numeryczne będą automatycznie używane jako zmienne referencyjne</target>
+      </trans-unit>
+      <trans-unit id="arimaTargetColumnDesc">
+        <source>Columna numérica a predecir</source>
+        <target>Numeryczna kolumna do przewidzenia</target>
+      </trans-unit>
+      <trans-unit id="advancedConfigLabel">
+        <source>Configuración avanzada</source>
+        <target>Zaawansowana konfiguracja</target>
+      </trans-unit>
+      <trans-unit id="advancedConfigDesc">
+        <source>Personalizar los parámetros del modelo</source>
+        <target>Dostosuj parametry modelu</target>
+      </trans-unit>
+      <trans-unit id="arimaVariablesTitle">
+        <source>Variables ARIMA</source>
+        <target>Zmienne ARIMA</target>
+      </trans-unit>
+      <trans-unit id="arimaFormula">
+        <source>Formula ARIMA(p, d, q)</source>
+        <target>Formuła ARIMA(p, d, q)</target>
+      </trans-unit>
+      <trans-unit id="arimaParamPTooltip">
+        <source>Número de términos autoregresivos. Indica cuántos valores pasados de la serie influyen en el valor actual.</source>
+        <target>Liczba składników autoregresyjnych. Wskazuje, ile przeszłych wartości serii wpływa na bieżącą wartość.</target>
+      </trans-unit>
+      <trans-unit id="arimaParamDTooltip">
+        <source>Número de veces que se diferencia la serie para hacerla estacionaria. Normalmente 0, 1 o 2.</source>
+        <target>Liczba razy, gdy szereg jest różnicowany, aby uczynić go stacjonarnym. Zazwyczaj 0, 1 lub 2.</target>
+      </trans-unit>
+      <trans-unit id="arimaParamQTooltip">
+        <source>Número de términos de media móvil. Indica cuántos errores pasados influyen en el valor actual.</source>
+        <target>Liczba składników średniej ruchomej. Wskazuje, ile przeszłych błędów wpływa na bieżącą wartość.</target>
+      </trans-unit>
+      <trans-unit id="tensorflowVariablesTitle">
+        <source>Variables TensorFlow (LSTM)</source>
+        <target>Zmienne TensorFlow (LSTM)</target>
+      </trans-unit>
+      <trans-unit id="tfEpochsLabel">
+        <source>Épocas</source>
+        <target>Epoki</target>
+      </trans-unit>
+      <trans-unit id="tfEpochsTooltip">
+        <source>Número de veces que el modelo recorre el conjunto de datos completo durante el entrenamiento. Más épocas pueden mejorar la precisión pero aumentan el tiempo de entrenamiento.</source>
+        <target>Liczba razy, gdy model przechodzi przez cały zbiór danych podczas trenowania. Więcej epok może poprawić dokładność, ale wydłuża czas trenowania.</target>
+      </trans-unit>
+      <trans-unit id="tfLookbackLabel">
+        <source>Lookback</source>
+        <target>Lookback</target>
+      </trans-unit>
+      <trans-unit id="tfLookbackTooltip">
+        <source>Número de pasos de tiempo pasados que el modelo usa como entrada para predecir el siguiente valor. Un valor mayor captura más contexto histórico.</source>
+        <target>Liczba przeszłych kroków czasowych, których model używa jako wejście do przewidywania następnej wartości. Większa wartość uwzględnia więcej kontekstu historycznego.</target>
+      </trans-unit>
+      <trans-unit id="tfLrLabel">
+        <source>Learning rate</source>
+        <target>Learning rate</target>
+      </trans-unit>
+      <trans-unit id="tfLrTooltip">
+        <source>Velocidad a la que el modelo actualiza sus pesos durante el entrenamiento. Valores pequeños son más estables pero aprenden más lento; valores grandes aprenden rápido pero pueden ser inestables.</source>
+        <target>Szybkość, z jaką model aktualizuje swoje wagi podczas trenowania. Małe wartości są bardziej stabilne, ale uczą się wolniej; duże wartości uczą się szybko, ale mogą być niestabilne.</target>
+      </trans-unit>
+      <trans-unit id="predictionConfigDescription">
+        <source>Se ejecutará la consulta con la predicción seleccionada y se guardarán los cambios.</source>
+        <target>Zapytanie zostanie wykonane z wybraną predykcją i zmiany zostaną zapisane.</target>
+      </trans-unit>
       </trans-unit>   
       <trans-unit id="filterSummary">
         <source>Resumen de filtros</source>

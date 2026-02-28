@@ -29,6 +29,7 @@ export const ChartsConfigUtils = {
     if (ebp.panelChart.componentRef && ['table', 'crosstable'].includes(ebp.panelChart.props.chartType)) {
       tableRows = ebp.panelChart.componentRef.instance.inject.rows || 10;
       config = {
+        chartType: ebp.panelChart.props.chartType,
         withColTotals: ebp.panelChart.componentRef.instance.inject.withColTotals,
         withColSubTotals: ebp.panelChart.componentRef.instance.inject.withColSubTotals,
         withRowTotals: ebp.panelChart.componentRef.instance.inject.withRowTotals,
