@@ -1178,9 +1178,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const predColLabel = numericCol?.display_name?.default
             ? `${$localize`:@@Prediction:Predicción`} - ${numericCol.display_name.default}`
             : $localize`:@@Prediction:Predicción`;
-        const tableLabels = labels.length < rowLen
-            ? [...labels, ...Array.from({ length: rowLen - labels.length }, () => predColLabel)]
-            : labels;
+        const tableLabels = [...labels.slice(0, queryLen), ...Array.from({ length: rowLen - queryLen }, () => predColLabel)];
         const tableValues = values.map((row: any[]) => row.map((val: any, idx: number) =>
             idx >= queryLen && (val === null || val === '') ? 0 : val));
         return { tableLabels, tableValues };
