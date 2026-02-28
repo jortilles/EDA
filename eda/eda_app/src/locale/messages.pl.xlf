@@ -5867,7 +5867,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="predictionConfigDescription">
         <source>Se ejecutará la consulta con la predicción seleccionada y se guardarán los cambios.</source>
         <target>Zapytanie zostanie wykonane z wybraną predykcją i zmiany zostaną zapisane.</target>
-      </trans-unit>
       </trans-unit>   
       <trans-unit id="filterSummary">
         <source>Resumen de filtros</source>
