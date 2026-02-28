@@ -256,14 +256,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             dataDescription.otherColumns.push(newCol);
             dataDescription.totalColumns++;
         }
-        // PREDICTION LINES
-        if(cfg.showPredictionLines === true){
-            // El índice de la columna de predicción es el último de las filas, ahora puede haber mas de una linea
-            const predictionIndex = values?.length > 0 && values[0]?.length > 0 ? values[0].length - 1 : 2;
-            dataDescription.numericColumns.push({name: $localize`:@@Prediction:Predicción`, index: predictionIndex });
-            dataTypes.push('numeric');
-            values = values.map(innerArray => innerArray.map(item => item === "" ? null : item));
-        }
+        const _predQueryLen = this.props.query?.length || 0;
+        const _hasPredCols = values?.length > 0 && (values[0]?.length || 0) > _predQueryLen;
+        if (cfg.showPredictionLines === true || _hasPredCols)
+            values = this._preparePredictionValues(values, dataDescription, dataTypes, cfg, _predQueryLen, _hasPredCols);
 
         const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart, values, dataTypes, dataDescription, isbarline, null);
         if (chartData.length == 0) {
@@ -291,14 +287,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps,
             minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines, cfg.showPredictionLines, cfg.numberOfColumns, this.props.edaChart, ticksOptions, false, this.styleProviderService);
 
+        if (cfg.showPredictionLines === true && _hasPredCols && chartData[1]?.length > 0){
+            this._hideConnectingDot(chartData);
+        }
         // TENDECNIAS
-        if (cfg.addTrend && (cfg.chartType === 'line')) {
-            let trends = [];
-            let predictionSerie = cfg.showPredictionLines; 
-            chartData[1].forEach(serie => {
-                if(!predictionSerie || (predictionSerie && serie !== chartData[1][chartData[1].length -1])) {
-                    let trend = this.chartUtils.getTrend(serie);
-                    trends.push(trend);
+        if (cfg.addTrend && cfg.chartType === 'line' && chartData[1]?.length > 0) {
+            const trends = [];
+            const predictionSerie = cfg.showPredictionLines === true;
+            const lastSerie = predictionSerie ? chartData[1][chartData[1].length - 1] : null;
+            chartData[1].forEach((serie: any) => {
+                if (!predictionSerie || serie !== lastSerie) {
+                    trends.push(this.chartUtils.getTrend(serie));
                 }
             });
             trends.forEach(trend => chartData[1].push(trend));
@@ -426,13 +425,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const config = this.props.config.getConfig();
 
         this.componentRef = this.entry.createComponent(EdaTableComponent);
-        // Si los valores tienen más columnas que labels (p.ej. predicción en modo línea convertida a tabla), añadir el label extra
         const rowLen = this.props.data.values?.[0]?.length || 0;
-        while (this.props.data.labels.length < rowLen) {
-            this.props.data.labels.push($localize`:@@Prediction:Predicción`);
-        }
-        this.componentRef.instance.inject = this.initializeTable(type, config);
-        this.componentRef.instance.inject.value = this.chartUtils.transformDataQueryForTable(this.props.data.labels, this.props.data.values);
+        const queryLen = this.props.query?.length || 0;
+        const hasPredictionData = rowLen > queryLen;
+        const { tableLabels, tableValues } = hasPredictionData
+            ? this._prepareTablePredictionData(this.props.data.labels, this.props.data.values, queryLen)
+            : { tableLabels: this.props.data.labels, tableValues: this.props.data.values };
+        this.componentRef.instance.inject = this.initializeTable(type, config, tableLabels);
+        this.componentRef.instance.inject.value = this.chartUtils.transformDataQueryForTable(tableLabels, tableValues);
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
 
         if (config) {
@@ -1115,21 +1115,22 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * @param type 
      * @param configs 
      */
-    private initializeTable(type: string, configs?: any): EdaTable {
+    private initializeTable(type: string, configs?: any, tableLabels?: string[]): EdaTable {
 
+        const labels = tableLabels || this.props.data.labels;
         const tableColumns = [];
         if (this.props.edaChart == 'tableanalized') {
             configs = configs || {};
             configs.rows = 25;
             configs.initRows = 25;
             configs.visibleRows = 25;
-            for (const label of this.props.data.labels) {
+            for (const label of labels) {
                 tableColumns.push(new EdaColumnText({ header: label, field: label, description: label }));
             }
         } else {
             for (let i = 0, n = this.props.query.length; i < n; i += 1) {
 
-                const label = this.props.data.labels[i];
+                const label = labels[i];
                 const r: Column = this.props.query[i];
 
                 if (_.isEqual(r.column_type, 'date')) {
@@ -1144,12 +1145,13 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default }));
                 }
             }
-            // Columnas extra añadidas por el backend (ej. predicción) que no están en el query original
-            // entra si tiene prediccion
-            console.log(this)
-            for (let i = this.props.query.length; i < this.props.data.labels.length; i++) {
-                const label = this.props.data.labels[i];
-                tableColumns.push(new EdaColumnNumber({ header: label, field: label, description: label }));
+            // Columnas extra añadidas por el backend (ej. predicción) que no están en el query original.
+            // Solo se procesan si hay más datos que campos en el query (hasPredictionData).
+            if (labels.length > this.props.query.length) {
+                for (let i = this.props.query.length; i < labels.length; i++) {
+                    const label = labels[i];
+                    tableColumns.push(new EdaColumnNumber({ header: label, field: label, description: label }));
+                }
             }
         }
 
@@ -1169,6 +1171,70 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * @param paletaActual - Paleta de colores a usar como fallback
      * @returns Array de assignedColors correctamente mapeados
      */
+
+    private _prepareTablePredictionData(labels: string[], values: any[][], queryLen: number): { tableLabels: string[], tableValues: any[][] } {
+        const rowLen = values[0].length;
+        const numericCol = this.props.query?.find((q: any) => q.column_type === 'numeric');
+        const predColLabel = numericCol?.display_name?.default
+            ? `${$localize`:@@Prediction:Predicción`} - ${numericCol.display_name.default}`
+            : $localize`:@@Prediction:Predicción`;
+        const tableLabels = labels.length < rowLen
+            ? [...labels, ...Array.from({ length: rowLen - labels.length }, () => predColLabel)]
+            : labels;
+        const tableValues = values.map((row: any[]) => row.map((val: any, idx: number) =>
+            idx >= queryLen && (val === null || val === '') ? 0 : val));
+        return { tableLabels, tableValues };
+    }
+
+    private _preparePredictionValues(
+        values: any[][], dataDescription: any, dataTypes: string[], cfg: any, predQueryLen: number, hasPredCols: boolean
+    ): any[][] {
+        if (cfg.showPredictionLines === true) {
+            const predictionIndex = values[0].length - 1;
+            const baseName = dataDescription.numericColumns[0]?.name || '';
+            const label = baseName
+                ? `${$localize`:@@Prediction:Predicción`} - ${baseName}`
+                : $localize`:@@Prediction:Predicción`;
+            dataDescription.numericColumns.push({ name: label, index: predictionIndex });
+            dataTypes.push('numeric');
+            values = values.map(row => row.map(item => item === '' ? null : item));
+        }
+
+        if (hasPredCols) {
+            if (cfg.showPredictionLines === true) {
+                values = values.map(row => row.map((val, idx) =>
+                    idx >= predQueryLen && (val === 0 || val === '') ? null : val));
+                const actualNumericCols = dataDescription.numericColumns.filter((c: any) => c.index < predQueryLen);
+                if (actualNumericCols.length > 0) {
+                    const numericIdx = actualNumericCols[0].index;
+                    let lastActualIdx = -1;
+                    for (let i = values.length - 1; i >= 0; i--) {
+                        const v = values[i][numericIdx];
+                        if (v !== null && v !== '') { lastActualIdx = i; break; }
+                    }
+                    if (lastActualIdx >= 0) {
+                        for (let j = 0; j <= lastActualIdx; j++) values[j][predQueryLen] = null;
+                        values[lastActualIdx][predQueryLen] = values[lastActualIdx][numericIdx];
+                    }
+                }
+            } else {
+                values = values
+                    .map(row => row.slice(0, predQueryLen))
+                    .filter(row => row.some(val => val !== null && val !== ''));
+            }
+        }
+        return values;
+    }
+
+    private _hideConnectingDot(chartData: any[]): void {
+        const predSeries = chartData[1][chartData[1].length - 1];
+        if (!predSeries?.data) return;
+        const connIdx: number = predSeries.data.findIndex((v: any) => v !== null);
+        if (connIdx < 0) return;
+        const defaultR = typeof predSeries.pointRadius === 'number' ? predSeries.pointRadius : 3;
+        predSeries.pointRadius = predSeries.data.map((_: any, i: number) => i === connIdx ? 0 : defaultR);
+        predSeries.pointHoverRadius = predSeries.data.map((_: any, i: number) => i === connIdx ? 0 : defaultR + 1);
+    }
 
     private resolveAndPersistColors(categories: string[], props: any, paletaActual: string[]): { value: string; color: string }[] {
     
