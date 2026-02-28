@@ -276,8 +276,11 @@ export const PanelOptions = {
     const headers = panelComponent.currentQuery.map(o => o.display_name.default);
     
     // Añadir headers extra que el backend añade y no están en currentQuery (para predicción)
-    const extraLabels = panelComponent.chartLabels.slice(panelComponent.currentQuery.length);
-    headers.push(...extraLabels);
+    const prediction = panelComponent.panel?.content?.query?.query?.prediction;
+    if (prediction && prediction !== 'None') {
+        const extraLabels = panelComponent.chartLabels.slice(panelComponent.currentQuery.length);
+        headers.push(...extraLabels);
+    }
 
     if (_.isEqual(fileType, 'excel')) {
       panelComponent.fileUtiles.exportToExcel(headers, cols, panelComponent.panel.title);
