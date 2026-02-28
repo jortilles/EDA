@@ -442,7 +442,11 @@ export class ChartDialogComponent {
 
         // Setear predicción y configuración en la query del panel
         const panelID = this.controller.params.panelId;
-        const dashboardPanel = this.dashboard.edaPanels.toArray().find(cmp => cmp.panel.id === panelID);
+        const dashboardPanel = this.dashboard?.edaPanels?.toArray().find(cmp => cmp.panel.id === panelID);
+        if (!dashboardPanel) {
+            this.spinnerService.off();
+            return;
+        }
         dashboardPanel.panel.content.query.query.prediction = predictionConfig.method;
         dashboardPanel.panel.content.query.query.predictionConfig = {
             steps: predictionConfig.steps,
@@ -484,7 +488,8 @@ export class ChartDialogComponent {
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
 
         const panelID = this.controller.params.panelId;
-        const dashboardPanel = this.dashboard.edaPanels.toArray().find(cmp => cmp.panel.id === panelID);
+        const dashboardPanel = this.dashboard?.edaPanels?.toArray().find(cmp => cmp.panel.id === panelID);
+        if (!dashboardPanel) return;
         dashboardPanel.panel.content.query.query.prediction = type;
 
         await dashboardPanel.runQueryFromDashboard(true);
