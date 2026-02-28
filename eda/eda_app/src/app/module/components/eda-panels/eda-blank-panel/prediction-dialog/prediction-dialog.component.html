@@ -1,5 +1,5 @@
 <eda-dialog2 header="Configuración de Predicción" i18n-header="@@predictionDialogTitle" [display]="visible" width="35vw" height="auto" [overflow]="'auto'"
-    (apply)="onConfirm()" (close)="onCancel()">
+    [disableApply]="!isValid" (apply)="onConfirm()" (close)="onCancel()">
     <div content class="flex flex-col gap-4 p-4">
         <!-- Método de predicción -->
         <div class="space-y-2">
