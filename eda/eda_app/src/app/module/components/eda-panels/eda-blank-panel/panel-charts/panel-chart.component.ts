@@ -1229,7 +1229,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (!predSeries?.data) return;
         const connIdx: number = predSeries.data.findIndex((v: any) => v !== null);
         if (connIdx < 0) return;
-        const defaultR = typeof predSeries.pointRadius === 'number' ? predSeries.pointRadius : 3;
+        const defaultR = typeof predSeries.pointRadius === 'number' ? predSeries.pointRadius : 5;
         predSeries.pointRadius = predSeries.data.map((_: any, i: number) => i === connIdx ? 0 : defaultR);
         predSeries.pointHoverRadius = predSeries.data.map((_: any, i: number) => i === connIdx ? 0 : defaultR + 1);
     }
