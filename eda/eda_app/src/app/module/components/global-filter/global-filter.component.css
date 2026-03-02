@@ -78,7 +78,7 @@
 }
 
 /* filtro sin autocomplete (multiselect) */
-::ng-deep .p-multiselect {
+:host ::ng-deep .p-multiselect {
   max-width: 10vw;
   min-width: 10vw;
 }
