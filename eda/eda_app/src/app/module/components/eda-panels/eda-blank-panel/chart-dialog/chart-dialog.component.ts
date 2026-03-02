@@ -309,7 +309,7 @@ export class ChartDialogComponent {
         let monthformat = false;
         const haveDate = params.config.query.filter(field => field.column_type === 'date').length > 0 //there is a date
         if (haveDate) {
-            monthformat = ['month', 'week'].includes(params.config.query.filter(field => field.column_type === 'date')[0].format);
+            monthformat = ['month', 'week','day'].includes(params.config.query.filter(field => field.column_type === 'date')[0].format);
         }
         const chartAllowed = ['line', 'bar'].includes(params.config.chartType);
         const onlyTwoCols = params.config.query.length === 2;

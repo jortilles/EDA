@@ -245,7 +245,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             && (['line', 'bar'].includes(cfg.chartType))
             && this.props.query.length === 2
             && this.props.query.filter(field => field.column_type === 'date').length > 0
-            && ['month', 'week'].includes(this.props.query.filter(field => field.column_type === 'date')[0].format)) {
+            && ['month', 'week','day'].includes(this.props.query.filter(field => field.column_type === 'date')[0].format)) {
 
             values = this.chartUtils.comparePeriods(this.props.data, this.props.query);
             let types = this.props.query.map(field => field.column_type);
@@ -256,10 +256,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             dataDescription.otherColumns.push(newCol);
             dataDescription.totalColumns++;
         }
-        const _predQueryLen = this.props.query?.length || 0;
-        const _hasPredCols = values?.length > 0 && (values[0]?.length || 0) > _predQueryLen;
-        if (cfg.showPredictionLines === true || _hasPredCols)
+        if (cfg.showPredictionLines === true) {
+            const _predQueryLen = (this.props.query?.length || 0);
+            const _hasPredCols = values?.length > 0 && (values[0]?.length || 0) > _predQueryLen;
             values = this._preparePredictionValues(values, dataDescription, dataTypes, cfg, _predQueryLen, _hasPredCols);
+        }
 
         const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart, values, dataTypes, dataDescription, isbarline, null);
         if (chartData.length == 0) {
@@ -287,7 +288,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps,
             minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines, cfg.showPredictionLines, cfg.numberOfColumns, this.props.edaChart, ticksOptions, false, this.styleProviderService);
 
-        if (cfg.showPredictionLines === true && _hasPredCols && chartData[1]?.length > 0){
+        if (cfg.showPredictionLines === true && chartData[1]?.length > 0){
             this._hideConnectingDot(chartData);
         }
         // TENDECNIAS
