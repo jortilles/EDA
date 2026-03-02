@@ -4703,6 +4703,16 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Compara amb dades de períodes anteriors</target>
 </trans-unit>
 
+<trans-unit id="tooltipBlockedByComparative">
+  <source>Bloqueado porque comparativa está activa</source>
+  <target>Blocat perquè la comparativa està activa</target>
+</trans-unit>
+
+<trans-unit id="tooltipBlockedByTrendOrPrediction">
+  <source>Bloqueado porque tendencia o predicción está activa</source>
+  <target>Blocat perquè la tendència o la predicció està activa</target>
+</trans-unit>
+
 <trans-unit id="chartLabelOption">
   <source>Muestra las etiquetas de cada segmento</source>
   <target>Mostra les etiquetes de cada segment</target>

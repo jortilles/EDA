@@ -4173,6 +4173,16 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <target>Porównaj z danymi z poprzednich okresów</target>
 </trans-unit>
 
+<trans-unit id="tooltipBlockedByComparative">
+  <source>Bloqueado porque comparativa está activa</source>
+  <target>Zablokowane, ponieważ tryb porównawczy jest aktywny</target>
+</trans-unit>
+
+<trans-unit id="tooltipBlockedByTrendOrPrediction">
+  <source>Bloqueado porque tendencia o predicción está activa</source>
+  <target>Zablokowane, ponieważ trend lub prognoza jest aktywna</target>
+</trans-unit>
+
 <trans-unit id="chartLabelOption">
   <source>Muestra las etiquetas de cada segmento</source>
   <target>Pokaż etykiety dla każdego segmentu</target>

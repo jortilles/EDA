@@ -4665,6 +4665,16 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Comparer avec les données des périodes précédentes</target>
 </trans-unit>
 
+<trans-unit id="tooltipBlockedByComparative">
+  <source>Bloqueado porque comparativa está activa</source>
+  <target>Bloqué car la comparaison est active</target>
+</trans-unit>
+
+<trans-unit id="tooltipBlockedByTrendOrPrediction">
+  <source>Bloqueado porque tendencia o predicción está activa</source>
+  <target>Bloqué car la tendance ou la prédiction est active</target>
+</trans-unit>
+
 <trans-unit id="chartLabelOption">
   <source>Muestra las etiquetas de cada segmento</source>
   <target>Il affiche les étiquettes de chaque segment.</target>
