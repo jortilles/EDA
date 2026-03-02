@@ -100,7 +100,7 @@
             @if (!!display.calendar) {
             <eda-date-picker #myCalendar class="h-[3.2rem]" (onDatesChanges)="processPickerEvent($event)"></eda-date-picker>
             }
-            @if (!display.calendar && !filter.switch) {
+            @if (!display.calendar && !filter.switch && (!['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(filterSelected?.value))) {
             <span class="p-float-label h-[3.2rem] w-full">
               <input
                 id="float-input1"
