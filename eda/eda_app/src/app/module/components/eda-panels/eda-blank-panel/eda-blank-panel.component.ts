@@ -798,19 +798,37 @@ public tableNodeExpand(event: any): void {
         this.graficos.numberOfColumns = config && config.getConfig() ? config.getConfig()['numberOfColumns'] : null;
         this.graficos.assignedColors = config && config.getConfig() ? config.getConfig()['assignedColors'] : null;
 
+        // Queremos mantener la prediccion entre cambios de tipo de gráfico 
+        // Si el chart es línea/área y hay predicción activa en la query, forzar showPredictionLines
+        if (['line', 'area'].includes(type)) {
+            const prediction = this.panel?.content?.query?.query?.prediction;
+            // Si existe prediccion la forzamos
+            if (prediction && prediction !== 'None') {
+                if (config && config.getConfig()) {
+                    config.getConfig()['showPredictionLines'] = true;
+                }
+                this.graficos.showPredictionLines = true;
+            }
+        }
+
         const allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
 
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
-            
+
             // Preservar assignedColors antes del merge
             const savedAssignedColors = config && config.getConfig() ? config.getConfig()['assignedColors'] : null;
 
             _.merge(_config, config||{});
-            
+
             // Restaurar assignedColors después del merge
             if (savedAssignedColors) {
                 _config.getConfig()['assignedColors'] = savedAssignedColors;
+            }
+
+            // Asegurar que showPredictionLines se propaga al _config (mantener la línea de predicción al cambiar entre tipos de gráficos)
+            if (['line', 'area'].includes(type) && this.graficos.showPredictionLines) {
+                _config.getConfig()['showPredictionLines'] = true;
             }
 
             if (subType=='tableanalized') {

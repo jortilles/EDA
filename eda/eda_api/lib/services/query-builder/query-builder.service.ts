@@ -584,6 +584,9 @@ export abstract class QueryBuilderService {
                     ){
                     //console.log('No puedo ver la columna pero no se usa. No hago nada ', permission.column );  
                     found = -1;  
+                    }else   if( permission.value[0] == '(~ => All)' ){
+                    //console.log('Puedo verlo todo ', permission.column );  
+                    found = -1;  
                     }else { 
 
                     let filter = {
@@ -635,7 +638,7 @@ export abstract class QueryBuilderService {
         if (columns.length > 0  && permissions !== null) {
             permissions.forEach(permission => {
                 found = columns.findIndex((t: any) => t.table_name.split('.')[0] === permission.table);
-                if (found >= 0) {
+                if (found >= 0 && permission.value[0] != '(~ => All)' ) {
                     if(permission.dynamic){
                             permission.value[0] =  permission.value[0].toString().replace("EDA_USER", this.usercode) 
                            
