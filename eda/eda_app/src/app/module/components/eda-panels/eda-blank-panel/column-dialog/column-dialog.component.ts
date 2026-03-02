@@ -488,7 +488,7 @@ export class ColumnDialogComponent {
             if (!column.ordenation_type) {
                 column.ordenation_type = 'No';
             }
-    
+
             const ordenation = queryFromServer.find(c =>
                 c.column_name === column.column_name &&
                 c.table_id === column.table_id &&
@@ -504,10 +504,11 @@ export class ColumnDialogComponent {
                 ord.selected = true;
             }
         } else {
+            const defaultOrd = column.ordenation_type || (column.column_type === 'date' ? 'Asc' : 'No');
             this.ordenationTypes = [
-                { display_name: 'Asc', value: 'Asc', selected: false },
-                { display_name: 'Desc', value: 'Desc', selected: false },
-                { display_name: 'No', value: 'No', selected: true }
+                { display_name: 'Asc', value: 'Asc', selected: defaultOrd === 'Asc' },
+                { display_name: 'Desc', value: 'Desc', selected: defaultOrd === 'Desc' },
+                { display_name: 'No', value: 'No', selected: defaultOrd === 'No' }
             ];
         }
     
