@@ -7,23 +7,26 @@ import * as _ from 'lodash';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
-import { StyleProviderService } from '@eda/services/service.index';
+import { StyleProviderService, SpinnerService } from '@eda/services/service.index';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { MenubarModule } from 'primeng/menubar';
 import { TableGradientDialogComponent } from './gradient-dialog/gradient-dialog.component';
+import { PredictionDialogComponent, PredictionConfig, QueryColumn } from '../prediction-dialog/prediction-dialog.component';
+import { QueryUtils } from '../panel-utils/query-utils';
 
 @Component({
   standalone: true,
   selector: 'app-table-dialog',
   templateUrl: './table-dialog.component.html',
   styleUrls: ['../../../../../../assets/sass/eda-styles/components/table-dialog.component.css'],
-  imports: [CommonModule, FormsModule, EdaDialog2Component, MenubarModule, TableGradientDialogComponent, PanelChartComponent]
+  imports: [CommonModule, FormsModule, EdaDialog2Component, MenubarModule, TableGradientDialogComponent, PanelChartComponent, PredictionDialogComponent]
 })
 
 export class TableDialogComponent{
   @Input() controller: any;
+  @Input() dashboard: any;
   @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
 
   public dialog: EdaDialog;
@@ -73,7 +76,17 @@ export class TableDialogComponent{
   public display: boolean = false;
   public title: string = this.tableTitleDialog;
 
-  constructor(private styleProviderService : StyleProviderService) {}
+  public showPredictionDialog: boolean = false;
+  public showPredictionCol: boolean = false;
+  public predictionMethod: string = 'Arima';
+
+  private originalPrediction: string;
+  private pendingPrediction: PredictionConfig | null = null;
+
+  public addPrediction: string = $localize`:@@showLinesPrediction:Mostrar Predicción`;
+  public removePrediction: string = $localize`:@@removePrediction:Quitar Predicción`;
+
+  constructor(private styleProviderService: StyleProviderService, private spinnerService: SpinnerService) {}
 
   setChartProperties() {
     this.setCols();
@@ -99,6 +112,15 @@ export class TableDialogComponent{
         new TableConfig(false, false, 5, false, false, false, false, null, null, null, false, false, [])
       )
     }
+    // Leer el estado actual de predicción del panel
+    const panelID = this.controller?.params?.panelId;
+    const dashboardPanel = this.dashboard?.edaPanels?.toArray().find((cmp: any) => cmp.panel.id === panelID);
+    const existingPrediction = dashboardPanel?.panel?.content?.query?.query?.prediction;
+    this.showPredictionCol = !!(existingPrediction && existingPrediction !== 'None');
+    if (this.showPredictionCol) {
+      this.predictionMethod = existingPrediction;
+    }
+    this.originalPrediction = dashboardPanel?.panel?.content?.query?.query?.prediction;
     this.setItems();
   }
 
@@ -276,11 +298,92 @@ export class TableDialogComponent{
     this.setItems(); // Aqui se busca la modificación de colores
   }
 
+  get queryNumericColumns(): QueryColumn[] {
+    const panelID = this.controller?.params?.panelId;
+    if (!panelID || !this.dashboard) return [];
+    const dashboardPanel = this.dashboard.edaPanels?.toArray().find((cmp: any) => cmp.panel.id === panelID);
+    const fields: any[] = dashboardPanel?.panel?.content?.query?.query?.fields;
+    if (!fields) return [];
+    return fields
+      .filter((f: any) => f.column_type === 'numeric')
+      .map((f: any) => ({
+        column_name: f.column_name,
+        table_id: f.table_id,
+        display_name: f.display_name?.default || f.column_name
+      }));
+  }
+
+  setPredictionCol() {
+    if (this.showPredictionCol) {
+      this.showPredictionDialog = true;
+    } else {
+      this.pendingPrediction = null;
+      // Si había predicción activa, recargar la preview sin predicción
+      if (this.originalPrediction && this.originalPrediction !== 'None') {
+        this.runPreviewQuery(null);
+      }
+      this.setItems();
+    }
+  }
+
+  async confirmPrediction(predictionConfig: PredictionConfig) {
+    this.showPredictionDialog = false;
+    this.predictionMethod = predictionConfig.method;
+    this.pendingPrediction = predictionConfig;
+    await this.runPreviewQuery(predictionConfig);
+    this.setItems();
+  }
+
+  private async runPreviewQuery(pred: PredictionConfig | null) {
+    const panelID = this.controller?.params?.panelId;
+    const dashboardPanel = this.dashboard?.edaPanels?.toArray().find((cmp: any) => cmp.panel.id === panelID);
+    if (!dashboardPanel) return;
+
+    this.spinnerService.on();
+    try {
+      // Setear temporalmente la predicción para construir la query
+      const origPred = dashboardPanel.panel.content.query.query.prediction;
+      const origPredConfig = dashboardPanel.panel.content.query.query.predictionConfig;
+
+      dashboardPanel.panel.content.query.query.prediction = pred ? pred.method : 'None';
+      dashboardPanel.panel.content.query.query.predictionConfig = pred ? {
+        steps: pred.steps,
+        targetColumn: pred.targetColumn,
+        arimaParams: pred.arimaParams,
+        tensorflowParams: pred.tensorflowParams,
+      } : null;
+
+      const query = QueryUtils.switchAndBuildQuery(dashboardPanel);
+
+      // Revertir inmediatamente (sincrónico, antes del await)
+      dashboardPanel.panel.content.query.query.prediction = origPred;
+      dashboardPanel.panel.content.query.query.predictionConfig = origPredConfig;
+
+      // Ejecutar la query directamente sin pasar por runQueryFromDashboard
+      const response = await dashboardPanel.dashboardService.executeQuery(query).toPromise();
+      const chartLabels = dashboardPanel.chartUtils.uniqueLabels(response[0]);
+      const chartData = response[1];
+
+      // Actualizar solo la preview del dialog
+      this.panelChartConfig = new PanelChart({
+        ...this.panelChartConfig,
+        data: { labels: chartLabels, values: chartData },
+      });
+    } finally {
+      this.spinnerService.off();
+    }
+  }
+
+  cancelPrediction() {
+    this.showPredictionDialog = false;
+    this.showPredictionCol = false;
+  }
+
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     return this.controller.close(event, response);
   }
-  
-  saveChartConfig() {
+
+  async saveChartConfig() {
     const config = (<TableConfig>this.panelChartConfig.config.getConfig());
     const rows = config.visibleRows;
     const sortedSerie = config.sortedSerie;
@@ -288,8 +391,36 @@ export class TableDialogComponent{
     const styles = this.styles;
 
     const properties = new TableConfig(this.onlyPercentages, this.resultAsPecentage, rows,
-      this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles, 
-      this.noRepetitions,this.negativeNumbers, this.ordering);
+      this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles,
+      this.noRepetitions, this.negativeNumbers, this.ordering);
+
+    // Aplicar cambios de predicción al dashboard solo al confirmar
+    const panelID = this.controller?.params?.panelId;
+    const dashboardPanel = this.dashboard?.edaPanels?.toArray().find((cmp: any) => cmp.panel.id === panelID);
+    const hadPrediction = !!(this.originalPrediction && this.originalPrediction !== 'None');
+    const predictionChanged = (this.showPredictionCol && this.pendingPrediction !== null) ||
+                              (!this.showPredictionCol && hadPrediction);
+
+    if (dashboardPanel && predictionChanged) {
+      if (this.showPredictionCol && this.pendingPrediction) {
+        dashboardPanel.panel.content.query.query.prediction = this.pendingPrediction.method;
+        dashboardPanel.panel.content.query.query.predictionConfig = {
+          steps: this.pendingPrediction.steps,
+          targetColumn: this.pendingPrediction.targetColumn,
+          arimaParams: this.pendingPrediction.arimaParams,
+          tensorflowParams: this.pendingPrediction.tensorflowParams,
+        };
+      } else {
+        dashboardPanel.panel.content.query.query.prediction = 'None';
+        dashboardPanel.panel.content.query.query.predictionConfig = null;
+      }
+      this.spinnerService.on();
+      try {
+        await dashboardPanel.runQueryFromDashboard(true);
+      } finally {
+        this.spinnerService.off();
+      }
+    }
 
     this.onClose(EdaDialogCloseEvent.UPDATE, properties);
   }
@@ -387,10 +518,18 @@ export class TableDialogComponent{
           icon: "pi pi-list",
           items: [
             {
-              label: this.negativeNumbers !== true ? this.withoutNegativeNumbers : this.withNegativeNumbers,   
+              label: this.negativeNumbers !== true ? this.withoutNegativeNumbers : this.withNegativeNumbers,
               command: () => this.noNegativeNumbers()
             }
           ]
+        },
+        {
+          label: this.showPredictionCol ? this.removePrediction : this.addPrediction,
+          icon: "pi pi-chart-line",
+          command: () => {
+            this.showPredictionCol = !this.showPredictionCol;
+            this.setPredictionCol();
+          }
         }
       ]
     } else {

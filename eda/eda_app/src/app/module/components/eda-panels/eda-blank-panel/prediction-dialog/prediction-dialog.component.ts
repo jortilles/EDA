@@ -64,6 +64,22 @@ export class PredictionDialogComponent {
     /** Columna objetivo para TensorFlow (la que se predice; las demás serán referencias automáticas) */
     public targetColumn: QueryColumn | null = null;
 
+    get isValid(): boolean {
+        if (!this.selectedMethod || this.selectedMethod === 'None') return false;
+        if (!this.steps || this.steps < 1) return false;
+        if (!this.targetColumn) return false;
+        if (this.advancedConfig) {
+            if (this.selectedMethod === 'Arima') {
+                if (this.arimaParams.p < 0 || this.arimaParams.d < 0 || this.arimaParams.q < 0) return false;
+            } else if (this.selectedMethod === 'Tensorflow') {
+                if (!this.tensorflowParams.epochs || this.tensorflowParams.epochs < 1) return false;
+                if (!this.tensorflowParams.lookback || this.tensorflowParams.lookback < 1) return false;
+                if (!this.tensorflowParams.learningRate || this.tensorflowParams.learningRate <= 0) return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * Construye el PredictionConfig y lo emite hacia chart-dialog.
      * Solo incluye arimaParams o tensorflowParams si están activos.

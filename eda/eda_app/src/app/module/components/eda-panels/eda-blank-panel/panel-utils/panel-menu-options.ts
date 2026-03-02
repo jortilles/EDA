@@ -278,8 +278,10 @@ export const PanelOptions = {
     if (!panelComponent.panel.content) {
         return panelComponent.alertService.addError($localize`:@@noContentToExport:No tienes contenido para exportar`);
     }
-    const cols = panelComponent.chartUtils.transformDataQueryForTable(panelComponent.chartLabels, panelComponent.chartData);
+    const { exportLabels, predLabel } = PanelOptions._buildPredictionLabels(panelComponent);
+    const cols = panelComponent.chartUtils.transformDataQueryForTable(exportLabels, panelComponent.chartData);
     const headers = panelComponent.currentQuery.map(o => o.display_name.default);
+    if (predLabel) headers.push(predLabel);
 
     if (_.isEqual(fileType, 'excel')) {
       panelComponent.fileUtiles.exportToExcel(headers, cols, panelComponent.panel.title);
@@ -289,6 +291,19 @@ export const PanelOptions = {
     }
 
     panelComponent.contextMenu.hideContextMenu();
+  },
+  _buildPredictionLabels: (panelComponent: EdaBlankPanelComponent): { exportLabels: string[], predLabel: string | null } => {
+    const queryLen = panelComponent.currentQuery.length;
+    const rowLen = panelComponent.chartData[0]?.length || 0;
+    const prediction = panelComponent.panel?.content?.query?.query?.prediction;
+    if (!prediction || prediction === 'None' || rowLen <= queryLen)
+        return { exportLabels: panelComponent.chartLabels, predLabel: null };
+    const numericCol = panelComponent.currentQuery.find((q: any) => q.column_type === 'numeric');
+    const predLabel = numericCol?.display_name?.default
+        ? `${$localize`:@@Prediction:Predicción`} - ${numericCol.display_name.default}`
+        : $localize`:@@Prediction:Predicción`;
+    const exportLabels = [...panelComponent.chartLabels.slice(0, queryLen), ...Array.from({ length: rowLen - queryLen }, () => predLabel)];
+    return { exportLabels, predLabel };
   },
   askToIA : (panelComponent: EdaBlankPanelComponent) => {
     return new EdaContextMenuItem({
