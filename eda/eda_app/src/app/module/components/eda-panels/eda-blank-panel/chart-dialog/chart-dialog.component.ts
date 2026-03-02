@@ -19,6 +19,7 @@ import Swal from 'sweetalert2';
     standalone: true,
     selector: 'app-chart-dialog',
     templateUrl: './chart-dialog.component.html',
+    styleUrls: ['./chart-dialog.component.css'],
     imports: [CommonModule, FormsModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule, PredictionDialogComponent]
 })
 
@@ -54,6 +55,8 @@ export class ChartDialogComponent {
     public showLablesTooltip = $localize`:@@showLablesTooltip:Mostrar o ocultar las etiquetas sobre los gráficos`
     public showLablesPercentTooltip = $localize`:@@showLablesPercentTooltip:Mostrar o ocultar las etiquetas en porcentaje sobre los gráficos`
     public columnsTooltip = $localize`:@@columnsTooltip:Elige cuantas columnas quieres mostrar`
+    public tooltipBlockedByComparative = $localize`:@@tooltipBlockedByComparative:Bloqueado porque comparativa está activa`
+    public tooltipBlockedByTrendOrPrediction = $localize`:@@tooltipBlockedByTrendOrPrediction:Bloqueado porque tendencia o predicción está activa`
     
     // Guardar los valores originales de los labels
     private originalLabelValues: {
@@ -309,7 +312,7 @@ export class ChartDialogComponent {
         let monthformat = false;
         const haveDate = params.config.query.filter(field => field.column_type === 'date').length > 0 //there is a date
         if (haveDate) {
-            monthformat = ['month', 'week'].includes(params.config.query.filter(field => field.column_type === 'date')[0].format);
+            monthformat = ['month', 'week','day'].includes(params.config.query.filter(field => field.column_type === 'date')[0].format);
         }
         const chartAllowed = ['line', 'bar'].includes(params.config.chartType);
         const onlyTwoCols = params.config.query.length === 2;
