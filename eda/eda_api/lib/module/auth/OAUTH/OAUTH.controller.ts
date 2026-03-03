@@ -10,11 +10,12 @@ import Group, { IGroup } from '../../admin/groups/model/group.model'
 import { UserController } from '../../admin/users/user.controller';
 import _ = require('lodash');
 
-const ENTORNS = require('../../../config/ens_autoritzats');
+
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const SEED = require('../../../../config/seed').SEED;
+const SEED =        require('../../../../config/seed').SEED;
 const OAUTHconfig = require('../../../../config/OAUTHconfig');
+const ENTORNS =     require('../../../../config/ens_autoritzats');
 
 
 export class OAUTHController {
@@ -101,6 +102,7 @@ export class OAUTHController {
             console.log('email identificación: ', email);
             console.log('usuari: ' , userDataValue);
             console.log('companyId: ', companyId);
+            console.log(ENTORNS);
             console.log(ENTORNS.some((p: { NIF_ENS: string }) => p.NIF_ENS === companyId));
             // Verificacion.
             if(!ENTORNS.some((p: { NIF_ENS: string }) => p.NIF_ENS === companyId)) return next(new HttpException(400, 'Ens no registrat al llistat de entorns: ' + companyId ));
