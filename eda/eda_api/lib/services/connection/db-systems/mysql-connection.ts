@@ -137,28 +137,30 @@ export class MysqlConnection extends AbstractConnection {
             const foreignKeys = await this.execQuery(fkQuery);
             this.client = await this.getclient();
             this.client.query = util.promisify(this.client.query);
-            for (let i = 0; i < tableNames.length; i++) {
-                let new_table = await this.setTable(tableNames[i]);
-                let count = 0;
-                if(optimize === 1){
-                    const dbCount = await this.countTable(tableNames[i]);
-                    count = dbCount[0].count;
+            try {
+                for (let i = 0; i < tableNames.length; i++) {
+                    let new_table = await this.setTable(tableNames[i]);
+                    let count = 0;
+                    if(optimize === 1){
+                        const dbCount = await this.countTable(tableNames[i]);
+                        count = dbCount[0].count;
+                    }
+                    new_table.tableCount = count;
+                    tables.push(new_table);
+                    if(i> 400){
+                        console.log('Un datasource no puede tener más de 400 tablas ');
+                        i = tableNames.length + 1;
+                    }
                 }
-                new_table.tableCount = count;
-                tables.push(new_table);
-                if(i> 400){
-                    console.log('Un datasource no puede tener más de 400 tablas ');
-                    i = tableNames.length + 1;
+                for (let i = 0; i < tables.length; i++) {
+                    for (let j = 0; j < tables[i].columns.length; j++) {
+                        tables[i].columns[j] = this.setColumns(tables[i].columns[j], tables[i].tableCount);
+                    }
                 }
+            } finally {
+                if (!this.pool) this.client.end();
             }
-            for (let i = 0; i < tables.length; i++) {
-                for (let j = 0; j < tables[i].columns.length; j++) {
-                    tables[i].columns[j] = this.setColumns(tables[i].columns[j], tables[i].tableCount);
-                }
-            }
-            // console.log(this.client.itsConnected());
-            // if (!this.pool && this.client.itsConnected()) this.client.end();
-            
+
             /**Return datamodel with foreign-keys-relations if exists or custom relations if not */
             if(foreignKeys.length > 0) return await this.setForeignKeys(tables, foreignKeys);
             else return await this.setRelations(tables);
@@ -172,11 +174,11 @@ export class MysqlConnection extends AbstractConnection {
         try {
             this.client.query = util.promisify(this.client.query);
             const rows = await this.client.query(query);
-            // console.log(this.client.itsConnected());
-            // if (!this.pool && this.client.itsConnected() ) this.client.end();
+            if (!this.pool) this.client.end();
             return rows;
         } catch (err) {
             console.log(err);
+            if (!this.pool) this.client.end();
             throw err;
         }
 
