@@ -158,7 +158,7 @@ export class MysqlConnection extends AbstractConnection {
                     }
                 }
             } finally {
-                if (!this.pool) this.client.end();
+                if (!this.pool) this.client.destroy();
             }
 
             /**Return datamodel with foreign-keys-relations if exists or custom relations if not */
@@ -174,11 +174,11 @@ export class MysqlConnection extends AbstractConnection {
         try {
             this.client.query = util.promisify(this.client.query);
             const rows = await this.client.query(query);
-            if (!this.pool) this.client.end();
+            if (!this.pool) this.client.destroy();
             return rows;
         } catch (err) {
             console.log(err);
-            if (!this.pool) this.client.end();
+            if (!this.pool) this.client.destroy();
             throw err;
         }
 
