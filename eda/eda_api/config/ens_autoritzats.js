@@ -1,4 +1,4 @@
-export const ENTORNS = [
+module.exports = [
 {NIF_ENS: "P1723000D"},
 {NIF_ENS: "P1721200B"},
 {NIF_ENS: "P1700200G"},

@@ -14,7 +14,9 @@
       "typeRoots": ["lib/types", "node_modules/@types"],
       "skipLibCheck": true
   },
-  "include": [ "lib/**/*.ts" ],
+  "include": [
+      "lib/**/*.ts"
+  ],
   "exclude": [
       "node_modules",
       "dist"

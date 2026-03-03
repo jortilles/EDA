@@ -3,13 +3,14 @@ import { HttpException } from '../../global/model/index';
 import axios from 'axios';
 import qs from 'qs';
 import { userDataValue, authenticationEvidenceValue, userPermissionsValue, userPermissionsRolesValue } from './dataTest'
-import { ENTORNS } from '../../../../config/ens_autoritzats'
+
 import ServerLogService from '../../../services/server-log/server-log.service';
 import User, { IUser } from '../../admin/users/model/user.model';
 import Group, { IGroup } from '../../admin/groups/model/group.model'
 import { UserController } from '../../admin/users/user.controller';
 import _ = require('lodash');
 
+const ENTORNS = require('../../../config/ens_autoritzats');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const SEED = require('../../../../config/seed').SEED;
