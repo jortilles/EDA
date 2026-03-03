@@ -1478,9 +1478,10 @@ public tableNodeExpand(event: any): void {
         // Usar spread operator para mantener el config existente
         this.panel.content.query.output.config = {
             ...this.panel.content.query.output.config,
-            assignedColors: response.assignedColors,  // ✅ Guardar assignedColors
+            assignedColors: response.assignedColors,
             alertLimits: response.alerts,
-            sufix: response.sufix
+            sufix: response.sufix,
+            modifiedFontPoints: response.modifiedFontPoints || 0,
         };
 
         let layout: any;
@@ -1508,7 +1509,8 @@ public tableNodeExpand(event: any): void {
                 sufix: response.sufix, 
                 alertLimits: response.alerts, 
                 edaChart: layout,
-                assignedColors: response.assignedColors  //  Añadir assignedColors al KpiConfig
+                assignedColors: response.assignedColors,
+                modifiedFontPoints: response.modifiedFontPoints || 0,
             })
         );
         

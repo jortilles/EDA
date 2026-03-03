@@ -2692,6 +2692,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <context context-type="linenumber">60</context>
 </context-group>
 </trans-unit>
+<trans-unit id="kpiSize">
+  <source>Modificar el tamaño del KPI</source>
+  <target>Modificar la mida del KPI</target>
+</trans-unit>
 <trans-unit id="addAlert" datatype="html">
 <source> Añadir alerta    </source>
 <target> Afegir alerta    </target>
