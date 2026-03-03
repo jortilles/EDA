@@ -3,7 +3,7 @@ import { HttpException } from '../../global/model/index';
 import axios from 'axios';
 import qs from 'qs';
 import { userDataValue, authenticationEvidenceValue, userPermissionsValue, userPermissionsRolesValue } from './dataTest'
-import { ENTORNS } from './users'
+import { ENTORNS } from './ens_autoritzats'
 import ServerLogService from '../../../services/server-log/server-log.service';
 import User, { IUser } from '../../admin/users/model/user.model';
 import Group, { IGroup } from '../../admin/groups/model/group.model'
@@ -100,7 +100,7 @@ export class OAUTHController {
             console.log('email identificación: ', email);
 
             // Verificacion.
-            if(!ENTORNS.some(p => p.NIF_ENS === identifier)) return next(new HttpException(400, 'Ens no reconegut: ' + identifier ));
+            if(!ENTORNS.some(p => p.NIF_ENS === identifier)) return next(new HttpException(400, 'Ens no registrat al llistat de entorns: ' + identifier ));
             
             // Verificamos el email o el identifier del usuario
             if (!email && !identifier) return next(new HttpException(400, 'Usuario no verificado'));
