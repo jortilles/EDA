@@ -200,6 +200,7 @@ export class EdaBlankPanelComponent implements OnInit {
     /** Query Variables */
     public tables: any[] = [];
     public tablesToShow: any[] = [];
+    public tablesToShowBase: any[] = [];
     public assertedTables: any[] = [];
     public columns: any[] = [];
     public aggregationsTypes: any[] = [];
@@ -534,6 +535,7 @@ public tableNodeExpand(event: any): void {
         const tables = TableUtils.getTablesData(this.dataSource.model.tables, this.inject.applyToAllfilter);
         this.tables = [].concat(_.cloneDeep(tables.allTables), this.assertedTables);
         this.tablesToShow = [].concat(_.cloneDeep(tables.tablesToShow), this.assertedTables);
+        this.tablesToShowBase = [...this.tablesToShow];
         this.sqlOriginTables = _.cloneDeep(tables.sqlOriginTables);
     }
 
@@ -907,10 +909,10 @@ public tableNodeExpand(event: any): void {
 
     public onTableInputKey(event: any) {
         if (event.target.value) {
-            this.tablesToShow = this.tablesToShow
+            this.tablesToShow = this.tablesToShowBase
                 .filter(table => table.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
-        }else{
-             this.setTablesData();
+        } else {
+            this.tablesToShow = [...this.tablesToShowBase];
         }
     }
 
@@ -1140,6 +1142,7 @@ public tableNodeExpand(event: any): void {
         this.loadChartsData(this.panelDeepCopy);
         this.userSelectedTable = undefined;
         this.tablesToShow = this.tables;
+        this.tablesToShowBase = [...this.tables];
         this.display_v.chart = '';
         this.display_v.page_dialog = false;
 
