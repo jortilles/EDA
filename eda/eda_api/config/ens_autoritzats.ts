@@ -1,5 +1,3 @@
-
-
 export const ENTORNS = [
 {NIF_ENS: "P1723000D"},
 {NIF_ENS: "P1721200B"},
