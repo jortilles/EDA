@@ -101,11 +101,9 @@ export class OAUTHController {
             console.log('email identificación: ', email);
             console.log('usuari: ' , userDataValue);
             console.log('companyId: ', companyId);
-            console.log( ENTORNS.some(p => p.NIF_ENS === companyId)  )
-            console.log( !ENTORNS.some(p => p.NIF_ENS === companyId)  )
-
+            console.log(ENTORNS.some((p: { NIF_ENS: string }) => p.NIF_ENS === companyId));
             // Verificacion.
-            // if(!ENTORNS.some(p => p.NIF_ENS === companyId)) return next(new HttpException(400, 'Ens no registrat al llistat de entorns: ' + companyId ));
+            if(!ENTORNS.some((p: { NIF_ENS: string }) => p.NIF_ENS === companyId)) return next(new HttpException(400, 'Ens no registrat al llistat de entorns: ' + companyId ));
             
             // Verificamos el email o el identifier del usuario
             if (!email && !identifier) return next(new HttpException(400, 'Usuario no verificado'));
