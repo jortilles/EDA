@@ -14,9 +14,7 @@
       "typeRoots": ["lib/types", "node_modules/@types"],
       "skipLibCheck": true
   },
-  "include": [
-      "lib/**/*.ts"
-, "config/ens_autoritzats.ts"  ],
+  "include": [ "lib/**/*.ts" ],
   "exclude": [
       "node_modules",
       "dist"
