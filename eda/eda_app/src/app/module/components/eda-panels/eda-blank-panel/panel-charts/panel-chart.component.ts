@@ -368,6 +368,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             });
         }
 
+        chartConfig.chartLegend = cfg.chartLegend ?? true;
         chartConfig.linkedDashboardProps = this.props.linkedDashboardProps;
         this.createEdaChartComponent(chartConfig);
     }
