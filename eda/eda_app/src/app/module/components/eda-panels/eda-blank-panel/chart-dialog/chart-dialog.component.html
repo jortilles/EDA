@@ -227,15 +227,24 @@
           <div class="grid gap-4 grid-rows-auto gap-6">
             <div>
               <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
-              <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm mb-6"
-                [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
-                <option [ngValue]="null" disabled hidden i18n="@@selectPalette">
-                  -- Seleccione una paleta --
-                </option>
-                @for (palette of allPalettes; track $index) {
-                <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
+              <div class="flex items-stretch gap-2 mb-6">
+                <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
+                  <option [ngValue]="null" disabled hidden i18n="@@selectPalette">
+                    -- Seleccione una paleta --
+                  </option>
+                  @for (palette of allPalettes; track $index) {
+                    <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
+                  }
+                </select>
+                @if (selectedPalette) {
+                  <div class="flex rounded overflow-hidden" style="width: 80px;">
+                    @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
+                      <div class="flex-1" [style.background-color]="color"></div>
+                    }
+                  </div>
                 }
-              </select>
+              </div>
 
               <!-- Iterar sobre assignedColors -->
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
