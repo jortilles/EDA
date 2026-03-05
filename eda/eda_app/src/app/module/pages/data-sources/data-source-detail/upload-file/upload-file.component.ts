@@ -146,14 +146,20 @@ export class UploadFileComponent implements OnInit {
     fileReader.onload = () => {
       const geojson = JSON.parse(fileReader.result as string);
 
-      // revisar validación fichero
-      if (true) {
+      // Validar que el fichero es un GeoJSON con features de tipo Polygon o MultiPolygon
+      const allSupported = geojson?.features?.every((f: any) => ['Polygon', 'MultiPolygon'].includes(f.geometry?.type));
+      const isValid = geojson?.type === 'FeatureCollection' && geojson?.features?.length > 0 && allSupported;
+
+      if (isValid) {
         this.alertService.addSuccess($localize`:@@correctGeoJsonFormat:El archivo tiene un formato GeoJson válido.`)
         this.onFilesAdded();
         this.uploadFile();
       } else {
-        this.alertService.addError($localize`:@@wrongGeoJsonFormat:El archivo no tiene un formato GeoJson válido.`);
-        // Clean fields
+        const unsupportedType = geojson?.features?.find((f: any) => !['Polygon', 'MultiPolygon'].includes(f.geometry?.type))?.geometry?.type;
+        const reason = unsupportedType
+          ? $localize`:@@unsupportedGeoJsonType:El tipo de geometría "${unsupportedType}" no está admitido. Solo se admiten "Polygon" y "MultiPolygon".`
+          : $localize`:@@wrongGeoJsonFormat:El archivo no tiene un formato GeoJson válido.`;
+        this.alertService.addError(reason);
         this._geoJsonFileName.set('');
         this._geoJsonFile.set(null);
       }
