@@ -110,39 +110,41 @@ export class ExcelSheetController {
             if (excelDocs) {
                 excelDocs.key = excelFields;
                 await excelDocs.save();
-            } else {
-                const parsedUrl = new URL(databaseUrl?.url);
-                const { host, port } = parsedUrl;
-                const config = {
-                    type: "mongodb",
-                    host: host.substring(0, host.indexOf(':')),
-                    port: Number(port),
-                    database: parsedUrl.pathname.substring(1),
-                    user: parsedUrl.username,
-                    password: parsedUrl.password,
-                    authSource: parsedUrl.search.split('=')[1]
-                };
-                const mongoConnection = new MongoDBConnection(config);
-                const client = await mongoConnection.getclient();
-                try {
-                    const database = client.db(config.database);
-                    const collection = database.collection('xls_' + excelName);
-                    const formatedFields = JSON.parse(JSON.stringify(excelFields));
-                    for (const obj of formatedFields) {
-                        for (let key in obj) {
-                            let field: any = obj[key];
-                            if (isNaN(Number(field))) {
-                                const isDateValue = DateUtil.convertDate(field);
-                                if (isDateValue) { obj[key] = isDateValue; }
-                            } else {
-                                obj[key] = Number(field);
-                            }
+            }
+
+            // Siempre reemplazar los datos reales de la colección xls_<nombre>
+            const parsedUrl = new URL(databaseUrl?.url);
+            const { host, port } = parsedUrl;
+            const config = {
+                type: "mongodb",
+                host: host.substring(0, host.indexOf(':')),
+                port: Number(port),
+                database: parsedUrl.pathname.substring(1),
+                user: parsedUrl.username,
+                password: parsedUrl.password,
+                authSource: parsedUrl.search.split('=')[1]
+            };
+            const mongoConnection = new MongoDBConnection(config);
+            const client = await mongoConnection.getclient();
+            try {
+                const database = client.db(config.database);
+                const collection = database.collection('xls_' + excelName);
+                const formatedFields = JSON.parse(JSON.stringify(excelFields));
+                for (const obj of formatedFields) {
+                    for (let key in obj) {
+                        let field: any = obj[key];
+                        if (isNaN(Number(field))) {
+                            const isDateValue = DateUtil.convertDate(field);
+                            if (isDateValue) { obj[key] = isDateValue; }
+                        } else {
+                            obj[key] = Number(field);
                         }
                     }
-                    await collection.insertMany(formatedFields);
-                } finally {
-                    await client.close();
                 }
+                await collection.deleteMany({});
+                await collection.insertMany(formatedFields);
+            } finally {
+                await client.close();
             }
 
             // Generar nuevo dsTableObject
