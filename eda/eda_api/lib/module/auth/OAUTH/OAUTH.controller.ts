@@ -22,6 +22,18 @@ export class OAUTHController {
 
     static async login(req: Request, res: Response, next: NextFunction) {
         try {
+
+            console.log('coño');
+            console.log(ENTORNS);
+
+            console.log(ENTORNS.some((p: { NIF_ENS: string }) => p.NIF_ENS === 'companyId'));
+            // Verificacion.
+            if(!ENTORNS.some((p: { NIF_ENS: string }) => p.NIF_ENS === 'companyId'))  console.log('No ta');
+            
+
+
+
+
             // Metadata para el inicio de la sesión oauth2
             const { response_type, client_id, redirect_uri, scope, state, access_type, baseUrlAuthentication } = OAUTHconfig;
 
