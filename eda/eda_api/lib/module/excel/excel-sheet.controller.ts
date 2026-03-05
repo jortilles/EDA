@@ -97,7 +97,13 @@ export class ExcelSheetController {
         try {
             if (!req.body?.name) return res.status(400).json({ ok: false, message: 'Nombre o campos incorrectos en la solicitud' });
             const excelModelChecker = ExcelSheetModel(req.body?.name), existentExcelDoc = await excelModelChecker.find({});
-            if (existentExcelDoc.length > 0) return res.status(200).json({ ok: true, message: 'Modelo existe', existence: true });
+            if (existentExcelDoc.length > 0) {
+                // Solo mostrar aviso de sobrescritura si además existe un datasource activo con ese nombre
+                const existentDataSource = await DataSource.findOne({ 'ds.metadata.model_name': req.body.name });
+                if (existentDataSource) {
+                    return res.status(200).json({ ok: true, message: 'Modelo existe', existence: true });
+                }
+            }
             return res.status(200).json({ ok: true, message: 'Modelo existe', existence: false });
         } catch (error) {
             console.log("Error: ", error);
