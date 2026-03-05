@@ -128,16 +128,29 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 currTable.type = element &&  element.name === table.display_name.default ? 'selected' : 'unselected'
                 tables.push(currTable);
 
-                // Column nodes
-                table.columns.forEach((column: { display_name: { default: string; }; }) => {
+
+
+
+                // Column nodes (sorted alphabetically)
+                const columnTypeIconMap: { [key: string]: string } = {
+                    text: 'mdi mdi-alphabetical',
+                    numeric: 'mdi mdi-numeric',
+                    date: 'mdi mdi-calendar-text',
+                    coordinate: 'mdi mdi-map-marker',
+                    html: 'mdi mdi-language-html5'
+                };
+
+                const sortedColumns = [...table.columns].sort((a: any, b: any) =>
+                    a.display_name.default.localeCompare(b.display_name.default)
+                );
+                sortedColumns.forEach((column: any) => {
                     const currCol: TreeNode = {};
                     currCol.label = column.display_name.default;
                     currCol.data = 'columna';
                     currCol.children = [];
-                    currCol.icon = 'fa fa-columns';
+                    currCol.icon = columnTypeIconMap[column.column_type] || 'fa fa-columns';
                     currCol.type = element && element.name === column.display_name.default ? 'selected' : 'unselected'
                     currTable.children.push(currCol);
-
                 });
             });
         // order by name....
@@ -603,6 +616,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         const tableIndex = this._databaseModel.getValue().findIndex((table: any) => table.display_name.default === columnPanel.parent);
         return model[tableIndex];
     }
+
     sendModel() {
 
         const connection = this._modelConnection.getValue();
@@ -616,13 +630,13 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 model: model
             }
         };
+        console.log(body, 'body');
         this.updateModelInServer(this.model_id, body).subscribe(
             (r) => this.alertService.addSuccess($localize`:@@ModelSaved:Modelo guardado correctamente`),
             (err) => this.alertService.addError(err)
         );
         this._unsaved.next(false)
     }
-
 
     async getModelById(id) {
         return this.get(`${this.globalDSRoute}/${id}`).subscribe(

@@ -228,19 +228,25 @@ export class TensorflowService {
         console.log(`  Batch size: ${batchSize}  ← min(32, ${xs.length} muestras)`);
         console.log(`  Early stopping: patience=${patience}  ← para cuando el loss no mejora en ${patience} épocas consecutivas`);
 
+        // Seed fijo → resultados reproducibles entre ejecuciones
+        const SEED = 42;
+
         const model = tf.sequential();
         model.add(tf.layers.lstm({
             units: lstmUnits,
             inputShape: [windowSize, numFeatures],
-            returnSequences: false
+            returnSequences: false,
+            kernelInitializer: tf.initializers.glorotUniform({ seed: SEED }),
+            recurrentInitializer: tf.initializers.orthogonal({ seed: SEED }),
+            biasInitializer: 'zeros',
         }));
         // Dropout tras LSTM: en cada epoch desactiva aleatoriamente el 20% de neuronas
         // Fuerza al modelo a aprender patrones robustos, no a memorizar las muestras
-        model.add(tf.layers.dropout({ rate: 0.2 }));
+        model.add(tf.layers.dropout({ rate: 0.2, seed: SEED }));
         if (tfParams) {
-            model.add(tf.layers.dense({ units: 32, activation: 'relu' }));
+            model.add(tf.layers.dense({ units: 32, activation: 'relu', kernelInitializer: tf.initializers.glorotUniform({ seed: SEED }) }));
         }
-        model.add(tf.layers.dense({ units: steps }));
+        model.add(tf.layers.dense({ units: steps, kernelInitializer: tf.initializers.glorotUniform({ seed: SEED }) }));
 
         model.compile({
             optimizer: tf.train.adam(learningRate),
@@ -253,6 +259,7 @@ export class TensorflowService {
         const history = await model.fit(inputTensor, outputTensor, {
             epochs,
             batchSize,
+            shuffle: false,  // sin shuffle → orden de batches determinista
             verbose: 0,
             callbacks: [earlyStop]
         });
@@ -306,9 +313,45 @@ export class TensorflowService {
         const inputFinal = tf.tensor3d([lastWindow]);
         const predTensor = model.predict(inputFinal) as tf.Tensor;
         const predictions = Array.from(predTensor.dataSync());
+        predTensor.dispose();
+
+        // ── PESO DE ATRIBUTOS DE REFERENCIA (impacto por neutralización) ──
+        if (useMultivariate) {
+            console.log('\n[6b/7] PESO DE ATRIBUTOS DE REFERENCIA');
+            console.log('  Método: neutralización — cada feature se reemplaza por 0.5 (punto medio normalizado)');
+            console.log('  y se mide el cambio absoluto medio en las predicciones respecto a la predicción base.');
+            console.log('  Un peso alto = el modelo depende mucho de ese atributo.\n');
+
+            const impacts: number[] = [];
+            for (let ri = 0; ri < normRefs.length; ri++) {
+                const windowNeutralized = lastWindow.map(vec => {
+                    const newVec = [...vec];
+                    newVec[ri + 1] = 0.5; // neutralizar esta referencia al punto medio
+                    return newVec;
+                });
+                const inputNeutralized = tf.tensor3d([windowNeutralized]);
+                const neutralTensor = model.predict(inputNeutralized) as tf.Tensor;
+                const neutralPred = Array.from(neutralTensor.dataSync());
+                inputNeutralized.dispose();
+                neutralTensor.dispose();
+
+                const impact = predictions.reduce((sum, v, i) => sum + Math.abs(v - neutralPred[i]), 0) / predictions.length;
+                impacts.push(impact);
+            }
+
+            const totalImpact = impacts.reduce((a, b) => a + b, 0) || 1;
+            console.log('  Atributo   Impacto absoluto   Peso relativo   Visual');
+            console.log('  ────────────────────────────────────────────────────────');
+            referenceDatasets!.forEach((_, ri) => {
+                const pct = (impacts[ri] / totalImpact * 100);
+                const bar = '█'.repeat(Math.max(1, Math.round(pct / 5)));
+                console.log(`  REF[${ri}]     ${impacts[ri].toFixed(6)}           ${pct.toFixed(1).padStart(5)}%   ${bar}`);
+            });
+            console.log('  ────────────────────────────────────────────────────────');
+            console.log('  ℹ️  Peso relativo: % del impacto total sobre la predicción final.');
+        }
 
         inputFinal.dispose();
-        predTensor.dispose();
         inputTensor.dispose();
         outputTensor.dispose();
         model.dispose();
@@ -390,11 +433,13 @@ export class TensorflowService {
         const inputTensor = tf.tensor2d(xs);
         const outputTensor = tf.tensor2d(ys);
 
+        const SEED = 42;
+
         const model = tf.sequential();
-        model.add(tf.layers.dense({ units: 16, activation: 'relu', inputShape: [windowSize] }));
-        model.add(tf.layers.dropout({ rate: 0.2 }));
-        model.add(tf.layers.dense({ units: 8, activation: 'relu' }));
-        model.add(tf.layers.dense({ units: steps }));
+        model.add(tf.layers.dense({ units: 16, activation: 'relu', inputShape: [windowSize], kernelInitializer: tf.initializers.glorotUniform({ seed: SEED }) }));
+        model.add(tf.layers.dropout({ rate: 0.2, seed: SEED }));
+        model.add(tf.layers.dense({ units: 8, activation: 'relu', kernelInitializer: tf.initializers.glorotUniform({ seed: SEED }) }));
+        model.add(tf.layers.dense({ units: steps, kernelInitializer: tf.initializers.glorotUniform({ seed: SEED }) }));
 
         model.compile({ optimizer: tf.train.adam(0.01), loss: 'meanSquaredError' });
 
@@ -403,6 +448,7 @@ export class TensorflowService {
         const history = await model.fit(inputTensor, outputTensor, {
             epochs,
             batchSize,
+            shuffle: false,
             verbose: 0,
             callbacks: [earlyStop]
         });

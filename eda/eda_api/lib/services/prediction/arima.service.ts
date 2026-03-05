@@ -22,48 +22,32 @@ export class ArimaService {
         console.log('╚══════════════════════════════════════════════════════════\n');
 
         try {
-            // ── NORMALIZACIÓN ──────────────────────────────────────────
-            const mean = dataset.reduce((a, b) => a + b, 0) / dataset.length;
-            const std  = Math.sqrt(
-                dataset.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / dataset.length
-            ) || 1;
-
-            const normalizedData = dataset.map(v => (v - mean) / std);
-
-            console.log('[1] NORMALIZACIÓN (z-score → media=0, std=1)');
-            console.log(`  media:  ${mean.toFixed(4)}`);
-            console.log(`  std:    ${std.toFixed(4)}`);
-            console.log(`  fórmula: valor_norm = (valor - ${mean.toFixed(4)}) / ${std.toFixed(4)}`);
-            console.log(`  normalizados (primeros 5): [${normalizedData.slice(0, 5).map(v => v.toFixed(4)).join(', ')}${normalizedData.length > 5 ? ', ...' : ''}]`);
-            console.log(`  normalizados (últimos 5):  [${normalizedData.slice(-5).map(v => v.toFixed(4)).join(', ')}]`);
-
             // ── DETECCIÓN DE TENDENCIA (solo automático) ───────────────
+            // Se hace sobre datos normalizados solo para obtener una pendiente adimensional
             let hasTrend = false;
             let slope    = 0;
 
             if (!arimaParams) {
-                const n     = normalizedData.length;
+                const mean = dataset.reduce((a, b) => a + b, 0) / dataset.length;
+                const std  = Math.sqrt(
+                    dataset.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / dataset.length
+                ) || 1;
+                const normForTrend = dataset.map(v => (v - mean) / std);
+
+                const n     = normForTrend.length;
                 const sumX  = n * (n - 1) / 2;
-                const sumY  = normalizedData.reduce((a, b) => a + b, 0);
-                const sumXY = normalizedData.reduce((s, y, i) => s + i * y, 0);
+                const sumY  = normForTrend.reduce((a, b) => a + b, 0);
+                const sumXY = normForTrend.reduce((s, y, i) => s + i * y, 0);
                 const sumX2 = n * (n - 1) * (2 * n - 1) / 6;
                 const denom = n * sumX2 - sumX ** 2;
                 slope       = denom !== 0 ? (n * sumXY - sumX * sumY) / denom : 0;
 
-                // Umbral: pendiente significativa en datos normalizados
-                // Una pendiente de 0.01 sobre n puntos supone un cambio de ~0.01*n desviaciones típicas
                 hasTrend = Math.abs(slope) > 0.005;
 
-                console.log('\n[2] DETECCIÓN DE TENDENCIA');
-                console.log(`  Regresión lineal sobre datos normalizados:`);
+                console.log('[1] DETECCIÓN DE TENDENCIA (regresión sobre datos normalizados)');
                 console.log(`  pendiente (slope) = ${slope.toFixed(6)}`);
-                console.log(`  umbral de tendencia: |slope| > 0.005`);
-                console.log(`  ¿Tiene tendencia?  ${hasTrend ? `SÍ (slope=${slope.toFixed(4)}) → priorizará configs con d≥1` : `NO  (slope=${slope.toFixed(4)}) → priorizará configs con d=0`}`);
-
-                if (hasTrend) {
-                    const direction = slope > 0 ? 'CRECIENTE' : 'DECRECIENTE';
-                    console.log(`  Dirección de la tendencia: ${direction}`);
-                }
+                console.log(`  umbral: |slope| > 0.005`);
+                console.log(`  ¿Tiene tendencia? ${hasTrend ? `SÍ (${slope > 0 ? 'CRECIENTE' : 'DECRECIENTE'})` : 'NO'}`);
             }
 
             // ── SELECCIÓN DE CONFIGS ───────────────────────────────────
@@ -71,25 +55,24 @@ export class ArimaService {
 
             if (arimaParams) {
                 configs = [{ p: arimaParams.p, d: arimaParams.d, q: arimaParams.q }];
-                console.log(`\n[2] MODO MANUAL — usando directamente ARIMA(${arimaParams.p},${arimaParams.d},${arimaParams.q})`);
+                console.log(`\n[1] MODO MANUAL — usando directamente ARIMA(${arimaParams.p},${arimaParams.d},${arimaParams.q})`);
             } else if (hasTrend) {
-                // Serie con tendencia: priorizar diferenciación (d=1 o d=2)
                 configs = [
                     { p: 1, d: 1, q: 1 },
                     { p: 2, d: 1, q: 1 },
                     { p: 2, d: 1, q: 2 },
+                    { p: 3, d: 1, q: 1 },
                     { p: 1, d: 1, q: 0 },
                     { p: 0, d: 1, q: 1 },
                     { p: 2, d: 1, q: 0 },
                     { p: 3, d: 1, q: 0 },
                     { p: 0, d: 1, q: 2 },
-                    { p: 1, d: 2, q: 1 },  // tendencia cuadrática
-                    { p: 2, d: 0, q: 2 },  // fallback estacionario
+                    { p: 1, d: 2, q: 1 },
+                    { p: 2, d: 0, q: 2 },
                     { p: 1, d: 0, q: 1 },
                 ];
-                console.log('\n[3] CONFIGS A PROBAR (serie CON tendencia → priorizando d=1):');
+                console.log('\n[2] CONFIGS A PROBAR (serie CON tendencia → priorizando d=1):');
             } else {
-                // Serie estacionaria: probar primero sin diferenciación
                 configs = [
                     { p: 2, d: 0, q: 2 },
                     { p: 1, d: 0, q: 1 },
@@ -98,11 +81,11 @@ export class ArimaService {
                     { p: 0, d: 0, q: 2 },
                     { p: 1, d: 0, q: 0 },
                     { p: 0, d: 0, q: 3 },
-                    { p: 2, d: 1, q: 1 },  // fallback con diferenciación
+                    { p: 2, d: 1, q: 1 },
                     { p: 1, d: 1, q: 1 },
                     { p: 1, d: 1, q: 0 },
                 ];
-                console.log('\n[3] CONFIGS A PROBAR (serie SIN tendencia → priorizando d=0):');
+                console.log('\n[2] CONFIGS A PROBAR (serie SIN tendencia → priorizando d=0):');
             }
 
             if (!arimaParams) {
@@ -110,15 +93,15 @@ export class ArimaService {
             }
 
             // ── SPLIT VALIDACIÓN ───────────────────────────────────────
-            const valSize       = Math.max(2, Math.floor(normalizedData.length * 0.25));
-            const splitIdx      = normalizedData.length - valSize;
-            const trainData     = normalizedData.slice(0, splitIdx);
-            const valData       = normalizedData.slice(splitIdx);
+            const valSize       = Math.max(2, Math.floor(dataset.length * 0.25));
+            const splitIdx      = dataset.length - valSize;
+            const trainData     = dataset.slice(0, splitIdx);
+            const valData       = dataset.slice(splitIdx);
             const useValidation = trainData.length >= 2 && valData.length >= 2;
 
             if (!arimaParams) {
-                console.log('\n[4] SPLIT VALIDACIÓN');
-                console.log(`  Total puntos: ${normalizedData.length}  →  train: ${trainData.length}  val: ${valData.length}`);
+                console.log('\n[3] SPLIT VALIDACIÓN (datos crudos, sin normalización)');
+                console.log(`  Total puntos: ${dataset.length}  →  train: ${trainData.length}  val: ${valData.length}`);
                 console.log(`  ¿Usar validación? ${useValidation ? `SÍ (train=${trainData.length}, val=${valData.length})` : 'NO (dataset demasiado pequeño → modo varianza)'}`);
             }
 
@@ -127,7 +110,7 @@ export class ArimaService {
             let bestConfig: {p: number, d: number, q: number} | null = null;
             let minError = Infinity;
 
-            if (!arimaParams) console.log('\n[5] EVALUACIÓN DE CONFIGS:');
+            if (!arimaParams) console.log('\n[4] EVALUACIÓN DE CONFIGS:');
 
             for (const config of configs) {
                 try {
@@ -143,9 +126,9 @@ export class ArimaService {
                         }
 
                         mse = valData.reduce((sum, v, i) => sum + Math.pow(v - valPreds[i], 2), 0) / valData.length;
-                        if (!arimaParams) console.log(`  ARIMA(${config.p},${config.d},${config.q})  MSE_val=${mse.toFixed(6)}${mse < minError ? '  ← mejor hasta ahora' : ''}`);
+                        if (!arimaParams) console.log(`  ARIMA(${config.p},${config.d},${config.q})  MSE_val=${mse.toFixed(4)}${mse < minError ? '  ← mejor hasta ahora' : ''}`);
                     } else {
-                        const model = new ARIMA(config).train(normalizedData);
+                        const model = new ARIMA(config).train(dataset);
                         const [preds] = model.predict(steps);
 
                         if (!preds.every((p: number) => isFinite(p) && !isNaN(p))) {
@@ -156,13 +139,13 @@ export class ArimaService {
                         const predMean = preds.reduce((a: number, b: number) => a + b, 0) / preds.length;
                         const predVar  = preds.reduce((s: number, p: number) => s + Math.pow(p - predMean, 2), 0) / preds.length;
                         mse = predVar > 0 ? 1 / predVar : Infinity;
-                        if (!arimaParams) console.log(`  ARIMA(${config.p},${config.d},${config.q})  var=${predVar.toFixed(6)}  score=${mse.toFixed(6)}${mse < minError ? '  ← mejor hasta ahora' : ''}`);
+                        if (!arimaParams) console.log(`  ARIMA(${config.p},${config.d},${config.q})  var=${predVar.toFixed(4)}  score=${mse.toFixed(4)}${mse < minError ? '  ← mejor hasta ahora' : ''}`);
                     }
 
                     if (mse < minError) {
                         minError   = mse;
                         bestConfig = config;
-                        const fullModel = new ARIMA(config).train(normalizedData);
+                        const fullModel = new ARIMA(config).train(dataset);
                         const [preds]   = fullModel.predict(steps);
                         if (preds.every((p: number) => isFinite(p) && !isNaN(p))) {
                             bestPredictions = preds;
@@ -182,24 +165,17 @@ export class ArimaService {
             }
 
             if (!arimaParams) {
-                console.log(`\n[6] MODELO GANADOR: ARIMA(${bestConfig!.p},${bestConfig!.d},${bestConfig!.q})`);
-                console.log(`  MSE de validación: ${minError.toFixed(6)}`);
-                console.log(`  Reentrenado con todos los ${normalizedData.length} puntos para la predicción final`);
+                console.log(`\n[5] MODELO GANADOR: ARIMA(${bestConfig!.p},${bestConfig!.d},${bestConfig!.q})`);
+                console.log(`  MSE de validación: ${minError.toFixed(4)}`);
+                console.log(`  Reentrenado con todos los ${dataset.length} puntos`);
             }
 
-            // ── PREDICCIONES NORMALIZADAS ──────────────────────────────
-            console.log(`\n[${arimaParams ? '3' : '7'}] PREDICCIONES (espacio normalizado z-score):`);
+            console.log(`\n[${arimaParams ? '2' : '6'}] PREDICCIONES (datos crudos, sin normalización):`);
             console.log(`  [${bestPredictions.map((v: number) => v.toFixed(4)).join(', ')}]`);
-
-            // ── DESNORMALIZACIÓN ───────────────────────────────────────
-            const denormalized = bestPredictions.map((v: number) => v * std + mean);
-
-            console.log(`\n[${arimaParams ? '4' : '8'}] DESNORMALIZACIÓN: pred_real = pred_norm × ${std.toFixed(4)} + ${mean.toFixed(4)}`);
-            console.log(`  [${denormalized.map(v => v.toFixed(4)).join(', ')}]`);
 
             // Sin clipping para params manuales
             if (arimaParams) {
-                const final = denormalized.map(pred => Math.round(pred * 100) / 100);
+                const final = bestPredictions.map(pred => Math.round(pred * 100) / 100);
                 console.log(`\n  Modo manual → SIN clipping`);
                 console.log(`  Predicciones finales: [${final.join(', ')}]`);
                 console.log('\n╔══════════════════════════════════════════════════════════');
@@ -209,17 +185,17 @@ export class ArimaService {
             }
 
             // Clipping ±150% para automático
-            const minData = Math.min(...dataset);
-            const maxData = Math.max(...dataset);
-            const range   = maxData - minData;
+            const minData  = Math.min(...dataset);
+            const maxData  = Math.max(...dataset);
+            const range    = maxData - minData;
             const clipLow  = minData - range * 1.5;
             const clipHigh = maxData + range * 1.5;
 
-            const final = denormalized.map(pred =>
+            const final = bestPredictions.map(pred =>
                 Math.round(Math.max(clipLow, Math.min(clipHigh, pred)) * 100) / 100
             );
 
-            console.log(`\n[9] CLIPPING ±150% del rango histórico`);
+            console.log(`\n[7] CLIPPING ±150% del rango histórico`);
             console.log(`  límite inferior: ${clipLow.toFixed(4)}`);
             console.log(`  límite superior: ${clipHigh.toFixed(4)}`);
             console.log(`  Predicciones finales: [${final.join(', ')}]`);
