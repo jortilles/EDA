@@ -428,7 +428,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef = this.entry.createComponent(EdaTableComponent);
         const rowLen = this.props.data.values?.[0]?.length || 0;
         const queryLen = this.props.query?.length || 0;
-        const hasPredictionData = rowLen > queryLen;
+        const hasPredictionData = rowLen > queryLen && config?.['showPredictionLines'] === true;
         const { tableLabels, tableValues } = hasPredictionData
             ? this._prepareTablePredictionData(this.props.data.labels, this.props.data.values, queryLen)
             : { tableLabels: this.props.data.labels, tableValues: this.props.data.values };
