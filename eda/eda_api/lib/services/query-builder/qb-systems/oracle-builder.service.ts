@@ -341,8 +341,6 @@ export class OracleBuilderService extends QueryBuilderService {
            grouping.push(this.getDateFormat(el.SQLexpression, el.format) );
         } else {
           if( el.aggregation_type === 'none' && el.column_type != 'numeric') {
-            console.log('entro aqui');
-            console.log(el);
             grouping.push(` (${el.SQLexpression}) `);
           }
         }
