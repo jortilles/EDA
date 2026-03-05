@@ -21,6 +21,7 @@ export class ExcelSheetController {
             const excelName = req.body?.name, optimize = req.body?.optimize, cacheAllowed = req.body?.allowCache;
             let excelFields = req.body?.fields;
             const columnsConfig = req.body?.columnsConfig; // Configuración de columnas del usuario
+            const sourceType = req.body?.source_type || 'excel';
 
 
             if (!excelName || !excelFields) {
@@ -85,7 +86,7 @@ export class ExcelSheetController {
                 }
             }
 
-            await this.ExcelCollectionToDataSource(excelName, excelFields, optimize, cacheAllowed, columnsConfig, res, next);
+            await this.ExcelCollectionToDataSource(excelName, excelFields, optimize, cacheAllowed, columnsConfig, sourceType, res, next);
         } catch (error) {
             console.error('Error al crear o actualizar el ExcelSheet:', error);
             next(new HttpException(500, 'Error al crear o actualizar el ExcelSheet'));
@@ -111,7 +112,7 @@ export class ExcelSheetController {
         }
     }
 
-    static async ExcelCollectionToDataSource(excelName, excelFields, optimized, cacheAllowed, columnsConfig, res: Response, next: NextFunction) {
+    static async ExcelCollectionToDataSource(excelName, excelFields, optimized, cacheAllowed, columnsConfig, sourceType, res: Response, next: NextFunction) {
         try {
             //Declaramos un objeto que va a contener los tipos y nombres de los campos del Excel
             const propertiesAndTypes = {};
@@ -205,6 +206,7 @@ export class ExcelSheetController {
                 ds: {
                     connection: {
                         type: "mongodb",
+                        source_type: sourceType,
                         host: host.substring(0, host.indexOf(':')),
                         port: Number(port),
                         database,

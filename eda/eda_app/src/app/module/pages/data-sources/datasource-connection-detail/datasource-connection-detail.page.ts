@@ -346,7 +346,8 @@ export class DataSourceConnectionDetailPage implements OnInit {
           name: value.name,
           fields: this.excelFileData,
           optimize: value.optimize,
-          allowCache: value.allowCache
+          allowCache: value.allowCache,
+          source_type: 'excel'
         };
 
         const res = await lastValueFrom(this.excelFormatterService.addNewCollectionFromJSON(fileData));
@@ -382,7 +383,8 @@ export class DataSourceConnectionDetailPage implements OnInit {
           fields: this.csvFileData,
           optimize: value.optimize,
           allowCache: value.allowCache,
-          columnsConfig: this.csvColumns // Enviar configuración de columnas
+          columnsConfig: this.csvColumns,
+          source_type: 'csv'
         };
 
         const res = await lastValueFrom(this.excelFormatterService.addNewCollectionFromJSON(fileData));

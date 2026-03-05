@@ -19,15 +19,28 @@
               <polyline points="7 3 7 8 15 8"></polyline>
             </svg>
           </button>
-          <button class="p-1.5 rounded-md hover:bg-muted" pButton [pTooltip]="updateModelSTR" (click)="reLoadModelFromDb()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
-              <path d="M3 5v3c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
-              <path d="M3 8v3c0 1.66 4 3 9 3s9-1.34 9-3V8"></path>
-              <path d="M3 11v3c0 1.66 4 3 9 3s9-1.34 9-3v-3"></path>
-              <path d="M3 14v3c0 1.66 4 3 9 3s9-1.34 9-3v-3"></path>
-            </svg>
-          </button>
+          <!-- Si es EXCEL o CSV redirigimos a XXXXX -->
+          @if(['excel','csv'].includes(connectionType)){
+            <button class="p-1.5 rounded-md hover:bg-muted" pButton [pTooltip]="updateModelXLCSV" (click)="reLoadModelFromDb()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                <path d="M3 5v3c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                <path d="M3 8v3c0 1.66 4 3 9 3s9-1.34 9-3V8"></path>
+                <path d="M3 11v3c0 1.66 4 3 9 3s9-1.34 9-3v-3"></path>
+                <path d="M3 14v3c0 1.66 4 3 9 3s9-1.34 9-3v-3"></path>
+              </svg>
+            </button>
+          }@else{
+            <button class="p-1.5 rounded-md hover:bg-muted" pButton [pTooltip]="updateModelSTR" (click)="reLoadModelFromDb()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                <path d="M3 5v3c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                <path d="M3 8v3c0 1.66 4 3 9 3s9-1.34 9-3V8"></path>
+                <path d="M3 11v3c0 1.66 4 3 9 3s9-1.34 9-3v-3"></path>
+                <path d="M3 14v3c0 1.66 4 3 9 3s9-1.34 9-3v-3"></path>
+              </svg>
+            </button>
+          }
           <button class="p-1.5 rounded-md hover:bg-muted" pButton [pTooltip]="deleteModelSTR" (click)="deleteDatasource()">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 6h18"></path>
