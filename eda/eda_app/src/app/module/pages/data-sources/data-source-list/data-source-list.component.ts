@@ -158,4 +158,8 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
         );
     }
 
+    openUpdateFilePage(): void {
+        this.router.navigate(['/data-source', this.id, 'update-file']);
+    }
+
 }

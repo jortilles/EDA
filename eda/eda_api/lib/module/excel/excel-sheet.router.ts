@@ -28,6 +28,7 @@ const router = express.Router();
  *       - Excel Sheets Routes
  */
 router.post('/add-json-data-source',authGuard,roleGuard,ExcelSheetController.GenerateCollectionFromJSON);
+router.put('/update-json-data-source/:id',authGuard,roleGuard,ExcelSheetController.UpdateCollectionFromJSON);
 //TODO
 router.post('/existent-json-data-source',authGuard,roleGuard,ExcelSheetController.ExistsExcelData);
 export default router;
