@@ -61,35 +61,26 @@ export default class QueryResolver {
                 filterElements = [
                     { value1: filter.values }
                 ]                
-            } else {
-
-                if(filter.column_type === 'text' || filter.column_type === 'numeric' || filter.column_type === 'coordinate') {
-                    if(
-                        filter.filter_type === "=" ||
-                        filter.filter_type === "!=" ||
-                        filter.filter_type === ">" ||
-                        filter.filter_type === "<" ||
-                        filter.filter_type === ">=" ||
-                        filter.filter_type === "<=" ||
-                        filter.filter_type === "like" ||
-                        filter.filter_type === "not_like"
-                    ) {
-                        filterElements = [
-                            { value1: filter.values }
-                        ]
-                    } else if(filter.filter_type === "between") {
-                        filterElements = [
-                            { value1: [filter.values[0]] },
-                            { value2: [filter.values[1]] }
-                        ]
-                    }
-                } else if(filter.column_type === 'date'){
+            } else if(filter.column_type === 'text' || filter.column_type === 'numeric' || filter.column_type === 'coordinate' || filter.column_type === 'date'){                 
+                if(
+                    filter.filter_type === "=" ||
+                    filter.filter_type === "!=" ||
+                    filter.filter_type === ">" ||
+                    filter.filter_type === "<" ||
+                    filter.filter_type === ">=" ||
+                    filter.filter_type === "<=" ||
+                    filter.filter_type === "like" ||
+                    filter.filter_type === "not_like"
+                ) {
                     filterElements = [
-                            { value1: [filter.values[0]] },
-                            { value2: [filter.values[1]] }
-                        ]
+                        { value1: filter.values }
+                    ]
+                } else if(filter.filter_type === "between") {
+                    filterElements = [
+                        { value1: [filter.values[0]] },
+                        { value2: [filter.values[1]] }
+                    ]
                 }
-
             }
 
             const filterObject = {

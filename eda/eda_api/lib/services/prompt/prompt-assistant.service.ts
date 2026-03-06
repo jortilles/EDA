@@ -217,7 +217,7 @@ export class PromptService {
             model: MODEL,
             input: messages,
             tools: tools,
-            tool_choice: "required",
+            tool_choice: "required", // Obliga que las funciones sean utilizadas
         })
 
         // console.log('response: ', response);
