@@ -108,8 +108,6 @@ export default class QueryResolver {
 
         filters.forEach((filter: any) => {
 
-            console.log('filter: ', filter);
-
             if(!currentQuery.some((column: any) => column.table_id === filter.table && column.column_name === filter.column)) {
                 let aggregation_type: any[] = [];
 

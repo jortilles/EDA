@@ -63,6 +63,34 @@ export class PromptService {
         ///////////////////////////////////////////////////////  Function Calling ////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        const getAssistantResponseTool: any = {
+            type: "function",
+            name: "getAssistantResponse",
+            description: `
+            Use this tool ONLY when the user message has NO relation to any table or entity, column or field or attribute in the schema.
+            Trigger cases:
+            - Greetings: "hola", "hello", "buenos días", "hey"
+            - Farewells: "adiós", "bye", "hasta luego"
+            - Thanks: "gracias", "thank you"
+            - Off-topic questions: jokes, weather, general knowledge, anything unrelated to data
+            - Unclear or ambiguous messages that cannot be mapped to any schema element
+            DO NOT use this tool if the user is asking about data, tables, or fields — use getFields instead.
+            `,
+            parameters: {
+                type: "object",
+                properties: {
+                    message: {
+                        type: "string",
+                        description: "A short, friendly response in Spanish to the user's message. Be concise and helpful. If the message is off-topic, kindly remind the user that you are a data query assistant."
+                    }
+                },
+                required: ["message"],
+                additionalProperties: false
+            },
+            strict: true,
+        };        
+
         const getFieldsTool: any = {
             type: "function",
             name: "getFields",
@@ -210,7 +238,7 @@ export class PromptService {
         };
 
         // Agregación de todas las funciones de llamada
-        const tools: any[] = [getFieldsTool, getFiltersTool];
+        const tools: any[] = [getAssistantResponseTool, getFieldsTool, getFiltersTool];
 
         // Consulta a la api de openAI
         let response: any = await openai.responses.create({
@@ -223,13 +251,26 @@ export class PromptService {
         // console.log('response: ', response);
 
 
+        const toolGetAssistantResponse: any = response.output?.find((tool: any) => tool.type === "function_call" && tool.name === "getAssistantResponse");
         const toolGetFields: any = response.output?.find((tool: any) => tool.type === "function_call" && tool.name === "getFields");
         const toolGetFilters: any = response.output?.find((tool: any) => tool.type === "function_call" && tool.name === "getFilters");
 
         // console.log('toolCallOutput ::::::::::::::::::::::: ', toolCallOutput);
+        console.log('toolGetAssistantResponse ::::::::::::::::::::::: ', toolGetAssistantResponse);
         console.log('toolGetFields ::::::::::::::::::::::: ', toolGetFields);
         console.log('toolGetFilters ::::::::::::::::::::::: ', toolGetFilters);
 
+        // Filtro que permite respuesta amable del asistente al usuario
+        if (toolGetAssistantResponse) {
+            try {
+                const args = toolGetAssistantResponse.arguments ? JSON.parse(toolGetAssistantResponse.arguments) : {};
+                return { output_text: args.message ?? 'Hola, ¿en qué puedo ayudarte?' };
+            } catch {
+                return { output_text: 'Hola, ¿en qué puedo ayudarte?' };
+            }
+        }  
+
+        // En caso de que si identifique que el usuario desea tablas o campos, pero no se pudo identificar ninguno
         if (!toolGetFields) {
             return { output_text: 'No pude identificar los campos necesarios. ¿Podrías reformular la consulta?' };
         }
@@ -241,7 +282,7 @@ export class PromptService {
             principalTable: null,
             selectedFilters: [],
             filteredColumns: [],
-        };
+        };      
 
         if (toolGetFields) {
             let args: any = {};
