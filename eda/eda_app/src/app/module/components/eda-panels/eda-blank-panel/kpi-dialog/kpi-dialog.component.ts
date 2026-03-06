@@ -91,6 +91,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewChecked {
 
         this.originalAlerts = [...(config.alertLimits || [])];
         this.alerts = [...this.originalAlerts];
+        this.modifiedFontPoints = config.modifiedFontPoints || 0;
 
         if (this.panelBaseResultSize > 0) {
         setTimeout(() => {
