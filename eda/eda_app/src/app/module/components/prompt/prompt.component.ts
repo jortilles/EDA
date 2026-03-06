@@ -110,8 +110,21 @@ export class PromptComponent implements OnInit, AfterViewInit {
         const histoty = this.messages;
         const schema = this.schema;
         const firstTime = this.firstTime;
+        const parameters = {
+            firstTime: firstTime,
+            dataSource_id: this.edaBlankPanel.dataSource._id,
+            dataSource_name: this.edaBlankPanel.dataSource.name,
+        }
 
-        this.chatgptService.sendPrompt(text, histoty, data, schema, firstTime).subscribe({
+        console.log('this.edaBlankPanel: ', this.edaBlankPanel);
+        console.log('text: ', text);
+        console.log('histoty', histoty);
+        console.log('data: ', data);
+        console.log('schema: ', schema);
+        console.log('firstTime: ', firstTime);
+        
+
+        this.chatgptService.sendPrompt(text, histoty, data, schema, parameters).subscribe({
             next: (resp) => {
                 // Esperamos que `resp` contenga la respuesta ya procesada como texto. Adapta según tu backend.
 

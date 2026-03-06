@@ -11,14 +11,14 @@ interface PromptParameters {
     history: any[],
     data: any[],
     schema: any[],
-    firstTime?: boolean
+    parameters?: object
 }
 
 export class PromptService {
 
     static async processPrompt(params: PromptParameters) {
         
-        const { text, history, data, schema, firstTime } = params;
+        const { text, history, data, schema, parameters } = params;
 
         if(PromptUtil.isForbidden(text)) {
             return {
@@ -54,10 +54,8 @@ export class PromptService {
             { role: "user", content: text }
         ];
 
-        // console.log('safeHistory: ', safeHistory);
-        // console.log('messages: ', messages);
+        
         console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
-
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////  Function Calling ////////////////////////////////////////////////////////
@@ -324,7 +322,7 @@ export class PromptService {
 
             const filters = Array.isArray(args.filters) ? args.filters : [];
             const currenQuery = result.currentQuery;
-            result.selectedFilters = filters.length === 0 ? [] : QueryResolver.getFilters(filters);
+            result.selectedFilters = filters.length === 0 ? [] : await QueryResolver.getFilters(filters, parameters);
             result.filteredColumns = filters.length === 0 ? [] : QueryResolver.getFilteredColumns(filters, currenQuery);
         }
 

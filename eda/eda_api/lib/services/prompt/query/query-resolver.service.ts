@@ -1,4 +1,7 @@
-import { PromptUtil } from '../../../utils/prompt.util' 
+import { PromptUtil } from '../../../utils/prompt.util';
+// Gestion de conexión
+import ManagerConnectionService from '../../../services/connection/manager-connection.service';
+
 
 // Servicio de generacion de Arreglos y Objetos para la asistencia del usurio
 export default class QueryResolver {
@@ -41,8 +44,26 @@ export default class QueryResolver {
         return currentQuery;
     }
 
-    static getFilters(filters: any[]) {
-        
+    static async getResultOptions(parameters: any) {
+        const connection = await ManagerConnectionService.getConnection(parameters.dataSource_id, undefined);
+        connection.client = await connection.getclient();
+        const query = `
+            SELECT DISTINCT "orders"."status" as "Status"
+            FROM "public"."orders"
+            group by "orders"."status"
+            order by "Status" Asc
+        `
+        const getResults = await connection.execQuery(query);
+
+        return getResults;
+    }    
+
+    // Funcion que devuelve los selectedFilters 
+    static async getFilters(filters: any[], parameters: any) {
+
+        const valores = await this.getResultOptions(parameters);
+        console.log('valores', valores);
+
         let selectedFilters: any[] = [];
 
         filters.forEach((filter: any) => {
@@ -102,16 +123,18 @@ export default class QueryResolver {
         return selectedFilters;
     }
 
+    // Funcion que devuelve los filtros de cada columna los filteredColumns
     static getFilteredColumns(filters: any[], currentQuery: any[]) {
 
         let filteredColumns: any[] = [];
 
-        filters.forEach((filter: any) => {
+        filters.forEach( async (filter: any) => {
 
-            if(!currentQuery.some((column: any) => column.table_id === filter.table && column.column_name === filter.column)) {
+            if(!currentQuery.some(async (column: any) => column.table_id === filter.table && column.column_name === filter.column)) {
                 let aggregation_type: any[] = [];
 
                 if(filter.column_type === 'text') {
+
                     aggregation_type = [
                         { value: "count", display_name: "Cuenta Valores" },
                         { value: "count_distinct", display_name: "Valores Distintos" },

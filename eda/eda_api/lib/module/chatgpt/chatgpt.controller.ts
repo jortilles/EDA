@@ -68,7 +68,7 @@ export class ChatGptController {
         
         try {
 
-            const { text, history, data, schema, firstTime } = req.body;
+            const { text, history, data, schema, parameters } = req.body;
 
             console.log('<====================> INICIAMOS <====================>')
             // console.log('text: ', text);
@@ -83,7 +83,7 @@ export class ChatGptController {
                 history,
                 data,
                 schema,
-                firstTime
+                parameters
             });
 
             res.status(200).json({

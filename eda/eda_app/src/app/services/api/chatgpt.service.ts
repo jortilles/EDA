@@ -18,9 +18,9 @@ export class ChatgptService extends ApiService{
     return this.get(`${this.chatGptRoute}/availableChatGpt`)
   }
 
-  sendPrompt(text: string, history?: any[], data?: any, schema? :any[], firstTime? : boolean): Observable<{ text: string } | any> {
+  sendPrompt(text: string, history?: any[], data?: any, schema? :any[], parameters? : object): Observable<{ text: string } | any> {
 
-    const payload = { text, history, data, schema, firstTime };
+    const payload = { text, history, data, schema, parameters };
 
     console.log('PAYLOAD =>', payload);
 
