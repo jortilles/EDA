@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { SharedModule } from "@eda/shared/shared.module";
 import { ChatgptService } from '@eda/services/api/chatgpt.service';
 import { FormsModule } from '@angular/forms';
@@ -24,7 +24,7 @@ imports: [SharedModule, FormsModule, CommonModule],
 templateUrl: './prompt.component.html',
 styleUrls: ['./prompt.component.css']
 })
-export class PromptComponent implements OnInit {
+export class PromptComponent implements OnInit, AfterViewInit {
 
     @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
     @Input() edaBlankPanel: EdaBlankPanelComponent;
@@ -40,20 +40,25 @@ export class PromptComponent implements OnInit {
     sending = false;
     schema: any[] = [] ; // Esquema de todas las tablas y sus columnas
     firstTime: boolean = true;
-    private shouldAutoScroll: boolean = false;
+    private shouldAutoScroll: boolean = true;
     loading: boolean = false;
     isCopied: boolean = false;
 
     constructor(private chatgptService: ChatgptService) {}
 
+    // Iniciamos el scroll a la misma altura donde termino el ultimo mensaje de respuesta del asistente
+    ngAfterViewInit(): void {
+        const el = this.messagesContainer?.nativeElement;
+        console.log('el::: ', el);
+        if (el) el.scrollTop = el.scrollHeight;
+    }
+
     ngOnInit(): void {
         const tables = this.edaBlankPanel.tables
 
-        console.log('MIRAAAAAAAAAAAAAAAAAAA => EBP: ', this.edaBlankPanel);
-        console.log('MIRAAAAAAAAAAAAAAAAAAA => tables: ', tables);
-        console.log('selectedFilters: ', this.edaBlankPanel.selectedFilters)
-
-        // debugger;
+        console.log('MIRAAAAAAAAAAAAAAAAAAA => EBP =>:', this.edaBlankPanel);
+        console.log('tables =>: ', tables);
+        console.log('selectedFilters =>:', this.edaBlankPanel.selectedFilters)
 
         this.initSchema(tables);
     }
@@ -79,14 +84,10 @@ export class PromptComponent implements OnInit {
         console.log('SCHEMA ::: ', this.schema);
     }
 
-    // ngAfterViewChecked(): void {
-    //     this.scrollToBottom();
-    // }
-
     sendMessage(): void {
 
         const data = this.edaBlankPanel.tables; // tablas
-        const text = this.inputText?.trim(); //
+        const text = this.inputText?.trim();
 
         // Filtra un texto vacio.
         if (!text) return;
