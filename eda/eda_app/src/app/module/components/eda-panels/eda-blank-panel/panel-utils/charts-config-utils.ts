@@ -52,6 +52,7 @@ export const ChartsConfigUtils = {
         sufix: ebp.panelChart.componentRef.instance.inject.sufix,
         alertLimits: ebp.panelChart.componentRef.instance.inject.alertLimits,
         assignedColors: ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || null,  // Guardar assignedColors
+        modifiedFontPoints: ebp.panelChart.componentRef.instance.inject.modifiedFontPoints || 0,
         edaChart: {}
       }
 
