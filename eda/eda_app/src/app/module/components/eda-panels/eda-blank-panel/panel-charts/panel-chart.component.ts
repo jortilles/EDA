@@ -588,6 +588,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     chartConfig.edaChart.chartDataset = chartData[1];
     chartConfig.edaChart.chartOptions = chartOptions.chartOptions;
     chartConfig.edaChart.chartColors = []; // Inicializar chartColors
+    chartConfig.edaChart.chartLegend = false;
 
     // Cargar assignedColors o usar colores por defecto
     const existingColors = cfg['assignedColors'] || [];
