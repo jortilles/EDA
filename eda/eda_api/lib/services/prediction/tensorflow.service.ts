@@ -94,11 +94,12 @@ export class TensorflowService {
             });
         }
 
-        // ── INFLUENCIA DE COLUMNAS DE REFERENCIA ──────────────────────
+        // ── CORRELACIÓN Y FILTRADO DE REFERENCIAS ─────────────────────
+        const pearsonValues: number[] = [];
         if (useMultivariate) {
-            console.log('\n[2b/7] INFLUENCIA DE COLUMNAS DE REFERENCIA');
-            console.log('  Correlación de Pearson con el TARGET (cuánto se mueven juntas):');
-            console.log('  (−1 = inversa total | 0 = sin relación | +1 = directa total)');
+            console.log('\n[2b/7] CORRELACION DE ATRIBUTOS DE REFERENCIA');
+            console.log('  Correlacion de Pearson con el TARGET:');
+            console.log('  (-1 = inversa total | 0 = sin relacion | +1 = directa total)');
             console.log('  ─────────────────────────────────────────────────────────────');
 
             const targetMean = dataset.reduce((a, b) => a + b, 0) / dataset.length;
@@ -113,27 +114,27 @@ export class TensorflowService {
                     return sum + ((dataset[idx] - targetMean) / targetStd) * ((rv - refMean) / refStd);
                 }, 0) / n;
 
-                const absP = Math.abs(pearson);
-                const strength = absP >= 0.7 ? 'ALTA' : absP >= 0.4 ? 'MODERADA' : 'BAJA';
-                const direction = pearson >= 0 ? 'positiva' : 'negativa';
+                pearsonValues.push(pearson);
 
-                console.log(`  REF[${i}]  Pearson = ${pearson.toFixed(4)}  →  correlación ${strength} ${direction}`);
-                console.log(`         Interpretación: cuando REF[${i}] sube, el target tiende a ${pearson >= 0 ? 'subir' : 'bajar'} (correlación ${absP >= 0.7 ? 'fuerte' : absP >= 0.4 ? 'moderada' : 'débil'})`);
+                const absP = Math.abs(pearson);
+                const strength = absP >= 0.7 ? 'ALTA' : absP >= 0.4 ? 'MODERADA' : absP >= 0.15 ? 'BAJA' : 'MUY BAJA';
+                const warning  = absP < 0.15 ? '  << correlacion muy baja, puede aportar ruido' : '';
+
+                console.log(`  REF[${i}]  Pearson = ${pearson.toFixed(4)}  |  ${strength}${warning}`);
 
                 const showN = Math.min(8, n);
                 const targetLast = dataset.slice(-showN);
                 const refLast    = refOrig.slice(-showN);
-                console.log(`         Últimos ${showN} pares (target | ref[${i}]):`);
+                console.log(`         Ultimos ${showN} pares (target | ref[${i}]):`);
                 targetLast.forEach((tv, idx) => {
                     console.log(`           [${idx + 1}]  ${tv}  |  ${refLast[idx]}`);
                 });
             });
 
             console.log('  ─────────────────────────────────────────────────────────────');
-            console.log('  ℹ️  Estas correlaciones son solo orientativas.');
-            console.log('     El LSTM aprende relaciones no lineales y temporales más complejas.');
-            console.log('     Un feature con baja correlación lineal puede igual aportar información.');
+            console.log(`  Todas las referencias entran al modelo. Atributos con correlacion baja pueden aportar ruido.`);
         }
+
 
         // ── WINDOW SIZE ────────────────────────────────────────────────
         let windowSize = tfParams?.lookback
