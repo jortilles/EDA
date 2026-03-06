@@ -43,6 +43,7 @@ export class ChartDialogComponent {
     public showLabelsPercent: boolean = false;
     public showPointLines: boolean = false;
     public showPredictionLines: boolean = false;
+    public chartLegend: boolean = true;
     public showPredictionDialog: boolean = false;
     public predictionMethod: string = 'Arima';
     public selectedPalette: { name: string; paleta: any } | null = null;
@@ -67,6 +68,7 @@ export class ChartDialogComponent {
         showPredictionLines: boolean;
         numberOfColumns: number;
         addComparative: boolean;
+        chartLegend: boolean;
     };
 
     public drops = {
@@ -82,8 +84,6 @@ export class ChartDialogComponent {
     public stacked: any;
     public id: any;
     public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
-
-    activeTab = "display"
 
     constructor(private chartUtils: ChartUtilsService, private stylesProviderService: StyleProviderService,
         private alertService: AlertService,
@@ -114,10 +114,6 @@ export class ChartDialogComponent {
         ];
     }
 
-    setActiveTab(tab: string): void {
-        this.activeTab = tab
-    }
-
     ngOnInit(): void {
         this.panelChartConfig = this.controller.params.config;
         this.addTrend = this.controller.params.config.config.getConfig()['addTrend'] || false;
@@ -128,6 +124,7 @@ export class ChartDialogComponent {
         this.predictionMethod = this.controller.params.config.config.getConfig()['predictionMethod'] || 'Arima'; // Valor iniciado en el dropdown
         this.numberOfColumns = this.controller.params.config.config.getConfig()['numberOfColumns'] || false;
         this.addComparative = this.controller.params.config.config.getConfig()['addComparative'] || false;
+        this.chartLegend = this.controller.params.config.config.getConfig()['chartLegend'] ?? true;
 
         // NUEVO: Guardar valores originales de labels
         this.originalLabelValues = {
@@ -137,7 +134,8 @@ export class ChartDialogComponent {
             showPointLines: this.showPointLines,
             showPredictionLines: this.showPredictionLines,
             numberOfColumns: this.numberOfColumns,
-            addComparative: this.addComparative
+            addComparative: this.addComparative,
+            chartLegend: this.chartLegend
         };
 
         this.oldChart = _.cloneDeep(this.controller.params.chart);
@@ -349,6 +347,26 @@ export class ChartDialogComponent {
             this.load();
         });
 
+    }
+
+    setChartLegend() {
+        const properties = this.panelChartConfig;
+        let c: ChartConfig = properties.config;
+        let config: any = c.getConfig();
+        config.chartLegend = this.chartLegend;
+        config.showLabels = this.showLabels;
+        config.showLabelsPercent = this.showLabelsPercent;
+        config.showPointLines = this.showPointLines;
+        config.showPredictionLines = this.showPredictionLines;
+        config.numberOfColumns = this.numberOfColumns;
+        
+        properties.config = c;
+        /**Update chart */
+        this.panelChartConfig = new PanelChart(this.panelChartConfig);
+        setTimeout(_ => {
+            this.chart = this.panelChartComponent.componentRef.instance.inject;
+            this.load();
+        });
     }
 
     setShowLines() {
@@ -687,7 +705,8 @@ export class ChartDialogComponent {
         this.chart.showPointLines = this.showPointLines;
         this.chart.showPredictionLines = this.showPredictionLines;
         this.chart.numberOfColumns = this.numberOfColumns;
-        
+        this.chart.chartLegend = this.chartLegend;
+
         // Guardar en config también (para persistencia)
         this.controller.params.config.config.getConfig()['addTrend'] = this.addTrend;
         this.controller.params.config.config.getConfig()['showLabels'] = this.showLabels;
@@ -697,6 +716,7 @@ export class ChartDialogComponent {
         this.controller.params.config.config.getConfig()['predictionMethod'] = this.predictionMethod;
         this.controller.params.config.config.getConfig()['numberOfColumns'] = this.numberOfColumns;
         this.controller.params.config.config.getConfig()['addComparative'] = this.addComparative;
+        this.controller.params.config.config.getConfig()['chartLegend'] = this.chartLegend;
 
         this.onClose(EdaDialogCloseEvent.UPDATE, this.chart);
     }
@@ -710,7 +730,8 @@ export class ChartDialogComponent {
         this.showPredictionLines = this.originalLabelValues.showPredictionLines;
         this.numberOfColumns = this.originalLabelValues.numberOfColumns;
         this.addComparative = this.originalLabelValues.addComparative;
-        
+        this.chartLegend = this.originalLabelValues.chartLegend;
+
         // Restaurar en config
         this.controller.params.config.config.getConfig()['addTrend'] = this.originalLabelValues.addTrend;
         this.controller.params.config.config.getConfig()['showLabels'] = this.originalLabelValues.showLabels;
@@ -719,6 +740,7 @@ export class ChartDialogComponent {
         this.controller.params.config.config.getConfig()['showPredictionLines'] = this.originalLabelValues.showPredictionLines;
         this.controller.params.config.config.getConfig()['numberOfColumns'] = this.originalLabelValues.numberOfColumns;
         this.controller.params.config.config.getConfig()['addComparative'] = this.originalLabelValues.addComparative;
+        this.controller.params.config.config.getConfig()['chartLegend'] = this.originalLabelValues.chartLegend;
         this.controller.params.config.config.getConfig()['assignedColors'] = this.assignedColors = _.cloneDeep(this.originalAssignedColors);
     }
 
