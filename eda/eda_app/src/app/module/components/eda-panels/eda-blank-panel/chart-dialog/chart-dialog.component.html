@@ -44,9 +44,9 @@
                 </div>
                 <p class="text-md text-slate-500" i18n="@@chartTrendOptionDescription">Muestra la línea de tendencia en el gráfico</p>
               </div>
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" [(ngModel)]="addTrend" class="sr-only peer" (ngModelChange)="checkTrend()">
-                <div
+              <label class="relative inline-flex items-center" [class.toggle-blocked]="addComparative" [attr.data-tooltip]="addComparative ? tooltipBlockedByComparative : null">
+                <input type="checkbox" [(ngModel)]="addTrend" class="sr-only peer" (ngModelChange)="checkTrend()" [disabled]="addComparative">
+                <div 
                   class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
                 </div>
               </label>
@@ -77,10 +77,10 @@
                 </div>
                 <p class="text-md text-slate-500" i18n="@@chartComparationOptionDescription">Compara con datos de períodos anteriores</p>
               </div>
-              <label class="relative inline-flex items-center cursor-pointer">
+              <label class="relative inline-flex items-center" [class.toggle-blocked]="addTrend || showPredictionLines" [attr.data-tooltip]="(addTrend || showPredictionLines) ? tooltipBlockedByTrendOrPrediction : null">
                 <input type="checkbox" [(ngModel)]="addComparative" class="sr-only peer"
-                  (ngModelChange)="setComparative()">
-                <div
+                  (ngModelChange)="setComparative()" [disabled]="addTrend || showPredictionLines">
+                <div 
                   class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
                 </div>
               </label>
@@ -205,10 +205,10 @@
                 </div>
                 <p class="text-md text-slate-500" i18n="@@chartLabelLinePredictionOptionDescription">Muestra la predicción de la serie</p>
               </div>
-              <label class="relative inline-flex items-center cursor-pointer">
+              <label class="relative inline-flex items-center" [class.toggle-blocked]="addComparative" [attr.data-tooltip]="addComparative ? tooltipBlockedByComparative : null">
                 <input type="checkbox" [(ngModel)]="showPredictionLines" class="sr-only peer"
-                  (ngModelChange)="setPredictionLines()">
-                <div
+                  (ngModelChange)="setPredictionLines()" [disabled]="addComparative">
+                <div 
                   class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
                 </div>
               </label>

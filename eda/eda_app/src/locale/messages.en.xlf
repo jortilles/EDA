@@ -4312,6 +4312,16 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Compares with data from previous periods</target>
 </trans-unit>
 
+<trans-unit id="tooltipBlockedByComparative">
+<source>Bloqueado porque comparativa está activa</source>
+<target>Blocked because comparative is active</target>
+</trans-unit>
+
+<trans-unit id="tooltipBlockedByTrendOrPrediction">
+<source>Bloqueado porque tendencia o predicción está activa</source>
+<target>Blocked because trend or prediction is active</target>
+</trans-unit>
+
 <trans-unit id="chartLabelOption">
 <source>Muestra las etiquetas de cada segmento</source>
 <target>Show labels for each segment</target>
@@ -5620,6 +5630,10 @@ OR<ph id="5"/>
 <trans-unit id="showLinesPrediction">
   <source>Mostrar Predicción</source>
   <target>Show Prediction</target>
+</trans-unit>
+<trans-unit id="removePrediction">
+  <source>Quitar Predicción</source>
+  <target>Remove Prediction</target>
 </trans-unit>
 <trans-unit id="chartLabelLinesOptionDescription">
   <source>Muestra las líneas en los puntos</source>

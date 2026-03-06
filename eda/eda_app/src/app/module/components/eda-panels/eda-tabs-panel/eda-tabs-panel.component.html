@@ -39,5 +39,7 @@
 <eda-context-menu [inject]="contextMenu"></eda-context-menu>
 
 @if(editTabsController){
-    <app-edit-tabs-dialog [controller]="editTabsController"></app-edit-tabs-dialog>
+    <div>
+        <app-edit-tabs-dialog [controller]="editTabsController"></app-edit-tabs-dialog>
+    </div>
 }

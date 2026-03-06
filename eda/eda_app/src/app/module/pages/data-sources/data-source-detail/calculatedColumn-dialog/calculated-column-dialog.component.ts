@@ -33,6 +33,7 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
   // Types
   public columnTypes: SelectItem[] = [
     { label: 'text', value: 'text' },
+    { label: 'html', value: 'html' },
     { label: 'numeric', value: 'numeric' },
     { label: 'date', value: 'date' },
     { label: 'coordinate', value: 'coordinate' }
@@ -58,7 +59,7 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
     { value: "none", display_name: "No" },
   ];
 
-  public selectedcolumnType = 'numeric';
+  public selectedcolumnType = 'text';
 
   constructor(
     private formBuilder: UntypedFormBuilder,

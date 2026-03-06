@@ -210,6 +210,7 @@ export class EdaBlankPanelComponent implements OnInit {
     /** Query Variables */
     public tables: any[] = [];
     public tablesToShow: any[] = [];
+    public tablesToShowBase: any[] = [];
     public assertedTables: any[] = [];
     public columns: any[] = [];
     public aggregationsTypes: any[] = [];
@@ -547,6 +548,7 @@ public tableNodeExpand(event: any): void {
         const tables = TableUtils.getTablesData(this.dataSource.model.tables, this.inject.applyToAllfilter);
         this.tables = [].concat(_.cloneDeep(tables.allTables), this.assertedTables);
         this.tablesToShow = [].concat(_.cloneDeep(tables.tablesToShow), this.assertedTables);
+        this.tablesToShowBase = [...this.tablesToShow];
         this.sqlOriginTables = _.cloneDeep(tables.sqlOriginTables);
     }
 
@@ -814,19 +816,37 @@ public tableNodeExpand(event: any): void {
         this.graficos.numberOfColumns = config && config.getConfig() ? config.getConfig()['numberOfColumns'] : null;
         this.graficos.assignedColors = config && config.getConfig() ? config.getConfig()['assignedColors'] : null;
 
+        // Queremos mantener la prediccion entre cambios de tipo de gráfico 
+        // Si el chart es línea/área y hay predicción activa en la query, forzar showPredictionLines
+        if (['line', 'area'].includes(type)) {
+            const prediction = this.panel?.content?.query?.query?.prediction;
+            // Si existe prediccion la forzamos
+            if (prediction && prediction !== 'None') {
+                if (config && config.getConfig()) {
+                    config.getConfig()['showPredictionLines'] = true;
+                }
+                this.graficos.showPredictionLines = true;
+            }
+        }
+
         const allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
 
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
-            
+
             // Preservar assignedColors antes del merge
             const savedAssignedColors = config && config.getConfig() ? config.getConfig()['assignedColors'] : null;
 
             _.merge(_config, config||{});
-            
+
             // Restaurar assignedColors después del merge
             if (savedAssignedColors) {
                 _config.getConfig()['assignedColors'] = savedAssignedColors;
+            }
+
+            // Asegurar que showPredictionLines se propaga al _config (mantener la línea de predicción al cambiar entre tipos de gráficos)
+            if (['line', 'area'].includes(type) && this.graficos.showPredictionLines) {
+                _config.getConfig()['showPredictionLines'] = true;
             }
 
             if (subType=='tableanalized') {
@@ -905,10 +925,10 @@ public tableNodeExpand(event: any): void {
 
     public onTableInputKey(event: any) {
         if (event.target.value) {
-            this.tablesToShow = this.tablesToShow
+            this.tablesToShow = this.tablesToShowBase
                 .filter(table => table.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
-        }else{
-             this.setTablesData();
+        } else {
+            this.tablesToShow = [...this.tablesToShowBase];
         }
     }
 
@@ -1138,6 +1158,7 @@ public tableNodeExpand(event: any): void {
         this.loadChartsData(this.panelDeepCopy);
         this.userSelectedTable = undefined;
         this.tablesToShow = this.tables;
+        this.tablesToShowBase = [...this.tables];
         this.display_v.chart = '';
         this.display_v.page_dialog = false;
 
@@ -1929,6 +1950,7 @@ private assignLevels(nodes: any[], level = 0): void {
         const icons = {
             numeric: 'mdi-numeric',//'text-blue-500',
             date: 'mdi-calendar-text', //text-green-500',
+            coordinate: 'mdi-map-marker', //text-green-500',
             text: 'mdi-alphabetical', //'text-orange-500' 
             html: 'mdi-language-html5' //'text-orange-500' 
         };

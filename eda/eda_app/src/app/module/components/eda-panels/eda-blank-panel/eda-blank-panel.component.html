@@ -67,7 +67,7 @@
 </div>
 
 @if(display_v.page_dialog) {
-  <eda-dialog2 [display]="display_v.page_dialog" width="95vw" [ngStyle]="panelContent" [overflow]="'auto'" height="100vh">
+  <eda-dialog2 [display]="display_v.page_dialog" width="95vw" [ngStyle]="panelContent" [overflow]="'hidden'" height="100vh">
 
     <!-- Header -->
     <div header class="w-full flex items-center justify-between px-2 py-2">
@@ -1122,7 +1122,7 @@
 }
 
 @if(tableController){
-  <app-table-dialog [controller]="tableController"></app-table-dialog>
+  <app-table-dialog [controller]="tableController" [dashboard]="dashboard"></app-table-dialog>
 }
 
 @if(alertController){
