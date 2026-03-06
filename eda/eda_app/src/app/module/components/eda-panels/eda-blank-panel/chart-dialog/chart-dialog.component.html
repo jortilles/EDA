@@ -2,7 +2,7 @@
   <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-[70vh]">
     <!-- Chart Preview -->
     <div class="flex-1 flex justify-center border-b md:border-b-0 md:border-r bg-slate-50" >
-      <div class="relative" [ngClass]="this.controller.params.chart.edaChart === 'radar' ? 'w-[30vw]' : 'p-3 h-full w-full content-end'">
+      <div class="relative" [ngClass]="this.controller.params.chart.edaChart === 'radar' ? 'w-[30vw]' : 'p-3 pb-6 h-full w-full content-end'">
         @if (display) {
           <panel-chart #PanelChartComponent [props]="panelChartConfig" class="h-[95%] w-full block"></panel-chart>
         }
