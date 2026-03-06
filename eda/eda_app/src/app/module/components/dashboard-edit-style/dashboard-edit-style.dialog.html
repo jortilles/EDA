@@ -19,12 +19,21 @@
         </div>
         <div>
           <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
-            <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm mb-6"
+          <div class="flex items-stretch gap-2 mb-6">
+            <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
               [(ngModel)]="selectedPalette" [compareWith]="comparePalettes">
                 @for (palette of allPalettes; track $index) {
                   <option [ngValue]="palette">{{ palette.name }}</option>
                 }
             </select>
+            @if (selectedPalette) {
+              <div class="flex rounded overflow-hidden" style="width: 80px;">
+                @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
+                  <div class="flex-1" [style.background-color]="color"></div>
+                }
+              </div>
+            }
+          </div>
         </div>
 
     
