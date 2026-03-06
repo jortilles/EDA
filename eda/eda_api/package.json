@@ -18,6 +18,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@clickhouse/client": "^1.8.0",
         "@google-cloud/bigquery": "^5.5.0",
         "@node-saml/passport-saml": "^5.1.0",
         "@tensorflow/tfjs": "^4.22.0",

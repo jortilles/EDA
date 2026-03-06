@@ -9,6 +9,7 @@ import { EnCrypterService } from '../encrypter/encrypter.service';
 import { SQLserverConnection } from './db-systems/slqserver-connection';
 import { JSONWebServiceConnection } from './db-systems/json-webservice-connection';
 import { MongoDBConnection } from './db-systems/mongodb-connection';
+import { ClickHouseConnection } from './db-systems/clickhouse-connection';
 import DataSource from '../../module/datasource/model/datasource.model';
 
 export const
@@ -21,7 +22,8 @@ export const
     BIGQUERY_CONNECTION = 'bigquery',
     SNOWFLAKE_CONNECTION = 'snowflake',
     WEB_SERVICE = 'jsonwebservice',
-    MONGODB_CONNECTION = 'mongodb'
+    MONGODB_CONNECTION = 'mongodb',
+    CLICKHOUSE_CONNECTION = 'clickhouse'
 
 
 
@@ -63,6 +65,8 @@ export class ManagerConnectionService {
                 return new JSONWebServiceConnection(config);
             case MONGODB_CONNECTION:
                 return new MongoDBConnection(config);
+            case CLICKHOUSE_CONNECTION:
+                return new ClickHouseConnection(config);
             default:
                 return null;
         }
@@ -89,7 +93,9 @@ export class ManagerConnectionService {
             case WEB_SERVICE:
                 return new JSONWebServiceConnection(config);
             case MONGODB_CONNECTION:
-                    return new MongoDBConnection(config);
+                return new MongoDBConnection(config);
+            case CLICKHOUSE_CONNECTION:
+                return new ClickHouseConnection(config);
             default:
                 return null;
         }
