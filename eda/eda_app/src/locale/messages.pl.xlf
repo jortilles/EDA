@@ -2345,6 +2345,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <source>Modificar el tamaño del KPI</source>
   <target>Zmień rozmiar KPI</target>
 </trans-unit>
+<trans-unit id="increaseKpiSize">
+  <source>Incrementar el tamaño del KPI</source>
+  <target>Incrementuj rozmiar KPI</target>
+</trans-unit>
 <trans-unit id="addAlert" datatype="html">
 <source> Añadir alerta    </source>
 <target>Dodaj alert    </target>

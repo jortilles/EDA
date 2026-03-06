@@ -2446,6 +2446,10 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <source>Modificar el tamaño del KPI</source>
 <target>Modify KPI size</target>
 </trans-unit>
+<trans-unit id="increaseKpiSize">
+  <source>Incrementar el tamaño del KPI</source>
+  <target>Increment KPI size</target>
+</trans-unit>
 <trans-unit id="addAlert" datatype="html">
 <source> Añadir alerta    </source>
 <target> Add alert    </target>

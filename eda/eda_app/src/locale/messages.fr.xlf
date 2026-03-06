@@ -2681,6 +2681,10 @@
   <source>Modificar el tamaño del KPI</source>
   <target>Modifier la taille du KPI</target>
 </trans-unit>
+<trans-unit id="increaseKpiSize">
+  <source>Incrementar el tamaño del KPI</source>
+  <target>Incrementer la taille du KPI</target>
+</trans-unit>
 <trans-unit id="addAlert" datatype="html">
 <source> Añadir alerta    </source>
 <target> Ajouter une alerte    </target>
