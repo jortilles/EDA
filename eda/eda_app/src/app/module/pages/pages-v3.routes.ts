@@ -55,6 +55,11 @@ export const pagesV3Routes: Routes = [
         loadComponent: () => import('./data-sources/datasource-connection-detail/datasource-connection-detail.page').then(c => c.DataSourceConnectionDetailPage)
       },
       {
+        path: 'data-source/:id/update-file',
+        canActivate: [VerifyTokenGuard],
+        loadComponent: () => import('./data-sources/datasource-update-file/datasource-update-file.page').then(c => c.DataSourceUpdateFilePage)
+      },
+      {
         path: 'admin/email-settings',
         data: { admin: true },
         canActivate: [RoleGuard],

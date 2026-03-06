@@ -4404,6 +4404,13 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
           <context context-type="linenumber">25</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="updateModelXLCSV" datatype="html">
+        <source>Actualizar el fichero origen para buscar nuevas tablas y columnas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/pages/data-sources/data-source-list/data-source-list.component.ts</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="deleteModel" datatype="html">
         <source>Borrar modelo de datos</source>
         <context-group purpose="location">

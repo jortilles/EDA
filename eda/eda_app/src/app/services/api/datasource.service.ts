@@ -192,6 +192,12 @@ export class DataSourceService extends ApiService implements OnDestroy {
     getModel() {
         return this._databaseModel.getValue();
     }
+
+    getConnectionType(): string {
+        const connection = this._modelConnection.getValue();
+        return connection?.source_type || connection?.type;
+    }
+
     getMaps() {
         return this._maps.getValue();
     }

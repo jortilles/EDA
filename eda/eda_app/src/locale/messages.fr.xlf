@@ -1580,6 +1580,14 @@
 <context context-type="linenumber">15</context>
 </context-group>
 </trans-unit>
+<trans-unit id="updateModelXLCSV" datatype="html">
+<source>Actualizar el fichero origen para buscar nuevas tablas y columnas</source>
+<target>Mettre à jour le fichier source pour trouver les nouvelles tables et colonnes</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/data-sources/data-source-list/data-source-list.component.ts</context>
+<context context-type="linenumber">30</context>
+</context-group>
+</trans-unit>
 <trans-unit id="saveModel" datatype="html">
 <source>Guardar modelo de datos</source>
 <target>Modèle de données enregistré</target>

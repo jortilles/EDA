@@ -21,6 +21,7 @@ export class ExcelSheetController {
             const excelName = req.body?.name, optimize = req.body?.optimize, cacheAllowed = req.body?.allowCache;
             let excelFields = req.body?.fields;
             const columnsConfig = req.body?.columnsConfig; // Configuración de columnas del usuario
+            const sourceType = req.body?.source_type || 'excel';
 
 
             if (!excelName || !excelFields) {
@@ -85,10 +86,131 @@ export class ExcelSheetController {
                 }
             }
 
-            await this.ExcelCollectionToDataSource(excelName, excelFields, optimize, cacheAllowed, columnsConfig, res, next);
+            await this.ExcelCollectionToDataSource(excelName, excelFields, optimize, cacheAllowed, columnsConfig, sourceType, res, next);
         } catch (error) {
             console.error('Error al crear o actualizar el ExcelSheet:', error);
             next(new HttpException(500, 'Error al crear o actualizar el ExcelSheet'));
+        }
+    }
+
+    static async UpdateCollectionFromJSON(req: Request, res: Response, next: NextFunction) {
+        try {
+            const datasourceId = req.params.id;
+            const excelName = req.body?.name, optimize = req.body?.optimize, cacheAllowed = req.body?.allowCache;
+            let excelFields = req.body?.fields;
+            const columnsConfig = req.body?.columnsConfig;
+
+            if (!datasourceId || !excelName || !excelFields) {
+                return res.status(400).json({ ok: false, message: 'ID, nombre o campos incorrectos en la solicitud' });
+            }
+
+            // Actualizar datos en MongoDB
+            const excelModel = ExcelSheetModel(excelName);
+            const excelDocs = await excelModel.findOne({});
+            if (excelDocs) {
+                excelDocs.key = excelFields;
+                await excelDocs.save();
+            }
+
+            // Siempre reemplazar los datos reales de la colección xls_<nombre>
+            const parsedUrl = new URL(databaseUrl?.url);
+            const { host, port } = parsedUrl;
+            const config = {
+                type: "mongodb",
+                host: host.substring(0, host.indexOf(':')),
+                port: Number(port),
+                database: parsedUrl.pathname.substring(1),
+                user: parsedUrl.username,
+                password: parsedUrl.password,
+                authSource: parsedUrl.search.split('=')[1]
+            };
+            const mongoConnection = new MongoDBConnection(config);
+            const client = await mongoConnection.getclient();
+            try {
+                const database = client.db(config.database);
+                const collection = database.collection('xls_' + excelName);
+                const formatedFields = JSON.parse(JSON.stringify(excelFields));
+                for (const obj of formatedFields) {
+                    for (let key in obj) {
+                        let field: any = obj[key];
+                        if (isNaN(Number(field))) {
+                            const isDateValue = DateUtil.convertDate(field);
+                            if (isDateValue) { obj[key] = isDateValue; }
+                        } else {
+                            obj[key] = Number(field);
+                        }
+                    }
+                }
+                await collection.deleteMany({});
+                await collection.insertMany(formatedFields);
+            } finally {
+                await client.close();
+            }
+
+            // Generar nuevo dsTableObject
+            const propertiesAndTypes = {};
+            if (columnsConfig && Array.isArray(columnsConfig)) {
+                columnsConfig.forEach(col => { propertiesAndTypes[col.field] = col.type; });
+            } else {
+                excelFields.forEach(object => {
+                    Object.entries(object).forEach(([property, value]) => {
+                        if (!isNaN(Number(value))) {
+                            propertiesAndTypes[property] = 'numeric';
+                        } else {
+                            const isDateValue = DateUtil.convertDate(value);
+                            if (isDateValue) { propertiesAndTypes[property] = 'date'; }
+                            else if (typeof value === 'string') { propertiesAndTypes[property] = 'text'; }
+                        }
+                    });
+                });
+            }
+
+            const columnsEntry = [];
+            Object.entries(propertiesAndTypes).map(([name, type]) => ({ name, type })).forEach((column) => {
+                let newCol: any = {
+                    column_name: column.name,
+                    column_type: String(column.type),
+                    display_name: { default: column.name, localized: [] },
+                    description: { default: column.name, localized: [] },
+                    minimumFractionDigits: 0,
+                    column_granted_roles: [],
+                    row_granted_roles: [],
+                    visible: true,
+                    tableCount: 0,
+                    valueListSource: {},
+                };
+                if (newCol.column_type === 'numeric') { newCol.aggregation_type = AggregationTypes.getValuesForNumbers(); }
+                else if (newCol.column_type === 'text') { newCol.aggregation_type = AggregationTypes.getValuesForText(); }
+                else { newCol.aggregation_type = AggregationTypes.getValuesForOthers(); }
+                columnsEntry.push(newCol);
+            });
+
+            const dsTableObject = [{
+                table_name: excelName,
+                display_name: { default: excelName, localized: [] },
+                description: { default: excelName, localized: [] },
+                table_granted_roles: [],
+                table_type: [],
+                columns: columnsEntry,
+                relations: [],
+                visible: true,
+                tableCount: 0,
+                no_relations: []
+            }];
+
+            // Actualizar el DataSource existente (no crear uno nuevo)
+            await DataSource.findByIdAndUpdate(datasourceId, {
+                $set: {
+                    'ds.model.tables': dsTableObject,
+                    'ds.metadata.optimized': optimize ?? false,
+                    'ds.metadata.cache_config.enabled': cacheAllowed ?? false,
+                }
+            });
+
+            return res.status(200).json({ ok: true, data_source_id: datasourceId });
+        } catch (error) {
+            console.error('Error al actualizar el ExcelSheet:', error);
+            next(new HttpException(500, 'Error al actualizar el ExcelSheet'));
         }
     }
 
@@ -97,7 +219,13 @@ export class ExcelSheetController {
         try {
             if (!req.body?.name) return res.status(400).json({ ok: false, message: 'Nombre o campos incorrectos en la solicitud' });
             const excelModelChecker = ExcelSheetModel(req.body?.name), existentExcelDoc = await excelModelChecker.find({});
-            if (existentExcelDoc.length > 0) return res.status(200).json({ ok: true, message: 'Modelo existe', existence: true });
+            if (existentExcelDoc.length > 0) {
+                // Solo mostrar aviso de sobrescritura si además existe un datasource activo con ese nombre
+                const existentDataSource = await DataSource.findOne({ 'ds.metadata.model_name': req.body.name });
+                if (existentDataSource) {
+                    return res.status(200).json({ ok: true, message: 'Modelo existe', existence: true });
+                }
+            }
             return res.status(200).json({ ok: true, message: 'Modelo existe', existence: false });
         } catch (error) {
             console.log("Error: ", error);
@@ -105,7 +233,7 @@ export class ExcelSheetController {
         }
     }
 
-    static async ExcelCollectionToDataSource(excelName, excelFields, optimized, cacheAllowed, columnsConfig, res: Response, next: NextFunction) {
+    static async ExcelCollectionToDataSource(excelName, excelFields, optimized, cacheAllowed, columnsConfig, sourceType, res: Response, next: NextFunction) {
         try {
             //Declaramos un objeto que va a contener los tipos y nombres de los campos del Excel
             const propertiesAndTypes = {};
@@ -199,6 +327,7 @@ export class ExcelSheetController {
                 ds: {
                     connection: {
                         type: "mongodb",
+                        source_type: sourceType,
                         host: host.substring(0, host.indexOf(':')),
                         port: Number(port),
                         database,

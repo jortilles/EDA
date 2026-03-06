@@ -1232,6 +1232,14 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">15</context>
 </context-group>
 </trans-unit>
+<trans-unit id="updateModelXLCSV" datatype="html">
+<source>Actualizar el fichero origen para buscar nuevas tablas y columnas</source>
+<target>Zaktualizuj plik źródłowy, aby znaleźć nowe tabele i kolumny</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/data-sources/data-source-list/data-source-list.component.ts</context>
+<context context-type="linenumber">30</context>
+</context-group>
+</trans-unit>
 <trans-unit id="saveModel" datatype="html">
 <source>Guardar modelo de datos</source>
 <target>Zapisz model danych</target>
