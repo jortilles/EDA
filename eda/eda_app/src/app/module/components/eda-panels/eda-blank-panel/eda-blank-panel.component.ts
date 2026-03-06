@@ -200,6 +200,7 @@ export class EdaBlankPanelComponent implements OnInit {
     /** Query Variables */
     public tables: any[] = [];
     public tablesToShow: any[] = [];
+    public tablesToShowBase: any[] = [];
     public assertedTables: any[] = [];
     public columns: any[] = [];
     public aggregationsTypes: any[] = [];
@@ -534,6 +535,7 @@ public tableNodeExpand(event: any): void {
         const tables = TableUtils.getTablesData(this.dataSource.model.tables, this.inject.applyToAllfilter);
         this.tables = [].concat(_.cloneDeep(tables.allTables), this.assertedTables);
         this.tablesToShow = [].concat(_.cloneDeep(tables.tablesToShow), this.assertedTables);
+        this.tablesToShowBase = [...this.tablesToShow];
         this.sqlOriginTables = _.cloneDeep(tables.sqlOriginTables);
     }
 
@@ -718,7 +720,7 @@ public tableNodeExpand(event: any): void {
             edaChart: subType,
             maps: this.dataSource.model.maps,
             linkedDashboardProps: this.panel.linkedDashboardProps,
-
+            predictionConfig: this.panel.content?.query?.query?.predictionConfig,
         });
     }
 
@@ -907,10 +909,10 @@ public tableNodeExpand(event: any): void {
 
     public onTableInputKey(event: any) {
         if (event.target.value) {
-            this.tablesToShow = this.tablesToShow
+            this.tablesToShow = this.tablesToShowBase
                 .filter(table => table.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
-        }else{
-             this.setTablesData();
+        } else {
+            this.tablesToShow = [...this.tablesToShowBase];
         }
     }
 
@@ -1140,6 +1142,7 @@ public tableNodeExpand(event: any): void {
         this.loadChartsData(this.panelDeepCopy);
         this.userSelectedTable = undefined;
         this.tablesToShow = this.tables;
+        this.tablesToShowBase = [...this.tables];
         this.display_v.chart = '';
         this.display_v.page_dialog = false;
 
@@ -1173,11 +1176,11 @@ public tableNodeExpand(event: any): void {
                 properties.chartDataset[0].data = this.graficos.assignedColors.map(element => element.value)
             }
         
-                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors };
+                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors, chartLegend: this.graficos.chartLegend };
                 const layout =
                     new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType,
                     this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels,
-                    this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors, this.graficos.showPointLines, this.graficos.showPredictionLines));
+                    this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors, this.graficos.showPointLines, this.graficos.showPredictionLines, this.graficos.chartLegend));
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
             }
             //not saved alert message
@@ -1478,9 +1481,10 @@ public tableNodeExpand(event: any): void {
         // Usar spread operator para mantener el config existente
         this.panel.content.query.output.config = {
             ...this.panel.content.query.output.config,
-            assignedColors: response.assignedColors,  // ✅ Guardar assignedColors
+            assignedColors: response.assignedColors,
             alertLimits: response.alerts,
-            sufix: response.sufix
+            sufix: response.sufix,
+            modifiedFontPoints: response.modifiedFontPoints || 0,
         };
 
         let layout: any;
@@ -1508,7 +1512,8 @@ public tableNodeExpand(event: any): void {
                 sufix: response.sufix, 
                 alertLimits: response.alerts, 
                 edaChart: layout,
-                assignedColors: response.assignedColors  //  Añadir assignedColors al KpiConfig
+                assignedColors: response.assignedColors,
+                modifiedFontPoints: response.modifiedFontPoints || 0,
             })
         );
         
@@ -1923,6 +1928,7 @@ private assignLevels(nodes: any[], level = 0): void {
         const icons = {
             numeric: 'mdi-numeric',//'text-blue-500',
             date: 'mdi-calendar-text', //text-green-500',
+            coordinate: 'mdi-map-marker', //text-green-500',
             text: 'mdi-alphabetical', //'text-orange-500' 
             html: 'mdi-language-html5' //'text-orange-500' 
         };

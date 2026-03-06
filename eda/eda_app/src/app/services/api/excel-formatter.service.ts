@@ -96,4 +96,8 @@ export class ExcelFormatterService extends ApiService {
         return this.post(`${this.globalExcelRoute}/existent-json-data-source`, nameData);
     }
 
+    updateCollectionFromJSON(id: string, jsonData: any): Observable<any> {
+        return this.put(`${this.globalExcelRoute}/update-json-data-source/${id}`, jsonData);
+    }
+
 }

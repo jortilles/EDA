@@ -27,9 +27,10 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
     public refreshSTR = $localize`:@@Refresh:Volver a cargar el modelo de datos almacenado`;
     public saveModelSTR = $localize`:@@saveModel:Guardar modelo de datos`;
     public updateModelSTR = $localize`:@@updateModel:Actualizar modelo de datos desde la base de datos origen para buscar nuevas tablas y columnas`;
+    public updateModelXLCSV = $localize`:@@updateModelXLCSV:Actualizar el fichero origen para buscar nuevas tablas y columnas`;
     public deleteModelSTR = $localize`:@@deleteModel:Borrar modelo de datos`;
     public unsaved : string;
-
+    public connectionType: string;
 
 
     constructor(public dataModelService: DataSourceService,
@@ -52,7 +53,9 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
       this.getDataSourceId();
         this.dataModelService.currentTreeData.subscribe(
             (data) => {
-                this.treeData = data
+                this.treeData = data;
+                // Recuperamos el tipo de conexión para mostrarlo en el título
+                this.connectionType = this.dataModelService.getConnectionType();
             },
             (err) => this.alertService.addError(err)
         );
@@ -153,6 +156,10 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
                 this.alertService.addError(err);
                 this.spinnerService.off()},
         );
+    }
+
+    openUpdateFilePage(): void {
+        this.router.navigate(['/data-source', this.id, 'update-file']);
     }
 
 }

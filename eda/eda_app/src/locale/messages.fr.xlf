@@ -1580,6 +1580,14 @@
 <context context-type="linenumber">15</context>
 </context-group>
 </trans-unit>
+<trans-unit id="updateModelXLCSV" datatype="html">
+<source>Actualizar el fichero origen para buscar nuevas tablas y columnas</source>
+<target>Mettre à jour le fichier source pour trouver les nouvelles tables et colonnes</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/data-sources/data-source-list/data-source-list.component.ts</context>
+<context context-type="linenumber">30</context>
+</context-group>
+</trans-unit>
 <trans-unit id="saveModel" datatype="html">
 <source>Guardar modelo de datos</source>
 <target>Modèle de données enregistré</target>
@@ -2676,6 +2684,14 @@
   <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
   <context context-type="linenumber">60</context>
 </context-group>
+</trans-unit>
+<trans-unit id="kpiSize">
+  <source>Modificar el tamaño del KPI</source>
+  <target>Modifier la taille du KPI</target>
+</trans-unit>
+<trans-unit id="increaseKpiSize">
+  <source>Incrementar el tamaño del KPI</source>
+  <target>Incrementer la taille du KPI</target>
 </trans-unit>
 <trans-unit id="addAlert" datatype="html">
 <source> Añadir alerta    </source>

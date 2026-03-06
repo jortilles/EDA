@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { StyleProviderService } from '@eda/services/service.index';
 import { registerLocaleData } from '@angular/common';
 import { EdaKpi } from './eda-kpi';
@@ -15,7 +15,7 @@ import { CommonModule } from '@angular/common';
     imports: [FormsModule, CommonModule, EdaChartComponent]
 })
 
-export class EdaKpiComponent implements OnInit {
+export class EdaKpiComponent implements OnInit, AfterViewInit {
     @Input() inject: EdaKpi;
     @Output() onNotify: EventEmitter<any> = new EventEmitter();
     @ViewChild('kpiContainer') kpiContainer: ElementRef;
@@ -28,11 +28,15 @@ export class EdaKpiComponent implements OnInit {
     warningColor = '#ff8100';
     containerHeight: number = 20;
     containerWidth: number = 20;
+    baseResultSize: number = 0;
+    showChart: boolean = true;
 
-    constructor(private styleProviderService : StyleProviderService) { }
+    constructor(private styleProviderService : StyleProviderService, private cdr: ChangeDetectorRef) { }
 
     ngAfterViewInit() {
         this.initDimensions();
+        this.baseResultSize = this.computeBaseSize();
+        this.cdr.detectChanges();
     }
 
     ngOnInit() {
@@ -81,6 +85,24 @@ export class EdaKpiComponent implements OnInit {
         }
     }
 
+    private computeBaseSize(): number {
+        let resultSize: number = this.containerHeight / 2;
+        const sufix = this.inject.sufix || '';
+        const ratio = (this.containerHeight / this.containerWidth);
+        const textLongitude = this.inject.value.toString().length;
+        let textWidth = textLongitude * resultSize;
+        if ((textWidth > this.containerWidth) && (sufix.length < 4)) resultSize = (this.containerWidth / textLongitude) * 1.4;
+        if (resultSize > this.containerHeight && ratio < 0.4) resultSize = this.containerHeight;
+        if (textLongitude * resultSize > this.containerWidth * 1.2 && ratio < 0.4) resultSize = resultSize / 1.5;
+        if (sufix.length > 4 && this.containerHeight < (resultSize * 4) && this.containerWidth < textWidth) {
+            resultSize = resultSize / 1.8;
+        }
+        if (this.showChart) {
+            resultSize = resultSize / 1.8;
+        }
+        return resultSize;
+    }
+
     setSufix(): void {
         this.sufixClick = !this.sufixClick;
         this.onNotify.emit({ sufix: this.inject.sufix })
@@ -127,6 +149,9 @@ export class EdaKpiComponent implements OnInit {
         const isMobile = window.innerWidth < 640;
         if(isMobile) {
             resultSize = 40;
+        }
+        if (this.inject.modifiedFontPoints) {
+            resultSize += this.inject.modifiedFontPoints;
         }
         return resultSize.toFixed().toString() + 'px';
     }

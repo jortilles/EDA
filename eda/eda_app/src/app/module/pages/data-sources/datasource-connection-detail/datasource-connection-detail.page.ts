@@ -2,7 +2,7 @@ import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angul
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DataSourceService, SpinnerService, AlertService, StyleProviderService, ExcelFormatterService, UploadFileService } from '@eda/services/service.index';
-import { ConfirmationService, SharedModule, SelectItem } from 'primeng/api';
+import { SharedModule, SelectItem } from 'primeng/api';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 import { UploadFileComponent } from '../../data-sources/data-source-detail/upload-file/upload-file.component';
@@ -22,7 +22,6 @@ import { DropdownModule } from 'primeng/dropdown';
 })
 export class DataSourceConnectionDetailPage implements OnInit {
   private uploadFileService = inject(UploadFileService);
-  private confirmationService = inject(ConfirmationService);
 
   @ViewChild('fileUploader', { static: false }) fileUploader: UploadFileComponent;
   @ViewChild('excelFile', { static: false }) excelFile: ElementRef<HTMLInputElement>;
@@ -60,6 +59,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     { label: 'Oracle', value: 'oracle', port: 1521 },
     { label: 'BigQuery', value: 'bigquery', port: null },
     { label: 'SnowFlake', value: 'snowflake', port: null },
+    { label: 'ClickHouse', value: 'clickhouse', port: 8123 },
     { label: 'jsonWebService', value: 'jsonwebservice' },
     { label: 'Mongo', value: 'mongo', port: 27017 },
     { label: 'Excel', value: 'excel', port: 27017 },
@@ -232,14 +232,17 @@ export class DataSourceConnectionDetailPage implements OnInit {
     } else {
       const checker = await this.checkExcelCollection();
       if (checker.existence) {
-        this.confirmationService.confirm({
-          message: $localize`:@@confirmationExcelMessage:¿Estás seguro de que quieres sobreescribir este modelo de datos?`,
-          header: $localize`:@@confirmationExcel:Confirmación`,
-          acceptLabel: $localize`:@@si:Si`,
-          rejectLabel: $localize`:@@no:No`,
-          icon: 'pi pi-exclamation-triangle',
-          accept: () => this.saveJSONCollection(),
-        })
+        const result = await Swal.fire({
+          title: $localize`:@@confirmationExcel:Confirmación`,
+          text: $localize`:@@confirmationExcelMessage:¿Estás seguro de que quieres sobreescribir este modelo de datos?`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: $localize`:@@si:Si`,
+          cancelButtonText: $localize`:@@no:No`,
+        });
+        if (result.isConfirmed) {
+          this.saveJSONCollection();
+        }
       } else {
         this.saveJSONCollection();
       }
@@ -253,14 +256,17 @@ export class DataSourceConnectionDetailPage implements OnInit {
     } else {
       const checker = await this.checkExcelCollection();
       if (checker.existence) {
-        this.confirmationService.confirm({
-          message: $localize`:@@confirmationExcelMessage:¿Estás seguro de que quieres sobreescribir este modelo de datos?`,
-          header: $localize`:@@confirmationExcel:Confirmación`,
-          acceptLabel: $localize`:@@si:Si`,
-          rejectLabel: $localize`:@@no:No`,
-          icon: 'pi pi-exclamation-triangle',
-          accept: () => this.saveCsvJSONCollection(),
-        })
+        const result = await Swal.fire({
+          title: $localize`:@@confirmationExcel:Confirmación`,
+          text: $localize`:@@confirmationExcelMessage:¿Estás seguro de que quieres sobreescribir este modelo de datos?`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: $localize`:@@si:Si`,
+          cancelButtonText: $localize`:@@no:No`,
+        });
+        if (result.isConfirmed) {
+          this.saveCsvJSONCollection();
+        }
       } else {
         this.saveCsvJSONCollection();
       }
@@ -341,7 +347,8 @@ export class DataSourceConnectionDetailPage implements OnInit {
           name: value.name,
           fields: this.excelFileData,
           optimize: value.optimize,
-          allowCache: value.allowCache
+          allowCache: value.allowCache,
+          source_type: 'excel'
         };
 
         const res = await lastValueFrom(this.excelFormatterService.addNewCollectionFromJSON(fileData));
@@ -377,7 +384,8 @@ export class DataSourceConnectionDetailPage implements OnInit {
           fields: this.csvFileData,
           optimize: value.optimize,
           allowCache: value.allowCache,
-          columnsConfig: this.csvColumns // Enviar configuración de columnas
+          columnsConfig: this.csvColumns,
+          source_type: 'csv'
         };
 
         const res = await lastValueFrom(this.excelFormatterService.addNewCollectionFromJSON(fileData));

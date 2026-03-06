@@ -348,7 +348,7 @@ export class BigQueryBuilderService extends QueryBuilderService {
         if (el.column_type === 'date') {
            grouping.push(this.getDateFormat(el.SQLexpression, el.format) );
         } else {
-          if( el.aggregation_type === 'none') {
+          if( el.aggregation_type === 'none' && el.column_type != 'numeric') {
             grouping.push(` (${el.SQLexpression}) `);
           }
         }
