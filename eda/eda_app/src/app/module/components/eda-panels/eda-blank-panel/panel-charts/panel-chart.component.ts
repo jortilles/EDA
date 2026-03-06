@@ -1175,7 +1175,16 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     private _prepareTablePredictionData(labels: string[], values: any[][], queryLen: number): { tableLabels: string[], tableValues: any[][] } {
         const rowLen = values[0].length;
-        const numericCol = this.props.query?.find((q: any) => q.column_type === 'numeric');
+        const targetSpec = this.props.predictionConfig?.targetColumn;
+        let numericCol: any;
+        if (targetSpec) {
+            numericCol = this.props.query?.find((q: any) =>
+                q.column_name === targetSpec.column_name && q.table_id === targetSpec.table_id
+            );
+        }
+        if (!numericCol) {
+            numericCol = this.props.query?.find((q: any) => q.column_type === 'numeric');
+        }
         const predColLabel = numericCol?.display_name?.default
             ? `${$localize`:@@Prediction:Predicción`} - ${numericCol.display_name.default}`
             : $localize`:@@Prediction:Predicción`;
@@ -1188,9 +1197,21 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     private _preparePredictionValues(
         values: any[][], dataDescription: any, dataTypes: string[], cfg: any, predQueryLen: number, hasPredCols: boolean
     ): any[][] {
+        // Resolve target column index once for use in both blocks below
+        const targetSpec = this.props.predictionConfig?.targetColumn;
+        let targetQueryIdx = -1;
+        if (targetSpec) {
+            targetQueryIdx = (this.props.query as any[])?.findIndex((q: any) =>
+                q.column_name === targetSpec.column_name && q.table_id === targetSpec.table_id
+            ) ?? -1;
+        }
+
         if (cfg.showPredictionLines === true) {
             const predictionIndex = values[0].length - 1;
-            const baseName = dataDescription.numericColumns[0]?.name || '';
+            const targetNumericCol = targetQueryIdx >= 0
+                ? dataDescription.numericColumns.find((c: any) => c.index === targetQueryIdx)
+                : null;
+            const baseName = targetNumericCol?.name || dataDescription.numericColumns[0]?.name || '';
             const label = baseName
                 ? `${$localize`:@@Prediction:Predicción`} - ${baseName}`
                 : $localize`:@@Prediction:Predicción`;
@@ -1205,7 +1226,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     idx >= predQueryLen && (val === 0 || val === '') ? null : val));
                 const actualNumericCols = dataDescription.numericColumns.filter((c: any) => c.index < predQueryLen);
                 if (actualNumericCols.length > 0) {
-                    const numericIdx = actualNumericCols[0].index;
+                    const targetCol = targetQueryIdx >= 0
+                        ? actualNumericCols.find((c: any) => c.index === targetQueryIdx)
+                        : null;
+                    const numericIdx = (targetCol ?? actualNumericCols[0]).index;
                     let lastActualIdx = -1;
                     for (let i = values.length - 1; i >= 0; i--) {
                         const v = values[i][numericIdx];

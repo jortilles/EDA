@@ -720,7 +720,7 @@ public tableNodeExpand(event: any): void {
             edaChart: subType,
             maps: this.dataSource.model.maps,
             linkedDashboardProps: this.panel.linkedDashboardProps,
-
+            predictionConfig: this.panel.content?.query?.query?.predictionConfig,
         });
     }
 

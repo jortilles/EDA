@@ -616,6 +616,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         const tableIndex = this._databaseModel.getValue().findIndex((table: any) => table.display_name.default === columnPanel.parent);
         return model[tableIndex];
     }
+
     sendModel() {
 
         const connection = this._modelConnection.getValue();
@@ -629,13 +630,13 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 model: model
             }
         };
+        console.log(body, 'body');
         this.updateModelInServer(this.model_id, body).subscribe(
             (r) => this.alertService.addSuccess($localize`:@@ModelSaved:Modelo guardado correctamente`),
             (err) => this.alertService.addError(err)
         );
         this._unsaved.next(false)
     }
-
 
     async getModelById(id) {
         return this.get(`${this.globalDSRoute}/${id}`).subscribe(
