@@ -75,7 +75,7 @@ export class GlobalFilterComponent implements OnInit {
     //Date filter ranges Dropdown
     public datePickerConfigs: {} = {};
 
-    public filtrar: string = $localize`:@@filterButtonDashboard:Filtrar`;
+    public filtrar: string = $localize`:@@filtrarH4:Filtrar`;
     public resumen: string = $localize`:@@filterSummary:Resumen de filtros`;
     private tooltipHideTimeout: any;
     // flag para ver ultimo panel

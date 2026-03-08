@@ -757,7 +757,7 @@ public tableNodeExpand(event: any): void {
     public changeChartTypeCheck(type: string, subType: string, config?: ChartConfig) {
         if (subType=='tableanalized') {
             Swal.fire({
-                title: $localize`:@@NameTablaQuality:Tabla DataQuality`,
+                title: $localize`:@@chartTypesTableAnalized:Tabla DataQuality`,
                 text: $localize`:@@SureDataQuality:¿Estás seguro de que deseas continuar con la visualización de DataQuality? Esta acción puede tomar un poco de tiempo.`,
                 icon: 'warning',
                 showCancelButton: true,

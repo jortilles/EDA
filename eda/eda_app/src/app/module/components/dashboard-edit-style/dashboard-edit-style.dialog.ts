@@ -63,7 +63,7 @@ export class DashboardEditStyleDialog {
   public samplePanelTitle: string = $localize`:@@samplePanelTitle:Previsualización`;
   public samplePanelDBName: string = $localize`:@@samplePanelDBName:Título del informe`;
   public samplePanelName: string = $localize`:@@samplePanelName:Título del panel`;
-  public filtrar: string = $localize`:@@filterButtonDashboard:Filtrar`;
+  public filtrar: string = $localize`:@@filtrarH4:Filtrar`;
   public css: string;
 
   public left: string = $localize`:@@left:Izquierda`;
