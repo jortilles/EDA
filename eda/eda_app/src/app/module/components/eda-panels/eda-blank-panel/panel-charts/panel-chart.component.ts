@@ -368,6 +368,25 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             });
         }
 
+        // Apply colored bars (per-bar colors based on thresholds)
+        const coloredBarsConfig = (this.props.config.getConfig() as any)['coloredBarsConfig'];
+        console.log('[ColoredBars] panel-chart renderEdaChart - coloredBarsConfig:', coloredBarsConfig);
+        const coloredBarsHasThresholds = coloredBarsConfig?.thresholdHigh !== null && coloredBarsConfig?.thresholdHigh !== undefined
+            || coloredBarsConfig?.thresholdLow !== null && coloredBarsConfig?.thresholdLow !== undefined;
+        if (coloredBarsConfig?.active && coloredBarsHasThresholds && chartData[1][0]?.data) {
+            const { thresholdHigh, thresholdLow, colorAbove, colorBetween, colorBelow } = coloredBarsConfig;
+            const bothThresholds = thresholdHigh !== null && thresholdLow !== null;
+            const assignedColor = chartConfig.chartColors[0]?.backgroundColor as string || '#cccccc';
+            const colors = (chartData[1][0].data as number[]).map((value: number) => {
+                if (thresholdHigh !== null && value > thresholdHigh) return colorAbove;
+                if (thresholdLow !== null && value < thresholdLow) return colorBelow;
+                return bothThresholds ? colorBetween : assignedColor;
+            });
+            chartData[1][0].backgroundColor = colors;
+            chartData[1][0].borderColor = colors;
+            chartConfig.chartColors = [{ backgroundColor: colors, borderColor: colors }];
+        }
+
         chartConfig.chartLegend = cfg.chartLegend ?? true;
         chartConfig.linkedDashboardProps = this.props.linkedDashboardProps;
         this.createEdaChartComponent(chartConfig);

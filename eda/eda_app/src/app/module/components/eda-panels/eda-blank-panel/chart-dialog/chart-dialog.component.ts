@@ -55,6 +55,7 @@ export class ChartDialogComponent {
     private originalAssignedColors: { value: string; color: string }[] = [];
 
     // Colored bars thresholds
+    public coloredBarsActive: boolean = false;
     public thresholdHigh: number | null = null;
     public thresholdLow: number | null = null;
     public colorAbove: string = '#ff4444';
@@ -163,6 +164,22 @@ export class ChartDialogComponent {
         this.showComparative = this.allowCoparative(this.controller.params);
         this.load();
         this.loadChartColors();
+
+        // Load colored bars config
+        const coloredBarsConfig = this.controller.params.config.config.getConfig()['coloredBarsConfig'];
+        if (coloredBarsConfig) {
+            this.thresholdHigh = coloredBarsConfig.thresholdHigh ?? null;
+            this.thresholdLow = coloredBarsConfig.thresholdLow ?? null;
+            this.colorAbove = coloredBarsConfig.colorAbove ?? '#ff4444';
+            this.colorBetween = coloredBarsConfig.colorBetween ?? '#ffcc00';
+            this.colorBelow = coloredBarsConfig.colorBelow ?? '#44bb44';
+            this.coloredBarsActive = coloredBarsConfig.active ?? false;
+            if (this.coloredBarsActive) {
+                this.activeTabIndex = 1;
+                this.applyColorsToChart();
+            }
+        }
+
         this.display = true;
     }
 
@@ -584,13 +601,32 @@ export class ChartDialogComponent {
                 }
                 break;
                 
-            default:
-                // Bar, Line, Radar, Stacked, etc.
+            default: {
+                const isBar = (this.chart.chartType as string) === 'bar' || (this.chart.chartType as string) === 'horizontalBar';
+                const hasThresholds = this.thresholdHigh !== null || this.thresholdLow !== null;
+                if (isBar && this.coloredBarsActive && hasThresholds && this.chart.chartDataset?.[0]?.data) {
+                    // Per-bar coloring based on thresholds
+                    const bothThresholds = this.thresholdHigh !== null && this.thresholdLow !== null;
+                    const dataset = this.chart.chartDataset[0];
+                    const assignedColor = this.assignedColors.find(c => c.value === dataset.label)?.color || this.getDefaultColor(0);
+                    const colors = (dataset.data as number[]).map(value => {
+                        if (this.thresholdHigh !== null && value > this.thresholdHigh) return this.colorAbove;
+                        if (this.thresholdLow !== null && value < this.thresholdLow) return this.colorBelow;
+                        return bothThresholds ? this.colorBetween : assignedColor;
+                    });
+                    this.chart.chartDataset[0] = {
+                        ...this.chart.chartDataset[0],
+                        backgroundColor: colors,
+                        borderColor: colors
+                    };
+                    this.chart.chartColors = [{ backgroundColor: colors, borderColor: colors }];
+                    break;
+                }
+
+                // Normal: one color per dataset
                 if (this.chart.chartDataset.length > 0 && Array.isArray(this.chart.chartDataset)) {
                     this.chart.chartDataset = this.chart.chartDataset.map((dataset) => {
-                        // Buscar el color correspondiente al label de este dataset
                         const colorConfig = this.assignedColors.find(c => c.value === dataset.label);
-                        
                         if (colorConfig) {
                             return {
                                 ...dataset,
@@ -603,16 +639,15 @@ export class ChartDialogComponent {
                         return dataset;
                     });
                 }
-                
-                // Actualizar chartColors
+
                 this.chart.chartColors = this.assignedColors.map(c => ({
                     backgroundColor: c.color,
                     borderColor: c.color,
                     pointBackgroundColor: c.color,
                     pointBorderColor: c.color
                 }));
-                
                 break;
+            }
         }
     }
 
@@ -736,6 +771,18 @@ export class ChartDialogComponent {
         this.controller.params.config.config.getConfig()['addComparative'] = this.addComparative;
         this.controller.params.config.config.getConfig()['chartLegend'] = this.chartLegend;
 
+        // Guardar config de colored bars
+        const coloredBarsConfig = {
+            thresholdHigh: this.thresholdHigh,
+            thresholdLow: this.thresholdLow,
+            colorAbove: this.colorAbove,
+            colorBetween: this.colorBetween,
+            colorBelow: this.colorBelow,
+            active: this.coloredBarsActive
+        };
+        this.controller.params.config.config.getConfig()['coloredBarsConfig'] = coloredBarsConfig;
+        this.chart['coloredBarsConfig'] = coloredBarsConfig;
+
         this.onClose(EdaDialogCloseEvent.UPDATE, this.chart);
     }
 
@@ -773,4 +820,22 @@ export class ChartDialogComponent {
         return this.controller.close(event, response);
     }
 
+    applyColoredBars(): void {
+        this.controller.params.config.config.getConfig()['coloredBarsConfig'] = {
+            thresholdHigh: this.thresholdHigh,
+            thresholdLow: this.thresholdLow,
+            colorAbove: this.colorAbove,
+            colorBetween: this.colorBetween,
+            colorBelow: this.colorBelow,
+            active: this.coloredBarsActive
+        };
+        this.handleInputColor();
+    }
+
+    onTabChange(event: any): void {
+        if ((this.chart.chartType as string) !== 'bar') return;
+        this.coloredBarsActive = event.index === 1;
+
+        this.handleInputColor();
+    }
 }

@@ -631,6 +631,7 @@ public tableNodeExpand(event: any): void {
         this.chartForm.patchValue({ chart: chartOption });
 
         const recoveredConfig = ChartsConfigUtils.recoverConfig(chart, panelContent.query.output.config);
+        console.log('[ColoredBars] initPanel recoveredConfig.coloredBarsConfig:', (recoveredConfig.getConfig() as any)['coloredBarsConfig']);
         this.changeChartType(chart, edaChart, recoveredConfig);
 
         // Mostrar panel y configurar tipo gráfico
@@ -696,7 +697,13 @@ public tableNodeExpand(event: any): void {
         const content = this.panel.content;
         const output = this.panel.content.query.output;
         PanelInteractionUtils.verifyData(this);
+        console.log('[ColoredBars] reloadContent - output.styles:', !!output.styles, '| output.config.coloredBarsConfig:', output.config?.coloredBarsConfig);
         const config = output.styles ? new ChartConfig(output.styles) : new ChartConfig(output.config);
+        // If using styles (legacy), carry over coloredBarsConfig from output.config
+        if (output.styles && output.config?.coloredBarsConfig) {
+            (config.getConfig() as any)['coloredBarsConfig'] = output.config.coloredBarsConfig;
+        }
+        console.log('[ColoredBars] reloadContent - config.getConfig().coloredBarsConfig:', (config.getConfig() as any)['coloredBarsConfig']);
         this.changeChartType(content.chart, content.edaChart, config);
         this.chartForm.patchValue({ chart: this.chartUtils.chartTypes.find(o => o.subValue === content.edaChart) });
     }
@@ -818,14 +825,20 @@ public tableNodeExpand(event: any): void {
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
 
-            // Preservar assignedColors antes del merge
+            // Preservar assignedColors y coloredBarsConfig antes del merge
             const savedAssignedColors = config && config.getConfig() ? config.getConfig()['assignedColors'] : null;
+            const savedColoredBarsConfig = config && config.getConfig() ? config.getConfig()['coloredBarsConfig'] : null;
+            console.log('[ColoredBars] changeChartType - savedColoredBarsConfig before merge:', savedColoredBarsConfig);
 
             _.merge(_config, config||{});
 
             // Restaurar assignedColors después del merge
             if (savedAssignedColors) {
                 _config.getConfig()['assignedColors'] = savedAssignedColors;
+            }
+            // Restaurar coloredBarsConfig después del merge
+            if (savedColoredBarsConfig) {
+                _config.getConfig()['coloredBarsConfig'] = savedColoredBarsConfig;
             }
 
             // Asegurar que showPredictionLines se propaga al _config (mantener la línea de predicción al cambiar entre tipos de gráficos)
@@ -1176,11 +1189,14 @@ public tableNodeExpand(event: any): void {
                 properties.chartDataset[0].data = this.graficos.assignedColors.map(element => element.value)
             }
         
-                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors, chartLegend: this.graficos.chartLegend };
+                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors, chartLegend: this.graficos.chartLegend, coloredBarsConfig: this.graficos.coloredBarsConfig };
                 const layout =
                     new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType,
                     this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels,
                     this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors, this.graficos.showPointLines, this.graficos.showPredictionLines, this.graficos.chartLegend));
+                if (this.graficos.coloredBarsConfig) {
+                    (layout.getConfig() as any)['coloredBarsConfig'] = this.graficos.coloredBarsConfig;
+                }
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
             }
             //not saved alert message

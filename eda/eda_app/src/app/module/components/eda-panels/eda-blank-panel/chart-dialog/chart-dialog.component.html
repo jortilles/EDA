@@ -291,7 +291,7 @@
               </div>
             }  
             @else{
-              <p-tabView [(activeIndex)]="activeTabIndex">
+              <p-tabView [(activeIndex)]="activeTabIndex" (onChange)="onTabChange($event)">
                 <p-tabPanel header="Colores" i18n-header="@@colorsTab">
                   <div class="grid p-6 gap-4 grid-rows-auto gap-6">
                     <div>
@@ -346,12 +346,12 @@
                       <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
                         <div>
                           <span class="font-medium mr-4">{{coloredBarsColumnHeader}} <span i18n="@@aboveThreshold">es mayor que:</span></span>
-                          <p-inputNumber [(ngModel)]="thresholdHigh" mode="decimal"
+                          <p-inputNumber [(ngModel)]="thresholdHigh" mode="decimal" (onInput)="applyColoredBars()"
                           [minFractionDigits]="0" [maxFractionDigits]="4" />
                         </div>
                         <div class="flex items-center gap-2">
-                          <input class="text-md text-right text-slate-500 font-mono" [(ngModel)]="colorAbove">
-                          <p-colorPicker [(ngModel)]="colorAbove" format="hex" appendTo="body" />
+                          <input class="text-md text-right text-slate-500 font-mono" [(ngModel)]="colorAbove" (input)="applyColoredBars()">
+                          <p-colorPicker [(ngModel)]="colorAbove" format="hex" appendTo="body" (onChange)="applyColoredBars()" />
                         </div>
                       </div>
                     </div>
@@ -360,8 +360,8 @@
                       <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
                         <span class="font-medium">{{coloredBarsColumnHeader}} <span i18n="@@betweenThresholds">mayor que</span> {{thresholdLow}} <span i18n="@@betweenThresholds2">y menor que</span> {{thresholdHigh}}</span>
                         <div class="flex items-center gap-2">
-                          <input class="text-md text-right text-slate-500 font-mono" [(ngModel)]="colorBetween">
-                          <p-colorPicker [(ngModel)]="colorBetween" format="hex" appendTo="body" />
+                          <input class="text-md text-right text-slate-500 font-mono" [(ngModel)]="colorBetween" (input)="applyColoredBars()">
+                          <p-colorPicker [(ngModel)]="colorBetween" format="hex" appendTo="body" (onChange)="applyColoredBars()" />
                         </div>
                       </div>
                     </div>
@@ -370,12 +370,12 @@
                       <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
                         <div>
                           <span class="font-medium mr-4">{{coloredBarsColumnHeader}} <span i18n="@@belowThreshold">es menor que:</span></span>
-                          <p-inputNumber [(ngModel)]="thresholdLow" mode="decimal"
+                          <p-inputNumber [(ngModel)]="thresholdLow" mode="decimal" (onInput)="applyColoredBars()"
                           [minFractionDigits]="0" [maxFractionDigits]="4" />
                         </div>
                         <div class="flex items-center gap-2">
-                          <input class="text-md text-right text-slate-500 font-mono" [(ngModel)]="colorBelow">
-                          <p-colorPicker [(ngModel)]="colorBelow" format="hex" appendTo="body" />
+                          <input class="text-md text-right text-slate-500 font-mono" [(ngModel)]="colorBelow" (input)="applyColoredBars()">
+                          <p-colorPicker [(ngModel)]="colorBelow" format="hex" appendTo="body" (onChange)="applyColoredBars()" />
                         </div>
                       </div>
                     </div>
