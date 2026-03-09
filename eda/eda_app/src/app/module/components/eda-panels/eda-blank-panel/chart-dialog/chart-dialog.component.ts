@@ -12,6 +12,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { ColorPickerModule } from 'primeng/colorpicker';
+import { TabViewModule } from 'primeng/tabview';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { PredictionDialogComponent, PredictionConfig, QueryColumn } from '../prediction-dialog/prediction-dialog.component';
 import Swal from 'sweetalert2';
 
@@ -20,7 +22,7 @@ import Swal from 'sweetalert2';
     selector: 'app-chart-dialog',
     templateUrl: './chart-dialog.component.html',
     styleUrls: ['./chart-dialog.component.css'],
-    imports: [CommonModule, FormsModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule, PredictionDialogComponent]
+    imports: [CommonModule, FormsModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule, PredictionDialogComponent, TabViewModule, InputNumberModule]
 })
 
 export class ChartDialogComponent {
@@ -29,6 +31,7 @@ export class ChartDialogComponent {
     @ViewChild('PanelChartComponent', { static: false }) panelChartComponent: PanelChartComponent;
 
     public dialog: EdaDialog;
+    public activeTabIndex: number = 0;
     public chart: EdaChart;
     public oldChart: EdaChart;
     public addTrend: boolean;
@@ -50,6 +53,21 @@ export class ChartDialogComponent {
     public allPalettes: any = this.stylesProviderService.ChartsPalettes;
     public assignedColors: { value: string; color: string }[] = [];
     private originalAssignedColors: { value: string; color: string }[] = [];
+
+    // Colored bars thresholds
+    public thresholdHigh: number | null = null;
+    public thresholdLow: number | null = null;
+    public colorAbove: string = '#ff4444';
+    public colorBetween: string = '#ffcc00';
+    public colorBelow: string = '#44bb44';
+
+    get coloredBarsColumnHeader(): string {
+        const numericCol = this.controller?.params?.config?.query?.find((f: any) => f.column_type === 'numeric');
+        if (!numericCol) return '';
+        return typeof numericCol.display_name === 'object'
+            ? (numericCol.display_name.default || numericCol.column_name)
+            : (numericCol.display_name || numericCol.column_name);
+    }
 
     public comparativeTooltip = $localize`:@@comparativeTooltip:La función de comparar sólo se puede activar si se dispone de un campo de fecha agregado por mes o semana y un único campo numérico agregado`
     public trendTooltip = $localize`:@@trendTooltip:La función de añadir tendencia sólo se puede activar en los gràficos de lineas`
