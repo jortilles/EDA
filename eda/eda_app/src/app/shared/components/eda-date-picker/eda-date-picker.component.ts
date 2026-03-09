@@ -37,9 +37,9 @@ export class EdaDatePickerComponent implements OnChanges {
 	public firstDayOfWeek: number = 1;
 
 	public ranges: Array<SelectItem> = [
-		{ label: $localize`:@@DatePickerAll:Todas`, value: 'all' },
+		{ label: $localize`:@@deleteDates:Todas`, value: 'all' },
 		{ label: $localize`:@@DatePickerToday:Hoy`, value: 'today' },
-		{ label: $localize`:@@DatePickerYesterday:Ayer`, value: 'yesterday' },
+		{ label: $localize`:@@yesterday:Ayer`, value: 'yesterday' },
 		{ label: $localize`:@@DatePickerBeforeYesterday:Antes de Ayer`, value: 'beforeYesterday' },
 		{ label: $localize`:@@DatePickerWeek:Esta semana (hasta hoy)`, value: 'weekStart' },
 		{ label: $localize`:@@DatePickerWeekFull:Esta semana`, value: 'weekStartFull' },

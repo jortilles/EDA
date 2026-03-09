@@ -71,7 +71,7 @@ export class DataSourceUpdateFilePage implements OnInit {
     public editFieldsHeaders: Array<string> = [
         $localize`:@@csvField:Campo`,
         $localize`:@@type:Tipo`,
-        $localize`:@@csvFormat:Formato`,
+        $localize`:@@dateFormatH4:Formato`,
         $localize`:@@csvSep:Separador Decimal`
     ];
 

@@ -831,22 +831,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">22</context>
 </context-group>
 </trans-unit>
-<trans-unit id="inputTipo" datatype="html">
-<source>TIPO *</source>
-<target>RODZAJ*</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/data-sources/data-sources.component.html</context>
-<context context-type="linenumber">15</context>
-</context-group>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-<context context-type="linenumber">157</context>
-</context-group>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-<context context-type="linenumber">162</context>
-</context-group>
-</trans-unit>
 <trans-unit id="placholderSelectTipo" datatype="html">
 <source>Selecciona un tipo</source>
 <target>Wybierz rodzaj</target>
@@ -1129,14 +1113,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/dashboard/filter-dialog/dashboard-filter-dialog.component.html</context>
 <context context-type="linenumber">30</context>
-</context-group>
-</trans-unit>
-<trans-unit id="placeholderColumns" datatype="html">
-<source>Atributos</source>
-<target>Atrybuty</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/dashboard/filter-dialog/dashboard-filter-dialog.component.html</context>
-<context context-type="linenumber">46</context>
 </context-group>
 </trans-unit>
 <trans-unit id="inputMapTables" datatype="html">
@@ -1831,11 +1807,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Privado</source>
 <target>Prywatny</target>
 </trans-unit>
-
-<trans-unit id="col">
-<source>Atributo:</source>
-<target>Atrybuty:</target>
-</trans-unit>
 <trans-unit id="table">
 <source>de la entidad</source>
 <target>. Encja: </target>
@@ -2100,11 +2071,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Usuniesz wszytskie elementy powiązane z tą grupą. Czy chcesz kontynuować?</target>
 </trans-unit>
 
-<trans-unit id="DeleteGroupButton">
-<source>Si, ¡Eliminalo!</source>
-<target>Tak, usuń!</target>
-</trans-unit>
-
 <trans-unit id="deleteDashboardWarning">
 <source>Estás a punto de borrar el informe: </source>
 <target>Raport zostanie usunięty: </target>
@@ -2211,15 +2177,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>EDITAR CONSULTA SQL</source>
 <target>EDYCJA ZAPYTANIA SQL</target>
 </trans-unit>
-
-<trans-unit id="DatePickerAll">
-<source>Todas</source>
-<target>Wszystko</target>
-</trans-unit>
-<trans-unit id="DatePickerYesterday">
-<source>Ayer</source>
-<target>Wczoraj</target>
-</trans-unit>
 <trans-unit id="DatePickerBeforeYesterday">
 <source>Antes de ayer</source>
 <target>Przed wczoraj</target>
@@ -2299,10 +2256,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="DateSelectRange">
 <source>Selecciona un rango</source>
 <target>Wybierz zakres</target>
-</trans-unit>
-<trans-unit id="filterButtonDashboard">
-<source>Filtrar</source>
-<target>Filtr </target>
 </trans-unit>
 
 
@@ -2482,10 +2435,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="csvField">
     <source>Campo</source>
     <target>Pole</target>
-  </trans-unit>
-  <trans-unit id="csvFormat">
-    <source>Formato</source>
-    <target>Format</target>
   </trans-unit>
 
   <trans-unit id="functionalities">
@@ -3107,11 +3056,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Zarządzanie pamięcią podręczną</target>
   </trans-unit>
 
-   <trans-unit id="conexionh3">
-    <source>Conexión  </source>
-    <target>Połączenie</target>
-  </trans-unit>
-
   <trans-unit id="newDashboardtitle">
     <source>CREA UN NUEVO INFORME</source>
     <target>TWÓJ NOWY RAPORT</target>
@@ -3180,11 +3124,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
  <trans-unit id="setNewAlert">
     <source>Configurar nueva alerta</source>
     <target>Ustaw nowy alert</target>
-  </trans-unit> 
-
-  <trans-unit id="inputFilter">
-    <source>FILTROS</source>
-    <target>FILTRY</target>
   </trans-unit>
 
      <trans-unit id="comparativeTooltip">
@@ -3510,10 +3449,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Ten panel jest niedostępny ze względu na brak uprawnień do filtra</target>
   </trans-unit>
 
-<trans-unit id="DatePickerYearPreviousYearFull">
-  <source>El año pasado, completo</source>
-  <target>W zeszłym roku, kompletne</target>
-</trans-unit>
+
 
 <trans-unit id="firstAboutParagraphSpan" datatype="html">
   <source>  
@@ -3835,10 +3771,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>El puerto es obligatorio</source>
         <target>Port jest obowiązkowy</target>
       </trans-unit>
-      <trans-unit id="database">
-        <source>Base de datos</source>
-        <target>Baza danych</target>
-      </trans-unit>
       <trans-unit id="databaseRequired">
         <source>Base de datos es obligatorio</source>
         <target>Baza danych jest obowiązkowa</target>
@@ -3981,11 +3913,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Skonfiguruj mapę na karcie Właściwości mapy</target>
       </trans-unit>
 
-      <trans-unit id="homeTitle">
-        <source>Mis informes</source>
-        <target>Moje raporty</target>
-      </trans-unit>
-
       <trans-unit id="filterReports">
         <source>FILTRAR INFORMES:</source>
         <target>FILTRUJ RAPORTY:</target>
@@ -4016,10 +3943,7 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Dane (opis)</target>
       </trans-unit>
 
-      <trans-unit id="name">
-        <source>Nombre</source>
-        <target>Nazwa</target>
-      </trans-unit>
+      
 
       <trans-unit id="withoutContentYet">
         <source>Sin contenido</source>
@@ -4118,9 +4042,9 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
 <trans-unit id="profileSubtitle"><source>Administra tu información personal y preferencias de cuenta</source><target>Zarządzaj swoimi danymi osobowymi i preferencjami konta</target></trans-unit>
 <trans-unit id="profileInfoTitle"><source>Información Personal</source><target>Dane osobowe</target></trans-unit>
 <trans-unit id="profileInfoSubtitle"><source>Actualiza tu información básica de perfil</source><target>Zaktualizuj podstawowe informacje o swoim profilu.</target></trans-unit>
-<trans-unit id="labelNombreUsuario"><source>Nombre de usuario</source><target>Nazwa użytkownika</target></trans-unit>
+
 <trans-unit id="usernameLengthValidation"><source>El nombre de usuario debe tener al menos 2 caracteres.</source><target>Nazwa użytkownika musi mieć co najmniej 2 znaki.</target></trans-unit>
-<trans-unit id="labelUsuarioEmail"><source>Correo electrónico</source><target>Correu electrònic</target></trans-unit>
+
 <trans-unit id="emailValidation"><source>Por favor ingresa un email válido.</source><target>Proszę podać prawidłowy adres e-mail.</target></trans-unit>
 <trans-unit id="changePassword"><source>Cambiar contraseña</source><target>Zmień hasło</target></trans-unit>
 <trans-unit id="newPassword"><source>Nueva contraseña</source><target>Nowe hasło</target></trans-unit>
@@ -4224,10 +4148,7 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <target>Pokaż linie w punktach</target>
 </trans-unit>
 
-<trans-unit id="panelOptions6">
-  <source>Pregunte a la IA</source>
-  <target>Zapytaj AI</target>
-</trans-unit>
+
 
 <trans-unit id="aboutEdaP1">
   <source>Una aplicación web de código libre que permite realizar informes gráficos e interactivos de forma sencilla.</source>
@@ -4475,11 +4396,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <target>Wprowadź identyfikator techniczny</target>
 </trans-unit>
 
-<trans-unit id="SQLExpression">
-  <source>Expresión SQL</source>
-  <target>Wyrażenie SQL</target>
-</trans-unit>
-
 <trans-unit id="enterSQLExpression">
   <source>Ingrese su consulta SQL aquí</source>
   <target>Wprowadź tutaj swoje zapytanie SQL</target>
@@ -4642,11 +4558,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
 <target>Wartość</target>
 </trans-unit>
 
-<trans-unit id="colour">
-<source>Color</source>
-<target>Kolor</target>
-</trans-unit>
-
 <trans-unit id="orderAlerts">
 <source>Las alertas se aplicarán en orden de creación. Haga clic en el botón X para eliminar una alerta.</source>
 <target>Alerty muszą być stosowane w kolejności ich utworzenia. Kliknij przycisk X, aby usunąć alert.</target>
@@ -4657,10 +4568,7 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
 <target>Aby wyświetlić zmiany na wykresie, skonfiguruj alert za pomocą formularza powyżej.</target>
 </trans-unit>
 
-<trans-unit id="panelOptions6">
-  <source>Pregunte a la IA</source>
-  <target>Zapytaj AI</target>
-</trans-unit>
+
 
 
 <trans-unit id="dashboardSidebarNewText">
@@ -4731,11 +4639,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
 <trans-unit id="dashboardSidebarDownloadImage">
   <source>Descargar imagen</source>
   <target>Pobierz obraz</target>
-</trans-unit>
-
-<trans-unit id="dashboardSidebarSendEmail">
-  <source>Enviar por email</source>
-  <target>Wyślij e-mailem</target>
 </trans-unit>
 
 <trans-unit id="dashboardSidebarCustomAction">
@@ -5078,10 +4981,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
     <source>Tabla Árbol</source>
     <target>Stół Drzewny</target>       
   </trans-unit>
-  <trans-unit id="NameTablaQuality">
-    <source>Tabla DataQuality</source>
-    <target>Tablica DataQuality</target>       
-  </trans-unit>
   <trans-unit id="SureDataQuality">
     <source>¿Estás seguro de que deseas continuar con la visualización de DataQuality? Esta acción puede tomar un poco de tiempo.</source>
     <target>Czy na pewno chcesz kontynuować wizualizację DataQuality? Ta czynność może chwilę potrwać.</target>       
@@ -5120,38 +5019,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Nieprawidłowa ścieżka dla wybranego filtra</target>
       </trans-unit>
 
-      <trans-unit id="PanelModeSelectorSQL">
-        <source>Modo SQL</source>
-        <target>Tryb SQL</target>
-      </trans-unit>
-      <trans-unit id="PanelModeSelectorTree">
-        <source>Modo Árbol</source>
-        <target>Tryb drzewa</target>
-      </trans-unit>
-      <trans-unit id="filters13">
-        <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
-        <target>WARTOŚCI NOR NULL NOR EMPTY (nie null i != '')</target>
-      </trans-unit>
-      <trans-unit id="filters14">
-        <source>VALORES NULOS O VACÍOS (null or = '')</source>
-        <target>WARTOŚCI NULL LUB PUSTE (null lub = '')</target>
-      </trans-unit>
-      <trans-unit id="aliasValuePh">
-        <source>Alias del filtro (opcional)</source>
-        <target>Filtruj alias (opcjonalnie)</target>
-      </trans-unit>
-      <trans-unit id="noDataAllowed">
-        <source>Este panel no está disponible por falta de permisos</source>
-        <target>Ten panel jest niedostępny z powodu braku uprawnień, raport otwiera się w trybie tylko do odczytu.</target>
-      </trans-unit>
-      <trans-unit id="noFilterAllowed">
-        <source>Este panel no está disponible por falta de permisos en un filtro</source>
-        <target>Ten panel jest niedostępny z powodu braku uprawnień do filtru. Raport otwiera się w trybie tylko do odczytu.</target>
-      </trans-unit>
-      <trans-unit id="DatePickerYearPreviousYearFull">
-        <source>El año pasado, completo</source>
-        <target>W zeszłym roku, kompletne</target>
-      </trans-unit>
+      
+      
+      
+      
+      
+      
+      
+      
       <trans-unit id="whereMessage">
         <source>Filtro sobre todos los registros</source>
         <target>Filtruj według wszystkich rekordów</target>
@@ -5168,18 +5043,9 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Aplicar el filtro sobre los resultados</source>
         <target>Zastosuj filtr do wyników</target>
       </trans-unit>
-      <trans-unit id="aplicarBtn">
-        <source>Aplicar</source>
-        <target>Stosować</target>
-      </trans-unit>
-      <trans-unit id="disenoTablaCruzada">
-        <source>Diseño de la tabla cruzada: </source>
-        <target>Projekt tabeli krzyżowej: </target>
-      </trans-unit>
-      <trans-unit id="messageItemCrosstable">
-        <source>Este eje debe contener al menos un elemento</source>
-        <target>Ta oś musi zawierać co najmniej jeden element</target>
-      </trans-unit>
+      
+      
+      
       <trans-unit id="textoTablaCruzadaEjeX">
         <source> • Eje vertical: Arrastre aquí los campos.</source>
         <target>• Oś pionowa: Przeciągnij pola tutaj.</target>
@@ -5452,11 +5318,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Eksport/Import danych</target>
       </trans-unit>
 
-       <trans-unit id="permissionAdvancedOptions">
-        <source>Opciones avanzadas</source>
-        <target>Opcje zaawansowane</target>
-      </trans-unit>
-
       <trans-unit id="AllTagsDescription">
         <source>Acceso a todos los elementos sin restricciones</source>
         <target>Nieograniczony dostęp do wszystkich funkcji</target>
@@ -5507,10 +5368,7 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Wykres słupkowy skumulowany 100%</target>
       </trans-unit>
 
-      <trans-unit id="showPointLines">
-        <source>Mostrar Puntos en Lineas</source>
-        <target>Pokaż punkty na liniach</target>
-      </trans-unit>
+      
       <trans-unit id="showLinesPrediction">
         <source>Mostrar Predicción</source>
         <target>Pokaż prognozę</target>
@@ -5519,10 +5377,7 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Quitar Predicción</source>
         <target>Usuń prognozę</target>
       </trans-unit>
-      <trans-unit id="chartLabelLinesOptionDescription">
-        <source>Muestra las líneas en los puntos</source>
-        <target>Pokaż linie w punktach</target>
-      </trans-unit>
+      
       <trans-unit id="chartLabelLinePredicctionOptionDescription">
         <source>Muestra las predicción de la serie</source>
         <target>Pokazuje przewidywania serii</target>
@@ -5558,10 +5413,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="tableRestrictionAccess">
         <source>Los usuarios y grupos configurados tendrán acceso autorizado a la tabla: </source>
         <target>Skonfigurowani użytkownicy i grupy będą mieć autoryzowany dostęp do tabeli: </target>
-      </trans-unit>
-      <trans-unit id="tableRestrictionAccessMessageOption">
-        <source>Desactivar para habilitar el acceso a todos los usuarios</source>
-        <target>Wyłączyć, aby umożliwić dostęp wszystkim użytkownikom</target>
       </trans-unit>
       <trans-unit id="tableActivationAccess">
         <source>Los usuarios y grupos configurados NO tendrán acceso a la tabla: </source>
@@ -5615,21 +5466,9 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Opciones del filtro:</source>
         <target>Opcje filtrowania:</target>
       </trans-unit>
-      <trans-unit id="sqlExpressionCalculatedField">
-        <source>Expresión SQL</source>
-        <target>Wyrażenie SQL</target>
-      </trans-unit>
-      <trans-unit id="typeSelectorText">
-        <source>Tipo de columna</source>
-        <target>Typ kolumny</target>
-      </trans-unit>
       <trans-unit id="decimalNumberText">
         <source>Número de decimales</source>
         <target>Liczba miejsc dziesiętnych</target>
-      </trans-unit>
-      <trans-unit id="typeSelectorAggregation">
-        <source>Agregación</source>
-        <target>Agregacja</target>
       </trans-unit>
       <trans-unit id="CheckExpression">
         <source>Comprobar expresión</source>
@@ -5833,10 +5672,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="arimaTargetColumnDesc">
         <source>Columna numérica a predecir</source>
         <target>Numeryczna kolumna do przewidzenia</target>
-      </trans-unit>
-      <trans-unit id="advancedConfigLabel">
-        <source>Configuración avanzada</source>
-        <target>Zaawansowana konfiguracja</target>
       </trans-unit>
       <trans-unit id="advancedConfigDesc">
         <source>Personalizar los parámetros del modelo</source>

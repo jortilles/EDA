@@ -22,11 +22,13 @@
       </div>
 
       <!-- Filters Section -->
-      <div class="flex flex-wrap justify-between items-center gap-2">
+      <div class="relative">
         <app-v2-global-filter #globalFilter [dashboard]="this"></app-v2-global-filter>
 
         @if (notSaved) {
-          <p-message severity="warn" i18n-text="@@notSavedChanges" text="Hay cambios sin guardar..." styleClass="whitespace-nowrap"></p-message>
+          <div class="absolute -top-12 right-16 z-50">
+            <p-message severity="warn" i18n-text="@@notSavedChanges" text="Hay cambios sin guardar..." styleClass="whitespace-nowrap"></p-message>
+          </div>
         }
       </div>
     </div>
