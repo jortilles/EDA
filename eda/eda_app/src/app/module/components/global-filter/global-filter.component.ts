@@ -564,6 +564,7 @@ export class GlobalFilterComponent implements OnInit {
         }
 
         this.globalFilter = undefined;
+        this.cdr.detectChanges();
         this.dashboard.refreshPanels();
     }
 

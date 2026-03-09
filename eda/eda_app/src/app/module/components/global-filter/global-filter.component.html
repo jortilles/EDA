@@ -1,4 +1,7 @@
-<div class="flex flex-wrap items-center gap-4 mb-2 ml-1">
+<div class="flex flex-wrap items-center gap-4 mb-2 ml-1"
+  [style.height]="globalFilters.length === 0 ? '0' : null"
+  [style.overflow]="globalFilters.length === 0 ? 'hidden' : null"
+  [style.margin]="globalFilters.length === 0 ? '0' : null">
 
   <!-- Botón Filtrar -->
   @if (globalFilters.length > 0 && (isAdmin || isDashboardCreator || filterButtonVisibility.public)) {
