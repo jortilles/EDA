@@ -6,12 +6,25 @@ import QueryResolver from '../../services/prompt/query/query-resolver.service'
 // Singleton: una sola instancia reutilizada por todas las llamadas
 const openai = new OpenAI({ apiKey: API_KEY });
 
+interface FilterResolutionState {
+    state: 'get_all' | 'search_pattern' | 'user_selected';
+    unresolvedFilter: any;
+    pendingResult: any;
+    pattern?: string;
+    selectedValues?: any[];
+}
+
+interface PromptParams {
+    dataSource_id?: string;
+    filterResolution?: FilterResolutionState;
+}
+
 interface PromptParameters {
     text: string,
     history: any[],
     data: any[],
     schema: any[],
-    parameters?: object
+    parameters?: PromptParams
 }
 
 export class PromptService {
@@ -20,10 +33,75 @@ export class PromptService {
         
         const { text, history, data, schema, parameters } = params;
 
+        console.log('parameters: ', parameters);
+
         if(PromptUtil.isForbidden(text)) {
             return {
                 ok: false,
                 response: "No puedo responder a esa pregunta, intentelo nuevamente."
+            }
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////  Filter Resolution  //////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Si el frontend envía un estado de resolución, respondemos sin llamar a OpenAI
+        if (parameters?.filterResolution) {
+            const { state, unresolvedFilter, pendingResult, pattern, selectedValues } = parameters.filterResolution;
+
+            // El usuario quiere ver todas las opciones disponibles
+            if (state === 'get_all') {
+                const options = await QueryResolver.getAllFilterOptions(unresolvedFilter, parameters);
+                if (options.length === 0) {
+                    return {
+                        type: 'awaiting_resolution',
+                        output_text: `No hay valores disponibles en la columna "${unresolvedFilter.column}". ¿Quieres reformular tu consulta?`,
+                        unresolvedFilter,
+                        pendingResult
+                    };
+                }
+                const numberedList = options.map((opt: string, i: number) => `${i + 1}. ${opt}`).join('\n');
+                return {
+                    type: 'awaiting_selection',
+                    output_text: `Opciones disponibles para "${unresolvedFilter.column}":\n\n${numberedList}\n\n¿Cuáles quieres usar?`,
+                    options,
+                    unresolvedFilter,
+                    pendingResult
+                };
+            }
+
+            // El usuario proporciona un patrón de búsqueda
+            if (state === 'search_pattern') {
+                const options = await QueryResolver.searchFilterByPattern(unresolvedFilter, pattern!, parameters);
+                if (options.length === 0) {
+                    return {
+                        type: 'awaiting_resolution',
+                        output_text: `No encontré ningún valor parecido a "${pattern}". ¿Quieres ver todas las opciones disponibles o prefieres darme otro patrón de búsqueda?`,
+                        unresolvedFilter,
+                        pendingResult
+                    };
+                }
+                const numberedList = options.map((opt: string, i: number) => `${i + 1}. ${opt}`).join('\n');
+                return {
+                    type: 'awaiting_selection',
+                    output_text: `Encontré estas opciones parecidas a "${pattern}":\n\n${numberedList}\n\n¿Cuáles quieres usar?`,
+                    options,
+                    unresolvedFilter,
+                    pendingResult
+                };
+            }
+
+            // El usuario ha seleccionado los valores definitivos
+            if (state === 'user_selected') {
+                const resolvedFilter = QueryResolver.getFilters([{ ...unresolvedFilter, values: selectedValues }])[0];
+                return {
+                    type: 'query_ready',
+                    output_text: 'Se ha configurado con éxito la consulta solicitada.',
+                    currentQuery: pendingResult.currentQuery,
+                    principalTable: pendingResult.principalTable,
+                    selectedFilters: [...pendingResult.resolvedFilters, resolvedFilter],
+                    filteredColumns: pendingResult.filteredColumns
+                };
             }
         }
 
@@ -50,8 +128,8 @@ export class PromptService {
         // System prompt unificado + historial previo + mensaje actual del usuario
         const messages: any = [
             { role: "system", content: `${CONTEXT}\n\n${PromptUtil.buildSystemMessage(schema)}` },
-            ...safeHistory,
-            { role: "user", content: text }
+            ...safeHistory, // historial de la conversación
+            { role: "user", content: text } // ultimo mensaje que acaba de enviar el usuario
         ];
 
         
@@ -321,9 +399,35 @@ export class PromptService {
             }
 
             const filters = Array.isArray(args.filters) ? args.filters : [];
-            const currenQuery = result.currentQuery;
-            result.selectedFilters = filters.length === 0 ? [] : await QueryResolver.getFilters(filters, parameters);
-            result.filteredColumns = filters.length === 0 ? [] : QueryResolver.getFilteredColumns(filters, currenQuery);
+            const currentQuery = result.currentQuery;
+
+            // Validación de filtros de texto contra la BD (solo si hay conexión disponible)
+            if (filters.length > 0 && parameters?.dataSource_id) {
+                const validation = await QueryResolver.validateTextFilters(filters, parameters);
+                console.log('validation::::::::::::::: ', validation);
+                console.log(' MIRAMOS QUE SIGUE ');
+                if (validation.unresolvedFilter) {
+                    // Trae automáticamente todas las opciones y las presenta numeradas
+                    const options = await QueryResolver.getAllFilterOptions(validation.unresolvedFilter, parameters);
+                    const numberedList = options.map((opt: string, i: number) => `${i + 1}. ${opt}`).join('\n');
+                    const notFoundText = validation.notFound.join('", "');
+                    return {
+                        type: 'awaiting_resolution',
+                        output_text: `No encontré "${notFoundText}" en la columna "${validation.unresolvedFilter.column}". Aquí tienes las opciones disponibles:\n\n${numberedList}\n\n¿Cuáles quieres usar?`,
+                        options,
+                        unresolvedFilter: validation.unresolvedFilter,
+                        pendingResult: {
+                            currentQuery: result.currentQuery,
+                            principalTable: result.principalTable,
+                            filteredColumns: QueryResolver.getFilteredColumns(validation.resolvedFiltersRaw, currentQuery),
+                            resolvedFilters: QueryResolver.getFilters(validation.resolvedFiltersRaw)
+                        }
+                    };
+                }
+            }
+
+            result.selectedFilters = filters.length === 0 ? [] : QueryResolver.getFilters(filters);
+            result.filteredColumns = filters.length === 0 ? [] : QueryResolver.getFilteredColumns(filters, currentQuery);
         }
 
         return result;

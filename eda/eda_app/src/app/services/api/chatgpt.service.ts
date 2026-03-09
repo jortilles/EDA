@@ -28,7 +28,7 @@ export class ChatgptService extends ApiService{
       map((resp: any) => {
         // Si tu backend devuelve un campo 'text' u otro, adáptalo aquí.
         // Por defecto devolvemos resp directamente.
-        console.log('SERVICIO =>', resp);
+        console.log('RESPUESTA =>', resp);
         
         return resp;
       })

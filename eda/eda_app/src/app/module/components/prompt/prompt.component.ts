@@ -44,6 +44,9 @@ export class PromptComponent implements OnInit, AfterViewInit {
     loading: boolean = false;
     isCopied: boolean = false;
 
+    // Estado de resolución de filtros: se activa cuando el backend responde con awaiting_resolution o awaiting_selection
+    private resolutionState: { options: string[], unresolvedFilter: any, pendingResult: any } | null = null;
+
     constructor(private chatgptService: ChatgptService) {}
 
     // Iniciamos el scroll a la misma altura donde termino el ultimo mensaje de respuesta del asistente
@@ -110,10 +113,22 @@ export class PromptComponent implements OnInit, AfterViewInit {
         const histoty = this.messages;
         const schema = this.schema;
         const firstTime = this.firstTime;
-        const parameters = {
+        const parameters: any = {
             firstTime: firstTime,
             dataSource_id: this.edaBlankPanel.dataSource._id,
             dataSource_name: this.edaBlankPanel.dataSource.name,
+        }
+
+        // Si hay un estado de resolución activo, el usuario está eligiendo valores del filtro
+        if (this.resolutionState) {
+            const selectedValues = this.parseSelection(text, this.resolutionState.options);
+            parameters.filterResolution = {
+                state: 'user_selected',
+                selectedValues,
+                unresolvedFilter: this.resolutionState.unresolvedFilter,
+                pendingResult: this.resolutionState.pendingResult
+            };
+            this.resolutionState = null;
         }
 
         console.log('this.edaBlankPanel: ', this.edaBlankPanel);
@@ -135,20 +150,30 @@ export class PromptComponent implements OnInit, AfterViewInit {
                 const selectedFilters = resp.response.selectedFilters;
                 const filteredColumns = resp.response.filteredColumns;
                 
-                console.log('----------- LLEGADA DE COMPONENTE -----------');
+                console.log('----------- LLEGADA AL COMPONENTE -----------');
                 console.log('--> currentQuery: ', currentQuery);
                 console.log('--> principalTable: ', principalTable);
                 console.log('--> selectedFilters: ', selectedFilters);
                 console.log('--> filteredColumns: ', filteredColumns);
 
-                if(currentQuery) {
-                    if( currentQuery.length !==0 ) {
+                // Capturamos el estado de resolución si el backend está esperando una elección del usuario
+                const responseType = resp.response.type;
+                if (responseType === 'awaiting_resolution' || responseType === 'awaiting_selection') {
+                    this.resolutionState = {
+                        options: resp.response.options ?? [],
+                        unresolvedFilter: resp.response.unresolvedFilter,
+                        pendingResult: resp.response.pendingResult
+                    };
+                } else {
+                    // Respuesta normal o query_ready: emitimos los datos al panel
+                    this.resolutionState = null;
+                    if (currentQuery && currentQuery.length !== 0) {
                         this.newCurrentQuery.emit(currentQuery);
                         this.principalTable.emit({principalTable, currentQuery});
                         this.newSelectedFilters.emit({selectedFilters, filteredColumns});
                     }
                 }
-                
+
                 const text = resp.response.output_text
                 const assistantMessage: ChatMessage = { role: 'assistant', content: text ?? String(text), timestamp: Date.now() };
                                 
@@ -194,6 +219,83 @@ export class PromptComponent implements OnInit, AfterViewInit {
         });
     }
     
+    // Levenshtein: distancia de edición entre dos strings
+    private levenshtein(a: string, b: string): number {
+        const m = a.length, n = b.length;
+        const dp: number[][] = Array.from({ length: m + 1 }, (_, i) =>
+            Array.from({ length: n + 1 }, (_, j) => i === 0 ? j : j === 0 ? i : 0)
+        );
+        for (let i = 1; i <= m; i++) {
+            for (let j = 1; j <= n; j++) {
+                dp[i][j] = a[i - 1] === b[j - 1]
+                    ? dp[i - 1][j - 1]
+                    : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+            }
+        }
+        return dp[m][n];
+    }
+
+    // Intenta encontrar la mejor opción para un término dado: exacto → contiene → fuzzy
+    private findBestMatch(term: string, options: string[]): string | null {
+        const lower = term.toLowerCase();
+
+        // 1. Exacto case-insensitive
+        const exact = options.find(opt => opt.toLowerCase() === lower);
+        if (exact) return exact;
+
+        // 2. La opción contiene el término ("train" → "Trains")
+        const contains = options.find(opt => opt.toLowerCase().includes(lower));
+        if (contains) return contains;
+
+        // 3. Fuzzy: Levenshtein con umbral del 40% de la longitud del término (mín 2)
+        const threshold = Math.max(2, Math.floor(lower.length * 0.4));
+        let bestMatch: string | null = null;
+        let bestDist = Infinity;
+        for (const opt of options) {
+            const dist = this.levenshtein(lower, opt.toLowerCase());
+            if (dist < bestDist && dist <= threshold) {
+                bestDist = dist;
+                bestMatch = opt;
+            }
+        }
+        return bestMatch;
+    }
+
+    // Convierte la respuesta del usuario ("2", "quiero el 3", "trainds") en valores reales del array de opciones
+    private parseSelection(input: string, options: string[]): string[] {
+        const trimmed = input.trim();
+
+        // 1. Extraer números del texto ("quiero el 3 y 5" → [options[2], options[4]])
+        const numbers = trimmed.match(/\d+/g);
+        if (numbers) {
+            const mapped = numbers
+                .map(n => parseInt(n, 10))
+                .filter(n => n >= 1 && n <= options.length)
+                .map(n => options[n - 1]);
+            if (mapped.length > 0) return mapped;
+        }
+
+        // 2. Separar por comas y buscar cada parte contra las opciones
+        const parts = trimmed.split(',').map(v => v.trim()).filter(v => v.length > 0);
+        const results: string[] = [];
+
+        for (const part of parts) {
+            // Intentar la frase completa primero ("classic cars" → "Classic Cars")
+            const wholeMatch = this.findBestMatch(part, options);
+            if (wholeMatch) { results.push(wholeMatch); continue; }
+
+            // Si no matchea la frase entera, probar palabra a palabra filtrando stopwords cortas
+            const words = part.split(/\s+/).filter(w => w.length >= 3);
+            for (const word of words) {
+                const wordMatch = this.findBestMatch(word, options);
+                if (wordMatch) results.push(wordMatch);
+            }
+        }
+
+        // Deduplicar en caso de que varias palabras resuelvan al mismo valor
+        return [...new Set(results.length > 0 ? results : [trimmed])];
+    }
+
     copyMessage(message: ChatMessage) {
         navigator.clipboard.writeText(message.content).then(() => {
             this.messages.forEach(m => m.copied = false);
