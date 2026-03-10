@@ -54,6 +54,8 @@ export class ChartDialogComponent {
     public allPalettes: any = this.stylesProviderService.ChartsPalettes;
     public assignedColors: { value: string; color: string }[] = [];
     private originalAssignedColors: { value: string; color: string }[] = [];
+    public uniqueBarColors: { value: string; color: string }[] = [];
+    private originalUniqueBarColors: { value: string; color: string }[] = [];
 
     // Colored bars thresholds
     public coloredBarsActive: boolean = false;
@@ -175,7 +177,6 @@ export class ChartDialogComponent {
                 this.applyColorsToChart();
             }
         }
-
         this.display = true;
     }
 
@@ -211,11 +212,20 @@ export class ChartDialogComponent {
             });
         }
         
+        // Cargar uniqueBarColors desde chartLabels (para barras) — ANTES de applyColorsToChart
+        const savedUniqueColors = this.controller.params.config.config.getConfig()['uniqueBarColors'] || [];
+        const barLabels: string[] = this.chart.chartLabels || [];
+        this.uniqueBarColors = barLabels.map((label, index) => {
+            const match = savedUniqueColors.find(c => c.value === label);
+            return { value: label, color: match?.color || this.getDefaultColor(index) };
+        });
+
         // Aplicar los colores al chart
         this.applyColorsToChart();
-        
+
         // Guardar preview para cancelar
         this.originalAssignedColors = _.cloneDeep(this.assignedColors);
+        this.originalUniqueBarColors = _.cloneDeep(this.uniqueBarColors);
     }
 
     loadChartTypeProperties() {
@@ -349,6 +359,9 @@ export class ChartDialogComponent {
         config.showPointLines = this.showPointLines;
         config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
+        config.uniqueBarColors = [...this.uniqueBarColors];
+        this.activeTabIndex = 0;
+        this.coloredBarsActive = false;
 
         properties.config = c;
         /**Update chart */
@@ -356,6 +369,8 @@ export class ChartDialogComponent {
         setTimeout(_ => {
             this.chart = this.panelChartComponent.componentRef.instance.inject;
             this.load();
+            this.applyColorsToChart();
+            this.updateChartView();
         });
 
     }
@@ -628,6 +643,8 @@ export class ChartDialogComponent {
                 
             default: {
                 const isBar = (this.chart.chartType as string) === 'bar' || (this.chart.chartType as string) === 'horizontalBar';
+
+                // Colores por intervalo
                 const hasThresholds = this.thresholdHigh !== null || this.thresholdLow !== null;
                 if (isBar && this.coloredBarsActive && hasThresholds && this.chart.chartDataset?.[0]?.data) {
                     // Per-bar coloring based on thresholds
@@ -644,6 +661,17 @@ export class ChartDialogComponent {
                         backgroundColor: colors,
                         borderColor: colors
                     };
+                    this.chart.chartColors = [{ backgroundColor: colors, borderColor: colors }];
+                    break;
+                }
+
+                console.log('Applying colors with config:', this.uniqueBarColors)
+                // Colores únicos por barra (un color por label/categoría)
+                if (isBar && this.showUniqueColors && this.uniqueBarColors.length > 0 && this.chart.chartDataset?.[0]?.data) {
+                    const colors = (this.chart.chartDataset[0].data as number[]).map((_, idx) =>
+                        this.uniqueBarColors[idx]?.color || this.getDefaultColor(idx)
+                    );
+                    this.chart.chartDataset[0] = { ...this.chart.chartDataset[0], backgroundColor: colors, borderColor: colors };
                     this.chart.chartColors = [{ backgroundColor: colors, borderColor: colors }];
                     break;
                 }
@@ -674,6 +702,17 @@ export class ChartDialogComponent {
                 break;
             }
         }
+    }
+
+    handleUniqueColorInput(): void {
+        this.applyColorsToChart();
+        this.controller.params.config.config.getConfig()['uniqueBarColors'] = [...this.uniqueBarColors];
+        if (this.panelChartComponent?.componentRef?.instance) {
+            this.panelChartComponent.componentRef.instance.inject = this.chart;
+            this.panelChartComponent.componentRef.instance.updateChart();
+        }
+
+        this.updateChartView();
     }
 
     // Método simplificado para cambios de color
@@ -787,9 +826,9 @@ export class ChartDialogComponent {
     }
 
     onTabChange(event: any): void {
+
         if ((this.chart.chartType as string) !== 'bar') return;
         this.coloredBarsActive = event.index === 1;
-
         this.handleInputColor();
     }
 
@@ -802,6 +841,8 @@ export class ChartDialogComponent {
         // Guardar assignedColors en config y chart
         this.chart['assignedColors'] = [...this.assignedColors];
         this.controller.params.config.config.getConfig()['assignedColors'] = [...this.assignedColors];
+        this.chart['uniqueBarColors'] = [...this.uniqueBarColors];
+        this.controller.params.config.config.getConfig()['uniqueBarColors'] = [...this.uniqueBarColors];
 
         // Guardar otras opciones
         this.chart.addTrend = this.addTrend;
@@ -864,6 +905,7 @@ export class ChartDialogComponent {
         this.controller.params.config.config.getConfig()['addComparative'] = this.originalLabelValues.addComparative;
         this.controller.params.config.config.getConfig()['chartLegend'] = this.originalLabelValues.chartLegend;
         this.controller.params.config.config.getConfig()['assignedColors'] = this.assignedColors = _.cloneDeep(this.originalAssignedColors);
+        this.controller.params.config.config.getConfig()['uniqueBarColors'] = this.uniqueBarColors = _.cloneDeep(this.originalUniqueBarColors);
     }
 
     closeChartConfig() {

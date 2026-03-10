@@ -169,7 +169,7 @@
             </div>
             
             <!-- Activar Colores Únicos -->
-            @if (panelChartConfig.edaChart === 'bar') {
+            @if (panelChartConfig.edaChart === 'bar' && queryNumericColumns.length === 1) {
               <div class="flex items-center justify-between">
                 <div class="space-y-0.5">
                   <div class="flex items-center gap-2">
@@ -328,51 +328,81 @@
                 <p-tabPanel header="Colores" i18n-header="@@colorsTab">
                   <div class="grid p-6 gap-4 grid-rows-auto gap-6">
                     <div>
-                      <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
-                      <div class="flex items-stretch gap-2 mb-6">
-                        <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
-                          [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
-                          <option [ngValue]="null" disabled hidden i18n="@@selectPalette">
-                            -- Seleccione una paleta --
-                          </option>
-                          @for (palette of allPalettes; track $index) {
-                            <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
-                          }
-                        </select>
-                        @if (selectedPalette) {
-                          <div class="flex rounded overflow-hidden" style="width: 80px;">
-                            @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
-                              <div class="flex-1" [style.background-color]="color"></div>
+                      @if (!showUniqueColors) {
+                        <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
+                        <div class="flex items-stretch gap-2 mb-6">
+                          <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                            [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
+                            <option [ngValue]="null" disabled hidden i18n="@@selectPalette">
+                              -- Seleccione una paleta --
+                            </option>
+                            @for (palette of allPalettes; track $index) {
+                              <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
                             }
-                          </div>
-                        }
-                      </div>
-  
-                      <!-- Iterar sobre assignedColors -->
-                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        @for (color of assignedColors; track color.value; let idx = $index) {
-                        <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
-                          <span class="font-medium">{{ color.value }}</span>
-                          <div class="flex items-center gap-2">
-                            <input
-                              [(ngModel)]="assignedColors[idx].color"
-                              (input)="handleInputColor()"
-                              class="text-md text-slate-500 font-mono w-[3.5vw]"
-                            >
-                            <p-colorPicker
-                              [(ngModel)]="assignedColors[idx].color"
-                              (onChange)="handleInputColor()"
-                              format="hex"
-                              appendTo="body"
-                            />
-                          </div>
+                          </select>
+                          @if (selectedPalette) {
+                            <div class="flex rounded overflow-hidden" style="width: 80px;">
+                              @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
+                                <div class="flex-1" [style.background-color]="color"></div>
+                              }
+                            </div>
+                          }
                         </div>
+                        <!-- Iterar sobre assignedColors (un color por serie) -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          @for (color of assignedColors; track color.value; let idx = $index) {
+                          <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
+                            <span class="font-medium">{{ color.value }}</span>
+                            <div class="flex items-center gap-2">
+                              <input [(ngModel)]="assignedColors[idx].color" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
+                              <p-colorPicker [(ngModel)]="assignedColors[idx].color" (onChange)="handleInputColor()" format="hex" appendTo="body" />
+                            </div>
+                          </div>
+                          }
+                        </div>
+                      }
+                      @else {
+                        <!-- Colores únicos por label/barra -->
+
+                        <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
+                        <div class="flex items-stretch gap-2 mb-6">
+                          <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                            [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
+                            <option [ngValue]="null" disabled hidden i18n="@@selectPalette">
+                              -- Seleccione una paleta --
+                            </option>
+                            @for (palette of allPalettes; track $index) {
+                              <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
+                            }
+                          </select>
+                          @if (selectedPalette) {
+                            <div class="flex rounded overflow-hidden" style="width: 80px;">
+                              @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
+                                <div class="flex-1" [style.background-color]="color"></div>
+                              }
+                            </div>
+                          }
+                        </div>
+
+                        @if (uniqueBarColors.length === 0) {
+                          <p class="text-sm text-slate-400 italic" i18n="@@noUniqueLabels">No hay valores únicos disponibles.</p>
                         }
-                      </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          @for (color of uniqueBarColors; track color.value; let idx = $index) {
+                          <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
+                            <span class="font-medium truncate max-w-[60%]" [title]="color.value">{{ color.value }}</span>
+                            <div class="flex items-center gap-2">
+                              <input [(ngModel)]="uniqueBarColors[idx].color" (input)="handleUniqueColorInput()" class="text-md text-slate-500 font-mono w-[3.5vw]">
+                              <p-colorPicker [(ngModel)]="uniqueBarColors[idx].color" (onChange)="handleUniqueColorInput()" format="hex" appendTo="body" />
+                            </div>
+                          </div>
+                          }
+                        </div>
+                      }
                     </div>
                   </div>
                 </p-tabPanel>
-                <p-tabPanel header="Gradiente de color" i18n-header="@@gradientTab">
+                <p-tabPanel header="Colores por intervalo" i18n-header="@@gradientTab">
                   <div class="px-6 pb-4">
 
                     <div class="chart-color-selection mt-4" style="min-width: 300px;">

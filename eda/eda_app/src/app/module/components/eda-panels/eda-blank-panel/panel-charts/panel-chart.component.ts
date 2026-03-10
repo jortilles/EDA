@@ -350,12 +350,45 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         // Generar chartColors en formato Chart.js desde assignedColors MAPEADOS
         chartConfig.chartColors = this.chartUtils.generateChartColorsFromAssignedColors(
-            assignedColors, 
+            assignedColors,
             this.props.chartType
         );
 
-        // Aplicar backgroundColor y borderColor a los datasets
-        if (!chartData[1][0]?.backgroundColor) {
+        // --- Determinar modo de color y aplicar ---
+        const isBar = this.props.chartType === 'bar' || this.props.chartType === 'horizontalBar';
+        const coloredBarsConfig = cfg['coloredBarsConfig'];
+        const hasThresholds = coloredBarsConfig?.thresholdHigh != null || coloredBarsConfig?.thresholdLow != null;
+        console.log(cfg['showUniqueColors'])
+        console.log(cfg)
+        if (isBar && coloredBarsConfig?.active && hasThresholds) {
+            // Modo 1: Colores por intervalo
+            console.log('pinto por color unico segun intervalo')
+            const { thresholdHigh, thresholdLow, colorAbove, colorBetween, colorBelow } = coloredBarsConfig;
+            const bothThresholds = thresholdHigh != null && thresholdLow != null;
+            const baseColor = chartConfig.chartColors[0]?.backgroundColor as string || '#cccccc';
+            const colors = (chartData[1][0].data as number[]).map((value: number) => {
+                if (thresholdHigh != null && value > thresholdHigh) return colorAbove;
+                if (thresholdLow != null && value < thresholdLow) return colorBelow;
+                return bothThresholds ? colorBetween : baseColor;
+            });
+            chartData[1][0].backgroundColor = colors;
+            chartData[1][0].borderColor = colors;
+            chartConfig.chartColors = [{ backgroundColor: colors, borderColor: colors }];
+
+        } else if (isBar && cfg['showUniqueColors']) {
+            // Modo 2: Colores únicos por barra (un color por label/categoría)
+            console.log('pinto por color unico')
+            const uniqueBarColors: { value: string; color: string }[] = cfg['uniqueBarColors'] || [];
+            const colors = (chartData[1][0].data as number[]).map((_, idx) =>
+                uniqueBarColors[idx]?.color || this.paletaActual[idx % this.paletaActual.length]
+            );
+            chartData[1][0].backgroundColor = colors;
+            chartData[1][0].borderColor = colors;
+            chartConfig.chartColors = [{ backgroundColor: colors, borderColor: colors }];
+
+        } else {
+            // Modo 3: Colores asignados por serie (comportamiento por defecto)
+            console.log('pinto por ass')
             chartData[1].forEach((dataset, i) => {
                 try {
                     dataset.backgroundColor = chartConfig.chartColors[i]?.backgroundColor;
@@ -366,25 +399,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     dataset.borderColor = fallbackColor;
                 }
             });
-        }
-
-        // Apply colored bars (per-bar colors based on thresholds)
-        const coloredBarsConfig = (this.props.config.getConfig() as any)['coloredBarsConfig'];
-        console.log('[ColoredBars] panel-chart renderEdaChart - coloredBarsConfig:', coloredBarsConfig);
-        const coloredBarsHasThresholds = coloredBarsConfig?.thresholdHigh !== null && coloredBarsConfig?.thresholdHigh !== undefined
-            || coloredBarsConfig?.thresholdLow !== null && coloredBarsConfig?.thresholdLow !== undefined;
-        if (coloredBarsConfig?.active && coloredBarsHasThresholds && chartData[1][0]?.data) {
-            const { thresholdHigh, thresholdLow, colorAbove, colorBetween, colorBelow } = coloredBarsConfig;
-            const bothThresholds = thresholdHigh !== null && thresholdLow !== null;
-            const assignedColor = chartConfig.chartColors[0]?.backgroundColor as string || '#cccccc';
-            const colors = (chartData[1][0].data as number[]).map((value: number) => {
-                if (thresholdHigh !== null && value > thresholdHigh) return colorAbove;
-                if (thresholdLow !== null && value < thresholdLow) return colorBelow;
-                return bothThresholds ? colorBetween : assignedColor;
-            });
-            chartData[1][0].backgroundColor = colors;
-            chartData[1][0].borderColor = colors;
-            chartConfig.chartColors = [{ backgroundColor: colors, borderColor: colors }];
         }
 
         chartConfig.chartLegend = cfg.chartLegend ?? true;
