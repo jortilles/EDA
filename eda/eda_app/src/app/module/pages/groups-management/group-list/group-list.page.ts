@@ -147,7 +147,7 @@ handleEditGroup(group: Group) {
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: $localize`:@@DeleteGroupButton:Si, ¡Eliminalo!`
+        confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`
     }).then(deleted => {
       if (deleted.value === true) { 
         this.groupService.deleteGroup(groupId).subscribe(

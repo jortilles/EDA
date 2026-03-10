@@ -23,7 +23,7 @@
           <div class="space-y-1">
             @if(permission) {
               <h3 class="text-lg font-medium text-gray-900" i18n="@@tableRestrictionAccess">Los usuarios y grupos configurados tendrán acceso autorizado a la tabla: <span class="font-bold">{{table.description}}</span></h3>
-              <p class="text-base text-gray-600" i18n="@@tableRestrictionAccessMessageOption">Desactivar para habilitar el acceso a todos los usuarios</p>
+              <p class="text-base text-gray-600" i18n="@@ModelRestrictionAccessMessageOption">Desactivar para habilitar el acceso a todos los usuarios</p>
             } @else {
               <h3 class="text-lg font-medium text-gray-900" i18n="@@tableActivationAccess">Los usuarios y grupos configurados NO tendrán acceso a la tabla: <span class="font-bold">{{table.description}}</span></h3>
               <p class="text-base text-gray-600" i18n="@@tableActivationAccessMessageOption">Activar para habilitar un acceso restringido</p>

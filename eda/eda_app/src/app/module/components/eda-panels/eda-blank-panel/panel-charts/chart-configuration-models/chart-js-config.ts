@@ -9,8 +9,9 @@ export class ChartJsConfig {
   showPredictionLines:boolean;
   numberOfColumns: number;
   assignedColors: any[];
+  chartLegend: boolean;
 
-  constructor(colors: Array<{}>, chartType:string, addTrend:boolean, addComparative:boolean, showLabels:boolean, showLabelsPercent:boolean, numberOfColumns:number, assignedColors: any[], showPointLines:boolean, showPredictionLines:boolean) {
+  constructor(colors: Array<{}>, chartType:string, addTrend:boolean, addComparative:boolean, showLabels:boolean, showLabelsPercent:boolean, numberOfColumns:number, assignedColors: any[], showPointLines:boolean, showPredictionLines:boolean, chartLegend:boolean = true) {
     this.colors = colors;
     this.chartType = chartType;
     this.addTrend = addTrend;
@@ -21,5 +22,6 @@ export class ChartJsConfig {
     this.assignedColors = assignedColors;
     this.showPointLines = showPointLines;
     this.showPredictionLines = showPredictionLines;
+    this.chartLegend = chartLegend;
   }
 }

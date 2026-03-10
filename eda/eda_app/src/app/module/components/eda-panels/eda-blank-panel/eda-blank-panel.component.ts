@@ -736,7 +736,7 @@ public tableNodeExpand(event: any): void {
             edaChart: subType,
             maps: this.dataSource.model.maps,
             linkedDashboardProps: this.panel.linkedDashboardProps,
-
+            predictionConfig: this.panel.content?.query?.query?.predictionConfig,
         });
     }
 
@@ -773,7 +773,7 @@ public tableNodeExpand(event: any): void {
     public changeChartTypeCheck(type: string, subType: string, config?: ChartConfig) {
         if (subType=='tableanalized') {
             Swal.fire({
-                title: $localize`:@@NameTablaQuality:Tabla DataQuality`,
+                title: $localize`:@@chartTypesTableAnalized:Tabla DataQuality`,
                 text: $localize`:@@SureDataQuality:¿Estás seguro de que deseas continuar con la visualización de DataQuality? Esta acción puede tomar un poco de tiempo.`,
                 icon: 'warning',
                 showCancelButton: true,
@@ -1195,11 +1195,11 @@ public tableNodeExpand(event: any): void {
                 properties.chartDataset[0].data = this.graficos.assignedColors.map(element => element.value)
             }
         
-                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors };
+                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors, chartLegend: this.graficos.chartLegend };
                 const layout =
                     new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType,
                     this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels,
-                    this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors, this.graficos.showPointLines, this.graficos.showPredictionLines));
+                    this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors, this.graficos.showPointLines, this.graficos.showPredictionLines, this.graficos.chartLegend));
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
             }
             //not saved alert message
@@ -1500,9 +1500,10 @@ public tableNodeExpand(event: any): void {
         // Usar spread operator para mantener el config existente
         this.panel.content.query.output.config = {
             ...this.panel.content.query.output.config,
-            assignedColors: response.assignedColors,  // ✅ Guardar assignedColors
+            assignedColors: response.assignedColors,
             alertLimits: response.alerts,
-            sufix: response.sufix
+            sufix: response.sufix,
+            modifiedFontPoints: response.modifiedFontPoints || 0,
         };
 
         let layout: any;
@@ -1530,7 +1531,8 @@ public tableNodeExpand(event: any): void {
                 sufix: response.sufix, 
                 alertLimits: response.alerts, 
                 edaChart: layout,
-                assignedColors: response.assignedColors  //  Añadir assignedColors al KpiConfig
+                assignedColors: response.assignedColors,
+                modifiedFontPoints: response.modifiedFontPoints || 0,
             })
         );
         

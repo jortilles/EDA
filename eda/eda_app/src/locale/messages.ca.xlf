@@ -1482,14 +1482,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">30</context>
 </context-group>
 </trans-unit>
-<trans-unit id="placeholderColumns" datatype="html">
-<source>Atributos</source>
-<target>Atributs</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/dashboard/filter-dialog/dashboard-filter-dialog.component.html</context>
-<context context-type="linenumber">46</context>
-</context-group>
-</trans-unit>
 <trans-unit id="inputMapTables" datatype="html">
 <source>Propiedades del mapa</source>
 <target>Propietats del mapa</target>
@@ -1589,6 +1581,14 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
 <context context-type="linenumber">15</context>
+</context-group>
+</trans-unit>
+<trans-unit id="updateModelXLCSV" datatype="html">
+<source>Actualizar el fichero origen para buscar nuevas tablas y columnas</source>
+<target>Actualitzar el fitxer origen per cercar noves taules i columnes</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/data-sources/data-source-list/data-source-list.component.ts</context>
+<context context-type="linenumber">30</context>
 </context-group>
 </trans-unit>
 <trans-unit id="saveModel" datatype="html">
@@ -2447,11 +2447,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Eliminaràs tots els elements relacionats amb aquest grup, vols continuar?</target>
 </trans-unit>
 
-<trans-unit id="DeleteGroupButton">
-<source>Si, ¡Eliminalo!</source>
-<target>Si, elimina'l!</target>
-</trans-unit>
-
 <trans-unit id="deleteDashboardWarning">
 <source>Estás a punto de borrar el informe: </source>
 <target>Ets a punt d'esborrar l'informe: </target>
@@ -2555,15 +2550,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>EDITAR CONSULTA SQL</source>
 <target>EDITAR CONSULTA SQL</target>
 </trans-unit>
-
-<trans-unit id="DatePickerAll">
-<source>Todas</source>
-<target>Totes</target>
-</trans-unit>
-<trans-unit id="DatePickerYesterday">
-<source>Ayer</source>
-<target>Ahir</target>
-</trans-unit>
 <trans-unit id="DatePickerBeforeYesterday">
 <source>Antes de ayer</source>
 <target>Abans d'ahir</target>
@@ -2645,11 +2631,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Selecciona un rang</target>
 </trans-unit>
 
-<trans-unit id="filterButtonDashboard">
-<source>Filtrar</source>
-<target>Filtrar </target>
-</trans-unit>
-
 <trans-unit id="kpiAlertH6" datatype="html">
 <source>      Generar alerta    </source>
 <target>      Generar alerta    </target>
@@ -2691,6 +2672,14 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
   <context context-type="linenumber">60</context>
 </context-group>
+</trans-unit>
+<trans-unit id="kpiSize">
+  <source>Modificar el tamaño del KPI</source>
+  <target>Modificar la mida del KPI</target>
+</trans-unit>
+<trans-unit id="increaseKpiSize">
+  <source>Incrementar el tamaño del KPI</source>
+  <target>Incrementar la mida del KPI</target>
 </trans-unit>
 <trans-unit id="addAlert" datatype="html">
 <source> Añadir alerta    </source>
@@ -2820,10 +2809,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="csvField">
     <source>Campo</source>
     <target>Camp</target>
-  </trans-unit>
-  <trans-unit id="csvFormat">
-    <source>Formato</source>
-    <target>Format</target>
   </trans-unit>
 
   <trans-unit id="functionalities">
@@ -3457,11 +3442,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="addCacheConfig">
     <source>Configurar Caché </source>
     <target>Configurar Caché</target>
-  </trans-unit>
-
-  <trans-unit id="conexionh3">
-    <source>Conexión  </source>
-    <target>Connexió</target>
   </trans-unit>
 
     <trans-unit id="newDashboardtitle">
@@ -4139,11 +4119,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Tabla Árbol</source>
         <target>Taula Arbre</target>
       </trans-unit>
-
-      <trans-unit id="NameTablaQuality">
-        <source>Tabla DataQuality</source>
-        <target>Taula DataQuality</target>       
-      </trans-unit>
       <trans-unit id="SureDataQuality">
         <source>¿Estás seguro de que deseas continuar con la visualización de DataQuality? Esta acción puede tomar un poco de tiempo.</source>
         <target>Segur que vols continuar amb la visualització de DataQuality? Aquesta acció pot trigar una mica de temps.</target>       
@@ -4366,10 +4341,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>El puerto es obligatorio</source>
         <target>El port és obligatori</target>
       </trans-unit>
-      <trans-unit id="database">
-        <source>Base de datos</source>
-        <target>Base de dades</target>
-      </trans-unit>
       <trans-unit id="databaseRequired">
         <source>Base de datos es obligatorio</source>
         <target>La base de dades és obligatòria</target>
@@ -4505,11 +4476,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="noMapsAvailableDescription">
         <source>Configurar un mapa en la pestaña Propiedades del mapa</source>
         <target>Configura un mapa a la pestanya Propietats del mapa</target>
-      </trans-unit>
-
-      <trans-unit id="homeTitle">
-        <source>Mis informes</source>
-        <target>Els meus informes</target>
       </trans-unit>
 
       <trans-unit id="filterReports">
@@ -4993,11 +4959,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Introduïu l'identificador tècnic</target>
 </trans-unit>
 
-<trans-unit id="SQLExpression">
-  <source>Expresión SQL</source>
-  <target>Expressió SQL</target>
-</trans-unit>
-
 <trans-unit id="enterSQLExpression">
   <source>Ingrese su consulta SQL aquí</source>
   <target>Introduïu la vostra consulta SQL aquí</target>
@@ -5159,11 +5120,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <target>Valor</target>
 </trans-unit>
 
-<trans-unit id="colour">
-<source>Color</source>
-<target>Color</target>
-</trans-unit>
-
 <trans-unit id="actions">
 <source>Acciones</source>
 <target>Accions</target>
@@ -5247,11 +5203,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="dashboardSidebarDownloadImage">
   <source>Descargar imagen</source>
   <target>Descarregar imatge</target>
-</trans-unit>
-
-<trans-unit id="dashboardSidebarSendEmail">
-  <source>Enviar por email</source>
-  <target>Enviar per email</target>
 </trans-unit>
 
 <trans-unit id="dashboardSidebarCustomAction">
@@ -5723,11 +5674,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Exportació/Importació de dades</target>
       </trans-unit>
 
-      <trans-unit id="permissionAdvancedOptions">
-        <source>Opciones avanzadas</source>
-        <target>Opcions avançades</target>
-      </trans-unit>
-
       <trans-unit id="AllTagsDescription">
         <source>Acceso a todos los elementos sin restricciones</source>
         <target>Accés a tots els elements sense restriccions</target>
@@ -5778,10 +5724,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="removePrediction">
         <source>Quitar Predicción</source>
         <target>Eliminar Predicció</target>
-      </trans-unit>
-      <trans-unit id="chartLabelLinesOptionDescription">
-        <source>Muestra las líneas en los puntos</source>
-        <target>Mostrar les línies als punts</target>
       </trans-unit>
       <trans-unit id="chartLabelLinePredicctionOptionDescription">
         <source>Muestra las predicción de la serie</source>
@@ -5874,10 +5816,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Los usuarios y grupos configurados tendrán acceso autorizado a la tabla: </source>
         <target>Els usuaris i grups configurats tindran accés autoritzat a la taula: </target>
       </trans-unit>
-      <trans-unit id="tableRestrictionAccessMessageOption">
-        <source>Desactivar para habilitar el acceso a todos los usuarios</source>
-        <target>Desactivar per habilitar l'accés a tots els usuaris</target>
-      </trans-unit>
       <trans-unit id="tableActivationAccess">
         <source>Los usuarios y grupos configurados NO tendrán acceso a la tabla: </source>
         <target>Els usuaris i grups configurats NO tindran accés a la taula: </target>
@@ -5886,21 +5824,9 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Activar para habilitar un acceso restringido</source>
         <target>Activar per habilitar un accés restringit</target>
       </trans-unit>
-      <trans-unit id="sqlExpressionCalculatedField">
-        <source>Expresión SQL</source>
-        <target>Expressió SQL</target>
-      </trans-unit>
-      <trans-unit id="typeSelectorText">
-        <source>Tipo de columna</source>
-        <target>Tipus de columna</target>
-      </trans-unit>
       <trans-unit id="decimalNumberText">
         <source>Número de decimales</source>
         <target>Nombre de decimals</target>
-      </trans-unit>
-      <trans-unit id="typeSelectorAggregation">
-        <source>Agregación</source>
-        <target>Agregació</target>
       </trans-unit>
       <trans-unit id="CheckExpression">
         <source>Comprobar expresión</source>
@@ -6109,10 +6035,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="arimaTargetColumnDesc">
         <source>Columna numérica a predecir</source>
         <target>Columna numèrica a predir</target>
-      </trans-unit>
-      <trans-unit id="advancedConfigLabel">
-        <source>Configuración avanzada</source>
-        <target>Configuració avançada</target>
       </trans-unit>
       <trans-unit id="advancedConfigDesc">
         <source>Personalizar los parámetros del modelo</source>
