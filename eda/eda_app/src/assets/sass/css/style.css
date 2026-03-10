@@ -28,10 +28,10 @@ html {
     pointer-events: none;
 }
 
-.readonly input{ 
+.readonly input{
     background-color: greenyellow!important;
 }
-  
+
 
 .custom .leaflet-popup-content-wrapper, .leaflet-popup-tip {
     background: #010913ce !important;
@@ -104,7 +104,7 @@ body .ui-tree {
     padding: 25px;
     z-index: 10;
 }
- 
+
 .btn-inverse {
     background: #2f3d4a;
     border: 1px solid #2f3d4a;
@@ -113,7 +113,7 @@ body .ui-tree {
 
 .btn {
     padding: 7px 12px;
-    cursor: pointer; 
+    cursor: pointer;
 }
 
 .btn-circle {
@@ -141,7 +141,7 @@ body .ui-tree {
     height: 5px;
 }
 ::-webkit-scrollbar-thumb {
-    background: #d6d6d6; 
+    background: #d6d6d6;
     border-radius: 3px;
   }
 ::-webkit-scrollbar-thumb:hover {
@@ -437,8 +437,8 @@ h6 {
 /*Light colors*/
 /*Normal Color*/
 /*Extra Variable*/
-/*============================================================== 
-  For all pages 
+/*==============================================================
+  For all pages
   ============================================================== */
 
 /*******************
@@ -886,14 +886,14 @@ form label {
 }
 
 /*******************
- Form validation error 
+ Form validation error
  ******************/
 .error .help-block {
     color: #fb3a3a;
 }
 
 /*******************
- File Upload 
+ File Upload
  ******************/
 .fileupload {
     overflow: hidden;
@@ -1000,8 +1000,8 @@ pre {
     border-color: #06d79c;
 }
 
-/*============================================================== 
-  For Laptop & above all (1650px) 
+/*==============================================================
+  For Laptop & above all (1650px)
   ============================================================== */
 @media (min-width: 1650px) {
     .widget-app-columns {
@@ -1033,8 +1033,8 @@ pre {
     }
 }
 
-/*============================================================== 
-  For Laptop & above all (1370px) 
+/*==============================================================
+  For Laptop & above all (1370px)
   ============================================================== */
 @media (max-width: 1370px) {
     .widget-app-columns {
@@ -1055,28 +1055,28 @@ pre {
         line-height: 35px;
         font-size: 32px;
     }
-    
+
     h2 {
         line-height: 30px;
         font-size: 20px;
     }
-    
+
     h3 {
         line-height: 30px;
         font-size: 18px;
     }
-    
+
     h4 {
         line-height: 20px;
         font-size: 16px;
     }
-    
+
     h5 {
         line-height: 16px;
         font-size: 14px;
         font-weight: 400;
     }
-    
+
     h6 {
         line-height: 13px;
         font-size: 10px;
@@ -1093,8 +1093,8 @@ pre {
     }
 }
 
-/*-- ============================================================== 
-  Small Desktop & above all (1024px) 
+/*-- ==============================================================
+  Small Desktop & above all (1024px)
   ============================================================== */
 @media (min-width: 1024px) {
     .page-wrapper {
@@ -1129,8 +1129,8 @@ pre {
 
 }
 
-/*-- ============================================================== 
-  Ipad & above all(768px) 
+/*-- ==============================================================
+  Ipad & above all(768px)
   ============================================================== */
 @media (min-width: 768px) {
 
@@ -1178,15 +1178,102 @@ pre {
     width: inherit;
 }
 
+/*SDA CUSTOM*/ .filter-tooltip-header {
+/*SDA CUSTOM*/     display: flex;
+/*SDA CUSTOM*/     justify-content: space-between;
+/*SDA CUSTOM*/     align-items: center;
+/*SDA CUSTOM*/     padding-bottom: 0.5rem;
+/*SDA CUSTOM*/     margin-bottom: 0.5rem;
+/*SDA CUSTOM*/     border-bottom: 1px solid #dee2e6;
+/*SDA CUSTOM*/ }
+
+/*SDA CUSTOM*/ .filter-tooltip-header-title {
+/*SDA CUSTOM*/     font-weight: 600;
+/*SDA CUSTOM*/     font-family: var(--eda-filters-font-family) !important;
+/*SDA CUSTOM*/ }
+
+/*SDA CUSTOM*/ .filter-tooltip-remove-all {
+/*SDA CUSTOM*/     background: transparent;
+/*SDA CUSTOM*/     border: none;
+/*SDA CUSTOM*/     color: #6c757d;
+/*SDA CUSTOM*/     cursor: pointer;
+/*SDA CUSTOM*/     font-size: 0.9rem;
+/*SDA CUSTOM*/     padding: 0.25rem;
+/*SDA CUSTOM*/     border-radius: 50%;
+/*SDA CUSTOM*/     width: 1.75rem;
+/*SDA CUSTOM*/     height: 1.75rem;
+/*SDA CUSTOM*/     display: flex;
+/*SDA CUSTOM*/     align-items: center;
+/*SDA CUSTOM*/     justify-content: center;
+/*SDA CUSTOM*/     transition: color 0.2s, background-color 0.2s;
+/*SDA CUSTOM*/     margin-left: 0.5rem;
+/*SDA CUSTOM*/ }
+
+/*SDA CUSTOM*/ .filter-tooltip-remove-all:hover {
+/*SDA CUSTOM*/     color: #c0392b;
+/*SDA CUSTOM*/     background-color: rgba(192, 57, 43, 0.1);
+/*SDA CUSTOM*/ }
+
+/*SDA CUSTOM*/ .filter-tooltip-items {
+/*SDA CUSTOM*/     display: flex;
+/*SDA CUSTOM*/     flex-wrap: wrap;
+/*SDA CUSTOM*/     gap: 0.4rem;
+/*SDA CUSTOM*/ }
+
+/*SDA CUSTOM*/ .filter-tooltip-chip {
+/*SDA CUSTOM*/     display: inline-flex;
+/*SDA CUSTOM*/     align-items: center;
+/*SDA CUSTOM*/     gap: 0.3rem;
+/*SDA CUSTOM*/     background-color: #f0f4ff;
+/*SDA CUSTOM*/     border: 1px solid #c8d3f5;
+/*SDA CUSTOM*/     border-radius: 1rem;
+/*SDA CUSTOM*/     padding: 0.2rem 0.4rem 0.2rem 0.65rem;
+/*SDA CUSTOM*/     max-width: 100%;
+/*SDA CUSTOM*/     transition: background-color 0.2s;
+/*SDA CUSTOM*/ }
+
+/*SDA CUSTOM*/ .filter-tooltip-chip:hover {
+/*SDA CUSTOM*/     background-color: #dde5ff;
+/*SDA CUSTOM*/ }
+
+/*SDA CUSTOM*/ .filter-tooltip-chip-text {
+/*SDA CUSTOM*/     overflow: hidden;
+/*SDA CUSTOM*/     text-overflow: ellipsis;
+/*SDA CUSTOM*/     white-space: nowrap;
+/*SDA CUSTOM*/     font-family: var(--eda-filters-font-family) !important;
+/*SDA CUSTOM*/ }
+
+/*SDA CUSTOM*/ .filter-tooltip-button {
+/*SDA CUSTOM*/     background: transparent;
+/*SDA CUSTOM*/     border: none;
+/*SDA CUSTOM*/     color: #7986cb;
+/*SDA CUSTOM*/     cursor: pointer;
+/*SDA CUSTOM*/     font-size: 0.7rem;
+/*SDA CUSTOM*/     padding: 0;
+/*SDA CUSTOM*/     border-radius: 50%;
+/*SDA CUSTOM*/     width: 1.1rem;
+/*SDA CUSTOM*/     height: 1.1rem;
+/*SDA CUSTOM*/     flex-shrink: 0;
+/*SDA CUSTOM*/     display: flex;
+/*SDA CUSTOM*/     align-items: center;
+/*SDA CUSTOM*/     justify-content: center;
+/*SDA CUSTOM*/     transition: color 0.2s, background-color 0.2s;
+/*SDA CUSTOM*/ }
+
+/*SDA CUSTOM*/ .filter-tooltip-button:hover {
+/*SDA CUSTOM*/     color: #c0392b;
+/*SDA CUSTOM*/     background-color: rgba(192, 57, 43, 0.15);
+/*SDA CUSTOM*/ }
+
 /* JJ Puesto para quitar el overlay que no se borra*/
 /*.p-component-overlay-enter {
     animation: p-component-overlay-enter-animation 150ms forwards;
   }*/
-  
+
   .p-component-overlay-leave {
     animation: p-component-overlay-leave-animation 150ms forwards;
   }
-  
+
   @keyframes p-component-overlay-enter-animation {
     from {
       background-color: transparent;
@@ -1210,12 +1297,12 @@ pre {
 .ui-table-auto-layout > .ui-table-wrapper {
     overflow-x: unset;
 }
- 
+
 .edaLoginTitle{
     font-family:  var(--DEFAULT_FONT_FAMILY);
     letter-spacing: 1em;
     font-weight: 700;
-    color: #163c49;	
+    color: #163c49;
     margin-left: 20px;
 
 }
@@ -1229,20 +1316,20 @@ pre {
 .edaLoginCreditsCaption{
     font-family: "Scada", Sans-serif;
     font-weight: 600;
-	color: #163c49;	
+	color: #163c49;
 
 }
 .circle:before {
     content: ' \25CF';
     font-size: 25px;
   }
-  
 
 
 
 
-/*-- ============================================================== 
-  Phone and below ipad(767px) 
+
+/*-- ==============================================================
+  Phone and below ipad(767px)
   ============================================================== */
 @media (max-width: 767px) {
     .container-fluid {
@@ -1335,8 +1422,8 @@ pre {
 
 
 
-/*============================================================== 
-  Editable variables 
+/*==============================================================
+  Editable variables
   ============================================================== */
 :root {
     --panel-color: #fff;
@@ -1366,7 +1453,7 @@ pre {
     --panel-font-color:"#455a64";
   }
 
-  
+
 .eda-title {
     font-family: var(--eda-title-font-family) !important;
     font-size: var(--eda-title-big);
@@ -1376,7 +1463,7 @@ pre {
     margin-bottom: auto;
     font-weight: 600;
     white-space: nowrap;
-    
+
 }
 
 .justify-title-content {
@@ -1493,8 +1580,8 @@ pre {
 
 
 
-  /*============================================================== 
-  For Laptop & above all (1370px) 
+  /*==============================================================
+  For Laptop & above all (1370px)
   ============================================================== */
   @media (max-width: 1370px) {
     html {
@@ -1512,10 +1599,10 @@ pre {
     }
 
   }
-  
 
-/*============================================================== 
-  For Laptop & above all (1370px) 
+
+/*==============================================================
+  For Laptop & above all (1370px)
   ============================================================== */
   @media (max-width: 1370px) {
 
@@ -1529,7 +1616,7 @@ pre {
         white-space: nowrap;
     }
 
-    
+
     .filters-size{
         font-size: var(--eda-filters-small);
         font-family: var(--eda-filters-font-family);
@@ -1551,7 +1638,7 @@ pre {
     .map-legend {
         font-size: var(--panel-small);
     }
-    
+
     .map-legend h6{
         font-size: var(--panel-small);
     }
@@ -1573,14 +1660,14 @@ pre {
 
 
 
-/*============================================================== 
+/*==============================================================
   For olds and small screens
   ============================================================== */
   @media (max-width: 1025px) {
 
     .eda-title {
         font-family: var(--font-family);
-        font-size: var(--eda-title-very-small); 
+        font-size: var(--eda-title-very-small);
         line-height: 0.7;
         text-align: center;
         margin-bottom: auto;
@@ -1588,7 +1675,7 @@ pre {
         white-space: nowrap;
     }
 
-    
+
     .filters-size{
         font-size: var(--eda-filters-small);
         font-family: var(--eda-filters-font-family);
@@ -1610,7 +1697,7 @@ pre {
     .map-legend {
         font-size: var(--panel-small);
     }
-    
+
     .map-legend h6{
         font-size: var(--panel-small);
     }
@@ -1626,7 +1713,7 @@ pre {
     .component .p-datatable .p-datatable-footer {
         font-size: var(--panel-small);
 
-        
+
     }
     .p-datatable .p-datatable-tfoot>tr>td, .p-datatable .p-datatable-thead>tr>th{
         font-weight: 300;

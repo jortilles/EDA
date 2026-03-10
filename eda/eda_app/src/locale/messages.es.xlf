@@ -4494,6 +4494,14 @@
         <source>Error al guardar el informe. Error en el panel: </source>
         <target>Se ha producido un error al guardar el informe. El error está en el panel </target>
       </trans-unit>
+      <trans-unit id="filterSummary">
+        <source>Resumen de filtros</source>
+        <target>Resumen de filtros</target>
+      </trans-unit>
+      <trans-unit id="globalFilterSelectedItemsLabel">
+        <source>{0} elementos seleccionados</source>
+        <target>{0} elementos seleccionados</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

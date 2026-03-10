@@ -4699,6 +4699,14 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Esta es una columna calculada y no tiene formatos disponibles</source>
         <target>This is a calculated column and has no available formats.</target>
       </trans-unit>
+      <trans-unit id="filterSummary">
+        <source>Resumen de filtros</source>
+        <target>Filter summary</target>
+      </trans-unit>
+      <trans-unit id="globalFilterSelectedItemsLabel">
+        <source>{0} elementos seleccionados</source>
+        <target>{0} selected items</target>
+      </trans-unit>
         </body>
   </file>
 </xliff>

@@ -4500,6 +4500,14 @@
         <source>Esta es una columna calculada y no tiene formatos disponibles</source>
         <target>Esta é unha columna calculada e non ten formatos dispoñibles</target>
       </trans-unit>
+      <trans-unit id="filterSummary">
+        <source>Resumen de filtros</source>
+        <target>Resumo do filtro</target>
+      </trans-unit>
+      <trans-unit id="globalFilterSelectedItemsLabel">
+        <source>{0} elementos seleccionados</source>
+        <target>{0} elementos seleccionados</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

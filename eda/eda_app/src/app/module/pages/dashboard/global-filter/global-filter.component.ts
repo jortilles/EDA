@@ -25,8 +25,12 @@ export class GlobalFilterComponent implements OnInit {
 
     //Date filter ranges Dropdown
     public datePickerConfigs: {} = {};
+    // flag para ver ultimo panel
+    private lastPanel: any;
 
     public filtrar: string = $localize`:@@filterButtonDashboard:Filtrar`;
+    /*SDA CUSTOM*/ public resumen: string = $localize`:@@filterSummary:Resumen de filtros`;
+    /*SDA CUSTOM*/ private tooltipHideTimeout: any;
 
 
     constructor(
@@ -622,6 +626,18 @@ export class GlobalFilterComponent implements OnInit {
         }
     }
 
+/*SDA CUSTOM*/ // This method have the same functionality as the chip in global filter, but this one is for the tooltip
+/*SDA CUSTOM*/ public removeFilterItem(filter: any, item: any): void {
+/*SDA CUSTOM*/     filter.selectedItems = filter.selectedItems.filter((i: any) => i !== item);
+/*SDA CUSTOM*/     this.setGlobalFilterItems(filter);
+/*SDA CUSTOM*/ }
+
+/*SDA CUSTOM*/ // Removes all selected items from a filter
+/*SDA CUSTOM*/ public removeAllFilterItems(filter: any): void {
+/*SDA CUSTOM*/     filter.selectedItems = [];
+/*SDA CUSTOM*/     this.setGlobalFilterItems(filter);
+/*SDA CUSTOM*/ }
+
     public disableGlobalFilter(filter: any): boolean {
         let disabled = false;
 
@@ -634,4 +650,24 @@ export class GlobalFilterComponent implements OnInit {
         return disabled;
     }
 
+/*SDA CUSTOM*/ // Method to show the filter tooltip
+/*SDA CUSTOM*/  public showFilterTooltip(event: MouseEvent, op: any, filter?: any): void {
+/*SDA CUSTOM*/ // If the filter doesn't have selected values, the tooltip won't be shown    
+/*SDA CUSTOM*/      if (filter && (!filter.selectedIdValues || filter.selectedIdValues.length === 0)) return;
+/*SDA CUSTOM*/ // If there is some active timeout to hide the tooltip, it will be cleared 
+/*SDA CUSTOM*/      if (this.tooltipHideTimeout && this.lastPanel === filter.id) {
+/*SDA CUSTOM*/         clearTimeout(this.tooltipHideTimeout);
+/*SDA CUSTOM*/         this.tooltipHideTimeout = null;
+/*SDA CUSTOM*/      }
+/*SDA CUSTOM*/      this.lastPanel = filter.id;
+/*SDA CUSTOM*/      op?.show(event);
+/*SDA CUSTOM*/  }
+/*SDA CUSTOM*/ // Method to hide the filter tooltip
+/*SDA CUSTOM*/  public hideFilterTooltip(op: any): void {
+/*SDA CUSTOM*/ // A timeout is set to avoid the tooltip to be hidden when the user is moving the mouse from the filter item to the tooltip
+/*SDA CUSTOM*/      this.tooltipHideTimeout = setTimeout(() => {
+/*SDA CUSTOM*/          op?.hide();
+/*SDA CUSTOM*/          this.tooltipHideTimeout = null;
+/*SDA CUSTOM*/      }, 150);
+/*SDA CUSTOM*/  }
 }

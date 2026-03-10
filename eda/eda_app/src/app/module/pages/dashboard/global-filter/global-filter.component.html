@@ -15,25 +15,25 @@
             class="p-button-raised p-button-outlined filters-size">
         </button>
 
-    
+
         <div *ngFor="let filter of globalFilters" class="filter-set d-flex align-items-center">
-          <!-- SDA CUSTOM <span *ngIf="( isAdmin || isDashboardCreator || ['public', 'readOnly'].includes(filter.visible) )  &&  filter.selectedColumn.visible " class="filter-name filters-size"> --> 
+          <!-- SDA CUSTOM <span *ngIf="( isAdmin || isDashboardCreator || ['public', 'readOnly'].includes(filter.visible) )  &&  filter.selectedColumn.visible " class="filter-name filters-size"> -->
           <!-- SDA CUSTOM --> <span *ngIf="( isAdmin || isDashboardCreator || (['public', 'readOnly'].includes(filter.visible)   &&  (filter.selectedColumn?.visible || filter.column?.value?.visible)) )" class="filter-name filters-size">
                 {{getFilterLabel(filter)}}:
             </span>
-            
+
             <!-- SDA CUSTOM  <ng-container -->
-            <!-- SDA CUSTOM *ngIf="( isAdmin || isDashboardCreator ||   ['public', 'readOnly'].includes(filter.visible) ) &&  filter.selectedColumn.visible  " --> 
-            <!-- SDA CUSTOM --> <ng-container 
+            <!-- SDA CUSTOM *ngIf="( isAdmin || isDashboardCreator ||   ['public', 'readOnly'].includes(filter.visible) ) &&  filter.selectedColumn.visible  " -->
+            <!-- SDA CUSTOM --> <ng-container
             *ngIf="( isAdmin || isDashboardCreator || (['public', 'readOnly'].includes(filter.visible)   &&  (filter.selectedColumn?.visible || filter.column?.value.visible)) )"
             [ngSwitch]="getFilterType(filter)" >
                 <div *ngSwitchCase="'date'">
-                    <eda-date-picker 
+                    <eda-date-picker
                         [autoClear]="true"
                         [inject]="datePickerConfigs[filter.id]"
                         (onRemove)="removeGlobalFilter(filter, true)"
                         (onDatesChanges)="processPickerEvent($event, filter)">
-        
+
                         <ng-container footer>
                             <button id="dashFilterConf"
                                 pButton pRipple type="button"
@@ -51,16 +51,19 @@
                         [options]="filter.data"
                         [(ngModel)]="filter.selectedItems"
                         [maxSelectedLabels]="3"
+                        i18n-selectedItemsLabel="@@globalFilterSelectedItemsLabel" selectedItemsLabel="{0} elementos seleccionados"
                         [virtualScroll]="true"
                         [defaultLabel]="getFilterLabel(filter)"
                         [disabled]="disableGlobalFilter(filter)"
                         itemSize="30"
-                        display="chip"
+                        [display]="filter.selectedItems?.length > 3 ? 'comma' : 'chip'"
                         class="customMultiselect filters-size"
                         [style]="{'max-width': '250px', 'min-width':'200px', 'font-family':'var(--eda-filters-font-family)'}"
                         [Show]="dropdownFiltersSize(filter)"
-                        (onChange)="setGlobalFilterItems(filter)">
-        
+                        (onChange)="setGlobalFilterItems(filter)"
+                        (mouseenter)="showFilterTooltip($event, op, filter)"
+                        (mouseleave)="hideFilterTooltip(op)"
+                        (onClick)="hideFilterTooltip(op)">
                         <p-footer>
                             <button *ngIf="dashboard.canIedit()" id="dashFilterConf"
                                 pButton pRipple type="button"
@@ -70,6 +73,24 @@
                             </button>
                         </p-footer>
                     </p-multiSelect>
+<!--SDA CUSTOM-->      <p-overlayPanel #op appendTo="body" [style]="{'margin-top': '2.25vh'}">
+<!--SDA CUSTOM-->          <ng-template pTemplate>
+<!--SDA CUSTOM-->               <div style="max-height: 30vh; overflow: auto; min-width: 20vw; max-width: 30vw;">
+<!--SDA CUSTOM-->                   <div (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)">
+<!--SDA CUSTOM-->                       <div class="filter-tooltip-header">
+<!--SDA CUSTOM-->                           <span class="filters-size filter-tooltip-header-title">{{ resumen }}</span>
+<!--SDA CUSTOM-->                           <button type="button" class="pi pi-trash filter-tooltip-remove-all" (click)="removeAllFilterItems(filter)"></button>
+<!--SDA CUSTOM-->                       </div>
+<!--SDA CUSTOM-->                       <div class="filter-tooltip-items">
+<!--SDA CUSTOM-->                           <div *ngFor="let item of filter.selectedItems" class="filter-tooltip-chip">
+<!--SDA CUSTOM-->                               <span class="customMultiselect filters-size filter-tooltip-chip-text">{{ item }}</span>
+<!--SDA CUSTOM-->                               <button type="button" class="pi pi-times filter-tooltip-button" (click)="removeFilterItem(filter, item)"></button>
+<!--SDA CUSTOM-->                           </div>
+<!--SDA CUSTOM-->                       </div>
+<!--SDA CUSTOM-->                   </div>
+<!--SDA CUSTOM-->               </div>
+<!--SDA CUSTOM-->          </ng-template>
+<!--SDA CUSTOM-->      </p-overlayPanel>
                 </div>
             </ng-container>
         </div>
