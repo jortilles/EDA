@@ -29,6 +29,10 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public dialog: EdaDialog;
     public selectedColumn: Column;
     public duplicatedColumnName: string;
+/* SDA CUSTOM */    public originalName: string;
+/* SDA CUSTOM */    public backupName: string;
+/* SDA CUSTOM */    public sourceFieldName: string;
+/* SDA CUSTOM */    public tableLabel: string;
 
     public display = {
         calendar: false, // calendars inputs
@@ -57,10 +61,10 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public dropDownFields: any[] = [];
     public limitSelectionFields: number;
     public cumulativeSum: boolean;
-    public cumulativeSumTooltip: string = $localize`:@@cumulativeSumTooltip:Si activas ésta función se calculará la suma acumulativa 
+    public cumulativeSumTooltip: string = $localize`:@@cumulativeSumTooltip:Si activas ésta función se calculará la suma acumulativa
                                             para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.`
 
-    public filterBeforeAfter = {    
+    public filterBeforeAfter = {
         filterBeforeGrouping: true, // valor por defecto true ==> WHERE / valor false ==> HAVING
         elements: [
             { label: $localize`:@@whereMessageLabel:Aplicar el filtro sobre todos los registros`, value: true },
@@ -113,6 +117,15 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     onShow(): void {
         this.selectedColumn = this.controller.params.selectedColumn;
+/* SDA CUSTOM */        this.originalName = this.selectedColumn.display_name.default;
+/* SDA CUSTOM */        this.backupName = this.selectedColumn.display_name.default;
+
+/* SDA CUSTOM */        const table_id = this.selectedColumn.table_id.split('.')[0];
+/* SDA CUSTOM */        const modelTable = this.controller.params.inject.dataSource.model.tables.find(t => t.table_name === table_id);
+/* SDA CUSTOM */        const modelColumn = modelTable?.columns.find(c => c.column_name === this.selectedColumn.column_name);
+/* SDA CUSTOM */        this.sourceFieldName = modelColumn?.display_name?.default || this.selectedColumn.column_name;
+
+/* SDA CUSTOM */        this.tableLabel = this.controller.params.table;
         const allowed = [];
         const title = this.selectedColumn.display_name.default;
         const col = $localize`:@@col:Atributo`, from = $localize`:@@table:de la entidad`;
@@ -646,6 +659,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     
 
     handleInputTypes() {
+
         const type = this.selectedColumn.column_type;
         this.inputType = this.columnUtils.handleInputTypes(type);
     }
@@ -753,6 +767,24 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.display.filterButton = false;
         }
     }
+                    // Function to rename the column in the query when the user changes the name in the dialog, also updates the title of the dialog
+/* SDA CUSTOM */    public renameColumn(newName: string) {
+/* SDA CUSTOM */        if (_.isNil(newName) || _.isEmpty(newName)) return;
+/* SDA CUSTOM */
+/* SDA CUSTOM */        const colInQuery = this.controller.params.currentQuery.find((c: any) =>
+/* SDA CUSTOM */            this.selectedColumn.table_id === c.table_id &&
+/* SDA CUSTOM */            this.selectedColumn.column_name === c.column_name &&
+/* SDA CUSTOM */            this.originalName === c.display_name.default
+/* SDA CUSTOM */        );
+/* SDA CUSTOM */
+/* SDA CUSTOM */        if (colInQuery) {
+/* SDA CUSTOM */            colInQuery.display_name.default = newName;
+/* SDA CUSTOM */            this.originalName = newName;
+/* SDA CUSTOM */        }
+/* SDA CUSTOM */
+/* SDA CUSTOM */        const col = $localize`:@@col:Atributo`, from = $localize`:@@table:de la entidad`;
+/* SDA CUSTOM */        this.dialog.title = `${col} ${newName} ${from} ${this.controller.params.table}`;
+/* SDA CUSTOM */      }
 
     public onCancelDuplicateColumn(): void {
         this.display.duplicateColumn = false;
@@ -773,6 +805,26 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     /* Close functions */
+/* SDA CUSTOM */    cancelDialog() {
+/* SDA CUSTOM */        const colInQuery = this.controller.params.currentQuery.find((c: any) =>
+/* SDA CUSTOM */            this.selectedColumn.table_id === c.table_id &&
+/* SDA CUSTOM */            this.selectedColumn.column_name === c.column_name &&
+/* SDA CUSTOM */            this.originalName === c.display_name.default
+/* SDA CUSTOM */);
+/* SDA CUSTOM */
+/* SDA CUSTOM */        if (colInQuery) {
+/* SDA CUSTOM */            colInQuery.display_name.default = this.backupName;
+/* SDA CUSTOM */            this.selectedColumn.display_name.default = this.backupName;
+            /* SDA CUSTOM */
+}
+/* SDA CUSTOM */
+/* SDA CUSTOM */        this.filter.switch = false;
+/* SDA CUSTOM */        this.filterSelected = undefined;
+/* SDA CUSTOM */        this.filterValue = {};
+/* SDA CUSTOM */        this.onClose(EdaDialogCloseEvent.NONE, []);
+        /* SDA CUSTOM */
+}
+
     closeDialog() {
         this.filter.switch = false;
         this.filterSelected = undefined;
@@ -803,7 +855,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         if(regexNumber.test(rangeString[rangeString.length-1])){
 
             const ranges = rangeString.split(":")
-            .map(item => parseFloat(item.replace(",", ".")));
+                .map(item => parseFloat(item.replace(",", ".")));
 
             for (let i = 0; i < ranges.length-1; i++) {
                 // Verificar si el número actual es menor o igual al anterior
@@ -824,7 +876,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             const selectionAggregationRange = { value: 'none', display_name: 'No', selected: 'true' };
             this.addAggregation(selectionAggregationRange);
 
-            // Encuentra la columna de turno y agrega el rango 
+            // Encuentra la columna de turno y agrega el rango
             const addAggr = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
             addAggr.column_type = 'text';
             addAggr.ranges = this.ranges;
@@ -849,18 +901,18 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     generarStringRango(rango: number[]): string {
         let resultado = "";
-    
+
         // Agregamos la primera condición
         resultado += `< ${rango[0]}<br>`;
-        
+
         // Creamos las condiciones intermedias
         for (let i = 0; i < rango.length - 1; i++) {
             resultado += `${rango[i]} - ${rango[i + 1] - 1}<br>`;
         }
-        
+
         // Agregamos la última condición
         resultado += `>= ${rango[rango.length - 1]}`;
-        
+
         return resultado;
     }
 

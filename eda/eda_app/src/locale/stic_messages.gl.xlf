@@ -367,6 +367,9 @@
     <source>Eliminar filtros</source>
     <target>Eliminar filtros</target>
   </trans-unit>
+  <trans-unit id="nombreColumnaH4" datatype="html">
+    <source>Etiqueta para el campo</source>
+    <target>Etiqueta para o campo</target>
   <trans-unit id="lockPanel">
     <source>Bloquear panel</source>
     <target>Bloquear panel</target>

@@ -2,6 +2,29 @@
 
     <div body class="grid mb-0 pb-0">
 
+        <!-- SDA CUSTOM Column name -->
+        <div class="col-12 mt-2" *ngIf="selectedColumn">
+
+            <div class="d-flex align-items-center flex-wrap" style="gap: 15px;">
+
+                <h4 style="margin: 0; white-space: nowrap;">
+         <span i18n="@@nombreColumnaH4">Etiqueta para el campo</span> [{{tableLabel}} -
+                    {{sourceFieldName}}]:
+
+                </h4>
+
+                <div style="flex-grow: 1; min-width: 250px; max-width: 500px;">
+                    <input id="columnName" type="text" pInputText
+                        [(ngModel)]="selectedColumn.display_name.default"
+                        (blur)="renameColumn(selectedColumn.display_name.default)"
+                        (keydown.enter)="renameColumn(selectedColumn.display_name.default)" style="width: 100%;">
+                </div>
+            </div>
+            <hr>
+
+        </div>
+        <!-- END SDA CUSTOM -->
+
         <!-- Agregaciones -->
         <div class="col-12 lg:col-2">
 
@@ -501,6 +524,12 @@
                 i18n-label="@@guardarButton" icon="fa fa-check" label="Confirmar"
                 id="eda_column_dialog_confirmar" [disabled]="!display.filterButton">
             </button>
+
+<!-- SDA CUSTOM CANCEL BUTTON-->
+             <button type="button" pButton (click)="cancelDialog()" class="p-button-raised p-button-danger"
+                i18n-label="@@DeleteGroupCancel" icon="fa fa-times" label="Cancelar" id="eda_column_dialog_cancel">
+            </button>
+<!-- END SDA CUSTOM -->
         </div>
 
     </div>
