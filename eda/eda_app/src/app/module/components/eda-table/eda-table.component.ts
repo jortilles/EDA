@@ -34,8 +34,8 @@ export class EdaTableComponent implements OnInit {
         this.chartOptions = EdaColumnChartOptions;
     }
     ngOnInit(): void {
-        
-        
+
+
         if(this.inject.styles && !this.inject.pivot){
             this.applyStyles(this.inject.styles)
         }else if(this.inject.styles && this.inject.pivot){
@@ -57,9 +57,9 @@ export class EdaTableComponent implements OnInit {
         if (this.inject.linkedDashboardProps && this.inject.linkedDashboardProps.sourceCol === colname) {
             const props = this.inject.linkedDashboardProps;
             const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${item}`;
-            
+
             window.open(url, "_blank");
-            
+
         } else {
             let filterBy = colname;
             let label = item;
@@ -320,12 +320,12 @@ export class EdaTableComponent implements OnInit {
                     valor = negativos[0];
                     str = `<span> <span style = "color: red">${valor}</span> <span> - </span> <span>${positivos[0]}</span> </span>`;
                 }
-            } 
+            }
             else {
                 str = `<span> <span style = "color: red">${negativos[0]}</span> <span> - </span> <span style = "color: red">${negativos[1]}</span> </span>`;
             }
         }
-        
+
         return this.sanitizer.bypassSecurityTrustHtml(str);
 
     }
@@ -333,7 +333,7 @@ export class EdaTableComponent implements OnInit {
     extractNumberRange(input) {
         const regex = /(?:<|<=|>|>=)?\s*(-?\d+)\s*(?:-|<|<=|>|>=)?\s*(-?\d+)?/;
         const match = input.trim().match(regex);
-        
+
         if (match) {
           // Determina qué número extraer en base al formato del string
           if (input.includes('<') || input.includes('>')) {
@@ -345,11 +345,11 @@ export class EdaTableComponent implements OnInit {
         return null; // Si no hay coincidencia
     }
 
-    customSort(event, cols) {
-        
+/* SDA CUSTOM */ customSort(event: any, cols: any) {
+
         const actualField = event.field;
         const actualCol = cols.find(col => col.field === actualField)
-        
+
         event.data.sort((data1, data2) => {
             let value1 = data1[event.field];
             let value2 = data2[event.field];
@@ -377,13 +377,15 @@ export class EdaTableComponent implements OnInit {
 
             return (event.order * result);
         });
+
+/* SDA CUSTOM */ // maintains the order of the crosstable
+/* SDA CUSTOM */ this.inject.sortedColumn = { field: event.field, order: event.order };
     }
-    public getColor(valor: number) { 
 
-        // modificar el true por una variable que se modifica en la edición de valores negativos. 
-
+    public getColor(valor: number) {
+        // modify true with a variable that is modified when editing negative values.
         if(valor<0 && this.inject.negativeNumbers) {
-            return '#FF0000' 
+            return '#FF0000'
         }
     }
 
