@@ -17,6 +17,7 @@ export class PanelChart {
   public draggable: boolean;
   public coordinates: Array<Array<number>>;
   public zoom: number;
+  public predictionConfig?: any;
   constructor(init?: Partial<PanelChart>) {
     Object.assign(this, init);
   }

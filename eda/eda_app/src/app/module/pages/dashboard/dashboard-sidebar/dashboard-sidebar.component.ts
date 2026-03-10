@@ -288,7 +288,7 @@ export class DashboardSidebarComponent {
       },
       {
         id: 'sendEmail',
-        label: $localize`:@@dashboardSidebarSendEmail: Enviar por email`,
+        label: $localize`:@@opcionMail: Enviar por email`,
         icon: "pi pi-envelope",
         command: () => {
           this.isMailConfigDialogVisible = true;

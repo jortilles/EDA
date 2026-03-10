@@ -12,7 +12,15 @@ export class OracleBuilderService extends QueryBuilderService {
        
     let o = tables.filter(table => table.name === origin)
       .map(table => { return table.query ? this.cleanViewString(table.query) : table.name })[0];
-    let myQuery = `SELECT ${columns.join(', ')} \nFROM "${o}"`;
+    let myQuery = `SELECT ${columns.join(', ')} \n `;
+    let vista = tables.filter(table => table.name === origin).map(table => { return table.query ? true: false })[0];
+    if( vista ){  // Es una vista. NO la pongo entre comillas
+      myQuery += `FROM ${o}`; 
+    }else{  // Es una tabla. La pongo entre comillas
+      myQuery += `FROM  "${o}"`;
+    }
+
+
 
     /** SI ES UN SELECT PARA UN SELECTOR  VOLDRÉ VALORS ÚNICS */
        if (forSelector === true) {
@@ -332,7 +340,7 @@ export class OracleBuilderService extends QueryBuilderService {
         if (el.column_type === 'date') {
            grouping.push(this.getDateFormat(el.SQLexpression, el.format) );
         } else {
-          if( el.aggregation_type === 'none') {
+          if( el.aggregation_type === 'none' && el.column_type != 'numeric') {
             grouping.push(` (${el.SQLexpression}) `);
           }
         }
@@ -655,6 +663,7 @@ export class OracleBuilderService extends QueryBuilderService {
   private cleanViewString(query: string) {
     const index = query.lastIndexOf('as');
     query = query.slice(0, index) + `"${query.slice(index + 3)}"`;
+    console.log('la query es:', query);
     return query;
   }
 }

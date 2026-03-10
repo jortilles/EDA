@@ -115,7 +115,7 @@
 
           <!-- Database Field -->
           <div class="space-y-2">
-            <label for="database" class="block font-medium" i18n="@@database">
+            <label for="database" class="block font-medium" i18n="@@inputNombreDB">
               Base de datos <span class="text-red-500">*</span>
             </label>
             <div class="relative">
@@ -203,7 +203,7 @@
           } @else if (connectionForm.get('type')?.value == 'bigquery') {
           <!-- Database Field -->
           <div class="space-y-2">
-            <label for="database" class="block font-medium" i18n="@@database">
+            <label for="database" class="block font-medium" i18n="@@inputNombreDB">
               Base de datos <span class="text-red-500">*</span>
             </label>
             <div class="relative">
@@ -546,7 +546,7 @@
               </div>
 
               <!-- SSL Connection Option -->
-              @if (['postgres', 'mysql','sqlserver'].includes(connectionForm.get('type')?.value)) {
+              @if (['postgres', 'mysql','sqlserver','clickhouse'].includes(connectionForm.get('type')?.value)) {
               <div class="flex items-start space-x-2">
                 <div class="flex h-5 items-center">
                   <input id="sslConnection" type="checkbox" formControlName="ssl"

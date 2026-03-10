@@ -52,7 +52,7 @@ export class OracleConnection extends AbstractConnection {
             return connection;
 
         } catch (err) {
-            console.error(err.message);
+            throw err;
         }
     }
 
@@ -70,6 +70,7 @@ export class OracleConnection extends AbstractConnection {
                     await this.client.close();
                 } catch (err) {
                     console.error(err.message);
+                     throw err;
                 }
             }
         }

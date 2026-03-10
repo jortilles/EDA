@@ -929,22 +929,6 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <context context-type="linenumber">22</context>
 </context-group>
 </trans-unit>
-<trans-unit id="inputTipo" datatype="html">
-<source>TIPO *</source>
-<target>TYPE*</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/data-sources/data-sources.component.html</context>
-<context context-type="linenumber">15</context>
-</context-group>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-<context context-type="linenumber">157</context>
-</context-group>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-<context context-type="linenumber">162</context>
-</context-group>
-</trans-unit>
 <trans-unit id="placholderSelectTipo" datatype="html">
 <source>Selecciona un tipo</source>
 <target>Select type</target>
@@ -1230,14 +1214,6 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <context context-type="linenumber">30</context>
 </context-group>
 </trans-unit>
-<trans-unit id="placeholderColumns" datatype="html">
-<source>Atributos</source>
-<target>Attributes</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/dashboard/filter-dialog/dashboard-filter-dialog.component.html</context>
-<context context-type="linenumber">46</context>
-</context-group>
-</trans-unit>
 
 <trans-unit id="inputMapTables" datatype="html">
 <source>Propiedades del mapa</source>
@@ -1330,6 +1306,14 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
 <context context-type="linenumber">15</context>
+</context-group>
+</trans-unit>
+<trans-unit id="updateModelXLCSV" datatype="html">
+<source>Actualizar el fichero origen para buscar nuevas tablas y columnas</source>
+<target>Update the source file to find new tables and columns</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/data-sources/data-source-list/data-source-list.component.ts</context>
+<context context-type="linenumber">30</context>
 </context-group>
 </trans-unit>
 <trans-unit id="saveModel" datatype="html">
@@ -1923,12 +1907,6 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <source>Privado</source>
 <target>Private</target>
 </trans-unit>
-
-
-<trans-unit id="col">
-<source>Atributo:</source>
-<target>Attribute:</target>
-</trans-unit>
 <trans-unit id="table">
 <source>de la entidad</source>
 <target>. Entity: </target>
@@ -2195,11 +2173,6 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>You are gonna delete all elements related to this group. Do you want to continue?</target>
 </trans-unit>
 
-<trans-unit id="DeleteGroupButton">
-<source>Si, ¡Eliminalo!</source>
-<target>Yes, delete it!</target>
-</trans-unit>
-
 <trans-unit id="deleteDashboardWarning">
 <source>Estás a punto de borrar el informe: </source>
 <target>You are gonna delete dashboard: </target>
@@ -2304,15 +2277,6 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <source>EDITAR CONSULTA SQL</source>
 <target>EDIT SQL QUERY</target>
 </trans-unit>
-
-<trans-unit id="DatePickerAll">
-<source>Todas</source>
-<target>All</target>
-</trans-unit>
-<trans-unit id="DatePickerYesterday">
-<source>Ayer</source>
-<target>Yesterday</target>
-</trans-unit>
 <trans-unit id="DatePickerBeforeYesterday">
 <source>Antes de ayer</source>
 <target>Before Yesterday</target>
@@ -2394,11 +2358,6 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>Select range</target>
 </trans-unit>
 
-<trans-unit id="filterButtonDashboard">
-<source>Filtrar</source>
-<target>Filter </target>
-</trans-unit>
-
 
 <trans-unit id="kpiAlertH6" datatype="html">
 <source>      Generar alerta    </source>
@@ -2441,6 +2400,14 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
 <context context-type="linenumber">60</context>
 </context-group>
+</trans-unit>
+<trans-unit id="kpiSize">
+<source>Modificar el tamaño del KPI</source>
+<target>Modify KPI size</target>
+</trans-unit>
+<trans-unit id="increaseKpiSize">
+  <source>Incrementar el tamaño del KPI</source>
+  <target>Increment KPI size</target>
 </trans-unit>
 <trans-unit id="addAlert" datatype="html">
 <source> Añadir alerta    </source>
@@ -2567,10 +2534,6 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <trans-unit id="csvField">
 <source>Campo</source>
 <target>Field</target>
-</trans-unit>
-<trans-unit id="csvFormat">
-<source>Formato</source>
-<target>Format</target>
 </trans-unit>
 
 <trans-unit id="functionalities">
@@ -3190,11 +3153,6 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>Manage Caché</target>
 </trans-unit>
 
-<trans-unit id="conexionh3">
-<source>Conexión  </source>
-<target>Connection</target>
-</trans-unit>
-
 <trans-unit id="newDashboardtitle">
 <source>CREA UN NUEVO INFORME</source>
 <target>YOUR NEW DASHBOARD</target>
@@ -3263,11 +3221,6 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <trans-unit id="setNewAlert">
 <source>Configurar nueva alerta</source>
 <target>Set new alert</target>
-</trans-unit>
-
-<trans-unit id="inputFilter">
-<source>FILTROS</source>
-<target>FILTERS</target>
 </trans-unit>
 
 <trans-unit id="comparativeTooltip">
@@ -3878,10 +3831,6 @@ Once configured you can invoke it whenever you want from the button.</target>
 <source>El puerto es obligatorio</source>
 <target>Port is required</target>
 </trans-unit>
-<trans-unit id="database">
-<source>Base de datos</source>
-<target>Database</target>
-</trans-unit>
 <trans-unit id="databaseRequired">
 <source>Base de datos es obligatorio</source>
 <target>Database is required</target>
@@ -4026,11 +3975,6 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Configure a map in the Map Properties tab</target>
 </trans-unit>
 
-<trans-unit id="homeTitle">
-<source>Mis informes</source>
-<target>My reports</target>
-</trans-unit>
-
 <trans-unit id="filterReports">
 <source>FILTRAR INFORMES:</source>
 <target>FILTER REPORTS:</target>
@@ -4166,18 +4110,12 @@ Once configured you can invoke it whenever you want from the button.</target>
 <source>Actualiza tu información básica de perfil</source>
 <target>Update your basic profile information</target>
 </trans-unit>
-<trans-unit id="labelNombreUsuario">
-<source>Nombre de usuario</source>
-<target>Username</target>
-</trans-unit>
+
 <trans-unit id="usernameLengthValidation">
 <source>El nombre de usuario debe tener al menos 2 caracteres.</source>
 <target>Username must be at least 2 characters long.</target>
 </trans-unit>
-<trans-unit id="labelUsuarioEmail">
-<source>Correo electrónico</source>
-<target>Email</target>
-</trans-unit>
+
 <trans-unit id="emailValidation">
 <source>Por favor ingresa un email válido.</source>
 <target>Please enter a valid email address.</target>
@@ -4310,6 +4248,16 @@ Once configured you can invoke it whenever you want from the button.</target>
 <trans-unit id="chartComparationOptionDescription">
 <source>Compara con datos de períodos anteriores</source>
 <target>Compares with data from previous periods</target>
+</trans-unit>
+
+<trans-unit id="tooltipBlockedByComparative">
+<source>Bloqueado porque comparativa está activa</source>
+<target>Blocked because comparative is active</target>
+</trans-unit>
+
+<trans-unit id="tooltipBlockedByTrendOrPrediction">
+<source>Bloqueado porque tendencia o predicción está activa</source>
+<target>Blocked because trend or prediction is active</target>
 </trans-unit>
 
 <trans-unit id="chartLabelOption">
@@ -4591,11 +4539,6 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Enter the technical ID</target>
 </trans-unit>
 
-<trans-unit id="SQLExpression">
-<source>Expresión SQL</source>
-<target>SQL expression</target>
-</trans-unit>
-
 <trans-unit id="enterSQLExpression">
 <source>Ingrese su consulta SQL aquí</source>
 <target>Enter your SQL query here</target>
@@ -4757,11 +4700,6 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Value</target>
 </trans-unit>
 
-<trans-unit id="colour">
-<source>Color</source>
-<target>Colour</target>
-</trans-unit>
-
 <trans-unit id="orderAlerts">
 <source>Las alertas se aplicarán en orden de creación. Haga clic en el botón X para eliminar una alerta.</source>
 <target>Alerts must be applied in the order they are created. Click the X button to remove an alert.</target>
@@ -4840,11 +4778,6 @@ Once configured you can invoke it whenever you want from the button.</target>
 <trans-unit id="dashboardSidebarDownloadImage">
 <source>Descargar imagen</source>
 <target>Download image</target>
-</trans-unit>
-
-<trans-unit id="dashboardSidebarSendEmail">
-<source>Enviar por email</source>
-<target>Send by email</target>
 </trans-unit>
 
 <trans-unit id="dashboardSidebarCustomAction">
@@ -5256,10 +5189,6 @@ Once configured you can invoke it whenever you want from the button.</target>
 <source>Tabla Árbol</source>
 <target>Tree Table</target>
 </trans-unit>
-<trans-unit id="NameTablaQuality">
-<source>Tabla DataQuality</source>
-<target>Table DataQuality</target>
-</trans-unit>
 <trans-unit id="SureDataQuality">
 <source>¿Estás seguro de que deseas continuar con la visualización de DataQuality? Esta acción puede tomar un poco de tiempo.</source>
 <target>Are you sure you want to continue viewing DataQuality? This may take a while.</target>
@@ -5568,11 +5497,6 @@ OR<ph id="5"/>
     <target>Data Export/Import</target>
   </trans-unit>
 
-   <trans-unit id="permissionAdvancedOptions">
-      <source>Opciones avanzadas</source>
-      <target>Advanced options</target>
-    </trans-unit>
-
     <trans-unit id="AllTagsDescription">
       <source>Acceso a todos los elementos sin restricciones</source>
       <target>Unrestricted access to all features</target>
@@ -5613,10 +5537,7 @@ OR<ph id="5"/>
         <target>Comparative</target>
       </trans-unit>
 
-<trans-unit id="showPointLines">
-  <source>Mostrar Puntos en Lineas</source>
-  <target>Show Points on Lines</target>
-</trans-unit>
+
 <trans-unit id="showLinesPrediction">
   <source>Mostrar Predicción</source>
   <target>Show Prediction</target>
@@ -5625,10 +5546,7 @@ OR<ph id="5"/>
   <source>Quitar Predicción</source>
   <target>Remove Prediction</target>
 </trans-unit>
-<trans-unit id="chartLabelLinesOptionDescription">
-  <source>Muestra las líneas en los puntos</source>
-  <target>Show the lines at the points</target>
-</trans-unit>
+
 <trans-unit id="chartLabelLinePredicctionOptionDescription">
   <source>Muestra las predicción de la serie</source>
   <target>Shows the series predictions</target>
@@ -5664,10 +5582,6 @@ OR<ph id="5"/>
 <trans-unit id="tableRestrictionAccess">
   <source>Los usuarios y grupos configurados tendrán acceso autorizado a la tabla: </source>
   <target>Configured users and groups will have authorized access to the table: </target>
-</trans-unit>
-<trans-unit id="tableRestrictionAccessMessageOption">
-  <source>Desactivar para habilitar el acceso a todos los usuarios</source>
-  <target>Disable to enable access for all users</target>
 </trans-unit>
 <trans-unit id="tableActivationAccess">
   <source>Los usuarios y grupos configurados NO tendrán acceso a la tabla: </source>
@@ -5721,21 +5635,9 @@ OR<ph id="5"/>
   <source>Opciones del filtro:</source>
   <target>Filter options:</target>
   </trans-unit>
-<trans-unit id="sqlExpressionCalculatedField">
-  <source>Expresión SQL</source>
-  <target>SQL Expression</target>
-</trans-unit>
-<trans-unit id="typeSelectorText">
-  <source>Tipo de columna</source>
-  <target>Column type</target>
-</trans-unit>
 <trans-unit id="decimalNumberText">
   <source>Número de decimales</source>
   <target>Number of decimals</target>
-</trans-unit>
-<trans-unit id="typeSelectorAggregation">
-  <source>Agregación</source>
-  <target>Aggregation</target>
 </trans-unit>
 <trans-unit id="CheckExpression">
   <source>Comprobar expresión</source>

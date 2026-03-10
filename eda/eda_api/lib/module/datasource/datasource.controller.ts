@@ -221,7 +221,7 @@ export class DataSourceController {
                 // Buscar DataSources
                 const dataSources = await DataSource.find({}, '_id ds.metadata.model_name ds.security');
 
-                if (!dataSources || dataSources.length === 0) {
+                if (!dataSources) {
                     return next(new HttpException(500, 'Error loading DataSources'));
                 }
 
@@ -248,7 +248,7 @@ export class DataSourceController {
                 // Filtrar DataSources por el owner actual
                 const dataSources = await DataSource.find({ 'ds.metadata.model_owner': { $in: [req.user._id] } }, '_id ds.metadata.model_name ds.metadata.model_owner');
 
-                if (!dataSources || dataSources.length === 0) {
+                if (!dataSources) {
                     return next(new HttpException(500, 'Error loading DataSources'));
                 }
 

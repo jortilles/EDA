@@ -31,8 +31,12 @@ export class KpiEditDialogComponent implements OnInit, AfterViewChecked {
     public operand: string;
     public color: string = '#ff0000';
     public alerts: Array<any> = [];
+    private originalAlerts: Array<any> = [];
     public alertInfo: string = $localize`:@@alertsInfo: Cuando el valor del kpi sea (=, <,>) que el valor definido cambiará el color del texto`;
     public ptooltipViewAlerts: string = $localize`:@@ptooltipViewAlerts:Configurar alertas`;
+
+    public modifiedFontPoints: number = 0;
+    public panelBaseResultSize: number = 0;
 
     public units: string;
     public quantity: number;
@@ -68,9 +72,8 @@ export class KpiEditDialogComponent implements OnInit, AfterViewChecked {
     }
 
     ngAfterViewChecked(): void {
-        if (!this.colorsLoaded && this.panelChartComponent?.componentRef?.instance?.inject?.edaChart) {
+        if (!this.colorsLoaded && this.panelChartComponent?.componentRef?.instance?.inject?.edaChart.chartType) {
             this.chartContent = this.panelChartComponent.componentRef.instance.inject.edaChart;
-            
             if (this.assignedColors.length === 0) {
                 setTimeout(() => {
                     this.loadChartColors();
@@ -83,9 +86,22 @@ export class KpiEditDialogComponent implements OnInit, AfterViewChecked {
     ngOnInit(): void {
         this.panelChartConfig = this.controller.params.panelChart;
         this.edaChart = this.controller.params.panelChart.edaChart;
+        this.panelBaseResultSize = this.controller.params.panelBaseResultSize || 0;
         const config: any = this.panelChartConfig.config.getConfig();
 
-        this.alerts = config.alertLimits || [];
+        this.originalAlerts = [...(config.alertLimits || [])];
+        this.alerts = [...this.originalAlerts];
+        this.modifiedFontPoints = config.modifiedFontPoints || 0;
+
+        if (this.panelBaseResultSize > 0) {
+        setTimeout(() => {
+            const kpiInstance = this.panelChartComponent?.componentRef?.instance;
+                if (kpiInstance) {
+                    kpiInstance.baseResultSize = this.panelBaseResultSize;
+                    this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
+                }
+            }, 100);
+        }
     }
 
     setActiveTab(tab: "colors" | "alerts"): void {
@@ -104,15 +120,19 @@ export class KpiEditDialogComponent implements OnInit, AfterViewChecked {
             edaChart: this.edaChart,
             chartType: this.panelChartConfig.chartType,
             chartSubType: this.panelChartConfig.edaChart,
-            assignedColors: [...this.assignedColors]
+            assignedColors: [...this.assignedColors],
+            modifiedFontPoints: this.modifiedFontPoints,
         });
     }
 
     closeChartConfig() {
-        // Restaurar colores originales
-        this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
-        this.applyColorsToChart();
-        
+        this.alerts = [...this.originalAlerts];
+
+        try {
+            this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
+            this.applyColorsToChart();
+        } catch (_) {}
+
         this.onClose(EdaDialogCloseEvent.NONE);
     }
 
@@ -138,12 +158,13 @@ export class KpiEditDialogComponent implements OnInit, AfterViewChecked {
 
     applyColorsToChart() {
         if (!this.chartContent) return;
+        if (!this.panelChartComponent?.componentRef?.instance?.inject?.edaChart) return;
 
         const dataset = this.chartContent.chartDataset;
 
         for (let i = 0; i < dataset.length; i++) {
             const colorConfig = this.assignedColors.find(c => c.value === dataset[i].label);
-            
+
             if (colorConfig) {
                 dataset[i].backgroundColor = this.hex2rgb(colorConfig.color, 90);
                 dataset[i].borderColor = this.hex2rgb(colorConfig.color, 100);
@@ -155,7 +176,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewChecked {
         }
 
         this.panelChartComponent.componentRef.instance.inject.edaChart.chartDataset = [...dataset];
-        this.panelChartComponent.componentRef?.instance.updateChart();
+        this.panelChartComponent.componentRef.instance.updateChart();
     }
 
     onClose(event: EdaDialogCloseEvent, response?: any): void {
@@ -294,5 +315,18 @@ export class KpiEditDialogComponent implements OnInit, AfterViewChecked {
 
         // Aplicar colores
         this.applyColorsToChart();
+    }
+
+    modifyKpiSize(newValue?: number) {
+        const min = -90;
+        const max = 300;
+        if (newValue !== undefined) {
+            this.modifiedFontPoints = Math.min(max, Math.max(min, newValue || 0));
+        } else {
+            this.modifiedFontPoints = Math.min(max, Math.max(min, this.modifiedFontPoints));
+        }
+        const instance = this.panelChartComponent.componentRef.instance;
+        instance.inject.modifiedFontPoints = this.modifiedFontPoints;
+        this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
     }
 }

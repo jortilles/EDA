@@ -674,7 +674,6 @@ export class ChartUtilsService {
                 notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
                 notAllowed.splice(notAllowed.indexOf('line'), 1);
                 notAllowed.splice(notAllowed.indexOf('area'), 1);
-                notAllowed.splice(notAllowed.indexOf('sunburst'), 1);
                 notAllowed.splice(notAllowed.indexOf('stackedbar100'), 1);
             }
         if(dataDescription.otherColumns.length===1 && dataDescription.numericColumns.length>=1 && dataDescription.totalColumns>=2 ){
@@ -758,10 +757,11 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('pyramid'), 1);
         }
 
-        //treetable (Al menos tres columnas y dos numéricas que son id y las relaciones_id)
-        // if(dataDescription.totalColumns > 2 && dataDescription.numericColumns.length > 1) {
-        //     notAllowed.splice(notAllowed.indexOf('treetable'), 1);
-        // }
+
+        // sunbrust two or more value columns and one numeric
+        if(  dataDescription.totalColumns > 2 && dataDescription.otherColumns.length >= 1 && dataDescription.numericColumns.length === 1  ) {
+            notAllowed.splice(notAllowed.indexOf('sunburst'), 1);
+        }
 
         // Pruebas con hacer dinámico el treeTable
         if(dataDescription.totalColumns > 2) {

@@ -330,15 +330,14 @@
         }
 
         
-        <!-- Row Roles and Permissions -->
-        @if (columnPanel.computed_column === 'no') {
-          <div class="mb-6">
-            <h3 class="text-lg font-medium text-gray-700 mb-3" i18n="@@rolesPermisos">Roles y permisos de fila</h3>
-            <eda-table [inject]="permissionsColumn"></eda-table>
-          </div>
-        }
+
+      <div class="mb-6">
+        <h3 class="text-lg font-medium text-gray-700 mb-3" i18n="@@rolesPermisos">Roles y permisos de fila</h3>
+        <eda-table [inject]="permissionsColumn"></eda-table>
+      </div>
+
         
-        @if (columnPanel.computed_column === 'no') {
+
           <!-- Action Buttons -->
           <div class="flex flex-wrap gap-2 mb-6">
             <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#00BFB3] hover:bg-[#00BFB3]/90 text-white  h-10 px-4 py-2"
@@ -352,8 +351,8 @@
               {{addPermission}}
             </button>
           </div>
-        
-        
+
+        @if (columnPanel.computed_column === 'no') {        
           <!-- Hide Column Toggle -->
           <div class="flex items-center space-x-2">
             <label class="font-medium" i18n="@@esconderColumna">Esconder columna</label>

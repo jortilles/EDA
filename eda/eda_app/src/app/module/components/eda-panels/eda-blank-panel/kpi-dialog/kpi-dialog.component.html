@@ -10,20 +10,20 @@
 
     <!-- Settings -->
     <div class="p-6 flex-1 overflow-y-auto">
+      @if (edaChart !== 'kpi' ) {
       <div [ngClass]="edaChart !== 'kpi' ? 'mb-6 grid grid-cols-2 gap-4': ' grid mb-6'">
         <button
           [class]="'py-2 px-4 text-center rounded-md transition-all ' + (activeTab === 'alerts' ? 'bg-[#00BFB3] text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-700')"
           (click)="setActiveTab('alerts')" i18n="@@kpiAlerts">
           Alertas
         </button>
-        @if (edaChart !== 'kpi' ) {
         <button
           [class]="'py-2 px-4 text-center rounded-md transition-all ' + (activeTab === 'colors' ? 'bg-[#00BFB3] text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-700')"
           (click)="setActiveTab('colors')" i18n="@@colorsChartH6">
           Colores
         </button>
-        }
       </div>
+    }
 
       <!-- Colors Tab -->
       @if (activeTab === 'colors') {
@@ -63,12 +63,33 @@
 
       <div class="space-y-6">
         <div class="grid gap-6">
+
+          <!-- Sección 1: Tamaño -->
           <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
             <div class="px-4 py-3 border-b bg-white">
               <h3 class="font-medium text-slate-800 flex items-center gap-2">
                 <span
                   class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">
                   1
+                </span>
+                <span i18n="@@kpiSize">Modificar el tamaño del KPI</span>
+              </h3>
+            </div>
+            <div class="p-4 inline-flex w-full gap-4 items-center justify-between">
+              <span i18n="@@increaseKpiSize">Incrementar el tamaño del KPI</span>
+              <input type="number" [ngModel]="modifiedFontPoints" min="-90" max="300"
+                (ngModelChange)="modifyKpiSize($event)"
+                class="w-1/2 px-3 py-2 border rounded-md bg-white text-center" />
+            </div>
+          </div>
+
+          <!-- Sección 2: Configurar nueva alerta -->
+          <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
+            <div class="px-4 py-3 border-b bg-white">
+              <h3 class="font-medium text-slate-800 flex items-center gap-2">
+                <span
+                  class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">
+                  2
                 </span>
                 <span i18n="@@setNewAlert">Configurar nueva alerta</span>
               </h3>
@@ -164,7 +185,7 @@
               <h3 class="font-medium text-slate-800 flex items-center gap-2">
                 <span
                   class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">
-                  2
+                  3
                 </span>
                 <span i18n="@@alertsConfigured">Alertas configuradas</span> ({{alerts.length}})
               </h3>
@@ -175,7 +196,7 @@
                   <tr class="bg-slate-50 text-slate-600">
                     <th class="text-left p-3 font-medium" i18n="@@condition">Condición</th>
                     <th class="text-left p-3 font-medium" i18n="@@value">Valor</th>
-                    <th class="text-left p-3 font-medium" i18n="@@colour">Color</th>
+                    <th class="text-left p-3 font-medium" i18n="@@colorKpiH6">Color</th>
                     <th class="text-right p-3 font-medium" i18n="@@actions">Acciones</th>
                   </tr>
                 </thead>

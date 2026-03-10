@@ -1169,22 +1169,6 @@
 <context context-type="linenumber">22</context>
 </context-group>
 </trans-unit>
-<trans-unit id="inputTipo" datatype="html">
-<source>TIPO *</source>
-<target>GARS *</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/data-sources/data-sources.component.html</context>
-<context context-type="linenumber">15</context>
-</context-group>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-<context context-type="linenumber">157</context>
-</context-group>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-<context context-type="linenumber">162</context>
-</context-group>
-</trans-unit>
 <trans-unit id="placholderSelectTipo" datatype="html">
 <source>Selecciona un tipo</source>
 <target>Sélectionnez un type</target>
@@ -1471,14 +1455,6 @@
 <context context-type="linenumber">30</context>
 </context-group>
 </trans-unit>
-<trans-unit id="placeholderColumns" datatype="html">
-<source>Atributos</source>
-<target>Attributs</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/dashboard/filter-dialog/dashboard-filter-dialog.component.html</context>
-<context context-type="linenumber">46</context>
-</context-group>
-</trans-unit>
 <trans-unit id="inputMapTables" datatype="html">
 <source>Propiedades del mapa</source>
 <target>Propriétés de la carte</target>
@@ -1578,6 +1554,14 @@
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
 <context context-type="linenumber">15</context>
+</context-group>
+</trans-unit>
+<trans-unit id="updateModelXLCSV" datatype="html">
+<source>Actualizar el fichero origen para buscar nuevas tablas y columnas</source>
+<target>Mettre à jour le fichier source pour trouver les nouvelles tables et colonnes</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/data-sources/data-source-list/data-source-list.component.ts</context>
+<context context-type="linenumber">30</context>
 </context-group>
 </trans-unit>
 <trans-unit id="saveModel" datatype="html">
@@ -2165,11 +2149,6 @@
 <source>Privado</source>
 <target>Privé</target>
 </trans-unit>
-
-<trans-unit id="col">
-<source>Atributo:</source>
-<target>Attribut:</target>
-</trans-unit>
 <trans-unit id="table">
 <source>de la entidad</source>
 <target>de l'entité</target>
@@ -2432,11 +2411,6 @@
 <target>Vous allez supprimer tous les éléments liés à ce groupe. Voulez-vous continuer?</target>
 </trans-unit>
 
-<trans-unit id="DeleteGroupButton">
-<source>Si, ¡Eliminalo!</source>
-<target>Oui, supprimez-le!</target>
-</trans-unit>
-
 <trans-unit id="deleteDashboardWarning">
 <source>Estás a punto de borrar el informe: </source>
 <target>Vous êtes sur le point de supprimer le rapport: </target>
@@ -2540,15 +2514,6 @@
 <source>EDITAR CONSULTA SQL</source>
 <target>MODIFIER LA REQUÊTE SQL</target>
 </trans-unit>
-
-<trans-unit id="DatePickerAll">
-<source>Todas</source>
-<target>Tous</target>
-</trans-unit>
-<trans-unit id="DatePickerYesterday">
-<source>Ayer</source>
-<target>Hier</target>
-</trans-unit>
 <trans-unit id="DatePickerBeforeYesterday">
 <source>Antes de ayer</source>
 <target>Avant-hier</target>
@@ -2630,11 +2595,6 @@
 <target>Sélectionnez une plage</target>
 </trans-unit>
 
-<trans-unit id="filterButtonDashboard">
-<source>Filtrar</source>
-<target>Filtre </target>
-</trans-unit>
-
 <trans-unit id="kpiAlertH6" datatype="html">
 <source>      Generar alerta    </source>
 <target>      Générer une alerte    </target>
@@ -2676,6 +2636,14 @@
   <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
   <context context-type="linenumber">60</context>
 </context-group>
+</trans-unit>
+<trans-unit id="kpiSize">
+  <source>Modificar el tamaño del KPI</source>
+  <target>Modifier la taille du KPI</target>
+</trans-unit>
+<trans-unit id="increaseKpiSize">
+  <source>Incrementar el tamaño del KPI</source>
+  <target>Incrementer la taille du KPI</target>
 </trans-unit>
 <trans-unit id="addAlert" datatype="html">
 <source> Añadir alerta    </source>
@@ -2800,10 +2768,6 @@
   <trans-unit id="csvField">
     <source>Campo</source>
     <target>Champ</target>
-  </trans-unit>
-  <trans-unit id="csvFormat">
-    <source>Formato</source>
-    <target>Format</target>
   </trans-unit>
 
   <trans-unit id="functionalities">
@@ -3426,11 +3390,6 @@
     <target>Configurer le cache</target>
   </trans-unit>
 
-  <trans-unit id="conexionh3">
-    <source>Conexión</source>
-    <target>Connexion</target>
-  </trans-unit>
-
   <trans-unit id="newDashboardtitle">
     <source>CREA UN NUEVO INFORME</source>
     <target>CRÉER UN NOUVEAU RAPPORT</target>
@@ -3499,11 +3458,6 @@
   <trans-unit id="setNewAlert">
     <source>Configurar nueva alerta</source>
     <target>Configurer une nouvelle alerte</target>
-  </trans-unit> 
-
-  <trans-unit id="inputFilter">
-    <source>FILTROS</source>
-    <target>FILTRES</target>
   </trans-unit> 
 
   <trans-unit id="comparativeTooltip">
@@ -4102,11 +4056,6 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Tabla Árbol</source>
         <target>Table arborescente</target>
       </trans-unit>
-
-      <trans-unit id="NameTablaQuality">
-        <source>Tabla DataQuality</source>
-        <target>Tableau DataQuality</target>       
-      </trans-unit>
       <trans-unit id="SureDataQuality">
         <source>¿Estás seguro de que deseas continuar con la visualización de DataQuality? Esta acción puede tomar un poco de tiempo.</source>
         <target>Êtes-vous sûr de vouloir continuer avec la visualisation de la qualité des données ? Cette action peut prendre un peu de temps.</target>       
@@ -4327,10 +4276,6 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>El puerto es obligatorio</source>
         <target>Le port est obligatoire</target>
       </trans-unit>
-      <trans-unit id="database">
-        <source>Base de datos</source>
-        <target>Base de données</target>
-      </trans-unit>
       <trans-unit id="databaseRequired">
         <source>Base de datos es obligatorio</source>
         <target>Une base de données est nécessaire</target>
@@ -4466,11 +4411,6 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="noMapsAvailableDescription">
         <source>Configurar un mapa en la pestaña Propiedades del mapa</source>
         <target>Configurez une carte dans l'onglet Propriétés de la carte</target>
-      </trans-unit>
-
-      <trans-unit id="homeTitle">
-        <source>Mis informes</source>
-        <target>Mes rapports</target>
       </trans-unit>
 
       <trans-unit id="filterReports">
@@ -4663,6 +4603,16 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 <trans-unit id="chartComparationOptionDescription">
   <source>Compara con datos de períodos anteriores</source>
   <target>Comparer avec les données des périodes précédentes</target>
+</trans-unit>
+
+<trans-unit id="tooltipBlockedByComparative">
+  <source>Bloqueado porque comparativa está activa</source>
+  <target>Bloqué car la comparaison est active</target>
+</trans-unit>
+
+<trans-unit id="tooltipBlockedByTrendOrPrediction">
+  <source>Bloqueado porque tendencia o predicción está activa</source>
+  <target>Bloqué car la tendance ou la prédiction est active</target>
 </trans-unit>
 
 <trans-unit id="chartLabelOption">
@@ -4945,11 +4895,6 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Saisissez l'identifiant technique</target>
 </trans-unit>
 
-<trans-unit id="SQLExpression">
-  <source>Expresión SQL</source>
-  <target>Expression SQL</target>
-</trans-unit>
-
 <trans-unit id="enterSQLExpression">
   <source>Ingrese su consulta SQL aquí</source>
   <target>Saisissez votre requête SQL ici</target>
@@ -5110,11 +5055,6 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Valeur</target>
 </trans-unit>
 
-<trans-unit id="colour">
-  <source>Color</source>
-  <target>Couleur</target>
-</trans-unit>
-
 <trans-unit id="actions">
   <source>Acciones</source>
   <target>Actes</target>
@@ -5198,11 +5138,6 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 <trans-unit id="dashboardSidebarDownloadImage">
   <source>Descargar imagen</source>
   <target>Télécharger l'image</target>
-</trans-unit>
-
-<trans-unit id="dashboardSidebarSendEmail">
-  <source>Enviar por email</source>
-  <target>Envoyer par courriel</target>
 </trans-unit>
 
 <trans-unit id="dashboardSidebarCustomAction">
@@ -5722,11 +5657,6 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <target>Exportation/importation de données</target>
       </trans-unit>
 
-       <trans-unit id="permissionAdvancedOptions">
-        <source>Opciones avanzadas</source>
-        <target>Options avancées</target>
-      </trans-unit>
-
       <trans-unit id="AllTagsDescription">
         <source>Acceso a todos los elementos sin restricciones</source>
         <target>Accès illimité à toutes les fonctionnalités</target>
@@ -5766,20 +5696,11 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Comparativa</source>
         <target>Comparatif</target>
       </trans-unit>
-      <trans-unit id="chartTypesTableAnalized" datatype="html">
-        <source>Tabla DataQuality</source>
-        <target>Tableau de qualité des données</target>
-      </trans-unit>
+      
 
-      <trans-unit id="chartTypes19">
-        <source>Gráfico de Barras Apiladas al 100%</source>
-        <target>Graphique à barres empilées à 100 %</target>
-      </trans-unit>
+      
 
-      <trans-unit id="showPointLines">
-        <source>Mostrar Puntos en Lineas</source>
-        <target>Afficher les points sur les lignes</target>
-      </trans-unit>
+      
       <trans-unit id="showLinesPrediction">
         <source>Mostrar Predicción</source>
         <target>Afficher la prédiction</target>
@@ -5788,10 +5709,7 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Quitar Predicción</source>
         <target>Supprimer la prédiction</target>
       </trans-unit>
-      <trans-unit id="chartLabelLinesOptionDescription">
-        <source>Muestra las líneas en los puntos</source>
-        <target>Représentez les lignes aux points</target>
-      </trans-unit>
+      
       <trans-unit id="chartLabelLinePredicctionOptionDescription">
         <source>Muestra las predicción de la serie</source>
         <target>Affiche les prédictions de la série</target>
@@ -5827,10 +5745,6 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="tableRestrictionAccess">
         <source>Los usuarios y grupos configurados tendrán acceso autorizado a la tabla: </source>
         <target>Les utilisateurs et groupes configurés auront un accès autorisé à la table: </target>
-      </trans-unit>
-      <trans-unit id="tableRestrictionAccessMessageOption">
-        <source>Desactivar para habilitar el acceso a todos los usuarios</source>
-        <target>Désactiver pour permettre l'accès à tous les utilisateurs</target>
       </trans-unit>
       <trans-unit id="tableActivationAccess">
         <source>Los usuarios y grupos configurados NO tendrán acceso a la tabla: </source>
@@ -5884,22 +5798,9 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Opciones del filtro:</source>
         <target>Options de filtrage:</target>
       </trans-unit>
-
-      <trans-unit id="sqlExpressionCalculatedField">
-        <source>Expresión SQL</source>
-        <target>Expression SQL</target>
-      </trans-unit>
-      <trans-unit id="typeSelectorText">
-        <source>Tipo de columna</source>
-        <target>Type de colonne</target>
-      </trans-unit>
       <trans-unit id="decimalNumberText">
         <source>Número de decimales</source>
         <target>Nombre de décimales</target>
-      </trans-unit>
-      <trans-unit id="typeSelectorAggregation">
-        <source>Agregación</source>
-        <target>Agrégation</target>
       </trans-unit>
       <trans-unit id="CheckExpression">
         <source>Comprobar expresión</source>
@@ -6103,10 +6004,6 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="arimaTargetColumnDesc">
         <source>Columna numérica a predecir</source>
         <target>Colonne numérique à prédire</target>
-      </trans-unit>
-      <trans-unit id="advancedConfigLabel">
-        <source>Configuración avanzada</source>
-        <target>Configuration avancée</target>
       </trans-unit>
       <trans-unit id="advancedConfigDesc">
         <source>Personalizar los parámetros del modelo</source>

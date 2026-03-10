@@ -876,9 +876,10 @@ export class DashboardController {
     // entonces tengo prohivida toda la tabla excepto esa columna
     if (dataModelObject.ds.metadata.model_granted_roles.length > 0) { /** SI HAY PERMISOS DEFINIDOS. SI NO, NO HAY SEGURIDAD */
       if (dataModelObject.ds.metadata.model_granted_roles.filter(r => r.global == false && r.none == false).length > 0) {
-        dataModelObject.ds.metadata.model_granted_roles.filter(r => r.global == false && r.none == false && r.value[0] == '(~ => All)' ).forEach(c => {
+        dataModelObject.ds.metadata.model_granted_roles.filter(r => r.global == false && r.none == false  ).forEach(c => {
          // para dada columna que digo que puedes ver.  
          // dejas de poder ver el resto de la tabla.
+         // todo o algun valor
          
           if (c.users?.includes(user)) {
             allowedColumns.push(c);

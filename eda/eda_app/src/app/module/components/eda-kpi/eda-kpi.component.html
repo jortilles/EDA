@@ -8,13 +8,13 @@
 
 @if(inject.showChart){
   <ng-container>
-    <div class="flex flex-col w-full h-full overflow-hidden">
+    <div class="relative w-full h-full overflow-hidden">
 
-      <div #kpiContainer class="flex flex-col justify-center items-center text-center text-wrap">
+      <div #kpiContainer class="absolute top-0 left-0 w-full z-10 flex flex-col justify-center items-center text-center text-wrap">
         <ng-container *ngTemplateOutlet="kpiValueContainer;"></ng-container>
       </div>
 
-      <div class="w-full overflow-hidden" style="flex-grow: 1; min-height: 70px;">
+      <div class="absolute bottom-0 left-0 w-full overflow-hidden" style="height: 70%;">
         <eda-chart #EdaChart [inject]="inject.edaChart" class="h-full w-full"></eda-chart>
       </div>
 
