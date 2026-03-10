@@ -22,14 +22,8 @@ export class ChatgptService extends ApiService{
 
     const payload = { text, history, data, schema, parameters };
 
-    console.log('=>=>=>=>=>=>=>=>=>=>=>=>=>=> PAYLOAD =>=>=>=>', payload);
-
     return this.post(`${this.chatGptRoute}/prompt`, payload).pipe(
-      map((resp: any) => {
-        // Si tu backend devuelve un campo 'text' u otro, adáptalo aquí.
-        // Por defecto devolvemos resp directamente.
-        console.log('=>=>=>=> RESPUESTA =>=>=>=>=>=>=>=>=>=>=>=>=>', resp);
-        
+      map((resp: any) => {        
         return resp;
       })
     );

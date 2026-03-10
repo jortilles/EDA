@@ -1649,10 +1649,6 @@ public tableNodeExpand(event: any): void {
     */
     public runManualQuery = () => {
 
-        // debugger;
-        console.log('EBP =====> currentQuery: ', this.currentQuery)
-        console.log('EBP =====> ', this)
-
         const chartType = this.panelChart?.props?.chartType || '';
 
         if (chartType == 'crosstable' && this.indextab === 1) {
@@ -2017,16 +2013,6 @@ private assignLevels(nodes: any[], level = 0): void {
         
         this.rootTable = _.cloneDeep(rootTable);
         this.userSelectedTable = principalTable;
-
-        // const currentQueryPrincipal = currentQuery.find(
-        //     (cq: any) => cq.table_id === principalTable
-        // );
-
-        // columns = rootTable.columns.filter((col: any) => {
-            //     if((currentQueryPrincipal.column_name !== col.column_name) && col.visible) {
-                //         return col
-                //     }
-                // })
                 
         let columns: any[] = []
         columns = rootTable.columns.filter((col: any) => !currentQuery.some((e: any) => e.column_name === col.column_name))
@@ -2036,17 +2022,8 @@ private assignLevels(nodes: any[], level = 0): void {
 
     newSelectedFiltersUpdate(event: any) {
         const {filteredColumns, selectedFilters} = event
-        console.log('EVENTTTTTTTTT .... ', event);
-        console.log('filteredColumns .... ', filteredColumns);
-        console.log('selectedFilters .... ', selectedFilters);
-
-        console.log('selectedFilters ===> ', this.selectedFilters)
-        console.log('filtredColumns ===> ', this.filtredColumns)
-
         this.selectedFilters = _.cloneDeep(selectedFilters)
         this.filtredColumns = _.cloneDeep(filteredColumns)
-
-        // debugger;
     }
 
     trackByTable(index: number, table: any): any {

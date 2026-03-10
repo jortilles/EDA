@@ -3,7 +3,7 @@ import { API_KEY, MODEL, CONTEXT } from '../../../config/chatgpt.config';
 import { PromptUtil } from '../../utils/prompt.util';
 import QueryResolver from '../../services/prompt/query/query-resolver.service'
 
-// Singleton: una sola instancia reutilizada por todas las llamadas
+// Singleton: Una sola instancia reutilizada por todas las llamadas
 const openai = new OpenAI({ apiKey: API_KEY });
 
 interface FilterResolutionState {
@@ -33,8 +33,6 @@ export class PromptService {
         
         const { text, history, data, schema, parameters } = params;
 
-        console.log('parameters: ', parameters);
-
         if(PromptUtil.isForbidden(text)) {
             return {
                 ok: false,
@@ -45,6 +43,7 @@ export class PromptService {
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////  Filter Resolution  //////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
         // Si el frontend envía un estado de resolución, respondemos sin llamar a OpenAI
         if (parameters?.filterResolution) {
             const { state, unresolvedFilter, pendingResult, pattern, selectedValues } = parameters.filterResolution;
@@ -96,7 +95,7 @@ export class PromptService {
                 const resolvedFilter = QueryResolver.getFilters([{ ...unresolvedFilter, values: selectedValues }])[0];
                 return {
                     type: 'query_ready',
-                    output_text: 'Se ha configurado con éxito la consulta solicitada.',
+                    output_text: 'Se ha configurado con éxito la consulta solicitada, con los valores selecionados.',
                     currentQuery: pendingResult.currentQuery,
                     principalTable: pendingResult.principalTable,
                     selectedFilters: [...pendingResult.resolvedFilters, resolvedFilter],
@@ -106,6 +105,7 @@ export class PromptService {
         }
 
         // Sanitizar history: solo dejamos { role, content }
+        // Falta crear un tool para esta funcion para optimizar este tipo de filtrado
         const safeHistory = Array.isArray(history) ? history.map((m: any) => {
             // content puede llegar en distintos formatos, normalizamos a string
             let content = "";
@@ -133,13 +133,13 @@ export class PromptService {
         ];
 
         
-        console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////  Function Calling ////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        // Definición de las tools para el uso de la IA
         const getAssistantResponseTool: any = {
             type: "function",
             name: "getAssistantResponse",
@@ -321,20 +321,16 @@ export class PromptService {
             model: MODEL,
             input: messages,
             tools: tools,
-            tool_choice: "required", // Obliga que las funciones sean utilizadas
+            tool_choice: "required", // Obliga que las funciones tools sean utilizadas
         })
-
-        // console.log('response: ', response);
-
 
         const toolGetAssistantResponse: any = response.output?.find((tool: any) => tool.type === "function_call" && tool.name === "getAssistantResponse");
         const toolGetFields: any = response.output?.find((tool: any) => tool.type === "function_call" && tool.name === "getFields");
         const toolGetFilters: any = response.output?.find((tool: any) => tool.type === "function_call" && tool.name === "getFilters");
 
-        // console.log('toolCallOutput ::::::::::::::::::::::: ', toolCallOutput);
-        console.log('toolGetAssistantResponse ::::::::::::::::::::::: ', toolGetAssistantResponse);
-        console.log('toolGetFields ::::::::::::::::::::::: ', toolGetFields);
-        console.log('toolGetFilters ::::::::::::::::::::::: ', toolGetFilters);
+        // console.log('toolGetAssistantResponse ::::::::::::::::::::::: ', toolGetAssistantResponse);
+        // console.log('toolGetFields ::::::::::::::::::::::: ', toolGetFields);
+        // console.log('toolGetFilters ::::::::::::::::::::::: ', toolGetFilters);
 
         // Filtro que permite respuesta amable del asistente al usuario
         if (toolGetAssistantResponse) {
@@ -351,7 +347,7 @@ export class PromptService {
             return { output_text: 'No pude identificar los campos necesarios. ¿Podrías reformular la consulta?' };
         }
 
-        // Objeto de resultado propio, sin mutar el response de OpenAI
+        // Creación del objeto que se envia al frontend como respuesta, sin mutar el response de OpenAI
         const result: any = {
             output_text: '',
             currentQuery: [],
@@ -404,8 +400,6 @@ export class PromptService {
             // Validación de filtros de texto contra la BD (solo si hay conexión disponible)
             if (filters.length > 0 && parameters?.dataSource_id) {
                 const validation = await QueryResolver.validateTextFilters(filters, parameters);
-                console.log('validation::::::::::::::: ', validation);
-                console.log(' MIRAMOS QUE SIGUE ');
                 if (validation.unresolvedFilter) {
                     // Trae automáticamente todas las opciones y las presenta numeradas
                     const options = await QueryResolver.getAllFilterOptions(validation.unresolvedFilter, parameters);
@@ -431,7 +425,6 @@ export class PromptService {
         }
 
         return result;
-
     }
 
 }

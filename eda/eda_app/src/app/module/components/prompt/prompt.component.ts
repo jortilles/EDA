@@ -57,11 +57,6 @@ export class PromptComponent implements OnInit, AfterViewInit {
 
     ngOnInit(): void {
         const tables = this.edaBlankPanel.tables
-
-        console.log('EBP =>:', this.edaBlankPanel);
-        console.log('tables =>: ', tables);
-        console.log('selectedFilters =>:', this.edaBlankPanel.selectedFilters)
-
         this.initSchema(tables);
     }
 
@@ -83,7 +78,6 @@ export class PromptComponent implements OnInit, AfterViewInit {
         })
 
         this.schema = schema;
-        console.log('SCHEMA ::: ', this.schema);
     }
 
     sendMessage(): void {
@@ -118,10 +112,7 @@ export class PromptComponent implements OnInit, AfterViewInit {
             dataSource_name: this.edaBlankPanel.dataSource.name,
         }
 
-        // Si hay un estado de resolución activo, el usuario está eligiendo valores del filtro
-
-        debugger;
-        
+        // Si hay un estado de resolución activo, el usuario está eligiendo valores del filtro        
         if (this.resolutionState) {
             const selectedValues = this.parseSelection(text, this.resolutionState.options);
             parameters.filterResolution = {
@@ -133,32 +124,27 @@ export class PromptComponent implements OnInit, AfterViewInit {
             this.resolutionState = null;
         }
 
-        console.log('this.edaBlankPanel: ', this.edaBlankPanel);
-        console.log('text: ', text);
-        console.log('histoty', histoty);
-        console.log('data: ', data);
-        console.log('schema: ', schema);
-        console.log('firstTime: ', firstTime);
+        // console.log('this.edaBlankPanel: ', this.edaBlankPanel);
+        // console.log('text: ', text);
+        // console.log('histoty', histoty);
+        // console.log('data: ', data);
+        // console.log('schema: ', schema);
+        // console.log('firstTime: ', firstTime);
         
 
         this.chatgptService.sendPrompt(text, histoty, data, schema, parameters).subscribe({
             next: (resp) => {
                 // Esperamos que `resp` contenga la respuesta ya procesada como texto. Adapta según tu backend.
-
-                // console.log('PROMPT =>', resp);
-
                 const currentQuery = resp.response.currentQuery;
                 const principalTable = resp.response.principalTable;
                 const selectedFilters = resp.response.selectedFilters;
                 const filteredColumns = resp.response.filteredColumns;
                 
-                console.log('----------- LLEGADA AL COMPONENTE -----------');
-                console.log('--> currentQuery: ', currentQuery);
-                console.log('--> principalTable: ', principalTable);
-                console.log('--> selectedFilters: ', selectedFilters);
-                console.log('--> filteredColumns: ', filteredColumns);
-
-                debugger;
+                // console.log('----------- LLEGADA AL COMPONENTE -----------');
+                // console.log('--> currentQuery: ', currentQuery);
+                // console.log('--> principalTable: ', principalTable);
+                // console.log('--> selectedFilters: ', selectedFilters);
+                // console.log('--> filteredColumns: ', filteredColumns);
 
                 // Capturamos el estado de resolución si el backend está esperando una elección del usuario
                 const responseType = resp.response.type;

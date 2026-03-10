@@ -1,11 +1,23 @@
 import { PromptUtil } from '../../../utils/prompt.util';
-// Gestion de conexión
 import ManagerConnectionService from '../../../services/connection/manager-connection.service';
 
 
-// Servicio de generacion de Arreglos y Objetos para la asistencia del usurio
+// Servicio de generacion de Arreglos y Objetos para la asistencia del usuario
 export default class QueryResolver {
+    
+    // Helper: escapa comillas simples para evitar SQL injection en valores
+    private static sanitize(value: any): string {
+        return String(value).replace(/'/g, "''");
+    }
+    
+    // Helper: obtiene la conexión a la BD
+    private static async getConnection(parameters: any) {
+        const connection = await ManagerConnectionService.getConnection(parameters.dataSource_id, undefined);
+        connection.client = await connection.getclient();
+        return connection;
+    }
 
+    /* ================================> INICIO TABLAS Y COLUMNAS <================================*/
     static getFields(tables: any[], data: any[]) {
 
         let currentQuery: any[] = [];
@@ -43,87 +55,10 @@ export default class QueryResolver {
 
         return currentQuery;
     }
-
-    // Helper: obtiene la conexión a la BD
-    // visto
-    private static async getConnection(parameters: any) {
-        const connection = await ManagerConnectionService.getConnection(parameters.dataSource_id, undefined);
-        connection.client = await connection.getclient();
-        return connection;
-    }
-
-    // Helper: escapa comillas simples para evitar SQL injection en valores
-    // visto
-    private static sanitize(value: any): string {
-        return String(value).replace(/'/g, "''");
-    }
-
-    // Valida si los valores del filtro existen en la BD (case-insensitive)
-    // Devuelve { found, notFound }
-    // visto
-    static async validateFilterValues(filter: any, parameters: any): Promise<{ found: string[], notFound: string[] }> {
-        const connection = await this.getConnection(parameters);
-        const inList = filter.values.map((v: any) => `UPPER('${this.sanitize(v)}')`).join(', ');
-        const query = `SELECT DISTINCT "${filter.column}" FROM "${filter.table}" WHERE UPPER("${filter.column}") IN (${inList})`;
-        const rows = await connection.execQuery(query);
-        const found: string[] = rows.map((r: any) => String(r[filter.column] ?? Object.values(r)[0]));
-        const notFound: string[] = filter.values.filter((v: any) =>
-            !found.some((f: string) => f.toUpperCase() === String(v).toUpperCase())
-        );
-
-        console.log('found: ', found);
-        console.log('notFound: ', notFound);
-        console.log('-------------------------------º-------------------------------: ');
+    /* ================================> FIN TABLAS Y COLUMNAS <================================*/
 
 
-        return { found, notFound };
-    }
-
-    // Recorre los filtros de texto qualificantes y devuelve el primero que no matchea (o null si todos ok)
-    // visto
-    static async validateTextFilters(filters: any[], parameters: any): Promise<{
-        unresolvedFilter: any | null;
-        notFound: string[];
-        resolvedFiltersRaw: any[];
-    }> {
-        const qualifyingTypes = ['=', '!=', 'in', 'not_in'];
-        const resolvedFiltersRaw: any[] = [];
-
-        console.log('filters ::: ', filters)
-        console.log('DETENIDO....')
-
-        for (const filter of filters) {
-            if (filter.column_type === 'text' && qualifyingTypes.includes(filter.filter_type) && filter.values?.length > 0) {
-                const { notFound } = await this.validateFilterValues(filter, parameters);
-                if (notFound.length > 0) {
-                    return { unresolvedFilter: filter, notFound, resolvedFiltersRaw };
-                }
-            }
-            resolvedFiltersRaw.push(filter);
-        }
-
-        return { unresolvedFilter: null, notFound: [], resolvedFiltersRaw: filters };
-    }
-
-    // Devuelve todos los valores distintos de una columna (max 200)
-    // visto
-    static async getAllFilterOptions(filter: any, parameters: any): Promise<string[]> {
-        const connection = await this.getConnection(parameters);
-        const query = `SELECT DISTINCT "${filter.column}" FROM "${filter.table}" WHERE "${filter.column}" IS NOT NULL ORDER BY "${filter.column}" ASC LIMIT 200`;
-        const rows = await connection.execQuery(query);
-        return rows.map((r: any) => String(r[filter.column] ?? Object.values(r)[0]));
-    }
-
-    // Devuelve valores distintos que coincidan con un patrón LIKE (max 50)
-    // visto
-    static async searchFilterByPattern(filter: any, pattern: string, parameters: any): Promise<string[]> {
-        const connection = await this.getConnection(parameters);
-        const safePattern = this.sanitize(pattern);
-        const query = `SELECT DISTINCT "${filter.column}" FROM "${filter.table}" WHERE UPPER("${filter.column}") LIKE UPPER('%${safePattern}%') ORDER BY "${filter.column}" ASC LIMIT 50`;
-        const rows = await connection.execQuery(query);
-        return rows.map((r: any) => String(r[filter.column] ?? Object.values(r)[0]));
-    }
-
+    /* ================================> INICIO FILTROS <================================*/
     // Construye el array de selectedFilters a partir de los filtros raw de la IA
     static getFilters(filters: any[]) {
 
@@ -245,5 +180,59 @@ export default class QueryResolver {
 
         return filteredColumns;
     }
+
+    // Valida si los valores del filtro existen en la BD (case-insensitive) => Devuelve { found, notFound }
+    static async validateFilterValues(filter: any, parameters: any): Promise<{ found: string[], notFound: string[] }> {
+        const connection = await this.getConnection(parameters);
+        const inList = filter.values.map((v: any) => `UPPER('${this.sanitize(v)}')`).join(', ');
+        const query = `SELECT DISTINCT "${filter.column}" FROM "${filter.table}" WHERE UPPER("${filter.column}") IN (${inList})`;
+        const rows = await connection.execQuery(query);
+        const found: string[] = rows.map((r: any) => String(r[filter.column] ?? Object.values(r)[0]));
+        const notFound: string[] = filter.values.filter((v: any) =>
+            !found.some((f: string) => f.toUpperCase() === String(v).toUpperCase())
+        );
+        return { found, notFound };
+    }
+
+    // Recorre los filtros de texto qualificantes y devuelve el primero que no matchea (o null si todos ok)
+    static async validateTextFilters(filters: any[], parameters: any): Promise<{
+        unresolvedFilter: any | null;
+        notFound: string[];
+        resolvedFiltersRaw: any[];
+    }> {
+        const qualifyingTypes = ['=', '!=', 'in', 'not_in'];
+        const resolvedFiltersRaw: any[] = [];
+
+        for (const filter of filters) {
+            if (filter.column_type === 'text' && qualifyingTypes.includes(filter.filter_type) && filter.values?.length > 0) {
+                const { notFound } = await this.validateFilterValues(filter, parameters);
+                if (notFound.length > 0) {
+                    return { unresolvedFilter: filter, notFound, resolvedFiltersRaw };
+                }
+            }
+            resolvedFiltersRaw.push(filter);
+        }
+
+        return { unresolvedFilter: null, notFound: [], resolvedFiltersRaw: filters };
+    }
+
+    // Devuelve todos los valores distintos de una columna (max 200)
+    static async getAllFilterOptions(filter: any, parameters: any): Promise<string[]> {
+        const connection = await this.getConnection(parameters);
+        const query = `SELECT DISTINCT "${filter.column}" FROM "${filter.table}" WHERE "${filter.column}" IS NOT NULL ORDER BY "${filter.column}" ASC LIMIT 200`;
+        const rows = await connection.execQuery(query);
+        return rows.map((r: any) => String(r[filter.column] ?? Object.values(r)[0]));
+    }
+
+    // Devuelve valores distintos que coincidan con un patrón LIKE (max 50)
+    static async searchFilterByPattern(filter: any, pattern: string, parameters: any): Promise<string[]> {
+        const connection = await this.getConnection(parameters);
+        const safePattern = this.sanitize(pattern);
+        const query = `SELECT DISTINCT "${filter.column}" FROM "${filter.table}" WHERE UPPER("${filter.column}") LIKE UPPER('%${safePattern}%') ORDER BY "${filter.column}" ASC LIMIT 50`;
+        const rows = await connection.execQuery(query);
+        return rows.map((r: any) => String(r[filter.column] ?? Object.values(r)[0]));
+    }
+    /* ================================> FIN FILTROS <================================*/
+
 
 }

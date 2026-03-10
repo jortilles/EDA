@@ -70,13 +70,7 @@ export class ChatGptController {
 
             const { text, history, data, schema, parameters } = req.body;
 
-            console.log('<====================> INICIAMOS <====================>')
-            // console.log('text: ', text);
-            // console.log('history: ', history);
-            // console.log('data: ', data);
-            // console.log('schema: ', schema);
-            // console.log('firstTime: ', firstTime);
-
+            // console.log('<====================> INICIAMOS <====================>')
 
             const response = await PromptService.processPrompt({
                 text,
