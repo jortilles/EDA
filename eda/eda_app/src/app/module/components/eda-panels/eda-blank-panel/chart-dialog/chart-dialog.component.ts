@@ -62,14 +62,6 @@ export class ChartDialogComponent {
     public colorBetween: string = '#ffcc00';
     public colorBelow: string = '#44bb44';
 
-    get coloredBarsColumnHeader(): string {
-        const numericCol = this.controller?.params?.config?.query?.find((f: any) => f.column_type === 'numeric');
-        if (!numericCol) return '';
-        return typeof numericCol.display_name === 'object'
-            ? (numericCol.display_name.default || numericCol.column_name)
-            : (numericCol.display_name || numericCol.column_name);
-    }
-
     public comparativeTooltip = $localize`:@@comparativeTooltip:La función de comparar sólo se puede activar si se dispone de un campo de fecha agregado por mes o semana y un único campo numérico agregado`
     public trendTooltip = $localize`:@@trendTooltip:La función de añadir tendencia sólo se puede activar en los gràficos de lineas`
     public showLablesTooltip = $localize`:@@showLablesTooltip:Mostrar o ocultar las etiquetas sobre los gráficos`
@@ -740,6 +732,34 @@ export class ChartDialogComponent {
         let c: ChartConfig = properties.config;    
     }
 
+    // METODOS DE CONTROL DE BARRAS SEMAFORICAS 
+    get coloredBarsColumnHeader(): string {
+        const numericCol = this.controller?.params?.config?.query?.find((f: any) => f.column_type === 'numeric');
+        if (!numericCol) return '';
+        return typeof numericCol.display_name === 'object'
+            ? (numericCol.display_name.default || numericCol.column_name)
+            : (numericCol.display_name || numericCol.column_name);
+    }
+
+    applyColoredBars(): void {
+        this.controller.params.config.config.getConfig()['coloredBarsConfig'] = {
+            thresholdHigh: this.thresholdHigh,
+            thresholdLow: this.thresholdLow,
+            colorAbove: this.colorAbove,
+            colorBetween: this.colorBetween,
+            colorBelow: this.colorBelow,
+            active: this.coloredBarsActive
+        };
+        this.handleInputColor();
+    }
+
+    onTabChange(event: any): void {
+        if ((this.chart.chartType as string) !== 'bar') return;
+        this.coloredBarsActive = event.index === 1;
+
+        this.handleInputColor();
+    }
+
     // METODOS DE GUARDAR/CANCELAR CONFIGURACION
 
     saveChartConfig() {
@@ -818,24 +838,5 @@ export class ChartDialogComponent {
 
     onClose(event: EdaDialogCloseEvent, response?: any): void {
         return this.controller.close(event, response);
-    }
-
-    applyColoredBars(): void {
-        this.controller.params.config.config.getConfig()['coloredBarsConfig'] = {
-            thresholdHigh: this.thresholdHigh,
-            thresholdLow: this.thresholdLow,
-            colorAbove: this.colorAbove,
-            colorBetween: this.colorBetween,
-            colorBelow: this.colorBelow,
-            active: this.coloredBarsActive
-        };
-        this.handleInputColor();
-    }
-
-    onTabChange(event: any): void {
-        if ((this.chart.chartType as string) !== 'bar') return;
-        this.coloredBarsActive = event.index === 1;
-
-        this.handleInputColor();
     }
 }
