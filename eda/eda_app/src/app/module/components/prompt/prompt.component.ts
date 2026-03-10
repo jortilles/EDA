@@ -52,14 +52,13 @@ export class PromptComponent implements OnInit, AfterViewInit {
     // Iniciamos el scroll a la misma altura donde termino el ultimo mensaje de respuesta del asistente
     ngAfterViewInit(): void {
         const el = this.messagesContainer?.nativeElement;
-        console.log('el::: ', el);
         if (el) el.scrollTop = el.scrollHeight;
     }
 
     ngOnInit(): void {
         const tables = this.edaBlankPanel.tables
 
-        console.log('MIRAAAAAAAAAAAAAAAAAAA => EBP =>:', this.edaBlankPanel);
+        console.log('EBP =>:', this.edaBlankPanel);
         console.log('tables =>: ', tables);
         console.log('selectedFilters =>:', this.edaBlankPanel.selectedFilters)
 
@@ -120,6 +119,9 @@ export class PromptComponent implements OnInit, AfterViewInit {
         }
 
         // Si hay un estado de resolución activo, el usuario está eligiendo valores del filtro
+
+        debugger;
+        
         if (this.resolutionState) {
             const selectedValues = this.parseSelection(text, this.resolutionState.options);
             parameters.filterResolution = {
@@ -155,6 +157,8 @@ export class PromptComponent implements OnInit, AfterViewInit {
                 console.log('--> principalTable: ', principalTable);
                 console.log('--> selectedFilters: ', selectedFilters);
                 console.log('--> filteredColumns: ', filteredColumns);
+
+                debugger;
 
                 // Capturamos el estado de resolución si el backend está esperando una elección del usuario
                 const responseType = resp.response.type;
@@ -219,7 +223,7 @@ export class PromptComponent implements OnInit, AfterViewInit {
         });
     }
     
-    // Levenshtein: distancia de edición entre dos strings
+    // Distancia de edición entre dos strings
     private levenshtein(a: string, b: string): number {
         const m = a.length, n = b.length;
         const dp: number[][] = Array.from({ length: m + 1 }, (_, i) =>
