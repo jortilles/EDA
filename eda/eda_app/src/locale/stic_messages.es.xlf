@@ -370,6 +370,7 @@
   <trans-unit id="nombreColumnaH4" datatype="html">
     <source>Etiqueta para el campo</source>
     <target>Etiqueta para el campo</target>
+  </trans-unit>
   <trans-unit id="lockPanel">
     <source>Bloquear panel</source>
     <target>Bloquear panel</target>
