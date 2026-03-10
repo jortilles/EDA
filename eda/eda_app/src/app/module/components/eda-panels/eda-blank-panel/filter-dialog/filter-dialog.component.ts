@@ -311,6 +311,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     async loadDropDrownData() {
         this.filterValue.value1 = null;
         this.filterValue.value2 = null;
+/* SDA CUSTOM*/ this.dropDownFields = [];
         if (this.filter.switch) {
             const column = _.cloneDeep(this.selectedColumn);
             column.table_id = column.table_id.split('.')[0];
