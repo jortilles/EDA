@@ -43,3 +43,6 @@ eda/eda_api/config/base_datamodel.json
 eda/eda_api/metadata.json
 .vscode
 eda/eda_app/src/locale/prod_messages*xlf
+.agent/rules.md
+.agent/rules/code-style-guide-sinergiada.md
+.cursorrules

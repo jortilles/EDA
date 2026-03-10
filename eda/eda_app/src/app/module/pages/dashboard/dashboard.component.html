@@ -15,31 +15,48 @@
     <!-- ============================================================== -->
     <!-- GLOBAL FILTERS  -->
     <!-- ============================================================== -->
-    <app-global-filter #gFilter [dashboard]="this"></app-global-filter>
+<!-- SDA CUSTOM --> <div class="filters-zoom-container" >
+<!-- SDA CUSTOM -->     <app-global-filter #gFilter [dashboard]="this"></app-global-filter>
+<!-- SDA CUSTOM -->     <div class="zoom-controls-simple" *ngIf="display_v.edit_mode && canIedit()">
+<!-- SDA CUSTOM -->         <button pButton pRipple type="button" class="p-button-rounded p-button-text p-button-plain zoom-btn-simple" (mousedown)="startContinuousZoom('out')" (mouseup)="stopContinuousZoom()" (mouseleave)="stopContinuousZoom()" (click)="zoomOut()" [disabled]="zoomLevel <= 25">
+<!-- SDA CUSTOM -->             <i class="fa fa-minus"></i>
+<!-- SDA CUSTOM -->         </button>
+<!-- SDA CUSTOM -->         <span class="zoom-value">{{zoomLevel}}%</span>
+<!-- SDA CUSTOM -->         <button pButton pRipple type="button" class="p-button-rounded p-button-text p-button-plain zoom-btn-simple" (mousedown)="startContinuousZoom('in')" (mouseup)="stopContinuousZoom()" (mouseleave)="stopContinuousZoom()" (click)="zoomIn()" [disabled]="zoomLevel >= 100">
+<!-- SDA CUSTOM -->             <i class="fa fa-plus"></i>
+<!-- SDA CUSTOM -->         </button>
+<!-- SDA CUSTOM -->         <div class="zoom-divider"></div>
+<!-- SDA CUSTOM -->         <button pButton pRipple type="button" class="p-button-rounded p-button-text p-button-plain zoom-btn-simple reset-btn" (click)="resetZoom()" [disabled]="zoomLevel === 100" pTooltip="Restablecer (100%)" tooltipPosition="bottom">
+<!-- SDA CUSTOM -->             <i class="fa fa-refresh"></i>
+<!-- SDA CUSTOM -->         </button>
+<!-- SDA CUSTOM -->     </div>
+<!-- SDA CUSTOM --> </div>
+<!-- SDA CUSTOM -->     <div class="col-12" style="padding:2px">
+        <ngx-gridster class="dashboard-grid" [options]="gridsterOptions" [draggableOptions]="gridsterDraggableOptions"
+            #gridster1>
+            <!-- Normal Size -->
+            <ng-container *ngIf="!toLitle && !toMedium" >
+<!-- SDA CUSTOM --> <ngx-gridster-item *ngFor="let panel of panels"  [options]="itemOptions" [dragAndDrop]="!panel.locked" [resizable]="!panel.locked && panel.resizable" [(w)]="panel.w" [(h)]="panel.h" [(x)]="panel.x" [(y)]="panel.y" (change)="itemChange($event, panel)" [class.panel-locked]="panel.locked">
+                    <ng-container *ngTemplateOutlet="panelTemplate; context: {$implicit: panel}"></ng-container>
+                </ngx-gridster-item>
+            </ng-container>
 
-    <ngx-gridster class="dashboard-grid" [options]="gridsterOptions" [draggableOptions]="gridsterDraggableOptions" #gridster1 >
-        <!-- Normal Size -->
-        <ng-container *ngIf="!toLitle && !toMedium" >
-            <ngx-gridster-item *ngFor="let panel of panels"  [options]="itemOptions" [dragAndDrop]="true" [resizable]="panel.resizable" [(w)]="panel.w" [(h)]="panel.h" [(x)]="panel.x" [(y)]="panel.y" (change)="itemChange($event, panel)">
-                <ng-container *ngTemplateOutlet="panelTemplate; context: {$implicit: panel}"></ng-container>
-            </ngx-gridster-item>
-        </ng-container>
+            <!-- Mid  Size -->
+            <ng-container *ngIf="toMedium">
+<!-- SDA CUSTOM --> <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="!panel.locked && panel.dragAndDrop" [resizable]="!panel.locked && panel.resizable" [(w)]="panel.tamanyMig.w" [(h)]="panel.tamanyMig.h" [(x)]="panel.tamanyMig.x" [(y)]="panel.tamanyMig.y" (change)="itemChange($event, panel)" [class.panel-locked]="panel.locked">
+                    <ng-container *ngTemplateOutlet="panelTemplate; context: {$implicit: panel}"></ng-container>
+                </ngx-gridster-item>
+            </ng-container>
 
-        <!-- Mid  Size -->
-        <ng-container *ngIf="toMedium">
-            <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="panel.dragAndDrop" [resizable]="panel.resizable" [(w)]="panel.tamanyMig.w" [(h)]="panel.tamanyMig.h" [(x)]="panel.tamanyMig.x" [(y)]="panel.tamanyMig.y" (change)="itemChange($event, panel)">
-                <ng-container *ngTemplateOutlet="panelTemplate; context: {$implicit: panel}"></ng-container>
-            </ngx-gridster-item>
-        </ng-container>
+            <!-- Mobile Size -->
+            <ng-container *ngIf="toLitle">
+<!-- SDA CUSTOM --> <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="!panel.locked && panel.dragAndDrop" [resizable]="!panel.locked && panel.resizable" [(w)]="panel.tamanyMobil.w" [(h)]="panel.tamanyMobil.h" [(x)]="panel.tamanyMobil.x" [(y)]="panel.tamanyMobil.y" (change)="itemChange($event, panel)" [class.panel-locked]="panel.locked">
+                    <ng-container *ngTemplateOutlet="panelTemplate; context: {$implicit: panel}"></ng-container>
+                </ngx-gridster-item>
+            </ng-container>
 
-        <!-- Mobile Size -->
-        <ng-container *ngIf="toLitle">
-            <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="panel.dragAndDrop" [resizable]="panel.resizable" [(w)]="panel.tamanyMobil.w" [(h)]="panel.tamanyMobil.h" [(x)]="panel.tamanyMobil.x" [(y)]="panel.tamanyMobil.y" (change)="itemChange($event, panel)">
-                <ng-container *ngTemplateOutlet="panelTemplate; context: {$implicit: panel}"></ng-container>
-            </ngx-gridster-item>
-        </ng-container>
-
-    </ngx-gridster>
+        </ngx-gridster>
+<!-- SDA CUSTOM --> </div>
 
     <ng-template #panelTemplate let-panel>
         <ng-container [ngSwitch]="panel.type">
@@ -208,7 +225,7 @@
             </p-inputSwitch>
         </div>
     </div>
-    
+
     <hr>
     <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="editStyles()">
         <div>

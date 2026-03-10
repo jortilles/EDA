@@ -4,9 +4,14 @@
         <div class="mb-0 pointer w-90 eda-title-panel" [innerHTML]="panel.title | sanitizeHtml"></div>
     </div>
 
-    <div *ngIf="display.editMode" id="edit" style="text-align: right; max-height: 2rem; ">
-        <i class="fa fa-ellipsis-v btn" (click)="contextMenu.showContextMenu($event)"></i>
-    </div>
+<!-- SDA CUSTOM -->    <div *ngIf="display.editMode" class="d-flex align-items-center">
+<!-- SDA CUSTOM -->        <div *ngIf="inject.canSave" class="mr-2 pointer" (click)="toggleLock()" [attr.title]="panel.locked ? unlockPanelTooltip : lockPanelTooltip">
+<!-- SDA CUSTOM -->            <i [className]="panel.locked ? 'fa fa-lock' : 'fa fa-unlock'" [style.color]="panel.locked ? 'red' : 'green'"></i>
+<!-- SDA CUSTOM -->        </div>
+<!-- SDA CUSTOM -->       <div id="edit" style="text-align: right; max-height: 2rem; ">
+                              <i class="fa fa-ellipsis-v btn" (click)="contextMenu.showContextMenu($event)"></i>
+<!-- SDA CUSTOM -->       </div>
+<!-- SDA CUSTOM -->    </div>
 
 </div>
 

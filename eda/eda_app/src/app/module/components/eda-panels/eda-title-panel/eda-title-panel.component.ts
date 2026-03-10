@@ -29,6 +29,8 @@ export class EdaTitlePanelComponent implements OnInit {
     }
     public htmlPipe : SafeHtmlPipe
     public urlPipe : SafeUrlPipe
+/* SDA CUSTOM */    public lockPanelTooltip: string = $localize`:@@lockPanel:Bloquear panel`;
+/* SDA CUSTOM */    public unlockPanelTooltip: string = $localize`:@@unlockPanel:Desbloquear panel`;
 
 
     constructor(public sanitized: DomSanitizer, public dashboardService : DashboardService){}
@@ -39,14 +41,10 @@ export class EdaTitlePanelComponent implements OnInit {
         this.setEditMode();
     }
 
-    public setTitle(): void {
-        this.titleClick = !this.titleClick;
-
-        this.dashboardService._notSaved.next(true);
-        if (this.titleClick) {
-
-        }
-    }
+/* SDA CUSTOM */   public toggleLock(): void {
+/* SDA CUSTOM */       this.panel.locked = !this.panel.locked;
+/* SDA CUSTOM */       this.dashboardService._notSaved.next(true);
+/* SDA CUSTOM */   }
 
     public setEditMode(): void {
         const user = localStorage.getItem('user');

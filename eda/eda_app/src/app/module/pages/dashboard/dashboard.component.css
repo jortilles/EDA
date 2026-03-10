@@ -5,7 +5,7 @@
 app-dashboard {
     position: absolute;
     height: 100%;
-    width: 80%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -252,9 +252,7 @@ app-dashboard {
     height:0px !important;
     visibility: hidden !important;
 }
-.noSidebar{
-    ;
-}
+
 .filterDialogTitles{
     font-size: medium;
     font-weight: bold;
@@ -265,7 +263,13 @@ app-dashboard {
     font-weight: bolder;
 }
 
+/* SDA CUSTOM */ .panel-locked {
+/* SDA CUSTOM */     cursor: not-allowed !important;
+/* SDA CUSTOM */ }
 
+/* SDA CUSTOM */ .panel-locked ::ng-deep .gridster-item-resizable-handler {
+/* SDA CUSTOM */     cursor: not-allowed !important;
+/* SDA CUSTOM */ }
 
 .disabled-div {
     position: absolute;
@@ -277,3 +281,107 @@ app-dashboard {
     background-color: rgba(0, 0, 0, 0.2);
     z-index: 99999;
 }
+
+/* SDA CUSTOM */ /* --- ZOOM CONTROLS --- */
+/* SDA CUSTOM */ .filters-zoom-container {
+/* SDA CUSTOM */     display: flex;
+/* SDA CUSTOM */     align-items: flex-start;
+/* SDA CUSTOM */     width: 100%;
+/* SDA CUSTOM */     min-height: 46px;
+/* SDA CUSTOM */     margin-bottom: 5px;
+/* SDA CUSTOM */     padding: 0 0.5em;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ .filters-zoom-container app-global-filter {
+/* SDA CUSTOM */     flex: 1;
+/* SDA CUSTOM */     min-width: 0;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ .zoom-controls-simple {
+/* SDA CUSTOM */     margin-left: auto;
+/* SDA CUSTOM */     margin-top: calc(0.5em + 2px);
+/* SDA CUSTOM */     flex-shrink: 0;
+/* SDA CUSTOM */     z-index: 100;
+/* SDA CUSTOM */     display: flex;
+/* SDA CUSTOM */     align-items: center;
+/* SDA CUSTOM */     background-color: #f8f9fa;
+/* SDA CUSTOM */     border-radius: 20px;
+/* SDA CUSTOM */     padding: 2px 10px;
+/* SDA CUSTOM */     border: 1px solid #dee2e6;
+/* SDA CUSTOM */     height: 32px;
+/* SDA CUSTOM */     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ .zoom-value {
+/* SDA CUSTOM */     font-weight: bold;
+/* SDA CUSTOM */     min-width: 45px;
+/* SDA CUSTOM */     text-align: center;
+/* SDA CUSTOM */     font-size: 13px;
+/* SDA CUSTOM */     color: #495057;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ .zoom-btn-simple {
+/* SDA CUSTOM */     width: 26px !important;
+/* SDA CUSTOM */     height: 26px !important;
+/* SDA CUSTOM */     padding: 0 !important;
+/* SDA CUSTOM */     display: flex !important;
+/* SDA CUSTOM */     align-items: center !important;
+/* SDA CUSTOM */     justify-content: center !important;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ .zoom-btn-simple i {
+/* SDA CUSTOM */     font-size: 10px;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ .zoom-divider {
+/* SDA CUSTOM */     width: 1px;
+/* SDA CUSTOM */     height: 16px;
+/* SDA CUSTOM */     background-color: #dee2e6;
+/* SDA CUSTOM */     margin: 0 4px;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ .reset-btn i {
+/* SDA CUSTOM */     color: #6c757d;
+/* SDA CUSTOM */     font-size: 11px !important;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ .reset-btn:hover:not(:disabled) i {
+/* SDA CUSTOM */     color: #007bff;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ .dashboard-grid {
+/* SDA CUSTOM */     width: 100%;
+/* SDA CUSTOM */     transition: transform 0.3s ease;
+/* SDA CUSTOM */     transform-origin: top left;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ .dashboard-grid.zoomed-out {
+/* SDA CUSTOM */     box-shadow: 0 0 20px rgba(0, 123, 255, 0.2);
+/* SDA CUSTOM */     border: 1px solid rgba(0, 123, 255, 0.3);
+/* SDA CUSTOM */     display: inline-block;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ ::ng-deep .gridster .gridster-item-moving {
+/* SDA CUSTOM */     z-index: 999 !important;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ ::ng-deep .gridster .gridster-column,
+/* SDA CUSTOM */ ::ng-deep .gridster .gridster-row {
+/* SDA CUSTOM */     transition: none;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ ::ng-deep .dashboard-grid ngx-gridster-item {
+/* SDA CUSTOM */     transform-origin: top left;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ ::ng-deep .dashboard-grid ngx-gridster-item:not(.panel-locked) {
+/* SDA CUSTOM */     cursor: grab;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ ::ng-deep .dashboard-grid ngx-gridster-item:not(.panel-locked):active {
+/* SDA CUSTOM */     cursor: grabbing;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ ::ng-deep ngx-gridster {
+/* SDA CUSTOM */     display: block;
+/* SDA CUSTOM */ }

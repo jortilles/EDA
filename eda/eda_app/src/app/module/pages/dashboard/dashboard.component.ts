@@ -101,6 +101,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         globalFilter: false
     };
 
+/* SDA CUSTOM */ // Zoom control
+/* SDA CUSTOM */ public zoomLevel: number = 100;
+/* SDA CUSTOM */ private zoomInterval: any;
+
     //Date filter ranges Dropdown
     public datePickerConfigs: {} = {};
 
@@ -224,6 +228,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public ngOnDestroy() {
         this.stopRefresh = true;
+/* SDA CUSTOM */         this.stopContinuousZoom();
         if (this.edaPanelsSubscription) {
             this.edaPanelsSubscription.unsubscribe();
         }
@@ -334,7 +339,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         };
 
         this.gridsterDraggableOptions = {
-            handlerClass: 'panel-heading'
+            /*keep for compatibility*/
         };
 
 
@@ -376,7 +381,19 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         const me = this;
 
         me.route.paramMap.subscribe(
-            params => me.id = params.get('id'),
+/* SDA CUSTOM */ params => {
+/* SDA CUSTOM */     me.id = params.get('id');
+/* SDA CUSTOM */     // Load zoom from session storage
+/* SDA CUSTOM */     if (me.id) {
+/* SDA CUSTOM */         const _zoomUserId = this.userService.user?._id || 'anonymous';
+/* SDA CUSTOM */         const savedZoom = sessionStorage.getItem(`dashboard_zoom_${_zoomUserId}_${me.id}`);
+/* SDA CUSTOM */         if (savedZoom) {
+/* SDA CUSTOM */             this.zoomLevel = parseInt(savedZoom, 10);
+/* SDA CUSTOM */             // Apply the zoom level after a short delay to ensure the dashboard is rendered
+/* SDA CUSTOM */             setTimeout(() => this.applyZoom(), 100);
+/* SDA CUSTOM */         }
+/* SDA CUSTOM */     }
+/* SDA CUSTOM */ },
             err => me.alertService.addError(err)
         );
 
@@ -617,6 +634,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
         if( (this.grups.filter(group => group.name === 'EDA_ADMIN' ).length > 0) )  this.display_v.edit_mode = true; // Admin always can edit
+/* SDA CUSTOM */        this.inject.canSave = this.display_v.edit_mode && this.canIedit();
     }
 
     private setPanelSizes(panel) {
@@ -815,6 +833,161 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
         }
     }
+
+/* SDA CUSTOM */    // Zoom control methods
+/* SDA CUSTOM */    public setZoom(level: number): void {
+/* SDA CUSTOM */        this.zoomLevel = Math.max(25, Math.min(100, level));
+/* SDA CUSTOM */        this.applyZoom();
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */    public zoomIn(): void {
+/* SDA CUSTOM */        this.zoomLevel = Math.min(100, this.zoomLevel + 5);
+/* SDA CUSTOM */        this.applyZoom();
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */    public zoomOut(): void {
+/* SDA CUSTOM */        this.zoomLevel = Math.max(25, this.zoomLevel - 5);
+/* SDA CUSTOM */        this.applyZoom();
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */    public startContinuousZoom(direction: 'in' | 'out'): void {
+/* SDA CUSTOM */        this.stopContinuousZoom();
+/* SDA CUSTOM */        // Ejecutamos la primera vez inmediatamente
+/* SDA CUSTOM */        if (direction === 'in') this.zoomIn();
+/* SDA CUSTOM */        else this.zoomOut();
+/* SDA CUSTOM */
+/* SDA CUSTOM */        // Establecemos el intervalo para las siguientes
+/* SDA CUSTOM */        this.zoomInterval = setInterval(() => {
+/* SDA CUSTOM */            if (direction === 'in') {
+/* SDA CUSTOM */                if (this.zoomLevel >= 100) this.stopContinuousZoom();
+/* SDA CUSTOM */                else this.zoomIn();
+/* SDA CUSTOM */            } else {
+/* SDA CUSTOM */                if (this.zoomLevel <= 25) this.stopContinuousZoom();
+/* SDA CUSTOM */                else this.zoomOut();
+/* SDA CUSTOM */            }
+/* SDA CUSTOM */        }, 150); // Velocidad del zoom continuo
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */    public stopContinuousZoom(): void {
+/* SDA CUSTOM */        if (this.zoomInterval) {
+/* SDA CUSTOM */            clearInterval(this.zoomInterval);
+/* SDA CUSTOM */            this.zoomInterval = null;
+/* SDA CUSTOM */        }
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */    public resetZoom(): void {
+/* SDA CUSTOM */        this.zoomLevel = 100;
+/* SDA CUSTOM */        this.applyZoom();
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */
+/* SDA CUSTOM */    // Applies the current zoom level to the dashboard by scaling the dashboard grid and adjusting related settings.
+/* SDA CUSTOM */    // It also saves the zoom level in session storage for persistence across sessions and sets up a global fix for drag-and-drop functionality when zoomed.
+/* SDA CUSTOM */    private applyZoom(): void {
+/* SDA CUSTOM */        const dashboardGrid = document.querySelector('.dashboard-grid') as HTMLElement;
+/* SDA CUSTOM */        const mainContent = document.querySelector('.main-content') as HTMLElement;
+/* SDA CUSTOM */
+/* SDA CUSTOM */        if (this.id) {
+/* SDA CUSTOM */            const _zoomUserId = this.userService.user?._id || 'anonymous';
+/* SDA CUSTOM */            sessionStorage.setItem(`dashboard_zoom_${_zoomUserId}_${this.id}`, this.zoomLevel.toString());
+/* SDA CUSTOM */        }
+/* SDA CUSTOM */
+/* SDA CUSTOM */        if (dashboardGrid) {
+/* SDA CUSTOM */            const scale = this.zoomLevel / 100;
+/* SDA CUSTOM */
+/* SDA CUSTOM */            // Apply CSS transform for zooming the dashboard grid
+/* SDA CUSTOM */            dashboardGrid.style.transform = `scale(${scale})`;
+/* SDA CUSTOM */            dashboardGrid.style.transformOrigin = 'top left';
+/* SDA CUSTOM */            (dashboardGrid.style as any).zoom = ''; // Clear previous zoom
+/* SDA CUSTOM */
+/* SDA CUSTOM */            // Adjust the main container to allow scrolling
+/* SDA CUSTOM */            if (mainContent) {
+/* SDA CUSTOM */                if (this.zoomLevel < 100) {
+/* SDA CUSTOM */                    mainContent.style.overflow = 'auto';
+/* SDA CUSTOM */                    dashboardGrid.classList.add('zoomed-out');
+/* SDA CUSTOM */                    // Do not force width/height so that the scale reduces the actual visual size of the panels
+/* SDA CUSTOM */                    dashboardGrid.style.width = '';
+/* SDA CUSTOM */                    dashboardGrid.style.height = '';
+/* SDA CUSTOM */                } else {
+/* SDA CUSTOM */                    mainContent.style.overflow = '';
+/* SDA CUSTOM */                    dashboardGrid.classList.remove('zoomed-out');
+/* SDA CUSTOM */                    dashboardGrid.style.transform = '';
+/* SDA CUSTOM */                    dashboardGrid.style.width = '';
+/* SDA CUSTOM */                    dashboardGrid.style.height = '';
+/* SDA CUSTOM */                }
+/* SDA CUSTOM */            }
+/* SDA CUSTOM */        }
+/* SDA CUSTOM */
+/* SDA CUSTOM */        // Ensure drag and drop is enabled
+/* SDA CUSTOM */        if (this.gridster) {
+/* SDA CUSTOM */            const enableDragDrop = window.innerWidth > 1000;
+/* SDA CUSTOM */            this.gridster.setOption('dragAndDrop', enableDragDrop);
+/* SDA CUSTOM */            this.gridster.setOption('resizable', enableDragDrop);
+/* SDA CUSTOM */
+/* SDA CUSTOM */            const showGridLines = this.zoomLevel < 100;
+/* SDA CUSTOM */            this.gridster.setOption('lines', {
+/* SDA CUSTOM */                visible: showGridLines,
+/* SDA CUSTOM */                color: showGridLines ? '#929599' : '#dbdbdb',
+/* SDA CUSTOM */                width: showGridLines ? 2 : 1
+/* SDA CUSTOM */            }).reload();
+/* SDA CUSTOM */        }
+/* SDA CUSTOM */
+/* SDA CUSTOM */        // Activate the global coordinate fix
+/* SDA CUSTOM */        this.setupZoomDragFix();
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */    private setupZoomDragFix(): void {
+/* SDA CUSTOM */        const windowProxy = window as any;
+/* SDA CUSTOM */
+/* SDA CUSTOM */        // Clear previous interceptor
+/* SDA CUSTOM */        if (windowProxy._zoomFixHandler) {
+/* SDA CUSTOM */            window.removeEventListener('mousedown', windowProxy._zoomFixHandler, true);
+/* SDA CUSTOM */            window.removeEventListener('mousemove', windowProxy._zoomFixHandler, true);
+/* SDA CUSTOM */            window.removeEventListener('mouseup', windowProxy._zoomFixHandler, true);
+/* SDA CUSTOM */        }
+/* SDA CUSTOM */
+/* SDA CUSTOM */        if (this.zoomLevel === 100) return;
+/* SDA CUSTOM */
+/* SDA CUSTOM */        const scale = this.zoomLevel / 100;
+/* SDA CUSTOM */        const dashboardGrid = document.querySelector('.dashboard-grid') as HTMLElement;
+/* SDA CUSTOM */        if (!dashboardGrid) return;
+/* SDA CUSTOM */
+/* SDA CUSTOM */        const handler = (e: MouseEvent) => {
+/* SDA CUSTOM */            if ((e as any)._zoomed) return;
+/* SDA CUSTOM */
+/* SDA CUSTOM */            // Only intercept events that affect panel movement
+/* SDA CUSTOM */            const isMoving = document.querySelector('.gridster-item-moving, .gridster-item-resizing');
+/* SDA CUSTOM */            const isOverGrid = (e.target as HTMLElement).closest('.dashboard-grid');
+/* SDA CUSTOM */
+/* SDA CUSTOM */            if (!isMoving && !isOverGrid) return;
+/* SDA CUSTOM */
+/* SDA CUSTOM */            const rect = dashboardGrid.getBoundingClientRect();
+/* SDA CUSTOM */
+/* SDA CUSTOM */            // Calculate the real position within the library's coordinate system
+/* SDA CUSTOM */            const adjustedX = rect.left + (e.clientX - rect.left) / scale;
+/* SDA CUSTOM */            const adjustedY = rect.top + (e.clientY - rect.top) / scale;
+/* SDA CUSTOM */
+/* SDA CUSTOM */            // Create a "fake" event that Gridster will accept as real
+/* SDA CUSTOM */            const newEvent = new MouseEvent(e.type, e);
+/* SDA CUSTOM */
+/* SDA CUSTOM */            // Overwrite clientX/Y and pageX/Y using defineProperty to avoid readonly errors
+/* SDA CUSTOM */            Object.defineProperty(newEvent, 'clientX', { value: adjustedX });
+/* SDA CUSTOM */            Object.defineProperty(newEvent, 'clientY', { value: adjustedY });
+/* SDA CUSTOM */            Object.defineProperty(newEvent, 'pageX', { value: adjustedX + window.pageXOffset });
+/* SDA CUSTOM */            Object.defineProperty(newEvent, 'pageY', { value: adjustedY + window.pageYOffset });
+/* SDA CUSTOM */            (newEvent as any)._zoomed = true;
+/* SDA CUSTOM */
+/* SDA CUSTOM */            // Stop the original event and dispatch the corrected one on the same target
+/* SDA CUSTOM */            e.stopImmediatePropagation();
+/* SDA CUSTOM */            e.target.dispatchEvent(newEvent);
+/* SDA CUSTOM */        };
+/* SDA CUSTOM */
+/* SDA CUSTOM */        windowProxy._zoomFixHandler = handler;
+/* SDA CUSTOM */        // Use addEventListener with 'true' (capture phase) to intercept before anyone else
+/* SDA CUSTOM */        window.addEventListener('mousedown', handler, true);
+/* SDA CUSTOM */        window.addEventListener('mousemove', handler, true);
+/* SDA CUSTOM */        window.addEventListener('mouseup', handler, true);
+/* SDA CUSTOM */    }
 
     public reloadOnGlobalFilter(): void {
 
@@ -1631,6 +1804,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
 
-  }
-
     }
+
+}
