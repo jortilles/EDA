@@ -3161,6 +3161,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Pokaż tagi w procentach</target>
   </trans-unit>
 
+  <trans-unit id="showUniqueColors">
+    <source>Activar Colores Únicos</source>
+    <target>Aktywuj unikalne kolory</target>
+  </trans-unit>
+
    <trans-unit id="showPointLines">
     <source>Mostrar Puntos en Líneas</source>
     <target>Pokaż punkty na liniach</target>
@@ -4141,6 +4146,16 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
 <trans-unit id="chartLabelPercentOptionDescription">
   <source>Muestra el valor porcentual de cada segmento</source>
   <target>Pokazuje wartość procentową każdego segmentu</target>
+</trans-unit>
+
+<trans-unit id="chartUniqueColorsOption">
+  <source>Asigna un color único a cada barra o elemento</source>
+  <target>Przypisuje unikalny kolor do każdego słupka lub elementu</target>
+</trans-unit>
+
+<trans-unit id="chartUniqueColorsOptionDescription">
+  <source>Cada elemento tendrá un color diferente</source>
+  <target>Każdy element będzie miał inny kolor</target>
 </trans-unit>
 
 <trans-unit id="chartLabelLinesOptionDescription">

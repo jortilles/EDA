@@ -3493,7 +3493,12 @@
   <trans-unit id="showLabelsPercent">
     <source>Mostrar Etiquetas en Porcentajes</source>
     <target>Afficher les étiquettes sous forme de pourcentages</target>
-  </trans-unit> 
+  </trans-unit>
+
+  <trans-unit id="showUniqueColors">
+    <source>Activar Colores Únicos</source>
+    <target>Activer les couleurs uniques</target>
+  </trans-unit>
 
   <trans-unit id="showPointLines">
     <source>Mostrar Puntos en Líneas</source>
@@ -4633,6 +4638,16 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 <trans-unit id="chartLabelPercentOptionDescription">
   <source>Muestra el valor porcentual de cada segmento</source>
   <target>Il indique la valeur en pourcentage de chaque segment</target>
+</trans-unit>
+
+<trans-unit id="chartUniqueColorsOption">
+  <source>Asigna un color único a cada barra o elemento</source>
+  <target>Attribue une couleur unique à chaque barre ou élément</target>
+</trans-unit>
+
+<trans-unit id="chartUniqueColorsOptionDescription">
+  <source>Cada elemento tendrá un color diferente</source>
+  <target>Chaque élément aura une couleur différente</target>
 </trans-unit>
 
 <trans-unit id="chartLabelLinesOptionDescription">

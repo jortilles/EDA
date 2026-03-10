@@ -3274,6 +3274,11 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>Show Tags in Percent</target>
 </trans-unit>
 
+<trans-unit id="showUniqueColors">
+<source>Activar Colores Únicos</source>
+<target>Activate Unique Colors</target>
+</trans-unit>
+
 <trans-unit id="showPointLines">
 <source>Mostrar Puntos en Líneas</source>
 <target>Show Points on Lines</target>
@@ -4280,6 +4285,15 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Displays the percentage value of each segment</target>
 </trans-unit>
 
+<trans-unit id="chartUniqueColorsOption">
+<source>Asigna un color único a cada barra o elemento</source>
+<target>Assigns a unique color to each bar or element</target>
+</trans-unit>
+
+<trans-unit id="chartUniqueColorsOptionDescription">
+<source>Cada elemento tendrá un color diferente</source>
+<target>Each element will have a different color</target>
+</trans-unit>
 
 <trans-unit id="chartLabelLinesOptionDescription">
 <source>Muestra las líneas en los puntos</source>

@@ -3553,7 +3553,12 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="showLabelsPercent">
     <source>Mostrar Etiquetas en Porcentajes</source>
     <target>Mostra Etiquetes en Percentatges</target>
-  </trans-unit> 
+  </trans-unit>
+
+  <trans-unit id="showUniqueColors">
+    <source>Activar Colores Únicos</source>
+    <target>Activa Colors Únics</target>
+  </trans-unit>
 
   <trans-unit id="showPointLines">
     <source>Mostrar Puntos en Líneas</source>
@@ -4697,6 +4702,16 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="chartLabelPercentOptionDescription">
   <source>Muestra el valor porcentual de cada segmento</source>
   <target>Mostra el valor percentual de cada segment</target>
+</trans-unit>
+
+<trans-unit id="chartUniqueColorsOption">
+  <source>Asigna un color único a cada barra o elemento</source>
+  <target>Assigna un color únic a cada barra o element</target>
+</trans-unit>
+
+<trans-unit id="chartUniqueColorsOptionDescription">
+  <source>Cada elemento tendrá un color diferente</source>
+  <target>Cada element tindrà un color diferent</target>
 </trans-unit>
 
 <trans-unit id="chartLabelLinesOptionDescription">

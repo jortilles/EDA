@@ -44,6 +44,7 @@ export class ChartDialogComponent {
     public display: boolean = false;
     public showLabels: boolean = false;
     public showLabelsPercent: boolean = false;
+    public showUniqueColors: boolean = false;
     public showPointLines: boolean = false;
     public showPredictionLines: boolean = false;
     public chartLegend: boolean = true;
@@ -75,6 +76,7 @@ export class ChartDialogComponent {
         addTrend: boolean;
         showLabels: boolean;
         showLabelsPercent: boolean;
+        showUniqueColors: boolean;
         showPointLines: boolean;
         showPredictionLines: boolean;
         numberOfColumns: number;
@@ -130,6 +132,7 @@ export class ChartDialogComponent {
         this.addTrend = this.controller.params.config.config.getConfig()['addTrend'] || false;
         this.showLabels = this.controller.params.config.config.getConfig()['showLabels'] || false;
         this.showLabelsPercent = this.controller.params.config.config.getConfig()['showLabelsPercent'] || false;
+        this.showUniqueColors = this.controller.params.config.config.getConfig()['showUniqueColors'] || false;
         this.showPointLines = this.controller.params.config.config.getConfig()['showPointLines'] || false;
         this.showPredictionLines = this.controller.params.config.config.getConfig()['showPredictionLines'] || false;
         this.predictionMethod = this.controller.params.config.config.getConfig()['predictionMethod'] || 'Arima'; // Valor iniciado en el dropdown
@@ -142,6 +145,7 @@ export class ChartDialogComponent {
             addTrend: this.addTrend,
             showLabels: this.showLabels,
             showLabelsPercent: this.showLabelsPercent,
+            showUniqueColors: this.showUniqueColors,
             showPointLines: this.showPointLines,
             showPredictionLines: this.showPredictionLines,
             numberOfColumns: this.numberOfColumns,
@@ -260,6 +264,7 @@ export class ChartDialogComponent {
         let config: any = c.getConfig();
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
+        config.showUniqueColors = this.showUniqueColors;
         config.showPointLines = this.showPointLines;
         config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
@@ -298,6 +303,7 @@ export class ChartDialogComponent {
         config.numberOfColumns = this.numberOfColumns;
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
+        config.showUniqueColors = this.showUniqueColors;
         config.showPointLines = this.showPointLines;
         config.showPredictionLines = this.showPredictionLines;
 
@@ -318,6 +324,28 @@ export class ChartDialogComponent {
         let config: any = c.getConfig();
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
+        config.showUniqueColors = this.showUniqueColors;
+        config.showPointLines = this.showPointLines;
+        config.showPredictionLines = this.showPredictionLines;
+        config.numberOfColumns = this.numberOfColumns;
+
+        properties.config = c;
+        /**Update chart */
+        this.panelChartConfig = new PanelChart(this.panelChartConfig);
+        setTimeout(_ => {
+            this.chart = this.panelChartComponent.componentRef.instance.inject;
+            this.load();
+        });
+
+    }
+
+    setShowUniqueColors() {
+        const properties = this.panelChartConfig;
+        let c: ChartConfig = properties.config;
+        let config: any = c.getConfig();
+        config.showLabels = this.showLabels;
+        config.showLabelsPercent = this.showLabelsPercent;
+        config.showUniqueColors = this.showUniqueColors;
         config.showPointLines = this.showPointLines;
         config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
@@ -362,6 +390,7 @@ export class ChartDialogComponent {
         let config: any = c.getConfig();
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
+        config.showUniqueColors = this.showUniqueColors;
         config.showPointLines = this.showPointLines;
         config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
@@ -383,6 +412,7 @@ export class ChartDialogComponent {
         config.chartLegend = this.chartLegend;
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
+        config.showUniqueColors = this.showUniqueColors;
         config.showPointLines = this.showPointLines;
         config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
@@ -402,6 +432,7 @@ export class ChartDialogComponent {
         let config: any = c.getConfig();
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
+        config.showUniqueColors = this.showUniqueColors;
         config.showPointLines = this.showPointLines;
         config.showPredictionLines = this.showPredictionLines;
         config.numberOfColumns = this.numberOfColumns;
@@ -481,6 +512,7 @@ export class ChartDialogComponent {
         let config: any = c.getConfig();
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
+        config.showUniqueColors = this.showUniqueColors;
         config.showPointLines = this.showPointLines;
         config.numberOfColumns = this.numberOfColumns;
         config.showPredictionLines = this.showPredictionLines;
@@ -528,6 +560,7 @@ export class ChartDialogComponent {
         let config: any = c.getConfig();
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
+        config.showUniqueColors = this.showUniqueColors;
         config.showPointLines = this.showPointLines;
         config.numberOfColumns = this.numberOfColumns;
         config.showPredictionLines = this.showPredictionLines;
@@ -775,6 +808,7 @@ export class ChartDialogComponent {
         this.chart.addComparative = this.addComparative;
         this.chart.showLabels = this.showLabels;
         this.chart.showLabelsPercent = this.showLabelsPercent;
+        this.chart.showUniqueColors = this.showUniqueColors;
         this.chart.showPointLines = this.showPointLines;
         this.chart.showPredictionLines = this.showPredictionLines;
         this.chart.numberOfColumns = this.numberOfColumns;
@@ -784,6 +818,7 @@ export class ChartDialogComponent {
         this.controller.params.config.config.getConfig()['addTrend'] = this.addTrend;
         this.controller.params.config.config.getConfig()['showLabels'] = this.showLabels;
         this.controller.params.config.config.getConfig()['showLabelsPercent'] = this.showLabelsPercent;
+        this.controller.params.config.config.getConfig()['showUniqueColors'] = this.showUniqueColors;
         this.controller.params.config.config.getConfig()['showPointLines'] = this.showPointLines;
         this.controller.params.config.config.getConfig()['showPredictionLines'] = this.showPredictionLines;
         this.controller.params.config.config.getConfig()['predictionMethod'] = this.predictionMethod;
@@ -811,6 +846,7 @@ export class ChartDialogComponent {
         this.addTrend = this.originalLabelValues.addTrend;
         this.showLabels = this.originalLabelValues.showLabels;
         this.showLabelsPercent = this.originalLabelValues.showLabelsPercent;
+        this.showUniqueColors = this.originalLabelValues.showUniqueColors;
         this.showPointLines = this.originalLabelValues.showPointLines;
         this.showPredictionLines = this.originalLabelValues.showPredictionLines;
         this.numberOfColumns = this.originalLabelValues.numberOfColumns;
@@ -821,6 +857,7 @@ export class ChartDialogComponent {
         this.controller.params.config.config.getConfig()['addTrend'] = this.originalLabelValues.addTrend;
         this.controller.params.config.config.getConfig()['showLabels'] = this.originalLabelValues.showLabels;
         this.controller.params.config.config.getConfig()['showLabelsPercent'] = this.originalLabelValues.showLabelsPercent;
+        this.controller.params.config.config.getConfig()['showUniqueColors'] = this.originalLabelValues.showUniqueColors;
         this.controller.params.config.config.getConfig()['showPointLines'] = this.originalLabelValues.showPointLines;
         this.controller.params.config.config.getConfig()['showPredictionLines'] = this.originalLabelValues.showPredictionLines;
         this.controller.params.config.config.getConfig()['numberOfColumns'] = this.originalLabelValues.numberOfColumns;

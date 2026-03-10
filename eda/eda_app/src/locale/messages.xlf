@@ -574,6 +574,27 @@
           <context context-type="linenumber">54,56</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="showUniqueColors" datatype="html">
+        <source>Activar Colores Únicos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/chart-dialog/chart-dialog.component.html</context>
+          <context context-type="linenumber">201,203</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="chartUniqueColorsOption" datatype="html">
+        <source>Asigna un color único a cada barra o elemento</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/chart-dialog/chart-dialog.component.html</context>
+          <context context-type="linenumber">212</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="chartUniqueColorsOptionDescription" datatype="html">
+        <source>Cada elemento tendrá un color diferente</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/chart-dialog/chart-dialog.component.html</context>
+          <context context-type="linenumber">216</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="comparativeTooltip" datatype="html">
         <source>La función de comparar sólo se puede activar si se dispone de un campo de fecha agregado por mes o semana y un único campo numérico agregado</source>
         <context-group purpose="location">
