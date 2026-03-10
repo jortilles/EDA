@@ -5972,9 +5972,20 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Mostra la predicció de la sèrie</target>
       </trans-unit>
       <trans-unit id="gradientTab">
-        <source>Gradiente de color</source>
-        <target>Gradient de color</target>
+        <source>Colores por intervalo</source>
+        <target>Colors per interval</target>
       </trans-unit>
+
+      <trans-unit id="uniqueColorsPerBar">
+        <source>Color por valor único:</source>
+        <target>Color per valor únic:</target>
+      </trans-unit>
+
+      <trans-unit id="noUniqueLabels">
+        <source>No hay valores únicos disponibles.</source>
+        <target>No hi ha valors únics disponibles.</target>
+      </trans-unit>
+
       <trans-unit id="semaphoreTab">
         <source>Código semafórico</source>
         <target>Codi semafòric</target>

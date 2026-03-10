@@ -5781,9 +5781,20 @@ OR<ph id="5"/>
   <target>Show the series prediction</target>
 </trans-unit>
 <trans-unit id="gradientTab">
-  <source>Gradiente de color</source>
-  <target>Color gradient</target>
+  <source>Colores por intervalo</source>
+  <target>Colors by interval</target>
 </trans-unit>
+
+<trans-unit id="uniqueColorsPerBar">
+  <source>Color por valor único:</source>
+  <target>Color per unique value:</target>
+</trans-unit>
+
+<trans-unit id="noUniqueLabels">
+  <source>No hay valores únicos disponibles.</source>
+  <target>No unique values available.</target>
+</trans-unit>
+
 <trans-unit id="semaphoreTab">
   <source>Código semafórico</source>
   <target>Traffic light code</target>

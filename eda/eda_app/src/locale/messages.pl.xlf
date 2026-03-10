@@ -5613,9 +5613,20 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Pokaż prognozę serii</target>
       </trans-unit>
       <trans-unit id="gradientTab">
-        <source>Gradiente de color</source>
-        <target>Gradient kolorów</target>
+        <source>Colores por intervalo</source>
+        <target>Kolory według przedziału</target>
       </trans-unit>
+
+      <trans-unit id="uniqueColorsPerBar">
+        <source>Color por valor único:</source>
+        <target>Kolor na unikalną wartość:</target>
+      </trans-unit>
+
+      <trans-unit id="noUniqueLabels">
+        <source>No hay valores únicos disponibles.</source>
+        <target>Brak unikalnych wartości.</target>
+      </trans-unit>
+
        <trans-unit id="semaphoreTab">
         <source>Código semafórico</source>
         <target>Kod sygnalizacji świetlnej</target>

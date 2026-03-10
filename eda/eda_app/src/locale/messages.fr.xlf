@@ -5945,9 +5945,20 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <target>Afficher la prédiction de la série</target>
       </trans-unit>
       <trans-unit id="gradientTab">
-        <source>Gradiente de color</source>
-        <target>Dégradé de couleurs</target>
+        <source>Colores por intervalo</source>
+        <target>Couleurs par intervalle</target>
       </trans-unit>
+
+      <trans-unit id="uniqueColorsPerBar">
+        <source>Color por valor único:</source>
+        <target>Couleur par valeur unique :</target>
+      </trans-unit>
+
+      <trans-unit id="noUniqueLabels">
+        <source>No hay valores únicos disponibles.</source>
+        <target>Aucune valeur unique disponible.</target>
+      </trans-unit>
+
        <trans-unit id="semaphoreTab">
         <source>Código semafórico</source>
         <target>Code des feux de circulation</target>
