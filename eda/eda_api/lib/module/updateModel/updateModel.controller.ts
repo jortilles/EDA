@@ -10,8 +10,19 @@ import path from 'path';
 import fs from "fs";
 import { CleanModel } from "./service/cleanModel";
 
-const mariadb = require("mariadb");
 const sinergiaDatabase = require("../../../config/sinergiacrm.config");
+let mariadbModule: any;
+const dynamicImport = new Function("modulePath", "return import(modulePath);") as (
+  modulePath: string
+) => Promise<any>;
+
+const getMariaDb = async () => {
+  if (!mariadbModule) {
+    const mod = await dynamicImport("mariadb");
+    mariadbModule = mod.default || mod;
+  }
+  return mariadbModule;
+};
 
 export class updateModel {
   /** Updates the SinergiaDA data model of an instance */
@@ -22,6 +33,7 @@ export class updateModel {
     let enumerator: any;
     let connection: any;
     console.time("UpdateModel");
+    const mariadb = await getMariaDb();
     connection = await mariadb.createConnection(sinergiaDatabase.sinergiaConn);
     console.timeLog("UpdateModel", "(Create connection)");
 

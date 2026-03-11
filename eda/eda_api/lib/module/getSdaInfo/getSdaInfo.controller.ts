@@ -2,7 +2,18 @@ import { Request, Response } from "express";
 import * as fs from "fs";
 import * as path from "path";
 const sinergiaDatabase = require("../../../config/sinergiacrm.config");
-const mariadb = require("mariadb");
+let mariadbModule: any;
+const dynamicImport = new Function("modulePath", "return import(modulePath);") as (
+  modulePath: string
+) => Promise<any>;
+
+const getMariaDb = async () => {
+  if (!mariadbModule) {
+    const mod = await dynamicImport("mariadb");
+    mariadbModule = mod.default || mod;
+  }
+  return mariadbModule;
+};
 
 
 /**
@@ -67,6 +78,7 @@ export class getSdaInfo {
 
       // Retrieve the last synchronization date with SinergiaCRM.
       let connection: any;
+      const mariadb = await getMariaDb();
       connection = await mariadb.createConnection(sinergiaDatabase.sinergiaConn);
       const rows = await connection.query("SELECT value from sda_def_config WHERE `key` = 'last_rebuild';");
 
