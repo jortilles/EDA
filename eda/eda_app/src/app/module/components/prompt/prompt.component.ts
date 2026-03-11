@@ -181,7 +181,7 @@ export class PromptComponent implements OnInit, AfterViewInit {
             },
             error: (err) => {
                 console.error('Error al enviar prompt:', err);
-                this.messages.push({ role: 'error', content: 'Error al obtener respuesta. Intenta de nuevo.', timestamp: Date.now() });
+                this.messages.push({ role: 'error', content: 'Error: límite diario de consultas superado. Inténtelo más tarde.', timestamp: Date.now() });
                 this.loading = false;
                 this.sending = false;
             }
