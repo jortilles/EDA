@@ -5,7 +5,7 @@ import moment from 'moment';
 
 @Injectable()
 export class DateUtils {
-    
+
     getDateFormatApp(date: any, ignoreTimeZone = true) {
 
     }
@@ -14,7 +14,8 @@ export class DateUtils {
 
             public getRange(range: any) {
                 switch (range) {
-                    case 'all': return this.allDates();
+/* SDA_CUSTOM*/     case 'beforeTodayIncluded':return this.beforeTodayIncluded();
+/* SDA_CUSTOM*/ //  case 'all': return this.allDates();
 /**SDA CUSTOM  */   case 'today': return this.setToday();
                     case 'yesterday': return this.setYesterday();
                     case 'beforeYesterday': return this.setBeforeYesterday();
@@ -28,6 +29,7 @@ export class DateUtils {
                     case 'pastMonthFull': return this.setPastMonthFull();
                     case 'monthStartPreviousYear': return this.setMonthStartPreviousYear();
                     case 'monthFullPreviousYear': return this.setMonthFullPreviousYear();
+/**SDA CUSTOM  */   case 'quarterStart': return this.setQuarterStart();
                     case 'yearStart': return this.setYearStart();
 /**SDA CUSTOM  */   case 'yearStartFull': return this.setYearStartFull();
                     case 'yearStartPreviousYear': return this.setYearStartPreviousYear();
@@ -37,7 +39,22 @@ export class DateUtils {
                     case 'last15': return this.setLast15();
                     case 'last30': return this.setLast30();
                     case 'last60': return this.setLast60();
+                    case 'last90': return this.setLast90();
                     case 'last120': return this.setLast120();
+/* SDA CUSTOM */    case 'nextMonth': return this.setNextMonth();
+/* SDA CUSTOM */    case 'nextWeek': return this.setNextWeek();
+/* SDA CUSTOM */    case 'next3': return this.setNext3();
+/* SDA CUSTOM */    case 'next7': return this.setNext7();
+/* SDA CUSTOM */    case 'next15': return this.setNext15();
+/* SDA CUSTOM */    case 'next30': return this.setNext30();
+/* SDA CUSTOM */    case 'next60': return this.setNext60();
+/* SDA CUSTOM */    case 'next90': return this.setNext90();
+/* SDA CUSTOM */    case 'next120': return this.setNext120();
+/* SDA CUSTOM */    case 'nextQuarter': return this.setNextQuarter();
+/* SDA CUSTOM */    case 'nextYear': return this.setNextYear();
+/* SDA CUSTOM */    case 'tomorrow': return this.setTomorrow();
+/* SDA CUSTOM */    case 'pastTomorrow': return this.setPastTomorrow();
+/* SDA_CUSTOM */    case 'lastQuarter': return this.setLastQuarter();
                 }
             }
 
@@ -46,12 +63,18 @@ export class DateUtils {
         const today = moment().toDate();
         return [mostOldDate, today];
     }
+   
+/* SDA CUSTOM */    public beforeTodayIncluded(): Array<Date> {
+/* SDA CUSTOM */        const mostOldDate = moment('1939-01-01').toDate();
+/* SDA CUSTOM */        const today = moment().toDate();
+/* SDA CUSTOM */        return [mostOldDate, today];
+/* SDA CUSTOM */    }
 
 /**SDA CUSTOM  */    public setToday(): Array<Date> {
 /**SDA CUSTOM  */        const today = moment().toDate();
 /**SDA CUSTOM  */        return [today, today];
 /**SDA CUSTOM  */    }
-    
+
     public setYesterday(): Array<Date> {
         const yesterday = moment().subtract(1,'days').toDate()
         return [yesterday,yesterday];
@@ -110,13 +133,13 @@ export class DateUtils {
         return [monday, today];
     }
 
-    public setMonthStart(): Array<Date> { 
+    public setMonthStart(): Array<Date> {
         const today = moment().toDate();
         const monthStart = moment().startOf('month').toDate();
         return [monthStart, today];
     }
 
-    public setMonthStartFull(): Array<Date> { 
+    public setMonthStartFull(): Array<Date> {
         const monthStart = moment().startOf('month').toDate();
         const monthStartEnd = moment().endOf('month').toDate();
         return [monthStart, monthStartEnd];
@@ -127,7 +150,7 @@ export class DateUtils {
         const pastMonthDay = moment().subtract(1,'months').toDate();
         return [monthStart, pastMonthDay];
     }
-    
+
     public setPastMonthFull(): Array<Date> {
         const t = new Date();
         var d = new Date();
@@ -154,6 +177,12 @@ export class DateUtils {
         const monthStartPastYear = moment().subtract(1,'years').startOf('month').toDate();
         const monthEndPastYear = moment().subtract(1,'years').endOf('month').toDate();
         return [monthStartPastYear,monthEndPastYear];
+    }
+
+    public setQuarterStart(): Array<Date> {
+        const quarterStart = moment().startOf('quarter').toDate();
+        const quarterEnd = moment().endOf('quarter').toDate();
+        return [quarterStart, quarterEnd];
     }
 
     public setYearStart(): Array<Date> {
@@ -211,10 +240,103 @@ export class DateUtils {
         return [lastFiftyNine, today];
     }
 
+    public setLast90(): Array<Date> {
+        const today = moment().toDate();
+        const lastFiftyNine = moment().subtract(89,'days').toDate();
+        return [lastFiftyNine, today];
+    }
+
     public setLast120(): Array<Date> {
         const today = moment().toDate();
         const lastOneHudredNineteen = moment().subtract(119,'days').toDate();
         return [lastOneHudredNineteen, today];
+    }
+
+    public setNextMonth(): Array<Date> {
+        const base = moment().add(1, 'month');
+        const monthStart = base.clone().startOf('month').toDate();
+        const lastDayOfTheMonth = base.clone().endOf('month').toDate();
+        return [monthStart, lastDayOfTheMonth];
+    }
+
+    public setNextWeek(): Array<Date> {
+        const base = moment().add(1, 'week');
+        const weekStart = base.clone().startOf('isoWeek').toDate();
+        const weekEnd   = base.clone().endOf('isoWeek').toDate();
+        return [weekStart, weekEnd];
+    }
+
+    public setNext3(): Array<Date> {
+        const start = moment().add(1, 'day').startOf('day').toDate();
+        const end   = moment().add(3, 'day').endOf('day').toDate();
+        return [start, end];
+    }
+
+    public setNext7(): Array<Date> {
+        const start = moment().add(1, 'day').startOf('day').toDate();
+        const end   = moment().add(7, 'day').endOf('day').toDate();
+        return [start, end];
+    }
+
+    public setNext15(): Array<Date> {
+        const start = moment().add(1, 'day').startOf('day').toDate();
+        const end   = moment().add(15, 'day').endOf('day').toDate();
+        return [start, end];
+    }
+
+    public setNext30(): Array<Date> {
+        const start = moment().add(1, 'day').startOf('day').toDate();
+        const end   = moment().add(30, 'day').endOf('day').toDate();
+        return [start, end];
+    }
+
+    public setNext60(): Array<Date> {
+        const start = moment().add(1, 'day').startOf('day').toDate();
+        const end   = moment().add(60, 'day').endOf('day').toDate();
+        return [start, end];
+    }
+
+    public setNext90(): Array<Date> {
+        const start = moment().add(1, 'day').startOf('day').toDate();
+        const end   = moment().add(90, 'day').endOf('day').toDate();
+        return [start, end];
+    }
+
+    public setNext120(): Array<Date> {
+        const start = moment().add(1, 'day').startOf('day').toDate();
+        const end   = moment().add(90, 'day').endOf('day').toDate();
+        return [start, end];
+    }
+
+    public setNextQuarter(): Array<Date> {
+        const base = moment().add(1, 'quarter');
+        const quarterStart = base.clone().startOf('quarter').toDate();
+        const quarterEnd   = base.clone().endOf('quarter').toDate();
+        return [quarterStart, quarterEnd];
+    }
+
+    public setNextYear(): Array<Date> {
+        const base = moment().add(1, 'year');
+        const yearStart = base.clone().startOf('year').toDate();
+        const yearEnd   = base.clone().endOf('year').toDate();
+        return [yearStart, yearEnd];
+    }
+
+    public setTomorrow(): Array<Date> {
+        const tomorrow = moment().add(1,'days').toDate()
+        return [tomorrow,tomorrow];
+    }
+
+    public setPastTomorrow(): Array<Date> {
+        const pastTomorrow = moment().add(2,'days').toDate()
+        return [pastTomorrow,pastTomorrow];
+    }
+
+    public setLastQuarter(): Array<Date> {
+        const base = moment().subtract(1, 'quarter');
+        const quarterStart = base.clone().startOf('quarter').toDate();
+        const quarterEnd   = base.clone().endOf('quarter').toDate();
+        return [quarterStart, quarterEnd];
     }
 
     public rangeToString(range: Array<Date>): Array<string> {

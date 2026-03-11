@@ -2912,13 +2912,13 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>El año pasado, completo</source>
 <target>L'any passat</target>
 </trans-unit>
-<trans-unit id="DatePickerLast7">
-<source> Últimos 7 días </source>
-<target>Els últims 7 dies</target>
-</trans-unit>
 <trans-unit id="DatePickerLast3">
 <source> Últimos 3 días </source>
 <target>Els últims 3 dies</target>
+</trans-unit>
+<trans-unit id="DatePickerLast7">
+<source> Últimos 7 días </source>
+<target>Els últims 7 dies</target>
 </trans-unit>
 <trans-unit id="DatePickerLast15">
 <source> Últimos 15 días </source>
@@ -2932,9 +2932,77 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source> Últimos 60 días </source>
 <target>Els últims 60 dies</target>
 </trans-unit>
+<trans-unit id="DatePickerLast90">
+<source> Últimos 90 días </source>
+<target>Els últims 90 dies</target>
+</trans-unit>
 <trans-unit id="DatePickerLast120">
 <source> Últimos 120 días </source>
 <target>Els últims 120 dies</target>
+</trans-unit>
+<trans-unit id="DatePickerThisQuarter">
+  <source>Este trimestre</source>
+  <target>Aquest trimestre</target>
+</trans-unit>
+<trans-unit id="DatePickerLastQuarter">
+  <source>Último trimestre</source>
+  <target>El trimestre passat</target>
+</trans-unit>
+<trans-unit id="DatePickerBeforeTodayIncluded">
+  <source>Todo hasta hoy</source>
+  <target>Tot fins avui</target>
+</trans-unit>
+<trans-unit id="DatePickerTomorrow">
+  <source>Mañana</source>
+  <target>Demà</target>
+</trans-unit>
+<trans-unit id="DatePickerPastTomorrow">
+  <source>Pasado mañana</source>
+  <target>Demà passat</target>
+</trans-unit>
+<trans-unit id="DatePickerNextWeek">
+  <source>Próxima semana</source>
+  <target>La setmana que ve</target>
+</trans-unit>
+<trans-unit id="DatePickerNextMonth">
+  <source>Próximo mes</source>
+  <target>El mes que ve</target>
+</trans-unit>
+<trans-unit id="DatePickerNext3">
+  <source>Próximos 3 días</source>
+  <target>Els propers 3 dies</target>
+</trans-unit>
+<trans-unit id="DatePickerNext7">
+  <source>Próximos 7 días</source>
+  <target>Els propers 7 dies</target>
+</trans-unit>
+<trans-unit id="DatePickerNext15">
+  <source>Próximos 15 días</source>
+  <target>Els propers 15 dies</target>
+</trans-unit>
+<trans-unit id="DatePickerNext30">
+  <source>Próximos 30 días</source>
+  <target>Els propers 30 dies</target>
+</trans-unit>
+<trans-unit id="DatePickerNext60">
+  <source>Próximos 60 días</source>
+  <target>Els propers 60 dies</target>
+</trans-unit>
+<trans-unit id="DatePickerNext90">
+  <source>Próximos 90 días</source>
+  <target>Els propers 90 dies</target>
+</trans-unit>
+<trans-unit id="DatePickerNext120">
+  <source>Próximos 120 días</source>
+  <target>Els propers 120 dies</target>
+</trans-unit>
+<trans-unit id="DatePickerNextQuarter">
+  <source>Próximo trimestre</source>
+  <target>El trimestre que ve</target>
+</trans-unit>
+<trans-unit id="DatePickerNextYear">
+  <source>Próximo año</source>
+  <target>L'any que ve</target>
 </trans-unit>
 <trans-unit id="DateSelectRange">
 <source>Selecciona un rango</source>
@@ -4345,10 +4413,6 @@ Un cop configurada podreu invocar-la des del botó sempre que calgui.</target>
       <trans-unit id="noFilterAllowed">
         <source>Este panel no está disponible por falta de permisos en un filtro</source>
         <target>Aquest panell no està disponible per manca de permisos en un filtre, l'informe s'obre en mode de només lectura.</target>
-      </trans-unit>
-      <trans-unit id="DatePickerYearPreviousYearFull">
-        <source>El año pasado, completo</source>
-        <target>L'any passat, complet</target>
       </trans-unit>
       <trans-unit id="aplicarBtn">
         <source>Aplicar</source>

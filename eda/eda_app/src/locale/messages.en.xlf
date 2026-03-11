@@ -2889,13 +2889,13 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>El año pasado, completo</source>
 <target>Last year</target>
 </trans-unit>
-<trans-unit id="DatePickerLast7">
-<source> Últimos 7 días </source>
-<target>Last 7 days</target>
-</trans-unit>
 <trans-unit id="DatePickerLast3">
 <source> Últimos 3 días </source>
 <target>Last 3 days</target>
+</trans-unit>
+<trans-unit id="DatePickerLast7">
+<source> Últimos 7 días </source>
+<target>Last 7 days</target>
 </trans-unit>
 <trans-unit id="DatePickerLast15">
 <source> Últimos 15 días </source>
@@ -2909,9 +2909,77 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source> Últimos 60 días </source>
 <target>Last 60 days</target>
 </trans-unit>
+<trans-unit id="DatePickerLast90">
+<source> Últimos 90 días </source>
+<target>Last 90 days</target>
+</trans-unit>
 <trans-unit id="DatePickerLast120">
 <source> Últimos 120 días </source>
 <target>Last 120 days</target>
+</trans-unit>
+<trans-unit id="DatePickerThisQuarter">
+  <source>Este trimestre</source>
+  <target>This quarter</target>
+</trans-unit>
+<trans-unit id="DatePickerLastQuarter">
+  <source>Último trimestre</source> 
+  <target>Last quarter</target>
+</trans-unit>
+<trans-unit id="DatePickerBeforeTodayIncluded">
+  <source>Todo hasta hoy</source>
+  <target>All until today</target>
+</trans-unit>
+<trans-unit id="DatePickerTomorrow">
+  <source>Mañana</source>
+  <target>Tomorrow</target>
+</trans-unit>
+<trans-unit id="DatePickerPastTomorrow">
+  <source>Pasado mañana</source>
+  <target>Day after tomorrow</target>
+</trans-unit>
+<trans-unit id="DatePickerNextWeek">
+  <source>Próxima semana</source>
+  <target>Next week</target>
+</trans-unit>
+<trans-unit id="DatePickerNextMonth">
+  <source>Próximo mes</source>
+  <target>Next month</target>
+</trans-unit>
+<trans-unit id="DatePickerNext3">
+  <source>Próximos 3 días</source>
+  <target>Next 3 days</target>
+</trans-unit>
+<trans-unit id="DatePickerNext7">
+  <source>Próximos 7 días</source>
+  <target>Next 7 days</target>
+</trans-unit>
+<trans-unit id="DatePickerNext15">
+  <source>Próximos 15 días</source>
+  <target>Next 15 days</target>
+</trans-unit>
+<trans-unit id="DatePickerNext30">
+  <source>Próximos 30 días</source>
+  <target>Next 30 days</target>
+</trans-unit>
+<trans-unit id="DatePickerNext60">
+  <source>Próximos 60 días</source>
+  <target>Next 60 days</target>
+</trans-unit>
+<trans-unit id="DatePickerNext90">
+  <source>Próximos 90 días</source>
+  <target>Next 90 days</target>
+</trans-unit>
+<trans-unit id="DatePickerNext120">
+  <source>Próximos 120 días</source>
+  <target>Next 120 days</target>
+</trans-unit>
+<trans-unit id="DatePickerNextQuarter">
+  <source>Próximo trimestre</source>
+  <target>Next quarter</target>
+</trans-unit>
+<trans-unit id="DatePickerNextYear">
+  <source>Próximo año</source>
+  <target>Next year</target>
 </trans-unit>
 <trans-unit id="DateSelectRange">
 <source>Selecciona un rango</source>
@@ -3929,10 +3997,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Panel color</target>
   </trans-unit>
 
-     <trans-unit id="ChangePaneColor">
-    <source>Color del panel</source>
-    <target>Panel color</target>
-  </trans-unit>
 
   <trans-unit id="opcionEditarEstilos">
     <source>EDITAR ESTILOS</source>
@@ -3942,14 +4006,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <trans-unit id="left">
     <source>Izquierda</source>
     <target>Left</target>
-  </trans-unit>
-  <trans-unit id="center">
-    <source>Centro</source>
-    <target>Center</target>
-  </trans-unit>
-  <trans-unit id="right">
-    <source>Derecha</source>
-    <target>Right</target>
   </trans-unit>
   <trans-unit id="center">
     <source>Centro</source>
@@ -4299,10 +4355,6 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Este panel no está disponible por falta de permisos en un filtro</source>
         <target>This panel is not available due to lack of permissions on a filter</target>
       </trans-unit>
-      <trans-unit id="DatePickerYearPreviousYearFull">
-        <source>El año pasado, completo</source>
-        <target>Last year, complete</target>
-      </trans-unit>
       <trans-unit id="aplicarBtn">
         <source>Aplicar</source>
         <target>Apply</target>
@@ -4443,30 +4495,6 @@ Once configured you can invoke it whenever you want from the button.</target>
       <source>Sin Informar</source>
       <target>Uninformed</target>
       </trans-unit>
-      <trans-unit id="filteredReportMessage">
-        <source>Por favor, espera un momento mientras procesamos la selección.</source>
-        <target>Please wait a moment while we process your selection.</target>
-      </trans-unit>
-      <trans-unit id="logsManagement">
-        <source>Gestión de logs</source>
-        <target>Logs management</target>
-      </trans-unit>
-      <trans-unit id="logFileBtn">
-        <source>Logs</source>
-        <target>Logs</target>
-      </trans-unit>
-      <trans-unit id="logErrorFileBtn">
-        <source>Logs Error</source>
-        <target>Logs Error</target>
-      </trans-unit>
-      <trans-unit id="filterByTreetable">
-      <source>Filtro: </source>
-      <target>Filter: </target>
-      </trans-unit>
-      <trans-unit id="EmptyValueMessage">
-      <source>Sin Informar</source>
-      <target>Uninformed</target>
-      </trans-unit>
 
 
 
@@ -4499,30 +4527,6 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Modo Árbol</source>
         <target>Tree mode</target>
       </trans-unit>
-      <trans-unit id="filters13">
-        <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
-        <target>VALUES NOR NULL NOR EMPTY (not null and != '')</target>
-      </trans-unit>
-      <trans-unit id="filters14">
-        <source>VALORES NULOS O VACÍOS (null or = '')</source>
-        <target>NULL OR EMPTY VALUES (null or = '')</target>
-      </trans-unit>
-      <trans-unit id="aliasValuePh">
-        <source>Alias del filtro (opcional)</source>
-        <target>Filter alias (optional)</target>
-      </trans-unit>
-      <trans-unit id="noDataAllowed">
-        <source>Este panel no está disponible por falta de permisos</source>
-        <target>This panel is not available due to lack of permissions, the report opens in read-only mode.</target>
-      </trans-unit>
-      <trans-unit id="noFilterAllowed">
-        <source>Este panel no está disponible por falta de permisos en un filtro</source>
-        <target>This panel is not available due to lack of permissions on a filter, the report opens in read-only mode.</target>
-      </trans-unit>
-      <trans-unit id="DatePickerYearPreviousYearFull">
-        <source>El año pasado, completo</source>
-        <target>Last year, complete</target>
-      </trans-unit>
       <trans-unit id="whereMessage">
         <source>Filtro sobre todos los registros</source>
         <target>Filter on all records</target>
@@ -4542,18 +4546,6 @@ Once configured you can invoke it whenever you want from the button.</target>
       <trans-unit id="aggregationText">
         <source>Agregación</source>
         <target>Aggregation</target>
-      </trans-unit>
-      <trans-unit id="aplicarBtn">
-        <source>Aplicar</source>
-        <target>Apply</target>
-      </trans-unit>
-      <trans-unit id="disenoTablaCruzada">
-        <source>Diseño de la tabla cruzada: </source>
-        <target>Crosstab design: </target>
-      </trans-unit>
-      <trans-unit id="messageItemCrosstable">
-        <source>Este eje debe contener al menos un elemento</source>
-        <target>This axis must contain at least one element</target>
       </trans-unit>
       <trans-unit id="textoTablaCruzadaEjeX">
         <source> • Eje vertical: Arrastre aquí los campos.</source>
@@ -4615,10 +4607,6 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Configuración avanzada de los todos los filtros</source>
         <target>Advanced settings for all filters</target>
        </trans-unit>
-      <trans-unit id="emptyStringTxt">
-        <source>Vacío</source>
-        <target>(Empty)</target>
-      </trans-unit>
               <trans-unit id="filterSettingsReboot">
         <source>La configuración de filtros se ha reiniciado</source>
         <target>Filter settings have been reset</target>
