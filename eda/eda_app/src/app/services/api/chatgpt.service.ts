@@ -23,10 +23,18 @@ export class ChatgptService extends ApiService{
     const payload = { text, history, data, schema, parameters };
 
     return this.post(`${this.chatGptRoute}/prompt`, payload).pipe(
-      map((resp: any) => {        
+      map((resp: any) => {
         return resp;
       })
     );
+  }
+
+  getConfig(): Observable<any> {
+    return this.get(`${this.chatGptRoute}/config`);
+  }
+
+  saveConfig(config: { API_KEY: string; MODEL: string; CONTEXT: string; AVAILABLE: boolean; LIMIT: number }): Observable<any> {
+    return this.post(`${this.chatGptRoute}/config`, config);
   }
 
 }

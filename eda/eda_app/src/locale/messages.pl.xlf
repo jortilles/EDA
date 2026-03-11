@@ -5745,6 +5745,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Consulta: </source>
         <target>Zapytanie: </target>
       </trans-unit>
+      <trans-unit id="AIManagement" datatype="html">
+        <source>Gestión del asistente</source>
+        <target>Zarządzanie asystentem</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

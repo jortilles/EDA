@@ -6108,6 +6108,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Consulta: </source>
         <target>Consulta: </target>
       </trans-unit>
+      <trans-unit id="AIManagement" datatype="html">
+        <source>Gestión del asistente</source>
+        <target>Gestió de l'assistent</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

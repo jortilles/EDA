@@ -5834,6 +5834,10 @@ OR<ph id="5"/>
   <source>Consulta: </source>
   <target>Query: </target>
 </trans-unit>
+<trans-unit id="AIManagement" datatype="html">
+  <source>Gestión del asistente</source>
+  <target>Assistant Management</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

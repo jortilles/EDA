@@ -3,22 +3,23 @@ import { HttpException } from "../global/model/index";
 import ChatGpt, { IChatGpt } from "../chatgpt/model/chatgpt.model" // A utilizar proximamente
 import OpenAI from "openai";
 import { PromptService } from "../../services/prompt/prompt-assistant.service";
+import * as fs from 'fs';
+import * as path from 'path';
 
-// Importanto elemento del ChatGpt
-const API_KEY = require('../../../config/chatgpt.config').API_KEY;
-const MODEL = require('../../../config/chatgpt.config').MODEL;
-const CONTEXT = require('../../../config/chatgpt.config').CONTEXT;
-const AVAILABLE = require('../../../config/chatgpt.config').AVAILABLE;
-const LIMIT = require('../../../config/chatgpt.config').LIMIT;
-
+const getChatgptConfig = () => {
+    const configPath = path.resolve(__dirname, '../../../config/chatgpt.config.js');
+    delete require.cache[require.resolve(configPath)];
+    return require(configPath);
+};
 
 export class ChatGptController {
 
     static async responseChatGpt(req: Request, res: Response, next: NextFunction) {
-        
-        
-        try {            
+
+
+        try {
             const { input } = req.body;
+            const { API_KEY, MODEL, CONTEXT } = getChatgptConfig();
 
             const openai = new OpenAI({
                 apiKey: API_KEY
@@ -45,12 +46,11 @@ export class ChatGptController {
     }
 
     static async availableChatGpt(req: Request, res: Response, next: NextFunction) {
-        
-        
+
         try {
-            const apiKeyAvailable = AVAILABLE;            
+            const { AVAILABLE } = getChatgptConfig();
             const response = {
-                available: apiKeyAvailable,
+                available: AVAILABLE,
             }
 
             res.status(200).json({
@@ -77,6 +77,8 @@ export class ChatGptController {
             startOfDay.setHours(0, 0, 0, 0);
             const endOfDay = new Date();
             endOfDay.setHours(23, 59, 59, 999);
+
+            const { MODEL, LIMIT } = getChatgptConfig();
 
             const todayCount = await ChatGpt.countDocuments({
                 user: userId,
@@ -117,6 +119,38 @@ export class ChatGptController {
             next(new HttpException(400, 'some Error occurred loading ChatGpt'))
         }
 
+    }
+
+    static async getConfig(_req: Request, res: Response, next: NextFunction) {
+        try {
+            const config = getChatgptConfig();
+            return res.status(200).json({
+                ok: true,
+                config: {
+                    API_KEY: config.API_KEY,
+                    MODEL: config.MODEL,
+                    CONTEXT: config.CONTEXT,
+                    AVAILABLE: config.AVAILABLE,
+                    LIMIT: config.LIMIT,
+                }
+            });
+        } catch (err) {
+            next(new HttpException(400, 'Error loading ChatGpt configuration'));
+        }
+    }
+
+    static async saveConfig(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { API_KEY, MODEL, CONTEXT, AVAILABLE, LIMIT } = req.body;
+            const configPath = path.resolve(__dirname, '../../../config/chatgpt.config.js');
+            const content = `module.exports = { \n    API_KEY: '${API_KEY}',\n    MODEL: '${MODEL}',\n    CONTEXT: '${CONTEXT}',\n    AVAILABLE: ${AVAILABLE},\n    LIMIT: ${LIMIT},\n};\n`;
+            fs.writeFile(configPath, content, 'utf8', (err) => {
+                if (err) return next(new HttpException(500, 'Error saving ChatGpt configuration'));
+                return res.status(200).json({ ok: true });
+            });
+        } catch (err) {
+            next(new HttpException(400, 'Error saving ChatGpt configuration'));
+        }
     }
 
 }

@@ -1,10 +1,13 @@
 import OpenAI from "openai";
-import { API_KEY, MODEL, CONTEXT } from '../../../config/chatgpt.config';
+import * as path from 'path';
 import { PromptUtil } from '../../utils/prompt.util';
 import QueryResolver from '../../services/prompt/query/query-resolver.service'
 
-// Singleton: Una sola instancia reutilizada por todas las llamadas
-const openai = new OpenAI({ apiKey: API_KEY });
+const getChatgptConfig = () => {
+    const configPath = path.resolve(__dirname, '../../../config/chatgpt.config.js');
+    delete require.cache[require.resolve(configPath)];
+    return require(configPath);
+};
 
 interface FilterResolutionState {
     state: 'get_all' | 'search_pattern' | 'user_selected';
@@ -30,8 +33,10 @@ interface PromptParameters {
 export class PromptService {
 
     static async processPrompt(params: PromptParameters) {
-        
+
         const { text, history, data, schema, parameters } = params;
+        const { API_KEY, MODEL, CONTEXT } = getChatgptConfig();
+        const openai = new OpenAI({ apiKey: API_KEY });
 
         if(PromptUtil.isForbidden(text)) {
             return {
