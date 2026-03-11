@@ -785,23 +785,23 @@ export class ChartDialogComponent {
     onPaletteSelected(): void {
         if (!this.selectedPalette) return;
         const palette = this.selectedPalette.paleta;
-        const numColors = this.assignedColors.length;
-        
-        // Generar colores interpolados de la paleta
-        const newColors: string[] = [];
-        for (let i = 0; i < numColors; i++) {
-        newColors.push(palette[i % palette.length]);
-        }
-            
-        // Actualizar assignedColors
+
+        // Siempre actualizar assignedColors
         this.assignedColors = this.assignedColors.map((item, index) => ({
             value: item.value,
-            color: newColors[index]
+            color: palette[index % palette.length]
         }));
-        // Aplicar y re-renderizar
-        this.handleInputColor();
-        const properties = this.panelChartConfig;
-        let c: ChartConfig = properties.config;    
+
+        if (this.showUniqueColors) {
+            // También actualizar uniqueBarColors y aplicar esos colores
+            this.uniqueBarColors = this.uniqueBarColors.map((item, index) => ({
+                value: item.value,
+                color: palette[index % palette.length]
+            }));
+            this.handleUniqueColorInput();
+        } else {
+            this.handleInputColor();
+        }
     }
 
     // METODOS DE CONTROL DE BARRAS SEMAFORICAS 
