@@ -534,6 +534,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
 
         this.queryLimit = panelContent.query.query.queryLimit;
+/*SDA CUSTOM*/ this.joinType = panelContent.query.query.joinType || 'inner';
         PanelInteractionUtils.handleFilters(this, panelContent.query.query);
         PanelInteractionUtils.handleFilterColumns(this, panelContent.query.query.filters, panelContent.query.query.fields);
         this.chartForm.patchValue({chart: this.chartUtils.chartTypes.find(o => o.subValue === panelContent.edaChart)});
