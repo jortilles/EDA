@@ -7,6 +7,7 @@ flex-direction: column;
 border: 1px solid #e3e3e3;
 border-radius: 8px;
 overflow: hidden;
+margin-bottom: 5px;
 }
 
 
@@ -19,8 +20,8 @@ background: #fafafa;
 
 .chat-messages {
 flex: 1 1 auto;
-min-height: 156px;
-max-height: 156px;
+min-height: 145px;
+max-height: 145px;
 overflow-y: auto;
 padding: 12px;
 background: #fff;
@@ -43,7 +44,7 @@ background: #fff;
 
 .chat-input { display: flex; gap: 8px; padding: 10px; border-top: 1px solid #eee; }
 .chat-input textarea { flex: 1 1 auto; resize: vertical; padding: 8px; border-radius: 6px; border: 1px solid #ddd; }
-.chat-input button { padding: 8px 14px; border-radius: 6px; border: none; cursor: pointer; }
+.chat-input button { padding: 8px 14px; border-radius: 6px; border: none; cursor: pointer; width: 100px; flex-shrink: 0; }
 
 
 

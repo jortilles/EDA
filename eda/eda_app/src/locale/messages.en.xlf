@@ -5830,6 +5830,10 @@ OR<ph id="5"/>
   <source>{0} items seleccionados</source>
   <target>{0} items selected</target>
 </trans-unit>
+<trans-unit id="assistantTitle">
+  <source>Consulta: </source>
+  <target>Query: </target>
+</trans-unit>
 </body>
 </file>
 </xliff>

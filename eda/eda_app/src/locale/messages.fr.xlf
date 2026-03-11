@@ -5975,7 +5975,7 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       </trans-unit>
       <trans-unit id="askTheAIText">
         <source>Consulta con la IA</source>
-        <target>Consultation avec l'IA</target>
+        <target>Consultation avec l'AI</target>
       </trans-unit>
       <trans-unit id="predictionDialogTitle">
         <source>Configuración de Predicción</source>
@@ -6072,6 +6072,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="globalFilterSelectedItemsLabel">
         <source>{0} items seleccionados</source>
         <target>{0} articles sélectionnés</target>
+      </trans-unit>
+      <trans-unit id="assistantTitle">
+        <source>Consulta: </source>
+        <target>Requête: </target>
       </trans-unit>
     </body>
   </file>
