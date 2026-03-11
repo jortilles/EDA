@@ -1,18 +1,18 @@
-<div class="flex flex-wrap items-center gap-4 mb-2 ml-1"
-  [style.height]="globalFilters.length === 0 ? '0' : null"
+<div class="flex flex-wrap items-center  mb-1 2xl:mb-2 ml-0 2xl:ml-1"
+  [style.height]="globalFilters.length === 0 ? '1' : null"
   [style.overflow]="globalFilters.length === 0 ? 'hidden' : null"
   [style.margin]="globalFilters.length === 0 ? '0' : null">
 
   <!-- Botón Filtrar -->
   @if (globalFilters.length > 0 && (isAdmin || isDashboardCreator || filterButtonVisibility.public)) {
-  <button class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md border hover:bg-gray-300"
+  <button class="flex items-center gap-2 px-2 py-2 bg-gray-200 text-gray-700 rounded-md border hover:bg-gray-300"
     [style]="styleButton" (click)="validateFilter()">
     <i class="pi pi-filter"></i>
     <span i18n="@@filtrarH4">Filtrar</span>
   </button>
   }
 
-  <div class="flex flex-wrap items-start gap-4 mt-2 mb-2 ml-1">
+  <div class="flex flex-wrap items-start gap-2 xl:gap-4 ">
 
     <!-- Contenedor general con scroll -->
     <div class="filters-container items-center flex flex-wrap gap-4 p-3 rounded-lg bg-transparent">
@@ -63,9 +63,11 @@
                             <div class="filter-tooltip-container bg-[white]  px-4 py-2 rounded flex items-center mr-1">
                                 <span class="customMultiselect filters-size filter-tooltip-text">
                                     {{ item }}
-                                        <button type="button" class=" pi pi-times-circle filter-tooltip-button"
-                                            (click)="removeFilterItem(filter, item)">
-                                        </button>
+                                        @if(filter.visible !== "readOnly" || isAdmin) {
+                                          <button type="button" class=" pi pi-times-circle filter-tooltip-button"
+                                              (click)="removeFilterItem(filter, item)">
+                                          </button>
+                                        }
                                 </span>
                             </div>
                           }
