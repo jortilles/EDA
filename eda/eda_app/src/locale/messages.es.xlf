@@ -4581,8 +4581,8 @@
         <target>Resumen de filtros</target>
       </trans-unit>
       <trans-unit id="globalFilterSelectedItemsLabel">
-        <source>{0} elementos seleccionados</source>
-        <target>{0} elementos seleccionados</target>
+        <source>elementos seleccionados</source>
+        <target>elementos seleccionados</target>
       </trans-unit>
     </body>
   </file>

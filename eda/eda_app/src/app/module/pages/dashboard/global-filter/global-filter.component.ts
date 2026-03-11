@@ -30,7 +30,8 @@ export class GlobalFilterComponent implements OnInit {
 
     public filtrar: string = $localize`:@@filterButtonDashboard:Filtrar`;
     /*SDA CUSTOM*/ public resumen: string = $localize`:@@filterSummary:Resumen de filtros`;
-    /*SDA CUSTOM*/ private tooltipHideTimeout: any;
+/* SDA CUSTOM */ public selectedItemsLabel: string = $localize`:@@globalFilterSelectedItemsLabel:elementos seleccionados`;
+/*SDA CUSTOM*/ private tooltipHideTimeout: any;
 
 
     constructor(

@@ -4692,8 +4692,8 @@ Once configured you can invoke it whenever you want from the button.</target>
         <target>Filter summary</target>
       </trans-unit>
       <trans-unit id="globalFilterSelectedItemsLabel">
-        <source>{0} elementos seleccionados</source>
-        <target>{0} selected items</target>
+        <source>elementos seleccionados</source>
+        <target>selected items</target>
       </trans-unit>
         </body>
   </file>

@@ -4587,8 +4587,8 @@ Un cop configurada podreu invocar-la des del botó sempre que calgui.</target>
         <target>Resum de filtres</target>
       </trans-unit>
       <trans-unit id="globalFilterSelectedItemsLabel">
-        <source>{0} elementos seleccionados</source>
-        <target>{0} elements seleccionats</target>
+        <source>elementos seleccionados</source>
+        <target>elements seleccionats</target>
       </trans-unit>
     </body>
   </file>
