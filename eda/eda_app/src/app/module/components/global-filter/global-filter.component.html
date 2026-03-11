@@ -63,9 +63,11 @@
                             <div class="filter-tooltip-container bg-[white]  px-4 py-2 rounded flex items-center mr-1">
                                 <span class="customMultiselect filters-size filter-tooltip-text">
                                     {{ item }}
-                                        <button type="button" class=" pi pi-times-circle filter-tooltip-button"
-                                            (click)="removeFilterItem(filter, item)">
-                                        </button>
+                                        @if(filter.visible !== "readOnly" || isAdmin) {
+                                          <button type="button" class=" pi pi-times-circle filter-tooltip-button"
+                                              (click)="removeFilterItem(filter, item)">
+                                          </button>
+                                        }
                                 </span>
                             </div>
                           }

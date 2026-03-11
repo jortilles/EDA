@@ -633,6 +633,7 @@ public tableNodeExpand(event: any): void {
 
         // Configuración global del panel
         this.queryLimit = queryLimit;
+        this.joinType = panelContent.query.query.joinType || 'inner';
         this.groupByEnabled = groupByEnabled;
         PanelInteractionUtils.handleFilters(this, query.query);
         PanelInteractionUtils.handleFilterColumns(this, filters, fields);
