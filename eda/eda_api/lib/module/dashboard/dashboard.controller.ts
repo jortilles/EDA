@@ -67,8 +67,9 @@ export class DashboardController {
   static async getPrivateDashboards(req: Request) {
     try {
       const dashboards = await Dashboard.find(
-        { user: req.user._id },
-        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds user'
+        /* SDA CUSTOM - Only active dashboards for non-admins */
+        /* SDA CUSTOM */{ user: req.user._id, "config.active": true },
+        /* SDA CUSTOM */ 'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds config.active user'
       ).populate('user','name').exec()
       const privates = []
       for (const dashboard of dashboards) {
@@ -115,8 +116,9 @@ export class DashboardController {
         users: { $in: req.user._id }
       }).exec();
       const dashboards = await Dashboard.find(
-        { group: { $in: userGroups.map(g => g._id) } },
-        'config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.ds user'
+        /* SDA CUSTOM - Only active dashboards for non-admins */
+        /* SDA CUSTOM */ { group: { $in: userGroups.map(g => g._id) }, "config.active": true },
+        /* SDA CUSTOM */'config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.ds config.active user'
       ).populate('user','name').exec()
       const groupDashboards = []
       for (let i = 0, n = dashboards.length; i < n; i += 1) {
@@ -215,8 +217,9 @@ export class DashboardController {
   static async getPublicsDashboards(req: Request, dss: any[]) {
     try {
       const dashboards = await Dashboard.find(
-        {},
-        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds user'
+        /* SDA CUSTOM - Only active dashboards for non-admins */
+        /* SDA CUSTOM */{ "config.active": true },
+        /* SDA CUSTOM */'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds config.active user'
       ).populate('user','name').exec()
       const publics = []
 
@@ -264,8 +267,9 @@ export class DashboardController {
   static async getSharedDashboards(req: Request) {
     try {
       const dashboards = await Dashboard.find(
-        {},
-        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds user'
+        /* SDA CUSTOM - Only active dashboards for non-admins */
+        /* SDA CUSTOM */ { "config.active": true },
+        /* SDA CUSTOM */ 'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds config.active user'
       ).populate('user','name').exec()
       const shared = []
       for (const dashboard of dashboards) {
@@ -346,11 +350,17 @@ export class DashboardController {
         ]
       );
 
+      /* SDA CUSTOM */ // Initialize config.active to true if it doesn't exist
+      /* SDA CUSTOM */const activeUpdateResult = await Dashboard.updateMany(
+      /* SDA CUSTOM */  { 'config.active': { $exists: false } },
+      /* SDA CUSTOM */  { $set: { 'config.active': true } }
+      /* SDA CUSTOM */);
+
 
       //si no lleva filtro, pasamos directamente a recuperarlos todos
       const dashboards =  JSON.stringify(filter) !== '{}'  ? 
-      await Dashboard.find({ $or : Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor }))},  'user config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds config.external').exec() : 
-      await Dashboard.find({}, 'user config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds config.external').exec();
+      /* SDA CUSTOM */ await Dashboard.find({ $or : Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor }))},  'user config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds config.external config.active').exec() : 
+      /* SDA CUSTOM */ await Dashboard.find({}, 'user config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds config.external config.active').exec();
       
       const publics = []
       const privates = []
@@ -487,6 +497,14 @@ export class DashboardController {
           userGroupDashboards.length === 0 &&
           dashboard.user.toString() !== user
 
+        /* SDA CUSTOM*/// Check if dashboard is active. 
+        /* SDA CUSTOM*/// If inactive, only admins can access it.
+        /* SDA CUSTOM*/const isActive = dashboard.config.active !== false;
+        /* SDA CUSTOM*/const isAdmin = userRoles.includes('EDA_ADMIN') || req.user.role.includes("135792467811111111111110");
+        /* SDA CUSTOM*/if (!isActive && !isAdmin) {
+        /* SDA CUSTOM*/  console.log(`Dashboard ${req.params.id} is inactive and user is not admin`);
+        /* SDA CUSTOM*/  return next(new HttpException(403, "DashboardInactive"));
+        /* SDA CUSTOM*/}
         if (visibilityCheck && roleCheck) {
           console.log(
             "You don't have permission " +

@@ -498,10 +498,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 },
                 err => {
-                    me.alertService.addError(err);
-                    if (err.text === "You don't have permission") {
+/* SDA CUSTOM*/                    if (err.text === "DashboardInactive") {
+/* SDA CUSTOM*/                        this.router.navigate(['/home']);
+/* SDA CUSTOM*/                    } else if (err.text === "You don't have permission") {
                         console.log("You don't have permission");
                         this.router.navigate(['/login']);
+/* SDA CUSTOM*/                    } else {
+/* SDA CUSTOM*/                        this.alertService.addError(err);
                     }
                 }
             );

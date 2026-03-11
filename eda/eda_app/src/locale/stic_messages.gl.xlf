@@ -367,6 +367,58 @@
     <source>Eliminar filtros</source>
     <target>Eliminar filtros</target>
   </trans-unit>
+  <trans-unit id="status" datatype="html">
+    <source>Estado</source>
+    <target>Estado</target>
+  </trans-unit>
+  <trans-unit id="active" datatype="html">
+    <source>Activos</source>
+    <target>Activos</target>
+  </trans-unit>
+  <trans-unit id="inactive" datatype="html">
+    <source>Inactivos</source>
+    <target>Inactivos</target>
+  </trans-unit>
+  <trans-unit id="activeLabel" datatype="html">
+    <source>Activo</source>
+    <target>Activo</target>
+  </trans-unit>
+  <trans-unit id="inactiveLabel" datatype="html">
+    <source>Inactivo</source>
+    <target>Inactivo</target>
+  </trans-unit>
+  <trans-unit id="activateReport" datatype="html">
+    <source>Activar informe</source>
+    <target>Activar informe</target>
+  </trans-unit>
+  <trans-unit id="deactivateReport" datatype="html">
+    <source>Desactivar informe</source>
+    <target>Desactivar informe</target>
+  </trans-unit>
+  <trans-unit id="DashboardActivated" datatype="html">
+    <source>Informe activado correctamente.</source>
+    <target>Informe activado correctamente.</target>
+  </trans-unit>
+  <trans-unit id="DashboardDeactivated" datatype="html">
+    <source>Informe desactivado correctamente.</source>
+    <target>Informe desactivado correctamente.</target>
+  </trans-unit>
+  <trans-unit id="ErrorUpdatingDashboardStatus" datatype="html">
+    <source>Error al actualizar el estado del informe.</source>
+    <target>Erro ao actualizar o estado do informe.</target>
+  </trans-unit>
+  <trans-unit id="deactivatePublicDashboardWarning" datatype="html">
+    <source>Si desactiva este informe público, la URL pública dejará de estar disponible y el informe ya no podrá visualizarse.</source>
+    <target>Se desactiva este informe público, a URL pública deixará de estar dispoñible e o informe xa non se poderá visualizar.</target>
+  </trans-unit>
+  <trans-unit id="ConfirmDeactivate" datatype="html">
+    <source>Sí, desactivarlo</source>
+    <target>Si, desactivalo</target>
+  </trans-unit>
+  <trans-unit id="Cancel" datatype="html">
+    <source>Cancelar</source>
+    <target>Cancelar</target>
+  </trans-unit>
   <trans-unit id="nombreColumnaH4" datatype="html">
     <source>Etiqueta para el campo</source>
     <target>Etiqueta para o campo</target>

@@ -151,6 +151,53 @@
     </div>
   </div>
 
+  <!--Status filter visible only to admins with multiselect -->
+  <div *ngIf="isAdmin" class="ml-2" id="active-filter">
+    <div class="dropdown">
+      <button
+        class="btn btn-secondary dropdown-toggle"
+        type="button"
+        id="dropdownActiveButton"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        <i class="fa fa-filter"></i>&nbsp;<span i18n="@@status"> Estado </span>
+        <span *ngIf="selectedStatuses.length === 1" class="counter bg-warning pull-right">1</span>
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownActiveButton">
+        <div class="dropdown-item">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="activeFilterActive"
+              [checked]="isStatusSelected('active')"
+              (change)="toggleStatusSelection('active')"
+            />
+            <label class="form-check-label" for="activeFilterActive" i18n="@@active">
+              Activos
+            </label>
+          </div>
+        </div>
+        <div class="dropdown-item">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="activeFilterInactive"
+              [checked]="isStatusSelected('inactive')"
+              (change)="toggleStatusSelection('inactive')"
+            />
+            <label class="form-check-label" for="activeFilterInactive" i18n="@@inactive">
+              Inactivos
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Type filter -->
   <div id="type-filter" class="ml-2">
     <div class="dropdown">
@@ -229,9 +276,9 @@
   <div class="ml-2" id="clear-filters-button">
     <button
       class="btn"
-      [class.btn-warning]="selectedTags.length > 0 || selectedGroups.length > 0 || selectedTypes.length > 0 || searchTerm.length > 0"
-      [class.btn-secondary]="selectedTags.length === 0 && selectedGroups.length === 0 && selectedTypes.length === 0 && searchTerm.length === 0"
-      [disabled]="selectedTags.length === 0 && selectedGroups.length === 0 && selectedTypes.length === 0 && searchTerm.length === 0"
+      [class.btn-warning]="hasActiveFilters()"
+      [class.btn-secondary]="!hasActiveFilters()"
+      [disabled]="!hasActiveFilters()"
       (click)="clearAllFilters()"
       i18n-title="@@clearAllFilters"
       title="Eliminar todos los filtros"
@@ -359,6 +406,8 @@
           Fuente de datos
         </th>
 
+        <!--Status column visible only to admins -->
+        <th *ngIf="isAdmin" i18n="@@status" class="text-center">Estado</th>
         <th i18n="@@actions">Acciones</th>
       </tr>
     </thead>
@@ -475,6 +524,18 @@
           </p>
         </td>
         <td>{{ dashboard.config.ds.name }}</td>
+        <!-- Status cell visible only to admins -->
+        <td *ngIf="isAdmin" class="text-center">
+          <input
+            type="checkbox"
+            class="form-check-input"
+            style="position: relative; margin-left: 0"
+            [checked]="dashboard.active"
+            (change)="toggleDashboardActive(dashboard)"
+            [disabled]="!canIEdit(dashboard)"
+            [title]="dashboard.active ? titleInactive : titleActive"
+          />
+        </td>
 
         <td>
           <div class="btn-group">
@@ -618,9 +679,37 @@
             </span>
           </p>
 
-          <p class="card-text">
-            <span *ngIf="dashboard.config.tag" class="tag-label">{{ dashboard.config.tag }}</span>
-          </p>
+          <div class="card-text">
+            <span *ngIf="dashboard.config.tag" class="tag-label">{{
+              dashboard.config.tag
+            }}</span>
+            <!--Status toggle visible only to admins -->
+            <div *ngIf="isAdmin" class="pull-right">
+              <input
+                type="checkbox"
+                class="form-check-input"
+                style="
+                  position: relative;
+                  margin-left: 0;
+                  vertical-align: middle;
+                "
+                [checked]="dashboard.active"
+                (change)="toggleDashboardActive(dashboard)"
+                [disabled]="!canIEdit(dashboard)"
+                [title]="
+                  canIEdit(dashboard)
+                    ? dashboard.active
+                      ? titleInactive
+                      : titleActive
+                    : ''
+                "
+              />
+              <small class="ml-1" style="vertical-align: middle">
+                <ng-container *ngIf="dashboard.active" i18n="@@activeLabel">Activo</ng-container>
+                <ng-container *ngIf="!dashboard.active" i18n="@@inactiveLabel">Inactivo</ng-container>
+              </small>
+            </div>
+          </div>
           <div class="mt-auto">
             <button
               class="btn btn-primary btn-sm mr-2 stic-button-green"

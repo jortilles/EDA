@@ -1,5 +1,5 @@
 import { GroupService } from "../../../services/api/group.service";
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectorRef, NgZone } from "@angular/core";
 import { Router } from "@angular/router";
 import { AlertService, DashboardService, SidebarService, StyleProviderService } from "@eda/services/service.index";
 import { EdaDialogController, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
@@ -32,6 +32,9 @@ export class HomeSdaComponent implements OnInit {
     column: string;
     direction: "asc" | "desc";
   };
+  public selectedStatuses: string[] = ["active", "inactive"];
+  public titleActive: string = $localize`:@@activateReport:Activar informe`;
+  public titleInactive: string = $localize`:@@deactivateReport:Desactivar informe`;
 
   // User and Group Management
   public groups: IGroup[] = [];
@@ -146,7 +149,9 @@ export class HomeSdaComponent implements OnInit {
     private router: Router,
     private alertService: AlertService,
     // Service for group management
-    private groupService: GroupService
+    private groupService: GroupService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
   ) {
     // Initialize data sources
     this.sidebarService.getDataSourceNames();
@@ -268,6 +273,7 @@ export class HomeSdaComponent implements OnInit {
     return {
       ...dashboard,
       type,
+      active: dashboard.config.active !== undefined ? dashboard.config.active : true,
       config: {
         ...dashboard.config,
         tag: Array.isArray(dashboard.config.tag)
@@ -509,6 +515,21 @@ public filterGroups() {
   public filterDashboards() {
     // Reset visibleDashboards
     this.visibleDashboards = [...this.allDashboards];
+
+    // Apply active filter
+    // Restrict status filtering to admins and support multiselect
+    if (this.isAdmin) {
+      if (this.selectedStatuses.length < 2) {
+        this.visibleDashboards = this.visibleDashboards.filter(db => {
+          if (this.selectedStatuses.includes("active") && db.active) return true;
+          if (this.selectedStatuses.includes("inactive") && !db.active) return true;
+          return false;
+        });
+      }
+    } else {
+      // Non-admins only see active reports
+      this.visibleDashboards = this.visibleDashboards.filter(db => db.active === true);
+    }
 
     // Apply type filter
     if (this.selectedTypes.length > 0) {
@@ -913,6 +934,73 @@ public filterGroups() {
     this.editingTypeId = null;
   }
 
+  /**
+   * Toggles the active status of a dashboard
+   * @param dashboard The dashboard to toggle
+   */
+  public toggleDashboardActive(dashboard: any): void {
+    const newStatus = !dashboard.active;
+    /* Confirm deactivation of shared reports */
+    if (!newStatus && (dashboard.config.visible === "shared")) {
+      Swal.fire({
+        title: $localize`:@@Sure:Are you sure?`,
+        text: $localize`:@@deactivatePublicDashboardWarning:Si desactiva este informe público, la URL pública dejará de estar disponible y el informe ya no podrá visualizarse.`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: $localize`:@@ConfirmDeactivate:Yes, deactivate it!`,
+        cancelButtonText: $localize`:@@Cancel:Cancelar`
+      }).then(result => {
+        if (result.value) {
+          this.executeToggleDashboardActive(dashboard, newStatus);
+        } else {
+          this.ngZone.run(() => {
+            dashboard.active = !newStatus;
+            if (dashboard.config) dashboard.config.active = !newStatus;
+            this.cdr.detectChanges();
+            window.location.reload();
+          });
+        }
+      });
+    } else {
+      this.executeToggleDashboardActive(dashboard, newStatus);
+    }
+  }
+
+  /**
+   * Internal function to execute the dashboard status toggle
+   */
+  private executeToggleDashboardActive(dashboard: any, newStatus: boolean): void {
+    dashboard.active = newStatus;
+    if (!dashboard.config) dashboard.config = {};
+    dashboard.config.active = newStatus;
+
+    this.dashboardService
+      .updateDashboardSpecific(dashboard._id, {
+        data: {
+          key: "config.active",
+          newValue: newStatus
+        }
+      })
+      .subscribe(
+        () => {
+          this.alertService.addSuccess(
+            newStatus
+              ? $localize`:@@DashboardActivated:Informe activado correctamente.`
+              : $localize`:@@DashboardDeactivated:Informe desactivado correctamente.`
+          );
+          this.filterDashboards();
+        },
+        error => {
+          this.alertService.addError($localize`:@@ErrorUpdatingDashboardStatus:Error al actualizar el estado del informe.`);
+          dashboard.active = !newStatus;
+          dashboard.config.active = !newStatus;
+          console.error("Error updating dashboard status:", error);
+        }
+      );
+  }
+
   public filterTypes() {
     this.filteredTypes = this.dashboardTypes.filter(type =>
       type.label.toLowerCase().includes(this.typeSearchTerm.toLowerCase())
@@ -972,6 +1060,7 @@ public filterGroups() {
     this.selectedGroups = [];
     this.selectedTypes = [];
     this.searchTerm = "";
+    this.selectedStatuses = ["active", "inactive"];
     this.filterDashboards();
     this.saveFiltersToStorage();
   }
@@ -979,12 +1068,13 @@ public filterGroups() {
   /**
    * Saves the current filter state and sorting to LocalStorage
    */
-  private saveFiltersToStorage(): void {
+  public saveFiltersToStorage(): void {
     const filterState = {
       selectedTags: this.selectedTags,
       selectedGroups: this.selectedGroups,
       selectedTypes: this.selectedTypes,
       searchTerm: this.searchTerm,
+      selectedStatuses: this.selectedStatuses,
       sortColumn: this.sortColumn,
       sortDirection: this.sortDirection
     };
@@ -1000,6 +1090,7 @@ public filterGroups() {
       try {
         const filterState = JSON.parse(savedFilters);
         this.searchTerm = filterState.searchTerm || "";
+        this.selectedStatuses = filterState.selectedStatuses || ["active", "inactive"];
         this.sortColumn = filterState.sortColumn || "config.title";
         this.sortDirection = filterState.sortDirection || "asc";
         // Note: selectedTags, selectedGroups, and selectedTypes will be restored after tags/groups are initialized
@@ -1085,5 +1176,43 @@ public filterGroups() {
       // If no saved filters, just apply current (empty) filters
       this.filterDashboards();
     }
+  }
+
+  /**
+   * Checks if a status is selected
+   * @param status The status to check
+   * @returns Boolean indicating if the status is selected
+   */
+  public isStatusSelected(status: string): boolean {
+    return this.selectedStatuses.includes(status);
+  }
+
+  /**
+   * Toggles the selection of a status
+   * @param status The status to toggle
+   */
+  public toggleStatusSelection(status: string): void {
+    const index = this.selectedStatuses.indexOf(status);
+    if (index > -1) {
+      this.selectedStatuses.splice(index, 1);
+    } else {
+      this.selectedStatuses.push(status);
+    }
+    this.filterDashboards();
+    this.saveFiltersToStorage();
+  }
+
+  /**
+   * Checks if any filters are currently active (different from default state)
+   * @returns Boolean indicating if any filter is active
+   */
+  public hasActiveFilters(): boolean {
+    return (
+      this.selectedTags.length > 0 ||
+      this.selectedGroups.length > 0 ||
+      this.selectedTypes.length > 0 ||
+      this.searchTerm.length > 0 ||
+      this.selectedStatuses.length < 2
+    );
   }
 }
