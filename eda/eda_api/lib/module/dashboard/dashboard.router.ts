@@ -340,4 +340,6 @@ router.delete('/:id', authGuard, DashboardController.delete);
 
 /*SDA CUSTOM*/ router.post('/:id/clone', authGuard, DashboardController.clone);
 
+/*SDA CUSTOM*/ router.get('/:id/visibility', DashboardController.getIsPublic);
+
 export default router;
