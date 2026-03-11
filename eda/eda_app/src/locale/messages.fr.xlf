@@ -1652,6 +1652,16 @@
 <target>Panneau en double</target>
 </trans-unit>
 
+<trans-unit id="panelOptionsLock">
+<source>Bloquear panel</source>
+<target>Verrouiller le panneau</target>
+</trans-unit>
+
+<trans-unit id="panelOptionsUnlock">
+<source>Desbloquear panel</source>
+<target>Déverrouiller le panneau</target>
+</trans-unit>
+
 <trans-unit id="duplicateColumnButton">
 <source>Duplicar columna</source>
 <target>Colonne en double</target>

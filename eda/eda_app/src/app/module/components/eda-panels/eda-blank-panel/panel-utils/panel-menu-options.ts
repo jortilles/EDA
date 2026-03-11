@@ -329,6 +329,28 @@ export const PanelOptions = {
       }
     });
   },
+  toggleLock: (panelComponent: EdaBlankPanelComponent) => {
+    const isLocked = () => (panelComponent.panel as any).dragEnabled === false;
+    const item = new EdaContextMenuItem({
+      label: isLocked() ? $localize`:@@panelOptionsUnlock:Desbloquear panel` : $localize`:@@panelOptionsLock:Bloquear panel`,
+      icon: isLocked() ? 'pi pi-lock' : 'pi pi-lock-open',
+      command: () => {
+        if (isLocked()) {
+          (panelComponent.panel as any).dragEnabled = true;
+          (panelComponent.panel as any).resizeEnabled = true;
+          item.label = $localize`:@@panelOptionsLock:Bloquear panel`;
+          item.icon = 'pi pi-lock-open';
+        } else {
+          (panelComponent.panel as any).dragEnabled = false;
+          (panelComponent.panel as any).resizeEnabled = false;
+          item.label = $localize`:@@panelOptionsUnlock:Desbloquear panel`;
+          item.icon = 'pi pi-lock';
+        }
+        panelComponent.dashboard.gridsterOptions.api?.optionsChanged();
+      }
+    });
+    return item;
+  },
 
   generateMenu: (ebp: EdaBlankPanelComponent) => {
     const isEditable = ebp.isEditable(); 
@@ -366,6 +388,10 @@ export const PanelOptions = {
       {
         show: isEditable,
         item: () => PanelOptions.duplicatePanel(ebp),
+      },
+      {
+        show: true,
+        item: () => PanelOptions.toggleLock(ebp),
       },
       {
         show: isEditable && ebp.availableChatGpt,

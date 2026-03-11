@@ -1679,6 +1679,16 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Duplicar panell</target>
 </trans-unit>
 
+<trans-unit id="panelOptionsLock">
+<source>Bloquear panel</source>
+<target>Bloquejar panell</target>
+</trans-unit>
+
+<trans-unit id="panelOptionsUnlock">
+<source>Desbloquear panel</source>
+<target>Desbloquejar panell</target>
+</trans-unit>
+
 <trans-unit id="duplicateColumnButton">
 <source>Duplicar columna</source>
 <target>Duplicar columna</target>

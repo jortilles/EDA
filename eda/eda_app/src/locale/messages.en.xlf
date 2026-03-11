@@ -1401,6 +1401,14 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <source>Duplicar panel</source>
 <target>Duplicate panel</target>
 </trans-unit>
+<trans-unit id="panelOptionsLock">
+<source>Bloquear panel</source>
+<target>Lock panel</target>
+</trans-unit>
+<trans-unit id="panelOptionsUnlock">
+<source>Desbloquear panel</source>
+<target>Unlock panel</target>
+</trans-unit>
 <trans-unit id="duplicateColumnButton">
 <source>Duplicar columna</source>
 <target>Duplicate column</target>
