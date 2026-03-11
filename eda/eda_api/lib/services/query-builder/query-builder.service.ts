@@ -829,17 +829,23 @@ export abstract class QueryBuilderService {
      */
 
     // not needed to filter relations. They are stored in a different array
-    public findRelationsRecursive(tables, table, vMap) {
-        vMap.set(table.table_name, table);
-        table.relations
-            .forEach(rel => {
-                const newTable = tables.find(t => t.table_name === rel.target_table);
-                if (!vMap.has(newTable.table_name)) {
-                    this.findRelationsRecursive(tables, newTable, vMap);
-                }
-            });
-        return vMap;
-    }
+        public findRelationsRecursive(tables, table, vMap) {
+// SDA CUSTOM - Added safety check for table and relations to avoid TypeError
+/* SDA CUSTOM */ 
+/* SDA CUSTOM */         if (!table) return vMap;
+/* SDA CUSTOM */         vMap.set(table.table_name, table);
+/* SDA CUSTOM */         if (table.relations) {
+/* SDA CUSTOM */             table.relations
+/* SDA CUSTOM */                .forEach(rel => {
+/* SDA CUSTOM */                     const newTable = tables.find(t => t.table_name === rel.target_table);
+/* SDA CUSTOM */                     if (newTable && !vMap.has(newTable.table_name)) {
+/* SDA CUSTOM */                         this.findRelationsRecursive(tables, newTable, vMap);
+/* SDA CUSTOM */                        }
+/* SDA CUSTOM */                    });
+/* SDA CUSTOM */                }
+/* SDA CUSTOM */        return vMap;
+/* SDA CUSTOM */    }
+// END SDA CUSTOM
 
     public findJoinColumns(tableA: string, tableB: string) {
 
