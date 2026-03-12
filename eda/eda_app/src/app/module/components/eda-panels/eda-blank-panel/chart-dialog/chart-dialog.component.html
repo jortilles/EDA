@@ -1,4 +1,4 @@
-<eda-dialog2 width="80vw" height="80vh" [header]="title" (apply)="saveChartConfig()" (close)="closeChartConfig()">
+<eda-dialog2 width="80vw" height="80vh" [header]="title" (apply)="saveChartConfig()" (close)="closeChartConfig()" [disableApply]="!thresholdsValid">
   <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-[70vh]">
     <!-- Chart Preview -->
     <div class="flex-1 flex justify-center border-b md:border-b-0 md:border-r bg-slate-50" >
@@ -410,7 +410,8 @@
                         <div>
                           <span class="font-medium mr-4">{{coloredBarsColumnHeader}} <span i18n="@@aboveThreshold">es mayor que:</span></span>
                           <p-inputNumber [(ngModel)]="thresholdHigh" mode="decimal" (onInput)="applyColoredBars()"
-                          [minFractionDigits]="0" [maxFractionDigits]="4" />
+                          [minFractionDigits]="0" [maxFractionDigits]="4"
+                          [ngClass]="{'ng-invalid ng-dirty': !thresholdsValid}" />
                         </div>
                         <div class="flex items-center gap-2">
                           <input class="text-md text-right text-slate-500 font-mono" [(ngModel)]="colorAbove" (input)="applyColoredBars()">
@@ -434,7 +435,8 @@
                         <div>
                           <span class="font-medium mr-4">{{coloredBarsColumnHeader}} <span i18n="@@belowThreshold">es menor que:</span></span>
                           <p-inputNumber [(ngModel)]="thresholdLow" mode="decimal" (onInput)="applyColoredBars()"
-                          [minFractionDigits]="0" [maxFractionDigits]="4" />
+                          [minFractionDigits]="0" [maxFractionDigits]="4"
+                          [ngClass]="{'ng-invalid ng-dirty': !thresholdsValid}" />
                         </div>
                         <div class="flex items-center gap-2">
                           <input class="text-md text-right text-slate-500 font-mono" [(ngModel)]="colorBelow" (input)="applyColoredBars()">

@@ -631,7 +631,6 @@ public tableNodeExpand(event: any): void {
         this.chartForm.patchValue({ chart: chartOption });
 
         const recoveredConfig = ChartsConfigUtils.recoverConfig(chart, panelContent.query.output.config);
-        console.log('[ColoredBars] initPanel recoveredConfig.coloredBarsConfig:', (recoveredConfig.getConfig() as any)['coloredBarsConfig']);
         this.changeChartType(chart, edaChart, recoveredConfig);
 
         // Mostrar panel y configurar tipo gráfico
@@ -697,7 +696,6 @@ public tableNodeExpand(event: any): void {
         const content = this.panel.content;
         const output = this.panel.content.query.output;
         PanelInteractionUtils.verifyData(this);
-        console.log('[ColoredBars] reloadContent - output.styles:', !!output.styles, '| output.config.coloredBarsConfig:', output.config?.coloredBarsConfig);
         const config = output.styles ? new ChartConfig(output.styles) : new ChartConfig(output.config);
         // If using styles (legacy), carry over coloredBarsConfig from output.config
         if (output.styles && output.config?.coloredBarsConfig) {
@@ -707,7 +705,6 @@ public tableNodeExpand(event: any): void {
             (config.getConfig() as any)['showUniqueColors'] = output.config.showUniqueColors;
             (config.getConfig() as any)['uniqueBarColors'] = output.config.uniqueBarColors ?? [];
         }
-        console.log('[ColoredBars] reloadContent - config.getConfig().coloredBarsConfig:', (config.getConfig() as any)['coloredBarsConfig']);
         this.changeChartType(content.chart, content.edaChart, config);
         this.chartForm.patchValue({ chart: this.chartUtils.chartTypes.find(o => o.subValue === content.edaChart) });
     }
@@ -834,7 +831,6 @@ public tableNodeExpand(event: any): void {
             const savedColoredBarsConfig = config && config.getConfig() ? config.getConfig()['coloredBarsConfig'] : null;
             const savedShowUniqueColors = config && config.getConfig() ? config.getConfig()['showUniqueColors'] : null;
             const savedUniqueBarColors = config && config.getConfig() ? config.getConfig()['uniqueBarColors'] : null;
-            console.log('[ColoredBars] changeChartType - savedColoredBarsConfig before merge:', savedColoredBarsConfig);
 
             _.merge(_config, config||{});
 

@@ -647,6 +647,8 @@ export class ChartDialogComponent {
                 // Colores por intervalo
                 const hasThresholds = this.thresholdHigh !== null || this.thresholdLow !== null;
                 if (isBar && this.coloredBarsActive && hasThresholds && this.chart.chartDataset?.[0]?.data) {
+                    // Si los umbrales no son correctos no haremos cambios
+                    if(!this.thresholdsValid) break;
                     // Per-bar coloring based on thresholds
                     const bothThresholds = this.thresholdHigh !== null && this.thresholdLow !== null;
                     const dataset = this.chart.chartDataset[0];
@@ -665,7 +667,6 @@ export class ChartDialogComponent {
                     break;
                 }
 
-                console.log('Applying colors with config:', this.uniqueBarColors)
                 // Colores únicos por barra (un color por label/categoría)
                 if (isBar && this.showUniqueColors && this.uniqueBarColors.length > 0 && this.chart.chartDataset?.[0]?.data) {
                     const colors = (this.chart.chartDataset[0].data as number[]).map((_, idx) =>
@@ -804,7 +805,13 @@ export class ChartDialogComponent {
         }
     }
 
-    // METODOS DE CONTROL DE BARRAS SEMAFORICAS 
+    // METODOS DE CONTROL DE BARRAS SEMAFORICAS
+    get thresholdsValid(): boolean {
+        if (!this.coloredBarsActive) return true;
+        if (this.thresholdHigh === null || this.thresholdLow === null) return true;
+        return this.thresholdHigh >= this.thresholdLow;
+    }
+
     get coloredBarsColumnHeader(): string {
         const numericCol = this.controller?.params?.config?.query?.find((f: any) => f.column_type === 'numeric');
         if (!numericCol) return '';

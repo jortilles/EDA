@@ -358,11 +358,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const isBar = this.props.chartType === 'bar' || this.props.chartType === 'horizontalBar';
         const coloredBarsConfig = cfg['coloredBarsConfig'];
         const hasThresholds = coloredBarsConfig?.thresholdHigh != null || coloredBarsConfig?.thresholdLow != null;
-        console.log(cfg['showUniqueColors'])
-        console.log(cfg)
         if (isBar && coloredBarsConfig?.active && hasThresholds) {
             // Modo 1: Colores por intervalo
-            console.log('pinto por color unico segun intervalo')
             const { thresholdHigh, thresholdLow, colorAbove, colorBetween, colorBelow } = coloredBarsConfig;
             const bothThresholds = thresholdHigh != null && thresholdLow != null;
             const baseColor = chartConfig.chartColors[0]?.backgroundColor as string || '#cccccc';
@@ -377,7 +374,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         } else if (isBar && cfg['showUniqueColors']) {
             // Modo 2: Colores únicos por barra (un color por label/categoría)
-            console.log('pinto por color unico')
             const uniqueBarColors: { value: string; color: string }[] = cfg['uniqueBarColors'] || [];
             const colors = (chartData[1][0].data as number[]).map((_, idx) =>
                 uniqueBarColors[idx]?.color || this.paletaActual[idx % this.paletaActual.length]
@@ -388,7 +384,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         } else {
             // Modo 3: Colores asignados por serie (comportamiento por defecto)
-            console.log('pinto por ass')
             chartData[1].forEach((dataset, i) => {
                 try {
                     dataset.backgroundColor = chartConfig.chartColors[i]?.backgroundColor;
