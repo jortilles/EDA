@@ -78,7 +78,16 @@ export class ChatGptController {
             const endOfDay = new Date();
             endOfDay.setHours(23, 59, 59, 999);
 
-            const { MODEL, LIMIT } = getChatgptConfig();
+            const { MODEL, LIMIT, MAX_LIMIT } = getChatgptConfig();
+
+            // Verificar límite global del sistema (acumulado total, sin importar el día)
+            const totalCount = await ChatGpt.countDocuments({});
+            if (totalCount >= MAX_LIMIT) {
+                return res.status(429).json({
+                    ok: false,
+                    response: `El sistema ha alcanzado el límite máximo de consultas disponibles.`
+                });
+            }
 
             const todayCount = await ChatGpt.countDocuments({
                 user: userId,
@@ -143,7 +152,8 @@ export class ChatGptController {
         try {
             const { API_KEY, MODEL, CONTEXT, AVAILABLE, LIMIT } = req.body;
             const configPath = path.resolve(__dirname, '../../../config/chatgpt.config.js');
-            const content = `module.exports = { \n    API_KEY: '${API_KEY}',\n    MODEL: '${MODEL}',\n    CONTEXT: '${CONTEXT}',\n    AVAILABLE: ${AVAILABLE},\n    LIMIT: ${LIMIT},\n};\n`;
+            const { MAX_LIMIT } = getChatgptConfig();
+            const content = `module.exports = { \n    API_KEY: '${API_KEY}',\n    MODEL: '${MODEL}',\n    CONTEXT: '${CONTEXT}',\n    AVAILABLE: ${AVAILABLE},\n    LIMIT: ${LIMIT},\n    MAX_LIMIT: ${MAX_LIMIT},\n};\n`;
             fs.writeFile(configPath, content, 'utf8', (err) => {
                 if (err) return next(new HttpException(500, 'Error saving ChatGpt configuration'));
                 return res.status(200).json({ ok: true });

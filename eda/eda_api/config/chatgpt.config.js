@@ -3,5 +3,6 @@ module.exports = {
     MODEL: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
     CONTEXT: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
     AVAILABLE: false,
-    LIMIT: 100,
+    LIMIT: 15,
+    MAX_LIMIT: 150
 };
