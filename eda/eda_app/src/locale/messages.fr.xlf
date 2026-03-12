@@ -1652,6 +1652,11 @@
 <target>Panneau en double</target>
 </trans-unit>
 
+<trans-unit id="panelOptionsChangeChartType">
+<source>Cambiar tipo de gráfico</source>
+<target>Changer le type de graphique</target>
+</trans-unit>
+
 <trans-unit id="panelOptionsLock">
 <source>Bloquear panel</source>
 <target>Verrouiller le panneau</target>

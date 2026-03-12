@@ -1,7 +1,8 @@
 import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
+import { PanelInteractionUtils } from './panel-interaction-utils';
 import * as _ from 'lodash';
 
-import { EdaContextMenuItem, EdaDialogController } from "@eda/shared/components/shared-components.index";
+import { EdaContextMenuItem, EdaDialogController, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
 
 export const PanelOptions = {
   editQuery: (panelComponent: EdaBlankPanelComponent) => {
@@ -329,6 +330,26 @@ export const PanelOptions = {
       }
     });
   },
+  changeChartType: (panelComponent: EdaBlankPanelComponent) => {
+    return new EdaContextMenuItem({
+      label: $localize`:@@panelOptionsChangeChartType:Cambiar tipo de gráfico`,
+      icon: 'mdi mdi-chart-bar',
+      command: () => {
+        PanelInteractionUtils.verifyData(panelComponent);
+        panelComponent.contextMenu.hideContextMenu();
+        panelComponent.chartTypeSelectorController = new EdaDialogController({
+          params: { chartTypes: panelComponent.chartTypes },
+          close: (event: EdaDialogCloseEvent, ct: any) => {
+            panelComponent.chartTypeSelectorController = undefined;
+            if (event === EdaDialogCloseEvent.UPDATE) {
+              panelComponent.changeChartTypeCheck(ct.value, ct.subValue);
+              panelComponent.chartForm.patchValue({ chart: ct });
+            }
+          }
+        });
+      }
+    });
+  },
   toggleLock: (panelComponent: EdaBlankPanelComponent) => {
     const isLocked = () => (panelComponent.panel as any).dragEnabled === false;
     const item = new EdaContextMenuItem({
@@ -372,6 +393,10 @@ export const PanelOptions = {
       {
         show: JSON.parse(localStorage.getItem('user'))._id  !== '135792467811111111111112',
         item: () => PanelOptions.editChart(ebp),
+      },
+      {
+        show: isEditable && !!ebp.panel.content,
+        item: () => PanelOptions.changeChartType(ebp),
       },
       {
         show: isEditable && isImported,

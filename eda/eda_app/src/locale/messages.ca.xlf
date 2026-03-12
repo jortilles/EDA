@@ -1679,6 +1679,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Duplicar panell</target>
 </trans-unit>
 
+<trans-unit id="panelOptionsChangeChartType">
+<source>Cambiar tipo de gráfico</source>
+<target>Canviar tipus de gràfic</target>
+</trans-unit>
+
 <trans-unit id="panelOptionsLock">
 <source>Bloquear panel</source>
 <target>Bloquejar panell</target>
