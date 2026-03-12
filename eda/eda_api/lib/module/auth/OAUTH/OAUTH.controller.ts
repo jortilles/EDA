@@ -166,8 +166,8 @@ export class OAUTHController {
                     { role: companyId }, // criterio de búsqueda
                     {
                         $setOnInsert: {
-                            name: companyName,
-                            role: companyId,
+                            name: companyId,
+                            role: 'EDA_USER_ROLE',
                             users: [],
                             img: ''
                         }
