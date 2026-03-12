@@ -620,6 +620,7 @@ public tableNodeExpand(event: any): void {
 
         // Configuración global del panel
         this.queryLimit = queryLimit;
+        this.joinType = panelContent.query.query.joinType || 'inner';
         this.groupByEnabled = groupByEnabled;
         PanelInteractionUtils.handleFilters(this, query.query);
         PanelInteractionUtils.handleFilterColumns(this, filters, fields);
@@ -697,6 +698,14 @@ public tableNodeExpand(event: any): void {
         const output = this.panel.content.query.output;
         PanelInteractionUtils.verifyData(this);
         const config = output.styles ? new ChartConfig(output.styles) : new ChartConfig(output.config);
+        // If using styles (legacy), carry over coloredBarsConfig from output.config
+        if (output.styles && output.config?.coloredBarsConfig) {
+            (config.getConfig() as any)['coloredBarsConfig'] = output.config.coloredBarsConfig;
+        }
+        if (output.config?.showUniqueColors != null) {
+            (config.getConfig() as any)['showUniqueColors'] = output.config.showUniqueColors;
+            (config.getConfig() as any)['uniqueBarColors'] = output.config.uniqueBarColors ?? [];
+        }
         this.changeChartType(content.chart, content.edaChart, config);
         this.chartForm.patchValue({ chart: this.chartUtils.chartTypes.find(o => o.subValue === content.edaChart) });
     }
@@ -818,14 +827,26 @@ public tableNodeExpand(event: any): void {
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
 
-            // Preservar assignedColors antes del merge
+            // Preservar assignedColors, coloredBarsConfig, showUniqueColors y uniqueBarColors antes del merge
             const savedAssignedColors = config && config.getConfig() ? config.getConfig()['assignedColors'] : null;
+            const savedColoredBarsConfig = config && config.getConfig() ? config.getConfig()['coloredBarsConfig'] : null;
+            const savedShowUniqueColors = config && config.getConfig() ? config.getConfig()['showUniqueColors'] : null;
+            const savedUniqueBarColors = config && config.getConfig() ? config.getConfig()['uniqueBarColors'] : null;
 
             _.merge(_config, config||{});
 
             // Restaurar assignedColors después del merge
             if (savedAssignedColors) {
                 _config.getConfig()['assignedColors'] = savedAssignedColors;
+            }
+            // Restaurar coloredBarsConfig después del merge
+            if (savedColoredBarsConfig) {
+                _config.getConfig()['coloredBarsConfig'] = savedColoredBarsConfig;
+            }
+            // Restaurar showUniqueColors y uniqueBarColors después del merge
+            if (savedShowUniqueColors != null) {
+                _config.getConfig()['showUniqueColors'] = savedShowUniqueColors;
+                _config.getConfig()['uniqueBarColors'] = savedUniqueBarColors ?? [];
             }
 
             // Asegurar que showPredictionLines se propaga al _config (mantener la línea de predicción al cambiar entre tipos de gráficos)
@@ -1176,11 +1197,16 @@ public tableNodeExpand(event: any): void {
                 properties.chartDataset[0].data = this.graficos.assignedColors.map(element => element.value)
             }
         
-                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors, chartLegend: this.graficos.chartLegend };
+                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors, chartLegend: this.graficos.chartLegend, coloredBarsConfig: this.graficos.coloredBarsConfig, showUniqueColors: this.graficos.showUniqueColors, uniqueBarColors: this.graficos.uniqueBarColors };
                 const layout =
                     new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType,
                     this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels,
                     this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors, this.graficos.showPointLines, this.graficos.showPredictionLines, this.graficos.chartLegend));
+                if (this.graficos.coloredBarsConfig) {
+                    (layout.getConfig() as any)['coloredBarsConfig'] = this.graficos.coloredBarsConfig;
+                }
+                (layout.getConfig() as any)['showUniqueColors'] = this.graficos.showUniqueColors ?? false;
+                (layout.getConfig() as any)['uniqueBarColors'] = this.graficos.uniqueBarColors ?? [];
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
             }
             //not saved alert message
