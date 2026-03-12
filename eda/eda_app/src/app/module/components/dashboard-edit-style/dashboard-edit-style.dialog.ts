@@ -252,12 +252,23 @@ export class DashboardEditStyleDialog {
             color: newPalette[index % newPalette.length]
         }));
 
+        // Si tiene uniqueBarColors activos, también aplicar la paleta
+        if (config.showUniqueColors && Array.isArray(config.uniqueBarColors) && config.uniqueBarColors.length > 0) {
+            config.uniqueBarColors = config.uniqueBarColors.map((item, index) => ({
+                value: item.value,
+                color: newPalette[index % newPalette.length]
+            }));
+        }
+
 		const edaPanel = this.dashboard.edaPanels['_results'].find(p => p.panel.id === panel.id);
         if (edaPanel?.panelChart?.props?.config) {
             const internalConfig = edaPanel.panelChart.props.config.getConfig();
             if (internalConfig) {
                 // Actualizar assignedColors por referencia
                 internalConfig['assignedColors'] = config.assignedColors;
+                if (config.showUniqueColors) {
+                    internalConfig['uniqueBarColors'] = config.uniqueBarColors;
+                }
             }
         }
 
