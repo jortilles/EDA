@@ -301,6 +301,7 @@ eda-blank-panel :root {
   display: flex;
   flex-direction: row;
   padding: 2px;
+  padding-left: 4px;
   /* border: solid 1px #ccc; */
   border-radius: 4px;
   min-height: 40px;
