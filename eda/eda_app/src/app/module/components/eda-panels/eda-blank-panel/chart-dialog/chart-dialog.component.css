@@ -1,3 +1,8 @@
+::ng-deep p-inputnumber.ng-invalid .p-inputtext {
+  border-color: #e24c4c !important;
+  box-shadow: 0 0 0 0.2rem rgba(226, 76, 76, 0.25) !important;
+}
+
 .toggle-blocked {
   cursor: not-allowed !important;
 

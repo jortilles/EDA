@@ -3493,7 +3493,12 @@
   <trans-unit id="showLabelsPercent">
     <source>Mostrar Etiquetas en Porcentajes</source>
     <target>Afficher les étiquettes sous forme de pourcentages</target>
-  </trans-unit> 
+  </trans-unit>
+
+  <trans-unit id="showUniqueColors">
+    <source>Activar Colores Únicos</source>
+    <target>Activer les couleurs uniques</target>
+  </trans-unit>
 
   <trans-unit id="showPointLines">
     <source>Mostrar Puntos en Líneas</source>
@@ -4633,6 +4638,16 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 <trans-unit id="chartLabelPercentOptionDescription">
   <source>Muestra el valor porcentual de cada segmento</source>
   <target>Il indique la valeur en pourcentage de chaque segment</target>
+</trans-unit>
+
+<trans-unit id="chartUniqueColorsOption">
+  <source>Asigna un color único a cada barra o elemento</source>
+  <target>Attribue une couleur unique à chaque barre ou élément</target>
+</trans-unit>
+
+<trans-unit id="chartUniqueColorsOptionDescription">
+  <source>Cada elemento tendrá un color diferente</source>
+  <target>Chaque élément aura une couleur différente</target>
 </trans-unit>
 
 <trans-unit id="chartLabelLinesOptionDescription">
@@ -5930,9 +5945,20 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <target>Afficher la prédiction de la série</target>
       </trans-unit>
       <trans-unit id="gradientTab">
-        <source>Gradiente de color</source>
-        <target>Dégradé de couleurs</target>
+        <source>Colores por intervalo</source>
+        <target>Couleurs par intervalle</target>
       </trans-unit>
+
+      <trans-unit id="uniqueColorsPerBar">
+        <source>Color por valor único:</source>
+        <target>Couleur par valeur unique :</target>
+      </trans-unit>
+
+      <trans-unit id="noUniqueLabels">
+        <source>No hay valores únicos disponibles.</source>
+        <target>Aucune valeur unique disponible.</target>
+      </trans-unit>
+
        <trans-unit id="semaphoreTab">
         <source>Código semafórico</source>
         <target>Code des feux de circulation</target>

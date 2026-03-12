@@ -350,12 +350,40 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         // Generar chartColors en formato Chart.js desde assignedColors MAPEADOS
         chartConfig.chartColors = this.chartUtils.generateChartColorsFromAssignedColors(
-            assignedColors, 
+            assignedColors,
             this.props.chartType
         );
 
-        // Aplicar backgroundColor y borderColor a los datasets
-        if (!chartData[1][0]?.backgroundColor) {
+        // --- Determinar modo de color y aplicar ---
+        const isBar = this.props.chartType === 'bar' || this.props.chartType === 'horizontalBar';
+        const coloredBarsConfig = cfg['coloredBarsConfig'];
+        const hasThresholds = coloredBarsConfig?.thresholdHigh != null || coloredBarsConfig?.thresholdLow != null;
+        if (isBar && coloredBarsConfig?.active && hasThresholds) {
+            // Modo 1: Colores por intervalo
+            const { thresholdHigh, thresholdLow, colorAbove, colorBetween, colorBelow } = coloredBarsConfig;
+            const bothThresholds = thresholdHigh != null && thresholdLow != null;
+            const baseColor = chartConfig.chartColors[0]?.backgroundColor as string || '#cccccc';
+            const colors = (chartData[1][0].data as number[]).map((value: number) => {
+                if (thresholdHigh != null && value > thresholdHigh) return colorAbove;
+                if (thresholdLow != null && value < thresholdLow) return colorBelow;
+                return bothThresholds ? colorBetween : baseColor;
+            });
+            chartData[1][0].backgroundColor = colors;
+            chartData[1][0].borderColor = colors;
+            chartConfig.chartColors = [{ backgroundColor: colors, borderColor: colors }];
+
+        } else if (isBar && cfg['showUniqueColors']) {
+            // Modo 2: Colores únicos por barra (un color por label/categoría)
+            const uniqueBarColors: { value: string; color: string }[] = cfg['uniqueBarColors'] || [];
+            const colors = (chartData[1][0].data as number[]).map((_, idx) =>
+                uniqueBarColors[idx]?.color || this.paletaActual[idx % this.paletaActual.length]
+            );
+            chartData[1][0].backgroundColor = colors;
+            chartData[1][0].borderColor = colors;
+            chartConfig.chartColors = [{ backgroundColor: colors, borderColor: colors }];
+
+        } else {
+            // Modo 3: Colores asignados por serie (comportamiento por defecto)
             chartData[1].forEach((dataset, i) => {
                 try {
                     dataset.backgroundColor = chartConfig.chartColors[i]?.backgroundColor;
