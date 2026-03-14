@@ -903,6 +903,12 @@ export class ChartUtilsService {
         return [r, g, b];
     }
 
+    public hexToRgba(hex: string, opacity: number): string {
+        const [r, g, b] = this.hex2rgb(hex);
+        const a = Math.max(0, Math.min(100, opacity)) / 100;
+        return `rgba(${r}, ${g}, ${b}, ${a})`;
+    }
+
     public rgbToHex(r: number, g: number, b: number): string {
         return `#${this.toHex(r)}${this.toHex(g)}${this.toHex(b)}`;
     }
@@ -1909,16 +1915,25 @@ export class ChartUtilsService {
                     font: {
                         family: fontStyle,
                     },
+                    elements: {
+                        line: {
+                            borderColor: '#000000',
+                            borderWidth: 2,
+                        },
+                        point: {
+                            borderColor: '#000000',
+                        }
+                    },
                     scales: {
                         r: {
                             pointLabels: {
-                                color: 'transparent', 
+                                color: 'transparent',
                                 font: {
                                     family: fontStyle,
                                 }
                             },
                             ticks: {
-                                color: colorStyle, 
+                                color: colorStyle,
                                 backdropColor: panelStyle,
                             },
                             angleLines: {
