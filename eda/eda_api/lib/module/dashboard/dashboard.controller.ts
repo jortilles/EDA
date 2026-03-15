@@ -840,12 +840,15 @@ export class DashboardController {
     user: string
   ) {
     let forbiddenColumns = [];
+    // Check if model have open or closed security
+    let open =  (dataModelObject.ds.metadata.model_granted_roles.filter(r => r.type == "anyoneCanSee" && r.permission == true).length > 0)  
+
 
     if (dataModelObject.ds.metadata.model_granted_roles.length > 0) { /** SI HAY PERMISOS DEFINIDOS. SI NO, NO HAY SEGURIDAD */
       
+      /** SI TENGO LA COLUMNA PROHIVIDA.... */
       if (dataModelObject.ds.metadata.model_granted_roles.filter(r => r.none == true).length > 0) {
         dataModelObject.ds.metadata.model_granted_roles.filter(r => r.none == true).forEach(c => {
-          
           if (c.users?.includes(user)) {
             forbiddenColumns.push(c);
           }
@@ -860,9 +863,10 @@ export class DashboardController {
 
     let allowedColumns = [];
     // puede ser que me den permiso sobre una columna. 
-    // entonces tengo prohivida toda la tabla excepto esa columna
+    // entonces tengo prohivida toda la tabla excepto esa columna en el caso de un modelo cerrado.
     if (dataModelObject.ds.metadata.model_granted_roles.length > 0) { /** SI HAY PERMISOS DEFINIDOS. SI NO, NO HAY SEGURIDAD */
-      if (dataModelObject.ds.metadata.model_granted_roles.filter(r => r.global == false && r.none == false).length > 0) {
+      if ( open == false &&  // si el modelo es cerrado.
+        dataModelObject.ds.metadata.model_granted_roles.filter(r => r.global == false && r.none == false).length > 0) {
         dataModelObject.ds.metadata.model_granted_roles.filter(r => r.global == false && r.none == false  ).forEach(c => {
          // para dada columna que digo que puedes ver.  
          // dejas de poder ver el resto de la tabla.
