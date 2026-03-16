@@ -52,8 +52,8 @@ export class ChartDialogComponent {
     public predictionMethod: string = 'Arima';
     public selectedPalette: { name: string; paleta: any } | null = null;
     public allPalettes: any = this.stylesProviderService.ChartsPalettes;
-    public assignedColors: { value: string; color: string }[] = [];
-    private originalAssignedColors: { value: string; color: string }[] = [];
+    public assignedColors: { value: string; color: string; opacity?: number }[] = [];
+    private originalAssignedColors: { value: string; color: string; opacity?: number }[] = [];
     public uniqueBarColors: { value: string; color: string }[] = [];
     private originalUniqueBarColors: { value: string; color: string }[] = [];
 
@@ -207,7 +207,8 @@ export class ChartDialogComponent {
                 const match = existingColors.find(c => c.value === label);
                 return {
                     value: label,
-                    color: match?.color || this.getDefaultColor(index)
+                    color: match?.color || this.getDefaultColor(index),
+                    opacity: match?.opacity ?? 100
                 };
             });
         }
@@ -678,16 +679,18 @@ export class ChartDialogComponent {
                 }
 
                 // Normal: one color per dataset
+                const edaChart = this.chart['edaChart'];
+                const isAreaOrRadar = ['area', 'kpiarea', 'radar'].includes(edaChart);
                 if (this.chart.chartDataset.length > 0 && Array.isArray(this.chart.chartDataset)) {
                     this.chart.chartDataset = this.chart.chartDataset.map((dataset) => {
                         const colorConfig = this.assignedColors.find(c => c.value === dataset.label);
                         if (colorConfig) {
+                            const fillColor = isAreaOrRadar ? this.chartUtils.hexToRgba(colorConfig.color, colorConfig.opacity ?? 100) : colorConfig.color;
                             return {
                                 ...dataset,
-                                backgroundColor: colorConfig.color,
+                                backgroundColor: fillColor,
                                 borderColor: colorConfig.color,
                                 pointBackgroundColor: colorConfig.color,
-                                pointBorderColor: colorConfig.color
                             };
                         }
                         return dataset;
@@ -695,10 +698,9 @@ export class ChartDialogComponent {
                 }
 
                 this.chart.chartColors = this.assignedColors.map(c => ({
-                    backgroundColor: c.color,
+                    backgroundColor: isAreaOrRadar ? this.chartUtils.hexToRgba(c.color, c.opacity ?? 100) : c.color,
                     borderColor: c.color,
                     pointBackgroundColor: c.color,
-                    pointBorderColor: c.color
                 }));
                 break;
             }
@@ -720,9 +722,6 @@ export class ChartDialogComponent {
     handleInputColor(): void {
         // Aplicar assignedColors al chart
         this.applyColorsToChart();
-
-        // Guardar los colores en el config para que persistan cuando se recargue el chart
-        this.controller.params.config.config.getConfig()['assignedColors'] = [...this.assignedColors];
 
         // Re-renderizar
         if (this.panelChartComponent?.componentRef?.instance) {
@@ -766,6 +765,7 @@ export class ChartDialogComponent {
                         if (chartJs.data.datasets[index]) {
                             chartJs.data.datasets[index].backgroundColor = dataset.backgroundColor;
                             chartJs.data.datasets[index].borderColor = dataset.borderColor;
+                            (chartJs.data.datasets[index] as any).pointBackgroundColor = (dataset as any).pointBackgroundColor;
                         }
                     });
                     break;
@@ -837,6 +837,10 @@ export class ChartDialogComponent {
         if ((this.chart.chartType as string) !== 'bar') return;
         this.coloredBarsActive = event.index === 1;
         this.handleInputColor();
+    }
+
+    get isAreaOrRadarChart(): boolean {
+        return ['area', 'kpiarea', 'radar'].includes(this.panelChartConfig?.edaChart);
     }
 
     // METODOS DE GUARDAR/CANCELAR CONFIGURACION

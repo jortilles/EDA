@@ -1162,15 +1162,18 @@ public tableNodeExpand(event: any): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             if (properties) {
                 this.graficos = {};
-        this.graficos = _.cloneDeep(properties);
+                this.graficos = _.cloneDeep(properties);
             if(properties.edaChart !== 'histogram'){
                 //assignedColors se le modifica el color dependiendo de su label
                 this.graficos.assignedColors.forEach((e) => {
                 if (this.graficos.chartLabels.includes(e.value)) {
                         let indexColor = this.graficos.chartLabels.findIndex(element => element === e.value)
-                        e.color = this.graficos.chartColors[0].backgroundColor[indexColor]?.length > 1 ?
-                            this.graficos.chartColors[0].backgroundColor[indexColor] : 
-                            this.graficos.chartColors[0].backgroundColor  
+                        const candidateColor = this.graficos.chartColors[0].backgroundColor[indexColor];
+                        // Solo sobreescribir si es un array de colores (doughnut/polarArea), no un string de color único
+                        if (candidateColor?.length > 1) {
+                            e.color = candidateColor;
+                        }
+                        // Para area/radar/line, preservar el color hex original de assignedColors
                 }
             });
             }else{
