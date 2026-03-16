@@ -1,5 +1,5 @@
 import { createClient } from '@clickhouse/client';
-import { ClickHouseBuilderService } from '../../query-builder/qb-systems/clickhouse-builder-service';
+import { ClickHouseBuilderService } from '../../query-builder/qb-systems/clickhouse-builder.service';
 import { AbstractConnection } from '../abstract-connection';
 import { AggregationTypes } from '../../../module/global/model/aggregation-types';
 

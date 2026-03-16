@@ -1,4 +1,4 @@
-import { BigQueryBuilderService } from './../../query-builder/qb-systems/bigquery-builder.service';
+import { BigQueryBuilderService } from '../../query-builder/qb-systems/bigquery-builder.service';
 import { AggregationTypes } from '../../../module/global/model/aggregation-types';
 import { AbstractConnection } from "../abstract-connection";
 import DataSource from '../../../module/datasource/model/datasource.model';

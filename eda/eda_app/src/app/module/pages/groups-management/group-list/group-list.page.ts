@@ -41,7 +41,7 @@ export class GroupListPage implements OnInit {
   showGroupDetail: boolean = false;
 
   currentPage: number = 1;
-  itemsPerPage: number = 10;
+  itemsPerPage: number = 25;
 
   public addGroupTitle = $localize`:@@newGroup:Crear Nuevo Grupo`;
   public updateGroupTitle = $localize`:@@editGroup:Editar Grupo`;

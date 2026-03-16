@@ -1,4 +1,4 @@
-import { EdaQueryParams, QueryBuilderService } from './../query-builder.service';
+import { EdaQueryParams, QueryBuilderService } from '../query-builder.service';
 import * as _ from 'lodash';
 
 
@@ -837,9 +837,9 @@ public getHavingColname(column: any){
     if (!Array.isArray(filter)) {
       switch (columnType) {
         case 'text': return `'${filter}'`;
-        case 'dynamic': return filter ;
         case 'html': return `'${filter}'`;
         case 'numeric': return filter;
+        case 'dynamic': return filter ;
         case 'date': return `STR_TO_DATE('${filter}','%Y-%m-%d')`
       }
     } else {
