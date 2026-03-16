@@ -324,16 +324,18 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         } else {
             // Mapear assignedColors a los labels actuales
             // Crear un Map para búsqueda rápida por valor
-            const colorMap = new Map(assignedColors.map(ac => [ac.value, ac.color]));
-            
+            const colorMap = new Map<string, any>(assignedColors.map(ac => [ac.value, ac]));
+
             // Mapear colores basándose en los labels ACTUALES
             const mappedAssignedColors = currentLabels.map((label, index) => {
                 // Buscar el color asignado para este label
                 const assignedColor = colorMap.get(label);
-                
+
                 if (assignedColor) {
-                    // Si existe un color asignado para este label, usarlo
-                    return { value: label, color: assignedColor };
+                    // Si existe un color asignado para este label, usarlo, añadimos opacity su tica
+                    const entry: any = { value: label, color: assignedColor.color };
+                    if (assignedColor.opacity !== undefined) entry.opacity = assignedColor.opacity;
+                    return entry;
                 } else {
                     // Si es un label nuevo (no estaba en assignedColors), usar color de la paleta
                     const fallbackColor = this.paletaActual[index % this.paletaActual.length];
@@ -384,10 +386,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         } else {
             // Modo 3: Colores asignados por serie (comportamiento por defecto)
+            const isAreaOrRadar = ['area', 'kpiarea', 'radar'].includes(this.props.edaChart);
             chartData[1].forEach((dataset, i) => {
                 try {
-                    dataset.backgroundColor = chartConfig.chartColors[i]?.backgroundColor;
-                    dataset.borderColor = chartConfig.chartColors[i]?.borderColor;
+                    const solidColor = chartConfig.chartColors[i]?.borderColor as string;
+                    const seriesOpacity: number = assignedColors[i]?.opacity ?? 100;
+                    const fillColor = isAreaOrRadar ? this.chartUtils.hexToRgba(solidColor, seriesOpacity) : solidColor;
+                    dataset.backgroundColor = fillColor;
+                    dataset.borderColor = solidColor;
+                    (dataset as any).pointBackgroundColor = solidColor;
                 } catch (err) {
                     const fallbackColor = this.paletaActual[i % this.paletaActual.length];
                     dataset.backgroundColor = fallbackColor;

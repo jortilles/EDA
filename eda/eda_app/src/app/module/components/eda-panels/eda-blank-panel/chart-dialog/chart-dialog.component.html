@@ -301,21 +301,38 @@
                     <!-- Iterar sobre assignedColors -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                       @for (color of assignedColors; track color.value; let idx = $index) {
-                        <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
-                          <span class="font-medium">{{ color.value }}</span>
-                          <div class="flex items-center gap-2">
-                            <input
-                              [(ngModel)]="assignedColors[idx].color"
-                              (input)="handleInputColor()"
-                              class="text-md text-slate-500 font-mono w-[3.5vw]"
-                            >
-                            <p-colorPicker
-                              [(ngModel)]="assignedColors[idx].color"
-                              (onChange)="handleInputColor()"
-                              format="hex"
-                              appendTo="body"
-                            />
+                        <div class="flex flex-col gap-2 border rounded-lg p-3 bg-white hover:bg-slate-50">
+                          <div class="flex items-center justify-between">
+                            <span class="font-medium">{{ color.value }}</span>
+                            <div class="flex items-center gap-2">
+                              <input
+                                [(ngModel)]="assignedColors[idx].color"
+                                (input)="handleInputColor()"
+                                class="text-md text-slate-500 font-mono w-[3.5vw]"
+                              >
+                              <p-colorPicker
+                                [(ngModel)]="assignedColors[idx].color"
+                                (onChange)="handleInputColor()"
+                                format="hex"
+                                appendTo="body"
+                              />
+                            </div>
                           </div>
+                          @if (isAreaOrRadarChart) {
+                            <div class="flex items-center gap-2">
+                              <label class="text-xs text-slate-500 w-16 shrink-0" i18n="@@opacityLabel">Opacidad</label>
+                              <!-- <input type="range" min="0" max="100" step="1"
+                                [(ngModel)]="assignedColors[idx].opacity"
+                                (input)="handleInputColor()"
+                                class="flex-1 accent-[#00bcd4]">
+                              <span class="text-xs text-slate-500 w-8 text-right">{{ assignedColors[idx].opacity ?? 100 }}%</span> -->
+                              <input type="number" min="0" max="100" step="1"
+                                [(ngModel)]="assignedColors[idx].opacity"
+                                (input)="handleInputColor()"
+                                class="text-xs text-slate-500 font-mono w-14 border rounded px-1 text-right">
+                              <span class="text-xs text-slate-500">%</span>
+                            </div>
+                          }
                         </div>
                       }
                     </div>
