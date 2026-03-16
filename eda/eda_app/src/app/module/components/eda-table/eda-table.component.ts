@@ -185,7 +185,7 @@ export class EdaTableComponent implements OnInit {
         return;
     }
 
-    public applyStyles(styles: Array<any>, queryColumns?: Array<any>) {
+    public applyStyles(styles: Array<any>) {
         try {
         // Verificamos que tipo de limites numericos estamos trantado
         const gradientStyles = styles.filter(s => !s.type || s.type === 'gradient');
@@ -197,8 +197,8 @@ export class EdaTableComponent implements OnInit {
         if (gradientStyles.length > 0) {
             const fields = gradientStyles.map(style => style.col);
 
-            gradientStyles.forEach(style => {
-                limits[style.col] = { min: Infinity, max: -Infinity, rangeValue: 0, ranges: [], col: style.col, tableOrigin: style.tableOrigin };
+            fields.forEach(field => {
+                limits[field] = { min: Infinity, max: -Infinity, rangeValue: 0, ranges: [], col: field };
             });
 
         //Set values
@@ -247,30 +247,9 @@ export class EdaTableComponent implements OnInit {
         // Si los estilos que entran son SEMAFORICOS<...
         if (semaphoreStyles.length > 0) {
             semaphoreStyles.forEach(style => {
-                // Buscamos la columna actual por tableOrigin + header como primera instancia
-                let field = style.col;
-                console.log('aaaaaa', style)
-                if (this.inject?.cols && queryColumns) {
-                    const matchingCol = this.inject.cols.find(col => {
-                        const colTableId = queryColumns.find(q => q.display_name === col.header || q.column_name === col.field)?.table_id;
-                        return style.tableOrigin === colTableId && col.header === style.col;
-                    });
-                    if (matchingCol) {
-                        console.warn('[applyStyles] match tableOrigin+header: style.col:', style.col, '→ col.field:', matchingCol.field, '| tableOrigin:', style.tableOrigin);
-                        field = matchingCol.field;
-                    }
-                }
+                const field = style.col;
                 const name = this.getNiceName(field);
-
-                const semaphoreEntry = {
-                    type: 'semaphore',
-                    col: field,
-                    tableOrigin: style.tableOrigin,
-                    value1: style.value1,
-                    value2: style.value2
-                };
-                limits[field] = semaphoreEntry;
-
+                limits[field] = { type: 'semaphore', col: field, value1: style.value1, value2: style.value2 };
                 const semaphoreColors = [style.color1, style.color2, style.color3];
                 semaphoreColors.forEach((color, i) => {
                     const hexColor = color.startsWith('#') ? color : `#${color}`;
@@ -287,7 +266,6 @@ export class EdaTableComponent implements OnInit {
         }
 
         // Devlolvemos los limites para luego saber que color aplicar
-        console.warn('[applyStyles] styles input:', JSON.stringify(styles), '| limits keys:', Object.keys(limits));
         this.styles = limits;
 
         } catch (e) {

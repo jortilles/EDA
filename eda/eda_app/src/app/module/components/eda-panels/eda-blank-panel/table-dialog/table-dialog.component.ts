@@ -90,7 +90,13 @@ export class TableDialogComponent{
 
   setChartProperties() {
     this.setCols();
-    this.styles = this.myPanelChartComponent.componentRef.instance.inject.styles || [];
+    const allStyles = this.myPanelChartComponent.componentRef.instance.inject.styles || [];
+    // Filtrar styles huérfanos (col no coincide con ninguna columna actual)
+    this.styles = allStyles.filter((style: any) =>
+      this.cols.some(col => col.field === style.col || col.header === style.col)
+    );
+    const removed = allStyles.length - this.styles.length;
+    if (removed > 0) console.warn(`[table-dialog] setChartProperties: ${removed} style(s) huérfanos eliminados`, allStyles.filter((s: any) => !this.styles.includes(s)));
   }
   ngOnInit(): void {
     this.panelChartConfig = this.controller.params.panelChart;
