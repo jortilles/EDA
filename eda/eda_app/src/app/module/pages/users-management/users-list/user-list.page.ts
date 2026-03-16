@@ -43,7 +43,7 @@ export class UserListPage implements OnInit {
   showUserDetail: boolean = false;
 
   currentPage: number = 1;
-  itemsPerPage: number = 10;
+  itemsPerPage: number = 25;
 
   get filteredUsers() {
     return [...this.users]
