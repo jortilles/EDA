@@ -90,7 +90,7 @@ export class TableDialogComponent{
 
   setChartProperties() {
     this.setCols();
-    this.styles = this.myPanelChartComponent.componentRef.instance.inject.styles || []; // si es null regresa vacio
+    this.styles = this.myPanelChartComponent.componentRef.instance.inject.styles || [];
   }
   ngOnInit(): void {
     this.panelChartConfig = this.controller.params.panelChart;
@@ -239,9 +239,11 @@ export class TableDialogComponent{
 
   private setStyle(col) {
     if (this.controller.params.panelChart.chartType === 'table') {
+      const queryCol = this.queryNumericColumns.find(q => q.display_name === col.header || q.column_name === col.field);
       this.gradientMenuController = new EdaDialogController({
         params: {
           col: col,
+          tableOrigin: queryCol?.table_id,
           style: this.styles.filter(style => style.col === col.field)[0]
         },
         close: (event, response) => this.onCloseGradientController(event, response)
@@ -432,7 +434,7 @@ export class TableDialogComponent{
   private onCloseGradientController(event, response, col?) {
     try {
       if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-
+        
         this.styles = this.styles.filter(style => style.col !== response.col);
 
         if (!response.noStyle) {
@@ -447,7 +449,7 @@ export class TableDialogComponent{
       }
       if (!this.myPanelChartComponent.componentRef.instance.inject.pivot) {
 
-        this.myPanelChartComponent.componentRef.instance.applyStyles(this.styles);
+        this.myPanelChartComponent.componentRef.instance.applyStyles(this.styles, this.queryNumericColumns);
 
       } else {
 

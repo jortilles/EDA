@@ -15,6 +15,8 @@ import { aggTypes } from 'app/config/aggretation-types';
 import * as _ from 'lodash';
 import { firstValueFrom } from 'rxjs';
 import { InputTextModule } from 'primeng/inputtext';
+import { IconComponent } from '@eda/shared/components/icon/icon.component';
+import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 
 const ANGULAR_MODULES = [
     FormsModule,
@@ -34,7 +36,9 @@ const PRIMENG_MODULES = [
 
 const STANDALONE_COMPONENTS = [
     EdaDialog2Component,
-    EdaDatePickerComponent
+    EdaDatePickerComponent,
+    IconComponent,
+    FocusOnShowDirective
 ];
 
 @Component({
@@ -85,7 +89,9 @@ export class ColumnDialogComponent {
     public cumulativeSum: boolean;
     public cumulativeSumTooltip: string = $localize`:@@cumulativeSumTooltip:Si activas ésta función se calculará la suma acumulativa 
                                             para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.`
-    public title :string;
+    public title: string;
+    public editingTitle: boolean = false;
+    public editableTitle: string = '';
 
     constructor(
         private dashboardService: DashboardService,
@@ -121,6 +127,37 @@ export class ColumnDialogComponent {
         }
 
         this.showFormatDateSection = columnType == 'date';
+    }
+
+    // Metodos de cambio de modo edición
+    // Input cambia a editable 
+    public startEditTitle(): void {
+        this.editableTitle = this.selectedColumn.display_name.default;
+        this.editingTitle = true;
+    }
+
+    // Guardamos cambios hechos
+    public saveTitle(): void {
+        if (this.editableTitle?.trim()) {
+            this.updateDisplayName(this.editableTitle.trim());
+        }
+        this.editingTitle = false;
+    }
+
+    // Cancelamos cambios hechos 
+    public cancelEditTitle(): void {
+        this.editingTitle = false;
+    }
+
+    // Actualizamos nombre en column dialog y current query
+    public updateDisplayName(name: string): void {
+        const col = $localize`:@@atributoLabel:Atributo`, from = $localize`:@@table:de la entidad`;
+        const foundInQuery = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
+        if (foundInQuery) {
+            foundInQuery.display_name.default = name;
+        }
+        this.selectedColumn.display_name.default = name;
+        this.title = `${col} ${name} ${from} ${this.controller.params.table}`;
     }
 
     private carregarValidacions(): void {
