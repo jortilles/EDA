@@ -67,7 +67,7 @@ export class TableGradientDialogComponent implements OnInit{
   saveGradientConfig(notStyles ?: boolean){
     // Si no tenemos estilos da igual el tab
     if (this.noStyle || notStyles) {
-      this.onClose(EdaDialogCloseEvent.UPDATE, { col: this.controller.params.col.field, columnName: this.controller.params.col.columnName, noStyle: true });
+      this.onClose(EdaDialogCloseEvent.UPDATE, { col: this.controller.params.col.field, noStyle: true });
       return; //cancelamos la asignación de colores a posterior
     }
     // Asignamos colores
@@ -75,7 +75,6 @@ export class TableGradientDialogComponent implements OnInit{
       // Gradiente tab
       const properties = {
         col: this.controller.params.col.field,
-        columnName: this.controller.params.col.columnName,
         type: 'gradient',
         min: this.min,
         max: this.max ,
@@ -85,7 +84,6 @@ export class TableGradientDialogComponent implements OnInit{
       // Semaforo tab
       const properties = {
         col: this.controller.params.col.field,
-        columnName: this.controller.params.col.columnName,
         type: 'semaphore',
         value1: this.value1,
         value2: this.value2,

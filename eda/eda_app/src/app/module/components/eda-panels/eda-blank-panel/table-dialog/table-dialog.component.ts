@@ -90,15 +90,7 @@ export class TableDialogComponent{
 
   setChartProperties() {
     this.setCols();
-    const labels = this.panelChartConfig?.data?.labels || [];
-    const query = this.panelChartConfig?.query || [];
-    this.styles = (this.myPanelChartComponent.componentRef.instance.inject.styles || []).map((style: any) => {
-      if (style.columnName) {
-        const idx = query.findIndex((q: any) => q.column_name === style.columnName);
-        if (idx >= 0 && labels[idx]) return { ...style, col: labels[idx] };
-      }
-      return style;
-    });
+    this.styles = this.myPanelChartComponent.componentRef.instance.inject.styles || [];
   }
   ngOnInit(): void {
     this.panelChartConfig = this.controller.params.panelChart;
@@ -247,13 +239,9 @@ export class TableDialogComponent{
 
   private setStyle(col) {
     if (this.controller.params.panelChart.chartType === 'table') {
-      const labels = this.panelChartConfig?.data?.labels || [];
-      const query = this.panelChartConfig?.query || [];
-      const idx = labels.indexOf(col.field);
-      const enrichedCol = { ...col, columnName: idx >= 0 ? query[idx]?.column_name : undefined };
       this.gradientMenuController = new EdaDialogController({
         params: {
-          col: enrichedCol,
+          col: col,
           style: this.styles.filter(style => style.col === col.field)[0]
         },
         close: (event, response) => this.onCloseGradientController(event, response)
