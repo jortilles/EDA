@@ -1,6 +1,24 @@
-<eda-dialog2 
-[display]="displayWindow" [header]="title" width="80vw" height="70vh" [overflow]="'auto'"
+<eda-dialog2
+[display]="displayWindow" width="80vw" height="70vh" [overflow]="'auto'"
   (apply)="onApply()" (close)="closeDialog()" [showDuplicate]=true (duplicate)="onDuplicate()">
+
+  <div header class="flex items-center gap-2">
+    @if(!editingTitle) {
+      <span class="font-semibold text-base">{{ title }}</span>
+      <button class="rounded-md p-1 cursor-pointer hover:bg-gray-100" (click)="startEditTitle()" title="Editar nombre">
+        <eda-icon name="pencil" class="pointer-events-none"></eda-icon>
+      </button>
+    } @else {
+      <input
+        autofocusOnShow
+        class="column-dialog-title-input px-2 py-1 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4] text-base font-semibold min-w-[200px]"
+        [(ngModel)]="editableTitle"
+        (keydown.enter)="saveTitle()"
+        (keydown.escape)="cancelEditTitle()"
+        (focusout)="saveTitle()"
+      />
+    }
+  </div>
   <!-- class="flex-1 px-6 overflow-y-auto" -->
   <div content class="p-2 space-y-6">
     <div class="grid gap-4"

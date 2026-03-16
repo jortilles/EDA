@@ -32,6 +32,7 @@ import { GroupService } from '../../../../services/api/group.service';
 import { QueryService } from '@eda/services/api/query.service';
 // Standalone components
 import { EdaDialog2Component, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent, EdaContextMenuComponent} from '@eda/shared/components/shared-components.index';
+import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 import { EdaInputText } from '@eda/shared/components/eda-input/eda-input-text';
 import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
 import { PanelChartComponent } from './panel-charts/panel-chart.component';
@@ -57,6 +58,7 @@ import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils';
 //
 import { CumSumAlertDialogComponent } from '@eda/components/component.index';
 import { AlertDialogComponent } from '@eda/components/component.index';
+import { IconComponent } from '@eda/shared/components/icon/icon.component';
 
 //pruebas
 import { MapEditDialogComponent } from '@eda/components/component.index';
@@ -89,7 +91,7 @@ const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipM
 const STANDALONE_COMPONENTS = [
     EdaDialog2Component, WhatIfDialogComponent, EbpChatgptComponent,FilterMapperComponent, EdadynamicTextComponent,EdaTitlePanelComponent,
     PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
-    DragDropComponent 
+    DragDropComponent, IconComponent, FocusOnShowDirective
 ]
 @Component({
     standalone: true,
@@ -462,25 +464,7 @@ public tableNodeExpand(event: any): void {
 
     public async runWhatIfQuery(column?: any): Promise<void> {
         try {
-            /* Este código actualiza el nombre de la columna. pero No lo actualizamos
-            const updateDisplayName = (col: any) => {
-                const origin = col.whatif.origin;
-                if (origin) {
-                    col.display_name.default = `${origin.display_name.default}(${col.whatif.operator}${col.whatif.value})`;
-                }
-            };
-
-            if (!column) {
-                for (const col of this.getWhatIfColumns()) {
-                    updateDisplayName(col);
-                }
-            } else {
-                updateDisplayName(column);
-            }
-*/
-
             await this.runQueryFromDashboard(true);
-           // this.panelChart.updateComponent();
         } catch (err) {
             throw err;
         }
@@ -1178,15 +1162,18 @@ public tableNodeExpand(event: any): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             if (properties) {
                 this.graficos = {};
-        this.graficos = _.cloneDeep(properties);
+                this.graficos = _.cloneDeep(properties);
             if(properties.edaChart !== 'histogram'){
                 //assignedColors se le modifica el color dependiendo de su label
                 this.graficos.assignedColors.forEach((e) => {
                 if (this.graficos.chartLabels.includes(e.value)) {
                         let indexColor = this.graficos.chartLabels.findIndex(element => element === e.value)
-                        e.color = this.graficos.chartColors[0].backgroundColor[indexColor]?.length > 1 ?
-                            this.graficos.chartColors[0].backgroundColor[indexColor] : 
-                            this.graficos.chartColors[0].backgroundColor  
+                        const candidateColor = this.graficos.chartColors[0].backgroundColor[indexColor];
+                        // Solo sobreescribir si es un array de colores (doughnut/polarArea), no un string de color único
+                        if (candidateColor?.length > 1) {
+                            e.color = candidateColor;
+                        }
+                        // Para area/radar/line, preservar el color hex original de assignedColors
                 }
             });
             }else{
