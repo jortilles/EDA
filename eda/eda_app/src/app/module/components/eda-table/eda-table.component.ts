@@ -141,6 +141,7 @@ export class EdaTableComponent implements OnInit {
         try {
             const styleKey = this.styles[col.field] ? col.field : col.header;
             const styleEntry = this.styles[styleKey];
+            console.log('[getStyleClass] col.field:', col.field, '| col.header:', col.header, '| styleKey:', styleKey, '| found:', !!styleEntry, '| styles keys:', Object.keys(this.styles));
             if (styleEntry) {
                 let field = styleEntry.col || styleKey;
                 if(this.inject.pivot) field = styleEntry.value;
