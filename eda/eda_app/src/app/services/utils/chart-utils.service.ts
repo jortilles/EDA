@@ -157,6 +157,14 @@ export class ChartUtilsService {
     */
     public transformDataQuery(type: string, subType: string,  values: any[], dataTypes: string[], dataDescription: any, isBarline: boolean, numberOfColumns: number) {
 
+        // If there is more than 1 column and all are numeric, convert the first one to text
+        const allNumeric = dataTypes.length > 1 && !dataTypes.find(t => t !== 'numeric');
+        if (allNumeric) {
+            dataTypes[0] = "text";
+            const columnaNumerica = dataDescription.numericColumns.shift();
+            dataDescription.otherColumns.unshift(columnaNumerica);
+        }
+
         dataTypes.forEach( (e,indice)=>{            
             if(e=='text'){
                 values.forEach( (v) => {
@@ -893,6 +901,12 @@ export class ChartUtilsService {
         const g = (bigint >> 8) & 255;
         const b = bigint & 255;
         return [r, g, b];
+    }
+
+    public hexToRgba(hex: string, opacity: number): string {
+        const [r, g, b] = this.hex2rgb(hex);
+        const a = Math.max(0, Math.min(100, opacity)) / 100;
+        return `rgba(${r}, ${g}, ${b}, ${a})`;
     }
 
     public rgbToHex(r: number, g: number, b: number): string {
@@ -1901,16 +1915,25 @@ export class ChartUtilsService {
                     font: {
                         family: fontStyle,
                     },
+                    elements: {
+                        line: {
+                            borderColor: '#000000',
+                            borderWidth: 2,
+                        },
+                        point: {
+                            borderColor: '#000000',
+                        }
+                    },
                     scales: {
                         r: {
                             pointLabels: {
-                                color: 'transparent', 
+                                color: 'transparent',
                                 font: {
                                     family: fontStyle,
                                 }
                             },
                             ticks: {
-                                color: colorStyle, 
+                                color: colorStyle,
                                 backdropColor: panelStyle,
                             },
                             angleLines: {

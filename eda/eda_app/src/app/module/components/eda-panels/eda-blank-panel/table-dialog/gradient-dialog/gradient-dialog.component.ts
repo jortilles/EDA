@@ -71,12 +71,12 @@ export class TableGradientDialogComponent implements OnInit{
       return; //cancelamos la asignación de colores a posterior
     }
     // Asignamos colores
-    if (this.activeTabIndex === 0) { 
-      // Gradiente tab 
-      const properties = { 
-        col: this.controller.params.col.field, 
-        type: 'gradient', 
-        min: this.min, 
+    if (this.activeTabIndex === 0) {
+      // Gradiente tab
+      const properties = {
+        col: this.controller.params.col.field,
+        type: 'gradient',
+        min: this.min,
         max: this.max ,
       };
       this.onClose(EdaDialogCloseEvent.UPDATE, properties);

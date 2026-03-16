@@ -32,6 +32,7 @@ import { GroupService } from '../../../../services/api/group.service';
 import { QueryService } from '@eda/services/api/query.service';
 // Standalone components
 import { EdaDialog2Component, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent, EdaContextMenuComponent} from '@eda/shared/components/shared-components.index';
+import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 import { EdaInputText } from '@eda/shared/components/eda-input/eda-input-text';
 import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
 import { PanelChartComponent } from './panel-charts/panel-chart.component';
@@ -59,6 +60,7 @@ import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils';
 //
 import { CumSumAlertDialogComponent } from '@eda/components/component.index';
 import { AlertDialogComponent } from '@eda/components/component.index';
+import { IconComponent } from '@eda/shared/components/icon/icon.component';
 
 //pruebas
 import { MapEditDialogComponent } from '@eda/components/component.index';
@@ -98,8 +100,8 @@ const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass
 const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule];
 const STANDALONE_COMPONENTS = [
     EdaDialog2Component, WhatIfDialogComponent, EbpChatgptComponent,FilterMapperComponent, EdadynamicTextComponent,EdaTitlePanelComponent,
-    PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
-    DragDropComponent, PromptComponent 
+    PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent, 
+    DragDropComponent, IconComponent, FocusOnShowDirective, PromptComponent
 ]
 @Component({
     standalone: true,
@@ -475,25 +477,7 @@ public tableNodeExpand(event: any): void {
 
     public async runWhatIfQuery(column?: any): Promise<void> {
         try {
-            /* Este código actualiza el nombre de la columna. pero No lo actualizamos
-            const updateDisplayName = (col: any) => {
-                const origin = col.whatif.origin;
-                if (origin) {
-                    col.display_name.default = `${origin.display_name.default}(${col.whatif.operator}${col.whatif.value})`;
-                }
-            };
-
-            if (!column) {
-                for (const col of this.getWhatIfColumns()) {
-                    updateDisplayName(col);
-                }
-            } else {
-                updateDisplayName(column);
-            }
-*/
-
             await this.runQueryFromDashboard(true);
-           // this.panelChart.updateComponent();
         } catch (err) {
             throw err;
         }
@@ -714,6 +698,14 @@ public tableNodeExpand(event: any): void {
         const output = this.panel.content.query.output;
         PanelInteractionUtils.verifyData(this);
         const config = output.styles ? new ChartConfig(output.styles) : new ChartConfig(output.config);
+        // If using styles (legacy), carry over coloredBarsConfig from output.config
+        if (output.styles && output.config?.coloredBarsConfig) {
+            (config.getConfig() as any)['coloredBarsConfig'] = output.config.coloredBarsConfig;
+        }
+        if (output.config?.showUniqueColors != null) {
+            (config.getConfig() as any)['showUniqueColors'] = output.config.showUniqueColors;
+            (config.getConfig() as any)['uniqueBarColors'] = output.config.uniqueBarColors ?? [];
+        }
         this.changeChartType(content.chart, content.edaChart, config);
         this.chartForm.patchValue({ chart: this.chartUtils.chartTypes.find(o => o.subValue === content.edaChart) });
     }
@@ -835,14 +827,26 @@ public tableNodeExpand(event: any): void {
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
 
-            // Preservar assignedColors antes del merge
+            // Preservar assignedColors, coloredBarsConfig, showUniqueColors y uniqueBarColors antes del merge
             const savedAssignedColors = config && config.getConfig() ? config.getConfig()['assignedColors'] : null;
+            const savedColoredBarsConfig = config && config.getConfig() ? config.getConfig()['coloredBarsConfig'] : null;
+            const savedShowUniqueColors = config && config.getConfig() ? config.getConfig()['showUniqueColors'] : null;
+            const savedUniqueBarColors = config && config.getConfig() ? config.getConfig()['uniqueBarColors'] : null;
 
             _.merge(_config, config||{});
 
             // Restaurar assignedColors después del merge
             if (savedAssignedColors) {
                 _config.getConfig()['assignedColors'] = savedAssignedColors;
+            }
+            // Restaurar coloredBarsConfig después del merge
+            if (savedColoredBarsConfig) {
+                _config.getConfig()['coloredBarsConfig'] = savedColoredBarsConfig;
+            }
+            // Restaurar showUniqueColors y uniqueBarColors después del merge
+            if (savedShowUniqueColors != null) {
+                _config.getConfig()['showUniqueColors'] = savedShowUniqueColors;
+                _config.getConfig()['uniqueBarColors'] = savedUniqueBarColors ?? [];
             }
 
             // Asegurar que showPredictionLines se propaga al _config (mantener la línea de predicción al cambiar entre tipos de gráficos)
@@ -1177,15 +1181,18 @@ public tableNodeExpand(event: any): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             if (properties) {
                 this.graficos = {};
-        this.graficos = _.cloneDeep(properties);
+                this.graficos = _.cloneDeep(properties);
             if(properties.edaChart !== 'histogram'){
                 //assignedColors se le modifica el color dependiendo de su label
                 this.graficos.assignedColors.forEach((e) => {
                 if (this.graficos.chartLabels.includes(e.value)) {
                         let indexColor = this.graficos.chartLabels.findIndex(element => element === e.value)
-                        e.color = this.graficos.chartColors[0].backgroundColor[indexColor]?.length > 1 ?
-                            this.graficos.chartColors[0].backgroundColor[indexColor] : 
-                            this.graficos.chartColors[0].backgroundColor  
+                        const candidateColor = this.graficos.chartColors[0].backgroundColor[indexColor];
+                        // Solo sobreescribir si es un array de colores (doughnut/polarArea), no un string de color único
+                        if (candidateColor?.length > 1) {
+                            e.color = candidateColor;
+                        }
+                        // Para area/radar/line, preservar el color hex original de assignedColors
                 }
             });
             }else{
@@ -1196,11 +1203,16 @@ public tableNodeExpand(event: any): void {
                 properties.chartDataset[0].data = this.graficos.assignedColors.map(element => element.value)
             }
         
-                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors, chartLegend: this.graficos.chartLegend };
+                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors, chartLegend: this.graficos.chartLegend, coloredBarsConfig: this.graficos.coloredBarsConfig, showUniqueColors: this.graficos.showUniqueColors, uniqueBarColors: this.graficos.uniqueBarColors };
                 const layout =
                     new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType,
                     this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels,
                     this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors, this.graficos.showPointLines, this.graficos.showPredictionLines, this.graficos.chartLegend));
+                if (this.graficos.coloredBarsConfig) {
+                    (layout.getConfig() as any)['coloredBarsConfig'] = this.graficos.coloredBarsConfig;
+                }
+                (layout.getConfig() as any)['showUniqueColors'] = this.graficos.showUniqueColors ?? false;
+                (layout.getConfig() as any)['uniqueBarColors'] = this.graficos.uniqueBarColors ?? [];
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
             }
             //not saved alert message

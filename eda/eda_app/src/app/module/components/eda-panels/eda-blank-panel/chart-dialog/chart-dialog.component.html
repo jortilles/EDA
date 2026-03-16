@@ -1,4 +1,4 @@
-<eda-dialog2 width="80vw" height="80vh" [header]="title" (apply)="saveChartConfig()" (close)="closeChartConfig()">
+<eda-dialog2 width="80vw" height="80vh" [header]="title" (apply)="saveChartConfig()" (close)="closeChartConfig()" [disableApply]="!thresholdsValid">
   <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-[70vh]">
     <!-- Chart Preview -->
     <div class="flex-1 flex justify-center border-b md:border-b-0 md:border-r bg-slate-50" >
@@ -167,6 +167,39 @@
                 </div>
               </label>
             </div>
+            
+            <!-- Activar Colores Únicos -->
+            @if (panelChartConfig.edaChart === 'bar' && queryNumericColumns.length === 1) {
+              <div class="flex items-center justify-between">
+                <div class="space-y-0.5">
+                  <div class="flex items-center gap-2">
+                    <label i18n="@@showUniqueColors" for="activarColoresUnicos" class="font-medium">
+                      Activar Colores Únicos
+                    </label>
+                    <div class="relative group">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="text-slate-400">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 16v-4"></path>
+                        <path d="M12 8h.01"></path>
+                      </svg>
+                      <div
+                        class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                        <span i18n="@@chartUniqueColorsOption">Asigna un color único a cada barra o elemento</span>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="text-md text-slate-500" i18n="@@chartUniqueColorsOptionDescription">Cada elemento tendrá un color diferente</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" [(ngModel)]="showUniqueColors" class="sr-only peer" (ngModelChange)="setShowUniqueColors()">
+                  <div
+                    class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+                  </div>
+                </label>
+              </div>
+            }
 
             <!-- Opciones adicionales para Line charts -->
             @if (showTrend) {
@@ -241,52 +274,197 @@
       <div class="space-y-6 p-4 pt-0 bg-slate-50 rounded-md">
         <div class="space-y-4">
           <h1 i18n="@@colorsChartH6" class="p-dialog-title">Colores</h1>
-
-          <div class="grid gap-4 grid-rows-auto gap-6">
+          @if (panelChartConfig.edaChart !== 'bar') {
             <div>
-              <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
-              <div class="flex items-stretch gap-2 mb-6">
-                <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
-                  <option [ngValue]="null" disabled hidden i18n="@@selectPalette">
-                    -- Seleccione una paleta --
-                  </option>
-                  @for (palette of allPalettes; track $index) {
-                    <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
-                  }
-                </select>
-                @if (selectedPalette) {
-                  <div class="flex rounded overflow-hidden" style="width: 80px;">
-                    @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
-                      <div class="flex-1" [style.background-color]="color"></div>
-                    }
-                  </div>
-                }
-              </div>
-
-              <!-- Iterar sobre assignedColors -->
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @for (color of assignedColors; track color.value; let idx = $index) {
-                <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
-                  <span class="font-medium">{{ color.value }}</span>
-                  <div class="flex items-center gap-2">
-                    <input 
-                      [(ngModel)]="assignedColors[idx].color" 
-                      (input)="handleInputColor()" 
-                      class="text-md text-slate-500 font-mono w-[3.5vw]"
-                    >
-                    <p-colorPicker 
-                      [(ngModel)]="assignedColors[idx].color" 
-                      (onChange)="handleInputColor()" 
-                      format="hex" 
-                      appendTo="body" 
-                    />
+              <div class="grid gap-4 grid-rows-auto gap-6">
+                <div>
+                  <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
+                    <div class="flex items-stretch gap-2 mb-6">
+                      <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
+                        <option [ngValue]="null" disabled hidden i18n="@@selectPalette">
+                          -- Seleccione una paleta --
+                        </option>
+                        @for (palette of allPalettes; track $index) {
+                          <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
+                        }
+                      </select>
+                      @if (selectedPalette) {
+                        <div class="flex rounded overflow-hidden" style="width: 80px;">
+                          @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
+                            <div class="flex-1" [style.background-color]="color"></div>
+                          }
+                        </div>
+                      }
+                    </div>
+  
+                    <!-- Iterar sobre assignedColors -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      @for (color of assignedColors; track color.value; let idx = $index) {
+                        <div class="flex flex-col gap-2 border rounded-lg p-3 bg-white hover:bg-slate-50">
+                          <div class="flex items-center justify-between">
+                            <span class="font-medium">{{ color.value }}</span>
+                            <div class="flex items-center gap-2">
+                              <input
+                                [(ngModel)]="assignedColors[idx].color"
+                                (input)="handleInputColor()"
+                                class="text-md text-slate-500 font-mono w-[3.5vw]"
+                              >
+                              <p-colorPicker
+                                [(ngModel)]="assignedColors[idx].color"
+                                (onChange)="handleInputColor()"
+                                format="hex"
+                                appendTo="body"
+                              />
+                            </div>
+                          </div>
+                          @if (isAreaOrRadarChart) {
+                            <div class="flex items-center gap-2">
+                              <label class="text-xs text-slate-500 w-16 shrink-0" i18n="@@opacityLabel">Opacidad</label>
+                              <!-- <input type="range" min="0" max="100" step="1"
+                                [(ngModel)]="assignedColors[idx].opacity"
+                                (input)="handleInputColor()"
+                                class="flex-1 accent-[#00bcd4]">
+                              <span class="text-xs text-slate-500 w-8 text-right">{{ assignedColors[idx].opacity ?? 100 }}%</span> -->
+                              <input type="number" min="0" max="100" step="1"
+                                [(ngModel)]="assignedColors[idx].opacity"
+                                (input)="handleInputColor()"
+                                class="text-xs text-slate-500 font-mono w-14 border rounded px-1 text-right">
+                              <span class="text-xs text-slate-500">%</span>
+                            </div>
+                          }
+                        </div>
+                      }
+                    </div>
                   </div>
                 </div>
-                }
               </div>
-            </div>
-          </div>
+            }  
+            @else{
+              <p-tabView [(activeIndex)]="activeTabIndex" (onChange)="onTabChange($event)">
+                <p-tabPanel header="Colores" i18n-header="@@colorsTab">
+                  <div class="grid p-6 gap-4 grid-rows-auto gap-6">
+                    <div>
+                      @if (!showUniqueColors) {
+                        <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
+                        <div class="flex items-stretch gap-2 mb-6">
+                          <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                            [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
+                            <option [ngValue]="null" disabled hidden i18n="@@selectPalette">
+                              -- Seleccione una paleta --
+                            </option>
+                            @for (palette of allPalettes; track $index) {
+                              <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
+                            }
+                          </select>
+                          @if (selectedPalette) {
+                            <div class="flex rounded overflow-hidden" style="width: 80px;">
+                              @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
+                                <div class="flex-1" [style.background-color]="color"></div>
+                              }
+                            </div>
+                          }
+                        </div>
+                        <!-- Iterar sobre assignedColors (un color por serie) -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          @for (color of assignedColors; track color.value; let idx = $index) {
+                          <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
+                            <span class="font-medium">{{ color.value }}</span>
+                            <div class="flex items-center gap-2">
+                              <input [(ngModel)]="assignedColors[idx].color" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
+                              <p-colorPicker [(ngModel)]="assignedColors[idx].color" (onChange)="handleInputColor()" format="hex" appendTo="body" />
+                            </div>
+                          </div>
+                          }
+                        </div>
+                      }
+                      @else {
+                        <!-- Colores únicos por label/barra -->
+
+                        <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
+                        <div class="flex items-stretch gap-2 mb-6">
+                          <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                            [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
+                            <option [ngValue]="null" disabled hidden i18n="@@selectPalette">
+                              -- Seleccione una paleta --
+                            </option>
+                            @for (palette of allPalettes; track $index) {
+                              <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
+                            }
+                          </select>
+                          @if (selectedPalette) {
+                            <div class="flex rounded overflow-hidden" style="width: 80px;">
+                              @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
+                                <div class="flex-1" [style.background-color]="color"></div>
+                              }
+                            </div>
+                          }
+                        </div>
+
+                        @if (uniqueBarColors.length === 0) {
+                          <p class="text-sm text-slate-400 italic" i18n="@@noUniqueLabels">No hay valores únicos disponibles.</p>
+                        }
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          @for (color of uniqueBarColors; track color.value; let idx = $index) {
+                          <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
+                            <span class="font-medium truncate max-w-[60%]" [title]="color.value">{{ color.value }}</span>
+                            <div class="flex items-center gap-2">
+                              <input [(ngModel)]="uniqueBarColors[idx].color" (input)="handleUniqueColorInput()" class="text-md text-slate-500 font-mono w-[3.5vw]">
+                              <p-colorPicker [(ngModel)]="uniqueBarColors[idx].color" (onChange)="handleUniqueColorInput()" format="hex" appendTo="body" />
+                            </div>
+                          </div>
+                          }
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </p-tabPanel>
+                <p-tabPanel header="Colores por intervalo" i18n-header="@@gradientTab">
+                  <div class="px-6 pb-4">
+
+                    <div class="chart-color-selection mt-4" style="min-width: 300px;">
+                      <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+                        <div>
+                          <span class="font-medium mr-4">{{coloredBarsColumnHeader}} <span i18n="@@aboveThreshold">es mayor que:</span></span>
+                          <p-inputNumber [(ngModel)]="thresholdHigh" mode="decimal" (onInput)="applyColoredBars()"
+                          [minFractionDigits]="0" [maxFractionDigits]="4"
+                          [ngClass]="{'ng-invalid ng-dirty': !thresholdsValid}" />
+                        </div>
+                        <div class="flex items-center gap-2">
+                          <input class="text-md text-right text-slate-500 font-mono" [(ngModel)]="colorAbove" (input)="applyColoredBars()">
+                          <p-colorPicker [(ngModel)]="colorAbove" format="hex" appendTo="body" (onChange)="applyColoredBars()" />
+                        </div>
+                      </div>
+                    </div>
+  
+                    <div class="chart-color-selection mt-4" style="min-width: 300px;">
+                      <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+                        <span class="font-medium">{{coloredBarsColumnHeader}} <span i18n="@@betweenThresholds">mayor que</span> {{thresholdLow}} <span i18n="@@betweenThresholds2">y menor que</span> {{thresholdHigh}}</span>
+                        <div class="flex items-center gap-2">
+                          <input class="text-md text-right text-slate-500 font-mono" [(ngModel)]="colorBetween" (input)="applyColoredBars()">
+                          <p-colorPicker [(ngModel)]="colorBetween" format="hex" appendTo="body" (onChange)="applyColoredBars()" />
+                        </div>
+                      </div>
+                    </div>
+  
+                    <div class="chart-color-selection mt-4" style="min-width: 300px;">
+                      <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+                        <div>
+                          <span class="font-medium mr-4">{{coloredBarsColumnHeader}} <span i18n="@@belowThreshold">es menor que:</span></span>
+                          <p-inputNumber [(ngModel)]="thresholdLow" mode="decimal" (onInput)="applyColoredBars()"
+                          [minFractionDigits]="0" [maxFractionDigits]="4"
+                          [ngClass]="{'ng-invalid ng-dirty': !thresholdsValid}" />
+                        </div>
+                        <div class="flex items-center gap-2">
+                          <input class="text-md text-right text-slate-500 font-mono" [(ngModel)]="colorBelow" (input)="applyColoredBars()">
+                          <p-colorPicker [(ngModel)]="colorBelow" format="hex" appendTo="body" (onChange)="applyColoredBars()" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </p-tabPanel>
+              </p-tabView>
+            }
         </div>
       </div>
     </div>
