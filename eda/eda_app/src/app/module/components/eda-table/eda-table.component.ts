@@ -1,6 +1,6 @@
 import { Component, ViewChild, Input, ElementRef, OnInit, Output, EventEmitter } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { StyleProviderService } from '@eda/services/service.index';
+import { StyleProviderService, AlertService } from '@eda/services/service.index';
 import { Table } from 'primeng/table';
 // import { FilterUtils } from 'primeng/utils';
 import { EdaTable } from './eda-table';
@@ -61,7 +61,8 @@ export class EdaTableComponent implements OnInit {
         private elementRef: ElementRef,
         private styleService: StyleService,
         private styleProviderService: StyleProviderService,
-        private sanitizer: DomSanitizer
+        private sanitizer: DomSanitizer,
+        private alertService: AlertService
     ) {
         registerLocaleData(es);
         /** Definim les caracteristiques del gràfic dintre de la taula.......................... */
@@ -136,35 +137,42 @@ export class EdaTableComponent implements OnInit {
     }
 
     getStyleClass(col, rowData) {
-        if (this.styles[col.field]) {
-            const styleEntry = this.styles[col.field];
-            let field = col.field;
-            if(this.inject.pivot) field = styleEntry.value;
+        try {
+            const styleKey = this.styles[col.field] ? col.field : col.header;
+            const styleEntry = this.styles[styleKey];
+            if (styleEntry) {
+                let field = styleEntry.col || styleKey;
+                if(this.inject.pivot) field = styleEntry.value;
 
-            field = this.getNiceName(field);
+                field = this.getNiceName(field);
 
-            const cellValue = parseFloat(rowData[col.field]);
-            if (isNaN(cellValue)) return null;
+                const cellValue = parseFloat(rowData[col.field]);
+                if (isNaN(cellValue)) return null;
 
-            // Si es semaforo devolveremos uno de los 3 colores
-            if (styleEntry.type === 'semaphore') {
-                if (cellValue > styleEntry.value1) return `table-semaphore-${field}-0`;
-                else if (cellValue >= styleEntry.value2) return `table-semaphore-${field}-1`;
-                else return `table-semaphore-${field}-2`;
+                // Si es semaforo devolveremos uno de los 3 colores
+                if (styleEntry.type === 'semaphore') {
+                    if (cellValue > styleEntry.value1) return `table-semaphore-${field}-0`;
+                    else if (cellValue >= styleEntry.value2) return `table-semaphore-${field}-1`;
+                    else return `table-semaphore-${field}-2`;
+                }
+
+                // Si es gradiente devolveremos uno de los 5 rangos que generamos
+                let cellClass = null;
+                if (cellValue < parseFloat(styleEntry.ranges[0])) cellClass = `table-gradient-${field}-${0}`
+                else if (cellValue < parseFloat(styleEntry.ranges[1])) cellClass = `table-gradient-${field}-${1}`;
+                else if (cellValue < parseFloat(styleEntry.ranges[2])) cellClass = `table-gradient-${field}-${2}`;
+                else if (cellValue < parseFloat(styleEntry.ranges[3])) cellClass = `table-gradient-${field}-${3}`;
+                else  cellClass = `table-gradient-${field}-${4}`;
+
+                // Devolvemos la clase de estilo que queremos aplicar a la columna
+                return cellClass;
             }
-
-            // Si es gradiente devolveremos uno de los 5 rangos que generamos
-            let cellClass = null;
-            if (cellValue < parseFloat(styleEntry.ranges[0])) cellClass = `table-gradient-${field}-${0}`
-            else if (cellValue < parseFloat(styleEntry.ranges[1])) cellClass = `table-gradient-${field}-${1}`;
-            else if (cellValue < parseFloat(styleEntry.ranges[2])) cellClass = `table-gradient-${field}-${2}`;
-            else if (cellValue < parseFloat(styleEntry.ranges[3])) cellClass = `table-gradient-${field}-${3}`;
-            else  cellClass = `table-gradient-${field}-${4}`;
-
-            // Devolvemos la clase de estilo que queremos aplicar a la columna
-            return cellClass;
+            return null;
+        } catch (e) {
+            console.warn('[getStyleClass] Error al aplicar estilo de color:', e, '| col:', col?.field);
+            this.alertService.addError('Error al aplicar el código de color');
+            return null;
         }
-        return null;
     }
 
     getStyle() {
@@ -178,6 +186,7 @@ export class EdaTableComponent implements OnInit {
     }
 
     public applyStyles(styles: Array<any>) {
+        try {
         // Verificamos que tipo de limites numericos estamos trantado
         const gradientStyles = styles.filter(s => !s.type || s.type === 'gradient');
         const semaphoreStyles = styles.filter(s => s.type === 'semaphore');
@@ -189,7 +198,7 @@ export class EdaTableComponent implements OnInit {
             const fields = gradientStyles.map(style => style.col);
 
             fields.forEach(field => {
-                limits[field] = { min: Infinity, max: -Infinity, rangeValue: 0, ranges: []};
+                limits[field] = { min: Infinity, max: -Infinity, rangeValue: 0, ranges: [], col: field };
             });
 
         //Set values
@@ -232,7 +241,7 @@ export class EdaTableComponent implements OnInit {
                     });
                 });
             });
-            
+
         }
 
         // Si los estilos que entran son SEMAFORICOS<...
@@ -240,13 +249,7 @@ export class EdaTableComponent implements OnInit {
             semaphoreStyles.forEach(style => {
                 const field = style.col;
                 const name = this.getNiceName(field);
-
-                limits[field] = {
-                    type: 'semaphore',
-                    value1: style.value1,
-                    value2: style.value2
-                };
-
+                limits[field] = { type: 'semaphore', col: field, value1: style.value1, value2: style.value2 };
                 const semaphoreColors = [style.color1, style.color2, style.color3];
                 semaphoreColors.forEach((color, i) => {
                     const hexColor = color.startsWith('#') ? color : `#${color}`;
@@ -265,6 +268,10 @@ export class EdaTableComponent implements OnInit {
         // Devlolvemos los limites para luego saber que color aplicar
         this.styles = limits;
 
+        } catch (e) {
+            console.warn('[applyStyles] Error al aplicar estilos de color:', e);
+            this.alertService.addError('Error al aplicar los estilos de color de la tabla');
+        }
     }
 
     applyPivotSyles(styles){
