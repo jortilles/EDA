@@ -84,7 +84,6 @@ export class TableGradientDialogComponent implements OnInit{
       // Semaforo tab
       const properties = {
         col: this.controller.params.col.field,
-        technical_name: this.controller.params.col.technical_name,
         type: 'semaphore',
         value1: this.value1,
         value2: this.value2,

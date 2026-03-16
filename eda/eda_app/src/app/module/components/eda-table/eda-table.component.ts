@@ -138,12 +138,10 @@ export class EdaTableComponent implements OnInit {
 
     getStyleClass(col, rowData) {
         try {
-            console.log('[getStyleClass] col.field:', col.field, '| col.technical_name:', col.technical_name, '| this.styles keys:', Object.keys(this.styles));
-            const styleKey = this.styles[col.field] ? col.field : col.technical_name;
+            const styleKey = this.styles[col.field] ? col.field : col.header;
             const styleEntry = this.styles[styleKey];
             if (styleEntry) {
-            console.log('[getStyleClass] styleEntry found for:', col.field, '|', col.technical_name, '| key used:', styleKey);
-                let field = styleKey;
+                let field = styleEntry.col || styleKey;
                 if(this.inject.pivot) field = styleEntry.value;
 
                 field = this.getNiceName(field);
@@ -187,7 +185,7 @@ export class EdaTableComponent implements OnInit {
         return;
     }
 
-    public applyStyles(styles: Array<any>) {
+    public applyStyles(styles: Array<any>, queryColumns?: Array<any>) {
         try {
         // Verificamos que tipo de limites numericos estamos trantado
         const gradientStyles = styles.filter(s => !s.type || s.type === 'gradient');
@@ -199,8 +197,8 @@ export class EdaTableComponent implements OnInit {
         if (gradientStyles.length > 0) {
             const fields = gradientStyles.map(style => style.col);
 
-            fields.forEach(field => {
-                limits[field] = { min: Infinity, max: -Infinity, rangeValue: 0, ranges: []};
+            gradientStyles.forEach(style => {
+                limits[style.col] = { min: Infinity, max: -Infinity, rangeValue: 0, ranges: [], col: style.col, tableOrigin: style.tableOrigin };
             });
 
         //Set values
@@ -243,25 +241,35 @@ export class EdaTableComponent implements OnInit {
                     });
                 });
             });
-            
+
         }
 
         // Si los estilos que entran son SEMAFORICOS<...
         if (semaphoreStyles.length > 0) {
             semaphoreStyles.forEach(style => {
-                const field = style.col;
+                // Buscamos la columna actual por tableOrigin + header como primera instancia
+                let field = style.col;
+                console.log('aaaaaa', style)
+                if (this.inject?.cols && queryColumns) {
+                    const matchingCol = this.inject.cols.find(col => {
+                        const colTableId = queryColumns.find(q => q.display_name === col.header || q.column_name === col.field)?.table_id;
+                        return style.tableOrigin === colTableId && col.header === style.col;
+                    });
+                    if (matchingCol) {
+                        console.warn('[applyStyles] match tableOrigin+header: style.col:', style.col, '→ col.field:', matchingCol.field, '| tableOrigin:', style.tableOrigin);
+                        field = matchingCol.field;
+                    }
+                }
                 const name = this.getNiceName(field);
 
                 const semaphoreEntry = {
                     type: 'semaphore',
+                    col: field,
+                    tableOrigin: style.tableOrigin,
                     value1: style.value1,
                     value2: style.value2
                 };
                 limits[field] = semaphoreEntry;
-                // También indexamos por technical_name para que funcione tras renombrar columna
-                if (style.technical_name && style.technical_name !== field) {
-                    limits[style.technical_name] = semaphoreEntry;
-                }
 
                 const semaphoreColors = [style.color1, style.color2, style.color3];
                 semaphoreColors.forEach((color, i) => {
@@ -279,8 +287,8 @@ export class EdaTableComponent implements OnInit {
         }
 
         // Devlolvemos los limites para luego saber que color aplicar
+        console.warn('[applyStyles] styles input:', JSON.stringify(styles), '| limits keys:', Object.keys(limits));
         this.styles = limits;
-        console.log('[applyStyles] this.styles keys:', Object.keys(this.styles));
 
         } catch (e) {
             console.warn('[applyStyles] Error al aplicar estilos de color:', e);
