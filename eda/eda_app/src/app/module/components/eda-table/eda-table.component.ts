@@ -136,9 +136,12 @@ export class EdaTableComponent implements OnInit {
     }
 
     getStyleClass(col, rowData) {
-        if (this.styles[col.field]) {
-            const styleEntry = this.styles[col.field];
-            let field = col.field;
+        console.log('[getStyleClass] col.field:', col.field, '| col.technical_name:', col.technical_name, '| this.styles keys:', Object.keys(this.styles));
+        const styleKey = this.styles[col.field] ? col.field : col.technical_name;
+        const styleEntry = this.styles[styleKey];
+        if (styleEntry) {
+            console.log('[getStyleClass] styleEntry found for:', col.field, '|', col.technical_name, '| key used:', styleKey);
+            let field = styleKey;
             if(this.inject.pivot) field = styleEntry.value;
 
             field = this.getNiceName(field);
@@ -241,11 +244,16 @@ export class EdaTableComponent implements OnInit {
                 const field = style.col;
                 const name = this.getNiceName(field);
 
-                limits[field] = {
+                const semaphoreEntry = {
                     type: 'semaphore',
                     value1: style.value1,
                     value2: style.value2
                 };
+                limits[field] = semaphoreEntry;
+                // También indexamos por technical_name para que funcione tras renombrar columna
+                if (style.technical_name && style.technical_name !== field) {
+                    limits[style.technical_name] = semaphoreEntry;
+                }
 
                 const semaphoreColors = [style.color1, style.color2, style.color3];
                 semaphoreColors.forEach((color, i) => {
@@ -264,6 +272,7 @@ export class EdaTableComponent implements OnInit {
 
         // Devlolvemos los limites para luego saber que color aplicar
         this.styles = limits;
+        console.log('[applyStyles] this.styles keys:', Object.keys(this.styles));
 
     }
 
