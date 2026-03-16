@@ -137,9 +137,18 @@ export class EdaTableComponent implements OnInit {
         }
     }
 
+    private normalizeKey(s: string): string {
+        if (!s) return '';
+        return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/gi, '').toLowerCase();
+    }
+
     getStyleClass(col, rowData) {
         try {
-            const styleKey = this.styles[col.field] ? col.field : col.header;
+            const normField = this.normalizeKey(col.field);
+            const styleKey = this.styles[col.field] ? col.field :
+                             this.styles[col.header] ? col.header :
+                             this.styles[normField] ? normField :
+                             this.normalizeKey(col.header);
             const styleEntry = this.styles[styleKey];
             console.log('[getStyleClass] col.field:', col.field, '| col.header:', col.header, '| styleKey:', styleKey, '| found:', !!styleEntry, '| styles keys:', Object.keys(this.styles));
             if (styleEntry) {
@@ -278,6 +287,15 @@ export class EdaTableComponent implements OnInit {
                 });
             });
         }
+
+        // Añadimos aliases normalizadas para que coincidan nombres con acentos, puntos y mayúsculas distintas
+        // Ej: "Ind.bústia" → "indbustia", "INDBUSTIA" → "indbustia" → match
+        Object.keys(limits).forEach(key => {
+            const norm = this.normalizeKey(key);
+            if (norm !== key && !limits[norm]) {
+                limits[norm] = limits[key];
+            }
+        });
 
         // Devlolvemos los limites para luego saber que color aplicar
         this.styles = limits;
