@@ -865,7 +865,7 @@ export class DashboardController {
     // puede ser que me den permiso sobre una columna. 
     // entonces tengo prohivida toda la tabla excepto esa columna en el caso de un modelo cerrado.
     if (dataModelObject.ds.metadata.model_granted_roles.length > 0) { /** SI HAY PERMISOS DEFINIDOS. SI NO, NO HAY SEGURIDAD */
-      if ( open == false &&  // si el modelo es cerrado.
+      if ( open != true &&  // si el modelo es cerrado.
         dataModelObject.ds.metadata.model_granted_roles.filter(r => r.global == false && r.none == false).length > 0) {
         dataModelObject.ds.metadata.model_granted_roles.filter(r => r.global == false && r.none == false  ).forEach(c => {
          // para dada columna que digo que puedes ver.  
