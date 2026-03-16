@@ -387,7 +387,11 @@ public filterToString(filterObject: any ) {
     column.minimumFractionDigits = 0;
   }
   const colname=this.getFilterColname(column);
-   let colType = column.column_type;
+  let colType = column.column_type;
+
+  if (filterObject.filter_dynamic == true) {
+    colType = 'dynamic';
+  }
 
   switch (this.setFilterType(filterObject.filter_type)) {
     case 0:
@@ -395,16 +399,16 @@ public filterToString(filterObject: any ) {
       if (filterObject.filter_type === 'like') {
         return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
       }
-      if (filterObject.filter_type === 'not_like') { 
+      if (filterObject.filter_type === 'not_like') {
         filterObject.filter_type = 'not like'
         return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
-      }   
+      }
       return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
     case 1:
       if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
       return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
     case 2:
-      return `${colname}  ${filterObject.filter_type} 
+      return `${colname}  ${filterObject.filter_type}
                       ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
     case 3:
       return `${colname} is not null`;
@@ -544,6 +548,7 @@ public filterToString(filterObject: any ) {
         case 'text': return `'${filter}'`;
         case 'html': return `'${filter}'`;
         case 'numeric': return filter;
+        case 'dynamic': return filter;
         case 'date': return `CAST('${filter}' as date)`
       }
     } else {
@@ -551,7 +556,7 @@ public filterToString(filterObject: any ) {
       filter.forEach(value => {
         const tail = columnType === 'date'
           ? `CAST('${value}' as date)`
-          : columnType === 'numeric' ? value : `'${value.replace(/'/g, "''")}'`;
+          : ['numeric', 'dynamic'].includes(columnType) ? value : `'${value.replace(/'/g, "''")}'`;
         str = str + tail + ','
       });
       return str.substring(0, str.length - 1);

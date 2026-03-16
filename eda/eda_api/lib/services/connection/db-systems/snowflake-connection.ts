@@ -1,4 +1,4 @@
-import { SnowFlakeBuilderService } from './../../query-builder/qb-systems/snowflake-builder.service';
+import { SnowFlakeBuilderService } from '../../query-builder/qb-systems/snowflake-builder.service';
 import { Snowflake } from 'snowflake-promise';
 import { AbstractConnection } from '../abstract-connection';
 import { AggregationTypes } from '../../../module/global/model/aggregation-types';

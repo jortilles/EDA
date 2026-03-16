@@ -1,5 +1,5 @@
 import { Client as PgClient } from 'pg';
-import { PgBuilderService } from '../../query-builder/qb-systems/pg-builder-service';
+import { PgBuilderService } from '../../query-builder/qb-systems/pg-builder.service';
 import { AbstractConnection } from '../abstract-connection';
 import { AggregationTypes } from '../../../module/global/model/aggregation-types';
 

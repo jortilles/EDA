@@ -1,6 +1,6 @@
 import { AbstractConnection } from '../abstract-connection';
 import { AggregationTypes } from '../../../module/global/model/aggregation-types';
-import { SQLserviceBuilderService } from '../../query-builder/qb-systems/sqlserver-builder-service';
+import { SQLserviceBuilderService } from '../../query-builder/qb-systems/sqlserver-builder.service';
 import DataSource from '../../../module/datasource/model/datasource.model';
 
 const SQLservice = require('mssql')
