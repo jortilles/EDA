@@ -48,6 +48,7 @@ import { DashboardPage } from 'app/module/pages/dashboard/dashboard.page';
 import { EdadynamicTextComponent } from '@eda/components/component.index';
 import { EdaTitlePanelComponent } from '@eda/components/component.index';
 import { PanelMenuModule } from 'primeng/panelmenu';
+import { ChartTypeSelectorDialogComponent } from './chart-type-selector-dialog/chart-type-selector-dialog.component';
 // Panel Utils
 import { TableUtils } from './panel-utils/tables-utils';
 import { QueryUtils } from './panel-utils/query-utils';
@@ -91,7 +92,8 @@ const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipM
 const STANDALONE_COMPONENTS = [
     EdaDialog2Component, WhatIfDialogComponent, EbpChatgptComponent,FilterMapperComponent, EdadynamicTextComponent,EdaTitlePanelComponent,
     PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
-    DragDropComponent, IconComponent, FocusOnShowDirective
+    DragDropComponent, ChartTypeSelectorDialogComponent,
+    IconComponent, FocusOnShowDirective
 ]
 @Component({
     standalone: true,
@@ -270,6 +272,7 @@ export class EdaBlankPanelComponent implements OnInit {
     // Dialog para el ChatGpt
     public isVisibleEbpChatGpt = false;
     public dataChatGpt: any;
+    public chartTypeSelectorController: EdaDialogController;
 
     // for the drag-drop component
     public axes:any[]=[]; 

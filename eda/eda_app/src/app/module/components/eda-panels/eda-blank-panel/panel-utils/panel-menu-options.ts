@@ -1,7 +1,8 @@
 import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
+import { PanelInteractionUtils } from './panel-interaction-utils';
 import * as _ from 'lodash';
 
-import { EdaContextMenuItem, EdaDialogController } from "@eda/shared/components/shared-components.index";
+import { EdaContextMenuItem, EdaDialogController, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
 
 export const PanelOptions = {
   editQuery: (panelComponent: EdaBlankPanelComponent) => {
@@ -329,6 +330,48 @@ export const PanelOptions = {
       }
     });
   },
+  changeChartType: (panelComponent: EdaBlankPanelComponent) => {
+    return new EdaContextMenuItem({
+      label: $localize`:@@panelOptionsChangeChartType:Cambiar tipo de gráfico`,
+      icon: 'mdi mdi-chart-bar',
+      command: () => {
+        PanelInteractionUtils.verifyData(panelComponent);
+        panelComponent.contextMenu.hideContextMenu();
+        panelComponent.chartTypeSelectorController = new EdaDialogController({
+          params: { chartTypes: panelComponent.chartTypes },
+          close: (event: EdaDialogCloseEvent, ct: any) => {
+            panelComponent.chartTypeSelectorController = undefined;
+            if (event === EdaDialogCloseEvent.UPDATE) {
+              panelComponent.changeChartTypeCheck(ct.value, ct.subValue);
+              panelComponent.chartForm.patchValue({ chart: ct });
+            }
+          }
+        });
+      }
+    });
+  },
+  toggleLock: (panelComponent: EdaBlankPanelComponent) => {
+    const isLocked = () => (panelComponent.panel as any).dragEnabled === false;
+    const item = new EdaContextMenuItem({
+      label: isLocked() ? $localize`:@@panelOptionsUnlock:Desbloquear panel` : $localize`:@@panelOptionsLock:Bloquear panel`,
+      icon: isLocked() ? 'pi pi-lock' : 'pi pi-lock-open',
+      command: () => {
+        if (isLocked()) {
+          (panelComponent.panel as any).dragEnabled = true;
+          (panelComponent.panel as any).resizeEnabled = true;
+          item.label = $localize`:@@panelOptionsLock:Bloquear panel`;
+          item.icon = 'pi pi-lock-open';
+        } else {
+          (panelComponent.panel as any).dragEnabled = false;
+          (panelComponent.panel as any).resizeEnabled = false;
+          item.label = $localize`:@@panelOptionsUnlock:Desbloquear panel`;
+          item.icon = 'pi pi-lock';
+        }
+        panelComponent.dashboard.gridsterOptions.api?.optionsChanged();
+      }
+    });
+    return item;
+  },
 
   generateMenu: (ebp: EdaBlankPanelComponent) => {
     const isEditable = ebp.isEditable(); 
@@ -352,6 +395,10 @@ export const PanelOptions = {
         item: () => PanelOptions.editChart(ebp),
       },
       {
+        show: isEditable && !!ebp.panel.content,
+        item: () => PanelOptions.changeChartType(ebp),
+      },
+      {
         show: isEditable && isImported,
         item: () => PanelOptions.filtersMapper(ebp),
       },
@@ -366,6 +413,10 @@ export const PanelOptions = {
       {
         show: isEditable,
         item: () => PanelOptions.duplicatePanel(ebp),
+      },
+      {
+        show: true,
+        item: () => PanelOptions.toggleLock(ebp),
       },
       {
         show: isEditable && ebp.availableChatGpt,
