@@ -311,6 +311,7 @@ export class EdaTableComponent implements OnInit {
 
         // Devlolvemos los limites para luego saber que color aplicar
         this.styles = limits;
+        console.log('[applyStyles] Estilos aplicados a la tabla | huérfanos eliminados:', orphans.map((s: any) => s.col), '| estilos activos:', styles.map((s: any) => ({ col: s.col, tipo: s.type || 'gradient' })));
 
         } catch (e) {
             console.warn('[applyStyles] Error al aplicar estilos de color:', e);
