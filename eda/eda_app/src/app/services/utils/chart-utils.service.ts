@@ -668,7 +668,8 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('dynamicText'), 1);
         }
         // Pie && Polar (Only one numeric column and one char/date column)
-        if (dataDescription.totalColumns === 2 && dataDescription.numericColumns.length === 1) {
+        if (dataDescription.totalColumns === 2 && dataDescription.numericColumns.length === 1 || 
+            (dataDescription.totalColumns === 2 && dataDescription.numericColumns.length === 2))  {         
             notAllowed.splice(notAllowed.indexOf('doughnut'), 1);
             notAllowed.splice(notAllowed.indexOf('polarArea'), 1);
             notAllowed.splice(notAllowed.indexOf('kpibar'), 1);
