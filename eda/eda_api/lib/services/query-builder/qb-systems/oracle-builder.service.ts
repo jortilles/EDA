@@ -483,13 +483,13 @@ export class OracleBuilderService extends QueryBuilderService {
 
     /**
    * 
-   * @param column 
+   * @param column  
    * @returns coumn name in string mode for having. 
    */
     public getHavingColname(column: any){
       let colname:String ;
-      if( column.computed_column == 'no' ){
-        colname =   `\`${column.table_id}\`.\`${column.column_name}\`` ;
+      if ( ( column.computed_column == 'no' ) || ! column.hasOwnProperty('computed_column')  ) {
+        colname =   `"${column.table_id}"."${column.column_name}"` ;
       }else{
         if(column.column_type == 'numeric'){
           colname = `ROUND(  CAST( ${column.SQLexpression}  as NUMBER)  , ${column.minimumFractionDigits})`;
