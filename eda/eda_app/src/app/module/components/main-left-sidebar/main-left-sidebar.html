@@ -1,7 +1,7 @@
 @if(!panelMode){
   <div class="flex w-[4vw] h-full flex-col items-center border-r bg-background p-2">
     <div class="flex flex-col items-center gap-2">
-      <img id="sidebar-btn-toggle" [src]="logoSidebar" alt="logo icono" class="dark-logo mb-2 w-12 h-9" />
+      <img id="sidebar-btn-toggle" [src]="logoSidebar" (click)="menuCommand({ path: '/home'}, $event)" alt="logo icono" class="dark-logo mb-2 w-12 h-9 cursor-pointer" />
       @if(!isAnonim){
       @for (item of navItems; track item.path) {
         <div
