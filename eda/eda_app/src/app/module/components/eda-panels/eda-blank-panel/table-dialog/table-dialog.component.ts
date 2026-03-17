@@ -90,9 +90,17 @@ export class TableDialogComponent{
 
   setChartProperties() {
     this.setCols();
-    this.styles = this.myPanelChartComponent.componentRef.instance.inject.styles || [];
+    console.log('huefanos eliminados?')
+    const allStyles = this.myPanelChartComponent.componentRef.instance.inject.styles || [];
+    // Limpieza de estilos huérfanos: solo conservar los que tienen columna activa
+    this.styles = allStyles.filter((style: any) =>
+      this.cols.some(col => col.field === style.col || col.header === style.col)
+    );
+    const removed = allStyles.length - this.styles.length;
+    if (removed > 0) console.log(`[setChartProperties] ${removed} estilos huérfanos eliminados`);
   }
   ngOnInit(): void {
+    
     this.panelChartConfig = this.controller.params.panelChart;
     if (this.panelChartConfig && this.panelChartConfig.config) {
       const config = (<TableConfig>this.panelChartConfig.config.getConfig());
@@ -382,6 +390,7 @@ export class TableDialogComponent{
   }
 
   onClose(event: EdaDialogCloseEvent, response?: any): void {
+    this.setChartProperties();
     return this.controller.close(event, response);
   }
 
