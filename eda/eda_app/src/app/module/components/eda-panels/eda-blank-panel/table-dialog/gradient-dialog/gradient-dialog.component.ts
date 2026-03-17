@@ -37,6 +37,7 @@ export class TableGradientDialogComponent implements OnInit{
   constructor() {}
 
   closeDialog(){
+    console.log('[GradientDialog] CERRANDO sin guardar | col.field:', this.controller.params.col?.field, '| col.header:', this.controller.params.col?.header);
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
@@ -57,6 +58,9 @@ export class TableGradientDialogComponent implements OnInit{
         this.color2 = style.color2;
         this.color3 = style.color3;
       }
+      console.log('[GradientDialog] ABRIENDO con estilo existente | col.field:', this.controller.params.col.field, '| col.header:', this.controller.params.col.header, '| tipo:', style.type, '| estilo:', JSON.stringify(style));
+    } else {
+      console.log('[GradientDialog] ABRIENDO sin estilo previo | col.field:', this.controller.params.col.field, '| col.header:', this.controller.params.col.header);
     }
   }
 
@@ -67,6 +71,7 @@ export class TableGradientDialogComponent implements OnInit{
   saveGradientConfig(notStyles ?: boolean){
     // Si no tenemos estilos da igual el tab
     if (this.noStyle || notStyles) {
+      console.log('[GradientDialog] GUARDANDO sin estilo (noStyle) | col.field:', this.controller.params.col.field);
       this.onClose(EdaDialogCloseEvent.UPDATE, { col: this.controller.params.col.field, noStyle: true });
       return; //cancelamos la asignación de colores a posterior
     }
@@ -79,6 +84,7 @@ export class TableGradientDialogComponent implements OnInit{
         min: this.min,
         max: this.max ,
       };
+      console.log('[GradientDialog] GUARDANDO gradiente | col.field:', properties.col, '| min:', properties.min, '| max:', properties.max);
       this.onClose(EdaDialogCloseEvent.UPDATE, properties);
     } else {
       // Semaforo tab
@@ -91,6 +97,7 @@ export class TableGradientDialogComponent implements OnInit{
         color2: this.color2,
         color3: this.color3
       };
+      console.log('[GradientDialog] GUARDANDO semáforo | col.field:', properties.col, '| value1:', properties.value1, '| value2:', properties.value2, '| color1:', properties.color1, '| color2:', properties.color2, '| color3:', properties.color3);
       this.onClose(EdaDialogCloseEvent.UPDATE, properties);
     }
   }

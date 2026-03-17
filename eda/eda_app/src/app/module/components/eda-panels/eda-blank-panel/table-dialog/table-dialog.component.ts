@@ -90,14 +90,17 @@ export class TableDialogComponent{
 
   setChartProperties() {
     this.setCols();
-    console.log('huefanos eliminados?')
-    const allStyles = this.myPanelChartComponent.componentRef.instance.inject.styles || [];
+    const inject = this.myPanelChartComponent.componentRef.instance.inject;
+    const allStyles = inject.styles || [];
     // Limpieza de estilos huérfanos: solo conservar los que tienen columna activa
-    this.styles = allStyles.filter((style: any) =>
+    const validStyles = allStyles.filter((style: any) =>
       this.cols.some(col => col.field === style.col || col.header === style.col)
     );
-    const removed = allStyles.length - this.styles.length;
-    if (removed > 0) console.log(`[setChartProperties] ${removed} estilos huérfanos eliminados`);
+    const removed = allStyles.length - validStyles.length;
+    if (removed > 0) console.log(`[setChartProperties] ${removed} estilos huérfanos eliminados:`, allStyles.filter((s: any) => !validStyles.includes(s)).map((s: any) => s.col));
+    // Limpiar la fuente y this.styles con los válidos
+    inject.styles = validStyles;
+    this.styles = validStyles;
   }
   ngOnInit(): void {
     
@@ -248,19 +251,23 @@ export class TableDialogComponent{
   private setStyle(col) {
     if (this.controller.params.panelChart.chartType === 'table') {
       const queryCol = this.queryNumericColumns.find(q => q.display_name === col.header || q.column_name === col.field);
+      const existingStyle = this.styles.filter(style => style.col === col.field)[0];
+      console.log('[TableDialog] ABRIENDO gradient dialog | col.field:', col.field, '| col.header:', col.header, '| estilo actual:', existingStyle ? JSON.stringify(existingStyle) : 'ninguno', '| todos los estilos:', JSON.stringify(this.styles));
       this.gradientMenuController = new EdaDialogController({
         params: {
           col: col,
           tableOrigin: queryCol?.table_id,
-          style: this.styles.filter(style => style.col === col.field)[0]
+          style: existingStyle
         },
         close: (event, response) => this.onCloseGradientController(event, response)
       })
     } else {
+      const existingStyle = this.styles.filter(style => style.col === col.header)[0];
+      console.log('[TableDialog] ABRIENDO gradient dialog (pivot) | col.header:', col.header, '| estilo actual:', existingStyle ? JSON.stringify(existingStyle) : 'ninguno', '| todos los estilos:', JSON.stringify(this.styles));
       this.gradientMenuController = new EdaDialogController({
         params: {
           col: col,
-          style: this.styles.filter(style => style.col === col.header)[0]
+          style: existingStyle
         },
         close: (event, response) => this.onCloseGradientController(event, response, col)
       })
@@ -390,7 +397,9 @@ export class TableDialogComponent{
   }
 
   onClose(event: EdaDialogCloseEvent, response?: any): void {
-    this.setChartProperties();
+    // Sincronizar this.styles (con los cambios del usuario) de vuelta a inject.styles antes de cerrar
+    this.myPanelChartComponent.componentRef.instance.inject.styles = this.styles;
+    console.log('[TableDialog] CERRANDO table dialog | event:', event, '| estilos finales guardados:', JSON.stringify(this.styles));
     return this.controller.close(event, response);
   }
 
@@ -443,7 +452,7 @@ export class TableDialogComponent{
   private onCloseGradientController(event, response, col?) {
     try {
       if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-        
+        console.log('[TableDialog] CERRANDO gradient dialog con cambios | response:', JSON.stringify(response));
         this.styles = this.styles.filter(style => style.col !== response.col);
 
         if (!response.noStyle) {
@@ -456,6 +465,7 @@ export class TableDialogComponent{
           }
         }
       }
+      console.log('[TableDialog] Estilos tras cerrar gradient dialog:', JSON.stringify(this.styles));
       if (!this.myPanelChartComponent.componentRef.instance.inject.pivot) {
 
         this.myPanelChartComponent.componentRef.instance.applyStyles(this.styles, this.queryNumericColumns);

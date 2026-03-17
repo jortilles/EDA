@@ -150,7 +150,6 @@ export class EdaTableComponent implements OnInit {
                              this.styles[normField] ? normField :
                              this.normalizeKey(col.header);
             const styleEntry = this.styles[styleKey];
-            console.log('[getStyleClass] col.field:', col.field, '| col.header:', col.header, '| styleKey:', styleKey, '| found:', !!styleEntry, '| styles keys:', Object.keys(this.styles));
             if (styleEntry) {
                 let field = styleEntry.col || styleKey;
                 if(this.inject.pivot) field = styleEntry.value;
@@ -200,6 +199,19 @@ export class EdaTableComponent implements OnInit {
 
     public applyStyles(styles: Array<any>) {
         try {
+        // Limpieza de estilos huérfanos: solo conservar los que tienen columna activa
+        const activeCols = this.inject?.cols || [];
+        const validStyles = styles.filter((style: any) =>
+            activeCols.some((col: any) => col.field === style.col || col.header === style.col)
+        );
+        const orphans = styles.filter((s: any) => !validStyles.includes(s));
+        if (orphans.length > 0) {
+            console.log('[applyStyles] Huérfanos eliminados:', orphans.map((s: any) => s.col), '| columnas activas:', activeCols.map((c: any) => c.field || c.header));
+            // Actualizar inject.styles para que la limpieza persista
+            if (this.inject) this.inject.styles = validStyles as any;
+        }
+        styles = validStyles;
+
         // Verificamos que tipo de limites numericos estamos trantado
         const gradientStyles = styles.filter(s => !s.type || s.type === 'gradient');
         const semaphoreStyles = styles.filter(s => s.type === 'semaphore');
