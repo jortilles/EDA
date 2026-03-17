@@ -90,14 +90,8 @@ export class TableDialogComponent{
 
   setChartProperties() {
     this.setCols();
-    console.log('huefanos eliminados?')
-    const allStyles = this.myPanelChartComponent.componentRef.instance.inject.styles || [];
-    // Limpieza de estilos huérfanos: solo conservar los que tienen columna activa
-    this.styles = allStyles.filter((style: any) =>
-      this.cols.some(col => col.field === style.col || col.header === style.col)
-    );
-    const removed = allStyles.length - this.styles.length;
-    if (removed > 0) console.log(`[setChartProperties] ${removed} estilos huérfanos eliminados`);
+    const inject = this.myPanelChartComponent.componentRef.instance.inject;
+    this.styles = inject.styles || [];
   }
   ngOnInit(): void {
     
@@ -390,7 +384,7 @@ export class TableDialogComponent{
   }
 
   onClose(event: EdaDialogCloseEvent, response?: any): void {
-    this.setChartProperties();
+    this.myPanelChartComponent.componentRef.instance.inject.styles = this.styles;
     return this.controller.close(event, response);
   }
 
@@ -443,7 +437,6 @@ export class TableDialogComponent{
   private onCloseGradientController(event, response, col?) {
     try {
       if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-        
         this.styles = this.styles.filter(style => style.col !== response.col);
 
         if (!response.noStyle) {

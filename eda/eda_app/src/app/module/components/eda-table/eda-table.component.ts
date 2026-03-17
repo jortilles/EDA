@@ -72,7 +72,6 @@ export class EdaTableComponent implements OnInit {
 
 
         if(this?.inject?.styles && !this.inject.pivot){
-            console.log('[eda-table] ngOnInit applyStyles inject.styles:', JSON.stringify(this.inject.styles));
             this.applyStyles(this.inject.styles)
         }else if(this?.inject?.styles && this.inject.pivot){
             this.applyPivotSyles(this.inject.styles)
@@ -137,20 +136,10 @@ export class EdaTableComponent implements OnInit {
         }
     }
 
-    private normalizeKey(s: string): string {
-        if (!s) return '';
-        return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/gi, '').toLowerCase();
-    }
-
     getStyleClass(col, rowData) {
         try {
-            const normField = this.normalizeKey(col.field);
-            const styleKey = this.styles[col.field] ? col.field :
-                             this.styles[col.header] ? col.header :
-                             this.styles[normField] ? normField :
-                             this.normalizeKey(col.header);
+            const styleKey = this.styles[col.field] ? col.field : col.header;
             const styleEntry = this.styles[styleKey];
-            console.log('[getStyleClass] col.field:', col.field, '| col.header:', col.header, '| styleKey:', styleKey, '| found:', !!styleEntry, '| styles keys:', Object.keys(this.styles));
             if (styleEntry) {
                 let field = styleEntry.col || styleKey;
                 if(this.inject.pivot) field = styleEntry.value;
@@ -161,7 +150,6 @@ export class EdaTableComponent implements OnInit {
 
                 // Si es semaforo devolveremos uno de los 3 colores
                 if (styleEntry.type === 'semaphore') {
-                    if (isNaN(cellValue)) return `table-semaphore-${field}-fallback`;
                     if (cellValue > styleEntry.value1) return `table-semaphore-${field}-0`;
                     else if (cellValue >= styleEntry.value2) return `table-semaphore-${field}-1`;
                     else return `table-semaphore-${field}-2`;
@@ -200,6 +188,18 @@ export class EdaTableComponent implements OnInit {
 
     public applyStyles(styles: Array<any>) {
         try {
+        // Limpieza de estilos huérfanos: solo conservar los que tienen columna activa
+        const activeCols = this.inject?.cols || [];
+        const validStyles = styles.filter((style: any) =>
+            activeCols.some((col: any) => col.field === style.col || col.header === style.col)
+        );
+        const orphans = styles.filter((s: any) => !validStyles.includes(s));
+        if (orphans.length > 0) {
+            // Actualizar inject.styles para que la limpieza persista
+            if (this.inject) this.inject.styles = validStyles as any;
+        }
+        styles = validStyles;
+
         // Verificamos que tipo de limites numericos estamos trantado
         const gradientStyles = styles.filter(s => !s.type || s.type === 'gradient');
         const semaphoreStyles = styles.filter(s => s.type === 'semaphore');
@@ -258,12 +258,10 @@ export class EdaTableComponent implements OnInit {
         }
 
         // Si los estilos que entran son SEMAFORICOS<...
-        console.log('[applyStyles] semaphoreStyles:', JSON.stringify(semaphoreStyles), '| gradientStyles:', JSON.stringify(gradientStyles));
         if (semaphoreStyles.length > 0) {
             semaphoreStyles.forEach(style => {
                 const field = style.col;
                 const name = this.getNiceName(field);
-                console.log('[applyStyles] procesando semáforo style.col:', style.col, '| field:', field, '| name(CSS):', name, '| value1:', style.value1, '| value2:', style.value2);
                 limits[field] = { type: 'semaphore', col: field, value1: style.value1, value2: style.value2 };
                 const semaphoreColors = [style.color1, style.color2, style.color3];
                 semaphoreColors.forEach((color, i) => {
@@ -277,25 +275,8 @@ export class EdaTableComponent implements OnInit {
                         backgroundColor:`var(--table-semaphore-bg-color-${name}-${i}) `,
                     });
                 });
-                console.log('[applyStyles] semáforo limits['+field+']:', limits[field], '| CSS vars generadas para:', name);
-                // Fallback naranja si el valor no se puede parsear
-                this.styleService.setStyles(`.table-semaphore-${name}-fallback`, {
-                    borderWidth: '1px ',
-                    borderStyle: 'solid ',
-                    borderColor: 'white ',
-                    backgroundColor: 'orange ',
-                });
             });
         }
-
-        // Añadimos aliases normalizadas para que coincidan nombres con acentos, puntos y mayúsculas distintas
-        // Ej: "Ind.bústia" → "indbustia", "INDBUSTIA" → "indbustia" → match
-        Object.keys(limits).forEach(key => {
-            const norm = this.normalizeKey(key);
-            if (norm !== key && !limits[norm]) {
-                limits[norm] = limits[key];
-            }
-        });
 
         // Devlolvemos los limites para luego saber que color aplicar
         this.styles = limits;
