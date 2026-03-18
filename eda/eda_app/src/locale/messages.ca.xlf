@@ -6122,6 +6122,18 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>{0} items seleccionados</source>
         <target>{0} elements seleccionats</target>
       </trans-unit>
+      <trans-unit id="signInSAML">
+        <source>Continuar con SAML</source>
+        <target>Continuar amb SAML</target>
+      </trans-unit>
+      <trans-unit id="signInOAUTH2">
+        <source>Continuar con OAUTH2</source>
+        <target>Continuar amb OAUTH2</target>
+      </trans-unit>
+      <trans-unit id="signInMicrosoft">
+        <source>Continuar con Microsoft</source>
+        <target>Continuar amb Microsoft</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

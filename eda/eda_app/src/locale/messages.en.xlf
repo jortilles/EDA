@@ -5843,6 +5843,18 @@ OR<ph id="5"/>
   <source>{0} items seleccionados</source>
   <target>{0} items selected</target>
 </trans-unit>
+<trans-unit id="signInSAML">
+  <source>Continuar con SAML</source>
+  <target>Continue with SAML</target>
+</trans-unit>
+<trans-unit id="signInOAUTH2">
+  <source>Continuar con OAUTH2</source>
+  <target>Continue with OAUTH2</target>
+</trans-unit>
+<trans-unit id="signInMicrosoft">
+  <source>Continuar con Microsoft</source>
+  <target>Continue with Microsoft</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

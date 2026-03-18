@@ -6095,6 +6095,18 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>{0} items seleccionados</source>
         <target>{0} articles sélectionnés</target>
       </trans-unit>
+      <trans-unit id="signInSAML">
+        <source>Continuar con SAML</source>
+        <target>Continuer avec SAML</target>
+      </trans-unit>
+      <trans-unit id="signInOAUTH2">
+        <source>Continuar con OAUTH2</source>
+        <target>Continuer avec OAUTH2</target>
+      </trans-unit>
+      <trans-unit id="signInMicrosoft">
+        <source>Continuar con Microsoft</source>
+        <target>Continuer avec Microsoft</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

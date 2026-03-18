@@ -5763,6 +5763,18 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>{0} items seleccionados</source>
         <target>{0} wybranych elementów</target>
       </trans-unit>
+      <trans-unit id="signInSAML">
+        <source>Continuar con SAML</source>
+        <target>Kontynuuj z SAML</target>
+      </trans-unit>
+      <trans-unit id="signInOAUTH2">
+        <source>Continuar con OAUTH2</source>
+        <target>Kontynuuj z OAUTH2</target>
+      </trans-unit>
+      <trans-unit id="signInMicrosoft">
+        <source>Continuar con Microsoft</source>
+        <target>Kontynuuj z Microsoft</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>
