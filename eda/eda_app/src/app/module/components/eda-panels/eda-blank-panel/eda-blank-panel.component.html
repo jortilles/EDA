@@ -315,7 +315,8 @@
                         <div
                           class="flex justify-start items-center gap-2 rounded-md px-3 py-2 font-bold bg-muted/50 cursor-move z-10 bg-white p-2 select-box text-center "
                           (click)="openColumnDialog(attr)"
-                          [cdkDragData]="columns" 
+                          (contextmenu)="removeColumn(attr, 'select'); $event.preventDefault()"
+                          [cdkDragData]="columns"
                           cdkDrag
                         >
                           <i class="drag-handle-icon"></i>
