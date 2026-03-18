@@ -178,6 +178,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     // DB types[]
     public tiposBD: SelectItem[] = [
         { label: 'Postgres', value: 'postgres' },
+        { label: 'ClickHouse', value: 'clickhouse' },
         { label: 'Sql Server', value: 'sqlserver' },
         { label: 'MySQL', value: 'mysql' },
         { label: 'Vertica', value: 'vertica' },
