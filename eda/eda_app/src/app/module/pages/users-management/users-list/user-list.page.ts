@@ -43,7 +43,7 @@ export class UserListPage implements OnInit {
   showUserDetail: boolean = false;
 
   currentPage: number = 1;
-  itemsPerPage: number = 25;
+  itemsPerPage: number = 10;
 
   get filteredUsers() {
     return [...this.users]
@@ -95,6 +95,10 @@ export class UserListPage implements OnInit {
 
   totalPages() {
     return Math.ceil(this.filteredUsers.length / this.itemsPerPage);
+  }
+
+  get pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages() }, (_, i) => i + 1);
   }
 
   setPage(page: number) {
