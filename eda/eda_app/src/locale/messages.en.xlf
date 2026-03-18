@@ -3996,6 +3996,10 @@ Once configured you can invoke it whenever you want from the button.</target>
 <source>FILTRAR INFORMES:</source>
 <target>FILTER REPORTS:</target>
 </trans-unit>
+<trans-unit id="tagsDescriptionDashboard">
+<source>Etiquetas:</source>
+<target>Tags:</target>
+</trans-unit>
 
 <trans-unit id="addTag">
 <source>Añadir etiqueta</source>

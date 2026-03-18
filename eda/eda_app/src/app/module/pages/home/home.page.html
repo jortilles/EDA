@@ -28,8 +28,8 @@
       <div class="flex-1 min-w-0">
         <div class="text-sm text-muted-foreground"> <span i18n="@@filterReports">FILTRAR INFORMES:</span> </div>
         <!-- Contenedor de tags -->
-        <div class="flex flex-wrap items-center gap-2 overflow-hidden"> <span
-            class="flex items-center px-4 py-2 text-sm text-gray-700">Tags:</span> @for (option of filteredTags(); track
+        <div class="flex flex-wrap items-center gap-2 overflow-hidden"> <span i18n="@@tagsDescriptionDashboard"
+            class="flex items-center px-4 py-2 text-sm text-gray-700">Etiquetas:</span> @for (option of filteredTags(); track
           option.value) { <div [ngClass]="isTagSelected(option.value) ? 'tag-selected' : 'tag'"
             (click)="handleTagSelect(option)"> {{ option.label }} </div> } </div>
       </div> <!-- Ordenar informes -->

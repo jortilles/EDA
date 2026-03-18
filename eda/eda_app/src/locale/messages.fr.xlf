@@ -4437,6 +4437,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>FILTRAR INFORMES:</source>
         <target>FILTRER LES RAPPORTS:</target>
       </trans-unit>
+      <trans-unit id="tagsDescriptionDashboard">
+        <source>Etiquetas:</source>
+        <target>Étiquettes:</target>
+      </trans-unit>
 
       <trans-unit id="addTag">
         <source>Añadir etiqueta</source>
