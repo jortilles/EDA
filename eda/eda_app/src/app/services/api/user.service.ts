@@ -104,11 +104,11 @@ export class UserService extends ApiService {
         this.token = token;
 
         this.getIsAdminUser(this.user._id).subscribe(
-            (value: any) => this.isAdmin = value.isAdmin,
+            (value: any) => { this.isAdmin = value.isAdmin; localStorage.setItem('isAdmin', String(value.isAdmin)); },
             (err) => this.alertService.addError(err)
         );
         this.getIsDataSourceCreator(this.user._id).subscribe(
-            (value: any) => { this.isDataSourceCreator = value.isDataSourceCreator  }, 
+            (value: any) => { this.isDataSourceCreator = value.isDataSourceCreator; localStorage.setItem('isDataSourceCreator', String(value.isDataSourceCreator)); },
             (err) => this.alertService.addError(err)
         );
 
@@ -199,17 +199,8 @@ export class UserService extends ApiService {
         if (localStorage.getItem('token') && localStorage.getItem('user') ) {
             this.token = localStorage.getItem('token');
             this.user = JSON.parse(localStorage.getItem('user'));
-
-            this.getIsAdminUser(this.user._id).subscribe(
-                (value: any) => this.isAdmin = value.isAdmin,
-                (err) => this.alertService.addError(err)
-            );
-            this.getIsDataSourceCreator(this.user._id).subscribe(
-                (value: any) => {this.isDataSourceCreator = value.isDataSourceCreator }, 
-                (err) => this.alertService.addError(err)
-            );
-            
-            
+            this.isAdmin = localStorage.getItem('isAdmin') === 'true';
+            this.isDataSourceCreator = localStorage.getItem('isDataSourceCreator') === 'true';
 
         } else {
             this.token = '';
