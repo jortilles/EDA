@@ -5,25 +5,21 @@ import * as _ from 'lodash';
 export class ClickHouseBuilderService extends QueryBuilderService {
 
   public analizedQuery(params: EdaQueryParams) {
-    const { fields, tables, origin, dest, joinTree, filters, joinType, valueListJoins, schema } = params;
-    const database = schema || 'default';
+    const { fields, tables, origin, dest, joinTree, filters, joinType, valueListJoins } = params;
 
     const fromTable = tables.filter(t => t.name === origin).map(t => t.query ? this.cleanViewString(t.query) : t.name)[0];
-    const vista = tables.filter(t => t.name === origin).map(t => t.query ? true : false)[0];
 
     const generateQuery = () => {
-      let myQuery = vista
-        ? `FROM ${fromTable}`
-        : `FROM \`${database}\`.\`${fromTable}\``;
+      let myQuery = `FROM \`${fromTable}\``;
 
       let joinString: any[];
       let alias: any;
       if (this.queryTODO.joined) {
-        const responseJoins = this.setJoins(joinTree, joinType, database, valueListJoins);
+        const responseJoins = this.setJoins(joinTree, joinType, '', valueListJoins);
         joinString = responseJoins.joinString;
         alias = responseJoins.aliasTables;
       } else {
-        joinString = this.getJoins(joinTree, dest, tables, joinType, valueListJoins, database);
+        joinString = this.getJoins(joinTree, dest, tables, joinType, valueListJoins, '');
       }
 
       joinString.forEach(x => { myQuery = myQuery + '\n' + x; });
@@ -143,35 +139,26 @@ export class ClickHouseBuilderService extends QueryBuilderService {
     columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[],
     filters: any[], havingFilters: any[], tables: Array<any>, limit: number,
     joinType: string, groupByEnabled: boolean, valueListJoins: Array<any>,
-    schema: string, database: string, forSelector: any
+    _schema: string, _database: string, forSelector: any
   ) {
-    if (!schema || schema === 'null' || schema === '') {
-      schema = database || 'default';
-    }
-
     let o = tables.filter(t => t.name === origin).map(t => t.query ? this.cleanViewString(t.query) : t.name)[0];
-    let vista = tables.filter(t => t.name === origin).map(t => t.query ? true : false)[0];
 
     let myQuery: string;
     if (forSelector === true) {
-      myQuery = vista
-        ? `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`
-        : `SELECT DISTINCT ${columns.join(', ')} \nFROM \`${schema}\`.\`${o}\``;
+      myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM \`${o}\``;
     } else {
-      myQuery = vista
-        ? `SELECT ${columns.join(', ')} \nFROM ${o}`
-        : `SELECT ${columns.join(', ')} \nFROM \`${schema}\`.\`${o}\``;
+      myQuery = `SELECT ${columns.join(', ')} \nFROM \`${o}\``;
     }
 
     // JOINS
     let joinString: any[];
     let alias: any;
     if (this.queryTODO.joined) {
-      const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
+      const responseJoins = this.setJoins(joinTree, joinType, '', valueListJoins);
       joinString = responseJoins.joinString;
       alias = responseJoins.aliasTables;
     } else {
-      joinString = this.getJoins(joinTree, dest, tables, joinType, valueListJoins, schema);
+      joinString = this.getJoins(joinTree, dest, tables, joinType, valueListJoins, '');
     }
 
     joinString.forEach(x => { myQuery = myQuery + '\n' + x; });
@@ -248,11 +235,7 @@ export class ClickHouseBuilderService extends QueryBuilderService {
     }
   }
 
-  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType: string, valueListJoins: Array<any>, schema: string) {
-    if (!schema || schema === 'null' || schema === '') {
-      schema = 'default';
-    }
-
+  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType: string, valueListJoins: Array<any>, _schema: string) {
     const joins = [];
     const joined = [];
     const joinString = [];
@@ -272,44 +255,30 @@ export class ClickHouseBuilderService extends QueryBuilderService {
         if (!joined.includes(e[j])) {
           const joinColumns = this.findJoinColumns(e[j], e[i]);
           const t = tables.filter(table => table.name === e[j]).map(table => table.query ? this.cleanViewString(table.query) : table.name)[0];
-          const view = tables.filter(table => table.name === e[j]).map(table => table.query ? true : false)[0];
 
           myJoin = valueListJoins.includes(e[j]) ? 'LEFT' : joinType;
 
           if (typeof joinColumns[0] === 'string') {
-            if (!view) {
-              if (joinColumns[2] && joinColumns[2] === 'source') {
-                joinString.push(` ${myJoin} JOIN \`${schema}\`.\`${t}\` ON ${joinColumns[1]} = \`${schema}\`.\`${e[i]}\`.\`${joinColumns[0]}\``);
-              } else if (joinColumns[2] && joinColumns[2] === 'target') {
-                joinString.push(` ${myJoin} JOIN \`${schema}\`.\`${t}\` ON \`${schema}\`.\`${e[j]}\`.\`${joinColumns[1]}\` = ${joinColumns[0]} `);
-              } else {
-                joinString.push(` ${myJoin} JOIN \`${schema}\`.\`${t}\` ON \`${schema}\`.\`${e[j]}\`.\`${joinColumns[1]}\` = \`${schema}\`.\`${e[i]}\`.\`${joinColumns[0]}\``);
-              }
+            if (joinColumns[2] && joinColumns[2] === 'source') {
+              joinString.push(` ${myJoin} JOIN \`${t}\` ON ${joinColumns[1]} = \`${e[i]}\`.\`${joinColumns[0]}\``);
+            } else if (joinColumns[2] && joinColumns[2] === 'target') {
+              joinString.push(` ${myJoin} JOIN \`${t}\` ON \`${e[j]}\`.\`${joinColumns[1]}\` = ${joinColumns[0]} `);
             } else {
-              joinString.push(` ${myJoin} JOIN ${t} ON \`${e[j]}\`.\`${joinColumns[1]}\` = \`${schema}\`.\`${e[i]}\`.\`${joinColumns[0]}\``);
+              joinString.push(` ${myJoin} JOIN \`${t}\` ON \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\``);
             }
           } else {
-            if (!view) {
-              let join = ` ${myJoin} JOIN \`${schema}\`.\`${t}\` ON`;
-              joinColumns[0].forEach((_, x) => {
-                if (joinColumns[2] && joinColumns[2] === 'source') {
-                  join += ` ${joinColumns[1][x]} = \`${schema}\`.\`${e[i]}\`.\`${joinColumns[0][x]}\` AND`;
-                } else if (joinColumns[2] && joinColumns[2] === 'target') {
-                  join += ` \`${schema}\`.\`${e[j]}\`.\`${joinColumns[1][x]}\` = ${joinColumns[0][x]} AND`;
-                } else {
-                  join += ` \`${schema}\`.\`${e[j]}\`.\`${joinColumns[1][x]}\` = \`${schema}\`.\`${e[i]}\`.\`${joinColumns[0][x]}\` AND`;
-                }
-              });
-              join = join.slice(0, join.length - ' AND'.length);
-              joinString.push(join);
-            } else {
-              let join = ` ${myJoin} JOIN ${t} ON`;
-              joinColumns[0].forEach((_, x) => {
-                join += ` \`${e[j]}\`.\`${joinColumns[1][x]}\` = \`${schema}\`.\`${e[i]}\`.\`${joinColumns[0][x]}\` AND`;
-              });
-              join = join.slice(0, join.length - ' AND'.length);
-              joinString.push(join);
-            }
+            let join = ` ${myJoin} JOIN \`${t}\` ON`;
+            joinColumns[0].forEach((_: any, x: number) => {
+              if (joinColumns[2] && joinColumns[2] === 'source') {
+                join += ` ${joinColumns[1][x]} = \`${e[i]}\`.\`${joinColumns[0][x]}\` AND`;
+              } else if (joinColumns[2] && joinColumns[2] === 'target') {
+                join += ` \`${e[j]}\`.\`${joinColumns[1][x]}\` = ${joinColumns[0][x]} AND`;
+              } else {
+                join += ` \`${e[j]}\`.\`${joinColumns[1][x]}\` = \`${e[i]}\`.\`${joinColumns[0][x]}\` AND`;
+              }
+            });
+            join = join.slice(0, join.length - ' AND'.length);
+            joinString.push(join);
           }
           joined.push(e[j]);
         }
@@ -319,11 +288,7 @@ export class ClickHouseBuilderService extends QueryBuilderService {
     return joinString;
   }
 
-  public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[]) {
-    if (!schema || schema === 'null') {
-      schema = 'default';
-    }
-
+  public setJoins(joinTree: any[], joinType: string, _schema: string, valueListJoins: string[]) {
     const joinExists = new Set();
     const aliasTables = {};
     const joinString = [];
@@ -661,8 +626,8 @@ export class ClickHouseBuilderService extends QueryBuilderService {
     }
   }
 
-  buildPermissionJoin(origin: string, joinStrings: string[], permissions: any[], schema?: string) {
-    const originRef = schema ? `\`${schema}\`.\`${origin}\`` : `\`${origin}\``;
+  buildPermissionJoin(origin: string, joinStrings: string[], permissions: any[], _schema?: string) {
+    const originRef = `\`${origin}\``;
     let joinString = `( SELECT ${originRef}.* FROM ${originRef} `;
     joinString += joinStrings.join(' ') + ' WHERE ';
     permissions.forEach(permission => {

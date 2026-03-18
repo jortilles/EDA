@@ -1121,6 +1121,10 @@
   <eda-context-menu (close)="contextMenu.display = false" [inject]="contextMenu"></eda-context-menu>
 }
 
+@if(chartTypeSelectorController) {
+  <app-chart-type-selector-dialog [controller]="chartTypeSelectorController"></app-chart-type-selector-dialog>
+}
+
 @if(isVisibleEbpChatGpt) {
   <app-ebp-chatgpt (close)="closeChatGpt($event)" [dataChatGpt]="dataChatGpt"></app-ebp-chatgpt>
 }

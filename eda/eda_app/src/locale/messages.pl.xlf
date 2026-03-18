@@ -1301,6 +1301,18 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Duplicar panel</source>
 <target>Duplikuj panel</target>
 </trans-unit>
+<trans-unit id="panelOptionsChangeChartType">
+<source>Cambiar tipo de gráfico</source>
+<target>Zmień typ wykresu</target>
+</trans-unit>
+<trans-unit id="panelOptionsLock">
+<source>Bloquear panel</source>
+<target>Zablokuj panel</target>
+</trans-unit>
+<trans-unit id="panelOptionsUnlock">
+<source>Desbloquear panel</source>
+<target>Odblokuj panel</target>
+</trans-unit>
 <trans-unit id="duplicateColumnButton">
 <source>Duplicar columna</source>
 <target>Duplikuj kolumna</target>
