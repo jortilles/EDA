@@ -6126,6 +6126,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Continuar con SAML</source>
         <target>Continuar amb SAML</target>
       </trans-unit>
+      <trans-unit id="signInSamlMixOrcl">
+        <source>Continuar con SAML</source>
+        <target>Continuar amb SAML</target>
+      </trans-unit>
       <trans-unit id="signInOAUTH2">
         <source>Continuar con OAUTH2</source>
         <target>Continuar amb OAUTH2</target>

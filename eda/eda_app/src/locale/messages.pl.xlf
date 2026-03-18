@@ -5767,6 +5767,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Continuar con SAML</source>
         <target>Kontynuuj z SAML</target>
       </trans-unit>
+      <trans-unit id="signInSamlMixOrcl">
+        <source>Continuar con SAML</source>
+        <target>Kontynuuj z SAML</target>
+      </trans-unit>
       <trans-unit id="signInOAUTH2">
         <source>Continuar con OAUTH2</source>
         <target>Kontynuuj z OAUTH2</target>

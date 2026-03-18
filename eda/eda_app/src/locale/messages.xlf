@@ -5484,6 +5484,34 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
           <context context-type="linenumber">29</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="signInSAML" datatype="html">
+        <source>Continuar con SAML</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/pages/login/login.html</context>
+          <context context-type="linenumber">125</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="signInSamlMixOrcl" datatype="html">
+        <source>Continuar con SAML</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/pages/login/login.html</context>
+          <context context-type="linenumber">89</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="signInOAUTH2" datatype="html">
+        <source>Continuar con OAUTH2</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/pages/login/login.html</context>
+          <context context-type="linenumber">107</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="signInMicrosoft" datatype="html">
+        <source>Continuar con Microsoft</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/pages/login/login.html</context>
+          <context context-type="linenumber">145</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>
