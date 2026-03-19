@@ -59,6 +59,7 @@ export class EditModelPanel {
         schema: string,
         port: number,
         warehouse: string,
+        sid: number, 
         poolLimit?: number, 
         ssl?: Boolean
     };
