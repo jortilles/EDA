@@ -8,6 +8,18 @@ export class BigQueryBuilderService extends QueryBuilderService {
     return [];
   }
 
+
+    /** esto se usa para las consultas que hacemos a bbdd para generar el modelo */
+  public simpleQuery(columns: string[], origin: string) {
+  
+      const schema = this.dataModel.ds.connection.schema;
+      if (schema) {
+          origin = `${schema}.${origin}`;
+      }
+      return `SELECT DISTINCT ${columns.join(', ')} \nFROM ${origin}`;
+  }
+
+
  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
     tables: Array<any>, limit: number,  joinType: string, groupByEnabled:boolean, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any ) {
       let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
