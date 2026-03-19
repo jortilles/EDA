@@ -25,6 +25,10 @@ export class DashboardService extends ApiService {
         return this.get(`${this.route}datasource/${id}`);
     }
 
+    getDashboardVisibility( id ): Observable<any> {
+        return this.get( `${this.route}${id}/visibility` );
+    }
+
     addNewDashboard(dashboard): Observable<any> {
         return this.post(this.route, dashboard);
     }
