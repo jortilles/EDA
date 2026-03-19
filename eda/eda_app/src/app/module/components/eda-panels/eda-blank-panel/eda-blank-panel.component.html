@@ -74,9 +74,14 @@
       <div class="flex items-center">
         <div class="p-2">
           @if (!titleClick) {
-            <h2 class="text-lg font-semibold">
-              {{panel.title.trim().length > 0 ? panel.title : '\uD83D\uDD89'}}
-            </h2>
+            <div class="w-full flex items-start justify-between px-2 py-2 gap-x-4">
+              <h2 class="text-lg font-semibold">
+                {{panel.title.trim().length > 0 ? panel.title : '\uD83D\uDD89'}}
+              </h2>
+              <button (click)="startEditTitle()" class="rounded-md  cursor-pointer hover:bg-muted h-fit">
+                <eda-icon class="pointer-events-none" name="pencil"></eda-icon>
+              </button>
+            </div>
           } @else {
               <input 
                 type="text" 
@@ -87,10 +92,8 @@
               >
           }
         </div>
-        <button (click)="titleClick=true;" class="rounded-md  cursor-pointer hover:bg-muted h-fit">
-          <eda-icon class="pointer-events-none" name="pencil"></eda-icon>
-        </button>
       </div>
+
       <p-dropdown 
         [(ngModel)]="selectedQueryMode" 
         [options]="queryModes" 
@@ -315,7 +318,8 @@
                         <div
                           class="flex justify-start items-center gap-2 rounded-md px-3 py-2 font-bold bg-muted/50 cursor-move z-10 bg-white p-2 select-box text-center "
                           (click)="openColumnDialog(attr)"
-                          [cdkDragData]="columns" 
+                          (contextmenu)="removeColumn(attr, 'select'); $event.preventDefault()"
+                          [cdkDragData]="columns"
                           cdkDrag
                         >
                           <i class="drag-handle-icon"></i>
@@ -357,6 +361,7 @@
                         <div
                           class="flex justify-start items-center gap-2 rounded-md px-3 py-2 font-bold bg-muted/50 cursor-move bg-white p-2 select-box text-center"
                           (click)="openColumnDialog(attr, true)" 
+                          (contextmenu)="removeColumn(attr, 'filter'); $event.preventDefault()"
                           [cdkDragData]="columns" 
                           cdkDrag
                         >
@@ -411,6 +416,7 @@
                         </div>
                         <!-- Contenedor de query -->
                         @if(display_v.showQueryContainer) {
+                          <div class="fixed inset-0 z-40" (click)="display_v.showQueryContainer = false"></div>
                           <div id="query-container" class="absolute top-full left-0 mt-1 w-[35vw] h-[30vh] max-h-[80vh] bg-white z-50 shadow-lg rounded-lg p-4 border border-gray-300 flex flex-col">
                             @if(display_v.minispinnerSQL) {
                               <div class="flex justify-center items-center w-full min-h-[15vh]">

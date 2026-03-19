@@ -41,7 +41,7 @@ export class GroupListPage implements OnInit {
   showGroupDetail: boolean = false;
 
   currentPage: number = 1;
-  itemsPerPage: number = 25;
+  itemsPerPage: number = 10;
 
   public addGroupTitle = $localize`:@@newGroup:Crear Nuevo Grupo`;
   public updateGroupTitle = $localize`:@@editGroup:Editar Grupo`;
@@ -100,6 +100,10 @@ export class GroupListPage implements OnInit {
 
   totalPages() {
     return Math.ceil(this.filteredGroups.length / this.itemsPerPage);
+  }
+
+  get pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages() }, (_, i) => i + 1);
   }
 
   setPage(page: number) {

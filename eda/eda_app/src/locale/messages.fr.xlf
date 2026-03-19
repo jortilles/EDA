@@ -5998,6 +5998,14 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>es menor que:</source>
         <target>est inférieur à:</target>
       </trans-unit>
+      <trans-unit id="gradientMin">
+        <source>Min</source>
+        <target>Min</target>
+      </trans-unit>
+      <trans-unit id="gradientMax">
+        <source>Max</source>
+        <target>Max</target>
+      </trans-unit>
       <trans-unit id="mandatoryFilter">
         <source>¿Filtro obligatorio?</source>
         <target>Filtre obligatoire?</target>
@@ -6113,6 +6121,46 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="globalFilterSelectedItemsLabel">
         <source>{0} items seleccionados</source>
         <target>{0} articles sélectionnés</target>
+      </trans-unit>
+      <trans-unit id="copyPublicLinkTooltip">
+        <source>Copiar enlace público</source>
+        <target>Copier le lien public</target>
+      </trans-unit>
+      <trans-unit id="copyPublicLinkSuccessTitle">
+        <source>¡Enlace copiado!</source>
+        <target>Lien copié !</target>
+      </trans-unit>
+      <trans-unit id="copyPublicLinkSuccessText">
+        <source>El enlace público ha sido copiado al portapapeles.</source>
+        <target>Le lien public a été copié dans le presse-papiers.</target>
+      </trans-unit>
+      <trans-unit id="acceptBtn">
+        <source>Aceptar</source>
+        <target>Accepter</target>
+      </trans-unit>
+      <trans-unit id="renameReportTooltip">
+        <source>Editar nombre</source>
+        <target>Modifier le nom</target>
+      </trans-unit>
+      <trans-unit id="confirmRenameTooltip">
+        <source>Confirmar nombre</source>
+        <target>Confirmer le nom</target>
+      </trans-unit>
+      <trans-unit id="duplicateReportTooltip">
+        <source>Duplicar informe</source>
+        <target>Dupliquer le rapport</target>
+      </trans-unit>
+      <trans-unit id="deleteReportTooltip">
+        <source>Eliminar informe</source>
+        <target>Supprimer le rapport</target>
+      </trans-unit>
+      <trans-unit id="emailAlreadyExistsTitle">
+        <source>Email en uso</source>
+        <target>Email déjà utilisé</target>
+      </trans-unit>
+      <trans-unit id="emailAlreadyExistsMsg">
+        <source>Ya existe un usuario con este correo electrónico.</source>
+        <target>Un utilisateur avec cette adresse e-mail existe déjà.</target>
       </trans-unit>
       <trans-unit id="signInSAML">
         <source>Continuar con SAML</source>

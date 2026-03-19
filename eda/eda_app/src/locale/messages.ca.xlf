@@ -6025,6 +6025,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>es menor que:</source>
         <target>és menor que:</target>
       </trans-unit>
+      <trans-unit id="gradientMin">
+        <source>Min</source>
+        <target>Min</target>
+      </trans-unit>
+      <trans-unit id="gradientMax">
+        <source>Max</source>
+        <target>Màx</target>
+      </trans-unit>
       <trans-unit id="mandatoryFilter">
         <source>¿Filtro obligatorio?</source>
         <target>Filtre obligatori?</target>
@@ -6140,6 +6148,46 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="globalFilterSelectedItemsLabel">
         <source>{0} items seleccionados</source>
         <target>{0} elements seleccionats</target>
+      </trans-unit>
+      <trans-unit id="copyPublicLinkTooltip">
+        <source>Copiar enlace público</source>
+        <target>Copiar enllaç públic</target>
+      </trans-unit>
+      <trans-unit id="copyPublicLinkSuccessTitle">
+        <source>¡Enlace copiado!</source>
+        <target>Enllaç copiat!</target>
+      </trans-unit>
+      <trans-unit id="copyPublicLinkSuccessText">
+        <source>El enlace público ha sido copiado al portapapeles.</source>
+        <target>L'enllaç públic s'ha copiat al porta-retalls.</target>
+      </trans-unit>
+      <trans-unit id="acceptBtn">
+        <source>Aceptar</source>
+        <target>Acceptar</target>
+      </trans-unit>
+      <trans-unit id="renameReportTooltip">
+        <source>Editar nombre</source>
+        <target>Editar nom</target>
+      </trans-unit>
+      <trans-unit id="confirmRenameTooltip">
+        <source>Confirmar nombre</source>
+        <target>Confirmar nom</target>
+      </trans-unit>
+      <trans-unit id="duplicateReportTooltip">
+        <source>Duplicar informe</source>
+        <target>Duplicar informe</target>
+      </trans-unit>
+      <trans-unit id="deleteReportTooltip">
+        <source>Eliminar informe</source>
+        <target>Eliminar informe</target>
+      </trans-unit>
+      <trans-unit id="emailAlreadyExistsTitle">
+        <source>Email en uso</source>
+        <target>Email en ús</target>
+      </trans-unit>
+      <trans-unit id="emailAlreadyExistsMsg">
+        <source>Ya existe un usuario con este correo electrónico.</source>
+        <target>Ja existeix un usuari amb aquest correu electrònic.</target>
       </trans-unit>
       <trans-unit id="signInSAML">
         <source>Continuar con SAML</source>

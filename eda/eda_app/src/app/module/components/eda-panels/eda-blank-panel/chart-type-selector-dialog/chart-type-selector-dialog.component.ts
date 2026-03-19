@@ -17,7 +17,7 @@ export class ChartTypeSelectorDialogComponent {
     visible = true;
 
     get chartTypes() {
-        return (this.controller?.params?.chartTypes || []).filter((ct: any) => !ct.ngIf && !ct.tooManyData && ct.subValue !== 'tableanalized');
+        return (this.controller?.params?.chartTypes || []).filter((ct: any) => !ct.ngIf && !ct.tooManyData &&  !(['tableanalized', 'treetable'].includes(ct.subValue)));
     }
 
     getOptionIcon(subValue: string): string {

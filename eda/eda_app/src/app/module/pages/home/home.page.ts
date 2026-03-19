@@ -215,15 +215,7 @@ public handleTagSelect(option: any): void {
     const dashboardUrl = `${currentUrl.replace(/\/home\/?$/, '')}/public/${report._id}`;
     // Copiar al portapapeles
     navigator.clipboard.writeText(dashboardUrl).then(() => {
-      Swal.fire({
-        title: $localize`:@@copyPublicLinkSuccessTitle:¡Enlace copiado!`,
-        text: $localize`:@@copyPublicLinkSuccessText:El enlace público ha sido copiado al portapapeles.`,
-        icon: 'success',
-        confirmButtonColor: '#14B8A6',
-        confirmButtonText: $localize`:@@acceptBtn:Aceptar`,
-        timer: 2500,
-        timerProgressBar: true,
-      });
+      this.alertService.addSuccess($localize`:@@copyPublicLinkSuccessText:El enlace público ha sido copiado al portapapeles.`);
     });
   }
 
