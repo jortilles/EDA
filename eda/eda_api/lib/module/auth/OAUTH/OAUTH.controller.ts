@@ -163,7 +163,7 @@ export class OAUTHController {
             try {
                 // Upsert: si existe devuelve el documento, si no, lo crea
                 const groupDoc = await Group.findOneAndUpdate(
-                    { role: companyId }, // criterio de búsqueda
+                    { name: companyId }, // criterio de búsqueda por el nombre
                     {
                         $setOnInsert: {
                             name: companyId,
