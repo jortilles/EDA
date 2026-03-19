@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '@eda/services/api/user.service';
+import { GroupService } from '@eda/services/api/group.service';
 import { AlertService, DashboardService } from '@eda/services/service.index';
 import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
 import Swal from 'sweetalert2';
@@ -36,6 +37,9 @@ export class HomePage implements OnInit {
   isOpenTags = signal(false)
   searchTagTerm = signal("")
 
+  // Control de anonim y eda_RO
+  public grups: Array<any> = [];
+  public isObserver: boolean = true;
 
   //Variables de control de edició Modificar
   isEditing = false;
@@ -48,10 +52,32 @@ export class HomePage implements OnInit {
   public groupTitle: string = $localize`:@@tituloGrupoMisGrupos:MIS GRUPOS`;
   public privateTitle: string = $localize`:@@tituloGrupoPersonales:PRIVADOS`;
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService, private groupService: GroupService) { }
 
   ngOnInit(): void {
     this.loadReports();
+    this.ifAnonymousGetOut();
+  }
+
+  private setIsObserver = async () => {
+      this.groupService.getGroupsByUser().subscribe(
+          res => {
+              const user = localStorage.getItem('user');
+              const userID = JSON.parse(user)._id;
+              this.grups = res;
+              this.isObserver = this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0
+          },
+          (err) => this.alertService.addError(err)
+      );
+  }
+
+  private ifAnonymousGetOut(): void {
+      const user = localStorage.getItem('user');
+      const userName = JSON.parse(user).name;
+
+      if (userName === 'edaanonim' || userName === 'EDA_RO') {
+          this.router.navigate(['/login']);
+      }
   }
 
   private async loadReports() {
@@ -61,17 +87,18 @@ export class HomePage implements OnInit {
     this.roleReports = group;
     this.sharedReports = publics;
 
-  this.allDashboards = [].concat(this.publicReports, this.privateReports, this.roleReports, this.sharedReports);
+    this.allDashboards = [].concat(this.publicReports, this.privateReports, this.roleReports, this.sharedReports);
 
-  this.reportMap = {
-    private: this.privateReports,
-    group: this.roleReports,
-    public: this.publicReports,
-    shared: this.sharedReports
-  };
+    this.reportMap = {
+      private: this.privateReports,
+      group: this.roleReports,
+      public: this.publicReports,
+      shared: this.sharedReports
+    };
 
-  this.handleSorting();
+    this.handleSorting();
     this.loadReportTags();
+    this.setIsObserver();
   }
 
   private async loadReportTags() {
