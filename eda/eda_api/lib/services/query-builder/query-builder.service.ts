@@ -75,6 +75,9 @@ export abstract class QueryBuilderService {
 
     abstract analizedQuery(params: EdaQueryParams): any[];
 
+    abstract simpleQuery(columns: string[], origin: string);
+
+
 
     public async builder() {
 
@@ -539,16 +542,6 @@ export abstract class QueryBuilderService {
     }
 
 
-
-    /** esto se usa para las consultas que hacemos a bbdd para generar el modelo */
-    public simpleQuery(columns: string[], origin: string) {
-    
-        const schema = this.dataModel.ds.connection.schema;
-        if (schema) {
-            origin = `${schema}.${origin}`;
-        }
-        return `SELECT DISTINCT ${columns.join(', ')} \nFROM ${origin}`;
-    }
 
     public cleanOriginTable(originTable:string):string {
         let res = "";
