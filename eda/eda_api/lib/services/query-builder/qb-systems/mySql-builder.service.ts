@@ -13,7 +13,9 @@ export class MySqlBuilderService extends QueryBuilderService {
     
         const schema = this.dataModel.ds.connection.schema;
         if (schema) {
-            origin = `${schema}.${origin}`;
+            origin = `\`${schema}\`.\`${origin}\``;
+        }else{
+           origin = `\`${origin}\``;
         }
         return `SELECT DISTINCT ${columns.join(', ')} \nFROM ${origin}`;
     }
