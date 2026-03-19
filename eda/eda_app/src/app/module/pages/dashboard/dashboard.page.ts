@@ -451,7 +451,8 @@ export class DashboardPage implements OnInit {
       dataSource: this.dataSource,
       dashboard_id: this.dashboardId,
       applyToAllfilter: this.applyToAllfilter,
-      isObserver: this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0
+      isObserver: this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0,
+      gridsterOptions: this.gridsterOptions
     }
     this.stylesProviderService.loadedPanels = dashboard.config?.panel?.length || -1;
   }
