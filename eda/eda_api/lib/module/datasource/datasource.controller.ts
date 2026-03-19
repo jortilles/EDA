@@ -360,9 +360,9 @@ export class DataSourceController {
 
     static async CheckConnection(req: Request, res: Response, next: NextFunction) {
 
-        if (!['postgres', 'mysql', 'vertica', 'sqlserver', 'oracle', 'bigquery', 'snowflake', 'jsonwebservice', 'mongodb'].includes(req.qs.type)) {
+        if (!['postgres', 'mysql', 'vertica', 'sqlserver', 'oracle', 'bigquery', 'snowflake', 'jsonwebservice', 'mongodb', 'clickhouse'].includes(req.qs.type)) {
 
-            next(new HttpException(404, '"Only" postgres, MySQL, oracle, SqlServer, Google BigQuery, Snowflake and Vertica are accepted'));
+            next(new HttpException(404, '"Only" postgres, MySQL, oracle, SqlServer, Google BigQuery, Snowflake, Vertica and ClickHouse are accepted'));
 
         } else {
             try {
@@ -385,8 +385,8 @@ export class DataSourceController {
 
     static async CheckStoredConnection(req: Request, res: Response, next: NextFunction) {
 
-        if (!['postgres', 'mysql', 'vertica', 'sqlserver', 'oracle', 'bigquery', 'snowflake', 'jsonwebservice', 'mongodb'].includes(req.qs.type)) {
-            next(new HttpException(404, 'Only postgres, MySQL, oracle, SqlServer and Vertica are accepted'));
+        if (!['postgres', 'mysql', 'vertica', 'sqlserver', 'oracle', 'bigquery', 'snowflake', 'jsonwebservice', 'mongodb', 'clickhouse'].includes(req.qs.type)) {
+            next(new HttpException(404, 'Only postgres, MySQL, oracle, SqlServer, Vertica and ClickHouse are accepted'));
         } else {
             try {
                 const actualDS = await DataSourceController.getMongoDataSource(req.params.id);

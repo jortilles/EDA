@@ -90,9 +90,11 @@ export class TableDialogComponent{
 
   setChartProperties() {
     this.setCols();
-    this.styles = this.myPanelChartComponent.componentRef.instance.inject.styles || [];
+    const inject = this.myPanelChartComponent.componentRef.instance.inject;
+    this.styles = inject.styles || [];
   }
   ngOnInit(): void {
+    
     this.panelChartConfig = this.controller.params.panelChart;
     if (this.panelChartConfig && this.panelChartConfig.config) {
       const config = (<TableConfig>this.panelChartConfig.config.getConfig());
@@ -382,6 +384,7 @@ export class TableDialogComponent{
   }
 
   onClose(event: EdaDialogCloseEvent, response?: any): void {
+    this.myPanelChartComponent.componentRef.instance.inject.styles = this.styles;
     return this.controller.close(event, response);
   }
 
@@ -434,7 +437,6 @@ export class TableDialogComponent{
   private onCloseGradientController(event, response, col?) {
     try {
       if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-        
         this.styles = this.styles.filter(style => style.col !== response.col);
 
         if (!response.noStyle) {

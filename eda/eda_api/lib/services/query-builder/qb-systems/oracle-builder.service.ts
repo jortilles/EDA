@@ -1,4 +1,4 @@
-import { EdaQueryParams, QueryBuilderService } from './../query-builder.service';
+import { EdaQueryParams, QueryBuilderService } from '../query-builder.service';
 import * as _ from 'lodash';
 
 
@@ -14,28 +14,30 @@ export class OracleBuilderService extends QueryBuilderService {
       .map(table => { return table.query ? this.cleanViewString(table.query) : table.name })[0];
     let myQuery = `SELECT ${columns.join(', ')} \n `;
     let vista = tables.filter(table => table.name === origin).map(table => { return table.query ? true: false })[0];
-    if( vista ){  // Es una vista. NO la pongo entre comillas
-      myQuery += `FROM ${o}`; 
+    if( vista ){  // Es una vista a nivel de modelo. NO la pongo entre comillas
+      myQuery += `FROM ${o}`;
     }else{  // Es una tabla. La pongo entre comillas
-      myQuery += `FROM  "${o}"`;
+      myQuery += schema ? `FROM  "${schema}"."${o}"` : `FROM  "${o}"`;
     }
 
 
 
     /** SI ES UN SELECT PARA UN SELECTOR  VOLDRÉ VALORS ÚNICS */
        if (forSelector === true) {
-        myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM "${o}"`;
+        myQuery = schema
+          ? `SELECT DISTINCT ${columns.join(', ')} \nFROM "${schema}"."${o}"`
+          : `SELECT DISTINCT ${columns.join(', ')} \nFROM "${o}"`;
       }
   
            
       let joinString: any[];
       let alias: any;
       if (this.queryTODO.joined) {
-        const responseJoins = this.setJoins(joinTree, joinType, valueListJoins);
+        const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
         joinString = responseJoins.joinString;
         alias = responseJoins.aliasTables;
       } else {
-        joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins );
+        joinString = this.getJoins(joinTree, dest, tables, joinType, valueListJoins, schema);
       }
 
  
@@ -134,7 +136,7 @@ export class OracleBuilderService extends QueryBuilderService {
   }
 
 
-  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string, valueListJoins:Array<any>) {
+  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string, valueListJoins:Array<any>, schema?: string) {
 
     let joins = [];
     let joined = [];
@@ -158,7 +160,7 @@ export class OracleBuilderService extends QueryBuilderService {
 
           let joinColumns = this.findJoinColumns(e[j], e[i]);
           let t = tables.filter(table => table.name === e[j])
-            .map(table => { return table.query ? this.cleanViewString(table.query) : `"${table.name}"` })[0];
+            .map(table => { return table.query ? this.cleanViewString(table.query) : schema ? `"${schema}"."${table.name}"` : `"${table.name}"` })[0];
             if( valueListJoins.includes(e[j])   ){
               myJoin = 'left'; // Si es una tabla que ve del multivaluelist aleshores els joins son left per que la consulta tingui sentit.
             }else{
@@ -195,7 +197,7 @@ export class OracleBuilderService extends QueryBuilderService {
 
 
   
-  public setJoins(joinTree: any[], joinType: string, valueListJoins: string[]) {
+  public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[]) {
 
     // Inicialización de variables
     const joinExists = new Set();
@@ -250,9 +252,9 @@ export class OracleBuilderService extends QueryBuilderService {
 
           if (aliasTargetTable) {
               targetJoin = `"${aliasTargetTable}"."${targetColumn}"`;
-              joinStr = `${joinType} JOIN "${targetTable}" "${aliasTargetTable}" ON  ${sourceJoin}  =  ${targetJoin} `;
+              joinStr = `${joinType} JOIN ${schema ? `"${schema}".` : ``}"${targetTable}" "${aliasTargetTable}" ON  ${sourceJoin}  =  ${targetJoin} `;
           } else {
-              joinStr = `${joinType} JOIN "${targetTable}" ON  ${sourceJoin} = ${targetJoin} `;
+              joinStr = `${joinType} JOIN ${schema ? `"${schema}".` : ``}"${targetTable}" ON  ${sourceJoin} = ${targetJoin} `;
           }
 
           // Si la join no se ha incluido ya, se añade al array
@@ -394,22 +396,26 @@ export class OracleBuilderService extends QueryBuilderService {
     const colname=this.getFilterColname(column);
     let colType = column.column_type;
 
+    if (filterObject.filter_dynamic == true) {
+      colType = 'dynamic';
+    }
+
     switch (this.setFilterType(filterObject.filter_type)) {
       case 0:
         if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
         if (filterObject.filter_type === 'like') {
           return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
         }
-        if (filterObject.filter_type === 'not_like') { 
+        if (filterObject.filter_type === 'not_like') {
           filterObject.filter_type = 'not like'
           return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
-        }   
+        }
         return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
       case 1:
         if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
         return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:
-        return `${colname}  ${filterObject.filter_type} 
+        return `${colname}  ${filterObject.filter_type}
                         ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
       case 3:
         return `${colname} is not null`;
@@ -479,13 +485,13 @@ export class OracleBuilderService extends QueryBuilderService {
 
     /**
    * 
-   * @param column 
+   * @param column  
    * @returns coumn name in string mode for having. 
    */
     public getHavingColname(column: any){
       let colname:String ;
-      if( column.computed_column == 'no' ){
-        colname =   `\`${column.table_id}\`.\`${column.column_name}\`` ;
+      if ( ( column.computed_column == 'no' ) || ! column.hasOwnProperty('computed_column')  ) {
+        colname =   `"${column.table_id}"."${column.column_name}"` ;
       }else{
         if(column.column_type == 'numeric'){
           colname = `ROUND(  CAST( ${column.SQLexpression}  as NUMBER)  , ${column.minimumFractionDigits})`;
@@ -545,6 +551,7 @@ export class OracleBuilderService extends QueryBuilderService {
         case 'text': return `'${filter}'`;
         case 'html': return `'${filter}'`;
         case 'numeric': return filter;
+        case 'dynamic': return filter;
         case 'date': return `to_date('${filter}','YYYY-MM-DD')`
       }
     } else {
@@ -552,7 +559,7 @@ export class OracleBuilderService extends QueryBuilderService {
       filter.forEach(value => {
         const tail = columnType === 'date'
           ? `to_date('${value}','YYYY-MM-DD')`
-          : columnType === 'numeric' ? value : `'${String(value).replace(/'/g, "''")}'`;
+          : ['numeric', 'dynamic'].includes(columnType) ? value : `'${String(value).replace(/'/g, "''")}'`;
         str = str + tail + ','
       });
       return str.substring(0, str.length - 1);

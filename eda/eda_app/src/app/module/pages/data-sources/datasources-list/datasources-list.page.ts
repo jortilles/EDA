@@ -25,7 +25,7 @@ export class DataSourceListPage implements OnInit {
   sortConfig: { key: any; direction: 'asc' | 'desc' } | null = null;
 
   currentPage: number = 1;
-  itemsPerPage: number = 10;
+  itemsPerPage: number = 25;
 
   get filteredDataSources() {
     return [...this.dataSources]

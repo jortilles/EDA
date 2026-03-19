@@ -25,5 +25,4 @@ export * from './eda-input/eda-input.component';
 
 // Eda Nav && Side
 export { NavbarComponent } from './navbar/navbar.component';
-export { SidebarComponent } from './sidebar/sidebar.component';
 

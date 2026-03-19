@@ -48,6 +48,7 @@ import { DashboardPage } from 'app/module/pages/dashboard/dashboard.page';
 import { EdadynamicTextComponent } from '@eda/components/component.index';
 import { EdaTitlePanelComponent } from '@eda/components/component.index';
 import { PanelMenuModule } from 'primeng/panelmenu';
+import { ChartTypeSelectorDialogComponent } from './chart-type-selector-dialog/chart-type-selector-dialog.component';
 import { PromptComponent } from '@eda/components/prompt/prompt.component';
 
 // Panel Utils
@@ -100,6 +101,9 @@ const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass
 const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule];
 const STANDALONE_COMPONENTS = [
     EdaDialog2Component, WhatIfDialogComponent, EbpChatgptComponent,FilterMapperComponent, EdadynamicTextComponent,EdaTitlePanelComponent,
+    PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
+    DragDropComponent, ChartTypeSelectorDialogComponent,
+    IconComponent, FocusOnShowDirective
     PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent, 
     DragDropComponent, IconComponent, FocusOnShowDirective, PromptComponent
 ]
@@ -283,6 +287,7 @@ export class EdaBlankPanelComponent implements OnInit {
     // Dialog para el ChatGpt
     public isVisibleEbpChatGpt = false;
     public dataChatGpt: any;
+    public chartTypeSelectorController: EdaDialogController;
 
     // for the drag-drop component
     public axes:any[]=[]; 
@@ -293,6 +298,9 @@ export class EdaBlankPanelComponent implements OnInit {
 
     private route = inject(ActivatedRoute);
     private formBuilder = inject(UntypedFormBuilder);
+
+    public editingTitle: boolean = false;
+
 
     constructor(
         public queryBuilder: QueryBuilderService,
@@ -2041,8 +2049,13 @@ private assignLevels(nodes: any[], level = 0): void {
         this.filtredColumns = _.cloneDeep(filteredColumns)
     }
 
-    trackByTable(index: number, table: any): any {
-        return table.value;
-    }
+trackByTable(index: number, table: any): any {
+    return table.value;
+}
+
+startEditTitle() {
+    this.editingTitle = true;
+    this.titleClick=true;
+}
 
 }

@@ -1,7 +1,6 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { SettingsService, StyleProviderService } from '@eda/services/service.index';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { SidebarComponent } from '@eda/shared/components/shared-components.index';
 
 declare function init_plugins();
 
@@ -9,7 +8,7 @@ declare function init_plugins();
     selector: 'app-pages',
     templateUrl: './pages.component.html',
     standalone: true,
-    imports: [RouterModule, SidebarComponent],
+    imports: [RouterModule],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class PagesComponent implements OnInit {

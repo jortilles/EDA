@@ -1,4 +1,4 @@
-import { MongoDBBuilderService } from '../../query-builder/qb-systems/mongodb-builder-service';
+import { MongoDBBuilderService } from '../../query-builder/qb-systems/mongodb-builder.service';
 import { AbstractConnection } from '../abstract-connection';
 import { MongoClient } from "mongodb";
 import _ from 'lodash';
