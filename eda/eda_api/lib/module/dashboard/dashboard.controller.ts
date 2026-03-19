@@ -619,6 +619,17 @@ export class DashboardController {
     }
   }
 
+  static async getIsPublic(req: Request, res: Response, next: NextFunction) {
+    try {
+      const dashboard = await Dashboard.findById(req.params.id, 'config.visible').exec();
+      if (!dashboard) return next(new HttpException(404, 'Dashboard not found'));
+      const isAccessible = dashboard.config.visible ===  'shared';
+      return res.status(200).json({ isAccessible });
+    } catch (err) {
+      return next(new HttpException(500, 'Error checking dashboard visibility'));
+    }
+  }
+
   static async create(req: Request, res: Response, next: NextFunction) {
     try {
       const body = req.body
@@ -1518,13 +1529,13 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
   );
 
   return res.status(200).json(output);
-      
+
     } catch (err) {
       console.log(err)
-      next(new HttpException(500, 'Error quering database'))
+      next(new HttpException(500, DashboardController.parseQueryError(err)))
     }
   }
-  
+
 
   static async setupPrediction(output: any, body: any, myQuery: any, connection?: any, dataModelObject?: any, user?: any){
     // Leer configuración de predicción del body
@@ -1931,10 +1942,35 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
 
     } catch (err) {
       console.log(err)
-      next(new HttpException(500, 'Error quering database'))
+      next(new HttpException(500, DashboardController.parseQueryError(err)))
     }
   }
 
+
+  /**
+   * Parses a DB error to produce a descriptive message when a column is not found.
+   * Supports PostgreSQL, MySQL, SQL Server, SQLite and Oracle error formats.
+   */
+  static parseQueryError(err: any, fields?: any[]): string {
+    console.log('holaaaa ', err)
+    const errMsg: string = err?.toString() || '';
+    const patterns: RegExp[] = [
+      /column ["']?([^"'\s,]+)["']? does not exist/i,          // PostgreSQL
+      /Unknown column ['"]?([^'"]+)['"]? in/i,                  // MySQL
+      /Invalid column name ['"]?([^'"]+)['"]?/i,                // SQL Server
+      /no such column:\s*([^\s,]+)/i,                           // SQLite
+      /ORA-00904:\s*["']?([^"'\s:]+)["']?/i,                   // Oracle
+    ];
+
+    for (const pattern of patterns) {
+      const match = err.match(pattern);
+      if (match) {
+        return `El campo ${match[1]} está incluido en el informe pero no está disponible`;
+      }else{
+        return 'esto no esta encontrando que es';
+      }
+    }
+  }
 
   /*
   Check if a value is not numeric
@@ -2053,7 +2089,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
       return res.status(200).json(output)
     } catch (err) {
       console.log(err)
-      next(new HttpException(500, 'Error quering database'))
+      next(new HttpException(500, DashboardController.parseQueryError(err)))
     }
   }
 

@@ -342,4 +342,6 @@ router.put('/:id/updateSpecific', authGuard, DashboardController.updateSpecific)
 
 router.post('/:id/clone', authGuard, DashboardController.clone);
 
+router.get('/:id/visibility', DashboardController.getIsPublic);
+
 export default router;
