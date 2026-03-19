@@ -18,16 +18,6 @@
             [title]="item.label || ''" (mousedown)="menuCommand(item, $event)" >
             <eda-icon style="pointer-events: none;" [name]="item.icon" class="h-5" />
           </button>
-          <!-- <a 
-            [routerLink]="item.path"
-            class="flex h-12 w-12 items-center justify-center text-center rounded-lg transition-colors hover:bg-muted hover:text-[#00B0BA]"
-            [ngClass]="{
-              'text-white bg-[#00B0BA]': item.isActive,
-              'bg-muted': !item.isActive
-            }"
-          >
-            <eda-icon [name]="item.icon" class="h-5" />
-          </a> -->
   
           <!-- Submenu Overlay -->
           @if (item.showOverlay && item.items?.length) {
