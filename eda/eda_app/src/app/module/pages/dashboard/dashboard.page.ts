@@ -132,6 +132,10 @@ export class DashboardPage implements OnInit {
   public clickFiltersEnabled: boolean = true;
   public stopRefresh: boolean = false;
 
+  // Custom data portal
+  public showCustomizeDialog: boolean = false;
+  public applyCustomizeHTML: string = '';
+  public finalCustimizeHTML: string = '';
 
   //Filter control variables
   public lastFilters: any[] = [];
@@ -475,21 +479,21 @@ export class DashboardPage implements OnInit {
     }
   }
 
-      public canIedit(): boolean {
-        let result: boolean = false;
-        result = this.userService.isAdmin;
-        // si no es admin...
-        if (!result) {
-            if (this.dashboard.onlyIcanEdit) {
-                result = this.userService.user._id === this.dashboard.user
-            } else {
-                // Usuari anonim no pot editar
-                result = this.userService.user._id !== '135792467811111111111112';
-            }
-
+  public canIedit(): boolean {
+    let result: boolean = false;
+    result = this.userService.isAdmin;
+    // si no es admin...
+    if (!result) {
+        if (this.dashboard.onlyIcanEdit) {
+            result = this.userService.user._id === this.dashboard.user
+        } else {
+            // Usuari anonim no pot editar
+            result = this.userService.user._id !== '135792467811111111111112';
         }
-        return result;
+
     }
+    return result;
+  }
 
   onRemovePanel(panel: any) {
     this.panels.splice(_.findIndex(this.panels, { id: panel }), 1);
@@ -1270,9 +1274,27 @@ public startCountdown(seconds: number) {
           this.hideWheel =true;
         }
         if (params['cnproperties']) {
-          this.connectionProperties = JSON.parse(decodeURIComponent(params['cnproperties'])); 
+          this.connectionProperties = JSON.parse(decodeURIComponent(params['cnproperties']));
         }
-        
+        if (params['MODEEDIT'] === 'TRUE') {
+          const user = localStorage.getItem('user');
+          console.log('hola');
+          console.log(user);
+          console.log('hola');
+          console.log(this.canIedit());
+
+          // restriccions = condicions per poder mostrar panell de edicio
+          const restriccions = true;
+          if(restriccions){
+            // si el usuario puede customizar, le mostraremos el panel de customización
+            this.showCustomizeDialog = true;
+            // setTimeout(() => {
+            //   this.showCustomizeDialog = false;
+            // },3000);
+          }
+
+        }
+
       } catch(e){
         console.error('getUrlParams: '+ e);
       }
