@@ -4,9 +4,9 @@
     <!-- Menú gris -->
     <div class="bg-gray-100">
       <div class="px-3 pt-3">
-        <div class="flex items-center gap-1 min-w-0">
+        <div class="flex items-center gap-1 min-w-0 h-8">
           @if(!editingTitle) {
-            <h4 class="text-lg font-bold truncate flex-1 min-w-0">{{ dashboard.title }}</h4>
+            <h4 class="text-lg font-bold truncate flex-1 min-w-0 leading-8">{{ dashboard.title }}</h4>
             @if(!isReadOnly) {
               <button (click)="renameDashboard()" class="shrink-0 rounded-md p-1 cursor-pointer hover:bg-gray-200">
                 <eda-icon class="pointer-events-none" name="pencil"></eda-icon>
@@ -15,7 +15,7 @@
           } @else {
             <input
               autofocusOnShow
-              class="text-lg font-bold flex-1 min-w-0 bg-gray-100 border border-[#00bcd4] rounded-md px-2 focus:outline-none"
+              class="text-lg font-bold flex-1 min-w-0 h-full bg-gray-100 ring-1 ring-[#00bcd4] rounded-md px-2 focus:outline-none"
               [(ngModel)]="editableTitle"
               (keydown.enter)="saveDashboardTitle()"
               (keydown.escape)="cancelDashboardTitle()"
