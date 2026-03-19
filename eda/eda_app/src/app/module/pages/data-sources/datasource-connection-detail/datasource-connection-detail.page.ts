@@ -67,8 +67,9 @@ export class DataSourceConnectionDetailPage implements OnInit {
   ];
 
   public sidOptions: any[] = [
-    { label: 'SID', value: 1 },
-    { label: 'SERVICE_NAME', value: 0 }
+    { label: 'SERVICE_NAME', value: 0 },
+    { label: 'SID', value: 1 }
+
   ];
 
   public bigQueryProjectId: any;
