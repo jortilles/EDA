@@ -377,6 +377,8 @@ export const PanelOptions = {
     const isEditable = ebp.isEditable(); 
     const isRemovable = ebp.isRemovable();
     const isImported = ebp.isImported;
+    const userId = JSON.parse(localStorage.getItem('user'))?._id;
+    const isRoOrAnonimus = userId === '135792467811111111111112' || localStorage.getItem('isObserver') === 'true';
     const type = ebp.getChartType();
 
     const isLinkableChart =
@@ -387,23 +389,23 @@ export const PanelOptions = {
     // Declaramos cada opción en orden visual deseado
     const MENU_DEFINITION = [
       {
-        show: isEditable,
+        show: !isRoOrAnonimus && isEditable,
         item: () => PanelOptions.editQuery(ebp),
       },
       {
-        show: JSON.parse(localStorage.getItem('user'))._id  !== '135792467811111111111112',
+        show: !isRoOrAnonimus,
         item: () => PanelOptions.editChart(ebp),
       },
       {
-        show: isEditable && !!ebp.panel.content,
+        show: !isRoOrAnonimus && isEditable && !!ebp.panel.content,
         item: () => PanelOptions.changeChartType(ebp),
       },
       {
-        show: isEditable && isImported,
+        show: !isRoOrAnonimus && isEditable && isImported,
         item: () => PanelOptions.filtersMapper(ebp),
       },
       {
-        show: isEditable && isLinkableChart,
+        show: !isRoOrAnonimus && isEditable && isLinkableChart,
         item: () => PanelOptions.linkPanel(ebp),
       },
       {
@@ -411,19 +413,19 @@ export const PanelOptions = {
         item: () => PanelOptions.exportExcel(ebp),
       },
       {
-        show: isEditable,
+        show: !isRoOrAnonimus && isEditable,
         item: () => PanelOptions.duplicatePanel(ebp),
       },
       {
-        show: true,
+        show: !isRoOrAnonimus,
         item: () => PanelOptions.toggleLock(ebp),
       },
       {
-        show: isEditable && ebp.availableChatGpt,
+        show: !isRoOrAnonimus && isEditable && ebp.availableChatGpt,
         item: () => PanelOptions.askToIA(ebp),
       },
       {
-        show: isRemovable,
+        show: !isRoOrAnonimus && isRemovable,
         item: () => PanelOptions.deletePanel(ebp),
       },
     ];

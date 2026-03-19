@@ -49,6 +49,7 @@ export class MainLeftSidebarComponent {
     this.groupService.getGroupsByUser().subscribe(groups => {
       this.grups = groups;
       this.isObserver = groups.some((g: any) => g.name === 'EDA_RO' && g.users.includes(user._id));
+      localStorage.setItem('isObserver', String(this.isObserver));
       this.assignNavItems();
     });
 
