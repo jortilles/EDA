@@ -104,16 +104,18 @@
             </button>
           }
           @if(!isObserver){
-            @if (!isEditing || editingReportId !== report._id) {
-            <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="renameReport(report)"
-              title="Editar nombre" i18n-title="@@renameReportTooltip">
-              <eda-icon name="pencil" class="mr-1"></eda-icon>
-            </button>
-            }@else {
-            <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="handleEditing('done', report)"
-              title="Confirmar nombre" i18n-title="@@confirmRenameTooltip">
-              <eda-icon name="check" class="mr-1"></eda-icon>
-            </button>
+            @if(canEditReport(report)){
+              @if (!isEditing || editingReportId !== report._id) {
+              <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="renameReport(report)"
+                title="Editar nombre" i18n-title="@@renameReportTooltip">
+                <eda-icon name="pencil" class="mr-1"></eda-icon>
+              </button>
+              }@else {
+              <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="handleEditing('done', report)"
+                title="Confirmar nombre" i18n-title="@@confirmRenameTooltip">
+                <eda-icon name="check" class="mr-1"></eda-icon>
+              </button>
+              }
             }
   
             <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="cloneReport(report)"

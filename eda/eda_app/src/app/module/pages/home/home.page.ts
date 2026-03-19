@@ -182,6 +182,11 @@ public handleTagSelect(option: any): void {
     this.createDashboardService.open();
   }
 
+  public canEditReport(report: any): boolean {
+    if (!report.onlyIcanEdit) return true;
+    return report.config.author === this.userService.user?.name || this.userService.isAdmin;
+  }
+
   // Esta función actualiza los reports, y es llamada cada vez que se modifican los tags
   public filterByTags() { 
     const tags = sessionStorage.getItem("activeTags") || "[]";
