@@ -5775,6 +5775,46 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>{0} items seleccionados</source>
         <target>{0} wybranych elementów</target>
       </trans-unit>
+      <trans-unit id="copyPublicLinkTooltip">
+        <source>Copiar enlace público</source>
+        <target>Kopiuj publiczny link</target>
+      </trans-unit>
+      <trans-unit id="copyPublicLinkSuccessTitle">
+        <source>¡Enlace copiado!</source>
+        <target>Link skopiowany!</target>
+      </trans-unit>
+      <trans-unit id="copyPublicLinkSuccessText">
+        <source>El enlace público ha sido copiado al portapapeles.</source>
+        <target>Publiczny link został skopiowany do schowka.</target>
+      </trans-unit>
+      <trans-unit id="acceptBtn">
+        <source>Aceptar</source>
+        <target>Akceptuj</target>
+      </trans-unit>
+      <trans-unit id="renameReportTooltip">
+        <source>Editar nombre</source>
+        <target>Edytuj nazwę</target>
+      </trans-unit>
+      <trans-unit id="confirmRenameTooltip">
+        <source>Confirmar nombre</source>
+        <target>Potwierdź nazwę</target>
+      </trans-unit>
+      <trans-unit id="duplicateReportTooltip">
+        <source>Duplicar informe</source>
+        <target>Duplikuj raport</target>
+      </trans-unit>
+      <trans-unit id="deleteReportTooltip">
+        <source>Eliminar informe</source>
+        <target>Usuń raport</target>
+      </trans-unit>
+      <trans-unit id="emailAlreadyExistsTitle">
+        <source>Email en uso</source>
+        <target>Email w użyciu</target>
+      </trans-unit>
+      <trans-unit id="emailAlreadyExistsMsg">
+        <source>Ya existe un usuario con este correo electrónico.</source>
+        <target>Użytkownik z tym adresem e-mail już istnieje.</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>
