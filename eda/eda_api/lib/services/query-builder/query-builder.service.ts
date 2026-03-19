@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import Group from '../../module/admin/groups/model/group.model';
 class TreeNode {
     public value: string;
     public child: Array<TreeNode>
@@ -37,6 +38,8 @@ export abstract class QueryBuilderService {
     public usercode: string;
     public groups: Array<string> = [];
     public permissions: any[];
+    public roleNames: string[] = [];
+    private _roleNamesPromise: Promise<void>;
 
     constructor(queryTODO: any, dataModel: any, user: any) {
         this.queryTODO = queryTODO;
@@ -45,6 +48,15 @@ export abstract class QueryBuilderService {
         this.usercode = user.email;
         this.groups = user.role;
         this.tables = dataModel.ds.model.tables;
+
+        if (user.role && user.role.length > 0) {
+            this._roleNamesPromise = Group.find({ _id: { $in: user.role } })
+                .then(groups => { this.roleNames = groups.map(g => g.name); })
+                .catch(() => {});
+        } else {
+            this._roleNamesPromise = Promise.resolve();
+        }
+
     }
 
     abstract getFilters(filters, type: string);
@@ -64,7 +76,9 @@ export abstract class QueryBuilderService {
     abstract analizedQuery(params: EdaQueryParams): any[];
 
 
-    public builder() {
+    public async builder() {
+
+        await this._roleNamesPromise;
 
         let graph = this.buildGraph();
         /* Agafem els noms de les taules, origen i destí (és arbitrari), les columnes i el tipus d'agregació per construïr la consulta */
@@ -553,6 +567,7 @@ export abstract class QueryBuilderService {
 
 
     public getPermissions(modelPermissions, modelTables, originTable, query) {
+
         //console.log('recursively.... SE BUSCA EN LAS TABLAS RELACIONADAS');
         let filters = [];
         let columns = [];
@@ -575,9 +590,14 @@ export abstract class QueryBuilderService {
             permissions.forEach(permission => {
                 found = relatedTables.findIndex((t: any) => t.table_name === permission.table);
                 if (found >= 0) {
+
                     if(permission.dynamic){
-                            permission.value[0] =  permission.value[0].toString().replace("EDA_USER", this.usercode) 
+                            /** para permisos de usuario */
+                            permission.value[0] =  permission.value[0].toString().replace("'EDA_USER'", `'${this.usercode}'` ).replace("EDA_USER",  `'${this.usercode}'` ) ;
+                            /** para permisos de grupo */
+                            permission.value[0] =  permission.value[0].toString().replace("EDA_ROLES", this.roleNames.map(r => `'${r}'`).join(',')  ) ;         
                     }
+
                     
                     if( permission.value[0] == '(x => None)' && 
                      columns.findIndex((t: any) => t.table_name.split('.')[0] === permission.table && t.column_name === permission.column ) < 0    
@@ -669,15 +689,20 @@ export abstract class QueryBuilderService {
                 case 'users':
                     if (permission.users.includes(this.user) && !permission.global) {
                         permissions.push(permission);
+                    }else if(permission.dynamic == true && permission.users.length == 0){
+                        permissions.push(permission); // si son permisos dinámicos para todos
                     }
                     break;
                 case 'groups':
                     this.groups.forEach(group => {
                         if (permission.groups.includes(group) && !permission.global) {
                             permissions.push(permission)
+                        }else if(permission.dynamic == true && permission.groups.length == 0){
+                            permissions.push(permission); // si son permisos dinámicos para todos
                         }
                     })
             }
+
         });
         return permissions;
     }

@@ -1,4 +1,4 @@
-import { EdaQueryParams, QueryBuilderService } from './../query-builder.service';
+import { EdaQueryParams, QueryBuilderService } from '../query-builder.service';
 import * as _ from 'lodash';
 
 
@@ -399,6 +399,10 @@ export class BigQueryBuilderService extends QueryBuilderService {
     }
     const colname=this.getFilterColname(column);
     let colType = column.column_type;
+    
+    if( filterObject.filter_dynamic == true){
+        colType = 'dynamic';
+    }
 
     switch (this.setFilterType(filterObject.filter_type)) {
       case 0:
@@ -553,6 +557,7 @@ public getHavingColname(column: any){
         case 'text': return `'${filter}'`;
         case 'html': return `'${filter}'`;
         case 'numeric': return filter;
+        case 'dynamic': return filter;
         case 'date': return `PARSE_DATE( '%Y-%m-%d','${filter}')`
       }
     } else {
@@ -560,7 +565,7 @@ public getHavingColname(column: any){
       filter.forEach(value => {
         const tail = columnType === 'date'
           ? `PARSE_DATE( '%Y-%m-%d','${value}')`
-          : columnType === 'numeric' ? value : `'${String(value).replace(/'/g, "\\'")}'`;
+          :  ['numeric', 'dynamic'].includes(columnType) ? value : `'${String(value).replace(/'/g, "\\'")}'`;
         str = str + tail + ','
       });
       return str.substring(0, str.length - 1);

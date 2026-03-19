@@ -132,7 +132,6 @@ menuCommand(item: any, event: MouseEvent) {
   const urlTree = this.router.createUrlTree([path]);
   const relativeUrl = this.router.serializeUrl(urlTree);
 
-
   // Si es clic medio y hay ruta, abrir en nueva pestaña
   if (event.button === 1 && path) {
     event.preventDefault();

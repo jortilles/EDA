@@ -178,6 +178,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     // DB types[]
     public tiposBD: SelectItem[] = [
         { label: 'Postgres', value: 'postgres' },
+        { label: 'ClickHouse', value: 'clickhouse' },
         { label: 'Sql Server', value: 'sqlserver' },
         { label: 'MySQL', value: 'mysql' },
         { label: 'Vertica', value: 'vertica' },
@@ -309,9 +310,9 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                         label: 'ELIMINAR', command: () => {
                             const elem = this.permissionModel.getContextMenuRow()._id.reduce((a, b)=> a + b) ;
                             const users = this.modelPanel.metadata.model_granted_roles.filter(r => r.users !== undefined)
-                            .filter(r => r.users.reduce((a, b)=> a + b) !== elem);
+                            .filter(r => { if(r.users.length !== 0) r.users.reduce((a, b)=> a + b) !== elem;})
                             const groups = this.modelPanel.metadata.model_granted_roles.filter(r => r.groups !== undefined)
-                            .filter(r => r.groups.reduce((a, b)=> a + b) !== elem);
+                            .filter(r =>{ if(r.groups.length !== 0) r.groups.reduce((a, b)=> a + b) !== elem});
                             let tmpPermissions = [];
                             groups.forEach(group => tmpPermissions.push(group));
                             users.forEach(user => tmpPermissions.push(user));

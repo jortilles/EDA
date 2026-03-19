@@ -1,5 +1,5 @@
 import { createClient } from '@clickhouse/client';
-import { ClickHouseBuilderService } from '../../query-builder/qb-systems/clickhouse-builder-service';
+import { ClickHouseBuilderService } from '../../query-builder/qb-systems/clickhouse-builder.service';
 import { AbstractConnection } from '../abstract-connection';
 import { AggregationTypes } from '../../../module/global/model/aggregation-types';
 
@@ -12,18 +12,19 @@ export class ClickHouseConnection extends AbstractConnection {
     private queryBuilder: ClickHouseBuilderService;
 
     private getDatabase(): string {
-        return this.config.database || this.config.schema || 'default';
+        return this.config.database || this.config.schema || '';
     }
 
     async getclient(): Promise<any> {
         try {
             const protocol = this.config.ssl ? 'https' : 'http';
             const port = this.config.port || 8123;
+            const database = this.getDatabase();
             const client = createClient({
-                host: `${protocol}://${this.config.host}:${port}`,
+                url: `${protocol}://${this.config.host}:${port}`,
                 username: this.config.user,
                 password: this.config.password,
-                database: this.getDatabase(),
+                ...(database ? { database } : {}),
             });
             return client;
         } catch (err) {
@@ -50,8 +51,13 @@ export class ClickHouseConnection extends AbstractConnection {
     async generateDataModel(optimize: number, filter: string): Promise<any> {
         const client = await this.getclient();
         try {
-            const database = this.getDatabase();
+            const configDatabase = this.getDatabase();
             const tables = [];
+
+            // Resolve the actual database name (uses ClickHouse's currentDatabase() if none configured)
+            const dbResult = await client.query({ query: `SELECT currentDatabase() AS db`, format: 'JSONEachRow' });
+            const dbRows: Array<{ db: string }> = await dbResult.json();
+            const database = configDatabase || dbRows[0]?.db || 'default';
 
             const filters = filter ? filter.split(',') : [];
             let filterStr = '';
