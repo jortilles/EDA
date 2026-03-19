@@ -5,6 +5,8 @@ import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { UserService } from '@eda/services/service.index';
 import { LogoSidebar } from '@eda/configs/index';
 import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
+import { GroupService } from '@eda/services/api/group.service';
+
 interface NavItem {
   path?: string;
   icon?: string;
@@ -27,22 +29,28 @@ export class MainLeftSidebarComponent {
   private userService = inject(UserService);
   public logoSidebar = LogoSidebar;
   private createDashboardService = inject(CreateDashboardService);
+  private groupService = inject(GroupService);
   public queryParams: any = {};
   public hideWheel: boolean = false;
   public panelMode: boolean = false;
   private route = inject(ActivatedRoute);
   navItems: NavItem[] = [];
+
+  // Control de anonim y eda_RO
   public isAnonim: boolean;
+  public grups: Array<any> = [];
+  public isObserver: boolean = false;
+
+
   ngOnInit(): void {
     const user = JSON.parse(localStorage.getItem('user'));
     this.isAnonim = user._id === '135792467811111111111112';
-    const interval = setInterval(() => {
-      // Si lo datos del usuario han cargado
-      if (this.userService.isAdmin !== undefined) {
-        this.assignNavItems();
-        clearInterval(interval);
-      }
-    }, 100); // revisa cada 100ms
+
+    this.groupService.getGroupsByUser().subscribe(groups => {
+      this.grups = groups;
+      this.isObserver = groups.some((g: any) => g.name === 'EDA_RO' && g.users.includes(user._id));
+      this.assignNavItems();
+    });
 
     this.getUrlParams();
   }
@@ -71,7 +79,7 @@ export class MainLeftSidebarComponent {
     ];
 
 
-  // Seccion adicional crear
+  // Seccion adicional crear (oculto para EDA_RO)
   const plusSection: NavItem = {
     icon: 'plus',
     items: [
@@ -79,38 +87,38 @@ export class MainLeftSidebarComponent {
     ]
   };
 
-    if (this.userService.isAdmin || this.userService.isDataSourceCreator) {
-      plusSection.items.push({ path: '/admin/data-source/new', label: $localize`:@@addDatasource: Crear fuente de datos`, icon: 'plus' });
-    }
+  if (this.userService.isAdmin || this.userService.isDataSourceCreator) {
+    plusSection.items.push({ path: '/admin/data-source/new', label: $localize`:@@addDatasource: Crear fuente de datos`, icon: 'plus' });
+  }
     
 
-    const moleculaSection: NavItem = {
-      icon: 'molecula',
-      items: []
-    };
+  const moleculaSection: NavItem = {
+    icon: 'molecula',
+    items: []
+  };
 
-    if (this.userService.isAdmin) {
-      moleculaSection.items.unshift(
-        { path: '/admin/users', label: $localize`:@@adminUsers:Gestión de usuarios`, icon: 'users' },
-        { path: '/admin/groups', label: $localize`:@@adminGroupsTitle:Gestión de grupos`, icon: 'rectangle-group' },
-        { path: '/admin/data-source', label: $localize`:@@adminDatasource:Gestión de fuentes de datos`, icon: 'rectangle-group' },
-        { path: '/admin/models/import-export', label: $localize`:@@dataExportImport:Data Export/Import`, icon: 'arrow-down-on-square-stack' },
-        { path: '/admin/email-settings', label: $localize`:@@adminEmail:Gestión de email`, icon: 'at-symbol' },
-        { path: '/logs', label: $localize`:@@logsManagement:Gestión de logs`, icon: 'clipboard-document-list' },
-      );
-    } else if (this.userService.isDataSourceCreator) {
-      moleculaSection.items.unshift(
-        { path: '/admin/data-source', label: $localize`:@@adminDatasource:Gestión de fuentes de datos`, icon: 'rectangle-group' },
-      );
-    }
+  if (this.userService.isAdmin) {
+    moleculaSection.items.unshift(
+      { path: '/admin/users', label: $localize`:@@adminUsers:Gestión de usuarios`, icon: 'users' },
+      { path: '/admin/groups', label: $localize`:@@adminGroupsTitle:Gestión de grupos`, icon: 'rectangle-group' },
+      { path: '/admin/data-source', label: $localize`:@@adminDatasource:Gestión de fuentes de datos`, icon: 'rectangle-group' },
+      { path: '/admin/models/import-export', label: $localize`:@@dataExportImport:Data Export/Import`, icon: 'arrow-down-on-square-stack' },
+      { path: '/admin/email-settings', label: $localize`:@@adminEmail:Gestión de email`, icon: 'at-symbol' },
+      { path: '/logs', label: $localize`:@@logsManagement:Gestión de logs`, icon: 'clipboard-document-list' },
+    );
+  } else if (this.userService.isDataSourceCreator) {
+    moleculaSection.items.unshift(
+      { path: '/admin/data-source', label: $localize`:@@adminDatasource:Gestión de fuentes de datos`, icon: 'rectangle-group' },
+    );
+  }
 
-    // Asignamos las secciones al navItems
-    this.navItems = [
-      ...baseNav.slice(0, 1), // home
-      plusSection,             // create menu
-      ...((this.userService.isAdmin || this.userService.isDataSourceCreator) ? [moleculaSection] : []), // gestion
-      ...baseNav.slice(1),    // settings, about, logout
-    ];
+  // Asignamos las secciones al navItems
+  this.navItems = [
+    ...baseNav.slice(0, 1), // home
+    ...(!this.isObserver ? [plusSection] : []), // create menu (oculto para EDA_RO)
+    ...((this.userService.isAdmin || this.userService.isDataSourceCreator) ? [moleculaSection] : []), // gestion
+    ...baseNav.slice(1),    // settings, about, logout
+  ];
   }
 
   showOverlay(item: NavItem) {
