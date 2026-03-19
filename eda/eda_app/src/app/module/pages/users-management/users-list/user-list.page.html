@@ -12,21 +12,21 @@
   </div>
 
   <div class="border rounded-lg overflow-hidden">
-    <table class="w-full">
+    <table class="w-full table-fixed">
       <thead class="bg-gray-100">
         <tr>
-          <th (click)="handleSort('email')" class="text-left cursor-pointer p-3" i18n="@@email">Correo</th>
-          <th (click)="handleSort('name')" class="text-left cursor-pointer p-3" i18n="@@name">Nombre</th>
-          <th (click)="handleSort('role')" class="text-left cursor-pointer p-3" i18n="@@group">Grupo</th>
-          <th class="p-3 text-right" i18n="@@actions">Acciones</th>
+          <th (click)="handleSort('email')" class="text-left cursor-pointer p-3 w-[35%]" i18n="@@email">Correo</th>
+          <th (click)="handleSort('name')" class="text-left cursor-pointer p-3 w-[25%]" i18n="@@name">Nombre</th>
+          <th (click)="handleSort('role')" class="text-left cursor-pointer p-3 w-[25%]" i18n="@@group">Grupo</th>
+          <th class="p-3 text-right w-[15%]" i18n="@@actions">Acciones</th>
         </tr>
       </thead>
       <tbody class="font-semibold">
         @for (user of paginatedUsers; track user._id) {
         <tr>
-          <td class="p-3">{{ user.email }}</td>
-          <td class="p-3">{{ user.name }}</td>
-          <td class="p-3">
+          <td class="p-3 truncate">{{ user.email }}</td>
+          <td class="p-3 truncate">{{ user.name }}</td>
+          <td class="p-3 truncate">
             <span [ngClass]="{'bg-[#00BFB3] text-white px-2 py-1 rounded': user.role === 'EDA_ADMIN'}">
               {{ user.role }}
             </span>

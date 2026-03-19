@@ -12,19 +12,19 @@
   </div>
 
   <div class="border rounded-lg overflow-hidden">
-    <table class="w-full">
+    <table class="w-full table-fixed">
       <thead class="bg-gray-100">
         <tr>
-          <th (click)="handleSort('name')" class="text-left cursor-pointer p-3" i18n="@@name">Nombre</th>
-          <th (click)="handleSort('role')" class="text-left cursor-pointer p-3" i18n="@@role">Rol</th>
-          <th class="p-3 text-right" i18n="@@actions">Acciones</th>
+          <th (click)="handleSort('name')" class="text-left cursor-pointer p-3 w-[50%]" i18n="@@name">Nombre</th>
+          <th (click)="handleSort('role')" class="text-left cursor-pointer p-3 w-[35%]" i18n="@@role">Rol</th>
+          <th class="p-3 text-right w-[15%]" i18n="@@actions">Acciones</th>
         </tr>
       </thead>
       <tbody class="font-semibold">
         @for (group of paginatedGroups; track group._id) {
         <tr>
-          <td class="p-3">{{ group.name }}</td>
-          <td class="p-3">
+          <td class="p-3 truncate">{{ group.name }}</td>
+          <td class="p-3 truncate">
             <span [ngClass]="{'bg-[#00BFB3] text-white px-2 py-1 rounded': group.role === 'EDA_ADMIN_ROLE'}">
               {{ group.role }}
             </span>
