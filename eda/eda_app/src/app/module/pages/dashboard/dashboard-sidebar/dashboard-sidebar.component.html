@@ -4,14 +4,23 @@
     <!-- Menú gris -->
     <div class="bg-gray-100">
       <div class="px-3 pt-3">
-        <div class="flex justify-between">
-          <h4 class="text-lg font-bold" id="dashboardName">
-            {{ dashboard.title }}
-          </h4>
-          @if( !isReadOnly ){
-          <button (click)="renameDashboard()" class="rounded-md p-2 cursor-pointer hover:bg-muted h-fit">
-            <eda-icon class="pointer-events-none" name="pencil"></eda-icon>
-          </button>
+        <div class="flex items-center gap-1 min-w-0">
+          @if(!editingTitle) {
+            <h4 class="text-lg font-bold truncate flex-1 min-w-0">{{ dashboard.title }}</h4>
+            @if(!isReadOnly) {
+              <button (click)="renameDashboard()" class="shrink-0 rounded-md p-1 cursor-pointer hover:bg-gray-200">
+                <eda-icon class="pointer-events-none" name="pencil"></eda-icon>
+              </button>
+            }
+          } @else {
+            <input
+              autofocusOnShow
+              class="text-lg font-bold flex-1 min-w-0 bg-gray-100 border border-[#00bcd4] rounded-md px-2 focus:outline-none"
+              [(ngModel)]="editableTitle"
+              (keydown.enter)="saveDashboardTitle()"
+              (keydown.escape)="cancelDashboardTitle()"
+              (focusout)="saveDashboardTitle()"
+            />
           }
         </div>
         <hr class="my-2" />

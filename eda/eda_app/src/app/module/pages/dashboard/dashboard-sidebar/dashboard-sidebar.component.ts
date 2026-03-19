@@ -1,4 +1,5 @@
 import { Component, EventEmitter, inject, Input, Output, ViewChild } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 import { OverlayModule } from "primeng/overlay";
 import { OverlayPanel, OverlayPanelModule } from "primeng/overlaypanel";
 import { DashboardPage } from "../dashboard.page";
@@ -12,6 +13,7 @@ import Swal from 'sweetalert2';
 import { DashboardSidebarService } from "@eda/services/shared/dashboard-sidebar.service";
 import { ExposeMethod } from "@eda/shared/decorators/expose-method.decorator";
 import { IconComponent } from "../../../../shared/components/icon/icon.component";
+import { FocusOnShowDirective } from "@eda/shared/directives/autofocus.directive";
 import * as _ from 'lodash';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 
@@ -41,10 +43,12 @@ const STANDALONE_COMPONENTS = [
 ] 
 
 const ANGULAR_MODULES = [
-  OverlayModule, 
+  OverlayModule,
   OverlayPanelModule,
-  IconComponent, 
-  DragDropModule
+  IconComponent,
+  DragDropModule,
+  FormsModule,
+  FocusOnShowDirective
 ]
 
 @Component({
@@ -109,6 +113,8 @@ export class DashboardSidebarComponent {
 
   isImportPanelVisible = false;
   isDependentFiltersVisible = false;
+  editingTitle: boolean = false;
+  editableTitle: string = '';
 
   sidebarItems: any[] = [];
 
@@ -780,37 +786,20 @@ export class DashboardSidebarComponent {
   }
 
   public renameDashboard() {
-    let elementName = document.getElementById('dashboardName');
+    this.editableTitle = this.dashboard.title;
+    this.editingTitle = true;
+  }
 
-    // Crear input
-    const input = document.createElement("input");
-    input.type = "text";
-    input.value = elementName.innerText;
+  public saveDashboardTitle() {
+    if (this.editableTitle?.trim()) {
+      this.dashboard.title = this.editableTitle.trim();
+      this.dashboardService._notSaved.next(true);
+    }
+    this.editingTitle = false;
+  }
 
-    // remplazamos el elemento por un input 
-    elementName.replaceWith(input);
-
-    // Foco del titulo
-    input.focus();
-
-    // Cuando se pierde el foco, volver a texto
-    input.addEventListener("blur", () => {
-      const p = document.createElement("p");
-      p.id = elementName.id;
-      p.innerText = input.value;
-      input.replaceWith(p);
-      p.className = 'italic font-slate-50'; // Estilo que le asignamos para diferenciar que no esta guardado
-      this.dashboard.title = p.innerText
-    });
-
-    // La tecla Enter quita el focus del titulo
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault(); // evita saltos de línea
-        input.blur();
-      }
-    });
-    this.dashboardService._notSaved.next(true);
+  public cancelDashboardTitle() {
+    this.editingTitle = false;
   }
 
 
