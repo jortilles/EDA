@@ -7,7 +7,7 @@
       <p-tabPanel header="Gradiente de color" i18n-header="@@gradientTab">
         <div class="chart-color-selection mt-4" style="min-width: 250px;">
           <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
-            <span class="font-medium">Min</span>
+            <span class="font-medium" i18n="@@gradientMin">Min</span>
             <div class="flex items-center gap-2">
               <input class="text-md text-right text-slate-500 font-mono"[(ngModel)]="min">
               <p-colorPicker [(ngModel)]="min" [disabled]="noStyle" format="hex" appendTo="body" />
@@ -17,7 +17,7 @@
 
         <div class="chart-color-selection mt-4" style="min-width: 250px;">
           <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
-            <span class="font-medium">Max</span>
+            <span class="font-medium" i18n="@@gradientMax">Max</span>
             <div class="flex items-center gap-2">
               <input class="text-md text-right text-slate-500 font-mono"[(ngModel)]="max">
               <p-colorPicker [(ngModel)]="max" [disabled]="noStyle" format="hex" appendTo="body" />

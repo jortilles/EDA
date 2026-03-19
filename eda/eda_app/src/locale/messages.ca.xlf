@@ -6021,6 +6021,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>es menor que:</source>
         <target>és menor que:</target>
       </trans-unit>
+      <trans-unit id="gradientMin">
+        <source>Min</source>
+        <target>Min</target>
+      </trans-unit>
+      <trans-unit id="gradientMax">
+        <source>Max</source>
+        <target>Màx</target>
+      </trans-unit>
       <trans-unit id="mandatoryFilter">
         <source>¿Filtro obligatorio?</source>
         <target>Filtre obligatori?</target>

@@ -5659,6 +5659,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>es menor que:</source>
         <target>jest mniejsze niż:</target>
       </trans-unit>
+      <trans-unit id="gradientMin">
+        <source>Min</source>
+        <target>Min</target>
+      </trans-unit>
+      <trans-unit id="gradientMax">
+        <source>Max</source>
+        <target>Maks</target>
+      </trans-unit>
       <trans-unit id="mandatoryFilter">
         <source>¿Filtro obligatorio?</source>
         <target>Filtr obowiązkowy?</target>

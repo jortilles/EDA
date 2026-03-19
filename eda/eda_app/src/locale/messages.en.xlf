@@ -5827,6 +5827,14 @@ OR<ph id="5"/>
   <source>es menor que:</source>
   <target>is less than:</target>
 </trans-unit>
+<trans-unit id="gradientMin">
+  <source>Min</source>
+  <target>Min</target>
+</trans-unit>
+<trans-unit id="gradientMax">
+  <source>Max</source>
+  <target>Max</target>
+</trans-unit>
 <trans-unit id="mandatoryFilter">
   <source>¿Filtro obligatorio?</source>
   <target>Mandatory filter?</target>

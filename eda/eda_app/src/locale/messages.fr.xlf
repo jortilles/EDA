@@ -5994,6 +5994,14 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>es menor que:</source>
         <target>est inférieur à:</target>
       </trans-unit>
+      <trans-unit id="gradientMin">
+        <source>Min</source>
+        <target>Min</target>
+      </trans-unit>
+      <trans-unit id="gradientMax">
+        <source>Max</source>
+        <target>Max</target>
+      </trans-unit>
       <trans-unit id="mandatoryFilter">
         <source>¿Filtro obligatorio?</source>
         <target>Filtre obligatoire?</target>

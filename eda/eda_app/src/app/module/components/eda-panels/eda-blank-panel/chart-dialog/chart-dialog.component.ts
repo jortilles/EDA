@@ -834,7 +834,7 @@ export class ChartDialogComponent {
 
     onTabChange(event: any): void {
 
-        if ((this.chart.chartType as string) !== 'bar') return;
+        if (!['bar', 'horizontalBar'].includes(this.chart.chartType as string)) return;
         this.coloredBarsActive = event.index === 1;
         this.handleInputColor();
     }
