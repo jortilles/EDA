@@ -96,25 +96,30 @@
         </div>
         <div class="flex items-center justify-end">
           @if(report.config.visible=='shared' || report.config.visible=='open' ){
-            <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="copyReport(report)">
-              <eda-icon name="export" class="mr-1"></eda-icon>
+            <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="copyReport(report)"
+              title="Copiar enlace público" i18n-title="@@copyPublicLinkTooltip">
+              <eda-icon name="link" size="sm" class="mr-1"></eda-icon>
             </button>
           }
 
           @if (!isEditing || editingReportId !== report._id) {
-          <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="renameReport(report)">
+          <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="renameReport(report)"
+            title="Editar nombre" i18n-title="@@renameReportTooltip">
             <eda-icon name="pencil" class="mr-1"></eda-icon>
           </button>
           }@else {
-          <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="handleEditing('done', report)">
+          <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="handleEditing('done', report)"
+            title="Confirmar nombre" i18n-title="@@confirmRenameTooltip">
             <eda-icon name="check" class="mr-1"></eda-icon>
           </button>
           }
 
-          <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="cloneReport(report)">
+          <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="cloneReport(report)"
+            title="Duplicar informe" i18n-title="@@duplicateReportTooltip">
             <eda-icon name="document-duplicated"></eda-icon>
           </button>
-          <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="deleteReport(report)">
+          <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="deleteReport(report)"
+            title="Eliminar informe" i18n-title="@@deleteReportTooltip">
             <eda-icon name="bin"></eda-icon>
           </button>
         </div>

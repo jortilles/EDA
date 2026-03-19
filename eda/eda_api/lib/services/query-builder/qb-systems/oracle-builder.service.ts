@@ -14,28 +14,30 @@ export class OracleBuilderService extends QueryBuilderService {
       .map(table => { return table.query ? this.cleanViewString(table.query) : table.name })[0];
     let myQuery = `SELECT ${columns.join(', ')} \n `;
     let vista = tables.filter(table => table.name === origin).map(table => { return table.query ? true: false })[0];
-    if( vista ){  // Es una vista. NO la pongo entre comillas
-      myQuery += `FROM ${o}`; 
+    if( vista ){  // Es una vista a nivel de modelo. NO la pongo entre comillas
+      myQuery += `FROM ${o}`;
     }else{  // Es una tabla. La pongo entre comillas
-      myQuery += `FROM  "${o}"`;
+      myQuery += schema ? `FROM  "${schema}"."${o}"` : `FROM  "${o}"`;
     }
 
 
 
     /** SI ES UN SELECT PARA UN SELECTOR  VOLDRÉ VALORS ÚNICS */
        if (forSelector === true) {
-        myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM "${o}"`;
+        myQuery = schema
+          ? `SELECT DISTINCT ${columns.join(', ')} \nFROM "${schema}"."${o}"`
+          : `SELECT DISTINCT ${columns.join(', ')} \nFROM "${o}"`;
       }
   
            
       let joinString: any[];
       let alias: any;
       if (this.queryTODO.joined) {
-        const responseJoins = this.setJoins(joinTree, joinType, valueListJoins);
+        const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
         joinString = responseJoins.joinString;
         alias = responseJoins.aliasTables;
       } else {
-        joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins );
+        joinString = this.getJoins(joinTree, dest, tables, joinType, valueListJoins, schema);
       }
 
  
@@ -134,7 +136,7 @@ export class OracleBuilderService extends QueryBuilderService {
   }
 
 
-  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string, valueListJoins:Array<any>) {
+  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string, valueListJoins:Array<any>, schema?: string) {
 
     let joins = [];
     let joined = [];
@@ -158,7 +160,7 @@ export class OracleBuilderService extends QueryBuilderService {
 
           let joinColumns = this.findJoinColumns(e[j], e[i]);
           let t = tables.filter(table => table.name === e[j])
-            .map(table => { return table.query ? this.cleanViewString(table.query) : `"${table.name}"` })[0];
+            .map(table => { return table.query ? this.cleanViewString(table.query) : schema ? `"${schema}"."${table.name}"` : `"${table.name}"` })[0];
             if( valueListJoins.includes(e[j])   ){
               myJoin = 'left'; // Si es una tabla que ve del multivaluelist aleshores els joins son left per que la consulta tingui sentit.
             }else{
@@ -195,7 +197,7 @@ export class OracleBuilderService extends QueryBuilderService {
 
 
   
-  public setJoins(joinTree: any[], joinType: string, valueListJoins: string[]) {
+  public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[]) {
 
     // Inicialización de variables
     const joinExists = new Set();
@@ -250,9 +252,9 @@ export class OracleBuilderService extends QueryBuilderService {
 
           if (aliasTargetTable) {
               targetJoin = `"${aliasTargetTable}"."${targetColumn}"`;
-              joinStr = `${joinType} JOIN "${targetTable}" "${aliasTargetTable}" ON  ${sourceJoin}  =  ${targetJoin} `;
+              joinStr = `${joinType} JOIN ${schema ? `"${schema}".` : ``}"${targetTable}" "${aliasTargetTable}" ON  ${sourceJoin}  =  ${targetJoin} `;
           } else {
-              joinStr = `${joinType} JOIN "${targetTable}" ON  ${sourceJoin} = ${targetJoin} `;
+              joinStr = `${joinType} JOIN ${schema ? `"${schema}".` : ``}"${targetTable}" ON  ${sourceJoin} = ${targetJoin} `;
           }
 
           // Si la join no se ha incluido ya, se añade al array
