@@ -169,7 +169,7 @@
             </div>
             
             <!-- Activar Colores Únicos -->
-            @if (panelChartConfig.edaChart === 'bar' && queryNumericColumns.length === 1) {
+            @if ((panelChartConfig.edaChart === 'bar' || panelChartConfig.edaChart === 'horizontalBar') && queryNumericColumns.length === 1) {
               <div class="flex items-center justify-between">
                 <div class="space-y-0.5">
                   <div class="flex items-center gap-2">
@@ -274,7 +274,7 @@
       <div class="space-y-6 p-4 pt-0 bg-slate-50 rounded-md">
         <div class="space-y-4">
           <h1 i18n="@@colorsChartH6" class="p-dialog-title">Colores</h1>
-          @if (panelChartConfig.edaChart !== 'bar') {
+          @if (panelChartConfig.edaChart !== 'bar' && panelChartConfig.edaChart !== 'horizontalBar') {
             <div>
               <div class="grid gap-4 grid-rows-auto gap-6">
                 <div>
