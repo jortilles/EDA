@@ -58,6 +58,9 @@ export class PromptComponent implements OnInit, AfterViewInit {
     ngOnInit(): void {
         const tables = this.edaBlankPanel.tables
         this.initSchema(tables);
+
+        console.log('THISSSSSS: ', this);
+
     }
 
     initSchema(tables: any[]) {
@@ -140,11 +143,11 @@ export class PromptComponent implements OnInit, AfterViewInit {
                 const selectedFilters = resp.response.selectedFilters;
                 const filteredColumns = resp.response.filteredColumns;
                 
-                // console.log('----------- LLEGADA AL COMPONENTE -----------');
-                // console.log('--> currentQuery: ', currentQuery);
-                // console.log('--> principalTable: ', principalTable);
-                // console.log('--> selectedFilters: ', selectedFilters);
-                // console.log('--> filteredColumns: ', filteredColumns);
+                console.log('----------- LLEGADA AL COMPONENTE -----------');
+                console.log('--> currentQuery: ', currentQuery);
+                console.log('--> principalTable: ', principalTable);
+                console.log('--> selectedFilters: ', selectedFilters);
+                console.log('--> filteredColumns: ', filteredColumns);
 
                 // Capturamos el estado de resolución si el backend está esperando una elección del usuario
                 const responseType = resp.response.type;

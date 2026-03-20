@@ -20,6 +20,8 @@ export default class QueryResolver {
     /* ================================> INICIO TABLAS Y COLUMNAS <================================*/
     static getFields(tables: any[], data: any[]) {
 
+        console.log('tables: ', tables);
+
         let currentQuery: any[] = [];
 
         tables.forEach((t: any) => {
@@ -37,6 +39,7 @@ export default class QueryResolver {
                 const col = structuredClone(column);
 
                 col.table_id = table.table_name;
+                col.ordenation_type = c.ordenation_type; // Agregando la ordenación
 
                 if (col.column_type === 'numeric') {
                     const agg = col.aggregation_type.find((a: any) => a.value === 'sum');
