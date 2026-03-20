@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
+import { CustomHTMLService } from '@eda/services/api/customHTML.service';
 
 @Component({
   selector: 'app-customized-dashboard',
@@ -24,14 +25,23 @@ export class CustomizedDashboardComponent implements OnInit {
   public sidebarBgColor: string = '#96adb5';
   public previewBgColor: string = '#96adb5';
 
-  constructor(private sanitizer: DomSanitizer) {}
+  constructor(private sanitizer: DomSanitizer, private customHTMLService: CustomHTMLService) {}
 
   ngOnInit(): void {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     this.isAdmin = user?.role?.includes('135792467811111111111110') ?? false;
-    const saved = localStorage.getItem('customizedDashboardSidebarHtml');
-    this.sidebarHtml = saved ?? this._buildSidebarHtml();
-    this._applySidebarHtml(this.sidebarHtml);
+    this.customHTMLService.getByKey('customHTML').subscribe({
+      next: ({ value }) => {
+        console.log('[CustomizedDashboard] HTML cargado desde BD:', value);
+        this.sidebarHtml = value;
+        this._applySidebarHtml(this.sidebarHtml);
+      },
+      error: (err) => {
+        console.log('[CustomizedDashboard] No hay HTML guardado, usando el por defecto. Error:', err);
+        this.sidebarHtml = this._buildSidebarHtml();
+        this._applySidebarHtml(this.sidebarHtml);
+      }
+    });
   }
 
   changeSrc(href: string): void {
@@ -42,8 +52,10 @@ export class CustomizedDashboardComponent implements OnInit {
   }
 
   saveSidebar(): void {
-    localStorage.setItem('customizedDashboardSidebarHtml', this.sidebarHtml);
-    this.haveUnsavedChanges = false;
+    this.customHTMLService.upsert('customHTML', this.sidebarHtml).subscribe({
+      next: () => this.haveUnsavedChanges = false,
+      error: (err) => console.error('Error saving sidebar', err)
+    });
   }
 
   onDialogReset(): void {

@@ -13,6 +13,7 @@ import ThirdPartyRouter from './module/thirdParty/thirdParty.router';
 import ChatGptRouter from './module/chatgpt/chatgpt.router';
 import ArimaRouter from './module/predictions/predictions.router';
 import AuthRouter from './module/auth/auth.router';
+import CustomHTMLRouter from './module/customHTML/customHTML.router';
 
 const router = express.Router();
 
@@ -41,6 +42,8 @@ router.use('/chatgpt', ChatGptRouter);
 router.use('/arima', ArimaRouter);  
 
 router.use('/auth', AuthRouter);
+
+router.use('/customHTML', CustomHTMLRouter);
 
 /* ruta per documentació*/
 router.use("/api-docs", DocuRouter);
