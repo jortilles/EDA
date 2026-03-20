@@ -142,8 +142,10 @@ export class PromptComponent implements OnInit, AfterViewInit {
                 const principalTable = resp.response.principalTable;
                 const selectedFilters = resp.response.selectedFilters;
                 const filteredColumns = resp.response.filteredColumns;
+                const queryLimit = resp.response.queryLimit;
                 
                 console.log('----------- LLEGADA AL COMPONENTE -----------');
+                console.log('--> RESPUESTA COMPONENTE: ', resp);
                 console.log('--> currentQuery: ', currentQuery);
                 console.log('--> principalTable: ', principalTable);
                 console.log('--> selectedFilters: ', selectedFilters);
@@ -162,7 +164,7 @@ export class PromptComponent implements OnInit, AfterViewInit {
                     this.resolutionState = null;
                     if (currentQuery && currentQuery.length !== 0) {
                         this.newCurrentQuery.emit(currentQuery);
-                        this.principalTable.emit({principalTable, currentQuery});
+                        this.principalTable.emit({principalTable, currentQuery, queryLimit});
                         this.newSelectedFilters.emit({selectedFilters, filteredColumns});
                     }
                 }

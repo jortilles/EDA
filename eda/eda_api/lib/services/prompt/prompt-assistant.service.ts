@@ -176,12 +176,13 @@ export class PromptService {
             type: "function",
             name: "getFields",
             description: `
-            Returns an array of table objects with their corresponding columns.
+            Returns an array of table objects with their corresponding columns, and the query row limit.
             Rules:
             - Always return columns for the requested tables.
             - Use synonyms or context in the user query to match table and column names in the schema.
             - Never return an empty columns array.
             - Do not return duplicated columns for the same table.
+            - For the limit: extract it from patterns like "los 10 clientes" → 10, "top 5" → 5, "los 3 primeros" → 3, "el mejor/peor" → 1. Default is 5000 if no number is mentioned.
             - Example output:
             [
             {
@@ -199,6 +200,12 @@ export class PromptService {
             parameters: {
                 type: "object",
                 properties: {
+                    limit: {
+                        type: "number",
+                        minimum: 1,
+                        maximum: 10000,
+                        description: "Maximum number of rows to return. Extract from 'top N', 'los N', 'los N primeros/mejores/peores', 'dame N', etc. Default is 5000 if no number is mentioned."
+                    },
                     tables: {
                         type: "array",
                         description: "Array of tables. Each element must be an object with 'table' (string) and 'columns' (array of objects). You must check the schema",
@@ -238,7 +245,7 @@ export class PromptService {
                         }
                     }
                 },
-                required: ["tables"],
+                required: ["limit", "tables"],
                 additionalProperties: false
             },
             strict: true,
@@ -364,6 +371,7 @@ export class PromptService {
             principalTable: null,
             selectedFilters: [],
             filteredColumns: [],
+            queryLimit: 5000,
         };      
 
         if (toolGetFields) {
@@ -378,6 +386,7 @@ export class PromptService {
             }
 
             const tables = Array.isArray(args.tables) ? args.tables : [];
+            result.queryLimit = typeof args.limit === 'number' ? args.limit : 5000;
 
             if (tables.length === 0) {
                 return { output_text: 'No se encontraron tablas en la consulta. Por favor, especifica la tabla.', currentQuery: [], principalTable: null, selectedFilters: [] };

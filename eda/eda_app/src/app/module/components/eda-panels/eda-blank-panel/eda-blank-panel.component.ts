@@ -2028,7 +2028,9 @@ private assignLevels(nodes: any[], level = 0): void {
 
     principalTableUpdate(event: any) {
 
-        const {principalTable, currentQuery} = event
+        const {principalTable, currentQuery, queryLimit} = event
+
+        this.queryLimit = queryLimit;
 
         const rootTable = this.tables.find((table: any) => {
             return table.table_name === principalTable;
