@@ -596,9 +596,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
 
     setDbType() {
-
         this.modelPanel.connection.type = this.selectedTipoBD.value;
-        debugger;
         this.update();
     }
 
