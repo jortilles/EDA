@@ -7,12 +7,22 @@
         <div class="flex-1 overflow-hidden relative">
             <div [innerHTML]="safeSidebarHtml" class="h-full"></div>
             @if (isAdmin) {
-                <button
-                    class="absolute top-2 right-2 cursor-pointer"
-                    title="Editar sidebar"
-                    (click)="openEditDialog()">
-                    <eda-icon name="pencil" class="h-6 w-6 text-white opacity-70 hover:opacity-100" />
-                </button>
+                <div class="absolute top-2 right-2 flex flex-row items-center gap-2">
+                    @if (haveUnsavedChanges) {
+                        <button
+                            class="flex items-center gap-1.5 pl-2.5 pr-3 py-1 rounded-full text-xs font-semibold cursor-pointer
+                                   bg-white/20 text-white border border-white/40 backdrop-blur-sm
+                                   hover:bg-white/35 transition-colors"
+                            title="Guardar cambios"
+                            (click)="saveSidebar()">
+                            <eda-icon name="check" class="h-3.5 w-3.5" style="margin-top: -3px" />
+                            Guardar
+                        </button>
+                    }
+                    <button class="cursor-pointer" title="Editar sidebar" (click)="openEditDialog()">
+                        <eda-icon name="pencil" class="h-6 w-6 text-white opacity-70 hover:opacity-100" />
+                    </button>
+                </div>
             }
         </div>
 
@@ -42,14 +52,16 @@
         width="80vw"
         height="80vh"
         [overflow]="'hidden'"
+        [showReset]="true"
         (apply)="onDialogApply()"
-        (close)="onDialogClose()">
+        (close)="onDialogClose()"
+        (reset)="onDialogReset()">
 
-        <div content class="flex h-full">
+        <div content class="flex" style="height: calc(80vh - 130px)">
 
             <!-- Columna izquierda: HTML editable -->
             <div class="flex-1 flex flex-col p-4 border-r">
-                <p class="text-xs text-gray-500 mb-2 font-semibold">HTML del sidebar</p>
+                <h4 class="text-xs text-gray-500 mb-2 font-semibold">HTML del sidebar</h4>
                 <textarea
                     [(ngModel)]="editingHtml"
                     (ngModelChange)="onEditingHtmlChange($event)"

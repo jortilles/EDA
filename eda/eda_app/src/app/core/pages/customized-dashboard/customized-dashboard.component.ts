@@ -14,15 +14,14 @@ import { EdaDialog2Component } from '@eda/shared/components/shared-components.in
 export class CustomizedDashboardComponent implements OnInit {
   public isAdmin: boolean = false;
   public showEditDialog: boolean = false;
+  public haveUnsavedChanges: boolean = false;
 
   public sidebarHtml: string = '';
   public editingHtml: string = '';
   public safeEditingHtml: SafeHtml = '';
   public safeSidebarHtml: SafeHtml = '';
 
-  // Color extraído del HTML confirmado (para el footer del sidebar real)
   public sidebarBgColor: string = '#96adb5';
-  // Color extraído del HTML en edición (para el footer del preview)
   public previewBgColor: string = '#96adb5';
 
   constructor(private sanitizer: DomSanitizer) {}
@@ -30,9 +29,9 @@ export class CustomizedDashboardComponent implements OnInit {
   ngOnInit(): void {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     this.isAdmin = user?.role?.includes('135792467811111111111110') ?? false;
-    this.sidebarHtml = this._buildSidebarHtml();
-    this.safeSidebarHtml = this.sanitizer.bypassSecurityTrustHtml(this.sidebarHtml);
-    this.sidebarBgColor = this._extractBgColor(this.sidebarHtml);
+    const saved = localStorage.getItem('customizedDashboardSidebarHtml');
+    this.sidebarHtml = saved ?? this._buildSidebarHtml();
+    this._applySidebarHtml(this.sidebarHtml);
   }
 
   changeSrc(href: string): void {
@@ -42,12 +41,30 @@ export class CustomizedDashboardComponent implements OnInit {
     }
   }
 
+  saveSidebar(): void {
+    localStorage.setItem('customizedDashboardSidebarHtml', this.sidebarHtml);
+    this.haveUnsavedChanges = false;
+  }
+
+  onDialogReset(): void {
+    const original = this._buildSidebarHtml();
+    this.editingHtml = original;
+    this.safeEditingHtml = this.sanitizer.bypassSecurityTrustHtml(original);
+    this.previewBgColor = this._extractBgColor(original);
+  }
+
+  private _applySidebarHtml(html: string): void {
+    this.safeSidebarHtml = this.sanitizer.bypassSecurityTrustHtml(html);
+    this.sidebarBgColor = this._extractBgColor(html);
+  }
+
   openEditDialog(): void {
     this.editingHtml = this.sidebarHtml;
     this.safeEditingHtml = this.sanitizer.bypassSecurityTrustHtml(this.editingHtml);
     this.previewBgColor = this._extractBgColor(this.editingHtml);
     this.showEditDialog = true;
   }
+
 
   onEditingHtmlChange(value: string): void {
     this.safeEditingHtml = this.sanitizer.bypassSecurityTrustHtml(value);
@@ -61,8 +78,8 @@ export class CustomizedDashboardComponent implements OnInit {
 
   onDialogApply(): void {
     this.sidebarHtml = this.editingHtml;
-    this.safeSidebarHtml = this.sanitizer.bypassSecurityTrustHtml(this.sidebarHtml);
-    this.sidebarBgColor = this._extractBgColor(this.sidebarHtml);
+    this._applySidebarHtml(this.sidebarHtml);
+    this.haveUnsavedChanges = true;
     this.showEditDialog = false;
     this.editingHtml = '';
   }
