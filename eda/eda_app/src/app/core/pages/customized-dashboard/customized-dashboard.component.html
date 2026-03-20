@@ -1,38 +1,77 @@
 <div class="flex h-screen">
+
     <!-- Columna izquierda -->
-    <div class="flex pt-4 flex-col w-[15%] gap-4 bg-[#96adb5]">
-        <!-- Imagen superior -->
-        <div class="h-1/8 flex items-center justify-center">
-            <!-- img src="assets/images/datapolis.svg" alt="" -->
+    <div class="flex flex-col w-[15%] relative">
+
+        <!-- Contenido editable (incluye el fondo) -->
+        <div class="flex-1 overflow-hidden relative">
+            <div [innerHTML]="safeSidebarHtml" class="h-full"></div>
+            @if (isAdmin) {
+                <button
+                    class="absolute top-2 right-2 cursor-pointer"
+                    title="Editar sidebar"
+                    (click)="openEditDialog()">
+                    <eda-icon name="pencil" class="h-6 w-6 text-white opacity-70 hover:opacity-100" />
+                </button>
+            }
         </div>
 
-        <!-- Listado -->
-        <div class="h-6/8 p-2 overflow-auto">
-            <ul class="space-y-2 pl-[10%]">
-                @for (item of leftItems; track $index) {
-                    <li class="p-2 pt-0 pb-0 text-white font-bold">
-                        @if (item.isStarting) {
-                            <div class="flex items-center">
-                                <eda-icon [name]="item.icon" class="h-6" />
-                                <a (click)="changeSrc(item.href)" class="btn">{{ item.name }}</a>
-                            </div>
-                        }@else{
-                            <a  class="btn ml-[10%]">{{ item.name }}</a>
-                        }
-                    </li>
-                }
-
-                <!-- Agrega más items según necesites -->
-            </ul>
+        <!-- Footer fijo: no editable -->
+        <div [style.background-color]="sidebarBgColor">
+            <span class="pt-4 pb-2 pl-[10%] block text-white font-bold"> FET AMB </span>
+            <div class="pb-4 w-[80%] flex self-center justify-center mx-auto">
+                <img src="assets/images/Logo-edalitics.png" alt="">
+            </div>
         </div>
 
-        <span class="pt-6  pl-[10%] text-white font-bold"> FET AMB </span>
-        <div class="pb-4 h-1/8 w-[80%] flex self-center justify-center">
-            <img src="assets/images/Logo-edalitics.png"  alt="">
-        </div>
     </div>
 
+    <!-- Iframe -->
     <div class="flex-1 border">
-        <iframe src='https://demo.edalitics.com/es/#/public/6801ea526c2a8f2c431e9b28?panelMode=true' class="w-full h-full" id="showDashboard" frameborder="0"></iframe>
+        <iframe src='https://demo.edalitics.com/es/#/public/6801ea526c2a8f2c431e9b28?panelMode=true'
+            class="w-full h-full" id="showDashboard" frameborder="0"></iframe>
     </div>
+
 </div>
+
+<!-- Edit dialog (admin only) -->
+@if (showEditDialog) {
+    <eda-dialog2
+        [display]="showEditDialog"
+        header="Editar sidebar"
+        width="80vw"
+        height="80vh"
+        [overflow]="'hidden'"
+        (apply)="onDialogApply()"
+        (close)="onDialogClose()">
+
+        <div content class="flex h-full">
+
+            <!-- Columna izquierda: HTML editable -->
+            <div class="flex-1 flex flex-col p-4 border-r">
+                <p class="text-xs text-gray-500 mb-2 font-semibold">HTML del sidebar</p>
+                <textarea
+                    [(ngModel)]="editingHtml"
+                    (ngModelChange)="onEditingHtmlChange($event)"
+                    class="flex-1 w-full font-mono text-xs border rounded p-3 resize-none outline-none focus:ring-1 focus:ring-blue-300"
+                    spellcheck="false">
+                </textarea>
+            </div>
+
+            <!-- Columna derecha: preview en vivo -->
+            <div class="w-[220px] shrink-0 flex flex-col overflow-hidden">
+                <div class="flex-1 overflow-auto">
+                    <div [innerHTML]="safeEditingHtml" class="h-full"></div>
+                </div>
+                <!-- Footer no editable -->
+                <div [style.background-color]="previewBgColor">
+                    <span class="pt-3 pb-1 pl-[10%] block text-white text-xs font-bold">FET AMB</span>
+                    <div class="pb-3 flex justify-center">
+                        <img src="assets/images/Logo-edalitics.png" class="w-[70%]" alt="">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </eda-dialog2>
+}
