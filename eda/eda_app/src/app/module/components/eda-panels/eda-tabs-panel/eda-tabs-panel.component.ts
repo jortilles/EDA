@@ -166,6 +166,7 @@ export class EdaTabsPanelComponent implements OnInit {
                         });
                     }
                 }),
+                this._buildToggleLockItem(),
                 new EdaContextMenuItem({
                     label: $localize`:@@panelOptions4:Eliminar panel`,
                     icon: 'fa fa-trash',
@@ -176,6 +177,29 @@ export class EdaTabsPanelComponent implements OnInit {
                 })
             ]
         });
+    }
+
+    private _buildToggleLockItem(): EdaContextMenuItem {
+        const isLocked = () => (this.panel as any).dragEnabled === false;
+        const item = new EdaContextMenuItem({
+            label: isLocked() ? $localize`:@@panelOptionsUnlock:Desbloquear panel` : $localize`:@@panelOptionsLock:Bloquear panel`,
+            icon: isLocked() ? 'pi pi-lock' : 'pi pi-lock-open',
+            command: () => {
+                if (isLocked()) {
+                    (this.panel as any).dragEnabled = true;
+                    (this.panel as any).resizeEnabled = true;
+                    item.label = $localize`:@@panelOptionsLock:Bloquear panel`;
+                    item.icon = 'pi pi-lock-open';
+                } else {
+                    (this.panel as any).dragEnabled = false;
+                    (this.panel as any).resizeEnabled = false;
+                    item.label = $localize`:@@panelOptionsUnlock:Desbloquear panel`;
+                    item.icon = 'pi pi-lock';
+                }
+                this.inject.gridsterOptions?.api?.optionsChanged();
+            }
+        });
+        return item;
     }
 
     public removePanel(): void {

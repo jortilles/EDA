@@ -262,14 +262,16 @@ export class DashboardController {
       for (const dashboard of dashboards) {
         // Normalize legacy visibility values
         DashboardController.normalizeVisibility(dashboard);
-
         if (dashboard.config.visible === 'open') {
           const ds = dss.find(e => e._id == dashboard.config.ds._id);
-          dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
-          if (this.iCanSeeTheDashboard(req, ds) == true) {
-            publics.push(dashboard);
+          if( ds ){
+              dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+              if (this.iCanSeeTheDashboard(req, ds) == true) {
+                publics.push(dashboard);
+              }
+          }else{
+            console.log('Unable to show the dashboard because i cant find the dataource' + dashboard )
           }
-
         }
       }
 
@@ -297,6 +299,7 @@ export class DashboardController {
       }
 
     } catch (err) {
+      console.log(err);
       throw new HttpException(400, 'Error loading public dashboards')
     }
   }
@@ -344,6 +347,7 @@ export class DashboardController {
         return sharedTags;
       }
     } catch (err) {
+      console.log(err);
       throw new HttpException(400, 'Error loading shared dashboards')
     }
   }
@@ -455,6 +459,7 @@ export class DashboardController {
 
 
     } catch (err) {
+      console.log(err);
       throw new HttpException(400, 'Error loading dashboards for admin')
     }
   }
@@ -569,6 +574,7 @@ export class DashboardController {
       }
 
     } catch (err) {
+      console.log(err);
       next(err)
     }
   }
@@ -626,6 +632,7 @@ export class DashboardController {
       const isAccessible = dashboard.config.visible ===  'shared';
       return res.status(200).json({ isAccessible });
     } catch (err) {
+      console.log(err);
       return next(new HttpException(500, 'Error checking dashboard visibility'));
     }
   }
@@ -650,6 +657,7 @@ export class DashboardController {
 
       return res.status(201).json({ ok: true, dashboard })
     } catch (err) {
+      console.log(err);
       return new HttpException(400, 'Some error ocurred while creating the dashboard')
     }
   }
@@ -692,11 +700,12 @@ export class DashboardController {
           return (new HttpException(500, 'Error updating dashboard'))
         }
       } catch (error) {
-
+        console.log(error);
         return (new HttpException(500, 'Error searching the dashboard'))
       }
 
     } catch (error) {
+      console.log(error);
       return (new HttpException(500, 'Error updating dashboard'))
     }
   }
@@ -744,6 +753,7 @@ export class DashboardController {
       return res.status(200).json({ ok: true, dashboard });
 
     } catch (err) {
+      console.log(err);
       return next(
         new HttpException(
           400,
@@ -767,6 +777,7 @@ export class DashboardController {
       return res.status(200).json({ ok: true, dashboard });
 
     } catch (err) {
+      console.log(err);
       return next(new HttpException(500, 'Error removing dashboard'));
     }
   }

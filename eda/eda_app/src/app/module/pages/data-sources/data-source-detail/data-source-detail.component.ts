@@ -190,7 +190,14 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         { label: 'Excel', value: 'excel'},
         { label: 'Csv', value: 'csv'}
     ];
+
+    public SID_Types: SelectItem[] = [
+        { label: 'SID', value: "0" },
+        { label: 'SERVICE_NAME', value: "1" }
+    ]
+
     public selectedTipoBD: SelectItem;
+    public selectedSID: SelectItem;
 
     // table permissions
     public permissions: Array<any>;
@@ -354,39 +361,40 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-      this.carregarPanels();
-              this.items = [{
-            label: 'Options',
-            items: [{
-                label: 'Update',
-                icon: 'pi pi-refresh',
-                command: () => {
-                    //this.update();
+        this.carregarPanels();
+        this.items = [
+            {
+                label: 'Options',
+                items: [{
+                    label: 'Update',
+                    icon: 'pi pi-refresh',
+                    command: () => {
+                        //this.update();
+                    }
+                },
+                {
+                    label: 'Delete',
+                    icon: 'pi pi-times',
+                    command: () => {
+                        // this.delete();
+                    }
                 }
+                ]
             },
             {
-                label: 'Delete',
-                icon: 'pi pi-times',
-                command: () => {
-                    // this.delete();
+                label: 'Navigate',
+                items: [{
+                    label: 'Angular Website',
+                    icon: 'pi pi-external-link',
+                    url: 'http://angular.io'
+                },
+                {
+                    label: 'Router',
+                    icon: 'pi pi-upload',
+                    routerLink: '/fileupload'
                 }
+                ]
             }
-            ]
-        },
-        {
-            label: 'Navigate',
-            items: [{
-                label: 'Angular Website',
-                icon: 'pi pi-external-link',
-                url: 'http://angular.io'
-            },
-            {
-                label: 'Router',
-                icon: 'pi pi-upload',
-                routerLink: '/fileupload'
-            }
-            ]
-        }
         ];
     }
 
@@ -520,8 +528,12 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             modelPanel => {
                 this.modelPanel = modelPanel;
                 this.selectedTipoBD = this.tiposBD.filter(type => type?.value === modelPanel.connection?.type)[0];
+
+                // selección del SID
+                this.selectedSID = this.SID_Types.find(type => type?.value === this.modelPanel.connection?.sid); 
             }, err => this.alertService.addError(err)
         );
+
 
     }
 
@@ -584,7 +596,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
 
     setDbType() {
-
         this.modelPanel.connection.type = this.selectedTipoBD.value;
         this.update();
     }
@@ -645,6 +656,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     checkConection() {
         this.spinnerService.on();
         let connection = this.modelPanel.connection;
+        
         let id = this.dataModelService.model_id;
         this.dataModelService.testStoredConnection(connection, id).subscribe(
             res => { this.alertService.addSuccess($localize`:@@EstablishedConnections:Conexión establecida`); this.spinnerService.off() },
