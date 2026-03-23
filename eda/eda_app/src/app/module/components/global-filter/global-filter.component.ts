@@ -80,6 +80,7 @@ export class GlobalFilterComponent implements OnInit {
     private tooltipHideTimeout: any;
     // flag para ver ultimo panel
     private lastPanel: any;
+    private isDropdownOpen: boolean = false;
 
     public autoCompleteValues: string[];
     public filterTimeout: any;
@@ -956,9 +957,15 @@ export class GlobalFilterComponent implements OnInit {
         this.setGlobalFilterItems(filter);
     }
 
+    public setDropdownOpen(value: boolean): void {
+        this.isDropdownOpen = value;
+    }
+
     // Method to show the filter tooltip
     public showFilterTooltip(event: MouseEvent, op: any, filter?: any): void {
-    // If the filter doesn't have selected values, the tooltip won't be shown    
+    // si el dropdown esta abierto no se muestra el tooltip
+        if (this.isDropdownOpen) return;
+    // If the filter doesn't have selected values, the tooltip won't be shown
         if (filter && (!filter.selectedItems || filter.selectedItems.length === 0)) return;
     // If there is some active timeout to hide the tooltip, it will be cleared 
         if (this.tooltipHideTimeout && this.lastPanel === filter.id) {
