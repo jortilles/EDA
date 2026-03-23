@@ -283,6 +283,7 @@ export class DashboardPage implements OnInit {
       this.applyToAllfilter = dashboard.config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
       this.globalFilter?.initOrderDependentFilters(dashboard.config.orderDependentFilters || []); // Filtros dependientes
       this.globalFilter?.initGlobalFilters(dashboard.config.filters || []);// Filtres del dashboard
+      //this.globalFilter?.initGlobalFilters( this.checkFiltersVisibility( dashboard.config.filters , res.datasource.model.tables ) ||[]);// Filtres del dashboard
       this.initPanels(dashboard);
       this.sortPanelsForMobile();
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
@@ -736,6 +737,43 @@ export class DashboardPage implements OnInit {
     } catch (error) {
       console.error('Error creando filtro:', error);
     }
+  }
+
+  
+/**
+ * Comprueba la configuración de seguridad de los filtros y pone la columna a invisible si el filtro no es visible para el usuario por motivos de filtro de seguridad
+ * @param filters - recibe el array de filtros del informe
+ * @param tables - recibe el array de tablas del modelo.
+ * @returns  - el array de filtros del informe informando cual es oculto por la seguridad
+ */
+    private checkFiltersVisibility( filters, tables){
+        if(filters && filters.length >0 ){
+            filters.forEach(  (f) => {
+        /*SDA CUSTOM*/ // Check if filter is designed in EDA2 mode (tree mode)
+        /*SDA CUSTOM*/ if (f.selectedColumn && f.selectedTable) {
+                f.selectedColumn.visible =  (
+                    ( tables.filter((t)=> t.table_name == f.selectedTable.table_name)[0]?.visible  == true )    &&
+                    ( tables.filter((t)=> t.table_name == f.selectedTable.table_name)[0]?.columns.filter( (c)=>c.column_name == f.selectedColumn.column_name )[0]?.visible  == true )
+                                            )
+          /*SDA CUSTOM*/ // Check if the column is not visible and is not admin then limit hide side bar functionality
+          if (f.selectedColumn.visible == false && !this.userService.isAdmin) {
+           // this.notDataAllowed = true;
+          }
+        /*SDA CUSTOM*/ }
+        /*SDA CUSTOM*/ // if selectedColumn is not defined, the filter is designed in EDA mode
+        /*SDA CUSTOM*/ else {
+        /*SDA CUSTOM*/   f.column.value.visible = (
+        /*SDA CUSTOM*/     (tables.filter((t) => t.table_name == f.table.value)[0]?.visible == true) &&
+        /*SDA CUSTOM*/     (tables.filter((t) => t.table_name == f.table.value)[0]?.columns.filter((c) => c.column_name == f.column.value.column_name)[0]?.visible == true)
+        /*SDA CUSTOM*/   )
+        /*SDA CUSTOM*/   // Check if the column is not visible and is not admin then limit hide side bar functionality
+        /*SDA CUSTOM*/   if (f.column.value.visible == false && !this.userService.isAdmin) {
+        /*SDA CUSTOM*/    // this.notDataAllowed = true;
+        /*SDA CUSTOM*/   }
+        /*SDA CUSTOM*/ }
+      })
+    }
+        return filters;
   }
 
 
