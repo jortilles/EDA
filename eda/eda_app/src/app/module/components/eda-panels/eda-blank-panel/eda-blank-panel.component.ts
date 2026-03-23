@@ -1673,8 +1673,29 @@ public tableNodeExpand(event: any): void {
 
     public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table, true);
 
-    public removeColumn = (c: Column, list?: string, event?: Event) => PanelInteractionUtils.removeColumn(this, c, list);
+    public removeColumn = (c: Column, list?: string) => {
+        // Conditions to check if we can delete the column
+        const isNotRootColumn = !!c?.joins?.length;
+        const rootColumnElements = this.currentQuery.filter(col => !col?.joins?.length).length;
+        const currentQueryLength = this.currentQuery.length;
 
+        // We just proceed if it is not the last column of the root table
+        if (isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
+            // We check if when deleting a field it has a filter at selectedFilters
+            if (this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name)) {
+                if (this.globalFilters.length !== 0) {
+                    this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+                }
+                this.globalFilters = []; // resets the values ​​because one or more filters were deleted
+            }
+            PanelInteractionUtils.removeColumn(this, c, list);
+        }
+        else {
+            // We stop the event propagation to not open the attribute panel
+            event.stopPropagation();
+            this.alertService.addError($localize`:@@cannotRemoveLastColumn:No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.`);
+        }
+    }
     public getOptionDescription = (value: string): string => EbpUtils.getOptionDescription(value);
 
     public getOptionIcon = (value: string): string => EbpUtils.getOptionIcon(value);

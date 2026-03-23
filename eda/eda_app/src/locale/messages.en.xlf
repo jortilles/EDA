@@ -5270,6 +5270,11 @@ Once configured you can invoke it whenever you want from the button.</target>
 </trans-unit>
 
 
+<trans-unit id="cannotRemoveLastColumn">
+<source>No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.</source>
+<target>Cannot remove all columns from the root table without removing the dependent columns.</target>
+</trans-unit>
+
 <trans-unit id="removeColumnGlobalFilter">
 <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
 <target>The column can not be removed because it has a linked filter</target>
