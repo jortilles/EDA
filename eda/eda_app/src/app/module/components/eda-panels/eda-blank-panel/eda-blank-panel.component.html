@@ -70,12 +70,12 @@
   <eda-dialog2 [display]="display_v.page_dialog" width="95vw" [ngStyle]="panelContent" [overflow]="'hidden'" height="100vh">
 
     <!-- Header -->
-    <div header class="w-full flex items-center justify-between px-2 py-2">
+    <div header class="w-full flex items-center justify-between px-2 py-0 xl:py-2">
       <div class="flex items-center">
-        <div class="p-2">
+        <div class="p-1 md:p-2">
           @if (!titleClick) {
-            <div class="w-full flex items-start justify-between px-2 py-2 gap-x-4">
-              <h2 class="text-lg font-semibold">
+            <div class="w-full flex items-start justify-between px-1 py-1 md:px-2 md:py-2 gap-x-4">
+              <h2 class="text-lg  font-semibold">
                 {{panel.title.trim().length > 0 ? panel.title : '\uD83D\uDD89'}}
               </h2>
               <button (click)="startEditTitle()" class="rounded-md  cursor-pointer hover:bg-muted h-fit">
@@ -107,7 +107,7 @@
       <div class="flex-1 relative ">
 
         <!-- Tabs -->
-        <div class="flex mb-4 space-x-4 pl-3">
+        <div class="flex mb-4 md:mb-1 space-x-4 pl-3">
           <h3 
             (click)="indextab = 0" 
             i18n="@@vistaSeleccionador"
@@ -401,9 +401,9 @@
 
                   <!-- Asistente con Inteligencia Artificial => Cuando el currentQuery es cero -->
                   @if(currentQuery.length === 0) {
-                    <div class="grid grid-cols-1  border rounded-lg bg-gray-50 min-h-[30vh] overflow-y-auto p-2">
+                    <div class="grid grid-cols-1  border rounded-lg bg-gray-50 pt-4 min-h-[30vh] overflow-y-auto p-2">
+
                         <div class=" ml-3 p-2">
-                          <h3 class="text-base font-semibold mb-4" i18n="@@FaltaAgregarElValor">¿En qué puedo ayudarte?</h3>
                           <Prompt 
                             [(messages)]="promptMessages" 
                             [edaBlankPanel]="this" 
@@ -743,7 +743,6 @@
                       <div class="grid grid-cols-1  border rounded-lg bg-gray-50 min-h-[30vh] overflow-y-auto p-2">
 
                           <div class=" ml-3 p-2">
-                            <h3 class="text-base font-semibold mb-4" i18n="@@FaltaAgregarElValor">¿En qué puedo ayudarte?</h3>
                             <Prompt 
                               [(messages)]="promptMessages" 
                               [edaBlankPanel]="this" 

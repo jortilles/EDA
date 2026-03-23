@@ -6194,8 +6194,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Ja existeix un usuari amb aquest correu electrònic.</target>
       </trans-unit>
       <trans-unit id="assistantTitle">
-        <source>Consulta: </source>
-        <target>Consulta: </target>
+        <source>Pregunta en lenguaje natural: </source>
+        <target>Pregunta en llenguatge natural: </target>
       </trans-unit>
       <trans-unit id="AIManagement" datatype="html">
         <source>Gestión del asistente</source>

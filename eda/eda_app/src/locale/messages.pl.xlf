@@ -5828,8 +5828,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Użytkownik z tym adresem e-mail już istnieje.</target>
       </trans-unit>
       <trans-unit id="assistantTitle">
-        <source>Consulta: </source>
-        <target>Zapytanie: </target>
+        <source>Pregunta en lenguaje natural:</source>
+        <target>Zapytaj w języku naturalnym:</target>
       </trans-unit>
       <trans-unit id="AIManagement" datatype="html">
         <source>Gestión del asistente</source>

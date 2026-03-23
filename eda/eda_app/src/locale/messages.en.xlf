@@ -5916,8 +5916,8 @@ OR<ph id="5"/>
   <target>A user with this email address already exists.</target>
 </trans-unit>
 <trans-unit id="assistantTitle">
-  <source>Consulta: </source>
-  <target>Query: </target>
+  <source>Pregunta en lenguaje natural: </source>
+  <target>Ask in natural language: </target>
 </trans-unit>
 <trans-unit id="AIManagement" datatype="html">
   <source>Gestión del asistente</source>

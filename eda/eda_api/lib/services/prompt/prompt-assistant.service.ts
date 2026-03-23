@@ -345,9 +345,9 @@ export class PromptService {
         const toolGetFields: any = response.output?.find((tool: any) => tool.type === "function_call" && tool.name === "getFields");
         const toolGetFilters: any = response.output?.find((tool: any) => tool.type === "function_call" && tool.name === "getFilters");
 
-        console.log('toolGetAssistantResponse ::::::::::::::::::::::: ', toolGetAssistantResponse);
-        console.log('toolGetFields ::::::::::::::::::::::: ', toolGetFields);
-        console.log('toolGetFilters ::::::::::::::::::::::: ', toolGetFilters);
+        //console.log('toolGetAssistantResponse ::::::::::::::::::::::: ', toolGetAssistantResponse);
+        //console.log('toolGetFields ::::::::::::::::::::::: ', toolGetFields);
+        //console.log('toolGetFilters ::::::::::::::::::::::: ', toolGetFilters);
 
         // Filtro que permite respuesta amable del asistente al usuario
         if (toolGetAssistantResponse) {
