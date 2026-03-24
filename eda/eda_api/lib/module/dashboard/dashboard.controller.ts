@@ -2014,7 +2014,6 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
    * Supports PostgreSQL, MySQL, SQL Server, SQLite and Oracle error formats.
    */
   static parseQueryError(err: any, fields?: any[]): string {
-    console.log('holaaaa ', err)
     const errMsg: string = err?.toString() || '';
     const patterns: RegExp[] = [
       /column ["']?([^"'\s,]+)["']? does not exist/i,          // PostgreSQL
@@ -2025,7 +2024,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
     ];
 
     for (const pattern of patterns) {
-      const match = err.match(pattern);
+      const match = (err.message || String(err)).match(pattern);
       if (match) {
         return `El campo ${match[1]} está incluido en el informe pero no está disponible`;
       }else{
