@@ -680,7 +680,7 @@ export class DashboardController {
     try {
       const dashboard = await Dashboard.findById(req.params.id, 'config.visible').exec();
       if (!dashboard) return next(new HttpException(404, 'Dashboard not found'));
-      const isAccessible = dashboard.config.visible ===  'shared';
+      const isAccessible = dashboard.config.visible ===  'shared' || dashboard.config.visible ===  'public';
       return res.status(200).json({ isAccessible });
     } catch (err) {
       console.log(err);
@@ -2014,7 +2014,6 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
    * Supports PostgreSQL, MySQL, SQL Server, SQLite and Oracle error formats.
    */
   static parseQueryError(err: any, fields?: any[]): string {
-    console.log('holaaaa ', err)
     const errMsg: string = err?.toString() || '';
     const patterns: RegExp[] = [
       /column ["']?([^"'\s,]+)["']? does not exist/i,          // PostgreSQL
@@ -2025,7 +2024,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
     ];
 
     for (const pattern of patterns) {
-      const match = err.match(pattern);
+      const match = (err.message || String(err)).match(pattern);
       if (match) {
         return `El campo ${match[1]} está incluido en el informe pero no está disponible`;
       }else{

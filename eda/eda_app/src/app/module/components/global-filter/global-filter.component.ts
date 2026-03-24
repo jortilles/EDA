@@ -61,9 +61,7 @@ export class GlobalFilterComponent implements OnInit {
     public orderDependentFilters: any[] = [];
     loading: boolean = true;
     placeholderText = this.loading ? $localize`:@@Cargando:Cargando...` : '';
-
     public filterController: EdaDialogController;
-
     public hideFilters: boolean = false;
     public isAdmin: boolean = false;
     public isDashboardCreator: boolean = false;

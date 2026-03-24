@@ -6026,6 +6026,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Abrir en MISMA pestaña</source>
         <target>Ouvrir dans le MÊME onglet</target>
       </trans-unit>
+      <trans-unit id="askTheAIText">
+        <source>Consulta con la IA</source>
+        <target>Consultation avec l'AI</target>
+      </trans-unit>
       <trans-unit id="predictionDialogTitle">
         <source>Configuración de Predicción</source>
         <target>Configuration de Prédiction</target>
@@ -6174,6 +6178,14 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Ya existe un usuario con este correo electrónico.</source>
         <target>Un utilisateur avec cette adresse e-mail existe déjà.</target>
       </trans-unit>
+      <trans-unit id="assistantTitle">
+        <source>Pregunta en lenguaje natural: </source>
+        <target>Posez votre question en langage naturel : </target>
+      </trans-unit>
+      <trans-unit id="AIManagement" datatype="html">
+        <source>Gestión del asistente</source>
+        <target>Gestion de l'assistant</target>
+              </trans-unit>
       <trans-unit id="signInSAML">
         <source>Continuar con SAML</source>
         <target>Continuer avec SAML</target>

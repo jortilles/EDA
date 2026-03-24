@@ -5779,6 +5779,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Se ejecutará la consulta con la predicción seleccionada y se guardarán los cambios.</source>
         <target>Zapytanie zostanie wykonane z wybraną predykcją i zmiany zostaną zapisane.</target>
       </trans-unit>   
+      <trans-unit id="askTheAIText">
+        <source>Consulta con la IA</source>
+        <target>Zapytaj AI</target>
+      </trans-unit>
       <trans-unit id="filterSummary">
         <source>Resumen de filtros</source>
         <target>Podsumowanie filtrów</target>
@@ -5839,6 +5843,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Ya existe un usuario con este correo electrónico.</source>
         <target>Użytkownik z tym adresem e-mail już istnieje.</target>
       </trans-unit>
+      <trans-unit id="assistantTitle">
+        <source>Pregunta en lenguaje natural:</source>
+        <target>Zapytaj w języku naturalnym:</target>
+      </trans-unit>
+      <trans-unit id="AIManagement" datatype="html">
+        <source>Gestión del asistente</source>
+        <target>Zarządzanie asystentem</target>
+              </trans-unit>
       <trans-unit id="signInSAML">
         <source>Continuar con SAML</source>
         <target>Kontynuuj z SAML</target>

@@ -6053,6 +6053,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Abrir en MISMA pestaña</source>
         <target>Obrir en MATEIXA pestanya</target>
       </trans-unit>
+      <trans-unit id="promptOption">
+        <source>Opciones IA</source>
+        <target>Opcions IA</target>
+      </trans-unit>
       <trans-unit id="predictionDialogTitle">
         <source>Configuración de Predicción</source>
         <target>Configuració de Predicció</target>
@@ -6141,6 +6145,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Se ejecutará la consulta con la predicción seleccionada y se guardarán los cambios.</source>
         <target>S'executarà la consulta amb la predicció seleccionada i es guardaran els canvis.</target>
       </trans-unit>
+      <trans-unit id="askTheAIText">
+        <source>Consulta con la IA</source>
+        <target>Consulta amb la IA</target>
+      </trans-unit>
       <trans-unit id="filterSummary">
         <source>Resumen de filtros</source>
         <target>Resum de filtres</target>
@@ -6201,6 +6209,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Ya existe un usuario con este correo electrónico.</source>
         <target>Ja existeix un usuari amb aquest correu electrònic.</target>
       </trans-unit>
+      <trans-unit id="assistantTitle">
+        <source>Pregunta en lenguaje natural: </source>
+        <target>Pregunta en llenguatge natural: </target>
+      </trans-unit>
+      <trans-unit id="AIManagement" datatype="html">
+        <source>Gestión del asistente</source>
+        <target>Gestió de l'assistent</target>
+              </trans-unit>
       <trans-unit id="signInSAML">
         <source>Continuar con SAML</source>
         <target>Continuar amb SAML</target>
