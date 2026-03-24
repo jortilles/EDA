@@ -19,6 +19,10 @@ import Swal from 'sweetalert2';
 export class UserProfilePage {
   public selectedImage = $localize`:@@selectedImage:Imagen seleccionada`;
   public noImageSelected = $localize`:@@noImageSelected:No hay imagen seleccionada`;
+  private msgEmailInUseTitle = $localize`:@@emailAlreadyExistsTitle:Email en uso`;
+  private msgEmailInUse = $localize`:@@emailAlreadyExistsMsg:Ya existe un usuario con este correo electrónico.`;
+  private msgUpdatedUser = $localize`:@@UpdatedUser:Usuario actualizado`;
+  private msgUpdateError = $localize`:@@UpdatedUserError:Error al actualizar el usuario`;
   
   private fb = inject(FormBuilder);
   private userService = inject(UserService);
@@ -70,37 +74,39 @@ export class UserProfilePage {
   }
 
 onSubmit() {
-  this.userService.getUsers().subscribe(users => {
-    const userToModifyID = users.find(
-      user => user._id === localStorage.getItem('id')
-    );
+  const newEmail = this.profileForm.value.email;
+  const emailChanged = newEmail && newEmail !== this.user.email;
 
-    if (!userToModifyID) {
-      Swal.fire('Error', 'Usuario no encontrado', 'error');
-      return;
-    }
-
-    userToModifyID.name = this.profileForm.value.username;
-    userToModifyID.email = this.profileForm.value.email;
-    userToModifyID.password = this.profileForm.value.password;
-
-    this.userService.manageUpdateUsers(userToModifyID).subscribe(
-      res => {
-        Swal.fire(
-          $localize`:@@UpdatedUser:Usuario actualizado`,
-          res.email,
-          'success'
-        );
-      },
-      err => {
-        Swal.fire(
-          $localize`:@@UpdatedUserError:Error al actualizar el usuario`,
-          err.text,
-          'error'
-        );
+  if (emailChanged) {
+    this.userService.getUsers().subscribe(users => {
+      const emailExists = users.some((u: User) => u.email === newEmail && u._id !== this.user._id);
+      if (emailExists) {
+        Swal.fire(this.msgEmailInUseTitle, this.msgEmailInUse, 'warning');
+        return;
       }
+      this.saveUser();
+    });
+  } else {
+    this.saveUser();
+  }
+}
+
+private saveUser() {
+  this.user.name = this.profileForm.value.username;
+  this.user.email = this.profileForm.value.email;
+  this.user.password = this.profileForm.value.password;
+
+  if (this.userService.isAdmin) {
+    this.userService.manageUpdateUsers(this.user).subscribe(
+      res => Swal.fire(this.msgUpdatedUser, res.email, 'success'),
+      err => Swal.fire(this.msgUpdateError, err.text, 'error')
     );
-  });
+  } else {
+    this.userService.updateUser(this.user).subscribe(
+      _ => {},
+      err => Swal.fire(this.msgUpdateError, err.text, 'error')
+    );
+  }
 }
 
 

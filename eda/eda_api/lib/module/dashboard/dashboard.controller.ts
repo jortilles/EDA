@@ -27,23 +27,20 @@ export class DashboardController {
    */
   static async getDashboards(req: Request, res: Response, next: NextFunction) {
     try {
-      let admin, privates, group, publics, shared = [];
+      const dataSources = await DataSource.find(  {},  'ds.metadata' ).exec();
+      let  privates, group, publics, shared = [];
       const groups = await Group.find({ users: { $in: req.user._id } }).exec();
       const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
       const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0;
-      const dataSources = await DataSource.find(
-        {},
-        'ds.metadata'
-      )
 
 
       if (isAdmin) {
-        [publics, privates, group, shared] = await DashboardController.getAllDashboardToAdmin(req)
+        [publics, privates, group, shared] = await DashboardController.getAllDashboardToAdmin(req, dataSources)
       } else {
-        group = await DashboardController.getGroupsDashboards(req)
-        privates = await DashboardController.getPrivateDashboards(req)
+        privates = await DashboardController.getPrivateDashboards(req, dataSources)
+        group = await DashboardController.getGroupsDashboards(req, dataSources)
+        shared = await DashboardController.getSharedDashboards(req, dataSources)
         publics = await DashboardController.getPublicsDashboards(req, dataSources)
-        shared = await DashboardController.getSharedDashboards(req)
       }
 
       // Modificación de fecha y adición de autor si no lo tiene (informes viejos)
@@ -85,26 +82,30 @@ export class DashboardController {
    * @param req Express Request with user information and possible tags
    * @returns List of private dashboards
    */
-  static async getPrivateDashboards(req: Request) {
+  static async getPrivateDashboards(req: Request, dss:any) {
     try {
-      const dashboards = await Dashboard.find(
-        { user: req.user._id },
-        'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.ds user'
-      ).populate('user', 'name').exec()
+      const dashboards = await DashboardController.findAllDashboardsWithMeta({ user: req.user._id })
       const privates = []
       for (const dashboard of dashboards) {
         // Normalize legacy visibility values
         DashboardController.normalizeVisibility(dashboard);
 
         if (dashboard.config.visible === 'private') {
-          // Obtain the name of the data source
-          dashboard.config.ds.name = (await DataSource.findById(dashboard.config.ds._id, 'ds.metadata.model_name').exec())?.ds?.metadata?.model_name ?? 'N/A';
+        const ds = dss.find( e=> e._id.toString() == dashboard.config.ds._id.toString() ); 
+         if( ds ){
+              // Obtain the name of the data source
+               dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+              if (this.iCanSeeTheDashboard(req, ds) == true) {
+                privates.push(dashboard);
+              }
+          }else{
+           // console.log('Unable to show the dashboard because i cant find the dataource' + dashboard )
+          }
 
-          privates.push(dashboard)
         }
       }
 
-      let tags: Array<any> = req.qs.tags
+      let tags: Array<any> = req.qs.tags;
 
       if (_.isEmpty(tags)) {
         return privates;
@@ -129,6 +130,7 @@ export class DashboardController {
 
 
     } catch (err) {
+      console.log(err);
       throw new HttpException(400, 'Error loading privates dashboards')
     }
   }
@@ -137,27 +139,37 @@ export class DashboardController {
    * @param req Express Request with user information and possible tags
    * @returns List of group dashboards
    */
-  static async getGroupsDashboards(req: Request) {
+  static async getGroupsDashboards(req: Request, dss:any) {
     try {
       const userGroups = await Group.find({
         users: { $in: req.user._id }
       }).exec();
-      const dashboards = await Dashboard.find(
-        { group: { $in: userGroups.map(g => g._id) } },
-        'config.title config.visible group config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.ds user'
-      ).populate('user', 'name').exec()
+
+
+      const dashboards = await DashboardController.findAllDashboardsWithMeta({ group: { $in: userGroups.map(g => g._id) } });
       const groupDashboards = []
       for (let i = 0, n = dashboards.length; i < n; i += 1) {
         const dashboard = dashboards[i]
         // Normalize legacy visibility values
         DashboardController.normalizeVisibility(dashboard);
+        if( dashboard.group ){
+          for (const dashboardGroup of dashboard.group) {
+            for (const userGroup of userGroups) {
+              if ( userGroup._id.equals(dashboardGroup) ) {
+                  const ds = dss.find( e=> e._id.toString() == dashboard.config.ds._id.toString() );
+                  if( ds ){
+                        dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+                        if (this.iCanSeeTheDashboard(req, ds) == true) {
+                          groupDashboards.push(dashboard)
+                        }else{
+                         //console.log('No pudo ver el informe ' +  dashboard);
+                        }
+                    }else{
+                      console.log('Unable to show the dashboard because i cant find the dataource' + dashboard )
+                    }
 
-        for (const dashboardGroup of dashboard.group) {
-          for (const userGroup of userGroups) {
-            if (
-              JSON.stringify(userGroup._id) === JSON.stringify(dashboardGroup)
-            ) {
-              groupDashboards.push(dashboard)
+                
+              }
             }
           }
         }
@@ -194,54 +206,8 @@ export class DashboardController {
   }
 
 
-  /**
-   * Determines if the user can view the dashboard according to the datasource permissions.
-   * @param req Express Request with user information
-   * @param ds Datasource object to check
-   * @returns true if the user can view the dashboard, false otherwise
-   */
-  static iCanSeeTheDashboard(req: Request, ds: any): boolean {
-    let result = false;
-    if (ds.ds.metadata.model_granted_roles.length == 0) { // si no hay permisos puedo verlo.
-      result = true;
-    }
-    if (result == false) {
-      const user = req.user;
-      ds.ds.metadata.model_granted_roles.forEach(e => {
-        if (e.table == 'fullModel') {
-          if (e.users?.indexOf(user._id) >= 0) { // el usuario puede ver el modelo
-            result = true;
-          }
-          if (e.type == 'anyoneCanSee') { // Todos pueden ver el modelo.
-            result = true;
-          }
-          if (e.role?.length > 0) { // si el rol puede verlo lo ve
-            user.role.forEach(r => {
-              if (e.role.indexOf(r) >= 0) {
-                result = true;
-              }
-            })
-          }
 
-        } else {  // si  veo algo.
-          if (e.permission == true) {
-            if (e.users?.indexOf(user._id) >= 0) { // el usuario puede ver el algo de alguna tabla
-              result = true;
-            }
-            if (e.role?.length > 0) { // si el rol puede ver algo de alguna tabla 
-              user.role.forEach(r => {
-                if (e.role.indexOf(r) >= 0) {
-                  result = true;
-                }
-              })
-            }
 
-          }
-        }
-      });
-    }
-    return result;
-  }
 
   /**
    * Retrieves the public dashboards the user has access to, filtering by tags if specified.
@@ -251,26 +217,23 @@ export class DashboardController {
    */
   static async getPublicsDashboards(req: Request, dss: any[]) {
     try {
-      const dashboards = await Dashboard.find(
-      /*EDA{},*/
-      /*Edalitics Free */  { user: req.user._id },
-        'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.ds user'
-      ).populate('user', 'name').exec()
+      const dashboards = await DashboardController.findAllDashboardsWithMeta(  /*Edalitics Free */  { user: req.user._id } );
       const publics = []
-
-
-
       for (const dashboard of dashboards) {
         // Normalize legacy visibility values
         DashboardController.normalizeVisibility(dashboard);
-
         if (dashboard.config.visible === 'open') {
           const ds = dss.find(e => e._id == dashboard.config.ds._id);
-          dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
-          if (this.iCanSeeTheDashboard(req, ds) == true) {
-            publics.push(dashboard);
+          if( ds ){
+              dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+              if (this.iCanSeeTheDashboard(req, ds) == true) {
+                 publics.push(dashboard);
+              }else{
+                 //console.log('No puedo ver el informe ' + dashboard            )
+              }
+          }else{
+            console.log('Unable to show the dashboard because i cant find the dataource' + dashboard )
           }
-
         }
       }
 
@@ -298,6 +261,7 @@ export class DashboardController {
       }
 
     } catch (err) {
+      console.log(err);
       throw new HttpException(400, 'Error loading public dashboards')
     }
   }
@@ -306,22 +270,30 @@ export class DashboardController {
    * @param req Express Request with possible tags
    * @returns List of shared dashboards
    */
-  /* EDA static async getSharedDashboards(req: Request) { */
-  /*Edalitics Free */static async getSharedDashboards(req: Request) {
+  static async getSharedDashboards(req: Request, dss:any) {
     try {
-      const dashboards = await Dashboard.find(
-        /*EDA{},*/
-        /*Edalitics Free */  { user: req.user._id },
-        'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt'
-      ).populate('user', 'name').exec()
+      const dashboards = await DashboardController.findAllDashboardsWithMeta( /*Edalitics Free */  { user: req.user._id } )
       const shared = []
       for (const dashboard of dashboards) {
         // Normalize legacy visibility values
         DashboardController.normalizeVisibility(dashboard);
-
+        const ds = dss.find( e=> e._id.toString() == dashboard.config.ds._id.toString() ); 
         if (dashboard.config.visible === 'common') {
-          shared.push(dashboard)
+          if( ds ){
+              // Obtain the name of the data source
+               dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+              if (this.iCanSeeTheDashboard(req, ds) == true) {
+                shared.push(dashboard);
+              }
+          }else{
+            console.log('Unable to show the dashboard because i cant find the dataource' + dashboard )
+          }
+
+
+
         }
+
+        
       }
 
       /*Edalitics Free */ 
@@ -357,15 +329,83 @@ export class DashboardController {
         return sharedTags;
       }
     } catch (err) {
+      console.log(err);
       throw new HttpException(400, 'Error loading shared dashboards')
     }
   }
+
+  
+  /**
+   * Get dashboards metadata
+   * @param filter filter to apply
+   */
+    private static async findAllDashboardsWithMeta(filter: Record<string, any> = {}) {
+    return Dashboard.find(
+      filter,
+      'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.ds user group'
+    ).populate('user', 'name').exec();
+  }
+
+
+
+  /**
+   * Determines if the user can view the dashboard according to the datasource permissions.
+   * @param req Express Request with user information
+   * @param ds Datasource object to check
+   * @returns true if the user can view the dashboard, false otherwise
+   */
+  static iCanSeeTheDashboard(req: Request, ds: any): boolean {
+
+    let result = false;
+    if (ds.ds.metadata.model_granted_roles.length == 0) { // si no hay permisos puedo verlo.
+      result = true;
+    }
+    if (result == false) {
+      const user = req.user;
+      ds.ds.metadata.model_granted_roles.forEach(e => {
+      
+        if (e.table == 'fullModel') {
+          if (e.users?.indexOf(user._id) >= 0) { // el usuario puede ver el modelo
+            result = true;
+          }
+          if (e.type == 'anyoneCanSee') { // Todos pueden ver el modelo.
+            result = true;
+          }
+          if (e.groups?.length > 0) { // si el rol puede verlo lo ve
+            user.role.forEach(r => {
+              if (e.groups.indexOf(r) >= 0) {
+                result = true;
+              }
+            })
+          }
+
+        } else {  // si  veo algo.
+          if (e.permission == true) {
+            if (e.users?.indexOf(user._id) >= 0) { // el usuario puede ver el algo de alguna tabla
+              result = true;
+            }
+            if (e.groups?.length > 0) { // si el rol puede ver algo de alguna tabla 
+              user.role.forEach(r => {
+                if (e.groups.indexOf(r) >= 0) {
+                  result = true;
+                }
+              })
+            }
+
+          }
+        }
+      });
+    }
+    return result;
+  }
+
+
   /**
    * Retrieves all dashboards for the administrator, allowing filtering by external properties and tags.
    * @param req Express Request with possible filters
    * @returns Lists of dashboards classified by visibility
    */
-  static async getAllDashboardToAdmin(req: Request) {
+  static async getAllDashboardToAdmin(req: Request, dss: any[]) {
     let external;
     if (req.qs.external) {
       external = JSON.parse(req.qs.external);
@@ -383,16 +423,28 @@ export class DashboardController {
     try {
       //si no lleva filtro, pasamos directamente a recuperarlos todos
       const dashboards = JSON.stringify(filter) !== '{}' ?
-        await Dashboard.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, 'user config.title config.visible group config.tag config.author config.createdAt config.modifiedAt config.onlyIcanEdit config.external').exec() :
-        await Dashboard.find({}, 'user config.title config.visible group config.tag config.author config.createdAt config.modifiedAt config.onlyIcanEdit  config.external').exec();
-      const publics = []
-      const privates = []
-      const groups = []
-      const shared = []
+        await Dashboard.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, 'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.ds user group config.external').exec() :
+        await Dashboard.find({}, 'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt config.description config.createdAt config.modifiedAt config.ds user group config.external').exec();
+      const publics = [];
+      const privates = [];
+      const groups = [];
+      const shared = [];
+
+
+
+
 
       for (const dashboard of dashboards) {
         // Normalize legacy visibility values
         DashboardController.normalizeVisibility(dashboard);
+        const ds = dss.find( e=> e._id.toString() == dashboard.config.ds._id.toString() ); 
+        if( ds ){
+            // Obtain the name of the data source
+            dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+         }else{
+            dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+          }
+
 
         switch (dashboard.config.visible) {
           case 'open':
@@ -468,6 +520,7 @@ export class DashboardController {
 
 
     } catch (err) {
+      console.log(err);
       throw new HttpException(400, 'Error loading dashboards for admin')
     }
   }
@@ -582,6 +635,7 @@ export class DashboardController {
       }
 
     } catch (err) {
+      console.log(err);
       next(err)
     }
   }
@@ -639,6 +693,7 @@ export class DashboardController {
       const isAccessible = dashboard.config.visible ===  'shared';
       return res.status(200).json({ isAccessible });
     } catch (err) {
+      console.log(err);
       return next(new HttpException(500, 'Error checking dashboard visibility'));
     }
   }
@@ -663,6 +718,7 @@ export class DashboardController {
 
       return res.status(201).json({ ok: true, dashboard })
     } catch (err) {
+      console.log(err);
       return new HttpException(400, 'Some error ocurred while creating the dashboard')
     }
   }
@@ -705,11 +761,12 @@ export class DashboardController {
           return (new HttpException(500, 'Error updating dashboard'))
         }
       } catch (error) {
-
+        console.log(error);
         return (new HttpException(500, 'Error searching the dashboard'))
       }
 
     } catch (error) {
+      console.log(error);
       return (new HttpException(500, 'Error updating dashboard'))
     }
   }
@@ -757,6 +814,7 @@ export class DashboardController {
       return res.status(200).json({ ok: true, dashboard });
 
     } catch (err) {
+      console.log(err);
       return next(
         new HttpException(
           400,
@@ -780,6 +838,7 @@ export class DashboardController {
       return res.status(200).json({ ok: true, dashboard });
 
     } catch (err) {
+      console.log(err);
       return next(new HttpException(500, 'Error removing dashboard'));
     }
   }

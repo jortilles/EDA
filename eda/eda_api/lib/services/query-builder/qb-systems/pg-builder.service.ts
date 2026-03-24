@@ -4,6 +4,17 @@ import * as _ from 'lodash';
 
 export class PgBuilderService extends QueryBuilderService {
 
+      /** esto se usa para las consultas que hacemos a bbdd para generar el modelo */
+    public simpleQuery(columns: string[], origin: string) {
+    
+        const schema = this.dataModel.ds.connection.schema;
+        if (schema) {
+            origin = `"${schema}"."${origin}"`;
+        }
+        return `SELECT DISTINCT ${columns.join(', ')} \nFROM ${origin}`;
+    }
+    
+
   public analizedQuery(params: EdaQueryParams) {
     const { fields, columns, tables, origin, dest, joinTree, grouping, filters, havingFilters, joinType, valueListJoins, schema } = params;
     

@@ -284,6 +284,9 @@ export class EdaBlankPanelComponent implements OnInit {
     private route = inject(ActivatedRoute);
     private formBuilder = inject(UntypedFormBuilder);
 
+    public editingTitle: boolean = false;
+
+
     constructor(
         public queryBuilder: QueryBuilderService,
         public fileUtiles: FileUtiles,
@@ -1999,6 +2002,11 @@ removeGroupBy(): void {
 
 trackByTable(index: number, table: any): any {
     return table.value;
+}
+
+startEditTitle() {
+    this.editingTitle = true;
+    this.titleClick=true;
 }
 
 }

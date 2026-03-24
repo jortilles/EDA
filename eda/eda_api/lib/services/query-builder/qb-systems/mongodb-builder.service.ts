@@ -17,6 +17,10 @@ export class MongoDBBuilderService {
 
     public builder(): any {
         try {
+            if (this.queryTODO.simple) {
+                return this.simpleQuery();
+            }
+
             const collectionName = this.queryTODO.fields[0].table_id;
             const fields = this.queryTODO.fields;
 
@@ -66,6 +70,42 @@ export class MongoDBBuilderService {
             console.error('Error:', err);
             throw err;
         }
+    }
+
+    public simpleQuery(): any {
+        const collectionName = this.queryTODO.fields[0].table_id;
+        const fields = this.queryTODO.fields;
+
+        const groupId: any = {};
+        const columns: string[] = [];
+        const dateFormat: any = {};
+
+        fields.forEach((column: any) => {
+            columns.push(column.column_name);
+            groupId[column.column_name] = `$${column.column_name}`;
+            if (column.column_type === 'date') {
+                dateFormat[column.column_name] = column.format || 'No';
+            }
+        });
+
+        const pipeline: any[] = [
+            { $group: { _id: groupId } },
+            { $sort: { [`_id.${fields[0].column_name}`]: 1 } },
+            { $limit: this.limit }
+        ];
+
+        return {
+            collectionName,
+            criteria: {},
+            columns,
+            aggregations: {},
+            filters: null,
+            dateFormat,
+            ordenationType: [],
+            dateProjection: {},
+            pipeline,
+            simple: true
+        };
     }
 
     public getFilters() {

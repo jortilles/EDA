@@ -25,7 +25,7 @@ export class DataSourceListPage implements OnInit {
   sortConfig: { key: any; direction: 'asc' | 'desc' } | null = null;
 
   currentPage: number = 1;
-  itemsPerPage: number = 25;
+  itemsPerPage: number = 10;
 
   get filteredDataSources() {
     return [...this.dataSources]
@@ -68,6 +68,10 @@ export class DataSourceListPage implements OnInit {
 
   totalPages() {
     return Math.ceil(this.filteredDataSources.length / this.itemsPerPage);
+  }
+
+  get pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages() }, (_, i) => i + 1);
   }
 
   setPage(page: number) {

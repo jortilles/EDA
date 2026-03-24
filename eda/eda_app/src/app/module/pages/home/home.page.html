@@ -14,12 +14,14 @@
             class="w-full rounded-md border border-input bg-background py-2 !pl-9 text-sm"
             i18n-placeholder="@@searcherInput" placeholder="Buscador">
         </div>
-        <button
-          class="bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white font-bold px-4 py-2 rounded flex items-center"
-          (click)="onCreateDashboard()">
-          <eda-icon name="plus" size="sm" class="h-4 mr-2" />
-          <span i18n="@@tituloNuevoInforme">Crear nuevo informe</span>
-        </button>
+        @if(!isObserver){
+          <button
+            class="bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white font-bold px-4 py-2 rounded flex items-center"
+            (click)="onCreateDashboard()">
+            <eda-icon name="plus" size="sm" class="h-4 mr-2" />
+            <span i18n="@@tituloNuevoInforme">Crear nuevo informe</span>
+          </button>
+        }
       </div>
     </div>
 
@@ -71,7 +73,49 @@
   <div class="space-y-4">
     <h2 class="text-lg font-semibold">{{ title }}</h2>
     @for (report of reports; track report._id) {
-    <div class="rounded-lg border bg-card text-card-foreground shadow-sm" [attr.id]="'dashboard-' + report._id">
+    <div class="rounded-lg border bg-card text-card-foreground shadow-sm relative group/card" [attr.id]="'dashboard-' + report._id">
+      <!-- Tooltip -->
+      <div class="absolute z-50 left-0 top-full mt-1 w-150 rounded-md border bg-popover p-3 shadow-lg text-sm text-popover-foreground opacity-0 invisible group-hover/card:opacity-100 group-hover/card:visible transition-all duration-200 pointer-events-none">
+        <div class="font-semibold text-base mb-2 break-words">{{ report.config?.title }}</div>
+        <div class="space-y-1">
+          @if(report.config?.ds?.name) {
+            <div class="flex gap-1">
+              <span class="text-muted-foreground shrink-0" i18n="@@DatadourceTitle">Datasource:</span>
+              <span class="break-words">{{ report.config.ds.name }}</span>
+            </div>
+          }
+          @if(report.config?.author && report.config?.author != 'Undefined') {
+            <div class="flex gap-1">
+              <span class="text-muted-foreground shrink-0" i18n="@@authorTooltipLabel">Autor:</span>
+              <span class="break-words">{{ report.config.author }}</span>
+            </div>
+          }
+          @if(report.config?.createdAt) {
+            <div class="flex gap-1">
+              <span class="text-muted-foreground shrink-0" i18n="@@createdAtTooltipLabel">Creado:</span>
+              <span>{{ report.config.createdAt }}</span>
+            </div>
+          }
+          @if(report.config?.modifiedAt) {
+            <div class="flex gap-1">
+              <span class="text-muted-foreground shrink-0" i18n="@@modifiedAtTooltipLabel">Modificado:</span>
+              <span>{{ report.config.modifiedAt }}</span>
+            </div>
+          }
+          @if(report.config?.tag && report.config.tag.length > 0) {
+            <div class="flex gap-1 flex-wrap">
+              <span class="text-muted-foreground shrink-0" i18n="@@tagsTooltipLabel">Tags:</span>
+              @if(isArray(report.config.tag)) {
+                @for(tag of report.config.tag; track tag) {
+                  <span class="bg-muted rounded px-1">{{ tag?.value ?? tag }}</span>
+                }
+              } @else {
+                <span class="bg-muted rounded px-1">{{ report.config.tag }}</span>
+              }
+            </div>
+          }
+        </div>
+      </div>
       <div class="px-4 py-2 cursor-pointer" (mousedown)="openReport(report, $event)">
         @if(!isEditing || editingReportId !== report._id){
         <h3 class="text-base font-semibold">
@@ -101,27 +145,30 @@
               <eda-icon name="link" size="sm" class="mr-1"></eda-icon>
             </button>
           }
-
-          @if (!isEditing || editingReportId !== report._id) {
-          <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="renameReport(report)"
-            title="Editar nombre" i18n-title="@@renameReportTooltip">
-            <eda-icon name="pencil" class="mr-1"></eda-icon>
-          </button>
-          }@else {
-          <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="handleEditing('done', report)"
-            title="Confirmar nombre" i18n-title="@@confirmRenameTooltip">
-            <eda-icon name="check" class="mr-1"></eda-icon>
-          </button>
+          @if(!isObserver){
+            @if(canEditReport(report)){
+              @if (!isEditing || editingReportId !== report._id) {
+              <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="renameReport(report)"
+                title="Editar nombre" i18n-title="@@renameReportTooltip">
+                <eda-icon name="pencil" class="mr-1"></eda-icon>
+              </button>
+              }@else {
+              <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="handleEditing('done', report)"
+                title="Confirmar nombre" i18n-title="@@confirmRenameTooltip">
+                <eda-icon name="check" class="mr-1"></eda-icon>
+              </button>
+              }
+            }
+  
+            <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="cloneReport(report)"
+              title="Duplicar informe" i18n-title="@@duplicateReportTooltip">
+              <eda-icon name="document-duplicated"></eda-icon>
+            </button>
+            <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="deleteReport(report)"
+              title="Eliminar informe" i18n-title="@@deleteReportTooltip">
+              <eda-icon name="bin"></eda-icon>
+            </button>
           }
-
-          <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="cloneReport(report)"
-            title="Duplicar informe" i18n-title="@@duplicateReportTooltip">
-            <eda-icon name="document-duplicated"></eda-icon>
-          </button>
-          <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="deleteReport(report)"
-            title="Eliminar informe" i18n-title="@@deleteReportTooltip">
-            <eda-icon name="bin"></eda-icon>
-          </button>
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '@eda/services/api/user.service';
+import { GroupService } from '@eda/services/api/group.service';
 import { AlertService, DashboardService } from '@eda/services/service.index';
 import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
 import Swal from 'sweetalert2';
@@ -36,6 +37,9 @@ export class HomePage implements OnInit {
   isOpenTags = signal(false)
   searchTagTerm = signal("")
 
+  // Control de anonim y eda_RO
+  public grups: Array<any> = [];
+  public isObserver: boolean = true;
 
   //Variables de control de edició Modificar
   isEditing = false;
@@ -43,15 +47,39 @@ export class HomePage implements OnInit {
   editTitle: string = '';
   sortingType: string = sessionStorage.getItem('homeSorting') || 'name';
 
+  isArray = Array.isArray;
+
   public publicTitle: string = $localize`:@@tituloGrupoPublicos:PUBLICOS`;
   public commonTitle: string = $localize`:@@tituloGrupoComunes:COMUNES`;
   public groupTitle: string = $localize`:@@tituloGrupoMisGrupos:MIS GRUPOS`;
   public privateTitle: string = $localize`:@@tituloGrupoPersonales:PRIVADOS`;
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService, private groupService: GroupService) { }
 
   ngOnInit(): void {
     this.loadReports();
+    this.ifAnonymousGetOut();
+  }
+
+  private setIsObserver = async () => {
+      this.groupService.getGroupsByUser().subscribe(
+          res => {
+              const user = localStorage.getItem('user');
+              const userID = JSON.parse(user)._id;
+              this.grups = res;
+              this.isObserver = this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0
+          },
+          (err) => this.alertService.addError(err)
+      );
+  }
+
+  private ifAnonymousGetOut(): void {
+      const user = localStorage.getItem('user');
+      const userName = JSON.parse(user).name;
+
+      if (userName === 'edaanonim' || userName === 'EDA_RO') {
+          this.router.navigate(['/login']);
+      }
   }
 
   private async loadReports() {
@@ -61,17 +89,18 @@ export class HomePage implements OnInit {
     this.roleReports = group;
     this.sharedReports = publics;
 
-  this.allDashboards = [].concat(this.publicReports, this.privateReports, this.roleReports, this.sharedReports);
+    this.allDashboards = [].concat(this.publicReports, this.privateReports, this.roleReports, this.sharedReports);
 
-  this.reportMap = {
-    private: this.privateReports,
-    group: this.roleReports,
-    public: this.publicReports,
-    shared: this.sharedReports
-  };
+    this.reportMap = {
+      private: this.privateReports,
+      group: this.roleReports,
+      public: this.publicReports,
+      shared: this.sharedReports
+    };
 
-  this.handleSorting();
+    this.handleSorting();
     this.loadReportTags();
+    this.setIsObserver();
   }
 
   private async loadReportTags() {
@@ -155,6 +184,11 @@ public handleTagSelect(option: any): void {
     this.createDashboardService.open();
   }
 
+  public canEditReport(report: any): boolean {
+    if (!report.onlyIcanEdit) return true;
+    return report.config.author === this.userService.user?.name || this.userService.isAdmin;
+  }
+
   // Esta función actualiza los reports, y es llamada cada vez que se modifican los tags
   public filterByTags() { 
     const tags = sessionStorage.getItem("activeTags") || "[]";
@@ -215,15 +249,7 @@ public handleTagSelect(option: any): void {
     const dashboardUrl = `${currentUrl.replace(/\/home\/?$/, '')}/public/${report._id}`;
     // Copiar al portapapeles
     navigator.clipboard.writeText(dashboardUrl).then(() => {
-      Swal.fire({
-        title: $localize`:@@copyPublicLinkSuccessTitle:¡Enlace copiado!`,
-        text: $localize`:@@copyPublicLinkSuccessText:El enlace público ha sido copiado al portapapeles.`,
-        icon: 'success',
-        confirmButtonColor: '#14B8A6',
-        confirmButtonText: $localize`:@@acceptBtn:Aceptar`,
-        timer: 2500,
-        timerProgressBar: true,
-      });
+      this.alertService.addSuccess($localize`:@@copyPublicLinkSuccessText:El enlace público ha sido copiado al portapapeles.`);
     });
   }
 
