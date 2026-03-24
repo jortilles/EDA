@@ -20,7 +20,7 @@ export default class QueryResolver {
     /* ================================> INICIO TABLAS Y COLUMNAS <================================*/
     static getFields(tables: any[], data: any[]) {
 
-        console.log('tables: ', tables);
+        //console.log('tables: ', tables);
 
         let currentQuery: any[] = [];
 
