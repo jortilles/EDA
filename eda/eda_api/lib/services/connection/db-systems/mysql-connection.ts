@@ -13,6 +13,7 @@ export class MysqlConnection extends AbstractConnection {
     private queryBuilder: MySqlBuilderService;
     private AggTypes: AggregationTypes;
     private pool: Pool;
+    private isMariaDB: boolean | null = null;
 
     public GetDefaultSchema(): string { return null; }
 
@@ -175,8 +176,24 @@ async execQuery(query: string): Promise<any> {
             let maxStatementTime = EDA_API_CONFIG.maxStatementTime ?? 900;
             console.log(`SET maxStatementTime=${maxStatementTime}`);
 
-            // Añadir timeout a la query
-            const queryWithTimeout = `SET STATEMENT max_statement_time=${maxStatementTime} FOR ${query}`;
+            // Detectar si es MariaDB (se cachea tras la primera consulta)
+            if (this.isMariaDB === null) {
+                const [[versionRow]] = await this.client.query('SELECT VERSION() as v') as any;
+                this.isMariaDB = String(versionRow.v).includes('MariaDB');
+                console.log(`DB engine detected: ${this.isMariaDB ? 'MariaDB' : 'MySQL'} (${versionRow.v})`);
+            }
+
+            // Añadir timeout según el motor
+            const trimmed = query.trimStart();
+            let queryWithTimeout: string;
+            if (this.isMariaDB) {
+                queryWithTimeout = `SET STATEMENT max_statement_time=${maxStatementTime} FOR ${trimmed}`;
+            } else {
+                const maxMs = maxStatementTime * 1000;
+                queryWithTimeout = /^SELECT/i.test(trimmed)
+                    ? trimmed.replace(/^SELECT/i, `SELECT /*+ MAX_EXECUTION_TIME(${maxMs}) */`)
+                    : trimmed;
+            }
 
             // Crear promesa con timeout que se cancela a los 600 segundos
             const timeoutPromise = new Promise((_, reject) => {
