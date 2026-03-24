@@ -81,7 +81,7 @@
           <!-- Info icon with tooltip -->
           <span class="relative group/info inline-flex shrink-0 ml-auto" (mousedown)="$event.stopPropagation()">
             <i class="pi pi-info-circle cursor-pointer text-gray-500"></i>
-            <div class="absolute z-50 right-0 top-full mt-1 w-64 rounded-md border bg-popover p-3 shadow-lg text-sm text-popover-foreground opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-200 pointer-events-none">
+            <div class="absolute z-50 right-0 bottom-full mb-1 w-[32rem] rounded-md border bg-popover p-3 shadow-lg text-sm text-popover-foreground opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-200 pointer-events-none">
               <div class="font-semibold text-base mb-2 break-words">{{ report.config?.title }}</div>
               <div class="space-y-1">
                 @if(report.config?.ds?.name) {
@@ -99,13 +99,13 @@
                 @if(report.config?.createdAt) {
                   <div class="flex gap-1">
                     <span class="text-muted-foreground shrink-0" i18n="@@createdAtTooltipLabel">Creado:</span>
-                    <span>{{ report.config.createdAt }}</span>
+                    <span>{{ formatDate(report.config.createdAt) }}</span>
                   </div>
                 }
                 @if(report.config?.modifiedAt) {
                   <div class="flex gap-1">
                     <span class="text-muted-foreground shrink-0" i18n="@@modifiedAtTooltipLabel">Modificado:</span>
-                    <span>{{ report.config.modifiedAt }}</span>
+                    <span>{{ formatDate(report.config.modifiedAt) }}</span>
                   </div>
                 }
                 @if(report.config?.tag && report.config.tag.length > 0) {
