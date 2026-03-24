@@ -6177,6 +6177,18 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Eliminar informe</source>
         <target>Eliminar informe</target>
       </trans-unit>
+      <trans-unit id="authorTooltipLabel">
+        <source>Autor:</source>
+        <target>Autor:</target>
+      </trans-unit>
+      <trans-unit id="createdAtTooltipLabel">
+        <source>Creado:</source>
+        <target>Creat:</target>
+      </trans-unit>
+      <trans-unit id="modifiedAtTooltipLabel">
+        <source>Modificado:</source>
+        <target>Modificat:</target>
+      </trans-unit>
       <trans-unit id="emailAlreadyExistsTitle">
         <source>Email en uso</source>
         <target>Email en ús</target>
