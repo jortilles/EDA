@@ -6115,8 +6115,8 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <target>Résumé des filtres</target>
       </trans-unit>
       <trans-unit id="globalFilterSelectedItemsLabel">
-        <source>{0} items seleccionados</source>
-        <target>{0} articles sélectionnés</target>
+        <source>items seleccionados</source>
+        <target>articles sélectionnés</target>
       </trans-unit>
       <trans-unit id="copyPublicLinkTooltip">
         <source>Copiar enlace público</source>

@@ -5780,8 +5780,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Podsumowanie filtrów</target>
       </trans-unit>
       <trans-unit id="globalFilterSelectedItemsLabel">
-        <source>{0} items seleccionados</source>
-        <target>{0} wybranych elementów</target>
+        <source>items seleccionados</source>
+        <target>wybranych elementów</target>
       </trans-unit>
       <trans-unit id="copyPublicLinkTooltip">
         <source>Copiar enlace público</source>
