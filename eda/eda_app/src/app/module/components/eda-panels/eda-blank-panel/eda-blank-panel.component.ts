@@ -49,6 +49,8 @@ import { EdadynamicTextComponent } from '@eda/components/component.index';
 import { EdaTitlePanelComponent } from '@eda/components/component.index';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { ChartTypeSelectorDialogComponent } from './chart-type-selector-dialog/chart-type-selector-dialog.component';
+import { PromptComponent } from '@eda/components/prompt/prompt.component';
+
 // Panel Utils
 import { TableUtils } from './panel-utils/tables-utils';
 import { QueryUtils } from './panel-utils/query-utils';
@@ -81,6 +83,14 @@ export interface IPanelAction {
     code: string;
     data: any;
 }
+
+interface ChatMessage {
+    id?: string | number;
+    role: 'user' | 'assistant' | 'system' | 'error';
+    content: string;
+    timestamp?: number;
+}
+
 const DIALOGS_COMPONENTS = [
     ChartDialogComponent,BubblechartDialog, MapCoordDialogComponent, MapEditDialogComponent,
     TreeTableDialogComponent, SunburstDialogComponent, TreeMapDialog, ScatterPlotDialog,
@@ -93,7 +103,9 @@ const STANDALONE_COMPONENTS = [
     EdaDialog2Component, WhatIfDialogComponent, EbpChatgptComponent,FilterMapperComponent, EdadynamicTextComponent,EdaTitlePanelComponent,
     PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
     DragDropComponent, ChartTypeSelectorDialogComponent,
-    IconComponent, FocusOnShowDirective
+    IconComponent, FocusOnShowDirective,
+    PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent, 
+    DragDropComponent, IconComponent, FocusOnShowDirective, PromptComponent
 ]
 @Component({
     standalone: true,
@@ -253,6 +265,9 @@ export class EdaBlankPanelComponent implements OnInit {
     public colorsDeepCopy: any = {};
 
     public queryFromServer: string = '';
+
+    public promptMessages: ChatMessage[] = []; // Historial de mensajes.
+
 
     // join types 
     joinTypeOptions: any[] = [
@@ -669,6 +684,9 @@ public tableNodeExpand(event: any): void {
 
         //not saved alert message
         this.dashboardService._notSaved.next(true);
+
+        // Reiniciar el chat del prompt
+        this.promptMessages = [];
 
     }
 
@@ -1156,6 +1174,9 @@ public tableNodeExpand(event: any): void {
         this.tablesToShowBase = [...this.tables];
         this.display_v.chart = '';
         this.display_v.page_dialog = false;
+
+        // Reiniciar el chat del prompt
+        this.promptMessages = [];
 
     }
 
@@ -1650,6 +1671,7 @@ public tableNodeExpand(event: any): void {
     * Runs actual query when execute button is pressed to check for heavy queries
     */
     public runManualQuery = () => {
+
         const chartType = this.panelChart?.props?.chartType || '';
 
         if (chartType == 'crosstable' && this.indextab === 1) {
@@ -1992,13 +2014,42 @@ private assignLevels(nodes: any[], level = 0): void {
         }
     }
 
-applyGroupBy(): void {
-  // Lógica para activar el group by
-}
+    applyGroupBy(): void {
+    // Lógica para activar el group by
+    }
 
-removeGroupBy(): void {
-  // Lógica para desactivar el group by
-}
+    removeGroupBy(): void {
+    // Lógica para desactivar el group by
+    }
+
+    newCurrentQueryUpdate(event: any) {
+        this.currentQuery = event;
+    }
+
+    principalTableUpdate(event: any) {
+
+        const {principalTable, currentQuery, queryLimit} = event
+
+        this.queryLimit = queryLimit;
+
+        const rootTable = this.tables.find((table: any) => {
+            return table.table_name === principalTable;
+        })
+        
+        this.rootTable = _.cloneDeep(rootTable);
+        this.userSelectedTable = principalTable;
+                
+        let columns: any[] = []
+        columns = rootTable.columns.filter((col: any) => !currentQuery.some((e: any) => e.column_name === col.column_name))
+
+        this.columns = columns;
+    }
+
+    newSelectedFiltersUpdate(event: any) {
+        const {filteredColumns, selectedFilters} = event
+        this.selectedFilters = _.cloneDeep(selectedFilters)
+        this.filtredColumns = _.cloneDeep(filteredColumns)
+    }
 
 trackByTable(index: number, table: any): any {
     return table.value;
