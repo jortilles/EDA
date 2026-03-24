@@ -4,6 +4,7 @@ import { AbstractConnection } from "../abstract-connection";
 import { AggregationTypes } from "../../../module/global/model/aggregation-types";
 import { ConnectionOptions, PoolOptions, Pool } from 'mysql2/typings/mysql';
 import { PoolManagerConnectionSingleton } from '../pool-manager-connection';
+const EDA_API_CONFIG = require('../../../../config/eda_api_config');
 const util = require('util');
 
 
@@ -175,8 +176,9 @@ async execQuery(query: string): Promise<any> {
             // Convertir querys con callback a query con promise
             this.client.query = util.promisify(this.client.query);
 
-            let maxStatementTime = 600;
-            
+            let maxStatementTime = EDA_API_CONFIG.maxStatementTime ?? 900;
+            console.log(`SET maxStatementTime=${maxStatementTime}`);
+
             // Añadir timeout a la query
             const queryWithTimeout = `SET STATEMENT max_statement_time=${maxStatementTime} FOR ${query}`;
 
