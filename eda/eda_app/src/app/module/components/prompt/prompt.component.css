@@ -1,6 +1,6 @@
 .chat-wrapper {
 width: 100%;
-max-width: 720px;
+max-width: 1200px;
 margin: 0 auto;
 display: flex;
 flex-direction: column;
@@ -28,8 +28,8 @@ background: #fff;
 
 @media (min-width: 1536px) {
   .chat-messages {
-    min-height: 160px;
-    max-height: 160px;
+    min-height: 200px;
+    max-height: 200px;
   }
 }
 
