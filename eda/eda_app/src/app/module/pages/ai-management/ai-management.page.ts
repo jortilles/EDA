@@ -44,7 +44,7 @@ export class AiManagementPage implements OnInit {
       const res = await lastValueFrom(this.chatgptService.getConfig());
       const cfg = res.config;
       this.aiForm.patchValue({
-        API_KEY: cfg.API_KEY,
+        API_KEY: this.API_KEY_PLACEHOLDER,
         MODEL: cfg.MODEL,
         CONTEXT: cfg.CONTEXT,
         AVAILABLE: cfg.AVAILABLE,
@@ -67,11 +67,17 @@ export class AiManagementPage implements OnInit {
     this.showApiKey.update(v => !v);
   }
 
+  readonly API_KEY_PLACEHOLDER = 'you should know..... ;)';
+
   async handleSubmit() {
     if (this.aiForm.invalid) return;
     this.isSubmitting.set(true);
     try {
-      await lastValueFrom(this.chatgptService.saveConfig(this.aiForm.value));
+      const payload = { ...this.aiForm.value };
+      if (payload.API_KEY === this.API_KEY_PLACEHOLDER) {
+        delete payload.API_KEY;
+      }
+      await lastValueFrom(this.chatgptService.saveConfig(payload));
       this.alertService.addSuccess($localize`:@@aiConfigSaved:Configuración de IA guardada correctamente`);
     } catch (err: any) {
       this.alertService.addError(err);

@@ -152,8 +152,9 @@ export class ChatGptController {
         try {
             const { API_KEY, MODEL, CONTEXT, AVAILABLE, LIMIT } = req.body;
             const configPath = path.resolve(__dirname, '../../../config/chatgpt.config.js');
-            const { MAX_LIMIT } = getChatgptConfig();
-            const content = `module.exports = { \n    API_KEY: '${API_KEY}',\n    MODEL: '${MODEL}',\n    CONTEXT: '${CONTEXT}',\n    AVAILABLE: ${AVAILABLE},\n    LIMIT: ${LIMIT},\n    MAX_LIMIT: ${MAX_LIMIT},\n};\n`;
+            const currentConfig = getChatgptConfig();
+            const finalApiKey = (API_KEY !== undefined && API_KEY !== null) ? API_KEY : currentConfig.API_KEY;
+            const content = `module.exports = { \n    API_KEY: '${finalApiKey}',\n    MODEL: '${MODEL}',\n    CONTEXT: '${CONTEXT}',\n    AVAILABLE: ${AVAILABLE},\n    LIMIT: ${LIMIT},\n    MAX_LIMIT: ${currentConfig.MAX_LIMIT},\n};\n`;
             fs.writeFile(configPath, content, 'utf8', (err) => {
                 if (err) return next(new HttpException(500, 'Error saving ChatGpt configuration'));
                 return res.status(200).json({ ok: true });
