@@ -52,7 +52,9 @@
                 (onChange)="setGlobalFilterItems(filter)"
                 (mouseenter)="showFilterTooltip($event, op, filter)"
                 (mouseleave)="hideFilterTooltip(op)"
-                (onClick)="hideFilterTooltip(op)">              
+                (onClick)="hideFilterTooltip(op)"
+                (onPanelShow)="setDropdownOpen(true)"
+                (onPanelHide)="setDropdownOpen(false)">
               </p-multiSelect>
               <p-overlayPanel #op appendTo="body" >
                   <ng-template pTemplate>

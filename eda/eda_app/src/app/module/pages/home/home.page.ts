@@ -47,6 +47,8 @@ export class HomePage implements OnInit {
   editTitle: string = '';
   sortingType: string = sessionStorage.getItem('homeSorting') || 'name';
 
+  isArray = Array.isArray;
+
   public publicTitle: string = $localize`:@@tituloGrupoPublicos:PUBLICOS`;
   public commonTitle: string = $localize`:@@tituloGrupoComunes:COMUNES`;
   public groupTitle: string = $localize`:@@tituloGrupoMisGrupos:MIS GRUPOS`;

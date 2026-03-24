@@ -5819,6 +5819,18 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Eliminar informe</source>
         <target>Usuń raport</target>
       </trans-unit>
+      <trans-unit id="authorTooltipLabel">
+        <source>Autor:</source>
+        <target>Autor:</target>
+      </trans-unit>
+      <trans-unit id="createdAtTooltipLabel">
+        <source>Creado:</source>
+        <target>Utworzono:</target>
+      </trans-unit>
+      <trans-unit id="modifiedAtTooltipLabel">
+        <source>Modificado:</source>
+        <target>Zmodyfikowano:</target>
+      </trans-unit>
       <trans-unit id="emailAlreadyExistsTitle">
         <source>Email en uso</source>
         <target>Email w użyciu</target>

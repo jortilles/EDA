@@ -5915,6 +5915,18 @@ OR<ph id="5"/>
   <source>Eliminar informe</source>
   <target>Delete report</target>
 </trans-unit>
+<trans-unit id="authorTooltipLabel">
+  <source>Autor:</source>
+  <target>Author:</target>
+</trans-unit>
+<trans-unit id="createdAtTooltipLabel">
+  <source>Creado:</source>
+  <target>Created:</target>
+</trans-unit>
+<trans-unit id="modifiedAtTooltipLabel">
+  <source>Modificado:</source>
+  <target>Modified:</target>
+</trans-unit>
 <trans-unit id="emailAlreadyExistsTitle">
   <source>Email en uso</source>
   <target>Email in use</target>
