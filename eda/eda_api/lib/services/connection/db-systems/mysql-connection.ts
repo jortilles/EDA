@@ -1,4 +1,4 @@
-import { createConnection, createPool, Connection as SqlConnection } from 'mysql2';
+import { createConnection, createPool, Connection as SqlConnection } from 'mysql2/promise';
 import { MySqlBuilderService } from "../../query-builder/qb-systems/mySql-builder.service";
 import { AbstractConnection } from "../abstract-connection";
 import { AggregationTypes } from "../../../module/global/model/aggregation-types";
@@ -170,18 +170,37 @@ export class MysqlConnection extends AbstractConnection {
         }
     }
 
-    async execQuery(query: string): Promise<any> {
+async execQuery(query: string): Promise<any> {
         try {
+            // Convertir querys con callback a query con promise
             this.client.query = util.promisify(this.client.query);
-            const rows = await this.client.query(query);
-            if (!this.pool) this.client.destroy();
+
+            let maxStatementTime = 600;
+            
+            // Añadir timeout a la query
+            const queryWithTimeout = `SET STATEMENT max_statement_time=${maxStatementTime} FOR ${query}`;
+
+            // Crear promesa con timeout que se cancela a los 600 segundos
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => {
+                    reject(new Error(`Query execution timed out after ${maxStatementTime} seconds`));
+                }, (maxStatementTime * 100));
+            });
+        
+            // Ejecutar race based entre query y timeout
+            const rows = await Promise.race([
+                this.client.query(queryWithTimeout),
+                timeoutPromise
+            ]);
             return rows;
         } catch (err) {
+            if (err.message === 'Query execution timed out after 60 seconds') {
+                // Visualizar errores de timeout
+                console.error('Query timeout:', query);
+            }
             console.log(err);
-            if (!this.pool) this.client.destroy();
             throw err;
         }
-
     }
 
     async execSqlQuery(query: string): Promise<any> {
