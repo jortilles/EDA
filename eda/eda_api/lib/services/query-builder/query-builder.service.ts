@@ -723,14 +723,18 @@ export abstract class QueryBuilderService {
 
     // not needed to filter relations. They are stored in a different array
     public findRelationsRecursive(tables, table, vMap) {
+        // Added safety check for table and relations to avoid TypeError
+        if (!table) return vMap;
         vMap.set(table.table_name, table);
-        table.relations
-            .forEach(rel => {
-                const newTable = tables.find(t => t.table_name === rel.target_table);
-                if (!vMap.has(newTable.table_name)) {
-                    this.findRelationsRecursive(tables, newTable, vMap);
-                }
-            });
+        if (table.relations) {
+            table.relations
+                .forEach(rel => {
+                    const newTable = tables.find(t => t.table_name === rel.target_table);
+                    if (newTable && !vMap.has(newTable.table_name)) {
+                        this.findRelationsRecursive(tables, newTable, vMap);
+                    }
+                });
+        }
         return vMap;
     }
 
