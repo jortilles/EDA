@@ -300,6 +300,7 @@ export class EdaBlankPanelComponent implements OnInit {
     private route = inject(ActivatedRoute);
     private formBuilder = inject(UntypedFormBuilder);
 
+
     public editingTitle: boolean = false;
 
 
@@ -428,9 +429,6 @@ public tableNodeExpand(event: any): void {
 
   const targetNode = this.tableInput ? (this.findOriginalNode(node) || node) : node;
   PanelInteractionUtils.expandTableNode(this, targetNode);
-
-  // Asignamos niveles SÍNCRONAMENTE, antes de que Angular renderice el árbol.
-  this.assignLevels([targetNode], targetNode.level ?? 0);
 
   setTimeout(() => {
     // Si la expansión no produjo hijos, eliminamos las propiedades de carpeta expandible
@@ -625,7 +623,7 @@ public tableNodeExpand(event: any): void {
                 PanelInteractionUtils.handleCurrentQuery2(this);
                 this.reloadTablesData();
                 PanelInteractionUtils.loadTableNodes(this);
-                this.assignLevels(this.tableNodes, 0);
+
                 this.displayedTableNodes = this.tableNodes;
 
                 this.userSelectedTable = undefined;
@@ -1753,7 +1751,6 @@ public tableNodeExpand(event: any): void {
 
         if (this.selectedQueryMode == 'EDA2' && this.currentQuery.length === 1) {
             PanelInteractionUtils.loadTableNodes(this);
-            this.assignLevels(this.tableNodes, 0);
             this.displayedTableNodes = this.tableNodes;
        }
     }
@@ -2023,15 +2020,6 @@ public tableNodeExpand(event: any): void {
         QueryUtils.runManualQuery(this) // Ejecutando con la nueva configuracion de currentQuery
     }
 
-private assignLevels(nodes: any[], level = 0): void {
-  nodes.forEach(node => {
-    node.level = level;
-    node.styleClass = `tree-level-${level}`;
-    if (node.children?.length) {
-      this.assignLevels(node.children, level + 1);
-    }
-  });
-}
 
     getAttributeTypeIcon(type: string) {
         const icons = {

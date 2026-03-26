@@ -205,7 +205,6 @@ export class GlobalFiltersService {
             }
         }
 
-        this.assignLevels(pathsTables, 0);
         return pathsTables;
     }
 
@@ -286,22 +285,9 @@ export class GlobalFiltersService {
             }
 
             expandNode.children.sort((a, b) => a.label.localeCompare(b.label));
-
-            // Asignar niveles síncronamente para que el CSS de indentación
-            // sea correcto desde el primer render, sin race conditions.
-            this.assignLevels([expandNode], expandNode.level ?? 0);
         }
     }
 
-    private assignLevels(nodes: any[], level = 0): void {
-        nodes.forEach(node => {
-            node.level = level;
-            node.styleClass = `tree-level-${level}`;
-            if (node.children?.length) {
-                this.assignLevels(node.children, level + 1);
-            }
-        });
-    }
 
     public formatFilter(globalFilter: any) {
         let formatedFilter: any;
