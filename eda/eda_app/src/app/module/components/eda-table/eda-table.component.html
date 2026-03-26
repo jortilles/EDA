@@ -38,8 +38,8 @@
             </tr>
 
             <tr *ngFor="let serie of inject.series" >
-                <th *ngFor="let label of serie.labels" [attr.rowspan]="label.rowspan" [pSortableColumn]="label.column" [attr.colspan]="label.colspan" 
-                (click)="inject.onHeaderClick(label)" [pTooltip]="getTooltip(label)" style="text-align:center"  >
+                <th *ngFor="let label of serie.labels" [attr.rowspan]="label.rowspan" [pSortableColumn]="label.column" [attr.colspan]="label.colspan"
+                (click)="inject.onHeaderClick(label)" [pTooltip]="getTooltip(label)" style="text-align:center" [ngStyle]="getStyle()" >
                     <div class="flex items-center">
                         {{label.title}}
                         @if(label.sortable){

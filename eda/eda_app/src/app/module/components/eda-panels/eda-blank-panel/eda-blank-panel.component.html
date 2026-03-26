@@ -947,6 +947,7 @@
   
       <!-- Preview View -->
       @if(indextab == 1){
+        <div class="overflow-y-auto" style="max-height: 65vh;">
         <div class="grid grid-cols-5 gap-x-4 ">
           <div class="col-span-4">
             <div class="rounded-lg border p-4 bg-muted/30 flex justify-center" style="height:60vh;">
@@ -1017,6 +1018,7 @@
         @if (dragAndDropAvailable && graphicType==='crosstable') {
           <drag-drop [axes]="axes" (newAxes)="newAxesOrdering($event)"></drag-drop>
         }
+        </div>
       }
     </div>
   
