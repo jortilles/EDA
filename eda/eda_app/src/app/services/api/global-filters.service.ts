@@ -205,6 +205,7 @@ export class GlobalFiltersService {
             }
         }
 
+        this.assignLevels(pathsTables, 0);
         return pathsTables;
     }
 
@@ -235,7 +236,7 @@ export class GlobalFiltersService {
                 /** Checks if the current child_node is included before.
                  * This prevents duplicated paths.*/
                 if ((!rootTree.includes(relation.target_table) || relation.autorelation) && !childrenId.includes(child_id)) {
-                    // Label to show on the treeComponent 
+                    // Label to show on the treeComponent
                     let childLabel = relation.display_name?.default
                         ? `${relation.display_name.default}`
                         : ` ${relation.source_column[0]} - ${relation.target_table} `;
@@ -285,7 +286,21 @@ export class GlobalFiltersService {
             }
 
             expandNode.children.sort((a, b) => a.label.localeCompare(b.label));
+
+            // Asignar niveles síncronamente para que el CSS de indentación
+            // sea correcto desde el primer render, sin race conditions.
+            this.assignLevels([expandNode], expandNode.level ?? 0);
         }
+    }
+
+    private assignLevels(nodes: any[], level = 0): void {
+        nodes.forEach(node => {
+            node.level = level;
+            node.styleClass = `tree-level-${level}`;
+            if (node.children?.length) {
+                this.assignLevels(node.children, level + 1);
+            }
+        });
     }
 
     public formatFilter(globalFilter: any) {

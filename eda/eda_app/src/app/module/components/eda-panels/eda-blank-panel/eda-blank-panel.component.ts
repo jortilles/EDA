@@ -343,7 +343,6 @@ export class EdaBlankPanelComponent implements OnInit {
     async ngOnInit() {
         this.index = 0;
         this.readonly = this.panel.readonly;
-        this.assignLevels(this.tableNodes, 0);
 
         await this.setTablesData();
 
@@ -427,13 +426,21 @@ public tableNodeExpand(event: any): void {
 
   this.loadingNodes = true;
 
-  const originalNode = this.findOriginalNode(node) || node;
-  PanelInteractionUtils.expandTableNode(this, originalNode);
+  const targetNode = this.tableInput ? (this.findOriginalNode(node) || node) : node;
+  PanelInteractionUtils.expandTableNode(this, targetNode);
 
-  // Si expandís de forma asíncrona, esperá al resultado
+  // Asignamos niveles SÍNCRONAMENTE, antes de que Angular renderice el árbol.
+  this.assignLevels([targetNode], targetNode.level ?? 0);
+
   setTimeout(() => {
-    this.assignLevels([originalNode], originalNode.level || 0);
+    // Si la expansión no produjo hijos, eliminamos las propiedades de carpeta expandible
+    if (targetNode.children?.length === 0) {
+      delete targetNode.children;
+      delete targetNode.expandedIcon;
+      delete targetNode.collapsedIcon;
+    }
     this.loadingNodes = false;
+    // Re-aplicar el filtro tras la expansión para incluir los nuevos hijos cargados.
     if (this.tableInput) {
       this.displayedTableNodes = this.filterTreeNodes(this.tableNodes, this.tableInput.toLowerCase());
     }
@@ -618,6 +625,7 @@ public tableNodeExpand(event: any): void {
                 PanelInteractionUtils.handleCurrentQuery2(this);
                 this.reloadTablesData();
                 PanelInteractionUtils.loadTableNodes(this);
+                this.assignLevels(this.tableNodes, 0);
                 this.displayedTableNodes = this.tableNodes;
 
                 this.userSelectedTable = undefined;
@@ -1745,6 +1753,7 @@ public tableNodeExpand(event: any): void {
 
         if (this.selectedQueryMode == 'EDA2' && this.currentQuery.length === 1) {
             PanelInteractionUtils.loadTableNodes(this);
+            this.assignLevels(this.tableNodes, 0);
             this.displayedTableNodes = this.tableNodes;
        }
     }
@@ -2017,6 +2026,7 @@ public tableNodeExpand(event: any): void {
 private assignLevels(nodes: any[], level = 0): void {
   nodes.forEach(node => {
     node.level = level;
+    node.styleClass = `tree-level-${level}`;
     if (node.children?.length) {
       this.assignLevels(node.children, level + 1);
     }
