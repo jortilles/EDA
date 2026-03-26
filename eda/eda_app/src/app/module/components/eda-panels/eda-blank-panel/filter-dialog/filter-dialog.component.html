@@ -15,6 +15,23 @@
                 <label i18n="@@tiposFiltrosLabel" for="types">Tipos de filtro</label>
               </span>
             </div>
+            <!-- WHERE / HAVING selector -->
+            @if (filterSelected && selectedColumn?.column_type === 'numeric' && !display.switchButton) {
+              <div>
+                <span class="p-float-label">
+                  <p-dropdown
+                    id="whereHaving"
+                    [options]="filterBeforeAfter.elements"
+                    [(ngModel)]="filterBeforeAfterSelected"
+                    optionLabel="label"
+                    [autoDisplayFirst]="true"
+                    [style]="{'width': '100%'}"
+                    (onChange)="whereHavingSwitch(filterBeforeAfterSelected)">
+                  </p-dropdown>
+                  <label for="whereHaving" i18n="@@whereHavingLabel">Ámbito del filtro</label>
+                </span>
+              </div>
+            }
             <!-- Switch y botón -->
             <div class="flex justify-between items-center w-full mt-4 w-[100%]">
               <div class="flex items-center gap-2">

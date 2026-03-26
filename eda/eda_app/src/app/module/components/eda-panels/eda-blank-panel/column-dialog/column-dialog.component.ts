@@ -46,7 +46,7 @@ const STANDALONE_COMPONENTS = [
     imports: [STANDALONE_COMPONENTS, ANGULAR_MODULES, PRIMENG_MODULES],
     selector: 'app-column-dialog',
     templateUrl: './column-dialog.component.html',
-    styleUrls: ['../eda-blank-panel.component.css']
+    styleUrls: ['../eda-blank-panel.component.css', './column-dialog.component.css']
 })
 
 export class ColumnDialogComponent {
@@ -83,6 +83,7 @@ export class ColumnDialogComponent {
     public formatDates: FormatDates[];
     public formatDate: FormatDates;
     public aggregationsTypes: any[] = [];
+    public aggregationSelected: any;
     public inputType: string;
     public dropDownFields: SelectItem[] = [];
     public limitSelectionFields: number;
@@ -92,6 +93,21 @@ export class ColumnDialogComponent {
     public title: string;
     public editingTitle: boolean = false;
     public editableTitle: string = '';
+
+    public filterBeforeAfter = {
+        filterBeforeGrouping: true, // valor por defecto true ==> WHERE / valor false ==> HAVING
+        elements: [
+            {label: 'Aplicar el filtro sobre todos los registros.', value: true},
+            {label: 'Aplicar el filtro sobre los resultados.', value: false},
+        ],
+    }
+    public filterBeforeAfterSelected: any;
+    public aggregationType: any = null;
+
+    // Tooltip
+    public whereMessage: string = $localize`:@@whereMessage: Filtro sobre todos los registros`;
+    public havingMessage: string = $localize`:@@havingMessage: Filtro sobre los resultados`;
+    public textBetween: string = $localize`:@@textBetween:Entre`
 
     constructor(
         private dashboardService: DashboardService,
@@ -127,7 +143,15 @@ export class ColumnDialogComponent {
         }
 
         this.showFormatDateSection = columnType == 'date';
+        // Buscando el valor inicial de agregacion de la columna seleccionada
+        for(let agg of this.selectedColumn.aggregation_type) {
+            if(agg.selected){
+                this.aggregationSelected = _.cloneDeep(agg);
+            }
+        } 
     }
+
+
 
     // Metodos de cambio de modo edición
     // Input cambia a editable 
@@ -183,6 +207,8 @@ export class ColumnDialogComponent {
         const valueListSource = this.selectedColumn.valueListSource;
         const joins = this.selectedColumn.joins;
         const autorelation = this.selectedColumn.autorelation;
+        const filterBeforeGrouping = this.filterBeforeAfter.filterBeforeGrouping;
+        const aggregation_type = this.aggregationSelected ? this.aggregationSelected.value : null;
 
         const filter = this.columnUtils.setFilter({
             obj: this.filterValue,
@@ -193,7 +219,9 @@ export class ColumnDialogComponent {
             selectedRange,
             valueListSource,
             autorelation,
-            joins
+            joins,
+            filterBeforeGrouping,
+            aggregation_type,
         });
 
         this.filter.selecteds.push(filter);        
@@ -204,6 +232,9 @@ export class ColumnDialogComponent {
         this.filterSelected = undefined; // filtre seleccionat cap
         this.filterValue = {}; // filtre ningun
         this.filter.range = null;
+
+        this.filterBeforeAfter.filterBeforeGrouping = true;
+        this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
     }
 
     removeFilter(item: any) {
@@ -234,6 +265,17 @@ export class ColumnDialogComponent {
 
         if (addAggr) {
             addAggr.aggregation_type = JSON.parse(JSON.stringify(this.selectedColumn.aggregation_type));
+        }
+
+        // Seteo de aggregationSelected dependiendo de la selección realizada por el usuario
+        this.aggregationSelected = _.cloneDeep(type);
+
+        // En caso no tengamos agregación el selected Where/Having se establece en Where
+        if(this.aggregationSelected.value==='none') {
+            this.whereHavingSwitch({
+                label: 'WHERE',
+                value: true,
+            })
         }
     }
 
@@ -647,6 +689,30 @@ export class ColumnDialogComponent {
 
     getAggName(value: string) {
         return aggTypes.find(agg => agg.value === value)?.label;
+    }
+
+    getAggregationText(value: any) {
+        const label = aggTypes.filter(agg => {
+            return (agg.value === value.aggregation_type);
+        })[0].label;
+        return label;
+    }
+
+    getFilterText(value) {
+        if(value.filter_type === 'between') return this.textBetween;
+        return value.filter_type;
+    }
+
+    whereHavingSwitch(selected) {
+
+        if(selected.value) {
+            this.filterBeforeAfter.filterBeforeGrouping = true;
+            return true
+        } else {
+            this.filterBeforeAfter.filterBeforeGrouping = false;
+            return false
+        }
+
     }
 
     processPickerEvent(event) {

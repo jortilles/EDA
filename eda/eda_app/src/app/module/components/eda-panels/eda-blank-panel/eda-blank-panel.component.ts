@@ -16,6 +16,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
 import { NULL_VALUE, EMPTY_VALUE} from '../../../../config/personalitzacio/customizables';
+import { aggTypes } from 'app/config/aggretation-types';
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 
 import { PanelChart } from './panel-charts/panel-chart';
@@ -212,7 +213,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public draggFilters: string = $localize`:@@draggFilters:Arrastre aquí los atributos sobre los que quiera filtrar`;
     public ptooltipSQLmode: string = $localize`:@@sqlTooltip:Al cambiar de modo perderás la configuración de la consulta actual`;
     public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`
-
+    public aggregationText: string = $localize`:@@aggregationText:Agregación`;
+    public textBetween: string = $localize`:@@textBetween:Entre`
     /** Query Variables */
     public tables: any[] = [];
     public tablesToShow: any[] = [];
@@ -1825,6 +1827,13 @@ public tableNodeExpand(event: any): void {
         return pathStr
     }
 
+    public getDisplayAggregation(aggregation: any) {
+        let str = '';
+        const aggregationText = aggTypes.filter(agg => agg.value === aggregation.value)[0].label
+        str = `&nbsp<strong>( ${aggregationText} )</strong>&nbsp`;
+        return str;
+    }
+
     public getDisplayFilterStr(filter: any) {
         let str = '';
 
@@ -1836,6 +1845,10 @@ public tableNodeExpand(event: any): void {
 
             const values = filter.filter_elements[0]?.value1;
             const values2 = filter.filter_elements[1]?.value2;
+            // Nomenclatura:  WHERE => Filtro sobre todos los registros | HAVING => Filtro sobre los resultados
+            const filterBeforeGroupingText = filter.filterBeforeGrouping ? 'Filtro sobre todos los registros' : 'Filtro sobre los resultados'
+            // Agregación
+            const aggregation = filter.aggregation_type;
             let valueStr = '';
 
             if (values) {
@@ -1847,7 +1860,7 @@ public tableNodeExpand(event: any): void {
 
                 if (values2) {
                     if (values2.length == 1) {
-                        valueStr = `AND "${values2[0]}"`;
+                        valueStr = `"${values[0]}" - "${values2[0]}"`;
                     }  else if (values2.length > 1) {
                         valueStr = `AND [${values2.map((v: string) => (`"${v}"`) ).join(', ')}]`;
                     }
@@ -1856,9 +1869,15 @@ public tableNodeExpand(event: any): void {
             }
 
 
-            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filter.filter_type}</strong>&nbsp${valueStr}`;
-        }
+            let aggregationLabel = '';
+            if(aggTypes.filter(agg => agg.value === aggregation).length !== 0) aggregationLabel = aggTypes.filter(agg => agg.value === aggregation)[0].label;
 
+            // Agregado de internacionalización del between
+            let filterType = filter.filter_type
+            if(filterType === 'between') filterType = this.textBetween;
+
+            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filterType}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp - ${this.aggregationText}: &nbsp<strong>${aggregationLabel}</strong>&nbsp`;
+        }
 
         return str;
     }

@@ -5935,6 +5935,22 @@ OR<ph id="5"/>
   <source>Gestión del asistente</source>
   <target>Assistant Management</target>
 </trans-unit>
+<trans-unit id="whereMessage">
+  <source>Filtro sobre todos los registros</source>
+  <target>Filter on all records</target>
+</trans-unit>
+<trans-unit id="havingMessage">
+  <source>Filtro sobre los resultados</source>
+  <target>Filter on results</target>
+</trans-unit>
+<trans-unit id="aggregationText">
+  <source>Agregación</source>
+  <target>Aggregation</target>
+</trans-unit>
+<trans-unit id="textBetween">
+  <source>Entre</source>
+  <target>Between</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

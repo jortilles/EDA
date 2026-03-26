@@ -6182,6 +6182,22 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Gestión del asistente</source>
         <target>Gestion de l'assistant</target>
       </trans-unit>
+      <trans-unit id="whereMessage">
+        <source>Filtro sobre todos los registros</source>
+        <target>Filtrer tous les enregistrements</target>
+      </trans-unit>
+      <trans-unit id="havingMessage">
+        <source>Filtro sobre los resultados</source>
+        <target>Filtrer les résultats</target>
+      </trans-unit>
+      <trans-unit id="aggregationText">
+        <source>Agregación</source>
+        <target>Agrégation</target>
+      </trans-unit>
+      <trans-unit id="textBetween">
+        <source>Entre</source>
+        <target>Entre</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

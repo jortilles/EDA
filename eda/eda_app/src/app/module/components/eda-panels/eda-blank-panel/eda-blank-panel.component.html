@@ -509,8 +509,8 @@
                                 {{attr.display_name.default}}
                               </span>
                               @for (aggregation of attr.aggregation_type; track aggregation.display_name) {
-                                @if (aggregation.selected && !['No', 'no'].includes(aggregation.display_name)) {
-                                  &nbsp;({{aggregation.display_name}})
+                                @if (aggregation.selected && aggregation.display_name !== 'no') {
+                                  <span class="d-flex align-items-center" [innerHTML]="getDisplayAggregation(aggregation)"></span>
                                 }
                               }
                             </p>

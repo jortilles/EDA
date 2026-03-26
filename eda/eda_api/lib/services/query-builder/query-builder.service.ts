@@ -315,12 +315,12 @@ export abstract class QueryBuilderService {
             let column =  this.queryTODO.fields.find(c=> f.filter_table == c.table_id && f.filter_column == c.column_name );
             if(column){
                 if(column.hasOwnProperty('aggregation_type')){
-                    return column.aggregation_type==='none' || [ 'not_null' , 'not_null_nor_empty' , 'null_or_empty'].includes( f.filter_type) ?true:false;
+                    return column.aggregation_type==='none' || [ 'not_null' , 'not_null_nor_empty' , 'null_or_empty'].includes( f.filter_type) ?true:false || f.filterBeforeGrouping;
                 }else{
                     return true;
                 }
             }else{
-                return true;
+                return f.filterBeforeGrouping;
             }
             });
 
@@ -343,9 +343,9 @@ export abstract class QueryBuilderService {
         const havingFilters = this.queryTODO.filters.filter(f => {
             const column = this.queryTODO.fields.find(e => e.table_id === f.filter_table &&   f.filter_column === e.column_name);
             if(column){
-            return column.column_type=='numeric' && column.aggregation_type!=='none'?true:false;
+            return (column.column_type=='numeric' && column.aggregation_type!=='none'?true:false) && !f.filterBeforeGrouping;
             }else{
-                return false;
+                return !f.filterBeforeGrouping;
             }
         }).filter(f=> ![ 'not_null' , 'not_null_nor_empty' , 'null_or_empty'].includes( f.filter_type));
 
@@ -773,8 +773,34 @@ export abstract class QueryBuilderService {
         return col;
     }
 
-    public findHavingColumn(table: string, column: string) {
-        return this.queryTODO.fields.find((f: any)=> f.table_id === table && f.column_name === column);
+    public findHavingColumn( havingFilter:any) {
+        
+
+        if(this.queryTODO.fields.find((f: any)=> f.table_id === havingFilter.filter_table && 
+                                            f.filter === havingFilter.filter_column)){
+            return this.queryTODO.fields.find((f: any)=> f.table_id === havingFilter.filter_table && 
+                                             f.filter === havingFilter.filter_column);
+        }else{
+
+            return  { // devolvemos una columna ficticia con los valores que necesitamos para hacer el having
+                table_id: havingFilter.filter_table ,
+                column_name: havingFilter.filter_column,
+                display_name: havingFilter.filter_column,
+                column_type: havingFilter.filter_column_type,
+                old_column_type: havingFilter.filter_column_type,
+                aggregation_type: havingFilter.aggregation_type,
+                ordenation_type: 'Asc',
+                order: 1,
+                column_granted_roles: [],
+                row_granted_roles: [],
+                tableCount: 0,
+                minimumFractionDigits: 0,
+                whatif_column: false,
+                whatif: {},
+                joins: [],
+                autorelation: false
+            }
+        }
     }
 
     public setFilterType(filter: string) {
