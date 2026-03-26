@@ -5951,6 +5951,14 @@ OR<ph id="5"/>
   <source>Entre</source>
   <target>Between</target>
 </trans-unit>
+<trans-unit id="whereMessageLabel">
+  <source>Aplicar el filtro sobre todos los registros</source>
+  <target>Apply filter on all records</target>
+</trans-unit>
+<trans-unit id="havingMessageLabel">
+  <source>Aplicar el filtro sobre los resultados</source>
+  <target>Apply filter on results</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

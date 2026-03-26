@@ -5863,6 +5863,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Entre</source>
         <target>Wśród</target>
       </trans-unit>
+      <trans-unit id="whereMessageLabel">
+        <source>Aplicar el filtro sobre todos los registros</source>
+        <target>Zastosuj filtr do wszystkich rekordów</target>
+      </trans-unit>
+      <trans-unit id="havingMessageLabel">
+        <source>Aplicar el filtro sobre los resultados</source>
+        <target>Zastosuj filtr do wyników</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

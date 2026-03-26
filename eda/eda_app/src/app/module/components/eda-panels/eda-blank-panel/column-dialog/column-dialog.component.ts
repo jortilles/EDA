@@ -97,8 +97,8 @@ export class ColumnDialogComponent {
     public filterBeforeAfter = {
         filterBeforeGrouping: true, // valor por defecto true ==> WHERE / valor false ==> HAVING
         elements: [
-            {label: 'Aplicar el filtro sobre todos los registros.', value: true},
-            {label: 'Aplicar el filtro sobre los resultados.', value: false},
+            { label: $localize`:@@whereMessageLabel:Aplicar el filtro sobre todos los registros`, value: true },
+            { label: $localize`:@@havingMessageLabel:Aplicar el filtro sobre los resultados`, value: false },
         ],
     }
     public filterBeforeAfterSelected: any;

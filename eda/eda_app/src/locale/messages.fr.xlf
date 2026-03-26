@@ -6198,6 +6198,14 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Entre</source>
         <target>Entre</target>
       </trans-unit>
+      <trans-unit id="whereMessageLabel">
+        <source>Aplicar el filtro sobre todos los registros</source>
+        <target>Appliquer le filtre à tous les enregistrements</target>
+      </trans-unit>
+      <trans-unit id="havingMessageLabel">
+        <source>Aplicar el filtro sobre los resultados</source>
+        <target>Appliquer le filtre aux résultats</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

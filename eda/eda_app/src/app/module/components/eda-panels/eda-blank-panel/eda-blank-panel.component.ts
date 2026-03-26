@@ -1845,8 +1845,12 @@ public tableNodeExpand(event: any): void {
 
             const values = filter.filter_elements[0]?.value1;
             const values2 = filter.filter_elements[1]?.value2;
+
+            const whereMessage: string = $localize`:@@whereMessage: Filtro sobre todos los registros`;
+            const havingMessage: string = $localize`:@@havingMessage: Filtro sobre los resultados`;
+
             // Nomenclatura:  WHERE => Filtro sobre todos los registros | HAVING => Filtro sobre los resultados
-            const filterBeforeGroupingText = filter.filterBeforeGrouping ? 'Filtro sobre todos los registros' : 'Filtro sobre los resultados'
+            const filterBeforeGroupingText = filter.filterBeforeGrouping ? whereMessage : havingMessage
             // Agregación
             const aggregation = filter.aggregation_type;
             let valueStr = '';
