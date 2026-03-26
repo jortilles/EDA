@@ -255,7 +255,6 @@ export class EdaBlankPanelComponent implements OnInit {
     public loadingNodes: boolean = false;
     public rootTable: any;
     public tableNodes: any = [];
-    public tableNodesBase: any = [];
     public displayedTableNodes: any[] = [];
     public selectedTableNode: any;
     public nodeJoins: any[] = [];
@@ -619,7 +618,6 @@ public tableNodeExpand(event: any): void {
                 PanelInteractionUtils.handleCurrentQuery2(this);
                 this.reloadTablesData();
                 PanelInteractionUtils.loadTableNodes(this);
-                this.tableNodesBase = [...this.tableNodes];
                 this.displayedTableNodes = this.tableNodes;
 
                 this.userSelectedTable = undefined;
@@ -944,6 +942,9 @@ public tableNodeExpand(event: any): void {
         return selectedTable;
     }
 
+     // Filtra el buscador de entidades según el modo de query activo.
+     // Modo EDA (estándar): filtra la lista plana tablesToShow.
+     // Modo EDA2 (árbol) con query activa: filtra displayedTableNodes de forma recursiva
     public onTableInputKey(event: any) {
         if (this.selectedQueryMode === 'EDA2' && this.currentQuery.length > 0) {
             const term = event.target.value?.toLowerCase();
@@ -960,6 +961,7 @@ public tableNodeExpand(event: any): void {
         }
     }
 
+    // Filtra recursivamente un array de nodos del árbol por término de búsqueda.
     private filterTreeNodes(nodes: any[], term: string): any[] {
         const result: any[] = [];
         for (const node of nodes) {
@@ -980,6 +982,13 @@ public tableNodeExpand(event: any): void {
         return result;
     }
 
+    /**
+     * Busca el nodo original en tableNodes (árbol completo) que corresponde
+     * al nodo target recibido del evento de expansión.
+     * Necesario porque al filtrar se crean objetos clonados con children reducidos;
+     * la expansión debe operar sobre el nodo real para que tableNodes quede actualizado.
+     * Identifica el nodo por table_id (nodos raíz) o child_id (nodos hijo).
+     */
     private findOriginalNode(target: any, nodes: any[] = this.tableNodes): any {
         for (const node of nodes) {
             if (target.table_id && node.table_id === target.table_id) return node;
@@ -1736,7 +1745,6 @@ public tableNodeExpand(event: any): void {
 
         if (this.selectedQueryMode == 'EDA2' && this.currentQuery.length === 1) {
             PanelInteractionUtils.loadTableNodes(this);
-            this.tableNodesBase = [...this.tableNodes];
             this.displayedTableNodes = this.tableNodes;
        }
     }
