@@ -99,7 +99,7 @@
                 <label i18n="@@tiposFiltrosLabel" for="types">Tipos de filtro</label>
               </span>
             </div>
-            @if (filterSelected && selectedColumn?.column_type === 'numeric' && !display.switchButton) {
+            @if (filterSelected && selectedColumn?.column_type === 'numeric' && !display.switchButton && aggregationSelected?.value !== 'none') {
               <div>
                 <span class="p-float-label">
                   <p-dropdown
@@ -211,10 +211,13 @@
                       * {{ selectedColumn.display_name.default }} is
                       {{ filtre.filter_type }}
                     </b>
+                    <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage" tooltipPosition="left">
+                      <b>&nbsp;[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]&nbsp;</b>
+                    </span>
                     <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
                   </p>
                   }
-    
+
                   @if (filtre.filter_elements.length === 1) {
                   <p class="flex items-center">
                     <b class="m-1">
@@ -222,10 +225,13 @@
                       {{ filtre.filter_type }}
                       "{{ filtre.filter_elements[0].value1 }}"
                     </b>
+                    <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage" tooltipPosition="left">
+                      <b>&nbsp;[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]&nbsp;</b>
+                    </span>
                     <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
                   </p>
                   }
-    
+
                   @if (filtre.filter_elements.length === 2) {
                   <p class="flex items-center">
                     <b class="m-1">
@@ -233,6 +239,9 @@
                       {{ filtre.filter_type }}
                       "{{ filtre.filter_elements[0].value1}}" Y "{{ filtre.filter_elements[1].value2 }}"
                     </b>
+                    <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage" tooltipPosition="left">
+                      <b>&nbsp;[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]&nbsp;</b>
+                    </span>
                     <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
                   </p>
                   }

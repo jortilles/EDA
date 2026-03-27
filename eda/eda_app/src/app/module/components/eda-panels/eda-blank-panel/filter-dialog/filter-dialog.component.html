@@ -3,7 +3,11 @@
   <div content class="grid gap-4">
     <div class="flex flex-col mt-4 gap-4">
       <!-- Configuración de filtros -->
-        <div class="grid grid-cols-[42.5%,42.5%,15%] gap-4 items-start mt-10">
+        <div class="grid gap-4 items-start mt-10"
+          [ngClass]="{
+            'grid-cols-[30%,30%,25%,15%]': filterSelected && selectedColumn?.column_type === 'numeric' && !display.switchButton && !filterBeforeAfter.filterBeforeGrouping,
+            'grid-cols-[42.5%,42.5%,15%]': !(filterSelected && selectedColumn?.column_type === 'numeric' && !display.switchButton && !filterBeforeAfter.filterBeforeGrouping)
+          }">
           <div class="flex flex-col gap-4 w-[100%]">
             <!-- Tipo de filtro  -->
             <div>
@@ -41,11 +45,11 @@
                   (onChange)="loadDropDrownData()">
                 </p-inputSwitch>
               </div>
-  
-  
+
+
             </div>
           </div>
-  
+
           <!-- Valores de los filtros -->
           <div class="flex flex-col gap-2">
             @if (!!display.calendar && !filter.switch) {
@@ -106,6 +110,22 @@
             }
           </div>
 
+          <!-- Agregaciones (solo cuando se selecciona HAVING) -->
+          @if (filterSelected && selectedColumn?.column_type === 'numeric' && !display.switchButton && !filterBeforeAfter.filterBeforeGrouping) {
+            <div class="flex flex-col gap-2">
+              <h4 i18n="@@agregacionesH4">Agregaciones</h4>
+              <div class="aggregation-list">
+                @for (aggregation of aggregationsTypes; track aggregation) {
+                  <div class="aggregation-box"
+                    (click)="addAggregation(aggregation)"
+                    [ngClass]="aggregation.selected === true ? 'aggregation-active' : 'aggregation-unactive'">
+                    <span>{{getAggName(aggregation.value)}}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
           <div class="flex flex-col gap-2 items-start ">
 
             <button class="addFilter-button" (click)="addFilter()" [disabled]="display.filterButton">
@@ -128,6 +148,9 @@
                           * {{ selectedColumn.display_name.default }} is
                           {{ filtre.filter_type }}
                         </b>
+                        <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage" tooltipPosition="left">
+                          <b>&nbsp;[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]&nbsp;</b>
+                        </span>
                         <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
                       </p>
                     }
@@ -139,10 +162,13 @@
                           {{ filtre.filter_type }}
                           "{{ filtre.filter_elements[0].value1 }}"
                         </b>
+                        <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage" tooltipPosition="left">
+                          <b>&nbsp;[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]&nbsp;</b>
+                        </span>
                         <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
-                    </p>
+                      </p>
                     }
-                    
+
                     @if (filtre.filter_elements.length === 2) {
                       <p class="flex items-center">
                         <b class="m-1">
@@ -150,6 +176,9 @@
                           {{ filtre.filter_type }}
                           "{{ filtre.filter_elements[0].value1}}" Y "{{ filtre.filter_elements[1].value2 }}"
                         </b>
+                        <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage" tooltipPosition="left">
+                          <b>&nbsp;[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]&nbsp;</b>
+                        </span>
                         <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
                       </p>
                     }
