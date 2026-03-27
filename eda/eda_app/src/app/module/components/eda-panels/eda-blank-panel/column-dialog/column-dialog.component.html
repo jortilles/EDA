@@ -226,6 +226,67 @@
           </div>
         }
       </div>
+
+      @if (selectedColumn.aggregation_type.length===7) {
+        <div class="">
+          <div class="flex justify-start gap-1 items-center">
+            <h4 i18n="@@rangeTitle">Rangos: </h4>
+            <div>
+              <span *ngIf="availableRange">
+                <i class="pi pi-info-circle"
+                    style="cursor: pointer; margin-top: -5px; font-size: 1.2rem;"
+                    [pTooltip]="ptooltipViewTextRanges">
+                </i>
+              </span>
+              <span *ngIf="!availableRange">
+                <i class="pi pi-info-circle"
+                    style="cursor: pointer; margin-top: -5px; font-size: 1.2rem;"
+                    [pTooltip]="ptooltipNotAvailableRanges">
+                </i>
+              </span>
+            </div>
+          </div>
+  
+          <div *ngIf="availableRange">
+  
+              <input
+              type="text"
+              style="font-size: 1rem; margin-bottom: 10px; border: 1px solid #d9d9d9; border-radius: 6px; padding: 4px 8px;"
+              [(ngModel)]="rangeString"
+              [disabled]="showRange"
+              (input)="validateInput($event)">
+  
+              <button
+                  class="confirm-button"
+                  (click)="addRange(rangeString)"
+                  [disabled]="((!rangeString || rangeString.length === 0)) || showRange"
+              >
+                <span i18n="@@addRange">Añadir Rango</span>
+              </button>
+  
+              <div *ngIf="showRange" class="col-12 foot-card" style="margin-top: 5px;">
+  
+                  <p-scrollPanel [style]="{width: '100%', height: '160px'}" styleClass="custombar1">
+  
+                      <ng-container *ngIf="showRange">
+  
+                          <b i18n="@@rangeDescriptionB" class="mr-2 pull-left">
+                              • Rango:
+                            </b>
+                            <i class="pull-right ui-dropdown-clear-icon pi pi-times pointer md-3"(click)="removeRange()"></i>
+  
+                            <div *ngIf="showRange" class="d-flex align-items-center" [innerHTML]="selectedRange" style="font-size: 1rem; padding: 10px 40px 5px 30px;"></div>
+  
+                      </ng-container>
+  
+                  </p-scrollPanel>
+  
+              </div>
+  
+          </div>        
+        </div>
+      }
+
     </div>
   </div>
 </eda-dialog2>
