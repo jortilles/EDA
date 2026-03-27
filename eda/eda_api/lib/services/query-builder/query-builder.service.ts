@@ -152,7 +152,9 @@ export abstract class QueryBuilderService {
         }
 
         /** ..........................PER ELS VALUE LISTS................................ */
-
+        
+        // Checkeo del rango, si existe, agrega los cambios, en otro caso todo continua igual
+        this.queryTODO = this.verifyRange(this.queryTODO);
 
         const filterTables = this.queryTODO.filters.map(filter => filter.filter_table);
 
@@ -373,6 +375,134 @@ export abstract class QueryBuilderService {
             return this.query;
         }
     }
+
+    public verifyRange(queryTODO: any){
+
+        queryTODO.fields.forEach( (fieldsColumn:any, j: number) => {
+            
+            if(fieldsColumn.ranges===undefined) {
+                
+                queryTODO.fields[j]=fieldsColumn;
+            } else {
+
+                if(fieldsColumn.ranges.length===0){
+                    queryTODO.fields[j]=fieldsColumn;
+                } else {
+
+                    fieldsColumn.computed_column = 'computed';
+                    fieldsColumn.column_type = 'text';
+        
+                    let identifiedColumn = `${fieldsColumn.table_id}.${fieldsColumn.column_name}`
+
+                    if(fieldsColumn.joins.length !== 0) { /** Los campos tienen un identificador único con puntos si provienen de una tabla unida table.column.table.column.*/
+                       let parts = identifiedColumn.split('.');  /** Nos quedamos con el primero y el último, que son los buenos.*/
+                       let newColumn = parts[0] + '.' + parts[parts.length - 1];
+                       identifiedColumn = newColumn;
+                    }
+
+                    let SQLexpression = "CASE\n";
+                
+                    // Primer caso: menor que el primer valor del rango.
+                    SQLexpression += `\tWHEN ${identifiedColumn} < ${fieldsColumn.ranges[0]} THEN '< ${fieldsColumn.ranges[0]}'\n`; 
+        
+                    // Casos intermedios: entre cada par de valores en el rango
+                    for (let i = 0; i < fieldsColumn.ranges.length - 1; i++) {
+                        const lower = fieldsColumn.ranges[i];
+                        const upper = fieldsColumn.ranges[i + 1] - 1;
+                        SQLexpression += `\tWHEN ${identifiedColumn} >= ${lower} AND ${identifiedColumn} <= ${upper} THEN ' ${lower} - ${upper}'\n`;
+                    }            
+        
+                    // Último caso: mayor o igual que el último valor del rango.
+                    SQLexpression += `\tWHEN ${identifiedColumn} >= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]} THEN '>= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]}'\n`;
+                    SQLexpression += "END";            
+        
+                    fieldsColumn.SQLexpression = SQLexpression;
+
+                    // Generando ordenamiento
+                    let rangesOrderExpression = "CASE\n";
+                    let rangesOrderExpressionNumber = 1;
+                    
+                    // Primer caso:
+                    rangesOrderExpression += `\tWHEN ${identifiedColumn} < ${fieldsColumn.ranges[0]} THEN ${rangesOrderExpressionNumber}\n`;
+
+                    // Caso del medio:
+                    for(let i = 0; i<fieldsColumn.ranges.length - 1; i++) {
+                        rangesOrderExpressionNumber += 1;
+                        const lower = fieldsColumn.ranges[i];
+                        const upper = fieldsColumn.ranges[i + 1] - 1;
+                        rangesOrderExpression += `\tWHEN ${identifiedColumn} >= ${lower} AND ${identifiedColumn} <= ${upper} THEN ${rangesOrderExpressionNumber}\n`;
+                    }
+
+                    // Ultimo caso:
+                    rangesOrderExpression += `\tWHEN ${identifiedColumn} >= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]} THEN  ${rangesOrderExpressionNumber + 1}\n`;
+                    rangesOrderExpression += "END";
+                    fieldsColumn.rangesOrderExpression = rangesOrderExpression;
+
+                    queryTODO[j] = fieldsColumn;
+
+                    // Agregación de ceros y valores nulos para campos que tienen agregaciones de: suma, recuento de valores y valores diferentes.
+
+                    let withRanges = "WITH ranges AS (\n";
+
+                    withRanges += `    SELECT '< ${fieldsColumn.ranges[0]}' as \`range\`\n`;
+
+                    for (let i = 0; i < fieldsColumn.ranges.length - 1; i++) {
+                        withRanges += `    UNION SELECT ' ${fieldsColumn.ranges[i]} - ${fieldsColumn.ranges[i + 1] - 1}'\n`;
+                    }
+
+                    withRanges += `    UNION SELECT '>= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]}'\n`;
+                    withRanges += ")\n";
+
+                    let coalesceRanges = `SELECT\n`;
+
+                    let coalesceRangesAux = '';
+                    queryTODO.fields.forEach( col => {
+                        if(col.ranges.length===0) {
+                            if(col.column_type==='numeric') {
+                                coalesceRangesAux += `    COALESCE(t.\`${col.display_name}\`, 0) AS \`${col.display_name}\`,\n`
+                            } else if(col.column_type==='text') {
+                                coalesceRangesAux += `    COALESCE(t.\`${col.display_name}\`, null) AS \`${col.display_name}\`,\n`
+                            } else {
+                                coalesceRangesAux += `    COALESCE(t.\`${col.display_name}\`, 0) AS \`${col.display_name}\`,\n` // Check dates
+                            }
+                        } else {
+                            coalesceRangesAux += `    r.range AS \`${fieldsColumn.display_name}\`,\n`;
+                        }
+                    })
+
+                    // Eliminando la última coma del salto de línea
+                    const lastCommaIndex = coalesceRangesAux.lastIndexOf(',\n');
+                    if (lastCommaIndex !== -1) {
+                        coalesceRangesAux = coalesceRangesAux.slice(0, lastCommaIndex) + coalesceRangesAux.slice(lastCommaIndex + 1);
+                    }
+
+                    coalesceRanges = coalesceRanges + coalesceRangesAux + `FROM ranges r\nLEFT JOIN(\n`;
+                    withRanges = withRanges + coalesceRanges
+                    fieldsColumn.withRanges = withRanges; // agregar withRanges en el campo del campo que tiene un rango
+
+                    let orderRanges = `\n) t ON r.range = t.\`${fieldsColumn.display_name}\`\nORDER BY\n`;
+                    orderRanges += `    CASE\n`;
+                    orderRanges += `        WHEN r.range = '< ${fieldsColumn.ranges[0]}' THEN 1\n`;
+
+                    // Generando caso intermedios
+                    for (let i = 0; i < fieldsColumn.ranges.length - 1; i++) {
+                        orderRanges += `        WHEN r.range = ' ${fieldsColumn.ranges[i]} - ${fieldsColumn.ranges[i + 1] - 1}' THEN ${i + 2}\n`;
+                    }
+
+                    // Agregue el último caso para valores mayores o iguales al último elemento.
+                    orderRanges += `        WHEN r.range = '>= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]}' THEN ${fieldsColumn.ranges.length + 1}\n`;
+                    orderRanges += `    END;`;
+
+                    fieldsColumn.orderRanges = orderRanges;
+
+                }
+
+            }
+
+        })
+
+        return queryTODO
+    }    
 
     public buildGraph() {
         const graph = [];
