@@ -32,7 +32,8 @@
         <div class="aggregation-list mt-10">
           @for (aggregation of aggregationsTypes; track aggregation) {
             <div class="aggregation-box"
-                (click)="addAggregation(aggregation)"
+                (click)="allowedAggregations && addAggregation(aggregation)"
+                [ngStyle]="{'cursor': !allowedAggregations ? 'not-allowed' : 'pointer'}"
                 [ngClass]="aggregation.selected === true ? 'aggregation-active' : 'aggregation-unactive'">
                 <span>{{getAggName(aggregation.value)}}</span>
             </div>
