@@ -1,10 +1,11 @@
-import { createConnection, createPool, Connection as SqlConnection } from 'mysql2';
+import { createConnection, createPool, Connection as SqlConnection } from 'mysql2/promise';
 import { MySqlBuilderService } from "../../query-builder/qb-systems/mySql-builder.service";
 import { AbstractConnection } from "../abstract-connection";
 import { AggregationTypes } from "../../../module/global/model/aggregation-types";
-import { ConnectionOptions, PoolOptions, Pool } from 'mysql2/typings/mysql';
+import { ConnectionOptions, PoolOptions } from 'mysql2/typings/mysql';
+import { Pool } from 'mysql2/promise';
 import { PoolManagerConnectionSingleton } from '../pool-manager-connection';
-const util = require('util');
+const EDA_API_CONFIG = require('../../../../config/eda_api_config');
 
 
 export class MysqlConnection extends AbstractConnection {
@@ -12,6 +13,7 @@ export class MysqlConnection extends AbstractConnection {
     private queryBuilder: MySqlBuilderService;
     private AggTypes: AggregationTypes;
     private pool: Pool;
+    private isMariaDB: boolean | null = null;
 
     public GetDefaultSchema(): string { return null; }
 
@@ -136,7 +138,6 @@ export class MysqlConnection extends AbstractConnection {
             this.client = await this.getclient();
             const foreignKeys = await this.execQuery(fkQuery);
             this.client = await this.getclient();
-            this.client.query = util.promisify(this.client.query);
             try {
                 for (let i = 0; i < tableNames.length; i++) {
                     let new_table = await this.setTable(tableNames[i]);
@@ -170,18 +171,51 @@ export class MysqlConnection extends AbstractConnection {
         }
     }
 
-    async execQuery(query: string): Promise<any> {
+async execQuery(query: string): Promise<any> {
         try {
-            this.client.query = util.promisify(this.client.query);
-            const rows = await this.client.query(query);
-            if (!this.pool) this.client.destroy();
+            let maxStatementTime = EDA_API_CONFIG.maxStatementTime ?? 900;
+            console.log(`SET maxStatementTime=${maxStatementTime}`);
+
+            // Detectar si es MariaDB (se cachea tras la primera consulta)
+            if (this.isMariaDB === null) {
+                const [[versionRow]] = await this.client.query('SELECT VERSION() as v') as any;
+                this.isMariaDB = String(versionRow.v).includes('MariaDB');
+                console.log(`DB engine detected: ${this.isMariaDB ? 'MariaDB' : 'MySQL'} (${versionRow.v})`);
+            }
+
+            // Añadir timeout según el motor
+            const trimmed = query.trimStart();
+            let queryWithTimeout: string;
+            if (this.isMariaDB) {
+                queryWithTimeout = `SET STATEMENT max_statement_time=${maxStatementTime} FOR ${trimmed}`;
+            } else {
+                const maxMs = maxStatementTime * 1000;
+                queryWithTimeout = /^SELECT/i.test(trimmed)
+                    ? trimmed.replace(/^SELECT/i, `SELECT /*+ MAX_EXECUTION_TIME(${maxMs}) */`)
+                    : trimmed;
+            }
+
+            // Crear promesa con timeout que se cancela a los 600 segundos
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => {
+                    reject(new Error(`Query execution timed out after ${maxStatementTime} seconds`));
+                }, (maxStatementTime * 100));
+            });
+
+            // Ejecutar race based entre query y timeout (mysql2/promise devuelve [rows, fields])
+            const [rows] = await Promise.race([
+                this.client.query(queryWithTimeout),
+                timeoutPromise
+            ]) as any;
             return rows;
         } catch (err) {
+            if (err.message === 'Query execution timed out after 60 seconds') {
+                // Visualizar errores de timeout
+                console.error('Query timeout:', query);
+            }
             console.log(err);
-            if (!this.pool) this.client.destroy();
             throw err;
         }
-
     }
 
     async execSqlQuery(query: string): Promise<any> {
@@ -205,7 +239,7 @@ export class MysqlConnection extends AbstractConnection {
         `;
         return new Promise(async (resolve, reject) => {
             try {
-                const count = await this.client.query(query);
+                const [count] = await this.client.query(query) as any;
                 resolve(count);
             } catch (err) {
                 reject(err);
@@ -223,7 +257,7 @@ export class MysqlConnection extends AbstractConnection {
         return new Promise(async (resolve, reject) => {
             try {
                 //this.client = createConnection(this.config);
-                const getColumns = await this.client.query(query);
+                const [getColumns] = await this.client.query(query) as any;
                 const newTable = {
                     table_name: tableName,
                     display_name: {

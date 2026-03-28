@@ -66,6 +66,12 @@ export const pagesV3Routes: Routes = [
         loadComponent: () => import('./mail-management/email-settings.page').then(c => c.EmailSettingsPage)
       },
       {
+        path: 'admin/ai-settings',
+        data: { admin: true },
+        canActivate: [RoleGuard],
+        loadComponent: () => import('./ai-management/ai-management.page').then(c => c.AiManagementPage)
+      },
+      {
         path: 'dashboard/:id',
         loadComponent: () => import('./dashboard/dashboard.page').then(c => c.DashboardPage)
       },

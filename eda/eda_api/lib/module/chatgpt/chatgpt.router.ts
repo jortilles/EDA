@@ -8,6 +8,11 @@ router.post('/response', authGuard, ChatGptController.responseChatGpt);
 
 router.get('/availableChatGpt', authGuard, ChatGptController.availableChatGpt);
 
+router.post('/prompt', authGuard, ChatGptController.promptChatGpt);
+
+router.get('/config', authGuard, ChatGptController.getConfig);
+
+router.post('/config', authGuard, ChatGptController.saveConfig);
 
 
 export default router;

@@ -282,7 +282,11 @@ export class IconService {
   </svg>
 `,
 
-
+"sparkles-ai": `
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18l-.813-2.096A4.5 4.5 0 006.904 14L4.5 13.5l2.404-.5a4.5 4.5 0 001.283-1.904L9 9l.813 2.096A4.5 4.5 0 0011.096 13l2.404.5-2.404.5a4.5 4.5 0 00-1.283 1.904zM17.25 6.75L18 9l.75-2.25L21 6l-2.25-.75L18 3l-.75 2.25L15 6z" />
+  </svg>
+`,
 
 
     // CUSTOM DASHBOARD PARA DATAPOLIS BORRAR A POSTERIOR 

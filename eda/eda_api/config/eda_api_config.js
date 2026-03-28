@@ -12,6 +12,7 @@ module.exports = {
         elements: []
       }
     },
+    maxStatementTime: 900, // tiempo antes de hacer kill a la mysql query
     log_file: "XXXXXXXXXXXXXXXXXX", // log de consoltas del servidor
     error_log_file: "XXXXXXXXXXXXXXXXXX" // log de errores del servidor
   }

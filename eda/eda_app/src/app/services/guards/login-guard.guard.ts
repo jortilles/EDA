@@ -26,26 +26,26 @@ canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<
                 })
                 return false;
             } else {
-  const dashboardMatch = state.url.match(/\/dashboard\/([^?/]+)/);
-  const loginUrl = { returnUrl: state.url.split('?')[0], params: state.url.split('?')[1] };
-  const goLogin = () => this.router.navigate(['/login'], { queryParams: loginUrl });
-  if (dashboardMatch) {
-      return new Promise((resolve) => {
-          this.dashboardService.getDashboardVisibility(dashboardMatch[1]).subscribe({
-              next: (res: any) => {
-                  if (!res.isAccessible) { goLogin(); return resolve(false);}
-                  const anonymousUser = new User(null, 'edaanonim@jortilles.com', '_-(··)-_edanonymous_-(··)-_');
-                  this.userService.login(anonymousUser, false).subscribe({
-                      next: () => { resolve(true); },
-                      error: (e) => { console.error(e); goLogin(); resolve(false); }
-                  });
-              },
-              error: (e) => { console.error(e); goLogin(); resolve(false); }
-          });
-      });
-  }
-  goLogin();
-  return false;
+                const dashboardMatch = state.url.match(/\/dashboard\/([^?/]+)/);
+                const loginUrl = { returnUrl: state.url.split('?')[0], params: state.url.split('?')[1] };
+                const goLogin = () => this.router.navigate(['/login'], { queryParams: loginUrl });
+                if (dashboardMatch) {
+                    return new Promise((resolve) => {
+                        this.dashboardService.getDashboardVisibility(dashboardMatch[1]).subscribe({
+                            next: (res: any) => {
+                                if (!res.isAccessible) { goLogin(); return resolve(false);}
+                                const anonymousUser = new User(null, 'edaanonim@jortilles.com', '_-(··)-_edanonymous_-(··)-_');
+                                this.userService.login(anonymousUser, false).subscribe({
+                                    next: () => { resolve(true); },
+                                    error: (e) => { console.error(e); goLogin(); resolve(false); }
+                                });
+                            },
+                            error: (e) => { console.error(e); goLogin(); resolve(false); }
+                        });
+                    });
+                }
+                goLogin();
+                return false;
             }
 
         }
