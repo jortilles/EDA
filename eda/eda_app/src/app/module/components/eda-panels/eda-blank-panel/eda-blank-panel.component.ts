@@ -50,6 +50,8 @@ import { EdaTitlePanelComponent } from '@eda/components/component.index';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { ChartTypeSelectorDialogComponent } from './chart-type-selector-dialog/chart-type-selector-dialog.component';
 import { PromptComponent } from '@eda/components/prompt/prompt.component';
+import { FilterAndOrDialogComponent } from './filter-and-or-dialog/filter-and-or-dialog.component';
+import { EdaFilterAndOrComponent } from '../../eda-filter-and-or/eda-filter-and-or.component';
 
 // Panel Utils
 import { TableUtils } from './panel-utils/tables-utils';
@@ -100,12 +102,11 @@ const DIALOGS_COMPONENTS = [
 const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass, CumSumAlertDialogComponent];
 const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule];
 const STANDALONE_COMPONENTS = [
-    EdaDialog2Component, WhatIfDialogComponent, EbpChatgptComponent,FilterMapperComponent, EdadynamicTextComponent,EdaTitlePanelComponent,
+    EdaDialog2Component, WhatIfDialogComponent, EbpChatgptComponent, FilterMapperComponent, EdadynamicTextComponent, EdaTitlePanelComponent,
     PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
     DragDropComponent, ChartTypeSelectorDialogComponent,
-    IconComponent, FocusOnShowDirective,
-    PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent, 
-    DragDropComponent, IconComponent, FocusOnShowDirective, PromptComponent
+    IconComponent, FocusOnShowDirective, PromptComponent,
+    FilterAndOrDialogComponent,
 ]
 @Component({
     standalone: true,
@@ -195,6 +196,7 @@ export class EdaBlankPanelComponent implements OnInit {
         advancedSetting: 0,
         filterMapperDialog: false,
         showQueryContainer: false,
+        filterAndOr_dialog: false,
     };
 
     public index: number;
@@ -248,6 +250,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public filterTypes: FilterType[];
     public selectedFilters: any[] = [];
     public globalFilters: any[] = [];
+    public sortedFilters: any[] = [];
+    public temporalSortedFilters: any[] = [];
     public filterValue: any = {};
     public tableInput: string;
     public columnInput: string;
@@ -364,6 +368,8 @@ export class EdaBlankPanelComponent implements OnInit {
                 if (queryMode == 'EDA2') {
                     this.rootTable = contentQuery.query.rootTable;
                 }
+
+                this.sortedFilters = contentQuery.query.sortedFilters || [];
 
             if (modeSQL || queryMode == 'SQL') {
                 this.currentSQLQuery = contentQuery.query.SQLexpression;
@@ -1137,6 +1143,7 @@ public tableNodeExpand(event: any): void {
         this.display_v.page_dialog = true;
         this.ableBtnSave();
         PanelInteractionUtils.verifyData(this);
+        this.temporalSortedFilters = _.cloneDeep(this.sortedFilters);
     }
 
     /**
@@ -1148,6 +1155,8 @@ public tableNodeExpand(event: any): void {
         this.columns = [];
         this.currentQuery = [];
         this.indextab = 0;
+        this.sortedFilters = _.cloneDeep(this.temporalSortedFilters);
+        EdaFilterAndOrComponent.reiniciarDashboard();
 
         if (this.panelDeepCopy.query) {
             this.panelDeepCopy.query.query.filters = this.mergeFilters(this.panelDeepCopy.query.query.filters, this.globalFilters);
@@ -2059,5 +2068,75 @@ startEditTitle() {
     this.editingTitle = true;
     this.titleClick=true;
 }
+
+    // ─── AND/OR Filter Dialog ────────────────────────────────────────────────
+
+    public filterAndOrDialog(): void {
+        const numFilters = this.selectedFilters.length + this.globalFilters.length;
+        if (numFilters === 0) {
+            this.alertService.addWarning($localize`:@@withoutFilters:Aún no has configurado filtros. Usa el panel de filtros o los filtros globales`);
+            return;
+        }
+        this.display_v.filterAndOr_dialog = true;
+    }
+
+    public onCloseFilterAndOrDialog(): void {
+        this.display_v.filterAndOr_dialog = false;
+    }
+
+    public newSortedFiltersFunction(event: any[]): void {
+        this.sortedFilters = event;
+        this.display_v.btnSave = true;
+    }
+
+    public updateSortedFiltersColumnDialogFunction(e: any): void {
+        if (e.add) {
+            if (this.sortedFilters.length !== 0) {
+                const lastElement = this.sortedFilters[this.sortedFilters.length - 1];
+                const newSortedFilter = {
+                    cols: 3, rows: 1,
+                    y: lastElement.y + 1, x: 0,
+                    filter_table: e.filter.filter_table,
+                    filter_column: e.filter.filter_column,
+                    filter_type: e.filter.filter_type,
+                    filter_column_type: e.filter.filter_column_type,
+                    filter_elements: e.filter.filter_elements,
+                    filter_id: e.filter.filter_id,
+                    value: 'and',
+                };
+                this.sortedFilters.push(newSortedFilter);
+            }
+        } else {
+            if (this.sortedFilters.length !== 0) {
+                this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+            }
+            this.sortedFilters = [];
+        }
+    }
+
+    public updateSortedFiltersFilterDialogFunction(e: any): void {
+        if (e.add) {
+            if (this.sortedFilters.length !== 0) {
+                const lastElement = this.sortedFilters[this.sortedFilters.length - 1];
+                const newSortedFilter = {
+                    cols: 3, rows: 1,
+                    y: lastElement.y + 1, x: 0,
+                    filter_table: e.filter.filter_table,
+                    filter_column: e.filter.filter_column,
+                    filter_type: e.filter.filter_type,
+                    filter_column_type: e.filter.filter_column_type,
+                    filter_elements: e.filter.filter_elements,
+                    filter_id: e.filter.filter_id,
+                    value: 'and',
+                };
+                this.sortedFilters.push(newSortedFilter);
+            }
+        } else {
+            if (this.sortedFilters.length !== 0) {
+                this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+            }
+            this.sortedFilters = [];
+        }
+    }
 
 }

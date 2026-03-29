@@ -577,20 +577,18 @@
                           </div>
 
                           
-                            <!-- // TBI -->
-                          <!-- <div class="grid grid-cols-4 items-center">
+                            <div class="grid grid-cols-4 items-center">
                             <div class="col-span-2">
-                              <h3 class="text-base font-bold inline"><span i18n="@@filtrosAvanzados">Filtros avanzados: </span>
+                              <h3 class="text-base font-bold inline">
+                                <span i18n="@@filtrosAvanzados">Filtros avanzados (AND/OR): </span>
                               </h3>
                             </div>
-          
                             <div class="col-span-2">
-          
-                              <button class="w-fit px-3 py-2 border rounded-lg bg-white text-black hover:bg-[#00BFB3] hover:text-white" (click)="onWhatIfDialog()">
-                                Configurar
+                              <button class="w-fit px-3 py-2 border rounded-lg bg-white text-black hover:bg-[#00BFB3] hover:text-white" (click)="filterAndOrDialog()">
+                                <span i18n="@@configurarFiltrosAvanzados">Configurar</span>
                               </button>
                             </div>
-                          </div> -->
+                          </div>
 
                           <div class="grid grid-cols-4 items-center">
                             <div class="col-span-2 ">
@@ -1188,4 +1186,15 @@
 
 @if (display_v.filterMapperDialog) {
   <app-filter-mapper-dialog [dashboard]="dashboard" [panel]="panel" (close)="onCloseFilterMapperDialog($event)"></app-filter-mapper-dialog>
+}
+
+@if (display_v.filterAndOr_dialog) {
+  <filter-and-or-dialog
+    [selectedFilters]="selectedFilters"
+    [globalFilters]="globalFilters"
+    [tables]="tables"
+    [sortedFilters]="sortedFilters"
+    (close)="onCloseFilterAndOrDialog()"
+    (newSortedFilters)="newSortedFiltersFunction($event)">
+  </filter-and-or-dialog>
 }

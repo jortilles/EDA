@@ -1,0 +1,99 @@
+.query-preview-box {
+    background-color: #ffffff;
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    padding: 8px 14px;
+    margin-bottom: 10px;
+}
+
+.query-preview-box .text-query {
+    color: #212529;
+    font-size: 0.72rem;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.filter-and-or-container {
+    margin-top: 5px;
+}
+
+.filter-and-or-container .gridster {
+    background-color: transparent;
+    border: 1px solid #13d60c00;
+    width: 100%;
+    height: 48vh;
+}
+
+.filter-and-or-container .gridster .gridster-column {
+    border-left: 1px solid rgb(240, 240, 243);
+    border-right: 1px solid rgb(240, 240, 243);
+    outline: 1px solid rgb(240, 240, 243);
+}
+
+.filter-and-or-container .gridster .gridster-row {
+    border-top: 1px solid rgb(240, 240, 243);
+    border-bottom: 1px solid rgb(240, 240, 243);
+    outline: 1px solid rgb(240, 240, 243);
+}
+
+.filter-and-or-container .gridster-item {
+    background-color: #ffffff;
+    border: 1.5px solid #b5b2b2c3;
+    cursor: pointer;
+    padding: 0 10px;
+    border-radius: 5px;
+}
+
+.filter-and-or-container .gridster-preview {
+    background-color: transparent;
+}
+
+.filter-and-or-container .global-filter,
+.eda-filter-legend .global-filter {
+    border: 3px solid #99dd9b;
+    background-color: #f3fbf3;
+}
+
+.filter-and-or-container .panel-filter,
+.eda-filter-legend .panel-filter {
+    border: 3px solid #7a9ee0;
+    background-color: #f0f4fd;
+}
+
+.small-button .p-button {
+    padding: 3px 6px !important;
+    height: 22px !important;
+    min-width: 20px !important;
+    font-size: 8px !important;
+    font-style: italic;
+    font-weight: 500;
+}
+
+.small-button .p-selectbutton {
+    height: 22px !important;
+}
+
+.texto-filtro {
+    font-style: italic;
+    font-size: 0.8rem;
+    color: rgb(73, 80, 87);
+    margin: 5px 10px 5px 10px;
+}
+
+.text-query {
+    font-weight: bold;
+    font-size: 0.7rem;
+}
+
+.filter-and-or-container .gridster-item .d-flex {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100%;
+}
+
+.custom-tooltip {
+    max-width: 6500px !important;
+    white-space: normal !important;
+    word-wrap: break-word;
+}
