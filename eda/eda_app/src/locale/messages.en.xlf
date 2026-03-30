@@ -5909,8 +5909,8 @@ OR<ph id="5"/>
   <target>Filters Summary</target>
 </trans-unit>
 <trans-unit id="globalFilterSelectedItemsLabel">
-  <source>{0} items seleccionados</source>
-  <target>{0} items selected</target>
+  <source>items seleccionados</source>
+  <target>items selected</target>
 </trans-unit>
 <trans-unit id="copyPublicLinkTooltip">
   <source>Copiar enlace público</source>

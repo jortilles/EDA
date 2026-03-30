@@ -6187,8 +6187,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Resum de filtres</target>
       </trans-unit>
       <trans-unit id="globalFilterSelectedItemsLabel">
-        <source>{0} items seleccionados</source>
-        <target>{0} elements seleccionats</target>
+        <source>elementos seleccionados</source>
+        <target>elements seleccionats</target>
       </trans-unit>
       <trans-unit id="copyPublicLinkTooltip">
         <source>Copiar enlace público</source>
