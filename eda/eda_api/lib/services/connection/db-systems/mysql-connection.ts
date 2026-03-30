@@ -69,27 +69,21 @@ export class MysqlConnection extends AbstractConnection {
 
     async tryConnection(): Promise<any> {
         try {
-            return new Promise((resolve, reject) => {
-                let mySqlConn = {}
-                if (this.config.ssl && (this.config.ssl === 'true')) {
-                    mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password, "ssl": { rejectUnauthorized: false }};
-                } else {
-                    mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password };
-                }
-                this.client = createConnection(mySqlConn);
-                console.log('\x1b[32m%s\x1b[0m', 'Connecting to MySQL database...\n');
-                this.client.connect((err:Error , connection: SqlConnection): void => {
-                    if (err) {
-                        return reject(err);
-                    }
-                    if (connection) {
-                        this.itsConnected();
-                        this.client.end();
-                        return resolve(connection);
-                    }
-                });
-            })
-
+            const mySqlConn: ConnectionOptions = {
+                host: this.config.host,
+                port: this.config.port,
+                database: this.config.database,
+                user: this.config.user,
+                password: this.config.password
+            };
+            if (this.config.ssl && (this.config.ssl === 'true')) {
+                mySqlConn.ssl = { rejectUnauthorized: false };
+            }
+            console.log('\x1b[32m%s\x1b[0m', 'Connecting to MySQL database...\n');
+            const connection = await createConnection(mySqlConn);
+            this.itsConnected();
+            await connection.end();
+            return connection;
         } catch (err) {
             throw err;
         }
