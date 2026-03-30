@@ -1,97 +1,183 @@
 .query-preview-box {
     background-color: #ffffff;
-    border-radius: 6px;
-    border: 1px solid #ced4da;
-    padding: 8px 14px;
-    margin-bottom: 10px;
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+    padding: 10px 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
 }
 
 .query-preview-box .text-query {
     color: #212529;
     font-size: 0.72rem;
+    font-weight: 600;
     margin: 0;
     line-height: 1.6;
 }
 
+/* ── Legend ───────────────────────────────────────────────── */
+.eda-filter-legend {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.eda-filter-legend span {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 5px 14px;
+    border-radius: 20px;
+}
+
+.eda-filter-legend .global-filter {
+    border: 2px solid #00B0BA;
+    background-color: #e0f7f8;
+    color: #007a82;
+}
+
+.eda-filter-legend .panel-filter {
+    border: 2px solid #a0aab2;
+    background-color: #f1f3f4;
+    color: #3d4a52;
+}
+
+/* ── Gridster container ───────────────────────────────────── */
 .filter-and-or-container {
-    margin-top: 5px;
+    margin-top: 4px;
 }
 
 .filter-and-or-container .gridster {
     background-color: transparent;
-    border: 1px solid #13d60c00;
+    border: none;
     width: 100%;
     height: 48vh;
 }
 
 .filter-and-or-container .gridster .gridster-column {
-    border-left: 1px solid rgb(240, 240, 243);
-    border-right: 1px solid rgb(240, 240, 243);
-    outline: 1px solid rgb(240, 240, 243);
+    border-left: 1px solid #f0f0f3;
+    border-right: 1px solid #f0f0f3;
+    outline: 1px solid #f0f0f3;
 }
 
 .filter-and-or-container .gridster .gridster-row {
-    border-top: 1px solid rgb(240, 240, 243);
-    border-bottom: 1px solid rgb(240, 240, 243);
-    outline: 1px solid rgb(240, 240, 243);
+    border-top: 1px solid #f0f0f3;
+    border-bottom: 1px solid #f0f0f3;
+    outline: 1px solid #f0f0f3;
 }
 
+/* ── Gridster cards ───────────────────────────────────────── */
 .filter-and-or-container .gridster-item {
     background-color: #ffffff;
-    border: 1.5px solid #b5b2b2c3;
-    cursor: pointer;
+    border: 1.5px solid #dee2e6;
+    cursor: grab;
     padding: 0 10px;
-    border-radius: 5px;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.filter-and-or-container .gridster-item:hover {
+    box-shadow: 0 3px 10px rgba(0,176,186,.18);
+    transform: translateY(-1px);
 }
 
 .filter-and-or-container .gridster-preview {
-    background-color: transparent;
+    background-color: #e0f7f8;
+    border-radius: 10px;
+    border: 1.5px dashed #00B0BA;
+    opacity: 0.6;
 }
 
-.filter-and-or-container .global-filter,
-.eda-filter-legend .global-filter {
-    border: 3px solid #99dd9b;
-    background-color: #f3fbf3;
+.filter-and-or-container .global-filter {
+    border: 2px solid #00B0BA;
+    background-color: #e8f9fa;
 }
 
-.filter-and-or-container .panel-filter,
-.eda-filter-legend .panel-filter {
-    border: 3px solid #7a9ee0;
-    background-color: #f0f4fd;
+.filter-and-or-container .panel-filter {
+    border: 2px solid #a0aab2;
+    background-color: #f1f3f4;
+}
+
+/* ── AND / OR select button ───────────────────────────────── */
+.button-holder {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
 }
 
 .small-button .p-button {
-    padding: 3px 6px !important;
+    padding: 3px 7px !important;
     height: 22px !important;
-    min-width: 20px !important;
-    font-size: 8px !important;
+    min-width: 24px !important;
+    font-size: 8.5px !important;
     font-style: italic;
-    font-weight: 500;
+    font-weight: 600;
+    border-radius: 6px !important;
+    letter-spacing: 0.03em;
 }
 
 .small-button .p-selectbutton {
     height: 22px !important;
+    border-radius: 6px !important;
+    overflow: hidden;
+    display: flex;
 }
 
+/* Botón izquierdo (OR): sin borde derecho, solo esquinas izquierdas redondeadas */
+.small-button .p-selectbutton .p-button:first-child {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-right: none !important;
+}
+
+/* Botón derecho (AND): sin borde izquierdo, solo esquinas derechas redondeadas */
+.small-button .p-selectbutton .p-button:last-child {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-left: none !important;
+}
+
+/* Override PrimeNG blue → corporate teal */
+.small-button .p-button.p-highlight {
+    background-color: #00B0BA !important;
+    border-color: #00B0BA !important;
+    color: #ffffff !important;
+}
+
+.small-button .p-button.p-highlight:hover {
+    background-color: #009aa3 !important;
+    border-color: #009aa3 !important;
+}
+
+/* ── Filter label text ────────────────────────────────────── */
 .texto-filtro {
     font-style: italic;
     font-size: 0.8rem;
-    color: rgb(73, 80, 87);
-    margin: 5px 10px 5px 10px;
+    color: #495057;
+    margin: 0 8px;
+    line-height: 1.3;
 }
 
 .text-query {
-    font-weight: bold;
+    font-weight: 600;
     font-size: 0.7rem;
 }
 
+/* ── Flex layout inside card ──────────────────────────────── */
 .filter-and-or-container .gridster-item .d-flex {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     height: 100%;
+    gap: 6px;
 }
 
+/* ── Tooltip ──────────────────────────────────────────────── */
 .custom-tooltip {
     max-width: 6500px !important;
     white-space: normal !important;
