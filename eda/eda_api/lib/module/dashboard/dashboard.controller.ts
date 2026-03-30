@@ -2028,7 +2028,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
       if (match) {
         return `El campo ${match[1]} está incluido en el informe pero no está disponible`;
       }else{
-        return 'esto no esta encontrando que es';
+        return 'Error querying database';
       }
     }
   }
