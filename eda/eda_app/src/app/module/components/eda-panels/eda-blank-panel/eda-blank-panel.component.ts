@@ -1124,6 +1124,24 @@ public tableNodeExpand(event: any): void {
         }
     }
 
+    /** Registers a global filter (even if empty) so it appears in the AND/OR dialog without triggering a query */
+    public assertGlobalEmptyFilter(_filter: any) {
+        const globalFilter = _.cloneDeep(_filter);
+
+        if (_filter.pathList && _filter.pathList[this.panel.id]) {
+            globalFilter.joins = _filter.pathList[this.panel.id].path;
+            globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
+        }
+        const filterInx = this.globalFilters.findIndex((gf: any) => gf.filter_id === globalFilter.filter_id);
+
+        if (filterInx !== -1) {
+            this.globalFilters.splice(filterInx, 1);
+            this.globalFilters.push(globalFilter);
+        } else {
+            this.globalFilters.push(globalFilter);
+        }
+    }
+
     /* Funcions generals de la pagina */
     public disableBtnSave = () => this.display_v.btnSave = true;
 

@@ -119,7 +119,38 @@ export class EdaFilterAndOrComponent implements OnInit {
           this.initAndOrFilters();
         }
       }
+      this.addMissingGlobalFilters();
     }
+  }
+
+  private addMissingGlobalFilters(): void {
+    const existingIds = new Set(this.dashboard.map((d: any) => d.filter_id));
+    const missing = this.globalFilters.filter(gf =>
+      gf.filterBeforeGrouping !== false && !existingIds.has(gf.filter_id)
+    );
+
+    if (missing.length === 0) return;
+
+    const maxY = this.dashboard.length > 0
+      ? Math.max(...this.dashboard.map((d: any) => d.y)) + 1
+      : 0;
+
+    missing.forEach((gf, i) => {
+      this.dashboard.push({
+        cols: 3, rows: 1, y: maxY + i, x: 0,
+        filter_table: gf.filter_table,
+        filter_column: gf.filter_column,
+        filter_type: gf.filter_type,
+        filter_column_type: gf.filter_column_type,
+        filter_elements: gf.filter_elements,
+        filter_id: gf.filter_id,
+        isGlobal: gf.isGlobal,
+        value: 'and',
+      });
+    });
+
+    this.dashboardClone = _.cloneDeep(this.dashboard);
+    this.creacionQueryFiltros(this.dashboard);
   }
 
   initAndOrFilters() {
