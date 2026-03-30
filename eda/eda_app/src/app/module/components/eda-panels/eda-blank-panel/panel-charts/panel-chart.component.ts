@@ -262,7 +262,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             values = this._preparePredictionValues(values, dataDescription, dataTypes, cfg, _predQueryLen, _hasPredCols);
         }
 
-        const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart, values, dataTypes, dataDescription, isbarline, null);
+        const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart, values, dataTypes, dataDescription, isbarline, cfg.numberOfColumns);
         if (chartData.length == 0) {
             chartData.push([], []);
         }

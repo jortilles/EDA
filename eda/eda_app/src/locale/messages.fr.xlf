@@ -3533,7 +3533,12 @@
   <trans-unit id="columnsTooltip">
     <source>Elige cuantas columnas quieres mostrar</source>
     <target>Choisissez le nombre de colonnes que vous souhaitez afficher</target>
-  </trans-unit> 
+  </trans-unit>
+
+  <trans-unit id="histogramColumDescription">
+    <source>Elige cuántas columnas mostrar en el histograma</source>
+    <target>Choisissez le nombre de colonnes à afficher dans l'histogramme</target>
+  </trans-unit>
 
   <trans-unit id="trendTooltip">
     <source>La función de añadir tendencia sólo se puede activar en los gràficos de lineas</source>

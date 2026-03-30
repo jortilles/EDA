@@ -31,11 +31,13 @@
         <h4 i18n="@@agregacionesH4">Agregaciones</h4>
         <div class="aggregation-list mt-10">
           @for (aggregation of aggregationsTypes; track aggregation) {
-            <div class="aggregation-box"
-                (click)="addAggregation(aggregation)"
-                [ngClass]="aggregation.selected === true ? 'aggregation-active' : 'aggregation-unactive'">
-                <span>{{getAggName(aggregation.value)}}</span>
-            </div>
+            @if (getAggName(aggregation.value)) {
+              <div class="aggregation-box"
+                  (click)="addAggregation(aggregation)"
+                  [ngClass]="aggregation.selected === true ? 'aggregation-active' : 'aggregation-unactive'">
+                  <span>{{getAggName(aggregation.value)}}</span>
+              </div>
+            }
           }
         </div>
       </div>
