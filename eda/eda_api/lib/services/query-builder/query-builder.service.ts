@@ -59,7 +59,7 @@ export abstract class QueryBuilderService {
 
     }
 
-    abstract getFilters(filters, type: string);
+    abstract getFilters(filters, type: string, pTable: string);
     abstract getJoins(joinTree: any[], dest: any[], tables: Array<any>, 
         joinType:string, valueListJoins:Array<any>, schema?: string, database?: string);
     abstract getSeparedColumns(origin: string, dest: string[]);
@@ -68,7 +68,7 @@ export abstract class QueryBuilderService {
     abstract processFilter(filter: any, columnType: string);
     abstract normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[],
         grouping: any[], filters: any[], havingFilters: any[], tables: Array<any>, limit: number, 
-        joinType: string,groupByEnabled:boolean, valueListJoins:any[], Schema?: string, database?: string, forSelector?: any );
+        joinType: string,groupByEnabled:boolean, valueListJoins:any[], Schema?: string, database?: string, forSelector?: any, sortedFilters?: any[]  );
     abstract sqlQuery(query: string, filters: any[], filterMarks: string[]): string;
     abstract buildPermissionJoin(origin: string, join: string[], permissions: any[], schema?: string);
     abstract parseSchema(tables: string[], schema?: string, database?: string);
@@ -355,8 +355,9 @@ export abstract class QueryBuilderService {
         const groupByEnabled = this.queryTODO.groupByEnabled !== undefined ? this.queryTODO.groupByEnabled : true;
         const schema = this.dataModel.ds.connection.schema || 'public'; 
         const database = this.dataModel.ds.connection.database; 
-        const forSelector = this.queryTODO.forSelector; 
+        const forSelector = this.queryTODO.forSelector;
         const fields = this.queryTODO.fields;
+        const sortedFilters = this.queryTODO.sortedFilters;
         if (this.queryTODO.simple) {
             this.query = this.simpleQuery(columns, origin);
             return this.query;
@@ -368,7 +369,7 @@ export abstract class QueryBuilderService {
         } else {
             this.query = this.normalQuery(
                 columns, origin, dest, joinTree, grouping,  filters, havingFilters, tables,
-                queryLimit, joinType, groupByEnabled,valueListJoins, schema, database, forSelector
+                queryLimit, joinType, groupByEnabled,valueListJoins, schema, database, forSelector, sortedFilters
             );
             return this.query;
         }

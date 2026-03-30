@@ -1383,6 +1383,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
           }
           myQuery.filters = req.body.query.filters
         }
+        myQuery.sortedFilters = req.body.query.sortedFilters;
       } else {
         // las etiquetas son el nombre técnico...
         myQuery = JSON.parse(JSON.stringify(req.body.query))

@@ -248,7 +248,23 @@ export class EdaFilterAndOrComponent implements OnInit {
           this.dashboard = _.cloneDeep(this.dashboardClone);
         }
       } else {
-        this.dashboard = _.cloneDeep(this.dashboardClone);
+        const itemX = this.dashboardClone.find((it: any) => it.filter_id === item.filter_id);
+        const itemSuperior = this.dashboardClone.find((it: any) => it.y === item.y - 1);
+
+        // Movimiento puramente horizontal demasiado a la derecha: intentar itemX.x + 1
+        if (itemX && item.y === itemX.y && itemSuperior && item.x > 1 + itemSuperior.x) {
+          const targetX = itemX.x + 1;
+          if (targetX <= 1 + itemSuperior.x) {
+            const newDashboard = _.cloneDeep(this.dashboardClone);
+            newDashboard.find((it: any) => it.filter_id === item.filter_id).x = targetX;
+            this.dashboardClone = _.cloneDeep(newDashboard);
+            this.dashboard = _.cloneDeep(newDashboard);
+          } else {
+            this.dashboard = _.cloneDeep(this.dashboardClone);
+          }
+        } else {
+          this.dashboard = _.cloneDeep(this.dashboardClone);
+        }
       }
     } else {
       this.dashboard = _.cloneDeep(this.dashboardClone);
@@ -298,14 +314,13 @@ export class EdaFilterAndOrComponent implements OnInit {
     }
   }
 
-  creacionQueryFiltros(dashboard: any) {
-    dashboard.sort((a: any, b: any) => a.y - b.y);
+  creacionQueryFiltros(queries: any) {
+    queries.sort((a: any, b: any) => a.y - b.y);
 
     let stringQuery = 'where ';
-    const textBetween = this.textBetween;
 
     function cadenaRecursiva(item: any) {
-      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, filter_id, isGlobal, value } = item;
+      const { y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements } = item;
 
       let filter_type_value = '';
       if (filter_type === 'not_in') filter_type_value = 'not in';
@@ -342,17 +357,17 @@ export class EdaFilterAndOrComponent implements OnInit {
       let resultado = `\"${filter_table}\".\"${filter_column}\" ${filter_type_value} ${filter_elements_value}`;
 
       let elementosHijos: any[] = [];
-      for (let n = y + 1; n < dashboard.length; n++) {
-        if (dashboard[n].x === x) break;
-        if (y < dashboard[n].y && dashboard[n].x === x + 1) elementosHijos.push(dashboard[n]);
+      for (let n = y + 1; n < queries.length; n++) {
+        if (queries[n].x === x) break;
+        if (y < queries[n].y && queries[n].x === x + 1) elementosHijos.push(queries[n]);
       }
-
-      const itemGenerico = dashboard.filter((i: any) => i.y === y + 1)[0];
-
+      
+      const itemGenerico = queries.filter((i: any) => i.y === y + 1)[0];
+      
       if (elementosHijos.length > 0) {
         let space = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
         let variableSpace = space.repeat(x + 1);
-
+        
         let hijoArreglo = elementosHijos.map(itemHijo => cadenaRecursiva(itemHijo));
         let hijosCadena = '';
         hijoArreglo.forEach((hijo, index) => {
@@ -368,9 +383,9 @@ export class EdaFilterAndOrComponent implements OnInit {
     }
 
     let itemsString = '( ';
-    for (let r = 0; r < dashboard.length; r++) {
-      if (dashboard[r].x === 0) {
-        itemsString = itemsString + (r === 0 ? '' : ' ' + dashboard[r].value.toUpperCase() + ' ') + dashboard.filter((e: any) => e.y === r).map(cadenaRecursiva)[0] + `<br>`;
+    for (let r = 0; r < queries.length; r++) {
+      if (queries[r].x === 0) {
+        itemsString = itemsString + (r === 0 ? '' : ' ' + queries[r].value.toUpperCase() + ' ') + queries.filter((e: any) => e.y === r).map(cadenaRecursiva)[0] + `<br>`;
       }
     }
     itemsString = itemsString + ' )';
