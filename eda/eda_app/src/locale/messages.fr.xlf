@@ -908,22 +908,6 @@
 <context context-type="linenumber">11</context>
 </context-group>
 </trans-unit>
-<trans-unit id="deleteDates" datatype="html">
-<source> Todas </source>
-<target> Tous </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
-<context context-type="linenumber">36</context>
-</context-group>
-</trans-unit>
-<trans-unit id="yesterday" datatype="html">
-<source> Ayer </source>
-<target> Hier </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
-<context context-type="linenumber">38</context>
-</context-group>
-</trans-unit>
 
 <trans-unit id="thisWeek" datatype="html">
 <source> Ésta semana </source>
@@ -5879,6 +5863,54 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="DatePickerNextYear">
         <source>Próximo año</source>
         <target>L'année prochaine</target>
+      </trans-unit>
+      <trans-unit id="DatePickerYesterday">
+        <source>Ayer</source>
+        <target>Hier</target>
+      </trans-unit>
+      <trans-unit id="DatePickerTomorrow">
+        <source>Mañana</source>
+        <target>Demain</target>
+      </trans-unit>
+      <trans-unit id="DatePickerPastTomorrow">
+        <source>Pasado mañana</source>
+        <target>Après-demain</target>
+      </trans-unit>
+      <trans-unit id="DatePickerLastQuarter">
+        <source>Último trimestre</source>
+        <target>Dernier trimestre</target>
+      </trans-unit>
+      <trans-unit id="DatePickerThisQuarter">
+        <source>Este trimestre</source>
+        <target>Ce trimestre</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext3">
+        <source>Próximos 3 días</source>
+        <target>Les 3 prochains jours</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext7">
+        <source>Próximos 7 días</source>
+        <target>Les 7 prochains jours</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext15">
+        <source>Próximos 15 días</source>
+        <target>Les 15 prochains jours</target>
+      </trans-unit>
+      <trans-unit id="DatePickerLast90">
+        <source>Últimos 90 días</source>
+        <target>Les 90 derniers jours</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext120">
+        <source>Próximos 120 días</source>
+        <target>Les 120 prochains jours</target>
+      </trans-unit>
+      <trans-unit id="DatePickerAll">
+        <source>Todas</source>
+        <target>Toutes</target>
+      </trans-unit>
+      <trans-unit id="DatePickerBeforeTodayIncluded">
+        <source>Todo hasta hoy</source>
+        <target>Tout jusqu'à aujourd'hui</target>
       </trans-unit>
       <trans-unit id="noNameProvided">
         <source>Debe proporcionar un nombre para el datasource</source>
