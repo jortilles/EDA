@@ -919,22 +919,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">11</context>
 </context-group>
 </trans-unit>
-<trans-unit id="deleteDates" datatype="html">
-<source> Todas </source>
-<target> Totes </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
-<context context-type="linenumber">36</context>
-</context-group>
-</trans-unit>
-<trans-unit id="yesterday" datatype="html">
-<source> Ayer </source>
-<target> Ahir </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
-<context context-type="linenumber">38</context>
-</context-group>
-</trans-unit>
 
 <trans-unit id="thisWeek" datatype="html">
 <source> Ésta semana </source>
@@ -5910,6 +5894,54 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="DatePickerNextYear">
         <source>Próximo año</source>
         <target>Proper any</target>
+      </trans-unit>
+      <trans-unit id="DatePickerYesterday">
+        <source>Ayer</source>
+        <target>Ahir</target>
+      </trans-unit>
+      <trans-unit id="DatePickerTomorrow">
+        <source>Mañana</source>
+        <target>Demà</target>
+      </trans-unit>
+      <trans-unit id="DatePickerPastTomorrow">
+        <source>Pasado mañana</source>
+        <target>Demà passat</target>
+      </trans-unit>
+      <trans-unit id="DatePickerLastQuarter">
+        <source>Último trimestre</source>
+        <target>Últim trimestre</target>
+      </trans-unit>
+      <trans-unit id="DatePickerThisQuarter">
+        <source>Este trimestre</source>
+        <target>Aquest trimestre</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext3">
+        <source>Próximos 3 días</source>
+        <target>Propers 3 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext7">
+        <source>Próximos 7 días</source>
+        <target>Propers 7 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext15">
+        <source>Próximos 15 días</source>
+        <target>Propers 15 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerLast90">
+        <source>Últimos 90 días</source>
+        <target>Últims 90 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext120">
+        <source>Próximos 120 días</source>
+        <target>Propers 120 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerAll">
+        <source>Todas</source>
+        <target>Totes</target>
+      </trans-unit>
+      <trans-unit id="DatePickerBeforeTodayIncluded">
+        <source>Todo hasta hoy</source>
+        <target>Tot fins avui</target>
       </trans-unit>
       <trans-unit id="noNameProvided">
         <source>Debe proporcionar un nombre para el datasource</source>
