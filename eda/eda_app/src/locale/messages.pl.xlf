@@ -5025,6 +5025,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       </trans-unit>
 
 
+      <trans-unit id="cannotRemoveLastColumn">
+        <source>No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.</source>
+        <target>Nie można usunąć wszystkich kolumn z tabeli głównej bez usunięcia kolumn zależnych.</target>
+      </trans-unit>
       <trans-unit id="removeColumnGlobalFilter">
         <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
         <target>Kolumny nie można usunąć, ponieważ ma ona powiązany filtr</target>

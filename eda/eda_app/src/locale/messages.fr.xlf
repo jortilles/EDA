@@ -4106,6 +4106,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Fecha nula</source>
         <target>Date d'annulation</target>
       </trans-unit>
+      <trans-unit id="cannotRemoveLastColumn">
+        <source>No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.</source>
+        <target>Impossible de supprimer toutes les colonnes de la table racine sans supprimer les colonnes dépendantes.</target>
+      </trans-unit>
       <trans-unit id="removeColumnGlobalFilter">
         <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
         <target>La colonne ne peut pas être supprimée car un filtre y est associé.</target>

@@ -4171,6 +4171,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Fecha nula</source>
         <target>Data nula</target>
       </trans-unit>
+      <trans-unit id="cannotRemoveLastColumn">
+        <source>No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.</source>
+        <target>No es pot eliminar totes les columnes de la taula arrel sense eliminar les columnes dependents.</target>
+      </trans-unit>
       <trans-unit id="removeColumnGlobalFilter">
         <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
         <target>No es pot eliminar la columna perquè té un filtre vinculat</target>
