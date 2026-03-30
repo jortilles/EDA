@@ -1674,9 +1674,11 @@ public tableNodeExpand(event: any): void {
     public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table, true);
 
     public removeColumn = (c: Column, list?: string) => {
-        // Conditions to check if we can delete the column
-        const isNotRootColumn = !!c?.joins?.length;
-        const rootColumnElements = this.currentQuery.filter(col => !col?.joins?.length).length;
+        // rootTableName To have the principal table => conditions to check if we can delete the column
+        const rootTableName = this.rootTable?.table_name;
+        // joins is reliable when interacting on the app; table_id comparison is the fallback after save and reload when joins may be empty
+        const isNotRootColumn = !!c?.joins?.length || (!!rootTableName && c?.table_id !== rootTableName);
+        const rootColumnElements = this.currentQuery.filter(col => !col?.joins?.length && (!rootTableName || col?.table_id === rootTableName)).length;
         const currentQueryLength = this.currentQuery.length;
 
         // We just proceed if it is not the last column of the root table
