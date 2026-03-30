@@ -1974,7 +1974,10 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
           // pongo a nulo los numeros nulos
           for (var i = 0; i < results.length; i++) {
             for (var j = 0; j < results[i].length; j++) {
-              if (results[i][j] === eda_api_config.null_value) results[i][j] = null;
+              const t = oracleDataTypes?.[0]?.[j];  // <-- changed
+              if( t === 'int' && results[i][j] === eda_api_config.null_value){
+                  results[i][j] = null;
+              }
             }
           }
         }
