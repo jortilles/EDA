@@ -3276,6 +3276,11 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>Choose how many columns you want to display</target>
 </trans-unit>
 
+<trans-unit id="histogramColumDescription">
+<source>Elige cuántas columnas mostrar en el histograma</source>
+<target>Choose how many columns to display in the histogram</target>
+</trans-unit>
+
 <trans-unit id="showLabels">
 <source>Mostrar Etiquetas</source>
 <target>Show Tags</target>

@@ -3198,6 +3198,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Wybierz ile kolumn chcesz wyświetlić</target>
   </trans-unit>
 
+  <trans-unit id="histogramColumDescription">
+    <source>Elige cuántas columnas mostrar en el histograma</source>
+    <target>Wybierz ile kolumn wyświetlić na histogramie</target>
+  </trans-unit>
+
      <trans-unit id="trendTooltip">
     <source>La función de añadir tendencia sólo se puede activar en los gràficos de lineas</source>
     <target>Funkcja trendu jest dozwolona tylko na wykresach liniowych</target>
