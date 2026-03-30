@@ -119,15 +119,19 @@ export class EdaFilterAndOrComponent implements OnInit {
           this.initAndOrFilters();
         }
       }
-      this.addMissingGlobalFilters();
+      this.addMissingFilters();
     }
   }
 
-  private addMissingGlobalFilters(): void {
+  private addMissingFilters(): void {
     const existingIds = new Set(this.dashboard.map((d: any) => d.filter_id));
-    const missing = this.globalFilters.filter(gf =>
-      gf.filterBeforeGrouping !== false && !existingIds.has(gf.filter_id)
-    );
+
+    const allFilters = [
+      ...this.selectedFilters.filter(sf => sf.filterBeforeGrouping !== false),
+      ...this.globalFilters.filter(gf => gf.filterBeforeGrouping !== false),
+    ];
+
+    const missing = allFilters.filter(f => !existingIds.has(f.filter_id));
 
     if (missing.length === 0) return;
 
@@ -135,16 +139,16 @@ export class EdaFilterAndOrComponent implements OnInit {
       ? Math.max(...this.dashboard.map((d: any) => d.y)) + 1
       : 0;
 
-    missing.forEach((gf, i) => {
+    missing.forEach((f, i) => {
       this.dashboard.push({
         cols: 3, rows: 1, y: maxY + i, x: 0,
-        filter_table: gf.filter_table,
-        filter_column: gf.filter_column,
-        filter_type: gf.filter_type,
-        filter_column_type: gf.filter_column_type,
-        filter_elements: gf.filter_elements,
-        filter_id: gf.filter_id,
-        isGlobal: gf.isGlobal,
+        filter_table: f.filter_table,
+        filter_column: f.filter_column,
+        filter_type: f.filter_type,
+        filter_column_type: f.filter_column_type,
+        filter_elements: f.filter_elements,
+        filter_id: f.filter_id,
+        isGlobal: f.isGlobal,
         value: 'and',
       });
     });
