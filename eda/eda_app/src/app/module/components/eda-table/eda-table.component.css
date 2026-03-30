@@ -45,7 +45,8 @@
 
 th{
   border-radius: 6px;
-
+  background-color: #F1F0F0;
+  border: 1px solid #fff;
 }
 
 .p-datatable-auto-layout>.p-datatable-wrapper {
