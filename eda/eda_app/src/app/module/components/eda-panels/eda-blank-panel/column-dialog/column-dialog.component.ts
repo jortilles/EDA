@@ -1,4 +1,4 @@
-import { Component, ViewChild, Input } from '@angular/core';
+import { Component, ViewChild, Input, Output, EventEmitter } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { Column } from '@eda/models/model.index';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -54,6 +54,7 @@ export class ColumnDialogComponent {
     @Input() controller: any;
 
     @ViewChild('myCalendar', { static: false }) datePicker: EdaDatePickerComponent;
+    @Output() updateSortedFiltersColumnDialog: EventEmitter<any> = new EventEmitter<any>();
 
     public dialog: EdaDialog;
     public selectedColumn: Column;
@@ -204,9 +205,17 @@ export class ColumnDialogComponent {
         this.filterSelected = undefined; // filtre seleccionat cap
         this.filterValue = {}; // filtre ningun
         this.filter.range = null;
+
+        // Control de agregar solo el filtro en la sección Where
+        const addToSortedFilters = { add: true, filter: filter };
+        if(filter['filterBeforeGrouping']) this.updateSortedFiltersColumnDialog.emit(addToSortedFilters);        
     }
 
     removeFilter(item: any) {
+
+        const addToSortedFilters = { add: false, filter: item };
+        this.updateSortedFiltersColumnDialog.emit(addToSortedFilters);
+
         this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id)).removed = true;
 
         this.filter.forDisplay = this.filter.selecteds.filter(f => {
