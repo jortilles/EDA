@@ -135,6 +135,22 @@ export class GlobalFilterComponent implements OnInit {
         }
 
         this.loading = false;
+
+        this.globalFilters.forEach(filter => {
+            this.setGlobalEmptyFilter(filter);
+        });
+    }
+
+    /** Pushes an empty global filter to all linked panels so it appears in the AND/OR dialog */
+    public setGlobalEmptyFilter(filter: any): void {
+        setTimeout(() => {
+            this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
+                if (filter.panelList.includes(panel.panel.id)) {
+                    const formatedFilter = this.globalFilterService.formatFilter(filter);
+                    panel.assertGlobalEmptyFilter(formatedFilter);
+                }
+            });
+        }, 500);
     }
 
     public async initOrderDependentFilters(orderDependentFilters: any[]): Promise<void> {

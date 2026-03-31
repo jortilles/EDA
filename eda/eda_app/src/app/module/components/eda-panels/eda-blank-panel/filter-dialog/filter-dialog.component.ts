@@ -1,4 +1,4 @@
-import {Component, Input, ViewChild} from '@angular/core';
+import {Component, Input, ViewChild, Output, EventEmitter} from '@angular/core';
 import {SelectItem} from 'primeng/api';
 import {EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent, EdaDatePickerComponent} from '@eda/shared/components/shared-components.index';
 import {Column} from '@eda/models/model.index';
@@ -49,6 +49,8 @@ const STANDALONE_COMPONENTS = [
 export class FilterDialogComponent {
 
     @ViewChild('myCalendar', { static: false }) datePicker: EdaDatePickerComponent;
+    @Output() updateSortedFiltersFilterDialog: EventEmitter<any> = new EventEmitter<any>();    
+
     @Input() controller: any;
 
     public dialog: EdaDialog;
@@ -125,6 +127,10 @@ export class FilterDialogComponent {
         this.filterSelected = undefined; // filtre seleccionat cap
         this.filterValue = {}; // filtre ningun
         this.filter.range = null;
+
+        // Control de agregar solo el filtro en la sección Where
+        const addToSortedFilters = { add: true, filter: filter };
+        if(filter['filterBeforeGrouping']) this.updateSortedFiltersFilterDialog.emit(addToSortedFilters);        
     }
 
     carrega() {
@@ -150,6 +156,9 @@ export class FilterDialogComponent {
 
 
     removeFilter(item: any) {
+        const addToSortedFilters = { add: false, filter: item };
+        this.updateSortedFiltersFilterDialog.emit(addToSortedFilters);
+
         this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id) ).removed = true;
 
         this.filter.forDisplay = this.filter.selecteds.filter(f => {
