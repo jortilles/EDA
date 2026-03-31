@@ -304,7 +304,10 @@ export const PanelInteractionUtils = {
                 column.whatif_column = contentColumn.whatif_column || false;
                 column.whatif = contentColumn.whatif || {};
                 column.joins = contentColumn.joins || [];
-                if(column.column_type!= contentColumn.column_type){
+                column.ranges = contentColumn.ranges || [];
+                if(column.ranges.length > 0){
+                  column.column_type = 'text';
+                } else if(column.column_type != contentColumn.column_type){
                   column.old_column_type = column.column_type;
                   column.column_type = contentColumn.column_type;
                 }

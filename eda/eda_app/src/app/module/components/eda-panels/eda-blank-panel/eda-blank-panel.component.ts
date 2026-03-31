@@ -619,7 +619,7 @@ public tableNodeExpand(event: any): void {
             } else {
                 this.rootTable = null; // no root table in EDA mode
                 PanelInteractionUtils.handleCurrentQuery(this);
-            this.columns = this.columns.filter(c => !c.isdeleted);
+                this.columns = this.columns.filter(c => !c.isdeleted);
             }
         }
 
