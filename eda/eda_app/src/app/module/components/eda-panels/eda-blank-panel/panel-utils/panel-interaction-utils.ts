@@ -304,7 +304,10 @@ export const PanelInteractionUtils = {
                 column.whatif_column = contentColumn.whatif_column || false;
                 column.whatif = contentColumn.whatif || {};
                 column.joins = contentColumn.joins || [];
-                if(column.column_type!= contentColumn.column_type){
+                column.ranges = contentColumn.ranges || [];
+                if(column.ranges.length > 0){
+                  column.column_type = 'text';
+                } else if(column.column_type != contentColumn.column_type){
                   column.old_column_type = column.column_type;
                   column.column_type = contentColumn.column_type;
                 }
@@ -413,7 +416,13 @@ export const PanelInteractionUtils = {
             handleColumn.joins = contentColumn.joins || [];
             handleColumn.ordenation_type = contentColumn.ordenation_type;
             handleColumn.autorelation = contentColumn.autorelation || false;
-
+            handleColumn.ranges = contentColumn.ranges || false;
+            
+            // Si posee Rango el column_type debe ser de tipo 'text'
+            if(handleColumn.ranges.length > 0){
+              handleColumn.column_type = 'text'
+            }
+            
             const existsAgg = handleColumn.aggregation_type.find((agg) => agg.value === contentColumn.aggregation_type);
             if (existsAgg) existsAgg.selected = true;
 
