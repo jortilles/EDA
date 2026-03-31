@@ -16,8 +16,8 @@ export abstract class EdaColumn {
     group: string;
     rowspan: number = 4;
     rowTotal : boolean = false;
-    visible : boolean;
-    rangeOption: boolean = false;
+    visible : boolean = true;
+    rangeOption: boolean;
     click : (row:any) => void  = () => {};
 
     cellStyle: (value: any, row: any) => any = () => {};
