@@ -223,7 +223,6 @@ export class EdaTableComponent implements OnInit {
                 });
 
             });
-        //console.log(limits);
 
         //Set ranges
             fields.forEach(field => {

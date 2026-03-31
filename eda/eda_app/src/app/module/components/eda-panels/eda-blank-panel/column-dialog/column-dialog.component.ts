@@ -735,9 +735,6 @@ export class ColumnDialogComponent {
 
 
     addRange(rangeString: string) {
-
-        console.log('rangeString: ', rangeString);
-
         const regexNumber = /^[0-9]/;
 
         if(regexNumber.test(rangeString[rangeString.length-1])){
@@ -759,10 +756,6 @@ export class ColumnDialogComponent {
             this.selectedRange = this.generarStringRango(this.ranges); // extraemos el rango seleccionado
             this.rangeString = '';
             this.allowedAggregations = false;
-
-            console.log('this.ranges: ', this.ranges)
-            console.log('this.showRange: ', this.showRange)
-            console.log('this.allowedAggregations: ', this.allowedAggregations)
 
             // Selección de Rango, genera que la agregación sea 'none'
             const selectionAggregationRange = { value: 'none', display_name: 'No', selected: 'true' };
