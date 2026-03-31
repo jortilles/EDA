@@ -919,22 +919,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">11</context>
 </context-group>
 </trans-unit>
-<trans-unit id="deleteDates" datatype="html">
-<source> Todas </source>
-<target> Totes </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
-<context context-type="linenumber">36</context>
-</context-group>
-</trans-unit>
-<trans-unit id="yesterday" datatype="html">
-<source> Ayer </source>
-<target> Ahir </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
-<context context-type="linenumber">38</context>
-</context-group>
-</trans-unit>
 
 <trans-unit id="thisWeek" datatype="html">
 <source> Ésta semana </source>
@@ -3593,7 +3577,12 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
        <trans-unit id="columnsTooltip">
     <source>Elige cuantas columnas quieres mostrar</source>
     <target>Tria quantes columnes vols mostrar</target>
-  </trans-unit> 
+  </trans-unit>
+
+  <trans-unit id="histogramColumDescription">
+    <source>Elige cuántas columnas mostrar en el histograma</source>
+    <target>Tria quantes columnes mostrar a l'histograma</target>
+  </trans-unit>
 
      <trans-unit id="trendTooltip">
     <source>La función de añadir tendencia sólo se puede activar en los gràficos de lineas</source>
@@ -4181,6 +4170,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="DatePickerNull">
         <source>Fecha nula</source>
         <target>Data nula</target>
+      </trans-unit>
+      <trans-unit id="cannotRemoveLastColumn">
+        <source>No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.</source>
+        <target>No es pot eliminar totes les columnes de la taula arrel sense eliminar les columnes dependents.</target>
       </trans-unit>
       <trans-unit id="removeColumnGlobalFilter">
         <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
@@ -5906,6 +5899,54 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Próximo año</source>
         <target>Proper any</target>
       </trans-unit>
+      <trans-unit id="DatePickerYesterday">
+        <source>Ayer</source>
+        <target>Ahir</target>
+      </trans-unit>
+      <trans-unit id="DatePickerTomorrow">
+        <source>Mañana</source>
+        <target>Demà</target>
+      </trans-unit>
+      <trans-unit id="DatePickerPastTomorrow">
+        <source>Pasado mañana</source>
+        <target>Demà passat</target>
+      </trans-unit>
+      <trans-unit id="DatePickerLastQuarter">
+        <source>Último trimestre</source>
+        <target>Últim trimestre</target>
+      </trans-unit>
+      <trans-unit id="DatePickerThisQuarter">
+        <source>Este trimestre</source>
+        <target>Aquest trimestre</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext3">
+        <source>Próximos 3 días</source>
+        <target>Propers 3 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext7">
+        <source>Próximos 7 días</source>
+        <target>Propers 7 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext15">
+        <source>Próximos 15 días</source>
+        <target>Propers 15 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerLast90">
+        <source>Últimos 90 días</source>
+        <target>Últims 90 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext120">
+        <source>Próximos 120 días</source>
+        <target>Propers 120 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerAll">
+        <source>Todas</source>
+        <target>Totes</target>
+      </trans-unit>
+      <trans-unit id="DatePickerBeforeTodayIncluded">
+        <source>Todo hasta hoy</source>
+        <target>Tot fins avui</target>
+      </trans-unit>
       <trans-unit id="noNameProvided">
         <source>Debe proporcionar un nombre para el datasource</source>
         <target>Heu de proporcionar un nom per al datasource</target>
@@ -6150,8 +6191,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Resum de filtres</target>
       </trans-unit>
       <trans-unit id="globalFilterSelectedItemsLabel">
-        <source>{0} items seleccionados</source>
-        <target>{0} elements seleccionats</target>
+        <source>elementos seleccionados</source>
+        <target>elements seleccionats</target>
       </trans-unit>
       <trans-unit id="copyPublicLinkTooltip">
         <source>Copiar enlace público</source>

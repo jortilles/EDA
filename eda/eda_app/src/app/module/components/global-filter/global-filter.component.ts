@@ -14,9 +14,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DestroyRef } from '@angular/core';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import '@angular/localize/init';
-
-
-// pruebas
 import { DropdownModule } from 'primeng/dropdown';       // Si usas <p-dropdown>
 import { InputSwitchModule } from 'primeng/inputswitch'; // Si usas <p-inputSwitch>
 import { ScrollPanelModule } from 'primeng/scrollpanel'; // Si usas <p-scrollPanel>
@@ -75,6 +72,7 @@ export class GlobalFilterComponent implements OnInit {
 
     public filtrar: string = $localize`:@@filtrarH4:Filtrar`;
     public resumen: string = $localize`:@@filterSummary:Resumen de filtros`;
+    public selectedItemsLabel: string = $localize`:@@globalFilterSelectedItemsLabel:elementos seleccionados`;
     private tooltipHideTimeout: any;
     // flag para ver ultimo panel
     private lastPanel: any;
