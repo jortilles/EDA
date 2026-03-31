@@ -76,12 +76,13 @@ export class EdaFilterAndOrComponent implements OnInit {
     }
 
     this.options = {
-      gridType: GridType.Fixed,
+      gridType: GridType.Fit,
       compactType: CompactType.None,
       displayGrid: DisplayGrid.Always,
       pushItems: false,
       draggable: { enabled: true },
       resizable: { enabled: false },
+      mobileBreakpoint: 150,// ---- Mobile control ----
       minCols: 10,
       maxCols: 10,
       minRows: 9,
