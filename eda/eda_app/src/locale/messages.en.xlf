@@ -3204,6 +3204,11 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>Dashboards mail sending</target>
 </trans-unit>
 
+<trans-unit id="noFormatsAvailable">
+<source>Esta es una columna calculada y no tiene opciones de formato disponibles</source>
+<target>This is a calculated column and has no format options available</target>
+</trans-unit>
+
 <trans-unit id="cumulativeSum">
 <source>Suma acumulativa   </source>
 <target>Cumulative sum </target>

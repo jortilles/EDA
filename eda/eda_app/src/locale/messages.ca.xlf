@@ -3498,10 +3498,15 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Enviament d'informes per email</target>
   </trans-unit> 
 
+    <trans-unit id="noFormatsAvailable">
+    <source>Esta es una columna calculada y no tiene opciones de formato disponibles</source>
+    <target>Aquesta és una columna calculada i no té opcions de format disponibles</target>
+  </trans-unit>
+
     <trans-unit id="cumulativeSum">
     <source>Suma acumulativa   </source>
     <target>Suma acumulativa  </target>
-  </trans-unit> 
+  </trans-unit>
 
    <trans-unit id="ptooltipViewAlerts">
     <source>Configurar alertas</source>

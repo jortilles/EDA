@@ -3107,6 +3107,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Wysyłanie raportów e-mailem</target>
   </trans-unit>
 
+  <trans-unit id="noFormatsAvailable">
+    <source>Esta es una columna calculada y no tiene opciones de formato disponibles</source>
+    <target>Ta kolumna jest obliczana i nie ma dostępnych opcji formatowania</target>
+  </trans-unit>
+
  <trans-unit id="cumulativeSum">
     <source>Suma acumulativa   </source>
     <target>Łączna suma </target>

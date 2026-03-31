@@ -3444,10 +3444,15 @@
     <target>Envoi de rapports par courriel</target>
   </trans-unit> 
 
+  <trans-unit id="noFormatsAvailable">
+    <source>Esta es una columna calculada y no tiene opciones de formato disponibles</source>
+    <target>Cette colonne est calculée et n'a pas d'options de format disponibles</target>
+  </trans-unit>
+
   <trans-unit id="cumulativeSum">
     <source>Suma acumulativa   </source>
     <target>Somme cumulée  </target>
-  </trans-unit> 
+  </trans-unit>
 
   <trans-unit id="ptooltipViewAlerts">
     <source>Configurar alertas</source>
