@@ -26,7 +26,7 @@
             </tr>
 
             <tr *ngFor="let serie of inject.series" >
-                <th *ngFor="let label of serie.labels" [attr.rowspan]="label.rowspan" [attr.colspan]="label.colspan" 
+                <th *ngFor="let label of serie.labels" [attr.rowspan]="label.rowspan" [pSortableColumn]="label.column" [attr.colspan]="label.colspan" 
                 (click)="inject.onHeaderClick(label)" [pTooltip]="getTooltip(label)" style="text-align:center"  >
                     <div class="flex items-center">
                         {{label.title}}
