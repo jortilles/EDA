@@ -606,6 +606,41 @@ span.state-label {
   overflow-x: hidden;
 }
 
+.overflow-x-hidden {
+  overflow-x: hidden;
+}
+
+.grid-item {
+  display: block;
+  width: 100%;
+}
+
+.table-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: normal;
+}
+
+.summary-section {
+  padding: 0.75rem 1rem;
+}
+
+.summary-section-title {
+  margin-bottom: 0.5rem;
+}
+
+.summary-item {
+  display: block;
+  width: 100%;
+  padding: 0.2rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+}
+
 #chartSelector .p-dropdown-panel .p-dropdown-items-wrapper,
 .edaChartSelector .p-dropdown-panel .p-dropdown-items-wrapper {
   overflow: auto;
