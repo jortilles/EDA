@@ -270,14 +270,13 @@
                   <p-scrollPanel [style]="{width: '100%', height: '160px'}" styleClass="custombar1">
   
                       <ng-container *ngIf="showRange">
-  
-                          <b i18n="@@rangeDescriptionB" class="mr-2 pull-left">
+                          <div class="pt-3">
+                            <b i18n="@@rangeDescriptionB" class="mr-2 pull-left pt-">
                               • Rango:
                             </b>
                             <i class="pull-right ui-dropdown-clear-icon pi pi-times pointer md-3"(click)="removeRange()"></i>
-  
                             <div *ngIf="showRange" class="d-flex align-items-center" [innerHTML]="selectedRange" style="font-size: 1rem; padding: 10px 40px 5px 30px;"></div>
-  
+                          </div>
                       </ng-container>
   
                   </p-scrollPanel>

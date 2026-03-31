@@ -817,6 +817,11 @@ export class EdaTable {
         if (typeof this._value[0][serie.column] === 'string') {
 
             this._value = this._value.sort((a, b) => {
+                if (serie.rangeOption) {
+                    const n1 = this.extractNumberFromRange(a[serie.column]);
+                    const n2 = this.extractNumberFromRange(b[serie.column]);
+                    return serie.sortState === true ? n1 - n2 : n2 - n1;
+                }
                 if (serie.sortState === true) {
                     if (a[serie.column] < b[serie.column])
                         return -1;
@@ -842,6 +847,16 @@ export class EdaTable {
                 }
             });
         }
+    }
+
+    extractNumberFromRange(input: string): number {
+        const regex = /(?:<|<=|>|>=)?\s*(-?\d+)\s*(?:-|<|<=|>|>=)?\s*(-?\d+)?/;
+        const match = input?.trim().match(regex);
+        if (!match) return 0;
+        if (input.includes('<') || input.includes('>')) {
+            return parseInt(match[1], 10);
+        }
+        return match[2] ? parseInt(match[2], 10) : parseInt(match[1], 10);
     }
 
     PivotTable() {
@@ -1424,10 +1439,13 @@ export class EdaTable {
         let mains = [];
 
         labels.axes[0].itemX.forEach((e, j) => {
+            const colName = labels.axes[0].itemX[j].column_name;
+            const matchingCol = this.cols.find(c => c.field === colName);
             mains.push({
                 title: labels.axes[0].itemX[j].description,
-                column: labels.axes[0].itemX[j].column_name,
-                rowspan: numRows, colspan: 1, sortable: true, description: labels.axes[0].itemX[j].description
+                column: colName,
+                rowspan: numRows, colspan: 1, sortable: true, description: labels.axes[0].itemX[j].description,
+                rangeOption: matchingCol?.rangeOption || false
             })
         });
 
