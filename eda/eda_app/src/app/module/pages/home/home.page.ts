@@ -1,8 +1,9 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { Router } from '@angular/router';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, fromEvent, Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '@eda/services/api/user.service';
 import { GroupService } from '@eda/services/api/group.service';
@@ -11,14 +12,18 @@ import { CreateDashboardService } from '@eda/services/utils/create-dashboard.ser
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
 import { CommonModule } from '@angular/common';
+import { EdaDatePickerComponent } from '@eda/shared/components/eda-date-picker/eda-date-picker.component';
+import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/datePickerConfig';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 @Component({
   selector: 'app-v2-home-page',
   standalone: true,
-  imports: [FormsModule, NgTemplateOutlet, IconComponent, CommonModule],
-  templateUrl: './home.page.html'
+  imports: [FormsModule, NgTemplateOutlet, IconComponent, CommonModule, EdaDatePickerComponent, MultiSelectModule],
+  templateUrl: './home.page.html',
+  styleUrls: ['./home.page.css']
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
   private createDashboardService = inject(CreateDashboardService);
   private dashboardService = inject(DashboardService);
   private alertService = inject(AlertService);
@@ -41,6 +46,17 @@ export class HomePage implements OnInit {
   public grups: Array<any> = [];
   public isObserver: boolean = true;
 
+  // Control de filtros avanzados
+  showAdvancedFilter = signal(false);
+  private outsideClickSub?: Subscription;
+  searchQuery = '';
+  advancedFilters = { author: '', datasource: '' };
+  advancedTags: string[] = [];
+  createdPickerConfig: EdaDatePickerConfig = { dateRange: [], range: null, filter: null };
+  modifiedPickerConfig: EdaDatePickerConfig = { dateRange: [], range: null, filter: null };
+  createdRange: Date[] = [];
+  modifiedRange: Date[] = [];
+  
   //Variables de control de edició Modificar
   isEditing = false;
   editingReportId: string | null = null;
@@ -238,16 +254,79 @@ public handleTagSelect(option: any): void {
     });
   }
 
-  public filterByTitle(event) {
-    const query = event.target.value?.toString().trim().toUpperCase();
-    if (query?.length > 1) {
-        this.publicReports  = this.reportMap.public.filter(db => db.config?.title?.toUpperCase().includes(query));
-        this.sharedReports  = this.reportMap.shared.filter(db => db.config?.title?.toUpperCase().includes(query));
-        this.privateReports = this.reportMap.private.filter(db => db.config?.title?.toUpperCase().includes(query));
-        this.roleReports    = this.reportMap.group.filter(db => db.config?.title?.toUpperCase().includes(query));
-    } else {
-        ({ public: this.publicReports, shared: this.sharedReports, private: this.privateReports, group: this.roleReports } = this.reportMap);
+  private parseSearchQuery(raw: string): { title: string, author: string, datasource: string, tag: string, createdFrom: string, createdTo: string, modifiedFrom: string, modifiedTo: string } {
+    const result = { title: '', author: '', datasource: '', tag: '', createdFrom: '', createdTo: '', modifiedFrom: '', modifiedTo: '' };
+    const titleParts: string[] = [];
+    for (const token of raw.trim().split(/\s+/)) {
+      if (token.startsWith('au:')) {
+        result.author = token.slice(3);
+      } else if (token.startsWith('ds:')) {
+        result.datasource = token.slice(3);
+      } else if (token.startsWith('tag:')) {
+        result.tag = token.slice(4);
+      } else if (token.startsWith('cr:')) {
+        const parts = token.slice(3).split('..');
+        result.createdFrom = parts[0];
+        result.createdTo   = parts[1] || '';
+      } else if (token.startsWith('mo:')) {
+        const parts = token.slice(3).split('..');
+        result.modifiedFrom = parts[0];
+        result.modifiedTo   = parts[1] || '';
+      } else {
+        titleParts.push(token);
+      }
     }
+    result.title = titleParts.join(' ');
+    return result;
+  }
+
+  private getActiveTagBase() {
+    const activeTags = sessionStorage.getItem('activeTags') || '[]';
+    const hasActiveTag = !activeTags.includes($localize`:@@AllTags:Todos`) && activeTags !== '[]';
+    return {
+      public:  hasActiveTag ? this.checkTagsIntoReports(this.reportMap.public,  activeTags) : this.reportMap.public,
+      shared:  hasActiveTag ? this.checkTagsIntoReports(this.reportMap.shared,  activeTags) : this.reportMap.shared,
+      private: hasActiveTag ? this.checkTagsIntoReports(this.reportMap.private, activeTags) : this.reportMap.private,
+      group:   hasActiveTag ? this.checkTagsIntoReports(this.reportMap.group,   activeTags) : this.reportMap.group,
+    };
+  }
+
+  private normTagArr(cfg: any): string[] {
+    const t = cfg.tag;
+    if (!t) return [];
+    return (Array.isArray(t) ? t : [t]).map(x => typeof x === 'string' ? x : x.value || x.label || '');
+  }
+
+  public filterByTitle(event: Event) {
+    // si esta vacio o 1 caracter se muestra todo con filtro de tags
+    const raw = (event.target as HTMLInputElement).value?.toString().trim() || '';
+    if (raw.length <= 1) {
+      this.filterByTags();
+      return;
+    }
+
+    const { title, author, datasource, tag, createdFrom, createdTo, modifiedFrom, modifiedTo } = this.parseSearchQuery(raw);
+    
+    // funcion de filtrado por keywords que se aplica a cada grupo de infromes
+    const filter = (reports: any[]) => reports.filter(db => {
+      const cfg = db.config;
+      if (title      && !cfg.title?.toUpperCase().includes(title.toUpperCase())) return false;
+      if (author     && !cfg.author?.toLowerCase().includes(author.toLowerCase())) return false;
+      if (datasource && !cfg.ds?.type?.toLowerCase().includes(datasource.toLowerCase())) return false;
+      if (tag        && !this.normTagArr(cfg).some(t => t.toLowerCase().includes(tag.toLowerCase()))) return false;
+      if (createdFrom  && new Date(cfg.createdAt) < new Date(createdFrom)) return false;
+      if (createdTo    && new Date(cfg.createdAt) > new Date(createdTo + 'T23:59:59')) return false;
+      if (modifiedFrom && new Date(cfg.modifiedAt) < new Date(modifiedFrom)) return false;
+      if (modifiedTo   && new Date(cfg.modifiedAt) > new Date(modifiedTo + 'T23:59:59')) return false;
+      return true;
+    });
+
+    // aplicar filtraje a grupos de informes
+    const base = this.getActiveTagBase();
+    this.publicReports  = filter(base.public);
+    this.sharedReports  = filter(base.shared);
+    this.privateReports = filter(base.private);
+    this.roleReports    = filter(base.group);
   }
 
   copyReport(report: any) {
@@ -446,6 +525,121 @@ public handleTagSelect(option: any): void {
         sessionStorage.setItem("homeSorting", "name");
         break;
     }
+  }
+
+  // Control de visibilidad del panel de filtros avanzados
+  ngOnDestroy(): void {
+    this.outsideClickSub?.unsubscribe();
+  }
+  
+  // Cerrar panel de filtros si se hace click fuera de él, el calendar o el multiselect
+  // Mostrar o ocultar el panel de filtros avanzados
+  toggleAdvancedFilter(event: Event) {
+    event.stopPropagation();
+    const opening = !this.showAdvancedFilter();
+    this.showAdvancedFilter.set(opening);
+
+    if (opening) {
+      this.outsideClickSub = fromEvent<MouseEvent>(document, 'click')
+        .pipe(filter(e => {
+          const target = e.target as HTMLElement;
+          return !target.closest('.p-datepicker') && !target.closest('.p-multiselect-panel');
+        }))
+        .subscribe(() => {
+          this.showAdvancedFilter.set(false);
+          this.outsideClickSub?.unsubscribe();
+        });
+    } else {
+      this.outsideClickSub?.unsubscribe();
+    }
+  }
+
+  // Aplicar los filtros avanzados a los informes
+  applyAdvancedFilters() {
+    //recoger valores de filtros avanzados
+    const { author, datasource } = this.advancedFilters;
+    const hasCreated  = this.createdRange?.length >= 1 && this.createdRange[0];
+    const hasModified = this.modifiedRange?.length >= 1 && this.modifiedRange[0];
+    const hasTags     = this.advancedTags.length > 0;
+    const hasFilters  = author || datasource || hasCreated || hasModified || hasTags;
+
+    if (!hasFilters) {
+      this.filterByTags();
+      return;
+    }
+
+    // devuelve falso si el informe no cumple alguno de los filtros avanzados
+    const filter = (reports: any[]) => reports.filter(db => {
+      const cfg = db.config;
+      if (author     && !cfg.author?.toLowerCase().includes(author.toLowerCase())) return false;
+      if (datasource && !cfg.ds?.type?.toLowerCase().includes(datasource.toLowerCase())) return false;
+      if (hasTags    && !this.advancedTags.some(t => this.normTagArr(cfg).includes(t))) return false;
+      if (hasCreated) {
+        const created = new Date(cfg.createdAt);
+        if (this.createdRange[0] && created < this.createdRange[0]) return false;
+        if (this.createdRange[1] && created > this.createdRange[1]) return false;
+      }
+      if (hasModified) {
+        const modified = new Date(cfg.modifiedAt);
+        if (this.modifiedRange[0] && modified < this.modifiedRange[0]) return false;
+        if (this.modifiedRange[1] && modified > this.modifiedRange[1]) return false;
+      }
+      return true;
+    });
+
+    const base = this.getActiveTagBase();
+    this.publicReports  = filter(base.public);
+    this.sharedReports  = filter(base.shared);
+    this.privateReports = filter(base.private);
+    this.roleReports    = filter(base.group);
+    this.buildSearchQuery();
+  }
+
+  // Construye la sintaxis aplicada en los campos de los filtros avanzados y lo pone en el buscador
+  private buildSearchQuery(): void {
+    const parts: string[] = [];
+    if (this.advancedFilters.author)     parts.push(`au:${this.advancedFilters.author}`);
+    if (this.advancedFilters.datasource) parts.push(`ds:${this.advancedFilters.datasource}`);
+    this.advancedTags.forEach(t => parts.push(`tag:${t}`));
+    if (this.createdRange?.length >= 1 && this.createdRange[0]) {
+      const from = this.formatDateForQuery(this.createdRange[0]);
+      const to   = this.createdRange[1] ? `..${this.formatDateForQuery(this.createdRange[1])}` : '';
+      parts.push(`cr:${from}${to}`);
+    }
+    if (this.modifiedRange?.length >= 1 && this.modifiedRange[0]) {
+      const from = this.formatDateForQuery(this.modifiedRange[0]);
+      const to   = this.modifiedRange[1] ? `..${this.formatDateForQuery(this.modifiedRange[1])}` : '';
+      parts.push(`mo:${from}${to}`);
+    }
+    this.searchQuery = parts.join(' ');
+  }
+
+  // Funciones para manejar fechas en filtos avanzados
+  onCreatedDatesChange(event: { dates: Date[], range: any }) {
+    this.createdRange = event.dates || [];
+    this.applyAdvancedFilters();
+  }
+
+  onModifiedDatesChange(event: { dates: Date[], range: any }) {
+    this.modifiedRange = event.dates || [];
+    this.applyAdvancedFilters();
+  }
+
+  private formatDateForQuery(d: Date): string {
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  }
+
+  // Funcion para vaciar el contenido del filtro avanzado
+  clearAdvancedFilters() {
+    this.advancedFilters = { author: '', datasource: '' };
+    this.advancedTags = [];
+    this.createdRange = [];
+    this.modifiedRange = [];
+    this.createdPickerConfig  = { dateRange: [], range: null, filter: null };
+    this.modifiedPickerConfig = { dateRange: [], range: null, filter: null };
+    this.searchQuery = '';
+    this.filterByTags();
   }
 
   sortingReports(type: string, reports: any, direction: string) {
