@@ -73,7 +73,8 @@ export class QueryBuilderService extends ApiService {
                 groupByEnabled: true,
                 prediction: 'None',
                 joinType: 'left', //puede que necesite el joinType
-                rootTable: null
+                rootTable: null,
+                sortedFilters: [],
             },
             output: {
                 labels,

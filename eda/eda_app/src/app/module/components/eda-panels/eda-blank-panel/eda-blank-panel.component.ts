@@ -391,6 +391,8 @@ export class EdaBlankPanelComponent implements OnInit {
             ['knob', 'radar'].includes(this.panel.content?.chart) ? { minHeight: '55vh', minWidth: '55vw', display: 'inline-block', alignItems: 'center' } :
             ['kpi'].includes(this.panel.content?.chart) ? {height: '100%', width: '100%', alignContent: 'center'} : 
             {height: '100%', width: '100%'};
+        
+        if(this.sortedFilters === undefined) this.sortedFilters = []; // Si se trata de un informe antiguo, definimos el informe como vacío.
     }
     
     /**
@@ -1142,6 +1144,45 @@ public tableNodeExpand(event: any): void {
         }
     }
 
+    public addingGlobalFilterEbp(_filter: any) {
+
+        if(this.sortedFilters.length !==0){
+            const lastElement = this.sortedFilters[this.sortedFilters.length-1];
+
+            const newSortedFilter = {
+                cols: 3,
+                rows: 1,
+                y: lastElement.y+1,
+                x: 0,
+                filter_table: _filter.filter_table,
+                filter_column: _filter.filter_column,
+                filter_type: _filter.filter_type,
+                filter_column_type: _filter.filter_column_type,
+                filter_elements: _filter.filter_elements,
+                filter_codes: _filter.filter_codes,
+                filter_id: _filter.filter_id,
+                isGlobal: _filter.isGlobal,
+                value: "and",
+            }
+
+            this.sortedFilters.push(newSortedFilter);
+            this.savePanel()
+        }
+    }    
+
+    public rebootGlobalFilter(_filter: any){
+
+        if(this.sortedFilters.length !==0) {
+            this.alertService.addWarning($localize`:@@globalFilterSettingsReboot:La configuración de filtros del panel involucrado se ha reiniciado`);
+        }
+
+        if(this.sortedFilters.some((sortedFilter: any) => _filter.id === sortedFilter.filter_id)){
+            this.sortedFilters = [];
+            this.savePanel(); // Panel setting saved
+        }
+
+    }
+    
     /* Funcions generals de la pagina */
     public disableBtnSave = () => this.display_v.btnSave = true;
 
@@ -1737,7 +1778,7 @@ public tableNodeExpand(event: any): void {
                 if (this.globalFilters.length !== 0) {
                     this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
                 }
-                this.globalFilters = []; // resets the values ​​because one or more filters were deleted
+                this.sortedFilters = []; // resets the values ​​because one or more filters were deleted
             }
             PanelInteractionUtils.removeColumn(this, c, list);
         }
@@ -1747,6 +1788,7 @@ public tableNodeExpand(event: any): void {
             this.alertService.addError($localize`:@@cannotRemoveLastColumn:No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.`);
         }
     }
+    
     public getOptionDescription = (value: string): string => EbpUtils.getOptionDescription(value);
 
     public getOptionIcon = (value: string): string => EbpUtils.getOptionIcon(value);
