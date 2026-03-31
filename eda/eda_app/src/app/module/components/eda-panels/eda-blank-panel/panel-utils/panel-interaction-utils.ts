@@ -413,7 +413,13 @@ export const PanelInteractionUtils = {
             handleColumn.joins = contentColumn.joins || [];
             handleColumn.ordenation_type = contentColumn.ordenation_type;
             handleColumn.autorelation = contentColumn.autorelation || false;
-
+            handleColumn.ranges = contentColumn.ranges || false;
+            
+            // Si posee Rango el column_type debe ser de tipo 'text'
+            if(handleColumn.ranges.length > 0){
+              handleColumn.column_type = 'text'
+            }
+            
             const existsAgg = handleColumn.aggregation_type.find((agg) => agg.value === contentColumn.aggregation_type);
             if (existsAgg) existsAgg.selected = true;
 
