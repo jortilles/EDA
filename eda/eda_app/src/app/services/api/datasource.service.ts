@@ -128,29 +128,16 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 currTable.type = element &&  element.name === table.display_name.default ? 'selected' : 'unselected'
                 tables.push(currTable);
 
-
-
-
-                // Column nodes (sorted alphabetically)
-                const columnTypeIconMap: { [key: string]: string } = {
-                    text: 'mdi mdi-alphabetical',
-                    numeric: 'mdi mdi-numeric',
-                    date: 'mdi mdi-calendar-text',
-                    coordinate: 'mdi mdi-map-marker',
-                    html: 'mdi mdi-language-html5'
-                };
-
-                const sortedColumns = [...table.columns].sort((a: any, b: any) =>
-                    a.display_name.default.localeCompare(b.display_name.default)
-                );
-                sortedColumns.forEach((column: any) => {
+                // Column nodes
+                table.columns.forEach((column: any) => {
                     const currCol: TreeNode = {};
                     currCol.label = column.display_name.default;
                     currCol.data = 'columna';
                     currCol.children = [];
-                    currCol.icon = columnTypeIconMap[column.column_type] || 'fa fa-columns';
+                    currCol.icon = column.computed_column === 'computed' ? 'fa fa-calculator' : 'fa fa-columns';
                     currCol.type = element && element.name === column.display_name.default ? 'selected' : 'unselected'
                     currTable.children.push(currCol);
+
                 });
             });
         // order by name....

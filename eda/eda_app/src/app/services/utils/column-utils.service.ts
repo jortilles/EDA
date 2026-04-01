@@ -12,6 +12,8 @@ interface FilterOptions {
     valueListSource?: {};
     autorelation?: boolean;
     joins?: any[];
+    computed_column?: string;
+    SQLexpression?: string;
 }
 @Injectable()
 export class ColumnUtilsService {
@@ -60,8 +62,7 @@ export class ColumnUtilsService {
     }
     
     public setFilter(options: FilterOptions): object {
-        const { obj, table, column, column_type, type, selectedRange, valueListSource, joins, autorelation } = options;
-    
+        const { obj, table, column, column_type, type, selectedRange, valueListSource, autorelation, joins, computed_column, SQLexpression } = options;    
         const values = Object.keys(obj).map((key) => {
             if (!_.isNil(obj[key])) {
                 return { [key]: Array.isArray(obj[key]) ? obj[key] : [obj[key]] };
@@ -78,7 +79,9 @@ export class ColumnUtilsService {
             filter_elements: values,
             selectedRange: selectedRange,
             autorelation, 
-            joins
+            joins,
+            computed_column,
+            SQLexpression
         };
     
         if (valueListSource) {
