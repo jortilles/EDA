@@ -266,8 +266,10 @@ export const PanelInteractionUtils = {
                 const column = table.columns?.find(column => column.column_name === filter.filter_column);
                 const columnInQuery = query.some(col => col.column_name === filter.filter_column);
                 if (!filter.isGlobal && !columnInQuery && column) {
-                    column.table_id?column.table_id=column.table_id:column.table_id=filter.filter_table;  /** Si no tengo la tabla se la pongo */
-                    ebp.filtredColumns.push(column);
+                    column.table_id ? column.table_id=column.table_id : column.table_id = filter.filter_table;  /** Si no tengo la tabla se la pongo */
+                    if (!ebp.filtredColumns.some((col: any) => col === column)) {
+                        ebp.filtredColumns.push(column);
+                    }
                 }
                 if (!column) {
                     console.warn('WARNING\nWARNING. YOU HAVE A COLUMN IN THE FILTERS NOT PRESENT IN THE MODEL!!!!!!!!!!!!\nWARNING');
