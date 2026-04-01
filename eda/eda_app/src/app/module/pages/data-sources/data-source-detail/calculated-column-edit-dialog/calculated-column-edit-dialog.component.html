@@ -4,10 +4,12 @@
     width="50vw" height="auto"
     (apply)="onApplyCalculatedColumn()"
     (close)="onCloseCalculatedColumn()"
+    [showCheckExpression]="true"
+    (checkexpression)="checkCalculatedColumn()"
 >
 
     <div content>
-        <form [formGroup]="form" class="grid gap-4">
+        <form [formGroup]="form" class="grid gap-4 pb-4">
 
             <div class="grid gap-2">
                 <label for="eda_col_nombre"

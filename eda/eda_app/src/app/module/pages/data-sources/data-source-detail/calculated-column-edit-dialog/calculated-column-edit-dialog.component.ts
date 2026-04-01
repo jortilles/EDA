@@ -151,6 +151,34 @@ export class CalculatedColumnEditDialogComponent implements OnInit {
     );
   }
 
+  checkCalculatedColumn() {
+    if (!this.sqlExpressionString) return;
+    this.spinnerService.on();
+    const table = this.dataModelService.getTable(this.temporalColumn);
+    const queryParams: QueryParams = {
+      table: table.table_name,
+      dataSource: this.dataModelService.model_id,
+    };
+    const columnCheck: any = {
+      SQLexpression: this.sqlExpressionString,
+      aggregation_type: [{ value: 'none', display_name: 'No' }],
+      column_granted_roles: [],
+      column_name: 'computed test',
+      column_type: this.selectedcolumnType,
+      computed_column: 'computed',
+      description: { default: 'computed test', localized: [] },
+      display_name: { default: 'computed test', localized: [] },
+      minimumFractionDigits: this.decimalNumberValue,
+      row_granted_roles: [],
+      visible: true,
+    };
+    const query = this.queryBuilderService.simpleQuery(columnCheck, queryParams);
+    this.dataModelService.executeQuery(query).subscribe(
+      () => { this.alertService.addSuccess($localize`:@@CorrectQuery:Consulta correcta`); this.spinnerService.off(); },
+      () => { this.alertService.addError($localize`:@@IncorrectQuery:Consulta incorrecta`); this.spinnerService.off(); }
+    );
+  }
+
   onCloseCalculatedColumn() {
     this.close.emit();
   }
