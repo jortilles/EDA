@@ -88,8 +88,7 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnChanges
             this.resizeObserver = new ResizeObserver(() => {
                 setTimeout(() => {
                     // Algo peta al eliminar un filtro
-                    console.log('obersavando...')
-//                    this.dialogRef.center();
+                    // this.dialogRef.center();
                     this.cd.detectChanges();
                 }, 1000);
             });

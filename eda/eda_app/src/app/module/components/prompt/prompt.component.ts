@@ -58,9 +58,6 @@ export class PromptComponent implements OnInit, AfterViewInit {
     ngOnInit(): void {
         const tables = this.edaBlankPanel.tables
         this.initSchema(tables);
-
-        console.log('THISSSSSS: ', this);
-
     }
 
     initSchema(tables: any[]) {
