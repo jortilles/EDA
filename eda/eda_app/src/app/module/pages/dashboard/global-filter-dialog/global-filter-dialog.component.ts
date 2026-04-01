@@ -781,8 +781,9 @@ public async loadFilterAutoComplete(event: any, filtro: any) {
         // Indice en el que se encuentra el filtro de la lista
         const index = this.globalFilterList.findIndex(f => f.id === filterNameID);
         // Quitamos los valores de la lista
-        this.globalFilter.selectedItems = []
-        
+        this.globalFilter.selectedItems = [];
+        this.globalFilter.isdeleted = true;
+
         if (this.validateGlobalFilter()) {
             if (this.globalFilter.queryMode != 'EDA2') {
                 this.globalFilter.panelList = this.filteredPanels.map((p: any) => p.id);
