@@ -3112,6 +3112,46 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Ta kolumna jest obliczana i nie ma dostępnych opcji formatowania</target>
   </trans-unit>
 
+  <trans-unit id="editCalculatedField">
+    <source>Edición de campo calculado</source>
+    <target>Edycja pola obliczanego</target>
+  </trans-unit>
+
+  <trans-unit id="deleteCalculatedColumn">
+    <source>Si, Eliminar el campo calculado!</source>
+    <target>Tak, usuń pole obliczane!</target>
+  </trans-unit>
+
+  <trans-unit id="deleteCalculatedColumnConfirmation">
+    <source>Campo calculado eliminado correctamente. Debera guardar cambios en el modelo de datos para que la eliminación sea permanente</source>
+    <target>Pole obliczane zostało pomyślnie usunięte. Należy zapisać zmiany w modelu danych, aby usunięcie było trwałe</target>
+  </trans-unit>
+
+  <trans-unit id="DeleteGroupCancel">
+    <source>Cancelar</source>
+    <target>Anuluj</target>
+  </trans-unit>
+
+  <trans-unit id="formDialogCalculatedColumn">
+    <source>Recuerde rellenar todos los campos</source>
+    <target>Pamiętaj, aby wypełnić wszystkie pola</target>
+  </trans-unit>
+
+  <trans-unit id="mandatoryDiferentName">
+    <source>Este nombre de campo calculado ya existe. Intente con otro.</source>
+    <target>Ta nazwa pola obliczanego już istnieje. Spróbuj innej.</target>
+  </trans-unit>
+
+  <trans-unit id="titleCalculatedColumnEditMessage">
+    <source>Campo calculado actualizado correctamente</source>
+    <target>Pole obliczane zostało pomyślnie zaktualizowane</target>
+  </trans-unit>
+
+  <trans-unit id="textCalculatedColumnEditMessage">
+    <source>IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entrar en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe</source>
+    <target>WAŻNE: Modyfikacja istniejącego pola obliczanego nie aktualizuje automatycznie paneli, które go używają. Należy wejść w konfigurację każdego z nich, kliknąć Wykonaj i zapisać raport</target>
+  </trans-unit>
+
  <trans-unit id="cumulativeSum">
     <source>Suma acumulativa   </source>
     <target>Łączna suma </target>

@@ -3209,6 +3209,46 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>This is a calculated column and has no format options available</target>
 </trans-unit>
 
+<trans-unit id="editCalculatedField">
+<source>Edición de campo calculado</source>
+<target>Edit calculated field</target>
+</trans-unit>
+
+<trans-unit id="deleteCalculatedColumn">
+<source>Si, Eliminar el campo calculado!</source>
+<target>Yes, delete the calculated field!</target>
+</trans-unit>
+
+<trans-unit id="deleteCalculatedColumnConfirmation">
+<source>Campo calculado eliminado correctamente. Debera guardar cambios en el modelo de datos para que la eliminación sea permanente</source>
+<target>Calculated field deleted successfully. You must save changes in the data model for the deletion to be permanent</target>
+</trans-unit>
+
+<trans-unit id="DeleteGroupCancel">
+<source>Cancelar</source>
+<target>Cancel</target>
+</trans-unit>
+
+<trans-unit id="formDialogCalculatedColumn">
+<source>Recuerde rellenar todos los campos</source>
+<target>Please fill in all fields</target>
+</trans-unit>
+
+<trans-unit id="mandatoryDiferentName">
+<source>Este nombre de campo calculado ya existe. Intente con otro.</source>
+<target>This calculated field name already exists. Please try another.</target>
+</trans-unit>
+
+<trans-unit id="titleCalculatedColumnEditMessage">
+<source>Campo calculado actualizado correctamente</source>
+<target>Calculated field updated successfully</target>
+</trans-unit>
+
+<trans-unit id="textCalculatedColumnEditMessage">
+<source>IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entrar en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe</source>
+<target>IMPORTANT: When modifying an existing calculated field, panels using it are not updated automatically. You must enter the configuration of each one, click Execute and save the report</target>
+</trans-unit>
+
 <trans-unit id="cumulativeSum">
 <source>Suma acumulativa   </source>
 <target>Cumulative sum </target>
