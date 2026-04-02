@@ -168,6 +168,22 @@
                 <label i18n="@@tiposFiltrosLabel" for="types">Tipos de filtro</label>
               </span>
             </div>
+            @if (filterSelected && selectedColumn?.column_type === 'numeric' && !display.switchButton && aggregationSelected?.value !== 'none') {
+              <div>
+                <span class="p-float-label">
+                  <p-dropdown
+                    id="whereHaving"
+                    [options]="filterBeforeAfter.elements"
+                    [(ngModel)]="filterBeforeAfterSelected"
+                    optionLabel="label"
+                    [autoDisplayFirst]="true"
+                    [style]="{'width': '100%'}"
+                    (onChange)="whereHavingSwitch(filterBeforeAfterSelected)">
+                  </p-dropdown>
+                  <label for="whereHaving" i18n="@@whereHavingLabel">Ámbito del filtro</label>
+                </span>
+              </div>
+            }
             <!-- Switch y botón -->
             @if (!showFormatDateSection) {
               <div class="flex justify-between items-center w-full mt-4">
@@ -261,31 +277,35 @@
                   @if (filtre.filter_elements.length === 0) {
                     <p class="flex items-center">
                       <b class="m-1">
-                      * {{ selectedColumn.display_name.default }} is
-                      {{ filtre.filter_type }}
+                        * {{ selectedColumn.display_name.default }} is {{ filtre.filter_type }}
                       </b>
+                      <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage" tooltipPosition="left">
+                        <b>&nbsp;[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]&nbsp;</b>
+                      </span>
                       <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
                     </p>
                   }
-    
+
                   @if (filtre.filter_elements.length === 1) {
                     <p class="flex items-center">
                       <b class="m-1">
-                      * {{ selectedColumn.display_name.default }}
-                      {{ filtre.filter_type }}
-                      "{{ filtre.filter_elements[0].value1 }}"
+                        * {{ selectedColumn.display_name.default }} {{ filtre.filter_type }} "{{ filtre.filter_elements[0].value1 }}"
                       </b>
+                      <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage" tooltipPosition="left">
+                        <b>&nbsp;[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]&nbsp;</b>
+                      </span>
                       <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
                     </p>
                   }
-    
+
                   @if (filtre.filter_elements.length === 2) {
                     <p class="flex items-center">
                       <b class="m-1">
-                      * {{ selectedColumn.display_name.default }}
-                      {{ filtre.filter_type }}
-                      "{{ filtre.filter_elements[0].value1}}" Y "{{ filtre.filter_elements[1].value2 }}"
+                        * {{ selectedColumn.display_name.default }} {{ filtre.filter_type }} "{{ filtre.filter_elements[0].value1}}" Y "{{ filtre.filter_elements[1].value2 }}"
                       </b>
+                      <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage" tooltipPosition="left">
+                        <b>&nbsp;[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]&nbsp;</b>
+                      </span>
                       <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
                     </p>
                   }

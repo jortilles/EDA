@@ -346,6 +346,7 @@ export class GlobalFiltersService {
             applyToAll: globalFilter.applyToAll,
             autorelation: globalFilter.autorelation,
             valueListSource: globalFilter.selectedColumn.valueListSource,
+            filterBeforeGrouping: true, // Para todos los filtros globales es Where
             computed_column: globalFilter.selectedColumn.computed_column,
             SQLexpression: globalFilter.selectedColumn.SQLexpression,
         }

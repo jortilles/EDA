@@ -660,7 +660,7 @@ export class ClickHouseBuilderService extends QueryBuilderService {
     if (filters.length) {
       let filtersString = `\nHAVING 1=1 `;
       filters.forEach(f => {
-        const column = this.findHavingColumn(f.filter_table, f.filter_column);
+        const column = this.findHavingColumn(f);
         const colname = this.getHavingColname(column);
         if (f.filter_type === 'not_null') {
           filtersString += `\nAND isNotNull(${colname}) `;
@@ -700,7 +700,7 @@ export class ClickHouseBuilderService extends QueryBuilderService {
   }
 
   public havingToString(filterObject: any) {
-    const column = this.findHavingColumn(filterObject.filter_table, filterObject.filter_column);
+    const column = this.findHavingColumn(filterObject);
     if (!column.hasOwnProperty('minimumFractionDigits')) {
       column.minimumFractionDigits = 0;
     }

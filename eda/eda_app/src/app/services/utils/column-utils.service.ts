@@ -12,6 +12,8 @@ interface FilterOptions {
     valueListSource?: {};
     autorelation?: boolean;
     joins?: any[];
+    filterBeforeGrouping?: boolean;
+    aggregation_type?: string;
     computed_column?: string;
     SQLexpression?: string;
 }
@@ -61,8 +63,8 @@ export class ColumnUtilsService {
         };
     }
     
-    public setFilter(options: FilterOptions): object {
-        const { obj, table, column, column_type, type, selectedRange, valueListSource, autorelation, joins, computed_column, SQLexpression } = options;    
+    public setFilter(options: FilterOptions): object {    
+        const { obj, table, column, column_type, type, selectedRange, valueListSource, autorelation, joins, filterBeforeGrouping, aggregation_type, computed_column, SQLexpression } = options;    
         const values = Object.keys(obj).map((key) => {
             if (!_.isNil(obj[key])) {
                 return { [key]: Array.isArray(obj[key]) ? obj[key] : [obj[key]] };
@@ -80,6 +82,8 @@ export class ColumnUtilsService {
             selectedRange: selectedRange,
             autorelation, 
             joins,
+            filterBeforeGrouping,
+            aggregation_type,
             computed_column,
             SQLexpression
         };
