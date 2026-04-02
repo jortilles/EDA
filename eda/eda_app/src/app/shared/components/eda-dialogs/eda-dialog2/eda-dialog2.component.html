@@ -80,6 +80,12 @@
                 }
             }
             
+            @if(ifShowCheckExpression){
+                <button class="execute-button w-auto text-center" (click)="onCheckExpression()">
+                    <i class="fa fa-cogs"></i>
+                    <span i18n="@@CheckExpression" class="whitespace-nowrap px-2">Comprobar expresión</span>
+                </button>
+            }
             @if(ifShowApply){
                 <button class="confirm-button" [disabled]="disableApply" (click)="onApply()">
                     <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>

@@ -316,7 +316,9 @@ export class GlobalFiltersService {
             isGlobal: true,
             isAutocompleted: globalFilter.isAutocompleted,
             applyToAll: globalFilter.applyToAll,
-            valueListSource: valueListSource
+            valueListSource: valueListSource,
+            computed_column: globalFilter.selectedColumn.computed_column,
+            SQLexpression: globalFilter.selectedColumn.SQLexpression,
         }
 
         return formatedFilter;
@@ -343,7 +345,9 @@ export class GlobalFiltersService {
             isAutocompleted: globalFilter.isAutocompleted,
             applyToAll: globalFilter.applyToAll,
             autorelation: globalFilter.autorelation,
-            valueListSource: globalFilter.selectedColumn.valueListSource
+            valueListSource: globalFilter.selectedColumn.valueListSource,
+            computed_column: globalFilter.selectedColumn.computed_column,
+            SQLexpression: globalFilter.selectedColumn.SQLexpression,
         }
 
         return formatedFilter;

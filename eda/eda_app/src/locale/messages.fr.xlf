@@ -3444,10 +3444,55 @@
     <target>Envoi de rapports par courriel</target>
   </trans-unit> 
 
+  <trans-unit id="noFormatsAvailable">
+    <source>Esta es una columna calculada y no tiene opciones de formato disponibles</source>
+    <target>Cette colonne est calculée et n'a pas d'options de format disponibles</target>
+  </trans-unit>
+
+  <trans-unit id="editCalculatedField">
+    <source>Edición de campo calculado</source>
+    <target>Édition du champ calculé</target>
+  </trans-unit>
+
+  <trans-unit id="deleteCalculatedColumn">
+    <source>Si, Eliminar el campo calculado!</source>
+    <target>Oui, supprimer le champ calculé !</target>
+  </trans-unit>
+
+  <trans-unit id="deleteCalculatedColumnConfirmation">
+    <source>Campo calculado eliminado correctamente. Debera guardar cambios en el modelo de datos para que la eliminación sea permanente</source>
+    <target>Champ calculé supprimé avec succès. Vous devez enregistrer les modifications du modèle de données pour que la suppression soit permanente</target>
+  </trans-unit>
+
+  <trans-unit id="DeleteGroupCancel">
+    <source>Cancelar</source>
+    <target>Annuler</target>
+  </trans-unit>
+
+  <trans-unit id="formDialogCalculatedColumn">
+    <source>Recuerde rellenar todos los campos</source>
+    <target>Veuillez remplir tous les champs</target>
+  </trans-unit>
+
+  <trans-unit id="mandatoryDiferentName">
+    <source>Este nombre de campo calculado ya existe. Intente con otro.</source>
+    <target>Ce nom de champ calculé existe déjà. Veuillez en essayer un autre.</target>
+  </trans-unit>
+
+  <trans-unit id="titleCalculatedColumnEditMessage">
+    <source>Campo calculado actualizado correctamente</source>
+    <target>Champ calculé mis à jour avec succès</target>
+  </trans-unit>
+
+  <trans-unit id="textCalculatedColumnEditMessage">
+    <source>IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entrar en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe</source>
+    <target>IMPORTANT : La modification d'un champ calculé existant ne met pas à jour automatiquement les panneaux qui l'utilisent. Vous devez accéder à la configuration de chacun d'eux, cliquer sur Exécuter et enregistrer le rapport</target>
+  </trans-unit>
+
   <trans-unit id="cumulativeSum">
     <source>Suma acumulativa   </source>
     <target>Somme cumulée  </target>
-  </trans-unit> 
+  </trans-unit>
 
   <trans-unit id="ptooltipViewAlerts">
     <source>Configurar alertas</source>

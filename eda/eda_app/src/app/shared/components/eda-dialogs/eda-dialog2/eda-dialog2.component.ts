@@ -47,6 +47,7 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnChanges
     public ifNoStyles: boolean;
     public ifShowNextStep: boolean;
     public ifShowSwitchRedirecction: boolean;
+    public ifShowCheckExpression: boolean;
 
     // Traducido automáticamente para PrimeNG
     get translatedBreakpoints(): Record<string, string> {
@@ -75,6 +76,7 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnChanges
         this.ifNoStyles = this.notstyles.observers.length > 0 && this.showNotStyles;
         this.ifShowNextStep = this.nextstep.observers.length > 0 && this.showNextStep;
         this.ifShowSwitchRedirecction = this.switchredirecction.observers.length > 0 && this.showRedirecction;
+        this.ifShowCheckExpression = this.checkexpression.observers.length > 0 && this.showCheckExpression;
     }
 
     public ngOnChanges(changes: SimpleChanges): void {

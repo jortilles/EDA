@@ -228,6 +228,10 @@ export class MySqlBuilderService extends QueryBuilderService {
       myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
     }
     
+    // If the element is a SQL Expression type
+    if(this.queryTODO.fields[0].computed_column !== undefined && this.queryTODO.fields[0].computed_column == 'computed' ) {
+      myQuery = `SELECT DISTINCT ${this.queryTODO.fields[0].SQLexpression} as \`${this.queryTODO.fields[0].column_name}\` ,   ${this.queryTODO.fields[0].SQLexpression} as \`id\`\nFROM ${o}`;
+    }
 
     // JOINS
     let joinString: any[];
@@ -1023,7 +1027,11 @@ export class MySqlBuilderService extends QueryBuilderService {
       
     }else{
       if(column.column_type == 'numeric'){
-        colname = `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits}))`;
+        if(column.aggregation_type === 'count_distinct') {
+          colname = `CAST( count( distinct (${column.SQLexpression})) as decimal(32,${column.minimumFractionDigits}))`;
+        } else {
+          colname = `CAST( ${column.aggregation_type}(${column.SQLexpression}) as decimal(32,${column.minimumFractionDigits}))`;
+        }
       }else{
         colname = `  ${column.SQLexpression}  `;
       }

@@ -1,11 +1,16 @@
-<eda-dialog2 
-  width="50vw" 
-  height="82vh" 
-  [header]="title" 
+<eda-dialog2
+  width="50vw"
+  height="auto"
+  [header]="title"
+  [overflow]="'auto'"
+  (apply)="saveColumn()"
+  (close)="closeDialog()"
+  [showCheckExpression]="true"
+  (checkexpression)="checkCalculatedColumn()"
 >
 
   <div content>
-    <form [formGroup]="form" class="grid gap-4">
+    <form [formGroup]="form" class="grid gap-4 pb-4">
 
       <div class="grid gap-2">
         <label for="eda_colname"
@@ -69,32 +74,30 @@
         </div>
       </div>
 
-      @if(selectedcolumnType==='numeric'){
-        <div class="grid gap-2">
-          <label for="eda_typeAggregation"
-            i18n="@@agregacionh5"
-            class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      <div class="grid gap-2">
+        <label for="eda_typeAggregation"
+          i18n="@@agregacionh5"
+          class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Agregación <span class="text-red-500">*</span>
+        </label>
+        <div id="eda_typeAggregation" class="flex flex-wrap gap-2">
+          <button
+            *ngFor="let type of aggregation_type_cases"
+            type="button"
+            (click)="updateAgg(type.value)"
+            class="px-4 py-2 font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            [ngClass]="type.display
+              ? 'bg-[#00BFB3] text-white border-[#00BFB3]'
+              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'"
           >
-            Agregación <span class="text-red-500">*</span>
-          </label>
-          <div id="eda_typeAggregation" class="flex gap-2">
-            <button
-              *ngFor="let type of aggregation_type_cases"
-              type="button"
-              (click)="updateAgg(type.value)"
-              class="w-full px-4 py-2 font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-              [ngClass]="type.display
-                ? 'bg-[#00BFB3] text-white border-[#00BFB3]'
-                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'"
-            >
-              {{ type.display_name }}
-            </button>
-          </div>
+            {{ type.display_name }}
+          </button>
         </div>
-      }
+      </div>
       
       @if(selectedcolumnType==='numeric'){
-        <div class="grid gap-2">
+        <div class="grid gap-2 pb-2">
           <label for="eda_decimalNumber"
             i18n="@@decimalNumberText"
             class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -114,29 +117,5 @@
     </form>
   </div>
 
-  <ng-container footer>
-
-    <button class="cancel-button" (click)="closeDialog()">
-      <i class="fa fa-times"></i>
-      <span i18n="@@cancelarBtn">
-        Cancelar
-      </span>
-    </button>
-
-    <button class="execute-button w-auto p-5 text-center" (click)="checkCalculatedColumn()">
-      <i class="fa fa-cogs"></i>
-      <span i18n="@@CheckExpression" class="whitespace-nowrap pr-4">
-        Comprobar expresión
-      </span>
-    </button>
-
-    <button class="confirm-button" (click)="saveColumn();">
-      <i class="fa fa-check"></i>
-      <span i18n="@@guardarBtn">
-        Confirmar
-      </span>
-    </button>
-
-  </ng-container>
 
 </eda-dialog2>

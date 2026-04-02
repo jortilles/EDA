@@ -208,6 +208,8 @@ export class ColumnDialogComponent {
         const valueListSource = this.selectedColumn.valueListSource;
         const joins = this.selectedColumn.joins;
         const autorelation = this.selectedColumn.autorelation;
+        const computed_column = this.selectedColumn.computed_column;
+        const SQLexpression = this.selectedColumn.SQLexpression;
 
         const filter = this.columnUtils.setFilter({
             obj: this.filterValue,
@@ -218,7 +220,9 @@ export class ColumnDialogComponent {
             selectedRange,
             valueListSource,
             autorelation,
-            joins
+            joins,
+            computed_column,
+            SQLexpression
         });
 
         this.filter.selecteds.push(filter);        
@@ -267,6 +271,29 @@ export class ColumnDialogComponent {
 
         if (addAggr) {
             addAggr.aggregation_type = JSON.parse(JSON.stringify(this.selectedColumn.aggregation_type));
+        }
+
+        // For computed columns with 3 aggregation options (text/date type): change column_type based on aggregation
+        if (this.aggregationsTypes.length === 3 && type.value !== 'none') {
+            this.selectedColumn.column_type = 'numeric';
+            const allowed = [];
+            for (const ft of this.chartUtils.filterTypes) {
+                ft.typeof.forEach((columnTypeOf: string) => {
+                    if (columnTypeOf === 'numeric') allowed.push(ft);
+                });
+            }
+            if (allowed.length > 0) this.filter.types = allowed;
+        }
+
+        if (this.aggregationsTypes.length === 3 && type.value === 'none') {
+            this.selectedColumn.column_type = 'text';
+            const allowed = [];
+            for (const ft of this.chartUtils.filterTypes) {
+                ft.typeof.forEach((columnTypeOf: string) => {
+                    if (columnTypeOf === 'text') allowed.push(ft);
+                });
+            }
+            if (allowed.length > 0) this.filter.types = allowed;
         }
     }
 
