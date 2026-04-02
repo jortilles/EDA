@@ -322,7 +322,7 @@ router.post('/remove-cache', authGuard, roleGuard, DataSourceController.removeCa
  *         description: Authentication token
  *         type: string
  *       - name: ds
- *         description: An EDA datasource. See (https://edadoc.jortilles.com/en/index.html#/modelo_de_datos?id=eda39s-data-model)
+ *         description: An Edalitics datasource. See (https://doc.edalitics.com/en/index.html#/modelo_de_datos?id=eda39s-data-model)
  *         in: body 
  *         schema:
  *            type: object
