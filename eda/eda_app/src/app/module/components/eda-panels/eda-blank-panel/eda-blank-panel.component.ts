@@ -1766,19 +1766,20 @@ public tableNodeExpand(event: any): void {
     public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table, true);
 
     public removeColumn = (c: Column, list?: string) => {
-        // rootTableName To have the principal table => conditions to check if we can delete the column
+        // rootTableName => Para tener la tabla principal => condiciones para comprobar si podemos eliminar la columna
         const rootTableName = this.rootTable?.table_name;
-        // joins is reliable when interacting on the app; table_id comparison is the fallback after save and reload when joins may be empty
+        // Las joins son fiables al interactuar con la aplicación; la comparación de table_id es el método alternativo después de guardar y recargar cuando los joins pueden estar vacías.
         const isNotRootColumn = !!c?.joins?.length || (!!rootTableName && c?.table_id !== rootTableName);
         const rootColumnElements = this.currentQuery.filter(col => !col?.joins?.length && (!rootTableName || col?.table_id === rootTableName)).length;
         const currentQueryLength = this.currentQuery.length;
 
-        // We just proceed if it is not the last column of the root table
+        // Simplemente procedemos si no es la última columna de la tabla raíz.
         if (isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
+            const columnHadFilter = this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name);
             const removed = PanelInteractionUtils.removeColumn(this, c, list);
             if (removed !== false) {
-                // We check if when deleting a field it has a filter at selectedFilters
-                if (this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name)) {
+                // Verificamos si al eliminar un campo tenía un filtro en selectedFilters (se comprueba antes de que removeColumn los borre).
+                if (columnHadFilter) {
                     if (this.sortedFilters.length !== 0) {
                         this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
                     }
@@ -1787,7 +1788,7 @@ public tableNodeExpand(event: any): void {
             }
         }
         else {
-            // We stop the event propagation to not open the attribute panel
+            // Detenemos la propagación del evento para no abrir el panel de atributos.
             event.stopPropagation();
             this.alertService.addError($localize`:@@cannotRemoveLastColumn:No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.`);
         }
