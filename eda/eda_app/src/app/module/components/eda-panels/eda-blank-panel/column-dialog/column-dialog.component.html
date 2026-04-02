@@ -27,20 +27,76 @@
         'grid-cols-[1fr_1fr_4fr]': !showFormatDateSection}
       ">
       <!-- Agregaciones -->
-      <div>
-        <h4 i18n="@@agregacionesH4">Agregaciones</h4>
-        <div class="aggregation-list mt-10">
-          @for (aggregation of aggregationsTypes; track aggregation) {
-            @if (getAggName(aggregation.value)) {
-              <div class="aggregation-box"
-                (click)="allowedAggregations && addAggregation(aggregation)"
-                [ngStyle]="{'cursor': !allowedAggregations ? 'not-allowed' : 'pointer'}"
-                [ngClass]="aggregation.selected === true ? 'aggregation-active' : 'aggregation-unactive'">
-                  <span>{{getAggName(aggregation.value)}}</span>
-              </div>
+      <div class="flex flex-col">
+        <div>
+          <h4 i18n="@@agregacionesH4">Agregaciones</h4>
+          <div class="aggregation-list mt-10">
+            @for (aggregation of aggregationsTypes; track aggregation) {
+              @if (getAggName(aggregation.value)) {
+                <div class="aggregation-box"
+                  (click)="allowedAggregations && addAggregation(aggregation)"
+                  [ngStyle]="{'cursor': !allowedAggregations ? 'not-allowed' : 'pointer'}"
+                  [ngClass]="aggregation.selected === true ? 'aggregation-active' : 'aggregation-unactive'">
+                    <span>{{getAggName(aggregation.value)}}</span>
+                </div>
+              }
             }
+          </div>
+        </div>
+
+        <!-- Rangos -->
+        <div class="mt-10">
+          <!-- Rangos (ocupa toda la fila) -->
+          @if (selectedColumn.aggregation_type.length === 7) {
+            <div>
+              <div class="flex justify-start gap-1 items-center">
+                <h4 i18n="@@rangeTitle">Rangos: </h4>
+                <div>
+                  @if (availableRange) {
+                    <i class="pi pi-info-circle"
+                      style="cursor: pointer; margin-top: -5px; font-size: 1.2rem;"
+                      [pTooltip]="ptooltipViewTextRanges">
+                    </i>
+                  } @else {
+                    <i class="pi pi-info-circle"
+                      style="cursor: pointer; margin-top: -5px; font-size: 1.2rem;"
+                      [pTooltip]="ptooltipNotAvailableRanges">
+                    </i>
+                  }
+                </div>
+              </div>
+    
+              @if (availableRange) {
+                <input
+                  type="text"
+                  style="font-size: 1rem; margin-bottom: 10px; border: 1px solid #d9d9d9; border-radius: 6px; padding: 4px 8px;"
+                  [(ngModel)]="rangeString"
+                  [disabled]="showRange"
+                  (input)="validateInput($event)">
+    
+                <button
+                  class="confirm-button"
+                  (click)="addRange(rangeString)"
+                  [disabled]="(!rangeString || rangeString.length === 0) || showRange">
+                  <span i18n="@@addRange">Añadir Rango</span>
+                </button>
+    
+                @if (showRange) {
+                  <div class="col-12 foot-card" style="margin-top: 5px;">
+                    <p-scrollPanel [style]="{width: '100%', height: '160px'}" styleClass="custombar1">
+                      <div class="pt-3">
+                        <b i18n="@@rangeDescriptionB" class="mr-2 pull-left">• Rango:</b>
+                        <i class="pull-right ui-dropdown-clear-icon pi pi-times pointer md-3" (click)="removeRange()"></i>
+                        <div class="d-flex align-items-center" [innerHTML]="selectedRange" style="font-size: 1rem; padding: 10px 40px 5px 30px;"></div>
+                      </div>
+                    </p-scrollPanel>
+                  </div>
+                }
+              }
+            </div>
           }
         </div>
+
       </div>
 
       <!-- Ordernacion -->
@@ -239,56 +295,6 @@
           </div>
         }
       </div>
-
-      <!-- Rangos (ocupa toda la fila) -->
-      @if (selectedColumn.aggregation_type.length === 7) {
-        <div class="col-span-full">
-          <div class="flex justify-start gap-1 items-center">
-            <h4 i18n="@@rangeTitle">Rangos: </h4>
-            <div>
-              @if (availableRange) {
-                <i class="pi pi-info-circle"
-                  style="cursor: pointer; margin-top: -5px; font-size: 1.2rem;"
-                  [pTooltip]="ptooltipViewTextRanges">
-                </i>
-              } @else {
-                <i class="pi pi-info-circle"
-                  style="cursor: pointer; margin-top: -5px; font-size: 1.2rem;"
-                  [pTooltip]="ptooltipNotAvailableRanges">
-                </i>
-              }
-            </div>
-          </div>
-
-          @if (availableRange) {
-            <input
-              type="text"
-              style="font-size: 1rem; margin-bottom: 10px; border: 1px solid #d9d9d9; border-radius: 6px; padding: 4px 8px;"
-              [(ngModel)]="rangeString"
-              [disabled]="showRange"
-              (input)="validateInput($event)">
-
-            <button
-              class="confirm-button"
-              (click)="addRange(rangeString)"
-              [disabled]="(!rangeString || rangeString.length === 0) || showRange">
-              <span i18n="@@addRange">Añadir Rango</span>
-            </button>
-
-            @if (showRange) {
-              <div class="col-12 foot-card" style="margin-top: 5px;">
-                <p-scrollPanel [style]="{width: '100%', height: '160px'}" styleClass="custombar1">
-                  <div class="pt-3">
-                    <b i18n="@@rangeDescriptionB" class="mr-2 pull-left">• Rango:</b>
-                    <i class="pull-right ui-dropdown-clear-icon pi pi-times pointer md-3" (click)="removeRange()"></i>
-                    <div class="d-flex align-items-center" [innerHTML]="selectedRange" style="font-size: 1rem; padding: 10px 40px 5px 30px;"></div>
-                  </div>
-                </p-scrollPanel>
-              </div>
-            }
-          }
-        </div>
-      }
 
     </div>
   </div>
