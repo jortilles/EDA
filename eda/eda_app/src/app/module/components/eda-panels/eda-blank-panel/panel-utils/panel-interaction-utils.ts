@@ -728,11 +728,11 @@ export const PanelInteractionUtils = {
         // Remove column is from rootTable then check currentQuery columns to allow or not.
         if (c.table_id === rootTable) {
           // If only there is 1 column of rootTable, check if panel have any globalFilter linked it.
-          if (ebp.currentQuery.map((query) => query.table_id == rootTable).length <= 1) {
+          if (ebp.currentQuery.filter((query) => query.table_id == rootTable).length <= 1) {
             if (ebp.globalFilters.some((filter) => filter.filter_table === rootTable)) {
               event.stopPropagation();
               ebp.alertService.addError($localize`:@@removeColumnGlobalFilter:No se puede eliminar la columna porque hay vinculado un Filtro`);
-              throw '[Error]: Can not remove this column cause there is a GlobalFilter linked.'
+              return false;
             }
           }
         }
