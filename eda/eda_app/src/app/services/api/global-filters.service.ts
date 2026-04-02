@@ -317,8 +317,8 @@ export class GlobalFiltersService {
             isAutocompleted: globalFilter.isAutocompleted,
             applyToAll: globalFilter.applyToAll,
             valueListSource: valueListSource,
-            computed_column: globalFilter.selectedColumn.computed_column,
-            SQLexpression: globalFilter.selectedColumn.SQLexpression,
+            computed_column: globalFilter.selectedColumn?.computed_column,
+            SQLexpression: globalFilter.selectedColumn?.SQLexpression,
         }
 
         return formatedFilter;
@@ -347,8 +347,8 @@ export class GlobalFiltersService {
             autorelation: globalFilter.autorelation,
             valueListSource: globalFilter.selectedColumn.valueListSource,
             filterBeforeGrouping: true, // Para todos los filtros globales es Where
-            computed_column: globalFilter.selectedColumn.computed_column,
-            SQLexpression: globalFilter.selectedColumn.SQLexpression,
+            computed_column: globalFilter.selectedColumn?.computed_column,
+            SQLexpression: globalFilter.selectedColumn?.SQLexpression,
         }
 
         return formatedFilter;
