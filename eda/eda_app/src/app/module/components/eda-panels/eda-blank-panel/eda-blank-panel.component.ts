@@ -261,6 +261,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public loadingNodes: boolean = false;
     public rootTable: any;
     public tableNodes: any = [];
+    public displayedTableNodes: any[] = [];
     public selectedTableNode: any;
     public nodeJoins: any[] = [];
 
@@ -305,6 +306,7 @@ export class EdaBlankPanelComponent implements OnInit {
     private route = inject(ActivatedRoute);
     private formBuilder = inject(UntypedFormBuilder);
 
+
     public editingTitle: boolean = false;
 
 
@@ -348,7 +350,6 @@ export class EdaBlankPanelComponent implements OnInit {
     async ngOnInit() {
         this.index = 0;
         this.readonly = this.panel.readonly;
-        this.assignLevels(this.tableNodes, 0);
 
         await this.setTablesData();
 
@@ -436,12 +437,21 @@ public tableNodeExpand(event: any): void {
 
   this.loadingNodes = true;
 
-  PanelInteractionUtils.expandTableNode(this, node);
+  const targetNode = this.tableInput ? (this.findOriginalNode(node) || node) : node;
+  PanelInteractionUtils.expandTableNode(this, targetNode);
 
-  // Si expandís de forma asíncrona, esperá al resultado
   setTimeout(() => {
-    this.assignLevels([node], node.level || 0);
+    // Si la expansión no produjo hijos, eliminamos las propiedades de carpeta expandible
+    if (targetNode.children?.length === 0) {
+      delete targetNode.children;
+      delete targetNode.expandedIcon;
+      delete targetNode.collapsedIcon;
+    }
     this.loadingNodes = false;
+    // Re-aplicar el filtro tras la expansión para incluir los nuevos hijos cargados.
+    if (this.tableInput) {
+      this.displayedTableNodes = this.filterTreeNodes(this.tableNodes, this.tableInput.toLowerCase());
+    }
   });
 }
 
@@ -623,6 +633,8 @@ public tableNodeExpand(event: any): void {
                 PanelInteractionUtils.handleCurrentQuery2(this);
                 this.reloadTablesData();
                 PanelInteractionUtils.loadTableNodes(this);
+
+                this.displayedTableNodes = this.tableNodes;
 
                 this.userSelectedTable = undefined;
                 this.columns = [];
@@ -946,13 +958,64 @@ public tableNodeExpand(event: any): void {
         return selectedTable;
     }
 
+     // Filtra el buscador de entidades según el modo de query activo.
+     // Modo EDA (estándar): filtra la lista plana tablesToShow.
+     // Modo EDA2 (árbol) con query activa: filtra displayedTableNodes de forma recursiva
     public onTableInputKey(event: any) {
-        if (event.target.value) {
-            this.tablesToShow = this.tablesToShowBase
-                .filter(table => table.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
+        if (this.selectedQueryMode === 'EDA2' && this.currentQuery.length > 0) {
+            const term = event.target.value?.toLowerCase();
+            this.displayedTableNodes = term
+                ? this.filterTreeNodes(this.tableNodes, term)
+                : this.tableNodes;
         } else {
-            this.tablesToShow = [...this.tablesToShowBase];
+            if (event.target.value) {
+                this.tablesToShow = this.tablesToShowBase
+                    .filter(table => table.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
+            } else {
+                this.tablesToShow = [...this.tablesToShowBase];
+            }
         }
+    }
+
+    // Filtra recursivamente un array de nodos del árbol por término de búsqueda.
+    private filterTreeNodes(nodes: any[], term: string): any[] {
+        const result: any[] = [];
+        for (const node of nodes) {
+            if (node.label?.toLowerCase().includes(term)) {
+                result.push(node);
+            } else {
+                const hasExpandedChildren = node.expanded === true
+                    && node.children?.length > 0
+                    && node.children[0]?.label !== undefined;
+                if (hasExpandedChildren) {
+                    const filtered = this.filterTreeNodes(node.children, term);
+                    if (filtered.length > 0) {
+                        result.push({ ...node, children: filtered });
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Busca el nodo original en tableNodes (árbol completo) que corresponde
+     * al nodo target recibido del evento de expansión.
+     * Necesario porque al filtrar se crean objetos clonados con children reducidos;
+     * la expansión debe operar sobre el nodo real para que tableNodes quede actualizado.
+     * Identifica el nodo por table_id (nodos raíz) o child_id (nodos hijo).
+     */
+    private findOriginalNode(target: any, nodes: any[] = this.tableNodes): any {
+        for (const node of nodes) {
+            if (target.table_id && node.table_id === target.table_id) return node;
+            if (target.child_id && node.child_id === target.child_id) return node;
+            const hasChildren = node.children?.length > 0 && node.children[0]?.label !== undefined;
+            if (hasChildren) {
+                const found = this.findOriginalNode(target, node.children);
+                if (found) return found;
+            }
+        }
+        return null;
     }
 
 
@@ -1758,6 +1821,7 @@ public tableNodeExpand(event: any): void {
 
         if (this.selectedQueryMode == 'EDA2' && this.currentQuery.length === 1) {
             PanelInteractionUtils.loadTableNodes(this);
+            this.displayedTableNodes = this.tableNodes;
        }
     }
 
@@ -2074,14 +2138,6 @@ public tableNodeExpand(event: any): void {
         QueryUtils.runManualQuery(this) // Ejecutando con la nueva configuracion de currentQuery
     }
 
-private assignLevels(nodes: any[], level = 0): void {
-  nodes.forEach(node => {
-    node.level = level;
-    if (node.children?.length) {
-      this.assignLevels(node.children, level + 1);
-    }
-  });
-}
 
     getAttributeTypeIcon(type: string) {
         const icons = {

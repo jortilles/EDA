@@ -170,20 +170,19 @@ eda-blank-panel :root {
   margin-top: 13px;
 }
 
-::ng-deep .p-tree .p-treenode-content {
-  padding-left: 0 !important;
+/* Árbol EDA2 — scroll lateral */
+::ng-deep .eda-tree-scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+}
+::ng-deep .eda-tree-scroll .p-tree {
+  min-width: max-content;
 }
 
-::ng-deep .p-tree .p-treenode[aria-level="1"] > .p-treenode-content {
-  padding-left: 0.5rem !important;
-}
-
-::ng-deep .p-tree .p-treenode[aria-level="2"] > .p-treenode-content {
+/* Indentación: Tailwind resetea padding en <ul>, lo forzamos aquí.
+   PrimeNG acumula el padding en cada .p-treenode-children anidado. */
+::ng-deep .eda-tree-scroll .p-treenode-children {
   padding-left: 1.5rem !important;
-}
-
-::ng-deep .p-tree .p-treenode[aria-level="3"] > .p-treenode-content {
-  padding-left: 2.5rem !important;
 }
 
 

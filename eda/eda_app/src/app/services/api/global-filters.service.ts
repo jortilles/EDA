@@ -235,7 +235,7 @@ export class GlobalFiltersService {
                 /** Checks if the current child_node is included before.
                  * This prevents duplicated paths.*/
                 if ((!rootTree.includes(relation.target_table) || relation.autorelation) && !childrenId.includes(child_id)) {
-                    // Label to show on the treeComponent 
+                    // Label to show on the treeComponent
                     let childLabel = relation.display_name?.default
                         ? `${relation.display_name.default}`
                         : ` ${relation.source_column[0]} - ${relation.target_table} `;
@@ -287,6 +287,7 @@ export class GlobalFiltersService {
             expandNode.children.sort((a, b) => a.label.localeCompare(b.label));
         }
     }
+
 
     public formatFilter(globalFilter: any) {
         let formatedFilter: any;
