@@ -7,12 +7,71 @@
         <h1 class="text-2xl font-semibold" i18n="@@sidebarMyDashboards">Mis informes</h1>
       </div>
       <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
-        <div class="relative w-full sm:w-[300px]">
+        <div class="flex relative w-full sm:w-[300px]">
           <eda-icon name="magnifying-glass"
             class="absolute left-3 top-1/2 h-4 w-4 -translate-y-[65%] text-muted-foreground" />
-          <input type="text" (keyup)="filterByTitle($event)"
-            class="w-full rounded-md border border-input bg-background py-2 !pl-9 text-sm"
+          <input type="text" [(ngModel)]="searchQuery" (keyup)="filterByTitle($event)"
+            class="w-full rounded-md border border-input bg-background py-2 !pl-9 !pr-9 text-sm"
             i18n-placeholder="@@searcherInput" placeholder="Buscador">
+          <eda-icon name="plus" size="sm" (click)="toggleAdvancedFilter($event)"
+            class="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 cursor-pointer transition-colors hover:text-teal-500"
+            [class.text-muted-foreground]="!showAdvancedFilter()"
+            [class.text-teal-500]="showAdvancedFilter()" />
+
+          @if(showAdvancedFilter()) {
+            <div class="advanced-filter-panel absolute top-full right-0 z-50 mt-2 w-72 rounded-lg border bg-white shadow-lg"
+              (click)="$event.stopPropagation()">
+              <!-- Header -->
+              <div class="flex items-center justify-between px-4 py-3 border-b">
+                <span class="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                  i18n="@@advancedFilterTitle">Filtro avanzado</span>
+                <button class="text-xs text-teal-500 hover:text-teal-700 font-medium"
+                  (click)="clearAdvancedFilters()" i18n="@@clearFiltersBtn">Limpiar</button>
+              </div>
+              <div class="p-4 space-y-3">
+                <!-- Autor -->
+                <div class="space-y-1">
+                  <label class="text-xs font-medium text-muted-foreground" i18n="@@authorFilterLabel">Propietario</label>
+                  <input type="text" [(ngModel)]="advancedFilters.author" (ngModelChange)="applyAdvancedFilters()"
+                    class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+                    i18n-placeholder="@@authorFilterPlaceholder" placeholder="Autor...">
+                </div>
+                <!-- Tipo Datasource -->
+                <div class="space-y-1">
+                  <label class="text-xs font-medium text-muted-foreground" i18n="@@datasourceFilterLabel">Datasource</label>
+                  <input type="text" [(ngModel)]="advancedFilters.datasource" (ngModelChange)="applyAdvancedFilters()"
+                    class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+                    i18n-placeholder="@@datasourceFilterPlaceholder" placeholder="postgres, mysql...">
+                </div>
+                
+                <!-- Creado en -->
+                <div class="space-y-1">
+                  <label class="text-xs font-medium text-muted-foreground" i18n="@@createdFilterLabel">Creado en</label>
+                  <eda-date-picker class="block w-full" [inject]="createdPickerConfig"  (onDatesChanges)="onCreatedDatesChange($event)" />
+                </div>
+                <!-- Modificado en -->
+                <div class="space-y-1">
+                  <label class="text-xs font-medium text-muted-foreground" i18n="@@modifiedFilterLabel">Modificado en</label>
+                  <eda-date-picker class="block w-full" [inject]="modifiedPickerConfig"  (onDatesChanges)="onModifiedDatesChange($event)" />
+                </div>
+                <!-- Tags[] -->
+                <div class="space-y-1">
+                  <label class="text-xs font-medium text-muted-foreground" i18n="@@tagsFilterLabel">Tags</label>
+                  <p-multiSelect
+                    [options]="tags | slice:0:-1"
+                    [(ngModel)]="advancedTags"
+                    (ngModelChange)="applyAdvancedFilters()"
+                    optionLabel="label"
+                    optionValue="value"
+                    appendTo="body"
+                    [style]="{width: '100%'}"
+                    i18n-placeholder="@@tagsFilterPlaceholder"
+                    placeholder="Selecciona tags...">
+                  </p-multiSelect>
+                </div>
+              </div>
+            </div>
+          }
         </div>
         @if(!isObserver){
           <button

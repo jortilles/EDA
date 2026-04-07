@@ -6050,6 +6050,46 @@ OR<ph id="5"/>
   <source>HTML personalizado guardado correctamente.</source>
   <target>Custom HTML saved correctly.</target>
 </trans-unit>
+<trans-unit id="advancedFilterTitle" datatype="html">
+  <source>Filtro avanzado</source>
+  <target>Advanced filter</target>
+</trans-unit>
+<trans-unit id="clearFiltersBtn" datatype="html">
+  <source>Limpiar</source>
+  <target>Clear</target>
+</trans-unit>
+<trans-unit id="authorFilterLabel" datatype="html">
+  <source>Propietario</source>
+  <target>Owner</target>
+</trans-unit>
+<trans-unit id="authorFilterPlaceholder" datatype="html">
+  <source>Autor...</source>
+  <target>Author...</target>
+</trans-unit>
+<trans-unit id="datasourceFilterLabel" datatype="html">
+  <source>Datasource</source>
+  <target>Datasource</target>
+</trans-unit>
+<trans-unit id="datasourceFilterPlaceholder" datatype="html">
+  <source>postgres, mysql...</source>
+  <target>postgres, mysql...</target>
+</trans-unit>
+<trans-unit id="createdFilterLabel" datatype="html">
+  <source>Creado en</source>
+  <target>Created at</target>
+</trans-unit>
+<trans-unit id="modifiedFilterLabel" datatype="html">
+  <source>Modificado en</source>
+  <target>Modified at</target>
+</trans-unit>
+<trans-unit id="tagsFilterLabel" datatype="html">
+  <source>Tags</source>
+  <target>Tags</target>
+</trans-unit>
+<trans-unit id="tagsFilterPlaceholder" datatype="html">
+  <source>Selecciona tags...</source>
+  <target>Select tags...</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

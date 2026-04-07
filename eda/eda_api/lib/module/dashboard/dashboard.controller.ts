@@ -27,7 +27,7 @@ export class DashboardController {
    */
   static async getDashboards(req: Request, res: Response, next: NextFunction) {
     try {
-      const dataSources = await DataSource.find(  {},  'ds.metadata' ).exec();
+      const dataSources = await DataSource.find(  {},  'ds.metadata ds.connection.type' ).exec();
       let  privates, group, publics, shared = [];
       const groups = await Group.find({ users: { $in: req.user._id } }).exec();
       const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
@@ -91,10 +91,11 @@ export class DashboardController {
         DashboardController.normalizeVisibility(dashboard);
 
         if (dashboard.config.visible === 'private') {
-        const ds = dss.find( e=> e._id.toString() == dashboard.config.ds._id.toString() ); 
+        const ds = dss.find( e=> e._id.toString() == dashboard.config.ds._id.toString() );
          if( ds ){
               // Obtain the name of the data source
                dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+              dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
               if (this.iCanSeeTheDashboard(req, ds) == true) {
                 privates.push(dashboard);
               }
@@ -159,6 +160,7 @@ export class DashboardController {
                   const ds = dss.find( e=> e._id.toString() == dashboard.config.ds._id.toString() );
                   if( ds ){
                         dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+                        dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
                         if (this.iCanSeeTheDashboard(req, ds) == true) {
                           groupDashboards.push(dashboard)
                         }else{
@@ -226,6 +228,7 @@ export class DashboardController {
           const ds = dss.find(e => e._id == dashboard.config.ds._id);
           if( ds ){
               dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+              dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
               if (this.iCanSeeTheDashboard(req, ds) == true) {
                  publics.push(dashboard);
               }else{
@@ -281,7 +284,8 @@ export class DashboardController {
         if (dashboard.config.visible === 'common') {
           if( ds ){
               // Obtain the name of the data source
-               dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+              dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+              dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
               if (this.iCanSeeTheDashboard(req, ds) == true) {
                 shared.push(dashboard);
               }
@@ -431,8 +435,10 @@ export class DashboardController {
         if( ds ){
             // Obtain the name of the data source
             dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+              dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
          }else{
             dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+              dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
           }
 
 
