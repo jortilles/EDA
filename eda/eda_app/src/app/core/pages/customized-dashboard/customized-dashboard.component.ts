@@ -1,21 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { CustomHTMLService } from '@eda/services/api/customHTML.service';
-
+import { AlertService } from '@eda/services/service.index';
 @Component({
   selector: 'app-customized-dashboard',
   standalone: true,
   imports: [CommonModule, FormsModule, IconComponent, EdaDialog2Component],
   templateUrl: './customized-dashboard.component.html',
 })
-export class CustomizedDashboardComponent implements OnInit {
+export class CustomizedDashboardComponent implements OnInit, OnDestroy {
+  private alertService = inject(AlertService);
   public isAdmin: boolean = false;
   public showEditDialog: boolean = false;
   public haveUnsavedChanges: boolean = false;
+  public sidebarOpen: boolean = true;
+  public sidebarLocked: boolean = false;
+  public isPinned: boolean = true;
+  private _closeTimer: ReturnType<typeof setTimeout> | null = null;
 
   public sidebarHtml: string = '';
   public editingHtml: string = '';
@@ -26,6 +31,25 @@ export class CustomizedDashboardComponent implements OnInit {
   public previewBgColor: string = '#96adb5';
 
   constructor(private sanitizer: DomSanitizer, private customHTMLService: CustomHTMLService) {}
+
+  ngOnDestroy(): void {
+    if (this._closeTimer) clearTimeout(this._closeTimer);
+  }
+
+  openSidebar(): void {
+    if (this._closeTimer) { clearTimeout(this._closeTimer); this._closeTimer = null; }
+    this.sidebarOpen = true;
+  }
+
+  closeSidebar(): void {
+    if (this.sidebarLocked || this.isPinned) return;
+    this._closeTimer = setTimeout(() => { this.sidebarOpen = false; this._closeTimer = null; }, 200);
+  }
+
+  togglePin(): void {
+    this.isPinned = !this.isPinned;
+    if (this.isPinned) this.sidebarOpen = true;
+  }
 
   ngOnInit(): void {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -44,18 +68,12 @@ export class CustomizedDashboardComponent implements OnInit {
     });
   }
 
-  changeSrc(href: string): void {
-    const iframe = document.getElementById('showDashboard') as HTMLIFrameElement;
-    if (iframe) {
-      iframe.src = href + '?panelMode=true&refresh=' + Date.now();
-    }
-  }
-
   saveSidebar(): void {
     this.customHTMLService.upsert('customHTML', this.sidebarHtml).subscribe({
       next: () => this.haveUnsavedChanges = false,
       error: (err) => console.error('Error saving sidebar', err)
     });
+    this.alertService.addSuccess($localize`:@@customHtmlSaved:HTML personalizado guardado correctamente.`);
   }
 
   onDialogReset(): void {
@@ -75,6 +93,7 @@ export class CustomizedDashboardComponent implements OnInit {
     this.safeEditingHtml = this.sanitizer.bypassSecurityTrustHtml(this.editingHtml);
     this.previewBgColor = this._extractBgColor(this.editingHtml);
     this.showEditDialog = true;
+    this.sidebarLocked = true;
   }
 
 
@@ -86,6 +105,7 @@ export class CustomizedDashboardComponent implements OnInit {
   onDialogClose(): void {
     this.showEditDialog = false;
     this.editingHtml = '';
+    this.sidebarLocked = false;
   }
 
   onDialogApply(): void {
@@ -94,6 +114,7 @@ export class CustomizedDashboardComponent implements OnInit {
     this.haveUnsavedChanges = true;
     this.showEditDialog = false;
     this.editingHtml = '';
+    this.sidebarLocked = false;
   }
 
   private _extractBgColor(html: string): string {
@@ -108,71 +129,44 @@ export class CustomizedDashboardComponent implements OnInit {
 
   // RAW HTML base, modificar aquí
   private _buildSidebarHtml(): string {
-    return `<div class="flex flex-col pt-4 gap-4 h-full" style="background-color: #96adb5">
-  <div class="p-2 overflow-auto flex-1">
-    <ul class="space-y-2 pl-[10%]">
-      <li class="p-2 pt-0 pb-0 text-white font-bold">
-        <div class="flex items-center">
-          <span class="mr-1">📊</span>
-          <a class="btn" href="#">Despeses</a>
+    return `<div class="flex flex-col h-full text-white" style="background-color: #96adb5">
+      <div class="flex-1 overflow-auto px-4 py-4">
+        <ul class="space-y-2">
+          
+          <li>
+            <div class="flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-white/10 transition">
+              <span>📊</span>
+              <span class="font-medium">Lorem ipsum</span>
+            </div>
+          </li>
+
+          <li>
+            <div class="flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-white/10 transition">
+              <span class="font-medium">Lorem ipsum</span>
+            </div>
+          </li>
+
+          <li class="pl-6">
+            <div class="block px-4 py-2 rounded-lg text-sm text-white/80 hover:text-white hover:bg-white/10 transition">
+              Lorem ipsum
+            </div>
+          </li>
+          <li class="pl-6">
+            <div class="block px-4 py-2 rounded-lg text-sm text-white/80 hover:text-white hover:bg-white/10 transition">
+              Lorem ipsum
+            </div>
+          </li>
+
+        </ul>
+        <div class="mt-6 p-4 bg-white/10 backdrop-blur-smshadow-sm">
+          <p class="text-sm text-white/90 leading-relaxed mb-4">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi quis tellus et eros ultricies dignissim.
+          </p>
+          <p class="text-sm text-white/70 leading-relaxed">
+            Maecenas metus mi, bibendum a orci eu, pellentesque imperdiet ex.
+          </p>
         </div>
-      </li>
-      <li class="p-2 pt-0 pb-0 text-white font-bold">
-        <div class="flex items-center">
-          <span class="mr-1">🚓</span>
-          <a class="btn" href="#">Actuacions Policials</a>
-        </div>
-      </li>
-      <li class="p-2 pt-0 pb-0 text-white font-bold">
-        <a class="btn ml-[10%]">Desplaçaments</a>
-      </li>
-      <li class="p-2 pt-0 pb-0 text-white font-bold">
-        <a class="btn ml-[10%]">Parc de vehicles</a>
-      </li>
-      <li class="p-2 pt-0 pb-0 text-white font-bold">
-        <div class="flex items-center">
-          <span class="mr-1">🌿</span>
-          <a class="btn" href="#">Pressupost</a>
-        </div>
-      </li>
-      <li class="p-2 pt-0 pb-0 text-white font-bold">
-        <a class="btn ml-[10%]">Energia i consum</a>
-      </li>
-      <li class="p-2 pt-0 pb-0 text-white font-bold">
-        <a class="btn ml-[10%]">Externalitats</a>
-      </li>
-      <li class="p-2 pt-0 pb-0 text-white font-bold">
-        <div class="flex items-center">
-          <span class="mr-1">⚠️</span>
-          <a class="btn" href="#">Seguretat</a>
-        </div>
-      </li>
-      <li class="p-2 pt-0 pb-0 text-white font-bold">
-        <a class="btn ml-[10%]">Delinqüència</a>
-      </li>
-      <li class="p-2 pt-0 pb-0 text-white font-bold">
-        <a class="btn ml-[10%]">Viari</a>
-      </li>
-      <li class="p-2 pt-0 pb-0 text-white font-bold">
-        <div class="flex items-center">
-          <span class="mr-1">☂️</span>
-          <a class="btn" href="#">Turisme</a>
-        </div>
-      </li>
-      <li class="p-2 pt-0 pb-0 text-white font-bold">
-        <a class="btn ml-[10%]">Visitants</a>
-      </li>
-      <li class="p-2 pt-0 pb-0 text-white font-bold">
-        <a class="btn ml-[10%]">Hosteleria</a>
-      </li>
-      <li class="p-2 pt-0 pb-0 text-white font-bold">
-        <div class="flex items-center">
-          <span class="mr-1">⚙️</span>
-          <a class="btn" href="#">Configuració</a>
-        </div>
-      </li>
-    </ul>
-  </div>
-</div>`;
+      </div>
+    </div>`;
   }
 }

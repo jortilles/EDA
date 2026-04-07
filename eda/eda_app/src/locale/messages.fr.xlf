@@ -6150,6 +6150,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Ya existe un usuario con este correo electrónico.</source>
         <target>Un utilisateur avec cette adresse e-mail existe déjà.</target>
       </trans-unit>
+      <trans-unit id="customHtmlSaved">
+        <source>HTML personalizado guardado correctamente.</source>
+        <target>Le code HTML personnalisé a été correctement enregistré.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

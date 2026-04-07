@@ -5895,6 +5895,10 @@ OR<ph id="5"/>
   <source>Ya existe un usuario con este correo electrónico.</source>
   <target>A user with this email address already exists.</target>
 </trans-unit>
+<trans-unit id="customHtmlSaved">
+  <source>HTML personalizado guardado correctamente.</source>
+  <target>Custom HTML saved correctly.</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

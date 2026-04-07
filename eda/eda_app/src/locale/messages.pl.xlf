@@ -5815,6 +5815,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Ya existe un usuario con este correo electrónico.</source>
         <target>Użytkownik z tym adresem e-mail już istnieje.</target>
       </trans-unit>
+      <trans-unit id="customHtmlSaved">
+        <source>HTML personalizado guardado correctamente.</source>
+        <target>Niestandardowy kod HTML został poprawnie zapisany.</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

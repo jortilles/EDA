@@ -6177,6 +6177,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Ya existe un usuario con este correo electrónico.</source>
         <target>Ja existeix un usuari amb aquest correu electrònic.</target>
       </trans-unit>
+      <trans-unit id="customHtmlSaved">
+        <source>HTML personalizado guardado correctamente.</source>
+        <target>HTML personalitzat guardat correctament.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
