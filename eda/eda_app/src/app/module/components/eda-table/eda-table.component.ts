@@ -496,21 +496,7 @@ export class EdaTableComponent implements OnInit {
 
     }
 
-    extractNumberRange(input) {
-        const regex = /(?:<|<=|>|>=)?\s*(-?\d+)\s*(?:-|<|<=|>|>=)?\s*(-?\d+)?/;
-        const match = input.trim().match(regex);
-
-        if (match) {
-          // Determina qué número extraer en base al formato del string
-          if (input.includes('<') || input.includes('>')) {
-            return parseInt(match[1], 10); // Extrae el primer número
-          } else {
-            return match[2] ? parseInt(match[2], 10) : null; // Extrae el segundo número si está presente
-          }
-        }
-        return null; // Si no hay coincidencia
-    }
-
+    
     customSort(event: any, cols: any) {
 
         const actualField = event.field;
@@ -547,6 +533,24 @@ export class EdaTableComponent implements OnInit {
         // maintains the order of the crosstable
         this.inject.sortedColumn = { field: event.field, order: event.order };
     }
+
+    extractNumberRange(input) {
+        const regex = /(?:<|<=|>|>=)?\s*(-?\d+)\s*(?:-|<|<=|>|>=)?\s*(-?\d+)?/;
+        const match = input.trim().match(regex);
+
+        if (match) {
+          // Determina qué número extraer en base al formato del string
+          if (input.includes('<') || input.includes('>')) {
+            return parseInt(match[1], 10); // Extrae el primer número
+          } else {
+            return match[2] ? parseInt(match[2], 10) : null; // Extrae el segundo número si está presente
+          }
+        }
+        return null; // Si no hay coincidencia
+    }
+
+    
+
 
     public getColor(valor: number) { 
 
