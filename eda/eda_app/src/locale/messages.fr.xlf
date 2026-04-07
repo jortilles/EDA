@@ -6292,6 +6292,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Aplicar el filtro sobre los resultados</source>
         <target>Appliquer le filtre aux résultats</target>
       </trans-unit>
+      <trans-unit id="customHtmlSaved">
+        <source>HTML personalizado guardado correctamente.</source>
+        <target>Le code HTML personnalisé a été correctement enregistré.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

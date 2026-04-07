@@ -5957,6 +5957,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Aplicar el filtro sobre los resultados</source>
         <target>Zastosuj filtr do wyników</target>
       </trans-unit>
+      <trans-unit id="customHtmlSaved">
+        <source>HTML personalizado guardado correctamente.</source>
+        <target>Niestandardowy kod HTML został poprawnie zapisany.</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

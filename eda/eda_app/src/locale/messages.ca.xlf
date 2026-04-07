@@ -6323,6 +6323,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Aplicar el filtro sobre los resultados</source>
         <target>Aplica el filtre sobre els resultats</target>
       </trans-unit>
+      <trans-unit id="customHtmlSaved">
+        <source>HTML personalizado guardado correctamente.</source>
+        <target>HTML personalitzat guardat correctament.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
