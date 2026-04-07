@@ -313,7 +313,7 @@ public handleTagSelect(option: any): void {
     const filter = (reports: any[]) => reports.filter(db => {
       const cfg = db.config;
       if (title      && !cfg.title?.toUpperCase().includes(title.toUpperCase())) return false;
-      if (author     && !cfg.author?.toLowerCase().includes(author.toLowerCase())) return false;
+      if (author     && !cfg.author?.toLowerCase().startsWith(author.toLowerCase())) return false;
       if (datasource && !cfg.ds?.type?.toLowerCase().includes(datasource.toLowerCase())) return false;
       if (tag        && !this.normTagArr(cfg).some(t => t.toLowerCase().includes(tag.toLowerCase()))) return false;
       if (createdFrom  && new Date(cfg.createdAt) < new Date(createdFrom)) return false;
@@ -338,7 +338,7 @@ public handleTagSelect(option: any): void {
       || (this.modifiedRange?.length >= 1 && this.modifiedRange[0]);
 
     if (hasAdvanced) {
-      this.applyAdvancedFilters();
+      this.applyAdvancedFilters(false);
       return;
     }
 
@@ -576,7 +576,7 @@ public handleTagSelect(option: any): void {
   }
 
   // Aplicar los filtros avanzados a los informes
-  applyAdvancedFilters() {
+  applyAdvancedFilters(updateSearchBar = true) {
     //recoger valores de filtros avanzados
     const { author, datasource } = this.advancedFilters;
     const hasCreated  = this.createdRange?.length >= 1 && this.createdRange[0];
@@ -594,7 +594,13 @@ public handleTagSelect(option: any): void {
       const cfg = db.config;
       if (author     && !cfg.author?.toLowerCase().includes(author.toLowerCase())) return false;
       if (datasource && !cfg.ds?.type?.toLowerCase().includes(datasource.toLowerCase())) return false;
-      if (hasTags    && !this.advancedTags.some(t => this.normTagArr(cfg).includes(t))) return false;
+      if (hasTags    && !this.advancedTags.some(t => {
+        if (t === $localize`:@@NoTag:Sin Etiqueta`) {
+          const tag = cfg.tag;
+          return tag === null || tag === undefined || tag === '';
+        }
+        return this.normTagArr(cfg).includes(t);
+      })) return false;
       if (hasCreated) {
         const created = new Date(cfg.createdAt);
         if (this.createdRange[0] && created < this.createdRange[0]) return false;
@@ -613,7 +619,7 @@ public handleTagSelect(option: any): void {
     this.sharedReports  = filter(base.shared);
     this.privateReports = filter(base.private);
     this.roleReports    = filter(base.group);
-    this.buildSearchQuery();
+    if (updateSearchBar) this.buildSearchQuery();
   }
 
   // Construye la sintaxis aplicada en los campos de los filtros avanzados y lo pone en el buscador
