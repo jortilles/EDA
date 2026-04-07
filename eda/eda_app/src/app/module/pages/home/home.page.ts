@@ -164,8 +164,6 @@ export class HomePage implements OnInit, OnDestroy {
 
 public handleTagSelect(option: any): void {
   const currentFilters = this.selectedTags(); // Filtros de tags
-  const tags = JSON.parse(sessionStorage.getItem("activeTags") || "[]"); // Tags activos en sesión
-
   const isSelected = currentFilters.value === option.value;
 
   if (isSelected) {
@@ -180,7 +178,7 @@ public handleTagSelect(option: any): void {
   }
 
   this.isOpenTags.set(false);
-  this.filterByTags();
+  this.reapplyFilters();
 }
 
   public filteredTags(): any[] {
@@ -189,11 +187,11 @@ public handleTagSelect(option: any): void {
 
   public removeTag(filterToRemove: any): void {
     this.selectedTags.set(this.selectedTags().filter((filter) => filter.value !== filterToRemove.value)); // Elimina del header el tag
-    sessionStorage.setItem("activeTags", JSON.stringify((() => {    
-      const tags = JSON.parse(sessionStorage.getItem("activeTags") || "[]"); 
+    sessionStorage.setItem("activeTags", JSON.stringify((() => {
+      const tags = JSON.parse(sessionStorage.getItem("activeTags") || "[]");
       return tags.filter(tag => tag.value !== filterToRemove.value); // Elimina valor del JSON de storage
     })()));
-    this.filterByTags();
+    this.reapplyFilters();
   }
 
   public toggleDropdownTags(): void {
@@ -300,13 +298,17 @@ public handleTagSelect(option: any): void {
   public filterByTitle(event: Event) {
     // si esta vacio o 1 caracter se muestra todo con filtro de tags
     const raw = (event.target as HTMLInputElement).value?.toString().trim() || '';
+    this.applyTitleFilter(raw);
+  }
+
+  private applyTitleFilter(raw: string) {
     if (raw.length <= 1) {
       this.filterByTags();
       return;
     }
 
     const { title, author, datasource, tag, createdFrom, createdTo, modifiedFrom, modifiedTo } = this.parseSearchQuery(raw);
-    
+
     // funcion de filtrado por keywords que se aplica a cada grupo de infromes
     const filter = (reports: any[]) => reports.filter(db => {
       const cfg = db.config;
@@ -327,6 +329,25 @@ public handleTagSelect(option: any): void {
     this.sharedReports  = filter(base.shared);
     this.privateReports = filter(base.private);
     this.roleReports    = filter(base.group);
+  }
+
+  private reapplyFilters(): void {
+    const hasAdvanced = this.advancedFilters.author || this.advancedFilters.datasource
+      || this.advancedTags.length > 0
+      || (this.createdRange?.length >= 1 && this.createdRange[0])
+      || (this.modifiedRange?.length >= 1 && this.modifiedRange[0]);
+
+    if (hasAdvanced) {
+      this.applyAdvancedFilters();
+      return;
+    }
+
+    if (this.searchQuery && this.searchQuery.trim().length > 1) {
+      this.applyTitleFilter(this.searchQuery.trim());
+      return;
+    }
+
+    this.filterByTags();
   }
 
   copyReport(report: any) {
