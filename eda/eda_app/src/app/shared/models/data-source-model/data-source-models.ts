@@ -65,6 +65,7 @@ export class EditModelPanel {
     };
     metadata: {
         model_name: string,
+        model_description: string,
         model_granted_roles: any,
         cache_config,
         filter: string,

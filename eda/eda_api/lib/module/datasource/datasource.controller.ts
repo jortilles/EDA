@@ -439,6 +439,7 @@ export class DataSourceController {
                     },
                     metadata: {
                         model_name: req.body.name,
+                        model_description: req.body.description || '',
                         model_id: '',
                         model_granted_roles: [],
                         optimized: req.params.optimize === '1',
@@ -487,6 +488,7 @@ export class DataSourceController {
                     },
                     metadata: {
                         model_name: req.body.name,
+                        model_description: req.body.description || '',
                         model_id: '',
                         model_granted_roles: [],
                         optimized: req.params.optimize === '1',

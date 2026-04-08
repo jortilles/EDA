@@ -6336,6 +6336,14 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Selecciona tags...</source>
         <target>Sélectionner des tags...</target>
       </trans-unit>
+      <trans-unit id="inputDescripcionModelo" datatype="html">
+        <source>Descripción</source>
+        <target>Description</target>
+      </trans-unit>
+      <trans-unit id="placeholderDescripcionModelo" datatype="html">
+        <source>Describe el propósito y contenido de este modelo de datos...</source>
+        <target>Décrivez l'objectif et le contenu de ce modèle de données...</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

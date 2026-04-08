@@ -412,16 +412,28 @@
               <label for="name" class="font-medium" i18n="@@inputNombre">
                 Nombre <span class="text-red-500">*</span>
               </label>
-              <input 
-                id="name" 
+              <input
+                id="name"
                 [(ngModel)]="modelPanel.metadata.model_name"
                 (keyup)="update()"
-                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
+            </div>
+            <div class="grid gap-2">
+              <label for="model_description" class="font-medium" i18n="@@inputDescripcionModelo">Descripción</label>
+              <textarea
+                id="model_description"
+                [(ngModel)]="$any(modelPanel.metadata).model_description"
+                (keyup)="update()"
+                rows="3"
+                class="flex w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+                i18n-placeholder="@@placeholderDescripcionModelo"
+                placeholder="Describe el propósito y contenido de este modelo de datos..."
+              ></textarea>
             </div>
           </div>
         </div>
-        
+
         <!-- Connection Section -->
         <div class="mb-8">
           <h3 class="text-lg font-medium text-gray-700 mb-4 border-b pb-2" i18n="@@conexionh4">Conexión</h3>

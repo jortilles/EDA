@@ -6090,6 +6090,14 @@ OR<ph id="5"/>
   <source>Selecciona tags...</source>
   <target>Select tags...</target>
 </trans-unit>
+<trans-unit id="inputDescripcionModelo" datatype="html">
+  <source>Descripción</source>
+  <target>Description</target>
+</trans-unit>
+<trans-unit id="placeholderDescripcionModelo" datatype="html">
+  <source>Describe el propósito y contenido de este modelo de datos...</source>
+  <target>Describe the purpose and content of this data model...</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

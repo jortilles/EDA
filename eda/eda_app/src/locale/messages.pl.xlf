@@ -6001,6 +6001,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Selecciona tags...</source>
         <target>Wybierz tagi...</target>
       </trans-unit>
+      <trans-unit id="inputDescripcionModelo" datatype="html">
+        <source>Descripción</source>
+        <target>Opis</target>
+      </trans-unit>
+      <trans-unit id="placeholderDescripcionModelo" datatype="html">
+        <source>Describe el propósito y contenido de este modelo de datos...</source>
+        <target>Opisz cel i zawartość tego modelu danych...</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>
