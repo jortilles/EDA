@@ -6006,8 +6006,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target> ZROBIONE Z </target>
       </trans-unit>
       <trans-unit id="adminPortal" datatype="html">
-        <source>Portal</source>
-        <target>Portal</target>
+        <source>Portal de datos</source>
+        <target>Portal danych</target>
       </trans-unit>
 </body>
 </file>

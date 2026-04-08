@@ -6372,8 +6372,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target> FET AMB </target>
       </trans-unit>
       <trans-unit id="adminPortal" datatype="html">
-        <source>Portal</source>
-        <target>Portal</target>
+        <source>Portal de datos</source>
+        <target>Portal de dades</target>
       </trans-unit>
     </body>
   </file>

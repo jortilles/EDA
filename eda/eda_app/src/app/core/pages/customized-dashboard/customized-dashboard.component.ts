@@ -14,7 +14,7 @@ import { AlertService } from '@eda/services/service.index';
 })
 export class CustomizedDashboardComponent implements OnInit, OnDestroy {
   private alertService = inject(AlertService);
-  public isAdmin: boolean = false;
+  public canEdit: boolean = false;
   public showEditDialog: boolean = false;
   public haveUnsavedChanges: boolean = false;
   public sidebarOpen: boolean = true;
@@ -53,7 +53,9 @@ export class CustomizedDashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
-    this.isAdmin = user?.role?.includes('135792467811111111111110') ?? false;
+    const isAdmin = user?.role?.includes('135792467811111111111110') ?? false;
+    const isDataSourceCreator = localStorage.getItem('isDataSourceCreator') === 'true';
+    this.canEdit = isAdmin || isDataSourceCreator;
     this.customHTMLService.getByKey('customHTML').subscribe({
       next: ({ value }) => {
         console.log('[CustomizedDashboard] HTML cargado desde BD:', value);

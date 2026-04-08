@@ -6341,8 +6341,8 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <target> FAIT AVEC </target>
       </trans-unit>
       <trans-unit id="adminPortal" datatype="html">
-        <source>Portal</source>
-        <target>Portail</target>
+        <source>Portal de datos</source>
+        <target>Portail de données</target>
       </trans-unit>
     </body>
   </file>
