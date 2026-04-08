@@ -507,6 +507,7 @@ public tableNodeExpand(event: any): void {
         try {
             await this.runQueryFromDashboard(true);
         } catch (err) {
+            console.log(err);
             throw err;
         }
     }
@@ -891,6 +892,7 @@ public tableNodeExpand(event: any): void {
                     const transformedData = QueryUtils.transformAnalizedQueryData(this, data);
                     this.renderChart(this.currentQuery, transformedData.labels, transformedData.values, type, subType, _config);
                 } catch(err) {
+                    console.log(err)
                     throw err;
                 } finally {
                     this.spinnerService.off();
@@ -898,6 +900,14 @@ public tableNodeExpand(event: any): void {
             } else {
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
             }
+        }else{
+            try{
+                console.log('no allow');
+                console.log(allow);
+            }catch (e){
+                console.log(e);
+            }
+
         }
 
         // Controlar si se ejecuta una tabla cruzada
