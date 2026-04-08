@@ -177,6 +177,7 @@ export class ExcelSheetController {
                     column_granted_roles: [],
                     row_granted_roles: [],
                     visible: true,
+                    ia_visibility: 'FULL',
                     tableCount: 0,
                     valueListSource: {},
                 };
@@ -282,6 +283,7 @@ export class ExcelSheetController {
                     column_granted_roles: [],
                     row_granted_roles: [],
                     visible: true,
+                    ia_visibility: 'FULL',
                     tableCount: 0,
                     valueListSource: {},
                 }
@@ -347,6 +349,7 @@ export class ExcelSheetController {
                         model_id: "",
                         model_granted_roles: [],
                         optimized: optimized ?? false,
+                        ia_visibility: 'FULL',
                         cache_config: {
                             units: "",
                             quantity: 1,

@@ -29,6 +29,7 @@ export class EditTablePanel {
     table_granted_roles: string;
     columns: [];
     visible: boolean;
+    ia_visibility?: string;
 }
 
 export class EditColumnPanel {
@@ -40,6 +41,7 @@ export class EditColumnPanel {
     column_granted_roles: string;
     row_granted_roles: string;
     visible: boolean;
+    ia_visibility: string;
     column_type: string;
     parent: string;
     SQLexpression: any;
@@ -59,8 +61,8 @@ export class EditModelPanel {
         schema: string,
         port: number,
         warehouse: string,
-        sid: number, 
-        poolLimit?: number, 
+        sid: number,
+        poolLimit?: number,
         ssl?: Boolean
     };
     metadata: {
@@ -69,7 +71,8 @@ export class EditModelPanel {
         model_granted_roles: any,
         cache_config,
         filter: string,
-        tags: any
+        tags: any,
+        ia_visibility: string
     };
 }
 
