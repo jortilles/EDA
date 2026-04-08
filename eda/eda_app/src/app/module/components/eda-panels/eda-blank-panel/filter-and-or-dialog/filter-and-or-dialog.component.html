@@ -1,0 +1,22 @@
+<eda-dialog2
+  [display]="display"
+  i18n-header="@@filterSettingsHeader"
+  header="Configuración de filtros"
+  width="70vw"
+  height="86vh"
+  (apply)="onApplyFilterAndOrDialog()"
+  (close)="oncloseFilterAndOrDialog()">
+
+  <div content>
+    <h6 i18n="@@descriptionFilterSettings">Configuración avanzada de todos los filtros</h6>
+
+    <eda-filter-and-or
+      [selectedFilters]="selectedFilters"
+      [globalFilters]="globalFilters"
+      [tables]="tables"
+      [sortedFilters]="sortedFilters"
+      (dashboardChanged)="handleDashboardChanged($event)">
+    </eda-filter-and-or>
+  </div>
+
+</eda-dialog2>

@@ -183,11 +183,12 @@
           <label for="name" class="block font-medium text-gray-700 mb-1" i18n="@@inputNombre">
             Nombre <span class="text-red-500">*</span>
           </label>
-          <input 
-            id="name" 
+          <input
+            id="name"
             [(ngModel)]="columnPanel.name"
             (keyup)="update()"
-            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+            [disabled]="columnPanel.computed_column === 'computed'"
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           />
         </div>
         
@@ -204,11 +205,12 @@
           <label for="description" class="block font-medium text-gray-700 mb-1" i18n="@@inputDescripcion">
             Descripción
           </label>
-          <input 
-            id="description" 
+          <input
+            id="description"
             [(ngModel)]="columnPanel.description"
             (keyup)="update()"
-            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+            [disabled]="columnPanel.computed_column === 'computed'"
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           />
         </div>
 
@@ -218,11 +220,12 @@
             <label for="sqlExpression" class="block font-medium text-gray-700 mb-1" i18n="@@sqlExpColumn">
               Expresión SQL
             </label>
-            <input 
-              id="sqlExpression" 
+            <input
+              id="sqlExpression"
               [(ngModel)]="columnPanel.SQLexpression"
               (keyup)="update()"
-              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+              [disabled]="columnPanel.computed_column === 'computed'"
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
         }
@@ -234,10 +237,11 @@
           </label>
           <div class="flex flex-wrap gap-2">
             @for (type of columnTypes; track type.value) {
-              <button 
-                type="button" 
-                (click)="updateColumnType(type.value)" 
-                class="px-4 py-2 font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2" 
+              <button
+                type="button"
+                (click)="updateColumnType(type.value)"
+                [disabled]="columnPanel.computed_column === 'computed'"
+                class="px-4 py-2 font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 [ngClass]="columnPanel.column_type === type.value ? 'bg-[#00BFB3] text-white border-[#00BFB3]' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'"
               >
                 {{ type.label }}
@@ -380,10 +384,10 @@
           </button>
         }
 
-        @if (columnPanel.SQLexpression) {
-          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#00BFB3] hover:bg-[#00BFB3]/90 text-white  h-10 px-4 py-2"
-            (click)="checkCalculatedColumn(columnPanel)" i18n="@@CheckExpression">
-            Comprobar expresión
+        @if (columnPanel.computed_column !== 'no') {
+          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#00BFB3] hover:bg-[#00BFB3]/90 text-white h-10 px-4 py-2"
+            (click)="editCalculatedField(columnPanel)" i18n="@@editCalculatedField">
+            Edición de campo calculado
           </button>
         }
       </div>
@@ -744,6 +748,9 @@
 }
 @if(showAddTagDialog){
   <app-add-tag-dialog [model_id]="dataModelService.model_id" [tagArray]="modelPanel.metadata.tags" (close)="onCloseTagDialog($event)"></app-add-tag-dialog>
+}
+@if(calculatedColumnEditController){
+  <app-calculated-column-edit-dialog [column]="columnPanel" (close)="onCloseCalculatedColumnEdit()" (newColum)="newColumnEdited($event)"></app-calculated-column-edit-dialog>
 }
 
 

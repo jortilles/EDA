@@ -14,9 +14,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DestroyRef } from '@angular/core';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import '@angular/localize/init';
-
-
-// pruebas
 import { DropdownModule } from 'primeng/dropdown';       // Si usas <p-dropdown>
 import { InputSwitchModule } from 'primeng/inputswitch'; // Si usas <p-inputSwitch>
 import { ScrollPanelModule } from 'primeng/scrollpanel'; // Si usas <p-scrollPanel>
@@ -75,6 +72,7 @@ export class GlobalFilterComponent implements OnInit {
 
     public filtrar: string = $localize`:@@filtrarH4:Filtrar`;
     public resumen: string = $localize`:@@filterSummary:Resumen de filtros`;
+    public selectedItemsLabel: string = $localize`:@@globalFilterSelectedItemsLabel:elementos seleccionados`;
     private tooltipHideTimeout: any;
     // flag para ver ultimo panel
     private lastPanel: any;
@@ -137,6 +135,22 @@ export class GlobalFilterComponent implements OnInit {
         }
 
         this.loading = false;
+
+        this.globalFilters.forEach(filter => {
+            this.setGlobalEmptyFilter(filter);
+        });
+    }
+
+    /** Pushes an empty global filter to all linked panels so it appears in the AND/OR dialog */
+    public setGlobalEmptyFilter(filter: any): void {
+        setTimeout(() => {
+            this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
+                if (filter.panelList.includes(panel.panel.id)) {
+                    const formatedFilter = this.globalFilterService.formatFilter(filter);
+                    panel.assertGlobalEmptyFilter(formatedFilter);
+                }
+            });
+        }, 500);
     }
 
     public async initOrderDependentFilters(orderDependentFilters: any[]): Promise<void> {
@@ -543,7 +557,7 @@ export class GlobalFilterComponent implements OnInit {
 
 
                     delete (filter.isnew);
-                } else if (filter.isdeleted) {
+                } else if (filter.isdeleted || (this.globalFilter.id === filter.id && this.globalFilter.isdeleted)) {
                     filter.selectedItems = [];
                     this.applyGlobalFilter(filter);
                     this.removeGlobalFilter(filter);
@@ -651,6 +665,9 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     public removeGlobalFilter(filter: any, reload?: boolean): void {
+
+        const formatedFilter = filter;
+
         // Remove 'applytoall' filter if it's the same fitler
         if (this.dashboard.applyToAllfilter && this.dashboard.applyToAllfilter.id === filter.id) {
             this.dashboard.applyToAllfilter = { present: false, refferenceTable: null, id: null };
@@ -659,6 +676,16 @@ export class GlobalFilterComponent implements OnInit {
 
         // Update fileterList and clean panels' filters
         this.globalFilters = this.globalFilters.filter((f: any) => f.id !== filter.id);
+        
+        this.dashboard.edaPanels.forEach(panel => {
+            panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== filter.id);
+        });
+
+        // Verifying global filters in panels
+        filter.panelList.map((id: string) => this.dashboard.edaPanels.toArray().find(p => p.panel.id === id))
+        .forEach((panel: EdaBlankPanelComponent) => { // Entire array of panels that contain the global filter
+            if (panel) panel.rebootGlobalFilter(formatedFilter);
+        });
 
         this.removeMapFilter(filter);
 
@@ -824,8 +851,20 @@ export class GlobalFilterComponent implements OnInit {
                             .map(id => this.dashboard.panels.find(p => p.id === id))
                             .forEach((panel) => {
                                 const panelFilter = panel.content.query.query.filters;
-                                const formatedFilter = this.globalFilterService.formatFilter(filter);
-                                panelFilter.splice(_.findIndex(panelFilter, (inx) => inx.filter_column === formatedFilter.filter_column), 1);
+                                let formatedFilter = this.globalFilterService.formatFilter(filter);
+
+                                let pathList: any;
+                                Object.entries(formatedFilter.pathList).forEach(([clave, valor]: any) => {
+                                    if(clave === panel.id) pathList = valor.path;
+                                });
+
+                                // Añadimos los joins del filtro que viene por url
+                                formatedFilter.joins = pathList;
+
+                                // Control de filtros
+                                if( _.findIndex(panelFilter, (inx) => inx.filter_column === formatedFilter.filter_column) >=0 ){
+                                    panelFilter.splice(_.findIndex(panelFilter, (inx) => inx.filter_column === formatedFilter.filter_column), 1);
+                                }
                                 panelFilter.push(formatedFilter);
                             });
 

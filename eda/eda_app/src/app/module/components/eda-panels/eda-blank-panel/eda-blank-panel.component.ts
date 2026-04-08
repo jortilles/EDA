@@ -16,6 +16,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
 import { NULL_VALUE, EMPTY_VALUE} from '../../../../config/personalitzacio/customizables';
+import { aggTypes } from 'app/config/aggretation-types';
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 
 import { PanelChart } from './panel-charts/panel-chart';
@@ -50,6 +51,8 @@ import { EdaTitlePanelComponent } from '@eda/components/component.index';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { ChartTypeSelectorDialogComponent } from './chart-type-selector-dialog/chart-type-selector-dialog.component';
 import { PromptComponent } from '@eda/components/prompt/prompt.component';
+import { FilterAndOrDialogComponent } from './filter-and-or-dialog/filter-and-or-dialog.component';
+import { EdaFilterAndOrComponent } from '../../eda-filter-and-or/eda-filter-and-or.component';
 
 // Panel Utils
 import { TableUtils } from './panel-utils/tables-utils';
@@ -100,12 +103,11 @@ const DIALOGS_COMPONENTS = [
 const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass, CumSumAlertDialogComponent];
 const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule];
 const STANDALONE_COMPONENTS = [
-    EdaDialog2Component, WhatIfDialogComponent, EbpChatgptComponent,FilterMapperComponent, EdadynamicTextComponent,EdaTitlePanelComponent,
+    EdaDialog2Component, WhatIfDialogComponent, EbpChatgptComponent, FilterMapperComponent, EdadynamicTextComponent, EdaTitlePanelComponent,
     PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
     DragDropComponent, ChartTypeSelectorDialogComponent,
-    IconComponent, FocusOnShowDirective,
-    PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent, 
-    DragDropComponent, IconComponent, FocusOnShowDirective, PromptComponent
+    IconComponent, FocusOnShowDirective, PromptComponent,
+    FilterAndOrDialogComponent,
 ]
 @Component({
     standalone: true,
@@ -195,6 +197,7 @@ export class EdaBlankPanelComponent implements OnInit {
         advancedSetting: 0,
         filterMapperDialog: false,
         showQueryContainer: false,
+        filterAndOr_dialog: false,
     };
 
     public index: number;
@@ -212,7 +215,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public draggFilters: string = $localize`:@@draggFilters:Arrastre aquí los atributos sobre los que quiera filtrar`;
     public ptooltipSQLmode: string = $localize`:@@sqlTooltip:Al cambiar de modo perderás la configuración de la consulta actual`;
     public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`
-
+    public aggregationText: string = $localize`:@@aggregationText:Agregación`;
+    public textBetween: string = $localize`:@@textBetween:Entre`
     /** Query Variables */
     public tables: any[] = [];
     public tablesToShow: any[] = [];
@@ -248,6 +252,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public filterTypes: FilterType[];
     public selectedFilters: any[] = [];
     public globalFilters: any[] = [];
+    public sortedFilters: any[] = [];
+    public temporalSortedFilters: any[] = [];
     public filterValue: any = {};
     public tableInput: string;
     public columnInput: string;
@@ -255,6 +261,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public loadingNodes: boolean = false;
     public rootTable: any;
     public tableNodes: any = [];
+    public displayedTableNodes: any[] = [];
     public selectedTableNode: any;
     public nodeJoins: any[] = [];
 
@@ -299,6 +306,7 @@ export class EdaBlankPanelComponent implements OnInit {
     private route = inject(ActivatedRoute);
     private formBuilder = inject(UntypedFormBuilder);
 
+
     public editingTitle: boolean = false;
 
 
@@ -342,7 +350,6 @@ export class EdaBlankPanelComponent implements OnInit {
     async ngOnInit() {
         this.index = 0;
         this.readonly = this.panel.readonly;
-        this.assignLevels(this.tableNodes, 0);
 
         await this.setTablesData();
 
@@ -365,6 +372,8 @@ export class EdaBlankPanelComponent implements OnInit {
                     this.rootTable = contentQuery.query.rootTable;
                 }
 
+                this.sortedFilters = contentQuery.query.sortedFilters || [];
+
             if (modeSQL || queryMode == 'SQL') {
                 this.currentSQLQuery = contentQuery.query.SQLexpression;
                 this.sqlOriginTable = this.sqlOriginTables.find(t => t.value === contentQuery.query.fields[0].table_id);
@@ -385,6 +394,8 @@ export class EdaBlankPanelComponent implements OnInit {
             ['knob', 'radar'].includes(this.panel.content?.chart) ? { minHeight: '55vh', minWidth: '55vw', display: 'inline-block', alignItems: 'center' } :
             ['kpi'].includes(this.panel.content?.chart) ? {height: '100%', width: '100%', alignContent: 'center'} : 
             {height: '100%', width: '100%'};
+        
+        if(this.sortedFilters === undefined) this.sortedFilters = []; // Si se trata de un informe antiguo, definimos el informe como vacío.
     }
     
     /**
@@ -426,12 +437,21 @@ public tableNodeExpand(event: any): void {
 
   this.loadingNodes = true;
 
-  PanelInteractionUtils.expandTableNode(this, node);
+  const targetNode = this.tableInput ? (this.findOriginalNode(node) || node) : node;
+  PanelInteractionUtils.expandTableNode(this, targetNode);
 
-  // Si expandís de forma asíncrona, esperá al resultado
   setTimeout(() => {
-    this.assignLevels([node], node.level || 0);
+    // Si la expansión no produjo hijos, eliminamos las propiedades de carpeta expandible
+    if (targetNode.children?.length === 0) {
+      delete targetNode.children;
+      delete targetNode.expandedIcon;
+      delete targetNode.collapsedIcon;
+    }
     this.loadingNodes = false;
+    // Re-aplicar el filtro tras la expansión para incluir los nuevos hijos cargados.
+    if (this.tableInput) {
+      this.displayedTableNodes = this.filterTreeNodes(this.tableNodes, this.tableInput.toLowerCase());
+    }
   });
 }
 
@@ -487,6 +507,7 @@ public tableNodeExpand(event: any): void {
         try {
             await this.runQueryFromDashboard(true);
         } catch (err) {
+            console.log(err);
             throw err;
         }
     }
@@ -614,12 +635,14 @@ public tableNodeExpand(event: any): void {
                 this.reloadTablesData();
                 PanelInteractionUtils.loadTableNodes(this);
 
+                this.displayedTableNodes = this.tableNodes;
+
                 this.userSelectedTable = undefined;
                 this.columns = [];
             } else {
                 this.rootTable = null; // no root table in EDA mode
                 PanelInteractionUtils.handleCurrentQuery(this);
-            this.columns = this.columns.filter(c => !c.isdeleted);
+                this.columns = this.columns.filter(c => !c.isdeleted);
             }
         }
 
@@ -832,7 +855,7 @@ public tableNodeExpand(event: any): void {
 
         const allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
 
-        if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
+        if (!_.isEqual(this.display_v.chart, 'no_data') && allow && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
 
             // Preservar assignedColors, coloredBarsConfig, showUniqueColors y uniqueBarColors antes del merge
@@ -869,6 +892,7 @@ public tableNodeExpand(event: any): void {
                     const transformedData = QueryUtils.transformAnalizedQueryData(this, data);
                     this.renderChart(this.currentQuery, transformedData.labels, transformedData.values, type, subType, _config);
                 } catch(err) {
+                    console.log(err)
                     throw err;
                 } finally {
                     this.spinnerService.off();
@@ -876,6 +900,14 @@ public tableNodeExpand(event: any): void {
             } else {
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
             }
+        }else{
+            try{
+                console.log('no allow');
+                console.log(allow);
+            }catch (e){
+                console.log(e);
+            }
+
         }
 
         // Controlar si se ejecuta una tabla cruzada
@@ -936,13 +968,64 @@ public tableNodeExpand(event: any): void {
         return selectedTable;
     }
 
+     // Filtra el buscador de entidades según el modo de query activo.
+     // Modo EDA (estándar): filtra la lista plana tablesToShow.
+     // Modo EDA2 (árbol) con query activa: filtra displayedTableNodes de forma recursiva
     public onTableInputKey(event: any) {
-        if (event.target.value) {
-            this.tablesToShow = this.tablesToShowBase
-                .filter(table => table.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
+        if (this.selectedQueryMode === 'EDA2' && this.currentQuery.length > 0) {
+            const term = event.target.value?.toLowerCase();
+            this.displayedTableNodes = term
+                ? this.filterTreeNodes(this.tableNodes, term)
+                : this.tableNodes;
         } else {
-            this.tablesToShow = [...this.tablesToShowBase];
+            if (event.target.value) {
+                this.tablesToShow = this.tablesToShowBase
+                    .filter(table => table.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
+            } else {
+                this.tablesToShow = [...this.tablesToShowBase];
+            }
         }
+    }
+
+    // Filtra recursivamente un array de nodos del árbol por término de búsqueda.
+    private filterTreeNodes(nodes: any[], term: string): any[] {
+        const result: any[] = [];
+        for (const node of nodes) {
+            if (node.label?.toLowerCase().includes(term)) {
+                result.push(node);
+            } else {
+                const hasExpandedChildren = node.expanded === true
+                    && node.children?.length > 0
+                    && node.children[0]?.label !== undefined;
+                if (hasExpandedChildren) {
+                    const filtered = this.filterTreeNodes(node.children, term);
+                    if (filtered.length > 0) {
+                        result.push({ ...node, children: filtered });
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Busca el nodo original en tableNodes (árbol completo) que corresponde
+     * al nodo target recibido del evento de expansión.
+     * Necesario porque al filtrar se crean objetos clonados con children reducidos;
+     * la expansión debe operar sobre el nodo real para que tableNodes quede actualizado.
+     * Identifica el nodo por table_id (nodos raíz) o child_id (nodos hijo).
+     */
+    private findOriginalNode(target: any, nodes: any[] = this.tableNodes): any {
+        for (const node of nodes) {
+            if (target.table_id && node.table_id === target.table_id) return node;
+            if (target.child_id && node.child_id === target.child_id) return node;
+            const hasChildren = node.children?.length > 0 && node.children[0]?.label !== undefined;
+            if (hasChildren) {
+                const found = this.findOriginalNode(target, node.children);
+                if (found) return found;
+            }
+        }
+        return null;
     }
 
 
@@ -1118,6 +1201,63 @@ public tableNodeExpand(event: any): void {
         }
     }
 
+    /** Registers a global filter (even if empty) so it appears in the AND/OR dialog without triggering a query */
+    public assertGlobalEmptyFilter(_filter: any) {
+        const globalFilter = _.cloneDeep(_filter);
+
+        if (_filter.pathList && _filter.pathList[this.panel.id]) {
+            globalFilter.joins = _filter.pathList[this.panel.id].path;
+            globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
+        }
+        const filterInx = this.globalFilters.findIndex((gf: any) => gf.filter_id === globalFilter.filter_id);
+
+        if (filterInx !== -1) {
+            this.globalFilters.splice(filterInx, 1);
+            this.globalFilters.push(globalFilter);
+        } else {
+            this.globalFilters.push(globalFilter);
+        }
+    }
+
+    public addingGlobalFilterEbp(_filter: any) {
+
+        if(this.sortedFilters.length !==0){
+            const lastElement = this.sortedFilters[this.sortedFilters.length-1];
+
+            const newSortedFilter = {
+                cols: 3,
+                rows: 1,
+                y: lastElement.y+1,
+                x: 0,
+                filter_table: _filter.filter_table,
+                filter_column: _filter.filter_column,
+                filter_type: _filter.filter_type,
+                filter_column_type: _filter.filter_column_type,
+                filter_elements: _filter.filter_elements,
+                filter_codes: _filter.filter_codes,
+                filter_id: _filter.filter_id,
+                isGlobal: _filter.isGlobal,
+                value: "and",
+            }
+
+            this.sortedFilters.push(newSortedFilter);
+            this.savePanel()
+        }
+    }    
+
+    public rebootGlobalFilter(_filter: any){
+
+        if(this.sortedFilters.length !==0) {
+            this.alertService.addWarning($localize`:@@globalFilterSettingsReboot:La configuración de filtros del panel involucrado se ha reiniciado`);
+        }
+
+        if(this.sortedFilters.some((sortedFilter: any) => _filter.id === sortedFilter.filter_id)){
+            this.sortedFilters = [];
+            this.savePanel(); // Panel setting saved
+        }
+
+    }
+    
     /* Funcions generals de la pagina */
     public disableBtnSave = () => this.display_v.btnSave = true;
 
@@ -1137,6 +1277,7 @@ public tableNodeExpand(event: any): void {
         this.display_v.page_dialog = true;
         this.ableBtnSave();
         PanelInteractionUtils.verifyData(this);
+        this.temporalSortedFilters = _.cloneDeep(this.sortedFilters);
     }
 
     /**
@@ -1148,6 +1289,8 @@ public tableNodeExpand(event: any): void {
         this.columns = [];
         this.currentQuery = [];
         this.indextab = 0;
+        this.sortedFilters = _.cloneDeep(this.temporalSortedFilters);
+        EdaFilterAndOrComponent.reiniciarDashboard();
 
         if (this.panelDeepCopy.query) {
             this.panelDeepCopy.query.query.filters = this.mergeFilters(this.panelDeepCopy.query.query.filters, this.globalFilters);
@@ -1688,6 +1831,7 @@ public tableNodeExpand(event: any): void {
 
         if (this.selectedQueryMode == 'EDA2' && this.currentQuery.length === 1) {
             PanelInteractionUtils.loadTableNodes(this);
+            this.displayedTableNodes = this.tableNodes;
        }
     }
 
@@ -1695,8 +1839,35 @@ public tableNodeExpand(event: any): void {
 
     public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table, true);
 
-    public removeColumn = (c: Column, list?: string, event?: Event) => PanelInteractionUtils.removeColumn(this, c, list);
+    public removeColumn = (c: Column, list?: string) => {
+        // rootTableName => Para tener la tabla principal => condiciones para comprobar si podemos eliminar la columna
+        const rootTableName = this.rootTable?.table_name;
+        // Las joins son fiables al interactuar con la aplicación; la comparación de table_id es el método alternativo después de guardar y recargar cuando los joins pueden estar vacías.
+        const isNotRootColumn = !!c?.joins?.length || (!!rootTableName && c?.table_id !== rootTableName);
+        const rootColumnElements = this.currentQuery.filter(col => !col?.joins?.length && (!rootTableName || col?.table_id === rootTableName)).length;
+        const currentQueryLength = this.currentQuery.length;
 
+        // Simplemente procedemos si no es la última columna de la tabla raíz.
+        if (isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
+            const columnHadFilter = this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name);
+            const removed = PanelInteractionUtils.removeColumn(this, c, list);
+            if (removed !== false) {
+                // Verificamos si al eliminar un campo tenía un filtro en selectedFilters (se comprueba antes de que removeColumn los borre).
+                if (columnHadFilter) {
+                    if (this.sortedFilters.length !== 0) {
+                        this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+                    }
+                    this.sortedFilters = []; // resets the values because one or more filters were deleted
+                }
+            }
+        }
+        else {
+            // Detenemos la propagación del evento para no abrir el panel de atributos.
+            event.stopPropagation();
+            this.alertService.addError($localize`:@@cannotRemoveLastColumn:No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.`);
+        }
+    }
+    
     public getOptionDescription = (value: string): string => EbpUtils.getOptionDescription(value);
 
     public getOptionIcon = (value: string): string => EbpUtils.getOptionIcon(value);
@@ -1825,6 +1996,13 @@ public tableNodeExpand(event: any): void {
         return pathStr
     }
 
+    public getDisplayAggregation(aggregation: any) {
+        let str = '';
+        const aggregationText = aggTypes.filter(agg => agg.value === aggregation.value)[0].label
+        str = `&nbsp<strong>( ${aggregationText} )</strong>&nbsp`;
+        return str;
+    }
+
     public getDisplayFilterStr(filter: any) {
         let str = '';
 
@@ -1836,6 +2014,14 @@ public tableNodeExpand(event: any): void {
 
             const values = filter.filter_elements[0]?.value1;
             const values2 = filter.filter_elements[1]?.value2;
+
+            const whereMessage: string = $localize`:@@whereMessage: Filtro sobre todos los registros`;
+            const havingMessage: string = $localize`:@@havingMessage: Filtro sobre los resultados`;
+
+            // Nomenclatura:  WHERE => Filtro sobre todos los registros | HAVING => Filtro sobre los resultados
+            const filterBeforeGroupingText = filter.filterBeforeGrouping ? whereMessage : havingMessage
+            // Agregación
+            const aggregation = filter.aggregation_type;
             let valueStr = '';
 
             if (values) {
@@ -1847,7 +2033,7 @@ public tableNodeExpand(event: any): void {
 
                 if (values2) {
                     if (values2.length == 1) {
-                        valueStr = `AND "${values2[0]}"`;
+                        valueStr = `"${values[0]}" - "${values2[0]}"`;
                     }  else if (values2.length > 1) {
                         valueStr = `AND [${values2.map((v: string) => (`"${v}"`) ).join(', ')}]`;
                     }
@@ -1856,9 +2042,15 @@ public tableNodeExpand(event: any): void {
             }
 
 
-            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filter.filter_type}</strong>&nbsp${valueStr}`;
-        }
+            let aggregationLabel = '';
+            if(aggTypes.filter(agg => agg.value === aggregation).length !== 0) aggregationLabel = aggTypes.filter(agg => agg.value === aggregation)[0].label;
 
+            // Agregado de internacionalización del between
+            let filterType = filter.filter_type
+            if(filterType === 'between') filterType = this.textBetween;
+
+            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filterType}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp - ${this.aggregationText}: &nbsp<strong>${aggregationLabel}</strong>&nbsp`;
+        }
 
         return str;
     }
@@ -1956,14 +2148,6 @@ public tableNodeExpand(event: any): void {
         QueryUtils.runManualQuery(this) // Ejecutando con la nueva configuracion de currentQuery
     }
 
-private assignLevels(nodes: any[], level = 0): void {
-  nodes.forEach(node => {
-    node.level = level;
-    if (node.children?.length) {
-      this.assignLevels(node.children, level + 1);
-    }
-  });
-}
 
     getAttributeTypeIcon(type: string) {
         const icons = {
@@ -2059,5 +2243,75 @@ startEditTitle() {
     this.editingTitle = true;
     this.titleClick=true;
 }
+
+    // ─── AND/OR Filter Dialog ────────────────────────────────────────────────
+
+    public filterAndOrDialog(): void {
+        const numFilters = this.selectedFilters.length + this.globalFilters.length;
+        if (numFilters === 0) {
+            this.alertService.addWarning($localize`:@@withoutFilters:Aún no has configurado filtros. Usa el panel de filtros o los filtros globales`);
+            return;
+        }
+        this.display_v.filterAndOr_dialog = true;
+    }
+
+    public onCloseFilterAndOrDialog(): void {
+        this.display_v.filterAndOr_dialog = false;
+    }
+
+    public newSortedFiltersFunction(event: any[]): void {
+        this.sortedFilters = event;
+        this.display_v.btnSave = true;
+    }
+
+    public updateSortedFiltersColumnDialogFunction(e: any): void {
+        if (e.add) {
+            if (this.sortedFilters.length !== 0) {
+                const lastElement = this.sortedFilters[this.sortedFilters.length - 1];
+                const newSortedFilter = {
+                    cols: 3, rows: 1,
+                    y: lastElement.y + 1, x: 0,
+                    filter_table: e.filter.filter_table,
+                    filter_column: e.filter.filter_column,
+                    filter_type: e.filter.filter_type,
+                    filter_column_type: e.filter.filter_column_type,
+                    filter_elements: e.filter.filter_elements,
+                    filter_id: e.filter.filter_id,
+                    value: 'and',
+                };
+                this.sortedFilters.push(newSortedFilter);
+            }
+        } else {
+            if (this.sortedFilters.length !== 0) {
+                this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+            }
+            this.sortedFilters = [];
+        }
+    }
+
+    public updateSortedFiltersFilterDialogFunction(e: any): void {
+        if (e.add) {
+            if (this.sortedFilters.length !== 0) {
+                const lastElement = this.sortedFilters[this.sortedFilters.length - 1];
+                const newSortedFilter = {
+                    cols: 3, rows: 1,
+                    y: lastElement.y + 1, x: 0,
+                    filter_table: e.filter.filter_table,
+                    filter_column: e.filter.filter_column,
+                    filter_type: e.filter.filter_type,
+                    filter_column_type: e.filter.filter_column_type,
+                    filter_elements: e.filter.filter_elements,
+                    filter_id: e.filter.filter_id,
+                    value: 'and',
+                };
+                this.sortedFilters.push(newSortedFilter);
+            }
+        } else {
+            if (this.sortedFilters.length !== 0) {
+                this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+            }
+            this.sortedFilters = [];
+        }
+    }
 
 }

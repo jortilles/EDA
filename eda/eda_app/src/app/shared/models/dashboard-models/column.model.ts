@@ -20,4 +20,5 @@ export interface Column {
     valueListSource: any;
     autorelation: boolean;
     joins: string[];
+    ranges: number[];
 }

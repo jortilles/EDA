@@ -1,38 +1,121 @@
 <div class="flex h-screen">
-    <!-- Columna izquierda -->
-    <div class="flex pt-4 flex-col w-[15%] gap-4 bg-[#96adb5]">
-        <!-- Imagen superior -->
-        <div class="h-1/8 flex items-center justify-center">
-            <!-- img src="assets/images/datapolis.svg" alt="" -->
+
+    <div class="relative flex-shrink-0 bg-white" style="width: 40px; z-index: 30;">
+
+        <!-- Tab (icono 3 barras) -->
+        <div class="absolute top-0 left-0 w-10 h-12 flex flex-col items-center justify-center gap-1 cursor-pointer"
+             style="z-index: 10;"
+             (mouseenter)="openSidebar()" (mouseleave)="closeSidebar()">
+            <span class="block w-5 h-0.5 bg-black rounded"></span>
+            <span class="block w-5 h-0.5 bg-black rounded"></span>
+            <span class="block w-5 h-0.5 bg-black rounded"></span>
         </div>
 
-        <!-- Listado -->
-        <div class="h-6/8 p-2 overflow-auto">
-            <ul class="space-y-2 pl-[10%]">
-                @for (item of leftItems; track $index) {
-                    <li class="p-2 pt-0 pb-0 text-white font-bold">
-                        @if (item.isStarting) {
-                            <div class="flex items-center">
-                                <eda-icon [name]="item.icon" class="h-6" />
-                                <a (click)="changeSrc(item.href)" class="btn">{{ item.name }}</a>
-                            </div>
-                        }@else{
-                            <a  class="btn ml-[10%]">{{ item.name }}</a>
+        <!-- Panel: overlay absoluto que sale desde left:0, encima del tab y del iframe -->
+        <div class="absolute top-0 left-0 h-full flex flex-col shadow-2xl transition-transform duration-300"
+             style="width: 16vw; min-width: 200px; z-index: 20;"
+             [style.transform]="sidebarOpen ? 'translateX(0)' : 'translateX(-100%)'"
+             (mouseenter)="openSidebar()" (mouseleave)="closeSidebar()">
+
+            <!-- Contenido editable (incluye el fondo) -->
+            <div class="flex-1 overflow-hidden relative" [style.background-color]="sidebarBgColor">
+                <div [innerHTML]="safeSidebarHtml" class="h-full pt-6"></div>
+                                <!-- Botón anclar -->
+                <button class="absolute top-2 left-2 p-1 rounded cursor-pointer transition-all duration-200"
+                        [style.background-color]="isPinned ? 'rgba(255,255,255,0.25)' : 'transparent'"
+                        [style.opacity]="isPinned ? '1' : '0.5'"
+                        (click)="togglePin()"
+                        [title]="isPinned ? 'Desanclar menú' : 'Anclar menú'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="white" viewBox="0 0 16 16">
+                        <path d="M9.828.722a.5.5 0 0 1 .354.146l4.95 4.95a.5.5 0 0 1 0 .707c-.48.48-1.072.588-1.503.588-.177 0-.335-.018-.46-.039l-3.134 3.134a5.927 5.927 0 0 1 .16 1.013c.046.702-.032 1.687-.72 2.375a.5.5 0 0 1-.707 0l-2.829-2.828-3.182 3.182c-.195.195-1.219.902-1.414.707-.195-.195.512-1.22.707-1.414l3.182-3.182-2.828-2.829a.5.5 0 0 1 0-.707c.688-.688 1.673-.767 2.375-.72a5.922 5.922 0 0 1 1.013.16l3.134-3.133a2.772 2.772 0 0 1-.04-.461c0-.43.108-1.022.589-1.503a.5.5 0 0 1 .353-.146z"/>
+                    </svg>
+                </button>
+                @if (isAdmin) {
+                    <div class="absolute top-2 right-4 flex flex-row items-center gap-2">
+                        @if (haveUnsavedChanges) {
+                            <button
+                                class="flex right-40 items-center gap-1.5 pl-2.5 pr-3 py-1 rounded-full text-xs font-semibold cursor-pointer
+                                       bg-white/20 text-white border border-white/40 backdrop-blur-sm
+                                       hover:bg-white/35 transition-colors"
+                                (click)="saveSidebar()">
+                                <eda-icon name="check" class="h-3.5 w-3.5" style="margin-top: -10px; margin-right: 5px;" />
+                                <span>Guardar</span>
+                            </button>
                         }
-                    </li>
+                        <button class="cursor-pointer" title="Editar sidebar" (click)="openEditDialog()">
+                            <eda-icon name="pencil" class="h-6 w-6 text-white opacity-70 hover:opacity-100" />
+                        </button>
+                    </div>
                 }
+            </div>
 
-                <!-- Agrega más items según necesites -->
-            </ul>
-        </div>
+            <!-- Footer fijo: no editable -->
+            <div [style.background-color]="sidebarBgColor" class="relative">
 
-        <span class="pt-6  pl-[10%] text-white font-bold"> FET AMB </span>
-        <div class="pb-4 h-1/8 w-[80%] flex self-center justify-center">
-            <img src="assets/images/Logo-edalitics.png"  alt="">
+                <span class="pt-4 pb-2 pl-[10%] block text-white font-bold"> FET AMB </span>
+                <div class="pb-4 w-[80%] flex self-center justify-center mx-auto">
+                    <img src="assets/images/Logo-edalitics.png" alt="">
+                </div>
+            </div>
+
         </div>
     </div>
 
+    <!-- Spacer: empuja el iframe cuando el sidebar abre (total = 16vw, menos los 40px fijos de la barra) -->
+    <div class="flex-shrink-0"
+         [style.width]="sidebarOpen ? 'calc(16vw - 40px)' : '0px'"
+         [style.min-width]="sidebarOpen ? 'calc(200px - 40px)' : '0px'"
+         style="transition: width 300ms ease-in-out, min-width 300ms ease-in-out;">
+    </div>
+
+    <!-- Iframe -->
     <div class="flex-1 border">
-        <iframe src='https://demo.edalitics.com/es/#/public/6801ea526c2a8f2c431e9b28?panelMode=true' class="w-full h-full" id="showDashboard" frameborder="0"></iframe>
+        <iframe src='https://demo.edalitics.com/es/#/public/6801ea526c2a8f2c431e9b28?panelMode=true'
+            class="w-full h-full" id="showDashboard" frameborder="0"></iframe>
     </div>
+
 </div>
+
+<!-- Edit dialog (admin only) -->
+@if (showEditDialog) {
+    <eda-dialog2
+        [display]="showEditDialog"
+        header="Editar sidebar"
+        width="80vw"
+        height="80vh"
+        [overflow]="'hidden'"
+        [showReset]="true"
+        (apply)="onDialogApply()"
+        (close)="onDialogClose()"
+        (reset)="onDialogReset()">
+
+        <div content class="flex" style="height: calc(80vh - 130px)">
+
+            <!-- Columna izquierda: HTML editable -->
+            <div class="flex-1 flex flex-col p-4 border-r">
+                <h4 class="text-xs text-gray-500 mb-2 font-semibold">HTML del sidebar</h4>
+                <textarea
+                    [(ngModel)]="editingHtml"
+                    (ngModelChange)="onEditingHtmlChange($event)"
+                    class="flex-1 w-full font-mono text-xs border rounded p-3 resize-none outline-none focus:ring-1 focus:ring-blue-300"
+                    spellcheck="false">
+                </textarea>
+            </div>
+
+            <!-- Columna derecha: preview en vivo -->
+            <div class="w-[16vw] p-4 pt-10 shrink-0 flex flex-col overflow-hidden">
+                <div class="flex-1 overflow-auto">
+                    <div [innerHTML]="safeEditingHtml" class="h-full"></div>
+                </div>
+                <!-- Footer no editable -->
+                <div [style.background-color]="previewBgColor">
+                    <span class="pt-3 pb-1 pl-[10%] block text-white text-xs font-bold">FET AMB</span>
+                    <div class="pb-3 flex justify-center">
+                        <img src="assets/images/Logo-edalitics.png" class="w-[70%]" alt="">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </eda-dialog2>
+}

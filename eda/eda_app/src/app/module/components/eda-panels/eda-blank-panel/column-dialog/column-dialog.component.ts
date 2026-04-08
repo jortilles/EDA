@@ -1,4 +1,4 @@
-import { Component, ViewChild, Input } from '@angular/core';
+import { Component, ViewChild, Input, Output, EventEmitter } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { Column } from '@eda/models/model.index';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -46,7 +46,7 @@ const STANDALONE_COMPONENTS = [
     imports: [STANDALONE_COMPONENTS, ANGULAR_MODULES, PRIMENG_MODULES],
     selector: 'app-column-dialog',
     templateUrl: './column-dialog.component.html',
-    styleUrls: ['../eda-blank-panel.component.css']
+    styleUrls: ['../eda-blank-panel.component.css', './column-dialog.component.css']
 })
 
 export class ColumnDialogComponent {
@@ -54,6 +54,7 @@ export class ColumnDialogComponent {
     @Input() controller: any;
 
     @ViewChild('myCalendar', { static: false }) datePicker: EdaDatePickerComponent;
+    @Output() updateSortedFiltersColumnDialog: EventEmitter<any> = new EventEmitter<any>();
 
     public dialog: EdaDialog;
     public selectedColumn: Column;
@@ -83,6 +84,7 @@ export class ColumnDialogComponent {
     public formatDates: FormatDates[];
     public formatDate: FormatDates;
     public aggregationsTypes: any[] = [];
+    public aggregationSelected: any;
     public inputType: string;
     public dropDownFields: SelectItem[] = [];
     public limitSelectionFields: number;
@@ -92,6 +94,31 @@ export class ColumnDialogComponent {
     public title: string;
     public editingTitle: boolean = false;
     public editableTitle: string = '';
+
+    public ranges: number[] = [];
+    public rangeString: string;
+    public selectedRange: string = '';
+    public showRange: boolean = false;
+    public availableRange: boolean = true;   
+    public allowedAggregations: boolean = true; 
+    public ptooltipViewTextRanges: string = $localize`:@@ptooltipViewTextRanges:Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango válido - 12:18:50:100 `;
+    public ptooltipNotAvailableRanges: string = $localize`:@@ptooltipNotAvailableRanges:No es posible crear un rango nuevo por que ya existe uno configurado`;
+    public rangeDescriptionNumberError: string = $localize`:@@rangeDescriptionNumberError:El correcto orden de los límites del rango van de menor a mayor`;
+    public rangeDescriptionCharacterError: string = $localize`:@@rangeDescriptionCharacterError:El último caracter del rango debe ser un número`;
+    public filterBeforeAfter = {
+        filterBeforeGrouping: true, // valor por defecto true ==> WHERE / valor false ==> HAVING
+        elements: [
+            { label: $localize`:@@whereMessageLabel:Aplicar el filtro sobre todos los registros`, value: true },
+            { label: $localize`:@@havingMessageLabel:Aplicar el filtro sobre los resultados`, value: false },
+        ],
+    }
+    public filterBeforeAfterSelected: any;
+    public aggregationType: any = null;
+
+    // Tooltip
+    public whereMessage: string = $localize`:@@whereMessage: Filtro sobre todos los registros`;
+    public havingMessage: string = $localize`:@@havingMessage: Filtro sobre los resultados`;
+    public textBetween: string = $localize`:@@textBetween:Entre`
 
     constructor(
         private dashboardService: DashboardService,
@@ -110,7 +137,9 @@ export class ColumnDialogComponent {
         const allowed = [];
         const col = $localize`:@@atributoLabel:Atributo`, from = $localize`:@@table:de la entidad`;
         this.title = `${col} ${this.selectedColumn.display_name.default} ${from} ${this.controller.params.table}`;
+
         this.carregarValidacions();
+        this.verifyRange();
 
         const columnType = this.selectedColumn.column_type;
 
@@ -127,7 +156,26 @@ export class ColumnDialogComponent {
         }
 
         this.showFormatDateSection = columnType == 'date';
+
+        if(this.controller.params.currentQuery.find( elemento => elemento.hasOwnProperty('ranges') &&  elemento.ranges.length!==0)) {
+            if(this.selectedColumn.hasOwnProperty('ranges') && this.selectedColumn.ranges.length!==0) {
+                this.availableRange = true;
+            } else {
+                this.availableRange = false;
+            }
+        } else {
+            this.availableRange = true;
+        }
+        
+        // Buscando el valor inicial de agregacion de la columna seleccionada
+        for(let agg of this.selectedColumn.aggregation_type) {
+            if(agg.selected){
+                this.aggregationSelected = _.cloneDeep(agg);
+            }
+        } 
     }
+
+
 
     // Metodos de cambio de modo edición
     // Input cambia a editable 
@@ -183,6 +231,10 @@ export class ColumnDialogComponent {
         const valueListSource = this.selectedColumn.valueListSource;
         const joins = this.selectedColumn.joins;
         const autorelation = this.selectedColumn.autorelation;
+        const computed_column = this.selectedColumn.computed_column;
+        const SQLexpression = this.selectedColumn.SQLexpression;
+        const filterBeforeGrouping = this.filterBeforeAfter.filterBeforeGrouping;
+        const aggregation_type = this.aggregationSelected ? this.aggregationSelected.value : null;
 
         const filter = this.columnUtils.setFilter({
             obj: this.filterValue,
@@ -193,7 +245,11 @@ export class ColumnDialogComponent {
             selectedRange,
             valueListSource,
             autorelation,
-            joins
+            joins,
+            computed_column,
+            SQLexpression,
+            filterBeforeGrouping,
+            aggregation_type,
         });
 
         this.filter.selecteds.push(filter);        
@@ -204,9 +260,19 @@ export class ColumnDialogComponent {
         this.filterSelected = undefined; // filtre seleccionat cap
         this.filterValue = {}; // filtre ningun
         this.filter.range = null;
+
+        // Control de agregar solo el filtro en la sección Where
+        const addToSortedFilters = { add: true, filter: filter };
+        if(filter['filterBeforeGrouping']) this.updateSortedFiltersColumnDialog.emit(addToSortedFilters);        
+        this.filterBeforeAfter.filterBeforeGrouping = true;
+        this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
     }
 
     removeFilter(item: any) {
+
+        const addToSortedFilters = { add: false, filter: item };
+        this.updateSortedFiltersColumnDialog.emit(addToSortedFilters);
+
         this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id)).removed = true;
 
         this.filter.forDisplay = this.filter.selecteds.filter(f => {
@@ -235,7 +301,42 @@ export class ColumnDialogComponent {
         if (addAggr) {
             addAggr.aggregation_type = JSON.parse(JSON.stringify(this.selectedColumn.aggregation_type));
         }
+
+        // For computed columns with 3 aggregation options (text/date type): change column_type based on aggregation
+        if (this.aggregationsTypes.length === 3 && type.value !== 'none') {
+            this.selectedColumn.column_type = 'numeric';
+            const allowed = [];
+            for (const ft of this.chartUtils.filterTypes) {
+                ft.typeof.forEach((columnTypeOf: string) => {
+                    if (columnTypeOf === 'numeric') allowed.push(ft);
+                });
+            }
+            if (allowed.length > 0) this.filter.types = allowed;
+        }
+
+        if (this.aggregationsTypes.length === 3 && type.value === 'none') {
+            this.selectedColumn.column_type = 'text';
+            const allowed = [];
+            for (const ft of this.chartUtils.filterTypes) {
+                ft.typeof.forEach((columnTypeOf: string) => {
+                    if (columnTypeOf === 'text') allowed.push(ft);
+                });
+            }
+            if (allowed.length > 0) this.filter.types = allowed;
+        }
+        
+        // Seteo de aggregationSelected dependiendo de la selección realizada por el usuario
+        this.aggregationSelected = _.cloneDeep(type);
+
+        // En caso no tengamos agregación el selected Where/Having se establece en Where
+        if(this.aggregationSelected.value==='none') {
+            this.whereHavingSwitch({
+                label: 'WHERE',
+                value: true,
+            })
+        }
     }
+
 
     addOrdenation(ord: any) {
 
@@ -649,6 +750,30 @@ export class ColumnDialogComponent {
         return aggTypes.find(agg => agg.value === value)?.label;
     }
 
+    getAggregationText(value: any) {
+        const label = aggTypes.filter(agg => {
+            return (agg.value === value.aggregation_type);
+        })[0].label;
+        return label;
+    }
+
+    getFilterText(value) {
+        if(value.filter_type === 'between') return this.textBetween;
+        return value.filter_type;
+    }
+
+    whereHavingSwitch(selected) {
+
+        if(selected.value) {
+            this.filterBeforeAfter.filterBeforeGrouping = true;
+            return true
+        } else {
+            this.filterBeforeAfter.filterBeforeGrouping = false;
+            return false
+        }
+
+    }
+
     processPickerEvent(event) {
         if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
@@ -707,6 +832,96 @@ export class ColumnDialogComponent {
     onDuplicate(){
         this.display.duplicateColumn = true;
         this.duplicatedColumnName = this.selectedColumn.display_name.default + ' (Copy)';    
+    }
+
+
+    addRange(rangeString: string) {
+        const regexNumber = /^[0-9]/;
+
+        if(regexNumber.test(rangeString[rangeString.length-1])){
+
+            const ranges = rangeString.split(":")
+                .map(item => parseFloat(item.replace(",", ".")));
+
+            for (let i = 0; i < ranges.length-1; i++) {
+                // Verificar si el número actual es menor o igual al anterior
+                if (ranges[i] >= ranges[i + 1]) {
+                    this.ranges=[];
+                    this.alertService.addError('El correcto orden de los límites del rango van de menor a mayor');
+                    return;
+                }
+            }
+
+            this.ranges = ranges
+            this.showRange = true;
+            this.selectedRange = this.generarStringRango(this.ranges); // extraemos el rango seleccionado
+            this.rangeString = '';
+            this.allowedAggregations = false;
+
+            // Selección de Rango, genera que la agregación sea 'none'
+            const selectionAggregationRange = { value: 'none', display_name: 'No', selected: 'true' };
+            this.addAggregation(selectionAggregationRange);
+
+            // Encuentra la columna de turno y agrega el rango
+            const addAggr = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
+            addAggr.column_type = 'text';
+            addAggr.ranges = this.ranges;
+        }
+        else {
+            this.alertService.addError('El último caracter del rango debe ser un número');
+            return;
+        }
+
+    }
+
+    removeRange() {
+        this.selectedRange='';
+        this.showRange=false;
+        this.allowedAggregations = true;
+        const addAggr = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
+        addAggr.column_type = 'numeric';
+        this.selectedColumn.column_type = 'numeric';
+        this.rangeString = this.ranges.join(':');
+        addAggr.ranges = [];
+    }
+
+    generarStringRango(rango: number[]): string {
+        let resultado = "";
+
+        // Agregamos la primera condición
+        resultado += `< ${rango[0]}<br>`;
+
+        // Creamos las condiciones intermedias
+        for (let i = 0; i < rango.length - 1; i++) {
+            resultado += `${rango[i]} - ${rango[i + 1] - 1}<br>`;
+        }
+
+        // Agregamos la última condición
+        resultado += `>= ${rango[rango.length - 1]}`;
+
+        return resultado;
+    }
+
+    verifyRange() {
+
+        if(this.selectedColumn.ranges !== undefined){
+
+            if(this.selectedColumn.ranges.length !==0){
+                this.allowedAggregations = false;
+                this.showRange = true;
+                this.ranges = this.selectedColumn.ranges;
+                this.selectedRange = this.generarStringRango(this.ranges);
+            }
+        }
+    }
+
+    validateInput(event: Event): void {
+        const inputElement = event.target as HTMLInputElement;
+        const validCharacters = /[1234567890.,:-]*/g;
+        inputElement.value = inputElement.value.match(validCharacters)?.join('') || '';
+        // Si el input inicia con (. , :) no se habilitara el botón del rango ni se agregará el signo en el input. Se debe empezar con un número o con un signo (-) y un número para los negativos.
+        if(inputElement.value=== '.' || inputElement.value===',' || inputElement.value===':') inputElement.value = '';
+        this.rangeString = inputElement.value; // Se actualiza ngModel
     }
 
 }

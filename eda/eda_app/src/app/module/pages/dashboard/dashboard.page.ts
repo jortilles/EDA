@@ -132,6 +132,10 @@ export class DashboardPage implements OnInit {
   public clickFiltersEnabled: boolean = true;
   public stopRefresh: boolean = false;
 
+  // Custom data portal
+  public showCustomizeDialog: boolean = false;
+  public applyCustomizeHTML: string = '';
+  public finalCustimizeHTML: string = '';
 
   //Filter control variables
   public lastFilters: any[] = [];
@@ -282,7 +286,8 @@ export class DashboardPage implements OnInit {
       this.title = dashboard.config.title;
       this.applyToAllfilter = dashboard.config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
       this.globalFilter?.initOrderDependentFilters(dashboard.config.orderDependentFilters || []); // Filtros dependientes
-      this.globalFilter?.initGlobalFilters(dashboard.config.filters || []);// Filtres del dashboard
+      //this.globalFilter?.initGlobalFilters(dashboard.config.filters || []);// Filtres del dashboard
+      this.globalFilter?.initGlobalFilters( this.checkFiltersVisibility( dashboard.config.filters , data.datasource.model.tables ) ||[]);// Filtres del dashboard
       this.initPanels(dashboard);
       this.sortPanelsForMobile();
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
@@ -476,21 +481,21 @@ export class DashboardPage implements OnInit {
     }
   }
 
-      public canIedit(): boolean {
-        let result: boolean = false;
-        result = this.userService.isAdmin;
-        // si no es admin...
-        if (!result) {
-            if (this.dashboard.onlyIcanEdit) {
-                result = this.userService.user._id === this.dashboard.user
-            } else {
-                // Usuari anonim no pot editar
-                result = this.userService.user._id !== '135792467811111111111112';
-            }
-
+  public canIedit(): boolean {
+    let result: boolean = false;
+    result = this.userService.isAdmin;
+    // si no es admin...
+    if (!result) {
+        if (this.dashboard.onlyIcanEdit) {
+            result = this.userService.user._id === this.dashboard.user
+        } else {
+            // Usuari anonim no pot editar
+            result = this.userService.user._id !== '135792467811111111111112';
         }
-        return result;
+
     }
+    return result;
+  }
 
   onRemovePanel(panel: any) {
     this.panels.splice(_.findIndex(this.panels, { id: panel }), 1);
@@ -736,6 +741,35 @@ export class DashboardPage implements OnInit {
     } catch (error) {
       console.error('Error creando filtro:', error);
     }
+  }
+
+  
+/**
+ * Comprueba la configuración de seguridad de los filtros y pone la columna a invisible si el filtro no es visible para el usuario por motivos de filtro de seguridad
+ * @param filters - recibe el array de filtros del informe
+ * @param tables - recibe el array de tablas del modelo.
+ * @returns  - el array de filtros del informe informando cual es oculto por la seguridad
+ */
+  private checkFiltersVisibility(filters, tables) {
+    if (filters && filters.length > 0) {
+      filters.forEach((f) => {
+        // Revisar si el filtro esta cread en modo EDA2 (modo arbol)
+        if (f.selectedColumn && f.selectedTable) {
+          f.selectedColumn.visible = (
+            (tables.filter((t) => t.table_name == f.selectedTable.table_name)[0]?.visible == true) &&
+            (tables.filter((t) => t.table_name == f.selectedTable.table_name)[0]?.columns.filter((c) => c.column_name == f.selectedColumn.column_name)[0]?.visible == true)
+          )
+        }
+        // si selectedColumn no esta definido, el filtro se crea en modo EDA
+        else {
+          f.column.value.visible = (
+            (tables.filter((t) => t.table_name == f.table.value)[0]?.visible == true) &&
+            (tables.filter((t) => t.table_name == f.table.value)[0]?.columns.filter((c) => c.column_name == f.column.value.column_name)[0]?.visible == true)
+          )
+        }
+      })
+    }
+    return filters;
   }
 
 
@@ -1271,9 +1305,27 @@ public startCountdown(seconds: number) {
           this.hideWheel =true;
         }
         if (params['cnproperties']) {
-          this.connectionProperties = JSON.parse(decodeURIComponent(params['cnproperties'])); 
+          this.connectionProperties = JSON.parse(decodeURIComponent(params['cnproperties']));
         }
-        
+        if (params['MODEEDIT'] === 'TRUE') {
+          const user = localStorage.getItem('user');
+          console.log('hola');
+          console.log(user);
+          console.log('hola');
+          console.log(this.canIedit());
+
+          // restriccions = condicions per poder mostrar panell de edicio
+          const restriccions = true;
+          if(restriccions){
+            // si el usuario puede customizar, le mostraremos el panel de customización
+            this.showCustomizeDialog = true;
+            // setTimeout(() => {
+            //   this.showCustomizeDialog = false;
+            // },3000);
+          }
+
+        }
+
       } catch(e){
         console.error('getUrlParams: '+ e);
       }

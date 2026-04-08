@@ -919,22 +919,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">11</context>
 </context-group>
 </trans-unit>
-<trans-unit id="deleteDates" datatype="html">
-<source> Todas </source>
-<target> Totes </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
-<context context-type="linenumber">36</context>
-</context-group>
-</trans-unit>
-<trans-unit id="yesterday" datatype="html">
-<source> Ayer </source>
-<target> Ahir </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
-<context context-type="linenumber">38</context>
-</context-group>
-</trans-unit>
 
 <trans-unit id="thisWeek" datatype="html">
 <source> Ésta semana </source>
@@ -3514,10 +3498,55 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Enviament d'informes per email</target>
   </trans-unit> 
 
+    <trans-unit id="noFormatsAvailable">
+    <source>Esta es una columna calculada y no tiene opciones de formato disponibles</source>
+    <target>Aquesta és una columna calculada i no té opcions de format disponibles</target>
+  </trans-unit>
+
+    <trans-unit id="editCalculatedField">
+    <source>Edición de campo calculado</source>
+    <target>Edició de camp calculat</target>
+  </trans-unit>
+
+    <trans-unit id="deleteCalculatedColumn">
+    <source>Si, Eliminar el campo calculado!</source>
+    <target>Sí, eliminar el camp calculat!</target>
+  </trans-unit>
+
+    <trans-unit id="deleteCalculatedColumnConfirmation">
+    <source>Campo calculado eliminado correctamente. Debera guardar cambios en el modelo de datos para que la eliminación sea permanente</source>
+    <target>Camp calculat eliminat correctament. Cal guardar els canvis al model de dades perquè l'eliminació sigui permanent</target>
+  </trans-unit>
+
+    <trans-unit id="DeleteGroupCancel">
+    <source>Cancelar</source>
+    <target>Cancel·lar</target>
+  </trans-unit>
+
+    <trans-unit id="formDialogCalculatedColumn">
+    <source>Recuerde rellenar todos los campos</source>
+    <target>Recorda omplir tots els camps</target>
+  </trans-unit>
+
+    <trans-unit id="mandatoryDiferentName">
+    <source>Este nombre de campo calculado ya existe. Intente con otro.</source>
+    <target>Aquest nom de camp calculat ja existeix. Intenta amb un altre.</target>
+  </trans-unit>
+
+    <trans-unit id="titleCalculatedColumnEditMessage">
+    <source>Campo calculado actualizado correctamente</source>
+    <target>Camp calculat actualitzat correctament</target>
+  </trans-unit>
+
+    <trans-unit id="textCalculatedColumnEditMessage">
+    <source>IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entrar en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe</source>
+    <target>IMPORTANT: En modificar un camp calculat ja existent, els panells que l'utilitzen no s'actualitzen automàticament. Cal entrar a la configuració de cadascun, fer clic a Executar i guardar l'informe</target>
+  </trans-unit>
+
     <trans-unit id="cumulativeSum">
     <source>Suma acumulativa   </source>
     <target>Suma acumulativa  </target>
-  </trans-unit> 
+  </trans-unit>
 
    <trans-unit id="ptooltipViewAlerts">
     <source>Configurar alertas</source>
@@ -3593,7 +3622,12 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
        <trans-unit id="columnsTooltip">
     <source>Elige cuantas columnas quieres mostrar</source>
     <target>Tria quantes columnes vols mostrar</target>
-  </trans-unit> 
+  </trans-unit>
+
+  <trans-unit id="histogramColumDescription">
+    <source>Elige cuántas columnas mostrar en el histograma</source>
+    <target>Tria quantes columnes mostrar a l'histograma</target>
+  </trans-unit>
 
      <trans-unit id="trendTooltip">
     <source>La función de añadir tendencia sólo se puede activar en los gràficos de lineas</source>
@@ -4181,6 +4215,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="DatePickerNull">
         <source>Fecha nula</source>
         <target>Data nula</target>
+      </trans-unit>
+      <trans-unit id="cannotRemoveLastColumn">
+        <source>No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.</source>
+        <target>No es pot eliminar totes les columnes de la taula arrel sense eliminar les columnes dependents.</target>
       </trans-unit>
       <trans-unit id="removeColumnGlobalFilter">
         <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
@@ -5910,6 +5948,54 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Próximo año</source>
         <target>Proper any</target>
       </trans-unit>
+      <trans-unit id="DatePickerYesterday">
+        <source>Ayer</source>
+        <target>Ahir</target>
+      </trans-unit>
+      <trans-unit id="DatePickerTomorrow">
+        <source>Mañana</source>
+        <target>Demà</target>
+      </trans-unit>
+      <trans-unit id="DatePickerPastTomorrow">
+        <source>Pasado mañana</source>
+        <target>Demà passat</target>
+      </trans-unit>
+      <trans-unit id="DatePickerLastQuarter">
+        <source>Último trimestre</source>
+        <target>Últim trimestre</target>
+      </trans-unit>
+      <trans-unit id="DatePickerThisQuarter">
+        <source>Este trimestre</source>
+        <target>Aquest trimestre</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext3">
+        <source>Próximos 3 días</source>
+        <target>Propers 3 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext7">
+        <source>Próximos 7 días</source>
+        <target>Propers 7 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext15">
+        <source>Próximos 15 días</source>
+        <target>Propers 15 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerLast90">
+        <source>Últimos 90 días</source>
+        <target>Últims 90 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext120">
+        <source>Próximos 120 días</source>
+        <target>Propers 120 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerAll">
+        <source>Todas</source>
+        <target>Totes</target>
+      </trans-unit>
+      <trans-unit id="DatePickerBeforeTodayIncluded">
+        <source>Todo hasta hoy</source>
+        <target>Tot fins avui</target>
+      </trans-unit>
       <trans-unit id="noNameProvided">
         <source>Debe proporcionar un nombre para el datasource</source>
         <target>Heu de proporcionar un nom per al datasource</target>
@@ -6154,8 +6240,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Resum de filtres</target>
       </trans-unit>
       <trans-unit id="globalFilterSelectedItemsLabel">
-        <source>{0} items seleccionados</source>
-        <target>{0} elements seleccionats</target>
+        <source>elementos seleccionados</source>
+        <target>elements seleccionats</target>
       </trans-unit>
       <trans-unit id="copyPublicLinkTooltip">
         <source>Copiar enlace público</source>
@@ -6232,6 +6318,74 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="signInMicrosoft">
         <source>Continuar con Microsoft</source>
         <target>Continuar amb Microsoft</target>
+      </trans-unit>
+      <trans-unit id="whereMessage">
+        <source>Filtro sobre todos los registros</source>
+        <target>Filtre sobre tots els registres</target>
+      </trans-unit>
+      <trans-unit id="havingMessage">
+        <source>Filtro sobre los resultados</source>
+        <target>Filtre sobre els resultats</target>
+      </trans-unit>
+      <trans-unit id="aggregationText">
+        <source>Agregación</source>
+        <target>Agregació</target>
+      </trans-unit>
+      <trans-unit id="textBetween">
+        <source>Entre</source>
+        <target>Entre</target>
+      </trans-unit>
+      <trans-unit id="whereMessageLabel">
+        <source>Aplicar el filtro sobre todos los registros</source>
+        <target>Aplica el filtre sobre tots els registres</target>
+      </trans-unit>
+      <trans-unit id="havingMessageLabel">
+        <source>Aplicar el filtro sobre los resultados</source>
+        <target>Aplica el filtre sobre els resultats</target>
+      </trans-unit>
+      <trans-unit id="customHtmlSaved">
+        <source>HTML personalizado guardado correctamente.</source>
+        <target>HTML personalitzat guardat correctament.</target>
+      </trans-unit>
+      <trans-unit id="advancedFilterTitle" datatype="html">
+        <source>Filtro avanzado</source>
+        <target>Filtre avançat</target>
+      </trans-unit>
+      <trans-unit id="clearFiltersBtn" datatype="html">
+        <source>Limpiar</source>
+        <target>Netejar</target>
+      </trans-unit>
+      <trans-unit id="authorFilterLabel" datatype="html">
+        <source>Propietario</source>
+        <target>Propietari</target>
+      </trans-unit>
+      <trans-unit id="authorFilterPlaceholder" datatype="html">
+        <source>Autor...</source>
+        <target>Autor...</target>
+      </trans-unit>
+      <trans-unit id="datasourceFilterLabel" datatype="html">
+        <source>Datasource</source>
+        <target>Datasource</target>
+      </trans-unit>
+      <trans-unit id="datasourceFilterPlaceholder" datatype="html">
+        <source>postgres, mysql...</source>
+        <target>postgres, mysql...</target>
+      </trans-unit>
+      <trans-unit id="createdFilterLabel" datatype="html">
+        <source>Creado en</source>
+        <target>Creat el</target>
+      </trans-unit>
+      <trans-unit id="modifiedFilterLabel" datatype="html">
+        <source>Modificado en</source>
+        <target>Modificat el</target>
+      </trans-unit>
+      <trans-unit id="tagsFilterLabel" datatype="html">
+        <source>Tags</source>
+        <target>Etiquetes</target>
+      </trans-unit>
+      <trans-unit id="tagsFilterPlaceholder" datatype="html">
+        <source>Selecciona tags...</source>
+        <target>Selecciona etiquetes...</target>
       </trans-unit>
     </body>
   </file>

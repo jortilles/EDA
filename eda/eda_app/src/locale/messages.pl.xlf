@@ -571,22 +571,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">11</context>
 </context-group>
 </trans-unit>
-<trans-unit id="deleteDates" datatype="html">
-<source> Todas </source>
-<target> Wszystko </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
-<context context-type="linenumber">36</context>
-</context-group>
-</trans-unit>
-<trans-unit id="yesterday" datatype="html">
-<source> Ayer </source>
-<target> Wczoraj </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
-<context context-type="linenumber">38</context>
-</context-group>
-</trans-unit>
 <trans-unit id="thisWeek" datatype="html">
 <source> Ésta semana </source>
 <target> Ten tydzień </target>
@@ -3123,6 +3107,51 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Wysyłanie raportów e-mailem</target>
   </trans-unit>
 
+  <trans-unit id="noFormatsAvailable">
+    <source>Esta es una columna calculada y no tiene opciones de formato disponibles</source>
+    <target>Ta kolumna jest obliczana i nie ma dostępnych opcji formatowania</target>
+  </trans-unit>
+
+  <trans-unit id="editCalculatedField">
+    <source>Edición de campo calculado</source>
+    <target>Edycja pola obliczanego</target>
+  </trans-unit>
+
+  <trans-unit id="deleteCalculatedColumn">
+    <source>Si, Eliminar el campo calculado!</source>
+    <target>Tak, usuń pole obliczane!</target>
+  </trans-unit>
+
+  <trans-unit id="deleteCalculatedColumnConfirmation">
+    <source>Campo calculado eliminado correctamente. Debera guardar cambios en el modelo de datos para que la eliminación sea permanente</source>
+    <target>Pole obliczane zostało pomyślnie usunięte. Należy zapisać zmiany w modelu danych, aby usunięcie było trwałe</target>
+  </trans-unit>
+
+  <trans-unit id="DeleteGroupCancel">
+    <source>Cancelar</source>
+    <target>Anuluj</target>
+  </trans-unit>
+
+  <trans-unit id="formDialogCalculatedColumn">
+    <source>Recuerde rellenar todos los campos</source>
+    <target>Pamiętaj, aby wypełnić wszystkie pola</target>
+  </trans-unit>
+
+  <trans-unit id="mandatoryDiferentName">
+    <source>Este nombre de campo calculado ya existe. Intente con otro.</source>
+    <target>Ta nazwa pola obliczanego już istnieje. Spróbuj innej.</target>
+  </trans-unit>
+
+  <trans-unit id="titleCalculatedColumnEditMessage">
+    <source>Campo calculado actualizado correctamente</source>
+    <target>Pole obliczane zostało pomyślnie zaktualizowane</target>
+  </trans-unit>
+
+  <trans-unit id="textCalculatedColumnEditMessage">
+    <source>IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entrar en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe</source>
+    <target>WAŻNE: Modyfikacja istniejącego pola obliczanego nie aktualizuje automatycznie paneli, które go używają. Należy wejść w konfigurację każdego z nich, kliknąć Wykonaj i zapisać raport</target>
+  </trans-unit>
+
  <trans-unit id="cumulativeSum">
     <source>Suma acumulativa   </source>
     <target>Łączna suma </target>
@@ -3196,6 +3225,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
          <trans-unit id="columnsTooltip">
     <source>Elige cuantas columnas quieres mostrar</source>
     <target>Wybierz ile kolumn chcesz wyświetlić</target>
+  </trans-unit>
+
+  <trans-unit id="histogramColumDescription">
+    <source>Elige cuántas columnas mostrar en el histograma</source>
+    <target>Wybierz ile kolumn wyświetlić na histogramie</target>
   </trans-unit>
 
      <trans-unit id="trendTooltip">
@@ -5040,6 +5074,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       </trans-unit>
 
 
+      <trans-unit id="cannotRemoveLastColumn">
+        <source>No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.</source>
+        <target>Nie można usunąć wszystkich kolumn z tabeli głównej bez usunięcia kolumn zależnych.</target>
+      </trans-unit>
       <trans-unit id="removeColumnGlobalFilter">
         <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
         <target>Kolumny nie można usunąć, ponieważ ma ona powiązany filtr</target>
@@ -5549,6 +5587,54 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Próximo año</source>
         <target>W przyszłym roku</target>
       </trans-unit>
+      <trans-unit id="DatePickerYesterday">
+        <source>Ayer</source>
+        <target>Wczoraj</target>
+      </trans-unit>
+      <trans-unit id="DatePickerTomorrow">
+        <source>Mañana</source>
+        <target>Jutro</target>
+      </trans-unit>
+      <trans-unit id="DatePickerPastTomorrow">
+        <source>Pasado mañana</source>
+        <target>Pojutrze</target>
+      </trans-unit>
+      <trans-unit id="DatePickerLastQuarter">
+        <source>Último trimestre</source>
+        <target>Ostatni kwartał</target>
+      </trans-unit>
+      <trans-unit id="DatePickerThisQuarter">
+        <source>Este trimestre</source>
+        <target>Ten kwartał</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext3">
+        <source>Próximos 3 días</source>
+        <target>Następne 3 dni</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext7">
+        <source>Próximos 7 días</source>
+        <target>Następne 7 dni</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext15">
+        <source>Próximos 15 días</source>
+        <target>Następne 15 dni</target>
+      </trans-unit>
+      <trans-unit id="DatePickerLast90">
+        <source>Últimos 90 días</source>
+        <target>Ostatnie 90 dni</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext120">
+        <source>Próximos 120 días</source>
+        <target>Następne 120 dni</target>
+      </trans-unit>
+      <trans-unit id="DatePickerAll">
+        <source>Todas</source>
+        <target>Wszystkie</target>
+      </trans-unit>
+      <trans-unit id="DatePickerBeforeTodayIncluded">
+        <source>Todo hasta hoy</source>
+        <target>Wszystko do dziś</target>
+      </trans-unit>
       <trans-unit id="noNameProvided">
         <source>Debe proporcionar un nombre para el datasource</source>
         <target>Musisz podać nazwę źródła danych</target>
@@ -5788,8 +5874,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Podsumowanie filtrów</target>
       </trans-unit>
       <trans-unit id="globalFilterSelectedItemsLabel">
-        <source>{0} items seleccionados</source>
-        <target>{0} wybranych elementów</target>
+        <source>items seleccionados</source>
+        <target>wybranych elementów</target>
       </trans-unit>
       <trans-unit id="copyPublicLinkTooltip">
         <source>Copiar enlace público</source>
@@ -5866,6 +5952,74 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="signInMicrosoft">
         <source>Continuar con Microsoft</source>
         <target>Kontynuuj z Microsoft</target>
+      </trans-unit>
+      <trans-unit id="whereMessage">
+        <source>Filtro sobre todos los registros</source>
+        <target>Filtr na wszystkie rekordy</target>
+      </trans-unit>
+      <trans-unit id="havingMessage">
+        <source>Filtro sobre los resultados</source>
+        <target>Filtr wyników</target>
+      </trans-unit>
+      <trans-unit id="aggregationText">
+        <source>Agregación</source>
+        <target>Agregacja</target>
+      </trans-unit>
+      <trans-unit id="textBetween">
+        <source>Entre</source>
+        <target>Wśród</target>
+      </trans-unit>
+      <trans-unit id="whereMessageLabel">
+        <source>Aplicar el filtro sobre todos los registros</source>
+        <target>Zastosuj filtr do wszystkich rekordów</target>
+      </trans-unit>
+      <trans-unit id="havingMessageLabel">
+        <source>Aplicar el filtro sobre los resultados</source>
+        <target>Zastosuj filtr do wyników</target>
+      </trans-unit>
+      <trans-unit id="customHtmlSaved">
+        <source>HTML personalizado guardado correctamente.</source>
+        <target>Niestandardowy kod HTML został poprawnie zapisany.</target>
+      </trans-unit>
+      <trans-unit id="advancedFilterTitle" datatype="html">
+        <source>Filtro avanzado</source>
+        <target>Zaawansowany filtr</target>
+      </trans-unit>
+      <trans-unit id="clearFiltersBtn" datatype="html">
+        <source>Limpiar</source>
+        <target>Wyczyść</target>
+      </trans-unit>
+      <trans-unit id="authorFilterLabel" datatype="html">
+        <source>Propietario</source>
+        <target>Właściciel</target>
+      </trans-unit>
+      <trans-unit id="authorFilterPlaceholder" datatype="html">
+        <source>Autor...</source>
+        <target>Autor...</target>
+      </trans-unit>
+      <trans-unit id="datasourceFilterLabel" datatype="html">
+        <source>Datasource</source>
+        <target>Źródło danych</target>
+      </trans-unit>
+      <trans-unit id="datasourceFilterPlaceholder" datatype="html">
+        <source>postgres, mysql...</source>
+        <target>postgres, mysql...</target>
+      </trans-unit>
+      <trans-unit id="createdFilterLabel" datatype="html">
+        <source>Creado en</source>
+        <target>Utworzono</target>
+      </trans-unit>
+      <trans-unit id="modifiedFilterLabel" datatype="html">
+        <source>Modificado en</source>
+        <target>Zmodyfikowano</target>
+      </trans-unit>
+      <trans-unit id="tagsFilterLabel" datatype="html">
+        <source>Tags</source>
+        <target>Tagi</target>
+      </trans-unit>
+      <trans-unit id="tagsFilterPlaceholder" datatype="html">
+        <source>Selecciona tags...</source>
+        <target>Wybierz tagi...</target>
       </trans-unit>
 </body>
 </file>

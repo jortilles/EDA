@@ -262,7 +262,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             values = this._preparePredictionValues(values, dataDescription, dataTypes, cfg, _predQueryLen, _hasPredCols);
         }
 
-        const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart, values, dataTypes, dataDescription, isbarline, null);
+        const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart, values, dataTypes, dataDescription, isbarline, cfg.numberOfColumns);
         if (chartData.length == 0) {
             chartData.push([], []);
         }
@@ -1182,7 +1182,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 } else if (_.isEqual(r.column_type, 'html')) {
                     tableColumns.push(new EdaColumnHtml({ header: r.display_name.default, field: label, description: r.description.default }));
                 } else if (_.isEqual(r.column_type, 'text')) {
-                    tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default }));
+                    let rangeOption = false;
+                    if(r.ranges === undefined) {
+                        tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default }));
+                    } else {
+                        if(r.ranges.length > 0) {
+                            rangeOption = true;
+                            tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default, rangeOption: rangeOption }));
+                        } else {
+                            tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default, rangeOption: rangeOption }));
+                        }
+                    }
                 } else if (_.isEqual(r.column_type, 'coordinate')) {
                     tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default }));
                 }

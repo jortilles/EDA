@@ -264,10 +264,12 @@ export const PanelInteractionUtils = {
             const table = ebp.tables.find(table => table.table_name === filter.filter_table);
             if (table) {
                 const column = table.columns?.find(column => column.column_name === filter.filter_column);
-                const columnInQuery = query.some(col => col.column_name === filter.filter_column);
+                const columnInQuery = query.some(col => ((col.column_name === filter.filter_column) && (col.table_id === filter.filter_table)));
                 if (!filter.isGlobal && !columnInQuery && column) {
-                    column.table_id?column.table_id=column.table_id:column.table_id=filter.filter_table;  /** Si no tengo la tabla se la pongo */
-                    ebp.filtredColumns.push(column);
+                    column.table_id ? column.table_id=column.table_id : column.table_id = filter.filter_table;  /** Si no tengo la tabla se la pongo */
+                    if (!ebp.filtredColumns.some((col: any) => col === column)) {
+                        ebp.filtredColumns.push(column);
+                    }
                 }
                 if (!column) {
                     console.warn('WARNING\nWARNING. YOU HAVE A COLUMN IN THE FILTERS NOT PRESENT IN THE MODEL!!!!!!!!!!!!\nWARNING');
@@ -304,7 +306,10 @@ export const PanelInteractionUtils = {
                 column.whatif_column = contentColumn.whatif_column || false;
                 column.whatif = contentColumn.whatif || {};
                 column.joins = contentColumn.joins || [];
-                if(column.column_type!= contentColumn.column_type){
+                column.ranges = contentColumn.ranges || [];
+                if(column.ranges.length > 0){
+                  column.column_type = 'text';
+                } else if(column.column_type != contentColumn.column_type){
                   column.old_column_type = column.column_type;
                   column.column_type = contentColumn.column_type;
                 }
@@ -413,7 +418,13 @@ export const PanelInteractionUtils = {
             handleColumn.joins = contentColumn.joins || [];
             handleColumn.ordenation_type = contentColumn.ordenation_type;
             handleColumn.autorelation = contentColumn.autorelation || false;
-
+            handleColumn.ranges = contentColumn.ranges || false;
+            
+            // Si posee Rango el column_type debe ser de tipo 'text'
+            if(handleColumn.ranges.length > 0){
+              handleColumn.column_type = 'text'
+            }
+            
             const existsAgg = handleColumn.aggregation_type.find((agg) => agg.value === contentColumn.aggregation_type);
             if (existsAgg) existsAgg.selected = true;
 
@@ -719,10 +730,11 @@ export const PanelInteractionUtils = {
         // Remove column is from rootTable then check currentQuery columns to allow or not.
         if (c.table_id === rootTable) {
           // If only there is 1 column of rootTable, check if panel have any globalFilter linked it.
-          if (ebp.currentQuery.map((query) => query.table_id == rootTable).length <= 1) {
+          if (ebp.currentQuery.filter((query) => query.table_id == rootTable).length <= 1) {
             if (ebp.globalFilters.some((filter) => filter.filter_table === rootTable)) {
+              event.stopPropagation();
               ebp.alertService.addError($localize`:@@removeColumnGlobalFilter:No se puede eliminar la columna porque hay vinculado un Filtro`);
-              throw '[Error]: Can not remove this column cause there is a GlobalFilter linked.'
+              return false;
             }
           }
         }

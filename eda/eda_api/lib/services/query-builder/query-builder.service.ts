@@ -59,7 +59,7 @@ export abstract class QueryBuilderService {
 
     }
 
-    abstract getFilters(filters, type: string);
+    abstract getFilters(filters, type: string, pTable: string);
     abstract getJoins(joinTree: any[], dest: any[], tables: Array<any>, 
         joinType:string, valueListJoins:Array<any>, schema?: string, database?: string);
     abstract getSeparedColumns(origin: string, dest: string[]);
@@ -68,7 +68,7 @@ export abstract class QueryBuilderService {
     abstract processFilter(filter: any, columnType: string);
     abstract normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[],
         grouping: any[], filters: any[], havingFilters: any[], tables: Array<any>, limit: number, 
-        joinType: string,groupByEnabled:boolean, valueListJoins:any[], Schema?: string, database?: string, forSelector?: any );
+        joinType: string,groupByEnabled:boolean, valueListJoins:any[], Schema?: string, database?: string, forSelector?: any, sortedFilters?: any[]  );
     abstract sqlQuery(query: string, filters: any[], filterMarks: string[]): string;
     abstract buildPermissionJoin(origin: string, join: string[], permissions: any[], schema?: string);
     abstract parseSchema(tables: string[], schema?: string, database?: string);
@@ -152,7 +152,9 @@ export abstract class QueryBuilderService {
         }
 
         /** ..........................PER ELS VALUE LISTS................................ */
-
+        
+        // Checkeo del rango, si existe, agrega los cambios, en otro caso todo continua igual
+        this.queryTODO = this.verifyRange(this.queryTODO);
 
         const filterTables = this.queryTODO.filters.map(filter => filter.filter_table);
 
@@ -315,12 +317,12 @@ export abstract class QueryBuilderService {
             let column =  this.queryTODO.fields.find(c=> f.filter_table == c.table_id && f.filter_column == c.column_name );
             if(column){
                 if(column.hasOwnProperty('aggregation_type')){
-                    return column.aggregation_type==='none' || [ 'not_null' , 'not_null_nor_empty' , 'null_or_empty'].includes( f.filter_type) ?true:false;
+                    return column.aggregation_type==='none' || [ 'not_null' , 'not_null_nor_empty' , 'null_or_empty'].includes( f.filter_type) ?true:false || f.filterBeforeGrouping;
                 }else{
                     return true;
                 }
             }else{
-                return true;
+                return f.filterBeforeGrouping;
             }
             });
 
@@ -343,9 +345,9 @@ export abstract class QueryBuilderService {
         const havingFilters = this.queryTODO.filters.filter(f => {
             const column = this.queryTODO.fields.find(e => e.table_id === f.filter_table &&   f.filter_column === e.column_name);
             if(column){
-            return column.column_type=='numeric' && column.aggregation_type!=='none'?true:false;
+            return (column.column_type=='numeric' && column.aggregation_type!=='none'?true:false) && !f.filterBeforeGrouping;
             }else{
-                return false;
+                return !f.filterBeforeGrouping;
             }
         }).filter(f=> ![ 'not_null' , 'not_null_nor_empty' , 'null_or_empty'].includes( f.filter_type));
 
@@ -355,8 +357,9 @@ export abstract class QueryBuilderService {
         const groupByEnabled = this.queryTODO.groupByEnabled !== undefined ? this.queryTODO.groupByEnabled : true;
         const schema = this.dataModel.ds.connection.schema || 'public'; 
         const database = this.dataModel.ds.connection.database; 
-        const forSelector = this.queryTODO.forSelector; 
+        const forSelector = this.queryTODO.forSelector;
         const fields = this.queryTODO.fields;
+        const sortedFilters = this.queryTODO.sortedFilters;
         if (this.queryTODO.simple) {
             this.query = this.simpleQuery(columns, origin);
             return this.query;
@@ -368,11 +371,139 @@ export abstract class QueryBuilderService {
         } else {
             this.query = this.normalQuery(
                 columns, origin, dest, joinTree, grouping,  filters, havingFilters, tables,
-                queryLimit, joinType, groupByEnabled,valueListJoins, schema, database, forSelector
+                queryLimit, joinType, groupByEnabled,valueListJoins, schema, database, forSelector, sortedFilters
             );
             return this.query;
         }
     }
+
+    public verifyRange(queryTODO: any){
+
+        queryTODO.fields.forEach( (fieldsColumn:any, j: number) => {
+            
+            if(fieldsColumn.ranges===undefined) {
+                
+                queryTODO.fields[j]=fieldsColumn;
+            } else {
+
+                if(fieldsColumn.ranges.length===0){
+                    queryTODO.fields[j]=fieldsColumn;
+                } else {
+
+                    fieldsColumn.computed_column = 'computed';
+                    fieldsColumn.column_type = 'text';
+        
+                    let identifiedColumn = `${fieldsColumn.table_id}.${fieldsColumn.column_name}`
+
+                    if(fieldsColumn.joins.length !== 0) { /** Los campos tienen un identificador único con puntos si provienen de una tabla unida table.column.table.column.*/
+                       let parts = identifiedColumn.split('.');  /** Nos quedamos con el primero y el último, que son los buenos.*/
+                       let newColumn = parts[0] + '.' + parts[parts.length - 1];
+                       identifiedColumn = newColumn;
+                    }
+
+                    let SQLexpression = "CASE\n";
+                
+                    // Primer caso: menor que el primer valor del rango.
+                    SQLexpression += `\tWHEN ${identifiedColumn} < ${fieldsColumn.ranges[0]} THEN '< ${fieldsColumn.ranges[0]}'\n`; 
+        
+                    // Casos intermedios: entre cada par de valores en el rango
+                    for (let i = 0; i < fieldsColumn.ranges.length - 1; i++) {
+                        const lower = fieldsColumn.ranges[i];
+                        const upper = fieldsColumn.ranges[i + 1] - 1;
+                        SQLexpression += `\tWHEN ${identifiedColumn} >= ${lower} AND ${identifiedColumn} <= ${upper} THEN ' ${lower} - ${upper}'\n`;
+                    }            
+        
+                    // Último caso: mayor o igual que el último valor del rango.
+                    SQLexpression += `\tWHEN ${identifiedColumn} >= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]} THEN '>= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]}'\n`;
+                    SQLexpression += "END";            
+        
+                    fieldsColumn.SQLexpression = SQLexpression;
+
+                    // Generando ordenamiento
+                    let rangesOrderExpression = "CASE\n";
+                    let rangesOrderExpressionNumber = 1;
+                    
+                    // Primer caso:
+                    rangesOrderExpression += `\tWHEN ${identifiedColumn} < ${fieldsColumn.ranges[0]} THEN ${rangesOrderExpressionNumber}\n`;
+
+                    // Caso del medio:
+                    for(let i = 0; i<fieldsColumn.ranges.length - 1; i++) {
+                        rangesOrderExpressionNumber += 1;
+                        const lower = fieldsColumn.ranges[i];
+                        const upper = fieldsColumn.ranges[i + 1] - 1;
+                        rangesOrderExpression += `\tWHEN ${identifiedColumn} >= ${lower} AND ${identifiedColumn} <= ${upper} THEN ${rangesOrderExpressionNumber}\n`;
+                    }
+
+                    // Ultimo caso:
+                    rangesOrderExpression += `\tWHEN ${identifiedColumn} >= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]} THEN  ${rangesOrderExpressionNumber + 1}\n`;
+                    rangesOrderExpression += "END";
+                    fieldsColumn.rangesOrderExpression = rangesOrderExpression;
+
+                    queryTODO[j] = fieldsColumn;
+
+                    // Agregación de ceros y valores nulos para campos que tienen agregaciones de: suma, recuento de valores y valores diferentes.
+
+                    let withRanges = "WITH ranges AS (\n";
+
+                    withRanges += `    SELECT '< ${fieldsColumn.ranges[0]}' as \`range\`\n`;
+
+                    for (let i = 0; i < fieldsColumn.ranges.length - 1; i++) {
+                        withRanges += `    UNION SELECT ' ${fieldsColumn.ranges[i]} - ${fieldsColumn.ranges[i + 1] - 1}'\n`;
+                    }
+
+                    withRanges += `    UNION SELECT '>= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]}'\n`;
+                    withRanges += ")\n";
+
+                    let coalesceRanges = `SELECT\n`;
+
+                    let coalesceRangesAux = '';
+                    queryTODO.fields.forEach( col => {
+                        if(col.ranges.length===0) {
+                            if(col.column_type==='numeric') {
+                                coalesceRangesAux += `    COALESCE(t.\`${col.display_name}\`, 0) AS \`${col.display_name}\`,\n`
+                            } else if(col.column_type==='text') {
+                                coalesceRangesAux += `    COALESCE(t.\`${col.display_name}\`, null) AS \`${col.display_name}\`,\n`
+                            } else {
+                                coalesceRangesAux += `    COALESCE(t.\`${col.display_name}\`, 0) AS \`${col.display_name}\`,\n` // Check dates
+                            }
+                        } else {
+                            coalesceRangesAux += `    r.range AS \`${fieldsColumn.display_name}\`,\n`;
+                        }
+                    })
+
+                    // Eliminando la última coma del salto de línea
+                    const lastCommaIndex = coalesceRangesAux.lastIndexOf(',\n');
+                    if (lastCommaIndex !== -1) {
+                        coalesceRangesAux = coalesceRangesAux.slice(0, lastCommaIndex) + coalesceRangesAux.slice(lastCommaIndex + 1);
+                    }
+
+                    coalesceRanges = coalesceRanges + coalesceRangesAux + `FROM ranges r\nLEFT JOIN(\n`;
+                    withRanges = withRanges + coalesceRanges
+                    fieldsColumn.withRanges = withRanges; // agregar withRanges en el campo del campo que tiene un rango
+
+                    let orderRanges = `\n) t ON r.range = t.\`${fieldsColumn.display_name}\`\nORDER BY\n`;
+                    orderRanges += `    CASE\n`;
+                    orderRanges += `        WHEN r.range = '< ${fieldsColumn.ranges[0]}' THEN 1\n`;
+
+                    // Generando caso intermedios
+                    for (let i = 0; i < fieldsColumn.ranges.length - 1; i++) {
+                        orderRanges += `        WHEN r.range = ' ${fieldsColumn.ranges[i]} - ${fieldsColumn.ranges[i + 1] - 1}' THEN ${i + 2}\n`;
+                    }
+
+                    // Agregue el último caso para valores mayores o iguales al último elemento.
+                    orderRanges += `        WHEN r.range = '>= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]}' THEN ${fieldsColumn.ranges.length + 1}\n`;
+                    orderRanges += `    END;`;
+
+                    fieldsColumn.orderRanges = orderRanges;
+
+                }
+
+            }
+
+        })
+
+        return queryTODO
+    }    
 
     public buildGraph() {
         const graph = [];
@@ -723,14 +854,18 @@ export abstract class QueryBuilderService {
 
     // not needed to filter relations. They are stored in a different array
     public findRelationsRecursive(tables, table, vMap) {
+        // Added safety check for table and relations to avoid TypeError
+        if (!table) return vMap;
         vMap.set(table.table_name, table);
-        table.relations
-            .forEach(rel => {
-                const newTable = tables.find(t => t.table_name === rel.target_table);
-                if (!vMap.has(newTable.table_name)) {
-                    this.findRelationsRecursive(tables, newTable, vMap);
-                }
-            });
+        if (table.relations) {
+            table.relations
+                .forEach(rel => {
+                    const newTable = tables.find(t => t.table_name === rel.target_table);
+                    if (newTable && !vMap.has(newTable.table_name)) {
+                        this.findRelationsRecursive(tables, newTable, vMap);
+                    }
+                });
+        }
         return vMap;
     }
 
@@ -773,8 +908,34 @@ export abstract class QueryBuilderService {
         return col;
     }
 
-    public findHavingColumn(table: string, column: string) {
-        return this.queryTODO.fields.find((f: any)=> f.table_id === table && f.column_name === column);
+    public findHavingColumn( havingFilter:any) {
+        
+
+        if(this.queryTODO.fields.find((f: any)=> f.table_id === havingFilter.filter_table && 
+                                            f.filter === havingFilter.filter_column)){
+            return this.queryTODO.fields.find((f: any)=> f.table_id === havingFilter.filter_table && 
+                                             f.filter === havingFilter.filter_column);
+        }else{
+
+            return  { // devolvemos una columna ficticia con los valores que necesitamos para hacer el having
+                table_id: havingFilter.filter_table ,
+                column_name: havingFilter.filter_column,
+                display_name: havingFilter.filter_column,
+                column_type: havingFilter.filter_column_type,
+                old_column_type: havingFilter.filter_column_type,
+                aggregation_type: havingFilter.aggregation_type,
+                ordenation_type: 'Asc',
+                order: 1,
+                column_granted_roles: [],
+                row_granted_roles: [],
+                tableCount: 0,
+                minimumFractionDigits: 0,
+                whatif_column: false,
+                whatif: {},
+                joins: [],
+                autorelation: false
+            }
+        }
     }
 
     public setFilterType(filter: string) {

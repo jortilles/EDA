@@ -170,20 +170,19 @@ eda-blank-panel :root {
   margin-top: 13px;
 }
 
-::ng-deep .p-tree .p-treenode-content {
-  padding-left: 0 !important;
+/* Árbol EDA2 — scroll lateral */
+::ng-deep .eda-tree-scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+}
+::ng-deep .eda-tree-scroll .p-tree {
+  min-width: max-content;
 }
 
-::ng-deep .p-tree .p-treenode[aria-level="1"] > .p-treenode-content {
-  padding-left: 0.5rem !important;
-}
-
-::ng-deep .p-tree .p-treenode[aria-level="2"] > .p-treenode-content {
+/* Indentación: Tailwind resetea padding en <ul>, lo forzamos aquí.
+   PrimeNG acumula el padding en cada .p-treenode-children anidado. */
+::ng-deep .eda-tree-scroll .p-treenode-children {
   padding-left: 1.5rem !important;
-}
-
-::ng-deep .p-tree .p-treenode[aria-level="3"] > .p-treenode-content {
-  padding-left: 2.5rem !important;
 }
 
 
@@ -604,6 +603,41 @@ span.state-label {
   max-height: 55vh;
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+.overflow-x-hidden {
+  overflow-x: hidden;
+}
+
+.grid-item {
+  display: block;
+  width: 100%;
+}
+
+.table-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: normal;
+}
+
+.summary-section {
+  padding: 0.75rem 1rem;
+}
+
+.summary-section-title {
+  margin-bottom: 0.5rem;
+}
+
+.summary-item {
+  display: block;
+  width: 100%;
+  padding: 0.2rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.summary-item:last-child {
+  border-bottom: none;
 }
 
 #chartSelector .p-dropdown-panel .p-dropdown-items-wrapper,

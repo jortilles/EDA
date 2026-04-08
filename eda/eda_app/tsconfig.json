@@ -23,7 +23,9 @@
       "typeRoots": ["node_modules/@types"],
       "types": ["node"],
       "lib": ["es2022", "dom"],
-      "useDefineForClassFields": false
+      "useDefineForClassFields": false,
+      "strict": false,
+      "strictPropertyInitialization": false
     },
     "angularCompilerOptions": {
       "strictTemplates": true,

@@ -189,8 +189,7 @@ export class GroupController {
       // Actualizar campos
       group.name = body.name;
       group.users = body.users;
-      group.role = body.role;
-
+      req.params.id === '135792467811111111111110' ? group.role = 'EDA_ADMIN_ROLE' : group.role = 'EDA_USER_ROLE';
       // Guardar grupo
       const groupSaved = await group.save();
 

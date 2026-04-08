@@ -669,22 +669,6 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <context context-type="linenumber">11</context>
 </context-group>
 </trans-unit>
-<trans-unit id="deleteDates" datatype="html">
-<source> Todas </source>
-<target> All </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
-<context context-type="linenumber">36</context>
-</context-group>
-</trans-unit>
-<trans-unit id="yesterday" datatype="html">
-<source> Ayer </source>
-<target> Yesterday </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
-<context context-type="linenumber">38</context>
-</context-group>
-</trans-unit>
 <trans-unit id="thisWeek" datatype="html">
 <source> Ésta semana </source>
 <target> This week </target>
@@ -3220,6 +3204,51 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>Dashboards mail sending</target>
 </trans-unit>
 
+<trans-unit id="noFormatsAvailable">
+<source>Esta es una columna calculada y no tiene opciones de formato disponibles</source>
+<target>This is a calculated column and has no format options available</target>
+</trans-unit>
+
+<trans-unit id="editCalculatedField">
+<source>Edición de campo calculado</source>
+<target>Edit calculated field</target>
+</trans-unit>
+
+<trans-unit id="deleteCalculatedColumn">
+<source>Si, Eliminar el campo calculado!</source>
+<target>Yes, delete the calculated field!</target>
+</trans-unit>
+
+<trans-unit id="deleteCalculatedColumnConfirmation">
+<source>Campo calculado eliminado correctamente. Debera guardar cambios en el modelo de datos para que la eliminación sea permanente</source>
+<target>Calculated field deleted successfully. You must save changes in the data model for the deletion to be permanent</target>
+</trans-unit>
+
+<trans-unit id="DeleteGroupCancel">
+<source>Cancelar</source>
+<target>Cancel</target>
+</trans-unit>
+
+<trans-unit id="formDialogCalculatedColumn">
+<source>Recuerde rellenar todos los campos</source>
+<target>Please fill in all fields</target>
+</trans-unit>
+
+<trans-unit id="mandatoryDiferentName">
+<source>Este nombre de campo calculado ya existe. Intente con otro.</source>
+<target>This calculated field name already exists. Please try another.</target>
+</trans-unit>
+
+<trans-unit id="titleCalculatedColumnEditMessage">
+<source>Campo calculado actualizado correctamente</source>
+<target>Calculated field updated successfully</target>
+</trans-unit>
+
+<trans-unit id="textCalculatedColumnEditMessage">
+<source>IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entrar en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe</source>
+<target>IMPORTANT: When modifying an existing calculated field, panels using it are not updated automatically. You must enter the configuration of each one, click Execute and save the report</target>
+</trans-unit>
+
 <trans-unit id="cumulativeSum">
 <source>Suma acumulativa   </source>
 <target>Cumulative sum </target>
@@ -3274,6 +3303,11 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <trans-unit id="columnsTooltip">
 <source>Elige cuantas columnas quieres mostrar</source>
 <target>Choose how many columns you want to display</target>
+</trans-unit>
+
+<trans-unit id="histogramColumDescription">
+<source>Elige cuántas columnas mostrar en el histograma</source>
+<target>Choose how many columns to display in the histogram</target>
 </trans-unit>
 
 <trans-unit id="showLabels">
@@ -5274,6 +5308,11 @@ Once configured you can invoke it whenever you want from the button.</target>
 </trans-unit>
 
 
+<trans-unit id="cannotRemoveLastColumn">
+<source>No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.</source>
+<target>Cannot remove all columns from the root table without removing the dependent columns.</target>
+</trans-unit>
+
 <trans-unit id="removeColumnGlobalFilter">
 <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
 <target>The column can not be removed because it has a linked filter</target>
@@ -5717,6 +5756,54 @@ OR<ph id="5"/>
   <source>Próximo año</source>
   <target>Next year</target>
 </trans-unit>
+<trans-unit id="DatePickerYesterday">
+  <source>Ayer</source>
+  <target>Yesterday</target>
+</trans-unit>
+<trans-unit id="DatePickerTomorrow">
+  <source>Mañana</source>
+  <target>Tomorrow</target>
+</trans-unit>
+<trans-unit id="DatePickerPastTomorrow">
+  <source>Pasado mañana</source>
+  <target>Day after tomorrow</target>
+</trans-unit>
+<trans-unit id="DatePickerLastQuarter">
+  <source>Último trimestre</source>
+  <target>Last quarter</target>
+</trans-unit>
+<trans-unit id="DatePickerThisQuarter">
+  <source>Este trimestre</source>
+  <target>This quarter</target>
+</trans-unit>
+<trans-unit id="DatePickerNext3">
+  <source>Próximos 3 días</source>
+  <target>Next 3 days</target>
+</trans-unit>
+<trans-unit id="DatePickerNext7">
+  <source>Próximos 7 días</source>
+  <target>Next 7 days</target>
+</trans-unit>
+<trans-unit id="DatePickerNext15">
+  <source>Próximos 15 días</source>
+  <target>Next 15 days</target>
+</trans-unit>
+<trans-unit id="DatePickerLast90">
+  <source>Últimos 90 días</source>
+  <target>Last 90 days</target>
+</trans-unit>
+<trans-unit id="DatePickerNext120">
+  <source>Próximos 120 días</source>
+  <target>Next 120 days</target>
+</trans-unit>
+<trans-unit id="DatePickerAll">
+  <source>Todas</source>
+  <target>All</target>
+</trans-unit>
+<trans-unit id="DatePickerBeforeTodayIncluded">
+  <source>Todo hasta hoy</source>
+  <target>Everything up to today</target>
+</trans-unit>
 <trans-unit id="noNameProvided">
   <source>Debe proporcionar un nombre para el datasource</source>
   <target>You must provide a name for the data source</target>
@@ -5876,8 +5963,8 @@ OR<ph id="5"/>
   <target>Filters Summary</target>
 </trans-unit>
 <trans-unit id="globalFilterSelectedItemsLabel">
-  <source>{0} items seleccionados</source>
-  <target>{0} items selected</target>
+  <source>items seleccionados</source>
+  <target>items selected</target>
 </trans-unit>
 <trans-unit id="signInSAML">
   <source>Continuar con SAML</source>
@@ -5954,6 +6041,74 @@ OR<ph id="5"/>
 <trans-unit id="AIManagement" datatype="html">
   <source>Gestión del asistente</source>
   <target>Assistant Management</target>
+</trans-unit>
+<trans-unit id="whereMessage">
+  <source>Filtro sobre todos los registros</source>
+  <target>Filter on all records</target>
+</trans-unit>
+<trans-unit id="havingMessage">
+  <source>Filtro sobre los resultados</source>
+  <target>Filter on results</target>
+</trans-unit>
+<trans-unit id="aggregationText">
+  <source>Agregación</source>
+  <target>Aggregation</target>
+</trans-unit>
+<trans-unit id="textBetween">
+  <source>Entre</source>
+  <target>Between</target>
+</trans-unit>
+<trans-unit id="whereMessageLabel">
+  <source>Aplicar el filtro sobre todos los registros</source>
+  <target>Apply filter on all records</target>
+</trans-unit>
+<trans-unit id="havingMessageLabel">
+  <source>Aplicar el filtro sobre los resultados</source>
+  <target>Apply filter on results</target>
+</trans-unit>
+<trans-unit id="customHtmlSaved">
+  <source>HTML personalizado guardado correctamente.</source>
+  <target>Custom HTML saved correctly.</target>
+</trans-unit>
+<trans-unit id="advancedFilterTitle" datatype="html">
+  <source>Filtro avanzado</source>
+  <target>Advanced filter</target>
+</trans-unit>
+<trans-unit id="clearFiltersBtn" datatype="html">
+  <source>Limpiar</source>
+  <target>Clear</target>
+</trans-unit>
+<trans-unit id="authorFilterLabel" datatype="html">
+  <source>Propietario</source>
+  <target>Owner</target>
+</trans-unit>
+<trans-unit id="authorFilterPlaceholder" datatype="html">
+  <source>Autor...</source>
+  <target>Author...</target>
+</trans-unit>
+<trans-unit id="datasourceFilterLabel" datatype="html">
+  <source>Datasource</source>
+  <target>Datasource</target>
+</trans-unit>
+<trans-unit id="datasourceFilterPlaceholder" datatype="html">
+  <source>postgres, mysql...</source>
+  <target>postgres, mysql...</target>
+</trans-unit>
+<trans-unit id="createdFilterLabel" datatype="html">
+  <source>Creado en</source>
+  <target>Created at</target>
+</trans-unit>
+<trans-unit id="modifiedFilterLabel" datatype="html">
+  <source>Modificado en</source>
+  <target>Modified at</target>
+</trans-unit>
+<trans-unit id="tagsFilterLabel" datatype="html">
+  <source>Tags</source>
+  <target>Tags</target>
+</trans-unit>
+<trans-unit id="tagsFilterPlaceholder" datatype="html">
+  <source>Selecciona tags...</source>
+  <target>Select tags...</target>
 </trans-unit>
 </body>
 </file>
