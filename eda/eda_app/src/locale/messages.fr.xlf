@@ -6336,8 +6336,8 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Selecciona tags...</source>
         <target>Sélectionner des tags...</target>
       </trans-unit>
-      <trans-unit id="fetAmb" datatype="html">
-        <source> FET AMB </source>
+      <trans-unit id="hechoCon" datatype="html">
+        <source> HECHO CON </source>
         <target> FAIT AVEC </target>
       </trans-unit>
       <trans-unit id="adminPortal" datatype="html">
