@@ -107,6 +107,7 @@ export class MainLeftSidebarComponent {
       { path: '/admin/email-settings', label: $localize`:@@adminEmail:Gestión de email`, icon: 'at-symbol' },
       { path: '/logs', label: $localize`:@@logsManagement:Gestión de logs`, icon: 'clipboard-document-list' },
       { path: '/admin/ai-settings', label: $localize`:@@AIManagement:Gestión del asistente`, icon: 'sparkles-ai' },
+      { path: '/portal', label: $localize`:@@adminPortal:Portal`, icon: 'global' },
     );
   } else if (this.userService.isDataSourceCreator) {
     moleculaSection.items.unshift(

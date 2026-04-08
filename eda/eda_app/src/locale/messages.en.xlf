@@ -6090,6 +6090,14 @@ OR<ph id="5"/>
   <source>Selecciona tags...</source>
   <target>Select tags...</target>
 </trans-unit>
+<trans-unit id="fetAmb" datatype="html">
+  <source> FET AMB </source>
+  <target> MADE WITH </target>
+</trans-unit>
+<trans-unit id="adminPortal" datatype="html">
+  <source>Portal</source>
+  <target>Portal</target>
+</trans-unit>
 </body>
 </file>
 </xliff>
