@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { lastValueFrom } from 'rxjs';
 import { AlertService, SpinnerService } from '@eda/services/service.index';
 import { ChatgptService } from '@eda/services/api/chatgpt.service';
+import { IaFormStateService } from '@eda/services/shared/IaFormState.service';
 
 @Component({
   selector: 'app-ai-management',
@@ -17,6 +18,8 @@ export class AiManagementPage implements OnInit {
   private alertService = inject(AlertService);
   private chatgptService = inject(ChatgptService);
   private spinnerService = inject(SpinnerService);
+  private iaFormStateService = inject(IaFormStateService)
+
 
   isSubmitting = signal(false);
   availableEnabled = signal(false);
@@ -77,6 +80,7 @@ export class AiManagementPage implements OnInit {
       if (payload.API_KEY === this.API_KEY_PLACEHOLDER) {
         delete payload.API_KEY;
       }
+      this.iaFormStateService.setFormData(payload); 
       await lastValueFrom(this.chatgptService.saveConfig(payload));
       this.alertService.addSuccess($localize`:@@aiConfigSaved:Configuración de IA guardada correctamente`);
     } catch (err: any) {

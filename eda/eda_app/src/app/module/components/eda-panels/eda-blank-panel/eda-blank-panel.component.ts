@@ -31,6 +31,8 @@ import { EdaChartType, FilterType, OrdenationType} from '@eda/services/service.i
 import { DashboardService, ChartUtilsService, AlertService, SpinnerService, FileUtiles, QueryBuilderService, UserService } from '@eda/services/service.index';
 import { GroupService } from '../../../../services/api/group.service';
 import { QueryService } from '@eda/services/api/query.service';
+import { IaFormStateService } from '@eda/services/shared/IaFormState.service'; 
+
 // Standalone components
 import { EdaDialog2Component, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent, EdaContextMenuComponent} from '@eda/shared/components/shared-components.index';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
@@ -305,9 +307,11 @@ export class EdaBlankPanelComponent implements OnInit {
 
     private route = inject(ActivatedRoute);
     private formBuilder = inject(UntypedFormBuilder);
+    private iaFormStateService = inject(IaFormStateService);
 
 
     public editingTitle: boolean = false;
+    public promptAvailable: boolean = false;
 
 
     constructor(
@@ -396,6 +400,9 @@ export class EdaBlankPanelComponent implements OnInit {
             {height: '100%', width: '100%'};
         
         if(this.sortedFilters === undefined) this.sortedFilters = []; // Si se trata de un informe antiguo, definimos el informe como vacío.
+
+
+        this.promptAvailable = this.iaFormStateService.formData().AVAILABLE;
     }
     
     /**
