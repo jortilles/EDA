@@ -854,7 +854,7 @@ public tableNodeExpand(event: any): void {
 
         const allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
 
-        if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
+        if (!_.isEqual(this.display_v.chart, 'no_data') && allow && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
 
             // Preservar assignedColors, coloredBarsConfig, showUniqueColors y uniqueBarColors antes del merge
