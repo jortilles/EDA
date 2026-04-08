@@ -82,6 +82,8 @@ import { dynamicTextDialogComponent } from '@eda/components/component.index';
 import { TableDialogComponent } from '@eda/components/component.index';
 import { TableGradientDialogComponent } from '@eda/components/component.index';
 import { KpiEditDialogComponent } from '@eda/components/component.index';
+import { IaFormStateService } from '@eda/services/shared/IaFormState.service';
+
 export interface IPanelAction {
     code: string;
     data: any;
@@ -274,6 +276,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public queryFromServer: string = '';
 
     public promptMessages: ChatMessage[] = []; // Historial de mensajes.
+    public promptAvailable: boolean = false;
 
 
     // join types 
@@ -305,6 +308,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     private route = inject(ActivatedRoute);
     private formBuilder = inject(UntypedFormBuilder);
+    private iaFormStateService = inject(IaFormStateService)
 
 
     public editingTitle: boolean = false;
@@ -396,6 +400,9 @@ export class EdaBlankPanelComponent implements OnInit {
             {height: '100%', width: '100%'};
         
         if(this.sortedFilters === undefined) this.sortedFilters = []; // Si se trata de un informe antiguo, definimos el informe como vacío.
+
+        // Control de visualización del prompt de la IA
+        this.promptAvailable = this.iaFormStateService.formData().AVAILABLE;
     }
     
     /**
