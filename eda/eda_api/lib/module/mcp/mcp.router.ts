@@ -17,6 +17,8 @@ const MCP_PASSWORD: string = eda_api_config.mcp_password || process.env.MCP_PASS
 
 // --- Auth interno (sin HTTP) ---
 async function loginInternal(): Promise<string> {
+
+    console.log('config ', eda_api_config);
     console.log('[MCP] loginInternal — email:', MCP_EMAIL || '(vacío)', '| password configurado:', !!MCP_PASSWORD);
     if (!MCP_EMAIL || !MCP_PASSWORD) {
         throw new Error('MCP_EMAIL y MCP_PASSWORD no están configurados en el servidor.');
