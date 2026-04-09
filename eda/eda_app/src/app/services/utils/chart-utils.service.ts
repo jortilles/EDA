@@ -1576,7 +1576,7 @@ export class ChartUtilsService {
                         devicePixelRatio: 2,
                         layout: {
                             padding: {
-                                top: (showLabels || showLabelsPercent) ? 25 : 0
+                                top: (showLabels || showLabelsPercent) ? 60 : 0
                             }
                         },
                         tooltips: {
