@@ -686,7 +686,7 @@ export class DashboardController {
     try {
       const dashboard = await Dashboard.findById(req.params.id, 'config.visible').exec();
       if (!dashboard) return next(new HttpException(404, 'Dashboard not found'));
-      const isAccessible = dashboard.config.visible ===  'shared' || dashboard.config.visible ===  'public';
+      const isAccessible = dashboard.config.visible === 'open' || dashboard.config.visible === 'shared';
       return res.status(200).json({ isAccessible });
     } catch (err) {
       console.log(err);

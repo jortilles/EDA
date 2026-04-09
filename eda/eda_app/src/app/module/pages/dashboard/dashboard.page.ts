@@ -774,25 +774,58 @@ export class DashboardPage implements OnInit {
 
 
   createChartFilter(table: any, column: any, dataLabel: string, config: any): any {
-    const filter = {
-      id: `${table.table_name}_${column.column_name}`,
-      filter_id: `${table.table_name}_${column.column_name}`, 
-      isGlobal: true,
-      isAutocompleted: config.isAutocompleted ?? false,
-      applyToAll: config.applyToAll ?? true,
-      panelList: config.panelList.map((p) => p.id),
-      table: { label: table.display_name.default, value: table.table_name },
-      column: { 
-          label: column.display_name?.default || column.column_name, 
-          value: column
-      },
-      selectedItems: [dataLabel],
-      fromChart: true,
-      visible: 'public',
-      data: []
-    };
+
+    let allNonDynamics = this.edaPanels.filter((panel: any) => !panel.dynamicFilters)
     
-    return filter;
+    if(allNonDynamics.length === 0){
+      const filter = {
+        id: `${table.table_name}_${column.column_name}`,
+        filter_id: `${table.table_name}_${column.column_name}`, 
+        isGlobal: true,
+        isAutocompleted: config.isAutocompleted ?? false,
+        applyToAll: config.applyToAll ?? true,
+        panelList: config.panelList.map((p) => p.id),
+        table: { label: table.display_name.default, value: table.table_name },
+        column: { 
+            label: column.display_name?.default || column.column_name, 
+            value: column
+        },
+        selectedItems: [dataLabel],
+        fromChart: true,
+        visible: 'public',
+        data: []
+      };
+
+      return filter;
+
+    } else {
+      
+      let allNonDynamicsPanels = allNonDynamics.map(panel => panel.panel.id)
+
+      const filter = {
+        id: `${table.table_name}_${column.column_name}`,
+        filter_id: `${table.table_name}_${column.column_name}`, 
+        isGlobal: true,
+        isAutocompleted: config.isAutocompleted ?? false,
+        applyToAll: false,
+        panelList: config.panelList.filter((panel: any) => !panel.id.includes(allNonDynamicsPanels)).map((p: any) => p.id),
+        table: { label: table.display_name.default, value: table.table_name },
+        column: { 
+            label: column.display_name?.default || column.column_name, 
+            value: column
+        },
+        selectedItems: [dataLabel],
+        fromChart: true,
+        visible: 'public',
+        data: []
+      };
+
+      return filter;
+    }
+    
+      //FALSE ==> recogemos los paneles que no tengan habilitado el click 
+        // Modificar propiedades isGlobal? applyToAll? panelList? 
+
   }
 
   deleteDynamicFilter(chartToRemove: any, table: any, filterName: any) {

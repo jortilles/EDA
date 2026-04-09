@@ -603,9 +603,31 @@
                                   'bg-[#00BFB3] text-white': groupByEnabled,
                                   'bg-white text-black': !groupByEnabled
                                 }"
-                                class="w-fit px-3 py-2 border rounded-lg hover:bg-[#00BFB3] hover:text-white"
+                                class="w-10 px-3 py-2 border rounded-lg hover:bg-[#00BFB3] hover:text-white text-center"
                               >
                                 {{ groupByEnabled ? 'Si' : 'No' }}
+                              </button>
+                            </div>
+                          </div>
+
+                          <div class="grid grid-cols-4 items-center">
+                            <div class="col-span-2 ">
+                              <h3 class="text-base font-bold inline">
+                                Filtros dinámicos 
+                              </h3>
+                            </div>
+
+                            <div class="col-span-2">
+                              <button
+                                type="button"
+                                (click)="dynamicFiltersInteraction()"
+                                [ngClass]="{
+                                  'bg-[#00BFB3] text-white': dynamicFilters,
+                                  'bg-white text-black': !dynamicFilters
+                                }"
+                                class="w-10 px-3 py-2 border rounded-lg hover:bg-[#00BFB3] hover:text-white text-center"
+                              >
+                                {{ dynamicFilters ? 'Si' : 'No' }}
                               </button>
                             </div>
                           </div>

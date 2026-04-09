@@ -7,6 +7,7 @@ export const pagesV3Routes: Routes = [
   {
     path: '',
     component: PagesV3Component,  // Wrapper que contiene el layout principal
+    canActivate: [VerifyTokenGuard],
     children: [
       {
         path: '',
