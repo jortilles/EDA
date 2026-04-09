@@ -58,44 +58,39 @@ async function getAllDashboards(userId: string) {
 // --- Filtrado ia_visibility ---
 function filterDatasourceForAI(ds: any): any | null {
 
-    console.log('AAAAAAAAAAA')
-
-    console.log(`[MCP] Filtrando datasource ${ds._id} — metadata:`, ds?.ds?.metadata);
-
-    console.log(`[MCP] Filtrado datasource ${ds._id} — model:`, ds?.ds?.model);
-
-    console.log(`[MCP] Filtrado datasource ${ds._id} — ia_visibility:`, ds?.ds?.metadata?.ia_visibility);
-
-    console.log('AAAAAAAAAAA')
     const metadata = ds?.ds?.metadata ?? {};
+    const modelVisibility: string = metadata.ia_visibility ?? 'FULL';
     // Si el modelo completo está oculto, no lo pasamos
-    if (metadata.ia_visibility === 'NONE') return null;
+    if (modelVisibility === 'NONE') return null;
 
     const tables: any[] = ds?.ds?.model ?? [];
     const filteredTables = tables
-        .filter((table: any) => table.ia_visibility !== 'NONE')
+        .filter((table: any) => (table.ia_visibility ?? 'FULL') !== 'NONE')
         .map((table: any) => {
-            const filteredColumns = (table.columns ?? []).filter((col: any) => col.ia_visibility !== 'NONE');
+            const tableVisibility: string = table.ia_visibility ?? 'FULL';
+            const filteredColumns = (table.columns ?? []).filter((col: any) => (col.ia_visibility ?? 'FULL') !== 'NONE');
             // DECLARATION: solo nombre y tipo, sin descripción ni detalles extra
-            if (table.ia_visibility === 'DECLARATION') {
+            if (tableVisibility === 'DECLARATION') {
                 return {
                     name: table.table_name,
-                    ia_visibility: table.ia_visibility,
+                    ia_visibility: tableVisibility,
                     columns: filteredColumns.map((col: any) => ({
                         name: col.column_name,
                         type: col.column_type,
-                        ia_visibility: col.ia_visibility,
+                        ia_visibility: col.ia_visibility ?? 'FULL',
                     })),
                 };
             }
             // FULL: tabla con columnas filtradas (columnas DECLARATION solo nombre+tipo)
             return {
                 ...table,
+                ia_visibility: tableVisibility,
                 columns: filteredColumns.map((col: any) => {
-                    if (col.ia_visibility === 'DECLARATION') {
-                        return { name: col.column_name, type: col.column_type, ia_visibility: col.ia_visibility };
+                    const colVisibility: string = col.ia_visibility ?? 'FULL';
+                    if (colVisibility === 'DECLARATION') {
+                        return { name: col.column_name, type: col.column_type, ia_visibility: colVisibility };
                     }
-                    return col;
+                    return { ...col, ia_visibility: colVisibility };
                 }),
             };
         });
@@ -103,7 +98,7 @@ function filterDatasourceForAI(ds: any): any | null {
     return {
         _id: ds._id,
         model_name: metadata.model_name,
-        ia_visibility: metadata.ia_visibility,
+        ia_visibility: modelVisibility,
         tables: filteredTables,
     };
 }
@@ -154,11 +149,10 @@ function createMcpServer() {
         { description: 'Lista los datasources accesibles en EDA (excluye los marcados como NONE en ia_visibility).' },
         async () => {
             try {
-                    console.log('BBBB')
                 await loginInternal();
                 const datasources = await DataSource.find({}, 'ds.metadata').exec();
                 const lines = datasources
-                    .filter((ds: any) => ds.ds?.metadata?.ia_visibility !== 'NONE')
+                    .filter((ds: any) => (ds.ds?.metadata?.ia_visibility ?? 'FULL') !== 'NONE')
                     .map((ds: any) => `  - [${ds._id}] ${ds.ds?.metadata?.model_name ?? '(sin nombre)'} [${ds.ds?.metadata?.ia_visibility ?? 'FULL'}]`);
                 return {
                     content: [{
@@ -179,7 +173,6 @@ function createMcpServer() {
             inputSchema: { id: z.string().describe('ID del datasource a consultar') },
         },
         async (args: any) => {
-                console.log('CCCCC')
             const id: string = args.id;
             try {
                 await loginInternal();
