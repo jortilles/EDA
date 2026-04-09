@@ -46,7 +46,7 @@ router.use('/auth', AuthRouter);
 
 router.use('/customHTML', CustomHTMLRouter);
 
-router.use('/ia/mcp', McpRouter);
+router.use('/ia', McpRouter);
 
 /* ruta per documentació*/
 router.use("/api-docs", DocuRouter);
