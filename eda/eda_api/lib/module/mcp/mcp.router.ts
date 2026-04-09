@@ -27,7 +27,6 @@ async function loginInternal(): Promise<string> {
     console.log('[MCP] Usuario encontrado:', user ? user.email : 'NO ENCONTRADO');
     if (!user) throw new Error(`Usuario no encontrado: ${MCP_EMAIL}`);
     const passwordOk = bcrypt.compareSync(MCP_PASSWORD, user.password);
-    console.log('[MCP] Password correcto:', passwordOk);
     if (!passwordOk) throw new Error('Credenciales incorrectas.');
     user.password = ':)';
     return jwt.sign({ user }, SEED, { expiresIn: 14400 });
@@ -58,6 +57,16 @@ async function getAllDashboards(userId: string) {
 
 // --- Filtrado ia_visibility ---
 function filterDatasourceForAI(ds: any): any | null {
+
+    console.log('AAAAAAAAAAA')
+
+    console.log(`[MCP] Filtrando datasource ${ds._id} — metadata:`, ds?.ds?.metadata);
+
+    console.log(`[MCP] Filtrado datasource ${ds._id} — model:`, ds?.ds?.model);
+
+    console.log(`[MCP] Filtrado datasource ${ds._id} — ia_visibility:`, ds?.ds?.metadata?.ia_visibility);
+
+    console.log('AAAAAAAAAAA')
     const metadata = ds?.ds?.metadata ?? {};
     // Si el modelo completo está oculto, no lo pasamos
     if (metadata.ia_visibility === 'NONE') return null;
@@ -145,6 +154,7 @@ function createMcpServer() {
         { description: 'Lista los datasources accesibles en EDA (excluye los marcados como NONE en ia_visibility).' },
         async () => {
             try {
+                    console.log('BBBB')
                 await loginInternal();
                 const datasources = await DataSource.find({}, 'ds.metadata').exec();
                 const lines = datasources
@@ -169,6 +179,7 @@ function createMcpServer() {
             inputSchema: { id: z.string().describe('ID del datasource a consultar') },
         },
         async (args: any) => {
+                console.log('CCCCC')
             const id: string = args.id;
             try {
                 await loginInternal();
