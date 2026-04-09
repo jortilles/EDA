@@ -18,7 +18,6 @@ const MCP_PASSWORD: string = eda_api_config.mcp_password || '';
 // --- Auth interno (sin HTTP) ---
 async function loginInternal(): Promise<string> {
 
-    console.log('config ', eda_api_config);
     console.log('[MCP] loginInternal — email:', MCP_EMAIL || '(vacío)', '| password configurado:', !!MCP_PASSWORD);
     if (!MCP_EMAIL || !MCP_PASSWORD) {
         throw new Error('MCP_EMAIL y MCP_PASSWORD no están configurados en el servidor.');
@@ -63,12 +62,12 @@ function filterDatasourceForAI(ds: any): any | null {
     // Si el modelo completo está oculto, no lo pasamos
     if (modelVisibility === 'NONE') return null;
 
-    const tables: any[] = ds?.ds?.model ?? [];
+    const tables: any[] = Array.isArray(ds?.ds?.model) ? ds.ds.model : [];
     const filteredTables = tables
         .filter((table: any) => (table.ia_visibility ?? 'FULL') !== 'NONE')
         .map((table: any) => {
             const tableVisibility: string = table.ia_visibility ?? 'FULL';
-            const filteredColumns = (table.columns ?? []).filter((col: any) => (col.ia_visibility ?? 'FULL') !== 'NONE');
+            const filteredColumns = (Array.isArray(table.columns) ? table.columns : []).filter((col: any) => (col.ia_visibility ?? 'FULL') !== 'NONE');
             // DECLARATION: solo nombre y tipo, sin descripción ni detalles extra
             if (tableVisibility === 'DECLARATION') {
                 return {
@@ -201,7 +200,7 @@ function createMcpServer() {
                 if (!db) return { content: [{ type: 'text', text: `Dashboard no encontrado: ${id}` }], isError: true };
 
                 const lines: string[] = [`# ${db.config?.title ?? '(sin título)'}`, ''];
-                const panels = db.config?.panel ?? [];
+                const panels = Array.isArray(db.config?.panel) ? db.config.panel : [];
                 if (panels.length === 0) lines.push('(sin panels)');
 
                 for (const panel of panels) {
