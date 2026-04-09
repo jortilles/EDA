@@ -6021,6 +6021,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Selecciona tags...</source>
         <target>Wybierz tagi...</target>
       </trans-unit>
+      <trans-unit id="hechoCon" datatype="html">
+        <source> HECHO CON </source>
+        <target> ZROBIONE Z </target>
+      </trans-unit>
+      <trans-unit id="adminPortal" datatype="html">
+        <source>Portal de datos</source>
+        <target>Portal danych</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

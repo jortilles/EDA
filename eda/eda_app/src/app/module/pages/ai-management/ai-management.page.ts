@@ -79,7 +79,6 @@ export class AiManagementPage implements OnInit {
       if (payload.API_KEY === this.API_KEY_PLACEHOLDER) {
         delete payload.API_KEY;
       }
-      // Almacenando la información del formulario configurado.
       this.iaFormStateService.setFormData(payload); 
       await lastValueFrom(this.chatgptService.saveConfig(payload));
       this.alertService.addSuccess($localize`:@@aiConfigSaved:Configuración de IA guardada correctamente`);

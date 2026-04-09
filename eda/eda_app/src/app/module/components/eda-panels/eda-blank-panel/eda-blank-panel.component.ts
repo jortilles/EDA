@@ -31,6 +31,8 @@ import { EdaChartType, FilterType, OrdenationType} from '@eda/services/service.i
 import { DashboardService, ChartUtilsService, AlertService, SpinnerService, FileUtiles, QueryBuilderService, UserService } from '@eda/services/service.index';
 import { GroupService } from '../../../../services/api/group.service';
 import { QueryService } from '@eda/services/api/query.service';
+import { IaFormStateService } from '@eda/services/shared/IaFormState.service'; 
+
 // Standalone components
 import { EdaDialog2Component, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent, EdaContextMenuComponent} from '@eda/shared/components/shared-components.index';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
@@ -82,7 +84,6 @@ import { dynamicTextDialogComponent } from '@eda/components/component.index';
 import { TableDialogComponent } from '@eda/components/component.index';
 import { TableGradientDialogComponent } from '@eda/components/component.index';
 import { KpiEditDialogComponent } from '@eda/components/component.index';
-import { IaFormStateService } from '@eda/services/shared/IaFormState.service';
 
 export interface IPanelAction {
     code: string;
@@ -276,8 +277,6 @@ export class EdaBlankPanelComponent implements OnInit {
     public queryFromServer: string = '';
 
     public promptMessages: ChatMessage[] = []; // Historial de mensajes.
-    public promptAvailable: boolean = false;
-
 
     // join types 
     joinTypeOptions: any[] = [
@@ -308,10 +307,11 @@ export class EdaBlankPanelComponent implements OnInit {
 
     private route = inject(ActivatedRoute);
     private formBuilder = inject(UntypedFormBuilder);
-    private iaFormStateService = inject(IaFormStateService)
+    private iaFormStateService = inject(IaFormStateService);
 
 
     public editingTitle: boolean = false;
+    public promptAvailable: boolean = false;
 
 
     constructor(

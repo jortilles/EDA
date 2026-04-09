@@ -6387,6 +6387,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Selecciona tags...</source>
         <target>Selecciona etiquetes...</target>
       </trans-unit>
+      <trans-unit id="hechoCon" datatype="html">
+        <source> HECHO CON </source>
+        <target> FET AMB </target>
+      </trans-unit>
+      <trans-unit id="adminPortal" datatype="html">
+        <source>Portal de datos</source>
+        <target>Portal de dades</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

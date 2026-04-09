@@ -179,7 +179,7 @@ export class DashboardSidebarComponent {
         icon: "pi pi-filter",
         command: () => this.toggleGlobalFilter(),
         items: this.dashboard.globalFilter.globalFilters.map(f => ({
-          label: f?.selectedColumn?.description?.default || f?.column?.value?.description?.default,
+          label: f?.selectedColumn?.display_name?.default || f?.column?.value?.description?.default,
           icon: "pi pi-check",
           command: () => this.handleSpecificFilter(f),
         }),
