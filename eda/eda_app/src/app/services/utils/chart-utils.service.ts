@@ -1574,6 +1574,11 @@ export class ChartUtilsService {
                         responsive: true,
                         maintainAspectRatio: false,
                         devicePixelRatio: 2,
+                        layout: {
+                            padding: {
+                                top: (showLabels || showLabelsPercent) ? 60 : 0
+                            }
+                        },
                         tooltips: {
                             enabled: true,
                             callbacks: {
@@ -1634,6 +1639,8 @@ export class ChartUtilsService {
                                 },
                                 display: true,
                                 grace: (showLabels || showLabelsPercent )?'1%': '0%',
+                                min: 0,
+                                max: 100,
                                 ticks: {
                                     autoSkip: true,
                                     color: colorStyle,
