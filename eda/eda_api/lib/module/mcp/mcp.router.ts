@@ -65,12 +65,17 @@ function filterDatasourceForAI(ds: any): any | null {
     // Si el modelo completo está oculto, no lo pasamos
     if (modelVisibility === 'NONE') return null;
 
-    const tables: any[] = Array.isArray(raw?.ds?.model) ? raw.ds.model : [];
+    const modelRaw = raw?.ds?.model;
+    const tables: any[] = Array.isArray(modelRaw)
+        ? modelRaw
+        : (modelRaw && typeof modelRaw === 'object' ? Object.values(modelRaw) : []);
     const filteredTables = tables
         .filter((table: any) => (table.ia_visibility ?? 'FULL') !== 'NONE')
         .map((table: any) => {
             const tableVisibility: string = table.ia_visibility ?? 'FULL';
-            const filteredColumns = (Array.isArray(table.columns) ? table.columns : []).filter((col: any) => (col.ia_visibility ?? 'FULL') !== 'NONE');
+            const colsRaw = table.columns;
+            const allColumns: any[] = Array.isArray(colsRaw) ? colsRaw : (colsRaw && typeof colsRaw === 'object' ? Object.values(colsRaw) : []);
+            const filteredColumns = allColumns.filter((col: any) => (col.ia_visibility ?? 'FULL') !== 'NONE');
             // DECLARATION: solo nombre y tipo, sin descripción ni detalles extra
             if (tableVisibility === 'DECLARATION') {
                 return {
