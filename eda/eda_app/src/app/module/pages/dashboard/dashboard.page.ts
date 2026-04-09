@@ -105,6 +105,7 @@ export class DashboardPage implements OnInit {
   public panelTabText: any;
   public panelTabAlign: any;
   public panelContent: any;
+  public gridsterItemStyle: any;
   public availableChatGpt: any = false;
   public height: number = 1000;
   public toLitle: boolean = false;
@@ -387,13 +388,24 @@ export class DashboardPage implements OnInit {
     };
 
     // Panel del título del chart
+    const bgImage = this.dashboard.config.styles.backgroundImage;
     this.backgroundColor = {
-      background: this.dashboard.config.styles.backgroundColor, 
+      background: this.dashboard.config.styles.backgroundColor,
+      ...(bgImage ? {
+        'background-image': `url(${bgImage})`,
+        'background-size': '100% auto',
+        'background-position': 'top center',
+        'background-repeat': 'repeat-y'
+      } : {})
     };
+
+    // Si hay imagen de fondo, los paneles se muestran con 80% de opacidad
+    const panelBg = bgImage
+      ? this.hexColorToRgba(this.dashboard.config.styles.panelColor, 0.5)
+      : this.dashboard.config.styles.panelColor;
 
     // Texto del título del chart
     this.panelTitle = {
-      background: this.dashboard.config.styles.panelColor,
       color: this.dashboard.config.styles.panelTitle.fontColor,
       'font-size': (20 + this.dashboard.config.styles.panelTitle.fontSize * 3) + 'px',
       'font-family': this.dashboard.config.styles.panelTitle.fontFamily,
@@ -404,12 +416,14 @@ export class DashboardPage implements OnInit {
     };
 
     this.panelContent = {
-      background: this.dashboard.config.styles.panelColor,
+      background: panelBg,
     };
+
+    this.gridsterItemStyle = { 'background-color': panelBg };
 
     // Texto de los tabs (como panelTitle pero con display:block y text-align)
     this.panelTabText = {
-      background: this.dashboard.config.styles.panelColor,
+      background: panelBg,
       color: this.dashboard.config.styles.panelTitle.fontColor,
       'font-size': (20 + this.dashboard.config.styles.panelTitle.fontSize * 3) + 'px',
       'font-family': this.dashboard.config.styles.panelTitle.fontFamily,
@@ -422,6 +436,15 @@ export class DashboardPage implements OnInit {
     };
 
     this.stylesProviderService.ActualChartPalette = this.dashboard.config.styles.palette;
+  }
+
+  private hexColorToRgba(hex: string, alpha: number): string {
+    const clean = (hex || '#ffffff').replace('#', '');
+    const full = clean.length === 3
+      ? clean.split('').map(c => c + c).join('')
+      : clean;
+    const n = parseInt(full, 16);
+    return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
   }
 
   private initPanels(dashboard: any) {

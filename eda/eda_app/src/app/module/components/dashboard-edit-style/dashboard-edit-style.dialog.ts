@@ -65,6 +65,7 @@ export class DashboardEditStyleDialog {
   public samplePanelName: string = $localize`:@@samplePanelName:Título del panel`;
   public filtrar: string = $localize`:@@filtrarH4:Filtrar`;
   public css: string;
+  public backgroundImage: string | null = null;  // base64 data URI
 
   public left: string = $localize`:@@left:Izquierda`;
   public center: string = $localize`:@@center:Centro`;
@@ -151,6 +152,7 @@ export class DashboardEditStyleDialog {
 	this.panelFontSize = styles.panelContent.fontSize;
 
 	this.css = styles.customCss;
+	this.backgroundImage = styles.backgroundImage || null;
 
 	}
 
@@ -275,6 +277,19 @@ export class DashboardEditStyleDialog {
     });
 }
 
+public onBackgroundImageSelected(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  const file = input?.files?.[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => { this.backgroundImage = reader.result as string; };
+  reader.readAsDataURL(file);
+}
+
+public removeBackgroundImage(): void {
+  this.backgroundImage = null;
+}
+
 public saveConfig(): void {
     // Aplicar paleta a todos los charts del dashboard
     this.applyPaletteToAllCharts();
@@ -282,6 +297,7 @@ public saveConfig(): void {
     const response: DashboardStyles = {
         stylesApplied: true,
         backgroundColor: this.backgroundColor,
+        backgroundImage: this.backgroundImage || undefined,
         panelColor: this.panelColor,
         titleAlign: this.alignDasboardTitle,
         panelTitleAlign: this.alignPanelTitle,

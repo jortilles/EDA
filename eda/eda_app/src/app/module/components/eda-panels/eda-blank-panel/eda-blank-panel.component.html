@@ -1,4 +1,4 @@
-<div class="flex flex-col h-full rounded-lg pb-6 pr-6 pl-6 shadow-sm bg-white" [ngStyle]="panelContent">
+<div class="flex flex-col h-full rounded-lg pb-6 pr-6 pl-6 shadow-sm" [ngStyle]="panelContent">
   <!-- Header -->
   <div class="flex items-center justify-between mb-2 w-full drag-handler min-h-12">
     <!-- Contenedor con alineación dinámica para el título -->
@@ -35,7 +35,7 @@
 
 
 
-  <div class="flex items-center justify-center flex-grow overflow-y-auto rounded-lg bg-gray-50" [class.spinner-panel]="display_v.minispinner">
+  <div class="flex items-center justify-center flex-grow overflow-y-auto rounded-lg" [class.spinner-panel]="display_v.minispinner">
     @if (display_v.saved_panel && !display_v.minispinner) {
       <div class="relative w-full h-full">
         <panel-chart 
