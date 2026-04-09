@@ -10,9 +10,10 @@ import Group from '../admin/groups/model/group.model';
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const SEED = require('../../../config/seed').SEED;
+const eda_api_config = require('../../../config/eda_api_config');
 
-const MCP_EMAIL = process.env.MCP_EMAIL || '';
-const MCP_PASSWORD = process.env.MCP_PASSWORD || '';
+const MCP_EMAIL: string = eda_api_config.mcp_email || process.env.MCP_EMAIL || '';
+const MCP_PASSWORD: string = eda_api_config.mcp_password || process.env.MCP_PASSWORD || '';
 
 // --- Auth interno (sin HTTP) ---
 async function loginInternal(): Promise<string> {
