@@ -17,12 +17,16 @@ const MCP_PASSWORD: string = eda_api_config.mcp_password || process.env.MCP_PASS
 
 // --- Auth interno (sin HTTP) ---
 async function loginInternal(): Promise<string> {
+    console.log('[MCP] loginInternal — email:', MCP_EMAIL || '(vacío)', '| password configurado:', !!MCP_PASSWORD);
     if (!MCP_EMAIL || !MCP_PASSWORD) {
         throw new Error('MCP_EMAIL y MCP_PASSWORD no están configurados en el servidor.');
     }
     const user: any = await User.findOne({ email: MCP_EMAIL }).exec();
+    console.log('[MCP] Usuario encontrado:', user ? user.email : 'NO ENCONTRADO');
     if (!user) throw new Error(`Usuario no encontrado: ${MCP_EMAIL}`);
-    if (!bcrypt.compareSync(MCP_PASSWORD, user.password)) throw new Error('Credenciales incorrectas.');
+    const passwordOk = bcrypt.compareSync(MCP_PASSWORD, user.password);
+    console.log('[MCP] Password correcto:', passwordOk);
+    if (!passwordOk) throw new Error('Credenciales incorrectas.');
     user.password = ':)';
     return jwt.sign({ user }, SEED, { expiresIn: 14400 });
 }
