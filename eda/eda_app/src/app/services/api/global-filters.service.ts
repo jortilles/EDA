@@ -320,6 +320,7 @@ export class GlobalFiltersService {
             valueListSource: valueListSource,
             computed_column: globalFilter.selectedColumn?.computed_column,
             SQLexpression: globalFilter.selectedColumn?.SQLexpression,
+            fromChart: globalFilter.fromChart ?? false,  // <-- añadir esto
         }
 
         return formatedFilter;

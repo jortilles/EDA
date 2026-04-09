@@ -232,6 +232,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public currentSQLQuery: string = '';
     public queryLimit: number = 5000; // por defecto se limita a 5.000
     public groupByEnabled: boolean = true;
+    public dynamicFilters: boolean = true;
 
     public queryModes: any[] = [
         { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
@@ -255,6 +256,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public selectedFilters: any[] = [];
     public globalFilters: any[] = [];
     public sortedFilters: any[] = [];
+    public globalFiltersBackup: any[];
     public temporalSortedFilters: any[] = [];
     public filterValue: any = {};
     public tableInput: string;
@@ -384,6 +386,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 this.cdr.detectChanges();
             }
             this.loadChartsData(this.panel.content);
+            this.dynamicFilters = this.panel.content.dynamicFilters ?? true;
             } catch(e){
                 console.error('Error loading panel conent: ');
                 throw e;
@@ -700,7 +703,7 @@ public tableNodeExpand(event: any): void {
             const chart = this.chartForm?.value.chart?.value ? this.chartForm?.value.chart?.value : this.chartForm?.value.chart;
             const edaChart = this.panelChart?.props.edaChart;
 
-            this.panel.content = { query, chart, edaChart };
+            this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters };
 
             /**This is to repaint on panel redimension */
             if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst','radar'].includes(chart)) {
@@ -2204,6 +2207,10 @@ public tableNodeExpand(event: any): void {
             this.removeGroupBy();
         }
     }
+
+    dynamicFiltersInteraction(): void {
+        this.dynamicFilters = !this.dynamicFilters;
+    } 
 
     applyGroupBy(): void {
     // Lógica para activar el group by
