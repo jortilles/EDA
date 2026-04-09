@@ -46,3 +46,6 @@ eda/eda_app/src/locale/prod_messages*xlf
 .agent/rules.md
 .agent/rules/code-style-guide-sinergiada.md
 .cursorrules
+# OpenCode local config (symlinks to private handbook repo)
+.opencode
+AGENTS.md
