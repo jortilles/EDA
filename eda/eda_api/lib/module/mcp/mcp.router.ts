@@ -12,8 +12,8 @@ const jwt = require('jsonwebtoken');
 const SEED = require('../../../config/seed').SEED;
 const eda_api_config = require('../../../config/eda_api_config');
 
-const MCP_EMAIL: string = eda_api_config.mcp_email || process.env.MCP_EMAIL || '';
-const MCP_PASSWORD: string = eda_api_config.mcp_password || process.env.MCP_PASSWORD || '';
+const MCP_EMAIL: string = eda_api_config.mcp_email || '';
+const MCP_PASSWORD: string = eda_api_config.mcp_password || '';
 
 // --- Auth interno (sin HTTP) ---
 async function loginInternal(): Promise<string> {
@@ -52,6 +52,51 @@ async function getAllDashboards(userId: string) {
     ]);
 
     return { dashboards: privates, group: groupDbs, publics, shared };
+}
+
+
+
+// --- Filtrado ia_visibility ---
+function filterDatasourceForAI(ds: any): any | null {
+    const metadata = ds?.ds?.metadata ?? {};
+    // Si el modelo completo está oculto, no lo pasamos
+    if (metadata.ia_visibility === 'NONE') return null;
+
+    const tables: any[] = ds?.ds?.model ?? [];
+    const filteredTables = tables
+        .filter((table: any) => table.ia_visibility !== 'NONE')
+        .map((table: any) => {
+            const filteredColumns = (table.columns ?? []).filter((col: any) => col.ia_visibility !== 'NONE');
+            // DECLARATION: solo nombre y tipo, sin descripción ni detalles extra
+            if (table.ia_visibility === 'DECLARATION') {
+                return {
+                    name: table.table_name,
+                    ia_visibility: table.ia_visibility,
+                    columns: filteredColumns.map((col: any) => ({
+                        name: col.column_name,
+                        type: col.column_type,
+                        ia_visibility: col.ia_visibility,
+                    })),
+                };
+            }
+            // FULL: tabla con columnas filtradas (columnas DECLARATION solo nombre+tipo)
+            return {
+                ...table,
+                columns: filteredColumns.map((col: any) => {
+                    if (col.ia_visibility === 'DECLARATION') {
+                        return { name: col.column_name, type: col.column_type, ia_visibility: col.ia_visibility };
+                    }
+                    return col;
+                }),
+            };
+        });
+
+    return {
+        _id: ds._id,
+        model_name: metadata.model_name,
+        ia_visibility: metadata.ia_visibility,
+        tables: filteredTables,
+    };
 }
 
 // --- MCP Server ---
@@ -97,12 +142,14 @@ function createMcpServer() {
 
     server.registerTool(
         'list_datasources',
-        { description: 'Lista los datasources accesibles en EDA.' },
+        { description: 'Lista los datasources accesibles en EDA (excluye los marcados como NONE en ia_visibility).' },
         async () => {
             try {
-                await loginInternal(); // solo verifica credenciales
-                const datasources = await DataSource.find({}, 'ds.metadata.model_name').exec();
-                const lines = datasources.map((ds: any) => `  - [${ds._id}] ${ds.ds?.metadata?.model_name ?? '(sin nombre)'}`);
+                await loginInternal();
+                const datasources = await DataSource.find({}, 'ds.metadata').exec();
+                const lines = datasources
+                    .filter((ds: any) => ds.ds?.metadata?.ia_visibility !== 'NONE')
+                    .map((ds: any) => `  - [${ds._id}] ${ds.ds?.metadata?.model_name ?? '(sin nombre)'} [${ds.ds?.metadata?.ia_visibility ?? 'FULL'}]`);
                 return {
                     content: [{
                         type: 'text',
@@ -118,7 +165,7 @@ function createMcpServer() {
     (server as any).registerTool(
         'get_datasource',
         {
-            description: 'Obtiene el detalle de un datasource de EDA por su ID.',
+            description: 'Obtiene el detalle de un datasource de EDA por su ID, filtrado por ia_visibility (excluye tablas y columnas con NONE).',
             inputSchema: { id: z.string().describe('ID del datasource a consultar') },
         },
         async (args: any) => {
@@ -127,7 +174,9 @@ function createMcpServer() {
                 await loginInternal();
                 const ds = await DataSource.findById(id).exec();
                 if (!ds) return { content: [{ type: 'text', text: `Datasource no encontrado: ${id}` }], isError: true };
-                return { content: [{ type: 'text', text: JSON.stringify(ds, null, 2) }] };
+                const filtered = filterDatasourceForAI(ds);
+                if (!filtered) return { content: [{ type: 'text', text: `Datasource ${id} excluido por ia_visibility: NONE` }], isError: true };
+                return { content: [{ type: 'text', text: JSON.stringify(filtered, null, 2) }] };
             } catch (err: any) {
                 return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
             }
