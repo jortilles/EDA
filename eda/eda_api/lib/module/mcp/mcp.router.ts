@@ -56,13 +56,16 @@ async function getAllDashboards(userId: string) {
 
 // --- Filtrado ia_visibility ---
 function filterDatasourceForAI(ds: any): any | null {
+    const raw = ds?.toObject ? ds.toObject() : ds;
+    console.log('[MCP] filterDatasource - keys ds:', Object.keys(raw?.ds ?? {}));
+    console.log('[MCP] filterDatasource - model type:', typeof raw?.ds?.model, '| isArray:', Array.isArray(raw?.ds?.model), '| length:', raw?.ds?.model?.length);
 
-    const metadata = ds?.ds?.metadata ?? {};
+    const metadata = raw?.ds?.metadata ?? {};
     const modelVisibility: string = metadata.ia_visibility ?? 'FULL';
     // Si el modelo completo está oculto, no lo pasamos
     if (modelVisibility === 'NONE') return null;
 
-    const tables: any[] = Array.isArray(ds?.ds?.model) ? ds.ds.model : [];
+    const tables: any[] = Array.isArray(raw?.ds?.model) ? raw.ds.model : [];
     const filteredTables = tables
         .filter((table: any) => (table.ia_visibility ?? 'FULL') !== 'NONE')
         .map((table: any) => {
@@ -94,8 +97,10 @@ function filterDatasourceForAI(ds: any): any | null {
             };
         });
 
+    console.log('[MCP] filterDatasource - tables after filter:', filteredTables.length);
+
     return {
-        _id: ds._id,
+        _id: raw._id,
         model_name: metadata.model_name,
         ia_visibility: modelVisibility,
         tables: filteredTables,
