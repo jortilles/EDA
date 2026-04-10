@@ -68,9 +68,9 @@ async function getAllDashboards(userId: string) {
 function buildSelectQuery(dbType: string, cols: string, table: string, limit: number): string {
     switch (dbType) {
         case 'sqlserver':
-            return `SELECT TOP ${limit} ${cols} FROM ${table}`;
+            return `SELECT TOP ${limit} ${cols} FROM ${table} as tabla`;
         case 'oracle':
-            return `SELECT ${cols} FROM ${table} FETCH FIRST ${limit} ROWS ONLY`;
+            return `SELECT ${cols} FROM ${table} as tabla FETCH FIRST ${limit} ROWS ONLY`;
         default:
             // mysql, postgres, vertica, clickhouse, snowflake, bigquery, etc.
             return `SELECT ${cols} FROM ${table} LIMIT ${limit}`;
@@ -158,10 +158,14 @@ function createMcpServer() {
             try {
                 const { dashboards, group, publics, shared } = await getAllDashboards(user._id);
 
+                const { EDA_APP_URL } = getAnthropicConfig();
                 const formatGroup = (label: string, items: any[] = []) => {
                     const lines = [`\n## ${label}`];
                     if (items.length === 0) lines.push('  (sin dashboards)');
-                    for (const d of items) lines.push(`  - [${d._id}] ${d.config?.title ?? '(sin título)'}`);
+                    for (const d of items) {
+                        const link = EDA_APP_URL ? ` — ${EDA_APP_URL}/en/#/dashboard/${encodeURIComponent(d._id)}` : '';
+                        lines.push(`  - [${d._id}] ${d.config?.title ?? '(sin título)'}${link}`);
+                    }
                     return lines;
                 };
 
@@ -244,7 +248,13 @@ function createMcpServer() {
                 const db: any = await Dashboard.findById(id).exec();
                 if (!db) return { content: [{ type: 'text', text: `Dashboard no encontrado: ${id}` }], isError: true };
 
-                const lines: string[] = [`# ${db.config?.title ?? '(sin título)'}`, ''];
+                const { EDA_APP_URL } = getAnthropicConfig();
+                const dashboardLink = EDA_APP_URL ? `${EDA_APP_URL}/en/#/dashboard/${encodeURIComponent(id)}` : '';
+                const lines: string[] = [
+                    `# ${db.config?.title ?? '(sin título)'}`,
+                    ...(dashboardLink ? [`URL: ${dashboardLink}`] : []),
+                    '',
+                ];
                 const panels = Array.isArray(db.config?.panel) ? db.config.panel : [];
                 if (panels.length === 0) lines.push('(sin panels)');
 
@@ -269,77 +279,77 @@ function createMcpServer() {
 
     console.log('[MCP] createMcpServer - get_dashboard registrado');
 
-    (server as any).registerTool(
-        'query_datasource',
-        {
-            description: 'Ejecuta una consulta SQL simple sobre una tabla de un datasource de EDA y devuelve las primeras filas. Útil para explorar datos reales.',
-            inputSchema: {
-                datasource_id: z.string().describe('ID del datasource'),
-                table_name: z.string().describe('Nombre de la tabla a consultar (puede incluir schema: schema.tabla)'),
-                limit: z.number().optional().describe('Número máximo de filas (por defecto 50, máximo 200)'),
-            },
-        },
-        async (args: any) => {
-            console.log('[MCP] tool: query_datasource - args:', JSON.stringify(args));
-            const { datasource_id, table_name, limit: rawLimit } = args;
-            const limit = Math.min(rawLimit ?? 50, 200);
-            console.log('[MCP] query_datasource - datasource_id:', datasource_id, '| table:', table_name, '| limit:', limit);
+    // (server as any).registerTool(
+    //     'query_datasource',
+    //     {
+    //         description: 'Ejecuta una consulta SQL simple sobre una tabla de un datasource de EDA y devuelve las primeras filas. Útil para explorar datos reales.',
+    //         inputSchema: {
+    //             datasource_id: z.string().describe('ID del datasource'),
+    //             table_name: z.string().describe('Nombre de la tabla a consultar (puede incluir schema: schema.tabla)'),
+    //             limit: z.number().optional().describe('Número máximo de filas (por defecto 50, máximo 200)'),
+    //         },
+    //     },
+    //     async (args: any) => {
+    //         console.log('[MCP] tool: query_datasource - args:', JSON.stringify(args));
+    //         const { datasource_id, table_name, limit: rawLimit } = args;
+    //         const limit = Math.min(rawLimit ?? 50, 200);
+    //         console.log('[MCP] query_datasource - datasource_id:', datasource_id, '| table:', table_name, '| limit:', limit);
 
-            if (!/^[\w.]+$/.test(table_name)) {
-                return { content: [{ type: 'text', text: 'Nombre de tabla inválido.' }], isError: true };
-            }
+    //         if (!/^[\w.]+$/.test(table_name)) {
+    //             return { content: [{ type: 'text', text: 'Nombre de tabla inválido.' }], isError: true };
+    //         }
 
-            try {
-                await loginInternal();
+    //         try {
+    //             await loginInternal();
 
-                // Obtener modelo para filtrar columnas FULL únicamente
-                const dsDoc = await DataSource.findById(datasource_id).exec();
-                if (!dsDoc) return { content: [{ type: 'text', text: `Datasource no encontrado: ${datasource_id}` }], isError: true };
+    //             // Obtener modelo para filtrar columnas FULL únicamente
+    //             const dsDoc = await DataSource.findById(datasource_id).exec();
+    //             if (!dsDoc) return { content: [{ type: 'text', text: `Datasource no encontrado: ${datasource_id}` }], isError: true };
 
-                const raw = (dsDoc as any).toObject ? (dsDoc as any).toObject() : dsDoc;
-                const modelRaw = raw?.ds?.model;
-                const allTables: any[] = Array.isArray(modelRaw) ? modelRaw
-                    : (modelRaw && typeof modelRaw === 'object' ? Object.values(modelRaw) : []);
+    //             const raw = (dsDoc as any).toObject ? (dsDoc as any).toObject() : dsDoc;
+    //             const modelRaw = raw?.ds?.model;
+    //             const allTables: any[] = Array.isArray(modelRaw) ? modelRaw
+    //                 : (modelRaw && typeof modelRaw === 'object' ? Object.values(modelRaw) : []);
 
-                // Busca la tabla por table_name (la parte después del punto si hay schema.tabla)
-                const bareTableName = table_name.includes('.') ? table_name.split('.').pop() : table_name;
-                const tableMeta = allTables.find((t: any) =>
-                    t.table_name === table_name || t.table_name === bareTableName
-                );
+    //             // Busca la tabla por table_name (la parte después del punto si hay schema.tabla)
+    //             const bareTableName = table_name.includes('.') ? table_name.split('.').pop() : table_name;
+    //             const tableMeta = allTables.find((t: any) =>
+    //                 t.table_name === table_name || t.table_name === bareTableName
+    //             );
 
-                let selectCols = '*';
-                if (tableMeta) {
-                    const colsRaw = tableMeta.columns;
-                    const cols: any[] = Array.isArray(colsRaw) ? colsRaw
-                        : (colsRaw && typeof colsRaw === 'object' ? Object.values(colsRaw) : []);
-                    const fullCols = cols
-                        .filter((c: any) => (c.ia_visibility ?? 'FULL') === 'FULL')
-                        .map((c: any) => c.column_name)
-                        .filter(Boolean);
-                    if (fullCols.length > 0) selectCols = fullCols.join(', ');
-                }
+    //             let selectCols = '*';
+    //             if (tableMeta) {
+    //                 const colsRaw = tableMeta.columns;
+    //                 const cols: any[] = Array.isArray(colsRaw) ? colsRaw
+    //                     : (colsRaw && typeof colsRaw === 'object' ? Object.values(colsRaw) : []);
+    //                 const fullCols = cols
+    //                     .filter((c: any) => (c.ia_visibility ?? 'FULL') === 'FULL')
+    //                     .map((c: any) => c.column_name)
+    //                     .filter(Boolean);
+    //                 if (fullCols.length > 0) selectCols = fullCols.join(', ');
+    //             }
 
-                const connection = await ManagerConnectionService.getConnection(datasource_id);
-                if (!connection) {
-                    return { content: [{ type: 'text', text: `No se pudo obtener conexión para el datasource: ${datasource_id}` }], isError: true };
-                }
-                connection.client = await connection.getclient();
-                const dbType: string = raw?.ds?.connection?.type ?? '';
-                const sql = buildSelectQuery(dbType, selectCols, table_name, limit);
-                console.log('[MCP] query_datasource - SQL:', sql);
-                const rows = await connection.execSqlQuery(sql);
+    //             const connection = await ManagerConnectionService.getConnection(datasource_id);
+    //             if (!connection) {
+    //                 return { content: [{ type: 'text', text: `No se pudo obtener conexión para el datasource: ${datasource_id}` }], isError: true };
+    //             }
+    //             connection.client = await connection.getclient();
+    //             const dbType: string = raw?.ds?.connection?.type ?? '';
+    //             const sql = buildSelectQuery(dbType, selectCols, table_name, limit);
+    //             console.log('[MCP] query_datasource - SQL:', sql);
+    //             const rows = await connection.execSqlQuery(sql);
 
-                if (!rows || rows.length === 0) {
-                    return { content: [{ type: 'text', text: `La tabla ${table_name} no devolvió filas.` }] };
-                }
+    //             if (!rows || rows.length === 0) {
+    //                 return { content: [{ type: 'text', text: `La tabla ${table_name} no devolvió filas.` }] };
+    //             }
 
-                return { content: [{ type: 'text', text: JSON.stringify(rows, null, 2) }] };
-            } catch (err: any) {
-                console.error('[MCP] query_datasource error:', err.message);
-                return { content: [{ type: 'text', text: `Error al consultar: ${err.message}` }], isError: true };
-            }
-        }
-    );
+    //             return { content: [{ type: 'text', text: JSON.stringify(rows, null, 2) }] };
+    //         } catch (err: any) {
+    //             console.error('[MCP] query_datasource error:', err.message);
+    //             return { content: [{ type: 'text', text: `Error al consultar: ${err.message}` }], isError: true };
+    //         }
+    //     }
+    // );
 
     console.log('[MCP] createMcpServer - query_datasource registrado. Total tools: 5');
 
@@ -387,9 +397,15 @@ async function execTool(toolName: string, toolInput: any, userId: string): Promi
             }
 
             case 'list_dashboards': {
+                const { EDA_APP_URL } = getAnthropicConfig();
                 const { dashboards, group, publics, shared } = await getAllDashboards(userId);
-                const fmt = (label: string, items: any[]) =>
-                    `\n## ${label}\n` + (items.length ? items.map((d: any) => `- [${d._id}] ${d.config?.title ?? '(sin título)'}`).join('\n') : '  (sin dashboards)');
+                const fmt = (label: string, items: any[]) => {
+                    if (!items.length) return `\n## ${label}\n  (sin dashboards)`;
+                    return `\n## ${label}\n` + items.map((d: any) => {
+                        const link = EDA_APP_URL ? ` — ${EDA_APP_URL}/en/#/dashboard/${encodeURIComponent(d._id)}` : '';
+                        return `- [${d._id}] ${d.config?.title ?? '(sin título)'}${link}`;
+                    }).join('\n');
+                };
                 return 'Dashboards:\n' + fmt('Privados', dashboards) + fmt('De grupo', group) + fmt('Públicos', publics) + fmt('Compartidos', shared);
             }
 
@@ -404,7 +420,13 @@ async function execTool(toolName: string, toolInput: any, userId: string): Promi
             case 'get_dashboard': {
                 const db: any = await Dashboard.findById(toolInput.id).exec();
                 if (!db) return `Dashboard no encontrado: ${toolInput.id}`;
-                const lines: string[] = [`# ${db.config?.title ?? '(sin título)'}`, ''];
+                const { EDA_APP_URL } = getAnthropicConfig();
+                const dashLink = EDA_APP_URL ? `${EDA_APP_URL}/en/#/dashboard/${encodeURIComponent(toolInput.id)}` : '';
+                const lines: string[] = [
+                    `# ${db.config?.title ?? '(sin título)'}`,
+                    ...(dashLink ? [`URL: ${dashLink}`] : []),
+                    '',
+                ];
                 const panels = Array.isArray(db.config?.panel) ? db.config.panel : [];
                 for (const panel of panels) {
                     lines.push(`## ${panel.title ?? '(sin título)'}`);
