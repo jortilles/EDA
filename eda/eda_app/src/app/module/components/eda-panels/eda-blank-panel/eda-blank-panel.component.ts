@@ -845,6 +845,11 @@ public tableNodeExpand(event: any): void {
         this.display_v.chart = type;
         this.graficos.chartType = type;
         this.graficos.edaChart = subType;
+        // Revision para paneles con modificacion de tipo de chart y posterior duplicado
+        if (this.panel.content) {
+            this.panel.content.chart = type;
+            this.panel.content.edaChart = subType;
+        }
         this.graficos.addTrend = config && config.getConfig() ? config.getConfig()['addTrend'] : false;
         this.graficos.showPredictionLines = config && config.getConfig() ? config.getConfig()['showPredictionLines'] : false;
         this.graficos.numberOfColumns = config && config.getConfig() ? config.getConfig()['numberOfColumns'] : null;
@@ -2161,11 +2166,11 @@ public tableNodeExpand(event: any): void {
 
     getAttributeTypeIcon(type: string) {
         const icons = {
-            numeric: 'mdi-numeric',//'text-blue-500',
-            date: 'mdi-calendar-text', //text-green-500',
-            coordinate: 'mdi-map-marker', //text-green-500',
-            text: 'mdi-alphabetical', //'text-orange-500' 
-            html: 'mdi-language-html5' //'text-orange-500' 
+            numeric: 'mdi-numeric',
+            date: 'mdi-calendar-text',
+            coordinate: 'mdi-map-marker',
+            text: 'mdi-alphabetical',
+            html: 'mdi-language-html5'
         };
         return icons[type as keyof typeof icons] || '';
     }

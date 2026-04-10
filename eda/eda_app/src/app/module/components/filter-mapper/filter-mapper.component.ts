@@ -164,9 +164,11 @@ export class FilterMapperComponent {
 
   getAttributeTypeIcon(type: string) {
     const icons = {
-      numeric: 'mdi-numeric',
-      date: 'mdi-calendar-text',
-      text: 'mdi-alphabetical'
+        numeric: 'mdi-numeric',
+        date: 'mdi-calendar-text',
+        coordinate: 'mdi-map-marker',
+        text: 'mdi-alphabetical',
+        html: 'mdi-language-html5'
     };
     return icons[type as keyof typeof icons] || '';
   }

@@ -135,7 +135,18 @@ export class DataSourceService extends ApiService implements OnDestroy {
                     currCol.label = column.display_name.default;
                     currCol.data = 'columna';
                     currCol.children = [];
-                    currCol.icon = column.computed_column === 'computed' ? 'fa fa-calculator' : 'fa fa-columns';
+                    const typeIconMap: Record<string, string> = {
+                        numeric: 'mdi mdi-numeric',
+                        date: 'mdi mdi-calendar-text',
+                        coordinate: 'mdi mdi-map-marker',
+                        text: 'mdi mdi-alphabetical',
+                        html: 'mdi mdi-language-html5'
+                    };
+                    if (column.computed_column === 'computed') {
+                        currCol.icon = 'fa fa-calculator';
+                    } else {
+                        currCol.icon = typeIconMap[column.column_type] || 'fa fa-columns';
+                    }
                     currCol.type = element && element.name === column.display_name.default ? 'selected' : 'unselected'
                     currTable.children.push(currCol);
 
