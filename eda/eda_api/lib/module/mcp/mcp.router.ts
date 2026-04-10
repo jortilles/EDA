@@ -6,6 +6,7 @@ import Dashboard from '../dashboard/model/dashboard.model';
 import DataSource from '../datasource/model/datasource.model';
 import User from '../admin/users/model/user.model';
 import Group from '../admin/groups/model/group.model';
+import ManagerConnectionService from '../../services/connection/manager-connection.service';
 
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -107,6 +108,7 @@ function filterDatasourceForAI(ds: any): any | null {
     return {
         _id: raw._id,
         model_name: metadata.model_name,
+        model_description: metadata.model_description ?? undefined,
         ia_visibility: modelVisibility,
         tables: filteredTables,
     };
@@ -228,6 +230,47 @@ function createMcpServer() {
                 return { content: [{ type: 'text', text: lines.join('\n') }] };
             } catch (err: any) {
                 return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
+            }
+        }
+    );
+
+    (server as any).registerTool(
+        'query_datasource',
+        {
+            description: 'Ejecuta una consulta SQL simple sobre una tabla de un datasource de EDA y devuelve las primeras filas. Útil para explorar datos reales.',
+            inputSchema: {
+                datasource_id: z.string().describe('ID del datasource'),
+                table_name: z.string().describe('Nombre de la tabla a consultar (puede incluir schema: schema.tabla)'),
+                limit: z.number().optional().describe('Número máximo de filas (por defecto 50, máximo 200)'),
+            },
+        },
+        async (args: any) => {
+            const { datasource_id, table_name, limit: rawLimit } = args;
+            const limit = Math.min(rawLimit ?? 50, 200);
+
+            if (!/^[\w.]+$/.test(table_name)) {
+                return { content: [{ type: 'text', text: 'Nombre de tabla inválido.' }], isError: true };
+            }
+
+            try {
+                await loginInternal();
+                const connection = await ManagerConnectionService.getConnection(datasource_id);
+                if (!connection) {
+                    return { content: [{ type: 'text', text: `No se pudo obtener conexión para el datasource: ${datasource_id}` }], isError: true };
+                }
+                connection.client = await connection.getclient();
+                const sql = `SELECT * FROM ${table_name} LIMIT ${limit}`;
+                console.log('[MCP] query_datasource - SQL:', sql);
+                const rows = await connection.execSqlQuery(sql);
+
+                if (!rows || rows.length === 0) {
+                    return { content: [{ type: 'text', text: `La tabla ${table_name} no devolvió filas.` }] };
+                }
+
+                return { content: [{ type: 'text', text: JSON.stringify(rows, null, 2) }] };
+            } catch (err: any) {
+                console.error('[MCP] query_datasource error:', err.message);
+                return { content: [{ type: 'text', text: `Error al consultar: ${err.message}` }], isError: true };
             }
         }
     );
