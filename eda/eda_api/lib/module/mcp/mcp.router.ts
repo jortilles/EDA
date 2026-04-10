@@ -116,12 +116,14 @@ function filterDatasourceForAI(ds: any): any | null {
 
 // --- MCP Server ---
 function createMcpServer() {
+    console.log('[MCP] createMcpServer - registrando tools...');
     const server = new McpServer({ name: 'eda-mcp', version: '1.0.0' });
 
     server.registerTool(
         'list_dashboards',
         { description: 'Lista todos los dashboards accesibles en EDA (privados, de grupo, públicos y compartidos).' },
         async () => {
+            console.log('[MCP] tool: list_dashboards - ejecutando');
             let user: any;
             try {
                 const token = await loginInternal();
@@ -155,10 +157,13 @@ function createMcpServer() {
         }
     );
 
+    console.log('[MCP] createMcpServer - list_dashboards registrado');
+
     server.registerTool(
         'list_datasources',
         { description: 'Lista los datasources accesibles en EDA (excluye los marcados como NONE en ia_visibility).' },
         async () => {
+            console.log('[MCP] tool: list_datasources - ejecutando');
             try {
                 await loginInternal();
                 const datasources = await DataSource.find({}, 'ds.metadata').exec();
@@ -177,6 +182,8 @@ function createMcpServer() {
         }
     );
 
+    console.log('[MCP] createMcpServer - list_datasources registrado');
+
     (server as any).registerTool(
         'get_datasource',
         {
@@ -184,6 +191,7 @@ function createMcpServer() {
             inputSchema: { id: z.string().describe('ID del datasource a consultar') },
         },
         async (args: any) => {
+            console.log('[MCP] tool: get_datasource - args:', JSON.stringify(args));
             const id: string = args.id;
             try {
                 await loginInternal();
@@ -198,6 +206,8 @@ function createMcpServer() {
         }
     );
 
+    console.log('[MCP] createMcpServer - get_datasource registrado');
+
     (server as any).registerTool(
         'get_dashboard',
         {
@@ -205,6 +215,7 @@ function createMcpServer() {
             inputSchema: { id: z.string().describe('ID del dashboard a consultar') },
         },
         async (args: any) => {
+            console.log('[MCP] tool: get_dashboard - args:', JSON.stringify(args));
             const id: string = args.id;
             try {
                 await loginInternal();
@@ -234,6 +245,8 @@ function createMcpServer() {
         }
     );
 
+    console.log('[MCP] createMcpServer - get_dashboard registrado');
+
     (server as any).registerTool(
         'query_datasource',
         {
@@ -245,8 +258,10 @@ function createMcpServer() {
             },
         },
         async (args: any) => {
+            console.log('[MCP] tool: query_datasource - args:', JSON.stringify(args));
             const { datasource_id, table_name, limit: rawLimit } = args;
             const limit = Math.min(rawLimit ?? 50, 200);
+            console.log('[MCP] query_datasource - datasource_id:', datasource_id, '| table:', table_name, '| limit:', limit);
 
             if (!/^[\w.]+$/.test(table_name)) {
                 return { content: [{ type: 'text', text: 'Nombre de tabla inválido.' }], isError: true };
@@ -303,6 +318,8 @@ function createMcpServer() {
         }
     );
 
+    console.log('[MCP] createMcpServer - query_datasource registrado. Total tools: 5');
+
     return server;
 }
 
@@ -313,7 +330,7 @@ McpRouter.post('/', async (req: Request, res: Response) => {
     // callInterceptor sets req.query = undefined; restore it so the MCP SDK can access it
     if (!req.query) (req as any).query = (req as any).qs || {};
 
-    console.log('[MCP] POST /ia/mcp — method:', req.body?.method, '| Accept:', req.headers.accept);
+    console.log('[MCP] POST /ia/mcp — method:', req.body?.method, '| tool:', req.body?.params?.name ?? '-', '| Accept:', req.headers.accept);
 
     try {
         const server = createMcpServer();
