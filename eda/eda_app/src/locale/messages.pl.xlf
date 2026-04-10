@@ -6049,6 +6049,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, Declaration expone solo nombre y tipo, None lo excluye totalmente.</source>
         <target>Kontroluje, czy agent AI ma dostęp do tych informacji: Full zezwala na pełny dostęp, Declaration udostępnia tylko nazwę i typ, None wyklucza je całkowicie.</target>
       </trans-unit>
+      <trans-unit id="dynamicFiltersText" datatype="html">
+        <source>Filtros dinámicos</source>
+        <target>Filtry dynamiczne</target>
+      </trans-unit>
+      <trans-unit id="uniqueRecordsGrouping" datatype="html">
+        <source>Registros únicos (agrupación)?</source>
+        <target>Unikalne rekordy (grupowanie)?</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>
