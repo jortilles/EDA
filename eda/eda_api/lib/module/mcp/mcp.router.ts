@@ -192,10 +192,14 @@ function createMcpServer() {
             console.log('[MCP] tool: list_datasources - ejecutando');
             try {
                 await loginInternal();
+                const { EDA_APP_URL } = getAnthropicConfig();
                 const datasources = await DataSource.find({}, 'ds.metadata').exec();
                 const lines = datasources
                     .filter((ds: any) => (ds.ds?.metadata?.ia_visibility ?? 'FULL') !== 'NONE')
-                    .map((ds: any) => `  - [${ds._id}] ${ds.ds?.metadata?.model_name ?? '(sin nombre)'} [${ds.ds?.metadata?.ia_visibility ?? 'FULL'}]`);
+                    .map((ds: any) => {
+                        const link = EDA_APP_URL ? ` — ${EDA_APP_URL}/en/#/data-source/${encodeURIComponent(ds._id)}` : '';
+                        return `  - [${ds._id}] ${ds.ds?.metadata?.model_name ?? '(sin nombre)'} [${ds.ds?.metadata?.ia_visibility ?? 'FULL'}]${link}`;
+                    });
                 return {
                     content: [{
                         type: 'text',
@@ -389,10 +393,14 @@ async function execTool(toolName: string, toolInput: any, userId: string): Promi
         switch (toolName) {
 
             case 'list_datasources': {
+                const { EDA_APP_URL } = getAnthropicConfig();
                 const datasources = await DataSource.find({}, 'ds.metadata').exec();
                 const lines = datasources
                     .filter((ds: any) => (ds.ds?.metadata?.ia_visibility ?? 'FULL') !== 'NONE')
-                    .map((ds: any) => `- [${ds._id}] ${ds.ds?.metadata?.model_name ?? '(sin nombre)'} [${ds.ds?.metadata?.ia_visibility ?? 'FULL'}]`);
+                    .map((ds: any) => {
+                        const link = EDA_APP_URL ? ` — ${EDA_APP_URL}/en/#/data-source/${encodeURIComponent(ds._id)}` : '';
+                        return `- [${ds._id}] ${ds.ds?.metadata?.model_name ?? '(sin nombre)'} [${ds.ds?.metadata?.ia_visibility ?? 'FULL'}]${link}`;
+                    });
                 return 'Datasources:\n' + (lines.length ? lines.join('\n') : '(sin datasources)');
             }
 
