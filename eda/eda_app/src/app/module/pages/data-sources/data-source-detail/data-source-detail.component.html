@@ -1,8 +1,27 @@
 @if(typePanel==='tabla' && tablePanel.technical_name){
   <div class="w-full mx-auto px-6">
     <div class="bg-card rounded-lg border shadow-sm">
-      <div class="flex flex-col space-y-1.5 p-6 border-b">
+      <div class="flex items-center justify-between p-6 border-b">
         <h3 class="text-2xl font-semibold leading-none tracking-tight" i18n="@@editModelHeaders">{{tablePanel.type ? tablePanel.name : ''}}</h3>
+        <div class="flex items-center gap-2">
+          <span class="relative group text-xs font-medium text-gray-500 cursor-default select-none">
+            <span i18n="@@mcpVisibilityLabel">Visibilidad MCP</span>
+            <span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 rounded-md bg-gray-800 text-white text-xs px-3 py-2 text-center shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50"
+                  i18n="@@mcpVisibilityTooltipTableModel">
+              Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, None lo excluye totalmente.
+            </span>
+          </span>
+          <div class="flex p-1 rounded-lg bg-gray-200">
+            @for (opt of iaVisibilityOptionsSimple; track opt.value) {
+              <button type="button"
+                (click)="tablePanel.ia_visibility = opt.value; update()"
+                class="px-3 py-1 rounded-md text-xs font-medium transition-all"
+                [ngClass]="{'bg-white shadow text-foreground': tablePanel.ia_visibility === opt.value, 'text-gray-500': tablePanel.ia_visibility !== opt.value}">
+                {{ opt.label }}
+              </button>
+            }
+          </div>
+        </div>
       </div>
       <div class="p-6 space-y-6">
         <div class="grid gap-4">
@@ -46,7 +65,7 @@
           
           <div class="flex items-center space-x-2">
             <button type="button" role="switch"
-              [attr.aria-checked]="!tablePanel.visible" (click)="toggle_table(tablePanel.visible)" 
+              [attr.aria-checked]="!tablePanel.visible" (click)="toggle_table(tablePanel.visible)"
               class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#00BFB3] data-[state=unchecked]:bg-input"
               [ngClass]="{'bg-[#00BFB3]': !tablePanel.visible, 'bg-input': tablePanel.visible}">
               <span
@@ -173,8 +192,27 @@
 @if(typePanel==='columna' && columnPanel.technical_name){
   <div class="w-full mx-auto px-6">
     <div class="bg-card rounded-lg border shadow-sm">
-      <div class="flex flex-col space-y-1.5 p-6 border-b">
+      <div class="flex items-center justify-between p-6 border-b">
         <h3 class="text-2xl font-semibold leading-none tracking-tight" i18n="@@editModelHeaders">{{columnPanel.type ? columnPanel.name : ''}}</h3>
+        <div class="flex items-center gap-2">
+          <span class="relative group text-xs font-medium text-gray-500 cursor-default select-none">
+            <span i18n="@@mcpVisibilityLabel">Visibilidad MCP</span>
+            <span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-72 rounded-md bg-gray-800 text-white text-xs px-3 py-2 text-center shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50"
+                  i18n="@@mcpVisibilityTooltipCol">
+              Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, Declaration expone solo nombre y tipo, None lo excluye totalmente.
+            </span>
+          </span>
+          <div class="flex p-1 rounded-lg bg-gray-200">
+            @for (opt of iaVisibilityOptions; track opt.value) {
+              <button type="button"
+                (click)="columnPanel.ia_visibility = opt.value; update()"
+                class="px-3 py-1 rounded-md text-xs font-medium transition-all"
+                [ngClass]="{'bg-white shadow text-foreground': columnPanel.ia_visibility === opt.value, 'text-gray-500': columnPanel.ia_visibility !== opt.value}">
+                {{ opt.label }}
+              </button>
+            }
+          </div>
+        </div>
       </div>
       
       <div class="p-6 space-y-6">
@@ -358,24 +396,25 @@
             </button>
           </div>
 
-        @if (columnPanel.computed_column === 'no') {        
+        @if (columnPanel.computed_column === 'no') {
           <!-- Hide Column Toggle -->
           <div class="flex items-center space-x-2">
             <label class="font-medium" i18n="@@esconderColumna">Esconder columna</label>
-            <button 
-              type="button" 
-              role="switch" 
-              [attr.aria-checked]="!columnPanel.visible" 
-              (click)="toggle_column(columnPanel.visible)" 
-              class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50" 
+            <button
+              type="button"
+              role="switch"
+              [attr.aria-checked]="!columnPanel.visible"
+              (click)="toggle_column(columnPanel.visible)"
+              class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"
               [ngClass]="{'bg-[#00BFB3]': !columnPanel.visible, 'bg-input': columnPanel.visible}"
             >
-              <span 
-                class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform" 
+              <span
+                class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform"
                 [ngClass]="{'translate-x-5': !columnPanel.visible, 'translate-x-0': columnPanel.visible}"
               ></span>
             </button>
           </div>
+
         } @else {
           <button class="inline-flex items-center mr-2 justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-red-600 text-white hover:bg-red-700 h-10 px-4 py-2"
             i18n="@@borrar"  
@@ -400,8 +439,27 @@
 @if(typePanel==='root' && modelPanel.metadata){
   <div class="w-full mx-auto px-6">
     <div class="bg-card rounded-lg border shadow-sm">
-      <div class="flex flex-col space-y-1.5 p-6 border-b"> 
+      <div class="flex items-center justify-between p-6 border-b">
         <h2 class="text-2xl font-semibold" i18n="@@editModelHeaders">Editar {{modelPanel.type ? modelPanel.metadata.model_name : ''}}</h2>
+        <div class="flex items-center gap-2">
+          <span class="relative group text-xs font-medium text-gray-500 cursor-default select-none">
+            <span i18n="@@mcpVisibilityLabel">Visibilidad MCP</span>
+            <span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 rounded-md bg-gray-800 text-white text-xs px-3 py-2 text-center shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50"
+                  i18n="@@mcpVisibilityTooltipTableModel">
+              Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, None lo excluye totalmente.
+            </span>
+          </span>
+          <div class="flex p-1 rounded-lg bg-gray-200">
+            @for (opt of iaVisibilityOptionsSimple; track opt.value) {
+              <button type="button"
+                (click)="$any(modelPanel.metadata).ia_visibility = opt.value; update()"
+                class="px-3 py-1 rounded-md text-xs font-medium transition-all"
+                [ngClass]="{'bg-white shadow text-foreground': $any(modelPanel.metadata).ia_visibility === opt.value, 'text-gray-500': $any(modelPanel.metadata).ia_visibility !== opt.value}">
+                {{ opt.label }}
+              </button>
+            }
+          </div>
+        </div>
       </div>
       <div class="p-6 space-y-6">
         <!-- Metadata Section -->
@@ -412,16 +470,28 @@
               <label for="name" class="font-medium" i18n="@@inputNombre">
                 Nombre <span class="text-red-500">*</span>
               </label>
-              <input 
-                id="name" 
+              <input
+                id="name"
                 [(ngModel)]="modelPanel.metadata.model_name"
                 (keyup)="update()"
-                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
+            </div>
+            <div class="grid gap-2">
+              <label for="model_description" class="font-medium" i18n="@@inputDescripcionModelo">Descripción</label>
+              <textarea
+                id="model_description"
+                [(ngModel)]="$any(modelPanel.metadata).model_description"
+                (keyup)="update()"
+                rows="3"
+                class="flex w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+                i18n-placeholder="@@placeholderDescripcionModelo"
+                placeholder="Describe el propósito y contenido de este modelo de datos..."
+              ></textarea>
             </div>
           </div>
         </div>
-        
+
         <!-- Connection Section -->
         <div class="mb-8">
           <h3 class="text-lg font-medium text-gray-700 mb-4 border-b pb-2" i18n="@@conexionh4">Conexión</h3>

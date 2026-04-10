@@ -69,7 +69,8 @@ export class JSONWebServiceConnection extends AbstractConnection {
 						table_type: [],
 						columns: this.getColumns(JSON.parse(body)),
 						relations: [],
-						visible: true
+						visible: true,
+						ia_visibility: 'FULL'
 					}
 
 					/**Resolve promise */
@@ -142,6 +143,7 @@ export class JSONWebServiceConnection extends AbstractConnection {
 			column_granted_roles: [],
 			row_granted_roles: [],
 			visible: true,
+			ia_visibility: 'FULL',
 			tableCount: 0,
 			minimumFractionDigits: type === 'numeric' ? 2 : 0
 		}
