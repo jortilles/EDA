@@ -6118,6 +6118,14 @@ OR<ph id="5"/>
   <source>Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, Declaration expone solo nombre y tipo, None lo excluye totalmente.</source>
   <target>Controls whether the AI agent has access to this information: Full allows full access, Declaration exposes only name and type, None excludes it entirely.</target>
 </trans-unit>
+<trans-unit id="dynamicFiltersText" datatype="html">
+  <source>Filtros dinámicos</source>
+  <target>Dynamic filters</target>
+</trans-unit>
+<trans-unit id="uniqueRecordsGrouping" datatype="html">
+  <source>Registros únicos (agrupación)?</source>
+  <target>Unique records (grouping)?</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

@@ -6395,6 +6395,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, Declaration expone solo nombre y tipo, None lo excluye totalmente.</source>
         <target>Controla si l'agent d'IA té accés a aquesta informació: Full permet accés complet, Declaration exposa només nom i tipus, None l'exclou totalment.</target>
       </trans-unit>
+      <trans-unit id="dynamicFiltersText" datatype="html">
+        <source>Filtros dinámicos</source>
+        <target>Filtres dinàmics</target>
+      </trans-unit>
+      <trans-unit id="uniqueRecordsGrouping" datatype="html">
+        <source>Registros únicos (agrupación)?</source>
+        <target>Registres únics (agrupació)?</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
