@@ -50,6 +50,18 @@ export class IconService {
         </g>
       </svg>
     `,
+    "global-mini": `
+      <svg viewBox="0 0 27 26" xmlns="http://www.w3.org/2000/svg">
+        <g fill="none" fill-rule="evenodd" stroke="currentColor" stroke-width="2">
+          <circle cx="11.9589" cy="11" r="10" />
+          <circle cx="11.9589" cy="11" r="5" />
+          <path d="m15.305533 14.565892 3.589018 3.589017" />
+          <path d="m5.305533 3.565892 3.589017 3.589017" />
+          <path d="m15.805533 7.654909 3.589018-3.589017" />
+          <path d="m4.805533 17.654909 3.589017-3.589017" />
+        </g>
+      </svg>
+    `,
     "logout": `
       <svg viewBox="0 0 21 15" xmlns="http://www.w3.org/2000/svg">
         <g style="stroke:currentColor;stroke-width:2;fill:none;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round"
