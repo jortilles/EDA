@@ -845,6 +845,10 @@ public tableNodeExpand(event: any): void {
         this.display_v.chart = type;
         this.graficos.chartType = type;
         this.graficos.edaChart = subType;
+        if (this.panel.content) {
+            this.panel.content.chart = type;
+            this.panel.content.edaChart = subType;
+        }
         this.graficos.addTrend = config && config.getConfig() ? config.getConfig()['addTrend'] : false;
         this.graficos.showPredictionLines = config && config.getConfig() ? config.getConfig()['showPredictionLines'] : false;
         this.graficos.numberOfColumns = config && config.getConfig() ? config.getConfig()['numberOfColumns'] : null;
