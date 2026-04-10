@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { Router } from '@angular/router';
@@ -9,6 +9,7 @@ import { UserService } from '@eda/services/api/user.service';
 import { GroupService } from '@eda/services/api/group.service';
 import { AlertService, DashboardService } from '@eda/services/service.index';
 import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
+import { IaChatService, ChatMessage } from '@eda/services/api/ia-chat.service';
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
 import { CommonModule } from '@angular/common';
@@ -23,11 +24,21 @@ import { MultiSelectModule } from 'primeng/multiselect';
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.css']
 })
-export class HomePage implements OnInit, OnDestroy {
+export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   private createDashboardService = inject(CreateDashboardService);
   private dashboardService = inject(DashboardService);
   private alertService = inject(AlertService);
   private router = inject(Router);
+  private iaChatService = inject(IaChatService);
+
+  // --- Chat IA ---
+  @ViewChild('chatMessages') private chatMessagesRef!: ElementRef;
+  chatOpen = signal(false);
+  chatAvailable = signal(false);
+  chatLoading = signal(false);
+  chatInput = '';
+  chatHistory: ChatMessage[] = [];
+  private shouldScrollChat = false;
 
   allDashboards: any[] = [];
   publicReports: any[] = [];
@@ -83,6 +94,52 @@ export class HomePage implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadReports();
     this.ifAnonymousGetOut();
+    this.iaChatService.getConfig().subscribe({
+      next: (cfg) => this.chatAvailable.set(cfg.available),
+      error: () => this.chatAvailable.set(false),
+    });
+  }
+
+  ngAfterViewChecked(): void {
+    if (this.shouldScrollChat && this.chatMessagesRef) {
+      const el = this.chatMessagesRef.nativeElement;
+      el.scrollTop = el.scrollHeight;
+      this.shouldScrollChat = false;
+    }
+  }
+
+  toggleChat(): void {
+    this.chatOpen.set(!this.chatOpen());
+  }
+
+  onChatKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.sendChatMessage();
+    }
+  }
+
+  sendChatMessage(): void {
+    const text = this.chatInput.trim();
+    if (!text || this.chatLoading()) return;
+
+    this.chatHistory.push({ role: 'user', content: text });
+    this.chatInput = '';
+    this.chatLoading.set(true);
+    this.shouldScrollChat = true;
+
+    this.iaChatService.sendMessage(this.chatHistory).subscribe({
+      next: (res) => {
+        this.chatHistory.push({ role: 'assistant', content: res.response });
+        this.chatLoading.set(false);
+        this.shouldScrollChat = true;
+      },
+      error: (err) => {
+        this.chatHistory.push({ role: 'assistant', content: 'Error al conectar con el asistente.' });
+        this.chatLoading.set(false);
+        this.shouldScrollChat = true;
+      },
+    });
   }
 
   private setIsObserver = async () => {
