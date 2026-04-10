@@ -845,6 +845,7 @@ public tableNodeExpand(event: any): void {
         this.display_v.chart = type;
         this.graficos.chartType = type;
         this.graficos.edaChart = subType;
+        // Revision para paneles con modificacion de tipo de chart y posterior duplicado
         if (this.panel.content) {
             this.panel.content.chart = type;
             this.panel.content.edaChart = subType;
