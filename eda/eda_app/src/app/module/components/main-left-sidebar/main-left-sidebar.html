@@ -33,17 +33,17 @@
                       @if (subItem.path && !subItem.command) {
                             <a 
                               [routerLink]="subItem.path"
-                              class="flex items-center gap-2 p-2 rounded-md bg-white hover:text-[#00BFB3] transition-colors"
+                              class="flex items-center  gap-2 p-2 rounded-md bg-white hover:text-[#00BFB3] transition-colors"
                             >
                               @if(subItem.icon) {
-                                <eda-icon [name]="subItem.icon" class="h-4" />
+                                <eda-icon [name]="subItem.icon" class="h-4 pb-6" />
                               }
                               {{ subItem.label }}
                             </a>
                       } @else {
                         <button class="flex items-center gap-2 p-2 bg-white hover:text-[#00BFB3] transition-colors focus:outline-none" (click)="menuCommand(subItem, $event)">
                           @if(subItem.icon) {
-                            <eda-icon [name]="subItem.icon" class="h-4" />
+                            <eda-icon [name]="subItem.icon" class="h-4 pb-6" />
                           }
                           {{ subItem.label }}
                         </button>

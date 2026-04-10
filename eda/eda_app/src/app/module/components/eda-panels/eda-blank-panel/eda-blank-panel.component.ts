@@ -2166,11 +2166,11 @@ public tableNodeExpand(event: any): void {
 
     getAttributeTypeIcon(type: string) {
         const icons = {
-            numeric: 'mdi-numeric',//'text-blue-500',
-            date: 'mdi-calendar-text', //text-green-500',
-            coordinate: 'mdi-map-marker', //text-green-500',
-            text: 'mdi-alphabetical', //'text-orange-500' 
-            html: 'mdi-language-html5' //'text-orange-500' 
+            numeric: 'mdi-numeric',
+            date: 'mdi-calendar-text',
+            coordinate: 'mdi-map-marker',
+            text: 'mdi-alphabetical',
+            html: 'mdi-language-html5'
         };
         return icons[type as keyof typeof icons] || '';
     }
