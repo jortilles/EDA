@@ -64,6 +64,19 @@ async function getAllDashboards(userId: string) {
 
 
 
+// --- Helper SQL por tipo de BD ---
+function buildSelectQuery(dbType: string, cols: string, table: string, limit: number): string {
+    switch (dbType) {
+        case 'sqlserver':
+            return `SELECT TOP ${limit} ${cols} FROM ${table}`;
+        case 'oracle':
+            return `SELECT ${cols} FROM ${table} FETCH FIRST ${limit} ROWS ONLY`;
+        default:
+            // mysql, postgres, vertica, clickhouse, snowflake, bigquery, etc.
+            return `SELECT ${cols} FROM ${table} LIMIT ${limit}`;
+    }
+}
+
 // --- Filtrado ia_visibility ---
 function filterDatasourceForAI(ds: any): any | null {
     const raw = ds?.toObject ? ds.toObject() : ds;
@@ -311,7 +324,8 @@ function createMcpServer() {
                     return { content: [{ type: 'text', text: `No se pudo obtener conexión para el datasource: ${datasource_id}` }], isError: true };
                 }
                 connection.client = await connection.getclient();
-                const sql = `SELECT ${selectCols} FROM ${table_name} LIMIT ${limit}`;
+                const dbType: string = raw?.ds?.connection?.type ?? '';
+                const sql = buildSelectQuery(dbType, selectCols, table_name, limit);
                 console.log('[MCP] query_datasource - SQL:', sql);
                 const rows = await connection.execSqlQuery(sql);
 
@@ -428,7 +442,8 @@ async function execTool(toolName: string, toolInput: any, userId: string): Promi
                 const connection = await ManagerConnectionService.getConnection(datasource_id);
                 if (!connection) return `No se pudo conectar al datasource: ${datasource_id}`;
                 connection.client = await connection.getclient();
-                const sql = `SELECT ${selectCols} FROM ${table_name} LIMIT ${limit}`;
+                const dbType: string = raw?.ds?.connection?.type ?? '';
+                const sql = buildSelectQuery(dbType, selectCols, table_name, limit);
                 console.log('[CHAT] query_datasource SQL:', sql);
                 const rows = await connection.execSqlQuery(sql);
                 if (!rows || rows.length === 0) return `La tabla ${table_name} no devolvió filas.`;
