@@ -76,23 +76,23 @@ export class MailingService {
 
       const dashboards = await Dashboard.find({ 'config.sendViaMailConfig.enabled': true });
       const token = await UserController.provideFakeToken();
-      let dashboardsToUpdate = [];
+      let dashboardsToUpdate: any[] = [];
 
       dashboards.forEach(dashboard => {
-        const userMails = dashboard.config.sendViaMailConfig.users.map(user => user.email);
+        const cfg = dashboard.config.sendViaMailConfig;
+        const userMails = cfg.users.map((user: any) => user.email);
         const dashboardID: string = dashboard._id.toString();
         let shouldUpdate = false;
-        if (dashboard.config.sendViaMailConfig.units = 'hours') {
-          shouldUpdate = SchedulerFunctions.checkScheduleHours(dashboard.config.sendViaMailConfig.quantity, dashboard.config.sendViaMailConfig.lastUpdated);
-        } else if (dashboard.config.sendViaMailConfig.units = 'minutes') {
-          const mailing = dashboard.config.sendViaMailConfig;
-          shouldUpdate = SchedulerFunctions.checkScheduleDays(mailing.quantity, mailing.hours, mailing.minutes, mailing.lastUpdated);
+        if (cfg.units === 'hours') {
+          shouldUpdate = SchedulerFunctions.checkScheduleHours(cfg.quantity, cfg.lastUpdated);
+        } else if (cfg.units === 'days') {
+          shouldUpdate = SchedulerFunctions.checkScheduleDays(cfg.quantity, cfg.hours, cfg.minutes, cfg.lastUpdated);
         }
 
 
         if (shouldUpdate) {
-          userMails.forEach( mail => {
-            MailDashboardsController.sendDashboard(dashboardID, mail, transporter, dashboard.config.sendViaMailConfig.mailMessage, token);
+          userMails.forEach((mail: string) => {
+            MailDashboardsController.sendDashboard(dashboardID, mail, transporter, cfg.mailMessage, token);
           });
           dashboard.config.sendViaMailConfig.lastUpdated = newDate;
           if (!dashboardsToUpdate.map(d => d._id).includes(dashboardID)) {

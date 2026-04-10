@@ -31,7 +31,17 @@ export class MailController {
 
     try {
 
-      fs.writeFile(`config/SMPT.config.json`, JSON.stringify(req.body), 'utf8', (err) => {
+      const newConfig = req.body;
+
+      // Si el password viene null (el usuario no lo reescribió), conservar el existente
+      if (!newConfig.auth?.pass) {
+        try {
+          const existing = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../config/SMPT.config.json'), 'utf-8'));
+          newConfig.auth.pass = existing.auth?.pass ?? null;
+        } catch { }
+      }
+
+      fs.writeFile(`config/SMPT.config.json`, JSON.stringify(newConfig), 'utf8', (err) => {
         if (err) return next(new HttpException(404, 'Error saving configuration'));
         return res.status(200).json({ ok: true });
       });

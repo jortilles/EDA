@@ -13,8 +13,7 @@ export const initJobs = ()=> {
   const cacheUpdater = schedule.scheduleJob(cache_config.UPDATING_SCHEDULE, () => CachedQueryService.updateQueries() );
 
   /**Check mail sending */
-  console.log('NOT SENDING MAILS')
-  // const mailSender   = schedule.scheduleJob(mail_config.MAILING_SCHEDULE, () => MailingService.mailingService() );
-  
+  const mailSender = schedule.scheduleJob(mail_config.MAILING_SCHEDULE, () => MailingService.mailingService() );
+
 }
 

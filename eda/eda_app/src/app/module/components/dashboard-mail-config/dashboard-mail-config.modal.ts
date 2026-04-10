@@ -42,28 +42,29 @@ export class DashboardMailConfigModal {
   public disabled : boolean ;
 
   constructor(private alertService: AlertService, private userService: UserService) { }
-  
+
   ngOnInit(): void {
     this.userService.getUsers().subscribe(
       res => this.users = res.map(user => ({ label: user.name, value: user })),
       err => console.log(err)
     );
 
-    if(this.dashboard.dashboard.config && this.dashboard.dashboard.config.enabled){
+    const sendViaMailConfig = this.dashboard.dashboard.config?.sendViaMailConfig;
+    if (sendViaMailConfig?.enabled) {
       this.setConfig();
     }
   }
 
-  setConfig(){
-      const config = this.dashboard.dashboard.config;
-      this.hours = `${config.hours || '00'}:${config.minutes || '00'}`;
-      this.units = config.units;
-      this.quantity = config.quantity;
-      this.selectedUsers = config.users.map(user => ({ label: user.name, value: user }) );
-      this.mailMessage = config.mailMessage;
-      this.disabled = !config.enabled;
-    }
-  
+  setConfig() {
+    const config = this.dashboard.dashboard.config.sendViaMailConfig;
+    this.hours = `${config.hours || '00'}:${config.minutes || '00'}`;
+    this.units = config.units;
+    this.quantity = config.quantity;
+    this.selectedUsers = config.users;
+    this.mailMessage = config.mailMessage;
+    this.disabled = !config.enabled;
+  }
+
   save() {
 
     const hours = this.hours && typeof this.hours === 'string' ? this.hours.slice(0, 2) :
@@ -76,7 +77,7 @@ export class DashboardMailConfigModal {
       quantity: this.quantity,
       hours: hours,
       minutes: minutes,
-      users: this.selectedUsers.map(user => user.name),
+      users: this.selectedUsers,
       mailMessage: this.mailMessage,
       lastUpdated: new Date().toISOString(),
       enabled: !this.disabled,
@@ -89,7 +90,7 @@ export class DashboardMailConfigModal {
     if (n < 10) return `0${n}`
     else return `${n}`;
   }
-  
+
   public onApply() {
     this.display = false;
     this.save();

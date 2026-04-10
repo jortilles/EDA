@@ -583,7 +583,7 @@ export class DashboardSidebarComponent {
 
     // Clonar info del sendViaMailConfig
     const configToSave = {
-      enabled: true,
+      enabled: sendViaMailConfig.enabled,
       hours: sendViaMailConfig.hours,
       lastUpdated: sendViaMailConfig.lastUpdated,
       mailMessage: sendViaMailConfig.mailMessage,
@@ -593,8 +593,9 @@ export class DashboardSidebarComponent {
       users: sendViaMailConfig.users
     };
 
-    // Asignar datos al config
+    // Asignar datos al config y persistir en BD
     this.dashboard.dashboard.config.sendViaMailConfig = configToSave;
+    this.dashboard.saveDashboard();
   }
 
 
