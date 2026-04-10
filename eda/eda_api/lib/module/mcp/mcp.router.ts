@@ -254,12 +254,40 @@ function createMcpServer() {
 
             try {
                 await loginInternal();
+
+                // Obtener modelo para filtrar columnas FULL únicamente
+                const dsDoc = await DataSource.findById(datasource_id).exec();
+                if (!dsDoc) return { content: [{ type: 'text', text: `Datasource no encontrado: ${datasource_id}` }], isError: true };
+
+                const raw = (dsDoc as any).toObject ? (dsDoc as any).toObject() : dsDoc;
+                const modelRaw = raw?.ds?.model;
+                const allTables: any[] = Array.isArray(modelRaw) ? modelRaw
+                    : (modelRaw && typeof modelRaw === 'object' ? Object.values(modelRaw) : []);
+
+                // Busca la tabla por table_name (la parte después del punto si hay schema.tabla)
+                const bareTableName = table_name.includes('.') ? table_name.split('.').pop() : table_name;
+                const tableMeta = allTables.find((t: any) =>
+                    t.table_name === table_name || t.table_name === bareTableName
+                );
+
+                let selectCols = '*';
+                if (tableMeta) {
+                    const colsRaw = tableMeta.columns;
+                    const cols: any[] = Array.isArray(colsRaw) ? colsRaw
+                        : (colsRaw && typeof colsRaw === 'object' ? Object.values(colsRaw) : []);
+                    const fullCols = cols
+                        .filter((c: any) => (c.ia_visibility ?? 'FULL') === 'FULL')
+                        .map((c: any) => c.column_name)
+                        .filter(Boolean);
+                    if (fullCols.length > 0) selectCols = fullCols.join(', ');
+                }
+
                 const connection = await ManagerConnectionService.getConnection(datasource_id);
                 if (!connection) {
                     return { content: [{ type: 'text', text: `No se pudo obtener conexión para el datasource: ${datasource_id}` }], isError: true };
                 }
                 connection.client = await connection.getclient();
-                const sql = `SELECT * FROM ${table_name} LIMIT ${limit}`;
+                const sql = `SELECT ${selectCols} FROM ${table_name} LIMIT ${limit}`;
                 console.log('[MCP] query_datasource - SQL:', sql);
                 const rows = await connection.execSqlQuery(sql);
 
