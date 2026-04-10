@@ -173,6 +173,17 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public tableTypes: SelectItem[] = [{ label: this.dimensionLabel, value: 'dimension' }, { label: this.factLabel, value: 'fact' }, { label: this.viewLabel, value: 'view' }];
     public selectedTableType: string;
 
+    public iaVisibilityOptions = [
+        { value: 'FULL', label: 'Full' },
+        { value: 'DECLARATION', label: 'Declaration' },
+        { value: 'NONE', label: 'None' },
+    ];
+
+    public iaVisibilityOptionsSimple = [
+        { value: 'FULL', label: 'Full' },
+        { value: 'NONE', label: 'None' },
+    ];
+
     // Aggregation Types
     public selectedAggType: any;
     public aggTypes: SelectItem[] = aggTypes;

@@ -6343,6 +6343,26 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="adminPortal" datatype="html">
         <source>Portal de datos</source>
         <target>Portail de données</target>
+ </trans-unit>
+      <trans-unit id="inputDescripcionModelo" datatype="html">
+        <source>Descripción</source>
+        <target>Description</target>
+      </trans-unit>
+      <trans-unit id="placeholderDescripcionModelo" datatype="html">
+        <source>Describe el propósito y contenido de este modelo de datos...</source>
+        <target>Décrivez l'objectif et le contenu de ce modèle de données...</target>
+      </trans-unit>
+      <trans-unit id="mcpVisibilityLabel" datatype="html">
+        <source>Visibilidad MCP</source>
+        <target>Visibilité MCP</target>
+      </trans-unit>
+      <trans-unit id="mcpVisibilityTooltipTableModel" datatype="html">
+        <source>Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, None lo excluye totalmente.</source>
+        <target>Contrôle si l'agent IA a accès à cette information : Full autorise l'accès complet, None l'exclut entièrement.</target>
+      </trans-unit>
+      <trans-unit id="mcpVisibilityTooltipCol" datatype="html">
+        <source>Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, Declaration expone solo nombre y tipo, None lo excluye totalmente.</source>
+        <target>Contrôle si l'agent IA a accès à cette information : Full autorise l'accès complet, Declaration expose uniquement le nom et le type, None l'exclut entièrement.</target>
       </trans-unit>
     </body>
   </file>

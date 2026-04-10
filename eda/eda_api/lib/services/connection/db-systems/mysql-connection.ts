@@ -266,7 +266,8 @@ async execQuery(query: string): Promise<any> {
                     table_type: [],
                     columns: getColumns,
                     relations: [],
-                    visible: true
+                    visible: true,
+                    ia_visibility: 'FULL'
                 };
                 resolve(newTable);
             } catch (err) {
@@ -301,6 +302,7 @@ async execQuery(query: string): Promise<any> {
         column.column_granted_roles = [];
         column.row_granted_roles = [];
         column.visible = true;
+        column.ia_visibility = 'FULL';
         column.tableCount = tableCount || 0;
 
         return column;

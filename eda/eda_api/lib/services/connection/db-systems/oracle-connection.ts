@@ -230,7 +230,8 @@ export class OracleConnection extends AbstractConnection {
             table_type: [],
             columns: getColumns.rows,
             relations: [],
-            visible: true
+            visible: true,
+            ia_visibility: 'FULL'
         };
     }
 
@@ -260,6 +261,7 @@ export class OracleConnection extends AbstractConnection {
         column.column_granted_roles = [];
         column.row_granted_roles = [];
         column.visible = true;
+        column.ia_visibility = 'FULL';
         column.tableCount = tableCount || 0;
 
         return column;
