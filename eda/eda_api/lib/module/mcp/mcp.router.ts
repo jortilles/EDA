@@ -475,7 +475,7 @@ McpRouter.get('/', (_req: Request, res: Response) => {
 });
 
 McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
-    const { API_KEY, MODEL, AVAILABLE, MAX_TOKENS, EDA_APP_URL } = getAnthropicConfig();
+    const { API_KEY, MODEL, AVAILABLE, MAX_TOKENS, EDA_APP_URL, MCP_URL } = getAnthropicConfig();
 
     if (!AVAILABLE) {
         return res.status(503).json({ ok: false, response: 'El asistente de IA no está disponible. Configura la API key de Anthropic.' });
@@ -494,9 +494,8 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
     const mcpClient = new Client({ name: 'eda-chat', version: '1.0.0' });
 
     try {
-        const mcpUrl = `${EDA_APP_URL}/mcp`;
-        console.log('[CHAT] Conectando a MCP:', mcpUrl);
-        const transport = new StreamableHTTPClientTransport(new URL(mcpUrl));
+        console.log('[CHAT] Conectando a MCP:', MCP_URL || '(no configurado)');
+        const transport = new StreamableHTTPClientTransport(new URL(MCP_URL));
         await mcpClient.connect(transport);
         console.log('[CHAT] Conexión MCP establecida OK');
 
