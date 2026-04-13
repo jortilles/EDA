@@ -49,6 +49,15 @@ th{
   border: 1px solid #fff;
 }
 
+/* Mantener cabecera gris y row-banding independientemente del color del panel */
+.eda-table ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+     background: rgba(228, 228, 228, 0.5) !important;
+}
+
+.eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) > td {
+     background: rgba(228, 228, 228, 0.5) !important;
+}
+
 .p-datatable-auto-layout>.p-datatable-wrapper {
   overflow: hidden;
 }
@@ -89,11 +98,11 @@ th{
 
 /* Cabeceras: fondo semi-transparente */
 .eda-table--transparent ::ng-deep .p-datatable .p-datatable-thead > tr > th {
-    background: rgba(255, 255, 255, 0.25) !important;
+    background: rgba(228, 228, 228, 0.5) !important;
 }
 
 .eda-table--transparent th {
-    background-color: rgba(255, 255, 255, 0.25) !important;
+    background: rgba(228, 228, 228, 0.5) !important;
 }
 
 /* Filas pares: transparente */
@@ -103,7 +112,7 @@ th{
 
 /* Filas impares (banding): franja semi-transparente */
 .eda-table--transparent ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
-    background: rgba(255, 255, 255, 0.15) !important;
+    background: rgba(228, 228, 228, 0.5) !important;
 }
 
 .eda-table--transparent ::ng-deep .p-datatable .p-datatable-tbody > tr > td,
