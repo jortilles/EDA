@@ -6423,6 +6423,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Registros únicos (agrupación)?</source>
         <target>Registres únics (agrupació)?</target>
       </trans-unit>
+      <trans-unit id="tableDescriptionDependentFilter" datatype="html">
+        <source>Tabla:</source>
+        <target>Taula:</target>
+      </trans-unit>
+      <trans-unit id="columnDescriptionDependentFilter" datatype="html">
+        <source>Columna:</source>
+        <target>Columna:</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

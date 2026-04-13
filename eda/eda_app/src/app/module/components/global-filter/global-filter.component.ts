@@ -522,6 +522,8 @@ export class GlobalFilterComponent implements OnInit {
                         filter_column: this.globalFilter.selectedColumn.column_name,
                         filter_type: this.globalFilter.selectedColumn.column_type,
                         filter_id: this.globalFilter.id,
+                        description_table: this.globalFilter.selectedTable?.display_name?.default || this.globalFilter.selectedTable?.table_name,
+                        description_column: this.globalFilter.selectedColumn?.display_name?.default || this.globalFilter.selectedColumn?.column_name,
                     })
                     this.alertService.addInfo($localize`:@@newFilterAddToDF:Se agregó un nuevo filtro a la relación de filtros dependientes`);
                 }

@@ -41,6 +41,19 @@
     padding: 5px
 }
 
+::ng-deep .df-filter-tooltip {
+    max-width: 24rem;
+}
+::ng-deep .df-filter-tooltip .p-tooltip-text {
+    background-color: #ffffff;
+    color: #000000;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+::ng-deep .df-filter-tooltip.p-tooltip-top .p-tooltip-arrow {
+    border-top-color: #ffffff;
+}
+
 ::ng-deep gridster.display-grid .gridster-column {
   border-left-color: #d1e7dd !important;
   border-right-color: #d1e7dd !important;
