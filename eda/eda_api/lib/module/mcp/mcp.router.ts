@@ -164,7 +164,7 @@ function createMcpServer() {
                     const lines = [`\n## ${label}`];
                     if (items.length === 0) lines.push('  (sin dashboards)');
                     for (const d of items) {
-                        const link = EDA_APP_URL ? ` — ${EDA_APP_URL}/en/#/dashboard/${encodeURIComponent(d._id)}` : '';
+                        const link = EDA_APP_URL ? ` — ${EDA_APP_URL}/ca/#/dashboard/${encodeURIComponent(d._id)}` : '';
                         lines.push(`  - [${d._id}] ${d.config?.title ?? '(sin título)'}${link}`);
                     }
                     return lines;
@@ -199,7 +199,7 @@ function createMcpServer() {
                 const lines = datasources
                     .filter((ds: any) => (ds.ds?.metadata?.ia_visibility ?? 'FULL') !== 'NONE')
                     .map((ds: any) => {
-                        const link = EDA_APP_URL ? ` — ${EDA_APP_URL}/en/#/data-source/${encodeURIComponent(ds._id)}` : '';
+                        const link = EDA_APP_URL ? ` — ${EDA_APP_URL}/ca/#/data-source/${encodeURIComponent(ds._id)}` : '';
                         return `  - [${ds._id}] ${ds.ds?.metadata?.model_name ?? '(sin nombre)'} [${ds.ds?.metadata?.ia_visibility ?? 'FULL'}]${link}`;
                     });
                 return {
@@ -233,7 +233,7 @@ function createMcpServer() {
                 if (!filtered) return { content: [{ type: 'text', text: `Datasource ${id} excluido por ia_visibility: NONE` }], isError: true };
                 const { EDA_APP_URL } = getAnthropicConfig();
                 console.log('[MCP] get_datasource — EDA_APP_URL:', EDA_APP_URL || '(vacío)', '| id:', id);
-                const url = EDA_APP_URL ? `URL: ${EDA_APP_URL}/en/#/data-source/${encodeURIComponent(id)}\n\n` : '';
+                const url = EDA_APP_URL ? `URL: ${EDA_APP_URL}/ca/#/data-source/${encodeURIComponent(id)}\n\n` : '';
                 return { content: [{ type: 'text', text: `${url}${JSON.stringify(filtered, null, 2)}` }] };
             } catch (err: any) {
                 return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
@@ -259,7 +259,7 @@ function createMcpServer() {
 
                 const { EDA_APP_URL } = getAnthropicConfig();
                 console.log('[MCP] get_dashboard — EDA_APP_URL:', EDA_APP_URL || '(vacío)', '| id:', id);
-                const dashboardLink = EDA_APP_URL ? `${EDA_APP_URL}/en/#/dashboard/${encodeURIComponent(id)}` : '';
+                const dashboardLink = EDA_APP_URL ? `${EDA_APP_URL}/ca/#/dashboard/${encodeURIComponent(id)}` : '';
                 const lines: string[] = [
                     `# ${db.config?.title ?? '(sin título)'}`,
                     ...(dashboardLink ? [`URL: ${dashboardLink}`] : []),
@@ -405,7 +405,7 @@ async function execTool(toolName: string, toolInput: any, userId: string): Promi
                 const lines = datasources
                     .filter((ds: any) => (ds.ds?.metadata?.ia_visibility ?? 'FULL') !== 'NONE')
                     .map((ds: any) => {
-                        const link = EDA_APP_URL ? ` — ${EDA_APP_URL}/en/#/data-source/${encodeURIComponent(ds._id)}` : '';
+                        const link = EDA_APP_URL ? ` — ${EDA_APP_URL}/ca/#/data-source/${encodeURIComponent(ds._id)}` : '';
                         return `- [${ds._id}] ${ds.ds?.metadata?.model_name ?? '(sin nombre)'} [${ds.ds?.metadata?.ia_visibility ?? 'FULL'}]${link}`;
                     });
                 return 'Datasources:\n' + (lines.length ? lines.join('\n') : '(sin datasources)');
@@ -418,7 +418,7 @@ async function execTool(toolName: string, toolInput: any, userId: string): Promi
                 const fmt = (label: string, items: any[]) => {
                     if (!items.length) return `\n## ${label}\n  (sin dashboards)`;
                     return `\n## ${label}\n` + items.map((d: any) => {
-                        const link = EDA_APP_URL ? ` — ${EDA_APP_URL}/en/#/dashboard/${encodeURIComponent(d._id)}` : '';
+                        const link = EDA_APP_URL ? ` — ${EDA_APP_URL}/ca/#/dashboard/${encodeURIComponent(d._id)}` : '';
                         return `- [${d._id}] ${d.config?.title ?? '(sin título)'}${link}`;
                     }).join('\n');
                 };
@@ -432,7 +432,7 @@ async function execTool(toolName: string, toolInput: any, userId: string): Promi
                 if (!filtered) return `Datasource ${toolInput.id} excluido por ia_visibility: NONE`;
                 const { EDA_APP_URL } = getAnthropicConfig();
                 console.log('[CHAT] get_datasource — EDA_APP_URL:', EDA_APP_URL || '(vacío)', '| id:', toolInput.id);
-                const url = EDA_APP_URL ? `URL: ${EDA_APP_URL}/en/#/data-source/${encodeURIComponent(toolInput.id)}\n\n` : '';
+                const url = EDA_APP_URL ? `URL: ${EDA_APP_URL}/ca/#/data-source/${encodeURIComponent(toolInput.id)}\n\n` : '';
                 return `${url}${JSON.stringify(filtered, null, 2)}`;
             }
 
@@ -441,7 +441,7 @@ async function execTool(toolName: string, toolInput: any, userId: string): Promi
                 if (!db) return `Dashboard no encontrado: ${toolInput.id}`;
                 const { EDA_APP_URL } = getAnthropicConfig();
                 console.log('[CHAT] get_dashboard — EDA_APP_URL:', EDA_APP_URL || '(vacío)', '| id:', toolInput.id);
-                const dashLink = EDA_APP_URL ? `${EDA_APP_URL}/en/#/dashboard/${encodeURIComponent(toolInput.id)}` : '';
+                const dashLink = EDA_APP_URL ? `${EDA_APP_URL}/ca/#/dashboard/${encodeURIComponent(toolInput.id)}` : '';
                 const lines: string[] = [
                     `# ${db.config?.title ?? '(sin título)'}`,
                     ...(dashLink ? [`URL: ${dashLink}`] : []),
