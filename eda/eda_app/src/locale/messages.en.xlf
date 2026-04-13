@@ -6134,6 +6134,18 @@ OR<ph id="5"/>
   <source>Columna:</source>
   <target>Column:</target>
 </trans-unit>
+<trans-unit id="noAttributeShouldHaveAggregation">
+  <source>Ningún Atributo debe tener agregación</source>
+  <target>No attribute should have aggregation</target>
+</trans-unit>
+<trans-unit id="mustConfigureAtLeastOneAttribute">
+  <source>Debe configurar un atributo como mínimo para habilitar esta opción</source>
+  <target>You must configure at least one attribute to enable this option</target>
+</trans-unit>
+<trans-unit id="mustAddTheGroupingsToRunWithAggregations">
+  <source>Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos</source>
+  <target>You must enable groupings to execute with aggregations configured on the attributes</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

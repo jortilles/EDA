@@ -6380,6 +6380,18 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Columna:</source>
         <target>Colonne:</target>
       </trans-unit>
+      <trans-unit id="noAttributeShouldHaveAggregation">
+        <source>Ningún Atributo debe tener agregación</source>
+        <target>Aucun attribut ne doit avoir d'agrégation</target>
+      </trans-unit>
+      <trans-unit id="mustConfigureAtLeastOneAttribute">
+        <source>Debe configurar un atributo como mínimo para habilitar esta opción</source>
+        <target>Vous devez configurer au moins un attribut pour activer cette option</target>
+      </trans-unit>
+      <trans-unit id="mustAddTheGroupingsToRunWithAggregations">
+        <source>Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos</source>
+        <target>Vous devez activer les regroupements pour exécuter avec des agrégations configurées dans les attributs</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

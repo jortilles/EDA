@@ -6045,6 +6045,18 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Columna:</source>
         <target>Kolumna:</target>
       </trans-unit>
+      <trans-unit id="noAttributeShouldHaveAggregation">
+        <source>Ningún Atributo debe tener agregación</source>
+        <target>Żaden atrybut nie powinien mieć agregacji</target>
+      </trans-unit>
+      <trans-unit id="mustConfigureAtLeastOneAttribute">
+        <source>Debe configurar un atributo como mínimo para habilitar esta opción</source>
+        <target>Należy skonfigurować co najmniej jeden atrybut, aby włączyć tę opcję</target>
+      </trans-unit>
+      <trans-unit id="mustAddTheGroupingsToRunWithAggregations">
+        <source>Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos</source>
+        <target>Należy włączyć grupowanie, aby wykonać operację z agregacjami skonfigurowanymi w atrybutach</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>
