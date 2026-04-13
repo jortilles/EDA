@@ -1,6 +1,8 @@
 import express, { Request, Response } from 'express';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { z } from 'zod';
 import Anthropic from '@anthropic-ai/sdk';
 import * as path from 'path';
@@ -36,9 +38,12 @@ async function loginInternal(): Promise<string> {
     console.log('[MCP] Usuario encontrado:', user ? user.email : 'NO ENCONTRADO');
     if (!user) throw new Error(`Usuario no encontrado: ${MCP_EMAIL}`);
     const passwordOk = bcrypt.compareSync(MCP_PASSWORD, user.password);
+    console.log('[MCP] loginInternal — password válido:', passwordOk);
     if (!passwordOk) throw new Error('Credenciales incorrectas.');
     user.password = ':)';
-    return jwt.sign({ user }, SEED, { expiresIn: 14400 });
+    const token = jwt.sign({ user }, SEED, { expiresIn: 14400 });
+    console.log('[MCP] loginInternal — token generado OK para:', user.email, '| role:', user.role);
+    return token;
 }
 
 // --- Helpers para obtener dashboards por rol ---
@@ -365,13 +370,85 @@ function createMcpServer() {
     //     }
     // );
 
-    console.log('[MCP] createMcpServer - query_datasource registrado. Total tools: 5');
+    server.registerTool(
+        'server_status',
+        { description: 'Devuelve el estado del servidor MCP de EDA: configuración activa, credenciales MCP, conteo de dashboards y datasources, y estado de autenticación.' },
+        async () => {
+            console.log('[MCP] tool: server_status - ejecutando');
+            const { EDA_APP_URL, MODEL, AVAILABLE, MAX_TOKENS } = getAnthropicConfig();
+
+            const lines: string[] = [
+                '# Estado del servidor EDA MCP',
+                '',
+                '## Configuración',
+                `  EDA_APP_URL : ${EDA_APP_URL || '(no configurado)'}`,
+                `  MODEL       : ${MODEL || '(no configurado)'}`,
+                `  AVAILABLE   : ${AVAILABLE}`,
+                `  MAX_TOKENS  : ${MAX_TOKENS}`,
+                '',
+                '## Credenciales MCP',
+                `  MCP_EMAIL   : ${MCP_EMAIL || '(no configurado)'}`,
+                `  MCP_PASSWORD: ${MCP_PASSWORD ? '(configurado)' : '(no configurado)'}`,
+                '',
+            ];
+
+            // Test autenticación
+            try {
+                const token = await loginInternal();
+                const decoded: any = jwt.verify(token, SEED);
+                lines.push('## Autenticación');
+                lines.push(`  Estado : OK`);
+                lines.push(`  Usuario: ${decoded.user?.email ?? '(desconocido)'}`);
+                lines.push(`  Rol    : ${decoded.user?.role ?? '(desconocido)'}`);
+                lines.push('');
+            } catch (authErr: any) {
+                lines.push('## Autenticación');
+                lines.push(`  Estado : ERROR — ${authErr.message}`);
+                lines.push('');
+            }
+
+            // Conteo de dashboards y datasources
+            try {
+                const [totalDashboards, totalDatasources] = await Promise.all([
+                    Dashboard.countDocuments().exec(),
+                    DataSource.countDocuments().exec(),
+                ]);
+                lines.push('## Base de datos');
+                lines.push(`  Dashboards : ${totalDashboards}`);
+                lines.push(`  Datasources: ${totalDatasources}`);
+                lines.push('');
+            } catch (dbErr: any) {
+                lines.push('## Base de datos');
+                lines.push(`  ERROR: ${dbErr.message}`);
+                lines.push('');
+            }
+
+            const statusText = lines.join('\n');
+            console.log('[MCP] server_status:\n' + statusText);
+            return { content: [{ type: 'text', text: statusText }] };
+        }
+    );
+
+    console.log('[MCP] createMcpServer - server_status registrado. Total tools: 5');
 
     return server;
 }
 
 // --- Express router ---
 const McpRouter = express.Router();
+
+// Log de arranque con valores clave
+{
+    const { EDA_APP_URL, MODEL, AVAILABLE, MAX_TOKENS } = getAnthropicConfig();
+    console.log('[MCP] ========== ROUTER INICIADO ==========');
+    console.log('[MCP] EDA_APP_URL :', EDA_APP_URL || '(no configurado)');
+    console.log('[MCP] MODEL       :', MODEL || '(no configurado)');
+    console.log('[MCP] AVAILABLE   :', AVAILABLE);
+    console.log('[MCP] MAX_TOKENS  :', MAX_TOKENS);
+    console.log('[MCP] MCP_EMAIL   :', MCP_EMAIL || '(no configurado)');
+    console.log('[MCP] MCP_PASSWORD:', MCP_PASSWORD ? '(configurado)' : '(no configurado)');
+    console.log('[MCP] =========================================');
+}
 
 McpRouter.post('/', async (req: Request, res: Response) => {
     // callInterceptor sets req.query = undefined; restore it so the MCP SDK can access it
@@ -397,159 +474,8 @@ McpRouter.get('/', (_req: Request, res: Response) => {
     res.json({ service: 'eda-mcp', version: '1.0.0', status: 'ok', transport: 'Streamable HTTP' });
 });
 
-// --- Tool implementations reutilizables para el chat ---
-async function execTool(toolName: string, toolInput: any, userId: string): Promise<string> {
-    try {
-        switch (toolName) {
-
-            case 'list_datasources': {
-                const { EDA_APP_URL } = getAnthropicConfig();
-                console.log('[CHAT] list_datasources — EDA_APP_URL:', EDA_APP_URL || '(vacío)');
-                const datasources = await DataSource.find({}, 'ds.metadata').exec();
-                const lines = datasources
-                    .filter((ds: any) => (ds.ds?.metadata?.ia_visibility ?? 'FULL') !== 'NONE')
-                    .map((ds: any) => {
-                        const link = EDA_APP_URL ? ` — ${EDA_APP_URL}/ca/#/data-source/${encodeURIComponent(ds._id)}` : '';
-                        return `- [${ds._id}] ${ds.ds?.metadata?.model_name ?? '(sin nombre)'} [${ds.ds?.metadata?.ia_visibility ?? 'FULL'}]${link}`;
-                    });
-                return 'Datasources:\n' + (lines.length ? lines.join('\n') : '(sin datasources)');
-            }
-
-            case 'list_dashboards': {
-                const { EDA_APP_URL } = getAnthropicConfig();
-                console.log('[CHAT] list_dashboards — EDA_APP_URL:', EDA_APP_URL || '(vacío)');
-                const { dashboards, group, publics, shared } = await getAllDashboards(userId);
-                const fmt = (label: string, items: any[]) => {
-                    if (!items.length) return `\n## ${label}\n  (sin dashboards)`;
-                    return `\n## ${label}\n` + items.map((d: any) => {
-                        const link = EDA_APP_URL ? ` — ${EDA_APP_URL}/ca/#/dashboard/${encodeURIComponent(d._id)}` : '';
-                        return `- [${d._id}] ${d.config?.title ?? '(sin título)'}${link}`;
-                    }).join('\n');
-                };
-                return 'Dashboards:\n' + fmt('Privados', dashboards) + fmt('De grupo', group) + fmt('Públicos', publics) + fmt('Compartidos', shared);
-            }
-
-            case 'get_datasource': {
-                const ds = await DataSource.findById(toolInput.id).exec();
-                if (!ds) return `Datasource no encontrado: ${toolInput.id}`;
-                const filtered = filterDatasourceForAI(ds);
-                if (!filtered) return `Datasource ${toolInput.id} excluido por ia_visibility: NONE`;
-                const { EDA_APP_URL } = getAnthropicConfig();
-                console.log('[CHAT] get_datasource — EDA_APP_URL:', EDA_APP_URL || '(vacío)', '| id:', toolInput.id);
-                const url = EDA_APP_URL ? `URL: ${EDA_APP_URL}/ca/#/data-source/${encodeURIComponent(toolInput.id)}\n\n` : '';
-                return `${url}${JSON.stringify(filtered, null, 2)}`;
-            }
-
-            case 'get_dashboard': {
-                const db: any = await Dashboard.findById(toolInput.id).exec();
-                if (!db) return `Dashboard no encontrado: ${toolInput.id}`;
-                const { EDA_APP_URL } = getAnthropicConfig();
-                console.log('[CHAT] get_dashboard — EDA_APP_URL:', EDA_APP_URL || '(vacío)', '| id:', toolInput.id);
-                const dashLink = EDA_APP_URL ? `${EDA_APP_URL}/ca/#/dashboard/${encodeURIComponent(toolInput.id)}` : '';
-                const lines: string[] = [
-                    `# ${db.config?.title ?? '(sin título)'}`,
-                    ...(dashLink ? [`URL: ${dashLink}`] : []),
-                    '',
-                ];
-                const panels = Array.isArray(db.config?.panel) ? db.config.panel : [];
-                for (const panel of panels) {
-                    lines.push(`## ${panel.title ?? '(sin título)'}`);
-                    const modelId = panel.content?.query?.model_id;
-                    if (modelId) lines.push(`  datasource: ${modelId}`);
-                    const fields = panel.content?.query?.query?.fields ?? [];
-                    if (fields.length) lines.push('  campos: ' + fields.map((f: any) => f.display_name ?? f.field_name).join(', '));
-                    lines.push('');
-                }
-                return lines.join('\n');
-            }
-
-            case 'query_datasource': {
-                const { datasource_id, table_name, limit: rawLimit } = toolInput;
-                const limit = Math.min(rawLimit ?? 50, 200);
-                if (!/^[\w.]+$/.test(table_name)) return 'Nombre de tabla inválido.';
-
-                const dsDoc = await DataSource.findById(datasource_id).exec();
-                if (!dsDoc) return `Datasource no encontrado: ${datasource_id}`;
-                const raw = (dsDoc as any).toObject ? (dsDoc as any).toObject() : dsDoc;
-                const modelRaw = raw?.ds?.model;
-                const allTables: any[] = Array.isArray(modelRaw) ? modelRaw
-                    : (modelRaw && typeof modelRaw === 'object' ? Object.values(modelRaw) : []);
-                const bareTableName = table_name.includes('.') ? table_name.split('.').pop() : table_name;
-                const tableMeta = allTables.find((t: any) => t.table_name === table_name || t.table_name === bareTableName);
-
-                let selectCols = '*';
-                if (tableMeta) {
-                    const colsRaw = tableMeta.columns;
-                    const cols: any[] = Array.isArray(colsRaw) ? colsRaw : (colsRaw && typeof colsRaw === 'object' ? Object.values(colsRaw) : []);
-                    const fullCols = cols.filter((c: any) => (c.ia_visibility ?? 'FULL') === 'FULL').map((c: any) => c.column_name).filter(Boolean);
-                    if (fullCols.length > 0) selectCols = fullCols.join(', ');
-                }
-
-                const connection = await ManagerConnectionService.getConnection(datasource_id);
-                if (!connection) return `No se pudo conectar al datasource: ${datasource_id}`;
-                connection.client = await connection.getclient();
-                const dbType: string = raw?.ds?.connection?.type ?? '';
-                const sql = buildSelectQuery(dbType, selectCols, table_name, limit);
-                console.log('[CHAT] query_datasource SQL:', sql);
-                const rows = await connection.execSqlQuery(sql);
-                if (!rows || rows.length === 0) return `La tabla ${table_name} no devolvió filas.`;
-                return JSON.stringify(rows, null, 2);
-            }
-
-            default:
-                return `Tool desconocido: ${toolName}`;
-        }
-    } catch (err: any) {
-        return `Error ejecutando ${toolName}: ${err.message}`;
-    }
-}
-
-const CHAT_TOOLS: Anthropic.Tool[] = [
-    {
-        name: 'list_datasources',
-        description: 'Lista los datasources accesibles en EDA (excluye los marcados como NONE en ia_visibility).',
-        input_schema: { type: 'object' as const, properties: {} },
-    },
-    {
-        name: 'list_dashboards',
-        description: 'Lista todos los dashboards accesibles en EDA (privados, de grupo, públicos y compartidos).',
-        input_schema: { type: 'object' as const, properties: {} },
-    },
-    {
-        name: 'get_datasource',
-        description: 'Obtiene el detalle de un datasource por su ID: tablas y columnas visibles para la IA.',
-        input_schema: {
-            type: 'object' as const,
-            properties: { id: { type: 'string', description: 'ID del datasource' } },
-            required: ['id'],
-        },
-    },
-    {
-        name: 'get_dashboard',
-        description: 'Obtiene el contenido de un dashboard por su ID: título, panels, datasource y campos.',
-        input_schema: {
-            type: 'object' as const,
-            properties: { id: { type: 'string', description: 'ID del dashboard' } },
-            required: ['id'],
-        },
-    },
-    {
-        name: 'query_datasource',
-        description: 'Ejecuta una consulta SQL simple sobre una tabla de un datasource y devuelve filas reales.',
-        input_schema: {
-            type: 'object' as const,
-            properties: {
-                datasource_id: { type: 'string', description: 'ID del datasource' },
-                table_name: { type: 'string', description: 'Nombre de la tabla' },
-                limit: { type: 'number', description: 'Máximo de filas (por defecto 50, máximo 200)' },
-            },
-            required: ['datasource_id', 'table_name'],
-        },
-    },
-];
-
 McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
-    const { API_KEY, MODEL, AVAILABLE, MAX_TOKENS } = getAnthropicConfig();
+    const { API_KEY, MODEL, AVAILABLE, MAX_TOKENS, EDA_APP_URL } = getAnthropicConfig();
 
     if (!AVAILABLE) {
         return res.status(503).json({ ok: false, response: 'El asistente de IA no está disponible. Configura la API key de Anthropic.' });
@@ -563,8 +489,26 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
     }
 
     console.log('[CHAT] POST /ia/chat — mensajes:', messages.length, '| user:', userId);
+    console.log('[CHAT] Config — MODEL:', MODEL, '| MAX_TOKENS:', MAX_TOKENS, '| EDA_APP_URL:', EDA_APP_URL || '(no configurado)');
+
+    const mcpClient = new Client({ name: 'eda-chat', version: '1.0.0' });
 
     try {
+        const mcpUrl = `${EDA_APP_URL}/mcp`;
+        console.log('[CHAT] Conectando a MCP:', mcpUrl);
+        const transport = new StreamableHTTPClientTransport(new URL(mcpUrl));
+        await mcpClient.connect(transport);
+        console.log('[CHAT] Conexión MCP establecida OK');
+
+        const { tools: mcpTools } = await mcpClient.listTools();
+        console.log('[CHAT] Tools MCP disponibles (' + mcpTools.length + '):', mcpTools.map((t: any) => t.name).join(', '));
+
+        const anthropicTools: Anthropic.Tool[] = mcpTools.map((tool: any) => ({
+            name: tool.name,
+            description: tool.description || '',
+            input_schema: tool.inputSchema || { type: 'object', properties: {} },
+        }));
+
         const anthropic = new Anthropic({ apiKey: API_KEY });
         const history: Anthropic.MessageParam[] = messages.map((m: any) => ({
             role: m.role as 'user' | 'assistant',
@@ -583,7 +527,7 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
                 max_tokens: MAX_TOKENS || 4096,
                 system: 'Eres un asistente de análisis de datos integrado en EDA (Enterprise Data Analytics). Tienes acceso a los datasources y dashboards del sistema. Responde siempre en el idioma del usuario. Sé conciso y útil.',
                 messages: history,
-                tools: CHAT_TOOLS,
+                tools: anthropicTools,
             });
 
             console.log('[CHAT] stop_reason:', response.stop_reason, '| content blocks:', response.content.length);
@@ -599,13 +543,23 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
 
                 const toolResults: Anthropic.ToolResultBlockParam[] = await Promise.all(
                     toolBlocks.map(async (block: any) => {
-                        console.log('[CHAT] Ejecutando tool:', block.name, '| input:', JSON.stringify(block.input));
-                        const result = await execTool(block.name, block.input, userId);
-                        console.log('[CHAT] Tool', block.name, 'result length:', result.length);
+                        console.log('[CHAT] Ejecutando tool MCP:', block.name, '| input:', JSON.stringify(block.input));
+                        let resultText = '';
+                        try {
+                            const result = await mcpClient.callTool({ name: block.name, arguments: block.input });
+                            resultText = (result.content as any[])
+                                .filter((c: any) => c.type === 'text')
+                                .map((c: any) => c.text)
+                                .join('\n');
+                            console.log('[CHAT] Tool MCP', block.name, 'result length:', resultText.length);
+                        } catch (toolErr: any) {
+                            console.error('[CHAT] Tool MCP error:', block.name, toolErr.message);
+                            resultText = `Error: ${toolErr.message}`;
+                        }
                         return {
                             type: 'tool_result' as const,
                             tool_use_id: block.id,
-                            content: result,
+                            content: resultText,
                         };
                     })
                 );
@@ -622,6 +576,8 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
     } catch (err: any) {
         console.error('[CHAT] Error:', err.message);
         return res.status(500).json({ ok: false, response: `Error del asistente: ${err.message}` });
+    } finally {
+        try { await mcpClient.close(); } catch (_) {}
     }
 });
 
