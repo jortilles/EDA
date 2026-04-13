@@ -128,6 +128,13 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.chatOpen.set(!this.chatOpen());
   }
 
+  useSuggestion(text: string): void {
+    if (this.chatInputEl?.nativeElement) {
+      this.chatInputEl.nativeElement.value = text;
+    }
+    this.sendChatMessage();
+  }
+
   onChatKeydown(event: KeyboardEvent): void {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
