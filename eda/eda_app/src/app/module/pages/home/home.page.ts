@@ -1,10 +1,11 @@
-import { Component, inject, OnInit, OnDestroy, signal, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal, ViewChild, ElementRef, AfterViewChecked, NgZone } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { Router } from '@angular/router';
 import { lastValueFrom, fromEvent, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { UserService } from '@eda/services/api/user.service';
 import { GroupService } from '@eda/services/api/group.service';
 import { AlertService, DashboardService } from '@eda/services/service.index';
@@ -31,14 +32,18 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   private router = inject(Router);
   private iaChatService = inject(IaChatService);
 
+  private sanitizer = inject(DomSanitizer);
+  private zone = inject(NgZone);
+
   // --- Chat IA ---
   @ViewChild('chatMessages') private chatMessagesRef!: ElementRef;
+  @ViewChild('chatInputEl') private chatInputEl!: ElementRef<HTMLTextAreaElement>;
   chatOpen = signal(false);
   chatAvailable = signal(false);
   chatLoading = signal(false);
-  chatInput = '';
   chatHistory: ChatMessage[] = [];
   private shouldScrollChat = false;
+  private chatInputListenerAdded = false;
 
   allDashboards: any[] = [];
   publicReports: any[] = [];
@@ -101,6 +106,17 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngAfterViewChecked(): void {
+    // Registrar listener del textarea fuera de la zona de Angular (una sola vez)
+    if (!this.chatInputListenerAdded && this.chatInputEl?.nativeElement) {
+      this.chatInputListenerAdded = true;
+      this.zone.runOutsideAngular(() => {
+        this.chatInputEl.nativeElement.addEventListener('input', () => {
+          const el = this.chatInputEl.nativeElement;
+          el.style.height = 'auto';
+          el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+        });
+      });
+    }
     if (this.shouldScrollChat && this.chatMessagesRef) {
       const el = this.chatMessagesRef.nativeElement;
       el.scrollTop = el.scrollHeight;
@@ -120,11 +136,12 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   sendChatMessage(): void {
-    const text = this.chatInput.trim();
+    const text = this.chatInputEl?.nativeElement.value.trim() ?? '';
     if (!text || this.chatLoading()) return;
 
     this.chatHistory.push({ role: 'user', content: text });
-    this.chatInput = '';
+    this.chatInputEl.nativeElement.value = '';
+    this.chatInputEl.nativeElement.style.height = 'auto';
     this.chatLoading.set(true);
     this.shouldScrollChat = true;
 
@@ -134,12 +151,63 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         this.chatLoading.set(false);
         this.shouldScrollChat = true;
       },
-      error: (err) => {
+      error: () => {
         this.chatHistory.push({ role: 'assistant', content: 'Error al conectar con el asistente.' });
         this.chatLoading.set(false);
         this.shouldScrollChat = true;
       },
     });
+  }
+
+  renderMarkdown(text: string): SafeHtml {
+    const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    // 1. Extraer bloques de código
+    const codeBlocks: string[] = [];
+    let html = text.replace(/```[\w]*\n?([\s\S]*?)```/g, (_, code) => {
+      const idx = codeBlocks.push(esc(code.trim())) - 1;
+      return `\x00CODE${idx}\x00`;
+    });
+
+    // 2. Código inline
+    const inlineCodes: string[] = [];
+    html = html.replace(/`([^`\n]+)`/g, (_, code) => {
+      const idx = inlineCodes.push(esc(code)) - 1;
+      return `\x00INLINE${idx}\x00`;
+    });
+
+    // 3. URLs → links clicables
+    html = html.replace(/(https?:\/\/[^\s<>")\]\n]+)/g,
+      '<a href="$1" target="_blank" rel="noopener noreferrer" class="chat-link">$1</a>');
+
+    // 4. Negrita
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+    // 5. Headers
+    html = html.replace(/^### (.+)$/gm, '<div class="chat-h3">$1</div>');
+    html = html.replace(/^## (.+)$/gm, '<div class="chat-h2">$1</div>');
+    html = html.replace(/^# (.+)$/gm, '<div class="chat-h1">$1</div>');
+
+    // 6. Listas con viñeta
+    html = html.replace(/^[ \t]*[-*] (.+)$/gm, '<li>$1</li>');
+    html = html.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul class="chat-list">$1</ul>');
+    html = html.replace(/<\/ul>\s*<ul class="chat-list">/g, '');
+
+    // 7. Saltos de línea y párrafos
+    html = html.replace(/\n\n+/g, '</p><p class="mt-2">');
+    html = html.replace(/\n/g, '<br>');
+
+    // 8. Restaurar bloques de código
+    codeBlocks.forEach((code, i) => {
+      html = html.replace(`\x00CODE${i}\x00`,
+        `<pre class="chat-code-block"><code>${code}</code></pre>`);
+    });
+    inlineCodes.forEach((code, i) => {
+      html = html.replace(`\x00INLINE${i}\x00`,
+        `<code class="chat-inline-code">${code}</code>`);
+    });
+
+    return this.sanitizer.bypassSecurityTrustHtml('<p>' + html + '</p>');
   }
 
   private setIsObserver = async () => {

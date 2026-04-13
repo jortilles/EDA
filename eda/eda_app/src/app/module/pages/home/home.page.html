@@ -1,8 +1,10 @@
-<div class="flex flex-row flex-1 min-h-screen">
+<div class="flex flex-row h-screen overflow-hidden">
 
 <!-- Contenido principal -->
-<div class="flex-1 min-w-0 w-full">
-  <div class="max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6 py-8">
+<div class="flex-1 min-w-0 flex flex-col overflow-hidden">
+
+  <!-- Header + Filtros (no scrollean) -->
+  <div class="shrink-0 max-w-[2000px] w-full mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4 space-y-4">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div class="flex items-center gap-2">
@@ -107,32 +109,35 @@
       </div>
     </div>
 
-    <!-- Categories -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      <!-- Public Reports -->
-      <ng-container
-        *ngTemplateOutlet="reportsTemplate; context: { reports: sharedReports, title: publicTitle }"></ng-container>
+  </div><!-- cierre header+filtros -->
 
-      <!-- Commons -->
-      <ng-container
-        *ngTemplateOutlet="reportsTemplate; context: { reports: publicReports, title: commonTitle }"></ng-container>
-
-      <!-- Groups -->
-      <ng-container
-        *ngTemplateOutlet="reportsTemplate; context: { reports: roleReports, title: groupTitle }"></ng-container>
-
-      <!-- Private -->
-      <ng-container
-        *ngTemplateOutlet="reportsTemplate; context: { reports: privateReports, title: privateTitle }"></ng-container>
+  <!-- Dashboards (scrollean) -->
+  <div class="flex-1 overflow-y-auto">
+    <div class="max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Public Reports -->
+        <ng-container
+          *ngTemplateOutlet="reportsTemplate; context: { reports: sharedReports, title: publicTitle }"></ng-container>
+        <!-- Commons -->
+        <ng-container
+          *ngTemplateOutlet="reportsTemplate; context: { reports: publicReports, title: commonTitle }"></ng-container>
+        <!-- Groups -->
+        <ng-container
+          *ngTemplateOutlet="reportsTemplate; context: { reports: roleReports, title: groupTitle }"></ng-container>
+        <!-- Private -->
+        <ng-container
+          *ngTemplateOutlet="reportsTemplate; context: { reports: privateReports, title: privateTitle }"></ng-container>
+      </div>
     </div>
-  </div>
+  </div><!-- cierre dashboards -->
+
 </div><!-- cierre contenido principal -->
 
-<!-- Panel lateral chat IA -->
-@if(chatAvailable() && chatOpen()) {
-  <div class="w-96 shrink-0 border-l bg-white flex flex-col h-screen sticky top-0">
+<!-- Panel lateral chat IA (siempre en DOM, slide con CSS) -->
+<div class="chat-panel" [class.chat-panel--open]="chatAvailable() && chatOpen()">
+  <div class="w-96 h-full flex flex-col border-l bg-white">
     <!-- Header -->
-    <div class="flex items-center justify-between gap-2 px-4 py-3 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white">
+    <div class="flex items-center justify-between gap-2 px-4 py-3 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white shrink-0">
       <div class="flex items-center gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
           <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
@@ -140,7 +145,7 @@
         </svg>
         <span class="font-semibold text-sm">Chat con Edalitics</span>
       </div>
-      <button (click)="toggleChat()" class="hover:opacity-75 transition-opacity">
+      <button (click)="toggleChat()" title="Cerrar" class="hover:opacity-75 transition-opacity">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
         </svg>
@@ -153,11 +158,15 @@
       }
       @for (msg of chatHistory; track $index) {
         <div [class]="msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'">
-          <div [class]="msg.role === 'user'
-            ? 'max-w-[85%] rounded-2xl rounded-br-sm px-3 py-2 text-sm bg-[#00B0BA] text-white'
-            : 'max-w-[85%] rounded-2xl rounded-bl-sm px-3 py-2 text-sm bg-white border shadow-sm text-gray-800 whitespace-pre-wrap'">
-            {{ msg.content }}
-          </div>
+          @if (msg.role === 'user') {
+            <div class="max-w-[85%] rounded-2xl rounded-br-sm px-3 py-2 text-sm bg-[#00B0BA] text-white whitespace-pre-wrap">
+              {{ msg.content }}
+            </div>
+          } @else {
+            <div class="max-w-[85%] rounded-2xl rounded-bl-sm px-3 py-2 text-sm bg-white border shadow-sm text-gray-800 chat-message-content"
+              [innerHTML]="renderMarkdown(msg.content)">
+            </div>
+          }
         </div>
       }
       @if (chatLoading()) {
@@ -171,9 +180,9 @@
       }
     </div>
     <!-- Input -->
-    <div class="p-3 border-t bg-white flex gap-2 items-end">
+    <div class="p-3 border-t bg-white flex gap-2 items-end shrink-0">
       <textarea
-        [(ngModel)]="chatInput"
+        #chatInputEl
         (keydown)="onChatKeydown($event)"
         [disabled]="chatLoading()"
         placeholder="Escribe un mensaje..."
@@ -183,7 +192,7 @@
       </textarea>
       <button
         (click)="sendChatMessage()"
-        [disabled]="chatLoading() || !chatInput.trim()"
+        [disabled]="chatLoading()"
         class="shrink-0 flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-br from-[#00B0BA] to-teal-400 text-white disabled:opacity-40 hover:scale-105 transition-transform">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12zm0 0h7.5"/>
@@ -191,7 +200,7 @@
       </button>
     </div>
   </div>
-}
+</div>
 
 </div><!-- cierre flex-row wrapper -->
 
