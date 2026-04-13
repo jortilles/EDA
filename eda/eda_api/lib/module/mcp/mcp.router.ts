@@ -43,7 +43,7 @@ async function loginInternal(): Promise<string> {
 
 // --- Helpers para obtener dashboards por rol ---
 async function getAllDashboards(userId: string) {
-    const groups = await Group.find({ users: { $in: userId } }).exec();
+    const groups = await Group.find({ users: userId }).exec();
     const isAdmin = groups.some((g: any) => g.role === 'EDA_ADMIN_ROLE');
     const groupIds = groups.map((g: any) => g._id);
 
@@ -179,6 +179,7 @@ function createMcpServer() {
 
                 return { content: [{ type: 'text', text: 'Dashboards en EDA:\n' + lines.join('\n') }] };
             } catch (err: any) {
+                console.error('[MCP] list_dashboards error:', err.message, err.stack);
                 return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
             }
         }
@@ -209,6 +210,7 @@ function createMcpServer() {
                     }],
                 };
             } catch (err: any) {
+                console.error('[MCP] list_datasources error:', err.message, err.stack);
                 return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
             }
         }
@@ -236,6 +238,7 @@ function createMcpServer() {
                 const url = EDA_APP_URL ? `URL: ${EDA_APP_URL}/ca/#/data-source/${encodeURIComponent(id)}\n\n` : '';
                 return { content: [{ type: 'text', text: `${url}${JSON.stringify(filtered, null, 2)}` }] };
             } catch (err: any) {
+                console.error('[MCP] get_datasource error:', err.message, err.stack);
                 return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
             }
         }
@@ -282,6 +285,7 @@ function createMcpServer() {
 
                 return { content: [{ type: 'text', text: lines.join('\n') }] };
             } catch (err: any) {
+                console.error('[MCP] get_dashboard error:', err.message, err.stack);
                 return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
             }
         }
