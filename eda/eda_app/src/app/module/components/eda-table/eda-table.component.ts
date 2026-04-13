@@ -185,7 +185,17 @@ export class EdaTableComponent implements OnInit {
             return {
                 'color': this.styleProviderService.panelFontColor.source['_value'],
                 'font-family': this.styleProviderService.panelFontFamily.source['_value'],
-                'background': bg
+                'background': bg,
+            };
+        }
+        return;
+    }
+
+    getTextStyle() {
+        if(this.styleProviderService.pageStylesApplied.source['_value'] && Object.keys(this.styles).length === 0) {
+            return {
+                'color': this.styleProviderService.panelFontColor.source['_value'],
+                'font-family': this.styleProviderService.panelFontFamily.source['_value'],
             };
         }
         return;

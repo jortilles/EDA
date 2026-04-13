@@ -54,8 +54,18 @@ th{
      background: rgba(228, 228, 228, 0.5) !important;
 }
 
+/* Row banding: filas pares con el mismo gris que el header — solo en td para no componer la transparencia dos veces */
 .eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) > td {
      background: rgba(228, 228, 228, 0.5) !important;
+}
+.eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
+     background: transparent !important;
+}
+
+/* Filas impares: transparentes para que se vea el color de fondo del panel (aplicado en p-table) */
+.eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(odd),
+.eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(odd) > td {
+     background: transparent !important;
 }
 
 .p-datatable-auto-layout>.p-datatable-wrapper {
@@ -94,30 +104,6 @@ th{
 .eda-table--transparent ::ng-deep .p-datatable,
 .eda-table--transparent ::ng-deep .p-datatable .p-datatable-wrapper {
     background: transparent !important;
-}
-
-/* Cabeceras: fondo semi-transparente */
-.eda-table--transparent ::ng-deep .p-datatable .p-datatable-thead > tr > th {
-    background: rgba(228, 228, 228, 0.5) !important;
-}
-
-.eda-table--transparent th {
-    background: rgba(228, 228, 228, 0.5) !important;
-}
-
-/* Filas pares: transparente */
-.eda-table--transparent ::ng-deep .p-datatable .p-datatable-tbody > tr {
-    background: transparent !important;
-}
-
-/* Filas impares (banding): franja semi-transparente */
-.eda-table--transparent ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
-    background: rgba(228, 228, 228, 0.5) !important;
-}
-
-.eda-table--transparent ::ng-deep .p-datatable .p-datatable-tbody > tr > td,
-.eda-table--transparent ::ng-deep .p-datatable .p-datatable-tfoot > tr > td {
-    background: inherit !important;
 }
 
 /* Aplica estilo al contenedor del footer */
