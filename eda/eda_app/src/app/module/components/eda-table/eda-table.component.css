@@ -83,16 +83,32 @@ th{
 
 /* === Transparent mode (background image on dashboard) === */
 .eda-table--transparent ::ng-deep .p-datatable,
-.eda-table--transparent ::ng-deep .p-datatable .p-datatable-wrapper,
-.eda-table--transparent ::ng-deep .p-datatable .p-datatable-thead > tr > th,
-.eda-table--transparent ::ng-deep .p-datatable .p-datatable-tbody > tr,
-.eda-table--transparent ::ng-deep .p-datatable .p-datatable-tbody > tr > td,
-.eda-table--transparent ::ng-deep .p-datatable .p-datatable-tfoot > tr > td {
+.eda-table--transparent ::ng-deep .p-datatable .p-datatable-wrapper {
     background: transparent !important;
 }
 
+/* Cabeceras: fondo semi-transparente */
+.eda-table--transparent ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+    background: rgba(255, 255, 255, 0.25) !important;
+}
+
 .eda-table--transparent th {
-    background-color: transparent !important;
+    background-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Filas pares: transparente */
+.eda-table--transparent ::ng-deep .p-datatable .p-datatable-tbody > tr {
+    background: transparent !important;
+}
+
+/* Filas impares (banding): franja semi-transparente */
+.eda-table--transparent ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.15) !important;
+}
+
+.eda-table--transparent ::ng-deep .p-datatable .p-datatable-tbody > tr > td,
+.eda-table--transparent ::ng-deep .p-datatable .p-datatable-tfoot > tr > td {
+    background: inherit !important;
 }
 
 /* Aplica estilo al contenedor del footer */

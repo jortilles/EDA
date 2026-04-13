@@ -419,7 +419,7 @@ export class DashboardPage implements OnInit {
       background: panelBg,
     };
 
-    this.gridsterItemStyle = { 'background-color': panelBg };
+    this.gridsterItemStyle = bgImage ? { 'background-color': panelBg } : {};
 
     // Texto de los tabs (como panelTitle pero con display:block y text-align)
     this.panelTabText = {

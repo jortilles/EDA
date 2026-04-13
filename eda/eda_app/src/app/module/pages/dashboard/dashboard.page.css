@@ -13,7 +13,7 @@
   border-radius: 0.5rem; /* Redondeo elegante */
   border: 1px solid rgba(0, 0, 0, 0.1); /* Borde sutil */
   box-shadow: 4px 6px 10px rgba(0, 0, 0, 0.08); /* Sombra sutil con desplazamiento hacia abajo y a la izquierda */
-  background-color: transparent;
+  background-color: #fff;
   transition: box-shadow 0.3s ease-in-out; /* Suavidad en el cambio de sombra */
 }
 
