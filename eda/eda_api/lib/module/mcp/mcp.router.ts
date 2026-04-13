@@ -159,6 +159,7 @@ function createMcpServer() {
                 const { dashboards, group, publics, shared } = await getAllDashboards(user._id);
 
                 const { EDA_APP_URL } = getAnthropicConfig();
+                console.log('[MCP] list_dashboards — EDA_APP_URL:', EDA_APP_URL || '(vacío)');
                 const formatGroup = (label: string, items: any[] = []) => {
                     const lines = [`\n## ${label}`];
                     if (items.length === 0) lines.push('  (sin dashboards)');
@@ -193,6 +194,7 @@ function createMcpServer() {
             try {
                 await loginInternal();
                 const { EDA_APP_URL } = getAnthropicConfig();
+                console.log('[MCP] list_datasources — EDA_APP_URL:', EDA_APP_URL || '(vacío)');
                 const datasources = await DataSource.find({}, 'ds.metadata').exec();
                 const lines = datasources
                     .filter((ds: any) => (ds.ds?.metadata?.ia_visibility ?? 'FULL') !== 'NONE')
@@ -229,7 +231,10 @@ function createMcpServer() {
                 if (!ds) return { content: [{ type: 'text', text: `Datasource no encontrado: ${id}` }], isError: true };
                 const filtered = filterDatasourceForAI(ds);
                 if (!filtered) return { content: [{ type: 'text', text: `Datasource ${id} excluido por ia_visibility: NONE` }], isError: true };
-                return { content: [{ type: 'text', text: JSON.stringify(filtered, null, 2) }] };
+                const { EDA_APP_URL } = getAnthropicConfig();
+                console.log('[MCP] get_datasource — EDA_APP_URL:', EDA_APP_URL || '(vacío)', '| id:', id);
+                const url = EDA_APP_URL ? `URL: ${EDA_APP_URL}/en/#/data-source/${encodeURIComponent(id)}\n\n` : '';
+                return { content: [{ type: 'text', text: `${url}${JSON.stringify(filtered, null, 2)}` }] };
             } catch (err: any) {
                 return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
             }
@@ -253,6 +258,7 @@ function createMcpServer() {
                 if (!db) return { content: [{ type: 'text', text: `Dashboard no encontrado: ${id}` }], isError: true };
 
                 const { EDA_APP_URL } = getAnthropicConfig();
+                console.log('[MCP] get_dashboard — EDA_APP_URL:', EDA_APP_URL || '(vacío)', '| id:', id);
                 const dashboardLink = EDA_APP_URL ? `${EDA_APP_URL}/en/#/dashboard/${encodeURIComponent(id)}` : '';
                 const lines: string[] = [
                     `# ${db.config?.title ?? '(sin título)'}`,
@@ -394,6 +400,7 @@ async function execTool(toolName: string, toolInput: any, userId: string): Promi
 
             case 'list_datasources': {
                 const { EDA_APP_URL } = getAnthropicConfig();
+                console.log('[CHAT] list_datasources — EDA_APP_URL:', EDA_APP_URL || '(vacío)');
                 const datasources = await DataSource.find({}, 'ds.metadata').exec();
                 const lines = datasources
                     .filter((ds: any) => (ds.ds?.metadata?.ia_visibility ?? 'FULL') !== 'NONE')
@@ -406,6 +413,7 @@ async function execTool(toolName: string, toolInput: any, userId: string): Promi
 
             case 'list_dashboards': {
                 const { EDA_APP_URL } = getAnthropicConfig();
+                console.log('[CHAT] list_dashboards — EDA_APP_URL:', EDA_APP_URL || '(vacío)');
                 const { dashboards, group, publics, shared } = await getAllDashboards(userId);
                 const fmt = (label: string, items: any[]) => {
                     if (!items.length) return `\n## ${label}\n  (sin dashboards)`;
@@ -422,13 +430,17 @@ async function execTool(toolName: string, toolInput: any, userId: string): Promi
                 if (!ds) return `Datasource no encontrado: ${toolInput.id}`;
                 const filtered = filterDatasourceForAI(ds);
                 if (!filtered) return `Datasource ${toolInput.id} excluido por ia_visibility: NONE`;
-                return JSON.stringify(filtered, null, 2);
+                const { EDA_APP_URL } = getAnthropicConfig();
+                console.log('[CHAT] get_datasource — EDA_APP_URL:', EDA_APP_URL || '(vacío)', '| id:', toolInput.id);
+                const url = EDA_APP_URL ? `URL: ${EDA_APP_URL}/en/#/data-source/${encodeURIComponent(toolInput.id)}\n\n` : '';
+                return `${url}${JSON.stringify(filtered, null, 2)}`;
             }
 
             case 'get_dashboard': {
                 const db: any = await Dashboard.findById(toolInput.id).exec();
                 if (!db) return `Dashboard no encontrado: ${toolInput.id}`;
                 const { EDA_APP_URL } = getAnthropicConfig();
+                console.log('[CHAT] get_dashboard — EDA_APP_URL:', EDA_APP_URL || '(vacío)', '| id:', toolInput.id);
                 const dashLink = EDA_APP_URL ? `${EDA_APP_URL}/en/#/dashboard/${encodeURIComponent(toolInput.id)}` : '';
                 const lines: string[] = [
                     `# ${db.config?.title ?? '(sin título)'}`,
