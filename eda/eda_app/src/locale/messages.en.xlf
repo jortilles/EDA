@@ -6126,6 +6126,14 @@ OR<ph id="5"/>
   <source>Registros únicos (agrupación)?</source>
   <target>Unique records (grouping)?</target>
 </trans-unit>
+<trans-unit id="tableDescriptionDependentFilter" datatype="html">
+  <source>Tabla:</source>
+  <target>Table:</target>
+</trans-unit>
+<trans-unit id="columnDescriptionDependentFilter" datatype="html">
+  <source>Columna:</source>
+  <target>Column:</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

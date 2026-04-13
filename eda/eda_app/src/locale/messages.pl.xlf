@@ -6037,6 +6037,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Registros únicos (agrupación)?</source>
         <target>Unikalne rekordy (grupowanie)?</target>
       </trans-unit>
+      <trans-unit id="tableDescriptionDependentFilter" datatype="html">
+        <source>Tabla:</source>
+        <target>Tabela:</target>
+      </trans-unit>
+      <trans-unit id="columnDescriptionDependentFilter" datatype="html">
+        <source>Columna:</source>
+        <target>Kolumna:</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

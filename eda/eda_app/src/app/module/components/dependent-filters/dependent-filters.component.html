@@ -18,8 +18,25 @@
                     *ngFor="let item of dependentFilterGrid" 
                     class="gridster-item">
                     <div class="button-holder">
-                        <div class="content-item">
-                            <p><strong>{{item.description_column}}</strong> : {{item.description_table}} </p>
+                        <div class="content-item flex items-center justify-between gap-1">
+                            <p><strong>{{item.description_column}}</strong></p>
+                            <ng-template #filterTooltip>
+                                <div class="space-y-1 text-sm">
+                                    <div class="flex gap-1">
+                                        <span class="text-muted-foreground shrink-0" i18n="@@tableDescriptionDependentFilter">Table:</span>
+                                        <span>{{ item.description_table }}</span>
+                                    </div>
+                                    <div class="flex gap-1">
+                                        <span class="text-muted-foreground shrink-0" i18n="@@columnDescriptionDependentFilter">Column:</span>
+                                        <span>{{ item.description_column }}</span>
+                                    </div>
+                                </div>
+                            </ng-template>
+                            <i class="pi pi-info-circle cursor-default text-gray-500 ml-auto shrink-0"
+                               [pTooltip]="filterTooltip"
+                               tooltipPosition="top"
+                               tooltipStyleClass="df-filter-tooltip"
+                               (mousedown)="$event.stopPropagation()"></i>
                         </div>
                     </div>
                 </gridster-item>

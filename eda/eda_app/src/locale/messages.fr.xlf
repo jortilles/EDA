@@ -6372,6 +6372,14 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Registros únicos (agrupación)?</source>
         <target>Enregistrements uniques (regroupement)?</target>
       </trans-unit>
+      <trans-unit id="tableDescriptionDependentFilter" datatype="html">
+        <source>Tabla:</source>
+        <target>Table:</target>
+      </trans-unit>
+      <trans-unit id="columnDescriptionDependentFilter" datatype="html">
+        <source>Columna:</source>
+        <target>Colonne:</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
