@@ -6,7 +6,7 @@
   transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .chat-panel--open {
-  width: 24rem; /* w-96 */
+  width:27.5vw;
 }
 
 /* ---- Chat header ---- */
