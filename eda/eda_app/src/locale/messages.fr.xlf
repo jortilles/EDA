@@ -2589,6 +2589,10 @@
 <source> Últimos 120 días </source>
 <target> Les 120 derniers jours </target>
 </trans-unit>
+<trans-unit id="DatePickerLast365">
+<source> Últimos 365 días </source>
+<target> Les 365 derniers jours </target>
+</trans-unit>
 <trans-unit id="DateSelectRange">
 <source>Selecciona un rango</source>
 <target>Sélectionnez une plage</target>
@@ -5972,6 +5976,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="DatePickerNext120">
         <source>Próximos 120 días</source>
         <target>Les 120 prochains jours</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext365">
+        <source>Próximos 365 días</source>
+        <target>Les 365 prochains jours</target>
       </trans-unit>
       <trans-unit id="DatePickerAll">
         <source>Todas</source>

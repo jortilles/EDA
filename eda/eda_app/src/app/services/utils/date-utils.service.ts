@@ -38,6 +38,7 @@ export class DateUtils {
             case 'last30': return this.setLast30();
             case 'last60': return this.setLast60();
             case 'last120': return this.setLast120();
+            case 'last365': return this.setLast365();
             case 'nextMonth': return this.setNextMonth();
             case 'nextWeek': return this.setNextWeek();
             case 'next30': return this.setNext30();
@@ -53,6 +54,7 @@ export class DateUtils {
             case 'next7': return this.setNext7();
             case 'next15': return this.setNext15();
             case 'next120': return this.setNext120();
+            case 'next365': return this.setNext365();
             case 'quarterStart': return this.setQuarterStart();
             case 'lastQuarter': return this.setLastQuarter();
             case 'beforeTodayIncluded': return this.setBeforeTodayIncluded();
@@ -231,6 +233,12 @@ export class DateUtils {
         const today = moment().toDate();
         const lastOneHudredNineteen = moment().subtract(119,'days').toDate();
         return [lastOneHudredNineteen, today];
+    }ç
+
+    public setLast365(): Array<Date> {
+        const today = moment().toDate();
+        const lastOneHudredNineteen = moment().subtract(364,'days').toDate();
+        return [lastOneHudredNineteen, today];
     }
 
     public rangeToString(range: Array<Date>): Array<string> {
@@ -334,6 +342,12 @@ export class DateUtils {
     public setNext120(): Array<Date> {
         const start = moment().add(1, 'day').startOf('day').toDate();
         const end   = moment().add(120, 'day').endOf('day').toDate();
+        return [start, end];
+    }
+
+    public setNext365(): Array<Date> {
+        const start = moment().add(1, 'day').startOf('day').toDate();
+        const end   = moment().add(365, 'day').endOf('day').toDate();
         return [start, end];
     }
 

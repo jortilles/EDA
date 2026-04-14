@@ -2625,6 +2625,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source> Últimos 120 días </source>
 <target>Últims 120 dies </target>
 </trans-unit>
+<trans-unit id="DatePickerLast365">
+<source> Últimos 365 días </source>
+<target>Últims 365 dies </target>
+</trans-unit>
 <trans-unit id="DateSelectRange">
 <source>Selecciona un rango</source>
 <target>Selecciona un rang</target>
@@ -5998,6 +6002,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="DatePickerNext120">
         <source>Próximos 120 días</source>
         <target>Propers 120 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext365">
+        <source>Próximos 365 días</source>
+        <target>Propers 365 dies</target>
       </trans-unit>
       <trans-unit id="DatePickerAll">
         <source>Todas</source>

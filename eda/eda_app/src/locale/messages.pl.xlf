@@ -2249,6 +2249,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source> Últimos 120 días </source>
 <target>Ostatnie 120 dni </target>
 </trans-unit>
+<trans-unit id="DatePickerLast365">
+<source> Últimos 365 días </source>
+<target>Ostatnie 365 dni </target>
+</trans-unit>
 <trans-unit id="DateSelectRange">
 <source>Selecciona un rango</source>
 <target>Wybierz zakres</target>
@@ -5637,6 +5641,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="DatePickerNext120">
         <source>Próximos 120 días</source>
         <target>Następne 120 dni</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext365">
+        <source>Próximos 365 días</source>
+        <target>Następne 365 dni</target>
       </trans-unit>
       <trans-unit id="DatePickerAll">
         <source>Todas</source>

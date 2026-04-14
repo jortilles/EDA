@@ -2349,6 +2349,10 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <source> Últimos 120 días </source>
 <target>Last 120 days </target>
 </trans-unit>
+<trans-unit id="DatePickerLast365">
+<source> Últimos 365 días </source>
+<target>Last 365 days </target>
+</trans-unit>
 <trans-unit id="DateSelectRange">
 <source>Selecciona un rango</source>
 <target>Select range</target>
@@ -5806,6 +5810,10 @@ OR<ph id="5"/>
 <trans-unit id="DatePickerNext120">
   <source>Próximos 120 días</source>
   <target>Next 120 days</target>
+</trans-unit>
+<trans-unit id="DatePickerNext365">
+  <source>Próximos 365 días</source>
+  <target>Next 365 days</target>
 </trans-unit>
 <trans-unit id="DatePickerAll">
   <source>Todas</source>

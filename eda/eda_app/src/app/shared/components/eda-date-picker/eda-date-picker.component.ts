@@ -45,20 +45,20 @@ export class EdaDatePickerComponent implements OnChanges {
 		{ label: $localize`:@@DatePickerPastTomorrow:Pasado mañana`, value: 'pastTomorrow' },
 
 		// Semanas
-		{ label: $localize`:@@DatePickerWeekFull:Esta semana al completo`, value: 'weekStartFull' },
-		{ label: $localize`:@@DatePickerWeek:Esta semana (hasta hoy)`, value: 'weekStart' },
 		{ label: $localize`:@@DatePickerLastWeekFull:La semana pasada completa`, value: 'pastWeekFull' },
 		{ label: $localize`:@@DatePickerLastWeek:La semana pasada (hasta equivalente a hoy)`, value: 'pastWeek' },
+		{ label: $localize`:@@DatePickerWeekFull:Esta semana al completo`, value: 'weekStartFull' },
+		{ label: $localize`:@@DatePickerWeek:Esta semana (hasta hoy)`, value: 'weekStart' },
 		{ label: $localize`:@@DatePickerNextWeek:Próxima semana`, value: 'nextWeek' },
 
 		// Meses
-		{ label: $localize`:@@DatePickerMonthFull:Este mes completo`, value: 'monthStartFull' },
-		{ label: $localize`:@@DatePickerMonth:Este mes (hasta hoy)`, value: 'monthStart' },
 		{ label: $localize`:@@DatePickerLastMonthFull:El mes pasado completo`, value: 'pastMonthFull' },
 		{ label: $localize`:@@DatePickerLastMonth:El mes pasado (hasta equivalente a hoy)`, value: 'pastMonth' },
+		{ label: $localize`:@@DatePickerMonthFull:Este mes completo`, value: 'monthStartFull' },
+		{ label: $localize`:@@DatePickerMonth:Este mes (hasta hoy)`, value: 'monthStart' },
+		{ label: $localize`:@@DatePickerNextMonth:Próximo mes`, value: 'nextMonth' },
 		{ label: $localize`:@@DatePickerMonthPreviousYearFull:Éste mes al completo del año pasado`, value: 'monthFullPreviousYear' },
 		{ label: $localize`:@@DatePickerMonthPreviousYear:Este mes del año pasado (hasta equivalente a hoy)`, value: 'monthStartPreviousYear' },
-		{ label: $localize`:@@DatePickerNextMonth:Próximo mes`, value: 'nextMonth' },
 
 		// Trimestres
 		{ label: $localize`:@@DatePickerLastQuarter:Último trimestre`, value: 'lastQuarter' },
@@ -66,10 +66,10 @@ export class EdaDatePickerComponent implements OnChanges {
 		{ label: $localize`:@@DatePickerNextQuarter:Próximo trimestre`, value: 'nextQuarter' },
 
 		// Años
-		{ label: $localize`:@@DatePickerYearFull:Este año al completo`, value: 'yearStartFull' },
-		{ label: $localize`:@@DatePickerYear:Este año (hasta hoy)`, value: 'yearStart' },
 		{ label: $localize`:@@DatePickerYearPreviousYearFull:El año pasado, completo`, value: 'yearStartPreviousYearFull' },
 		{ label: $localize`:@@DatePickerYearPreviousYear:El año pasado (hasta equivalente a hoy)`, value: 'yearStartPreviousYear' },
+		{ label: $localize`:@@DatePickerYearFull:Este año al completo`, value: 'yearStartFull' },
+		{ label: $localize`:@@DatePickerYear:Este año (hasta hoy)`, value: 'yearStart' },
 		{ label: $localize`:@@DatePickerNextYear:Próximo año`, value: 'nextYear' },
 
 		// Últimos N días
@@ -87,6 +87,8 @@ export class EdaDatePickerComponent implements OnChanges {
 		{ label: $localize`:@@DatePickerNext90:Próximos 90 días`, value: 'next90' },
 		{ label: $localize`:@@DatePickerLast120:Últimos 120 días`, value: 'last120' },
 		{ label: $localize`:@@DatePickerNext120:Próximos 120 días`, value: 'next120' },
+		{ label: $localize`:@@DatePickerLast365:Últimos 365 días`, value: 'last365' },
+		{ label: $localize`:@@DatePickerNext365:Próximos 365 días`, value: 'next365' },
 
 		// Rangos generales
 		{ label: $localize`:@@DatePickerAll:Todas`, value: 'all' },
