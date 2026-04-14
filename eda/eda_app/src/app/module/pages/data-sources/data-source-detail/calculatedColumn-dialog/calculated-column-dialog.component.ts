@@ -34,8 +34,8 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
   // Types
   public columnTypes: SelectItem[] = [
     { label: 'text', value: 'text' },
-    { label: 'html', value: 'html' },
     { label: 'numeric', value: 'numeric' },
+    { label: 'html', value: 'html' },
     { label: 'date', value: 'date' },
     { label: 'coordinate', value: 'coordinate' }
   ];
