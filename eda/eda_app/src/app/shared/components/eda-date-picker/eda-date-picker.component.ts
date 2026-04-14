@@ -29,6 +29,8 @@ export class EdaDatePickerComponent implements OnChanges {
 	@Input() inject: EdaDatePickerConfig;
 	@Input() autoRemove: boolean = false;
 	@Input() autoClear: boolean = false;
+	@Input() filterSelected: any = {};
+	@Input() selectionMode: 'single' | 'multiple' | 'range' = 'range';
 	@Output() onDatesChanges = new EventEmitter<any>();
 	@Output() onRemove = new EventEmitter<void>();
 
@@ -99,6 +101,7 @@ export class EdaDatePickerComponent implements OnChanges {
 	public selectedRange: SelectItem;
 	public rangePlaceholder: string = $localize`:@@DateSelectRange:Selecciona un rango`;
 	public rangeDates: any;
+	private _allRanges: Array<SelectItem>;
 
 	constructor(
 		private dateUtilsService: DateUtils) {
@@ -108,6 +111,7 @@ export class EdaDatePickerComponent implements OnChanges {
 		this.locale = lan_ca.test(url) ? locales.ca : lan_es.test(url) ? locales.es : locales.en;
 		//this.firstDayOfWeek = lan_es.test(url) || lan_ca.test(url) ? 1 : 0;
 		this.firstDayOfWeek = lan_es.test(url) || lan_ca.test(url) ? 1 : 1;
+		this._allRanges = [...this.ranges];
 	}
 
 	ngOnChanges(changes: SimpleChanges): void {
@@ -119,9 +123,18 @@ export class EdaDatePickerComponent implements OnChanges {
 				this.rangeDates = this.inject.dateRange;
 			}
 		}
+
+		// Control for single selection 
+		this.ranges = [...this._allRanges];
+		if(['=', '!=', '>', '<', '>=', '<='].includes(this.filterSelected?.value)) {
+			this.ranges = this.ranges.filter(r => ['beforeYesterday', 'yesterday', 'today', 'pastTomorrow'].includes(r.value));
+		}
+
 	}
 
 	public emitChanges(): void {
+		let dates = this.rangeDates;
+		if (this.selectionMode === 'single' && dates && !Array.isArray(dates)) dates = [dates, dates];
 		this.onDatesChanges.emit({ dates: this.rangeDates, range: this.selectedRange });
 		this.active = false;
 	}
@@ -146,6 +159,8 @@ export class EdaDatePickerComponent implements OnChanges {
 
 	public getRange() {
 		const value = <any>this.selectedRange;
-		this.rangeDates = this.dateUtilsService.getRange(value);
+		const dates = this.dateUtilsService.getRange(value);
+		this.rangeDates = this.selectionMode === 'single' ? dates[0] : dates;
+		this.emitChanges();
 	}
 }
