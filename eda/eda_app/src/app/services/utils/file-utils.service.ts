@@ -136,10 +136,10 @@ export class FileUtiles {
      * Cada columna Excel tendrá ancho de ~12 caracteres (~90px).
      */
     private static readonly GRID_TOTAL_COLS  = 40;
-    private static readonly EXCEL_SCALE      = 1;   // Excel cols por unidad de grid
-    private static readonly EXCEL_COL_WIDTH  = 12;  // ancho por defecto de cada columna Excel
-    private static readonly IMG_ROWS_DEFAULT = 25;  // filas Excel que ocupa una imagen
-    private static readonly ROW_GAP          = 2;   // filas de separación entre bandas
+    private static readonly EXCEL_SCALE      = 0.5;   // Excel cols por unidad de grid
+    private static readonly EXCEL_COL_WIDTH  = 10;  // ancho por defecto de cada columna Excel
+    private static readonly IMG_ROWS_DEFAULT = 20;  // filas Excel que ocupa una imagen
+    private static readonly ROW_GAP          = 1;   // filas de separación entre bandas
     /**
      * Calibración de píxeles por celda Excel (empírica, usada para aspect ratio).
      * - Fila a 18pt: ~24px de alto.
@@ -170,6 +170,17 @@ export class FileUtiles {
             worksheet.getColumn(c).width = FileUtiles.EXCEL_COL_WIDTH;
         }
 
+        // ── Título del dashboard ──────────────────────────────────────────────
+        const dashTitleRow = worksheet.getRow(1);
+        dashTitleRow.height = 28;
+        const dashTitleCell = dashTitleRow.getCell(1);
+        dashTitleCell.value = dashboardTitle;
+        dashTitleCell.font      = { bold: true, size: 16, color: { argb: HEADER_FG } };
+        dashTitleCell.fill      = { type: 'pattern', pattern: 'solid', fgColor: { argb: HEADER_BG } };
+        dashTitleCell.alignment = { vertical: 'middle', horizontal: 'left' };
+        try { worksheet.mergeCells(1, 1, 1, Math.max(1, totalExcelCols)); } catch (_) {}
+        dashTitleRow.commit();
+
         // ── Agrupar paneles por su fila de grid (gridY) ──────────────────────
         const rowGroups = new Map<number, DashboardPanelExport[]>();
         for (const panel of panels) {
@@ -181,7 +192,7 @@ export class FileUtiles {
         // Ordenar grupos por y ascendente
         const sortedYs = Array.from(rowGroups.keys()).sort((a, b) => a - b);
 
-        let currentExcelRow = 1;
+        let currentExcelRow = 3; // Empieza en fila 3 (título + fila en blanco)
 
         for (const groupY of sortedYs) {
             const group = rowGroups.get(groupY)!.sort((a, b) => a.gridX - b.gridX);
