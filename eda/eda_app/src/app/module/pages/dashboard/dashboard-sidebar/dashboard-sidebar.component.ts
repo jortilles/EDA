@@ -285,7 +285,7 @@ export class DashboardSidebarComponent {
       },
       {
         id: 'download',
-        label: $localize`:@@dashboardSidebarDownload:Descargar`,
+        label: $localize`:@@dashboardSidebarDownload:Descargar...`,
         icon: "pi pi-download",
         items: [
           {
@@ -296,7 +296,7 @@ export class DashboardSidebarComponent {
           },
           {
             id: 'downloadImage',
-            label: $localize`:@@dashboardSidebarDownloadImage:Descargar imagen`,
+            label: $localize`:@@dashboardSidebarDownloadImage:Descargar Imagen`,
             icon: "pi pi-image",
             command: () => this.exportAsJPEG()
           },
