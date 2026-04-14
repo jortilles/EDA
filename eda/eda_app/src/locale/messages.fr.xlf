@@ -5173,6 +5173,11 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Live Dashboard</target>
 </trans-unit>
 
+<trans-unit id="secondsToRefresh">
+  <source>Segundos para refrescar</source>
+  <target>Secondes pour rafraîchir</target>
+</trans-unit>
+
 <trans-unit id="dashboardSidebarSave">
   <source>Guardar</source>
   <target>Garder</target>
@@ -5206,6 +5211,16 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 <trans-unit id="dashboardSidebarDownloadImage">
   <source>Descargar imagen</source>
   <target>Télécharger l'image</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownloadExcel">
+  <source>Descargar Excel</source>
+  <target>Télécharger Excel</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownload">
+  <source>Descargar</source>
+  <target>Télécharger</target>
 </trans-unit>
 
 <trans-unit id="dashboardSidebarCustomAction">

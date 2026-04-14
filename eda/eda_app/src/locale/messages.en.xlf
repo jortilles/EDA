@@ -4805,6 +4805,11 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Live Dashboard</target>
 </trans-unit>
 
+<trans-unit id="secondsToRefresh">
+<source>Segundos para refrescar</source>
+<target>Seconds to refresh</target>
+</trans-unit>
+
 <trans-unit id="dashboardSidebarSave">
 <source>Guardar</source>
 <target>Save</target>
@@ -4838,6 +4843,16 @@ Once configured you can invoke it whenever you want from the button.</target>
 <trans-unit id="dashboardSidebarDownloadImage">
 <source>Descargar imagen</source>
 <target>Download image</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownloadExcel">
+<source>Descargar Excel</source>
+<target>Download Excel</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownload">
+<source>Descargar</source>
+<target>Download</target>
 </trans-unit>
 
 <trans-unit id="dashboardSidebarCustomAction">
