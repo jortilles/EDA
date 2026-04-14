@@ -12,6 +12,7 @@ export interface StyleConfig {
 export interface DashboardStyles {
 	stylesApplied: boolean;
 	backgroundColor: string;
+	backgroundImage?: string;   // base64 data URI, optional
 	panelColor: string;
 	titleAlign: string;
 	panelTitleAlign: string;
@@ -61,6 +62,9 @@ export class StyleProviderService {
 	/**Panel background */
 	private _panelColor = new BehaviorSubject<string>(this.DEFAULT_PANEL_COLOR);
 	public panelColor = this._panelColor.asObservable();
+
+	/** Background image data URI (set when a dashboard has a background image) */
+	public backgroundImage: string | null = null;
 
 	/**Title align */
 	private _titleAlign = new BehaviorSubject<string>(this.DEFAULT_TITLE_ALIGN);
@@ -126,6 +130,7 @@ export class StyleProviderService {
 			this.ActualChartPalette = styles.palette;
 			this.loadingFromPalette = true;
 		}
+		this.backgroundImage = styles.backgroundImage || null;
 		this._pageStylesApplied.next(true)
 		this._pageBackground.next(styles.backgroundColor);
 		this._panelColor.next(styles.panelColor);
