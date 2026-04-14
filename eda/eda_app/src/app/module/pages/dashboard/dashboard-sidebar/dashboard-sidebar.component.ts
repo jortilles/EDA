@@ -4,11 +4,13 @@ import { OverlayModule } from "primeng/overlay";
 import { OverlayPanel, OverlayPanelModule } from "primeng/overlaypanel";
 import { DashboardPage } from "../dashboard.page";
 import { AlertService, DashboardService, FileUtiles, SpinnerService, StyleProviderService, ChartUtilsService } from "@eda/services/service.index";
+import { DashboardPanelExport } from "@eda/services/utils/file-utils.service";
 import { EdaPanel, EdaPanelType, EdaTitlePanel, EdaTabsPanel } from "@eda/models/model.index";
 import { lastValueFrom } from "rxjs";
 import { Router } from "@angular/router";
 import domtoimage from 'dom-to-image';
 import jspdf from 'jspdf';
+import html2canvas from 'html2canvas';
 import Swal from 'sweetalert2';
 import { DashboardSidebarService } from "@eda/services/shared/dashboard-sidebar.service";
 import { ExposeMethod } from "@eda/shared/decorators/expose-method.decorator";
@@ -109,6 +111,7 @@ export class DashboardSidebarComponent {
   isEditable; boolean = false; // puede editar el dashboard
   mostrarOpciones = false;
   mostrarFiltros = false;
+  mostrarDescargas = false;
   hayFiltros;
 
   isImportPanelVisible = false;
@@ -281,16 +284,29 @@ export class DashboardSidebarComponent {
         }
       },
       {
-        id: 'downloadPDF',
-        label: $localize`:@@dashboardSidebarDownloadPDF: Descargar PDF`,
-        icon: "pi pi-file-pdf",
-        command: () => this.exportAsPDF()
-      },
-      {
-        id: 'downloadImage',
-        label: $localize`:@@dashboardSidebarDownloadImage:Descargar imagen`,
-        icon: "pi pi-image",
-        command: () => this.exportAsJPEG()
+        id: 'download',
+        label: $localize`:@@dashboardSidebarDownload:Descargar...`,
+        icon: "pi pi-download",
+        items: [
+          {
+            id: 'downloadPDF',
+            label: $localize`:@@dashboardSidebarDownloadPDF: Descargar PDF`,
+            icon: "pi pi-file-pdf",
+            command: () => this.exportAsPDF()
+          },
+          {
+            id: 'downloadImage',
+            label: $localize`:@@dashboardSidebarDownloadImage:Descargar Imagen`,
+            icon: "pi pi-image",
+            command: () => this.exportAsJPEG()
+          },
+          {
+            id: 'downloadExcel',
+            label: $localize`:@@dashboardSidebarDownloadExcel:Descargar Excel`,
+            icon: "pi pi-file-excel",
+            command: () => this.exportDashboardAsExcel()
+          },
+        ]
       },
       {
         id: 'sendEmail',
@@ -325,6 +341,7 @@ export class DashboardSidebarComponent {
     this.popover.hide();
     this.mostrarOpciones = false;
     this.mostrarFiltros = false;
+    this.mostrarDescargas = false;
   }
 
   public onAddGlobalFilter(): void {
@@ -730,6 +747,80 @@ export class DashboardSidebarComponent {
       });
   }
 
+  public async exportDashboardAsExcel(): Promise<void> {
+    this.hidePopover();
+    this.spinner.on();
+
+    try {
+      const panelComponents = this.dashboard.edaPanels?.toArray() ?? [];
+      // El agrupamiento 2D (por gridY) se hace dentro de FileUtiles.exportDashboardToExcel
+      const sorted = panelComponents;
+
+      const panelDataList: DashboardPanelExport[] = [];
+
+      for (const panelComp of sorted) {
+        if (!panelComp.panel?.content) continue;
+
+        const chartType = panelComp.panelChart?.props?.chartType ?? '';
+        const title     = panelComp.panel.title ?? '';
+
+        const gridPos = {
+          gridX:    panelComp.panel.x    ?? 0,
+          gridY:    panelComp.panel.y    ?? 0,
+          gridCols: panelComp.panel.cols ?? 20,
+          gridRows: panelComp.panel.rows ?? 10,
+        };
+
+        if (['table', 'crosstable'].includes(chartType)) {
+          // Acceso directo a la instancia EdaTable activa
+          const tableInstance = panelComp.panelChart?.currentConfig;
+          if (tableInstance) {
+            panelDataList.push({
+              title,
+              type: chartType as 'table' | 'crosstable',
+              tableData: tableInstance,
+              ...gridPos,
+            });
+          }
+        } else {
+          // Capturar el panel completo como imagen PNG usando html2canvas
+          // (más robusto que dom-to-image frente a hojas CSS cross-origin)
+          const hostEl: HTMLElement = panelComp.elRef?.nativeElement;
+          if (hostEl) {
+            try {
+              const CAPTURE_SCALE = 1.5;
+              const canvas = await html2canvas(hostEl, {
+                backgroundColor: '#ffffff',
+                useCORS: false,       // no intentar cargar recursos externos
+                allowTaint: true,     // permitir canvas "manchado" si hay recursos cross-origin
+                logging: false,
+                scale: CAPTURE_SCALE,
+              });
+              const dataUrl = canvas.toDataURL('image/png');
+              // Dividir por la escala de captura para obtener el tamaño CSS real del panel
+              panelDataList.push({
+                title, type: 'chart', imageBase64: dataUrl,
+                imageWidth:  Math.round(canvas.width  / CAPTURE_SCALE),
+                imageHeight: Math.round(canvas.height / CAPTURE_SCALE),
+                ...gridPos,
+              });
+            } catch (imgErr) {
+              console.warn(`[ExportExcel] No se pudo capturar imagen del panel "${title}":`, imgErr);
+              panelDataList.push({ title, type: 'other', ...gridPos });
+            }
+          }
+        }
+      }
+
+      await this.fileUtils.exportDashboardToExcel(panelDataList, this.dashboard.title);
+
+    } catch (err) {
+      console.error('[ExportExcel] Error exportando dashboard a Excel:', err);
+    } finally {
+      this.spinner.off();
+    }
+  }
+
   public getMailingAlertsEnabled(): boolean {
 
     let mailingenabled = false;
@@ -845,6 +936,11 @@ export class DashboardSidebarComponent {
     // Actualizar label e icono según estado
     clickItem.label = this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`;
     clickItem.icon = this.onlyIcanEdit ? "pi pi-check" : "pi pi-ban";
+  }
+
+  toggleDownload() {
+    // Abrimos desplegable de filtros
+    this.mostrarDescargas = !this.mostrarDescargas;
   }
 
   // FUNCIONES DE LOS EVENTOS QUE CONTROLAN EL DRAG AND DROP DE LOS FILTROS

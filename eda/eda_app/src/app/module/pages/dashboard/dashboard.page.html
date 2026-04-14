@@ -42,7 +42,7 @@
         <gridster [options]="gridsterOptions" class="dashboard-grid">
           @for (panel of panels; track panel) {
           <gridster-item class="gridster-item" [item]="panel" [dragAndDrop]="panel.dragAndDrop"
-            [resizable]="panel.resizable">
+            [resizable]="panel.resizable" [ngStyle]="gridsterItemStyle">
 
               @if (panel.type===0) {
                 <eda-blank-panel #edaPanel [dashboard]="this" [panel]="panel" [inject]="injectEdaPanel" [panelContent]="panelContent" [panelText]="panelTitle"
