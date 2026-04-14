@@ -46,14 +46,31 @@ async function loginInternal(): Promise<string> {
 }
 
 // --- Helpers para obtener dashboards por usuario ---
+// Nomenclatura igual que el home:
+//   privados → visible:'private',  campo raíz: user = userId
+//   grupo    → visible:'group',    campo raíz: group contiene groupIds del usuario
+//   comunes  → visible:'public'|'common'
+//   publicos → visible:'shared'|'open'
+// Si es admin, devuelve TODOS clasificados por visibilidad.
 async function getAllDashboards(userId: string) {
-    const groups = await Group.find({ users: userId }).exec();
+    const groups = await Group.find({ users: { $in: [userId] } }).exec();
+    const isAdmin = groups.some((g: any) => g.role === 'EDA_ADMIN_ROLE');
     const groupIds = groups.map((g: any) => g._id);
-    console.log('[MCP] getAllDashboards — userId:', userId, '| grupos:', groupIds.length);
+    console.log('[MCP] getAllDashboards — userId:', userId, '| isAdmin:', isAdmin, '| grupos:', groupIds.length);
+
+    if (isAdmin) {
+        const all = await Dashboard.find({}, 'config.title config.visible').exec();
+        const privados = all.filter((d: any) => d.config?.visible === 'private');
+        const grupo    = all.filter((d: any) => d.config?.visible === 'group');
+        const comunes  = all.filter((d: any) => ['public', 'common'].includes(d.config?.visible));
+        const publicos = all.filter((d: any) => ['shared', 'open'].includes(d.config?.visible));
+        console.log('[MCP] getAllDashboards (admin) — privados:', privados.length, '| grupo:', grupo.length, '| comunes:', comunes.length, '| públicos:', publicos.length);
+        return { privados, grupo, comunes, publicos };
+    }
 
     const [privados, grupo, comunes, publicos] = await Promise.all([
-        Dashboard.find({ 'config.visible': 'private', 'config.createdBy': userId }, 'config.title config.visible').exec(),
-        Dashboard.find({ 'config.visible': 'group', 'config.group': { $in: groupIds } }, 'config.title config.visible').exec(),
+        Dashboard.find({ 'config.visible': 'private', user: userId }, 'config.title config.visible').exec(),
+        Dashboard.find({ 'config.visible': 'group', group: { $in: groupIds } }, 'config.title config.visible').exec(),
         Dashboard.find({ 'config.visible': { $in: ['public', 'common'] } }, 'config.title config.visible').exec(),
         Dashboard.find({ 'config.visible': { $in: ['shared', 'open'] } }, 'config.title config.visible').exec(),
     ]);
