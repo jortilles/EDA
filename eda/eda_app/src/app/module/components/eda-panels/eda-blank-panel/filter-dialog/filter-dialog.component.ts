@@ -351,11 +351,13 @@ export class FilterDialogComponent {
     processPickerEvent(event){
         if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-            if (!event.dates[1]) {
-                event.dates[1] = event.dates[0];
-            }
+            const singleValueOperators = ['=', '!=', '>', '<', '>=', '<='];
+            const isSingleDate = singleValueOperators.includes(this.filterSelected?.value);
 
-            let stringRange = [event.dates[0], event.dates[1]]
+            const dates = Array.isArray(event.dates) ? event.dates : [event.dates, event.dates];
+            if (!dates[1]) dates[1] = dates[0];
+
+            let stringRange = [dates[0], dates[1]]
                 .map(date => {
                     let [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
                     return `${ye}-${mo}-${da}`
@@ -363,7 +365,7 @@ export class FilterDialogComponent {
 
             this.filter.range = event.range;
             this.filterValue.value1 = stringRange[0];
-            this.filterValue.value2 = stringRange[1];
+            this.filterValue.value2 = isSingleDate ? null : stringRange[1];
             this.display.filterButton = false;
         }
     }
