@@ -10,6 +10,7 @@ import { authGuard } from '../../guards/auth-guard';
 import Dashboard from '../dashboard/model/dashboard.model';
 import DataSource from '../datasource/model/datasource.model';
 import User from '../admin/users/model/user.model';
+import Group from '../admin/groups/model/group.model';
 
 const getAnthropicConfig = () => {
     const configPath = path.resolve(__dirname, '../../../config/anthropic.config.js');
@@ -44,16 +45,21 @@ async function loginInternal(): Promise<string> {
     return token;
 }
 
-// --- Helpers para obtener dashboards por rol ---
-async function getAllDashboards() {
-    const [privates, group, publics, common] = await Promise.all([
-        Dashboard.find({ 'config.visible': { $in: ['private'] } }, 'config.title config.visible').exec(),
-        Dashboard.find({ 'config.visible': { $in: ['group'] } }, 'config.title config.visible').exec(),
-        Dashboard.find({ 'config.visible': { $in: ['shared', 'open'] } }, 'config.title config.visible').exec(),
+// --- Helpers para obtener dashboards por usuario ---
+async function getAllDashboards(userId: string) {
+    const groups = await Group.find({ users: userId }).exec();
+    const groupIds = groups.map((g: any) => g._id);
+    console.log('[MCP] getAllDashboards — userId:', userId, '| grupos:', groupIds.length);
+
+    const [privados, grupo, comunes, publicos] = await Promise.all([
+        Dashboard.find({ 'config.visible': 'private', 'config.createdBy': userId }, 'config.title config.visible').exec(),
+        Dashboard.find({ 'config.visible': 'group', 'config.group': { $in: groupIds } }, 'config.title config.visible').exec(),
         Dashboard.find({ 'config.visible': { $in: ['public', 'common'] } }, 'config.title config.visible').exec(),
+        Dashboard.find({ 'config.visible': { $in: ['shared', 'open'] } }, 'config.title config.visible').exec(),
     ]);
 
-    return { privates, group, publics, common };
+    console.log('[MCP] getAllDashboards — privados:', privados.length, '| grupo:', grupo.length, '| comunes:', comunes.length, '| públicos:', publicos.length);
+    return { privados, grupo, comunes, publicos };
 }
 
 
@@ -161,7 +167,7 @@ function createMcpServer(requestUser?: any) {
             }
 
             try {
-                const { privates, group, publics, common } = await getAllDashboards();
+                const { privados, grupo, comunes, publicos } = await getAllDashboards(user._id.toString());
 
                 const { EDA_APP_URL } = getAnthropicConfig();
                 console.log('[MCP] list_dashboards — EDA_APP_URL:', EDA_APP_URL || '(vacío)');
@@ -175,13 +181,13 @@ function createMcpServer(requestUser?: any) {
                     return lines;
                 };
 
-                const total = privates.length + group.length + publics.length + common.length;
+                const total = privados.length + grupo.length + comunes.length + publicos.length;
                 const lines = [
-                    `Total: ${total} dashboards (${privates.length} privados, ${group.length} de grupo, ${publics.length} públicos, ${common.length} comunes)`,
-                    ...formatGroup('Privados', privates),
-                    ...formatGroup('De grupo', group),
-                    ...formatGroup('Públicos', publics),
-                    ...formatGroup('Compartidos', common),
+                    `Total: ${total} dashboards (${privados.length} privados, ${grupo.length} de grupo, ${comunes.length} comunes, ${publicos.length} públicos)`,
+                    ...formatGroup('Privados', privados),
+                    ...formatGroup('De grupo', grupo),
+                    ...formatGroup('Comunes', comunes),
+                    ...formatGroup('Públicos', publicos),
                 ];
 
                 return { content: [{ type: 'text', text: 'Dashboards en EDA:\n' + lines.join('\n') }] };
