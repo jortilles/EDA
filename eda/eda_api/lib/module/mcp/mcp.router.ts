@@ -10,8 +10,6 @@ import { authGuard } from '../../guards/auth-guard';
 import Dashboard from '../dashboard/model/dashboard.model';
 import DataSource from '../datasource/model/datasource.model';
 import User from '../admin/users/model/user.model';
-import Group from '../admin/groups/model/group.model';
-import ManagerConnectionService from '../../services/connection/manager-connection.service';
 
 const getAnthropicConfig = () => {
     const configPath = path.resolve(__dirname, '../../../config/anthropic.config.js');
@@ -47,9 +45,7 @@ async function loginInternal(): Promise<string> {
 }
 
 // --- Helpers para obtener dashboards por rol ---
-async function getAllDashboards(userId: string) {
-    const groups = await Group.find({ users: userId }).exec();
-
+async function getAllDashboards() {
     const [privates, group, publics, common] = await Promise.all([
         Dashboard.find({ 'config.visible': { $in: ['private'] } }, 'config.title config.visible').exec(),
         Dashboard.find({ 'config.visible': { $in: ['group'] } }, 'config.title config.visible').exec(),
@@ -63,17 +59,17 @@ async function getAllDashboards(userId: string) {
 
 
 // --- Helper SQL por tipo de BD ---
-function buildSelectQuery(dbType: string, cols: string, table: string, limit: number): string {
-    switch (dbType) {
-        case 'sqlserver':
-            return `SELECT TOP ${limit} ${cols} FROM ${table} as tabla`;
-        case 'oracle':
-            return `SELECT ${cols} FROM ${table} as tabla FETCH FIRST ${limit} ROWS ONLY`;
-        default:
-            // mysql, postgres, vertica, clickhouse, snowflake, bigquery, etc.
-            return `SELECT ${cols} FROM ${table} LIMIT ${limit}`;
-    }
-}
+// function buildSelectQuery(dbType: string, cols: string, table: string, limit: number): string {
+//     switch (dbType) {
+//         case 'sqlserver':
+//             return `SELECT TOP ${limit} ${cols} FROM ${table} as tabla`;
+//         case 'oracle':
+//             return `SELECT ${cols} FROM ${table} as tabla FETCH FIRST ${limit} ROWS ONLY`;
+//         default:
+//             // mysql, postgres, vertica, clickhouse, snowflake, bigquery, etc.
+//             return `SELECT ${cols} FROM ${table} LIMIT ${limit}`;
+//     }
+// }
 
 // --- Filtrado ia_visibility ---
 function filterDatasourceForAI(ds: any): any | null {
@@ -135,7 +131,19 @@ function filterDatasourceForAI(ds: any): any | null {
 }
 
 // --- MCP Server ---
-function createMcpServer() {
+async function resolveUser(requestUser?: any): Promise<any> {
+    if (requestUser) {
+        console.log('[MCP] resolveUser — fuente: sesión | usuario:', requestUser.email ?? requestUser._id ?? '(desconocido)');
+        return requestUser;
+    }
+    console.log('[MCP] resolveUser — fuente: loginInternal (eda_api_config)');
+    const token = await loginInternal();
+    const decoded: any = jwt.verify(token, SEED);
+    console.log('[MCP] resolveUser — usuario del config:', decoded.user?.email ?? '(desconocido)');
+    return decoded.user;
+}
+
+function createMcpServer(requestUser?: any) {
     console.log('[MCP] createMcpServer - registrando tools...');
     const server = new McpServer({ name: 'eda-mcp', version: '1.0.0' });
 
@@ -146,15 +154,14 @@ function createMcpServer() {
             console.log('[MCP] tool: list_dashboards - ejecutando');
             let user: any;
             try {
-                const token = await loginInternal();
-                const decoded: any = jwt.verify(token, SEED);
-                user = decoded.user;
+                user = await resolveUser(requestUser);
+                console.log('[MCP] list_dashboards — usuario:', user?.email ?? user?._id ?? '(desconocido)');
             } catch (err: any) {
                 return { content: [{ type: 'text', text: `Error de autenticación: ${err.message}` }], isError: true };
             }
 
             try {
-                const { privates, group, publics, common } = await getAllDashboards(user._id);
+                const { privates, group, publics, common } = await getAllDashboards();
 
                 const { EDA_APP_URL } = getAnthropicConfig();
                 console.log('[MCP] list_dashboards — EDA_APP_URL:', EDA_APP_URL || '(vacío)');
@@ -193,7 +200,7 @@ function createMcpServer() {
         async () => {
             console.log('[MCP] tool: list_datasources - ejecutando');
             try {
-                await loginInternal();
+                await resolveUser(requestUser);
                 const { EDA_APP_URL } = getAnthropicConfig();
                 console.log('[MCP] list_datasources — EDA_APP_URL:', EDA_APP_URL || '(vacío)');
                 const datasources = await DataSource.find({}, 'ds.metadata').exec();
@@ -228,7 +235,7 @@ function createMcpServer() {
             console.log('[MCP] tool: get_datasource - args:', JSON.stringify(args));
             const id: string = args.id;
             try {
-                await loginInternal();
+                await resolveUser(requestUser);
                 const ds = await DataSource.findById(id).exec();
                 if (!ds) return { content: [{ type: 'text', text: `Datasource no encontrado: ${id}` }], isError: true };
                 const filtered = filterDatasourceForAI(ds);
@@ -256,31 +263,42 @@ function createMcpServer() {
             console.log('[MCP] tool: get_dashboard - args:', JSON.stringify(args));
             const id: string = args.id;
             try {
-                await loginInternal();
+                await resolveUser(requestUser);
                 const db: any = await Dashboard.findById(id).exec();
                 if (!db) return { content: [{ type: 'text', text: `Dashboard no encontrado: ${id}` }], isError: true };
 
                 const { EDA_APP_URL } = getAnthropicConfig();
                 console.log('[MCP] get_dashboard — EDA_APP_URL:', EDA_APP_URL || '(vacío)', '| id:', id);
                 const dashboardLink = EDA_APP_URL ? `${EDA_APP_URL}/ca/#/dashboard/${encodeURIComponent(id)}` : '';
+                const panels = Array.isArray(db.config?.panel) ? db.config.panel : [];
+
+                // Agrupar datasources únicos
+                const datasourceIds: string[] = [...new Set<string>(
+                    panels.map((p: any) => p.content?.query?.model_id).filter(Boolean) as string[]
+                )];
+
                 const lines: string[] = [
-                    `# ${db.config?.title ?? '(sin título)'}`,
+                    `Dashboard: ${db.config?.title ?? '(sin título)'}`,
                     ...(dashboardLink ? [`URL: ${dashboardLink}`] : []),
+                    `Visibilidad: ${db.config?.visible ?? '(desconocida)'}`,
+                    `Panels: ${panels.length}`,
+                    ...(datasourceIds.length > 0 ? [`Datasource(s): ${datasourceIds.join(', ')}`] : []),
                     '',
                 ];
-                const panels = Array.isArray(db.config?.panel) ? db.config.panel : [];
-                if (panels.length === 0) lines.push('(sin panels)');
 
-                for (const panel of panels) {
-                    lines.push(`## Panel: ${panel.title ?? '(sin título)'}`);
-                    const modelId = panel.content?.query?.model_id;
-                    if (modelId) lines.push(`  datasource: ${modelId}`);
-                    const fields = panel.content?.query?.query?.fields ?? [];
-                    if (fields.length > 0) {
-                        lines.push('  campos:');
-                        for (const f of fields) lines.push(`    - ${f.display_name ?? f.field_name}`);
+                if (panels.length === 0) {
+                    lines.push('(sin panels)');
+                } else {
+                    lines.push('--- Panels ---');
+                    for (let i = 0; i < panels.length; i++) {
+                        const panel = panels[i];
+                        const fields: any[] = panel.content?.query?.query?.fields ?? [];
+                        const fieldNames = fields.map((f: any) => f.display_name ?? f.field_name).filter(Boolean);
+                        lines.push(`${i + 1}. ${panel.title ?? '(sin título)'}`);
+                        if (fieldNames.length > 0) lines.push(`   Campos: ${fieldNames.join(', ')}`);
+                        const chartType = panel.content?.chart_type ?? panel.content?.edaChart ?? null;
+                        if (chartType) lines.push(`   Tipo: ${chartType}`);
                     }
-                    lines.push('');
                 }
 
                 return { content: [{ type: 'text', text: lines.join('\n') }] };
@@ -389,12 +407,12 @@ function createMcpServer() {
 
             // Test autenticación
             try {
-                const token = await loginInternal();
-                const decoded: any = jwt.verify(token, SEED);
+                const user = await resolveUser(requestUser);
                 lines.push('## Autenticación');
                 lines.push(`  Estado : OK`);
-                lines.push(`  Usuario: ${decoded.user?.email ?? '(desconocido)'}`);
-                lines.push(`  Rol    : ${decoded.user?.role ?? '(desconocido)'}`);
+                lines.push(`  Fuente : ${requestUser ? 'usuario de la sesión' : 'usuario MCP del config'}`);
+                lines.push(`  Usuario: ${user?.email ?? '(desconocido)'}`);
+                lines.push(`  Rol    : ${user?.role ?? '(desconocido)'}`);
                 lines.push('');
             } catch (authErr: any) {
                 lines.push('## Autenticación');
@@ -451,8 +469,25 @@ McpRouter.post('/', async (req: Request, res: Response) => {
 
     console.log('[MCP] POST /ia/mcp — method:', req.body?.method, '| tool:', req.body?.params?.name ?? '-', '| Accept:', req.headers.accept);
 
+    // Intentar recuperar el usuario del header x-user-token (enviado desde /chat)
+    let requestUser: any = null;
+    const userToken = req.headers['x-user-token'] as string;
+    console.log('[MCP] x-user-token presente:', !!userToken);
+    if (userToken) {
+        console.log('[MCP] Intentando verificar x-user-token...');
+        try {
+            const decoded: any = jwt.verify(userToken, SEED);
+            requestUser = decoded.user;
+            console.log('[MCP] x-user-token OK — usuario:', requestUser?.email ?? '(sin email)', '| id:', requestUser?._id ?? '(sin id)', '| role:', requestUser?.role ?? '(sin role)');
+        } catch (e: any) {
+            console.warn('[MCP] x-user-token inválido:', e.message, '→ fallback a loginInternal');
+        }
+    } else {
+        console.log('[MCP] Sin x-user-token → se usará loginInternal con el usuario del config');
+    }
+
     try {
-        const server = createMcpServer();
+        const server = createMcpServer(requestUser);
         const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
         res.on('close', () => transport.close());
         await server.connect(transport);
@@ -490,7 +525,11 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
 
     try {
         console.log('[CHAT] Conectando a MCP:', MCP_URL || '(no configurado)');
-        const transport = new StreamableHTTPClientTransport(new URL(MCP_URL));
+        const userToken = (req.headers.authorization || '').replace('Bearer ', '');
+        console.log('[CHAT] x-user-token a enviar — presente:', !!userToken, '| longitud:', userToken.length);
+        const transport = new StreamableHTTPClientTransport(new URL(MCP_URL), {
+            requestInit: { headers: { 'x-user-token': userToken } },
+        });
         await mcpClient.connect(transport);
         console.log('[CHAT] Conexión MCP establecida OK');
 
