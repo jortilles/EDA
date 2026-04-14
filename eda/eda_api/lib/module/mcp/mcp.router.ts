@@ -51,14 +51,15 @@ async function getAllDashboards(userId: string) {
     const groups = await Group.find({ users: userId }).exec();
     const groupIds = groups.map((g: any) => g._id);
 
-    const [privates, groupDbs, publics, shared] = await Promise.all([
-        Dashboard.find({ 'config.visible': 'private', 'config.createdBy': userId }, 'config.title config.visible').exec(),
+    const [privates, group, publics, common] = await Promise.all([
         Dashboard.find({ 'config.visible': 'group', 'config.group': { $in: groupIds } }, 'config.title config.visible').exec(),
-        Dashboard.find({ 'config.visible': { $in: ['public', 'open'] } }, 'config.title config.visible').exec(),
-        Dashboard.find({ 'config.visible': 'shared', 'config.sharedWith': { $in: [userId] } }, 'config.title config.visible').exec(),
+        Dashboard.find({ 'config.visible': { $in: ['private'] } }, 'config.title config.visible').exec(),
+        Dashboard.find({ 'config.visible': { $in: ['group'] } }, 'config.title config.visible').exec(),
+        Dashboard.find({ 'config.visible': { $in: ['shared', 'open'] } }, 'config.title config.visible').exec(),
+        Dashboard.find({ 'config.visible': { $in: ['public', 'common'] } }, 'config.title config.visible').exec(),
     ]);
 
-    return { dashboards: privates, group: groupDbs, publics, shared };
+    return { privates, group, publics, common };
 }
 
 
@@ -155,7 +156,7 @@ function createMcpServer() {
             }
 
             try {
-                const { dashboards, group, publics, shared } = await getAllDashboards(user._id);
+                const { privates, group, publics, common } = await getAllDashboards(user._id);
 
                 const { EDA_APP_URL } = getAnthropicConfig();
                 console.log('[MCP] list_dashboards — EDA_APP_URL:', EDA_APP_URL || '(vacío)');
@@ -169,13 +170,13 @@ function createMcpServer() {
                     return lines;
                 };
 
-                const total = dashboards.length + group.length + publics.length + shared.length;
+                const total = privates.length + group.length + publics.length + common.length;
                 const lines = [
-                    `Total: ${total} dashboards (${dashboards.length} privados, ${group.length} de grupo, ${publics.length} públicos, ${shared.length} compartidos)`,
-                    ...formatGroup('Privados', dashboards),
+                    `Total: ${total} dashboards (${privates.length} privados, ${group.length} de grupo, ${publics.length} públicos, ${common.length} comunes)`,
+                    ...formatGroup('Privados', privates),
                     ...formatGroup('De grupo', group),
                     ...formatGroup('Públicos', publics),
-                    ...formatGroup('Compartidos', shared),
+                    ...formatGroup('Compartidos', common),
                 ];
 
                 return { content: [{ type: 'text', text: 'Dashboards en EDA:\n' + lines.join('\n') }] };
