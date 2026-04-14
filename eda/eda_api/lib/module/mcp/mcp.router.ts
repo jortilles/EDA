@@ -49,10 +49,8 @@ async function loginInternal(): Promise<string> {
 // --- Helpers para obtener dashboards por rol ---
 async function getAllDashboards(userId: string) {
     const groups = await Group.find({ users: userId }).exec();
-    const groupIds = groups.map((g: any) => g._id);
 
     const [privates, group, publics, common] = await Promise.all([
-        Dashboard.find({ 'config.visible': 'group', 'config.group': { $in: groupIds } }, 'config.title config.visible').exec(),
         Dashboard.find({ 'config.visible': { $in: ['private'] } }, 'config.title config.visible').exec(),
         Dashboard.find({ 'config.visible': { $in: ['group'] } }, 'config.title config.visible').exec(),
         Dashboard.find({ 'config.visible': { $in: ['shared', 'open'] } }, 'config.title config.visible').exec(),
