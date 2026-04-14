@@ -607,12 +607,19 @@ Responde siempre en el idioma del usuario. Sé conciso y útil.`,
                 const toolBlocks = response.content.filter((b: any) => b.type === 'tool_use') as any[];
                 history.push({ role: 'assistant', content: response.content });
 
+                const TOOL_TIMEOUT_MS = 20_000;
                 const toolResults: Anthropic.ToolResultBlockParam[] = await Promise.all(
                     toolBlocks.map(async (block: any) => {
                         console.log('[CHAT] Ejecutando tool MCP:', block.name, '| input:', JSON.stringify(block.input));
                         let resultText = '';
                         try {
-                            const result = await mcpClient.callTool({ name: block.name, arguments: block.input });
+                            const timeoutPromise = new Promise<never>((_, reject) =>
+                                setTimeout(() => reject(new Error(`Tool "${block.name}" timeout tras ${TOOL_TIMEOUT_MS / 1000}s`)), TOOL_TIMEOUT_MS)
+                            );
+                            const result = await Promise.race([
+                                mcpClient.callTool({ name: block.name, arguments: block.input }),
+                                timeoutPromise,
+                            ]);
                             resultText = (result.content as any[])
                                 .filter((c: any) => c.type === 'text')
                                 .map((c: any) => c.text)
@@ -637,7 +644,10 @@ Responde siempre en el idioma del usuario. Sé conciso y útil.`,
             break;
         }
 
-        return res.status(200).json({ ok: true, response: '(Sin respuesta del asistente)' });
+        const lastAssistantText = [...history].reverse()
+            .reduce((acc: any[], m: any) => acc.concat(Array.isArray(m.content) ? m.content : []), [])
+            .find((b: any) => b.type === 'text')?.text ?? '';
+        return res.status(200).json({ ok: true, response: lastAssistantText || '(Sin respuesta del asistente)' });
 
     } catch (err: any) {
         console.error('[CHAT] Error:', err.message);

@@ -130,7 +130,11 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   toggleChat(): void {
-    this.chatOpen.set(!this.chatOpen());
+    const opening = !this.chatOpen();
+    this.chatOpen.set(opening);
+    if (opening) {
+      setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+    }
   }
 
   useSuggestion(text: string): void {
@@ -162,11 +166,13 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         this.chatHistory.push({ role: 'assistant', content: res.response });
         this.chatLoading.set(false);
         this.shouldScrollChat = true;
+        setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
       },
       error: () => {
         this.chatHistory.push({ role: 'assistant', content: 'Error al conectar con el asistente.' });
         this.chatLoading.set(false);
         this.shouldScrollChat = true;
+        setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
       },
     });
   }
