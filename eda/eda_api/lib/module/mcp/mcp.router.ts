@@ -525,8 +525,10 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
 
     try {
         console.log('[CHAT] Conectando a MCP:', MCP_URL || '(no configurado)');
-        const userToken = (req.headers.authorization || '').replace('Bearer ', '');
-        console.log('[CHAT] x-user-token a enviar — presente:', !!userToken, '| longitud:', userToken.length);
+        // authGuard ya verificó el JWT y dejó req.user disponible — generamos un token fresco desde ahí
+        const reqUser = (req as any).user;
+        const userToken = reqUser ? jwt.sign({ user: reqUser }, SEED, { expiresIn: 14400 }) : '';
+        console.log('[CHAT] x-user-token a enviar — usuario:', reqUser?.email ?? reqUser?._id ?? '(ninguno)', '| token generado:', !!userToken);
         const transport = new StreamableHTTPClientTransport(new URL(MCP_URL), {
             requestInit: { headers: { 'x-user-token': userToken } },
         });
