@@ -6110,6 +6110,46 @@ OR<ph id="5"/>
   <source>Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, Declaration expone solo nombre y tipo, None lo excluye totalmente.</source>
   <target>Controls whether the AI agent has access to this information: Full allows full access, Declaration exposes only name and type, None excludes it entirely.</target>
 </trans-unit>
+<trans-unit id="chatAssistantTitle" datatype="html">
+  <source>Asistente Edalitics</source>
+  <target>Edalitics Assistant</target>
+</trans-unit>
+<trans-unit id="chatAssistantSubtitle" datatype="html">
+  <source>Asistente IA para facilitar tu trabajo</source>
+  <target>AI Assistant to make your work easier</target>
+</trans-unit>
+<trans-unit id="chatCloseBtn" datatype="html">
+  <source>Cerrar</source>
+  <target>Close</target>
+</trans-unit>
+<trans-unit id="chatEmptyTitle" datatype="html">
+  <source>¿En qué puedo ayudarte?</source>
+  <target>How can I help you?</target>
+</trans-unit>
+<trans-unit id="chatEmptySubtitle" datatype="html">
+  <source>Consulta dashboards, datasources y datos</source>
+  <target>Browse dashboards, datasources and data</target>
+</trans-unit>
+<trans-unit id="chatSuggestion1" datatype="html">
+  <source>¿Qué dashboards tengo?</source>
+  <target>What dashboards do I have?</target>
+</trans-unit>
+<trans-unit id="chatSuggestion2" datatype="html">
+  <source>¿Qué datasources hay?</source>
+  <target>What datasources are available?</target>
+</trans-unit>
+<trans-unit id="chatSuggestion3" datatype="html">
+  <source>Estado del servidor</source>
+  <target>Server status</target>
+</trans-unit>
+<trans-unit id="chatInputPlaceholder" datatype="html">
+  <source>Escribe un mensaje...</source>
+  <target>Write a message...</target>
+</trans-unit>
+<trans-unit id="chatFabTitle" datatype="html">
+  <source>Asistente IA</source>
+  <target>AI Assistant</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

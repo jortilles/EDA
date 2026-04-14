@@ -6356,6 +6356,46 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, Declaration expone solo nombre y tipo, None lo excluye totalmente.</source>
         <target>Contrôle si l'agent IA a accès à cette information : Full autorise l'accès complet, Declaration expose uniquement le nom et le type, None l'exclut entièrement.</target>
       </trans-unit>
+      <trans-unit id="chatAssistantTitle" datatype="html">
+        <source>Asistente Edalitics</source>
+        <target>Assistant Edalitics</target>
+      </trans-unit>
+      <trans-unit id="chatAssistantSubtitle" datatype="html">
+        <source>Asistente IA para facilitar tu trabajo</source>
+        <target>Assistant IA pour faciliter votre travail</target>
+      </trans-unit>
+      <trans-unit id="chatCloseBtn" datatype="html">
+        <source>Cerrar</source>
+        <target>Fermer</target>
+      </trans-unit>
+      <trans-unit id="chatEmptyTitle" datatype="html">
+        <source>¿En qué puedo ayudarte?</source>
+        <target>Comment puis-je vous aider ?</target>
+      </trans-unit>
+      <trans-unit id="chatEmptySubtitle" datatype="html">
+        <source>Consulta dashboards, datasources y datos</source>
+        <target>Consultez des tableaux de bord, datasources et données</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion1" datatype="html">
+        <source>¿Qué dashboards tengo?</source>
+        <target>Quels tableaux de bord ai-je ?</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion2" datatype="html">
+        <source>¿Qué datasources hay?</source>
+        <target>Quels datasources sont disponibles ?</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion3" datatype="html">
+        <source>Estado del servidor</source>
+        <target>État du serveur</target>
+      </trans-unit>
+      <trans-unit id="chatInputPlaceholder" datatype="html">
+        <source>Escribe un mensaje...</source>
+        <target>Écrire un message...</target>
+      </trans-unit>
+      <trans-unit id="chatFabTitle" datatype="html">
+        <source>Asistente IA</source>
+        <target>Assistant IA</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

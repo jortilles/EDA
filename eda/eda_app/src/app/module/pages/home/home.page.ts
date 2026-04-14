@@ -94,6 +94,11 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   public groupTitle: string = $localize`:@@tituloGrupoMisGrupos:MIS GRUPOS`;
   public privateTitle: string = $localize`:@@tituloGrupoPersonales:PRIVADOS`;
 
+  // Chat suggestions (used both as button label and as message text)
+  public chatSuggestion1: string = $localize`:@@chatSuggestion1:¿Qué dashboards tengo?`;
+  public chatSuggestion2: string = $localize`:@@chatSuggestion2:¿Qué datasources hay?`;
+  public chatSuggestion3: string = $localize`:@@chatSuggestion3:Estado del servidor`;
+
   constructor(private userService: UserService, private groupService: GroupService) { }
 
   ngOnInit(): void {

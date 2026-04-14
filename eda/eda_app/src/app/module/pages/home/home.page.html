@@ -145,11 +145,11 @@
           <img src="assets/images/logos/logo.png" alt="Edalitics" class="w-5 h-5 object-contain" style="filter: invert(51%) sepia(89%) saturate(400%) hue-rotate(145deg) brightness(95%);">
         </div>
         <div>
-          <p class="font-semibold text-sm leading-tight" style="color: #00B0BA;">Asistente Edalitics</p>
-          <p class="text-[10px] text-gray-400 leading-tight">Asistente IA para facilitar tu trabajo</p>
+          <p class="font-semibold text-sm leading-tight" style="color: #00B0BA;" i18n="@@chatAssistantTitle">Asistente Edalitics</p>
+          <p class="text-[10px] text-gray-400 leading-tight" i18n="@@chatAssistantSubtitle">Asistente IA para facilitar tu trabajo</p>
         </div>
       </div>
-      <button (click)="toggleChat()" title="Cerrar"
+      <button (click)="toggleChat()" i18n-title="@@chatCloseBtn" title="Cerrar"
         class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
@@ -165,13 +165,13 @@
             <img src="assets/images/logos/logo.png" alt="Edalitics" class="w-10 h-10 object-contain" style="filter: invert(51%) sepia(89%) saturate(400%) hue-rotate(145deg) brightness(95%);">
           </div>
           <div>
-            <p class="text-sm font-medium text-gray-700">¿En qué puedo ayudarte?</p>
-            <p class="text-xs text-gray-400 mt-1">Consulta dashboards, datasources y datos</p>
+            <p class="text-sm font-medium text-gray-700" i18n="@@chatEmptyTitle">¿En qué puedo ayudarte?</p>
+            <p class="text-xs text-gray-400 mt-1" i18n="@@chatEmptySubtitle">Consulta dashboards, datasources y datos</p>
           </div>
           <div class="flex flex-col gap-2 w-full">
-            <button class="chat-suggestion" (click)="useSuggestion('¿Qué dashboards tengo?')">¿Qué dashboards tengo?</button>
-            <button class="chat-suggestion" (click)="useSuggestion('¿Qué datasources hay disponibles?')">¿Qué datasources hay?</button>
-            <button class="chat-suggestion" (click)="useSuggestion('Muéstrame el estado del servidor')">Estado del servidor</button>
+            <button class="chat-suggestion" (click)="useSuggestion(chatSuggestion1)" i18n="@@chatSuggestion1">¿Qué dashboards tengo?</button>
+            <button class="chat-suggestion" (click)="useSuggestion(chatSuggestion2)" i18n="@@chatSuggestion2">¿Qué datasources hay?</button>
+            <button class="chat-suggestion" (click)="useSuggestion(chatSuggestion3)" i18n="@@chatSuggestion3">Estado del servidor</button>
           </div>
         </div>
       }
@@ -213,7 +213,7 @@
           #chatInputEl
           (keydown)="onChatKeydown($event)"
           [disabled]="chatLoading()"
-          placeholder="Escribe un mensaje..."
+          i18n-placeholder="@@chatInputPlaceholder" placeholder="Escribe un mensaje..."
           rows="1"
           class="chat-textarea flex-1 resize-none rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400 transition-all disabled:opacity-50 leading-relaxed"
           style="max-height: 100px; overflow-y: auto; min-height: 2.5rem;"></textarea>
@@ -358,7 +358,7 @@
   <button
     (click)="toggleChat()"
     class="chat-fab"
-    title="Asistente IA">
+    i18n-title="@@chatFabTitle" title="Asistente IA">
     <img src="assets/images/logos/logo.png" alt="Edalitics" class="w-7 h-7 object-contain" style="filter: brightness(0) invert(1);">
   </button>
 }
