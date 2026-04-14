@@ -106,7 +106,7 @@
         @if (mostrarOpciones) {
           <div class="ml-6 flex flex-col gap-2">
             @for (item of itemsDesplegables().slice(1); track item.label) {
-                @if(isEditable && !isReadOnly || (item.id === 'downloadPDF' || item.id === 'downloadImage')){
+                @if(isEditable && !isReadOnly || (item.id === 'downloadPDF' || item.id === 'downloadImage' || item.id === 'downloadExcel')){
                   <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
                     (click)="item.command()">
                     <i [class]="item.icon + ' text-gray-600'"></i>
