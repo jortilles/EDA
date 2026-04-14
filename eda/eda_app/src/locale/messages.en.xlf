@@ -2349,6 +2349,10 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <source> Últimos 120 días </source>
 <target>Last 120 days </target>
 </trans-unit>
+<trans-unit id="DatePickerLast365">
+<source> Últimos 365 días </source>
+<target>Last 365 days </target>
+</trans-unit>
 <trans-unit id="DateSelectRange">
 <source>Selecciona un rango</source>
 <target>Select range</target>
@@ -4809,6 +4813,11 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Live Dashboard</target>
 </trans-unit>
 
+<trans-unit id="secondsToRefresh">
+<source>Segundos para refrescar</source>
+<target>Seconds to refresh</target>
+</trans-unit>
+
 <trans-unit id="dashboardSidebarSave">
 <source>Guardar</source>
 <target>Save</target>
@@ -4842,6 +4851,16 @@ Once configured you can invoke it whenever you want from the button.</target>
 <trans-unit id="dashboardSidebarDownloadImage">
 <source>Descargar imagen</source>
 <target>Download image</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownloadExcel">
+<source>Descargar Excel</source>
+<target>Download Excel</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownload">
+<source>Descargar</source>
+<target>Download</target>
 </trans-unit>
 
 <trans-unit id="dashboardSidebarCustomAction">
@@ -5796,6 +5815,10 @@ OR<ph id="5"/>
   <source>Próximos 120 días</source>
   <target>Next 120 days</target>
 </trans-unit>
+<trans-unit id="DatePickerNext365">
+  <source>Próximos 365 días</source>
+  <target>Next 365 days</target>
+</trans-unit>
 <trans-unit id="DatePickerAll">
   <source>Todas</source>
   <target>All</target>
@@ -6153,6 +6176,58 @@ OR<ph id="5"/>
 <trans-unit id="columnDescriptionDependentFilter" datatype="html">
   <source>Columna:</source>
   <target>Column:</target>
+</trans-unit>
+<trans-unit id="noAttributeShouldHaveAggregation">
+  <source>Ningún Atributo debe tener agregación</source>
+  <target>No attribute should have aggregation</target>
+</trans-unit>
+<trans-unit id="mustConfigureAtLeastOneAttribute">
+  <source>Debe configurar un atributo como mínimo para habilitar esta opción</source>
+  <target>You must configure at least one attribute to enable this option</target>
+</trans-unit>
+<trans-unit id="mustAddTheGroupingsToRunWithAggregations">
+  <source>Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos</source>
+  <target>You must enable groupings to execute with aggregations configured on the attributes</target>
+</trans-unit>
+<trans-unit id="chatAssistantTitle" datatype="html">
+  <source>Asistente Edalitics</source>
+  <target>Edalitics Assistant</target>
+</trans-unit>
+<trans-unit id="chatAssistantSubtitle" datatype="html">
+  <source>Asistente IA para facilitar tu trabajo</source>
+  <target>AI Assistant to make your work easier</target>
+</trans-unit>
+<trans-unit id="chatCloseBtn" datatype="html">
+  <source>Cerrar</source>
+  <target>Close</target>
+</trans-unit>
+<trans-unit id="chatEmptyTitle" datatype="html">
+  <source>¿En qué puedo ayudarte?</source>
+  <target>How can I help you?</target>
+</trans-unit>
+<trans-unit id="chatEmptySubtitle" datatype="html">
+  <source>Consulta dashboards, datasources y datos</source>
+  <target>Browse dashboards, datasources and data</target>
+</trans-unit>
+<trans-unit id="chatSuggestion1" datatype="html">
+  <source>¿Qué dashboards tengo?</source>
+  <target>What dashboards do I have?</target>
+</trans-unit>
+<trans-unit id="chatSuggestion2" datatype="html">
+  <source>¿Qué datasources hay?</source>
+  <target>What datasources are available?</target>
+</trans-unit>
+<trans-unit id="chatSuggestion3" datatype="html">
+  <source>Estado del servidor</source>
+  <target>Server status</target>
+</trans-unit>
+<trans-unit id="chatInputPlaceholder" datatype="html">
+  <source>Escribe un mensaje...</source>
+  <target>Write a message...</target>
+</trans-unit>
+<trans-unit id="chatFabTitle" datatype="html">
+  <source>Asistente IA</source>
+  <target>AI Assistant</target>
 </trans-unit>
 </body>
 </file>

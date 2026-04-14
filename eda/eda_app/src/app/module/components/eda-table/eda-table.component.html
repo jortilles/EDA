@@ -1,4 +1,4 @@
-<div class="eda-table">
+<div class="eda-table" [class.eda-table--transparent]="styleProviderService.backgroundImage">
     <p-table 
         #table 
         [columns]="inject.cols" 
@@ -56,10 +56,10 @@
                         @if(col.type && col.visible){
                             <th [pSortableColumn]="col.field" [class]="col.styleClass" [pTooltip]="getTooltip(col)"  [ngStyle]="getStyle()"
                                 [width]="col.width" [attr.rowspan]="col.rowspan">
-                                <div class="flex items-center "  [ngStyle]="getStyle()">
+                                <div class="flex items-center "  [ngStyle]="getTextStyle()">
                                     {{col.header}}
                                     @if(col.sortable){
-                                        <p-sortIcon [field]="col.field"  [ngStyle]="getStyle()"></p-sortIcon>
+                                        <p-sortIcon [field]="col.field"  [ngStyle]="getTextStyle()"></p-sortIcon>
                                     }
                                 </div>
                             </th>
@@ -93,7 +93,7 @@
             <tr>
                 <ng-container *ngFor="let col of inject.cols">
                     @if(col.visible===true){
-                        <td [class]="col.styleClass" [width]="col.width" (click)="handleClick(lodash.get(rowData, col.field), col.field )" style="cursor: pointer; height: 35px;" [ngClass]="getStyleClass(col, rowData)" [ngStyle]="getStyle()">
+                        <td [class]="col.styleClass" [width]="col.width" (click)="handleClick(lodash.get(rowData, col.field), col.field )" style="cursor: pointer; height: 35px;" [ngClass]="getStyleClass(col, rowData)" [ngStyle]="getTextStyle()">
                             <ng-container [ngSwitch]="col.type">
                                 <!-- ngSwitch TEXT -->
                                         

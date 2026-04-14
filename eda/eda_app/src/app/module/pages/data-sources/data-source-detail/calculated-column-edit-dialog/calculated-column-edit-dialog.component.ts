@@ -26,6 +26,7 @@ export class CalculatedColumnEditDialogComponent implements OnInit {
   public columnTypes = [
     { label: 'text', value: 'text' },
     { label: 'numeric', value: 'numeric' },
+    { label: 'html', value: 'html' },
     { label: 'date', value: 'date' },
     { label: 'coordinate', value: 'coordinate' }
   ];

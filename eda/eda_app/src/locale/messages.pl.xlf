@@ -2249,6 +2249,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source> Últimos 120 días </source>
 <target>Ostatnie 120 dni </target>
 </trans-unit>
+<trans-unit id="DatePickerLast365">
+<source> Últimos 365 días </source>
+<target>Ostatnie 365 dni </target>
+</trans-unit>
 <trans-unit id="DateSelectRange">
 <source>Selecciona un rango</source>
 <target>Wybierz zakres</target>
@@ -4671,6 +4675,11 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <target>Panel na żywo</target>
 </trans-unit>
 
+<trans-unit id="secondsToRefresh">
+  <source>Segundos para refrescar</source>
+  <target>Sekundy do odświeżenia</target>
+</trans-unit>
+
 <trans-unit id="dashboardSidebarSave">
   <source>Guardar</source>
   <target>Ratować</target>
@@ -4704,6 +4713,16 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
 <trans-unit id="dashboardSidebarDownloadImage">
   <source>Descargar imagen</source>
   <target>Pobierz obraz</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownloadExcel">
+  <source>Descargar Excel</source>
+  <target>Pobierz Excel</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownload">
+  <source>Descargar</source>
+  <target>Pobierz</target>
 </trans-unit>
 
 <trans-unit id="dashboardSidebarCustomAction">
@@ -5627,6 +5646,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Próximos 120 días</source>
         <target>Następne 120 dni</target>
       </trans-unit>
+      <trans-unit id="DatePickerNext365">
+        <source>Próximos 365 días</source>
+        <target>Następne 365 dni</target>
+      </trans-unit>
       <trans-unit id="DatePickerAll">
         <source>Todas</source>
         <target>Wszystkie</target>
@@ -6064,6 +6087,58 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="columnDescriptionDependentFilter" datatype="html">
         <source>Columna:</source>
         <target>Kolumna:</target>
+      </trans-unit>
+      <trans-unit id="noAttributeShouldHaveAggregation">
+        <source>Ningún Atributo debe tener agregación</source>
+        <target>Żaden atrybut nie powinien mieć agregacji</target>
+      </trans-unit>
+      <trans-unit id="mustConfigureAtLeastOneAttribute">
+        <source>Debe configurar un atributo como mínimo para habilitar esta opción</source>
+        <target>Należy skonfigurować co najmniej jeden atrybut, aby włączyć tę opcję</target>
+      </trans-unit>
+      <trans-unit id="mustAddTheGroupingsToRunWithAggregations">
+        <source>Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos</source>
+        <target>Należy włączyć grupowanie, aby wykonać operację z agregacjami skonfigurowanymi w atrybutach</target>
+      </trans-unit>
+      <trans-unit id="chatAssistantTitle" datatype="html">
+        <source>Asistente Edalitics</source>
+        <target>Asystent Edalitics</target>
+      </trans-unit>
+      <trans-unit id="chatAssistantSubtitle" datatype="html">
+        <source>Asistente IA para facilitar tu trabajo</source>
+        <target>Asystent AI ułatwiający Twoją pracę</target>
+      </trans-unit>
+      <trans-unit id="chatCloseBtn" datatype="html">
+        <source>Cerrar</source>
+        <target>Zamknij</target>
+      </trans-unit>
+      <trans-unit id="chatEmptyTitle" datatype="html">
+        <source>¿En qué puedo ayudarte?</source>
+        <target>W czym mogę Ci pomóc?</target>
+      </trans-unit>
+      <trans-unit id="chatEmptySubtitle" datatype="html">
+        <source>Consulta dashboards, datasources y datos</source>
+        <target>Przeglądaj dashboardy, datasources i dane</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion1" datatype="html">
+        <source>¿Qué dashboards tengo?</source>
+        <target>Jakie dashboardy mam?</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion2" datatype="html">
+        <source>¿Qué datasources hay?</source>
+        <target>Jakie datasources są dostępne?</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion3" datatype="html">
+        <source>Estado del servidor</source>
+        <target>Stan serwera</target>
+      </trans-unit>
+      <trans-unit id="chatInputPlaceholder" datatype="html">
+        <source>Escribe un mensaje...</source>
+        <target>Napisz wiadomość...</target>
+      </trans-unit>
+      <trans-unit id="chatFabTitle" datatype="html">
+        <source>Asistente IA</source>
+        <target>Asystent AI</target>
       </trans-unit>
 </body>
 </file>

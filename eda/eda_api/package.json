@@ -18,6 +18,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@anthropic-ai/sdk": "^0.87.0",
         "@clickhouse/client": "^1.8.0",
         "@google-cloud/bigquery": "^5.5.0",
         "@modelcontextprotocol/sdk": "^1.29.0",

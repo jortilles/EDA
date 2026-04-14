@@ -357,6 +357,23 @@ export const PanelInteractionUtils = {
             }
         }
     }
+
+    // Restore the saved column order from fields (handleCurrentQuery groups by table,
+    // which scrambles the user-defined order saved in panelContent.query.query.fields).
+    const savedFields = panelContent.query.query.fields;
+    ebp.currentQuery.sort((a: any, b: any) => {
+        const aIdx = savedFields.findIndex((f: any) =>
+            f.table_id === a.table_id &&
+            f.column_name === a.column_name &&
+            f.display_name === a.display_name.default
+        );
+        const bIdx = savedFields.findIndex((f: any) =>
+            f.table_id === b.table_id &&
+            f.column_name === b.column_name &&
+            f.display_name === b.display_name.default
+        );
+        return (aIdx === -1 ? Infinity : aIdx) - (bIdx === -1 ? Infinity : bIdx);
+    });
   },
 
   handleCurrentQuery2: (ebp: EdaBlankPanelComponent): void => {

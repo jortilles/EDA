@@ -1170,10 +1170,18 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 tableColumns.push(new EdaColumnText({ header: label, field: label, description: label }));
             }
         } else {
+            // Build a consumable copy of labels to correctly match each column by column_name.
+            // This handles cases where currentQuery is reordered differently from the server labels
+            const availableLabels = [...labels];
+
             for (let i = 0, n = this.props.query.length; i < n; i += 1) {
 
-                const label = labels[i];
                 const r: Column = this.props.query[i];
+                // Find the label matching this column's column_name (consume it to handle duplicates)
+                const labelIdx = availableLabels.findIndex(l => l === r.column_name);
+                const label = labelIdx !== -1
+                    ? availableLabels.splice(labelIdx, 1)[0]
+                    : (availableLabels.shift() ?? labels[i]);
 
                 if (_.isEqual(r.column_type, 'date')) {
                     tableColumns.push(new EdaColumnDate({ header: r.display_name.default, field: label, description: r.description.default }));

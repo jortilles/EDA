@@ -2625,6 +2625,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source> Últimos 120 días </source>
 <target>Últims 120 dies </target>
 </trans-unit>
+<trans-unit id="DatePickerLast365">
+<source> Últimos 365 días </source>
+<target>Últims 365 dies </target>
+</trans-unit>
 <trans-unit id="DateSelectRange">
 <source>Selecciona un rango</source>
 <target>Selecciona un rang</target>
@@ -5242,6 +5246,11 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Live Dashboard</target>
 </trans-unit>
 
+<trans-unit id="secondsToRefresh">
+  <source>Segundos para refrescar</source>
+  <target>Segons per refrescar</target>
+</trans-unit>
+
 <trans-unit id="dashboardSidebarSave">
   <source>Guardar</source>
   <target>Guardar</target>
@@ -5275,6 +5284,16 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="dashboardSidebarDownloadImage">
   <source>Descargar imagen</source>
   <target>Descarregar imatge</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownloadExcel">
+  <source>Descargar Excel</source>
+  <target>Descarregar Excel</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownload">
+  <source>Descargar</source>
+  <target>Descarregar</target>
 </trans-unit>
 
 <trans-unit id="dashboardSidebarCustomAction">
@@ -5988,6 +6007,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Próximos 120 días</source>
         <target>Propers 120 dies</target>
       </trans-unit>
+      <trans-unit id="DatePickerNext365">
+        <source>Próximos 365 días</source>
+        <target>Propers 365 dies</target>
+      </trans-unit>
       <trans-unit id="DatePickerAll">
         <source>Todas</source>
         <target>Totes</target>
@@ -6430,6 +6453,58 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="columnDescriptionDependentFilter" datatype="html">
         <source>Columna:</source>
         <target>Columna:</target>
+      </trans-unit>
+      <trans-unit id="noAttributeShouldHaveAggregation">
+        <source>Ningún Atributo debe tener agregación</source>
+        <target>Cap atribut ha de tenir agregació</target>
+      </trans-unit>
+      <trans-unit id="mustConfigureAtLeastOneAttribute">
+        <source>Debe configurar un atributo como mínimo para habilitar esta opción</source>
+        <target>Cal configurar com a mínim un atribut per habilitar aquesta opció</target>
+      </trans-unit>
+      <trans-unit id="mustAddTheGroupingsToRunWithAggregations">
+        <source>Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos</source>
+        <target>Cal activar les agrupacions per executar amb agregacions configurades als atributs</target>
+      </trans-unit>
+      <trans-unit id="chatAssistantTitle" datatype="html">
+        <source>Asistente Edalitics</source>
+        <target>Assistent Edalitics</target>
+      </trans-unit>
+      <trans-unit id="chatAssistantSubtitle" datatype="html">
+        <source>Asistente IA para facilitar tu trabajo</source>
+        <target>Assistent IA per facilitar la teva feina</target>
+      </trans-unit>
+      <trans-unit id="chatCloseBtn" datatype="html">
+        <source>Cerrar</source>
+        <target>Tancar</target>
+      </trans-unit>
+      <trans-unit id="chatEmptyTitle" datatype="html">
+        <source>¿En qué puedo ayudarte?</source>
+        <target>En què et puc ajudar?</target>
+      </trans-unit>
+      <trans-unit id="chatEmptySubtitle" datatype="html">
+        <source>Consulta dashboards, datasources y datos</source>
+        <target>Consulta dashboards, datasources i dades</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion1" datatype="html">
+        <source>¿Qué dashboards tengo?</source>
+        <target>Quins dashboards tinc?</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion2" datatype="html">
+        <source>¿Qué datasources hay?</source>
+        <target>Quins datasources hi ha?</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion3" datatype="html">
+        <source>Estado del servidor</source>
+        <target>Estat del servidor</target>
+      </trans-unit>
+      <trans-unit id="chatInputPlaceholder" datatype="html">
+        <source>Escribe un mensaje...</source>
+        <target>Escriu un missatge...</target>
+      </trans-unit>
+      <trans-unit id="chatFabTitle" datatype="html">
+        <source>Asistente IA</source>
+        <target>Assistent IA</target>
       </trans-unit>
     </body>
   </file>

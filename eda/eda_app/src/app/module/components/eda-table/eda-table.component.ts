@@ -60,7 +60,7 @@ export class EdaTableComponent implements OnInit {
     constructor(
         private elementRef: ElementRef,
         private styleService: StyleService,
-        private styleProviderService: StyleProviderService,
+        public styleProviderService: StyleProviderService,
         private sanitizer: DomSanitizer,
         private alertService: AlertService
     ) {
@@ -177,13 +177,35 @@ export class EdaTableComponent implements OnInit {
     }
 
     getStyle() {
-        if(this.styleProviderService.pageStylesApplied.source['_value'] && Object.keys(this.styles).length === 0) 
-        return {
-            'color': this.styleProviderService.panelFontColor.source['_value'],
-            'font-family': this.styleProviderService.panelFontFamily.source['_value'],
-            'background': this.styleProviderService.panelColor.source['_value'] 
-            }
+        if(this.styleProviderService.pageStylesApplied.source['_value'] && Object.keys(this.styles).length === 0) {
+            const panelColor = this.styleProviderService.panelColor.source['_value'];
+            const bg = this.styleProviderService.backgroundImage
+                ? this.hexToRgba(panelColor, 0.5)
+                : panelColor;
+            return {
+                'color': this.styleProviderService.panelFontColor.source['_value'],
+                'font-family': this.styleProviderService.panelFontFamily.source['_value'],
+                'background': bg,
+            };
+        }
         return;
+    }
+
+    getTextStyle() {
+        if(this.styleProviderService.pageStylesApplied.source['_value'] && Object.keys(this.styles).length === 0) {
+            return {
+                'color': this.styleProviderService.panelFontColor.source['_value'],
+                'font-family': this.styleProviderService.panelFontFamily.source['_value'],
+            };
+        }
+        return;
+    }
+
+    private hexToRgba(hex: string, alpha: number): string {
+        const clean = (hex || '#ffffff').replace('#', '');
+        const full = clean.length === 3 ? clean.split('').map(c => c + c).join('') : clean;
+        const n = parseInt(full, 16);
+        return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
     }
 
     public applyStyles(styles: Array<any>) {
