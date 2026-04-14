@@ -111,6 +111,7 @@ export class DashboardSidebarComponent {
   isEditable; boolean = false; // puede editar el dashboard
   mostrarOpciones = false;
   mostrarFiltros = false;
+  mostrarDescargas = false;
   hayFiltros;
 
   isImportPanelVisible = false;
@@ -283,22 +284,29 @@ export class DashboardSidebarComponent {
         }
       },
       {
-        id: 'downloadPDF',
-        label: $localize`:@@dashboardSidebarDownloadPDF: Descargar PDF`,
-        icon: "pi pi-file-pdf",
-        command: () => this.exportAsPDF()
-      },
-      {
-        id: 'downloadImage',
-        label: $localize`:@@dashboardSidebarDownloadImage:Descargar imagen`,
-        icon: "pi pi-image",
-        command: () => this.exportAsJPEG()
-      },
-      {
-        id: 'downloadExcel',
-        label: $localize`:@@dashboardSidebarDownloadExcel:Descargar Excel`,
-        icon: "pi pi-file-excel",
-        command: () => this.exportDashboardAsExcel()
+        id: 'download',
+        label: $localize`:@@dashboardSidebarDownload:Descargar`,
+        icon: "pi pi-download",
+        items: [
+          {
+            id: 'downloadPDF',
+            label: $localize`:@@dashboardSidebarDownloadPDF: Descargar PDF`,
+            icon: "pi pi-file-pdf",
+            command: () => this.exportAsPDF()
+          },
+          {
+            id: 'downloadImage',
+            label: $localize`:@@dashboardSidebarDownloadImage:Descargar imagen`,
+            icon: "pi pi-image",
+            command: () => this.exportAsJPEG()
+          },
+          {
+            id: 'downloadExcel',
+            label: $localize`:@@dashboardSidebarDownloadExcel:Descargar Excel`,
+            icon: "pi pi-file-excel",
+            command: () => this.exportDashboardAsExcel()
+          },
+        ]
       },
       {
         id: 'sendEmail',
@@ -333,6 +341,7 @@ export class DashboardSidebarComponent {
     this.popover.hide();
     this.mostrarOpciones = false;
     this.mostrarFiltros = false;
+    this.mostrarDescargas = false;
   }
 
   public onAddGlobalFilter(): void {
@@ -927,6 +936,11 @@ export class DashboardSidebarComponent {
     // Actualizar label e icono según estado
     clickItem.label = this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`;
     clickItem.icon = this.onlyIcanEdit ? "pi pi-check" : "pi pi-ban";
+  }
+
+  toggleDownload() {
+    // Abrimos desplegable de filtros
+    this.mostrarDescargas = !this.mostrarDescargas;
   }
 
   // FUNCIONES DE LOS EVENTOS QUE CONTROLAN EL DRAG AND DROP DE LOS FILTROS
