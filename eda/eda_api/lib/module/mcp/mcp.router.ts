@@ -49,18 +49,12 @@ async function loginInternal(): Promise<string> {
 // --- Helpers para obtener dashboards por rol ---
 async function getAllDashboards(userId: string) {
     const groups = await Group.find({ users: userId }).exec();
-    const isAdmin = groups.some((g: any) => g.role === 'EDA_ADMIN_ROLE');
     const groupIds = groups.map((g: any) => g._id);
-
-    if (isAdmin) {
-        const all = await Dashboard.find({}, 'config.title config.visible').exec();
-        return { dashboards: all, group: [], publics: [], shared: [] };
-    }
 
     const [privates, groupDbs, publics, shared] = await Promise.all([
         Dashboard.find({ 'config.visible': 'private', 'config.createdBy': userId }, 'config.title config.visible').exec(),
         Dashboard.find({ 'config.visible': 'group', 'config.group': { $in: groupIds } }, 'config.title config.visible').exec(),
-        Dashboard.find({ 'config.visible': 'public' }, 'config.title config.visible').exec(),
+        Dashboard.find({ 'config.visible': { $in: ['public', 'open'] } }, 'config.title config.visible').exec(),
         Dashboard.find({ 'config.visible': 'shared', 'config.sharedWith': { $in: [userId] } }, 'config.title config.visible').exec(),
     ]);
 
@@ -166,7 +160,7 @@ function createMcpServer() {
                 const { EDA_APP_URL } = getAnthropicConfig();
                 console.log('[MCP] list_dashboards — EDA_APP_URL:', EDA_APP_URL || '(vacío)');
                 const formatGroup = (label: string, items: any[] = []) => {
-                    const lines = [`\n## ${label}`];
+                    const lines = [`\n## ${label} (${items.length})`];
                     if (items.length === 0) lines.push('  (sin dashboards)');
                     for (const d of items) {
                         const link = EDA_APP_URL ? ` — ${EDA_APP_URL}/ca/#/dashboard/${encodeURIComponent(d._id)}` : '';
@@ -175,7 +169,9 @@ function createMcpServer() {
                     return lines;
                 };
 
+                const total = dashboards.length + group.length + publics.length + shared.length;
                 const lines = [
+                    `Total: ${total} dashboards (${dashboards.length} privados, ${group.length} de grupo, ${publics.length} públicos, ${shared.length} compartidos)`,
                     ...formatGroup('Privados', dashboards),
                     ...formatGroup('De grupo', group),
                     ...formatGroup('Públicos', publics),
