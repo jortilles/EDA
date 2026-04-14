@@ -1,5 +1,5 @@
 import { EdaDialogCloseEvent, EdaDialog2Component } from '@eda/shared/components/shared-components.index';
-import { AfterViewChecked, Component, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { UserService } from '@eda/services/service.index';
@@ -16,10 +16,11 @@ import { ColorPickerModule } from 'primeng/colorpicker';
     styleUrls: ['./kpi-dialog.component.css'],
     imports: [FormsModule, CommonModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent]
 })
-export class KpiEditDialogComponent implements OnInit, AfterViewChecked {
+export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewChecked {
     @Input() controller: any;
     @ViewChild('PanelChartComponent', { static: false }) panelChartComponent: PanelChartComponent;
     @ViewChild('mailConfig', { static: false }) mailConfig: any;
+    @ViewChild('previewContainer', { static: false }) previewContainer: ElementRef;
 
     public panelChartConfig: PanelChart = new PanelChart();
     
@@ -37,6 +38,11 @@ export class KpiEditDialogComponent implements OnInit, AfterViewChecked {
 
     public modifiedFontPoints: number = 0;
     public panelBaseResultSize: number = 0;
+    public previewAspectRatio: string = '4/3';
+    public previewBoxStyle: any = {};
+    public panelTitle: string = '';
+    private panelWidth: number = 400;
+    private panelHeight: number = 300;
 
     public units: string;
     public quantity: number;
@@ -71,6 +77,24 @@ export class KpiEditDialogComponent implements OnInit, AfterViewChecked {
         this.canIRunAlerts = this.userService.user.name !== "edaanonim";
     }
 
+    ngAfterViewInit(): void {
+        setTimeout(() => this.computePreviewBox(), 0);
+    }
+
+    private computePreviewBox(): void {
+        if (!this.previewContainer) return;
+        const el = this.previewContainer.nativeElement;
+        const padding = 48; // 1.5rem * 2 sides * 16px
+        const cw = el.offsetWidth - padding;
+        const ch = el.offsetHeight - padding;
+        if (cw <= 0 || ch <= 0) return;
+        const scale = Math.min(cw / this.panelWidth, ch / this.panelHeight);
+        this.previewBoxStyle = {
+            width: `${Math.round(this.panelWidth * scale)}px`,
+            height: `${Math.round(this.panelHeight * scale)}px`,
+        };
+    }
+
     ngAfterViewChecked(): void {
         if (!this.colorsLoaded && this.panelChartComponent?.componentRef?.instance?.inject?.edaChart.chartType) {
             this.chartContent = this.panelChartComponent.componentRef.instance.inject.edaChart;
@@ -87,6 +111,10 @@ export class KpiEditDialogComponent implements OnInit, AfterViewChecked {
         this.panelChartConfig = this.controller.params.panelChart;
         this.edaChart = this.controller.params.panelChart.edaChart;
         this.panelBaseResultSize = this.controller.params.panelBaseResultSize || 0;
+        this.panelWidth = this.controller.params.panelWidth || 400;
+        this.panelHeight = this.controller.params.panelHeight || 300;
+        this.panelTitle = this.controller.params.panelTitle || '';
+        this.previewAspectRatio = `${this.panelWidth} / ${this.panelHeight}`;
         const config: any = this.panelChartConfig.config.getConfig();
 
         this.originalAlerts = [...(config.alertLimits || [])];

@@ -2,9 +2,14 @@
   (close)="closeChartConfig()">
   <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-full">
     <!-- Chart Preview -->
-    <div class="p-6 flex-1 flex items-center justify-center border-b md:border-b-0 md:border-r bg-slate-50">
-      <div class="relative w-full h-full  aspect-square flex-wrap justify-center content-center">
-        <panel-chart #PanelChartComponent [props]="panelChartConfig" class="h-full w-full"></panel-chart>
+    <div #previewContainer class="flex-1 flex items-center justify-center border-b md:border-b-0 md:border-r bg-slate-100 min-h-0 min-w-0 overflow-hidden" style="padding: 1.5rem;">
+      <!-- Panel simulation box: scaled to exact proportions of the real panel -->
+      <div class="relative bg-white border border-slate-300 shadow-md overflow-hidden flex flex-col"
+           [style]="previewBoxStyle">
+        <!-- KPI area: fills remaining space, KPI centered -->
+        <div class="flex-1 min-h-0 relative">
+          <panel-chart #PanelChartComponent [props]="panelChartConfig" class="absolute inset-0 h-full w-full"></panel-chart>
+        </div>
       </div>
     </div>
 
