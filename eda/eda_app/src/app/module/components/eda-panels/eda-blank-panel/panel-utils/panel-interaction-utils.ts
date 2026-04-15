@@ -690,18 +690,12 @@ export const PanelInteractionUtils = {
     }
   },
 
-
-
-
-
-
   /**
-    * Removes given column from content
-    * @param c column to remove
-    * @param list where collumn is present (select, filters)
-    */
+  * Removes given column from content
+  * @param c column to remove
+  * @param list where collumn is present (select, filters)
+  */
   removeColumn: (ebp: EdaBlankPanelComponent, c: Column, list?: string) => {
-
     ebp.disableBtnSave();
     // Searches the array index, the column to delete and does it
     if (list === 'select') {
@@ -714,7 +708,7 @@ export const PanelInteractionUtils = {
           // If only there is 1 column of rootTable, check if panel have any globalFilter linked it.
           if (ebp.currentQuery.map((query) => query.table_id == rootTable).length <= 1) {
             if (ebp.globalFilters.some((filter) => filter.filter_table === rootTable)) {
-/**SDA CUSTOM  */ event.stopPropagation();
+                /**SDA CUSTOM  */ event.stopPropagation();
               ebp.alertService.addError($localize`@@removeColumnGlobalFilter:No se puede eliminar la columna porque hay vinculado un Filtro`);
               throw '[Error]: Can not remove this column cause there is a GlobalFilter linked.'
             }
@@ -752,9 +746,8 @@ export const PanelInteractionUtils = {
       _.map(ebp.currentQuery, selected => selected.table_id === c.table_id);
     }
 
-    const filters = ebp.selectedFilters.filter(f => f.filter_column === c.column_name);
+    /**SDA CUSTOM  */ const filters = ebp.selectedFilters.filter(f => f.filter_column === c.column_name && f.filter_table === c.table_id);
     filters.forEach(f => ebp.selectedFilters = ebp.selectedFilters.filter(ff => ff.filter_id !== f.filter_id));
-
   }
 
 }

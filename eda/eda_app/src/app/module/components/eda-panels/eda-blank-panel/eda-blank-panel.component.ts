@@ -1587,7 +1587,7 @@ export class EdaBlankPanelComponent implements OnInit {
 /**SDA CUSTOM  */       // We just proceed if it is not the last column of the root table
 /**SDA CUSTOM  */       if (isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
 /**SDA CUSTOM  */           // We check if when deleting a field it has a filter at selectedFilters
-                            if (this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name)) {
+/**SDA CUSTOM  */           if (this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name && sf.filter_table === c.table_id)) {
                                 if (this.sortedFilters.length !== 0) {
                                     this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
                                 }
