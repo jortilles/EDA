@@ -18,7 +18,7 @@ export class MailingService {
     const newDate = SchedulerFunctions.totLocalISOTime(new Date()) ;
     const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../config/SMPT.config.json"), 'utf-8'));
     const transporter = nodemailer.createTransport(config);
-    const verify = transporter.verify(async (error, sucess) => {
+    transporter.verify(async (error: any) => {
       if (error) {
         console.log(`\n\x1b[33m\u21AF\x1b[0m \x1b[1mMailing service is not configured properly, please check your configuration file\x1b[0m \x1b[33m\u21AF\x1b[0m\n`);
         console.log(error);
@@ -39,7 +39,7 @@ export class MailingService {
       let dashboardsToUpdate = [];
       const alerts = MailingService.getAlerts(dashboards);
       /**Check alerts  */
-      alerts.forEach((alert, i) => {
+      alerts.forEach((alert) => {
         let shouldUpdate = false;
         if (alert.value.mailing.units === 'hours') {
           shouldUpdate = SchedulerFunctions.checkScheduleHours(alert.value.mailing.quantity, alert.value.mailing.lastUpdated);
@@ -102,7 +102,7 @@ export class MailingService {
       });
 
        /**Update dashbaords */
-       dashboardsToUpdate.forEach(d => {
+      dashboardsToUpdate.forEach(d => {
         Dashboard.replaceOne({ _id: d._id }, d).exec()
       });
 
@@ -163,13 +163,8 @@ export class MailingService {
 
 
       if (condition) {
-
-        transporter.sendMail(mailOptions, function (error, info) {
-          if (error) {
-            console.log(error);
-          } else {
-            console.log('Email sent: ' + info.response + `Email sent: ${info.response} from: ${info.envelope.from} to: ${info.envelope.to} at ${SchedulerFunctions.totLocalISOTime(new Date()) }`);
-          }
+        transporter.sendMail(mailOptions, function (error: any) {
+          if (error) console.log(error);
         });
       }
     })
@@ -192,41 +187,22 @@ export class MailingService {
       }],
     };
 
-    transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log('Email sent: ' + info.response + `Email sent: ${info.response} from: ${info.envelope.from} to: ${info.envelope.to} at ${SchedulerFunctions.totLocalISOTime(new Date()) }`);
-      }
-
-      /**Remove file */
-      try{
+    transporter.sendMail(mailOptions, function (error: any) {
+      if (error) console.log(error);
+      try {
         fs.unlinkSync(`${filepath}/${filename}`);
-      }catch(err){
+      } catch (err) {
         throw err
       }
-
     });
-
-
   }
 
   static compareValues(v1, v2, op) {
 
     switch (op) {
-      case '<': if (v1 < v2) {
-        return true;
-      } else return false;
-      case '>': if (v1 > v2) {
-        return true
-      } else {
-        return false;
-      }
-      case '=': if (v1 === v2) {
-        return true
-      } else {
-        return false;
-      }
+      case '<': return v1 < v2;
+      case '>': return v1 > v2;
+      case '=': return v1 === v2;
       default: return false;
     }
 
@@ -248,13 +224,11 @@ export class MailingService {
       // Normalize data
       for (let i = 0, n = getResults.length; i < n; i++) {
         const r = getResults[i];
-        const output = Object.keys(r).map(i => r[i]);
+        const output = Object.keys(r).map(k => r[k]);
         results.push(output);
       }
       return results[0][0];
-
-    }
-    catch (err) {
+    } catch (err) {
       console.log(err);
       return null;
     }
@@ -276,7 +250,7 @@ export class MailingService {
       // Normalize data
       for (let i = 0, n = getResults.length; i < n; i++) {
         const r = getResults[i];
-        const output = Object.keys(r).map(i => r[i]);
+        const output = Object.keys(r).map(k => r[k]);
         results.push(output);
       }
 
