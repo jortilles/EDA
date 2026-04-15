@@ -4652,6 +4652,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <source>Administrar las configuraciones de correo electrónico del panel</source>
   <target>Administra les configuracions de correu electrònic del panell</target>
 </trans-unit>
+<trans-unit id="dashboardMailDeleted">
+  <source>Configuración de envío eliminada</source>
+  <target>Configuració d'enviament eliminada</target>
+</trans-unit>
 <trans-unit id="chartDisplayTitle">
   <source>Visualización</source>
   <target>Visualització</target>

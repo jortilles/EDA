@@ -4089,6 +4089,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <source>Administrar las configuraciones de correo electrónico del panel</source>
   <target>Zarządzaj ustawieniami poczty e-mail na pulpicie nawigacyjnym</target>
 </trans-unit>
+<trans-unit id="dashboardMailDeleted">
+  <source>Configuración de envío eliminada</source>
+  <target>Konfiguracja wysyłania usunięta</target>
+</trans-unit>
 <trans-unit id="chartDisplayTitle">
   <source>Visualización</source>
   <target>Wyobrażanie sobie</target>

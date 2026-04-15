@@ -4588,6 +4588,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <source>Administrar las configuraciones de correo electrónico del panel</source>
   <target>Gérez les paramètres de messagerie depuis le panneau</target>
 </trans-unit>
+<trans-unit id="dashboardMailDeleted">
+  <source>Configuración de envío eliminada</source>
+  <target>Configuration d'envoi supprimée</target>
+</trans-unit>
 <trans-unit id="chartDisplayTitle">
   <source>Visualización</source>
   <target>Afficher</target>

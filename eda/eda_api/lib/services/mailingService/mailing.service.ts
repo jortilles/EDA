@@ -16,7 +16,11 @@ export class MailingService {
 
   static async mailingService() {
     const newDate = SchedulerFunctions.totLocalISOTime(new Date()) ;
-    const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../config/SMPT.config.json"), 'utf-8'));
+    const smtpConfig = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../config/SMPT.config.json"), 'utf-8'));
+    const configFile = smtpConfig.configType === 'GMAIL'
+      ? path.resolve(__dirname, "../../../config/GMAIL.config.json")
+      : path.resolve(__dirname, "../../../config/SMPT.config.json");
+    const config = { ...JSON.parse(fs.readFileSync(configFile, 'utf-8')), family: 4 };
     const transporter = nodemailer.createTransport(config);
     transporter.verify(async (error: any) => {
       if (error) {

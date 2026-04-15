@@ -99,8 +99,12 @@ export class EmailSettingsPage implements OnInit {
     return this.dashboardItems().slice(0, n);
   });
 
-  // --- Form ---
+  // --- Form selector ---
+  emailFormSelector: 'SMPT' | 'GMAIL' = 'SMPT';
+
+  // --- Forms ---
   emailForm: FormGroup;
+  gmailForm: FormGroup;
 
   constructor() {
     this.emailForm = this.fb.group({
@@ -109,6 +113,12 @@ export class EmailSettingsPage implements OnInit {
       secure: [false, Validators.required],
       user: [null, Validators.required],
       password: [null, Validators.required],
+    });
+    this.gmailForm = this.fb.group({
+      user: [null, Validators.required],
+      clientId: [null, Validators.required],
+      clientSecret: [null, Validators.required],
+      refreshToken: [null, Validators.required],
     });
   }
 
@@ -122,14 +132,28 @@ export class EmailSettingsPage implements OnInit {
   // =====================================================
   private async loadEmailSettings() {
     const mailSettings = await lastValueFrom(this.mailService.getConfiguration());
-    this.emailForm.patchValue({
-      host: mailSettings.config.host,
-      port: mailSettings.config.port,
-      secure: mailSettings.config.secure,
-      user: mailSettings.config.auth.user,
-      password: null
-    });
-    this.tlsEnabled.set(mailSettings.config.secure);
+    const config = mailSettings.config;
+
+    if (config.configType === 'GMAIL') {
+      this.emailFormSelector = 'GMAIL';
+      this.gmailForm.patchValue({
+        user: config.auth?.user,
+        clientId: config.auth?.clientId,
+        clientSecret: config.auth?.clientSecret,
+        refreshToken: config.auth?.refreshToken,
+      });
+      this.tlsEnabled.set(config.tls?.rejectUnauthorized ?? false);
+    } else {
+      this.emailFormSelector = 'SMPT';
+      this.emailForm.patchValue({
+        host: config.host,
+        port: config.port,
+        secure: config.secure,
+        user: config.auth?.user,
+        password: null
+      });
+      this.tlsEnabled.set(config.secure);
+    }
   }
 
   // =====================================================
@@ -201,6 +225,25 @@ export class EmailSettingsPage implements OnInit {
     this.router.navigate(['/dashboard', id]);
   }
 
+  async deleteDashboardMailConfig(id: string) {
+    try {
+      const response = await lastValueFrom(this.dashboardService.getDashboard(id)) as DashboardDetailResponse;
+      const dashboard = response.dashboard;
+      if (dashboard.config?.sendViaMailConfig) {
+        dashboard.config.sendViaMailConfig.enabled = false;
+      }
+      await lastValueFrom(this.dashboardService.updateDashboard(id, {
+        config: dashboard.config,
+        group: (response as any).group ?? []
+      }));
+      this.dashboardItems.update(items => items.filter(d => d.id !== id));
+      this.alertService.addSuccess($localize`:@@dashboardMailDeleted:Configuración de envío eliminada`);
+    } catch (err: any) {
+      this.alertService.addError(err);
+    }
+  }
+
+
   toggleTls() {
     this.tlsEnabled.update(v => !v);
   }
@@ -208,7 +251,6 @@ export class EmailSettingsPage implements OnInit {
   async handleCheckCredentials() {
     this.spinnerService.on();
     const options = this.getOptions();
-
     this.mailService.checkConfiguration(options).subscribe({
       next: () => {
         this.spinnerService.off();
@@ -235,8 +277,26 @@ export class EmailSettingsPage implements OnInit {
   }
 
   private getOptions() {
+    if (this.emailFormSelector === 'GMAIL') {
+      const v = this.gmailForm.value;
+      return {
+        configType: 'GMAIL',
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+          type: 'OAuth2',
+          user: v.user,
+          clientId: v.clientId,
+          clientSecret: v.clientSecret,
+          refreshToken: v.refreshToken,
+        },
+        tls: { rejectUnauthorized: this.tlsEnabled() }
+      };
+    }
     const v = this.emailForm.value;
     return {
+      configType: 'SMPT',
       host: v.host,
       port: v.port,
       secure: v.secure,
@@ -245,7 +305,4 @@ export class EmailSettingsPage implements OnInit {
     };
   }
 
-  public sendMailconfig() {
-    // (Pendiente de implementación)
-  }
 }

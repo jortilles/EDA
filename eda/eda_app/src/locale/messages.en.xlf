@@ -4226,6 +4226,10 @@ Once configured you can invoke it whenever you want from the button.</target>
 <source>Administrar las configuraciones de correo electrónico del panel</source>
 <target>Manage dashboard email configurations</target>
 </trans-unit>
+<trans-unit id="dashboardMailDeleted">
+<source>Configuración de envío eliminada</source>
+<target>Send configuration deleted</target>
+</trans-unit>
 <trans-unit id="chartDisplayTitle">
 <source>Visualización</source>
 <target>Display</target>
