@@ -107,7 +107,8 @@ export class CreateDashboardComponent implements OnInit {
                     styles:this.stylesProviderService.generateDefaultStyles(),
                     /*SDA CUSTOM*/ createdAt: new Date(),
                     /*SDA CUSTOM*/ modifiedAt: new Date(),
-                    external: null
+                    external: null,
+                    /*SDA CUSTOM*/ active: true
                 },
                 group: this.form.value.group
                     ? _.map(this.form.value.group, '_id')

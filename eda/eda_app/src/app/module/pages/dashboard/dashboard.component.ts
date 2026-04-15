@@ -1405,7 +1405,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     sendViaMailConfig: this.sendViaMailConfig,
                     onlyIcanEdit: this.onlyIcanEdit,
                     styles : this.styles,
-                    urls: this.urls
+                    urls: this.urls,
+                    /*SDA CUSTOM*/ active: this.dashboard.active !== undefined ? this.dashboard.active : true
 
                 },
                 group: this.form.value.group ? _.map(this.form.value.group, '_id') : undefined
