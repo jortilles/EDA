@@ -39,7 +39,7 @@ export class DashboardMailConfigModal {
   public currentAlert = null;
   public users: any;
   public selectedUsers: any = [];
-  public disabled : boolean ;
+  public enabled: boolean = false;
 
   constructor(private alertService: AlertService, private userService: UserService) { }
 
@@ -62,7 +62,7 @@ export class DashboardMailConfigModal {
     this.quantity = config.quantity;
     this.selectedUsers = config.users;
     this.mailMessage = config.mailMessage;
-    this.disabled = !config.enabled;
+    this.enabled = config.enabled;
   }
 
   save() {
@@ -80,7 +80,7 @@ export class DashboardMailConfigModal {
       users: this.selectedUsers,
       mailMessage: this.mailMessage,
       lastUpdated: new Date().toISOString(),
-      enabled: !this.disabled,
+      enabled: this.enabled,
       dashboard: this.dashboard
     };
     this.apply.emit(response);
