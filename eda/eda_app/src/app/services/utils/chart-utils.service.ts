@@ -147,6 +147,14 @@ export class ChartUtilsService {
         numberOfColumns es el numero de columnes que farem servidr en el histograma
     */
     public transformDataQuery(type: string, subType: string,  values: any[], dataTypes: string[], dataDescription: any, isBarline: boolean, numberOfColumns: number) {
+        
+        /* SDA CUSTOM */ // If there is more than 1 column and all are numeric, convert the first one to text
+        /* SDA CUSTOM */ const allNumeric = dataTypes.length > 1 && !dataTypes.find(t => t !== 'numeric');
+        /* SDA CUSTOM */ if (allNumeric) {
+        /* SDA CUSTOM */     dataTypes[0] = "text";
+        /* SDA CUSTOM */     const columnaNumerica = dataDescription.numericColumns.shift();
+        /* SDA CUSTOM */     dataDescription.otherColumns.unshift(columnaNumerica);
+        /* SDA CUSTOM */ }
 
         dataTypes.forEach( (e,indice)=>{            
             if(e=='text'){
@@ -635,7 +643,7 @@ export class ChartUtilsService {
                 'table', 'crosstable', 'kpi','dynamicText', 'geoJsonMap', 'coordinatesMap',
                 'doughnut', 'polarArea', 'line', 'kpiline', 'area', 'kpiarea', 'bar', 'kpibar', 'histogram',  'funnel', 'bubblechart',
                 'horizontalBar', 'barline', 'stackedbar', 'parallelSets', 'treeMap', 'scatterPlot', 'knob' ,
-                'pyramid', 'radar', 'stackedbar100', 'treetable'
+/*SDA CUSTOM*/  'pyramid', 'radar', 'stackedbar100', 'treetable', 'sunburst'
             ];
 
         //table (at least one column)
@@ -651,12 +659,13 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('dynamicText'), 1);
         }
         // Pie && Polar (Only one numeric column and one char/date column)
-        if (dataDescription.totalColumns === 2 && dataDescription.numericColumns.length === 1) {
+/* SDA CUSTOM */ if ((dataDescription.totalColumns === 2 && dataDescription.numericColumns.length === 1) ||
+/* SDA CUSTOM */    (dataDescription.totalColumns === 2 && dataDescription.numericColumns.length === 2))  {         
             notAllowed.splice(notAllowed.indexOf('doughnut'), 1);
             notAllowed.splice(notAllowed.indexOf('polarArea'), 1);
             notAllowed.splice(notAllowed.indexOf('kpibar'), 1);
             notAllowed.splice(notAllowed.indexOf('kpiline'), 1);
-            notAllowed.splice(notAllowed.indexOf('kpiarea',), 1);
+/* SDA CUSTOM */notAllowed.splice(notAllowed.indexOf('kpiarea'), 1);
         }
         // barchart i horizontalbar  poden ser grafics normals o poden ser histograms....
         if (dataDescription.numericColumns.length >= 1 && dataDescription.totalColumns > 1 && dataDescription.otherColumns.length < 2
@@ -753,6 +762,13 @@ export class ChartUtilsService {
         if(  dataDescription.totalColumns > 2 && dataDescription.otherColumns.length >= 1) {
             notAllowed.splice(notAllowed.indexOf('treetable'), 1);
         }
+
+
+/*SDA CUSTOM*/ // sunbrust two or more value columns and one numeric
+/*SDA CUSTOM*/ if(  dataDescription.totalColumns > 2 && dataDescription.otherColumns.length >= 1 && dataDescription.numericColumns.length === 1  ) {
+/*SDA CUSTOM*/     notAllowed.splice(notAllowed.indexOf('sunburst'), 1);
+/*SDA CUSTOM*/ }
+
 
         return notAllowed;
 
