@@ -539,9 +539,16 @@ export class GlobalFilterComponent implements OnInit {
                      globalFilter.selectedIdValues = [];
                 }
 
+                // If selectedItems has values but selectedIdValues is empty, derive selectedIdValues from selectedItems
+                /* SDA CUSTOM */ if (globalFilter.selectedItems?.length > 0 && globalFilter.selectedIdValues.length === 0) {
+                /* SDA CUSTOM */     globalFilter.selectedIdValues = globalFilter.selectedItems
+                /* SDA CUSTOM */         .map((element: any) => data.find(d => d.label === element)?.id)
+                /* SDA CUSTOM */         .filter((id: any) => id !== undefined);
+                /* SDA CUSTOM */ }
+
                 globalFilter.selectedItems = globalFilter.selectedIdValues?.map(siv => {
                     const value = data.filter(d => d.id === siv);
-/*SDA CUSTOM*/      return value[0]?.value ?? siv;
+                /*SDA CUSTOM*/      return value[0]?.value ?? siv;
                 })
 
 
@@ -660,9 +667,9 @@ export class GlobalFilterComponent implements OnInit {
 
 /*SDA CUSTOM*/ // Method to show the filter tooltip
 /*SDA CUSTOM*/  public showFilterTooltip(event: MouseEvent, op: any, filter?: any): void {
-/*SDA CUSTOM*/ // If the filter doesn't have selected values, the tooltip won't be shown    
+/*SDA CUSTOM*/ // If the filter doesn't have selected values, the tooltip won't be shown
 /*SDA CUSTOM*/      if (filter && (!filter.selectedIdValues || filter.selectedIdValues.length === 0)) return;
-/*SDA CUSTOM*/ // If there is some active timeout to hide the tooltip, it will be cleared 
+/*SDA CUSTOM*/ // If there is some active timeout to hide the tooltip, it will be cleared
 /*SDA CUSTOM*/      if (this.tooltipHideTimeout && this.lastPanel === filter.id) {
 /*SDA CUSTOM*/         clearTimeout(this.tooltipHideTimeout);
 /*SDA CUSTOM*/         this.tooltipHideTimeout = null;
