@@ -541,7 +541,7 @@ export class GlobalFilterComponent implements OnInit {
 
                 globalFilter.selectedItems = globalFilter.selectedIdValues?.map(siv => {
                     const value = data.filter(d => d.id === siv);
-                    return value[0].value;
+/*SDA CUSTOM*/      return value[0]?.value ?? siv;
                 })
 
 
@@ -599,6 +599,13 @@ export class GlobalFilterComponent implements OnInit {
 
                     if (columnName === paramColumn) {
                         filter.selectedItems = _.split(urlParams[param], '|');
+/*SDA CUSTOM*/          if (filter.selectedColumn?.valueListSource) {
+/*SDA CUSTOM*/          // IDs differ from labels: set nulls so loadGlobalFiltersData resolves labels → ids
+/*SDA CUSTOM*/              filter.selectedIdValues = [... _.split(urlParams[param], '|')];
+/*SDA CUSTOM*/          } else {
+/*SDA CUSTOM*/              // No valueListSource: label and id are the same value
+/*SDA CUSTOM*/              filter.selectedIdValues = [...filter.selectedItems];
+/*SDA CUSTOM*/          }
 
                         filter.panelList
                             .map(id => this.dashboard.panels.find(p => p.id === id))
