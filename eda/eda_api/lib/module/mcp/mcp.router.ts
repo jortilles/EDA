@@ -308,7 +308,7 @@ function createMcpServer(requestUser?: any) {
 
                 const lines: string[] = [
                     `Dashboard: ${db.config?.title ?? '(sin título)'}`,
-                    ...(dashboardLink ? [`URL: ${dashboardLink}`] : []),
+                    ...(dashboardLink ? [`Dashboard URL / LINK: ${dashboardLink}`] : []),
                     `Visibilidad: ${db.config?.visible ?? '(desconocida)'}`,
                     `Panels: ${panels.length}`,
                     ...(datasourceIds.length > 0 ? [`Datasource(s): ${datasourceIds.join(', ')}`] : []),
@@ -329,7 +329,7 @@ function createMcpServer(requestUser?: any) {
                         if (chartType) lines.push(`   Tipo: ${chartType}`);
                     }
                 }
-
+                console.log('[MCP] get_dashboard - resultado:\n' + lines.join('\n'));
                 return { content: [{ type: 'text', text: lines.join('\n') }] };
             } catch (err: any) {
                 console.error('[MCP] get_dashboard error:', err.message, err.stack);
