@@ -306,6 +306,12 @@ export class DashboardSidebarComponent {
             icon: "pi pi-file-excel",
             command: () => this.exportDashboardAsExcel()
           },
+          {
+            id: 'downloadWord',
+            label: $localize`:@@dashboardSidebarDownloadWord:Descargar Word`,
+            icon: "pi pi-file-word",
+            command: () => this.exportDashboardAsWord()
+          },
         ]
       },
       {
@@ -750,74 +756,96 @@ export class DashboardSidebarComponent {
   public async exportDashboardAsExcel(): Promise<void> {
     this.hidePopover();
     this.spinner.on();
-
     try {
-      const panelComponents = this.dashboard.edaPanels?.toArray() ?? [];
-      // El agrupamiento 2D (por gridY) se hace dentro de FileUtiles.exportDashboardToExcel
-      const sorted = panelComponents;
-
-      const panelDataList: DashboardPanelExport[] = [];
-
-      for (const panelComp of sorted) {
-        if (!panelComp.panel?.content) continue;
-
-        const chartType = panelComp.panelChart?.props?.chartType ?? '';
-        const title     = panelComp.panel.title ?? '';
-
-        const gridPos = {
-          gridX:    panelComp.panel.x    ?? 0,
-          gridY:    panelComp.panel.y    ?? 0,
-          gridCols: panelComp.panel.cols ?? 20,
-          gridRows: panelComp.panel.rows ?? 10,
-        };
-
-        if (['table', 'crosstable'].includes(chartType)) {
-          // Acceso directo a la instancia EdaTable activa
-          const tableInstance = panelComp.panelChart?.currentConfig;
-          if (tableInstance) {
-            panelDataList.push({
-              title,
-              type: chartType as 'table' | 'crosstable',
-              tableData: tableInstance,
-              ...gridPos,
-            });
-          }
-        } else {
-          // Capturar el panel completo como imagen PNG usando html2canvas
-          // (más robusto que dom-to-image frente a hojas CSS cross-origin)
-          const hostEl: HTMLElement = panelComp.elRef?.nativeElement;
-          if (hostEl) {
-            try {
-              const CAPTURE_SCALE = 1.5;
-              const canvas = await html2canvas(hostEl, {
-                backgroundColor: '#ffffff',
-                useCORS: false,       // no intentar cargar recursos externos
-                allowTaint: true,     // permitir canvas "manchado" si hay recursos cross-origin
-                logging: false,
-                scale: CAPTURE_SCALE,
-              });
-              const dataUrl = canvas.toDataURL('image/png');
-              // Dividir por la escala de captura para obtener el tamaño CSS real del panel
-              panelDataList.push({
-                title, type: 'chart', imageBase64: dataUrl,
-                imageWidth:  Math.round(canvas.width  / CAPTURE_SCALE),
-                imageHeight: Math.round(canvas.height / CAPTURE_SCALE),
-                ...gridPos,
-              });
-            } catch (imgErr) {
-              console.warn(`[ExportExcel] No se pudo capturar imagen del panel "${title}":`, imgErr);
-              panelDataList.push({ title, type: 'other', ...gridPos });
-            }
-          }
-        }
-      }
-
+      const panelDataList = await this._collectPanelData();
       await this.fileUtils.exportDashboardToExcel(panelDataList, this.dashboard.title);
-
     } catch (err) {
       console.error('[ExportExcel] Error exportando dashboard a Excel:', err);
     } finally {
       this.spinner.off();
+    }
+  }
+
+  public async exportDashboardAsWord(): Promise<void> {
+    this.hidePopover();
+    this.spinner.on();
+    try {
+      const panelDataList = await this._collectPanelData();
+      await this.fileUtils.exportDashboardToWord(panelDataList, this.dashboard.title);
+    } catch (err) {
+      console.error('[ExportWord] Error exportando dashboard a Word:', err);
+    } finally {
+      this.spinner.off();
+    }
+  }
+
+  /**
+   * Recorre todos los paneles y devuelve su contenido listo para exportar.
+   * Para gráficos, oculta temporalmente el header del panel antes de capturar
+   * la imagen para evitar que el título aparezca duplicado.
+   */
+  private async _collectPanelData(): Promise<DashboardPanelExport[]> {
+    const panelDataList: DashboardPanelExport[] = [];
+
+    for (const panelComp of this.dashboard.edaPanels?.toArray() ?? []) {
+      if (!panelComp.panel?.content) continue;
+
+      const chartType = panelComp.panelChart?.props?.chartType ?? '';
+      const title     = panelComp.panel.title ?? '';
+      const gridPos   = {
+        gridX:    panelComp.panel.x    ?? 0,
+        gridY:    panelComp.panel.y    ?? 0,
+        gridCols: panelComp.panel.cols ?? 20,
+        gridRows: panelComp.panel.rows ?? 10,
+      };
+
+      if (['table', 'crosstable'].includes(chartType)) {
+        const tableInstance = panelComp.panelChart?.currentConfig;
+        if (tableInstance) {
+          panelDataList.push({ title, type: chartType as 'table' | 'crosstable', tableData: tableInstance, ...gridPos });
+        }
+      } else {
+        const captured = await this._captureChartImage(panelComp.elRef?.nativeElement, title);
+        panelDataList.push({ ...captured, title, ...gridPos });
+      }
+    }
+
+    return panelDataList;
+  }
+
+  /**
+   * Captura el área del gráfico como PNG, ocultando previamente el header
+   * (.drag-handler) para que el título del panel no aparezca en la imagen.
+   */
+  private async _captureChartImage(
+    hostEl: HTMLElement | undefined,
+    panelTitle: string
+  ): Promise<Pick<DashboardPanelExport, 'type' | 'imageBase64' | 'imageWidth' | 'imageHeight'>> {
+    if (!hostEl) return { type: 'other' };
+
+    const headerEl = hostEl.querySelector('.drag-handler') as HTMLElement | null;
+    if (headerEl) headerEl.style.visibility = 'hidden';
+
+    try {
+      const SCALE = 1.5;
+      const canvas = await html2canvas(hostEl, {
+        backgroundColor: '#ffffff',
+        useCORS: false,
+        allowTaint: true,
+        logging: false,
+        scale: SCALE,
+      });
+      return {
+        type: 'chart',
+        imageBase64:  canvas.toDataURL('image/png'),
+        imageWidth:   Math.round(canvas.width  / SCALE),
+        imageHeight:  Math.round(canvas.height / SCALE),
+      };
+    } catch (err) {
+      console.warn(`[Export] No se pudo capturar imagen del panel "${panelTitle}":`, err);
+      return { type: 'other' };
+    } finally {
+      if (headerEl) headerEl.style.visibility = '';
     }
   }
 
