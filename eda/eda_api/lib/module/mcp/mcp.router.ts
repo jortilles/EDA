@@ -18,6 +18,15 @@ const getAnthropicConfig = () => {
     return require(configPath);
 };
 
+const LOCALES = ['/es', '/ca', '/en', '/pl', '/fr'];
+
+function getBaseUrl(): string {
+    const { EDA_APP_URL } = getAnthropicConfig();
+    if (!EDA_APP_URL) return '';
+    const hasLocale = LOCALES.some(l => EDA_APP_URL.includes(l));
+    return hasLocale ? EDA_APP_URL : `${EDA_APP_URL}/es`;
+}
+
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const SEED = require('../../../config/seed').SEED;
@@ -186,13 +195,13 @@ function createMcpServer(requestUser?: any) {
             try {
                 const { privados, grupo, comunes, publicos } = await getAllDashboards(user._id.toString());
 
-                const { EDA_APP_URL } = getAnthropicConfig();
-                console.log('[MCP] list_dashboards — EDA_APP_URL:', EDA_APP_URL || '(vacío)');
+                const baseUrl = getBaseUrl();
+                console.log('[MCP] list_dashboards — baseUrl:', baseUrl || '(vacío)');
                 const formatGroup = (label: string, items: any[] = []) => {
                     const lines = [`\n## ${label} (${items.length})`];
                     if (items.length === 0) lines.push('  (sin dashboards)');
                     for (const d of items) {
-                        const link = EDA_APP_URL ? ` — ${EDA_APP_URL}/#/dashboard/${encodeURIComponent(d._id)}` : '';
+                        const link = baseUrl ? ` — ${baseUrl}/#/dashboard/${encodeURIComponent(d._id)}` : '';
                         lines.push(`  - [${d._id}] ${d.config?.title ?? '(sin título)'}${link}`);
                     }
                     return lines;
@@ -224,13 +233,13 @@ function createMcpServer(requestUser?: any) {
             console.log('[MCP] tool: list_datasources - ejecutando');
             try {
                 await resolveUser(requestUser);
-                const { EDA_APP_URL } = getAnthropicConfig();
-                console.log('[MCP] list_datasources — EDA_APP_URL:', EDA_APP_URL || '(vacío)');
+                const baseUrl = getBaseUrl();
+                console.log('[MCP] list_datasources — baseUrl:', baseUrl || '(vacío)');
                 const datasources = await DataSource.find({}, 'ds.metadata').exec();
                 const lines = datasources
                     .filter((ds: any) => (ds.ds?.metadata?.ia_visibility ?? 'FULL') !== 'NONE')
                     .map((ds: any) => {
-                        const link = EDA_APP_URL ? ` — ${EDA_APP_URL}/#/data-source/${encodeURIComponent(ds._id)}` : '';
+                        const link = baseUrl ? ` — ${baseUrl}/#/data-source/${encodeURIComponent(ds._id)}` : '';
                         return `  - [${ds._id}] ${ds.ds?.metadata?.model_name ?? '(sin nombre)'} [${ds.ds?.metadata?.ia_visibility ?? 'FULL'}]${link}`;
                     });
                 return {
@@ -263,9 +272,9 @@ function createMcpServer(requestUser?: any) {
                 if (!ds) return { content: [{ type: 'text', text: `Datasource no encontrado: ${id}` }], isError: true };
                 const filtered = filterDatasourceForAI(ds);
                 if (!filtered) return { content: [{ type: 'text', text: `Datasource ${id} excluido por ia_visibility: NONE` }], isError: true };
-                const { EDA_APP_URL } = getAnthropicConfig();
-                console.log('[MCP] get_datasource — EDA_APP_URL:', EDA_APP_URL || '(vacío)', '| id:', id);
-                const url = EDA_APP_URL ? `URL: ${EDA_APP_URL}/#/data-source/${encodeURIComponent(id)}\n\n` : '';
+                const baseUrl = getBaseUrl();
+                console.log('[MCP] get_datasource — baseUrl:', baseUrl || '(vacío)', '| id:', id);
+                const url = baseUrl ? `URL: ${baseUrl}/#/data-source/${encodeURIComponent(id)}\n\n` : '';
                 return { content: [{ type: 'text', text: `${url}${JSON.stringify(filtered, null, 2)}` }] };
             } catch (err: any) {
                 console.error('[MCP] get_datasource error:', err.message, err.stack);
@@ -290,15 +299,9 @@ function createMcpServer(requestUser?: any) {
                 const db: any = await Dashboard.findById(id).exec();
                 if (!db) return { content: [{ type: 'text', text: `Dashboard no encontrado: ${id}` }], isError: true };
 
-                const { EDA_APP_URL } = getAnthropicConfig();
-                console.log('[MCP] get_dashboard — EDA_APP_URL:', EDA_APP_URL || '(vacío)', '| id:', id);
-                const locale = ['/es', '/ca', '/en', '/pl', '/fr'];
-                const hasLocale = EDA_APP_URL ? locale.some(l => EDA_APP_URL.includes(l)) : false;
-                const baseUrl = EDA_APP_URL ? (hasLocale ? EDA_APP_URL : `${EDA_APP_URL}/es`) : '';
+                const baseUrl = getBaseUrl();
+                console.log('[MCP] get_dashboard — baseUrl:', baseUrl || '(vacío)', '| id:', id);
                 const dashboardLink = baseUrl ? `${baseUrl}/#/dashboard/${encodeURIComponent(id)}` : '';
-                console.log('El link es =>', dashboardLink);
-                console.log('EDAAPPURL es  =>', EDA_APP_URL);
-                console.log(' tiene idimoa?', hasLocale);
                 const panels = Array.isArray(db.config?.panel) ? db.config.panel : [];
 
                 // Agrupar datasources únicos
@@ -597,7 +600,7 @@ REGLA IMPORTANTE - URLs:
 - Si el usuario pide el link de un elemento concreto y ya tienes la lista en el contexto, extrae la URL directamente sin llamar a la herramienta de nuevo.
 - Nunca digas que no tienes acceso a los links si los datos ya están en el contexto de la conversación.
 - NUNCA inventes ni construyas URLs. Si no tienes la URL de un elemento en el contexto actual, llama a la herramienta correspondiente para obtenerla o indica que no dispones del link.
-
+- Asegurate SIEMPRE de respetar los links y urls que te proporciona el mcp. El mpc te devuelve ${'SERVIDOR'}${'LOCALE'}${'PATH'} y debes respetarlo. 
 Responde siempre en el idioma del usuario. Sé conciso y útil.`,
                 messages: history,
                 tools: anthropicTools,
