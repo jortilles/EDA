@@ -590,6 +590,7 @@ REGLA IMPORTANTE - URLs:
 - Cuando listes dashboards o datasources, SIEMPRE incluye su URL en la respuesta al usuario.
 - Si el usuario pide el link de un elemento concreto y ya tienes la lista en el contexto, extrae la URL directamente sin llamar a la herramienta de nuevo.
 - Nunca digas que no tienes acceso a los links si los datos ya están en el contexto de la conversación.
+- NUNCA inventes ni construyas URLs. Si no tienes la URL de un elemento en el contexto actual, llama a la herramienta correspondiente para obtenerla o indica que no dispones del link.
 
 Responde siempre en el idioma del usuario. Sé conciso y útil.`,
                 messages: history,
