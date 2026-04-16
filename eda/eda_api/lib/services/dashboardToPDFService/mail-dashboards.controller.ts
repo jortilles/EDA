@@ -7,8 +7,6 @@ export class MailDashboardsController {
   static sendDashboard = async (dashboard: string, userMail: string, transporter: any, message: string, token: string) => {
 
     try {
-      console.log('Send Dashboard token');
-      console.log(token);
       const browser = await puppeteer.launch({ headless: true , args: ['--no-sandbox'] });
       const loginPage = await browser.newPage();
       // Configure the navigation timeout
@@ -23,8 +21,8 @@ export class MailDashboardsController {
         try {
           const res = await response.json();
 
-          console.log(res.user, res.token)
-          
+          if (!res?.user?._id || !res?.token) return;
+
           const browser = await puppeteer.launch({ headless: true,  args: ['--no-sandbox'] });
           const page = await browser.newPage();
 

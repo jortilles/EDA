@@ -16,11 +16,7 @@ export class MailingService {
 
   static async mailingService() {
     const newDate = SchedulerFunctions.totLocalISOTime(new Date()) ;
-    const smtpConfig = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../config/SMPT.config.json"), 'utf-8'));
-    const configFile = smtpConfig.configType === 'GMAIL'
-      ? path.resolve(__dirname, "../../../config/GMAIL.config.json")
-      : path.resolve(__dirname, "../../../config/SMPT.config.json");
-    const config = { ...JSON.parse(fs.readFileSync(configFile, 'utf-8')), family: 4 };
+    const config = { ...JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../config/SMPT.config.json"), 'utf-8')), family: 4 };
     const transporter = nodemailer.createTransport(config);
     transporter.verify(async (error: any) => {
       if (error) {
@@ -79,6 +75,7 @@ export class MailingService {
     try {
 
       const dashboards = await Dashboard.find({ 'config.sendViaMailConfig.enabled': true });
+      console.log(`[MailingService] dashboards programados: ${dashboards.length}`);
       const token = await UserController.provideFakeToken();
       let dashboardsToUpdate: any[] = [];
 
@@ -93,6 +90,9 @@ export class MailingService {
           shouldUpdate = SchedulerFunctions.checkScheduleDays(cfg.quantity, cfg.hours, cfg.minutes, cfg.lastUpdated);
         }
 
+        const now = SchedulerFunctions.totLocalISOTime(new Date());
+        const nextSend = new Date(Date.parse(cfg.lastUpdated) + cfg.quantity * 60 * 60000);
+        console.log(`[MailingService] dashboard: "${dashboard.config.title}" | ahora: ${now} | lastUpdated: ${cfg.lastUpdated} | proxEnvio: ${SchedulerFunctions.totLocalISOTime(nextSend)} | shouldUpdate: ${shouldUpdate} | recipients: ${userMails.join(', ')}`);
 
         if (shouldUpdate) {
           userMails.forEach((mail: string) => {

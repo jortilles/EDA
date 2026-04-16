@@ -4,23 +4,28 @@ const fs = require('fs');
 const path = require("path");
 let nodemailer = require('nodemailer');
 
-const SMPT_CONFIG_PATH = path.resolve(__dirname, '../../../config/SMPT.config.json');
-const GMAIL_CONFIG_PATH = path.resolve(__dirname, '../../../config/GMAIL.config.json');
+const CONFIG_PATH = path.resolve(__dirname, '../../../config/SMPT.config.json');
 
-function readConfigFile(filePath: string): any {
-  return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+function readConfig(): any {
+  return JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf-8'));
+}
+
+function writeConfig(data: any): void {
+  fs.writeFileSync(CONFIG_PATH, JSON.stringify(data, null, 4), 'utf8');
 }
 
 export class MailController {
 
   static async checkCredentials(req: Request, res: Response, next: NextFunction) {
     try {
-      const config = req.body;
-      const configType = config?.configType || 'SMPT';
+      const body = req.body;
+      const configType = body?.configType || 'SMPT';
+      const config = { ...body, family: 4 };
 
-      if (configType === 'SMPT' && !config.auth?.pass) {
+      // If SMTP and no password provided, use saved one
+      if (configType !== 'GMAIL' && !config.auth?.pass) {
         try {
-          const saved = readConfigFile(SMPT_CONFIG_PATH);
+          const saved = readConfig();
           config.auth.pass = saved.auth?.pass ?? null;
         } catch { }
       }
@@ -55,48 +60,58 @@ export class MailController {
 
   static async saveCredentials(req: Request, res: Response, next: NextFunction) {
     try {
-      const newConfig = req.body;
-      const configType = newConfig.configType || 'SMPT';
+      const body = req.body;
+      const configType = body.configType || 'SMPT';
+
+      let saved: any = {};
+      try { saved = readConfig(); } catch { }
 
       if (configType === 'GMAIL') {
-        fs.writeFile(GMAIL_CONFIG_PATH, JSON.stringify(newConfig, null, 4), 'utf8', (err: any) => {
-          if (err) {
-            return next(new HttpException(404, 'Error saving Gmail configuration'));
-          }
-
-          try {
-            const smtpConfig = readConfigFile(SMPT_CONFIG_PATH);
-            smtpConfig.configType = 'GMAIL';
-            fs.writeFileSync(SMPT_CONFIG_PATH, JSON.stringify(smtpConfig, null, 4), 'utf8');
-          } catch { }
-
-          MailController.sendConfigConfirmationEmail(newConfig);
-          return res.status(200).json({ ok: true });
-        });
-
+        const unified = {
+          ...saved,
+          configType: 'GMAIL',
+          host: body.host ?? saved.host,
+          port: body.port ?? saved.port,
+          secure: body.secure ?? saved.secure,
+          auth: {
+            type: 'OAuth2',
+            user: body.auth?.user ?? saved.auth?.user,
+            pass: 'XXXX',
+            clientId: body.auth?.clientId ?? saved.auth?.clientId,
+            clientSecret: body.auth?.clientSecret ?? saved.auth?.clientSecret,
+            refreshToken: body.auth?.refreshToken ?? saved.auth?.refreshToken,
+          },
+          tls: body.tls ?? saved.tls,
+        };
+        writeConfig(unified);
       } else {
-        if (!newConfig.auth?.pass) {
-          try {
-            const existing = readConfigFile(SMPT_CONFIG_PATH);
-            newConfig.auth.pass = existing.auth?.pass ?? null;
-          } catch { }
-        }
+        // Keep Gmail credentials, update SMTP fields, mask OAuth fields
+        const pass = body.auth?.pass && body.auth.pass !== 'XXXX'
+          ? body.auth.pass
+          : (saved.auth?.pass && saved.auth.pass !== 'XXXX' ? saved.auth.pass : null);
 
-        fs.writeFile(SMPT_CONFIG_PATH, JSON.stringify(newConfig, null, 4), 'utf8', (err: any) => {
-          if (err) {
-            return next(new HttpException(404, 'Error saving configuration'));
-          }
-
-          let savedConfig: any;
-          try {
-            savedConfig = readConfigFile(SMPT_CONFIG_PATH);
-          } catch {
-            savedConfig = newConfig;
-          }
-          MailController.sendConfigConfirmationEmail(savedConfig);
-          return res.status(200).json({ ok: true });
-        });
+        const unified = {
+          ...saved,
+          configType: 'SMPT',
+          host: body.host ?? saved.host,
+          port: body.port ?? saved.port,
+          secure: body.secure ?? saved.secure,
+          auth: {
+            type: 'XXXX',
+            user: body.auth?.user ?? saved.auth?.user,
+            pass: pass,
+            clientId: 'XXXX',
+            clientSecret: 'XXXX',
+            refreshToken: 'XXXX',
+          },
+          tls: body.tls ?? saved.tls,
+        };
+        writeConfig(unified);
       }
+
+      const finalConfig = readConfig();
+      MailController.sendConfigConfirmationEmail(finalConfig);
+      return res.status(200).json({ ok: true });
 
     } catch (err) {
       return next(new HttpException(501, 'Error saving configuration'));
@@ -105,16 +120,10 @@ export class MailController {
 
   static async getCredentials(_req: Request, res: Response, next: NextFunction) {
     try {
-      const smtpConfig = readConfigFile(SMPT_CONFIG_PATH);
-      const activeType = smtpConfig.configType || 'SMPT';
-
-      if (activeType === 'GMAIL') {
-        const gmailConfig = readConfigFile(GMAIL_CONFIG_PATH);
-        return res.status(200).json({ ok: true, config: gmailConfig });
-      } else {
-        smtpConfig.auth.pass = null;
-        return res.status(200).json({ ok: true, config: smtpConfig });
-      }
+      const config = readConfig();
+      // Never expose SMTP password to the frontend
+      const sanitized = { ...config, auth: { ...config.auth, pass: null } };
+      return res.status(200).json({ ok: true, config: sanitized });
     } catch (err) {
       return next(new HttpException(501, 'Error loading configuration'));
     }
@@ -122,7 +131,7 @@ export class MailController {
 
   private static sendConfigConfirmationEmail(config: any) {
     try {
-      const transporter = nodemailer.createTransport(config);
+      const transporter = nodemailer.createTransport({ ...config, family: 4 });
       const recipientEmail = config.auth?.user;
 
       if (!recipientEmail) return;

@@ -1,7 +1,6 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { from, lastValueFrom } from 'rxjs';
 import { mergeMap, toArray, tap, finalize } from 'rxjs/operators';
 import { MailService, AlertService, DashboardService, SpinnerService } from '@eda/services/service.index';
@@ -76,10 +75,8 @@ export class EmailSettingsPage implements OnInit {
   private mailService = inject(MailService);
   private dashboardService = inject(DashboardService);
   private spinnerService = inject(SpinnerService);
-  private router = inject(Router);
-
   // --- Signals ---
-  loadingSignal = signal(true);  
+  loadingSignal = signal(true);
   tlsEnabled = signal<boolean>(false);
   isChecking = signal<boolean>(false);
   isSubmitting = signal<boolean>(false);
@@ -99,26 +96,24 @@ export class EmailSettingsPage implements OnInit {
     return this.dashboardItems().slice(0, n);
   });
 
-  // --- Form selector ---
-  emailFormSelector: 'SMPT' | 'GMAIL' = 'SMPT';
+  // --- Unified form ---
+  unifiedForm: FormGroup;
 
-  // --- Forms ---
-  emailForm: FormGroup;
-  gmailForm: FormGroup;
+  get configType(): 'SMPT' | 'GMAIL' {
+    return this.unifiedForm.get('configType')?.value || 'SMPT';
+  }
 
   constructor() {
-    this.emailForm = this.fb.group({
-      host: [null, Validators.required],
-      port: [null, Validators.required],
-      secure: [false, Validators.required],
+    this.unifiedForm = this.fb.group({
+      configType: ['SMPT'],
+      host: [null],
+      port: [null],
       user: [null, Validators.required],
-      password: [null, Validators.required],
-    });
-    this.gmailForm = this.fb.group({
-      user: [null, Validators.required],
-      clientId: [null, Validators.required],
-      clientSecret: [null, Validators.required],
-      refreshToken: [null, Validators.required],
+      password: [null],
+      clientId: [null],
+      clientSecret: [null],
+      refreshToken: [null],
+      secure: [false],
     });
   }
 
@@ -135,24 +130,25 @@ export class EmailSettingsPage implements OnInit {
     const config = mailSettings.config;
 
     if (config.configType === 'GMAIL') {
-      this.emailFormSelector = 'GMAIL';
-      this.gmailForm.patchValue({
+      this.unifiedForm.patchValue({
+        configType: 'GMAIL',
         user: config.auth?.user,
         clientId: config.auth?.clientId,
         clientSecret: config.auth?.clientSecret,
         refreshToken: config.auth?.refreshToken,
+        secure: config.secure ?? false,
       });
       this.tlsEnabled.set(config.tls?.rejectUnauthorized ?? false);
     } else {
-      this.emailFormSelector = 'SMPT';
-      this.emailForm.patchValue({
+      this.unifiedForm.patchValue({
+        configType: 'SMPT',
         host: config.host,
         port: config.port,
-        secure: config.secure,
         user: config.auth?.user,
-        password: null
+        password: null,
+        secure: config.secure ?? false,
       });
-      this.tlsEnabled.set(config.secure);
+      this.tlsEnabled.set(config.secure ?? false);
     }
   }
 
@@ -184,12 +180,10 @@ export class EmailSettingsPage implements OnInit {
           const modelName = d.datasource?.name ?? '';
           const dashId = dash._id;
 
-          // Dashboards con envío por mail
           if (dash.config?.sendViaMailConfig?.enabled) {
             dashboardsForMail.push({ id: dashId, dashboard: title, datamodel: modelName });
           }
 
-          // Alertas por KPI
           const panels = dash.config?.panel ?? [];
           for (const p of panels) {
             const isKpi = p?.content?.chart?.startsWith('kpi');
@@ -197,17 +191,18 @@ export class EmailSettingsPage implements OnInit {
             if (!isKpi || limits.length === 0) continue;
 
             for (const a of limits) {
-              alerts.push({
-                id: dashId,
-                alerts: `KPI ${a.operand} ${a.value}`,
-                panel: p.title,
-                dashboard: title,
-                datamodel: modelName,
-              });
+              if ((a as any).mailing?.enabled === true) {
+                alerts.push({
+                  id: dashId,
+                  alerts: `KPI ${a.operand} ${a.value}`,
+                  panel: p.title,
+                  dashboard: title,
+                  datamodel: modelName,
+                });
+              }
             }
           }
 
-          // Actualización parcial (UX fluida)
           this.dashboardItems.set([...dashboardsForMail]);
           this.alertItems.set([...alerts]);
         }),
@@ -221,8 +216,8 @@ export class EmailSettingsPage implements OnInit {
     this.loadingSignal.set(false);
   }
 
-  goToDashboardById(id: string) {
-    this.router.navigate(['/dashboard', id]);
+  getDashboardUrl(id: string): string {
+    return `${window.location.origin}/#/dashboard/${id}`;
   }
 
   async deleteDashboardMailConfig(id: string) {
@@ -236,13 +231,12 @@ export class EmailSettingsPage implements OnInit {
         config: dashboard.config,
         group: (response as any).group ?? []
       }));
-      this.dashboardItems.update(items => items.filter(d => d.id !== id));
+      this.dashboardItems.update(items => items.filter((d: DashboardItem) => d.id !== id));
       this.alertService.addSuccess($localize`:@@dashboardMailDeleted:Configuración de envío eliminada`);
     } catch (err: any) {
       this.alertService.addError(err);
     }
   }
-
 
   toggleTls() {
     this.tlsEnabled.update(v => !v);
@@ -277,8 +271,8 @@ export class EmailSettingsPage implements OnInit {
   }
 
   private getOptions() {
-    if (this.emailFormSelector === 'GMAIL') {
-      const v = this.gmailForm.value;
+    const v = this.unifiedForm.value;
+    if (v.configType === 'GMAIL') {
       return {
         configType: 'GMAIL',
         host: 'smtp.gmail.com',
@@ -294,7 +288,6 @@ export class EmailSettingsPage implements OnInit {
         tls: { rejectUnauthorized: this.tlsEnabled() }
       };
     }
-    const v = this.emailForm.value;
     return {
       configType: 'SMPT',
       host: v.host,
