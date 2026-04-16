@@ -24,7 +24,7 @@ function getBaseUrl(): string {
     const { EDA_APP_URL } = getAnthropicConfig();
     if (!EDA_APP_URL) return '';
     const hasLocale = LOCALES.some(l => EDA_APP_URL.includes(l));
-    return hasLocale ? EDA_APP_URL : `${EDA_APP_URL}/es`;
+    return hasLocale ? EDA_APP_URL : `${EDA_APP_URL}/es/#`;
 }
 
 const bcrypt = require('bcryptjs');
@@ -201,7 +201,7 @@ function createMcpServer(requestUser?: any) {
                     const lines = [`\n## ${label} (${items.length})`];
                     if (items.length === 0) lines.push('  (sin dashboards)');
                     for (const d of items) {
-                        const link = baseUrl ? ` — ${baseUrl}/#/dashboard/${encodeURIComponent(d._id)}` : '';
+                        const link = baseUrl ? ` — ${baseUrl}/dashboard/${encodeURIComponent(d._id)}` : '';
                         lines.push(`  - [${d._id}] ${d.config?.title ?? '(sin título)'}${link}`);
                     }
                     return lines;
@@ -239,7 +239,7 @@ function createMcpServer(requestUser?: any) {
                 const lines = datasources
                     .filter((ds: any) => (ds.ds?.metadata?.ia_visibility ?? 'FULL') !== 'NONE')
                     .map((ds: any) => {
-                        const link = baseUrl ? ` — ${baseUrl}/#/data-source/${encodeURIComponent(ds._id)}` : '';
+                        const link = baseUrl ? ` — ${baseUrl}/data-source/${encodeURIComponent(ds._id)}` : '';
                         return `  - [${ds._id}] ${ds.ds?.metadata?.model_name ?? '(sin nombre)'} [${ds.ds?.metadata?.ia_visibility ?? 'FULL'}]${link}`;
                     });
                 return {
@@ -274,7 +274,7 @@ function createMcpServer(requestUser?: any) {
                 if (!filtered) return { content: [{ type: 'text', text: `Datasource ${id} excluido por ia_visibility: NONE` }], isError: true };
                 const baseUrl = getBaseUrl();
                 console.log('[MCP] get_datasource — baseUrl:', baseUrl || '(vacío)', '| id:', id);
-                const url = baseUrl ? `URL: ${baseUrl}/#/data-source/${encodeURIComponent(id)}\n\n` : '';
+                const url = baseUrl ? `URL: ${baseUrl}/data-source/${encodeURIComponent(id)}\n\n` : '';
                 return { content: [{ type: 'text', text: `${url}${JSON.stringify(filtered, null, 2)}` }] };
             } catch (err: any) {
                 console.error('[MCP] get_datasource error:', err.message, err.stack);
@@ -301,7 +301,7 @@ function createMcpServer(requestUser?: any) {
 
                 const baseUrl = getBaseUrl();
                 console.log('[MCP] get_dashboard — baseUrl:', baseUrl || '(vacío)', '| id:', id);
-                const dashboardLink = baseUrl ? `${baseUrl}/#/dashboard/${encodeURIComponent(id)}` : '';
+                const dashboardLink = baseUrl ? `${baseUrl}/dashboard/${encodeURIComponent(id)}` : '';
                 const panels = Array.isArray(db.config?.panel) ? db.config.panel : [];
 
                 // Agrupar datasources únicos
@@ -332,7 +332,6 @@ function createMcpServer(requestUser?: any) {
                         if (chartType) lines.push(`   Tipo: ${chartType}`);
                     }
                 }
-                console.log('[MCP] get_dashboard - resultado:\n' + lines.join('\n'));
                 return { content: [{ type: 'text', text: lines.join('\n') }] };
             } catch (err: any) {
                 console.error('[MCP] get_dashboard error:', err.message, err.stack);
