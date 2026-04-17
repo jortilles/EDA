@@ -108,7 +108,7 @@ export class DashboardSidebarComponent {
   clickFiltersEnabled: boolean = true;
   onlyIcanEdit: boolean = false; // Solo yo pueedo editar. pero puedo guardar como
   isReadOnly: boolean = false; // es un dashbaord de solo lecturas
-  isEditable; boolean = false; // puede editar el dashboard
+  isEditable: boolean = false; // puede editar el dashboard
   mostrarOpciones = false;
   mostrarFiltros = false;
   mostrarDescargas = false;
@@ -896,12 +896,13 @@ export class DashboardSidebarComponent {
 
   
   public isReadOnlyCheck() {
-    const user = localStorage.getItem('user');
-    const userName = JSON.parse(user).name;
+    const user = JSON.parse(localStorage.getItem('user'));
+    const userName = user.name;
+    const isObserver = user.role.includes('135792467811111111111113');
+    const onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ?? false;
     const imProperty = userName === this.dashboard.dashboard.config.author;
-    const isObserver = JSON.parse(user).role.includes('135792467811111111111113');
-    const onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ? this.dashboard.dashboard.config.onlyIcanEdit:false ;
-    return userName === 'edaanonim' || (onlyIcanEdit && imProperty) && isObserver;
+    const isAdmin = user.role.includes('135792467811111111111110');
+    return userName === 'edaanonim' || isObserver || (onlyIcanEdit && !imProperty && !isAdmin);
   }
 
 
