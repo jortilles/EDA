@@ -1,14 +1,14 @@
 <eda-dialog2
   i18n-header="@@kpiMailConfigTitle"
   header="Configuración de envío por email"
-  width="50vw"
+  width="70vw"
   height="65vh"
   [disableApply]="disableApply()"
   (apply)="onApply()"
   (close)="onClose()">
 
   <div content class="p-8 bg-gray-50 h-[50vh]">
-    <div class="grid grid-cols-3 gap-8">
+    <div class="grid grid-cols-[25%_30%_40%] gap-8 h-full">
 
       <!-- Frecuencia -->
       <div class="bg-white shadow-lg rounded-2xl p-6 space-y-5">
@@ -50,7 +50,7 @@
       </div>
 
       <!-- Destinatarios -->
-      <div class="bg-white shadow-lg rounded-2xl p-6 space-y-4">
+      <div class="bg-white shadow-lg rounded-2xl p-6 flex flex-col gap-4">
         <h5 i18n="@@SendMailWho" class="text-lg font-semibold text-gray-800">Destinatarios</h5>
         <p-multiSelect
           [(ngModel)]="selectedUsers"
@@ -58,9 +58,21 @@
           optionLabel="label"
           i18n-defaultLabel="@@selectRecipients"
           defaultLabel="Selecciona los destinatarios *"
-          class="flex w-[auto] border border-gray-300 rounded-lg"
+          styleClass="w-full"
+          [style]="{'width': '100%'}"
           [maxSelectedLabels]="2">
         </p-multiSelect>
+
+        <div class="max-h-40 overflow-y-auto border border-gray-200 rounded-lg divide-y divide-gray-100">
+          @for (user of selectedUsers; track $index) {
+            <div class="flex items-center gap-2 px-3 py-2 text-sm text-gray-700">
+              <span class="w-2 h-2 rounded-full bg-blue-500 shrink-0"></span>
+              {{ user?.label ?? user?.name ?? user }}
+            </div>
+          } @empty {
+            <p i18n="@@noRecipientsSelected" class="text-sm text-gray-400 px-3 py-2">Sin destinatarios seleccionados</p>
+          }
+        </div>
       </div>
 
       <!-- Contenido del mail -->
