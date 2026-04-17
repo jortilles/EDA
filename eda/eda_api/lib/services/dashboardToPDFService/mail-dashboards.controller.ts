@@ -68,10 +68,8 @@ export class MailDashboardsController {
       const page = await dashboardContext.newPage();
       await page.setViewportSize({ width: 1380, height: 900 });
 
-      const localeMatch = serverConfig.server_baseURL.replace(/\/$/, '').match(/\/([a-z]{2})$/);
-      const locale = localeMatch ? localeMatch[1] : 'es';
       const baseURL = serverConfig.server_baseURL.replace(/\/?$/, '/');
-      const dashboardUrl = `${baseURL}${locale}/#/dashboard/${dashboard}`;
+      const dashboardUrl = `${baseURL}#/dashboard/${dashboard}`;
       await page.goto(dashboardUrl, { waitUntil: 'networkidle', timeout: 60000 });
 
       // 3. Wait for all panel spinners to disappear (max 90 s)
@@ -145,7 +143,7 @@ export class MailDashboardsController {
       });
 
       // 7. Send the email with the generated PDF attached
-      const link = `${baseURL}${locale}/#/dashboard/${dashboard}`;
+      const link = `${baseURL}#/dashboard/${dashboard}`;
       MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message, link, senderEmail);
 
     } finally {

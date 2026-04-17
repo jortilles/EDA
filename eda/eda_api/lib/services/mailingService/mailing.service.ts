@@ -90,7 +90,8 @@ export class MailingService {
 
         if (shouldUpdate) {
           userMails.forEach((mail: string) => {
-            MailDashboardsController.sendDashboard(dashboardID, mail, transporter, cfg.mailMessage, token, senderEmail);
+            MailDashboardsController.sendDashboard(dashboardID, mail, transporter, cfg.mailMessage, token, senderEmail)
+              .catch((err: any) => console.error(`[MailingService] ERROR enviando dashboard "${dashboard.config.title}" a ${mail}:`, err));
           });
           if (updateTimestamp) {
             dashboard.config.sendViaMailConfig.lastUpdated = newDate;
@@ -153,10 +154,8 @@ export class MailingService {
       let condition = MailingService.compareValues(result, alert.value.value, alert.value.operand);
       console.log(`[MailingService] alerta KPI | resultado: ${result} | condición: ${result} ${alert.value.operand} ${alert.value.value} = ${condition} | destinatario: ${user.email}`);
 
-      const localeMatch = mailConfig.server_baseURL.replace(/\/$/, '').match(/\/([a-z]{2})$/);
-      const locale = localeMatch ? localeMatch[1] : 'es';
       const appBase = mailConfig.server_baseURL.replace(/\/?$/, '/');
-      const dashboardLink = `${appBase}${locale}/#/dashboard/${alert.query.dashboard.dashboard_id}`;
+      const dashboardLink = `${appBase}#/dashboard/${alert.query.dashboard.dashboard_id}`;
 
       let text = `${alert.value.mailing.mailMessage}\n-------------------------------------------- \n\n` +
         `${alert.query.query.fields[0].display_name}: ${result.toLocaleString('de-DE')}\n${dashboardLink}`
