@@ -180,6 +180,7 @@ export class PromptService {
             Rules:
             - Always return columns for the requested tables.
             - Use synonyms or context in the user query to match table and column names in the schema.
+            - Use table and column descriptions from the schema to resolve ambiguous or semantic user terms.
             - Never return an empty columns array.
             - Do not return duplicated columns for the same table.
             - For the limit: extract it from patterns like "los 10 clientes" → 10, "top 5" → 5, "los 3 primeros" → 3, "el mejor/peor" → 1. Default is 5000 if no number is mentioned.
@@ -212,17 +213,17 @@ export class PromptService {
                         items: {
                             type: "object",
                             properties: {
-                                table: { type: "string", description: "Name of the table (e.g. 'customers')" },
+                                table: { type: "string", description: "Name of the table. Use the table description from the schema to identify the correct table when the user uses semantic or natural language terms." },
                                 columns: {
                                     type: "array",
                                     minItems: 1,
                                     description: "Array of column objects. never return an empty array of columns. You must check the schema. You must identify tables or fields in the prompt query to match them with the columns you will return. Take also into account synonyms and possible typography mistakes.",
-                                    items: { 
+                                    items: {
                                         type: "object",
                                         properties: {
                                             column: {
                                                 type: "string",
-                                                description: "Column or field of the table defined in the schema"
+                                                description: "Column or field of the table defined in the schema. Use the column description to match semantic meaning when the user uses natural language terms."
                                             },
                                             column_type: {
                                                 type: "string",
@@ -345,9 +346,9 @@ export class PromptService {
         const toolGetFields: any = response.output?.find((tool: any) => tool.type === "function_call" && tool.name === "getFields");
         const toolGetFilters: any = response.output?.find((tool: any) => tool.type === "function_call" && tool.name === "getFilters");
 
-        //console.log('toolGetAssistantResponse ::::::::::::::::::::::: ', toolGetAssistantResponse);
-        //console.log('toolGetFields ::::::::::::::::::::::: ', toolGetFields);
-        //console.log('toolGetFilters ::::::::::::::::::::::: ', toolGetFilters);
+        console.log('toolGetAssistantResponse ::::::::::::::::::::::: ', toolGetAssistantResponse);
+        console.log('toolGetFields ::::::::::::::::::::::: ', toolGetFields);
+        console.log('toolGetFilters ::::::::::::::::::::::: ', toolGetFilters);
 
         // Filtro que permite respuesta amable del asistente al usuario
         if (toolGetAssistantResponse) {
