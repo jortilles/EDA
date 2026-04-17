@@ -316,7 +316,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
 
     public editingTitle: boolean = false;
-    public promptAvailable: boolean = false;
+    public promptAvailable = computed(() => this.iaFormStateService.formData().AVAILABLE);
 
 
     constructor(
@@ -408,7 +408,6 @@ export class EdaBlankPanelComponent implements OnInit {
         if(this.sortedFilters === undefined) this.sortedFilters = []; // Si se trata de un informe antiguo, definimos el informe como vacío.
 
 
-        this.promptAvailable = this.iaFormStateService.formData().AVAILABLE;
     }
     
     /**

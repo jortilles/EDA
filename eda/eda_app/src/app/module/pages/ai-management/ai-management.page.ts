@@ -54,6 +54,7 @@ export class AiManagementPage implements OnInit {
         LIMIT: cfg.LIMIT,
       });
       this.availableEnabled.set(cfg.AVAILABLE);
+      this.iaFormStateService.setFormData(cfg);
     } catch (err: any) {
       this.alertService.addError(err);
     } finally {
