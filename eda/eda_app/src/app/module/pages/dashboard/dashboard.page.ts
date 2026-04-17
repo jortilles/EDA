@@ -993,6 +993,7 @@ export class DashboardPage implements OnInit {
         createdAt: this.dashboard.config.createdAt || new Date().toISOString(),
         modifiedAt: new Date().toISOString(),
         sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig,
+        mailingAlertsEnabled: false as boolean,
         onlyIcanEdit: this.dashboard.config.onlyIcanEdit,
         styles: this.dashboard.config.styles,
         urls: this.dashboard.config.urls,
