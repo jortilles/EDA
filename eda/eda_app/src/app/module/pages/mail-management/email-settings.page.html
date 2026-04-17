@@ -10,7 +10,7 @@
         </div>
         <button type="button" (click)="handleSendNow()" [disabled]="isSendingNow()"
           class="inline-flex items-center justify-center rounded-md bg-[#00BFB3] px-4 py-2 text-sm font-medium text-white hover:bg-[#00BFB3]/90 disabled:opacity-50 disabled:pointer-events-none transition-colors">
-          {{ isSendingNow() ? 'Enviando...' : 'Enviar todas las alertas' }}
+          {{ sendNowLabel() }}
         </button>
       </div>
 

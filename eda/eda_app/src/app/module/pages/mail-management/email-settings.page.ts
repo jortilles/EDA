@@ -273,7 +273,12 @@ export class EmailSettingsPage implements OnInit {
     }
   }
 
-  isSendingNow = signal<boolean>(false);//borrar
+  isSendingNow = signal<boolean>(false);
+  sendNowLabel = computed(() =>
+    this.isSendingNow()
+      ? $localize`:@@sendingNow:Enviando...`
+      : $localize`:@@sendScheduledMails:Enviar todos los correos programados`
+  );
 
   async handleSendNow() {
     this.isSendingNow.set(true);
