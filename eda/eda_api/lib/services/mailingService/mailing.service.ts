@@ -52,8 +52,8 @@ export class MailingService {
         }
         console.log(`[MailingService] alerta: "${alert.value.operand} ${alert.value.value}" | units: ${alert.value.mailing.units} | lastUpdated: ${alert.value.mailing.lastUpdated} | shouldUpdate: ${shouldUpdate}`);
                 // para validar se puede forzar la variable. 
-        console.log('Forzado del should upddate.....')
-        shouldUpdate = true;
+        // console.log('Forzado del should upddate.....')
+        // shouldUpdate = true;
         if (shouldUpdate) {
           MailingService.mailAlertsSending(alert, transporter, senderEmail);
           alert.value.mailing.lastUpdated = newDate;
@@ -99,8 +99,8 @@ export class MailingService {
         const nextSend = new Date(Date.parse(cfg.lastUpdated) + cfg.quantity * 60 * 60000);
         console.log(`[MailingService] dashboard: "${dashboard.config.title}" | ahora: ${now} | lastUpdated: ${cfg.lastUpdated} | proxEnvio: ${SchedulerFunctions.totLocalISOTime(nextSend)} | shouldUpdate: ${shouldUpdate} | recipients: ${userMails.join(', ')}`);
         
-        console.log('Forzado del should upddate de los dashboards.....');
-        shouldUpdate = true;
+        // console.log('Forzado del should upddate de los dashboards.....');
+        // shouldUpdate = true;
         
         if (shouldUpdate) {
           userMails.forEach((mail: string) => {
