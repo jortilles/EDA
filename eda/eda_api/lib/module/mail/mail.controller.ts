@@ -157,7 +157,7 @@ export class MailController {
 
   static async sendNow(_req: Request, res: Response, next: NextFunction) {
     try {
-      MailingService.mailingService();
+      MailingService.mailingService(false);
       return res.status(200).json({ ok: true });
     } catch (err) {
       return next(new HttpException(501, 'Error triggering mail service'));

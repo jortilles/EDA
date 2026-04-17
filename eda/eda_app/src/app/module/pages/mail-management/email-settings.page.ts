@@ -221,7 +221,8 @@ export class EmailSettingsPage implements OnInit {
   }
 
   getDashboardUrl(id: string): string {
-    return `${window.location.origin}/es/#/dashboard/${id}`;
+    const locale = window.location.pathname.split('/').filter(Boolean)[0] || 'es';
+    return `${window.location.origin}/${locale}/#/dashboard/${id}`;
   }
 
   async deleteAlertMailConfig(item: AlertItem) {

@@ -15,8 +15,8 @@ export const initJobs = ()=> {
   /**Check mail sending */
   const mailSender = schedule.scheduleJob(mail_config.MAILING_SCHEDULE, () => MailingService.mailingService() );
   // DEVELOPEMENT TESTING.
-   console.log('Forzado del mailing.....')
-  MailingService.mailingService()
+  //  console.log('Forzado del mailing.....')
+  // MailingService.mailingService()
 
 }
 

@@ -14,7 +14,7 @@ const path = require("path");
 
 export class MailingService {
 
-  static async mailingService() {
+  static async mailingService(updateTimestamp = true) {
     const newDate = SchedulerFunctions.totLocalISOTime(new Date()) ;
     const smtpConfig = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../config/SMPT.config.json"), 'utf-8'));
     const config = { ...smtpConfig, family: 4 };
@@ -26,47 +26,47 @@ export class MailingService {
         console.log(error);
       } else {
         console.log(`\n\x1b[34m=====\x1b[0m \x1b[32mMail server is ready to take our messages\x1b[0m \x1b[34m=====\x1b[0m\n`)
-        this.alertSending(newDate, transporter, senderEmail);
-        this.dashboardSending(newDate, transporter, senderEmail);
+        this.alertSending(newDate, transporter, senderEmail, updateTimestamp);
+        this.dashboardSending(newDate, transporter, senderEmail, updateTimestamp);
       }
     });
   }
 
-  static async alertSending(newDate: string, transporter: any, senderEmail: string) {
+  static async alertSending(newDate: string, transporter: any, senderEmail: string, updateTimestamp = true) {
     try {
       const dashboards = await Dashboard.find({ 'config.mailingAlertsEnabled': true });
       const alerts = MailingService.getAlerts(dashboards);
       console.log(`[MailingService] alertas KPI activas: ${alerts.length}`);
-      let dashboardsToUpdate = [];
+      let dashboardsToUpdate: any[] = [];
       /**Check alerts  */
       alerts.forEach((alert) => {
         let shouldUpdate = true;
         console.log(`[MailingService] alerta: "${alert.value.operand} ${alert.value.value}" | units: ${alert.value.mailing.units} | lastUpdated: ${alert.value.mailing.lastUpdated} | shouldUpdate: ${shouldUpdate}`);
                 // para validar se puede forzar la variable. 
-        console.log('Forzado del should upddate.....')
-        shouldUpdate = true;
+        // console.log('Forzado del should upddate.....')
+        // shouldUpdate = true;
         if (shouldUpdate) {
           MailingService.mailAlertsSending(alert, transporter, senderEmail);
-          alert.value.mailing.lastUpdated = newDate;
-          /**Push dashboard to update */
-          if (!dashboardsToUpdate.map(d => d._id).includes(alert.dashboard_id)) dashboardsToUpdate.push(dashboards.filter(d => d._id === alert.dashboard_id)[0]);
+          if (updateTimestamp) {
+            alert.value.mailing.lastUpdated = newDate;
+            if (!dashboardsToUpdate.map(d => d._id).includes(alert.dashboard_id)) dashboardsToUpdate.push(dashboards.filter(d => d._id === alert.dashboard_id)[0]);
+          }
         }
       });
 
-      /**Update dashbaords */
-      dashboardsToUpdate.forEach(d => {
-        Dashboard.replaceOne({ _id: d._id }, d).exec()
-      });
+      if (updateTimestamp) {
+        dashboardsToUpdate.forEach(d => {
+          Dashboard.replaceOne({ _id: d._id }, d).exec()
+        });
+      }
 
     } catch (err) {
       throw err;
     }
 
-
-
   }
 
-  static async dashboardSending(newDate: string, transporter: any, senderEmail: string) {
+  static async dashboardSending(newDate: string, transporter: any, senderEmail: string, updateTimestamp = true) {
 
     try {
 
@@ -85,24 +85,27 @@ export class MailingService {
         const nextSend = new Date(Date.parse(cfg.lastUpdated) + cfg.quantity * 60 * 60000);
         console.log(`[MailingService] dashboard: "${dashboard.config.title}" | ahora: ${now} | lastUpdated: ${cfg.lastUpdated} | proxEnvio: ${SchedulerFunctions.totLocalISOTime(nextSend)} | shouldUpdate: ${shouldUpdate} | recipients: ${userMails.join(', ')}`);
         
-         console.log('Forzado del should upddate de los dashboards.....');
-         shouldUpdate = true;
+        //  console.log('Forzado del should upddate de los dashboards.....');
+        //  shouldUpdate = true;
 
         if (shouldUpdate) {
           userMails.forEach((mail: string) => {
             MailDashboardsController.sendDashboard(dashboardID, mail, transporter, cfg.mailMessage, token, senderEmail);
           });
-          dashboard.config.sendViaMailConfig.lastUpdated = newDate;
-          if (!dashboardsToUpdate.map(d => d._id).includes(dashboardID)) {
-            dashboardsToUpdate.push(dashboard)
-          };
+          if (updateTimestamp) {
+            dashboard.config.sendViaMailConfig.lastUpdated = newDate;
+            if (!dashboardsToUpdate.map(d => d._id).includes(dashboardID)) {
+              dashboardsToUpdate.push(dashboard)
+            }
+          }
         }
       });
 
-       /**Update dashbaords */
-      dashboardsToUpdate.forEach(d => {
-        Dashboard.replaceOne({ _id: d._id }, d).exec()
-      });
+      if (updateTimestamp) {
+        dashboardsToUpdate.forEach(d => {
+          Dashboard.replaceOne({ _id: d._id }, d).exec()
+        });
+      }
 
     } catch (err) {
       throw err;
@@ -150,8 +153,13 @@ export class MailingService {
       let condition = MailingService.compareValues(result, alert.value.value, alert.value.operand);
       console.log(`[MailingService] alerta KPI | resultado: ${result} | condición: ${result} ${alert.value.operand} ${alert.value.value} = ${condition} | destinatario: ${user.email}`);
 
+      const localeMatch = mailConfig.server_baseURL.replace(/\/$/, '').match(/\/([a-z]{2})$/);
+      const locale = localeMatch ? localeMatch[1] : 'es';
+      const appBase = mailConfig.server_baseURL.replace(/\/?$/, '/');
+      const dashboardLink = `${appBase}${locale}/#/dashboard/${alert.query.dashboard.dashboard_id}`;
+
       let text = `${alert.value.mailing.mailMessage}\n-------------------------------------------- \n\n` +
-        `${alert.query.query.fields[0].display_name}: ${result.toLocaleString('de-DE')}\n${mailConfig.server_baseURL}#/dashboard/${alert.query.dashboard.dashboard_id}`
+        `${alert.query.query.fields[0].display_name}: ${result.toLocaleString('de-DE')}\n${dashboardLink}`
 
       let mailOptions = {
         from: senderEmail,
