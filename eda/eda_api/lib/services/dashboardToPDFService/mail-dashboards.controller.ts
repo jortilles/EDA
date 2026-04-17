@@ -4,7 +4,7 @@ const puppeteer = require('puppeteer');
 
 export class MailDashboardsController {
 
-  static sendDashboard = async (dashboard: string, userMail: string, transporter: any, message: string, token: string) => {
+  static sendDashboard = async (dashboard: string, userMail: string, transporter: any, message: string, token: string, senderEmail: string) => {
 
     try {
       const browser = await puppeteer.launch({ headless: true , args: ['--no-sandbox'] });
@@ -57,7 +57,7 @@ export class MailDashboardsController {
             });
           await browser.close();
           const link = `${serverConfig.server_baseURL}/#/dashboard/${dashboard}`
-          MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message, link);
+          MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message, link, senderEmail);
 
         } catch (err) {
           throw err;

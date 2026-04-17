@@ -1003,6 +1003,10 @@ export class DashboardPage implements OnInit {
     };
 
     body.config.panel = this.savePanels();
+    body.config.mailingAlertsEnabled = body.config.panel.some((panel: any) =>
+      panel.content?.chart === 'kpi' &&
+      panel.content?.query?.output?.config?.alertLimits?.some((a: any) => a.mailing?.enabled === true)
+    );
 
     try {
       await lastValueFrom(this.dashboardService.updateDashboard(this.dashboardId, body));

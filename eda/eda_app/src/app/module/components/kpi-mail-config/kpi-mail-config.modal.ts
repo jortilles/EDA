@@ -31,22 +31,26 @@ export class KpiMailConfigModal implements OnInit {
   constructor(private userService: UserService) {}
 
   ngOnInit(): void {
-    this.userService.getUsers().subscribe(
-      res => this.users = res.map(user => ({ label: user.name, value: user })),
-      err => console.log(err)
-    );
-
     const mailing = this.alert?.mailing;
+
     if (mailing?.enabled) {
       this.hours = `${mailing.hours || '00'}:${mailing.minutes || '00'}`;
       this.units = mailing.units;
       this.quantity = mailing.quantity;
-      this.selectedUsers = (mailing.users || []).map((u: any) =>
-        u.label ? u : { label: u.name, value: u }
-      );
       this.mailMessage = mailing.mailMessage || '';
       this.enabled = mailing.enabled;
     }
+
+    this.userService.getUsers().subscribe(
+      res => {
+        this.users = res.map(user => ({ label: user.name, value: user }));
+        const savedUsers = mailing?.users || [];
+        this.selectedUsers = this.users.filter(opt =>
+          savedUsers.some((u: any) => u._id === opt.value._id || u.email === opt.value.email)
+        );
+      },
+      err => console.log(err)
+    );
   }
 
   save() {

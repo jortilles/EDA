@@ -16,7 +16,9 @@ export class MailingService {
 
   static async mailingService() {
     const newDate = SchedulerFunctions.totLocalISOTime(new Date()) ;
-    const config = { ...JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../config/SMPT.config.json"), 'utf-8')), family: 4 };
+    const smtpConfig = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../config/SMPT.config.json"), 'utf-8'));
+    const config = { ...smtpConfig, family: 4 };
+    const senderEmail = smtpConfig.auth?.user;
     const transporter = nodemailer.createTransport(config);
     transporter.verify(async (error: any) => {
       if (error) {
@@ -24,8 +26,8 @@ export class MailingService {
         console.log(error);
       } else {
         console.log(`\n\x1b[34m=====\x1b[0m \x1b[32mMail server is ready to take our messages\x1b[0m \x1b[34m=====\x1b[0m\n`)
-        this.alertSending(newDate, transporter);
-        this.dashboardSending(newDate, transporter);
+        this.alertSending(newDate, transporter, senderEmail);
+        this.dashboardSending(newDate, transporter, senderEmail);
 
       }
     });
@@ -33,11 +35,12 @@ export class MailingService {
 
   }
 
-  static async alertSending(newDate: string, transporter: any) {
+  static async alertSending(newDate: string, transporter: any, senderEmail: string) {
     try {
       const dashboards = await Dashboard.find({ 'config.mailingAlertsEnabled': true });
-      let dashboardsToUpdate = [];
       const alerts = MailingService.getAlerts(dashboards);
+      console.log(`[MailingService] alertas KPI activas: ${alerts.length}`);
+      let dashboardsToUpdate = [];
       /**Check alerts  */
       alerts.forEach((alert) => {
         let shouldUpdate = false;
@@ -47,11 +50,12 @@ export class MailingService {
           const mailing = alert.value.mailing;
           shouldUpdate = SchedulerFunctions.checkScheduleDays(mailing.quantity, mailing.hours, mailing.minutes, mailing.lastUpdated);
         }
-        // para validar se puede forzar la variable. 
+        console.log(`[MailingService] alerta: "${alert.value.operand} ${alert.value.value}" | units: ${alert.value.mailing.units} | lastUpdated: ${alert.value.mailing.lastUpdated} | shouldUpdate: ${shouldUpdate}`);
+                // para validar se puede forzar la variable. 
         console.log('Forzado del should upddate.....')
         shouldUpdate = true;
         if (shouldUpdate) {
-          MailingService.mailAlertsSending(alert, transporter);
+          MailingService.mailAlertsSending(alert, transporter, senderEmail);
           alert.value.mailing.lastUpdated = newDate;
           /**Push dashboard to update */
           if (!dashboardsToUpdate.map(d => d._id).includes(alert.dashboard_id)) dashboardsToUpdate.push(dashboards.filter(d => d._id === alert.dashboard_id)[0]);
@@ -71,7 +75,7 @@ export class MailingService {
 
   }
 
-  static async dashboardSending(newDate: string, transporter: any) {
+  static async dashboardSending(newDate: string, transporter: any, senderEmail: string) {
 
     try {
 
@@ -100,7 +104,7 @@ export class MailingService {
         
         if (shouldUpdate) {
           userMails.forEach((mail: string) => {
-            MailDashboardsController.sendDashboard(dashboardID, mail, transporter, cfg.mailMessage, token);
+            MailDashboardsController.sendDashboard(dashboardID, mail, transporter, cfg.mailMessage, token, senderEmail);
           });
           dashboard.config.sendViaMailConfig.lastUpdated = newDate;
           if (!dashboardsToUpdate.map(d => d._id).includes(dashboardID)) {
@@ -149,7 +153,7 @@ export class MailingService {
   /**Chech kpi condition and send mail if condition is true
    * 
    */
-  static mailAlertsSending(alert, transporter) {
+  static mailAlertsSending(alert, transporter, senderEmail: string) {
 
     alert.value.mailing.users.forEach(async user => {
 
@@ -158,12 +162,13 @@ export class MailingService {
         await MailingService.execSqlQuery(alert.query, user);
 
       let condition = MailingService.compareValues(result, alert.value.value, alert.value.operand);
+      console.log(`[MailingService] alerta KPI | resultado: ${result} | condición: ${result} ${alert.value.operand} ${alert.value.value} = ${condition} | destinatario: ${user.email}`);
 
       let text = `${alert.value.mailing.mailMessage}\n-------------------------------------------- \n\n` +
         `${alert.query.query.fields[0].display_name}: ${result.toLocaleString('de-DE')}\n${mailConfig.server_baseURL}#/dashboard/${alert.query.dashboard.dashboard_id}`
 
       let mailOptions = {
-        from: mailConfig.user,
+        from: senderEmail,
         to: user.email,
         subject: 'Eda Alerts',
         text: text
@@ -178,13 +183,13 @@ export class MailingService {
     })
   }
 
-  static mailDashboardSending(userMail:string, filename:string, filepath:string, transporter:any, message:string, link:string){
+  static mailDashboardSending(userMail:string, filename:string, filepath:string, transporter:any, message:string, link:string, senderEmail:string){
 
     let text = `${message}\n-------------------------------------------- \n\n`;
     text += link;
 
     let mailOptions = {
-      from: mailConfig.user,
+      from: senderEmail,
       to: userMail,
       subject: 'Eda Dashboard Sending Service',
       text: text,
@@ -206,14 +211,14 @@ export class MailingService {
   }
 
   static compareValues(v1, v2, op) {
-
+    const n1 = Number(v1);
+    const n2 = Number(v2);
     switch (op) {
-      case '<': return v1 < v2;
-      case '>': return v1 > v2;
-      case '=': return v1 === v2;
+      case '<': return n1 < n2;
+      case '>': return n1 > n2;
+      case '=': return n1 === n2;
       default: return false;
     }
-
   }
 
   static async execQuery(alertQuery, user) {
