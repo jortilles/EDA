@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { HttpException } from '../global/model/index';
+import { MailingService } from '../../services/mailingService/mailing.service'; //borrar
 const fs = require('fs');
 const path = require("path");
 let nodemailer = require('nodemailer');
@@ -152,6 +153,15 @@ export class MailController {
         transporter.sendMail(mailOptions, () => {});
       });
     } catch { }
+  }
+
+  static async sendNow(_req: Request, res: Response, next: NextFunction) {
+    try {
+      MailingService.mailingService();
+      return res.status(200).json({ ok: true });
+    } catch (err) {
+      return next(new HttpException(501, 'Error triggering mail service'));
+    }
   }
 
 }

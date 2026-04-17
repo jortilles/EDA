@@ -11,6 +11,8 @@ interface AlertItem {
   panel: string;
   dashboard: string;
   datamodel: string;
+  operand: string;
+  value: string | number;
 }
 
 interface DashboardItem {
@@ -198,6 +200,8 @@ export class EmailSettingsPage implements OnInit {
                   panel: p.title,
                   dashboard: title,
                   datamodel: modelName,
+                  operand: a.operand,
+                  value: a.value,
                 });
               }
             }
@@ -217,7 +221,37 @@ export class EmailSettingsPage implements OnInit {
   }
 
   getDashboardUrl(id: string): string {
-    return `${window.location.origin}/#/dashboard/${id}`;
+    return `${window.location.origin}/es/#/dashboard/${id}`;
+  }
+
+  async deleteAlertMailConfig(item: AlertItem) {
+    try {
+      const response = await lastValueFrom(this.dashboardService.getDashboard(item.id)) as DashboardDetailResponse;
+      const dashboard = response.dashboard;
+      const panels = dashboard.config?.panel ?? [];
+      for (const p of panels) {
+        if (p.title !== item.panel) continue;
+        const limits = p.content?.query?.output?.config?.alertLimits ?? [];
+        for (const a of limits) {
+          if (a.operand === item.operand && String(a.value) === String(item.value)) {
+            (a as any).mailing = { ...(a as any).mailing, enabled: false };
+          }
+        }
+      }
+      const mailingAlertsEnabled = panels.some((p: any) =>
+        p.content?.chart === 'kpi' &&
+        p.content?.query?.output?.config?.alertLimits?.some((a: any) => a.mailing?.enabled === true)
+      );
+      (dashboard.config as any).mailingAlertsEnabled = mailingAlertsEnabled;
+      await lastValueFrom(this.dashboardService.updateDashboard(item.id, {
+        config: dashboard.config,
+        group: (response as any).group ?? []
+      }));
+      this.alertItems.update(items => items.filter(i => !(i.id === item.id && i.panel === item.panel && i.operand === item.operand && String(i.value) === String(item.value))));
+      this.alertService.addSuccess($localize`:@@alertMailDeleted:Alerta de correo eliminada`);
+    } catch (err: any) {
+      this.alertService.addError(err);
+    }
   }
 
   async deleteDashboardMailConfig(id: string) {
@@ -235,6 +269,20 @@ export class EmailSettingsPage implements OnInit {
       this.alertService.addSuccess($localize`:@@dashboardMailDeleted:Configuración de envío eliminada`);
     } catch (err: any) {
       this.alertService.addError(err);
+    }
+  }
+
+  isSendingNow = signal<boolean>(false);//borrar
+
+  async handleSendNow() {
+    this.isSendingNow.set(true);
+    try {
+      await lastValueFrom(this.mailService.sendNow());
+      this.alertService.addSuccess($localize`:@@mailSentNow:Envío iniciado correctamente`);
+    } catch (err: any) {
+      this.alertService.addError(err);
+    } finally {
+      this.isSendingNow.set(false);
     }
   }
 

@@ -1,11 +1,22 @@
-<div class="container mx-auto py-10">
+<div class="container mx-auto py-10 px-4">
   <div class="space-y-6">
     <!-- Email Configuration Card -->
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-      <div class="p-6">
-        <h2 class="text-xl font-semibold" i18n="@@adminEmail">Gestión de correo</h2>
-        <p class="text-gray-500 dark:text-gray-400 mb-4" i18n="@@adminEmailSubtitle">Configure los ajustes y credenciales de
-          su servidor de correo electrónico</p>
+      <div class="p-6 flex items-start justify-between">
+        <div>
+          <h2 class="text-xl font-semibold" i18n="@@adminEmail">Gestión de correo</h2>
+          <p class="text-gray-500 dark:text-gray-400 mb-4" i18n="@@adminEmailSubtitle">Configure los ajustes y credenciales de
+            su servidor de correo electrónico</p>
+        </div>
+        <button type="button" (click)="handleSendNow()" [disabled]="isSendingNow()"
+          class="inline-flex items-center gap-2 rounded-md bg-[#00BFB3] px-4 py-2 text-sm font-medium text-white hover:bg-[#00BFB3]/90 disabled:opacity-50 disabled:pointer-events-none transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+          {{ isSendingNow() ? 'Enviando...' : 'Enviar ahora' }}
+        </button>
       </div>
 
       <div class="p-6 pt-0">
@@ -225,16 +236,29 @@
                     <td class="px-4 py-3 align-middle text-gray-700">{{ item.dashboard }}</td>
                     <td class="px-4 py-3 align-middle text-gray-500 text-xs">{{ item.datamodel }}</td>
                     <td class="px-4 py-3 align-middle text-right whitespace-nowrap">
-                      <a [href]="getDashboardUrl(item.id)" target="_blank" rel="noopener noreferrer"
-                        class="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#00BFB3] hover:border-[#00BFB3] transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
-                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                          <polyline points="15 3 21 3 21 9"></polyline>
-                          <line x1="10" y1="14" x2="21" y2="3"></line>
-                        </svg>
-                        Ir al informe
-                      </a>
+                      <div class="inline-flex items-center gap-2">
+                        <a [href]="getDashboardUrl(item.id)" target="_blank" rel="noopener noreferrer"
+                          class="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#00BFB3] hover:border-[#00BFB3] transition-colors">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                            <polyline points="15 3 21 3 21 9"></polyline>
+                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                          </svg>
+                          Ir al informe
+                        </a>
+                        <button type="button"
+                          class="inline-flex items-center gap-1.5 rounded-md border border-red-200 bg-white px-3 py-1.5 text-sm text-red-500 hover:bg-red-50 hover:border-red-400 transition-colors"
+                          (click)="deleteAlertMailConfig(item)">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18"></path><path d="M8 6V4h8v2"></path>
+                            <path d="M6 6v14c0 1 1 2 2 2h8c1 0 2-1 2-2V6"></path>
+                            <path d="M10 11v6"></path><path d="M14 11v6"></path>
+                          </svg>
+                          Eliminar
+                        </button>
+                      </div>
                     </td>
                   </tr>
                   }

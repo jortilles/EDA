@@ -28,11 +28,8 @@ export class MailingService {
         console.log(`\n\x1b[34m=====\x1b[0m \x1b[32mMail server is ready to take our messages\x1b[0m \x1b[34m=====\x1b[0m\n`)
         this.alertSending(newDate, transporter, senderEmail);
         this.dashboardSending(newDate, transporter, senderEmail);
-
       }
     });
-
-
   }
 
   static async alertSending(newDate: string, transporter: any, senderEmail: string) {
@@ -43,13 +40,7 @@ export class MailingService {
       let dashboardsToUpdate = [];
       /**Check alerts  */
       alerts.forEach((alert) => {
-        let shouldUpdate = false;
-        if (alert.value.mailing.units === 'hours') {
-          shouldUpdate = SchedulerFunctions.checkScheduleHours(alert.value.mailing.quantity, alert.value.mailing.lastUpdated);
-        } else if (alert.value.mailing.units === 'days') {
-          const mailing = alert.value.mailing;
-          shouldUpdate = SchedulerFunctions.checkScheduleDays(mailing.quantity, mailing.hours, mailing.minutes, mailing.lastUpdated);
-        }
+        let shouldUpdate = true;
         console.log(`[MailingService] alerta: "${alert.value.operand} ${alert.value.value}" | units: ${alert.value.mailing.units} | lastUpdated: ${alert.value.mailing.lastUpdated} | shouldUpdate: ${shouldUpdate}`);
                 // para validar se puede forzar la variable. 
         console.log('Forzado del should upddate.....')
@@ -88,12 +79,7 @@ export class MailingService {
         const cfg = dashboard.config.sendViaMailConfig;
         const userMails = cfg.users.map((user: any) => user.email);
         const dashboardID: string = dashboard._id.toString();
-        let shouldUpdate = false;
-        if (cfg.units === 'hours') {
-          shouldUpdate = SchedulerFunctions.checkScheduleHours(cfg.quantity, cfg.lastUpdated);
-        } else if (cfg.units === 'days') {
-          shouldUpdate = SchedulerFunctions.checkScheduleDays(cfg.quantity, cfg.hours, cfg.minutes, cfg.lastUpdated);
-        }
+        let shouldUpdate = true;
 
         const now = SchedulerFunctions.totLocalISOTime(new Date());
         const nextSend = new Date(Date.parse(cfg.lastUpdated) + cfg.quantity * 60 * 60000);
@@ -101,7 +87,7 @@ export class MailingService {
         
          console.log('Forzado del should upddate de los dashboards.....');
          shouldUpdate = true;
-        
+
         if (shouldUpdate) {
           userMails.forEach((mail: string) => {
             MailDashboardsController.sendDashboard(dashboardID, mail, transporter, cfg.mailMessage, token, senderEmail);
