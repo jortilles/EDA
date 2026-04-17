@@ -22,21 +22,31 @@ export class MailDashboardsController {
     senderEmail: string
   ) => {
 
-    const browser = await chromium.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
+    console.log(`[Dashboard] Iniciando envío | dashboard: ${dashboard} | destinatario: ${userMail}`);
+
+    let browser: any;
+    try {
+      browser = await chromium.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+      });
+      console.log(`[Dashboard] Chromium lanzado`);
+    } catch (err: any) {
+      console.error(`[Dashboard] ERROR lanzando Chromium:`, err.message);
+      throw err;
+    }
 
     try {
       // 1. Obtain a real JWT via fake-login
       const loginUrl = `${serverConfig.server_apiURL}/admin/user/fake-login/${userMail}/${token}`;
+      console.log(`[Dashboard] Login URL: ${loginUrl}`);
       const loginContext = await browser.newContext();
       const loginPage = await loginContext.newPage();
 
       let authToken: string | null = null;
       let authUser: object | null = null;
 
-      loginPage.on('response', async (response) => {
+      loginPage.on('response', async (response: any) => {
         try {
           const contentType = response.headers()['content-type'] || '';
           if (!contentType.includes('application/json')) return;
@@ -52,14 +62,14 @@ export class MailDashboardsController {
       await loginContext.close();
 
       if (!authToken || !authUser) {
-        throw new Error(`Could not obtain auth token for user ${userMail}`);
+        throw new Error(`[Dashboard] No se pudo obtener token para ${userMail}`);
       }
+      console.log(`[Dashboard] Token obtenido para ${userMail}`);
 
       // 2. Open dashboard with credentials pre-injected into localStorage
-      //    deviceScaleFactor: 2 matches the frontend's scale(2) transform in dom-to-image
       const dashboardContext = await browser.newContext({ deviceScaleFactor: 2 });
 
-      await dashboardContext.addInitScript(({ t, u }) => {
+      await dashboardContext.addInitScript(({ t, u }: any) => {
         localStorage.setItem('token', t);
         localStorage.setItem('user', JSON.stringify(u));
         localStorage.setItem('id', (u as any)._id);
@@ -70,36 +80,40 @@ export class MailDashboardsController {
 
       const baseURL = serverConfig.server_baseURL.replace(/\/?$/, '/');
       const dashboardUrl = `${baseURL}#/dashboard/${dashboard}`;
+      console.log(`[Dashboard] Navegando a: ${dashboardUrl}`);
+
       await page.goto(dashboardUrl, { waitUntil: 'networkidle', timeout: 60000 });
+      console.log(`[Dashboard] Página cargada`);
 
       // 3. Wait for all panel spinners to disappear (max 90 s)
       await page.waitForFunction(
         () => document.querySelectorAll('.spinner-panel').length === 0,
         { timeout: 90000, polling: 1000 }
       );
+      console.log(`[Dashboard] Spinners desaparecidos`);
+
       // Extra pause so charts finish painting (canvas / SVG flush)
       await page.waitForTimeout(2000);
 
       // 4. Get the dashboard element dimensions in CSS pixels
       const element = await page.$('#myDashboard');
-      if (!element) throw new Error('Dashboard element #myDashboard not found in the page');
+      if (!element) throw new Error('[Dashboard] Elemento #myDashboard no encontrado en la página');
 
       const box = await element.boundingBox();
-      if (!box) throw new Error('Could not get bounding box of #myDashboard');
+      if (!box) throw new Error('[Dashboard] No se pudo obtener bounding box de #myDashboard');
       const cssWidth  = box.width;
       const cssHeight = box.height;
+      console.log(`[Dashboard] Dimensiones: ${cssWidth}x${cssHeight} CSS px`);
 
       // 5. Capture element screenshot at 2x resolution (deviceScaleFactor: 2)
-      //    This is the equivalent of dom-to-image with height/width * 2 + scale(2)
       const screenshotBuffer = await element.screenshot({ type: 'jpeg', quality: 100 });
+      console.log(`[Dashboard] Screenshot capturado (${screenshotBuffer.length} bytes)`);
 
       // Physical pixel dimensions (CSS * deviceScaleFactor)
       const physicalWidth  = Math.round(cssWidth  * 2);
       const physicalHeight = Math.round(cssHeight * 2);
 
-      // 6. Create multi-page A4 PDF — same paging logic as the frontend jspdf function
-      //    ratio = A4_width / cssWidth  →  how many PDF points per CSS pixel
-      //    pageHeightCSS = how many CSS pixels fit in one A4 page
+      // 6. Create multi-page A4 PDF
       const ratio             = A4_WIDTH_PT / cssWidth;
       const pageHeightCSS     = A4_HEIGHT_PT / ratio;
       const pageHeightPhysical = Math.floor(pageHeightCSS * 2);
@@ -121,16 +135,13 @@ export class MailDashboardsController {
           while (position < physicalHeight) {
             const sliceHeight = Math.min(pageHeightPhysical, physicalHeight - position);
 
-            // Cut the screenshot into A4-sized slices (same canvas.drawImage logic as frontend)
             const sliceBuffer = await sharp(screenshotBuffer)
               .extract({ left: 0, top: position, width: physicalWidth, height: sliceHeight })
               .jpeg({ quality: 100 })
               .toBuffer();
 
             doc.addPage();
-            // White background (matches ctx.fillStyle = '#FFFFFF' in frontend)
             doc.rect(0, 0, A4_WIDTH_PT, A4_HEIGHT_PT).fill('white');
-            // Image scaled to full A4 width
             doc.image(sliceBuffer, 0, 0, { width: A4_WIDTH_PT });
 
             position += sliceHeight;
@@ -142,12 +153,18 @@ export class MailDashboardsController {
         buildPages().catch(reject);
       });
 
+      console.log(`[Dashboard] PDF generado: ${filename}`);
+
       // 7. Send the email with the generated PDF attached
       const link = `${baseURL}#/dashboard/${dashboard}`;
       MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message, link, senderEmail);
+      console.log(`[Dashboard] Email enviado a ${userMail}`);
 
+    } catch (err: any) {
+      console.error(`[Dashboard] ERROR en sendDashboard (${dashboard} → ${userMail}): ${err.message}`);
+      throw err;
     } finally {
-      await browser.close();
+      if (browser) await browser.close();
     }
   };
 }
