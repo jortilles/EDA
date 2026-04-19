@@ -1,25 +1,26 @@
 import { NextFunction, Request, response, Response } from "express";
 import { HttpException } from "../global/model/index";
-import ChatGpt, { IChatGpt } from "../chatgpt/model/chatgpt.model" // A utilizar proximamente
+import AIUsage from "./model/ai-usage.model" // A utilizar proximamente
 import OpenAI from "openai";
 import { PromptService } from "../../services/prompt/prompt-assistant.service";
 import * as fs from 'fs';
 import * as path from 'path';
 
-const getChatgptConfig = () => {
-    const configPath = path.resolve(__dirname, '../../../config/chatgpt.config.js');
+
+const getAiConfig = () => {
+    const configPath = path.resolve(__dirname, '../../../config/ai.config.js');
     delete require.cache[require.resolve(configPath)];
     return require(configPath);
 };
 
-export class ChatGptController {
+export class AiController {
 
-    static async responseChatGpt(req: Request, res: Response, next: NextFunction) {
+    static async aIresponse(req: Request, res: Response, next: NextFunction) {
 
 
         try {
             const { input } = req.body;
-            const { API_KEY, MODEL, CONTEXT } = getChatgptConfig();
+            const { API_KEY, MODEL, CONTEXT } = getAiConfig();
 
             const openai = new OpenAI({
                 apiKey: API_KEY
@@ -40,15 +41,15 @@ export class ChatGptController {
             
         } catch (err) {
             console.log(err);
-            next(new HttpException(400, 'some Error occurred loading ChatGpt'))
+            next(new HttpException(400, 'some Error occurred loading the AI'))
         }
 
     }
 
-    static async availableChatGpt(req: Request, res: Response, next: NextFunction) {
+    static async aIavailable(req: Request, res: Response, next: NextFunction) {
 
         try {
-            const { AVAILABLE } = getChatgptConfig();
+            const { AVAILABLE } = getAiConfig();
             const response = {
                 available: AVAILABLE,
             }
@@ -60,12 +61,12 @@ export class ChatGptController {
             
         } catch (err) {
             console.log(err);
-            next(new HttpException(400, 'some Error occurred with the ChatGpt availability'))
+            next(new HttpException(400, 'some Error occurred with the AI availability'))
         }
 
     }
 
-    static async promptChatGpt(req: Request, res: Response, next: NextFunction) {
+    static async aIprompt(req: Request, res: Response, next: NextFunction) {
 
         try {
 
@@ -78,10 +79,10 @@ export class ChatGptController {
             const endOfDay = new Date();
             endOfDay.setHours(23, 59, 59, 999);
 
-            const { MODEL, LIMIT, MAX_LIMIT } = getChatgptConfig();
+            const { MODEL, LIMIT, MAX_LIMIT } = getAiConfig();
 
             // Verificar límite global del sistema (acumulado total, sin importar el día)
-            const totalCount = await ChatGpt.countDocuments({});
+            const totalCount = await AIUsage.countDocuments({});
             if (totalCount >= MAX_LIMIT) {
                 return res.status(429).json({
                     ok: false,
@@ -89,7 +90,7 @@ export class ChatGptController {
                 });
             }
 
-            const todayCount = await ChatGpt.countDocuments({
+            const todayCount = await AIUsage.countDocuments({
                 user: userId,
                 createdAt: { $gte: startOfDay, $lte: endOfDay }
             });
@@ -112,7 +113,7 @@ export class ChatGptController {
             });
 
             // Registrar la consulta para el control de uso
-            await ChatGpt.create({
+            await AIUsage.create({
                 user: userId,
                 prompt: text,
                 modelUsed: MODEL,
@@ -125,14 +126,14 @@ export class ChatGptController {
 
         } catch (err) {
             console.log(err);
-            next(new HttpException(400, 'some Error occurred loading ChatGpt'))
+            next(new HttpException(400, 'some Error occurred loading the AI'))
         }
 
     }
 
-    static async getConfig(_req: Request, res: Response, next: NextFunction) {
+    static async aIgetConfig(_req: Request, res: Response, next: NextFunction) {
         try {
-            const config = getChatgptConfig();
+            const config = getAiConfig();
             return res.status(200).json({
                 ok: true,
                 config: {
@@ -144,23 +145,23 @@ export class ChatGptController {
                 }
             });
         } catch (err) {
-            next(new HttpException(400, 'Error loading ChatGpt configuration'));
+            next(new HttpException(400, 'Error loading the AI configuration'));
         }
     }
 
-    static async saveConfig(req: Request, res: Response, next: NextFunction) {
+    static async aIsaveConfig(req: Request, res: Response, next: NextFunction) {
         try {
             const { API_KEY, MODEL, CONTEXT, AVAILABLE, LIMIT } = req.body;
-            const configPath = path.resolve(__dirname, '../../../config/chatgpt.config.js');
-            const currentConfig = getChatgptConfig();
+            const configPath = path.resolve(__dirname, '../../../config/ai.config.js');
+            const currentConfig = getAiConfig();
             const finalApiKey = (API_KEY !== undefined && API_KEY !== null) ? API_KEY : currentConfig.API_KEY;
-            const content = `module.exports = { \n    API_KEY: '${finalApiKey}',\n    MODEL: '${MODEL}',\n    CONTEXT: '${CONTEXT}',\n    AVAILABLE: ${AVAILABLE},\n    LIMIT: ${LIMIT},\n    MAX_LIMIT: ${currentConfig.MAX_LIMIT},\n};\n`;
+            const content = `module.exports = { \n    PROVIDER: '${currentConfig.PROVIDER}',\n    API_KEY: '${finalApiKey}',\n    MODEL: '${MODEL}',\n    CONTEXT: '${CONTEXT}',\n    AVAILABLE: ${AVAILABLE},\n    LIMIT: ${LIMIT},\n    MAX_LIMIT: ${currentConfig.MAX_LIMIT},\n};\n`;
             fs.writeFile(configPath, content, 'utf8', (err) => {
-                if (err) return next(new HttpException(500, 'Error saving ChatGpt configuration'));
+                if (err) return next(new HttpException(500, 'Error saving the AI configuration'));
                 return res.status(200).json({ ok: true });
             });
         } catch (err) {
-            next(new HttpException(400, 'Error saving ChatGpt configuration'));
+            next(new HttpException(400, 'Error saving the AI configuration'));
         }
     }
 

@@ -6,23 +6,23 @@ import { Observable, map } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class ChatgptService extends ApiService{
+export class AssistantService extends ApiService{
 
-  public chatGptRoute = '/chatgpt';
+  public AiRouter = '/assistant';
 
   responseChatGpt(message: string): Observable<any> {
-    return this.post(`${this.chatGptRoute}/response`, {input: message})
+    return this.post(`${this.AiRouter}/response`, {input: message})
   }
 
   availableChatGpt(): Observable<any> {
-    return this.get(`${this.chatGptRoute}/availableChatGpt`)
+    return this.get(`${this.AiRouter}/available`)
   }
 
   sendPrompt(text: string, history?: any[], data?: any, schema? :any[], parameters? : object): Observable<{ text: string } | any> {
 
     const payload = { text, history, data, schema, parameters };
 
-    return this.post(`${this.chatGptRoute}/prompt`, payload).pipe(
+    return this.post(`${this.AiRouter}/prompt`, payload).pipe(
       map((resp: any) => {
         return resp;
       })
@@ -30,11 +30,11 @@ export class ChatgptService extends ApiService{
   }
 
   getConfig(): Observable<any> {
-    return this.get(`${this.chatGptRoute}/config`);
+    return this.get(`${this.AiRouter}/config`);
   }
 
   saveConfig(config: { API_KEY: string; MODEL: string; CONTEXT: string; AVAILABLE: boolean; LIMIT: number }): Observable<any> {
-    return this.post(`${this.chatGptRoute}/config`, config);
+    return this.post(`${this.AiRouter}/config`, config);
   }
 
 }

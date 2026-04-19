@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { SharedModule } from "@eda/shared/shared.module";
-import { ChatgptService } from '@eda/services/api/chatgpt.service';
+import { AssistantService } from '@eda/services/api/assistant.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -47,7 +47,7 @@ export class PromptComponent implements OnInit, AfterViewInit {
     // Estado de resolución de filtros: se activa cuando el backend responde con awaiting_resolution o awaiting_selection
     private resolutionState: { options: string[], unresolvedFilter: any, pendingResult: any } | null = null;
 
-    constructor(private chatgptService: ChatgptService) {}
+    constructor(private assistantService: AssistantService) {}
 
     // Iniciamos el scroll a la misma altura donde termino el ultimo mensaje de respuesta del asistente
     ngAfterViewInit(): void {
@@ -135,7 +135,7 @@ export class PromptComponent implements OnInit, AfterViewInit {
         // console.log('firstTime: ', firstTime);
         
 
-        this.chatgptService.sendPrompt(text, histoty, data, schema, parameters).subscribe({
+        this.assistantService.sendPrompt(text, histoty, data, schema, parameters).subscribe({
             next: (resp) => {
                 // Esperamos que `resp` contenga la respuesta ya procesada como texto. Adapta según tu backend.
                 const currentQuery = resp.response.currentQuery;
@@ -186,7 +186,8 @@ export class PromptComponent implements OnInit, AfterViewInit {
             },
             error: (err) => {
                 console.error('Error al enviar prompt:', err);
-                this.messages.push({ role: 'error', content: 'Error: límite diario de consultas superado. Inténtelo más tarde.', timestamp: Date.now() });
+                const msg = err?.error?.response ?? err?.message ?? 'Error desconocido';
+                this.messages.push({ role: 'error', content: msg, timestamp: Date.now() });
                 this.loading = false;
                 this.sending = false;
             }

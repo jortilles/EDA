@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { lastValueFrom } from 'rxjs';
 import { AlertService, SpinnerService } from '@eda/services/service.index';
-import { ChatgptService } from '@eda/services/api/chatgpt.service';
+import { AssistantService } from '@eda/services/api/assistant.service';
 import { IaFormStateService } from '@eda/services/shared/IaFormState.service';
 
 @Component({
@@ -16,7 +16,7 @@ export class AiManagementPage implements OnInit {
 
   private fb = inject(FormBuilder);
   private alertService = inject(AlertService);
-  private chatgptService = inject(ChatgptService);
+  private assistantService = inject(AssistantService);
   private spinnerService = inject(SpinnerService);
   private iaFormStateService = inject(IaFormStateService)
 
@@ -44,7 +44,7 @@ export class AiManagementPage implements OnInit {
   private async loadConfig() {
     try {
       this.spinnerService.on();
-      const res = await lastValueFrom(this.chatgptService.getConfig());
+      const res = await lastValueFrom(this.assistantService.getConfig());
       const cfg = res.config;
       this.aiForm.patchValue({
         API_KEY: this.API_KEY_PLACEHOLDER,
@@ -82,7 +82,7 @@ export class AiManagementPage implements OnInit {
         delete payload.API_KEY;
       }
       this.iaFormStateService.setFormData(payload); 
-      await lastValueFrom(this.chatgptService.saveConfig(payload));
+      await lastValueFrom(this.assistantService.saveConfig(payload));
       this.alertService.addSuccess($localize`:@@aiConfigSaved:Configuración de IA guardada correctamente`);
     } catch (err: any) {
       this.alertService.addError(err);

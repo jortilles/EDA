@@ -5,7 +5,7 @@ import { EdaDialog2Component } from "@eda/shared/components/shared-components.in
 import { SharedModule } from "@eda/shared/shared.module";
 
 // Servicio ChatGpt
-import { ChatgptService } from '@eda/services/api/chatgpt.service';
+import { AssistantService } from '@eda/services/api/assistant.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -27,7 +27,7 @@ export class EbpChatgptComponent implements OnInit, AfterViewChecked{
   public userInput: string = '';
   public loading = false;
 
-  constructor(private chatgptService: ChatgptService) {}
+  constructor(private assistantService: AssistantService) {}
 
   ngOnInit(): void {
   }
@@ -51,7 +51,7 @@ export class EbpChatgptComponent implements OnInit, AfterViewChecked{
     this.userInput = '';
     this.loading = true;
 
-    this.chatgptService.responseChatGpt(input).subscribe({
+    this.assistantService.responseChatGpt(input).subscribe({
       next: (response) => {
 
         const content = response.response.choices[0].message?.content;

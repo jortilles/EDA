@@ -16,7 +16,7 @@ import { EdaBlankPanelComponent, IPanelAction } from '@eda/components/eda-panels
 import { FormsModule } from '@angular/forms';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 import { CommonModule } from '@angular/common';
-import { ChatgptService } from '@eda/services/api/chatgpt.service';
+import { AssistantService } from '@eda/services/api/assistant.service';
 import { EdaTitlePanelComponent, EdaTabsPanelComponent } from '@eda/components/component.index';
 
 // Imports del sidebar
@@ -154,7 +154,7 @@ export class DashboardPage implements OnInit {
 
   public selectedTags: any[] = [];
 
-  constructor(public chatgptService: ChatgptService, private cdr: ChangeDetectorRef) {
+  constructor(public assistantService: AssistantService, private cdr: ChangeDetectorRef) {
 
   }
 
@@ -166,7 +166,7 @@ export class DashboardPage implements OnInit {
       (data) => this.notSaved = data
     );
 
-    this.chatgptService.availableChatGpt().subscribe((resp: any) => {
+    this.assistantService.availableChatGpt().subscribe((resp: any) => {
       if(resp.response.available) {
         this.availableChatGpt = true;
       } else {
