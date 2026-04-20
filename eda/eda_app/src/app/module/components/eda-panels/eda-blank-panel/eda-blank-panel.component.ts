@@ -661,7 +661,7 @@ public tableNodeExpand(event: any): void {
         // Configuración global del panel
         this.queryLimit = queryLimit;
         this.joinType = panelContent.query.query.joinType || 'inner';
-        this.groupByEnabled = groupByEnabled;
+        this.groupByEnabled = groupByEnabled ?? true;
         PanelInteractionUtils.handleFilters(this, query.query);
         PanelInteractionUtils.handleFilterColumns(this, filters, fields);
 
@@ -1837,7 +1837,7 @@ public tableNodeExpand(event: any): void {
             let isAnAggregation: boolean = false;
             isAnAggregation = this.currentQuery.some((column: any) =>
                 column.aggregation_type.some((at: any) =>
-                    at.selected && at.display_name !== 'None'
+                    at.selected && at.value !== 'none'
                 )
             );
             if(isAnAggregation) {
@@ -1935,7 +1935,7 @@ public tableNodeExpand(event: any): void {
             let isAnAggregation: boolean = false;
             isAnAggregation = this.currentQuery.some((column: any) =>
                 column.aggregation_type.some((at: any) =>
-                    at.selected && at.display_name !== 'None'
+                    at.selected && at.value !== 'none'
                 )
             );
             if(isAnAggregation) {
@@ -2241,7 +2241,7 @@ public tableNodeExpand(event: any): void {
 
             isAnAggregation = this.currentQuery.some((column: any) =>
                 column.aggregation_type.some((at: any) =>
-                    at.selected && at.display_name !== 'None'
+                    at.selected && at.value !== 'none'
                 )
             );
 
