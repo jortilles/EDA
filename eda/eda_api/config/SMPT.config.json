@@ -1,1 +1,17 @@
-{"host":"smtp.gmail.com","port":587,"secure":false,"auth":{"user":"","pass":""},"tls":{"rejectUnauthorized":false}}
+{
+    "configType": "GMAIL",
+    "host": "smtp.gmail.com",
+    "port": 587,
+    "secure": false,
+    "auth": {
+        "type": "OAuth2",
+        "user": "XXXX@XXXX.com",
+        "pass": "XXXX",
+        "clientId": "XXXXXXXX.apps.googleusercontent.com",
+        "clientSecret": "XXXX-XXXX",
+        "refreshToken": "1//XXXXXXXX"
+    },
+    "tls": {
+        "rejectUnauthorized": false
+    }
+}

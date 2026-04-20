@@ -659,7 +659,7 @@ public tableNodeExpand(event: any): void {
         // Configuración global del panel
         this.queryLimit = queryLimit;
         this.joinType = panelContent.query.query.joinType || 'inner';
-        this.groupByEnabled = groupByEnabled;
+        this.groupByEnabled = groupByEnabled ?? true;
         PanelInteractionUtils.handleFilters(this, query.query);
         PanelInteractionUtils.handleFilterColumns(this, filters, fields);
 
@@ -1369,16 +1369,17 @@ public tableNodeExpand(event: any): void {
                 properties.chartDataset[0].data = this.graficos.assignedColors.map(element => element.value)
             }
         
-                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors, chartLegend: this.graficos.chartLegend, coloredBarsConfig: this.graficos.coloredBarsConfig, showUniqueColors: this.graficos.showUniqueColors, uniqueBarColors: this.graficos.uniqueBarColors };
+                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors, chartLegend: this.graficos.chartLegend, coloredBarsConfig: this.graficos.coloredBarsConfig, showUniqueColors: this.graficos.showUniqueColors, uniqueBarColors: this.graficos.uniqueBarColors, showGridLines: this.graficos.showGridLines };
                 const layout =
                     new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType,
                     this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels,
-                    this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors, this.graficos.showPointLines, this.graficos.showPredictionLines, this.graficos.chartLegend));
+                    this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors, this.graficos.showPointLines, this.graficos.showPredictionLines, this.graficos.chartLegend, this.graficos.showGridLines ?? true));
                 if (this.graficos.coloredBarsConfig) {
                     (layout.getConfig() as any)['coloredBarsConfig'] = this.graficos.coloredBarsConfig;
                 }
                 (layout.getConfig() as any)['showUniqueColors'] = this.graficos.showUniqueColors ?? false;
                 (layout.getConfig() as any)['uniqueBarColors'] = this.graficos.uniqueBarColors ?? [];
+                (layout.getConfig() as any)['showGridLines'] = this.graficos.showGridLines ?? true;
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
             }
             //not saved alert message
@@ -1834,7 +1835,7 @@ public tableNodeExpand(event: any): void {
             let isAnAggregation: boolean = false;
             isAnAggregation = this.currentQuery.some((column: any) =>
                 column.aggregation_type.some((at: any) =>
-                    at.selected && at.display_name !== 'None'
+                    at.selected && at.value !== 'none'
                 )
             );
             if(isAnAggregation) {
@@ -1932,7 +1933,7 @@ public tableNodeExpand(event: any): void {
             let isAnAggregation: boolean = false;
             isAnAggregation = this.currentQuery.some((column: any) =>
                 column.aggregation_type.some((at: any) =>
-                    at.selected && at.display_name !== 'None'
+                    at.selected && at.value !== 'none'
                 )
             );
             if(isAnAggregation) {
@@ -2238,7 +2239,7 @@ public tableNodeExpand(event: any): void {
 
             isAnAggregation = this.currentQuery.some((column: any) =>
                 column.aggregation_type.some((at: any) =>
-                    at.selected && at.display_name !== 'None'
+                    at.selected && at.value !== 'none'
                 )
             );
 

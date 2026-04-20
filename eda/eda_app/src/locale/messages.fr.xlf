@@ -3368,6 +3368,51 @@
     <target>Identifiants  corrects</target>
   </trans-unit>
 
+  <trans-unit id="alertMailDeleted">
+    <source>Alerta de correo eliminada</source>
+    <target>Alerte mail supprimée</target>
+  </trans-unit>
+
+  <trans-unit id="dashboardMailDeleted">
+    <source>Configuración de envío eliminada</source>
+    <target>Configuration d'envoi supprimée</target>
+  </trans-unit>
+
+  <trans-unit id="mailSentNow">
+    <source>Envío iniciado correctamente</source>
+    <target>Envoi déclenché avec succès</target>
+  </trans-unit>
+
+  <trans-unit id="sendingNow">
+    <source>Enviando...</source>
+    <target>Envoi en cours...</target>
+  </trans-unit>
+
+  <trans-unit id="sendScheduledMails">
+    <source>Enviar todos los correos programados</source>
+    <target>Envoyer tous les e-mails programmés</target>
+  </trans-unit>
+
+  <trans-unit id="adminEmail">
+    <source>Gestión de correo</source>
+    <target>Gestion du courrier</target>
+  </trans-unit>
+
+  <trans-unit id="adminEmailSubtitle">
+    <source>Configure los ajustes y credenciales de su servidor de correo electrónico</source>
+    <target>Configurez les paramètres et identifiants de votre serveur de messagerie</target>
+  </trans-unit>
+
+  <trans-unit id="alertsConfigSubtitle">
+    <source>Administra tus configuraciones de alertas</source>
+    <target>Gérez vos configurations d'alertes</target>
+  </trans-unit>
+
+  <trans-unit id="dashbaordsMailingSubtitle">
+    <source>Administrar las configuraciones de correo electrónico del panel</source>
+    <target>Gérer les configurations d'e-mail du panneau</target>
+  </trans-unit>
+
   <trans-unit id="checkCredentials">
     <source>Comprobar credenciales</source>
     <target>Vérifier les identifiants</target>
@@ -4625,22 +4670,6 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 <trans-unit id="profileMessagesDescription"><source>Recibe notificaciones de nuevos mensajes</source><target>Recevoir des notifications de nouveaux messages</target></trans-unit>
 <trans-unit id="selectedImage"><source>Imagen seleccionada</source><target>Image sélectionnée</target></trans-unit>
 <trans-unit id="noImageSelected"><source>No hay imagen seleccionada</source><target>Aucune image sélectionnée</target></trans-unit>
-<trans-unit id="adminEmail">
-  <source>Gestión de correo</source>
-  <target>Gestion des e-mails</target>
-</trans-unit>
-<trans-unit id="adminEmailSubtitle">
-  <source>Configure los ajustes y credenciales de su servidor de correo electrónico</source>
-  <target>Configurez les paramètres et les identifiants de votre serveur de messagerie</target>
-</trans-unit>
-<trans-unit id="alertsConfigSubtitle">
-  <source>Administra tus configuraciones de alertas</source>
-  <target>Gérez vos paramètres d'alerte</target>
-</trans-unit>
-<trans-unit id="dashbaordsMailingSubtitle">
-  <source>Administrar las configuraciones de correo electrónico del panel</source>
-  <target>Gérez les paramètres de messagerie depuis le panneau</target>
-</trans-unit>
 <trans-unit id="chartDisplayTitle">
   <source>Visualización</source>
   <target>Afficher</target>
@@ -4679,6 +4708,31 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 <trans-unit id="tooltipBlockedByTrendOrPrediction">
   <source>Bloqueado porque tendencia o predicción está activa</source>
   <target>Bloqué car la tendance ou la prédiction est active</target>
+</trans-unit>
+
+<trans-unit id="showLegend">
+  <source>Mostrar Leyenda</source>
+  <target>Afficher la légende</target>
+</trans-unit>
+
+<trans-unit id="chartLegendOptionDescription">
+  <source>Muestra la leyenda del gráfico</source>
+  <target>Afficher la légende du graphique</target>
+</trans-unit>
+
+<trans-unit id="showGridLines">
+  <source>Mostrar Líneas Guía</source>
+  <target>Afficher les lignes de grille</target>
+</trans-unit>
+
+<trans-unit id="chartGridLinesOptionDescription">
+  <source>Muestra u oculta las líneas guía del gráfico</source>
+  <target>Afficher ou masquer les lignes de grille du graphique</target>
+</trans-unit>
+
+<trans-unit id="histogramColum">
+  <source>Columnas</source>
+  <target>Colonnes</target>
 </trans-unit>
 
 <trans-unit id="chartLabelOption">
@@ -5279,6 +5333,26 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 <trans-unit id="enableBaseLayer">
   <source>Activar capa base</source>
   <target>Activer la couche de base</target>
+</trans-unit>
+
+<trans-unit id="logarithmicScaleTooltip">
+  <source>Aplica escala logarítmica a los valores del mapa</source>
+  <target>Applique une échelle logarithmique aux valeurs de la carte</target>
+</trans-unit>
+
+<trans-unit id="activeMouseFunctionsTooltip">
+  <source>Permite arrastrar y hacer zoom con el ratón</source>
+  <target>Permet de faire glisser et de zoomer avec la souris</target>
+</trans-unit>
+
+<trans-unit id="enableBaseLayerTooltip">
+  <source>Muestra u oculta la capa base del mapa</source>
+  <target>Afficher ou masquer la couche de base de la carte</target>
+</trans-unit>
+
+<trans-unit id="layerColor">
+  <source>Color de capa</source>
+  <target>Couleur de couche</target>
 </trans-unit>
 
 <trans-unit id="topleftPosition">
