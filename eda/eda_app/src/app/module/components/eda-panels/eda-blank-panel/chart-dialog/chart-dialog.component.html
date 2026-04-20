@@ -18,7 +18,7 @@
             Opciones de visualización
           </h1>
 
-          <div class="space-y-4 text-base">
+          <div class="space-y-4 text-base gap-3 flex flex-col">
             @if (panelChartConfig.edaChart !== 'histogram') {
             <!-- Tendencia -->
             @if (showTrend) {
@@ -42,7 +42,6 @@
                     </div>
                   </div>
                 </div>
-                <p class="text-md text-slate-500" i18n="@@chartTrendOptionDescription">Muestra la línea de tendencia en el gráfico</p>
               </div>
               <label class="relative inline-flex items-center" [class.toggle-blocked]="addComparative" [attr.data-tooltip]="addComparative ? tooltipBlockedByComparative : null">
                 <input type="checkbox" [(ngModel)]="addTrend" class="sr-only peer" (ngModelChange)="checkTrend()" [disabled]="addComparative">
@@ -75,7 +74,6 @@
                     </div>
                   </div>
                 </div>
-                <p class="text-md text-slate-500" i18n="@@chartComparationOptionDescription">Compara con datos de períodos anteriores</p>
               </div>
               <label class="relative inline-flex items-center" [class.toggle-blocked]="addTrend || showPredictionLines" [attr.data-tooltip]="(addTrend || showPredictionLines) ? tooltipBlockedByTrendOrPrediction : null">
                 <input type="checkbox" [(ngModel)]="addComparative" class="sr-only peer"
@@ -95,8 +93,20 @@
                   <label i18n="@@showLegend" for="mostrarLeyenda" class="font-medium">
                     Mostrar Leyenda
                   </label>
+                  <div class="relative group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4"></path>
+                      <path d="M12 8h.01"></path>
+                    </svg>
+                    <div
+                      class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      <span i18n="@@chartLegendOptionDescription">Muestra la leyenda del gráfico</span>
+                    </div>
+                  </div>
                 </div>
-                <p class="text-md text-slate-500" i18n="@@chartLegendOptionDescription">Muestra la leyenda del gráfico</p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" [(ngModel)]="chartLegend" class="sr-only peer" (ngModelChange)="setChartLegend()">
@@ -107,7 +117,7 @@
             </div>
             
             <!-- Mostrar Líneas Guía -->
-            @if (panelChartConfig.edaChart === 'bar' || panelChartConfig.edaChart === 'horizontalBar' || panelChartConfig.edaChart === 'line' || panelChartConfig.edaChart === 'area' || panelChartConfig.edaChart === 'kpiarea') {
+            @if (['bar', 'horizontalBar', 'line', 'area', 'kpiarea', 'polarArea'].includes(panelChartConfig.edaChart)) {
             <div class="flex items-center justify-between">
               <div class="space-y-0.5">
                 <div class="flex items-center gap-2">
@@ -124,11 +134,10 @@
                     </svg>
                     <div
                       class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                      <span i18n="@@chartGridLinesOption">Muestra u oculta las líneas guía del gráfico</span>
+                      <span i18n="@@chartGridLinesOptionDescription">Muestra u oculta las líneas guía del gráfico</span>
                     </div>
                   </div>
                 </div>
-                <p class="text-md text-slate-500" i18n="@@chartGridLinesOptionDescription">Muestra u oculta las líneas guía del gráfico</p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" [(ngModel)]="showGridLines" class="sr-only peer" (ngModelChange)="setShowGridLines()">
@@ -160,7 +169,6 @@
                     </div>
                   </div>
                 </div>
-                <p class="text-md text-slate-500" i18n="@@chartLabelOptionDescription">Muestra los valores sobre cada elemento</p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" [(ngModel)]="showLabels" class="sr-only peer" (ngModelChange)="setShowLables()">
@@ -191,7 +199,6 @@
                     </div>
                   </div>
                 </div>
-                <p class="text-md text-slate-500" i18n="@@chartLabelPercentOptionDescription">Muestra los valores como porcentajes</p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" [(ngModel)]="showLabelsPercent" class="sr-only peer" (ngModelChange)="setShowLablesPercent()">
@@ -223,7 +230,6 @@
                     </div>
                   </div>
                 </div>
-                <p class="text-md text-slate-500" i18n="@@histogramColumDescription">Elige cuántas columnas mostrar en el histograma</p>
               </div>
               <input type="number" id="numberOfColumns" name="numberOfColumns"
                 min="3" max="100" [(ngModel)]="numberOfColumns" (change)="SetNumberOfColumns()"
@@ -253,7 +259,6 @@
                       </div>
                     </div>
                   </div>
-                  <p class="text-md text-slate-500" i18n="@@chartUniqueColorsOptionDescription">Cada elemento tendrá un color diferente</p>
                 </div>
                 <label class="relative inline-flex items-center cursor-pointer">
                   <input type="checkbox" [(ngModel)]="showUniqueColors" class="sr-only peer" (ngModelChange)="setShowUniqueColors()">
@@ -286,7 +291,6 @@
                     </div>
                   </div>
                 </div>
-                <p class="text-md text-slate-500" i18n="@@chartLabelLineOptionDescription2">Conecta los puntos con líneas</p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" [(ngModel)]="showPointLines" class="sr-only peer"
@@ -317,7 +321,6 @@
                     </div>
                   </div>
                 </div>
-                <p class="text-md text-slate-500" i18n="@@chartLabelLinePredictionOptionDescription">Muestra la predicción de la serie</p>
               </div>
               <label class="relative inline-flex items-center" [class.toggle-blocked]="addComparative" [attr.data-tooltip]="addComparative ? tooltipBlockedByComparative : null">
                 <input type="checkbox" [(ngModel)]="showPredictionLines" class="sr-only peer"

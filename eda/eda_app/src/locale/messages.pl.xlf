@@ -4207,6 +4207,31 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <target>Zablokowane, ponieważ trend lub prognoza jest aktywna</target>
 </trans-unit>
 
+<trans-unit id="showLegend">
+  <source>Mostrar Leyenda</source>
+  <target>Pokaż legendę</target>
+</trans-unit>
+
+<trans-unit id="chartLegendOptionDescription">
+  <source>Muestra la leyenda del gráfico</source>
+  <target>Pokaż legendę wykresu</target>
+</trans-unit>
+
+<trans-unit id="showGridLines">
+  <source>Mostrar Líneas Guía</source>
+  <target>Pokaż linie siatki</target>
+</trans-unit>
+
+<trans-unit id="chartGridLinesOptionDescription">
+  <source>Muestra u oculta las líneas guía del gráfico</source>
+  <target>Pokaż lub ukryj linie siatki wykresu</target>
+</trans-unit>
+
+<trans-unit id="histogramColum">
+  <source>Columnas</source>
+  <target>Kolumny</target>
+</trans-unit>
+
 <trans-unit id="chartLabelOption">
   <source>Muestra las etiquetas de cada segmento</source>
   <target>Pokaż etykiety dla każdego segmentu</target>

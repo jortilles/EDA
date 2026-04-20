@@ -4706,6 +4706,31 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Bloqué car la tendance ou la prédiction est active</target>
 </trans-unit>
 
+<trans-unit id="showLegend">
+  <source>Mostrar Leyenda</source>
+  <target>Afficher la légende</target>
+</trans-unit>
+
+<trans-unit id="chartLegendOptionDescription">
+  <source>Muestra la leyenda del gráfico</source>
+  <target>Afficher la légende du graphique</target>
+</trans-unit>
+
+<trans-unit id="showGridLines">
+  <source>Mostrar Líneas Guía</source>
+  <target>Afficher les lignes de grille</target>
+</trans-unit>
+
+<trans-unit id="chartGridLinesOptionDescription">
+  <source>Muestra u oculta las líneas guía del gráfico</source>
+  <target>Afficher ou masquer les lignes de grille du graphique</target>
+</trans-unit>
+
+<trans-unit id="histogramColum">
+  <source>Columnas</source>
+  <target>Colonnes</target>
+</trans-unit>
+
 <trans-unit id="chartLabelOption">
   <source>Muestra las etiquetas de cada segmento</source>
   <target>Il affiche les étiquettes de chaque segment.</target>

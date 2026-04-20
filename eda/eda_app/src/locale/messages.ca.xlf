@@ -4761,6 +4761,31 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Compara amb dades de períodes anteriors</target>
 </trans-unit>
 
+<trans-unit id="showLegend">
+  <source>Mostrar Leyenda</source>
+  <target>Mostra la llegenda</target>
+</trans-unit>
+
+<trans-unit id="chartLegendOptionDescription">
+  <source>Muestra la leyenda del gráfico</source>
+  <target>Mostra la llegenda del gràfic</target>
+</trans-unit>
+
+<trans-unit id="showGridLines">
+  <source>Mostrar Líneas Guía</source>
+  <target>Mostra les línies guia</target>
+</trans-unit>
+
+<trans-unit id="chartGridLinesOptionDescription">
+  <source>Muestra u oculta las líneas guía del gráfico</source>
+  <target>Mostra o amaga les línies guia del gràfic</target>
+</trans-unit>
+
+<trans-unit id="histogramColum">
+  <source>Columnas</source>
+  <target>Columnes</target>
+</trans-unit>
+
 <trans-unit id="tooltipBlockedByComparative">
   <source>Bloqueado porque comparativa está activa</source>
   <target>Blocat perquè la comparativa està activa</target>

@@ -4344,6 +4344,31 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Blocked because trend or prediction is active</target>
 </trans-unit>
 
+<trans-unit id="showLegend">
+<source>Mostrar Leyenda</source>
+<target>Show Legend</target>
+</trans-unit>
+
+<trans-unit id="chartLegendOptionDescription">
+<source>Muestra la leyenda del gráfico</source>
+<target>Show chart legend</target>
+</trans-unit>
+
+<trans-unit id="showGridLines">
+<source>Mostrar Líneas Guía</source>
+<target>Show Grid Lines</target>
+</trans-unit>
+
+<trans-unit id="chartGridLinesOptionDescription">
+<source>Muestra u oculta las líneas guía del gráfico</source>
+<target>Show or hide chart grid lines</target>
+</trans-unit>
+
+<trans-unit id="histogramColum">
+<source>Columnas</source>
+<target>Columns</target>
+</trans-unit>
+
 <trans-unit id="chartLabelOption">
 <source>Muestra las etiquetas de cada segmento</source>
 <target>Show labels for each segment</target>
