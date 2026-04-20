@@ -11,6 +11,7 @@ import Dashboard from '../dashboard/model/dashboard.model';
 import DataSource from '../datasource/model/datasource.model';
 import User from '../admin/users/model/user.model';
 import Group from '../admin/groups/model/group.model';
+import ManagerConnectionService from '../../services/connection/manager-connection.service';
 
 const getAnthropicConfig = () => {
     const configPath = path.resolve(__dirname, '../../../config/anthropic.config.js');
@@ -377,27 +378,87 @@ function createMcpServer(requestUser?: any) {
                         `Dashboard: ${db.config?.title ?? '(sin título)'}`,
                         ...(dashboardLink ? [`URL: ${dashboardLink}`] : []),
                         `Pregunta: ${question}`,
-                        `Panels disponibles: ${panels.length}`,
+                        `Panels con datos (${panels.length} panels):`,
                         '',
-                        '--- Panels con queries completas ---',
                     ];
 
                     for (let i = 0; i < panels.length; i++) {
                         const panel = panels[i];
-                        const fields: any[] = panel.content?.query?.query?.fields ?? [];
+                        const query = panel.content?.query;
+                        const fields: any[] = query?.query?.fields ?? [];
                         const fieldNames = fields.map((f: any) => f.display_name ?? f.field_name).filter(Boolean);
-                        console.log(`[MCP] get_data_from_dashboard - panel ${i + 1}:`, panel.title ?? '(sin título)', '| campos:', fieldNames.length, '| tiene query:', !!panel.content?.query);
-                        lines.push(`\n### Panel ${i + 1}: ${panel.title ?? '(sin título)'}`);
-                        if (fieldNames.length > 0) lines.push(`Campos: ${fieldNames.join(', ')}`);
                         const chartType = panel.content?.chart_type ?? panel.content?.edaChart ?? null;
-                        if (chartType) lines.push(`Tipo de gráfico: ${chartType}`);
-                        if (panel.content?.query) {
-                            lines.push('Query EDA completa:');
-                            lines.push(JSON.stringify(panel.content.query, null, 2));
+                        console.log(`[MCP] get_data_from_dashboard - panel ${i + 1}:`, panel.title ?? '(sin título)', '| campos:', fieldNames.length, '| tiene query:', !!query, '| model_id:', query?.model_id ?? '-');
+
+                        lines.push(`### Panel ${i + 1}: ${panel.title ?? '(sin título)'}`);
+                        if (fieldNames.length > 0) lines.push(`Campos: ${fieldNames.join(', ')}`);
+                        if (chartType) lines.push(`Tipo: ${chartType}`);
+
+                        console.log(`[MCP] panel ${i + 1} — content keys:`, Object.keys(panel.content ?? {}));
+                        console.log(`[MCP] panel ${i + 1} — query wrapper:`, JSON.stringify(query)?.substring(0, 300));
+                        console.log(`[MCP] panel ${i + 1} — inner query (query.query):`, JSON.stringify(query?.query)?.substring(0, 300));
+                        console.log(`[MCP] panel ${i + 1} — model_id:`, query?.model_id ?? 'FALTA', '| fields count:', query?.query?.fields?.length ?? 0);
+
+                        if (query?.model_id && query?.query?.fields?.length > 0) {
+                            try {
+                                const modelId: string = query.model_id;
+                                // Preparar el inner query igual que hace dashboard.controller
+                                const innerQuery: any = JSON.parse(JSON.stringify(query.query));
+                                innerQuery.queryMode  = innerQuery.queryMode  ?? 'EDA';
+                                innerQuery.rootTable  = innerQuery.queryMode === 'EDA2' ? (innerQuery.rootTable ?? '') : '';
+                                innerQuery.joinType   = innerQuery.joinType   ?? 'inner';
+                                innerQuery.forSelector = false;
+                                console.log(`[MCP] panel ${i + 1} — innerQuery preparado:`, JSON.stringify(innerQuery).substring(0, 400));
+
+                                console.log(`[MCP] panel ${i + 1} — getConnection(${modelId})...`);
+                                const connection = await ManagerConnectionService.getConnection(modelId);
+                                console.log(`[MCP] panel ${i + 1} — connection OK | tipo:`, (connection as any)?.constructor?.name ?? typeof connection);
+
+                                console.log(`[MCP] panel ${i + 1} — getDataSource(${modelId})...`);
+                                const dataModel = await connection.getDataSource(modelId);
+                                console.log(`[MCP] panel ${i + 1} — dataSource OK | nombre:`, (dataModel as any)?.ds?.metadata?.model_name ?? '(sin nombre)', '| tipo BD:', (dataModel as any)?.ds?.connection?.type ?? '(desconocido)');
+                                const dataModelObject = JSON.parse(JSON.stringify(dataModel));
+
+                                console.log(`[MCP] panel ${i + 1} — getQueryBuilded...`);
+                                const builtQuery = await connection.getQueryBuilded(innerQuery, dataModelObject, user, innerQuery.queryLimit);
+                                console.log(`[MCP] panel ${i + 1} — SQL construido (tipo: ${typeof builtQuery}):`, typeof builtQuery === 'string' ? builtQuery.substring(0, 500) : JSON.stringify(builtQuery).substring(0, 500));
+
+                                console.log(`[MCP] panel ${i + 1} — getclient...`);
+                                connection.client = await connection.getclient();
+                                console.log(`[MCP] panel ${i + 1} — client OK`);
+
+                                console.log(`[MCP] panel ${i + 1} — execQuery...`);
+                                const rawResults = await connection.execQuery(builtQuery);
+                                console.log(`[MCP] panel ${i + 1} — rawResults tipo:`, typeof rawResults, '| isArray:', Array.isArray(rawResults), '| length:', Array.isArray(rawResults) ? rawResults.length : 'N/A');
+                                if (Array.isArray(rawResults) && rawResults.length > 0) {
+                                    console.log(`[MCP] panel ${i + 1} — primera fila:`, JSON.stringify(rawResults[0]));
+                                    console.log(`[MCP] panel ${i + 1} — keys primera fila:`, Object.keys(rawResults[0]));
+                                } else {
+                                    console.log(`[MCP] panel ${i + 1} — rawResults vacío o no es array:`, JSON.stringify(rawResults)?.substring(0, 200));
+                                }
+
+                                if (rawResults && Array.isArray(rawResults) && rawResults.length > 0) {
+                                    const headers = Object.keys(rawResults[0]);
+                                    const rows = rawResults.map((r: any) => headers.map(h => r[h]));
+                                    console.log(`[MCP] panel ${i + 1} — headers:`, headers, '| total rows:', rows.length);
+                                    lines.push(`Datos (${rows.length} filas, columnas: ${headers.join(', ')}):`);
+                                    lines.push(JSON.stringify({ headers, rows }, null, 2));
+                                } else {
+                                    lines.push('Datos: (sin resultados)');
+                                }
+                            } catch (qErr: any) {
+                                console.error(`[MCP] panel ${i + 1} — ERROR en ejecución:`, qErr.message);
+                                console.error(`[MCP] panel ${i + 1} — stack:`, qErr.stack?.substring(0, 500));
+                                lines.push(`Error al obtener datos: ${qErr.message}`);
+                            }
+                        } else {
+                            console.log(`[MCP] panel ${i + 1} — SALTADO | model_id:`, query?.model_id ?? 'null', '| fields:', query?.query?.fields?.length ?? 0);
+                            lines.push(query?.model_id ? '(panel sin campos — posiblemente es un widget de texto o imagen)' : '(panel sin datasource)');
                         }
+                        lines.push('');
                     }
 
-                    console.log('[MCP] get_data_from_dashboard - modo dashboard específico finalizado OK');
+                    console.log('[MCP] get_data_from_dashboard - modo dashboard específico finalizado OK | chars:', lines.join('\n').length);
                     return { content: [{ type: 'text', text: lines.join('\n') }] };
                 }
 
@@ -697,22 +758,34 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
             const response = await anthropic.messages.create({
                 model: MODEL || 'claude-opus-4-6',
                 max_tokens: MAX_TOKENS || 4096,
-                system: 
+                system:
                 `Eres un asistente de análisis de datos integrado en EDA (Enterprise Data Analytics). Tienes acceso a los datasources y dashboards del sistema mediante herramientas MCP.
 
+                FLUJO OBLIGATORIO PARA PREGUNTAS SOBRE DATOS:
+                1. Llama a get_data_from_dashboard SIN dashboard_id para identificar qué dashboard tiene los datos relevantes.
+                2. Si encuentras un dashboard relevante, llama de nuevo a get_data_from_dashboard CON el dashboard_id para obtener los datos reales de los paneles.
+                3. Responde directamente con los valores que te ha devuelto la herramienta. NUNCA redirijas al usuario a ver el dashboard.
+                4. Solo si ningún panel devuelve datos relevantes (resultados vacíos o error), dilo claramente: "No he encontrado datos sobre X en los dashboards disponibles."
+
+                REGLAS DE RESPUESTA:
+                - SIEMPRE da una respuesta directa con los datos numéricos o valores reales obtenidos de las herramientas.
+                - NUNCA sugieras al usuario que vaya a ver el dashboard como sustituto de responder su pregunta.
+                - NUNCA digas "no tengo acceso a los datos específicos" si hay paneles con datos disponibles — úsalos.
+                - Si los datos están en el contexto de la conversación (resultado de una tool anterior), úsalos sin llamar de nuevo a la herramienta.
+                - Si realmente no hay ningún dashboard o panel con la información pedida, dilo directamente y sin alternativas: "No hay datos sobre X en el sistema."
+                - NUNCA inventes ni adivines datos que no te hayan sido proporcionados por las herramientas o el contexto.
+                
                 REGLAS IMPORTANTES - URLs:
                 - Los resultados de list_dashboards y list_datasources incluyen la URL de cada elemento al final de la línea (formato: " — https://...").
                 - Cuando listes dashboards o datasources, SIEMPRE incluye su URL en la respuesta al usuario.
-                - Si el usuario pide el link de un elemento concreto y ya tienes la lista en el contexto, extrae la URL directamente sin llamar a la herramienta de nuevo.
-                - Nunca digas que no tienes acceso a los links si los datos ya están en el contexto de la conversación.
-                - NUNCA inventes ni construyas URLs. Si no tienes la URL de un elemento en el contexto actual, llama a la herramienta correspondiente para obtenerla o indica que no dispones del link.
-                - Asegurate SIEMPRE de respetar los links y urls que te proporciona el mcp. El mpc te devuelve ${'SERVIDOR'}${'LOCALE'}${'PATH'} y debes respetarlo. 
-                
+                - NUNCA inventes ni construyas URLs. Si no tienes la URL, llama a la herramienta correspondiente.
+                - Respeta SIEMPRE los links que te devuelve el MCP. El MCP devuelve ${'SERVIDOR'}${'LOCALE'}${'PATH'} y debes respetarlo tal cual.
+
                 REGLAS IMPORTANTES - VISIBILIDAD:
                 - No tienes acceso a ningún dato de EDA que no te haya sido proporcionado explícitamente en el contexto de la conversación o mediante las herramientas MCP.
-                - Si un datasource o dashboard está marcado como NONE en ia_visibility, es como si no existiera para ti: no puedes acceder a su información ni mencionarlo. 
+                - Si un datasource o dashboard está marcado como NONE en ia_visibility, es como si no existiera para ti.
 
-                Responde siempre en el idioma del usuario. Sé conciso y útil.`,
+                Responde siempre en el idioma del usuario. Sé conciso y directo.`,
                 messages: history,
                 tools: anthropicTools,
             });
