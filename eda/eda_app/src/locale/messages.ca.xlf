@@ -5397,6 +5397,26 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Activar capa base</target>
 </trans-unit>
 
+<trans-unit id="logarithmicScaleTooltip">
+  <source>Aplica escala logarítmica a los valores del mapa</source>
+  <target>Aplica escala logarítmica als valors del mapa</target>
+</trans-unit>
+
+<trans-unit id="activeMouseFunctionsTooltip">
+  <source>Permite arrastrar y hacer zoom con el ratón</source>
+  <target>Permet arrossegar i fer zoom amb el ratolí</target>
+</trans-unit>
+
+<trans-unit id="enableBaseLayerTooltip">
+  <source>Muestra u oculta la capa base del mapa</source>
+  <target>Mostra o amaga la capa base del mapa</target>
+</trans-unit>
+
+<trans-unit id="layerColor">
+  <source>Color de capa</source>
+  <target>Color de capa</target>
+</trans-unit>
+
 <trans-unit id="topleftPosition">
   <source>Superior izquierda</source>
   <target>Superior esquerra</target>
