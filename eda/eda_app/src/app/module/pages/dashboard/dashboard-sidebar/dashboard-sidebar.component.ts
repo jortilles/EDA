@@ -106,7 +106,7 @@ export class DashboardSidebarComponent {
   inputVisible: boolean = false;
   refreshTime: number = null;
   clickFiltersEnabled: boolean = true;
-  onlyIcanEdit: boolean = false; // Solo yo pueedo editar. pero puedo guardar como
+  onlyIcanEdit: boolean = true; // Solo yo pueedo editar. pero puedo guardar como
   isReadOnly: boolean = false; // es un dashbaord de solo lecturas
   isEditable: boolean = false; // puede editar el dashboard
   mostrarOpciones = false;
@@ -277,8 +277,8 @@ export class DashboardSidebarComponent {
       },
       {
         id: 'enableEdition',
-        label: this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`,
-        icon: this.onlyIcanEdit ? "pi pi-check" : "pi pi-ban",
+        label: this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada` : $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada`,
+        icon: this.onlyIcanEdit ? "pi pi-ban" : "pi pi-check",
         command: () => {
           this.toggleEdit();
         }
@@ -928,7 +928,7 @@ export class DashboardSidebarComponent {
     const userName = JSON.parse(user).name;
     const imProperty = userName === this.dashboard.dashboard.config.author;
     const isObserver = JSON.parse(user).role.includes('135792467811111111111113');
-    const onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ? this.dashboard.dashboard.config.onlyIcanEdit:false ;
+    const onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ? this.dashboard.dashboard.config.onlyIcanEdit: true ;
     return userName === 'edaanonim' || (onlyIcanEdit && !imProperty) || isObserver;
   }
 
@@ -961,8 +961,8 @@ export class DashboardSidebarComponent {
     this.onlyIcanEdit = !this.onlyIcanEdit;
 
     // Actualizar label e icono según estado
-    clickItem.label = this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`;
-    clickItem.icon = this.onlyIcanEdit ? "pi pi-check" : "pi pi-ban";
+    clickItem.label = this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada` : $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada`;
+    clickItem.icon = this.onlyIcanEdit ? "pi pi-ban" : "pi pi-check";
   }
 
   toggleDownload() {
