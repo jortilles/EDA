@@ -349,6 +349,7 @@ function createMcpServer(requestUser?: any) {
             description: 'Busca en los dashboards de EDA paneles con datos relevantes a una pregunta. SIN dashboard_id: modo exploración — devuelve un catálogo estructurado de opciones (panel, datasource, filtros activos) para que el asistente presente al usuario cuál quiere consultar. CON dashboard_id: modo datos — ejecuta las queries de los paneles y devuelve el modelo de respuesta con datos reales + fuente.',
             inputSchema: {
                 question: z.string().describe('Pregunta del usuario sobre los datos que quiere consultar'),
+                campos_requeridos: z.array(z.string()).optional().describe('Palabras clave de los campos que deben aparecer en el panel (ej: ["country","credit"]). En modo exploración, solo se devuelven paneles donde TODOS los campos mencionados estén presentes (coincidencia parcial, case-insensitive). El asistente debe inferir estas palabras clave de la pregunta del usuario.'),
                 dashboard_id: z.string().optional().describe('ID del dashboard a consultar (opcional). Si no se proporciona, se lista el catálogo de opciones disponibles.'),
                 panel_index: z.number().optional().describe('Índice del panel dentro del dashboard (0-based). Si se omite, se ejecutan todos los panels del dashboard.'),
             },
@@ -358,7 +359,11 @@ function createMcpServer(requestUser?: any) {
             console.log('[MCP] get_data_from_dashboard - question:', args?.question);
             console.log('[MCP] get_data_from_dashboard - dashboard_id:', args?.dashboard_id ?? '(no proporcionado → modo exploración)');
             console.log('[MCP] get_data_from_dashboard - panel_index:', args?.panel_index ?? '(no proporcionado → todos)');
-            const { question, dashboard_id, panel_index } = args;
+            console.log('[MCP] get_data_from_dashboard - campos_requeridos:', args?.campos_requeridos ?? '(no proporcionados → sin filtro de campos)');
+            const { question, dashboard_id, panel_index, campos_requeridos } = args;
+            const camposLower: string[] = Array.isArray(campos_requeridos)
+                ? campos_requeridos.map((c: string) => c.toLowerCase())
+                : [];
 
             // Helper: resume los filtros activos de un panel en texto legible
             const summarizeFilters = (filters: any[]): string => {
@@ -519,9 +524,23 @@ function createMcpServer(requestUser?: any) {
                         if (!query?.model_id || fields.length === 0) continue;
 
                         const fieldNames = fields.map((f: any) => f.display_name ?? f.field_name).filter(Boolean);
+
+                        // Filtrar por campos_requeridos: cada keyword debe aparecer en al menos un campo del panel
+                        if (camposLower.length > 0) {
+                            const fieldNamesLower = fieldNames.map((n: string) => n.toLowerCase());
+                            const allMatch = camposLower.every((kw: string) =>
+                                fieldNamesLower.some((fn: string) => fn.includes(kw))
+                            );
+                            if (!allMatch) {
+                                console.log(`[MCP] exploración — panel saltado (campos no coinciden) | dashboard=${db.config?.title}, idx=${idx} | campos=${fieldNames.join(',')} | requeridos=${camposLower.join(',')}`);
+                                continue;
+                            }
+                        }
+
                         const activeFilters: any[] = query?.query?.filters ?? [];
 
-                        // Clave de deduplicación: mismo datasource + mismos filtros = misma opción
+                        // Clave de deduplicación: mismos campos + mismo datasource + mismos filtros = misma opción
+                        const fieldsKey = [...fieldNames].sort().join(',');
                         const filterKey = JSON.stringify(
                             activeFilters.map((f: any) => ({
                                 col: f.filter_column,
@@ -529,7 +548,7 @@ function createMcpServer(requestUser?: any) {
                                 vals: (f.filter_elements ?? []).flatMap((e: any) => Array.isArray(e.value1) ? e.value1 : [e.value1]).sort(),
                             })).sort((a: any, b: any) => a.col.localeCompare(b.col))
                         );
-                        const dedupeKey = `${query.model_id}__${filterKey}`;
+                        const dedupeKey = `${query.model_id}__${fieldsKey}__${filterKey}`;
 
                         if (!opcionesMap.has(dedupeKey)) {
                             const filterSummary = summarizeFilters(activeFilters);
@@ -553,7 +572,7 @@ function createMcpServer(requestUser?: any) {
                     }
                 }
 
-                const opciones = Array.from(opcionesMap.values()).map((o, i) => ({ ...o, opcion_id: String.fromCharCode(65 + i) }));
+                const opciones = Array.from(opcionesMap.values()).map((o, i) => ({ ...o, opcion_num: i + 1 }));
                 console.log('[MCP] MODO EXPLORACIÓN finalizado | opciones únicas:', opciones.length);
 
                 const respuestaExploracion = {
@@ -830,19 +849,17 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
                 FLUJO OBLIGATORIO PARA PREGUNTAS SOBRE DATOS:
 
                 PASO 1 — EXPLORACIÓN (sin dashboard_id):
-                Llama a get_data_from_dashboard SIN dashboard_id. Recibirás un JSON con una lista de "opciones", cada una con: dashboard_nombre, panel_titulo, campos, tiene_filtros, filtros_activos.
+                Llama a get_data_from_dashboard SIN dashboard_id. SIEMPRE extrae de la pregunta del usuario las palabras clave de los campos que necesitas (en el idioma que pertoque, ej: ["country","credit"]) y pásalas en campos_requeridos. El tool solo devolverá paneles que contengan TODOS esos campos. Si no pasas campos_requeridos, el tool devuelve todos los paneles y habrá demasiado ruido.
 
                 PASO 2 — SELECCIÓN (si hay múltiples opciones relevantes):
-                Si encuentras más de una opción relevante para la pregunta del usuario (distintos filtros activos, distintos datasources o distintos niveles de agregación), NO ejecutes datos todavía.
-                Presenta las opciones al usuario de forma clara y estructurada. Por ejemplo:
-                  "He encontrado datos sobre X en varios paneles:
-                   **Opción A** — Dashboard «Ventas» › Panel «Total por país»
-                   📊 Sin filtros — muestra todos los países
-                   📋 Campos: País, Ventas totales
-                   **Opción B** — Dashboard «Ventas EU» › Panel «Top países»
-                   🔍 Filtros activos: País in (España, Francia, Italia)
-                   📋 Campos: País, Ventas
-                   ¿Con cuál quieres trabajar, o quieres ver ambos?"
+                Filtra las opciones del JSON para quedarte SOLO con las que contengan campos relacionados con la pregunta del usuario. Ignora las opciones irrelevantes.
+                Si quedan más de una opción relevante (distintos filtros o distintos datasources), NO ejecutes datos todavía.
+                Presenta cada opción como una frase natural en prosa, numerada desde 1. SIEMPRE incluye el link del dashboard. Ejemplo de formato:
+                  "He encontrado varias fuentes con estos datos:
+                   Opción 1 — [Dashboard «Ventas»](url) — Contiene el crédito total por país sin ningún filtro aplicado, con datos de todos los países disponibles.
+                   Opción 2 — [Dashboard «Ventas EU»](url) — Mismos campos pero filtrado solo por España, Francia e Italia.
+                   ¿Con cuál quieres trabajar?"
+                NUNCA uses letras (A, B, C) ni bullets con iconos de campo. Solo números y prosa fluida.
 
                 PASO 3 — DATOS (con dashboard_id y panel_index):
                 Una vez el usuario elija (o si solo había una opción relevante), llama a get_data_from_dashboard CON dashboard_id Y panel_index del panel elegido.
