@@ -3422,6 +3422,52 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target> Credencials  correctes</target>
   </trans-unit>
 
+  <trans-unit id="alertMailDeleted">
+    <source>Alerta de correo eliminada</source>
+    <target>Alerta de correu eliminada</target>
+  </trans-unit>
+
+  <trans-unit id="dashboardMailDeleted">
+    <source>Configuración de envío eliminada</source>
+    <target>Configuració d'enviament eliminada</target>
+  </trans-unit>
+
+  <trans-unit id="mailSentNow">
+    <source>Envío iniciado correctamente</source>
+    <target>Enviament iniciat correctament</target>
+  </trans-unit>
+
+  <trans-unit id="sendingNow">
+    <source>Enviando...</source>
+    <target>Enviant...</target>
+  </trans-unit>
+
+  <trans-unit id="sendScheduledMails">
+    <source>Enviar todos los correos programados</source>
+    <target>Enviar tots els correus programats</target>
+  </trans-unit>
+
+
+  <trans-unit id="adminEmail">
+    <source>Gestión de correo</source>
+    <target>Gestió de correu</target>
+  </trans-unit>
+
+  <trans-unit id="adminEmailSubtitle">
+    <source>Configure los ajustes y credenciales de su servidor de correo electrónico</source>
+    <target>Configureu els ajustos i credencials del vostre servidor de correu electrònic</target>
+  </trans-unit>
+
+  <trans-unit id="alertsConfigSubtitle">
+    <source>Administra tus configuraciones de alertas</source>
+    <target>Administra les teves configuracions d'alertes</target>
+  </trans-unit>
+
+  <trans-unit id="dashbaordsMailingSubtitle">
+    <source>Administrar las configuraciones de correo electrónico del panel</source>
+    <target>Administrar les configuracions de correu electrònic del panell</target>
+  </trans-unit>
+
   <trans-unit id="checkCredentials">
     <source>Comprobar credenciales</source>
     <target>Comprovar credencials</target>
@@ -4685,22 +4731,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="profileMessagesDescription"><source>Recibe notificaciones de nuevos mensajes</source><target>Rep notificacions de nous missatges</target></trans-unit>
 <trans-unit id="selectedImage"><source>Imagen seleccionada</source><target>Imatge seleccionada</target></trans-unit>
 <trans-unit id="noImageSelected"><source>No hay imagen seleccionada</source><target>Cap imatge seleccionada</target></trans-unit>
-<trans-unit id="adminEmail">
-  <source>Gestión de correo</source>
-  <target>Gestió de correu</target>
-</trans-unit>
-<trans-unit id="adminEmailSubtitle">
-  <source>Configure los ajustes y credenciales de su servidor de correo electrónico</source>
-  <target>Configura els ajustos i les credencials del teu servidor de correu electrònic</target>
-</trans-unit>
-<trans-unit id="alertsConfigSubtitle">
-  <source>Administra tus configuraciones de alertas</source>
-  <target>Administra les teves configuracions d'alertes</target>
-</trans-unit>
-<trans-unit id="dashbaordsMailingSubtitle">
-  <source>Administrar las configuraciones de correo electrónico del panel</source>
-  <target>Administra les configuracions de correu electrònic del panell</target>
-</trans-unit>
 <trans-unit id="chartDisplayTitle">
   <source>Visualización</source>
   <target>Visualització</target>

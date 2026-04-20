@@ -1,0 +1,91 @@
+<eda-dialog2
+  i18n-header="@@kpiMailConfigTitle"
+  header="Configuración de envío por email"
+  width="70vw"
+  height="65vh"
+  [disableApply]="disableApply()"
+  (apply)="onApply()"
+  (close)="onClose()">
+
+  <div content class="p-8 bg-gray-50 h-[50vh]">
+    <div class="grid grid-cols-[25%_30%_40%] gap-8 h-full">
+
+      <!-- Frecuencia -->
+      <div class="bg-white shadow-lg rounded-2xl p-6 space-y-5">
+        <h5 class="text-lg font-semibold text-gray-800 mb-4" i18n="@@SendMailEvery">Enviar mail de alerta cada:</h5>
+
+        <div class="flex flex-col">
+          <input id="kpi-quantity" type="number" [(ngModel)]="quantity"
+            class="w-full border border-gray-300 focus:ring-2 focus:ring-blue-500 px-3 py-2.5 rounded-lg outline-none">
+        </div>
+
+        <label class="flex items-center gap-3 cursor-pointer w-fit">
+          <input type="radio" name="kpiMailUnits" value="days" [(ngModel)]="units"
+            class="w-5 h-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded-full">
+          <span class="text-base text-gray-700">{{daysSTR}}</span>
+        </label>
+
+        <div>
+          @if (units === 'days') {
+            <p i18n="@@at" class="mb-2 text-gray-600">A las</p>
+            <p-calendar [timeOnly]="true" [(ngModel)]="hours"
+              class="w-full border border-gray-300 px-3 py-2.5 rounded-lg shadow-sm"></p-calendar>
+          }
+        </div>
+
+        <label class="flex items-center gap-3 cursor-pointer w-fit">
+          <input type="radio" name="kpiMailUnits" value="hours" [(ngModel)]="units"
+            class="w-5 h-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded-full">
+          <span class="text-base text-gray-700">{{hoursSTR}}</span>
+        </label>
+
+        <div class="pt-4 border-t border-gray-200">
+          @if (enabled) {
+            <h6 i18n="@@opcionMail" class="text-gray-600 font-medium">Enviar por email</h6>
+          } @else {
+            <h6 i18n="@@noMail" class="text-gray-600 font-medium">Sin alertas de correo</h6>
+          }
+          <p-inputSwitch id="kpiSwitchEnabled" class="mt-3" [(ngModel)]="enabled" tooltipPosition="left"></p-inputSwitch>
+        </div>
+      </div>
+
+      <!-- Destinatarios -->
+      <div class="bg-white shadow-lg rounded-2xl p-6 flex flex-col gap-4">
+        <h5 i18n="@@SendMailWho" class="text-lg font-semibold text-gray-800">Destinatarios</h5>
+        <p-multiSelect
+          [(ngModel)]="selectedUsers"
+          [options]="users"
+          optionLabel="label"
+          i18n-defaultLabel="@@selectRecipients"
+          defaultLabel="Selecciona los destinatarios *"
+          styleClass="w-full"
+          [style]="{'width': '100%'}"
+          [maxSelectedLabels]="2">
+        </p-multiSelect>
+
+        <div class="max-h-40 overflow-y-auto border border-gray-200 rounded-lg divide-y divide-gray-100">
+          @for (user of selectedUsers; track $index) {
+            <div class="flex items-center gap-2 px-3 py-2 text-sm text-gray-700">
+              <span class="w-2 h-2 rounded-full bg-blue-500 shrink-0"></span>
+              {{ user?.label ?? user?.name ?? user }}
+            </div>
+          } @empty {
+            <p i18n="@@noRecipientsSelected" class="text-sm text-gray-400 px-3 py-2">Sin destinatarios seleccionados</p>
+          }
+        </div>
+      </div>
+
+      <!-- Contenido del mail -->
+      <div class="bg-white shadow-lg rounded-2xl p-6 flex flex-col">
+        <h5 i18n="@@SendMailWhat" class="text-lg font-semibold text-gray-800 mb-3">Contenido del mail</h5>
+        <textarea
+          class="flex-1 w-full border border-gray-300 px-3 py-2.5 rounded-lg shadow-sm resize-none focus:ring-2 focus:ring-blue-500 outline-none"
+          rows="6"
+          [(ngModel)]="mailMessage">
+        </textarea>
+      </div>
+
+    </div>
+  </div>
+
+</eda-dialog2>

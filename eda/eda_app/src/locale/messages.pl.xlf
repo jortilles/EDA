@@ -3026,6 +3026,51 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target> Prawidłowe dane uwierzytelniające</target>
   </trans-unit>
 
+  <trans-unit id="alertMailDeleted">
+    <source>Alerta de correo eliminada</source>
+    <target>Alert mailowy usunięty</target>
+  </trans-unit>
+
+  <trans-unit id="dashboardMailDeleted">
+    <source>Configuración de envío eliminada</source>
+    <target>Konfiguracja wysyłania usunięta</target>
+  </trans-unit>
+
+  <trans-unit id="mailSentNow">
+    <source>Envío iniciado correctamente</source>
+    <target>Wysyłanie uruchomione pomyślnie</target>
+  </trans-unit>
+
+  <trans-unit id="sendingNow">
+    <source>Enviando...</source>
+    <target>Wysyłanie...</target>
+  </trans-unit>
+
+  <trans-unit id="sendScheduledMails">
+    <source>Enviar todos los correos programados</source>
+    <target>Wyślij wszystkie zaplanowane e-maile</target>
+  </trans-unit>
+
+  <trans-unit id="adminEmail">
+    <source>Gestión de correo</source>
+    <target>Zarządzanie pocztą</target>
+  </trans-unit>
+
+  <trans-unit id="adminEmailSubtitle">
+    <source>Configure los ajustes y credenciales de su servidor de correo electrónico</source>
+    <target>Skonfiguruj ustawienia i dane uwierzytelniające serwera poczty</target>
+  </trans-unit>
+
+  <trans-unit id="alertsConfigSubtitle">
+    <source>Administra tus configuraciones de alertas</source>
+    <target>Zarządzaj konfiguracjami alertów</target>
+  </trans-unit>
+
+  <trans-unit id="dashbaordsMailingSubtitle">
+    <source>Administrar las configuraciones de correo electrónico del panel</source>
+    <target>Zarządzaj konfiguracjami poczty panelu</target>
+  </trans-unit>
+
   <trans-unit id="chartInfoPyramid">
     <source>Un gráfico de piramide necesita de dos categorías y un valor numérico </source>
     <target>Wykres piramidowy wymaga dwóch kategorii i wartości liczbowej</target>
@@ -4122,22 +4167,6 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
 <trans-unit id="profileMessagesDescription"><source>Recibe notificaciones de nuevos mensajes</source><target>Otrzymuj powiadomienia o nowych wiadomościach</target></trans-unit>
 <trans-unit id="selectedImage"><source>Imagen seleccionada</source><target>Wybrany obraz</target></trans-unit>
 <trans-unit id="noImageSelected"><source>No hay imagen seleccionada</source><target>Nie wybrano obrazu</target></trans-unit>
-<trans-unit id="adminEmail">
-  <source>Gestión de correo</source>
-  <target>Zarządzanie pocztą</target>
-</trans-unit>
-<trans-unit id="adminEmailSubtitle">
-  <source>Configure los ajustes y credenciales de su servidor de correo electrónico</source>
-  <target>Skonfiguruj ustawienia i dane uwierzytelniające serwera poczty e-mail</target>
-</trans-unit>
-<trans-unit id="alertsConfigSubtitle">
-  <source>Administra tus configuraciones de alertas</source>
-  <target>Zarządzaj ustawieniami alertów</target>
-</trans-unit>
-<trans-unit id="dashbaordsMailingSubtitle">
-  <source>Administrar las configuraciones de correo electrónico del panel</source>
-  <target>Zarządzaj ustawieniami poczty e-mail na pulpicie nawigacyjnym</target>
-</trans-unit>
 <trans-unit id="chartDisplayTitle">
   <source>Visualización</source>
   <target>Wyobrażanie sobie</target>
