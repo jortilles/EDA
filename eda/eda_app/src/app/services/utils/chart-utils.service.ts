@@ -710,7 +710,7 @@ export class ChartUtilsService {
         }
 
         //Coordinates map Map (two coordinates and two aditional fields at max)
-        if (dataDescription.coordinateColumns === 2 && dataDescription.totalColumns < 5) {
+        if (dataDescription.coordinateColumns === 2) {
             notAllowed.splice(notAllowed.indexOf('coordinatesMap'), 1);
         }
 
