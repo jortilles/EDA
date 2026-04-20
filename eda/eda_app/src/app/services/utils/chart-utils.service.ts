@@ -1333,11 +1333,10 @@ export class ChartUtilsService {
 
                 // Escalas específicas por polarArea
                 let scaleOptions;
-                if (type === 'polarArea') { 
+                if (type === 'polarArea') {
                     scaleOptions =  {
                         r: {
-                            grid: gridColorConfig,
-                            angleLines: gridColorConfig,
+                            grid: { ...gridColorConfig, display: showGridLines },
                             ticks: {
                                 backdropColor: panelStyle,
                                 color: colorStyle
