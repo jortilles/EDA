@@ -525,21 +525,27 @@ function createMcpServer(requestUser?: any) {
 
                         const fieldNames = fields.map((f: any) => f.display_name ?? f.field_name).filter(Boolean);
 
-                        // Filtrar por campos_requeridos: cada keyword debe aparecer en al menos un campo del panel
+                        // Filtrar por campos_requeridos:
+                        //   1. Todos los keywords deben estar presentes en algún campo (all-required)
+                        //   2. Ningún campo del panel puede quedar sin cubrir por algún keyword (no-extra)
                         if (camposLower.length > 0) {
                             const fieldNamesLower = fieldNames.map((n: string) => n.toLowerCase());
-                            const allMatch = camposLower.every((kw: string) =>
+                            const allRequired = camposLower.every((kw: string) =>
                                 fieldNamesLower.some((fn: string) => fn.includes(kw))
                             );
-                            if (!allMatch) {
-                                console.log(`[MCP] exploración — panel saltado (campos no coinciden) | dashboard=${db.config?.title}, idx=${idx} | campos=${fieldNames.join(',')} | requeridos=${camposLower.join(',')}`);
+                            const noExtra = fieldNamesLower.every((fn: string) =>
+                                camposLower.some((kw: string) => fn.includes(kw))
+                            );
+                            if (!allRequired || !noExtra) {
+                                console.log(`[MCP] exploración — panel saltado (campos no exactos) | dashboard=${db.config?.title}, idx=${idx} | campos=${fieldNames.join(',')} | requeridos=${camposLower.join(',')} | allRequired=${allRequired} | noExtra=${noExtra}`);
                                 continue;
                             }
                         }
 
                         const activeFilters: any[] = query?.query?.filters ?? [];
 
-                        // Clave de deduplicación: mismos campos + mismo datasource + mismos filtros = misma opción
+                        // Clave de deduplicación: mismos campos + mismos filtros = misma opción
+                        // (sin model_id: paneles con mismo alcance y mismos campos son equivalentes)
                         const fieldsKey = [...fieldNames].sort().join(',');
                         const filterKey = JSON.stringify(
                             activeFilters.map((f: any) => ({
@@ -548,7 +554,7 @@ function createMcpServer(requestUser?: any) {
                                 vals: (f.filter_elements ?? []).flatMap((e: any) => Array.isArray(e.value1) ? e.value1 : [e.value1]).sort(),
                             })).sort((a: any, b: any) => a.col.localeCompare(b.col))
                         );
-                        const dedupeKey = `${query.model_id}__${fieldsKey}__${filterKey}`;
+                        const dedupeKey = `${fieldsKey}__${filterKey}`;
 
                         if (!opcionesMap.has(dedupeKey)) {
                             const filterSummary = summarizeFilters(activeFilters);
