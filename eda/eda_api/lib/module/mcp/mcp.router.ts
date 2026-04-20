@@ -504,7 +504,7 @@ function createMcpServer(requestUser?: any) {
                 const allDashboards = [...privados, ...grupo, ...comunes, ...publicos];
                 console.log('[MCP] exploración — dashboards:', allDashboards.length);
 
-                const opciones: any[] = [];
+                const opcionesMap = new Map<string, any>();
 
                 for (const d of allDashboards) {
                     const db: any = await Dashboard.findById(d._id).exec();
@@ -516,34 +516,52 @@ function createMcpServer(requestUser?: any) {
                         const panel = panels[idx];
                         const query = panel.content?.query;
                         const fields: any[] = query?.query?.fields ?? [];
-                        if (fields.length === 0) continue;
+                        if (!query?.model_id || fields.length === 0) continue;
 
                         const fieldNames = fields.map((f: any) => f.display_name ?? f.field_name).filter(Boolean);
                         const activeFilters: any[] = query?.query?.filters ?? [];
-                        const filterSummary = summarizeFilters(activeFilters);
-                        const chartType = panel.content?.chart_type ?? panel.content?.edaChart ?? null;
 
-                        opciones.push({
-                            dashboard_id: d._id.toString(),
-                            dashboard_nombre: db.config?.title ?? '(sin título)',
-                            dashboard_url: dashboardLink,
-                            panel_index: idx,
-                            panel_titulo: panel.title ?? '(sin título)',
-                            tipo_grafico: chartType,
-                            campos: fieldNames,
-                            tiene_filtros: activeFilters.length > 0,
-                            filtros_activos: filterSummary,
-                        });
+                        // Clave de deduplicación: mismo datasource + mismos filtros = misma opción
+                        const filterKey = JSON.stringify(
+                            activeFilters.map((f: any) => ({
+                                col: f.filter_column,
+                                type: f.filter_type,
+                                vals: (f.filter_elements ?? []).flatMap((e: any) => Array.isArray(e.value1) ? e.value1 : [e.value1]).sort(),
+                            })).sort((a: any, b: any) => a.col.localeCompare(b.col))
+                        );
+                        const dedupeKey = `${query.model_id}__${filterKey}`;
+
+                        if (!opcionesMap.has(dedupeKey)) {
+                            const filterSummary = summarizeFilters(activeFilters);
+                            const alcance = activeFilters.length === 0
+                                ? 'Todos los datos disponibles (sin filtros)'
+                                : `Filtrado: ${filterSummary}`;
+
+                            opcionesMap.set(dedupeKey, {
+                                dashboard_id: d._id.toString(),
+                                dashboard_url: dashboardLink,
+                                dashboard_nombre: db.config?.title ?? '(sin título)',
+                                panel_index: idx,
+                                campos: fieldNames,
+                                tiene_filtros: activeFilters.length > 0,
+                                alcance,
+                            });
+                            console.log(`[MCP] exploración — nueva opción única [${opcionesMap.size}]: datasource=${query.model_id} | alcance=${alcance}`);
+                        } else {
+                            console.log(`[MCP] exploración — panel duplicado saltado (mismo datasource+filtros): dashboard=${db.config?.title}, panel=${idx}`);
+                        }
                     }
                 }
 
-                console.log('[MCP] MODO EXPLORACIÓN finalizado | opciones con datos:', opciones.length);
+                const opciones = Array.from(opcionesMap.values()).map((o, i) => ({ ...o, opcion_id: String.fromCharCode(65 + i) }));
+                console.log('[MCP] MODO EXPLORACIÓN finalizado | opciones únicas:', opciones.length);
 
                 const respuestaExploracion = {
                     pregunta: question,
-                    instruccion: 'Analiza estas opciones e identifica cuáles son relevantes para la pregunta. Si hay varias relevantes (distintos filtros, distintos datasources o distintos niveles de agregación), PREGUNTA AL USUARIO cuál prefiere antes de llamar al modo datos.',
-                    total_opciones: opciones.length,
-                    opciones,
+                    opciones_unicas: opciones,
+                    nota_al_asistente: opciones.length === 1
+                        ? 'Solo hay una opción, ejecuta directamente el modo datos sin preguntar al usuario.'
+                        : 'Presenta las opciones al usuario de forma clara. Destaca la diferencia principal entre ellas (alcance de datos, filtros). Pregunta cuál prefiere antes de ejecutar el modo datos.',
                 };
 
                 return { content: [{ type: 'text', text: JSON.stringify(respuestaExploracion, null, 2) }] };
