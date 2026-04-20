@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
+import mongoose from 'mongoose';
 import { HttpException } from '../../global/model/index';
 import axios from 'axios';
 import qs from 'qs';
-//import { userDataValue, authenticationEvidenceValue, userPermissionsValue, userPermissionsRolesValue } from './dataTest'
+// import { userDataValue, authenticationEvidenceValue, userPermissionsValue, userPermissionsRolesValue } from './dataTest'
 
 import ServerLogService from '../../../services/server-log/server-log.service';
 import User, { IUser } from '../../admin/users/model/user.model';
@@ -139,7 +140,7 @@ export class OAUTHController {
                 const groups = await Group.find({});
     
                 // Extraemos los ids de todos los grupos del usuario
-                const userRoleIds = userEda.role.map(id => id.toString());
+                const userRoleIds = userEda.role.map((id: any) => id.toString());
     
                 // Obtenemos todos los grupos con source = 'EDA'
                 const groupsSourceEDA = groups.filter((g: any) => g._doc.source === 'EDA');
@@ -181,6 +182,8 @@ export class OAUTHController {
                 if (groupDoc && groupDoc._id) {
                     role_id.push(groupDoc._id);
                 }
+
+                if(companyId !== 'P1700000A') role_id.push(new mongoose.Types.ObjectId('135792467811111111111113'));
 
             } catch (err: any) {
                 console.error(`Error creando o actualizando grupo "${companyName}":`, err.message);
