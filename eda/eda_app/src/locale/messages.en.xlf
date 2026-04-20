@@ -4964,6 +4964,26 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Enable base layer</target>
 </trans-unit>
 
+<trans-unit id="logarithmicScaleTooltip">
+<source>Aplica escala logarítmica a los valores del mapa</source>
+<target>Applies logarithmic scale to map values</target>
+</trans-unit>
+
+<trans-unit id="activeMouseFunctionsTooltip">
+<source>Permite arrastrar y hacer zoom con el ratón</source>
+<target>Allows dragging and zooming with the mouse</target>
+</trans-unit>
+
+<trans-unit id="enableBaseLayerTooltip">
+<source>Muestra u oculta la capa base del mapa</source>
+<target>Show or hide the map base layer</target>
+</trans-unit>
+
+<trans-unit id="layerColor">
+<source>Color de capa</source>
+<target>Layer color</target>
+</trans-unit>
+
 <trans-unit id="topleftPosition">
 <source>Superior izquierda</source>
 <target>Upper left</target>

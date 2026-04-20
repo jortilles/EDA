@@ -4826,6 +4826,26 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <target>Aktywuj warstwę bazową</target>
 </trans-unit>
 
+<trans-unit id="logarithmicScaleTooltip">
+  <source>Aplica escala logarítmica a los valores del mapa</source>
+  <target>Stosuje skalę logarytmiczną do wartości mapy</target>
+</trans-unit>
+
+<trans-unit id="activeMouseFunctionsTooltip">
+  <source>Permite arrastrar y hacer zoom con el ratón</source>
+  <target>Umożliwia przeciąganie i powiększanie za pomocą myszy</target>
+</trans-unit>
+
+<trans-unit id="enableBaseLayerTooltip">
+  <source>Muestra u oculta la capa base del mapa</source>
+  <target>Pokaż lub ukryj warstwę bazową mapy</target>
+</trans-unit>
+
+<trans-unit id="layerColor">
+  <source>Color de capa</source>
+  <target>Kolor warstwy</target>
+</trans-unit>
+
 <trans-unit id="topleftPosition">
   <source>Superior izquierda</source>
   <target>Górny lewy</target>

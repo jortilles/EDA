@@ -5331,6 +5331,26 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Activer la couche de base</target>
 </trans-unit>
 
+<trans-unit id="logarithmicScaleTooltip">
+  <source>Aplica escala logarítmica a los valores del mapa</source>
+  <target>Applique une échelle logarithmique aux valeurs de la carte</target>
+</trans-unit>
+
+<trans-unit id="activeMouseFunctionsTooltip">
+  <source>Permite arrastrar y hacer zoom con el ratón</source>
+  <target>Permet de faire glisser et de zoomer avec la souris</target>
+</trans-unit>
+
+<trans-unit id="enableBaseLayerTooltip">
+  <source>Muestra u oculta la capa base del mapa</source>
+  <target>Afficher ou masquer la couche de base de la carte</target>
+</trans-unit>
+
+<trans-unit id="layerColor">
+  <source>Color de capa</source>
+  <target>Couleur de couche</target>
+</trans-unit>
+
 <trans-unit id="topleftPosition">
   <source>Superior izquierda</source>
   <target>En haut à gauche</target>
