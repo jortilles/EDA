@@ -6486,6 +6486,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Asistente IA</source>
         <target>Assistent IA</target>
       </trans-unit>
+      <trans-unit id="mapClusteredPoints" datatype="html">
+        <source>puntos agrupados</source>
+        <target>punts agrupats</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -191,7 +191,7 @@ export class MapUtilsService extends ApiService {
     const me = this;
     let div = "";
     if (data._clusterCount) {
-      div += `<div><strong>${data._clusterCount} puntos agrupados</strong></div>`;
+      div += `<div><strong>${data._clusterCount} ${$localize`:@@mapClusteredPoints:puntos agrupados`}</strong></div>`;
     }
     for (let i = 2; i < 4; i++) {
       if (data[i] !== undefined) {
