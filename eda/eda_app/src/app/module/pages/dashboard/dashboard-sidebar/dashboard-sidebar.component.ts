@@ -930,7 +930,7 @@ export class DashboardSidebarComponent {
     const imProperty = userName === this.dashboard.dashboard.config.author;
     const isObserver = JSON.parse(user).role.includes('135792467811111111111113');
     const onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ? this.dashboard.dashboard.config.onlyIcanEdit: true ;
-    return userName === 'edaanonim' || (onlyIcanEdit && !imProperty) || isObserver;
+    return userName === 'edaanonim' || (!onlyIcanEdit && !imProperty) || isObserver;
   }
 
   public isEditableCheck() {
