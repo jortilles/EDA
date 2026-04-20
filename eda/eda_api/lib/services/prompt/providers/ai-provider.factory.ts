@@ -10,7 +10,7 @@ export class AIProviderFactory {
         if (PROVIDER === 'openai') return new OpenAIProvider(config);
         // if (PROVIDER === 'anthropic') return new AnthropicProvider(config);
 
-        throw new Error(`AI provider "${PROVIDER}" is not supported. Valid options: openai, anthropic`);
+        throw new Error(`Proveedor IA "${PROVIDER}" no esta soportado. Opciones validas: openai, anthropic`);
     }
 
 }
