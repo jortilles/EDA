@@ -48,6 +48,7 @@ export class ChartDialogComponent {
     public showPointLines: boolean = false;
     public showPredictionLines: boolean = false;
     public chartLegend: boolean = true;
+    public showGridLines: boolean = true;
     public showPredictionDialog: boolean = false;
     public predictionMethod: string = 'Arima';
     public selectedPalette: { name: string; paleta: any } | null = null;
@@ -84,6 +85,7 @@ export class ChartDialogComponent {
         numberOfColumns: number;
         addComparative: boolean;
         chartLegend: boolean;
+        showGridLines: boolean;
     };
 
     public drops = {
@@ -141,6 +143,7 @@ export class ChartDialogComponent {
         this.numberOfColumns = this.controller.params.config.config.getConfig()['numberOfColumns'] || false;
         this.addComparative = this.controller.params.config.config.getConfig()['addComparative'] || false;
         this.chartLegend = this.controller.params.config.config.getConfig()['chartLegend'] ?? true;
+        this.showGridLines = this.controller.params.config.config.getConfig()['showGridLines'] ?? true;
 
         // NUEVO: Guardar valores originales de labels
         this.originalLabelValues = {
@@ -152,7 +155,8 @@ export class ChartDialogComponent {
             showPredictionLines: this.showPredictionLines,
             numberOfColumns: this.numberOfColumns,
             addComparative: this.addComparative,
-            chartLegend: this.chartLegend
+            chartLegend: this.chartLegend,
+            showGridLines: this.showGridLines
         };
 
         this.oldChart = _.cloneDeep(this.controller.params.chart);
@@ -435,6 +439,20 @@ export class ChartDialogComponent {
         
         properties.config = c;
         /**Update chart */
+        this.panelChartConfig = new PanelChart(this.panelChartConfig);
+        setTimeout(_ => {
+            this.chart = this.panelChartComponent.componentRef.instance.inject;
+            this.load();
+        });
+    }
+
+    setShowGridLines() {
+        const properties = this.panelChartConfig;
+        let c: ChartConfig = properties.config;
+        let config: any = c.getConfig();
+        config.showGridLines = this.showGridLines;
+
+        properties.config = c;
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
         setTimeout(_ => {
             this.chart = this.panelChartComponent.componentRef.instance.inject;
@@ -865,6 +883,7 @@ export class ChartDialogComponent {
         this.chart.showPredictionLines = this.showPredictionLines;
         this.chart.numberOfColumns = this.numberOfColumns;
         this.chart.chartLegend = this.chartLegend;
+        this.chart['showGridLines'] = this.showGridLines;
 
         // Guardar en config también (para persistencia)
         this.controller.params.config.config.getConfig()['addTrend'] = this.addTrend;
@@ -877,6 +896,7 @@ export class ChartDialogComponent {
         this.controller.params.config.config.getConfig()['numberOfColumns'] = this.numberOfColumns;
         this.controller.params.config.config.getConfig()['addComparative'] = this.addComparative;
         this.controller.params.config.config.getConfig()['chartLegend'] = this.chartLegend;
+        this.controller.params.config.config.getConfig()['showGridLines'] = this.showGridLines;
 
         // Guardar config de colored bars
         const coloredBarsConfig = {
@@ -904,6 +924,7 @@ export class ChartDialogComponent {
         this.numberOfColumns = this.originalLabelValues.numberOfColumns;
         this.addComparative = this.originalLabelValues.addComparative;
         this.chartLegend = this.originalLabelValues.chartLegend;
+        this.showGridLines = this.originalLabelValues.showGridLines;
 
         // Restaurar en config
         this.controller.params.config.config.getConfig()['addTrend'] = this.originalLabelValues.addTrend;
@@ -915,6 +936,7 @@ export class ChartDialogComponent {
         this.controller.params.config.config.getConfig()['numberOfColumns'] = this.originalLabelValues.numberOfColumns;
         this.controller.params.config.config.getConfig()['addComparative'] = this.originalLabelValues.addComparative;
         this.controller.params.config.config.getConfig()['chartLegend'] = this.originalLabelValues.chartLegend;
+        this.controller.params.config.config.getConfig()['showGridLines'] = this.originalLabelValues.showGridLines;
         this.controller.params.config.config.getConfig()['assignedColors'] = this.assignedColors = _.cloneDeep(this.originalAssignedColors);
         this.controller.params.config.config.getConfig()['uniqueBarColors'] = this.uniqueBarColors = _.cloneDeep(this.originalUniqueBarColors);
     }

@@ -1192,6 +1192,7 @@ export class ChartUtilsService {
         chartSubType: string,
         ticksOptions: any,
         displayLegend: boolean = true,
+        showGridLines: boolean = true,
         styleProviderService: StyleProviderService,
     ): { chartOptions: any } {
         let colorStyle : any = styleProviderService.panelFontColor.source['value'];
@@ -1480,7 +1481,7 @@ export class ChartUtilsService {
                                     style: edafontStyle
                                 },
                                     color: colorStyle,
-                                
+
                                 callback: function(val, index) {
                                     const label = this.getLabelForValue(val);
                                     return label?.length > 20 ? label.substr(0, 17) + '...' : label;
@@ -1490,12 +1491,13 @@ export class ChartUtilsService {
                             },
 
                             y: {
+                                display: maxTicksLimitY !== 0,
                                 stacked: stacked || false,
                                 grid: {
+                                    display: showGridLines,
                                     drawBorder: false,
-                                    color: colorStyle 
+                                    color: colorStyle
                                 },
-                                display: maxTicksLimitY !== 0,
                                 beginAtZero: true,
                                 grace: (showLabels || showLabelsPercent) ? '3%' : '3%',
                                 ticks: {
@@ -1506,7 +1508,7 @@ export class ChartUtilsService {
                                     if (value)
                                     return isNaN(value) ? value : this.format10thPowers(parseFloat(value));
                                 },
-                                
+
                                 font: {
                                     size: edaFontSize,
                                     family: fontStyle,
@@ -1618,7 +1620,7 @@ export class ChartUtilsService {
                                     },
                                     maxRotation: ticksOptions.maxRotation || 30,
                                     minRotation: ticksOptions.minRotation || 0,
-                                    labelOffset:  ticksOptions.labelOffset || 0, 
+                                    labelOffset:  ticksOptions.labelOffset || 0,
                                     padding: ticksOptions.padding ||0,
                                     color: colorStyle,
                                     font: {
@@ -1634,10 +1636,10 @@ export class ChartUtilsService {
                             y: {
                                 stacked: stacked || false,
                                 grid: {
+                                    display: showGridLines,
                                     drawBorder: false,
-                                    color: colorStyle 
+                                    color: colorStyle
                                 },
-                                display: true,
                                 grace: (showLabels || showLabelsPercent )?'1%': '0%',
                                 min: 0,
                                 max: 100,
@@ -1793,14 +1795,13 @@ export class ChartUtilsService {
                         scales: {
                             x: {
                                 grid: {
+                                    display: showGridLines,
                                     drawBorder: false,
                                     color: colorStyle,
-                                    display: true,
                                     callback: function(val, index) {
                                         if (this.getLabelForValue(val))
                                         return  this.getLabelForValue(val).length > 20 ? (this.getLabelForValue(val).substr(0, 12) + '...') : this.getLabelForValue(val);
                                     }
-                                    
                                 },
                                 ticks: {
                                     color: colorStyle,
@@ -2067,7 +2068,7 @@ export class ChartUtilsService {
                             ticks: {
                                 maxRotation: ticksOptions.maxRotation || 30,
                                 minRotation: ticksOptions.minRotation || 0,
-                                labelOffset:  ticksOptions.labelOffset || 0, 
+                                labelOffset:  ticksOptions.labelOffset || 0,
                                 padding: ticksOptions.padding ||0,
                                 maxTicksLimit: maxTicksLimit,
                                 callback: function(val, index) {
@@ -2088,9 +2089,9 @@ export class ChartUtilsService {
                         y: {
                             display: maxTicksLimitY !== 0,
                             grid: {
+                                display: showGridLines,
                                 drawBorder: false,
                                 color: this.suavizaColor(  colorStyle, 0.1 ),
-                                display: true,
                                 lineWidth:0.5,
                                 zeroLineWidth: 1
                             },
