@@ -6529,6 +6529,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Asistente IA</source>
         <target>Assistant IA</target>
       </trans-unit>
+      <trans-unit id="mapClusteredPoints" datatype="html">
+        <source>puntos agrupados</source>
+        <target>points regroupés</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
