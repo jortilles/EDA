@@ -342,6 +342,112 @@ function createMcpServer(requestUser?: any) {
 
     console.log('[MCP] createMcpServer - get_dashboard registrado');
 
+    (server as any).registerTool(
+        'get_data_from_dashboard',
+        {
+            description: 'Busca en los dashboards de EDA paneles que puedan responder una pregunta sobre datos. Si se proporciona dashboard_id, devuelve los paneles con su query EDA completa. Si no, devuelve un resumen de todos los dashboards accesibles con sus paneles y campos para identificar cuál es relevante.',
+            inputSchema: {
+                question: z.string().describe('Pregunta del usuario sobre los datos que quiere consultar'),
+                dashboard_id: z.string().optional().describe('ID del dashboard donde buscar (opcional). Si no se proporciona, se busca en todos los dashboards accesibles.'),
+            },
+        },
+        async (args: any) => {
+            console.log('[MCP] tool: get_data_from_dashboard - START');
+            console.log('[MCP] get_data_from_dashboard - question:', args?.question);
+            console.log('[MCP] get_data_from_dashboard - dashboard_id:', args?.dashboard_id ?? '(no proporcionado → modo exploración)');
+            const { question, dashboard_id } = args;
+            try {
+                const user = await resolveUser(requestUser);
+                console.log('[MCP] get_data_from_dashboard - usuario:', user?.email ?? user?._id ?? '(desconocido)');
+                const baseUrl = getBaseUrl();
+
+                if (dashboard_id) {
+                    console.log('[MCP] get_data_from_dashboard - modo: dashboard específico →', dashboard_id);
+                    const db: any = await Dashboard.findById(dashboard_id).exec();
+                    if (!db) {
+                        console.warn('[MCP] get_data_from_dashboard - dashboard NO encontrado:', dashboard_id);
+                        return { content: [{ type: 'text', text: `Dashboard no encontrado: ${dashboard_id}` }], isError: true };
+                    }
+
+                    const panels = Array.isArray(db.config?.panel) ? db.config.panel : [];
+                    console.log('[MCP] get_data_from_dashboard - dashboard:', db.config?.title, '| panels:', panels.length);
+                    const dashboardLink = baseUrl ? `${baseUrl}/dashboard/${encodeURIComponent(dashboard_id)}` : '';
+
+                    const lines: string[] = [
+                        `Dashboard: ${db.config?.title ?? '(sin título)'}`,
+                        ...(dashboardLink ? [`URL: ${dashboardLink}`] : []),
+                        `Pregunta: ${question}`,
+                        `Panels disponibles: ${panels.length}`,
+                        '',
+                        '--- Panels con queries completas ---',
+                    ];
+
+                    for (let i = 0; i < panels.length; i++) {
+                        const panel = panels[i];
+                        const fields: any[] = panel.content?.query?.query?.fields ?? [];
+                        const fieldNames = fields.map((f: any) => f.display_name ?? f.field_name).filter(Boolean);
+                        console.log(`[MCP] get_data_from_dashboard - panel ${i + 1}:`, panel.title ?? '(sin título)', '| campos:', fieldNames.length, '| tiene query:', !!panel.content?.query);
+                        lines.push(`\n### Panel ${i + 1}: ${panel.title ?? '(sin título)'}`);
+                        if (fieldNames.length > 0) lines.push(`Campos: ${fieldNames.join(', ')}`);
+                        const chartType = panel.content?.chart_type ?? panel.content?.edaChart ?? null;
+                        if (chartType) lines.push(`Tipo de gráfico: ${chartType}`);
+                        if (panel.content?.query) {
+                            lines.push('Query EDA completa:');
+                            lines.push(JSON.stringify(panel.content.query, null, 2));
+                        }
+                    }
+
+                    console.log('[MCP] get_data_from_dashboard - modo dashboard específico finalizado OK');
+                    return { content: [{ type: 'text', text: lines.join('\n') }] };
+                }
+
+                // Sin dashboard_id: resumen de todos los dashboards accesibles
+                console.log('[MCP] get_data_from_dashboard - modo: exploración de todos los dashboards');
+                const { privados, grupo, comunes, publicos } = await getAllDashboards(user._id.toString());
+                const allDashboards = [...privados, ...grupo, ...comunes, ...publicos];
+                console.log('[MCP] get_data_from_dashboard - dashboards encontrados:', allDashboards.length, '(privados:', privados.length, '| grupo:', grupo.length, '| comunes:', comunes.length, '| públicos:', publicos.length, ')');
+
+                const lines: string[] = [
+                    `Pregunta: ${question}`,
+                    `Dashboards accesibles: ${allDashboards.length}`,
+                    '',
+                    'Resumen de dashboards y paneles. Usa get_data_from_dashboard con dashboard_id para obtener las queries completas del dashboard más relevante.',
+                    '',
+                    '--- Dashboards ---',
+                ];
+
+                for (const d of allDashboards) {
+                    const db: any = await Dashboard.findById(d._id).exec();
+                    if (!db) {
+                        console.warn('[MCP] get_data_from_dashboard - dashboard no cargado:', d._id);
+                        continue;
+                    }
+                    const panels = Array.isArray(db.config?.panel) ? db.config.panel : [];
+                    console.log('[MCP] get_data_from_dashboard - dashboard:', db.config?.title ?? d._id, '| panels:', panels.length);
+                    const dashboardLink = baseUrl ? `${baseUrl}/dashboard/${encodeURIComponent(d._id)}` : '';
+                    lines.push(`\n## [${d._id}] ${d.config?.title ?? '(sin título)'}${dashboardLink ? ` — ${dashboardLink}` : ''}`);
+                    if (panels.length === 0) {
+                        lines.push('  (sin panels)');
+                    } else {
+                        for (const panel of panels) {
+                            const fields: any[] = panel.content?.query?.query?.fields ?? [];
+                            const fieldNames = fields.map((f: any) => f.display_name ?? f.field_name).filter(Boolean);
+                            lines.push(`  - ${panel.title ?? '(sin título)'}${fieldNames.length > 0 ? `: ${fieldNames.join(', ')}` : ''}`);
+                        }
+                    }
+                }
+
+                console.log('[MCP] get_data_from_dashboard - modo exploración finalizado OK | respuesta chars:', lines.join('\n').length);
+                return { content: [{ type: 'text', text: lines.join('\n') }] };
+            } catch (err: any) {
+                console.error('[MCP] get_data_from_dashboard error:', err.message, err.stack);
+                return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
+            }
+        }
+    );
+
+    console.log('[MCP] createMcpServer - get_data_from_dashboard registrado');
+
     // (server as any).registerTool(
     //     'query_datasource',
     //     {
@@ -473,7 +579,7 @@ function createMcpServer(requestUser?: any) {
         }
     );
 
-    console.log('[MCP] createMcpServer - server_status registrado. Total tools: 5');
+    console.log('[MCP] createMcpServer - server_status registrado. Total tools: 6');
 
     return server;
 }
@@ -591,17 +697,22 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
             const response = await anthropic.messages.create({
                 model: MODEL || 'claude-opus-4-6',
                 max_tokens: MAX_TOKENS || 4096,
-                system: `Eres un asistente de análisis de datos integrado en EDA (Enterprise Data Analytics). Tienes acceso a los datasources y dashboards del sistema mediante herramientas MCP.
+                system: 
+                `Eres un asistente de análisis de datos integrado en EDA (Enterprise Data Analytics). Tienes acceso a los datasources y dashboards del sistema mediante herramientas MCP.
 
-REGLA IMPORTANTE - URLs:
-- Los resultados de list_dashboards y list_datasources incluyen la URL de cada elemento al final de la línea (formato: " — https://...").
-- Cuando listes dashboards o datasources, SIEMPRE incluye su URL en la respuesta al usuario.
-- Si el usuario pide el link de un elemento concreto y ya tienes la lista en el contexto, extrae la URL directamente sin llamar a la herramienta de nuevo.
-- Nunca digas que no tienes acceso a los links si los datos ya están en el contexto de la conversación.
-- NUNCA inventes ni construyas URLs. Si no tienes la URL de un elemento en el contexto actual, llama a la herramienta correspondiente para obtenerla o indica que no dispones del link.
+                REGLAS IMPORTANTES - URLs:
+                - Los resultados de list_dashboards y list_datasources incluyen la URL de cada elemento al final de la línea (formato: " — https://...").
+                - Cuando listes dashboards o datasources, SIEMPRE incluye su URL en la respuesta al usuario.
+                - Si el usuario pide el link de un elemento concreto y ya tienes la lista en el contexto, extrae la URL directamente sin llamar a la herramienta de nuevo.
+                - Nunca digas que no tienes acceso a los links si los datos ya están en el contexto de la conversación.
+                - NUNCA inventes ni construyas URLs. Si no tienes la URL de un elemento en el contexto actual, llama a la herramienta correspondiente para obtenerla o indica que no dispones del link.
+                - Asegurate SIEMPRE de respetar los links y urls que te proporciona el mcp. El mpc te devuelve ${'SERVIDOR'}${'LOCALE'}${'PATH'} y debes respetarlo. 
+                
+                REGLAS IMPORTANTES - VISIBILIDAD:
+                - No tienes acceso a ningún dato de EDA que no te haya sido proporcionado explícitamente en el contexto de la conversación o mediante las herramientas MCP.
+                - Si un datasource o dashboard está marcado como NONE en ia_visibility, es como si no existiera para ti: no puedes acceder a su información ni mencionarlo. 
 
-- Asegurate SIEMPRE de respetar los links y urls que te proporciona el mcp. El mpc te devuelve ${'SERVIDOR'}${'LOCALE'}${'PATH'} y debes respetarlo. 
-Responde siempre en el idioma del usuario. Sé conciso y útil.`,
+                Responde siempre en el idioma del usuario. Sé conciso y útil.`,
                 messages: history,
                 tools: anthropicTools,
             });
