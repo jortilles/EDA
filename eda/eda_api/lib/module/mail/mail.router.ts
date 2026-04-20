@@ -7,5 +7,6 @@ const router = express.Router();
 router.get('/credentials', authGuard, roleGuard, MailController.getCredentials);
 router.post('/check', authGuard, roleGuard, MailController.checkCredentials);
 router.post('/save', authGuard, roleGuard, MailController.saveCredentials);
+router.post('/send-now', authGuard, roleGuard, MailController.sendNow); //borrar
 
 export default router;
