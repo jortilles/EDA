@@ -181,7 +181,8 @@ export class ClickHouseConnection extends AbstractConnection {
             table_type: [],
             columns: columns,
             relations: [],
-            visible: true
+            visible: true,
+            ia_visibility: 'FULL'
         };
     }
 
@@ -212,6 +213,7 @@ export class ClickHouseConnection extends AbstractConnection {
         column.column_granted_roles = [];
         column.row_granted_roles = [];
         column.visible = true;
+        column.ia_visibility = 'FULL';
         column.tableCount = tableCount || 0;
 
         return column;

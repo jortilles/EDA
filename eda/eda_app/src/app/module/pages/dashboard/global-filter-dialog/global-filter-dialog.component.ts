@@ -780,20 +780,25 @@ public async loadFilterAutoComplete(event: any, filtro: any) {
         
         // Indice en el que se encuentra el filtro de la lista
         const index = this.globalFilterList.findIndex(f => f.id === filterNameID);
-        // Quitamos los valores de la lista
-        this.globalFilter.selectedItems = []
         
         if (this.validateGlobalFilter()) {
+            // Quitamos los valores de la lista si el filtro es valido
+            this.globalFilter.selectedItems = [];
+            this.globalFilter.isdeleted = true;
+
             if (this.globalFilter.queryMode != 'EDA2') {
                 this.globalFilter.panelList = this.filteredPanels.map((p: any) => p.id);
                 this.globalFilter.applyToAll = this.applyToAll;
             }
-            
+
+            // Enviando el valor true de eliminación de un Filtro ANTES de que close destruya el componente
+            this.deleteFilterEvent.emit(true);
+
             // Aplicamos filtros de lista
             this.globalFilterChange.emit(this.globalFilter);
             this.display = false;
             this.close.emit(true);
-            
+
             // Intervalo para borrar el filtro visualmente
             const interval = setInterval(() => {
                 if (this.styleProviderService.loadedPanels === 0) {
@@ -802,9 +807,6 @@ public async loadFilterAutoComplete(event: any, filtro: any) {
                 }
             }, 100);
         }
-
-        // Enviando el valor true de eliminación de un Filtro
-        this.deleteFilterEvent.emit(true);
     }
 
     public onApply(): void {

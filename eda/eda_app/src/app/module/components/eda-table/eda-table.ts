@@ -476,16 +476,39 @@ export class EdaTable {
                     });
             } else if (col.type === "EdaColumnPercentage") {
                 const numericField = col.field.slice(0, -1);
-                const globalSum = this._value.reduce((acc, row) => acc + (row[numericField] === '' ? 0 : parseFloat(row[numericField]) || 0), 0);
-                const pageSum = partialRow[numericField] || 0;
-                const pct = globalSum !== 0 ? (pageSum / globalSum * 100).toFixed(2) + '%' : ' ~ ';
-                this.partialTotalsRow.push({ data: pct, style: "right", class: "sub-total-row", border: '', type: col.type });
+                if (this.pivot) {
+                    // SDA style: suma de todas las columnas numéricas de la tabla dinámica en esta página.
+                    const value = Number(partialRow[numericField]);
+                    const total = Object.keys(partialRow)
+                        .filter(key => !key.endsWith('%') && key.includes('~'))
+                        .reduce((sum, key) => sum + Number(partialRow[key] || 0), 0);
+                    const pct = (!Number.isNaN(value) && !Number.isNaN(total) && total !== 0)
+                        ? ((value / total) * 100).toFixed(2) + '%' : ' ~ ';
+                    this.partialTotalsRow.push({ data: pct, style: "right", class: "sub-total-row", border: '', type: col.type });
+                } else {
+                    const globalSum = this._value.reduce((acc, row) => acc + (row[numericField] === '' ? 0 : parseFloat(row[numericField]) || 0), 0);
+                    const pageSum = partialRow[numericField] || 0;
+                    const pct = globalSum !== 0 ? (pageSum / globalSum * 100).toFixed(2) + '%' : ' ~ ';
+                    this.partialTotalsRow.push({ data: pct, style: "right", class: "sub-total-row", border: '', type: col.type });
+                }
             } else {
                 if (firstNonNumericRow) {
                     this.partialTotalsRow.push({ data: `${this.SubTotals} `, border: " ", class: 'sub-total-row-header', type: col.type });
                     firstNonNumericRow = false;
                 } else {
-                    this.partialTotalsRow.push({ data: " ", border: " ", class: 'sub-total-row', type: col.type });
+                    if (this.pivot) {
+                        const baseField = (col.field.trimStart().startsWith('~') ? '  ' : ' ') + col.field.replace('%', '').trim();
+                        const value: number = Number(partialRow[baseField]);
+                        const total: number = Object.keys(partialRow)
+                            .filter(key => !key.endsWith('%') && key.includes('~'))
+                            .reduce((sum, key) => sum + Number(partialRow[key] || 0), 0);
+                        const percentage = (!Number.isNaN(value) && !Number.isNaN(total) && total !== 0) ? ((value / total) * 100).toFixed(2) : '0';
+                        this.partialTotalsRow.push({
+                            data: percentage + '%', border: ' ', class: 'sub-total-row-header text-right', type: col.type
+                        });
+                    } else {
+                        this.partialTotalsRow.push({ data: " ", border: " ", class: 'sub-total-row', type: col.type });
+                    }
                 }
             }
         });
@@ -546,7 +569,18 @@ export class EdaTable {
                         type: col.type
                     });
             } else if (col.type === "EdaColumnPercentage") {
-                this.totalsRow.push({ data: "100.00%", style: "right", class: "total-row", border: '', type: col.type });
+                if (this.pivot) {
+                    const numericField = col.field.slice(0, -1);
+                    const value = Number(row[numericField]);
+                    const total = Object.keys(row)
+                        .filter(key => !key.endsWith('%') && key.includes('~'))
+                        .reduce((sum, key) => sum + Number(row[key] || 0), 0);
+                    const pct = (!Number.isNaN(value) && !Number.isNaN(total) && total !== 0)
+                        ? ((value / total) * 100).toFixed(2) + '%' : ' ~ ';
+                    this.totalsRow.push({ data: pct, style: "right", class: "total-row", border: '', type: col.type });
+                } else {
+                    this.totalsRow.push({ data: "100.00%", style: "right", class: "total-row", border: '', type: col.type });
+                }
             } else {
                 if (firstNonNumericRow) {
                     this.totalsRow.push({ data: `${this.Totals} `, border: " ", class: 'total-row-header', type: col.type });
@@ -817,6 +851,11 @@ export class EdaTable {
         if (typeof this._value[0][serie.column] === 'string') {
 
             this._value = this._value.sort((a, b) => {
+                if (serie.rangeOption) {
+                    const n1 = this.extractNumberFromRange(a[serie.column]);
+                    const n2 = this.extractNumberFromRange(b[serie.column]);
+                    return serie.sortState === true ? n1 - n2 : n2 - n1;
+                }
                 if (serie.sortState === true) {
                     if (a[serie.column] < b[serie.column])
                         return -1;
@@ -842,6 +881,16 @@ export class EdaTable {
                 }
             });
         }
+    }
+
+    extractNumberFromRange(input: string): number {
+        const regex = /(?:<|<=|>|>=)?\s*(-?\d+)\s*(?:-|<|<=|>|>=)?\s*(-?\d+)?/;
+        const match = input?.trim().match(regex);
+        if (!match) return 0;
+        if (input.includes('<') || input.includes('>')) {
+            return parseInt(match[1], 10);
+        }
+        return match[2] ? parseInt(match[2], 10) : parseInt(match[1], 10);
     }
 
     PivotTable() {
@@ -950,7 +999,7 @@ export class EdaTable {
 
         const tableColumns = [];
         params.mainCols.forEach(element => {
-            tableColumns.push(new EdaColumnText({ header: element['header'], field: element['field'] }))
+            tableColumns.push(new EdaColumnText({ header: element['header'], field: element['field'], rangeOption: element['rangeOption'] }))
         })
         newColNames.forEach(col => {
             tableColumns.push(new EdaColumnNumber({ header: col, field: col }));
@@ -1424,10 +1473,13 @@ export class EdaTable {
         let mains = [];
 
         labels.axes[0].itemX.forEach((e, j) => {
+            const colName = labels.axes[0].itemX[j].column_name;
+            const matchingCol = this.cols.find(c => c.field === colName);
             mains.push({
                 title: labels.axes[0].itemX[j].description,
-                column: labels.axes[0].itemX[j].column_name,
-                rowspan: numRows, colspan: 1, sortable: true, description: labels.axes[0].itemX[j].description
+                column: colName,
+                rowspan: numRows, colspan: 1, sortable: true, description: labels.axes[0].itemX[j].description,
+                rangeOption: matchingCol?.rangeOption || false
             })
         });
 

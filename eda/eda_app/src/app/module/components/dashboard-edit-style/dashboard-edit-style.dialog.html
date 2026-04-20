@@ -18,6 +18,21 @@
             (onChange)="setSampleTitleStyle(); setPanelContentStyle(); setPanelTitleStyle() " />
         </div>
         <div>
+          <h6 class="mb-1">Imagen de fondo:</h6>
+          <label class="flex flex-col items-start gap-1 cursor-pointer">
+            <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded border text-sm bg-gray-50 hover:bg-gray-100">
+              <i class="pi pi-upload"></i> Subir imagen
+            </span>
+            <input type="file" accept="image/*" class="hidden" (change)="onBackgroundImageSelected($event)">
+          </label>
+          @if (backgroundImage) {
+            <div class="mt-2 flex items-center gap-2">
+              <img [src]="backgroundImage" class="w-16 h-10 object-cover rounded border" />
+              <button class="text-xs text-red-500 hover:underline" (click)="removeBackgroundImage()">Quitar</button>
+            </div>
+          }
+        </div>
+        <div>
           <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
           <div class="flex items-stretch gap-2 mb-6">
             <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"

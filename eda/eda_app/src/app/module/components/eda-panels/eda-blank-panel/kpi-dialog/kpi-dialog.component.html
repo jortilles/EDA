@@ -223,15 +223,30 @@
                       </div>
                     </td>
                     <td class="p-3 text-right">
-                      <button (click)="deleteAlert(alert)"
-                        class="h-8 w-8 p-0 inline-flex items-center justify-center rounded-md hover:bg-slate-100">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M18 6 6 18"></path>
-                          <path d="m6 6 12 12"></path>
-                        </svg>
-                        <span class="sr-only" i18n="@@deleteBtn">Eliminar</span>
-                      </button>
+                      <div class="inline-flex items-center gap-1">
+                        @if (canIRunAlerts) {
+                        <button (click)="openConfigDialog(alert)"
+                          class="h-8 w-8 p-0 inline-flex items-center justify-center rounded-md hover:bg-slate-100 transition-colors"
+                          [class.text-[#00BFB3]]="alert.mailing?.enabled"
+                          [class.text-slate-300]="!alert.mailing?.enabled"
+                          title="Configurar envío por email">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                          </svg>
+                        </button>
+                        }
+                        <button (click)="deleteAlert(alert)"
+                          class="h-8 w-8 p-0 inline-flex items-center justify-center rounded-md hover:bg-slate-100">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 6 6 18"></path>
+                            <path d="m6 6 12 12"></path>
+                          </svg>
+                          <span class="sr-only" i18n="@@deleteBtn">Eliminar</span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 </tbody>
@@ -263,3 +278,11 @@
   </div>
 
 </eda-dialog2>
+
+@if (mailConfigOpen) {
+  <app-kpi-mail-config
+    [alert]="currentAlert"
+    (apply)="onMailConfigApply($event)"
+    (close)="closeMailingConfig()">
+  </app-kpi-mail-config>
+}

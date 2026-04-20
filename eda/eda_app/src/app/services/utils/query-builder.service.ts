@@ -18,6 +18,7 @@ export interface QueryParams {
     forSelector?: boolean;
     connectionProperties?: any;
     rootTable?: string;
+    sortedFilters?: any[];
 }
 
 @Injectable()
@@ -72,7 +73,8 @@ export class QueryBuilderService extends ApiService {
                 groupByEnabled: true,
                 prediction: 'None',
                 joinType: 'left', //puede que necesite el joinType
-                rootTable: null
+                rootTable: null,
+                sortedFilters: [],
             },
             output: {
                 labels,
@@ -110,6 +112,7 @@ export class QueryBuilderService extends ApiService {
             col.whatif = select[i].whatif;
             col.joins = select[i].joins || [];
             col.autorelation = select[i].autorelation;
+            col.ranges = select[i].ranges || [];
             queryColumns.push(col);
             labels.push(select[i].column_name);
         }
@@ -146,6 +149,7 @@ export class QueryBuilderService extends ApiService {
                 joinType: params.joinType,
                 forSelector: params.forSelector,
                 rootTable: params.rootTable,
+                sortedFilters: params.sortedFilters,
             },
             output: {
                 labels,

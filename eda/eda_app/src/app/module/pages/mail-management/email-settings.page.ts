@@ -1,7 +1,6 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { from, lastValueFrom } from 'rxjs';
 import { mergeMap, toArray, tap, finalize } from 'rxjs/operators';
 import { MailService, AlertService, DashboardService, SpinnerService } from '@eda/services/service.index';
@@ -12,6 +11,8 @@ interface AlertItem {
   panel: string;
   dashboard: string;
   datamodel: string;
+  operand: string;
+  value: string | number;
 }
 
 interface DashboardItem {
@@ -76,10 +77,8 @@ export class EmailSettingsPage implements OnInit {
   private mailService = inject(MailService);
   private dashboardService = inject(DashboardService);
   private spinnerService = inject(SpinnerService);
-  private router = inject(Router);
-
   // --- Signals ---
-  loadingSignal = signal(true);  
+  loadingSignal = signal(true);
   tlsEnabled = signal<boolean>(false);
   isChecking = signal<boolean>(false);
   isSubmitting = signal<boolean>(false);
@@ -99,16 +98,24 @@ export class EmailSettingsPage implements OnInit {
     return this.dashboardItems().slice(0, n);
   });
 
-  // --- Form ---
-  emailForm: FormGroup;
+  // --- Unified form ---
+  unifiedForm: FormGroup;
+
+  get configType(): 'SMPT' | 'GMAIL' {
+    return this.unifiedForm.get('configType')?.value || 'SMPT';
+  }
 
   constructor() {
-    this.emailForm = this.fb.group({
-      host: [null, Validators.required],
-      port: [null, Validators.required],
-      secure: [false, Validators.required],
+    this.unifiedForm = this.fb.group({
+      configType: ['SMPT'],
+      host: [null],
+      port: [null],
       user: [null, Validators.required],
-      password: [null, Validators.required],
+      password: [null],
+      clientId: [null],
+      clientSecret: [null],
+      refreshToken: [null],
+      secure: [false],
     });
   }
 
@@ -122,14 +129,29 @@ export class EmailSettingsPage implements OnInit {
   // =====================================================
   private async loadEmailSettings() {
     const mailSettings = await lastValueFrom(this.mailService.getConfiguration());
-    this.emailForm.patchValue({
-      host: mailSettings.config.host,
-      port: mailSettings.config.port,
-      secure: mailSettings.config.secure,
-      user: mailSettings.config.auth.user,
-      password: null
-    });
-    this.tlsEnabled.set(mailSettings.config.secure);
+    const config = mailSettings.config;
+
+    if (config.configType === 'GMAIL') {
+      this.unifiedForm.patchValue({
+        configType: 'GMAIL',
+        user: config.auth?.user,
+        clientId: config.auth?.clientId,
+        clientSecret: config.auth?.clientSecret,
+        refreshToken: config.auth?.refreshToken,
+        secure: config.secure ?? false,
+      });
+      this.tlsEnabled.set(config.tls?.rejectUnauthorized ?? false);
+    } else {
+      this.unifiedForm.patchValue({
+        configType: 'SMPT',
+        host: config.host,
+        port: config.port,
+        user: config.auth?.user,
+        password: null,
+        secure: config.secure ?? false,
+      });
+      this.tlsEnabled.set(config.secure ?? false);
+    }
   }
 
   // =====================================================
@@ -160,12 +182,10 @@ export class EmailSettingsPage implements OnInit {
           const modelName = d.datasource?.name ?? '';
           const dashId = dash._id;
 
-          // Dashboards con envío por mail
           if (dash.config?.sendViaMailConfig?.enabled) {
             dashboardsForMail.push({ id: dashId, dashboard: title, datamodel: modelName });
           }
 
-          // Alertas por KPI
           const panels = dash.config?.panel ?? [];
           for (const p of panels) {
             const isKpi = p?.content?.chart?.startsWith('kpi');
@@ -173,17 +193,20 @@ export class EmailSettingsPage implements OnInit {
             if (!isKpi || limits.length === 0) continue;
 
             for (const a of limits) {
-              alerts.push({
-                id: dashId,
-                alerts: `KPI ${a.operand} ${a.value}`,
-                panel: p.title,
-                dashboard: title,
-                datamodel: modelName,
-              });
+              if ((a as any).mailing?.enabled === true) {
+                alerts.push({
+                  id: dashId,
+                  alerts: `KPI ${a.operand} ${a.value}`,
+                  panel: p.title,
+                  dashboard: title,
+                  datamodel: modelName,
+                  operand: a.operand,
+                  value: a.value,
+                });
+              }
             }
           }
 
-          // Actualización parcial (UX fluida)
           this.dashboardItems.set([...dashboardsForMail]);
           this.alertItems.set([...alerts]);
         }),
@@ -197,8 +220,76 @@ export class EmailSettingsPage implements OnInit {
     this.loadingSignal.set(false);
   }
 
-  goToDashboardById(id: string) {
-    this.router.navigate(['/dashboard', id]);
+  getDashboardUrl(id: string): string {
+    const locale = window.location.pathname.split('/').filter(Boolean)[0] || 'es';
+    return `${window.location.origin}/${locale}/#/dashboard/${id}`;
+  }
+
+  async deleteAlertMailConfig(item: AlertItem) {
+    try {
+      const response = await lastValueFrom(this.dashboardService.getDashboard(item.id)) as DashboardDetailResponse;
+      const dashboard = response.dashboard;
+      const panels = dashboard.config?.panel ?? [];
+      for (const p of panels) {
+        if (p.title !== item.panel) continue;
+        const limits = p.content?.query?.output?.config?.alertLimits ?? [];
+        for (const a of limits) {
+          if (a.operand === item.operand && String(a.value) === String(item.value)) {
+            (a as any).mailing = { ...(a as any).mailing, enabled: false };
+          }
+        }
+      }
+      const mailingAlertsEnabled = panels.some((p: any) =>
+        p.content?.chart === 'kpi' &&
+        p.content?.query?.output?.config?.alertLimits?.some((a: any) => a.mailing?.enabled === true)
+      );
+      (dashboard.config as any).mailingAlertsEnabled = mailingAlertsEnabled;
+      await lastValueFrom(this.dashboardService.updateDashboard(item.id, {
+        config: dashboard.config,
+        group: (response as any).group ?? []
+      }));
+      this.alertItems.update(items => items.filter(i => !(i.id === item.id && i.panel === item.panel && i.operand === item.operand && String(i.value) === String(item.value))));
+      this.alertService.addSuccess($localize`:@@alertMailDeleted:Alerta de correo eliminada`);
+    } catch (err: any) {
+      this.alertService.addError(err);
+    }
+  }
+
+  async deleteDashboardMailConfig(id: string) {
+    try {
+      const response = await lastValueFrom(this.dashboardService.getDashboard(id)) as DashboardDetailResponse;
+      const dashboard = response.dashboard;
+      if (dashboard.config?.sendViaMailConfig) {
+        dashboard.config.sendViaMailConfig.enabled = false;
+      }
+      await lastValueFrom(this.dashboardService.updateDashboard(id, {
+        config: dashboard.config,
+        group: (response as any).group ?? []
+      }));
+      this.dashboardItems.update(items => items.filter((d: DashboardItem) => d.id !== id));
+      this.alertService.addSuccess($localize`:@@dashboardMailDeleted:Configuración de envío eliminada`);
+    } catch (err: any) {
+      this.alertService.addError(err);
+    }
+  }
+
+  isSendingNow = signal<boolean>(false);
+  sendNowLabel = computed(() =>
+    this.isSendingNow()
+      ? $localize`:@@sendingNow:Enviando...`
+      : $localize`:@@sendScheduledMails:Enviar todos los correos programados`
+  );
+
+  async handleSendNow() {
+    this.isSendingNow.set(true);
+    try {
+      await lastValueFrom(this.mailService.sendNow());
+      this.alertService.addSuccess($localize`:@@mailSentNow:Envío iniciado correctamente`);
+    } catch (err: any) {
+      this.alertService.addError(err);
+    } finally {
+      this.isSendingNow.set(false);
+    }
   }
 
   toggleTls() {
@@ -208,7 +299,6 @@ export class EmailSettingsPage implements OnInit {
   async handleCheckCredentials() {
     this.spinnerService.on();
     const options = this.getOptions();
-
     this.mailService.checkConfiguration(options).subscribe({
       next: () => {
         this.spinnerService.off();
@@ -235,8 +325,25 @@ export class EmailSettingsPage implements OnInit {
   }
 
   private getOptions() {
-    const v = this.emailForm.value;
+    const v = this.unifiedForm.value;
+    if (v.configType === 'GMAIL') {
+      return {
+        configType: 'GMAIL',
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+          type: 'OAuth2',
+          user: v.user,
+          clientId: v.clientId,
+          clientSecret: v.clientSecret,
+          refreshToken: v.refreshToken,
+        },
+        tls: { rejectUnauthorized: this.tlsEnabled() }
+      };
+    }
     return {
+      configType: 'SMPT',
       host: v.host,
       port: v.port,
       secure: v.secure,
@@ -245,7 +352,4 @@ export class EmailSettingsPage implements OnInit {
     };
   }
 
-  public sendMailconfig() {
-    // (Pendiente de implementación)
-  }
 }

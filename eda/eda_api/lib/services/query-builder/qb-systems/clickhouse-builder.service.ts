@@ -149,7 +149,7 @@ export class ClickHouseBuilderService extends QueryBuilderService {
     columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[],
     filters: any[], havingFilters: any[], tables: Array<any>, limit: number,
     joinType: string, groupByEnabled: boolean, valueListJoins: Array<any>,
-    _schema: string, _database: string, forSelector: any
+    _schema: string, _database: string, forSelector: any, sortedFilters?: any[]
   ) {
     let o = tables.filter(t => t.name === origin).map(t => t.query ? this.cleanViewString(t.query) : t.name)[0];
 
@@ -174,7 +174,11 @@ export class ClickHouseBuilderService extends QueryBuilderService {
     joinString.forEach(x => { myQuery = myQuery + '\n' + x; });
 
     // WHERE
-    myQuery += this.getFilters(filters);
+    if (Array.isArray(sortedFilters) && sortedFilters.length !== 0) {
+      myQuery += this.getSortedFilters(sortedFilters, filters);
+    } else {
+      myQuery += this.getFilters(filters);
+    }
 
     // GROUP BY
     if (grouping.length > 0 && groupByEnabled) {
@@ -204,6 +208,151 @@ export class ClickHouseBuilderService extends QueryBuilderService {
     }
 
     return myQuery;
+  }
+
+  public getSortedFilters(sortedFilters: any[], filters: any[]): any {
+
+    if (filters.length === 0) { return ''; }
+
+    if (this.permissions.length > 0) {
+      this.permissions.forEach(permission => { filters.push(permission); });
+    }
+
+    filters.forEach((filter: any) => {
+      if (filter.valueListSource !== undefined && filter.valueListSource !== null && filter.filter_id !== 'is_null') {
+        const sf = sortedFilters.find((e: any) => e.filter_id === filter.filter_id);
+        if (sf) sf.valueListSource = filter.valueListSource;
+      }
+    });
+
+    sortedFilters.sort((a: any, b: any) => a.y - b.y);
+
+    const nullSortedFilters = sortedFilters.filter((f: any) => ((f.isGlobal === true) && (f.filter_elements[0].value1.length === 0)));
+    if (nullSortedFilters.length !== 0) {
+      nullSortedFilters.sort((a: any, b: any) => a.y - b.y);
+      nullSortedFilters.forEach(element => {
+        for (let i = element.y + 1; i < sortedFilters.length; i++) {
+          if (element.x < sortedFilters[i].x) { sortedFilters[i].x -= 1; } else { break; }
+        }
+      });
+      const newSortedFilters = sortedFilters.filter((f: any) => !((f.isGlobal === true) && (f.filter_elements[0].value1.length === 0)));
+      newSortedFilters.forEach((f, i) => f.y = i);
+      sortedFilters = _.cloneDeep(newSortedFilters);
+    }
+
+    filters.forEach(filter => {
+      if (filter.isGlobal && (filter.filter_type === 'null_or_empty') && (filter.filter_elements[0].value1[0] === 'emptyString')) {
+        const sf = sortedFilters.find(s => s.filter_id === filter.filter_id);
+        if (sf) { sf.filter_type = 'null_or_empty'; sf.filter_elements = []; }
+      }
+      if (filter.filter_id === 'is_null') {
+        const sf = sortedFilters.find(s => s.filter_id === filter.source_filter_id);
+        if (sf) {
+          sf.sqlOptional = '';
+          if (filter.valueListSource === undefined) {
+            sf.sqlOptional += `\`${filter.filter_table}\`.\`${filter.filter_column}\` is null or \`${filter.filter_table}\`.\`${filter.filter_column}\` = '' or`;
+            sf.filter_elements[0].value1 = sf.filter_elements[0].value1.filter((e: any) => e !== 'emptyString');
+          } else {
+            sf.sqlOptional += `\`${filter.valueListSource.target_table}\`.\`${filter.valueListSource.target_id_column}\` is null or \`${filter.valueListSource.target_table}\`.\`${filter.valueListSource.target_id_column}\` = '' or`;
+            sf.filter_elements[0].value1 = sf.filter_elements[0].value1.filter((e: any) => e !== 'emptyString');
+          }
+        }
+      }
+    });
+
+    filters.forEach(filter => {
+      if (filter.computed_column === 'computed') {
+        const match = sortedFilters.find(s => s.filter_id === filter.filter_id);
+        if (match) { match.computed_column = 'computed'; match.SQLexpression = filter.SQLexpression; }
+      }
+    });
+
+    let stringQuery = '\nWHERE ';
+
+    function cadenaRecursiva(item: any) {
+      const { y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, valueListSource, sqlOptional, computed_column, SQLexpression } = item;
+
+      let filter_type_value = filter_type === 'not_in' ? 'NOT IN' : filter_type === 'not_like' ? 'NOT ILIKE' : filter_type;
+
+      let filter_elements_value = '';
+      if (filter_elements.length === 0) {
+        if (filter_type === 'not_null') filter_type_value = 'IS NOT NULL';
+        if (filter_type === 'not_null_nor_empty') filter_type_value = 'IS NOT NULL AND';
+        if (filter_type === 'null_or_empty') filter_type_value = 'IS NULL OR';
+      } else {
+        if (filter_elements[0].value1.length === 1) {
+          if (filter_column_type === 'text') {
+            filter_elements_value = (filter_type === 'in' || filter_type === 'not_in')
+              ? `('${filter_elements[0].value1[0]}')`
+              : `'${filter_type === 'like' || filter_type === 'not_like' ? '%' : ''}${filter_elements[0].value1[0]}${filter_type === 'like' || filter_type === 'not_like' ? '%' : ''}'`;
+          }
+          if (filter_column_type === 'numeric') {
+            filter_elements_value = filter_type === 'between'
+              ? ` ${Number(filter_elements[0].value1[0])} AND ${Number(filter_elements[1]?.value2?.[0])}`
+              : (filter_type === 'in' || filter_type === 'not_in') ? `(${filter_elements[0].value1[0]})` : `${filter_elements[0].value1[0]}`;
+          }
+          if (filter_column_type === 'date') {
+            filter_elements_value = filter_type === 'between'
+              ? ` toDate('${filter_elements[0].value1[0]}') AND toDateTime('${filter_elements[1]?.value2?.[0]} 23:59:59')`
+              : (filter_type === 'in' || filter_type === 'not_in') ? `(toDate('${filter_elements[0].value1[0]}'))` : `toDate('${filter_elements[0].value1[0]}')`;
+          }
+        } else {
+          filter_elements_value = '(';
+          const vals = filter_elements[0].value1;
+          if (filter_column_type === 'text' || filter_column_type === undefined) {
+            vals.forEach((e: any, i: number) => { filter_elements_value += `'${e}'${i === vals.length - 1 ? ')' : ','}`; });
+          } else if (filter_column_type === 'numeric') {
+            vals.forEach((e: any, i: number) => { filter_elements_value += `${e}${i === vals.length - 1 ? ')' : ','}`; });
+          } else if (filter_column_type === 'date') {
+            vals.forEach((e: any, i: number) => { filter_elements_value += `toDate('${e}')${i === vals.length - 1 ? ')' : ','}`; });
+          }
+        }
+      }
+
+      const validador = (valueListSource !== undefined && valueListSource !== null);
+      const tbl = validador ? valueListSource.target_table : filter_table;
+      const col = validador ? valueListSource.target_description_column : filter_column;
+
+      let resultado = computed_column === 'computed'
+        ? `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type === 'in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional ?? ''} (${SQLexpression}) ${filter_type_value}${filter_elements_value}`
+        : `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type === 'in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional ?? ''} \`${tbl}\`.\`${col}\` ${filter_type_value}${filter_elements_value}`;
+
+      if (filter_type === 'not_null_nor_empty') {
+        resultado += computed_column === 'computed' ? ` (${SQLexpression}) != '')` : ` \`${tbl}\`.\`${col}\` != '')`;
+      }
+      if (filter_type === 'null_or_empty') {
+        resultado += computed_column === 'computed' ? ` (${SQLexpression}) = '')` : ` \`${tbl}\`.\`${col}\` = '')`;
+      }
+      if (filter_type === 'in' && sqlOptional !== undefined) resultado += ' )';
+
+      let elementosHijos: any[] = [];
+      for (let n = y + 1; n < sortedFilters.length; n++) {
+        if (sortedFilters[n].x === x) break;
+        if (y < sortedFilters[n].y && sortedFilters[n].x === x + 1) elementosHijos.push(sortedFilters[n]);
+      }
+
+      const itemGenerico = sortedFilters.find((i: any) => i.y === y + 1);
+      if (elementosHijos.length > 0) {
+        const variableSpace = '            '.repeat(x + 1);
+        let hijosCadena = '';
+        elementosHijos.map(h => cadenaRecursiva(h)).forEach((hijo, idx) => {
+          hijosCadena += hijo;
+          if (idx < elementosHijos.length - 1) hijosCadena += ` \n ${variableSpace} ${elementosHijos[idx + 1].value.toUpperCase()} `;
+        });
+        resultado = `(${resultado} \n ${variableSpace} ${itemGenerico.value.toUpperCase()} (${hijosCadena}))`;
+      }
+      return resultado;
+    }
+
+    let itemsString = '( ';
+    for (let r = 0; r < sortedFilters.length; r++) {
+      if (sortedFilters[r].x === 0) {
+        itemsString += (r === 0 ? '' : ' ' + sortedFilters[r].value.toUpperCase() + ' ') + sortedFilters.filter((e: any) => e.y === r).map(cadenaRecursiva)[0] + '\n';
+      }
+    }
+    itemsString += ' )';
+    stringQuery += itemsString;
+    return stringQuery;
   }
 
   public getFilters(filters) {
@@ -511,7 +660,7 @@ export class ClickHouseBuilderService extends QueryBuilderService {
     if (filters.length) {
       let filtersString = `\nHAVING 1=1 `;
       filters.forEach(f => {
-        const column = this.findHavingColumn(f.filter_table, f.filter_column);
+        const column = this.findHavingColumn(f);
         const colname = this.getHavingColname(column);
         if (f.filter_type === 'not_null') {
           filtersString += `\nAND isNotNull(${colname}) `;
@@ -551,7 +700,7 @@ export class ClickHouseBuilderService extends QueryBuilderService {
   }
 
   public havingToString(filterObject: any) {
-    const column = this.findHavingColumn(filterObject.filter_table, filterObject.filter_column);
+    const column = this.findHavingColumn(filterObject);
     if (!column.hasOwnProperty('minimumFractionDigits')) {
       column.minimumFractionDigits = 0;
     }

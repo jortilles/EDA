@@ -1,5 +1,5 @@
 // Angular
-import { Component, Input, Output, EventEmitter, ViewChild, OnInit, inject, computed, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, OnInit, inject, computed, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, ElementRef } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { DragDropModule, CdkDrag, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
@@ -16,6 +16,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
 import { NULL_VALUE, EMPTY_VALUE} from '../../../../config/personalitzacio/customizables';
+import { aggTypes } from 'app/config/aggretation-types';
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 
 import { PanelChart } from './panel-charts/panel-chart';
@@ -30,6 +31,8 @@ import { EdaChartType, FilterType, OrdenationType} from '@eda/services/service.i
 import { DashboardService, ChartUtilsService, AlertService, SpinnerService, FileUtiles, QueryBuilderService, UserService } from '@eda/services/service.index';
 import { GroupService } from '../../../../services/api/group.service';
 import { QueryService } from '@eda/services/api/query.service';
+import { IaFormStateService } from '@eda/services/shared/IaFormState.service'; 
+
 // Standalone components
 import { EdaDialog2Component, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent, EdaContextMenuComponent} from '@eda/shared/components/shared-components.index';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
@@ -50,6 +53,8 @@ import { EdaTitlePanelComponent } from '@eda/components/component.index';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { ChartTypeSelectorDialogComponent } from './chart-type-selector-dialog/chart-type-selector-dialog.component';
 import { PromptComponent } from '@eda/components/prompt/prompt.component';
+import { FilterAndOrDialogComponent } from './filter-and-or-dialog/filter-and-or-dialog.component';
+import { EdaFilterAndOrComponent } from '../../eda-filter-and-or/eda-filter-and-or.component';
 
 // Panel Utils
 import { TableUtils } from './panel-utils/tables-utils';
@@ -100,12 +105,11 @@ const DIALOGS_COMPONENTS = [
 const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass, CumSumAlertDialogComponent];
 const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule];
 const STANDALONE_COMPONENTS = [
-    EdaDialog2Component, WhatIfDialogComponent, EbpChatgptComponent,FilterMapperComponent, EdadynamicTextComponent,EdaTitlePanelComponent,
+    EdaDialog2Component, WhatIfDialogComponent, EbpChatgptComponent, FilterMapperComponent, EdadynamicTextComponent, EdaTitlePanelComponent,
     PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
     DragDropComponent, ChartTypeSelectorDialogComponent,
-    IconComponent, FocusOnShowDirective,
-    PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent, 
-    DragDropComponent, IconComponent, FocusOnShowDirective, PromptComponent
+    IconComponent, FocusOnShowDirective, PromptComponent,
+    FilterAndOrDialogComponent,
 ]
 @Component({
     standalone: true,
@@ -116,6 +120,9 @@ const STANDALONE_COMPONENTS = [
     styleUrls: ['./eda-blank-panel.component.css'],
 })
 export class EdaBlankPanelComponent implements OnInit {
+    /** Referencia al elemento raíz del panel (usada para captura de imagen en export a Excel) */
+    public elRef = inject(ElementRef);
+
     @ViewChild('edaChart', { static: false }) edaChart: EdaChartComponent;
     @ViewChild('PanelChartComponent', { static: false }) panelChart: PanelChartComponent;
     @ViewChild('panelChartComponentPreview', { static: false }) panelChartPreview: PanelChartComponent;
@@ -195,6 +202,7 @@ export class EdaBlankPanelComponent implements OnInit {
         advancedSetting: 0,
         filterMapperDialog: false,
         showQueryContainer: false,
+        filterAndOr_dialog: false,
     };
 
     public index: number;
@@ -212,7 +220,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public draggFilters: string = $localize`:@@draggFilters:Arrastre aquí los atributos sobre los que quiera filtrar`;
     public ptooltipSQLmode: string = $localize`:@@sqlTooltip:Al cambiar de modo perderás la configuración de la consulta actual`;
     public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`
-
+    public aggregationText: string = $localize`:@@aggregationText:Agregación`;
+    public textBetween: string = $localize`:@@textBetween:Entre`
     /** Query Variables */
     public tables: any[] = [];
     public tablesToShow: any[] = [];
@@ -226,6 +235,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public currentSQLQuery: string = '';
     public queryLimit: number = 5000; // por defecto se limita a 5.000
     public groupByEnabled: boolean = true;
+    public dynamicFilters: boolean = true;
 
     public queryModes: any[] = [
         { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
@@ -248,6 +258,9 @@ export class EdaBlankPanelComponent implements OnInit {
     public filterTypes: FilterType[];
     public selectedFilters: any[] = [];
     public globalFilters: any[] = [];
+    public sortedFilters: any[] = [];
+    public globalFiltersBackup: any[];
+    public temporalSortedFilters: any[] = [];
     public filterValue: any = {};
     public tableInput: string;
     public columnInput: string;
@@ -255,6 +268,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public loadingNodes: boolean = false;
     public rootTable: any;
     public tableNodes: any = [];
+    public displayedTableNodes: any[] = [];
     public selectedTableNode: any;
     public nodeJoins: any[] = [];
 
@@ -298,8 +312,11 @@ export class EdaBlankPanelComponent implements OnInit {
 
     private route = inject(ActivatedRoute);
     private formBuilder = inject(UntypedFormBuilder);
+    private iaFormStateService = inject(IaFormStateService);
+
 
     public editingTitle: boolean = false;
+    public promptAvailable = computed(() => this.iaFormStateService.formData().AVAILABLE);
 
 
     constructor(
@@ -342,7 +359,6 @@ export class EdaBlankPanelComponent implements OnInit {
     async ngOnInit() {
         this.index = 0;
         this.readonly = this.panel.readonly;
-        this.assignLevels(this.tableNodes, 0);
 
         await this.setTablesData();
 
@@ -365,12 +381,15 @@ export class EdaBlankPanelComponent implements OnInit {
                     this.rootTable = contentQuery.query.rootTable;
                 }
 
+                this.sortedFilters = contentQuery.query.sortedFilters || [];
+
             if (modeSQL || queryMode == 'SQL') {
                 this.currentSQLQuery = contentQuery.query.SQLexpression;
                 this.sqlOriginTable = this.sqlOriginTables.find(t => t.value === contentQuery.query.fields[0].table_id);
                 this.cdr.detectChanges();
             }
             this.loadChartsData(this.panel.content);
+            this.dynamicFilters = this.panel.content.dynamicFilters ?? true;
             } catch(e){
                 console.error('Error loading panel conent: ');
                 throw e;
@@ -385,6 +404,10 @@ export class EdaBlankPanelComponent implements OnInit {
             ['knob', 'radar'].includes(this.panel.content?.chart) ? { minHeight: '55vh', minWidth: '55vw', display: 'inline-block', alignItems: 'center' } :
             ['kpi'].includes(this.panel.content?.chart) ? {height: '100%', width: '100%', alignContent: 'center'} : 
             {height: '100%', width: '100%'};
+        
+        if(this.sortedFilters === undefined) this.sortedFilters = []; // Si se trata de un informe antiguo, definimos el informe como vacío.
+
+
     }
     
     /**
@@ -426,12 +449,21 @@ public tableNodeExpand(event: any): void {
 
   this.loadingNodes = true;
 
-  PanelInteractionUtils.expandTableNode(this, node);
+  const targetNode = this.tableInput ? (this.findOriginalNode(node) || node) : node;
+  PanelInteractionUtils.expandTableNode(this, targetNode);
 
-  // Si expandís de forma asíncrona, esperá al resultado
   setTimeout(() => {
-    this.assignLevels([node], node.level || 0);
+    // Si la expansión no produjo hijos, eliminamos las propiedades de carpeta expandible
+    if (targetNode.children?.length === 0) {
+      delete targetNode.children;
+      delete targetNode.expandedIcon;
+      delete targetNode.collapsedIcon;
+    }
     this.loadingNodes = false;
+    // Re-aplicar el filtro tras la expansión para incluir los nuevos hijos cargados.
+    if (this.tableInput) {
+      this.displayedTableNodes = this.filterTreeNodes(this.tableNodes, this.tableInput.toLowerCase());
+    }
   });
 }
 
@@ -487,6 +519,7 @@ public tableNodeExpand(event: any): void {
         try {
             await this.runQueryFromDashboard(true);
         } catch (err) {
+            console.log(err);
             throw err;
         }
     }
@@ -614,19 +647,21 @@ public tableNodeExpand(event: any): void {
                 this.reloadTablesData();
                 PanelInteractionUtils.loadTableNodes(this);
 
+                this.displayedTableNodes = this.tableNodes;
+
                 this.userSelectedTable = undefined;
                 this.columns = [];
             } else {
                 this.rootTable = null; // no root table in EDA mode
                 PanelInteractionUtils.handleCurrentQuery(this);
-            this.columns = this.columns.filter(c => !c.isdeleted);
+                this.columns = this.columns.filter(c => !c.isdeleted);
             }
         }
 
         // Configuración global del panel
         this.queryLimit = queryLimit;
         this.joinType = panelContent.query.query.joinType || 'inner';
-        this.groupByEnabled = groupByEnabled;
+        this.groupByEnabled = groupByEnabled ?? true;
         PanelInteractionUtils.handleFilters(this, query.query);
         PanelInteractionUtils.handleFilterColumns(this, filters, fields);
 
@@ -670,7 +705,7 @@ public tableNodeExpand(event: any): void {
             const chart = this.chartForm?.value.chart?.value ? this.chartForm?.value.chart?.value : this.chartForm?.value.chart;
             const edaChart = this.panelChart?.props.edaChart;
 
-            this.panel.content = { query, chart, edaChart };
+            this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters };
 
             /**This is to repaint on panel redimension */
             if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst','radar'].includes(chart)) {
@@ -812,6 +847,11 @@ public tableNodeExpand(event: any): void {
         this.display_v.chart = type;
         this.graficos.chartType = type;
         this.graficos.edaChart = subType;
+        // Revision para paneles con modificacion de tipo de chart y posterior duplicado
+        if (this.panel.content) {
+            this.panel.content.chart = type;
+            this.panel.content.edaChart = subType;
+        }
         this.graficos.addTrend = config && config.getConfig() ? config.getConfig()['addTrend'] : false;
         this.graficos.showPredictionLines = config && config.getConfig() ? config.getConfig()['showPredictionLines'] : false;
         this.graficos.numberOfColumns = config && config.getConfig() ? config.getConfig()['numberOfColumns'] : null;
@@ -832,7 +872,7 @@ public tableNodeExpand(event: any): void {
 
         const allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
 
-        if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
+        if (!_.isEqual(this.display_v.chart, 'no_data') && allow && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
 
             // Preservar assignedColors, coloredBarsConfig, showUniqueColors y uniqueBarColors antes del merge
@@ -869,6 +909,7 @@ public tableNodeExpand(event: any): void {
                     const transformedData = QueryUtils.transformAnalizedQueryData(this, data);
                     this.renderChart(this.currentQuery, transformedData.labels, transformedData.values, type, subType, _config);
                 } catch(err) {
+                    console.log(err)
                     throw err;
                 } finally {
                     this.spinnerService.off();
@@ -876,6 +917,14 @@ public tableNodeExpand(event: any): void {
             } else {
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
             }
+        }else{
+            try{
+                console.log('no allow');
+                console.log(allow);
+            }catch (e){
+                console.log(e);
+            }
+
         }
 
         // Controlar si se ejecuta una tabla cruzada
@@ -936,13 +985,64 @@ public tableNodeExpand(event: any): void {
         return selectedTable;
     }
 
+     // Filtra el buscador de entidades según el modo de query activo.
+     // Modo EDA (estándar): filtra la lista plana tablesToShow.
+     // Modo EDA2 (árbol) con query activa: filtra displayedTableNodes de forma recursiva
     public onTableInputKey(event: any) {
-        if (event.target.value) {
-            this.tablesToShow = this.tablesToShowBase
-                .filter(table => table.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
+        if (this.selectedQueryMode === 'EDA2' && this.currentQuery.length > 0) {
+            const term = event.target.value?.toLowerCase();
+            this.displayedTableNodes = term
+                ? this.filterTreeNodes(this.tableNodes, term)
+                : this.tableNodes;
         } else {
-            this.tablesToShow = [...this.tablesToShowBase];
+            if (event.target.value) {
+                this.tablesToShow = this.tablesToShowBase
+                    .filter(table => table.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
+            } else {
+                this.tablesToShow = [...this.tablesToShowBase];
+            }
         }
+    }
+
+    // Filtra recursivamente un array de nodos del árbol por término de búsqueda.
+    private filterTreeNodes(nodes: any[], term: string): any[] {
+        const result: any[] = [];
+        for (const node of nodes) {
+            if (node.label?.toLowerCase().includes(term)) {
+                result.push(node);
+            } else {
+                const hasExpandedChildren = node.expanded === true
+                    && node.children?.length > 0
+                    && node.children[0]?.label !== undefined;
+                if (hasExpandedChildren) {
+                    const filtered = this.filterTreeNodes(node.children, term);
+                    if (filtered.length > 0) {
+                        result.push({ ...node, children: filtered });
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Busca el nodo original en tableNodes (árbol completo) que corresponde
+     * al nodo target recibido del evento de expansión.
+     * Necesario porque al filtrar se crean objetos clonados con children reducidos;
+     * la expansión debe operar sobre el nodo real para que tableNodes quede actualizado.
+     * Identifica el nodo por table_id (nodos raíz) o child_id (nodos hijo).
+     */
+    private findOriginalNode(target: any, nodes: any[] = this.tableNodes): any {
+        for (const node of nodes) {
+            if (target.table_id && node.table_id === target.table_id) return node;
+            if (target.child_id && node.child_id === target.child_id) return node;
+            const hasChildren = node.children?.length > 0 && node.children[0]?.label !== undefined;
+            if (hasChildren) {
+                const found = this.findOriginalNode(target, node.children);
+                if (found) return found;
+            }
+        }
+        return null;
     }
 
 
@@ -1118,6 +1218,63 @@ public tableNodeExpand(event: any): void {
         }
     }
 
+    /** Registers a global filter (even if empty) so it appears in the AND/OR dialog without triggering a query */
+    public assertGlobalEmptyFilter(_filter: any) {
+        const globalFilter = _.cloneDeep(_filter);
+
+        if (_filter.pathList && _filter.pathList[this.panel.id]) {
+            globalFilter.joins = _filter.pathList[this.panel.id].path;
+            globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
+        }
+        const filterInx = this.globalFilters.findIndex((gf: any) => gf.filter_id === globalFilter.filter_id);
+
+        if (filterInx !== -1) {
+            this.globalFilters.splice(filterInx, 1);
+            this.globalFilters.push(globalFilter);
+        } else {
+            this.globalFilters.push(globalFilter);
+        }
+    }
+
+    public addingGlobalFilterEbp(_filter: any) {
+
+        if(this.sortedFilters.length !==0){
+            const lastElement = this.sortedFilters[this.sortedFilters.length-1];
+
+            const newSortedFilter = {
+                cols: 3,
+                rows: 1,
+                y: lastElement.y+1,
+                x: 0,
+                filter_table: _filter.filter_table,
+                filter_column: _filter.filter_column,
+                filter_type: _filter.filter_type,
+                filter_column_type: _filter.filter_column_type,
+                filter_elements: _filter.filter_elements,
+                filter_codes: _filter.filter_codes,
+                filter_id: _filter.filter_id,
+                isGlobal: _filter.isGlobal,
+                value: "and",
+            }
+
+            this.sortedFilters.push(newSortedFilter);
+            this.savePanel()
+        }
+    }    
+
+    public rebootGlobalFilter(_filter: any){
+
+        if(this.sortedFilters.length !==0) {
+            this.alertService.addWarning($localize`:@@globalFilterSettingsReboot:La configuración de filtros del panel involucrado se ha reiniciado`);
+        }
+
+        if(this.sortedFilters.some((sortedFilter: any) => _filter.id === sortedFilter.filter_id)){
+            this.sortedFilters = [];
+            this.savePanel(); // Panel setting saved
+        }
+
+    }
+    
     /* Funcions generals de la pagina */
     public disableBtnSave = () => this.display_v.btnSave = true;
 
@@ -1137,6 +1294,7 @@ public tableNodeExpand(event: any): void {
         this.display_v.page_dialog = true;
         this.ableBtnSave();
         PanelInteractionUtils.verifyData(this);
+        this.temporalSortedFilters = _.cloneDeep(this.sortedFilters);
     }
 
     /**
@@ -1148,6 +1306,8 @@ public tableNodeExpand(event: any): void {
         this.columns = [];
         this.currentQuery = [];
         this.indextab = 0;
+        this.sortedFilters = _.cloneDeep(this.temporalSortedFilters);
+        EdaFilterAndOrComponent.reiniciarDashboard();
 
         if (this.panelDeepCopy.query) {
             this.panelDeepCopy.query.query.filters = this.mergeFilters(this.panelDeepCopy.query.query.filters, this.globalFilters);
@@ -1211,16 +1371,17 @@ public tableNodeExpand(event: any): void {
                 properties.chartDataset[0].data = this.graficos.assignedColors.map(element => element.value)
             }
         
-                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors, chartLegend: this.graficos.chartLegend, coloredBarsConfig: this.graficos.coloredBarsConfig, showUniqueColors: this.graficos.showUniqueColors, uniqueBarColors: this.graficos.uniqueBarColors };
+                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors, chartLegend: this.graficos.chartLegend, coloredBarsConfig: this.graficos.coloredBarsConfig, showUniqueColors: this.graficos.showUniqueColors, uniqueBarColors: this.graficos.uniqueBarColors, showGridLines: this.graficos.showGridLines };
                 const layout =
                     new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType,
                     this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels,
-                    this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors, this.graficos.showPointLines, this.graficos.showPredictionLines, this.graficos.chartLegend));
+                    this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors, this.graficos.showPointLines, this.graficos.showPredictionLines, this.graficos.chartLegend, this.graficos.showGridLines ?? true));
                 if (this.graficos.coloredBarsConfig) {
                     (layout.getConfig() as any)['coloredBarsConfig'] = this.graficos.coloredBarsConfig;
                 }
                 (layout.getConfig() as any)['showUniqueColors'] = this.graficos.showUniqueColors ?? false;
                 (layout.getConfig() as any)['uniqueBarColors'] = this.graficos.uniqueBarColors ?? [];
+                (layout.getConfig() as any)['showGridLines'] = this.graficos.showGridLines ?? true;
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
             }
             //not saved alert message
@@ -1672,6 +1833,19 @@ public tableNodeExpand(event: any): void {
     */
     public runManualQuery = () => {
 
+        if(!this.groupByEnabled) {
+            let isAnAggregation: boolean = false;
+            isAnAggregation = this.currentQuery.some((column: any) =>
+                column.aggregation_type.some((at: any) =>
+                    at.selected && at.value !== 'none'
+                )
+            );
+            if(isAnAggregation) {
+                this.alertService.addWarning($localize`:@@mustAddTheGroupingsToRunWithAggregations:Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos`);
+                return;
+            }
+        }
+
         const chartType = this.panelChart?.props?.chartType || '';
 
         if (chartType == 'crosstable' && this.indextab === 1) {
@@ -1688,6 +1862,7 @@ public tableNodeExpand(event: any): void {
 
         if (this.selectedQueryMode == 'EDA2' && this.currentQuery.length === 1) {
             PanelInteractionUtils.loadTableNodes(this);
+            this.displayedTableNodes = this.tableNodes;
        }
     }
 
@@ -1695,8 +1870,35 @@ public tableNodeExpand(event: any): void {
 
     public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table, true);
 
-    public removeColumn = (c: Column, list?: string, event?: Event) => PanelInteractionUtils.removeColumn(this, c, list);
+    public removeColumn = (c: Column, list?: string) => {
+        // rootTableName => Para tener la tabla principal => condiciones para comprobar si podemos eliminar la columna
+        const rootTableName = this.rootTable?.table_name;
+        // Las joins son fiables al interactuar con la aplicación; la comparación de table_id es el método alternativo después de guardar y recargar cuando los joins pueden estar vacías.
+        const isNotRootColumn = !!c?.joins?.length || (!!rootTableName && c?.table_id !== rootTableName);
+        const rootColumnElements = this.currentQuery.filter(col => !col?.joins?.length && (!rootTableName || col?.table_id === rootTableName)).length;
+        const currentQueryLength = this.currentQuery.length;
 
+        // Simplemente procedemos si no es la última columna de la tabla raíz.
+        if (isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
+            const columnHadFilter = this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name);
+            const removed = PanelInteractionUtils.removeColumn(this, c, list);
+            if (removed !== false) {
+                // Verificamos si al eliminar un campo tenía un filtro en selectedFilters (se comprueba antes de que removeColumn los borre).
+                if (columnHadFilter) {
+                    if (this.sortedFilters.length !== 0) {
+                        this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+                    }
+                    this.sortedFilters = []; // resets the values because one or more filters were deleted
+                }
+            }
+        }
+        else {
+            // Detenemos la propagación del evento para no abrir el panel de atributos.
+            event.stopPropagation();
+            this.alertService.addError($localize`:@@cannotRemoveLastColumn:No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.`);
+        }
+    }
+    
     public getOptionDescription = (value: string): string => EbpUtils.getOptionDescription(value);
 
     public getOptionIcon = (value: string): string => EbpUtils.getOptionIcon(value);
@@ -1728,9 +1930,23 @@ public tableNodeExpand(event: any): void {
 
 
     public async getQuery($event: MouseEvent) {
-    this.display_v.showQueryContainer = true;
-    this.display_v.minispinnerSQL = true;
-    this.queryFromServer = null;
+
+        if(!this.groupByEnabled) {
+            let isAnAggregation: boolean = false;
+            isAnAggregation = this.currentQuery.some((column: any) =>
+                column.aggregation_type.some((at: any) =>
+                    at.selected && at.value !== 'none'
+                )
+            );
+            if(isAnAggregation) {
+                this.alertService.addWarning($localize`:@@mustAddTheGroupingsToRunWithAggregations:Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos`);
+                return;
+            }
+        }
+
+        this.display_v.showQueryContainer = true;
+        this.display_v.minispinnerSQL = true;
+        this.queryFromServer = null;
 
         // this.op.toggle($event);
 
@@ -1825,6 +2041,13 @@ public tableNodeExpand(event: any): void {
         return pathStr
     }
 
+    public getDisplayAggregation(aggregation: any) {
+        let str = '';
+        const aggregationText = aggTypes.filter(agg => agg.value === aggregation.value)[0].label
+        str = `&nbsp<strong>( ${aggregationText} )</strong>&nbsp`;
+        return str;
+    }
+
     public getDisplayFilterStr(filter: any) {
         let str = '';
 
@@ -1836,6 +2059,14 @@ public tableNodeExpand(event: any): void {
 
             const values = filter.filter_elements[0]?.value1;
             const values2 = filter.filter_elements[1]?.value2;
+
+            const whereMessage: string = $localize`:@@whereMessage: Filtro sobre todos los registros`;
+            const havingMessage: string = $localize`:@@havingMessage: Filtro sobre los resultados`;
+
+            // Nomenclatura:  WHERE => Filtro sobre todos los registros | HAVING => Filtro sobre los resultados
+            const filterBeforeGroupingText = filter.filterBeforeGrouping ? whereMessage : havingMessage
+            // Agregación
+            const aggregation = filter.aggregation_type;
             let valueStr = '';
 
             if (values) {
@@ -1847,7 +2078,7 @@ public tableNodeExpand(event: any): void {
 
                 if (values2) {
                     if (values2.length == 1) {
-                        valueStr = `AND "${values2[0]}"`;
+                        valueStr = `"${values[0]}" - "${values2[0]}"`;
                     }  else if (values2.length > 1) {
                         valueStr = `AND [${values2.map((v: string) => (`"${v}"`) ).join(', ')}]`;
                     }
@@ -1856,9 +2087,15 @@ public tableNodeExpand(event: any): void {
             }
 
 
-            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filter.filter_type}</strong>&nbsp${valueStr}`;
-        }
+            let aggregationLabel = '';
+            if(aggTypes.filter(agg => agg.value === aggregation).length !== 0) aggregationLabel = aggTypes.filter(agg => agg.value === aggregation)[0].label;
 
+            // Agregado de internacionalización del between
+            let filterType = filter.filter_type
+            if(filterType === 'between') filterType = this.textBetween;
+
+            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filterType}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp - ${this.aggregationText}: &nbsp<strong>${aggregationLabel}</strong>&nbsp`;
+        }
 
         return str;
     }
@@ -1956,22 +2193,14 @@ public tableNodeExpand(event: any): void {
         QueryUtils.runManualQuery(this) // Ejecutando con la nueva configuracion de currentQuery
     }
 
-private assignLevels(nodes: any[], level = 0): void {
-  nodes.forEach(node => {
-    node.level = level;
-    if (node.children?.length) {
-      this.assignLevels(node.children, level + 1);
-    }
-  });
-}
 
     getAttributeTypeIcon(type: string) {
         const icons = {
-            numeric: 'mdi-numeric',//'text-blue-500',
-            date: 'mdi-calendar-text', //text-green-500',
-            coordinate: 'mdi-map-marker', //text-green-500',
-            text: 'mdi-alphabetical', //'text-orange-500' 
-            html: 'mdi-language-html5' //'text-orange-500' 
+            numeric: 'mdi-numeric',
+            date: 'mdi-calendar-text',
+            coordinate: 'mdi-map-marker',
+            text: 'mdi-alphabetical',
+            html: 'mdi-language-html5'
         };
         return icons[type as keyof typeof icons] || '';
     }
@@ -2005,22 +2234,34 @@ private assignLevels(nodes: any[], level = 0): void {
         return this.dragDrop?.validated;
     }
 
-    toggleGroupBy(): void {
-        this.groupByEnabled = !this.groupByEnabled;
-        if (this.groupByEnabled) {
-            this.applyGroupBy();
-        } else {
-            this.removeGroupBy();
+    toggleGroupBy(): void {        
+        if(this.groupByEnabled) {
+            const currentQueryLength = this.currentQuery.length
+            let isAnAggregation: boolean = false;
+
+            isAnAggregation = this.currentQuery.some((column: any) =>
+                column.aggregation_type.some((at: any) =>
+                    at.selected && at.value !== 'none'
+                )
+            );
+
+            if(currentQueryLength !== 0){
+                if(isAnAggregation) {
+                    this.alertService.addWarning($localize`:@@noAttributeShouldHaveAggregation:Ningún Atributo debe tener agregación`);
+                    return;
+                }
+            } else {
+                this.alertService.addWarning($localize`:@@mustConfigureAtLeastOneAttribute:Debe configurar un atributo como mínimo para habilitar esta opción`);
+                return
+            }
         }
+        
+        this.groupByEnabled = !this.groupByEnabled;
     }
 
-    applyGroupBy(): void {
-    // Lógica para activar el group by
-    }
-
-    removeGroupBy(): void {
-    // Lógica para desactivar el group by
-    }
+    dynamicFiltersInteraction(): void {
+        this.dynamicFilters = !this.dynamicFilters;
+    } 
 
     newCurrentQueryUpdate(event: any) {
         this.currentQuery = event;
@@ -2059,5 +2300,75 @@ startEditTitle() {
     this.editingTitle = true;
     this.titleClick=true;
 }
+
+    // ─── AND/OR Filter Dialog ────────────────────────────────────────────────
+
+    public filterAndOrDialog(): void {
+        const numFilters = this.selectedFilters.length + this.globalFilters.length;
+        if (numFilters === 0) {
+            this.alertService.addWarning($localize`:@@withoutFilters:Aún no has configurado filtros. Usa el panel de filtros o los filtros globales`);
+            return;
+        }
+        this.display_v.filterAndOr_dialog = true;
+    }
+
+    public onCloseFilterAndOrDialog(): void {
+        this.display_v.filterAndOr_dialog = false;
+    }
+
+    public newSortedFiltersFunction(event: any[]): void {
+        this.sortedFilters = event;
+        this.display_v.btnSave = true;
+    }
+
+    public updateSortedFiltersColumnDialogFunction(e: any): void {
+        if (e.add) {
+            if (this.sortedFilters.length !== 0) {
+                const lastElement = this.sortedFilters[this.sortedFilters.length - 1];
+                const newSortedFilter = {
+                    cols: 3, rows: 1,
+                    y: lastElement.y + 1, x: 0,
+                    filter_table: e.filter.filter_table,
+                    filter_column: e.filter.filter_column,
+                    filter_type: e.filter.filter_type,
+                    filter_column_type: e.filter.filter_column_type,
+                    filter_elements: e.filter.filter_elements,
+                    filter_id: e.filter.filter_id,
+                    value: 'and',
+                };
+                this.sortedFilters.push(newSortedFilter);
+            }
+        } else {
+            if (this.sortedFilters.length !== 0) {
+                this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+            }
+            this.sortedFilters = [];
+        }
+    }
+
+    public updateSortedFiltersFilterDialogFunction(e: any): void {
+        if (e.add) {
+            if (this.sortedFilters.length !== 0) {
+                const lastElement = this.sortedFilters[this.sortedFilters.length - 1];
+                const newSortedFilter = {
+                    cols: 3, rows: 1,
+                    y: lastElement.y + 1, x: 0,
+                    filter_table: e.filter.filter_table,
+                    filter_column: e.filter.filter_column,
+                    filter_type: e.filter.filter_type,
+                    filter_column_type: e.filter.filter_column_type,
+                    filter_elements: e.filter.filter_elements,
+                    filter_id: e.filter.filter_id,
+                    value: 'and',
+                };
+                this.sortedFilters.push(newSortedFilter);
+            }
+        } else {
+            if (this.sortedFilters.length !== 0) {
+                this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
+            }
+            this.sortedFilters = [];
+        }
+    }
 
 }

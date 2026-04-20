@@ -14,7 +14,7 @@
       "outDir": "./dist/out-tsc",
       "sourceMap": true,
       "declaration": false,
-      "moduleResolution": "node",
+      "moduleResolution": "bundler",
       "experimentalDecorators": true,
       "emitDecoratorMetadata": true,
       "importHelpers": true,
@@ -23,7 +23,9 @@
       "typeRoots": ["node_modules/@types"],
       "types": ["node"],
       "lib": ["es2022", "dom"],
-      "useDefineForClassFields": false
+      "useDefineForClassFields": false,
+      "strict": false,
+      "strictPropertyInitialization": false
     },
     "angularCompilerOptions": {
       "strictTemplates": true,
@@ -32,8 +34,7 @@
       "enableI18nLegacyMessageIdFormat": false, // ✅ Angular moderno no necesita IDs legados para i18n
       "i18nInLocale": "es-ES", // ✅ Cambia esto si quieres otro idioma predeterminado
       "i18nOutFile": "src/locale/messages.xlf", // ✅ Si deseas extraer mensajes, especifica el archivo de salida
-      "i18nOutFormat": "xlf", // ✅ Especifica el formato de exportación de i18n (por defecto es "xlf")
-      "enableIvy": true // ✅ Ivy debe estar habilitado (por defecto en Angular 17)
+      "i18nOutFormat": "xlf" // ✅ Especifica el formato de exportación de i18n (por defecto es "xlf")
     }
 }
   

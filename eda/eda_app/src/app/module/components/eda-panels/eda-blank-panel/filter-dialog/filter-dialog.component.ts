@@ -1,4 +1,4 @@
-import {Component, Input, ViewChild} from '@angular/core';
+import {Component, Input, ViewChild, Output, EventEmitter} from '@angular/core';
 import {SelectItem} from 'primeng/api';
 import {EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent, EdaDatePickerComponent} from '@eda/shared/components/shared-components.index';
 import {Column} from '@eda/models/model.index';
@@ -14,7 +14,7 @@ import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { DropdownModule } from 'primeng/dropdown';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
-
+import { aggTypes } from 'app/config/aggretation-types';
 
 const ANGULAR_MODULES = [
     FormsModule,
@@ -41,7 +41,7 @@ const STANDALONE_COMPONENTS = [
     standalone: true,
     selector: 'app-filter-dialog',
     templateUrl: './filter-dialog.component.html',
-    styleUrls: ['../eda-blank-panel.component.css'],
+    styleUrls: ['../eda-blank-panel.component.css','./filter-dialog.component.css'],
     imports: [STANDALONE_COMPONENTS, ANGULAR_MODULES, PRIMENG_MODULES]
 
 })
@@ -49,6 +49,8 @@ const STANDALONE_COMPONENTS = [
 export class FilterDialogComponent {
 
     @ViewChild('myCalendar', { static: false }) datePicker: EdaDatePickerComponent;
+    @Output() updateSortedFiltersFilterDialog: EventEmitter<any> = new EventEmitter<any>();    
+
     @Input() controller: any;
 
     public dialog: EdaDialog;
@@ -70,11 +72,26 @@ export class FilterDialogComponent {
         selecteds: [],
         range : null
     };
+    public filterBeforeAfter = {
+        filterBeforeGrouping: true, // valor por defecto true ==> WHERE / valor false ==> HAVING
+        elements: [
+            {label: 'Aplicar el filtro sobre todos los registros.', value: true}, // WHERE
+            {label: 'Aplicar el filtro sobre los resultados.', value: false}, // HAVING
+        ],
+    }
+    public filterBeforeAfterSelected: any;
     public inputType: string;
     public filterValue: any = {};
     public filterSelected: FilterType;
     public dropDownFields: SelectItem[] = [];
     public limitSelectionFields: number;
+    public aggregationsTypes: any[] = [];
+    public aggregationType: any = null;
+
+    // Tooltip
+    public whereMessage: string = $localize`:@@whereMessage: Filtro sobre todos los registros`;
+    public havingMessage: string = $localize`:@@havingMessage: Filtro sobre los resultados`;
+    public textBetween: string = $localize`:@@textBetween:Entre`
 
     constructor(
         private dashboardService: DashboardService,
@@ -85,7 +102,7 @@ export class FilterDialogComponent {
     ) {
 
         this.filter.types = this.chartUtils.filterTypes;
-
+        this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
     }
 
     ngOnInit(): void {
@@ -103,6 +120,8 @@ export class FilterDialogComponent {
         const valueListSource = this.selectedColumn.valueListSource;
         const joins = this.selectedColumn.joins;
         const autorelation = this.selectedColumn.autorelation;
+        const filterBeforeGrouping = this.filterBeforeAfter.filterBeforeGrouping
+        const aggregation_type = this.aggregationType ? this.aggregationType.value : null;
 
         const filter = this.columnUtils.setFilter({
             obj: this.filterValue,
@@ -113,7 +132,9 @@ export class FilterDialogComponent {
             selectedRange,
             valueListSource,
             autorelation,
-            joins
+            joins,
+            filterBeforeGrouping,
+            aggregation_type,
         });
         
         this.filter.selecteds.push(filter);
@@ -125,17 +146,80 @@ export class FilterDialogComponent {
         this.filterSelected = undefined; // filtre seleccionat cap
         this.filterValue = {}; // filtre ningun
         this.filter.range = null;
+        this.filterBeforeAfter.filterBeforeGrouping = true;
+        this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
+        this.aggregationType = {display_name: 'Suma', value: 'sum', selected: true};
+
+        // Control de agregar solo el filtro en la sección Where
+        const addToSortedFilters = { add: true, filter: filter };
+        if(filter['filterBeforeGrouping']) this.updateSortedFiltersFilterDialog.emit(addToSortedFilters);        
     }
 
     carrega() {
         this.carregarFilters();
         this.handleInputTypes();
-
+        this.handleAggregationType();
     }
 
     handleInputTypes() {
         const type = this.selectedColumn.column_type;
         this.inputType = this.columnUtils.handleInputTypes(type);
+    }
+
+    handleAggregationType() {
+
+        this.aggregationsTypes = JSON.parse(JSON.stringify(this.selectedColumn.aggregation_type));
+
+        for (let agg of this.aggregationsTypes) {
+            if(agg.value === 'sum') {
+                agg.selected = true;
+                this.aggregationType = agg; // Obtenemos la agregación por default
+            } else {
+                agg.selected = false;
+            }
+        }
+
+        // La agregacion none, esta descartada
+        this.aggregationsTypes.pop();
+
+    }
+    
+    addAggregation(type: any) {
+
+        // Seleccionando la agregación
+        this.aggregationsTypes.find((ag:any) => ag.value === type.value).selected = true;
+
+        for (let ag of this.aggregationsTypes) {
+            if (ag.selected === true && type.value !== ag.value) {
+                ag.selected = false;
+            }
+        }
+
+        // Recarguem les agregacions d'aquella columna + la seleccionada
+        this.selectedColumn.aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
+
+        // Obteniendo la agregación seleccionada
+        this.aggregationType = _.cloneDeep(type);
+
+    }
+
+    getAggName(value: string) {
+        return aggTypes.filter(agg => agg.value === value)[0].label;
+    }
+
+    getAggregationText(value: any) {
+
+        console.log('value:::: ', value);
+
+        const label = aggTypes.filter(agg => {
+            return (agg.value === value.aggregation_type);
+        })[0].label;
+        return label;
+    }
+
+    getFilterText(value) {
+        if(value.filter_type === 'between') return this.textBetween;
+        return value.filter_type;
     }
 
     carregarFilters() {
@@ -150,6 +234,9 @@ export class FilterDialogComponent {
 
 
     removeFilter(item: any) {
+        const addToSortedFilters = { add: false, filter: item };
+        this.updateSortedFiltersFilterDialog.emit(addToSortedFilters);
+
         this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id) ).removed = true;
 
         this.filter.forDisplay = this.filter.selecteds.filter(f => {
@@ -189,6 +276,13 @@ export class FilterDialogComponent {
 
             if ( !_.isEqual(filter.value, 'between') ) {
                 this.filterValue = {};
+            }
+            if(['in', 'not_in', 'not_null', 'not_null_nor_empty', 'null_or_empty'].includes(filter.value)) {
+                this.whereHavingSwitch({
+                    label: 'WHERE',
+                    value: true,
+                })
+                this.filterBeforeAfterSelected = {label: 'WHERE', value: true}
             }
         } else {
             this.resetDisplay();
@@ -242,14 +336,28 @@ export class FilterDialogComponent {
         this.loading = false;
     }
 
+    whereHavingSwitch(selected) {
+
+        if(selected.value) {
+            this.filterBeforeAfter.filterBeforeGrouping = true;
+            return true
+        } else {
+            this.filterBeforeAfter.filterBeforeGrouping = false;
+            return false
+        }
+
+    }
+
     processPickerEvent(event){
         if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-            if (!event.dates[1]) {
-                event.dates[1] = event.dates[0];
-            }
+            const singleValueOperators = ['=', '!=', '>', '<', '>=', '<='];
+            const isSingleDate = singleValueOperators.includes(this.filterSelected?.value);
 
-            let stringRange = [event.dates[0], event.dates[1]]
+            const dates = Array.isArray(event.dates) ? event.dates : [event.dates, event.dates];
+            if (!dates[1]) dates[1] = dates[0];
+
+            let stringRange = [dates[0], dates[1]]
                 .map(date => {
                     let [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
                     return `${ye}-${mo}-${da}`
@@ -257,7 +365,7 @@ export class FilterDialogComponent {
 
             this.filter.range = event.range;
             this.filterValue.value1 = stringRange[0];
-            this.filterValue.value2 = stringRange[1];
+            this.filterValue.value2 = isSingleDate ? null : stringRange[1];
             this.display.filterButton = false;
         }
     }

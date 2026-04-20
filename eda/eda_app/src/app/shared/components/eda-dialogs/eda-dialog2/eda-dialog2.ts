@@ -21,6 +21,7 @@ export abstract class EdaDialog2 {
     @Output() notstyles: EventEmitter<any> = new EventEmitter();
     @Output() nextstep: EventEmitter<any> = new EventEmitter();
     @Output() switchredirecction: EventEmitter<any> = new EventEmitter();
+    @Output() checkexpression: EventEmitter<any> = new EventEmitter();
 
 
     @Input() showApply: boolean = true;
@@ -34,6 +35,7 @@ export abstract class EdaDialog2 {
     @Input() disableApply: boolean = false;
     @Input() showNextStep: boolean = false;
     @Input() disableNextStep: boolean = false;
+    @Input() showCheckExpression: boolean = false;
 
     // Mapa estándar de siglas a píxeles
     protected sizeMap: Record<string, string> = {
@@ -67,5 +69,8 @@ export abstract class EdaDialog2 {
     }
     public onSwitchRedirecction(): void {
         this.switchredirecction.emit(true);
+    }
+    public onCheckExpression(): void {
+        this.checkexpression.emit(true);
     }
 }

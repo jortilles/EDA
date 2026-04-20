@@ -3,7 +3,11 @@
   <div content class="grid gap-4">
     <div class="flex flex-col mt-4 gap-4">
       <!-- Configuración de filtros -->
-        <div class="grid grid-cols-[42.5%,42.5%,15%] gap-4 items-start mt-10">
+        <div class="grid gap-4 items-start mt-10"
+          [ngClass]="{
+            'grid-cols-[30%,30%,25%,15%]': filterSelected && selectedColumn?.column_type === 'numeric' && !display.switchButton && !filterBeforeAfter.filterBeforeGrouping,
+            'grid-cols-[42.5%,42.5%,15%]': !(filterSelected && selectedColumn?.column_type === 'numeric' && !display.switchButton && !filterBeforeAfter.filterBeforeGrouping)
+          }">
           <div class="flex flex-col gap-4 w-[100%]">
             <!-- Tipo de filtro  -->
             <div>
@@ -15,6 +19,23 @@
                 <label i18n="@@tiposFiltrosLabel" for="types">Tipos de filtro</label>
               </span>
             </div>
+            <!-- WHERE / HAVING selector -->
+            @if (filterSelected && selectedColumn?.column_type === 'numeric' && !display.switchButton) {
+              <div>
+                <span class="p-float-label">
+                  <p-dropdown
+                    id="whereHaving"
+                    [options]="filterBeforeAfter.elements"
+                    [(ngModel)]="filterBeforeAfterSelected"
+                    optionLabel="label"
+                    [autoDisplayFirst]="true"
+                    [style]="{'width': '100%'}"
+                    (onChange)="whereHavingSwitch(filterBeforeAfterSelected)">
+                  </p-dropdown>
+                  <label for="whereHaving" i18n="@@whereHavingLabel">Ámbito del filtro</label>
+                </span>
+              </div>
+            }
             <!-- Switch y botón -->
             <div class="flex justify-between items-center w-full mt-4 w-[100%]">
               <div class="flex items-center gap-2">
@@ -24,17 +45,26 @@
                   (onChange)="loadDropDrownData()">
                 </p-inputSwitch>
               </div>
-  
-  
+
+
             </div>
           </div>
-  
+
           <!-- Valores de los filtros -->
           <div class="flex flex-col gap-2">
             @if (!!display.calendar && !filter.switch) {
-            <eda-date-picker #myCalendar class="h-[3.2rem]" (onDatesChanges)="processPickerEvent($event)"></eda-date-picker>
+              <!-- valores de solo un valor fecha -->
+              <eda-date-picker 
+                #myCalendar 
+                class="h-[3.2rem]" 
+                (onDatesChanges)="processPickerEvent($event)"
+                [filterSelected]="filterSelected"
+                [selectionMode]="display.between ? 'range' : 'single'"
+              ></eda-date-picker>
+
             }
-            @if (!display.calendar && !filter.switch) {
+            @if (!display.calendar && !filter.switch && (selectedColumn.column_type !== 'date')) {
+            <!-- Valores vacios y nulos -->
             <span class="p-float-label h-[3.2rem] w-full">
               <input
                 id="float-input1"
@@ -49,6 +79,7 @@
          
             }
             @if (filter.switch) {
+            <!-- Valores de in y out -->
             <span class="p-float-label h-[3.2rem] [&_.p-multiselect-label-container]:h-[3.05rem] [&_.p-multiselect-label-container]:flex [&_.p-multiselect-label-container]:items-center">
               <p-multiSelect
                 [options]="dropDownFields"
@@ -69,25 +100,42 @@
             }
             <!-- Segundo valor por si el filtro es between  -->
             @if (!!display.between) {
-            @if (!display.calendar && !filter.switch) {
-            <span class="p-float-label h-[3.2rem] [&_.p-multiselect-label-container]:h-[3.05rem] [&_.p-multiselect-label-container]:flex [&_.p-multiselect-label-container]:items-center">
-              <input id="float-input2" class="h-[3.2rem] w-full rounded-md border px-2 py-4" [type]="inputType"
-                [(ngModel)]="filterValue.value2" (input)="handleValidForm({value2: filterValue.value2})" pInputText>
-              <label i18n="@@valor2Label">Valor 2</label>
-            </span>
-            }
-            @if (filter.switch) {
-            <span class="p-float-label h-[3.2rem] [&_.p-multiselect-label-container]:h-[3.05rem] [&_.p-multiselect-label-container]:flex [&_.p-multiselect-label-container]:items-center">
-              <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value2" [virtualScroll]="true" [itemSize]="34"
-                [filter]="false" [style]="{width:'100%'}" [panelStyle]="{minWidth:'100%'}"
-                (onChange)="handleValidForm({value2: filterValue.value2})" i18n-defaultLabel="@@groupSelect" defaultLabel="Selecciona..."
-                [selectionLimit]="limitSelectionFields" id="float-input2">
-              </p-multiSelect>
-              <label i18n="@@valor2Label">Valor 2</label>
-            </span>
-            }
+
+              @if (!display.calendar && !filter.switch) {
+              <span class="p-float-label h-[3.2rem] [&_.p-multiselect-label-container]:h-[3.05rem] [&_.p-multiselect-label-container]:flex [&_.p-multiselect-label-container]:items-center">
+                <input id="float-input2" class="h-[3.2rem] w-full rounded-md border px-2 py-4" [type]="inputType"
+                  [(ngModel)]="filterValue.value2" (input)="handleValidForm({value2: filterValue.value2})" pInputText>
+                <label i18n="@@valor2Label">Valor 2</label>
+              </span>
+              }
+              @if (filter.switch) {
+              <span class="p-float-label h-[3.2rem] [&_.p-multiselect-label-container]:h-[3.05rem] [&_.p-multiselect-label-container]:flex [&_.p-multiselect-label-container]:items-center">
+                <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value2" [virtualScroll]="true" [itemSize]="34"
+                  [filter]="false" [style]="{width:'100%'}" [panelStyle]="{minWidth:'100%'}"
+                  (onChange)="handleValidForm({value2: filterValue.value2})" i18n-defaultLabel="@@groupSelect" defaultLabel="Selecciona..."
+                  [selectionLimit]="limitSelectionFields" id="float-input2">
+                </p-multiSelect>
+                <label i18n="@@valor2Label">Valor 2</label>
+              </span>
+              }
             }
           </div>
+
+          <!-- Agregaciones (solo cuando se selecciona HAVING) -->
+          @if (filterSelected && selectedColumn?.column_type === 'numeric' && !display.switchButton && !filterBeforeAfter.filterBeforeGrouping) {
+            <div class="flex flex-col gap-2">
+              <h4 i18n="@@agregacionesH4">Agregaciones</h4>
+              <div class="aggregation-list">
+                @for (aggregation of aggregationsTypes; track aggregation) {
+                  <div class="aggregation-box"
+                    (click)="addAggregation(aggregation)"
+                    [ngClass]="aggregation.selected === true ? 'aggregation-active' : 'aggregation-unactive'">
+                    <span>{{getAggName(aggregation.value)}}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
 
           <div class="flex flex-col gap-2 items-start ">
 
@@ -111,6 +159,9 @@
                           * {{ selectedColumn.display_name.default }} is
                           {{ filtre.filter_type }}
                         </b>
+                        <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage" tooltipPosition="left">
+                          <b>&nbsp;[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]&nbsp;</b>
+                        </span>
                         <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
                       </p>
                     }
@@ -122,10 +173,13 @@
                           {{ filtre.filter_type }}
                           "{{ filtre.filter_elements[0].value1 }}"
                         </b>
+                        <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage" tooltipPosition="left">
+                          <b>&nbsp;[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]&nbsp;</b>
+                        </span>
                         <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
-                    </p>
+                      </p>
                     }
-                    
+
                     @if (filtre.filter_elements.length === 2) {
                       <p class="flex items-center">
                         <b class="m-1">
@@ -133,6 +187,9 @@
                           {{ filtre.filter_type }}
                           "{{ filtre.filter_elements[0].value1}}" Y "{{ filtre.filter_elements[1].value2 }}"
                         </b>
+                        <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage" tooltipPosition="left">
+                          <b>&nbsp;[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]&nbsp;</b>
+                        </span>
                         <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
                       </p>
                     }

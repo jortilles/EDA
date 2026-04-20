@@ -27,7 +27,7 @@ export class DashboardController {
    */
   static async getDashboards(req: Request, res: Response, next: NextFunction) {
     try {
-      const dataSources = await DataSource.find(  {},  'ds.metadata' ).exec();
+      const dataSources = await DataSource.find(  {},  'ds.metadata ds.connection.type' ).exec();
       let  privates, group, publics, shared = [];
       const groups = await Group.find({ users: { $in: req.user._id } }).exec();
       const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
@@ -91,10 +91,11 @@ export class DashboardController {
         DashboardController.normalizeVisibility(dashboard);
 
         if (dashboard.config.visible === 'private') {
-        const ds = dss.find( e=> e._id.toString() == dashboard.config.ds._id.toString() ); 
+        const ds = dss.find( e=> e._id.toString() == dashboard.config.ds._id.toString() );
          if( ds ){
               // Obtain the name of the data source
                dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+              dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
               if (this.iCanSeeTheDashboard(req, ds) == true) {
                 privates.push(dashboard);
               }
@@ -159,6 +160,7 @@ export class DashboardController {
                   const ds = dss.find( e=> e._id.toString() == dashboard.config.ds._id.toString() );
                   if( ds ){
                         dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+                        dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
                         if (this.iCanSeeTheDashboard(req, ds) == true) {
                           groupDashboards.push(dashboard)
                         }else{
@@ -226,6 +228,7 @@ export class DashboardController {
           const ds = dss.find(e => e._id == dashboard.config.ds._id);
           if( ds ){
               dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+              dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
               if (this.iCanSeeTheDashboard(req, ds) == true) {
                  publics.push(dashboard);
               }else{
@@ -281,7 +284,8 @@ export class DashboardController {
         if (dashboard.config.visible === 'common') {
           if( ds ){
               // Obtain the name of the data source
-               dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+              dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+              dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
               if (this.iCanSeeTheDashboard(req, ds) == true) {
                 shared.push(dashboard);
               }
@@ -441,8 +445,10 @@ export class DashboardController {
         if( ds ){
             // Obtain the name of the data source
             dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+              dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
          }else{
             dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
+              dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
           }
 
 
@@ -690,7 +696,7 @@ export class DashboardController {
     try {
       const dashboard = await Dashboard.findById(req.params.id, 'config.visible').exec();
       if (!dashboard) return next(new HttpException(404, 'Dashboard not found'));
-      const isAccessible = dashboard.config.visible ===  'shared' || dashboard.config.visible ===  'public';
+      const isAccessible = dashboard.config.visible === 'open' || dashboard.config.visible === 'shared';
       return res.status(200).json({ isAccessible });
     } catch (err) {
       console.log(err);
@@ -1393,6 +1399,7 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
           }
           myQuery.filters = req.body.query.filters
         }
+        myQuery.sortedFilters = req.body.query.sortedFilters;
       } else {
         // las etiquetas son el nombre técnico...
         myQuery = JSON.parse(JSON.stringify(req.body.query))
@@ -1429,6 +1436,10 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
               const filterColumn = filterTable.columns.find((c) => c.column_name == filter.filter_column);
               filter.filter_column_type = filterColumn?.column_type || 'text';
             }
+          }
+          /** por compatibilidad. Si no tengo el el tipo de agregación en el filtro lo pongo en el where*/ 
+          if(! filter.hasOwnProperty('filterBeforeGrouping') ){
+            filter.filterBeforeGrouping = true;
           }
         }
       }
@@ -1988,7 +1999,10 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
           // pongo a nulo los numeros nulos
           for (var i = 0; i < results.length; i++) {
             for (var j = 0; j < results[i].length; j++) {
-              if (results[i][j] === eda_api_config.null_value) results[i][j] = null;
+              const t = oracleDataTypes?.[0]?.[j];  // <-- changed
+              if( t === 'int' && results[i][j] === eda_api_config.null_value){
+                  results[i][j] = null;
+              }
             }
           }
         }
@@ -2125,7 +2139,25 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
 
       const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
       const dataModel = await connection.getDataSource(req.body.model_id)
-      const dataModelObject = JSON.parse(JSON.stringify(dataModel))
+      const dataModelObject = JSON.parse(JSON.stringify(dataModel));
+
+      /** por compatibilidad. Si no tengo el tipo de columna en el filtro lo añado */
+      /** por compatibilidad. Si no tengo el el tipo de agregación en el filtro.....*/
+      if(req.body.query.filters){
+        for (const filter of req.body.query.filters) {
+          if (!filter.filter_column_type) {
+            const filterTable = dataModelObject.ds.model.tables.find((t) => t.table_name == filter.filter_table.split('.')[0]);
+            if (filterTable) {
+              const filterColumn = filterTable.columns.find((c) => c.column_name == filter.filter_column);
+              filter.filter_column_type = filterColumn?.column_type || 'text';
+            }
+          }
+          /** por compatibilidad. Si no tengo el el tipo de agregación en el filtro lo pongo en el where*/ 
+          if(! filter.hasOwnProperty('filterBeforeGrouping') ){
+            filter.filterBeforeGrouping = true;
+          }
+        }
+      }
       const query = await connection.getQueryBuilded(
         req.body.query,
         dataModelObject,

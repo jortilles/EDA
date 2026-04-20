@@ -187,7 +187,8 @@ export class VerticaConnection extends AbstractConnection {
                 table_type: [],
                 columns: columns,
                 relations: [],
-                visible: true
+                visible: true,
+                ia_visibility: 'FULL'
             };
             return newTable
         } catch (err) {
@@ -219,6 +220,7 @@ export class VerticaConnection extends AbstractConnection {
         column.column_granted_roles = [];
         column.row_granted_roles = [];
         column.visible = true;
+        column.ia_visibility = 'FULL';
         column.tableCount = tableCount;
         return column;
     }

@@ -203,6 +203,17 @@ export const QueryUtils = {
  */
   runQuery: async (ebp: EdaBlankPanelComponent, globalFilters: boolean) => {
 
+    // Actualización de los eleentos globalFilters
+
+    if(ebp.sortedFilters === undefined) ebp.sortedFilters = []; // if it is an old report, we define the report as empty
+
+    for(let i=0; i<ebp.sortedFilters.length; i++){
+      if(ebp.sortedFilters[i].isGlobal) {
+        ebp.sortedFilters[i].filter_elements = ebp.globalFilters.find((globalFilter: any) => globalFilter.filter_id === ebp.sortedFilters[i].filter_id).filter_elements;
+        ebp.sortedFilters[i].filter_codes = ebp.globalFilters.find((globalFilter: any) => globalFilter.filter_id === ebp.sortedFilters[i].filter_id).filter_codes;
+      }
+    }
+
     /** gestiona las columnas duplicadas. Si tengo dos columnas con el mismo nombre le añado el sufijo _1, _2, _3.... etc */
     let dup = [];
     let cont = 0;
@@ -400,6 +411,7 @@ export const QueryUtils = {
       connectionProperties: ebp.connectionProperties,
       prediction: ebp.panel?.content?.query?.query?.prediction ? ebp.panel.content.query.query.prediction:'None',
       predictionConfig: ebp.panel?.content?.query?.query?.predictionConfig || undefined,
+      sortedFilters: ebp.sortedFilters,
     };
     return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode);
   },

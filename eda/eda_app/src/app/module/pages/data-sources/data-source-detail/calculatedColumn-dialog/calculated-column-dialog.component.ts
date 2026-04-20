@@ -6,6 +6,7 @@ import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule, 
 import { SelectItem } from 'primeng/api';
 import { EditColumnPanel } from '@eda/models/data-source-model/data-source-models';
 import { aggTypes } from 'app/config/aggretation-types';
+import { AGG_COMPUTED } from '../aggregationConstants';
 
 
 @Component({
@@ -33,31 +34,14 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
   // Types
   public columnTypes: SelectItem[] = [
     { label: 'text', value: 'text' },
-    { label: 'html', value: 'html' },
     { label: 'numeric', value: 'numeric' },
+    { label: 'html', value: 'html' },
     { label: 'date', value: 'date' },
     { label: 'coordinate', value: 'coordinate' }
   ];
 
-  public aggregation_type_cases: any[] = [
-    { value: "sum", display_name: "Suma",  display: true },
-    { value: "avg", display_name: "Media",  display: true },
-    { value: "max", display_name: "Máximo",  display: true },
-    { value: "min", display_name: "Mínimo",  display: true },
-    { value: "count", display_name: "Cuenta Valores",  display: true },
-    { value: "count_distinct", display_name: "Valores Distintos",  display: true },
-    { value: "none", display_name: "No", display: true },
-  ]
-
-  public final_aggregation_type: any[] = [
-    { value: "sum", display_name: "Suma" },
-    { value: "avg", display_name: "Media" },
-    { value: "max", display_name: "Máximo" },
-    { value: "min", display_name: "Mínimo" },
-    { value: "count", display_name: "Cuenta Valores" },
-    { value: "count_distinct", display_name: "Valores Distintos" },
-    { value: "none", display_name: "No" },
-  ];
+  public aggregation_type_cases: any[] = this.getAggCasesForType('text');
+  public final_aggregation_type: any[] = this.getAggCasesForType('text').map(a => ({ value: a.value, display_name: a.display_name }));
 
   public selectedcolumnType = 'text';
 
@@ -104,7 +88,7 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
     } else {
 
       const column: any = {
-        aggregation_type: this.selectedcolumnType === 'numeric' ? this.final_aggregation_type : [{ value: "none", display_name: "No" }],
+        aggregation_type: this.final_aggregation_type,
         column_granted_roles: [],
         column_name: this.form.value.colName,
         column_type: this.selectedcolumnType,
@@ -128,7 +112,7 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
     } else {
       const columnCheck: any = {
         SQLexpression: this.form.value.colSqlExpression,
-        aggregation_type: this.selectedcolumnType === 'numeric' ? this.final_aggregation_type : [{ value: "none", display_name: "No" }],
+        aggregation_type: this.final_aggregation_type,
         column_granted_roles: [],
         column_name: "computed test",
         column_type: this.selectedcolumnType,
@@ -158,31 +142,33 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
 
   }
 
+  getAggCasesForType(type: string): any[] {
+    const map: Record<string, any[]> = {
+      text: AGG_COMPUTED.AGG_TEXT_VALUE_DISPLAY,
+      html: AGG_COMPUTED.AGG_TEXT_VALUE_DISPLAY,
+      numeric: AGG_COMPUTED.AGG_NUMERIC_VALUE_DISPLAY,
+      date: AGG_COMPUTED.AGG_DATE_VALUE_DISPLAY,
+      coordinate: AGG_COMPUTED.AGG_COORDINATE_VALUE_DISPLAY,
+    };
+    const source = map[type] || AGG_COMPUTED.AGG_TEXT_VALUE_DISPLAY;
+    return source.map(a => ({ ...a, display: true }));
+  }
+
   updateAgg(type?: any) {
-
     const aggItem = this.aggregation_type_cases.find((item: any) => item.value === type);
-
-    if(aggItem.display) {
-      aggItem.display = false
-    } else {
-      aggItem.display = true
-    }
-
-    this.final_aggregation_type = this.aggregation_type_cases.filter((item: any ) => item.display).map((item: any) => {
-      return {
-        value: item.value,
-        display_name: item.display_name
-      }
-    })
+    aggItem.display = !aggItem.display;
+    this.final_aggregation_type = this.aggregation_type_cases
+      .filter((item: any) => item.display)
+      .map((item: any) => ({ value: item.value, display_name: item.display_name }));
   }
 
   onTypeChange(event: any) {
-
     this.selectedcolumnType = event.value;
+    this.aggregation_type_cases = this.getAggCasesForType(event.value);
+    this.final_aggregation_type = this.aggregation_type_cases.map(a => ({ value: a.value, display_name: a.display_name }));
 
-    const ctrl = this.form.get('decimalNumber');
+    const ctrl = this.form.get('colDecimalNumber');
     if (!ctrl) return;
-
     if (event.value === 'numeric') {
       ctrl.enable();
     } else {

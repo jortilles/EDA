@@ -210,7 +210,7 @@ export class UserService extends ApiService {
 
     /** Verify if user is logged */
     isLogged() {
-        return this.token.length > 5 || !!localStorage.getItem('token');
+        return this.token.length > 5;
     }
 
     /** Logout user and clean localstorage */

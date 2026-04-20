@@ -919,22 +919,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">11</context>
 </context-group>
 </trans-unit>
-<trans-unit id="deleteDates" datatype="html">
-<source> Todas </source>
-<target> Totes </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
-<context context-type="linenumber">36</context>
-</context-group>
-</trans-unit>
-<trans-unit id="yesterday" datatype="html">
-<source> Ayer </source>
-<target> Ahir </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
-<context context-type="linenumber">38</context>
-</context-group>
-</trans-unit>
 
 <trans-unit id="thisWeek" datatype="html">
 <source> Ésta semana </source>
@@ -2641,6 +2625,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source> Últimos 120 días </source>
 <target>Últims 120 dies </target>
 </trans-unit>
+<trans-unit id="DatePickerLast365">
+<source> Últimos 365 días </source>
+<target>Últims 365 dies </target>
+</trans-unit>
 <trans-unit id="DateSelectRange">
 <source>Selecciona un rango</source>
 <target>Selecciona un rang</target>
@@ -3434,6 +3422,52 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target> Credencials  correctes</target>
   </trans-unit>
 
+  <trans-unit id="alertMailDeleted">
+    <source>Alerta de correo eliminada</source>
+    <target>Alerta de correu eliminada</target>
+  </trans-unit>
+
+  <trans-unit id="dashboardMailDeleted">
+    <source>Configuración de envío eliminada</source>
+    <target>Configuració d'enviament eliminada</target>
+  </trans-unit>
+
+  <trans-unit id="mailSentNow">
+    <source>Envío iniciado correctamente</source>
+    <target>Enviament iniciat correctament</target>
+  </trans-unit>
+
+  <trans-unit id="sendingNow">
+    <source>Enviando...</source>
+    <target>Enviant...</target>
+  </trans-unit>
+
+  <trans-unit id="sendScheduledMails">
+    <source>Enviar todos los correos programados</source>
+    <target>Enviar tots els correus programats</target>
+  </trans-unit>
+
+
+  <trans-unit id="adminEmail">
+    <source>Gestión de correo</source>
+    <target>Gestió de correu</target>
+  </trans-unit>
+
+  <trans-unit id="adminEmailSubtitle">
+    <source>Configure los ajustes y credenciales de su servidor de correo electrónico</source>
+    <target>Configureu els ajustos i credencials del vostre servidor de correu electrònic</target>
+  </trans-unit>
+
+  <trans-unit id="alertsConfigSubtitle">
+    <source>Administra tus configuraciones de alertas</source>
+    <target>Administra les teves configuracions d'alertes</target>
+  </trans-unit>
+
+  <trans-unit id="dashbaordsMailingSubtitle">
+    <source>Administrar las configuraciones de correo electrónico del panel</source>
+    <target>Administrar les configuracions de correu electrònic del panell</target>
+  </trans-unit>
+
   <trans-unit id="checkCredentials">
     <source>Comprobar credenciales</source>
     <target>Comprovar credencials</target>
@@ -3514,10 +3548,55 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Enviament d'informes per email</target>
   </trans-unit> 
 
+    <trans-unit id="noFormatsAvailable">
+    <source>Esta es una columna calculada y no tiene opciones de formato disponibles</source>
+    <target>Aquesta és una columna calculada i no té opcions de format disponibles</target>
+  </trans-unit>
+
+    <trans-unit id="editCalculatedField">
+    <source>Edición de campo calculado</source>
+    <target>Edició de camp calculat</target>
+  </trans-unit>
+
+    <trans-unit id="deleteCalculatedColumn">
+    <source>Si, Eliminar el campo calculado!</source>
+    <target>Sí, eliminar el camp calculat!</target>
+  </trans-unit>
+
+    <trans-unit id="deleteCalculatedColumnConfirmation">
+    <source>Campo calculado eliminado correctamente. Debera guardar cambios en el modelo de datos para que la eliminación sea permanente</source>
+    <target>Camp calculat eliminat correctament. Cal guardar els canvis al model de dades perquè l'eliminació sigui permanent</target>
+  </trans-unit>
+
+    <trans-unit id="DeleteGroupCancel">
+    <source>Cancelar</source>
+    <target>Cancel·lar</target>
+  </trans-unit>
+
+    <trans-unit id="formDialogCalculatedColumn">
+    <source>Recuerde rellenar todos los campos</source>
+    <target>Recorda omplir tots els camps</target>
+  </trans-unit>
+
+    <trans-unit id="mandatoryDiferentName">
+    <source>Este nombre de campo calculado ya existe. Intente con otro.</source>
+    <target>Aquest nom de camp calculat ja existeix. Intenta amb un altre.</target>
+  </trans-unit>
+
+    <trans-unit id="titleCalculatedColumnEditMessage">
+    <source>Campo calculado actualizado correctamente</source>
+    <target>Camp calculat actualitzat correctament</target>
+  </trans-unit>
+
+    <trans-unit id="textCalculatedColumnEditMessage">
+    <source>IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entrar en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe</source>
+    <target>IMPORTANT: En modificar un camp calculat ja existent, els panells que l'utilitzen no s'actualitzen automàticament. Cal entrar a la configuració de cadascun, fer clic a Executar i guardar l'informe</target>
+  </trans-unit>
+
     <trans-unit id="cumulativeSum">
     <source>Suma acumulativa   </source>
     <target>Suma acumulativa  </target>
-  </trans-unit> 
+  </trans-unit>
 
    <trans-unit id="ptooltipViewAlerts">
     <source>Configurar alertas</source>
@@ -3593,7 +3672,12 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
        <trans-unit id="columnsTooltip">
     <source>Elige cuantas columnas quieres mostrar</source>
     <target>Tria quantes columnes vols mostrar</target>
-  </trans-unit> 
+  </trans-unit>
+
+  <trans-unit id="histogramColumDescription">
+    <source>Elige cuántas columnas mostrar en el histograma</source>
+    <target>Tria quantes columnes mostrar a l'histograma</target>
+  </trans-unit>
 
      <trans-unit id="trendTooltip">
     <source>La función de añadir tendencia sólo se puede activar en los gràficos de lineas</source>
@@ -4182,6 +4266,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Fecha nula</source>
         <target>Data nula</target>
       </trans-unit>
+      <trans-unit id="cannotRemoveLastColumn">
+        <source>No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.</source>
+        <target>No es pot eliminar totes les columnes de la taula arrel sense eliminar les columnes dependents.</target>
+      </trans-unit>
       <trans-unit id="removeColumnGlobalFilter">
         <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
         <target>No es pot eliminar la columna perquè té un filtre vinculat</target>
@@ -4643,22 +4731,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="profileMessagesDescription"><source>Recibe notificaciones de nuevos mensajes</source><target>Rep notificacions de nous missatges</target></trans-unit>
 <trans-unit id="selectedImage"><source>Imagen seleccionada</source><target>Imatge seleccionada</target></trans-unit>
 <trans-unit id="noImageSelected"><source>No hay imagen seleccionada</source><target>Cap imatge seleccionada</target></trans-unit>
-<trans-unit id="adminEmail">
-  <source>Gestión de correo</source>
-  <target>Gestió de correu</target>
-</trans-unit>
-<trans-unit id="adminEmailSubtitle">
-  <source>Configure los ajustes y credenciales de su servidor de correo electrónico</source>
-  <target>Configura els ajustos i les credencials del teu servidor de correu electrònic</target>
-</trans-unit>
-<trans-unit id="alertsConfigSubtitle">
-  <source>Administra tus configuraciones de alertas</source>
-  <target>Administra les teves configuracions d'alertes</target>
-</trans-unit>
-<trans-unit id="dashbaordsMailingSubtitle">
-  <source>Administrar las configuraciones de correo electrónico del panel</source>
-  <target>Administra les configuracions de correu electrònic del panell</target>
-</trans-unit>
 <trans-unit id="chartDisplayTitle">
   <source>Visualización</source>
   <target>Visualització</target>
@@ -4687,6 +4759,31 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="chartComparationOptionDescription">
   <source>Compara con datos de períodos anteriores</source>
   <target>Compara amb dades de períodes anteriors</target>
+</trans-unit>
+
+<trans-unit id="showLegend">
+  <source>Mostrar Leyenda</source>
+  <target>Mostra la llegenda</target>
+</trans-unit>
+
+<trans-unit id="chartLegendOptionDescription">
+  <source>Muestra la leyenda del gráfico</source>
+  <target>Mostra la llegenda del gràfic</target>
+</trans-unit>
+
+<trans-unit id="showGridLines">
+  <source>Mostrar Líneas Guía</source>
+  <target>Mostra les línies guia</target>
+</trans-unit>
+
+<trans-unit id="chartGridLinesOptionDescription">
+  <source>Muestra u oculta las líneas guía del gráfico</source>
+  <target>Mostra o amaga les línies guia del gràfic</target>
+</trans-unit>
+
+<trans-unit id="histogramColum">
+  <source>Columnas</source>
+  <target>Columnes</target>
 </trans-unit>
 
 <trans-unit id="tooltipBlockedByComparative">
@@ -5200,6 +5297,11 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Live Dashboard</target>
 </trans-unit>
 
+<trans-unit id="secondsToRefresh">
+  <source>Segundos para refrescar</source>
+  <target>Segons per refrescar</target>
+</trans-unit>
+
 <trans-unit id="dashboardSidebarSave">
   <source>Guardar</source>
   <target>Guardar</target>
@@ -5233,6 +5335,16 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="dashboardSidebarDownloadImage">
   <source>Descargar imagen</source>
   <target>Descarregar imatge</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownloadExcel">
+  <source>Descargar Excel</source>
+  <target>Descarregar Excel</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownload">
+  <source>Descargar</source>
+  <target>Descarregar</target>
 </trans-unit>
 
 <trans-unit id="dashboardSidebarCustomAction">
@@ -5283,6 +5395,26 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="enableBaseLayer">
   <source>Activar capa base</source>
   <target>Activar capa base</target>
+</trans-unit>
+
+<trans-unit id="logarithmicScaleTooltip">
+  <source>Aplica escala logarítmica a los valores del mapa</source>
+  <target>Aplica escala logarítmica als valors del mapa</target>
+</trans-unit>
+
+<trans-unit id="activeMouseFunctionsTooltip">
+  <source>Permite arrastrar y hacer zoom con el ratón</source>
+  <target>Permet arrossegar i fer zoom amb el ratolí</target>
+</trans-unit>
+
+<trans-unit id="enableBaseLayerTooltip">
+  <source>Muestra u oculta la capa base del mapa</source>
+  <target>Mostra o amaga la capa base del mapa</target>
+</trans-unit>
+
+<trans-unit id="layerColor">
+  <source>Color de capa</source>
+  <target>Color de capa</target>
 </trans-unit>
 
 <trans-unit id="topleftPosition">
@@ -5906,6 +6038,58 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Próximo año</source>
         <target>Proper any</target>
       </trans-unit>
+      <trans-unit id="DatePickerYesterday">
+        <source>Ayer</source>
+        <target>Ahir</target>
+      </trans-unit>
+      <trans-unit id="DatePickerTomorrow">
+        <source>Mañana</source>
+        <target>Demà</target>
+      </trans-unit>
+      <trans-unit id="DatePickerPastTomorrow">
+        <source>Pasado mañana</source>
+        <target>Demà passat</target>
+      </trans-unit>
+      <trans-unit id="DatePickerLastQuarter">
+        <source>Último trimestre</source>
+        <target>Últim trimestre</target>
+      </trans-unit>
+      <trans-unit id="DatePickerThisQuarter">
+        <source>Este trimestre</source>
+        <target>Aquest trimestre</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext3">
+        <source>Próximos 3 días</source>
+        <target>Propers 3 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext7">
+        <source>Próximos 7 días</source>
+        <target>Propers 7 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext15">
+        <source>Próximos 15 días</source>
+        <target>Propers 15 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerLast90">
+        <source>Últimos 90 días</source>
+        <target>Últims 90 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext120">
+        <source>Próximos 120 días</source>
+        <target>Propers 120 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext365">
+        <source>Próximos 365 días</source>
+        <target>Propers 365 dies</target>
+      </trans-unit>
+      <trans-unit id="DatePickerAll">
+        <source>Todas</source>
+        <target>Totes</target>
+      </trans-unit>
+      <trans-unit id="DatePickerBeforeTodayIncluded">
+        <source>Todo hasta hoy</source>
+        <target>Tot fins avui</target>
+      </trans-unit>
       <trans-unit id="noNameProvided">
         <source>Debe proporcionar un nombre para el datasource</source>
         <target>Heu de proporcionar un nom per al datasource</target>
@@ -6150,8 +6334,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Resum de filtres</target>
       </trans-unit>
       <trans-unit id="globalFilterSelectedItemsLabel">
-        <source>{0} items seleccionados</source>
-        <target>{0} elements seleccionats</target>
+        <source>elementos seleccionados</source>
+        <target>elements seleccionats</target>
       </trans-unit>
       <trans-unit id="copyPublicLinkTooltip">
         <source>Copiar enlace público</source>
@@ -6212,6 +6396,174 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="AIManagement" datatype="html">
         <source>Gestión del asistente</source>
         <target>Gestió de l'assistent</target>
+      </trans-unit>
+      <trans-unit id="whereMessage">
+        <source>Filtro sobre todos los registros</source>
+        <target>Filtre sobre tots els registres</target>
+      </trans-unit>
+      <trans-unit id="havingMessage">
+        <source>Filtro sobre los resultados</source>
+        <target>Filtre sobre els resultats</target>
+      </trans-unit>
+      <trans-unit id="aggregationText">
+        <source>Agregación</source>
+        <target>Agregació</target>
+      </trans-unit>
+      <trans-unit id="textBetween">
+        <source>Entre</source>
+        <target>Entre</target>
+      </trans-unit>
+      <trans-unit id="whereMessageLabel">
+        <source>Aplicar el filtro sobre todos los registros</source>
+        <target>Aplica el filtre sobre tots els registres</target>
+      </trans-unit>
+      <trans-unit id="havingMessageLabel">
+        <source>Aplicar el filtro sobre los resultados</source>
+        <target>Aplica el filtre sobre els resultats</target>
+      </trans-unit>
+      <trans-unit id="customHtmlSaved">
+        <source>HTML personalizado guardado correctamente.</source>
+        <target>HTML personalitzat guardat correctament.</target>
+      </trans-unit>
+      <trans-unit id="advancedFilterTitle" datatype="html">
+        <source>Filtro avanzado</source>
+        <target>Filtre avançat</target>
+      </trans-unit>
+      <trans-unit id="clearFiltersBtn" datatype="html">
+        <source>Limpiar</source>
+        <target>Netejar</target>
+      </trans-unit>
+      <trans-unit id="authorFilterLabel" datatype="html">
+        <source>Propietario</source>
+        <target>Propietari</target>
+      </trans-unit>
+      <trans-unit id="authorFilterPlaceholder" datatype="html">
+        <source>Autor...</source>
+        <target>Autor...</target>
+      </trans-unit>
+      <trans-unit id="datasourceFilterLabel" datatype="html">
+        <source>Datasource</source>
+        <target>Datasource</target>
+      </trans-unit>
+      <trans-unit id="datasourceFilterPlaceholder" datatype="html">
+        <source>postgres, mysql...</source>
+        <target>postgres, mysql...</target>
+      </trans-unit>
+      <trans-unit id="createdFilterLabel" datatype="html">
+        <source>Creado en</source>
+        <target>Creat el</target>
+      </trans-unit>
+      <trans-unit id="modifiedFilterLabel" datatype="html">
+        <source>Modificado en</source>
+        <target>Modificat el</target>
+      </trans-unit>
+      <trans-unit id="tagsFilterLabel" datatype="html">
+        <source>Tags</source>
+        <target>Etiquetes</target>
+      </trans-unit>
+      <trans-unit id="tagsFilterPlaceholder" datatype="html">
+        <source>Selecciona tags...</source>
+        <target>Selecciona etiquetes...</target>
+      </trans-unit>
+      <trans-unit id="hechoCon" datatype="html">
+        <source> HECHO CON </source>
+        <target> FET AMB </target>
+      </trans-unit>
+      <trans-unit id="adminPortal" datatype="html">
+        <source>Portal de datos</source>
+        <target>Portal de dades</target>
+      </trans-unit>
+      <trans-unit id="inputDescripcionModelo" datatype="html">
+        <source>Descripción</source>
+        <target>Descripció</target>
+      </trans-unit>
+      <trans-unit id="placeholderDescripcionModelo" datatype="html">
+        <source>Describe el propósito y contenido de este modelo de datos...</source>
+        <target>Descriu el propòsit i el contingut d'aquest model de dades...</target>
+      </trans-unit>
+      <trans-unit id="mcpVisibilityLabel" datatype="html">
+        <source>Visibilidad MCP</source>
+        <target>Visibilitat MCP</target>
+      </trans-unit>
+      <trans-unit id="mcpVisibilityTooltipTableModel" datatype="html">
+        <source>Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, None lo excluye totalmente.</source>
+        <target>Controla si l'agent d'IA té accés a aquesta informació: Full permet accés complet, None l'exclou totalment.</target>
+      </trans-unit>
+      <trans-unit id="mcpVisibilityTooltipCol" datatype="html">
+        <source>Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, Declaration expone solo nombre y tipo, None lo excluye totalmente.</source>
+        <target>Controla si l'agent d'IA té accés a aquesta informació: Full permet accés complet, Declaration exposa només nom i tipus, None l'exclou totalment.</target>
+      </trans-unit>
+      <trans-unit id="dynamicFiltersText" datatype="html">
+        <source>Filtros dinámicos</source>
+        <target>Filtres dinàmics</target>
+      </trans-unit>
+      <trans-unit id="uniqueRecordsGrouping" datatype="html">
+        <source>Registros únicos (agrupación)?</source>
+        <target>Registres únics (agrupació)?</target>
+      </trans-unit>
+      <trans-unit id="tableDescriptionDependentFilter" datatype="html">
+        <source>Tabla:</source>
+        <target>Taula:</target>
+      </trans-unit>
+      <trans-unit id="columnDescriptionDependentFilter" datatype="html">
+        <source>Columna:</source>
+        <target>Columna:</target>
+      </trans-unit>
+      <trans-unit id="noAttributeShouldHaveAggregation">
+        <source>Ningún Atributo debe tener agregación</source>
+        <target>Cap atribut ha de tenir agregació</target>
+      </trans-unit>
+      <trans-unit id="mustConfigureAtLeastOneAttribute">
+        <source>Debe configurar un atributo como mínimo para habilitar esta opción</source>
+        <target>Cal configurar com a mínim un atribut per habilitar aquesta opció</target>
+      </trans-unit>
+      <trans-unit id="mustAddTheGroupingsToRunWithAggregations">
+        <source>Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos</source>
+        <target>Cal activar les agrupacions per executar amb agregacions configurades als atributs</target>
+      </trans-unit>
+      <trans-unit id="chatAssistantTitle" datatype="html">
+        <source>Asistente Edalitics</source>
+        <target>Assistent Edalitics</target>
+      </trans-unit>
+      <trans-unit id="chatAssistantSubtitle" datatype="html">
+        <source>Asistente IA para facilitar tu trabajo</source>
+        <target>Assistent IA per facilitar la teva feina</target>
+      </trans-unit>
+      <trans-unit id="chatCloseBtn" datatype="html">
+        <source>Cerrar</source>
+        <target>Tancar</target>
+      </trans-unit>
+      <trans-unit id="chatEmptyTitle" datatype="html">
+        <source>¿En qué puedo ayudarte?</source>
+        <target>En què et puc ajudar?</target>
+      </trans-unit>
+      <trans-unit id="chatEmptySubtitle" datatype="html">
+        <source>Consulta dashboards, datasources y datos</source>
+        <target>Consulta dashboards, datasources i dades</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion1" datatype="html">
+        <source>¿Qué dashboards tengo?</source>
+        <target>Quins dashboards tinc?</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion2" datatype="html">
+        <source>¿Qué datasources hay?</source>
+        <target>Quins datasources hi ha?</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion3" datatype="html">
+        <source>Estado del servidor</source>
+        <target>Estat del servidor</target>
+      </trans-unit>
+      <trans-unit id="chatInputPlaceholder" datatype="html">
+        <source>Escribe un mensaje...</source>
+        <target>Escriu un missatge...</target>
+      </trans-unit>
+      <trans-unit id="chatFabTitle" datatype="html">
+        <source>Asistente IA</source>
+        <target>Assistent IA</target>
+      </trans-unit>
+      <trans-unit id="mapClusteredPoints" datatype="html">
+        <source>puntos agrupados</source>
+        <target>punts agrupats</target>
       </trans-unit>
     </body>
   </file>

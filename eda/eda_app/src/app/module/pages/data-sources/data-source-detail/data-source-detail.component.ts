@@ -30,6 +30,8 @@ import { TablePermissionDialogComponent } from './table-permissions-dialog/table
 import { ViewDialogEditionComponent } from './view-dialog-edition/view-dialog-edition.component';
 import { ViewDialogComponent } from './view-dialog/view-dialog.component';
 import { AddTagComponent } from '../data-source-list/add-tag/add-tag.component';
+import { CalculatedColumnEditDialogComponent } from './calculated-column-edit-dialog/calculated-column-edit-dialog.component';
+import { AGG_COMPUTED } from './aggregationConstants';
 
 // Angular Modules
 const ANGULAR_MODULES = [
@@ -54,7 +56,8 @@ const STANDALONE_COMPONENTS = [
   ViewDialogComponent,
   ViewDialogEditionComponent,
   AddTagComponent,
-  EdaTableComponent
+  EdaTableComponent,
+  CalculatedColumnEditDialogComponent
 ];
 
 @Component({
@@ -109,6 +112,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     
     public securityController : EdaDialogController;
     public showSecurityDialog: boolean = false;
+
+    public calculatedColumnEditController = false;
 
     public items: MenuItem[];
     public user: any;
@@ -167,6 +172,17 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
     public tableTypes: SelectItem[] = [{ label: this.dimensionLabel, value: 'dimension' }, { label: this.factLabel, value: 'fact' }, { label: this.viewLabel, value: 'view' }];
     public selectedTableType: string;
+
+    public iaVisibilityOptions = [
+        { value: 'FULL', label: 'Full' },
+        { value: 'DECLARATION', label: 'Declaration' },
+        { value: 'NONE', label: 'None' },
+    ];
+
+    public iaVisibilityOptionsSimple = [
+        { value: 'FULL', label: 'Full' },
+        { value: 'NONE', label: 'None' },
+    ];
 
     // Aggregation Types
     public selectedAggType: any;
@@ -560,6 +576,14 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
     updateColumn() {
         if (this.columnPanel.technical_name) {
+            if (this.columnPanel.computed_column === 'computed') {
+                switch (this.columnPanel.column_type) {
+                    case 'text': this.columnPanel.aggregation_type = AGG_COMPUTED.AGG_TEXT; break;
+                    case 'date': this.columnPanel.aggregation_type = AGG_COMPUTED.AGG_DATE; break;
+                    case 'numeric': this.columnPanel.aggregation_type = AGG_COMPUTED.AGG_NUMERIC; break;
+                    default: this.columnPanel.aggregation_type = AGG_COMPUTED.AGG_COORDINATE; break;
+                }
+            }
             this.dataModelService.changeColumnPanel(this.columnPanel);
         }
     }
@@ -618,9 +642,28 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.dataModelService.deleteRelation(relation);
     }
     deleteCalculatedCol(columnPanel: EditColumnPanel) {
-        this.dataModelService.deleteCalculatedCol(columnPanel);
-        this.typePanel = 'tabla';
-        this.update();
+        Swal.fire({
+            title: $localize`:@@Sure:¿Estás seguro?`,
+            text: $localize`:@@deleteCalculatedColumn:Si, Eliminar el campo calculado!`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
+            cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
+        }).then(async (borrado) => {
+            if (borrado.value) {
+                try {
+                    this.dataModelService.deleteCalculatedCol(columnPanel);
+                    this.typePanel = 'tabla';
+                    this.update();
+                    Swal.fire($localize`:@@Deleted:¡Eliminado!`, $localize`:@@deleteCalculatedColumnConfirmation:Campo calculado eliminado correctamente. Debera guardar cambios en el modelo de datos para que la eliminación sea permanente`, 'success');
+                } catch (err) {
+                    this.alertService.addError(err);
+                    throw err;
+                }
+            }
+        });
     }
     deleteView(tableName: string) {
         this.dataModelService.deleteView(tableName);
@@ -635,22 +678,17 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.update();
     }
 
-    checkCalculatedColumn(columnPanel: EditColumnPanel) {
-        this.spinnerService.on();
-        const table = this.dataModelService.getTable(columnPanel);
-        const column = table.columns.filter(col => col.column_name === columnPanel.technical_name)[0];
+    editCalculatedField(columnPanel: EditColumnPanel) {
+        this.calculatedColumnEditController = true;
+    }
 
-        const queryParams: QueryParams = {
-            table: table.table_name,
-            dataSource: this.dataModelService.model_id,
-        };
+    onCloseCalculatedColumnEdit() {
+        this.calculatedColumnEditController = false;
+    }
 
-        const query = this.queryBuilderService.simpleQuery(column, queryParams);
-        this.dataModelService.executeQuery(query).subscribe(
-            res => { this.alertService.addSuccess($localize`:@@CorrectQuery:Consulta correcta`); this.spinnerService.off() },
-            err => { this.alertService.addError($localize`:@@IncorrectQuery:Consulta incorrecta`); this.spinnerService.off() }
-        );
-        
+    newColumnEdited(column: any) {
+        this.columnPanel = _.cloneDeep(column);
+        this.dataModelService.changeColumnPanel(this.columnPanel);
     }
 
     checkConection() {
@@ -683,6 +721,17 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             params: { table: this.tablePanel },
             close: (event, response) => {
                 if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    const column = response.column;
+
+                    let aggregation_type = [];
+                    switch (column.column_type) {
+                        case 'text': aggregation_type = AGG_COMPUTED.AGG_TEXT_VALUE_DISPLAY; break;
+                        case 'date': aggregation_type = AGG_COMPUTED.AGG_DATE_VALUE_DISPLAY; break;
+                        case 'numeric': aggregation_type = AGG_COMPUTED.AGG_NUMERIC_VALUE_DISPLAY; break;
+                        default: aggregation_type = AGG_COMPUTED.AGG_COORDINATE_VALUE_DISPLAY; break;
+                    }
+                    if (column.computed_column === 'computed') { response.column.aggregation_type = aggregation_type; }
+
                     this.dataModelService.addCalculatedColumn(response);
                     this.update();
                     this.typePanel = 'columna';

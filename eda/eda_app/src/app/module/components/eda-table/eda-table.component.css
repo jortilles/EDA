@@ -45,7 +45,27 @@
 
 th{
   border-radius: 6px;
+  background-color: #F1F0F0;
+  border: 1px solid #fff;
+}
 
+/* Mantener cabecera gris y row-banding independientemente del color del panel */
+.eda-table ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+     background: rgba(228, 228, 228, 0.5) !important;
+}
+
+/* Row banding: filas pares con el mismo gris que el header — excluir celdas con color de gradiente/semáforo */
+.eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) > td:not([class*="table-gradient"]):not([class*="table-semaphore"]) {
+     background: rgba(228, 228, 228, 0.5) !important;
+}
+.eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
+     background: transparent !important;
+}
+
+/* Filas impares: transparentes para que se vea el color de fondo del panel — excluir celdas con color */
+.eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(odd),
+.eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(odd) > td:not([class*="table-gradient"]):not([class*="table-semaphore"]) {
+     background: transparent !important;
 }
 
 .p-datatable-auto-layout>.p-datatable-wrapper {
@@ -80,9 +100,15 @@ th{
     cursor: pointer;
 }
 
+/* === Transparent mode (background image on dashboard) === */
+.eda-table--transparent ::ng-deep .p-datatable,
+.eda-table--transparent ::ng-deep .p-datatable .p-datatable-wrapper {
+    background: transparent !important;
+}
+
 /* Aplica estilo al contenedor del footer */
 .eda-table ::ng-deep .p-datatable-footer {
-    background-color: inherit; 
+    background-color: inherit;
 }
 /* Aplica estilo al contenedor del paginator */
 .eda-table ::ng-deep .p-paginator{

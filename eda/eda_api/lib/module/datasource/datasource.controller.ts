@@ -471,10 +471,12 @@ export class DataSourceController {
                     },
                     metadata: {
                         model_name: req.body.name,
+                        model_description: req.body.description || '',
                         model_id: '',
                         model_granted_roles: [],
                         optimized: req.params.optimize === '1',
-                        cache_config: CC
+                        cache_config: CC,
+                        ia_visibility: 'FULL'
                     },
                     model: {
                         tables: tables
@@ -519,6 +521,7 @@ export class DataSourceController {
                     },
                     metadata: {
                         model_name: req.body.name,
+                        model_description: req.body.description || '',
                         model_id: '',
                         model_granted_roles: [],
                         optimized: req.params.optimize === '1',
@@ -526,7 +529,8 @@ export class DataSourceController {
                         filter: req.body.filter,
                         model_owner: req.user._id,
                         properties: null,
-                        external: req.body.external
+                        external: req.body.external,
+                        ia_visibility: 'FULL'
                     },
                     model: {
                         tables: tables

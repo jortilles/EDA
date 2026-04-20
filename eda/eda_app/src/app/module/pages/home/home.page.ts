@@ -1,28 +1,49 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal, ViewChild, ElementRef, AfterViewChecked, NgZone } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { Router } from '@angular/router';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, fromEvent, Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { UserService } from '@eda/services/api/user.service';
 import { GroupService } from '@eda/services/api/group.service';
 import { AlertService, DashboardService } from '@eda/services/service.index';
 import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
+import { IaChatService, ChatMessage } from '@eda/services/api/ia-chat.service';
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
 import { CommonModule } from '@angular/common';
+import { EdaDatePickerComponent } from '@eda/shared/components/eda-date-picker/eda-date-picker.component';
+import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/datePickerConfig';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 @Component({
   selector: 'app-v2-home-page',
   standalone: true,
-  imports: [FormsModule, NgTemplateOutlet, IconComponent, CommonModule],
-  templateUrl: './home.page.html'
+  imports: [FormsModule, NgTemplateOutlet, IconComponent, CommonModule, EdaDatePickerComponent, MultiSelectModule],
+  templateUrl: './home.page.html',
+  styleUrls: ['./home.page.css']
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   private createDashboardService = inject(CreateDashboardService);
   private dashboardService = inject(DashboardService);
   private alertService = inject(AlertService);
   private router = inject(Router);
+  private iaChatService = inject(IaChatService);
+
+  private sanitizer = inject(DomSanitizer);
+  private zone = inject(NgZone);
+
+  // --- Chat IA ---
+  @ViewChild('chatMessages') private chatMessagesRef!: ElementRef;
+  @ViewChild('chatInputEl') private chatInputEl!: ElementRef<HTMLTextAreaElement>;
+  chatOpen = signal(false);
+  chatAvailable = signal(false);
+  chatLoading = signal(false);
+  chatHistory: ChatMessage[] = [];
+  private shouldScrollChat = false;
+  private chatInputListenerAdded = false;
 
   allDashboards: any[] = [];
   publicReports: any[] = [];
@@ -41,6 +62,17 @@ export class HomePage implements OnInit {
   public grups: Array<any> = [];
   public isObserver: boolean = true;
 
+  // Control de filtros avanzados
+  showAdvancedFilter = signal(false);
+  private outsideClickSub?: Subscription;
+  searchQuery = '';
+  advancedFilters = { author: '', datasource: '' };
+  advancedTags: string[] = [];
+  createdPickerConfig: EdaDatePickerConfig = { dateRange: [], range: null, filter: null };
+  modifiedPickerConfig: EdaDatePickerConfig = { dateRange: [], range: null, filter: null };
+  createdRange: Date[] = [];
+  modifiedRange: Date[] = [];
+  
   //Variables de control de edició Modificar
   isEditing = false;
   editingReportId: string | null = null;
@@ -62,11 +94,138 @@ export class HomePage implements OnInit {
   public groupTitle: string = $localize`:@@tituloGrupoMisGrupos:MIS GRUPOS`;
   public privateTitle: string = $localize`:@@tituloGrupoPersonales:PRIVADOS`;
 
+  // Chat suggestions (used both as button label and as message text)
+  public chatSuggestion1: string = $localize`:@@chatSuggestion1:¿Qué dashboards tengo?`;
+  public chatSuggestion2: string = $localize`:@@chatSuggestion2:¿Qué datasources hay?`;
+  public chatSuggestion3: string = $localize`:@@chatSuggestion3:Estado del servidor`;
+
   constructor(private userService: UserService, private groupService: GroupService) { }
 
   ngOnInit(): void {
     this.loadReports();
     this.ifAnonymousGetOut();
+    this.iaChatService.getConfig().subscribe({
+      next: (cfg) => this.chatAvailable.set(cfg.available),
+      error: () => this.chatAvailable.set(false),
+    });
+  }
+
+  ngAfterViewChecked(): void {
+    // Registrar listener del textarea fuera de la zona de Angular (una sola vez)
+    if (!this.chatInputListenerAdded && this.chatInputEl?.nativeElement) {
+      this.chatInputListenerAdded = true;
+      this.zone.runOutsideAngular(() => {
+        this.chatInputEl.nativeElement.addEventListener('input', () => {
+          const el = this.chatInputEl.nativeElement;
+          el.style.height = 'auto';
+          el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+        });
+      });
+    }
+    if (this.shouldScrollChat && this.chatMessagesRef) {
+      const el = this.chatMessagesRef.nativeElement;
+      el.scrollTop = el.scrollHeight;
+      this.shouldScrollChat = false;
+    }
+  }
+
+  toggleChat(): void {
+    const opening = !this.chatOpen();
+    this.chatOpen.set(opening);
+    if (opening) {
+      setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+    }
+  }
+
+  useSuggestion(text: string): void {
+    if (this.chatInputEl?.nativeElement) {
+      this.chatInputEl.nativeElement.value = text;
+    }
+    this.sendChatMessage();
+  }
+
+  onChatKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.sendChatMessage();
+    }
+  }
+
+  sendChatMessage(): void {
+    const text = this.chatInputEl?.nativeElement.value.trim() ?? '';
+    if (!text || this.chatLoading()) return;
+
+    this.chatHistory.push({ role: 'user', content: text });
+    this.chatInputEl.nativeElement.value = '';
+    this.chatInputEl.nativeElement.style.height = 'auto';
+    this.chatLoading.set(true);
+    this.shouldScrollChat = true;
+
+    this.iaChatService.sendMessage(this.chatHistory).subscribe({
+      next: (res) => {
+        this.chatHistory.push({ role: 'assistant', content: res.response });
+        this.chatLoading.set(false);
+        this.shouldScrollChat = true;
+        setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+      },
+      error: () => {
+        this.chatHistory.push({ role: 'assistant', content: 'Error al conectar con el asistente.' });
+        this.chatLoading.set(false);
+        this.shouldScrollChat = true;
+        setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+      },
+    });
+  }
+
+  renderMarkdown(text: string): SafeHtml {
+    const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    // 1. Extraer bloques de código
+    const codeBlocks: string[] = [];
+    let html = text.replace(/```[\w]*\n?([\s\S]*?)```/g, (_, code) => {
+      const idx = codeBlocks.push(esc(code.trim())) - 1;
+      return `\x00CODE${idx}\x00`;
+    });
+
+    // 2. Código inline
+    const inlineCodes: string[] = [];
+    html = html.replace(/`([^`\n]+)`/g, (_, code) => {
+      const idx = inlineCodes.push(esc(code)) - 1;
+      return `\x00INLINE${idx}\x00`;
+    });
+
+    // 3. URLs → links clicables
+    html = html.replace(/(https?:\/\/[^\s<>")\]\n]+)/g,
+      '<a href="$1" target="_blank" rel="noopener noreferrer" class="chat-link">$1</a>');
+
+    // 4. Negrita
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+    // 5. Headers
+    html = html.replace(/^### (.+)$/gm, '<div class="chat-h3">$1</div>');
+    html = html.replace(/^## (.+)$/gm, '<div class="chat-h2">$1</div>');
+    html = html.replace(/^# (.+)$/gm, '<div class="chat-h1">$1</div>');
+
+    // 6. Listas con viñeta
+    html = html.replace(/^[ \t]*[-*] (.+)$/gm, '<li>$1</li>');
+    html = html.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul class="chat-list">$1</ul>');
+    html = html.replace(/<\/ul>\s*<ul class="chat-list">/g, '');
+
+    // 7. Saltos de línea y párrafos
+    html = html.replace(/\n\n+/g, '</p><p class="mt-2">');
+    html = html.replace(/\n/g, '<br>');
+
+    // 8. Restaurar bloques de código
+    codeBlocks.forEach((code, i) => {
+      html = html.replace(`\x00CODE${i}\x00`,
+        `<pre class="chat-code-block"><code>${code}</code></pre>`);
+    });
+    inlineCodes.forEach((code, i) => {
+      html = html.replace(`\x00INLINE${i}\x00`,
+        `<code class="chat-inline-code">${code}</code>`);
+    });
+
+    return this.sanitizer.bypassSecurityTrustHtml('<p>' + html + '</p>');
   }
 
   private setIsObserver = async () => {
@@ -148,8 +307,6 @@ export class HomePage implements OnInit {
 
 public handleTagSelect(option: any): void {
   const currentFilters = this.selectedTags(); // Filtros de tags
-  const tags = JSON.parse(sessionStorage.getItem("activeTags") || "[]"); // Tags activos en sesión
-
   const isSelected = currentFilters.value === option.value;
 
   if (isSelected) {
@@ -164,7 +321,7 @@ public handleTagSelect(option: any): void {
   }
 
   this.isOpenTags.set(false);
-  this.filterByTags();
+  this.reapplyFilters();
 }
 
   public filteredTags(): any[] {
@@ -173,11 +330,11 @@ public handleTagSelect(option: any): void {
 
   public removeTag(filterToRemove: any): void {
     this.selectedTags.set(this.selectedTags().filter((filter) => filter.value !== filterToRemove.value)); // Elimina del header el tag
-    sessionStorage.setItem("activeTags", JSON.stringify((() => {    
-      const tags = JSON.parse(sessionStorage.getItem("activeTags") || "[]"); 
+    sessionStorage.setItem("activeTags", JSON.stringify((() => {
+      const tags = JSON.parse(sessionStorage.getItem("activeTags") || "[]");
       return tags.filter(tag => tag.value !== filterToRemove.value); // Elimina valor del JSON de storage
     })()));
-    this.filterByTags();
+    this.reapplyFilters();
   }
 
   public toggleDropdownTags(): void {
@@ -238,16 +395,102 @@ public handleTagSelect(option: any): void {
     });
   }
 
-  public filterByTitle(event) {
-    const query = event.target.value?.toString().trim().toUpperCase();
-    if (query?.length > 1) {
-        this.publicReports  = this.reportMap.public.filter(db => db.config?.title?.toUpperCase().includes(query));
-        this.sharedReports  = this.reportMap.shared.filter(db => db.config?.title?.toUpperCase().includes(query));
-        this.privateReports = this.reportMap.private.filter(db => db.config?.title?.toUpperCase().includes(query));
-        this.roleReports    = this.reportMap.group.filter(db => db.config?.title?.toUpperCase().includes(query));
-    } else {
-        ({ public: this.publicReports, shared: this.sharedReports, private: this.privateReports, group: this.roleReports } = this.reportMap);
+  private parseSearchQuery(raw: string): { title: string, author: string, datasource: string, tag: string, createdFrom: string, createdTo: string, modifiedFrom: string, modifiedTo: string } {
+    const result = { title: '', author: '', datasource: '', tag: '', createdFrom: '', createdTo: '', modifiedFrom: '', modifiedTo: '' };
+    const titleParts: string[] = [];
+    for (const token of raw.trim().split(/\s+/)) {
+      if (token.startsWith('au:')) {
+        result.author = token.slice(3);
+      } else if (token.startsWith('ds:')) {
+        result.datasource = token.slice(3);
+      } else if (token.startsWith('tag:')) {
+        result.tag = token.slice(4);
+      } else if (token.startsWith('cr:')) {
+        const parts = token.slice(3).split('..');
+        result.createdFrom = parts[0];
+        result.createdTo   = parts[1] || '';
+      } else if (token.startsWith('mo:')) {
+        const parts = token.slice(3).split('..');
+        result.modifiedFrom = parts[0];
+        result.modifiedTo   = parts[1] || '';
+      } else {
+        titleParts.push(token);
+      }
     }
+    result.title = titleParts.join(' ');
+    return result;
+  }
+
+  private getActiveTagBase() {
+    const activeTags = sessionStorage.getItem('activeTags') || '[]';
+    const hasActiveTag = !activeTags.includes($localize`:@@AllTags:Todos`) && activeTags !== '[]';
+    return {
+      public:  hasActiveTag ? this.checkTagsIntoReports(this.reportMap.public,  activeTags) : this.reportMap.public,
+      shared:  hasActiveTag ? this.checkTagsIntoReports(this.reportMap.shared,  activeTags) : this.reportMap.shared,
+      private: hasActiveTag ? this.checkTagsIntoReports(this.reportMap.private, activeTags) : this.reportMap.private,
+      group:   hasActiveTag ? this.checkTagsIntoReports(this.reportMap.group,   activeTags) : this.reportMap.group,
+    };
+  }
+
+  private normTagArr(cfg: any): string[] {
+    const t = cfg.tag;
+    if (!t) return [];
+    return (Array.isArray(t) ? t : [t]).map(x => typeof x === 'string' ? x : x.value || x.label || '');
+  }
+
+  public filterByTitle(event: Event) {
+    // si esta vacio o 1 caracter se muestra todo con filtro de tags
+    const raw = (event.target as HTMLInputElement).value?.toString().trim() || '';
+    this.applyTitleFilter(raw);
+  }
+
+  private applyTitleFilter(raw: string) {
+    if (raw.length <= 1) {
+      this.filterByTags();
+      return;
+    }
+
+    const { title, author, datasource, tag, createdFrom, createdTo, modifiedFrom, modifiedTo } = this.parseSearchQuery(raw);
+
+    // funcion de filtrado por keywords que se aplica a cada grupo de infromes
+    const filter = (reports: any[]) => reports.filter(db => {
+      const cfg = db.config;
+      if (title      && !cfg.title?.toUpperCase().includes(title.toUpperCase())) return false;
+      if (author     && !cfg.author?.toLowerCase().startsWith(author.toLowerCase())) return false;
+      if (datasource && !cfg.ds?.type?.toLowerCase().includes(datasource.toLowerCase())) return false;
+      if (tag        && !this.normTagArr(cfg).some(t => t.toLowerCase().includes(tag.toLowerCase()))) return false;
+      if (createdFrom  && new Date(cfg.createdAt) < new Date(createdFrom)) return false;
+      if (createdTo    && new Date(cfg.createdAt) > new Date(createdTo + 'T23:59:59')) return false;
+      if (modifiedFrom && new Date(cfg.modifiedAt) < new Date(modifiedFrom)) return false;
+      if (modifiedTo   && new Date(cfg.modifiedAt) > new Date(modifiedTo + 'T23:59:59')) return false;
+      return true;
+    });
+
+    // aplicar filtraje a grupos de informes
+    const base = this.getActiveTagBase();
+    this.publicReports  = filter(base.public);
+    this.sharedReports  = filter(base.shared);
+    this.privateReports = filter(base.private);
+    this.roleReports    = filter(base.group);
+  }
+
+  private reapplyFilters(): void {
+    const hasAdvanced = this.advancedFilters.author || this.advancedFilters.datasource
+      || this.advancedTags.length > 0
+      || (this.createdRange?.length >= 1 && this.createdRange[0])
+      || (this.modifiedRange?.length >= 1 && this.modifiedRange[0]);
+
+    if (hasAdvanced) {
+      this.applyAdvancedFilters(false);
+      return;
+    }
+
+    if (this.searchQuery && this.searchQuery.trim().length > 1) {
+      this.applyTitleFilter(this.searchQuery.trim());
+      return;
+    }
+
+    this.filterByTags();
   }
 
   copyReport(report: any) {
@@ -446,6 +689,127 @@ public handleTagSelect(option: any): void {
         sessionStorage.setItem("homeSorting", "name");
         break;
     }
+  }
+
+  // Control de visibilidad del panel de filtros avanzados
+  ngOnDestroy(): void {
+    this.outsideClickSub?.unsubscribe();
+  }
+  
+  // Cerrar panel de filtros si se hace click fuera de él, el calendar o el multiselect
+  // Mostrar o ocultar el panel de filtros avanzados
+  toggleAdvancedFilter(event: Event) {
+    event.stopPropagation();
+    const opening = !this.showAdvancedFilter();
+    this.showAdvancedFilter.set(opening);
+
+    if (opening) {
+      this.outsideClickSub = fromEvent<MouseEvent>(document, 'click')
+        .pipe(filter(e => {
+          const target = e.target as HTMLElement;
+          return !target.closest('.p-datepicker') && !target.closest('.p-multiselect-panel');
+        }))
+        .subscribe(() => {
+          this.showAdvancedFilter.set(false);
+          this.outsideClickSub?.unsubscribe();
+        });
+    } else {
+      this.outsideClickSub?.unsubscribe();
+    }
+  }
+
+  // Aplicar los filtros avanzados a los informes
+  applyAdvancedFilters(updateSearchBar = true) {
+    //recoger valores de filtros avanzados
+    const { author, datasource } = this.advancedFilters;
+    const hasCreated  = this.createdRange?.length >= 1 && this.createdRange[0];
+    const hasModified = this.modifiedRange?.length >= 1 && this.modifiedRange[0];
+    const hasTags     = this.advancedTags.length > 0;
+    const hasFilters  = author || datasource || hasCreated || hasModified || hasTags;
+
+    if (!hasFilters) {
+      this.filterByTags();
+      return;
+    }
+
+    // devuelve falso si el informe no cumple alguno de los filtros avanzados
+    const filter = (reports: any[]) => reports.filter(db => {
+      const cfg = db.config;
+      if (author     && !cfg.author?.toLowerCase().includes(author.toLowerCase())) return false;
+      if (datasource && !cfg.ds?.type?.toLowerCase().includes(datasource.toLowerCase())) return false;
+      if (hasTags    && !this.advancedTags.some(t => {
+        if (t === $localize`:@@NoTag:Sin Etiqueta`) {
+          const tag = cfg.tag;
+          return tag === null || tag === undefined || tag === '';
+        }
+        return this.normTagArr(cfg).includes(t);
+      })) return false;
+      if (hasCreated) {
+        const created = new Date(cfg.createdAt);
+        if (this.createdRange[0] && created < this.createdRange[0]) return false;
+        if (this.createdRange[1] && created > this.createdRange[1]) return false;
+      }
+      if (hasModified) {
+        const modified = new Date(cfg.modifiedAt);
+        if (this.modifiedRange[0] && modified < this.modifiedRange[0]) return false;
+        if (this.modifiedRange[1] && modified > this.modifiedRange[1]) return false;
+      }
+      return true;
+    });
+
+    const base = this.getActiveTagBase();
+    this.publicReports  = filter(base.public);
+    this.sharedReports  = filter(base.shared);
+    this.privateReports = filter(base.private);
+    this.roleReports    = filter(base.group);
+    if (updateSearchBar) this.buildSearchQuery();
+  }
+
+  // Construye la sintaxis aplicada en los campos de los filtros avanzados y lo pone en el buscador
+  private buildSearchQuery(): void {
+    const parts: string[] = [];
+    if (this.advancedFilters.author)     parts.push(`au:${this.advancedFilters.author}`);
+    if (this.advancedFilters.datasource) parts.push(`ds:${this.advancedFilters.datasource}`);
+    this.advancedTags.forEach(t => parts.push(`tag:${t}`));
+    if (this.createdRange?.length >= 1 && this.createdRange[0]) {
+      const from = this.formatDateForQuery(this.createdRange[0]);
+      const to   = this.createdRange[1] ? `..${this.formatDateForQuery(this.createdRange[1])}` : '';
+      parts.push(`cr:${from}${to}`);
+    }
+    if (this.modifiedRange?.length >= 1 && this.modifiedRange[0]) {
+      const from = this.formatDateForQuery(this.modifiedRange[0]);
+      const to   = this.modifiedRange[1] ? `..${this.formatDateForQuery(this.modifiedRange[1])}` : '';
+      parts.push(`mo:${from}${to}`);
+    }
+    this.searchQuery = parts.join(' ');
+  }
+
+  // Funciones para manejar fechas en filtos avanzados
+  onCreatedDatesChange(event: { dates: Date[], range: any }) {
+    this.createdRange = event.dates || [];
+    this.applyAdvancedFilters();
+  }
+
+  onModifiedDatesChange(event: { dates: Date[], range: any }) {
+    this.modifiedRange = event.dates || [];
+    this.applyAdvancedFilters();
+  }
+
+  private formatDateForQuery(d: Date): string {
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  }
+
+  // Funcion para vaciar el contenido del filtro avanzado
+  clearAdvancedFilters() {
+    this.advancedFilters = { author: '', datasource: '' };
+    this.advancedTags = [];
+    this.createdRange = [];
+    this.modifiedRange = [];
+    this.createdPickerConfig  = { dateRange: [], range: null, filter: null };
+    this.modifiedPickerConfig = { dateRange: [], range: null, filter: null };
+    this.searchQuery = '';
+    this.filterByTags();
   }
 
   sortingReports(type: string, reports: any, direction: string) {

@@ -153,6 +153,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
   initForm(): void {
     this.connectionForm = this.fb.group({
       name: ["", Validators.required],
+      description: [""],
       type: ["postgres", Validators.required],
       host: ["", Validators.required],
       database: ["", Validators.required],
@@ -279,6 +280,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
 
     const connection = {
       name: value.name,
+      description: value.description || '',
       type: value.type,
       database: value.database,
       project_id: this.bigQueryProjectId,
@@ -345,6 +347,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
       try {
         const fileData = {
           name: value.name,
+          description: value.description || '',
           fields: this.excelFileData,
           optimize: value.optimize,
           allowCache: value.allowCache,
@@ -381,6 +384,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
       try {
         const fileData = {
           name: value.name,
+          description: value.description || '',
           fields: this.csvFileData,
           optimize: value.optimize,
           allowCache: value.allowCache,

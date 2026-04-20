@@ -4,6 +4,7 @@ import { CommonModule } from "@angular/common";
 import { EdaDialog, EdaDialog2Component, EdaDialogAbstract, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
 import { SharedModule } from "@eda/shared/shared.module";
 import { SelectButtonModule } from "primeng/selectbutton";
+import { TooltipModule } from "primeng/tooltip";
 import { DashboardPage } from "../../pages/dashboard/dashboard.page";
 import * as _ from 'lodash';
 
@@ -22,7 +23,7 @@ import {
     selector:'app-dependent-filters',
     standalone: true,
     templateUrl: './dependent-filters.component.html',
-    imports: [SharedModule, ReactiveFormsModule, SelectButtonModule, CommonModule, GridsterModule,EdaDialog2Component],
+    imports: [SharedModule, ReactiveFormsModule, SelectButtonModule, CommonModule, GridsterModule, EdaDialog2Component, TooltipModule],
     styleUrls: ["./dependent-filters.component.css"],
 
 })
@@ -48,7 +49,46 @@ export class DependentFilters implements OnInit {
         // Si existe una configuración previa de los filtros dependientes debería prevalecer
         if(this.dashboard.globalFilter.orderDependentFilters.length !== 0) {
 
-            this.dependentFilterGrid = _.cloneDeep(this.dashboard.globalFilter.orderDependentFilters);
+            const saved = _.cloneDeep(this.dashboard.globalFilter.orderDependentFilters);
+            const currentFilters = this.dashboard.globalFilter.globalFilters;
+            const currentIds = new Set(currentFilters.map((gf: any) => gf.id));
+            const savedIds = new Set(saved.map((item: any) => item.filter_id));
+
+            // 1. Eliminar items del grid que ya no existen en globalFilters
+            let reconciled = saved.filter((item: any) => currentIds.has(item.filter_id));
+
+            // 1.5. Agregar description a los items que les falten
+            for (const item of reconciled) {
+                if (!item.description_column || !item.description_table) {
+                    const gf = currentFilters.find((f: any) => f.id === item.filter_id) as any;
+                    if (gf) {
+                        item.description_table = item.description_table || gf.selectedTable?.display_name?.default || gf.table?.label || gf.selectedTable?.table_name;
+                        item.description_column = item.description_column || gf.selectedColumn?.display_name?.default || gf.column?.label || gf.selectedColumn?.column_name;
+                    }
+                }
+            }
+
+            // 2. Normalizar valores, para que sean consecutivos 0..n-1 tras la eliminación
+            reconciled.sort((a: any, b: any) => a.y - b.y);
+            reconciled.forEach((item: any, index: number) => { item.y = index; });
+
+            // 3. Agregar nuevos filtros que no están en el grid guardado
+            let k = reconciled.length;
+            for (const gf of currentFilters) {
+                if (!savedIds.has((gf as any).id)) {
+                    reconciled.push({
+                        cols: 3, rows: 1, y: k++, x: 0,
+                        filter_table: (gf as any).selectedTable?.table_name || (gf as any).table?.value,
+                        filter_column: (gf as any).selectedColumn?.column_name || (gf as any).column?.value?.column_name,
+                        filter_type: (gf as any).selectedColumn?.column_type || (gf as any).column?.value?.column_type,
+                        filter_id: (gf as any).id,
+                        description_table: (gf as any).selectedTable?.display_name?.default || (gf as any).table?.label,
+                        description_column: (gf as any).selectedColumn?.display_name?.default || (gf as any).column?.label,
+                    });
+                }
+            }
+
+            this.dependentFilterGrid = reconciled;
             this.dependentFilterGridPrev = _.cloneDeep(this.dependentFilterGrid);
 
         } else {
@@ -104,8 +144,8 @@ export class DependentFilters implements OnInit {
                     filter_column: gf.selectedColumn?.column_name || gf.column?.value?.column_name,
                     filter_type: gf.selectedColumn?.column_type || gf.column?.value?.column_type,
                     filter_id: gf.id,
-                    description_table: gf.selectedTable?.description?.default || gf.table?.label,
-                    description_column: gf.selectedColumn?.description?.default || gf.column?.label,
+                    description_table: gf.selectedTable?.display_name?.default || gf.table?.label,
+                    description_column: gf.selectedColumn?.display_name?.default || gf.column?.label,
                 }
             );
             k++;
@@ -311,16 +351,10 @@ export class DependentFilters implements OnInit {
             return children;
         }
 
-        // Helper para obtener el "nombre" clave dentro de globalFilter
+        // Helper para obtener la clave del globalFilter (los globalFilters usan gf.id)
         function getFilterKey(gf) {
             if (!gf) return undefined;
-            if (gf.filter_id) return gf.filter_id;
-            // soporte opcional para gf.selectedColumn.display_name.default
-            try {
-                return gf.id;
-            } catch (e) {
-                return undefined;
-            }
+            return gf.id ?? undefined;
         }
 
         // Construir resultado manteniendo el orden de globalFilters

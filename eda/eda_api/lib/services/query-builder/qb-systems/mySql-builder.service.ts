@@ -21,6 +21,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     }
   public analizedQuery(params: EdaQueryParams) {
     const {fields,columns,tables,origin,dest,joinTree,grouping,filters,havingFilters,joinType,valueListJoins,schema,}= params;
+    let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
 
     const fromTable = tables
       .filter((table) => table.name === origin)
@@ -73,7 +74,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       });
       
       // WHERE
-      myQuery += this.getFilters(filters);
+      myQuery += this.getFilters(filters, dest.length, o);
       
       if (alias) {
         for (const key in alias) {
@@ -217,7 +218,7 @@ export class MySqlBuilderService extends QueryBuilderService {
   }
 
   public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
-    tables: Array<any>, limit: number,  joinType: string, groupByEnabled:boolean, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any ) {
+    tables: Array<any>, limit: number,  joinType: string, groupByEnabled:boolean, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any, sortedFilters: any[] ) {
    
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
     let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
@@ -227,6 +228,10 @@ export class MySqlBuilderService extends QueryBuilderService {
       myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
     }
     
+    // If the element is a SQL Expression type
+    if(this.queryTODO.fields[0].computed_column !== undefined && this.queryTODO.fields[0].computed_column == 'computed' ) {
+      myQuery = `SELECT DISTINCT ${this.queryTODO.fields[0].SQLexpression} as \`${this.queryTODO.fields[0].column_name}\` ,   ${this.queryTODO.fields[0].SQLexpression} as \`id\`\nFROM ${o}`;
+    }
 
     // JOINS
     let joinString: any[];
@@ -246,8 +251,15 @@ export class MySqlBuilderService extends QueryBuilderService {
       myQuery = myQuery + '\n' + x;
     });
 
+    
+
     // WHERE
-    myQuery += this.getFilters(filters);
+      // Check if AND | OR filter sort exists
+    if(Array.isArray(sortedFilters) && sortedFilters.length !== 0) {
+      myQuery += this.getSortedFilters(sortedFilters, filters); // sortedFilters has elements
+    } else {
+        myQuery += this.getFilters(filters, dest.length, o); // sortedFilters is empty
+    }
 
 
     // GroupBy
@@ -293,11 +305,13 @@ export class MySqlBuilderService extends QueryBuilderService {
     return myQuery;
   };
 
-  public getFilters(filters): any { 
+  public getFilters(filters, destLongitud, pTable): any { 
 
-    if (this.permissions.length > 0) {
-      this.permissions.forEach(permission => { filters.push(permission); });
-    }
+    /** If We Have permissions And No Destination I Add To Filters */
+
+    if ( this.permissions.length > 0 && destLongitud == 0) this.permissions.forEach( permission => { filters.push(permission); });
+    else { this.permissions.forEach( permission => { if( permission.filter_table === pTable ) filters.push(permission);})}
+
     if (filters.length) {
 
       let equalfilters = this.getEqualFilters(filters);
@@ -313,10 +327,10 @@ export class MySqlBuilderService extends QueryBuilderService {
         if (f.filter_type === 'not_null' || f.filter_type === 'not_null_nor_empty' || f.filter_type === 'null_or_empty') {
           filtersString += '\nand ' + this.filterToString(f);
         } else {
-          /* Control de nulos... se genera la consutla de forma diferente */
-            if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.length >1 ) {// Si tengo varios filtors es filtro por X o es nulo.
+          /* Null control... query generated in a different way */
+            if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.filter( (f)=>f.filter_column == column.column_name && f.filter_table == column.table_id ).length  >1 ) {// Si tengo varios filtros sobre una misma columna  es filtro por X o es nulo.
                    filtersString += `\nor ${colname}  is null `;
-            } if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.length ==1 ) { // si soolo tengo el filtro de nulo es un and poqque digo 1=1 y es nulo.
+            } if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.filter( (f)=>f.filter_column == column.column_name && f.filter_table == column.table_id ).length  ==1 ) { // si solo tengo el filtro de nulo es un and porque digo 1=1 y es nulo.
               filtersString += `\nand ${colname}  is null `;
             } else {  
                 filtersString += `\nand (${this.filterToString(f)} ) `;
@@ -331,6 +345,325 @@ export class MySqlBuilderService extends QueryBuilderService {
     } else {
       return '';
     }
+  }
+
+// This function generates a SQL expression needed to add the permissions.
+  public getSqlPermissionsExpresion(permissions: any) {
+    let sql = '';
+    if(!permissions.some((p: any) => p.toBeUsed)) return sql;
+    
+    permissions = permissions.filter(p => p.toBeUsed);
+
+    const generarExpresionSQL = (permissions) => {
+      const grupos = {};
+
+      for (const filtro of permissions) {
+        const tabla = filtro.filter_table;
+        const columna = filtro.filter_column;
+        const valor = filtro.filter_elements[0].value1[0];
+
+        if (!grupos[tabla]) {
+          grupos[tabla] = [];
+        }
+
+        grupos[tabla].push(`\`${tabla}\`.\`${columna}\` in (${valor})`);
+      }
+
+      const gruposOR = Object.values(grupos).map((columnas: any) => {
+        return `( ${columnas.join(' OR ')} )`;
+      });
+
+      return gruposOR.join(' AND ');
+    }
+
+    return generarExpresionSQL(permissions);
+  }
+
+  public getSortedFilters(sortedFilters: any[], filters: any[]): any {
+
+    let sqlPermissionsExpresion = this.getSqlPermissionsExpresion(this.permissions);
+
+    // If the there is no filters 
+    if(filters.length === 0) { return ''; }
+    
+    // Adding valueListSource to the filters And/Or
+    filters.forEach((filter: any) => {
+      if(filter.valueListSource !== undefined && filter.valueListSource !== null && filter.filter_id !== 'is_null') {
+        sortedFilters.find((e: any) => e.filter_id === filter.filter_id ).valueListSource = filter.valueListSource;
+      }
+    })
+
+    // Ordering the dashboard on the y-axis from lowest to highest.
+    sortedFilters.sort((a: any, b: any) => a.y - b.y); 
+
+    // Calculating global filters and they are empty.
+    const nullSortedFilters  =  sortedFilters.filter((f: any) => ((f.isGlobal===true) && (f.filter_elements[0].value1.length === 0)));
+
+    // If we have empty values in the filters we define a new sortedFilters
+    if(nullSortedFilters.length !==0){
+
+      // Ordering
+      nullSortedFilters.sort((a: any, b: any) => a.y - b.y); 
+  
+      // Order in the x axis
+      nullSortedFilters.forEach( element =>{
+            for(let i= element.y + 1 ; i < sortedFilters.length; i++ ){
+              if(element.x  < sortedFilters[i].x) {
+                sortedFilters[i].x -= 1;
+              } else {
+                break;
+              }
+            }
+      }  )
+  
+      // Order in the y axis
+      const newSortedFilters = sortedFilters.filter((f: any) => !((f.isGlobal===true) && (f.filter_elements[0].value1.length === 0)));
+      newSortedFilters.forEach( (f,i) => f.y=i );
+
+      sortedFilters = _.cloneDeep(newSortedFilters);
+    }
+
+    // If we have a global filter with only one empty value selected
+    filters.forEach(filter => {
+      if(filter.isGlobal && (filter.filter_type === 'null_or_empty') && (filter.filter_elements[0].value1[0]==='emptyString')) {
+        const selectedFilter = sortedFilters.find(sf => sf.filter_id === filter.filter_id);
+
+        if(selectedFilter) {
+          selectedFilter.filter_type = 'null_or_empty';
+          selectedFilter.filter_elements = [];
+        }
+      }
+
+      if(filter.filter_id === 'is_null') {
+        const selectedFilter = sortedFilters.find(sf => sf.filter_id === filter.source_filter_id);
+        selectedFilter.sqlOptional = '';
+        
+        if(selectedFilter){
+          if(filter.valueListSource === undefined) {
+            selectedFilter.sqlOptional += `\`${filter.filter_table}\`.\`${filter.filter_column}\` is null or \`${filter.filter_table}\`.\`${filter.filter_column}\` = '' or`;
+            selectedFilter.filter_elements[0].value1 = selectedFilter.filter_elements[0].value1.filter(e => e !== 'emptyString');
+          } else {
+            selectedFilter.sqlOptional += `\`${filter.valueListSource.target_table}\`.\`${filter.valueListSource.target_id_column}\` is null or \`${filter.valueListSource.target_table}\`.\`${filter.valueListSource.target_id_column}\` = '' or`;
+            selectedFilter.filter_elements[0].value1 = selectedFilter.filter_elements[0].value1.filter(e => e !== 'emptyString');
+          }
+        }
+
+      }
+
+    })
+
+    // Checking the computed fields and SQLexpression added
+    filters.forEach(filter => {
+      if (filter.computed_column === 'computed') {
+        const match = sortedFilters.find(sf => sf.filter_id === filter.filter_id);
+        if (match) {
+          match.computed_column = 'computed';
+          match.SQLexpression = filter.SQLexpression;
+        }
+      }
+    });
+    
+    // Variable containing the new string of nested AND/OR filters corresponding to the graphic design of the items.
+    let stringQuery = '\nwhere ';
+
+    // Adding needed permissions if we have some item in the array of permissions with toBeUsed in true
+    if(sqlPermissionsExpresion !== '') stringQuery += `\n${sqlPermissionsExpresion}\nAND\n`; 
+
+    // Recursive function for the necessary nesting according to the AND/OR filter graph.
+    function cadenaRecursiva(item: any) {
+      // recursive item
+      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, filter_codes, value, valueListSource, sqlOptional, computed_column, SQLexpression } = item;
+
+      ////////////////////////////////////////////////// filter_type ////////////////////////////////////////////////// 
+      let filter_type_value = '';
+      if(filter_type === 'not_in'){
+        filter_type_value = 'not in';
+      } else {
+        if(filter_type === 'not_like') {
+          filter_type_value = 'not like';
+        } else {
+          if(true){
+            filter_type_value = filter_type;
+          }
+        }
+      }
+
+      ////////////////////////////////////////////////// filter_elements ////////////////////////////////////////////////// 
+      let filter_elements_value = '';
+
+      if(filter_elements.length === 0) {
+        if(filter_type === 'not_null') {
+          filter_type_value = 'is not null';
+        }
+        if(filter_type === 'not_null_nor_empty') {
+          filter_type_value = 'is not null and';
+        }
+        if(filter_type === 'null_or_empty') {
+          filter_type_value = 'is null or';
+        }
+      }
+      else {
+        // FOR ONE VALUE
+
+        if(filter_elements[0].value1.length === 1){
+
+          //Value of type text
+          if(filter_column_type === 'text'){
+            if(filter_type === 'in' || filter_type === 'not_in'){
+              filter_elements_value = filter_elements_value + `(\'${filter_codes[0].value1[0]}\')`;
+            } else {
+              filter_elements_value = filter_elements_value + `'${filter_type === 'like' || filter_type === 'not_like'? '%': ''}${filter_codes[0].value1[0]}${filter_type === 'like' || filter_type === 'not_like'? '%': ''}'`;
+            }
+          } 
+
+          // Numeric type value
+          if(filter_column_type === 'numeric'){
+            if(filter_type === 'between') {
+              filter_elements_value = filter_elements_value + ` ${Number(filter_codes[0].value1[0])} and ${Number(filter_codes[1].value2[0])}`;
+            } else {
+              if(filter_type === 'in' || filter_type === 'not_in') {
+                filter_elements_value = filter_elements_value + `(${filter_codes[0].value1[0]})`;
+              } else {
+                filter_elements_value = filter_elements_value + `${filter_codes[0].value1[0]}`;
+              }
+            }
+          } 
+
+          // Date type value
+          if(filter_column_type === 'date'){
+            if(filter_type === 'between'){
+              filter_elements_value = filter_elements_value + ` STR_TO_DATE(\'${filter_codes[0].value1[0]}\',\'%Y-%m-%d\')` + ' and ' + `STR_TO_DATE(\'${filter_codes[1].value2[0]} 23:59:59\',\'%Y-%m-%d %H:%i:%S\')`;
+            } else {
+              if(filter_type==='in' || filter_type==='not_in') {
+                filter_elements_value = filter_elements_value + `(STR_TO_DATE(\'${filter_codes[0].value1[0]}\',\'%Y-%m-%d\'))`;
+              } else {
+                filter_elements_value = filter_elements_value + `STR_TO_DATE(\'${filter_codes[0].value1[0]}\',\'%Y-%m-%d\')`;
+              }
+            }
+          }
+
+        } else {
+          // FOR SEVERAL VALUES
+
+          filter_elements_value = filter_elements_value + '(';
+
+          // Text type values
+
+          if(filter_column_type === 'text'){
+            filter_codes[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `'${element}'` + `${index===(filter_codes[0].value1.length-1)? ')': ','}`;
+            })
+          }
+
+          // Numeric type values
+          if(filter_column_type === 'numeric'){
+            filter_codes[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `${element}` + `${index===(filter_codes[0].value1.length-1)? ')': ','}`;
+            })
+          }
+
+          // Date type values
+          if(filter_column_type === 'date'){
+            filter_codes[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `STR_TO_DATE(\'${element}\',\'%Y-%m-%d\')` + `${index===(filter_codes[0].value1.length-1)? ')': ','}`;
+            })
+          }
+
+          // Values ​​that do not have a filter_column_type defined
+          if(filter_column_type === undefined){
+            filter_codes[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `'${element}'` + `${index===(filter_codes[0].value1.length-1)? ')': ','}`;
+            })
+          }
+        }
+      }
+
+      ////////////////////////////////////////////////// Building the query sequence by item ////////////////////////////////////////////////// 
+
+      // variable to find filters with valueListSource
+      let validador = (valueListSource !== undefined && valueListSource !== null);
+      // Result of the whole string 
+
+      let resultado = '';
+
+      if(computed_column==='computed') {
+        resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} (${SQLexpression}) ${filter_type_value}${filter_elements_value}`;
+      } else {
+        resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` ${filter_type_value}${filter_elements_value}`;
+      }
+
+
+      // It is located in this position because the table and field must be duplicated in the query (*observation)
+      if(filter_type === 'not_null_nor_empty') {
+        if(computed_column==='computed') {
+          resultado = `${resultado} (${SQLexpression}) != '')`;
+        } else {
+          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` != '')`;
+        }
+      }
+
+      // It is located in this position because the table and field must be duplicated in the query (*observation)
+      if(filter_type === 'null_or_empty') {
+        if(computed_column==='computed') {
+          resultado = `${resultado} (${SQLexpression}) = '')`;
+        } else {
+          resultado = `${resultado} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${ validador ? valueListSource.target_description_column : filter_column}\` = '')`;
+        }
+      }
+
+      if(filter_type === 'in' && sqlOptional !== undefined) {
+        resultado = `${resultado} )`;
+      }
+
+      ////////////////////////////////////////////////// Arrays of child items ////////////////////////////////////////////////// 
+      let elementosHijos = []; 
+
+      for(let n = y+1; n<sortedFilters.length; n++){
+        if(sortedFilters[n].x === x) break;
+        if(y < sortedFilters[n].y && sortedFilters[n].x === x+1) elementosHijos.push(sortedFilters[n]);
+      }
+
+      // Variable that contains the next item of the item treated by the recursive function.
+      const itemGenerico = sortedFilters.filter((item: any) => item.y === y + 1)[0];
+
+      if(elementosHijos.length>0) {
+        let space = '            '; // Jumps for indentation
+        let variableSpace = space.repeat(x+1);
+
+        let hijoArreglo = elementosHijos.map(itemHijo => {
+          return cadenaRecursiva(itemHijo);
+        })
+
+        let hijosCadena = '';
+        hijoArreglo.forEach((hijo, index) => {
+          hijosCadena = hijosCadena + hijo;
+          if(index<elementosHijos.length-1){
+            hijosCadena = hijosCadena + ` \n ${variableSpace} ${elementosHijos[index+1].value.toUpperCase()} `
+          }
+        })
+
+        resultado = `(${resultado} \n ${variableSpace} ${itemGenerico.value.toUpperCase()} (${hijosCadena}))`;
+      }
+
+      // Final result of the recursive function
+      return resultado;
+    }
+
+    // Iterating the dashboard to get the correct nested string
+    let itemsString = '( '
+    for(let r=0; r<sortedFilters.length; r++){
+      if(sortedFilters[r].x === 0){
+        itemsString = itemsString +  (r === 0 ? '' : ' ' + sortedFilters[r].value.toUpperCase() + ' ' ) + sortedFilters.filter((e: any) => e.y===r).map(cadenaRecursiva)[0] + `\n`;
+      } else {
+        continue;
+      }
+    }
+
+    itemsString = itemsString + ' )';
+    stringQuery = stringQuery + itemsString
+
+    // Final result of the constructed query
+    return stringQuery;
   }
 
   public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string, valueListJoins:Array<any>, schema:string): any {
@@ -694,7 +1027,11 @@ export class MySqlBuilderService extends QueryBuilderService {
       
     }else{
       if(column.column_type == 'numeric'){
-        colname = `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits}))`;
+        if(column.aggregation_type === 'count_distinct') {
+          colname = `CAST( count( distinct (${column.SQLexpression})) as decimal(32,${column.minimumFractionDigits}))`;
+        } else {
+          colname = `CAST( ${column.aggregation_type}(${column.SQLexpression}) as decimal(32,${column.minimumFractionDigits}))`;
+        }
       }else{
         colname = `  ${column.SQLexpression}  `;
       }
@@ -715,7 +1052,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       let filtersString = `\nhaving 1=1 `;
 
       filters.forEach(f => {
-        const column = this.findHavingColumn(f.filter_table, f.filter_column);
+        const column = this.findHavingColumn(f);
         column.autorelation = f.autorelation;
         column.joins = f.joins;
         const colname = this.getHavingColname(column);
@@ -769,7 +1106,11 @@ public getHavingColname(column: any){
         table_id = column.joins[column.joins.length-1][0];
     }
 
-    colname = `cast(${column.aggregation_type}(\`${table_id}\`.\`${column.column_name}\`) as decimal(32,${column.minimumFractionDigits||0}) ) ` ;
+    if(column.aggregation_type === 'count_distinct') {
+      colname = `cast( count( distinct \`${table_id}\`.\`${column.column_name}\`) as decimal(32,${column.minimumFractionDigits||0}) ) ` ;
+    } else {
+      colname = `cast(${column.aggregation_type}(\`${table_id}\`.\`${column.column_name}\`) as decimal(32,${column.minimumFractionDigits||0}) ) ` ;
+    }
   }else{
     if(column.column_type == 'numeric'){
       colname = `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits}))`;
@@ -786,7 +1127,7 @@ public getHavingColname(column: any){
    * @returns having filters  to string. 
    */
  public havingToString(filterObject: any) {
-    const column = this.findHavingColumn(filterObject.filter_table, filterObject.filter_column);
+    const column = this.findHavingColumn(filterObject);
     column.autorelation = filterObject.autorelation;
     column.joins = filterObject.joins;
 

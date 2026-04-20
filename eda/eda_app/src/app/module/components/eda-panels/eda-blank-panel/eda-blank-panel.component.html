@@ -35,7 +35,7 @@
 
 
 
-  <div class="flex items-center justify-center flex-grow overflow-y-auto rounded-lg bg-gray-50" [class.spinner-panel]="display_v.minispinner">
+  <div class="flex items-center justify-center flex-grow overflow-y-auto rounded-lg" [class.spinner-panel]="display_v.minispinner">
     @if (display_v.saved_panel && !display_v.minispinner) {
       <div class="relative w-full h-full">
         <panel-chart 
@@ -154,13 +154,12 @@
                   </div>
                 </div>
 
-                <div class="flex overflow-y-auto h-[55vh] text-base">
-                  <div class="w-full">
+                <div class="overflow-y-auto h-[55vh] text-base">
 
                     <ng-template #entityList>
                       <div class="space-y-1 p-2">
                         @for (entity of tablesToShow; track entity.table_name) {
-                          <button 
+                          <button
                             class="flex w-full items-center justify-between rounded-md px-3 py-2"
                             [class.bg-[#00BFB3]]="userSelectedTable === entity.table_name"
                             [class.text-primary-foreground]="userSelectedTable === entity.table_name"
@@ -181,46 +180,37 @@
                     @if (selectedQueryMode=='EDA2') {
 
                       @if (currentQuery.length > 0) {
-                        <p-tree 
-                          [value]="tableNodes" 
-                          selectionMode="single" 
+                        <div class="eda-tree-scroll">
+                        <p-tree
+                          [value]="displayedTableNodes"
+                          selectionMode="single"
                           [loading]="loadingNodes"
-                          (onNodeExpand)="tableNodeExpand($event)" 
+                          (onNodeExpand)="tableNodeExpand($event)"
                           (onNodeSelect)="tableNodeSelect($event)"
                         >
-        
+
                           <!-- ESTE TEMPLATE CONTEMPLA AL PADRE -->
                           <ng-template let-node let-options="options" pTemplate="default">
-                            <div 
-                              class="p-treenode-content" 
-                              [ngStyle]="{'padding-left.px': (node.level || 0) * 25}"
-                              [ngClass]="checkNodeSelected(node) ? 'font-bold' : ''" 
-                              style="display:flex; align-items:center;"
-                            >
+                            <div [ngClass]="checkNodeSelected(node) ? 'font-bold' : ''">
                               {{node.label}}
                             </div>
                           </ng-template>
-        
+
                           <!-- ESTE TEMPLATE TRATA A LOS HIJOS -->
                           <ng-template let-node let-options="options" pTemplate="child">
-                            <div 
-                              class="p-treenode-content" 
-                              [ngStyle]="{'padding-left.px': (node.level || 0) * 20}"
-                              [ngClass]="checkNodeSelected(node) ? 'font-bold' : ''" 
-                              style="display:flex; align-items:center;"
-                            >
+                            <div [ngClass]="checkNodeSelected(node) ? 'font-bold' : ''">
                               {{node.label}}
                             </div>
                           </ng-template>
-        
+
                         </p-tree>
+                        </div>
                       } @else {
                         <ng-container *ngTemplateOutlet="entityList"></ng-container>
                       }
 
                     }
 
-                  </div>
                 </div>
               </div>
 
@@ -400,7 +390,7 @@
                   </div>
 
                   <!-- Asistente con Inteligencia Artificial => Cuando el currentQuery es cero -->
-                  @if(currentQuery.length === 0) {
+                  @if(currentQuery.length === 0 && promptAvailable()) {
                     <div class=" ml-3 p-2">
                       <Prompt 
                         [(messages)]="promptMessages" 
@@ -483,58 +473,66 @@
                         </h3>
                       </div>
 
-                      <div class="relative inline-block cols-span-1">
-                        <h3
-                          class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-[max-content]"
-                          [ngClass]="display_v.advancedSetting === 2 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
-                          (click)="display_v.advancedSetting = 2" 
-                          i18n="@@askTheAIText"
-                        >
-                          Consulta con la IA
-                        </h3>
-                      </div>
+                      @if(promptAvailable()) {
+                        <div class="relative inline-block cols-span-1">
+                          <h3
+                            class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-[max-content]"
+                            [ngClass]="display_v.advancedSetting === 2 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
+                            (click)="display_v.advancedSetting = 2" 
+                            i18n="@@askTheAIText"
+                          >
+                            Consulta con la IA
+                          </h3>
+                        </div>
+                      }
                     </div>
       
                     <!-- Query Summary -->
                     @if(display_v.advancedSetting === 0){
-                      <div class="grid grid-cols-2  border rounded-lg bg-gray-50 min-h-[30vh] overflow-y-auto p-2">
-                        <div class=" ml-3 p-2">
-                          <h3 class="text-base font-semibold" i18n="@@resumenAtrH6">Resumen de atributos</h3>
-                          @for (attr of currentQuery; track attr.display_name.default) {
-                            <p class="flex items-center text-base">
-                              <strong [innerHTML]="getColumnJoins(attr)"></strong>
-                              <span>
-                                <strong> {{ getNiceTableName(attr.table_id) }} </strong>
-                                <i class="pi pi-angle-right"></i>
-                                {{attr.display_name.default}}
-                              </span>
-                              @for (aggregation of attr.aggregation_type; track aggregation.display_name) {
-                                @if (aggregation.selected && !['No', 'no'].includes(aggregation.display_name)) {
-                                  &nbsp;({{aggregation.display_name}})
+                      <div class="grid grid-cols-2 overflow-x-hidden border rounded-lg bg-gray-50 min-h-[30vh] overflow-y-auto">
+
+                        <!-- Top left: Atributos -->
+                        <div class="summary-section border-r border-gray-200">
+                          <h3 class="summary-section-title text-base font-semibold" i18n="@@resumenAtrH6">Resumen de atributos</h3>
+                          @for (column of currentQuery; track column.display_name.default) {
+                            <div class="summary-item">
+                              <strong class="text-xs text-gray-400" [innerHTML]="getColumnJoins(column)"></strong>
+                              <div class="table-name text-sm">
+                                <strong>{{ getNiceTableName(column.table_id) }}</strong>
+                                <i class="pi pi-angle-right text-gray-400 text-xs"></i>
+                                <span class="text-gray-700">{{ column.display_name.default }}</span>
+                                @for (aggregation of column.aggregation_type; track aggregation.display_name) {
+                                  @if (aggregation.selected && !['No', 'no'].includes(aggregation.display_name)) {
+                                    <span>&nbsp;({{ aggregation.display_name }})</span>
+                                  }
                                 }
-                              }
-                            </p>
-                          }
-                          <br>
-                          <h3 class="text-base font-semibold" i18n="@@resumenFiltrosPanelH6">Resumen de filtros del panel</h3>
-          
-                          @for (attr of selectedFilters; track attr) {
-                            <p class="flex items-center">
-                              <strong [innerHTML]="getFilterJoins(attr)"></strong>
-                              <span [innerHTML]="getDisplayFilterStr(attr)"></span>
-                            </p>
+                              </div>
+                            </div>
                           }
                         </div>
-          
-                        <div>
-                          <h3 class="text-base font-semibold" i18n="@@resumenFiltrosInformeH6">Resumen de filtros del informe</h3>
-                          @for (attr of globalFilters; track attr) {
-                            <p class="flex items-center">
-                              <strong [innerHTML]="getFilterJoins(attr)"></strong>
-                              <span [innerHTML]="getDisplayFilterStr(attr)"></span>
-                            </p>
+
+                        <!-- Top right: Filtros del informe -->
+                        <div class="summary-section">
+                          <h3 class="summary-section-title text-base font-semibold" i18n="@@resumenFiltrosInformeH6">Resumen de filtros del informe</h3>
+                          @for (filter of globalFilters; track filter) {
+                            <div class="summary-item text-sm">
+                              <span class="text-xs text-gray-400" [innerHTML]="getFilterJoins(filter)"></span>
+                              <span [innerHTML]="getDisplayFilterStr(filter)"></span>
+                            </div>
                           }
                         </div>
+
+                        <!-- Bottom left: Filtros del panel -->
+                        <div class="summary-section border-t border-r border-gray-200">
+                          <h3 class="summary-section-title text-base font-semibold" i18n="@@resumenFiltrosPanelH6">Resumen de filtros del panel</h3>
+                          @for (filter of selectedFilters; track filter) {
+                            <div class="summary-item text-sm">
+                              <span class="text-xs text-gray-400" [innerHTML]="getFilterJoins(filter)"></span>
+                              <span [innerHTML]="getDisplayFilterStr(filter)"></span>
+                            </div>
+                          }
+                        </div>
+
                       </div>
                     }
                     
@@ -577,40 +575,59 @@
                           </div>
 
                           
-                            <!-- // TBI -->
-                          <!-- <div class="grid grid-cols-4 items-center">
+                            <div class="grid grid-cols-4 items-center">
                             <div class="col-span-2">
-                              <h3 class="text-base font-bold inline"><span i18n="@@filtrosAvanzados">Filtros avanzados: </span>
+                              <h3 class="text-base font-bold inline">
+                                <span i18n="@@filtrosAvanzados">Filtros avanzados (AND/OR): </span>
                               </h3>
                             </div>
-          
                             <div class="col-span-2">
-          
-                              <button class="w-fit px-3 py-2 border rounded-lg bg-white text-black hover:bg-[#00BFB3] hover:text-white" (click)="onWhatIfDialog()">
-                                Configurar
+                              <button class="w-fit px-3 py-2 border rounded-lg bg-white text-black hover:bg-[#00BFB3] hover:text-white" (click)="filterAndOrDialog()">
+                                <span i18n="@@configurarFiltrosAvanzados">Configurar</span>
                               </button>
                             </div>
-                          </div> -->
+                          </div>
 
                           <div class="grid grid-cols-4 items-center">
                             <div class="col-span-2 ">
                               <h3 class="text-base font-bold inline">
-                                Registros únicos (agrupación)? 
+                                <span i18n="@@uniqueRecordsGrouping">Registros únicos (agrupación)?</span> 
                               </h3>
                             </div>
 
                             <div class="col-span-2">
                               <button
                                 type="button"
-                                [(ngModel)]="groupByEnabled"
                                 (click)="toggleGroupBy()"
                                 [ngClass]="{
                                   'bg-[#00BFB3] text-white': groupByEnabled,
                                   'bg-white text-black': !groupByEnabled
                                 }"
-                                class="w-fit px-3 py-2 border rounded-lg hover:bg-[#00BFB3] hover:text-white"
+                                class="w-10 px-3 py-2 border rounded-lg hover:bg-[#00BFB3] hover:text-white text-center"
                               >
                                 {{ groupByEnabled ? 'Si' : 'No' }}
+                              </button>
+                            </div>
+                          </div>
+
+                          <div class="grid grid-cols-4 items-center">
+                            <div class="col-span-2 ">
+                              <h3 class="text-base font-bold inline">
+                                <span i18n="@@dynamicFiltersText">Filtros dinámicos</span> 
+                              </h3>
+                            </div>
+
+                            <div class="col-span-2">
+                              <button
+                                type="button"
+                                (click)="dynamicFiltersInteraction()"
+                                [ngClass]="{
+                                  'bg-[#00BFB3] text-white': dynamicFilters,
+                                  'bg-white text-black': !dynamicFilters
+                                }"
+                                class="w-10 px-3 py-2 border rounded-lg hover:bg-[#00BFB3] hover:text-white text-center"
+                              >
+                                {{ dynamicFilters ? 'Si' : 'No' }}
                               </button>
                             </div>
                           </div>
@@ -736,7 +753,7 @@
                       </div>
                     }
 
-                    @else if(display_v.advancedSetting === 2) {
+                    @else if(display_v.advancedSetting === 2 && promptAvailable()) {
                       <div class="grid grid-cols-1  border rounded-lg bg-gray-50 min-h-[30vh] overflow-y-auto p-2">
 
                           <div class=" ml-3 p-2">
@@ -995,6 +1012,7 @@
   
       <!-- Preview View -->
       @if(indextab == 1){
+        <div class="overflow-y-auto" style="max-height: 65vh;">
         <div class="grid grid-cols-5 gap-x-4 ">
           <div class="col-span-4">
             <div class="rounded-lg border p-4 bg-muted/30 flex justify-center" style="height:60vh;">
@@ -1065,6 +1083,7 @@
         @if (dragAndDropAvailable && graphicType==='crosstable') {
           <drag-drop [axes]="axes" (newAxes)="newAxesOrdering($event)"></drag-drop>
         }
+        </div>
       }
     </div>
   
@@ -1096,11 +1115,11 @@
 }
 
 @if(configController) {
-  <app-column-dialog [controller]="configController"></app-column-dialog>
+  <app-column-dialog [controller]="configController" (updateSortedFiltersColumnDialog)="updateSortedFiltersColumnDialogFunction($event)"></app-column-dialog>
 }
 
 @if(filterController){
-<app-filter-dialog [controller]="filterController" [height]="'10px'"></app-filter-dialog>
+<app-filter-dialog [controller]="filterController" [height]="'10px'" (updateSortedFiltersFilterDialog)="updateSortedFiltersFilterDialogFunction($event)"></app-filter-dialog>
 }
 
 @if(chartController) {
@@ -1188,4 +1207,15 @@
 
 @if (display_v.filterMapperDialog) {
   <app-filter-mapper-dialog [dashboard]="dashboard" [panel]="panel" (close)="onCloseFilterMapperDialog($event)"></app-filter-mapper-dialog>
+}
+
+@if (display_v.filterAndOr_dialog) {
+  <filter-and-or-dialog
+    [selectedFilters]="selectedFilters"
+    [globalFilters]="globalFilters"
+    [tables]="tables"
+    [sortedFilters]="sortedFilters"
+    (close)="onCloseFilterAndOrDialog()"
+    (newSortedFilters)="newSortedFiltersFunction($event)">
+  </filter-and-or-dialog>
 }

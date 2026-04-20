@@ -105,6 +105,7 @@ export class DashboardPage implements OnInit {
   public panelTabText: any;
   public panelTabAlign: any;
   public panelContent: any;
+  public gridsterItemStyle: any;
   public availableChatGpt: any = false;
   public height: number = 1000;
   public toLitle: boolean = false;
@@ -132,6 +133,10 @@ export class DashboardPage implements OnInit {
   public clickFiltersEnabled: boolean = true;
   public stopRefresh: boolean = false;
 
+  // Custom data portal
+  public showCustomizeDialog: boolean = false;
+  public applyCustomizeHTML: string = '';
+  public finalCustimizeHTML: string = '';
 
   //Filter control variables
   public lastFilters: any[] = [];
@@ -282,7 +287,8 @@ export class DashboardPage implements OnInit {
       this.title = dashboard.config.title;
       this.applyToAllfilter = dashboard.config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
       this.globalFilter?.initOrderDependentFilters(dashboard.config.orderDependentFilters || []); // Filtros dependientes
-      this.globalFilter?.initGlobalFilters(dashboard.config.filters || []);// Filtres del dashboard
+      //this.globalFilter?.initGlobalFilters(dashboard.config.filters || []);// Filtres del dashboard
+      this.globalFilter?.initGlobalFilters( this.checkFiltersVisibility( dashboard.config.filters , data.datasource.model.tables ) ||[]);// Filtres del dashboard
       this.initPanels(dashboard);
       this.sortPanelsForMobile();
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
@@ -382,13 +388,24 @@ export class DashboardPage implements OnInit {
     };
 
     // Panel del título del chart
+    const bgImage = this.dashboard.config.styles.backgroundImage;
     this.backgroundColor = {
-      background: this.dashboard.config.styles.backgroundColor, 
+      background: this.dashboard.config.styles.backgroundColor,
+      ...(bgImage ? {
+        'background-image': `url(${bgImage})`,
+        'background-size': '100% auto',
+        'background-position': 'top center',
+        'background-repeat': 'repeat-y'
+      } : {})
     };
+
+    // Si hay imagen de fondo, los paneles se muestran con 80% de opacidad
+    const panelBg = bgImage
+      ? this.hexColorToRgba(this.dashboard.config.styles.panelColor, 0.5)
+      : this.dashboard.config.styles.panelColor;
 
     // Texto del título del chart
     this.panelTitle = {
-      background: this.dashboard.config.styles.panelColor,
       color: this.dashboard.config.styles.panelTitle.fontColor,
       'font-size': (20 + this.dashboard.config.styles.panelTitle.fontSize * 3) + 'px',
       'font-family': this.dashboard.config.styles.panelTitle.fontFamily,
@@ -399,12 +416,14 @@ export class DashboardPage implements OnInit {
     };
 
     this.panelContent = {
-      background: this.dashboard.config.styles.panelColor,
+      background: panelBg,
     };
+
+    this.gridsterItemStyle = bgImage ? { 'background-color': panelBg } : {};
 
     // Texto de los tabs (como panelTitle pero con display:block y text-align)
     this.panelTabText = {
-      background: this.dashboard.config.styles.panelColor,
+      background: panelBg,
       color: this.dashboard.config.styles.panelTitle.fontColor,
       'font-size': (20 + this.dashboard.config.styles.panelTitle.fontSize * 3) + 'px',
       'font-family': this.dashboard.config.styles.panelTitle.fontFamily,
@@ -417,6 +436,15 @@ export class DashboardPage implements OnInit {
     };
 
     this.stylesProviderService.ActualChartPalette = this.dashboard.config.styles.palette;
+  }
+
+  private hexColorToRgba(hex: string, alpha: number): string {
+    const clean = (hex || '#ffffff').replace('#', '');
+    const full = clean.length === 3
+      ? clean.split('').map(c => c + c).join('')
+      : clean;
+    const n = parseInt(full, 16);
+    return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
   }
 
   private initPanels(dashboard: any) {
@@ -476,21 +504,21 @@ export class DashboardPage implements OnInit {
     }
   }
 
-      public canIedit(): boolean {
-        let result: boolean = false;
-        result = this.userService.isAdmin;
-        // si no es admin...
-        if (!result) {
-            if (this.dashboard.onlyIcanEdit) {
-                result = this.userService.user._id === this.dashboard.user
-            } else {
-                // Usuari anonim no pot editar
-                result = this.userService.user._id !== '135792467811111111111112';
-            }
-
+  public canIedit(): boolean {
+    let result: boolean = false;
+    result = this.userService.isAdmin;
+    // si no es admin...
+    if (!result) {
+        if (this.dashboard.onlyIcanEdit) {
+            result = this.userService.user._id === this.dashboard.user
+        } else {
+            // Usuari anonim no pot editar
+            result = this.userService.user._id !== '135792467811111111111112';
         }
-        return result;
+
     }
+    return result;
+  }
 
   onRemovePanel(panel: any) {
     this.panels.splice(_.findIndex(this.panels, { id: panel }), 1);
@@ -738,27 +766,89 @@ export class DashboardPage implements OnInit {
     }
   }
 
+  
+/**
+ * Comprueba la configuración de seguridad de los filtros y pone la columna a invisible si el filtro no es visible para el usuario por motivos de filtro de seguridad
+ * @param filters - recibe el array de filtros del informe
+ * @param tables - recibe el array de tablas del modelo.
+ * @returns  - el array de filtros del informe informando cual es oculto por la seguridad
+ */
+  private checkFiltersVisibility(filters, tables) {
+    if (filters && filters.length > 0) {
+      filters.forEach((f) => {
+        // Revisar si el filtro esta cread en modo EDA2 (modo arbol)
+        if (f.selectedColumn && f.selectedTable) {
+          f.selectedColumn.visible = (
+            (tables.filter((t) => t.table_name == f.selectedTable.table_name)[0]?.visible == true) &&
+            (tables.filter((t) => t.table_name == f.selectedTable.table_name)[0]?.columns.filter((c) => c.column_name == f.selectedColumn.column_name)[0]?.visible == true)
+          )
+        }
+        // si selectedColumn no esta definido, el filtro se crea en modo EDA
+        else {
+          f.column.value.visible = (
+            (tables.filter((t) => t.table_name == f.table.value)[0]?.visible == true) &&
+            (tables.filter((t) => t.table_name == f.table.value)[0]?.columns.filter((c) => c.column_name == f.column.value.column_name)[0]?.visible == true)
+          )
+        }
+      })
+    }
+    return filters;
+  }
+
 
   createChartFilter(table: any, column: any, dataLabel: string, config: any): any {
-    const filter = {
-      id: `${table.table_name}_${column.column_name}`,
-      filter_id: `${table.table_name}_${column.column_name}`, 
-      isGlobal: true,
-      isAutocompleted: config.isAutocompleted ?? false,
-      applyToAll: config.applyToAll ?? true,
-      panelList: config.panelList.map((p) => p.id),
-      table: { label: table.display_name.default, value: table.table_name },
-      column: { 
-          label: column.display_name?.default || column.column_name, 
-          value: column
-      },
-      selectedItems: [dataLabel],
-      fromChart: true,
-      visible: 'public',
-      data: []
-    };
+
+    let allNonDynamics = this.edaPanels.filter((panel: any) => !panel.dynamicFilters)
     
-    return filter;
+    if(allNonDynamics.length === 0){
+      const filter = {
+        id: `${table.table_name}_${column.column_name}`,
+        filter_id: `${table.table_name}_${column.column_name}`, 
+        isGlobal: true,
+        isAutocompleted: config.isAutocompleted ?? false,
+        applyToAll: config.applyToAll ?? true,
+        panelList: config.panelList.map((p) => p.id),
+        table: { label: table.display_name.default, value: table.table_name },
+        column: { 
+            label: column.display_name?.default || column.column_name, 
+            value: column
+        },
+        selectedItems: [dataLabel],
+        fromChart: true,
+        visible: 'public',
+        data: []
+      };
+
+      return filter;
+
+    } else {
+      
+      let allNonDynamicsPanels = allNonDynamics.map(panel => panel.panel.id)
+
+      const filter = {
+        id: `${table.table_name}_${column.column_name}`,
+        filter_id: `${table.table_name}_${column.column_name}`, 
+        isGlobal: true,
+        isAutocompleted: config.isAutocompleted ?? false,
+        applyToAll: false,
+        panelList: config.panelList.filter((panel: any) => !panel.id.includes(allNonDynamicsPanels)).map((p: any) => p.id),
+        table: { label: table.display_name.default, value: table.table_name },
+        column: { 
+            label: column.display_name?.default || column.column_name, 
+            value: column
+        },
+        selectedItems: [dataLabel],
+        fromChart: true,
+        visible: 'public',
+        data: []
+      };
+
+      return filter;
+    }
+    
+      //FALSE ==> recogemos los paneles que no tengan habilitado el click 
+        // Modificar propiedades isGlobal? applyToAll? panelList? 
+
   }
 
   deleteDynamicFilter(chartToRemove: any, table: any, filterName: any) {
@@ -924,150 +1014,71 @@ export class DashboardPage implements OnInit {
         setTimeout(() => panel.panelChart?.updateComponent(), 100);
       }
     });
-    
-    // LiveDashboardTimer
-    let isvalid = true;
-    const emptyQuery = this.edaPanels.some((panel) => panel.currentQuery.length === 0);
-
-
-      if (emptyQuery) isvalid = false;
-
-      if (!isvalid) {
-        this.alertService.addError($localize`:@@SaveWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`)
-      }else{
-        
-        
-            this.triggerTimer();
-            const body = {
-              config: {
-                title: this.title,
-                panel: [],
-                ds: { _id: this.dataSource._id },
-                filters: this.cleanFiltersData(),
-                applyToAllfilter: this.applyToAllfilter,
-                visible: this.dashboard.config.visible,
-                tag: this.selectedTags,
-                refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
-                clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
-                // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
-                sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig, 
-                onlyIcanEdit: this.dashboard.config.onlyIcanEdit, //Ssólo yo puedo editar el dashboard --> publico con enlace
-                styles: this.dashboard.config.styles,
-                urls: this.dashboard.config.urls,
-                author: this.dashboard.config?.author
-              },
-              group: this.dashboard.group ? _.map(this.dashboard.group) : undefined,
-            }
-        
-            body.config.panel = this.savePanels();
-          }
-
   }
 
-  // Metodo a revisar, este solo refresh a los paneles que no son js
   refreshPanelsOthersCharts() {
     this.edaPanels.forEach(async (panel) => {
-        if (panel.currentQuery.length > 0) {
-            const chartType = panel.graphicType;
-            const isChartJS = ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'pyramid', 'radar', 'knob'].includes(chartType);
-            
-            // Solo re-ejecutar query para charts NO ChartJS
-            if (!isChartJS) {
-                panel.display_v.chart = '';
-                await panel.runQueryFromDashboard(true);
-            } 
-            
-            // Siempre llamar a updateComponent para aplicar nuevos colores
-            setTimeout(() => panel.panelChart?.updateComponent(), 100);
+      if (panel.currentQuery.length > 0) {
+        const chartType = panel.graphicType;
+        const isChartJS = ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'pyramid', 'radar', 'knob'].includes(chartType);
+        if (!isChartJS) {
+          panel.display_v.chart = '';
+          await panel.runQueryFromDashboard(true);
         }
+        setTimeout(() => panel.panelChart?.updateComponent(), 100);
+      }
     });
-    
-    // LiveDashboardTimer
-    let isvalid = true;
-    const emptyQuery = this.edaPanels.some((panel) => panel.currentQuery.length === 0);
-
-    if (emptyQuery) isvalid = false;
-
-    if (!isvalid) {
-        this.alertService.addError($localize`:@@SaveWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`)
-    } else {
-        this.triggerTimer();
-        const body = {
-            config: {
-                title: this.title,
-                panel: [],
-                ds: { _id: this.dataSource._id },
-                filters: this.cleanFiltersData(),
-                applyToAllfilter: this.applyToAllfilter,
-                visible: this.dashboard.config.visible,
-                tag: this.selectedTags,
-                refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
-                clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
-                sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig, 
-                onlyIcanEdit: this.dashboard.config.onlyIcanEdit,
-                styles: this.dashboard.config.styles,
-                urls: this.dashboard.config.urls,
-                author: this.dashboard.config?.author
-            },
-            group: this.dashboard.group ? _.map(this.dashboard.group) : undefined,
-        }
-    
-        body.config.panel = this.savePanels();
-    }
-}
+  }
 
 
   public async saveDashboard() {
-    // LiveDashboardTimer
-    let isvalid = true;
     const emptyQuery = this.edaPanels.some((panel) => panel.currentQuery.length === 0);
+    if (emptyQuery) {
+      this.alertService.addError($localize`:@@SaveWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`);
+      return;
+    }
 
+    this.triggerTimer();
+    const body = {
+      config: {
+        title: this.title,
+        panel: [] as any[],
+        ds: { _id: this.dataSource._id },
+        filters: this.cleanFiltersData(),
+        applyToAllfilter: this.applyToAllfilter,
+        visible: this.dashboard.config.visible,
+        tag: this.selectedTags,
+        refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
+        clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
+        createdAt: this.dashboard.config.createdAt || new Date().toISOString(),
+        modifiedAt: new Date().toISOString(),
+        sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig,
+        mailingAlertsEnabled: false as boolean,
+        onlyIcanEdit: this.dashboard.config.onlyIcanEdit,
+        styles: this.dashboard.config.styles,
+        urls: this.dashboard.config.urls,
+        author: this.dashboard.config?.author,
+        orderDependentFilters: this.globalFilter?.orderDependentFilters,
+      },
+      group: this.dashboard.group ? _.map(this.dashboard.group) : undefined,
+    };
 
+    body.config.panel = this.savePanels();
+    body.config.mailingAlertsEnabled = body.config.panel.some((panel: any) =>
+      panel.content?.chart === 'kpi' &&
+      panel.content?.query?.output?.config?.alertLimits?.some((a: any) => a.mailing?.enabled === true)
+    );
 
-      if (emptyQuery) isvalid = false;
+    try {
+      await lastValueFrom(this.dashboardService.updateDashboard(this.dashboardId, body));
+      this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
+      this.dashboardService._notSaved.next(false);
+    } catch (err) {
+      this.alertService.addError(err);
+      throw err;
+    }
 
-      if (!isvalid) {
-        this.alertService.addError($localize`:@@SaveWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`)
-      }else{
-        
-        
-            this.triggerTimer();
-            const body = {
-              config: {
-                title: this.title,
-                panel: [],
-                ds: { _id: this.dataSource._id },
-                filters: this.cleanFiltersData(),
-                applyToAllfilter: this.applyToAllfilter,
-                visible: this.dashboard.config.visible,
-                tag: this.selectedTags,
-                refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
-                clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
-                createdAt: this.dashboard.config.createdAt || new Date().toISOString(),
-                modifiedAt: new Date().toISOString(),
-                // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
-                sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig, 
-                onlyIcanEdit: this.dashboard.config.onlyIcanEdit, // NO puedo Editar dashboard --> publico con enlace
-                styles: this.dashboard.config.styles,
-                urls: this.dashboard.config.urls,
-                author: this.dashboard.config?.author,
-                orderDependentFilters: this.globalFilter?.orderDependentFilters,
-              },
-              group: this.dashboard.group ? _.map(this.dashboard.group) : undefined,
-            }
-        
-            body.config.panel = this.savePanels();
-
-            try {
-              await lastValueFrom(this.dashboardService.updateDashboard(this.dashboardId, body));
-              this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
-              this.dashboardService._notSaved.next(false);
-            } catch (err) {
-              this.alertService.addError(err);
-              throw err;
-            }
-      }
-      this.checkImportedPanels(this.dashboard);
+    this.checkImportedPanels(this.dashboard);
   }
 
   private savePanels(): any[] {
@@ -1271,9 +1282,27 @@ public startCountdown(seconds: number) {
           this.hideWheel =true;
         }
         if (params['cnproperties']) {
-          this.connectionProperties = JSON.parse(decodeURIComponent(params['cnproperties'])); 
+          this.connectionProperties = JSON.parse(decodeURIComponent(params['cnproperties']));
         }
-        
+        if (params['MODEEDIT'] === 'TRUE') {
+          const user = localStorage.getItem('user');
+          console.log('hola');
+          console.log(user);
+          console.log('hola');
+          console.log(this.canIedit());
+
+          // restriccions = condicions per poder mostrar panell de edicio
+          const restriccions = true;
+          if(restriccions){
+            // si el usuario puede customizar, le mostraremos el panel de customización
+            this.showCustomizeDialog = true;
+            // setTimeout(() => {
+            //   this.showCustomizeDialog = false;
+            // },3000);
+          }
+
+        }
+
       } catch(e){
         console.error('getUrlParams: '+ e);
       }

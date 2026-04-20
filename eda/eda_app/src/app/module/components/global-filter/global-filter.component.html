@@ -41,7 +41,7 @@
                 [options]="filter.data" 
                 [(ngModel)]="filter.selectedItems"
                 [virtualScroll]="true" 
-                i18n-selectedItemsLabel="@@globalFilterSelectedItemsLabel" selectedItemsLabel="{0} items seleccionados"
+                [selectedItemsLabel]="'{0} ' + selectedItemsLabel"
                 [defaultLabel]="getFilterLabel(filter)" 
                 [disabled]="disableGlobalFilter(filter)"
                 [virtualScrollItemSize]="30" 

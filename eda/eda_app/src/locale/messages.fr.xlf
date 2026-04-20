@@ -908,22 +908,6 @@
 <context context-type="linenumber">11</context>
 </context-group>
 </trans-unit>
-<trans-unit id="deleteDates" datatype="html">
-<source> Todas </source>
-<target> Tous </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
-<context context-type="linenumber">36</context>
-</context-group>
-</trans-unit>
-<trans-unit id="yesterday" datatype="html">
-<source> Ayer </source>
-<target> Hier </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
-<context context-type="linenumber">38</context>
-</context-group>
-</trans-unit>
 
 <trans-unit id="thisWeek" datatype="html">
 <source> Ésta semana </source>
@@ -2605,6 +2589,10 @@
 <source> Últimos 120 días </source>
 <target> Les 120 derniers jours </target>
 </trans-unit>
+<trans-unit id="DatePickerLast365">
+<source> Últimos 365 días </source>
+<target> Les 365 derniers jours </target>
+</trans-unit>
 <trans-unit id="DateSelectRange">
 <source>Selecciona un rango</source>
 <target>Sélectionnez une plage</target>
@@ -3380,6 +3368,51 @@
     <target>Identifiants  corrects</target>
   </trans-unit>
 
+  <trans-unit id="alertMailDeleted">
+    <source>Alerta de correo eliminada</source>
+    <target>Alerte mail supprimée</target>
+  </trans-unit>
+
+  <trans-unit id="dashboardMailDeleted">
+    <source>Configuración de envío eliminada</source>
+    <target>Configuration d'envoi supprimée</target>
+  </trans-unit>
+
+  <trans-unit id="mailSentNow">
+    <source>Envío iniciado correctamente</source>
+    <target>Envoi déclenché avec succès</target>
+  </trans-unit>
+
+  <trans-unit id="sendingNow">
+    <source>Enviando...</source>
+    <target>Envoi en cours...</target>
+  </trans-unit>
+
+  <trans-unit id="sendScheduledMails">
+    <source>Enviar todos los correos programados</source>
+    <target>Envoyer tous les e-mails programmés</target>
+  </trans-unit>
+
+  <trans-unit id="adminEmail">
+    <source>Gestión de correo</source>
+    <target>Gestion du courrier</target>
+  </trans-unit>
+
+  <trans-unit id="adminEmailSubtitle">
+    <source>Configure los ajustes y credenciales de su servidor de correo electrónico</source>
+    <target>Configurez les paramètres et identifiants de votre serveur de messagerie</target>
+  </trans-unit>
+
+  <trans-unit id="alertsConfigSubtitle">
+    <source>Administra tus configuraciones de alertas</source>
+    <target>Gérez vos configurations d'alertes</target>
+  </trans-unit>
+
+  <trans-unit id="dashbaordsMailingSubtitle">
+    <source>Administrar las configuraciones de correo electrónico del panel</source>
+    <target>Gérer les configurations d'e-mail du panneau</target>
+  </trans-unit>
+
   <trans-unit id="checkCredentials">
     <source>Comprobar credenciales</source>
     <target>Vérifier les identifiants</target>
@@ -3460,10 +3493,55 @@
     <target>Envoi de rapports par courriel</target>
   </trans-unit> 
 
+  <trans-unit id="noFormatsAvailable">
+    <source>Esta es una columna calculada y no tiene opciones de formato disponibles</source>
+    <target>Cette colonne est calculée et n'a pas d'options de format disponibles</target>
+  </trans-unit>
+
+  <trans-unit id="editCalculatedField">
+    <source>Edición de campo calculado</source>
+    <target>Édition du champ calculé</target>
+  </trans-unit>
+
+  <trans-unit id="deleteCalculatedColumn">
+    <source>Si, Eliminar el campo calculado!</source>
+    <target>Oui, supprimer le champ calculé !</target>
+  </trans-unit>
+
+  <trans-unit id="deleteCalculatedColumnConfirmation">
+    <source>Campo calculado eliminado correctamente. Debera guardar cambios en el modelo de datos para que la eliminación sea permanente</source>
+    <target>Champ calculé supprimé avec succès. Vous devez enregistrer les modifications du modèle de données pour que la suppression soit permanente</target>
+  </trans-unit>
+
+  <trans-unit id="DeleteGroupCancel">
+    <source>Cancelar</source>
+    <target>Annuler</target>
+  </trans-unit>
+
+  <trans-unit id="formDialogCalculatedColumn">
+    <source>Recuerde rellenar todos los campos</source>
+    <target>Veuillez remplir tous les champs</target>
+  </trans-unit>
+
+  <trans-unit id="mandatoryDiferentName">
+    <source>Este nombre de campo calculado ya existe. Intente con otro.</source>
+    <target>Ce nom de champ calculé existe déjà. Veuillez en essayer un autre.</target>
+  </trans-unit>
+
+  <trans-unit id="titleCalculatedColumnEditMessage">
+    <source>Campo calculado actualizado correctamente</source>
+    <target>Champ calculé mis à jour avec succès</target>
+  </trans-unit>
+
+  <trans-unit id="textCalculatedColumnEditMessage">
+    <source>IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entrar en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe</source>
+    <target>IMPORTANT : La modification d'un champ calculé existant ne met pas à jour automatiquement les panneaux qui l'utilisent. Vous devez accéder à la configuration de chacun d'eux, cliquer sur Exécuter et enregistrer le rapport</target>
+  </trans-unit>
+
   <trans-unit id="cumulativeSum">
     <source>Suma acumulativa   </source>
     <target>Somme cumulée  </target>
-  </trans-unit> 
+  </trans-unit>
 
   <trans-unit id="ptooltipViewAlerts">
     <source>Configurar alertas</source>
@@ -3533,7 +3611,12 @@
   <trans-unit id="columnsTooltip">
     <source>Elige cuantas columnas quieres mostrar</source>
     <target>Choisissez le nombre de colonnes que vous souhaitez afficher</target>
-  </trans-unit> 
+  </trans-unit>
+
+  <trans-unit id="histogramColumDescription">
+    <source>Elige cuántas columnas mostrar en el histograma</source>
+    <target>Choisissez le nombre de colonnes à afficher dans l'histogramme</target>
+  </trans-unit>
 
   <trans-unit id="trendTooltip">
     <source>La función de añadir tendencia sólo se puede activar en los gràficos de lineas</source>
@@ -4117,6 +4200,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Fecha nula</source>
         <target>Date d'annulation</target>
       </trans-unit>
+      <trans-unit id="cannotRemoveLastColumn">
+        <source>No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.</source>
+        <target>Impossible de supprimer toutes les colonnes de la table racine sans supprimer les colonnes dépendantes.</target>
+      </trans-unit>
       <trans-unit id="removeColumnGlobalFilter">
         <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
         <target>La colonne ne peut pas être supprimée car un filtre y est associé.</target>
@@ -4579,22 +4666,6 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 <trans-unit id="profileMessagesDescription"><source>Recibe notificaciones de nuevos mensajes</source><target>Recevoir des notifications de nouveaux messages</target></trans-unit>
 <trans-unit id="selectedImage"><source>Imagen seleccionada</source><target>Image sélectionnée</target></trans-unit>
 <trans-unit id="noImageSelected"><source>No hay imagen seleccionada</source><target>Aucune image sélectionnée</target></trans-unit>
-<trans-unit id="adminEmail">
-  <source>Gestión de correo</source>
-  <target>Gestion des e-mails</target>
-</trans-unit>
-<trans-unit id="adminEmailSubtitle">
-  <source>Configure los ajustes y credenciales de su servidor de correo electrónico</source>
-  <target>Configurez les paramètres et les identifiants de votre serveur de messagerie</target>
-</trans-unit>
-<trans-unit id="alertsConfigSubtitle">
-  <source>Administra tus configuraciones de alertas</source>
-  <target>Gérez vos paramètres d'alerte</target>
-</trans-unit>
-<trans-unit id="dashbaordsMailingSubtitle">
-  <source>Administrar las configuraciones de correo electrónico del panel</source>
-  <target>Gérez les paramètres de messagerie depuis le panneau</target>
-</trans-unit>
 <trans-unit id="chartDisplayTitle">
   <source>Visualización</source>
   <target>Afficher</target>
@@ -4633,6 +4704,31 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 <trans-unit id="tooltipBlockedByTrendOrPrediction">
   <source>Bloqueado porque tendencia o predicción está activa</source>
   <target>Bloqué car la tendance ou la prédiction est active</target>
+</trans-unit>
+
+<trans-unit id="showLegend">
+  <source>Mostrar Leyenda</source>
+  <target>Afficher la légende</target>
+</trans-unit>
+
+<trans-unit id="chartLegendOptionDescription">
+  <source>Muestra la leyenda del gráfico</source>
+  <target>Afficher la légende du graphique</target>
+</trans-unit>
+
+<trans-unit id="showGridLines">
+  <source>Mostrar Líneas Guía</source>
+  <target>Afficher les lignes de grille</target>
+</trans-unit>
+
+<trans-unit id="chartGridLinesOptionDescription">
+  <source>Muestra u oculta las líneas guía del gráfico</source>
+  <target>Afficher ou masquer les lignes de grille du graphique</target>
+</trans-unit>
+
+<trans-unit id="histogramColum">
+  <source>Columnas</source>
+  <target>Colonnes</target>
 </trans-unit>
 
 <trans-unit id="chartLabelOption">
@@ -5135,6 +5231,11 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Live Dashboard</target>
 </trans-unit>
 
+<trans-unit id="secondsToRefresh">
+  <source>Segundos para refrescar</source>
+  <target>Secondes pour rafraîchir</target>
+</trans-unit>
+
 <trans-unit id="dashboardSidebarSave">
   <source>Guardar</source>
   <target>Garder</target>
@@ -5168,6 +5269,16 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 <trans-unit id="dashboardSidebarDownloadImage">
   <source>Descargar imagen</source>
   <target>Télécharger l'image</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownloadExcel">
+  <source>Descargar Excel</source>
+  <target>Télécharger Excel</target>
+</trans-unit>
+
+<trans-unit id="dashboardSidebarDownload">
+  <source>Descargar</source>
+  <target>Télécharger</target>
 </trans-unit>
 
 <trans-unit id="dashboardSidebarCustomAction">
@@ -5218,6 +5329,26 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
 <trans-unit id="enableBaseLayer">
   <source>Activar capa base</source>
   <target>Activer la couche de base</target>
+</trans-unit>
+
+<trans-unit id="logarithmicScaleTooltip">
+  <source>Aplica escala logarítmica a los valores del mapa</source>
+  <target>Applique une échelle logarithmique aux valeurs de la carte</target>
+</trans-unit>
+
+<trans-unit id="activeMouseFunctionsTooltip">
+  <source>Permite arrastrar y hacer zoom con el ratón</source>
+  <target>Permet de faire glisser et de zoomer avec la souris</target>
+</trans-unit>
+
+<trans-unit id="enableBaseLayerTooltip">
+  <source>Muestra u oculta la capa base del mapa</source>
+  <target>Afficher ou masquer la couche de base de la carte</target>
+</trans-unit>
+
+<trans-unit id="layerColor">
+  <source>Color de capa</source>
+  <target>Couleur de couche</target>
 </trans-unit>
 
 <trans-unit id="topleftPosition">
@@ -5880,6 +6011,58 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Próximo año</source>
         <target>L'année prochaine</target>
       </trans-unit>
+      <trans-unit id="DatePickerYesterday">
+        <source>Ayer</source>
+        <target>Hier</target>
+      </trans-unit>
+      <trans-unit id="DatePickerTomorrow">
+        <source>Mañana</source>
+        <target>Demain</target>
+      </trans-unit>
+      <trans-unit id="DatePickerPastTomorrow">
+        <source>Pasado mañana</source>
+        <target>Après-demain</target>
+      </trans-unit>
+      <trans-unit id="DatePickerLastQuarter">
+        <source>Último trimestre</source>
+        <target>Dernier trimestre</target>
+      </trans-unit>
+      <trans-unit id="DatePickerThisQuarter">
+        <source>Este trimestre</source>
+        <target>Ce trimestre</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext3">
+        <source>Próximos 3 días</source>
+        <target>Les 3 prochains jours</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext7">
+        <source>Próximos 7 días</source>
+        <target>Les 7 prochains jours</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext15">
+        <source>Próximos 15 días</source>
+        <target>Les 15 prochains jours</target>
+      </trans-unit>
+      <trans-unit id="DatePickerLast90">
+        <source>Últimos 90 días</source>
+        <target>Les 90 derniers jours</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext120">
+        <source>Próximos 120 días</source>
+        <target>Les 120 prochains jours</target>
+      </trans-unit>
+      <trans-unit id="DatePickerNext365">
+        <source>Próximos 365 días</source>
+        <target>Les 365 prochains jours</target>
+      </trans-unit>
+      <trans-unit id="DatePickerAll">
+        <source>Todas</source>
+        <target>Toutes</target>
+      </trans-unit>
+      <trans-unit id="DatePickerBeforeTodayIncluded">
+        <source>Todo hasta hoy</source>
+        <target>Tout jusqu'à aujourd'hui</target>
+      </trans-unit>
       <trans-unit id="noNameProvided">
         <source>Debe proporcionar un nombre para el datasource</source>
         <target>Vous devez fournir un nom pour la source de données</target>
@@ -6119,8 +6302,8 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <target>Résumé des filtres</target>
       </trans-unit>
       <trans-unit id="globalFilterSelectedItemsLabel">
-        <source>{0} items seleccionados</source>
-        <target>{0} articles sélectionnés</target>
+        <source>items seleccionados</source>
+        <target>articles sélectionnés</target>
       </trans-unit>
       <trans-unit id="copyPublicLinkTooltip">
         <source>Copiar enlace público</source>
@@ -6181,6 +6364,174 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="AIManagement" datatype="html">
         <source>Gestión del asistente</source>
         <target>Gestion de l'assistant</target>
+      </trans-unit>
+      <trans-unit id="whereMessage">
+        <source>Filtro sobre todos los registros</source>
+        <target>Filtrer tous les enregistrements</target>
+      </trans-unit>
+      <trans-unit id="havingMessage">
+        <source>Filtro sobre los resultados</source>
+        <target>Filtrer les résultats</target>
+      </trans-unit>
+      <trans-unit id="aggregationText">
+        <source>Agregación</source>
+        <target>Agrégation</target>
+      </trans-unit>
+      <trans-unit id="textBetween">
+        <source>Entre</source>
+        <target>Entre</target>
+      </trans-unit>
+      <trans-unit id="whereMessageLabel">
+        <source>Aplicar el filtro sobre todos los registros</source>
+        <target>Appliquer le filtre à tous les enregistrements</target>
+      </trans-unit>
+      <trans-unit id="havingMessageLabel">
+        <source>Aplicar el filtro sobre los resultados</source>
+        <target>Appliquer le filtre aux résultats</target>
+      </trans-unit>
+      <trans-unit id="customHtmlSaved">
+        <source>HTML personalizado guardado correctamente.</source>
+        <target>Le code HTML personnalisé a été correctement enregistré.</target>
+      </trans-unit>
+      <trans-unit id="advancedFilterTitle" datatype="html">
+        <source>Filtro avanzado</source>
+        <target>Filtre avancé</target>
+      </trans-unit>
+      <trans-unit id="clearFiltersBtn" datatype="html">
+        <source>Limpiar</source>
+        <target>Effacer</target>
+      </trans-unit>
+      <trans-unit id="authorFilterLabel" datatype="html">
+        <source>Propietario</source>
+        <target>Propriétaire</target>
+      </trans-unit>
+      <trans-unit id="authorFilterPlaceholder" datatype="html">
+        <source>Autor...</source>
+        <target>Auteur...</target>
+      </trans-unit>
+      <trans-unit id="datasourceFilterLabel" datatype="html">
+        <source>Datasource</source>
+        <target>Source de données</target>
+      </trans-unit>
+      <trans-unit id="datasourceFilterPlaceholder" datatype="html">
+        <source>postgres, mysql...</source>
+        <target>postgres, mysql...</target>
+      </trans-unit>
+      <trans-unit id="createdFilterLabel" datatype="html">
+        <source>Creado en</source>
+        <target>Créé le</target>
+      </trans-unit>
+      <trans-unit id="modifiedFilterLabel" datatype="html">
+        <source>Modificado en</source>
+        <target>Modifié le</target>
+      </trans-unit>
+      <trans-unit id="tagsFilterLabel" datatype="html">
+        <source>Tags</source>
+        <target>Tags</target>
+      </trans-unit>
+      <trans-unit id="tagsFilterPlaceholder" datatype="html">
+        <source>Selecciona tags...</source>
+        <target>Sélectionner des tags...</target>
+      </trans-unit>
+      <trans-unit id="hechoCon" datatype="html">
+        <source> HECHO CON </source>
+        <target> FAIT AVEC </target>
+      </trans-unit>
+      <trans-unit id="adminPortal" datatype="html">
+        <source>Portal de datos</source>
+        <target>Portail de données</target>
+ </trans-unit>
+      <trans-unit id="inputDescripcionModelo" datatype="html">
+        <source>Descripción</source>
+        <target>Description</target>
+      </trans-unit>
+      <trans-unit id="placeholderDescripcionModelo" datatype="html">
+        <source>Describe el propósito y contenido de este modelo de datos...</source>
+        <target>Décrivez l'objectif et le contenu de ce modèle de données...</target>
+      </trans-unit>
+      <trans-unit id="mcpVisibilityLabel" datatype="html">
+        <source>Visibilidad MCP</source>
+        <target>Visibilité MCP</target>
+      </trans-unit>
+      <trans-unit id="mcpVisibilityTooltipTableModel" datatype="html">
+        <source>Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, None lo excluye totalmente.</source>
+        <target>Contrôle si l'agent IA a accès à cette information : Full autorise l'accès complet, None l'exclut entièrement.</target>
+      </trans-unit>
+      <trans-unit id="mcpVisibilityTooltipCol" datatype="html">
+        <source>Controla si el agente de IA tiene acceso a esta información: Full permite acceso completo, Declaration expone solo nombre y tipo, None lo excluye totalmente.</source>
+        <target>Contrôle si l'agent IA a accès à cette information : Full autorise l'accès complet, Declaration expose uniquement le nom et le type, None l'exclut entièrement.</target>
+      </trans-unit>
+      <trans-unit id="dynamicFiltersText" datatype="html">
+        <source>Filtros dinámicos</source>
+        <target>Filtres dynamiques</target>
+      </trans-unit>
+      <trans-unit id="uniqueRecordsGrouping" datatype="html">
+        <source>Registros únicos (agrupación)?</source>
+        <target>Enregistrements uniques (regroupement)?</target>
+      </trans-unit>
+      <trans-unit id="tableDescriptionDependentFilter" datatype="html">
+        <source>Tabla:</source>
+        <target>Table:</target>
+      </trans-unit>
+      <trans-unit id="columnDescriptionDependentFilter" datatype="html">
+        <source>Columna:</source>
+        <target>Colonne:</target>
+      </trans-unit>
+      <trans-unit id="noAttributeShouldHaveAggregation">
+        <source>Ningún Atributo debe tener agregación</source>
+        <target>Aucun attribut ne doit avoir d'agrégation</target>
+      </trans-unit>
+      <trans-unit id="mustConfigureAtLeastOneAttribute">
+        <source>Debe configurar un atributo como mínimo para habilitar esta opción</source>
+        <target>Vous devez configurer au moins un attribut pour activer cette option</target>
+      </trans-unit>
+      <trans-unit id="mustAddTheGroupingsToRunWithAggregations">
+        <source>Debe activar las agrupaciones para ejecutar con agregaciones configuradas en los atributos</source>
+        <target>Vous devez activer les regroupements pour exécuter avec des agrégations configurées dans les attributs</target>
+      </trans-unit>
+      <trans-unit id="chatAssistantTitle" datatype="html">
+        <source>Asistente Edalitics</source>
+        <target>Assistant Edalitics</target>
+      </trans-unit>
+      <trans-unit id="chatAssistantSubtitle" datatype="html">
+        <source>Asistente IA para facilitar tu trabajo</source>
+        <target>Assistant IA pour faciliter votre travail</target>
+      </trans-unit>
+      <trans-unit id="chatCloseBtn" datatype="html">
+        <source>Cerrar</source>
+        <target>Fermer</target>
+      </trans-unit>
+      <trans-unit id="chatEmptyTitle" datatype="html">
+        <source>¿En qué puedo ayudarte?</source>
+        <target>Comment puis-je vous aider ?</target>
+      </trans-unit>
+      <trans-unit id="chatEmptySubtitle" datatype="html">
+        <source>Consulta dashboards, datasources y datos</source>
+        <target>Consultez des tableaux de bord, datasources et données</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion1" datatype="html">
+        <source>¿Qué dashboards tengo?</source>
+        <target>Quels tableaux de bord ai-je ?</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion2" datatype="html">
+        <source>¿Qué datasources hay?</source>
+        <target>Quels datasources sont disponibles ?</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion3" datatype="html">
+        <source>Estado del servidor</source>
+        <target>État du serveur</target>
+      </trans-unit>
+      <trans-unit id="chatInputPlaceholder" datatype="html">
+        <source>Escribe un mensaje...</source>
+        <target>Écrire un message...</target>
+      </trans-unit>
+      <trans-unit id="chatFabTitle" datatype="html">
+        <source>Asistente IA</source>
+        <target>Assistant IA</target>
+      </trans-unit>
+      <trans-unit id="mapClusteredPoints" datatype="html">
+        <source>puntos agrupados</source>
+        <target>points regroupés</target>
       </trans-unit>
     </body>
   </file>

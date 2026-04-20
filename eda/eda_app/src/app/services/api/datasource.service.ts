@@ -31,6 +31,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         table_granted_roles: '',
         columns: [],
         visible: false,
+        ia_visibility: 'FULL',
     };
 
     private _databaseModel = new BehaviorSubject<any>([]); // [{ display_name: { default: '' }, eda-columns: [] }] --> just in case
@@ -128,29 +129,27 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 currTable.type = element &&  element.name === table.display_name.default ? 'selected' : 'unselected'
                 tables.push(currTable);
 
-
-
-
-                // Column nodes (sorted alphabetically)
-                const columnTypeIconMap: { [key: string]: string } = {
-                    text: 'mdi mdi-alphabetical',
-                    numeric: 'mdi mdi-numeric',
-                    date: 'mdi mdi-calendar-text',
-                    coordinate: 'mdi mdi-map-marker',
-                    html: 'mdi mdi-language-html5'
-                };
-
-                const sortedColumns = [...table.columns].sort((a: any, b: any) =>
-                    a.display_name.default.localeCompare(b.display_name.default)
-                );
-                sortedColumns.forEach((column: any) => {
+                // Column nodes
+                table.columns.forEach((column: any) => {
                     const currCol: TreeNode = {};
                     currCol.label = column.display_name.default;
                     currCol.data = 'columna';
                     currCol.children = [];
-                    currCol.icon = columnTypeIconMap[column.column_type] || 'fa fa-columns';
+                    const typeIconMap: Record<string, string> = {
+                        numeric: 'mdi mdi-numeric',
+                        date: 'mdi mdi-calendar-text',
+                        coordinate: 'mdi mdi-map-marker',
+                        text: 'mdi mdi-alphabetical',
+                        html: 'mdi mdi-language-html5'
+                    };
+                    if (column.computed_column === 'computed') {
+                        currCol.icon = 'fa fa-calculator';
+                    } else {
+                        currCol.icon = typeIconMap[column.column_type] || 'fa fa-columns';
+                    }
                     currCol.type = element && element.name === column.display_name.default ? 'selected' : 'unselected'
                     currTable.children.push(currCol);
+
                 });
             });
         // order by name....
@@ -216,6 +215,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         modelPanel.type = node.data;        // 'root'
         modelPanel.connection = this._modelConnection.getValue();
         modelPanel.metadata = this._modelMetadata.getValue();
+        if (!modelPanel.metadata.ia_visibility) modelPanel.metadata.ia_visibility = 'FULL';
         this._modelPanel.next(modelPanel);
         this._typePanel.next('root');
     }
@@ -232,6 +232,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         tablePanel.technical_name = table.table_name;
         tablePanel.table_type = table.table_type;
         tablePanel.visible = table.visible;
+        tablePanel.ia_visibility = table.ia_visibility || 'FULL';
         tablePanel.columns = table.columns;
         this._tablePanel.next(tablePanel);
         this._typePanel.next('tabla');
@@ -255,6 +256,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         columnPanel.row_granted_roles = column.row_granted_roles;
         columnPanel.minimumFractionDigits = parseInt(column.minimumFractionDigits);
         columnPanel.visible = column.visible;
+        columnPanel.ia_visibility = column.ia_visibility || 'FULL';
         columnPanel.parent = node.parent.label;
         if(column.valueListSource){
             columnPanel.valueListSource =column.valueListSource;
@@ -451,7 +453,10 @@ export class DataSourceService extends ApiService implements OnDestroy {
             tmp_model[tableIndex].table_type = panel.table_type;
             tmp_model[tableIndex].table_granted_roles = panel.table_granted_roles;
             tmp_model[tableIndex].visible = panel.visible;
+            const tableVisibility = panel.ia_visibility || 'FULL';
+            tmp_model[tableIndex].ia_visibility = tableVisibility;
             tmp_model[tableIndex].query = panel.query;
+            tmp_model[tableIndex].columns.forEach((col: any) => col.ia_visibility = tableVisibility);
 
             this._databaseModel.next(tmp_model);
 
@@ -476,6 +481,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
             tmp_model[tableIndex].columns[columnindex].column_granted_roles = panel.column_granted_roles;
             tmp_model[tableIndex].columns[columnindex].row_granted_roles = panel.row_granted_roles;
             tmp_model[tableIndex].columns[columnindex].visible = panel.visible;
+            tmp_model[tableIndex].columns[columnindex].ia_visibility = panel.ia_visibility || 'FULL';
 
             if( panel.valueListSource  ){
                 tmp_model[tableIndex].columns[columnindex].valueListSource = panel.valueListSource;
@@ -484,6 +490,15 @@ export class DataSourceService extends ApiService implements OnDestroy {
             this._databaseModel.next(tmp_model);
 
         } else if (panel.type === 'root') {
+            const modelVisibility = panel.metadata?.ia_visibility;
+            if (modelVisibility) {
+                const tmp_model = this._databaseModel.getValue();
+                tmp_model.forEach((table: any) => {
+                    table.ia_visibility = modelVisibility;
+                    table.columns.forEach((col: any) => col.ia_visibility = modelVisibility);
+                });
+                this._databaseModel.next(tmp_model);
+            }
         }
         this._unsaved.next(true)
         this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name, panel.parent, panel));
@@ -636,7 +651,6 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 model: model
             }
         };
-        console.log(body, 'body');
         this.updateModelInServer(this.model_id, body).subscribe(
             (r) => this.alertService.addSuccess($localize`:@@ModelSaved:Modelo guardado correctamente`),
             (err) => this.alertService.addError(err)
@@ -649,8 +663,17 @@ export class DataSourceService extends ApiService implements OnDestroy {
             async (data: any) => {
                 // data is a string
                 this.model_id = id;
-                this._databaseModel.next(data.dataSource.ds.model.tables);
-                this._modelMetadata.next(data.dataSource.ds.metadata);
+                const tables = data.dataSource.ds.model.tables;
+                tables.forEach((table: any) => {
+                    if (!table.ia_visibility) table.ia_visibility = 'FULL';
+                    table.columns.forEach((col: any) => {
+                        if (!col.ia_visibility) col.ia_visibility = 'FULL';
+                    });
+                });
+                const metadata = data.dataSource.ds.metadata;
+                if (!metadata.ia_visibility) metadata.ia_visibility = 'FULL';
+                this._databaseModel.next(tables);
+                this._modelMetadata.next(metadata);
                 this._modelConnection.next(data.dataSource.ds.connection);
                 this._maps.next(data.dataSource.ds.model.maps);
                 this._treeData.next(this.generateTree());

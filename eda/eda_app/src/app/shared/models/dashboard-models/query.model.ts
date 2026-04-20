@@ -31,7 +31,7 @@ export interface Query {
             arimaParams?: { p: number, d: number, q: number },
             tensorflowParams?: { epochs: number, lookback: number, learningRate: number },
         },
-
+        sortedFilters?: any[],
     };
     output: {
         labels: any[],

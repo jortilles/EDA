@@ -57,10 +57,8 @@ export class PromptComponent implements OnInit, AfterViewInit {
 
     ngOnInit(): void {
         const tables = this.edaBlankPanel.tables
+        console.log('tables::: ', tables);
         this.initSchema(tables);
-
-        console.log('THISSSSSS: ', this);
-
     }
 
     initSchema(tables: any[]) {
@@ -72,10 +70,12 @@ export class PromptComponent implements OnInit, AfterViewInit {
                 columns.push({
                     column: column.column_name,
                     column_type: column.column_type,
+                    description: column.description?.default,
                 });
             });
             schema.push({
                 table: table.table_name,
+                description: table.description?.default ?? table.description ?? '',
                 columns: columns,
             })
         })

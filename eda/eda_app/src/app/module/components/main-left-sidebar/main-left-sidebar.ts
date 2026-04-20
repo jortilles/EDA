@@ -101,12 +101,13 @@ export class MainLeftSidebarComponent {
   if (this.userService.isAdmin) {
     moleculaSection.items.unshift(
       { path: '/admin/users', label: $localize`:@@adminUsers:Gestión de usuarios`, icon: 'users' },
-      { path: '/admin/groups', label: $localize`:@@adminGroupsTitle:Gestión de grupos`, icon: 'rectangle-group' },
+      { path: '/admin/groups', label: $localize`:@@adminGroupsTitle:Gestión de grupos`, icon: 'groups' },
       { path: '/admin/data-source', label: $localize`:@@adminDatasource:Gestión de fuentes de datos`, icon: 'rectangle-group' },
       { path: '/admin/models/import-export', label: $localize`:@@dataExportImport:Data Export/Import`, icon: 'arrow-down-on-square-stack' },
       { path: '/admin/email-settings', label: $localize`:@@adminEmail:Gestión de email`, icon: 'at-symbol' },
       { path: '/logs', label: $localize`:@@logsManagement:Gestión de logs`, icon: 'clipboard-document-list' },
       { path: '/admin/ai-settings', label: $localize`:@@AIManagement:Gestión del asistente`, icon: 'sparkles-ai' },
+      { path: '/portal', label: $localize`:@@adminPortal:Portal de datos`, icon: 'global-mini' },
     );
   } else if (this.userService.isDataSourceCreator) {
     moleculaSection.items.unshift(

@@ -77,7 +77,7 @@ export class GlobalFiltersService {
         for (const rel of tableRelations) {
             let newTable = modelTables.find((t: any) => t.table_name === rel.target_table || t.table_name === `${rel.target_table}.${rel.target_column[0]}`);
 
-            if (newTable.table_name && !vMap.has(newTable.table_name)) {
+            if (newTable?.table_name && !vMap.has(newTable.table_name)) {
                 this.findRelations(modelTables, newTable, vMap);
             }
         }
@@ -235,7 +235,7 @@ export class GlobalFiltersService {
                 /** Checks if the current child_node is included before.
                  * This prevents duplicated paths.*/
                 if ((!rootTree.includes(relation.target_table) || relation.autorelation) && !childrenId.includes(child_id)) {
-                    // Label to show on the treeComponent 
+                    // Label to show on the treeComponent
                     let childLabel = relation.display_name?.default
                         ? `${relation.display_name.default}`
                         : ` ${relation.source_column[0]} - ${relation.target_table} `;
@@ -288,6 +288,7 @@ export class GlobalFiltersService {
         }
     }
 
+
     public formatFilter(globalFilter: any) {
         let formatedFilter: any;
         if (globalFilter.pathList) {
@@ -316,7 +317,10 @@ export class GlobalFiltersService {
             isGlobal: true,
             isAutocompleted: globalFilter.isAutocompleted,
             applyToAll: globalFilter.applyToAll,
-            valueListSource: valueListSource
+            valueListSource: valueListSource,
+            computed_column: globalFilter.selectedColumn?.computed_column,
+            SQLexpression: globalFilter.selectedColumn?.SQLexpression,
+            fromChart: globalFilter.fromChart ?? false,  // <-- añadir esto
         }
 
         return formatedFilter;
@@ -343,7 +347,10 @@ export class GlobalFiltersService {
             isAutocompleted: globalFilter.isAutocompleted,
             applyToAll: globalFilter.applyToAll,
             autorelation: globalFilter.autorelation,
-            valueListSource: globalFilter.selectedColumn.valueListSource
+            valueListSource: globalFilter.selectedColumn.valueListSource,
+            filterBeforeGrouping: true, // Para todos los filtros globales es Where
+            computed_column: globalFilter.selectedColumn?.computed_column,
+            SQLexpression: globalFilter.selectedColumn?.SQLexpression,
         }
 
         return formatedFilter;

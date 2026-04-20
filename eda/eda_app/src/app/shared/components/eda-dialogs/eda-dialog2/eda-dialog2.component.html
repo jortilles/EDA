@@ -37,7 +37,7 @@
             }
             
             @if(ifShowReset){
-                <button class="execute-button" (click)="onReset()">
+                <button class="execute-button place-content-center w-[14.5vw]" (click)="onReset()">
                    <i class="fa fa-refresh"></i>
                    <span i18n="@@resetStylesBtn">Volver a los valores por defecto</span>
                 </button>
@@ -80,6 +80,12 @@
                 }
             }
             
+            @if(ifShowCheckExpression){
+                <button class="execute-button w-auto text-center gap-0" (click)="onCheckExpression()">
+                    <i class="fa fa-cogs"></i>
+                    <span i18n="@@CheckExpression" class="whitespace-nowrap pr-2">Comprobar expresión</span>
+                </button>
+            }
             @if(ifShowApply){
                 <button class="confirm-button" [disabled]="disableApply" (click)="onApply()">
                     <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
