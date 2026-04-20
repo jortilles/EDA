@@ -346,160 +346,208 @@ function createMcpServer(requestUser?: any) {
     (server as any).registerTool(
         'get_data_from_dashboard',
         {
-            description: 'Busca en los dashboards de EDA paneles que puedan responder una pregunta sobre datos. Si se proporciona dashboard_id, devuelve los paneles con su query EDA completa. Si no, devuelve un resumen de todos los dashboards accesibles con sus paneles y campos para identificar cuál es relevante.',
+            description: 'Busca en los dashboards de EDA paneles con datos relevantes a una pregunta. SIN dashboard_id: modo exploración — devuelve un catálogo estructurado de opciones (panel, datasource, filtros activos) para que el asistente presente al usuario cuál quiere consultar. CON dashboard_id: modo datos — ejecuta las queries de los paneles y devuelve el modelo de respuesta con datos reales + fuente.',
             inputSchema: {
                 question: z.string().describe('Pregunta del usuario sobre los datos que quiere consultar'),
-                dashboard_id: z.string().optional().describe('ID del dashboard donde buscar (opcional). Si no se proporciona, se busca en todos los dashboards accesibles.'),
+                dashboard_id: z.string().optional().describe('ID del dashboard a consultar (opcional). Si no se proporciona, se lista el catálogo de opciones disponibles.'),
+                panel_index: z.number().optional().describe('Índice del panel dentro del dashboard (0-based). Si se omite, se ejecutan todos los panels del dashboard.'),
             },
         },
         async (args: any) => {
             console.log('[MCP] tool: get_data_from_dashboard - START');
             console.log('[MCP] get_data_from_dashboard - question:', args?.question);
             console.log('[MCP] get_data_from_dashboard - dashboard_id:', args?.dashboard_id ?? '(no proporcionado → modo exploración)');
-            const { question, dashboard_id } = args;
+            console.log('[MCP] get_data_from_dashboard - panel_index:', args?.panel_index ?? '(no proporcionado → todos)');
+            const { question, dashboard_id, panel_index } = args;
+
+            // Helper: resume los filtros activos de un panel en texto legible
+            const summarizeFilters = (filters: any[]): string => {
+                if (!filters || filters.length === 0) return 'Sin filtros';
+                return filters.map((f: any) => {
+                    const col = f.filter_column ?? '?';
+                    const type = f.filter_type ?? '?';
+                    const vals = (f.filter_elements ?? []).flatMap((e: any) => Array.isArray(e.value1) ? e.value1 : [e.value1]).filter(Boolean);
+                    return vals.length > 0 ? `${col} ${type} (${vals.join(', ')})` : `${col} ${type}`;
+                }).join(' | ');
+            };
+
             try {
                 const user = await resolveUser(requestUser);
                 console.log('[MCP] get_data_from_dashboard - usuario:', user?.email ?? user?._id ?? '(desconocido)');
                 const baseUrl = getBaseUrl();
 
+                // ── MODO DATOS: dashboard_id proporcionado ──────────────────────────────
                 if (dashboard_id) {
-                    console.log('[MCP] get_data_from_dashboard - modo: dashboard específico →', dashboard_id);
+                    console.log('[MCP] get_data_from_dashboard - MODO DATOS →', dashboard_id);
                     const db: any = await Dashboard.findById(dashboard_id).exec();
                     if (!db) {
                         console.warn('[MCP] get_data_from_dashboard - dashboard NO encontrado:', dashboard_id);
                         return { content: [{ type: 'text', text: `Dashboard no encontrado: ${dashboard_id}` }], isError: true };
                     }
 
-                    const panels = Array.isArray(db.config?.panel) ? db.config.panel : [];
-                    console.log('[MCP] get_data_from_dashboard - dashboard:', db.config?.title, '| panels:', panels.length);
+                    const allPanels: any[] = Array.isArray(db.config?.panel) ? db.config.panel : [];
                     const dashboardLink = baseUrl ? `${baseUrl}/dashboard/${encodeURIComponent(dashboard_id)}` : '';
+                    console.log('[MCP] get_data_from_dashboard - dashboard:', db.config?.title, '| panels total:', allPanels.length, '| panel_index solicitado:', panel_index ?? 'todos');
 
-                    const lines: string[] = [
-                        `Dashboard: ${db.config?.title ?? '(sin título)'}`,
-                        ...(dashboardLink ? [`URL: ${dashboardLink}`] : []),
-                        `Pregunta: ${question}`,
-                        `Panels con datos (${panels.length} panels):`,
-                        '',
-                    ];
+                    // Si se especifica panel_index, ejecutar solo ese panel; si no, todos
+                    const panelsToRun = panel_index !== undefined
+                        ? (allPanels[panel_index] ? [{ panel: allPanels[panel_index], idx: panel_index }] : [])
+                        : allPanels.map((p, idx) => ({ panel: p, idx }));
 
-                    for (let i = 0; i < panels.length; i++) {
-                        const panel = panels[i];
+                    const resultados: any[] = [];
+
+                    for (const { panel, idx } of panelsToRun) {
                         const query = panel.content?.query;
-                        const fields: any[] = query?.query?.fields ?? [];
-                        const fieldNames = fields.map((f: any) => f.display_name ?? f.field_name).filter(Boolean);
+                        const innerFields: any[] = query?.query?.fields ?? [];
+                        const fieldNames = innerFields.map((f: any) => f.display_name ?? f.field_name).filter(Boolean);
+                        const activeFilters: any[] = query?.query?.filters ?? [];
+                        const filterSummary = summarizeFilters(activeFilters);
                         const chartType = panel.content?.chart_type ?? panel.content?.edaChart ?? null;
-                        console.log(`[MCP] get_data_from_dashboard - panel ${i + 1}:`, panel.title ?? '(sin título)', '| campos:', fieldNames.length, '| tiene query:', !!query, '| model_id:', query?.model_id ?? '-');
 
-                        lines.push(`### Panel ${i + 1}: ${panel.title ?? '(sin título)'}`);
-                        if (fieldNames.length > 0) lines.push(`Campos: ${fieldNames.join(', ')}`);
-                        if (chartType) lines.push(`Tipo: ${chartType}`);
+                        console.log(`[MCP] panel ${idx} (${panel.title}) — model_id:`, query?.model_id ?? 'FALTA', '| fields:', innerFields.length, '| filtros:', activeFilters.length);
 
-                        console.log(`[MCP] panel ${i + 1} — content keys:`, Object.keys(panel.content ?? {}));
-                        console.log(`[MCP] panel ${i + 1} — query wrapper:`, JSON.stringify(query)?.substring(0, 300));
-                        console.log(`[MCP] panel ${i + 1} — inner query (query.query):`, JSON.stringify(query?.query)?.substring(0, 300));
-                        console.log(`[MCP] panel ${i + 1} — model_id:`, query?.model_id ?? 'FALTA', '| fields count:', query?.query?.fields?.length ?? 0);
-
-                        if (query?.model_id && query?.query?.fields?.length > 0) {
-                            try {
-                                const modelId: string = query.model_id;
-                                // Preparar el inner query igual que hace dashboard.controller
-                                const innerQuery: any = JSON.parse(JSON.stringify(query.query));
-                                innerQuery.queryMode  = innerQuery.queryMode  ?? 'EDA';
-                                innerQuery.rootTable  = innerQuery.queryMode === 'EDA2' ? (innerQuery.rootTable ?? '') : '';
-                                innerQuery.joinType   = innerQuery.joinType   ?? 'inner';
-                                innerQuery.forSelector = false;
-                                console.log(`[MCP] panel ${i + 1} — innerQuery preparado:`, JSON.stringify(innerQuery).substring(0, 400));
-
-                                console.log(`[MCP] panel ${i + 1} — getConnection(${modelId})...`);
-                                const connection = await ManagerConnectionService.getConnection(modelId);
-                                console.log(`[MCP] panel ${i + 1} — connection OK | tipo:`, (connection as any)?.constructor?.name ?? typeof connection);
-
-                                console.log(`[MCP] panel ${i + 1} — getDataSource(${modelId})...`);
-                                const dataModel = await connection.getDataSource(modelId);
-                                console.log(`[MCP] panel ${i + 1} — dataSource OK | nombre:`, (dataModel as any)?.ds?.metadata?.model_name ?? '(sin nombre)', '| tipo BD:', (dataModel as any)?.ds?.connection?.type ?? '(desconocido)');
-                                const dataModelObject = JSON.parse(JSON.stringify(dataModel));
-
-                                console.log(`[MCP] panel ${i + 1} — getQueryBuilded...`);
-                                const builtQuery = await connection.getQueryBuilded(innerQuery, dataModelObject, user, innerQuery.queryLimit);
-                                console.log(`[MCP] panel ${i + 1} — SQL construido (tipo: ${typeof builtQuery}):`, typeof builtQuery === 'string' ? builtQuery.substring(0, 500) : JSON.stringify(builtQuery).substring(0, 500));
-
-                                console.log(`[MCP] panel ${i + 1} — getclient...`);
-                                connection.client = await connection.getclient();
-                                console.log(`[MCP] panel ${i + 1} — client OK`);
-
-                                console.log(`[MCP] panel ${i + 1} — execQuery...`);
-                                const rawResults = await connection.execQuery(builtQuery);
-                                console.log(`[MCP] panel ${i + 1} — rawResults tipo:`, typeof rawResults, '| isArray:', Array.isArray(rawResults), '| length:', Array.isArray(rawResults) ? rawResults.length : 'N/A');
-                                if (Array.isArray(rawResults) && rawResults.length > 0) {
-                                    console.log(`[MCP] panel ${i + 1} — primera fila:`, JSON.stringify(rawResults[0]));
-                                    console.log(`[MCP] panel ${i + 1} — keys primera fila:`, Object.keys(rawResults[0]));
-                                } else {
-                                    console.log(`[MCP] panel ${i + 1} — rawResults vacío o no es array:`, JSON.stringify(rawResults)?.substring(0, 200));
-                                }
-
-                                if (rawResults && Array.isArray(rawResults) && rawResults.length > 0) {
-                                    const headers = Object.keys(rawResults[0]);
-                                    const rows = rawResults.map((r: any) => headers.map(h => r[h]));
-                                    console.log(`[MCP] panel ${i + 1} — headers:`, headers, '| total rows:', rows.length);
-                                    lines.push(`Datos (${rows.length} filas, columnas: ${headers.join(', ')}):`);
-                                    lines.push(JSON.stringify({ headers, rows }, null, 2));
-                                } else {
-                                    lines.push('Datos: (sin resultados)');
-                                }
-                            } catch (qErr: any) {
-                                console.error(`[MCP] panel ${i + 1} — ERROR en ejecución:`, qErr.message);
-                                console.error(`[MCP] panel ${i + 1} — stack:`, qErr.stack?.substring(0, 500));
-                                lines.push(`Error al obtener datos: ${qErr.message}`);
-                            }
-                        } else {
-                            console.log(`[MCP] panel ${i + 1} — SALTADO | model_id:`, query?.model_id ?? 'null', '| fields:', query?.query?.fields?.length ?? 0);
-                            lines.push(query?.model_id ? '(panel sin campos — posiblemente es un widget de texto o imagen)' : '(panel sin datasource)');
+                        if (!query?.model_id || innerFields.length === 0) {
+                            console.log(`[MCP] panel ${idx} — SALTADO (sin datasource o sin campos)`);
+                            resultados.push({
+                                panel_index: idx,
+                                panel_titulo: panel.title ?? '(sin título)',
+                                tipo: chartType,
+                                campos: fieldNames,
+                                filtros_activos: filterSummary,
+                                error: 'Panel sin datasource o sin campos ejecutables',
+                                datos: null,
+                            });
+                            continue;
                         }
-                        lines.push('');
+
+                        try {
+                            const modelId: string = query.model_id;
+                            const innerQuery: any = JSON.parse(JSON.stringify(query.query));
+                            innerQuery.queryMode   = innerQuery.queryMode  ?? 'EDA';
+                            innerQuery.rootTable   = innerQuery.queryMode === 'EDA2' ? (innerQuery.rootTable ?? '') : '';
+                            innerQuery.joinType    = innerQuery.joinType   ?? 'inner';
+                            innerQuery.forSelector = false;
+
+                            console.log(`[MCP] panel ${idx} — getConnection(${modelId})...`);
+                            const connection = await ManagerConnectionService.getConnection(modelId);
+                            console.log(`[MCP] panel ${idx} — connection OK | tipo:`, (connection as any)?.constructor?.name ?? typeof connection);
+
+                            const dataModel = await connection.getDataSource(modelId);
+                            const dsName: string = (dataModel as any)?.ds?.metadata?.model_name ?? modelId;
+                            console.log(`[MCP] panel ${idx} — dataSource OK | nombre:`, dsName, '| tipo BD:', (dataModel as any)?.ds?.connection?.type ?? '?');
+
+                            const dataModelObject = JSON.parse(JSON.stringify(dataModel));
+                            const builtQuery = await connection.getQueryBuilded(innerQuery, dataModelObject, user, innerQuery.queryLimit);
+                            console.log(`[MCP] panel ${idx} — query construida (tipo: ${typeof builtQuery}):`, typeof builtQuery === 'string' ? builtQuery.substring(0, 400) : JSON.stringify(builtQuery).substring(0, 400));
+
+                            connection.client = await connection.getclient();
+                            const rawResults = await connection.execQuery(builtQuery);
+                            console.log(`[MCP] panel ${idx} — rawResults: isArray=${Array.isArray(rawResults)} | length=${Array.isArray(rawResults) ? rawResults.length : 'N/A'}`);
+                            if (Array.isArray(rawResults) && rawResults.length > 0) {
+                                console.log(`[MCP] panel ${idx} — primera fila:`, JSON.stringify(rawResults[0]));
+                            }
+
+                            if (Array.isArray(rawResults) && rawResults.length > 0) {
+                                const headers = Object.keys(rawResults[0]);
+                                const rows = rawResults.map((r: any) => headers.map(h => r[h]));
+                                resultados.push({
+                                    panel_index: idx,
+                                    panel_titulo: panel.title ?? '(sin título)',
+                                    tipo: chartType,
+                                    campos: fieldNames,
+                                    filtros_activos: filterSummary,
+                                    tiene_filtros: activeFilters.length > 0,
+                                    modelo_datos: dsName,
+                                    datos: { columnas: headers, filas: rows, total_filas: rows.length },
+                                });
+                            } else {
+                                resultados.push({
+                                    panel_index: idx,
+                                    panel_titulo: panel.title ?? '(sin título)',
+                                    tipo: chartType,
+                                    campos: fieldNames,
+                                    filtros_activos: filterSummary,
+                                    datos: null,
+                                    mensaje: 'Sin resultados',
+                                });
+                            }
+                        } catch (qErr: any) {
+                            console.error(`[MCP] panel ${idx} — ERROR:`, qErr.message);
+                            resultados.push({
+                                panel_index: idx,
+                                panel_titulo: panel.title ?? '(sin título)',
+                                campos: fieldNames,
+                                filtros_activos: filterSummary,
+                                error: qErr.message,
+                                datos: null,
+                            });
+                        }
                     }
 
-                    console.log('[MCP] get_data_from_dashboard - modo dashboard específico finalizado OK | chars:', lines.join('\n').length);
-                    return { content: [{ type: 'text', text: lines.join('\n') }] };
+                    const respuesta = {
+                        fuente: {
+                            dashboard_id,
+                            dashboard_nombre: db.config?.title ?? '(sin título)',
+                            dashboard_url: dashboardLink,
+                        },
+                        pregunta: question,
+                        panels: resultados,
+                    };
+
+                    console.log('[MCP] MODO DATOS finalizado | panels ejecutados:', resultados.length, '| chars:', JSON.stringify(respuesta).length);
+                    return { content: [{ type: 'text', text: JSON.stringify(respuesta, null, 2) }] };
                 }
 
-                // Sin dashboard_id: resumen de todos los dashboards accesibles
-                console.log('[MCP] get_data_from_dashboard - modo: exploración de todos los dashboards');
+                // ── MODO EXPLORACIÓN: sin dashboard_id ─────────────────────────────────
+                console.log('[MCP] get_data_from_dashboard - MODO EXPLORACIÓN');
                 const { privados, grupo, comunes, publicos } = await getAllDashboards(user._id.toString());
                 const allDashboards = [...privados, ...grupo, ...comunes, ...publicos];
-                console.log('[MCP] get_data_from_dashboard - dashboards encontrados:', allDashboards.length, '(privados:', privados.length, '| grupo:', grupo.length, '| comunes:', comunes.length, '| públicos:', publicos.length, ')');
+                console.log('[MCP] exploración — dashboards:', allDashboards.length);
 
-                const lines: string[] = [
-                    `Pregunta: ${question}`,
-                    `Dashboards accesibles: ${allDashboards.length}`,
-                    '',
-                    'Resumen de dashboards y paneles. Usa get_data_from_dashboard con dashboard_id para obtener las queries completas del dashboard más relevante.',
-                    '',
-                    '--- Dashboards ---',
-                ];
+                const opciones: any[] = [];
 
                 for (const d of allDashboards) {
                     const db: any = await Dashboard.findById(d._id).exec();
-                    if (!db) {
-                        console.warn('[MCP] get_data_from_dashboard - dashboard no cargado:', d._id);
-                        continue;
-                    }
-                    const panels = Array.isArray(db.config?.panel) ? db.config.panel : [];
-                    console.log('[MCP] get_data_from_dashboard - dashboard:', db.config?.title ?? d._id, '| panels:', panels.length);
+                    if (!db) continue;
+                    const panels: any[] = Array.isArray(db.config?.panel) ? db.config.panel : [];
                     const dashboardLink = baseUrl ? `${baseUrl}/dashboard/${encodeURIComponent(d._id)}` : '';
-                    lines.push(`\n## [${d._id}] ${d.config?.title ?? '(sin título)'}${dashboardLink ? ` — ${dashboardLink}` : ''}`);
-                    if (panels.length === 0) {
-                        lines.push('  (sin panels)');
-                    } else {
-                        for (const panel of panels) {
-                            const fields: any[] = panel.content?.query?.query?.fields ?? [];
-                            const fieldNames = fields.map((f: any) => f.display_name ?? f.field_name).filter(Boolean);
-                            lines.push(`  - ${panel.title ?? '(sin título)'}${fieldNames.length > 0 ? `: ${fieldNames.join(', ')}` : ''}`);
-                        }
+
+                    for (let idx = 0; idx < panels.length; idx++) {
+                        const panel = panels[idx];
+                        const query = panel.content?.query;
+                        const fields: any[] = query?.query?.fields ?? [];
+                        if (fields.length === 0) continue;
+
+                        const fieldNames = fields.map((f: any) => f.display_name ?? f.field_name).filter(Boolean);
+                        const activeFilters: any[] = query?.query?.filters ?? [];
+                        const filterSummary = summarizeFilters(activeFilters);
+                        const chartType = panel.content?.chart_type ?? panel.content?.edaChart ?? null;
+
+                        opciones.push({
+                            dashboard_id: d._id.toString(),
+                            dashboard_nombre: db.config?.title ?? '(sin título)',
+                            dashboard_url: dashboardLink,
+                            panel_index: idx,
+                            panel_titulo: panel.title ?? '(sin título)',
+                            tipo_grafico: chartType,
+                            campos: fieldNames,
+                            tiene_filtros: activeFilters.length > 0,
+                            filtros_activos: filterSummary,
+                        });
                     }
                 }
 
-                console.log('[MCP] get_data_from_dashboard - modo exploración finalizado OK | respuesta chars:', lines.join('\n').length);
-                return { content: [{ type: 'text', text: lines.join('\n') }] };
+                console.log('[MCP] MODO EXPLORACIÓN finalizado | opciones con datos:', opciones.length);
+
+                const respuestaExploracion = {
+                    pregunta: question,
+                    instruccion: 'Analiza estas opciones e identifica cuáles son relevantes para la pregunta. Si hay varias relevantes (distintos filtros, distintos datasources o distintos niveles de agregación), PREGUNTA AL USUARIO cuál prefiere antes de llamar al modo datos.',
+                    total_opciones: opciones.length,
+                    opciones,
+                };
+
+                return { content: [{ type: 'text', text: JSON.stringify(respuestaExploracion, null, 2) }] };
+
             } catch (err: any) {
                 console.error('[MCP] get_data_from_dashboard error:', err.message, err.stack);
                 return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
@@ -762,30 +810,43 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
                 `Eres un asistente de análisis de datos integrado en EDA (Enterprise Data Analytics). Tienes acceso a los datasources y dashboards del sistema mediante herramientas MCP.
 
                 FLUJO OBLIGATORIO PARA PREGUNTAS SOBRE DATOS:
-                1. Llama a get_data_from_dashboard SIN dashboard_id para identificar qué dashboard tiene los datos relevantes.
-                2. Si encuentras un dashboard relevante, llama de nuevo a get_data_from_dashboard CON el dashboard_id para obtener los datos reales de los paneles.
-                3. Responde directamente con los valores que te ha devuelto la herramienta. NUNCA redirijas al usuario a ver el dashboard.
-                4. Solo si ningún panel devuelve datos relevantes (resultados vacíos o error), dilo claramente: "No he encontrado datos sobre X en los dashboards disponibles."
 
-                REGLAS DE RESPUESTA:
-                - SIEMPRE da una respuesta directa con los datos numéricos o valores reales obtenidos de las herramientas.
-                - NUNCA sugieras al usuario que vaya a ver el dashboard como sustituto de responder su pregunta.
-                - NUNCA digas "no tengo acceso a los datos específicos" si hay paneles con datos disponibles — úsalos.
-                - Si los datos están en el contexto de la conversación (resultado de una tool anterior), úsalos sin llamar de nuevo a la herramienta.
-                - Si realmente no hay ningún dashboard o panel con la información pedida, dilo directamente y sin alternativas: "No hay datos sobre X en el sistema."
-                - NUNCA inventes ni adivines datos que no te hayan sido proporcionados por las herramientas o el contexto.
-                
+                PASO 1 — EXPLORACIÓN (sin dashboard_id):
+                Llama a get_data_from_dashboard SIN dashboard_id. Recibirás un JSON con una lista de "opciones", cada una con: dashboard_nombre, panel_titulo, campos, tiene_filtros, filtros_activos.
+
+                PASO 2 — SELECCIÓN (si hay múltiples opciones relevantes):
+                Si encuentras más de una opción relevante para la pregunta del usuario (distintos filtros activos, distintos datasources o distintos niveles de agregación), NO ejecutes datos todavía.
+                Presenta las opciones al usuario de forma clara y estructurada. Por ejemplo:
+                  "He encontrado datos sobre X en varios paneles:
+                   **Opción A** — Dashboard «Ventas» › Panel «Total por país»
+                   📊 Sin filtros — muestra todos los países
+                   📋 Campos: País, Ventas totales
+                   **Opción B** — Dashboard «Ventas EU» › Panel «Top países»
+                   🔍 Filtros activos: País in (España, Francia, Italia)
+                   📋 Campos: País, Ventas
+                   ¿Con cuál quieres trabajar, o quieres ver ambos?"
+
+                PASO 3 — DATOS (con dashboard_id y panel_index):
+                Una vez el usuario elija (o si solo había una opción relevante), llama a get_data_from_dashboard CON dashboard_id Y panel_index del panel elegido.
+                Recibirás un JSON con "fuente" (dashboard_nombre, dashboard_url) y en panels[0].datos: columnas y filas con los valores reales.
+
+                PASO 4 — RESPUESTA FINAL:
+                Presenta los datos directamente. Formato sugerido:
+                  - Tabla o ranking con los valores reales
+                  - Al final: «📌 Datos obtenidos de [dashboard_nombre](dashboard_url)»
+                  - Si había filtros activos, indícalo: «(con filtro: País in España, Francia)»
+                NUNCA redirijas al usuario al dashboard como sustituto de la respuesta.
+                Si no hay datos relevantes en ninguna opción, dilo: "No he encontrado datos sobre X en los dashboards disponibles."
+
                 REGLAS IMPORTANTES - URLs:
-                - Los resultados de list_dashboards y list_datasources incluyen la URL de cada elemento al final de la línea (formato: " — https://...").
-                - Cuando listes dashboards o datasources, SIEMPRE incluye su URL en la respuesta al usuario.
-                - NUNCA inventes ni construyas URLs. Si no tienes la URL, llama a la herramienta correspondiente.
-                - Respeta SIEMPRE los links que te devuelve el MCP. El MCP devuelve ${'SERVIDOR'}${'LOCALE'}${'PATH'} y debes respetarlo tal cual.
+                - NUNCA inventes ni construyas URLs. Usa siempre las que devuelve el MCP en el campo dashboard_url.
+                - Respeta el formato exacto de la URL que devuelve el MCP.
 
                 REGLAS IMPORTANTES - VISIBILIDAD:
-                - No tienes acceso a ningún dato de EDA que no te haya sido proporcionado explícitamente en el contexto de la conversación o mediante las herramientas MCP.
-                - Si un datasource o dashboard está marcado como NONE en ia_visibility, es como si no existiera para ti.
+                - No accedas a datos que no hayan sido proporcionados por las herramientas MCP.
+                - Datasources o dashboards con ia_visibility NONE no existen para ti.
 
-                Responde siempre en el idioma del usuario. Sé conciso y directo.`,
+                Responde siempre en el idioma del usuario.`,
                 messages: history,
                 tools: anthropicTools,
             });
