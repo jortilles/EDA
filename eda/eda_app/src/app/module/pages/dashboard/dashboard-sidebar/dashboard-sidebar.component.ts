@@ -923,29 +923,22 @@ export class DashboardSidebarComponent {
     this.editingTitle = false;
   }
 
-
-  
-  public isReadOnlyCheck() {
-    const user = JSON.parse(localStorage.getItem('user'));
-    const userName = user.name;
-    const userRole: string[] = user.role ?? [];
-    const isObserver = userRole.includes('135792467811111111111113');
-    const isAdmin = userRole.includes('135792467811111111111110');
-    const hasNoRoles = userRole.length === 0;
-    const onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ?? false;
+ public isReadOnlyCheck() {
+    const user = localStorage.getItem('user');
+    const userName = JSON.parse(user).name;
     const imProperty = userName === this.dashboard.dashboard.config.author;
-    return userName === 'edaanonim' || isObserver || hasNoRoles || (onlyIcanEdit && !imProperty && !isAdmin);
+    const isObserver = JSON.parse(user).role.includes('135792467811111111111113');
+    const onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ? this.dashboard.dashboard.config.onlyIcanEdit:false ;
+    return userName === 'edaanonim' || (onlyIcanEdit && !imProperty) || isObserver;
   }
 
-
   public isEditableCheck() {
-    const user = JSON.parse(localStorage.getItem('user'));
-    const userName = user.name;
-    const userRole: string[] = user.role ?? [];
+    const user = localStorage.getItem('user');
+    const userName = JSON.parse(user).name;
+    const userRole = JSON.parse(user).role;
     const isAdmin = userRole.includes('135792467811111111111110');
-    const hasNoRoles = userRole.length === 0;
-    const imProperty = userName === this.dashboard.dashboard.config.author;
-    return !hasNoRoles && (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty || isAdmin);
+    const imProperty = userName === this.dashboard.dashboard.config.author
+    return (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty || isAdmin );
   }
 
   toggleClickFilters() {
