@@ -2,13 +2,13 @@
   i18n-header="@@kpiMailConfigTitle"
   header="Configuración de envío por email"
   width="70vw"
-  height="65vh"
+  height="75vh"
   [disableApply]="disableApply()"
   (apply)="onApply()"
   (close)="onClose()">
 
-  <div content class="p-8 bg-gray-50 h-[50vh]">
-    <div class="grid grid-cols-[25%_30%_40%] gap-8 h-full">
+  <div content class="p-8 bg-gray-50 h-[60vh] flex flex-col">
+    <div class="grid grid-cols-[25%_30%_40%] gap-8 flex-shrink-0">
 
       <!-- Frecuencia -->
       <div class="bg-white shadow-lg rounded-2xl p-6 space-y-5">
@@ -73,11 +73,44 @@
             <p i18n="@@noRecipientsSelected" class="text-sm text-gray-400 px-3 py-2">Sin destinatarios seleccionados</p>
           }
         </div>
+
+        <!-- Botón de prueba -->
+        <div class="mt-auto pt-4 border-t border-gray-200">
+          <button
+            (click)="testSend()"
+            [disabled]="disableTest()"
+            class="w-full py-2.5 px-4 bg-[#00BFB3] text-white rounded-lg font-medium transition-all hover:bg-[#00A59B] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+            @if (isTesting) {
+              <span class="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
+              <span i18n="@@testingMail">Enviando prueba...</span>
+            } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+              </svg>
+              <span i18n="@@testMailBtn">Probar envío</span>
+            }
+          </button>
+        </div>
       </div>
 
       <!-- Contenido del mail -->
       <div class="bg-white shadow-lg rounded-2xl p-6 flex flex-col">
-        <h5 i18n="@@SendMailWhat" class="text-lg font-semibold text-gray-800 mb-3">Contenido del mail</h5>
+        <div class="flex items-center justify-between mb-3">
+          <h5 i18n="@@SendMailWhat" class="text-lg font-semibold text-gray-800">Contenido del mail</h5>
+          @if (history.length > 0) {
+            <button
+              (click)="toggleHistory()"
+              class="text-sm text-[#00BFB3] hover:text-[#00A59B] font-medium flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12,6 12,12 16,14"></polyline>
+              </svg>
+              <span>{{ showHistory ? 'Ocultar historial' : 'Ver historial' }}</span>
+            </button>
+          }
+        </div>
         <textarea
           class="flex-1 w-full border border-gray-300 px-3 py-2.5 rounded-lg shadow-sm resize-none focus:ring-2 focus:ring-blue-500 outline-none"
           rows="6"
@@ -85,6 +118,141 @@
         </textarea>
       </div>
 
+    </div>
+
+    <!-- Resultados de prueba y historial -->
+    <div class="mt-6 flex-1 min-h-0 overflow-hidden flex flex-col">
+      <!-- Resultados de prueba -->
+      @if (testResults.length > 0) {
+        <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-4">
+          <div class="px-4 py-3 bg-gradient-to-r from-slate-50 to-slate-100 border-b">
+            <h6 class="font-medium text-slate-800 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+              </svg>
+              <span i18n="@@testResults">Resultados de la prueba</span>
+            </h6>
+          </div>
+          <div class="max-h-40 overflow-y-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-50 sticky top-0">
+                <tr>
+                  <th class="text-left p-3 font-medium text-slate-600" i18n="@@recipient">Destinatario</th>
+                  <th class="text-left p-3 font-medium text-slate-600" i18n="@@status">Estado</th>
+                  <th class="text-left p-3 font-medium text-slate-600" i18n="@@kpiValue">Valor KPI</th>
+                  <th class="text-left p-3 font-medium text-slate-600" i18n="@@errorMsg">Error</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (result of testResults; track $index) {
+                  <tr class="border-t hover:bg-slate-50">
+                    <td class="p-3 font-mono text-slate-700">{{ result.recipient }}</td>
+                    <td class="p-3">
+                      <span class="inline-flex items-center gap-1.5">
+                        @if (result.success) {
+                          <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                          <span class="text-green-600 font-medium">Éxito</span>
+                        } @else {
+                          <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                          <span class="text-red-600 font-medium">Fallido</span>
+                        }
+                      </span>
+                    </td>
+                    <td class="p-3 font-mono text-slate-700">
+                      {{ result.kpiValue !== null && result.kpiValue !== undefined ? result.kpiValue : 'N/A' }}
+                    </td>
+                    <td class="p-3">
+                      @if (result.error) {
+                        <span class="text-red-600 text-sm">{{ result.error }}</span>
+                      } @else {
+                        <span class="text-slate-400">-</span>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+
+      <!-- Historial de envíos -->
+      @if (showHistory && history.length > 0) {
+        <div class="bg-white rounded-xl shadow-md border overflow-hidden flex-1 min-h-0 flex flex-col">
+          <div class="px-4 py-3 bg-gradient-to-r from-slate-50 to-slate-100 border-b flex-shrink-0">
+            <h6 class="font-medium text-slate-800 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12,6 12,12 16,14"></polyline>
+              </svg>
+              <span i18n="@@sendHistory">Historial de envíos</span>
+              <span class="text-xs text-slate-500">(Últimos {{ history.length }})</span>
+            </h6>
+          </div>
+          <div class="flex-1 overflow-y-auto min-h-0">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-50 sticky top-0">
+                <tr>
+                  <th class="text-left p-3 font-medium text-slate-600" i18n="@@timestamp">Fecha/Hora</th>
+                  <th class="text-left p-3 font-medium text-slate-600" i18n="@@recipient">Destinatario</th>
+                  <th class="text-left p-3 font-medium text-slate-600" i18n="@@status">Estado</th>
+                  <th class="text-left p-3 font-medium text-slate-600" i18n="@@kpiValue">Valor KPI</th>
+                  <th class="text-left p-3 font-medium text-slate-600" i18n="@@conditionMet">Condición</th>
+                  <th class="text-left p-3 font-medium text-slate-600" i18n="@@errorMsg">Error</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of history; track $index) {
+                  <tr class="border-t hover:bg-slate-50">
+                    <td class="p-3 text-slate-700 whitespace-nowrap">{{ formatDate(item.timestamp) }}</td>
+                    <td class="p-3 font-mono text-slate-700">{{ item.recipient }}</td>
+                    <td class="p-3">
+                      <span class="inline-flex items-center gap-1.5">
+                        @if (item.status === 'success') {
+                          <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                          <span class="text-green-600 font-medium">Éxito</span>
+                        } @else {
+                          <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                          <span class="text-red-600 font-medium">Fallido</span>
+                        }
+                      </span>
+                    </td>
+                    <td class="p-3 font-mono text-slate-700">
+                      {{ item.kpiValue !== null && item.kpiValue !== undefined ? item.kpiValue : 'N/A' }}
+                    </td>
+                    <td class="p-3">
+                      @if (item.conditionMet === true) {
+                        <span class="inline-flex items-center gap-1 text-amber-600">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                          </svg>
+                          <span>Activada</span>
+                        </span>
+                      } @else if (item.conditionMet === false) {
+                        <span class="text-slate-500">No activada</span>
+                      } @else {
+                        <span class="text-slate-400">-</span>
+                      }
+                    </td>
+                    <td class="p-3">
+                      @if (item.error) {
+                        <span class="text-red-600 text-sm">{{ item.error }}</span>
+                      } @else {
+                        <span class="text-slate-400">-</span>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
     </div>
   </div>
 
