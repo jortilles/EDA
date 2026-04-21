@@ -1,0 +1,252 @@
+<div class="flex flex-row h-screen overflow-hidden">
+
+  <!-- Contenido principal -->
+  <div class="flex-1 min-w-0 flex flex-col overflow-hidden">
+
+    <!-- Header + Filtros (no scrollean) -->
+    <div class="shrink-0 max-w-[2000px] w-full mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4 space-y-4">
+      <!-- Header -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-2">
+          <button (click)="goToHome()" class="p-2 rounded hover:bg-gray-100 transition-colors" i18n-title="@@backToHome" title="Volver a inicio">
+            <eda-icon name="arrow-left" class="text-[#00B0BA]" />
+          </button>
+          <eda-icon name="document-text" class="text-[#00B0BA]" />
+          <h1 class="text-2xl font-semibold" i18n="@@templateCenterTitle">Centro de Plantillas</h1>
+        </div>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
+          <div class="flex relative w-full sm:w-[300px]">
+            <eda-icon name="magnifying-glass"
+              class="absolute left-3 top-1/2 h-4 w-4 -translate-y-[65%] text-muted-foreground" />
+            <input type="text" [(ngModel)]="searchQuery" (keyup)="filterByTitle($event)"
+              class="w-full rounded-md border border-input bg-background py-2 !pl-9 !pr-9 text-sm"
+              i18n-placeholder="@@searchTemplatesPlaceholder" placeholder="Buscar plantillas...">
+          </div>
+          @if(!isObserver){
+            <button
+              class="bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white font-bold px-4 py-2 rounded flex items-center"
+              (click)="openCreateDashboard()">
+              <span i18n="@@createNewReportBtn">Crear nuevo informe</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="flex-1 min-w-0">
+          <div class="text-sm text-muted-foreground">
+            <span i18n="@@totalTemplates">Total de plantillas:</span>
+            <span class="font-semibold ml-1">{{ filteredTemplates.length }}</span>
+          </div>
+        </div>
+        <!-- Ordenar plantillas -->
+        <div class="w-full sm:w-auto flex-shrink-0">
+          <div class="text-sm text-muted-foreground" i18n="@@sortTemplates">ORDENAR PLANTILLAS:</div>
+          <select
+            class="w-full sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+            [(ngModel)]="sortingType" (change)="handleSorting()">
+            <option value="lastUsedAt" i18n="@@sortByLastUsed">Recientemente usadas</option>
+            <option value="useCount" i18n="@@sortByUseCount">Más usadas</option>
+            <option value="name" i18n="@@sortByNameAsc">Nombre (A-Z)</option>
+            <option value="nameDesc" i18n="@@sortByNameDesc">Nombre (Z-A)</option>
+            <option value="dateDesc" i18n="@@sortByDateDesc">Fecha (nuevas primero)</option>
+            <option value="dateAsc" i18n="@@sortByDateAsc">Fecha (antiguas primero)</option>
+          </select>
+        </div>
+      </div>
+
+    </div><!-- cierre header+filtros -->
+
+    <!-- Plantillas (scrollean) -->
+    <div class="flex-1 overflow-y-auto">
+      <div class="max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          @for (template of filteredTemplates; track template._id) {
+          <div class="rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow">
+            <div class="px-4 py-3 cursor-pointer">
+              <h3 class="text-base font-semibold flex items-center justify-between gap-1">
+                <span>{{ template.name }}</span>
+                @if(template.isPublic) {
+                  <span class="text-xs bg-teal-100 text-teal-800 px-2 py-0.5 rounded-full" i18n="@@publicTemplateLabel">Pública</span>
+                }
+                <!-- Info icon with tooltip -->
+                <span class="relative group/info inline-flex shrink-0 ml-auto">
+                  <i class="pi pi-info-circle cursor-pointer text-gray-500"></i>
+                  <div class="absolute z-50 right-0 bottom-full mb-1 w-[28rem] rounded-md border bg-popover p-3 shadow-lg text-sm text-popover-foreground opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-200 pointer-events-none">
+                    <div class="font-semibold text-base mb-2 break-words">{{ template.name }}</div>
+                    <div class="space-y-1">
+                      @if(template.description) {
+                        <div class="flex gap-1">
+                          <span class="text-muted-foreground shrink-0" i18n="@@descriptionLabel">Descripción:</span>
+                          <span class="break-words">{{ template.description }}</span>
+                        </div>
+                      }
+                      @if(template.config?.ds?.name) {
+                        <div class="flex gap-1">
+                          <span class="text-muted-foreground shrink-0" i18n="@@DatadourceTitle">Datasource:</span>
+                          <span class="break-words">{{ template.config.ds.name }}</span>
+                        </div>
+                      }
+                      @if(template.config?.ds?.type) {
+                        <div class="flex gap-1">
+                          <span class="text-muted-foreground shrink-0" i18n="@@datasourceTypeLabel">Tipo:</span>
+                          <span>{{ template.config.ds.type }}</span>
+                        </div>
+                      }
+                      @if(template.user?.name) {
+                        <div class="flex gap-1">
+                          <span class="text-muted-foreground shrink-0" i18n="@@authorTooltipLabel">Creador:</span>
+                          <span class="break-words">{{ template.user.name }}</span>
+                        </div>
+                      }
+                      @if(template.createdAt) {
+                        <div class="flex gap-1">
+                          <span class="text-muted-foreground shrink-0" i18n="@@createdAtTooltipLabel">Creado:</span>
+                          <span>{{ formatDate(template.createdAt) }}</span>
+                        </div>
+                      }
+                      @if(template.lastUsedAt) {
+                        <div class="flex gap-1">
+                          <span class="text-muted-foreground shrink-0" i18n="@@lastUsedAtLabel">Último uso:</span>
+                          <span>{{ formatDate(template.lastUsedAt) }}</span>
+                        </div>
+                      }
+                      @if(template.useCount !== undefined && template.useCount !== null) {
+                        <div class="flex gap-1">
+                          <span class="text-muted-foreground shrink-0" i18n="@@useCountLabel">Veces usada:</span>
+                          <span>{{ template.useCount }}</span>
+                        </div>
+                      }
+                      @if(template.config?.panel?.length) {
+                        <div class="flex gap-1">
+                          <span class="text-muted-foreground shrink-0" i18n="@@panelCountLabel">Paneles:</span>
+                          <span>{{ template.config.panel.length }}</span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </span>
+              </h3>
+              @if(template.description) {
+                <p class="text-sm text-gray-500 mt-1 line-clamp-2">{{ template.description }}</p>
+              }
+            </div>
+            <div class="grid grid-cols-2 items-center border-t px-4 py-2 gap-2">
+              <div class="text-sm text-muted-foreground truncate min-w-0">
+                @if (template.config?.ds?.name) {
+                  <span class="truncate block" [title]="template.config.ds.name">{{ template.config.ds.name }}</span>
+                }
+              </div>
+              <div class="flex items-center justify-end gap-1">
+                @if(!isObserver){
+                  <button class="rounded-md p-1.5 cursor-pointer hover:bg-muted text-teal-600" 
+                    (click)="openCreateFromTemplate(template)"
+                    title="Crear informe desde plantilla" i18n-title="@@createFromTemplateTooltip">
+                    <eda-icon name="plus" size="sm"></eda-icon>
+                  </button>
+                  <button class="rounded-md p-1.5 cursor-pointer hover:bg-muted text-red-600" 
+                    (click)="deleteTemplate(template)"
+                    title="Eliminar plantilla" i18n-title="@@deleteTemplateTooltip">
+                    <eda-icon name="bin"></eda-icon>
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+          }
+          @empty {
+          <div class="col-span-full mt-8 rounded-lg bg-muted p-8 text-center">
+            <eda-icon name="document-text" size="lg" class="mx-auto mb-4 text-gray-400"></eda-icon>
+            <p class="text-lg font-medium text-gray-600" i18n="@@noTemplatesFound">No se encontraron plantillas</p>
+            <p class="text-sm text-gray-500 mt-2" i18n="@@noTemplatesHint">Puedes crear plantillas desde cualquier informe guardado</p>
+          </div>
+          }
+        </div>
+      </div>
+    </div><!-- cierre plantillas -->
+
+  </div><!-- cierre contenido principal -->
+
+</div><!-- cierre flex-row wrapper -->
+
+<!-- Modal para crear informe desde plantilla -->
+@if(showCreateFromTemplate && selectedTemplate) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b">
+      <h3 class="text-lg font-semibold" i18n="@@createFromTemplateTitle">Crear informe desde plantilla</h3>
+      <button (click)="closeCreateFromTemplate()" class="text-gray-400 hover:text-gray-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="px-6 py-4 space-y-4">
+      <!-- Plantilla seleccionada -->
+      <div class="bg-gray-50 rounded-md p-3">
+        <p class="text-sm text-gray-500 mb-1" i18n="@@selectedTemplateLabel">Plantilla seleccionada:</p>
+        <p class="font-medium">{{ selectedTemplate.name }}</p>
+        @if(selectedTemplate.description) {
+          <p class="text-sm text-gray-500 mt-1">{{ selectedTemplate.description }}</p>
+        }
+      </div>
+
+      <!-- Nombre del informe -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1" i18n="@@reportNameLabel">Nombre del informe *</label>
+        <input type="text" 
+          [(ngModel)]="createForm.name"
+          class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          i18n-placeholder="@@reportNamePlaceholder" placeholder="Ingrese el nombre del informe">
+      </div>
+
+      <!-- Visibilidad -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2" i18n="@@visibilityLabel">Visibilidad</label>
+        <p-selectButton 
+          [options]="visibleTypes" 
+          [(ngModel)]="createForm.visible" 
+          (onChange)="handleSelectedBtn($event)"
+          class="w-full">
+        </p-selectButton>
+      </div>
+
+      <!-- Grupo (si es necesario) -->
+      @if(showGroups) {
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1" i18n="@@groupLabel">Grupo *</label>
+        <p-multiSelect
+          [(ngModel)]="createForm.group"
+          [options]="grups"
+          [filter]="false"
+          optionLabel="name"
+          i18n-defaultLabel="@@multiSelectDefaultLabel"
+          defaultLabel="Selecciona un grupo *"
+          class="w-full"
+          appendTo="body">
+        </p-multiSelect>
+      </div>
+      }
+    </div>
+
+    <!-- Footer -->
+    <div class="flex items-center justify-end gap-3 px-6 py-4 border-t">
+      <button 
+        (click)="closeCreateFromTemplate()"
+        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+        i18n="@@cancelarBtn">Cancelar</button>
+      <button 
+        (click)="createDashboardFromTemplate()"
+        [disabled]="!createForm.name"
+        class="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#00B0BA] to-teal-400 rounded-md hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+        i18n="@@createBtn">Crear</button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- <app-create-dashboard></app-create-dashboard> -->

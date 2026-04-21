@@ -1,0 +1,60 @@
+<eda-dialog2 [display]="display" i18n-header="@@saveTemplateHeader"
+  header="Guardar como plantilla" width="50vw" height="55vh"
+  [disableApply]="disableApply()"
+  (apply)="saveTemplate()"
+  (close)="onClose()">
+
+  <div content class="p-6">
+    <form [formGroup]="form" class="mt-8 space-y-4" (ngSubmit)="true"> 
+      <div class="grid space-y-4">
+        <!-- Información del informe -->
+        <div class="col-12 mb-4">
+          <p class="text-sm text-gray-500 mb-2" i18n="@@templateFromDashboard">Creando plantilla desde el informe:</p>
+          <p class="text-gray-700 font-medium">{{ dashboardTitle }}</p>
+        </div>
+
+        <!-- Input Nombre -->
+        <div class="col-12">
+          <span class="relative block">
+            <input 
+              id="float-template-name" 
+              formControlName="name" 
+              type="text" 
+              pInputText 
+              i18n-placeholder="@@templateNamePlaceholder"
+              placeholder="Nombre de la plantilla *"
+              required 
+              class="w-full p-2 border rounded-md bg-gray-100 text-gray-700 focus:outline-none focus:ring focus:ring-gray-300 peer"
+            />
+          </span>
+        </div>
+
+        <!-- Input Descripción -->
+        <div class="col-12">
+          <span class="relative block">
+            <textarea 
+              id="float-template-description" 
+              formControlName="description" 
+              rows="3"
+              pInputTextarea 
+              i18n-placeholder="@@templateDescriptionPlaceholder"
+              placeholder="Descripción (opcional)"
+              class="w-full p-2 border rounded-md bg-gray-100 text-gray-700 focus:outline-none focus:ring focus:ring-gray-300 peer"
+            ></textarea>
+          </span>
+        </div>
+
+        <!-- Checkbox Público -->
+        <div class="col-12">
+          <p-checkbox 
+            formControlName="isPublic" 
+            i18n-label="@@templateIsPublic"
+            label="Hacer plantilla pública"
+            binary="true">
+          </p-checkbox>
+          <p class="text-xs text-gray-500 mt-1" i18n="@@templatePublicHint">Si se marca, otros usuarios podrán ver y usar esta plantilla</p>
+        </div>
+      </div>
+    </form>
+  </div>
+</eda-dialog2>

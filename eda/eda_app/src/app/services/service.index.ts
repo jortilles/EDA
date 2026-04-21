@@ -24,6 +24,7 @@ export { SpinnerService } from './shared/spinner.service';
 export { ApiService } from './api/api.service';
 export * from './api/user.service'; // User
 export * from './api/dashboard.service'; // Dashboard
+export { TemplateService } from './api/template.service'; // Template
 export * from './api/global.service'; // Global
 export * from './api/datasource.service'; // Datasource
 export * from './api/global-filters.service'; // Global filter
