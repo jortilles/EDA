@@ -10,7 +10,7 @@ import { UserService } from '@eda/services/api/user.service';
 import { GroupService } from '@eda/services/api/group.service';
 import { AlertService, DashboardService } from '@eda/services/service.index';
 import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
-import { IaChatService, ChatMessage } from '@eda/services/api/ia-chat.service';
+import { IaChatService, ChatMessage, ChatOption } from '@eda/services/api/ia-chat.service';
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
 import { CommonModule } from '@angular/common';
@@ -36,6 +36,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   private zone = inject(NgZone);
 
   // --- Chat IA ---
+  private markdownCache = new Map<string, SafeHtml>();
   @ViewChild('chatMessages') private chatMessagesRef!: ElementRef;
   @ViewChild('chatInputEl') private chatInputEl!: ElementRef<HTMLTextAreaElement>;
   chatOpen = signal(false);
@@ -163,13 +164,36 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
     this.iaChatService.sendMessage(this.chatHistory).subscribe({
       next: (res) => {
-        this.chatHistory.push({ role: 'assistant', content: res.response });
+        this.chatHistory.push({ role: 'assistant', content: res.response, options: res.options ?? [] });
         this.chatLoading.set(false);
         this.shouldScrollChat = true;
         setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
       },
       error: () => {
-        this.chatHistory.push({ role: 'assistant', content: 'Error al conectar con el asistente.' });
+        this.chatHistory.push({ role: 'assistant', content: $localize`:@@chatErrorConnecting:Error al conectar con el asistente.` });
+        this.chatLoading.set(false);
+        this.shouldScrollChat = true;
+        setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+      },
+    });
+  }
+
+  selectOption(option: ChatOption): void {
+    if (this.chatLoading()) return;
+    const displayLabel = $localize`:@@chatOptionSelectedLabel:Opción` + ` ${option.num}: ${option.label}`;
+    const apiMsg = `${displayLabel} (dashboard_id: ${option.dashboard_id}, panel_index: ${option.panel_index})`;
+    this.chatHistory.push({ role: 'user', content: apiMsg, displayContent: displayLabel });
+    this.chatLoading.set(true);
+    this.shouldScrollChat = true;
+    this.iaChatService.sendMessage(this.chatHistory).subscribe({
+      next: (res) => {
+        this.chatHistory.push({ role: 'assistant', content: res.response, options: res.options ?? [] });
+        this.chatLoading.set(false);
+        this.shouldScrollChat = true;
+        setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+      },
+      error: () => {
+        this.chatHistory.push({ role: 'assistant', content: $localize`:@@chatErrorConnecting:Error al conectar con el asistente.` });
         this.chatLoading.set(false);
         this.shouldScrollChat = true;
         setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
@@ -178,54 +202,118 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   renderMarkdown(text: string): SafeHtml {
+    if (this.markdownCache.has(text)) return this.markdownCache.get(text)!;
+
     const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-    // 1. Extraer bloques de código
+    // 1. Code blocks → sentinel
     const codeBlocks: string[] = [];
     let html = text.replace(/```[\w]*\n?([\s\S]*?)```/g, (_, code) => {
       const idx = codeBlocks.push(esc(code.trim())) - 1;
       return `\x00CODE${idx}\x00`;
     });
 
-    // 2. Código inline
+    // 2. Inline code → sentinel
     const inlineCodes: string[] = [];
     html = html.replace(/`([^`\n]+)`/g, (_, code) => {
       const idx = inlineCodes.push(esc(code)) - 1;
       return `\x00INLINE${idx}\x00`;
     });
 
-    // 3. URLs → links clicables
-    html = html.replace(/(https?:\/\/[^\s<>")\]\n]+)/g,
-      '<a href="$1" target="_blank" rel="noopener noreferrer" class="chat-link">$1</a>');
+    // 3. Named links [text](url) → sentinel (before bare URL processing)
+    const linkBlocks: string[] = [];
+    html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (_, label, url) => {
+      const idx = linkBlocks.push(
+        `<a href="${url}" target="_blank" rel="noopener noreferrer" class="chat-link">${label}</a>`
+      ) - 1;
+      return `\x00LINK${idx}\x00`;
+    });
 
-    // 4. Negrita
+    // 4. Tables (line-by-line, after link extraction so links work inside cells)
+    const tableBlocks: string[] = [];
+    const rawLines = html.split('\n');
+    const processedLines: string[] = [];
+    let li = 0;
+    while (li < rawLines.length) {
+      const cur = rawLines[li].trim();
+      const nxt = rawLines[li + 1]?.trim() ?? '';
+      if (cur.startsWith('|') && /^\|(?:[ \t]*:?-+:?[ \t]*\|)+$/.test(nxt)) {
+        const headers = cur.split('|').slice(1, -1)
+          .map(h => `<th>${h.trim()}</th>`).join('');
+        li += 2; // skip header + separator row
+        const bodyRows: string[] = [];
+        while (li < rawLines.length && rawLines[li].trim().startsWith('|')) {
+          const cells = rawLines[li].trim().split('|').slice(1, -1)
+            .map(c => `<td>${c.trim()}</td>`).join('');
+          bodyRows.push(`<tr>${cells}</tr>`);
+          li++;
+        }
+        const tHtml = `<div class="chat-table-wrapper"><table class="chat-table"><thead><tr>${headers}</tr></thead><tbody>${bodyRows.join('')}</tbody></table></div>`;
+        const tIdx = tableBlocks.push(tHtml) - 1;
+        processedLines.push(`\x00TABLE${tIdx}\x00`);
+      } else {
+        processedLines.push(rawLines[li]);
+        li++;
+      }
+    }
+    html = processedLines.join('\n');
+
+    // 5. Bare URLs → sentinel
+    html = html.replace(/(https?:\/\/[^\s<>")\]\n\x00]+)/g, (_, url) => {
+      const display = url.length > 55 ? url.substring(0, 52) + '…' : url;
+      const idx = linkBlocks.push(
+        `<a href="${url}" target="_blank" rel="noopener noreferrer" class="chat-link">${esc(display)}</a>`
+      ) - 1;
+      return `\x00LINK${idx}\x00`;
+    });
+
+    // 6. Bold
     html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 
-    // 5. Headers
+    // 7. Italic (*text* and _text_)
+    html = html.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+    html = html.replace(/\b_([^_\n]+)_\b/g, '<em>$1</em>');
+
+    // 8. Strikethrough
+    html = html.replace(/~~(.+?)~~/g, '<del>$1</del>');
+
+    // 9. Headers
     html = html.replace(/^### (.+)$/gm, '<div class="chat-h3">$1</div>');
     html = html.replace(/^## (.+)$/gm, '<div class="chat-h2">$1</div>');
     html = html.replace(/^# (.+)$/gm, '<div class="chat-h1">$1</div>');
 
-    // 6. Listas con viñeta
+    // 10. Horizontal rule
+    html = html.replace(/^---+$/gm, '<hr class="chat-hr">');
+
+    // 11. Ordered lists 1. 2. 3.
+    html = html.replace(/^[ \t]*\d+\. (.+)$/gm, '<li class="ol-li">$1</li>');
+    html = html.replace(/(<li class="ol-li">[\s\S]*?<\/li>)/g, '<ol class="chat-ol">$1</ol>');
+    html = html.replace(/<\/ol>\s*<ol class="chat-ol">/g, '');
+
+    // 12. Bullet lists
     html = html.replace(/^[ \t]*[-*] (.+)$/gm, '<li>$1</li>');
     html = html.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul class="chat-list">$1</ul>');
     html = html.replace(/<\/ul>\s*<ul class="chat-list">/g, '');
 
-    // 7. Saltos de línea y párrafos
+    // 13. Paragraphs and line breaks
     html = html.replace(/\n\n+/g, '</p><p class="mt-2">');
     html = html.replace(/\n/g, '<br>');
 
-    // 8. Restaurar bloques de código
+    // 14. Restore all sentinels
+    tableBlocks.forEach((t, i) => { html = html.replace(`\x00TABLE${i}\x00`, t); });
     codeBlocks.forEach((code, i) => {
-      html = html.replace(`\x00CODE${i}\x00`,
-        `<pre class="chat-code-block"><code>${code}</code></pre>`);
+      html = html.replace(`\x00CODE${i}\x00`, `<pre class="chat-code-block"><code>${code}</code></pre>`);
     });
     inlineCodes.forEach((code, i) => {
-      html = html.replace(`\x00INLINE${i}\x00`,
-        `<code class="chat-inline-code">${code}</code>`);
+      html = html.replace(`\x00INLINE${i}\x00`, `<code class="chat-inline-code">${code}</code>`);
+    });
+    linkBlocks.forEach((link, i) => {
+      html = html.replace(`\x00LINK${i}\x00`, link);
     });
 
-    return this.sanitizer.bypassSecurityTrustHtml('<p>' + html + '</p>');
+    const result = this.sanitizer.bypassSecurityTrustHtml('<p>' + html + '</p>');
+    this.markdownCache.set(text, result);
+    return result;
   }
 
   private setIsObserver = async () => {
