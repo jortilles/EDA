@@ -51,6 +51,7 @@ export class TemplateCenterPage implements OnInit, OnDestroy {
   };
 
   dataSources: any[] = [];
+  selectedDataSource: any = null;
   visibleTypes: SelectItem[] = [];
   showGroups: boolean = false;
 
@@ -119,14 +120,26 @@ export class TemplateCenterPage implements OnInit, OnDestroy {
     );
   }
 
-  private async loadTemplates() {
+  private async loadTemplates(dataSourceId?: string) {
     try {
-      const data = await lastValueFrom(this.templateService.getTemplates());
+      const params: any = {};
+      if (dataSourceId) {
+        params.dataSourceId = dataSourceId;
+      }
+      const data = await lastValueFrom(this.templateService.getTemplates(params));
       this.templates = data.templates || [];
       this.filteredTemplates = [...this.templates];
       this.handleSorting();
     } catch (err) {
       this.alertService.addError(err);
+    }
+  }
+
+  public onDataSourceChange(): void {
+    if (this.selectedDataSource) {
+      this.loadTemplates(this.selectedDataSource._id);
+    } else {
+      this.loadTemplates();
     }
   }
 

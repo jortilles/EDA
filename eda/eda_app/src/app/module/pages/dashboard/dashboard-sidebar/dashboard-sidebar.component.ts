@@ -103,7 +103,6 @@ export class DashboardSidebarComponent {
 
   isPopoverVisible = false; // Controla la visibilidad del overlay
   isSaveAsDialogVisible = false;
-  isSaveTemplateDialogVisible = false;
   isEditStyleDialogVisible = false;
   isCustomActionDialogVisible = false;
   isMailConfigDialogVisible = false;

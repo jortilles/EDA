@@ -1,6 +1,6 @@
 import { Component, EventEmitter, inject, OnInit, Output } from "@angular/core";
 import { FormBuilder, FormsModule, ReactiveFormsModule, UntypedFormGroup, Validators } from "@angular/forms";
-import { AlertService, DashboardService, GroupService, IGroup, SidebarService, StyleProviderService } from "@eda/services/service.index";
+import { AlertService, DashboardService, GroupService, IGroup, SidebarService, StyleProviderService, TemplateService } from "@eda/services/service.index";
 import { SelectItem } from "primeng/api";
 import { CreateDashboardService } from "@eda/services/utils/create-dashboard.service";
 import { SharedModule } from "@eda/shared/shared.module";
@@ -11,6 +11,7 @@ import { SelectButtonModule } from "primeng/selectbutton";
 import { EdaDialog2Component } from "../shared-components.index";
 import * as _ from 'lodash';
 import { DataSourceNamesService } from "@eda/services/shared/datasource-names.service";
+import { lastValueFrom } from "rxjs";
 
 @Component({
     standalone: true,
@@ -21,6 +22,7 @@ import { DataSourceNamesService } from "@eda/services/shared/datasource-names.se
 export class CreateDashboardComponent implements OnInit {
     private createDashboardService = inject(CreateDashboardService);
     private dataSourceNameService = inject(DataSourceNamesService);
+    private templateService = inject(TemplateService);
 
     public display: boolean = false;
     public dataSources: any[] = [];
@@ -30,6 +32,12 @@ export class CreateDashboardComponent implements OnInit {
     public visibleTypes: SelectItem[] = [];
     public showGroups: boolean = false;
 
+    public templates: any[] = [];
+    public filteredTemplates: any[] = [];
+    public selectedTemplate: any = null;
+    public createMode: 'empty' | 'template' = 'empty';
+    public showTemplateSelector: boolean = false;
+
     @Output() close: EventEmitter<any> = new EventEmitter();
 
     constructor(
@@ -37,7 +45,6 @@ export class CreateDashboardComponent implements OnInit {
         private alertService: AlertService,
         private groupService: GroupService,
         private dashboardService: DashboardService,
-        // private sidebarService: SidebarService,
         private stylesProviderService: StyleProviderService
     ) {
         this.initializeForm();
@@ -88,6 +95,41 @@ export class CreateDashboardComponent implements OnInit {
         }
     }
 
+    public async onDataSourceChange(): Promise<void> {
+        const selectedDs = this.form.value.ds;
+        if (selectedDs && selectedDs._id) {
+            try {
+                const data = await lastValueFrom(this.templateService.getTemplates({ dataSourceId: selectedDs._id }));
+                this.templates = data.templates || [];
+                this.filteredTemplates = [...this.templates];
+                this.showTemplateSelector = this.templates.length > 0;
+            } catch (err) {
+                this.templates = [];
+                this.filteredTemplates = [];
+                this.showTemplateSelector = false;
+            }
+        } else {
+            this.templates = [];
+            this.filteredTemplates = [];
+            this.showTemplateSelector = false;
+        }
+        this.selectedTemplate = null;
+        this.createMode = 'empty';
+    }
+
+    public selectTemplate(template: any): void {
+        this.selectedTemplate = template;
+        this.createMode = 'template';
+        if (template.name && !this.form.value.name) {
+            this.form.controls['name'].setValue(template.name + ' - ' + $localize`:@@newReport:Nuevo Informe`);
+        }
+    }
+
+    public selectEmptyDashboard(): void {
+        this.selectedTemplate = null;
+        this.createMode = 'empty';
+    }
+
     public handleSelectedBtn(event): void {
         const groupControl = this.form.get('group');
         this.showGroups = event.value === 'group';
@@ -100,43 +142,81 @@ export class CreateDashboardComponent implements OnInit {
             groupControl.setValidators(null);
             groupControl.setValue(null);
         }
-
     }
 
     public async createNewDashboard(): Promise<void> {
         if (this.form.invalid) {
             this.alertService.addError('Recuerde rellenar los campos obligatorios');
-        } else {
-            const ds = { _id: this.form.value.ds._id };
-            const body = {
-                config: {
-                    ds,
-                    title: this.form.value.name,
-                    visible: this.form.value.visible,
-                    tag: null, 
-                    refreshTime:null, 
-                    clickFiltersEnabled:true, 
-                    styles: this.stylesProviderService.generateDefaultStyles(),
-                    external: null
-                },
-                group: this.form.value.group
-                    ? _.map(this.form.value.group, '_id')
-                    : undefined
-            };
+            return;
+        }
 
-            try {
-                const res = await this.dashboardService.addNewDashboard(body).toPromise();
-                this.onClose(res.dashboard);
-            } catch (err) {
-                this.alertService.addError(err);
-                throw err;
-            }
+        if (this.createMode === 'template' && this.selectedTemplate) {
+            await this.createFromTemplate();
+        } else {
+            await this.createEmptyDashboard();
+        }
+    }
+
+    private async createEmptyDashboard(): Promise<void> {
+        const ds = { _id: this.form.value.ds._id };
+        const body = {
+            config: {
+                ds,
+                title: this.form.value.name,
+                visible: this.form.value.visible,
+                tag: null, 
+                refreshTime:null, 
+                clickFiltersEnabled:true, 
+                styles: this.stylesProviderService.generateDefaultStyles(),
+                external: null
+            },
+            group: this.form.value.group
+                ? _.map(this.form.value.group, '_id')
+                : undefined
+        };
+
+        try {
+            const res = await this.dashboardService.addNewDashboard(body).toPromise();
+            this.onClose(res.dashboard);
+        } catch (err) {
+            this.alertService.addError(err);
+            throw err;
+        }
+    }
+
+    private async createFromTemplate(): Promise<void> {
+        try {
+            const res = await lastValueFrom(
+                this.templateService.createDashboardFromTemplate(
+                    this.selectedTemplate._id,
+                    {
+                        name: this.form.value.name,
+                        visible: this.form.value.visible,
+                        group: this.form.value.group ? _.map(this.form.value.group, '_id') : undefined
+                    }
+                )
+            );
+
+            this.alertService.addSuccess($localize`:@@dashboardCreated:Informe creado correctamente`);
+            this.onClose(res.dashboard);
+        } catch (err) {
+            this.alertService.addError(err);
+            throw err;
         }
     }
 
     public onClose(res?: any): void {
         this.display = false;
         this.createDashboardService.close();
+        this.templates = [];
+        this.filteredTemplates = [];
+        this.selectedTemplate = null;
+        this.createMode = 'empty';
+        this.showTemplateSelector = false;
         this.close.emit(res);
+    }
+
+    public disableApply(): boolean {
+        return this.form.invalid;
     }
 }

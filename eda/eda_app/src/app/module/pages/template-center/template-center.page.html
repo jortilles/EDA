@@ -34,7 +34,18 @@
 
       <!-- Filters -->
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div class="flex-1 min-w-0">
+        <div class="flex-1 min-w-0 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <!-- Data Source Selector -->
+          <div class="w-full sm:w-auto">
+            <label class="block text-sm text-muted-foreground mb-1" i18n="@@selectDataSource">Seleccionar modelo de datos</label>
+            <select class="w-full sm:w-[250px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+              [(ngModel)]="selectedDataSource" (change)="onDataSourceChange()">
+              <option [ngValue]="null" i18n="@@allDataSources">Todos los modelos</option>
+              @for(ds of dataSources; track ds._id) {
+                <option [ngValue]="ds">{{ ds.model_name }}</option>
+              }
+            </select>
+          </div>
           <div class="text-sm text-muted-foreground">
             <span i18n="@@totalTemplates">Total de plantillas:</span>
             <span class="font-semibold ml-1">{{ filteredTemplates.length }}</span>

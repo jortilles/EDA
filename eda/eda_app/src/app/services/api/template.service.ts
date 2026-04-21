@@ -15,7 +15,7 @@ export class TemplateService extends ApiService {
     public _selectedTemplate = new BehaviorSubject<any>(null);
     public selectedTemplate = this._selectedTemplate.asObservable();
 
-    getTemplates(params?: { search?: string; sortBy?: string; sortOrder?: string }): Observable<any> {
+    getTemplates(params?: { search?: string; sortBy?: string; sortOrder?: string; dataSourceId?: string }): Observable<any> {
         if (params) {
             return this.getParams(this.route, params);
         }

@@ -16,6 +16,7 @@ export class DashboardTemplateController {
             const searchTerm = req.query.search as string;
             const sortBy = req.query.sortBy as string || 'lastUsedAt';
             const sortOrder = req.query.sortOrder as string || 'desc';
+            const dataSourceId = req.query.dataSourceId as string;
 
             const isAdmin = userGroups.includes('135792467811111111111110');
 
@@ -40,6 +41,13 @@ export class DashboardTemplateController {
                         { description: searchRegex },
                         { 'config.title': searchRegex }
                     ]
+                });
+            }
+
+            if (dataSourceId) {
+                filter.$and = filter.$and || [];
+                filter.$and.push({
+                    'config.ds._id': dataSourceId
                 });
             }
 
