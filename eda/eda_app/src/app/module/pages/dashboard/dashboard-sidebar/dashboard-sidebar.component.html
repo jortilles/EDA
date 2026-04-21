@@ -181,3 +181,5 @@
 @if (isDependentFiltersVisible) {
   <app-dependent-filters [dashboard]="dashboard" (close)="closeDependentFilters($event)"></app-dependent-filters>  
 }
+
+<app-save-template-dialog #saveTemplateDialog (close)="closeSaveTemplateDialog($event)"></app-save-template-dialog>
