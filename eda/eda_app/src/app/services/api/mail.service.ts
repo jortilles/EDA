@@ -23,4 +23,8 @@ export class MailService extends ApiService{
     return this.post(`${this.globalDSRoute}/send-now`, {});
   }
 
+  testAlertMail(alertConfig: any, query: any): Observable<any> {
+    return this.post(`${this.globalDSRoute}/test-alert`, { alertConfig, query });
+  }
+
 }

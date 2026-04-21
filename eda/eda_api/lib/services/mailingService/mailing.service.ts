@@ -47,27 +47,26 @@ export class MailingService {
       const alerts = MailingService.getAlerts(dashboards);
       console.log(`[MailingService] alertas KPI activas: ${alerts.length}`);
       let dashboardsToUpdate: any[] = [];
-
-      for (const alert of alerts) {
+      /**Check alerts  */
+      alerts.forEach((alert) => {
         let shouldUpdate = true;
         console.log(`[MailingService] alerta: "${alert.value.operand} ${alert.value.value}" | units: ${alert.value.mailing.units} | lastUpdated: ${alert.value.mailing.lastUpdated} | shouldUpdate: ${shouldUpdate}`);
-
+                // para validar se puede forzar la variable. 
+        // console.log('Forzado del should upddate.....')
+        // shouldUpdate = true;
         if (shouldUpdate) {
-          await MailingService.mailAlertsSending(alert, transporter, senderEmail);
+          MailingService.mailAlertsSending(alert, transporter, senderEmail);
           if (updateTimestamp) {
             alert.value.mailing.lastUpdated = newDate;
-            if (!dashboardsToUpdate.map(d => d._id).includes(alert.dashboard_id)) {
-              const dashboard = dashboards.find(d => d._id === alert.dashboard_id);
-              if (dashboard) dashboardsToUpdate.push(dashboard);
-            }
+            if (!dashboardsToUpdate.map(d => d._id).includes(alert.dashboard_id)) dashboardsToUpdate.push(dashboards.filter(d => d._id === alert.dashboard_id)[0]);
           }
         }
-      }
+      });
 
       if (updateTimestamp) {
-        for (const d of dashboardsToUpdate) {
-          await Dashboard.replaceOne({ _id: d._id }, d).exec();
-        }
+        dashboardsToUpdate.forEach(d => {
+          Dashboard.replaceOne({ _id: d._id }, d).exec()
+        });
       }
 
     } catch (err) {
@@ -163,21 +162,10 @@ export class MailingService {
   /**Chech kpi condition and send mail if condition is true
    * 
    */
-  static async mailAlertsSending(alert, transporter, senderEmail: string): Promise<void> {
-    const sendPromises: Promise<void>[] = [];
+  static mailAlertsSending(alert, transporter, senderEmail: string) {
 
-    for (const user of alert.value.mailing.users) {
-      const sendPromise = MailingService.sendAlertMailToUser(alert, transporter, senderEmail, user);
-      sendPromises.push(sendPromise);
-    }
+    alert.value.mailing.users.forEach(async user => {
 
-    await Promise.all(sendPromises);
-  }
-
-  static async sendAlertMailToUser(alert, transporter, senderEmail: string, user: any): Promise<void> {
-    const timestamp = SchedulerFunctions.totLocalISOTime(new Date());
-
-    try {
       let result = !alert.query.query.modeSQL ?
         await MailingService.execQuery(alert.query, user) :
         await MailingService.execSqlQuery(alert.query, user);
@@ -185,57 +173,43 @@ export class MailingService {
       let condition = MailingService.compareValues(result, alert.value.value, alert.value.operand);
       console.log(`[MailingService] alerta KPI | resultado: ${result} | condición: ${result} ${alert.value.operand} ${alert.value.value} = ${condition} | destinatario: ${user.email}`);
 
+      const appBase = mailConfig.server_baseURL.replace(/\/?$/, '/');
+      const dashboardLink = `${appBase}#/dashboard/${alert.query.dashboard.dashboard_id}`;
+
+      let text = `${alert.value.mailing.mailMessage}\n-------------------------------------------- \n\n` +
+        `${alert.query.query.fields[0].display_name}: ${result.toLocaleString('de-DE')}\n${dashboardLink}`
+
+      let mailOptions = {
+        from: senderEmail,
+        to: user.email,
+        subject: 'Eda Alerts',
+        text: text
+      };
+
+      const timestamp = SchedulerFunctions.totLocalISOTime(new Date());
+
       if (condition) {
-        const appBase = mailConfig.server_baseURL.replace(/\/?$/, '/');
-        const dashboardLink = `${appBase}#/dashboard/${alert.query.dashboard.dashboard_id}`;
-
-        let text = `${alert.value.mailing.mailMessage}\n-------------------------------------------- \n\n` +
-          `${alert.query.query.fields[0].display_name}: ${result.toLocaleString('de-DE')}\n${dashboardLink}`;
-
-        let mailOptions = {
-          from: senderEmail,
-          to: user.email,
-          subject: 'Eda Alerts',
-          text: text
-        };
-
-        try {
-          await new Promise<void>((resolve, reject) => {
-            transporter.sendMail(mailOptions, function (error: any) {
-              if (error) {
-                console.log(error);
-                MailingService.addAlertHistory(alert, {
-                  timestamp,
-                  status: 'failed',
-                  recipient: user.email,
-                  error: error.message || 'Unknown error',
-                  kpiValue: result,
-                  conditionMet: true
-                });
-                resolve();
-              } else {
-                MailingService.addAlertHistory(alert, {
-                  timestamp,
-                  status: 'success',
-                  recipient: user.email,
-                  kpiValue: result,
-                  conditionMet: true
-                });
-                resolve();
-              }
+        transporter.sendMail(mailOptions, function (error: any) {
+          if (error) {
+            console.log(error);
+            MailingService.addAlertHistory(alert, {
+              timestamp,
+              status: 'failed',
+              recipient: user.email,
+              error: error.message || 'Unknown error',
+              kpiValue: result,
+              conditionMet: true
             });
-          });
-        } catch (err) {
-          console.log(err);
-          MailingService.addAlertHistory(alert, {
-            timestamp,
-            status: 'failed',
-            recipient: user.email,
-            error: (err as any).message || 'Unknown error',
-            kpiValue: result,
-            conditionMet: true
-          });
-        }
+          } else {
+            MailingService.addAlertHistory(alert, {
+              timestamp,
+              status: 'success',
+              recipient: user.email,
+              kpiValue: result,
+              conditionMet: true
+            });
+          }
+        });
       } else {
         MailingService.addAlertHistory(alert, {
           timestamp,
@@ -245,17 +219,7 @@ export class MailingService {
           conditionMet: false
         });
       }
-    } catch (err) {
-      console.log(err);
-      MailingService.addAlertHistory(alert, {
-        timestamp,
-        status: 'failed',
-        recipient: user.email,
-        error: (err as any).message || 'Query execution error',
-        kpiValue: null,
-        conditionMet: false
-      });
-    }
+    })
   }
 
   static mailDashboardSending(userMail:string, filename:string, filepath:string, transporter:any, message:string, link:string, senderEmail:string){
