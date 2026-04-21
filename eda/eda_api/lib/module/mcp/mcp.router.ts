@@ -163,6 +163,33 @@ function filterDatasourceForAI(ds: any): any | null {
     };
 }
 
+// --- Datasources accesibles vía /datasource/namesForDashboard ---
+async function getAccessibleDatasourceIds(user: any): Promise<Set<string>> {
+    const { MCP_URL } = getAnthropicConfig();
+    const apiBase = MCP_URL.replace(/\/ia$/, '');
+    const token = jwt.sign({ user }, SEED, { expiresIn: 14400 });
+    const url = `${apiBase}/datasource/namesForDashboard?token=${token}`;
+
+    console.log('[MCP] getAccessibleDatasourceIds — GET', apiBase + '/datasource/namesForDashboard');
+    const response = await fetch(url);
+    if (!response.ok) {
+        const body = await response.text();
+        throw new Error(`namesForDashboard HTTP ${response.status}: ${body}`);
+    }
+    const data: any = await response.json();
+    const ids = new Set<string>((data.ds ?? []).map((d: any) => d._id.toString()));
+    console.log('[MCP] getAccessibleDatasourceIds — accesibles:', ids.size);
+    return ids;
+}
+
+// --- Helper: apiBase + token para llamadas HTTP internas ---
+function buildApiCall(user: any): { apiBase: string; token: string } {
+    const { MCP_URL } = getAnthropicConfig();
+    const apiBase = MCP_URL.replace(/\/ia$/, '');
+    const token = jwt.sign({ user }, SEED, { expiresIn: 14400 });
+    return { apiBase, token };
+}
+
 // --- MCP Server ---
 async function resolveUser(requestUser?: any): Promise<any> {
     if (requestUser) {
@@ -194,7 +221,20 @@ function createMcpServer(requestUser?: any) {
             }
 
             try {
-                const { privados, grupo, comunes, publicos } = await getAllDashboards(user._id.toString());
+                const { apiBase, token } = buildApiCall(user);
+                console.log('[MCP] list_dashboards — GET', apiBase + '/dashboard/');
+                const response = await fetch(`${apiBase}/dashboard/?token=${token}`);
+                if (!response.ok) {
+                    const body = await response.text();
+                    throw new Error(`/dashboard/ HTTP ${response.status}: ${body}`);
+                }
+                const data: any = await response.json();
+                if (!data.ok) throw new Error('La API respondió con ok: false');
+
+                const privados: any[] = data.dashboards ?? [];
+                const grupo: any[]    = data.group ?? [];
+                const comunes: any[]  = data.publics ?? [];
+                const publicos: any[] = data.shared ?? [];
 
                 const baseUrl = getBaseUrl();
                 console.log('[MCP] list_dashboards — baseUrl:', baseUrl || '(vacío)');
@@ -229,20 +269,27 @@ function createMcpServer(requestUser?: any) {
 
     server.registerTool(
         'list_datasources',
-        { description: 'Lista los datasources accesibles en EDA (excluye los marcados como NONE en ia_visibility).' },
+        { description: 'Lista los datasources accesibles en EDA (filtrados por permisos del usuario).' },
         async () => {
             console.log('[MCP] tool: list_datasources - ejecutando');
             try {
-                await resolveUser(requestUser);
+                const user = await resolveUser(requestUser);
+                const { apiBase, token } = buildApiCall(user);
+                console.log('[MCP] list_datasources — GET', apiBase + '/datasource/namesForDashboard');
+                const response = await fetch(`${apiBase}/datasource/namesForDashboard?token=${token}`);
+                if (!response.ok) {
+                    const body = await response.text();
+                    throw new Error(`/datasource/namesForDashboard HTTP ${response.status}: ${body}`);
+                }
+                const data: any = await response.json();
+
                 const baseUrl = getBaseUrl();
                 console.log('[MCP] list_datasources — baseUrl:', baseUrl || '(vacío)');
-                const datasources = await DataSource.find({}, 'ds.metadata').exec();
-                const lines = datasources
-                    .filter((ds: any) => (ds.ds?.metadata?.ia_visibility ?? 'FULL') !== 'NONE')
-                    .map((ds: any) => {
-                        const link = baseUrl ? ` — ${baseUrl}/data-source/${encodeURIComponent(ds._id)}` : '';
-                        return `  - [${ds._id}] ${ds.ds?.metadata?.model_name ?? '(sin nombre)'} [${ds.ds?.metadata?.ia_visibility ?? 'FULL'}]${link}`;
-                    });
+                const lines = (data.ds ?? []).map((ds: any) => {
+                    const link = baseUrl ? ` — ${baseUrl}/data-source/${encodeURIComponent(ds._id)}` : '';
+                    const desc = ds.model_description ? ` — ${ds.model_description}` : '';
+                    return `  - [${ds._id}] ${ds.model_name ?? '(sin nombre)'}${desc}${link}`;
+                });
                 return {
                     content: [{
                         type: 'text',
@@ -268,15 +315,22 @@ function createMcpServer(requestUser?: any) {
             console.log('[MCP] tool: get_datasource - args:', JSON.stringify(args));
             const id: string = args.id;
             try {
-                await resolveUser(requestUser);
-                const ds = await DataSource.findById(id).exec();
-                if (!ds) return { content: [{ type: 'text', text: `Datasource no encontrado: ${id}` }], isError: true };
-                const filtered = filterDatasourceForAI(ds);
+                const user = await resolveUser(requestUser);
+                const { apiBase, token } = buildApiCall(user);
+                console.log('[MCP] get_datasource — GET', apiBase + '/datasource/' + id);
+                const response = await fetch(`${apiBase}/datasource/${encodeURIComponent(id)}?token=${token}`);
+                if (!response.ok) {
+                    const body = await response.text();
+                    throw new Error(`/datasource/${id} HTTP ${response.status}: ${body}`);
+                }
+                const data: any = await response.json();
+                if (!data.ok) return { content: [{ type: 'text', text: `Datasource no encontrado o sin acceso: ${id}` }], isError: true };
+                const filtered = filterDatasourceForAI(data.dataSource);
                 if (!filtered) return { content: [{ type: 'text', text: `Datasource ${id} excluido por ia_visibility: NONE` }], isError: true };
                 const baseUrl = getBaseUrl();
                 console.log('[MCP] get_datasource — baseUrl:', baseUrl || '(vacío)', '| id:', id);
-                const url = baseUrl ? `URL: ${baseUrl}/data-source/${encodeURIComponent(id)}\n\n` : '';
-                return { content: [{ type: 'text', text: `${url}${JSON.stringify(filtered, null, 2)}` }] };
+                const urlStr = baseUrl ? `URL: ${baseUrl}/data-source/${encodeURIComponent(id)}\n\n` : '';
+                return { content: [{ type: 'text', text: `${urlStr}${JSON.stringify(filtered, null, 2)}` }] };
             } catch (err: any) {
                 console.error('[MCP] get_datasource error:', err.message, err.stack);
                 return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
@@ -296,16 +350,23 @@ function createMcpServer(requestUser?: any) {
             console.log('[MCP] tool: get_dashboard - args:', JSON.stringify(args));
             const id: string = args.id;
             try {
-                await resolveUser(requestUser);
-                const db: any = await Dashboard.findById(id).exec();
-                if (!db) return { content: [{ type: 'text', text: `Dashboard no encontrado: ${id}` }], isError: true };
+                const user = await resolveUser(requestUser);
+                const { apiBase, token } = buildApiCall(user);
+                console.log('[MCP] get_dashboard — GET', apiBase + '/dashboard/' + id);
+                const response = await fetch(`${apiBase}/dashboard/${encodeURIComponent(id)}?token=${token}`);
+                if (!response.ok) {
+                    const body = await response.text();
+                    throw new Error(`/dashboard/${id} HTTP ${response.status}: ${body}`);
+                }
+                const data: any = await response.json();
+                if (!data.ok) return { content: [{ type: 'text', text: `Dashboard no encontrado: ${id}` }], isError: true };
 
+                const db = data.dashboard;
                 const baseUrl = getBaseUrl();
                 console.log('[MCP] get_dashboard — baseUrl:', baseUrl || '(vacío)', '| id:', id);
                 const dashboardLink = baseUrl ? `${baseUrl}/dashboard/${encodeURIComponent(id)}` : '';
                 const panels = Array.isArray(db.config?.panel) ? db.config.panel : [];
 
-                // Agrupar datasources únicos
                 const datasourceIds: string[] = [...new Set<string>(
                     panels.map((p: any) => p.content?.query?.model_id).filter(Boolean) as string[]
                 )];
@@ -509,6 +570,9 @@ function createMcpServer(requestUser?: any) {
                 const allDashboards = [...privados, ...grupo, ...comunes, ...publicos];
                 console.log('[MCP] exploración — dashboards:', allDashboards.length);
 
+                const accessibleDsIds = await getAccessibleDatasourceIds(user);
+                console.log('[MCP] exploración — datasources accesibles:', accessibleDsIds.size);
+
                 const opcionesMap = new Map<string, any>();
 
                 for (const d of allDashboards) {
@@ -522,6 +586,12 @@ function createMcpServer(requestUser?: any) {
                         const query = panel.content?.query;
                         const fields: any[] = query?.query?.fields ?? [];
                         if (!query?.model_id || fields.length === 0) continue;
+
+                        // Filtrar por permisos de datasource (namesForDashboard)
+                        if (!accessibleDsIds.has(query.model_id)) {
+                            console.log(`[MCP] exploración — panel saltado (datasource sin acceso) | model_id=${query.model_id} | dashboard=${db.config?.title}`);
+                            continue;
+                        }
 
                         const fieldNames = fields.map((f: any) => f.display_name ?? f.field_name).filter(Boolean);
 
