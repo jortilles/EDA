@@ -556,11 +556,13 @@ function createMcpServer(requestUser?: any) {
                         const globalFiltersForSummary = (Array.isArray(db.config?.filters) ? db.config.filters : [])
                             .filter((gf: any) => gf && !gf.isdeleted && (gf.selectedItems ?? []).length > 0 &&
                                 (gf.applyToAll === true || (Array.isArray(gf.panelList) && gf.panelList.includes(panelId0))));
-                        const filterSummary = summarizeFilters([...activeFilters, ...globalFiltersForSummary.map((gf: any) => ({
-                            filter_column: gf.selectedColumn?.column_name ?? gf.column?.value?.column_name ?? '?',
-                            filter_type: (gf.selectedColumn?.column_type ?? 'text') === 'date' ? 'between' : 'in',
-                            filter_elements: [{ value1: gf.selectedItems }],
-                        }))]);
+                        const allActiveFilterCols = [
+                            ...activeFilters.map((f: any) => f.filter_column).filter(Boolean),
+                            ...globalFiltersForSummary.map((gf: any) => gf.selectedColumn?.column_name ?? gf.column?.value?.column_name).filter(Boolean),
+                        ];
+                        const filterSummary = allActiveFilterCols.length === 0
+                            ? 'Sin filtros'
+                            : `Filtros: ${[...new Set(allActiveFilterCols)].join(', ')}`;
                         const chartType = panel.content?.chart_type ?? panel.content?.edaChart ?? null;
 
                         console.log(`[MCP] panel ${idx} (${panel.title}) — model_id:`, query?.model_id ?? 'FALTA', '| fields:', innerFields.length, '| filtros:', activeFilters.length);
@@ -899,10 +901,10 @@ function createMcpServer(requestUser?: any) {
                         const dedupeKey = `${fieldsKey}__${filterKey}`;
 
                         if (!opcionesMap.has(dedupeKey)) {
-                            const filterSummary = summarizeFilters(activeFilters);
+                            const filterCols = [...new Set(activeFilters.map((f: any) => f.filter_column).filter(Boolean))];
                             const alcance = activeFilters.length === 0
-                                ? 'Todos los datos disponibles (sin filtros)'
-                                : `Filtrado: ${filterSummary}`;
+                                ? 'Sin filtros'
+                                : `Filtros: ${filterCols.join(', ')}`;
 
                             opcionesMap.set(dedupeKey, {
                                 dashboard_id: d._id.toString(),
@@ -992,8 +994,17 @@ function createMcpServer(requestUser?: any) {
                 };
 
                 let opcionesArr = Array.from(opcionesMap.values());
-                const totalOpciones = opcionesArr.length;
                 opcionesArr.sort((a, b) => scoreOption(b) - scoreOption(a));
+
+                // Filtrar opciones irrelevantes: si la pregunta tiene palabras clave significativas
+                // y alguna opción puntúa > 0, descartar las que puntúan 0.
+                const scores = opcionesArr.map(o => scoreOption(o));
+                const maxScore = scores.length > 0 ? Math.max(...scores) : 0;
+                if (maxScore > 0) {
+                    opcionesArr = opcionesArr.filter((_, i) => scores[i] > 0);
+                }
+
+                const totalOpciones = opcionesArr.length;
                 const truncada = opcionesArr.length > MAX_OPTIONS;
                 opcionesArr = opcionesArr.slice(0, MAX_OPTIONS).map((o, i) => ({ ...o, opcion_num: i + 1 }));
                 console.log('[MCP] MODO EXPLORACIÓN finalizado | opciones únicas:', totalOpciones, truncada ? `(top ${MAX_OPTIONS} por relevancia)` : '');
