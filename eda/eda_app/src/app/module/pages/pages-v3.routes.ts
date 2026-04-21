@@ -18,6 +18,10 @@ export const pagesV3Routes: Routes = [
         loadComponent: () => import('./home/home.page').then(c => c.HomePage)
       },
       {
+        path: 'templates',
+        loadComponent: () => import('./template-center/template-center.page').then(c => c.TemplateCenterPage)
+      },
+      {
         path: 'about',
         loadComponent: () => import('./about/about-eda.page').then(c => c.AboutEdaPage)
         },

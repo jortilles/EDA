@@ -30,6 +30,8 @@ import { DependentFilters } from "../../../components/dependent-filters/dependen
 import { DashboardVisibleModal } from "../../../components/dashboard-visible/dashboard-visible.modal";
 import { GlobalFilterDialogComponent } from "../../../pages/dashboard/global-filter-dialog/global-filter-dialog.component";
 import { GlobalFilterComponent } from "@eda/components/global-filter/global-filter.component";
+import { SaveTemplateDialog } from "../../../components/save-template-dialog/save-template.dialog";
+import { TemplateService } from "@eda/services/service.index";
 
 const STANDALONE_COMPONENTS = [
     DashboardSaveAsDialog,
@@ -41,7 +43,8 @@ const STANDALONE_COMPONENTS = [
     ImportPanelDialog,
     DependentFilters,
     GlobalFilterDialogComponent,
-    GlobalFilterComponent
+    GlobalFilterComponent,
+    SaveTemplateDialog
 ] 
 
 const ANGULAR_MODULES = [
@@ -89,8 +92,10 @@ export class DashboardSidebarComponent {
   private alertService = inject(AlertService);
   private stylesProviderService = inject(StyleProviderService)
   private ChartUtilsService = inject(ChartUtilsService)
+  private templateService = inject(TemplateService)
 
   @ViewChild('popover') popover!: OverlayPanel;
+  @ViewChild('saveTemplateDialog') saveTemplateDialog!: SaveTemplateDialog;
   @Input() dashboard: DashboardPage;
   @Output() bgClass = new EventEmitter<string>();
 
@@ -98,6 +103,7 @@ export class DashboardSidebarComponent {
 
   isPopoverVisible = false; // Controla la visibilidad del overlay
   isSaveAsDialogVisible = false;
+  isSaveTemplateDialogVisible = false;
   isEditStyleDialogVisible = false;
   isCustomActionDialogVisible = false;
   isMailConfigDialogVisible = false;
@@ -228,6 +234,17 @@ export class DashboardSidebarComponent {
         command: () => {
           this.isSaveAsDialogVisible = true;
           this.hidePopover();
+        }
+      },
+      {
+        id: 'saveTemplate',
+        label: $localize`:@@dashboardSidebarSaveTemplate: Guardar como plantilla`,
+        icon: "pi pi-file",
+        command: () => {
+          this.hidePopover();
+          setTimeout(() => {
+            this.saveTemplateDialog?.open(this.dashboard.dashboardId, this.dashboard.title);
+          });
         }
       },
       {
@@ -980,5 +997,9 @@ export class DashboardSidebarComponent {
   onDrop(event: CdkDragDrop<any[]>) {
     moveItemInArray(this.dashboard.globalFilter.globalFilters, event.previousIndex, event.currentIndex);
     this.dashboardService._notSaved.next(true);
+  }
+
+  public closeSaveTemplateDialog(res?: any): void {
+    this.isSaveTemplateDialogVisible = false;
   }
 }
