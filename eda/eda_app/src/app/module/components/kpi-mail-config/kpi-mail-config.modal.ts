@@ -65,8 +65,9 @@ export class KpiMailConfigModal implements OnInit {
       this.quantity = mailing.quantity;
       this.mailMessage = mailing.mailMessage || '';
       this.enabled = mailing.enabled;
-      this.history = mailing.history || [];
     }
+
+    this.history = mailing?.history || [];
 
     this.userService.getUsers().subscribe(
       res => {
