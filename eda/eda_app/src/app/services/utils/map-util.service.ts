@@ -127,11 +127,13 @@ export class MapUtilsService extends ApiService {
   private makePopup = (data: any, labels: Array<string>): string => {
     const me = this;
     let div = "";
-    for (let i = 2; i < 4; i++) {
+    /* SDA CUSTOM*   for (let i = 2; i < 4; i++) {
+    /* SDA CUSTOM*/ for (let i = 2; i < data.length; i++) {
       if (data[i] !== undefined) {
+        /* SDA CUSTOM*/ const label = labels[i] !== undefined ? labels[i] : `Field ${i-1}`;
         div += `<div> ${me._sanitizer.sanitize(
           SecurityContext.HTML,
-          labels[i]
+          /* SDA CUSTOM*/ label
         )} :  ${data[i]} </div>`;
       }
     }

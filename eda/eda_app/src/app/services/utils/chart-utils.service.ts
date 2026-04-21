@@ -701,8 +701,9 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('crosstable'), 1);
         }
 
-        //Coordinates map Map (two coordinates and two aditional fields at max)
-        if (dataDescription.coordinateColumns === 2 && dataDescription.totalColumns < 5) {
+        //Coordinates map (two coordinates, no field limit)
+        /* SDA CUSTOM if (dataDescription.coordinateColumns === 2 && dataDescription.totalColumns < 5) {
+        /* SDA CUSTOM*/ if (dataDescription.coordinateColumns === 2) {
             notAllowed.splice(notAllowed.indexOf('coordinatesMap'), 1);
         }
 
