@@ -617,8 +617,21 @@ function createMcpServer(requestUser?: any) {
                             console.log(`[MCP] panel ${idx} — dataSource OK | nombre:`, dsName, '| tipo BD:', (dataModel as any)?.ds?.connection?.type ?? '?');
 
                             const dataModelObject = JSON.parse(JSON.stringify(dataModel));
-                            const builtQuery = await connection.getQueryBuilded(innerQuery, dataModelObject, user, innerQuery.queryLimit);
+                            let builtQuery = await connection.getQueryBuilded(innerQuery, dataModelObject, user, innerQuery.queryLimit);
                             console.log(`[MCP] panel ${idx} — query construida (tipo: ${typeof builtQuery}):`, typeof builtQuery === 'string' ? builtQuery.substring(0, 400) : JSON.stringify(builtQuery).substring(0, 400));
+
+                            // Detectar bug del query builder de EDA: genera SQL con 'undefined' literal
+                            // cuando aplica una función numérica a una columna de texto en los filtros.
+                            // Fallback: reintentar sin filtros y avisar al usuario en el resultado.
+                            let filtrosFallback = false;
+                            const queryStr: string = typeof builtQuery === 'string' ? builtQuery : JSON.stringify(builtQuery);
+                            if (/\bundefined\s*\(/.test(queryStr) || / undefined /.test(queryStr)) {
+                                console.warn(`[MCP] panel ${idx} — query contiene 'undefined' (bug EDA query builder), reintentando sin filtros`);
+                                const fallbackInner = JSON.parse(JSON.stringify(innerQuery));
+                                fallbackInner.filters = [];
+                                builtQuery = await connection.getQueryBuilded(fallbackInner, dataModelObject, user, fallbackInner.queryLimit);
+                                filtrosFallback = true;
+                            }
 
                             connection.client = await connection.getclient();
                             const rawResults = await connection.execQuery(builtQuery);
@@ -630,7 +643,7 @@ function createMcpServer(requestUser?: any) {
                             if (Array.isArray(rawResults) && rawResults.length > 0) {
                                 const headers = Object.keys(rawResults[0]);
                                 const rows = rawResults.map((r: any) => headers.map(h => r[h]));
-                                resultados.push({
+                                const resultado: any = {
                                     panel_index: idx,
                                     panel_titulo: panel.title ?? '(sin título)',
                                     tipo: chartType,
@@ -639,7 +652,11 @@ function createMcpServer(requestUser?: any) {
                                     tiene_filtros: activeFilters.length > 0,
                                     modelo_datos: dsName,
                                     datos: { columnas: headers, filas: rows, total_filas: rows.length },
-                                });
+                                };
+                                if (filtrosFallback) {
+                                    resultado.advertencia = `AVISO: los filtros del panel no se pudieron aplicar por un error de configuración en EDA (función SQL no definida). Los datos mostrados NO tienen filtros activos — pueden incluir más registros de los esperados. El panel debe revisarse en EDA para corregir los filtros.`;
+                                }
+                                resultados.push(resultado);
                             } else {
                                 resultados.push({
                                     panel_index: idx,
@@ -1162,6 +1179,7 @@ Presenta los datos en tabla markdown. Los valores deben ser idénticos a "datos.
 - Si total_filas > 30: muestra las 30 filas más relevantes e indica "Mostrando 30 de N filas".
 - Puedes ordenar filas para responder mejor (de mayor a menor, etc.) pero sin cambiar ningún valor.
 - Si un panel devuelve error o datos vacíos: informa del error. No inventes datos.
+- Si el resultado incluye un campo "advertencia": muéstralo claramente al usuario ANTES de la tabla de datos (en negrita o destacado).
 - Al final añade siempre: «📌 Datos de [dashboard_nombre](dashboard_url)»
 - Si había filtros activos: añade «(filtrado: descripción del filtro)»
 - NUNCA digas "visita el dashboard para ver los datos" como sustituto de mostrarlos.
