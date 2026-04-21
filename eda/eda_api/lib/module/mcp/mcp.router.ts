@@ -677,6 +677,16 @@ function createMcpServer(requestUser?: any) {
                             innerQuery.joinType    = innerQuery.joinType   ?? 'inner';
                             innerQuery.forSelector = false;
 
+                            // Compatibilidad: si un filtro no tiene filterBeforeGrouping,
+                            // asumir true (WHERE) igual que hace el dashboard controller.
+                            // Sin esto, columnas de texto sin aggregation_type van al HAVING
+                            // y generan SQL inválido con 'undefined'.
+                            for (const f of (innerQuery.filters ?? [])) {
+                                if (!f.hasOwnProperty('filterBeforeGrouping')) {
+                                    f.filterBeforeGrouping = true;
+                                }
+                            }
+
                             console.log(`[MCP] panel ${idx} — getConnection(${modelId})...`);
                             const connection = await ManagerConnectionService.getConnection(modelId);
                             console.log(`[MCP] panel ${idx} — connection OK | tipo:`, (connection as any)?.constructor?.name ?? typeof connection);
@@ -1000,7 +1010,7 @@ function createMcpServer(requestUser?: any) {
                         ? notaSinResultados
                         : opcionesArr.length === 1
                             ? 'Hay exactamente UNA opción. OBLIGATORIO: llama AHORA MISMO a get_data_from_dashboard en modo datos con el dashboard_id y panel_index de esta opción. NO preguntes al usuario, NO esperes confirmación.' + notaTruncada
-                            : `Hay ${opcionesArr.length} opciones. Preséntaselas al usuario numeradas (1, 2, 3...) en prosa fluida con el link del dashboard, destacando la diferencia clave entre ellas (con/sin filtros, distintos alcances). Espera la selección del usuario ANTES de ejecutar el modo datos.` + notaTruncada,
+                            : `Hay ${opcionesArr.length} opciones en total. IMPORTANTE: muestra al usuario SOLO las opciones cuyo dashboard_nombre o panel_titulo estén relacionados con la pregunta "${question}". Si una opción claramente no tiene relación con la pregunta (ej: pregunta sobre agua pero la opción es de ventas), NO la incluyas en la lista. Preséntaselas numeradas en prosa fluida con el link del dashboard, destacando la diferencia clave entre ellas (con/sin filtros, distintos alcances). Si tras filtrar queda solo 1 opción relevante, ve directamente al PASO 3 sin preguntar. Espera la selección del usuario ANTES de ejecutar el modo datos cuando haya varias relevantes.` + notaTruncada,
                 };
 
                 return { content: [{ type: 'text', text: JSON.stringify(respuestaExploracion, null, 2) }] };
@@ -1231,8 +1241,10 @@ Llama a get_data_from_dashboard SIN dashboard_id.
 - Si nota_al_asistente indica 1 opción: ve directamente al PASO 3. No preguntes al usuario.
 - Si el usuario menciona el nombre de un dashboard concreto (ej: "el dashboard Ventas", "consums aigua"): úsalo como guía para los campos_requeridos, pero igualmente ejecuta la exploración completa (sin dashboard_id) para encontrar el panel_index correcto. NO llames a get_data_from_dashboard con dashboard_id sin haber identificado el panel_index primero.
 
-PASO 2 — SELECCIÓN (solo si hay múltiples opciones):
-Presenta las opciones numeradas (1, 2, 3...) en prosa fluida con el link del dashboard. Destaca la diferencia clave: con/sin filtros, distintos alcances o períodos.
+PASO 2 — SELECCIÓN (solo si hay múltiples opciones relevantes):
+Muestra SOLO las opciones cuyo dashboard o panel estén relacionados con la pregunta del usuario. Si una opción no tiene relación (ej: pregunta de agua → panel de ventas), NO la incluyas.
+Si tras filtrar queda 1 sola opción relevante, ve directamente al PASO 3 sin preguntar.
+Si hay varias relevantes, preséntaselas numeradas (1, 2, 3...) en prosa fluida con el link del dashboard. Destaca la diferencia clave: con/sin filtros, distintos alcances o períodos.
 Espera la selección del usuario ANTES de ejecutar el PASO 3.
 NUNCA uses letras (A, B, C) ni emojis de número. Solo números arábigos seguidos de punto.
 Ejemplo: "Opción 1 — [Dashboard «Ventas»](url) — Todos los países sin filtrar. Opción 2 — [Dashboard «EU»](url) — Solo España y Francia."
