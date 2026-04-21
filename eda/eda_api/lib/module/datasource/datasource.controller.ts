@@ -112,8 +112,8 @@ export class DataSourceController {
         try {
             //si no lleva filtro, pasamos directamente a recuperarlos todos           
             const datasources = JSON.stringify(filter) !== '{}' ?
-                await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec() :
-                await DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner ds.metadata.model_description', options).exec();
+                await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner ds.metadata.ia_visibility', options).exec() :
+                await DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner ds.metadata.model_description ds.metadata.ia_visibility', options).exec();
 
             if (!datasources) {
                 return next(new HttpException(500, 'Error loading DataSources'));
@@ -122,6 +122,8 @@ export class DataSourceController {
             const output = [];
             for (let i = 0, n = names.length; i < n; i += 1) {
                 const e = names[i];
+                // Excluir datasources ocultos para la IA — no deben existir para ningún consumidor
+                if ((e.ds.metadata.ia_visibility ?? 'FULL') === 'NONE') continue;
                 // Si hay permisos de seguridad.....
                 if (e.ds.metadata.model_granted_roles?.length > 0) {
                     const users = [];

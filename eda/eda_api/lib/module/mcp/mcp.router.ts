@@ -164,7 +164,8 @@ function filterDatasourceForAI(ds: any): any | null {
 }
 
 // --- Datasources accesibles vía /datasource/namesForDashboard ---
-async function getAccessibleDatasourceIds(user: any): Promise<Set<string>> {
+// Devuelve Map<id, model_name> — excluye ia_visibility=NONE (filtrado en el controlador)
+async function getAccessibleDatasourceIds(user: any): Promise<Map<string, string>> {
     const { MCP_URL } = getAnthropicConfig();
     const apiBase = MCP_URL.replace(/\/ia$/, '');
     const token = jwt.sign({ user }, SEED, { expiresIn: 14400 });
@@ -177,9 +178,12 @@ async function getAccessibleDatasourceIds(user: any): Promise<Set<string>> {
         throw new Error(`namesForDashboard HTTP ${response.status}: ${body}`);
     }
     const data: any = await response.json();
-    const ids = new Set<string>((data.ds ?? []).map((d: any) => d._id.toString()));
-    console.log('[MCP] getAccessibleDatasourceIds — accesibles:', ids.size);
-    return ids;
+    const map = new Map<string, string>();
+    for (const d of (data.ds ?? [])) {
+        map.set(d._id.toString(), d.model_name ?? d._id.toString());
+    }
+    console.log('[MCP] getAccessibleDatasourceIds — accesibles (sin NONE):', map.size);
+    return map;
 }
 
 // --- Helper: apiBase + token para llamadas HTTP internas ---
@@ -231,12 +235,21 @@ function createMcpServer(requestUser?: any) {
                 const data: any = await response.json();
                 if (!data.ok) throw new Error('La API respondió con ok: false');
 
-                const privados: any[] = data.dashboards ?? [];
-                const grupo: any[]    = data.group ?? [];
-                const comunes: any[]  = data.publics ?? [];
-                const publicos: any[] = data.shared ?? [];
-                console.log('[MCP] list_dashboards — metadata recibida | privados:', privados.length, '| grupo:', grupo.length, '| comunes:', comunes.length, '| públicos:', publicos.length);
-                if (privados[0]) console.log('[MCP] list_dashboards — ejemplo privado[0]:', JSON.stringify({ _id: privados[0]._id, title: privados[0].config?.title, visible: privados[0].config?.visible }));
+                // Filtrar dashboards cuyos datasources tienen ia_visibility=NONE
+                const accessibleDsIds = await getAccessibleDatasourceIds(user);
+                const filterVisible = (items: any[]) => items.filter((d: any) => {
+                    const dsId = d.config?.ds?._id?.toString();
+                    if (!dsId) return true; // sin datasource → no ocultamos
+                    const visible = accessibleDsIds.has(dsId);
+                    if (!visible) console.log(`[MCP] list_dashboards — dashboard oculto (datasource NONE): ${d.config?.title} | dsId=${dsId}`);
+                    return visible;
+                });
+
+                const privados: any[] = filterVisible(data.dashboards ?? []);
+                const grupo: any[]    = filterVisible(data.group ?? []);
+                const comunes: any[]  = filterVisible(data.publics ?? []);
+                const publicos: any[] = filterVisible(data.shared ?? []);
+                console.log('[MCP] list_dashboards — tras filtro NONE | privados:', privados.length, '| grupo:', grupo.length, '| comunes:', comunes.length, '| públicos:', publicos.length);
 
                 const baseUrl = getBaseUrl();
                 console.log('[MCP] list_dashboards — baseUrl:', baseUrl || '(vacío)');
@@ -245,7 +258,13 @@ function createMcpServer(requestUser?: any) {
                     if (items.length === 0) lines.push('  (sin dashboards)');
                     for (const d of items) {
                         const link = baseUrl ? ` — ${baseUrl}/dashboard/${encodeURIComponent(d._id)}` : '';
-                        lines.push(`  - [${d._id}] ${d.config?.title ?? '(sin título)'}${link}`);
+                        const author = d.config?.author ?? d.user?.name ?? '(desconocido)';
+                        const createdAt = d.config?.createdAt ? new Date(d.config.createdAt).toLocaleDateString('es-ES') : null;
+                        const modifiedAt = d.config?.modifiedAt ? new Date(d.config.modifiedAt).toLocaleDateString('es-ES') : null;
+                        const meta: string[] = [`autor: ${author}`];
+                        if (createdAt) meta.push(`creado: ${createdAt}`);
+                        if (modifiedAt) meta.push(`modificado: ${modifiedAt}`);
+                        lines.push(`  - [${d._id}] ${d.config?.title ?? '(sin título)'} (${meta.join(' | ')})${link}`);
                     }
                     return lines;
                 };
@@ -274,6 +293,7 @@ function createMcpServer(requestUser?: any) {
         { description: 'Lista los datasources accesibles en EDA (filtrados por permisos del usuario).' },
         async () => {
             console.log('[MCP] tool: list_datasources - ejecutando');
+            console.log('[MCP] tool: list_datasources - ejecutandopruebaaaaaaaa');
             try {
                 const user = await resolveUser(requestUser);
                 const { apiBase, token } = buildApiCall(user);
@@ -383,21 +403,49 @@ function createMcpServer(requestUser?: any) {
                     panels: Array.isArray(db?.config?.panel) ? db.config.panel.length : 0,
                     ds: db?.config?.ds?._id ?? null,
                 }));
+
+                // Bloquear si el datasource principal tiene ia_visibility=NONE
+                const accessibleDsIds = await getAccessibleDatasourceIds(user);
+                const mainDsId = db?.config?.ds?._id?.toString();
+                if (mainDsId && !accessibleDsIds.has(mainDsId)) {
+                    console.log(`[MCP] get_dashboard — bloqueado (datasource NONE): id=${id} | dsId=${mainDsId}`);
+                    return { content: [{ type: 'text', text: `Dashboard no encontrado: ${id}` }], isError: true };
+                }
+
                 const baseUrl = getBaseUrl();
                 console.log('[MCP] get_dashboard — baseUrl:', baseUrl || '(vacío)', '| id:', id);
                 const dashboardLink = baseUrl ? `${baseUrl}/dashboard/${encodeURIComponent(id)}` : '';
-                const panels = Array.isArray(db.config?.panel) ? db.config.panel : [];
+                // Filtrar panels cuyos model_id pertenecen a datasources NONE
+                const allPanels = Array.isArray(db.config?.panel) ? db.config.panel : [];
+                const panels = allPanels.filter((p: any) => {
+                    const mid = p.content?.query?.model_id;
+                    if (!mid) return true;
+                    const visible = accessibleDsIds.has(mid);
+                    if (!visible) console.log(`[MCP] get_dashboard — panel oculto (datasource NONE): panel=${p.title} | model_id=${mid}`);
+                    return visible;
+                });
 
                 const datasourceIds: string[] = [...new Set<string>(
                     panels.map((p: any) => p.content?.query?.model_id).filter(Boolean) as string[]
                 )];
+                const datasourceLabels = datasourceIds.map(dsId => {
+                    const name = accessibleDsIds.get(dsId);
+                    return name ? `${name} (${dsId})` : dsId;
+                });
+
+                const author = db.config?.author ?? '(desconocido)';
+                const createdAt = db.config?.createdAt ? new Date(db.config.createdAt).toLocaleDateString('es-ES') : null;
+                const modifiedAt = db.config?.modifiedAt ? new Date(db.config.modifiedAt).toLocaleDateString('es-ES') : null;
 
                 const lines: string[] = [
                     `Dashboard: ${db.config?.title ?? '(sin título)'}`,
                     ...(dashboardLink ? [`Dashboard URL / LINK: ${dashboardLink}`] : []),
                     `Visibilidad: ${db.config?.visible ?? '(desconocida)'}`,
+                    `Autor: ${author}`,
+                    ...(createdAt ? [`Creado: ${createdAt}`] : []),
+                    ...(modifiedAt ? [`Modificado: ${modifiedAt}`] : []),
                     `Panels: ${panels.length}`,
-                    ...(datasourceIds.length > 0 ? [`Datasource(s): ${datasourceIds.join(', ')}`] : []),
+                    ...(datasourceLabels.length > 0 ? [`Datasource(s): ${datasourceLabels.join(', ')}`] : []),
                     '',
                 ];
 
@@ -476,10 +524,20 @@ function createMcpServer(requestUser?: any) {
                     const dashboardLink = baseUrl ? `${baseUrl}/dashboard/${encodeURIComponent(dashboard_id)}` : '';
                     console.log('[MCP] get_data_from_dashboard - dashboard:', db.config?.title, '| panels total:', allPanels.length, '| panel_index solicitado:', panel_index ?? 'todos');
 
-                    // Si se especifica panel_index, ejecutar solo ese panel; si no, todos
+                    // Excluir panels cuyos datasources tienen ia_visibility=NONE
+                    const accessibleDsIds = await getAccessibleDatasourceIds(user);
+                    const visiblePanels = allPanels.filter((p: any) => {
+                        const mid = p.content?.query?.model_id;
+                        if (!mid) return true;
+                        const visible = accessibleDsIds.has(mid);
+                        if (!visible) console.log(`[MCP] MODO DATOS — panel oculto (datasource NONE): ${p.title} | model_id=${mid}`);
+                        return visible;
+                    });
+
+                    // Si se especifica panel_index, ejecutar solo ese panel; si no, todos los visibles
                     const panelsToRun = panel_index !== undefined
-                        ? (allPanels[panel_index] ? [{ panel: allPanels[panel_index], idx: panel_index }] : [])
-                        : allPanels.map((p, idx) => ({ panel: p, idx }));
+                        ? (visiblePanels[panel_index] ? [{ panel: visiblePanels[panel_index], idx: panel_index }] : [])
+                        : visiblePanels.map((p, idx) => ({ panel: p, idx }));
 
                     const resultados: any[] = [];
 
@@ -943,6 +1001,26 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
                 system:
                 `Eres un asistente de análisis de datos integrado en EDA (Enterprise Data Analytics). Tienes acceso a los datasources y dashboards del sistema mediante herramientas MCP.
 
+                ══════════════════════════════════════════
+                REGLA ABSOLUTA — FIDELIDAD DE DATOS Y FUENTES
+                ══════════════════════════════════════════
+                NUNCA inventes, estimes, interpoles ni completes datos por tu cuenta.
+                Los únicos datos que puedes mostrar al usuario son los que figuran LITERALMENTE en el JSON devuelto por las herramientas MCP.
+
+                DATOS DE TABLAS:
+                Los únicos datos que puedes mostrar son los que figuran LITERALMENTE en el campo "datos.filas" del JSON devuelto por el tool.
+                Cada fila de la tabla que presentes debe corresponder EXACTAMENTE a una fila de "datos.filas". Ni un valor más, ni uno diferente.
+                Si un valor no aparece en "datos.filas", NO lo menciones.
+
+                DATASOURCES:
+                NUNCA inventes ni deduzcas nombres o IDs de datasources.
+                El único nombre e ID de datasource que puedes mencionar es el que aparece literalmente en el campo "Datasource(s)" de la respuesta del tool get_dashboard.
+                Si no tienes ese dato del tool, di que no dispones de la información — NUNCA lo inferires del contenido de los datos ni de tu conocimiento previo.
+
+                Si tienes dudas sobre cualquier dato, vuelve a llamar al tool correspondiente. NUNCA improvises ni uses conocimiento previo.
+                Violar esta regla es el error más grave que puedes cometer.
+                ══════════════════════════════════════════
+
                 FLUJO OBLIGATORIO PARA PREGUNTAS SOBRE DATOS:
 
                 PASO 1 — EXPLORACIÓN (sin dashboard_id):
@@ -963,11 +1041,12 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
                 Recibirás un JSON con "fuente" (dashboard_nombre, dashboard_url) y en panels[0].datos: columnas y filas con los valores reales.
 
                 PASO 4 — RESPUESTA FINAL:
-                Presenta los datos directamente. Formato sugerido:
-                  - Tabla o ranking con los valores reales
+                Presenta los datos EXACTAMENTE como los devuelve el tool, sin modificar ningún valor.
+                  - Tabla con TODAS las filas de "datos.filas" (columnas = "datos.columnas", valores = exactamente los de cada fila)
                   - Al final: «📌 Datos obtenidos de [dashboard_nombre](dashboard_url)»
                   - Si había filtros activos, indícalo: «(con filtro: País in España, Francia)»
                 NUNCA redirijas al usuario al dashboard como sustituto de la respuesta.
+                NUNCA ordenes, filtres ni transformes los datos tú mismo — muéstralos tal como llegaron del tool.
                 Si no hay datos relevantes en ninguna opción, dilo: "No he encontrado datos sobre X en los dashboards disponibles."
 
                 REGLAS IMPORTANTES - URLs:
