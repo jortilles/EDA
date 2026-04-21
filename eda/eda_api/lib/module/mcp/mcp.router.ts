@@ -180,6 +180,10 @@ async function getAccessibleDatasourceIds(user: any): Promise<Map<string, string
     const data: any = await response.json();
     const map = new Map<string, string>();
     for (const d of (data.ds ?? [])) {
+        if ((d.ia_visibility ?? 'FULL') === 'NONE') {
+            console.log('[MCP] getAccessibleDatasourceIds — excluido (ia_visibility=NONE):', d.model_name ?? d._id);
+            continue;
+        }
         map.set(d._id.toString(), d.model_name ?? d._id.toString());
     }
     console.log('[MCP] getAccessibleDatasourceIds — accesibles (sin NONE):', map.size);
@@ -211,11 +215,17 @@ function createMcpServer(requestUser?: any) {
     console.log('[MCP] createMcpServer - registrando tools...');
     const server = new McpServer({ name: 'eda-mcp', version: '1.0.0' });
 
-    server.registerTool(
+    (server as any).registerTool(
         'list_dashboards',
-        { description: 'Lista todos los dashboards accesibles en EDA (privados, de grupo, públicos y compartidos).' },
-        async () => {
-            console.log('[MCP] tool: list_dashboards - ejecutando');
+        {
+            description: 'Lista todos los dashboards accesibles en EDA. Devuelve título, autor, fechas de creación/modificación, visibilidad y URL. Usa el parámetro autor para filtrar dashboards de un usuario concreto.',
+            inputSchema: {
+                autor: z.string().optional().describe('Filtra los dashboards por nombre de autor (búsqueda parcial, case-insensitive). Si se omite, devuelve todos los dashboards accesibles.'),
+            },
+        },
+        async (args: any) => {
+            const autorFiltro: string | undefined = args?.autor?.toLowerCase();
+            console.log('[MCP] tool: list_dashboards - ejecutando | autor:', autorFiltro ?? '(todos)');
             let user: any;
             try {
                 user = await resolveUser(requestUser);
@@ -237,19 +247,26 @@ function createMcpServer(requestUser?: any) {
 
                 // Filtrar dashboards cuyos datasources tienen ia_visibility=NONE
                 const accessibleDsIds = await getAccessibleDatasourceIds(user);
-                const filterVisible = (items: any[]) => items.filter((d: any) => {
+                const filterItems = (items: any[]) => items.filter((d: any) => {
+                    // Excluir datasource NONE
                     const dsId = d.config?.ds?._id?.toString();
-                    if (!dsId) return true; // sin datasource → no ocultamos
-                    const visible = accessibleDsIds.has(dsId);
-                    if (!visible) console.log(`[MCP] list_dashboards — dashboard oculto (datasource NONE): ${d.config?.title} | dsId=${dsId}`);
-                    return visible;
+                    if (dsId && !accessibleDsIds.has(dsId)) {
+                        console.log(`[MCP] list_dashboards — dashboard oculto (datasource NONE): ${d.config?.title} | dsId=${dsId}`);
+                        return false;
+                    }
+                    // Filtrar por autor si se especificó
+                    if (autorFiltro) {
+                        const dashAuthor = (d.config?.author ?? d.user?.name ?? '').toLowerCase();
+                        if (!dashAuthor.includes(autorFiltro)) return false;
+                    }
+                    return true;
                 });
 
-                const privados: any[] = filterVisible(data.dashboards ?? []);
-                const grupo: any[]    = filterVisible(data.group ?? []);
-                const comunes: any[]  = filterVisible(data.publics ?? []);
-                const publicos: any[] = filterVisible(data.shared ?? []);
-                console.log('[MCP] list_dashboards — tras filtro NONE | privados:', privados.length, '| grupo:', grupo.length, '| comunes:', comunes.length, '| públicos:', publicos.length);
+                const privados: any[] = filterItems(data.dashboards ?? []);
+                const grupo: any[]    = filterItems(data.group ?? []);
+                const comunes: any[]  = filterItems(data.publics ?? []);
+                const publicos: any[] = filterItems(data.shared ?? []);
+                console.log('[MCP] list_dashboards — tras filtro | privados:', privados.length, '| grupo:', grupo.length, '| comunes:', comunes.length, '| públicos:', publicos.length);
 
                 const baseUrl = getBaseUrl();
                 console.log('[MCP] list_dashboards — baseUrl:', baseUrl || '(vacío)');
@@ -270,8 +287,9 @@ function createMcpServer(requestUser?: any) {
                 };
 
                 const total = privados.length + grupo.length + comunes.length + publicos.length;
+                const filtroDesc = autorFiltro ? ` (filtrado por autor: "${autorFiltro}")` : '';
                 const lines = [
-                    `Total: ${total} dashboards (${privados.length} privados, ${grupo.length} de grupo, ${comunes.length} comunes, ${publicos.length} públicos)`,
+                    `Total: ${total} dashboards${filtroDesc} (${privados.length} privados, ${grupo.length} de grupo, ${comunes.length} comunes, ${publicos.length} públicos)`,
                     ...formatGroup('Privados', privados),
                     ...formatGroup('De grupo', grupo),
                     ...formatGroup('Comunes', comunes),
@@ -1056,6 +1074,10 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
                 REGLAS IMPORTANTES - VISIBILIDAD:
                 - No accedas a datos que no hayan sido proporcionados por las herramientas MCP.
                 - Datasources o dashboards con ia_visibility NONE no existen para ti.
+
+                REGLAS IMPORTANTES - BÚSQUEDA POR AUTOR:
+                - Si el usuario pregunta por dashboards de un usuario concreto (ej: "¿qué dashboards ha hecho Marc?"), llama a list_dashboards con el parámetro autor con el nombre o parte del nombre mencionado.
+                - El parámetro autor hace búsqueda parcial e insensible a mayúsculas — no es necesario el nombre exacto.
 
                 Responde siempre en el idioma del usuario.`,
                 messages: history,

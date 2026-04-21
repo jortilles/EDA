@@ -122,8 +122,6 @@ export class DataSourceController {
             const output = [];
             for (let i = 0, n = names.length; i < n; i += 1) {
                 const e = names[i];
-                // Excluir datasources ocultos para la IA — no deben existir para ningún consumidor
-                if ((e.ds.metadata.ia_visibility ?? 'FULL') === 'NONE') continue;
                 // Si hay permisos de seguridad.....
                 if (e.ds.metadata.model_granted_roles?.length > 0) {
                     const users = [];
@@ -151,11 +149,11 @@ export class DataSourceController {
                         }
                     });
                     if (users.includes(userID) || roles.length > 0 || allCanSee == 'true' || req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/) {
-                        output.push({ _id: e._id, model_name: e.ds.metadata.model_name, model_description: e.ds.metadata.model_description ?? null });
+                        output.push({ _id: e._id, model_name: e.ds.metadata.model_name, model_description: e.ds.metadata.model_description ?? null, ia_visibility: e.ds.metadata.ia_visibility ?? 'FULL' });
                     }
 
                 } else {
-                    output.push({ _id: e._id, model_name: e.ds.metadata.model_name, model_description: e.ds.metadata.model_description ?? null });
+                    output.push({ _id: e._id, model_name: e.ds.metadata.model_name, model_description: e.ds.metadata.model_description ?? null, ia_visibility: e.ds.metadata.ia_visibility ?? 'FULL' });
                 }
             }
             output.sort((a, b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 :
