@@ -40,6 +40,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewChecked {
     public panelBaseResultSize: number = 0;
 
     public currentAlert = null;
+    public currentQuery: any = null;
     public canIRunAlerts: boolean = false;
     public edaChart: any;
     public chartContent: any;
@@ -228,6 +229,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewChecked {
 
     openConfigDialog(alert) {
         this.currentAlert = alert;
+        this.currentQuery = this.controller.params?.query || this.panelChartConfig?.config?.query || null;
         this.mailConfigOpen = true;
     }
 

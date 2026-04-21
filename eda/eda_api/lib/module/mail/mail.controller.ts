@@ -164,4 +164,24 @@ export class MailController {
     }
   }
 
+  static async testAlertMail(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { alertConfig, query } = req.body;
+
+      if (!alertConfig || !query) {
+        return next(new HttpException(400, 'Missing alertConfig or query'));
+      }
+
+      if (!alertConfig.users || alertConfig.users.length === 0) {
+        return next(new HttpException(400, 'No recipients selected'));
+      }
+
+      const results = await MailingService.testAlertSending(alertConfig, query);
+
+      return res.status(200).json({ ok: true, results });
+    } catch (err) {
+      return next(new HttpException(501, (err as any).message || 'Error testing alert mail'));
+    }
+  }
+
 }

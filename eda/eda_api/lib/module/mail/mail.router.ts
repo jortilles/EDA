@@ -8,5 +8,6 @@ router.get('/credentials', authGuard, roleGuard, MailController.getCredentials);
 router.post('/check', authGuard, roleGuard, MailController.checkCredentials);
 router.post('/save', authGuard, roleGuard, MailController.saveCredentials);
 router.post('/send-now', authGuard, roleGuard, MailController.sendNow); //borrar
+router.post('/test-alert', authGuard, roleGuard, MailController.testAlertMail);
 
 export default router;

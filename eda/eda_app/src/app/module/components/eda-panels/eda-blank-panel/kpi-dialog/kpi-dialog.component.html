@@ -282,6 +282,7 @@
 @if (mailConfigOpen) {
   <app-kpi-mail-config
     [alert]="currentAlert"
+    [query]="currentQuery"
     (apply)="onMailConfigApply($event)"
     (close)="closeMailingConfig()">
   </app-kpi-mail-config>

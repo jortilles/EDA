@@ -9,6 +9,15 @@ import { MailDashboardsController } from '../dashboardToPDFService/mail-dashboar
 const fs = require('fs');
 const path = require("path");
 
+export interface AlertHistoryItem {
+  timestamp: string;
+  status: 'success' | 'failed';
+  recipient: string;
+  error?: string;
+  kpiValue?: number | null;
+  conditionMet?: boolean;
+}
+
 /**Mailing service */
 
 
@@ -38,26 +47,27 @@ export class MailingService {
       const alerts = MailingService.getAlerts(dashboards);
       console.log(`[MailingService] alertas KPI activas: ${alerts.length}`);
       let dashboardsToUpdate: any[] = [];
-      /**Check alerts  */
-      alerts.forEach((alert) => {
+
+      for (const alert of alerts) {
         let shouldUpdate = true;
         console.log(`[MailingService] alerta: "${alert.value.operand} ${alert.value.value}" | units: ${alert.value.mailing.units} | lastUpdated: ${alert.value.mailing.lastUpdated} | shouldUpdate: ${shouldUpdate}`);
-                // para validar se puede forzar la variable. 
-        // console.log('Forzado del should upddate.....')
-        // shouldUpdate = true;
+
         if (shouldUpdate) {
-          MailingService.mailAlertsSending(alert, transporter, senderEmail);
+          await MailingService.mailAlertsSending(alert, transporter, senderEmail);
           if (updateTimestamp) {
             alert.value.mailing.lastUpdated = newDate;
-            if (!dashboardsToUpdate.map(d => d._id).includes(alert.dashboard_id)) dashboardsToUpdate.push(dashboards.filter(d => d._id === alert.dashboard_id)[0]);
+            if (!dashboardsToUpdate.map(d => d._id).includes(alert.dashboard_id)) {
+              const dashboard = dashboards.find(d => d._id === alert.dashboard_id);
+              if (dashboard) dashboardsToUpdate.push(dashboard);
+            }
           }
         }
-      });
+      }
 
       if (updateTimestamp) {
-        dashboardsToUpdate.forEach(d => {
-          Dashboard.replaceOne({ _id: d._id }, d).exec()
-        });
+        for (const d of dashboardsToUpdate) {
+          await Dashboard.replaceOne({ _id: d._id }, d).exec();
+        }
       }
 
     } catch (err) {
@@ -140,13 +150,34 @@ export class MailingService {
   }
 
 
+  static addAlertHistory(alert: any, historyItem: AlertHistoryItem) {
+    if (!alert.value.mailing.history) {
+      alert.value.mailing.history = [];
+    }
+    alert.value.mailing.history.unshift(historyItem);
+    if (alert.value.mailing.history.length > 20) {
+      alert.value.mailing.history = alert.value.mailing.history.slice(0, 20);
+    }
+  }
+
   /**Chech kpi condition and send mail if condition is true
    * 
    */
-  static mailAlertsSending(alert, transporter, senderEmail: string) {
+  static async mailAlertsSending(alert, transporter, senderEmail: string): Promise<void> {
+    const sendPromises: Promise<void>[] = [];
 
-    alert.value.mailing.users.forEach(async user => {
+    for (const user of alert.value.mailing.users) {
+      const sendPromise = MailingService.sendAlertMailToUser(alert, transporter, senderEmail, user);
+      sendPromises.push(sendPromise);
+    }
 
+    await Promise.all(sendPromises);
+  }
+
+  static async sendAlertMailToUser(alert, transporter, senderEmail: string, user: any): Promise<void> {
+    const timestamp = SchedulerFunctions.totLocalISOTime(new Date());
+
+    try {
       let result = !alert.query.query.modeSQL ?
         await MailingService.execQuery(alert.query, user) :
         await MailingService.execSqlQuery(alert.query, user);
@@ -154,26 +185,77 @@ export class MailingService {
       let condition = MailingService.compareValues(result, alert.value.value, alert.value.operand);
       console.log(`[MailingService] alerta KPI | resultado: ${result} | condición: ${result} ${alert.value.operand} ${alert.value.value} = ${condition} | destinatario: ${user.email}`);
 
-      const appBase = mailConfig.server_baseURL.replace(/\/?$/, '/');
-      const dashboardLink = `${appBase}#/dashboard/${alert.query.dashboard.dashboard_id}`;
-
-      let text = `${alert.value.mailing.mailMessage}\n-------------------------------------------- \n\n` +
-        `${alert.query.query.fields[0].display_name}: ${result.toLocaleString('de-DE')}\n${dashboardLink}`
-
-      let mailOptions = {
-        from: senderEmail,
-        to: user.email,
-        subject: 'Eda Alerts',
-        text: text
-      };
-
-
       if (condition) {
-        transporter.sendMail(mailOptions, function (error: any) {
-          if (error) console.log(error);
+        const appBase = mailConfig.server_baseURL.replace(/\/?$/, '/');
+        const dashboardLink = `${appBase}#/dashboard/${alert.query.dashboard.dashboard_id}`;
+
+        let text = `${alert.value.mailing.mailMessage}\n-------------------------------------------- \n\n` +
+          `${alert.query.query.fields[0].display_name}: ${result.toLocaleString('de-DE')}\n${dashboardLink}`;
+
+        let mailOptions = {
+          from: senderEmail,
+          to: user.email,
+          subject: 'Eda Alerts',
+          text: text
+        };
+
+        try {
+          await new Promise<void>((resolve, reject) => {
+            transporter.sendMail(mailOptions, function (error: any) {
+              if (error) {
+                console.log(error);
+                MailingService.addAlertHistory(alert, {
+                  timestamp,
+                  status: 'failed',
+                  recipient: user.email,
+                  error: error.message || 'Unknown error',
+                  kpiValue: result,
+                  conditionMet: true
+                });
+                resolve();
+              } else {
+                MailingService.addAlertHistory(alert, {
+                  timestamp,
+                  status: 'success',
+                  recipient: user.email,
+                  kpiValue: result,
+                  conditionMet: true
+                });
+                resolve();
+              }
+            });
+          });
+        } catch (err) {
+          console.log(err);
+          MailingService.addAlertHistory(alert, {
+            timestamp,
+            status: 'failed',
+            recipient: user.email,
+            error: (err as any).message || 'Unknown error',
+            kpiValue: result,
+            conditionMet: true
+          });
+        }
+      } else {
+        MailingService.addAlertHistory(alert, {
+          timestamp,
+          status: 'success',
+          recipient: user.email,
+          kpiValue: result,
+          conditionMet: false
         });
       }
-    })
+    } catch (err) {
+      console.log(err);
+      MailingService.addAlertHistory(alert, {
+        timestamp,
+        status: 'failed',
+        recipient: user.email,
+        error: (err as any).message || 'Query execution error',
+        kpiValue: null,
+        conditionMet: false
+      });
+    }
   }
 
   static mailDashboardSending(userMail:string, filename:string, filepath:string, transporter:any, message:string, link:string, senderEmail:string){
@@ -265,6 +347,103 @@ export class MailingService {
     } catch (err) {
       console.log(err);
       return null;
+    }
+  }
+
+  static async testAlertSending(alertConfig: any, query: any): Promise<{ success: boolean; error?: string; kpiValue?: number | null; recipient: string }[]> {
+    const results: { success: boolean; error?: string; kpiValue?: number | null; recipient: string }[] = [];
+
+    try {
+      const smtpConfig = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../config/SMPT.config.json"), 'utf-8'));
+      const config = { ...smtpConfig, family: 4 };
+      const senderEmail = smtpConfig.auth?.user;
+      const transporter = nodemailer.createTransport(config);
+
+      const verifyError = await new Promise((resolve) => {
+        transporter.verify((error: any) => {
+          resolve(error);
+        });
+      });
+
+      if (verifyError) {
+        for (const user of alertConfig.users) {
+          results.push({
+            success: false,
+            error: 'SMTP configuration error: ' + (verifyError as any).message,
+            recipient: user.email
+          });
+        }
+        return results;
+      }
+
+      for (const user of alertConfig.users) {
+        try {
+          let kpiValue = !query.query.modeSQL ?
+            await MailingService.execQuery(query, user) :
+            await MailingService.execSqlQuery(query, user);
+
+          const appBase = mailConfig.server_baseURL.replace(/\/?$/, '/');
+          const dashboardLink = query.dashboard ? `${appBase}#/dashboard/${query.dashboard.dashboard_id}` : '';
+
+          let text = `${alertConfig.mailMessage}\n-------------------------------------------- \n\n`;
+          if (query.query.fields && query.query.fields[0]) {
+            text += `${query.query.fields[0].display_name}: ${kpiValue !== null ? kpiValue.toLocaleString('de-DE') : 'N/A'}\n`;
+          }
+          text += `Condición: ${alertConfig.operand || 'N/A'} ${alertConfig.value || 'N/A'}\n`;
+          if (dashboardLink) {
+            text += dashboardLink;
+          }
+
+          let mailOptions = {
+            from: senderEmail,
+            to: user.email,
+            subject: 'EDA - Prueba de alerta KPI',
+            text: text
+          };
+
+          const sendResult = await new Promise((resolve) => {
+            transporter.sendMail(mailOptions, function (error: any, info: any) {
+              if (error) {
+                resolve({ success: false, error: error.message });
+              } else {
+                resolve({ success: true, info });
+              }
+            });
+          });
+
+          if ((sendResult as any).success) {
+            results.push({
+              success: true,
+              kpiValue: kpiValue,
+              recipient: user.email
+            });
+          } else {
+            results.push({
+              success: false,
+              error: (sendResult as any).error,
+              kpiValue: kpiValue,
+              recipient: user.email
+            });
+          }
+        } catch (err) {
+          results.push({
+            success: false,
+            error: (err as any).message || 'Unknown error',
+            recipient: user.email
+          });
+        }
+      }
+
+      return results;
+    } catch (err) {
+      for (const user of alertConfig.users) {
+        results.push({
+          success: false,
+          error: (err as any).message || 'Configuration error',
+          recipient: user.email
+        });
+      }
+      return results;
     }
   }
 
