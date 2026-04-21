@@ -768,15 +768,19 @@ function createMcpServer(requestUser?: any) {
                             }
                         }
 
-                        // Filtrar por campos_requeridos: todos los keywords deben aparecer en al menos
-                        // un campo, descripción de columna o descripción de tabla.
+                        // Filtrar por campos_requeridos: cada keyword debe aparecer en AL MENOS UNA señal:
+                        // nombre de campo, descripción de columna/tabla, título del panel o nombre del dashboard.
                         // (no se exige que cada campo esté cubierto — paneles con campos extra son válidos)
                         if (camposLower.length > 0) {
                             const fieldNamesLower = fieldNames.map((n: string) => n.toLowerCase());
                             const allDescText = [...camposDescripciones, ...tablasDescripciones].join(' ').toLowerCase();
+                            const panelTitleLower = (panel.title ?? '').toLowerCase();
+                            const dashboardNameLower = (db.config?.title ?? '').toLowerCase();
                             const allRequired = camposLower.every((kw: string) =>
                                 fieldNamesLower.some((fn: string) => fn.includes(kw)) ||
-                                allDescText.includes(kw)
+                                allDescText.includes(kw) ||
+                                panelTitleLower.includes(kw) ||
+                                dashboardNameLower.includes(kw)
                             );
                             if (!allRequired) {
                                 console.log(`[MCP] exploración — panel saltado (faltan campos requeridos) | dashboard=${db.config?.title}, idx=${idx} | campos=${fieldNames.join(',')} | requeridos=${camposLower.join(',')}`);
@@ -833,15 +837,24 @@ function createMcpServer(requestUser?: any) {
                 // Relevance scoring — fraction of keywords found in each signal corpus
                 // Score = titleScore*3 + fieldDescScore*2.5 + tableDescScore*2 + datasourceScore*2 + dashboardScore*1.5 + exactFieldScore*2 + fieldPrecision + noFilterBonus
                 // When panel_descripcion is added: + descriptionScore * 4  (uncomment below)
+                const questionWords = (question ?? '').toLowerCase().split(/\s+/).filter((w: string) => w.length > 3);
                 const kwMatch = (text: string): number => {
                     if (!text || camposLower.length === 0) return 0;
                     const t = text.toLowerCase();
                     return camposLower.filter(kw => t.includes(kw)).length / camposLower.length;
                 };
+                const questionMatch = (text: string): number => {
+                    if (!text || questionWords.length === 0) return 0;
+                    const t = text.toLowerCase();
+                    return questionWords.filter((w: string) => t.includes(w)).length / questionWords.length;
+                };
                 const scoreOption = (o: any): number => {
                     if (camposLower.length === 0) {
-                        // No keywords: prefer unfiltered (canonical) panels
-                        return o.tiene_filtros ? 0 : 1;
+                        // No explicit keywords: rank by how well panel/dashboard title matches the question
+                        const titleQ = questionMatch(o.panel_titulo ?? '');
+                        const dashQ  = questionMatch(o.dashboard_nombre ?? '');
+                        const noFilterBonus = o.tiene_filtros ? 0 : 0.1;
+                        return titleQ * 3 + dashQ * 1.5 + noFilterBonus;
                     }
                     const fieldNamesLower: string[] = (o.campos as string[]).map((n: string) => n.toLowerCase());
 
@@ -1130,6 +1143,7 @@ Llama a get_data_from_dashboard SIN dashboard_id.
 - Si la pregunta no menciona campos concretos, omite campos_requeridos para obtener todas las opciones disponibles.
 - Si nota_al_asistente indica 0 opciones y usaste campos_requeridos: vuelve a llamar SIN campos_requeridos antes de informar al usuario. Si sigue siendo 0, informa que no hay datos disponibles.
 - Si nota_al_asistente indica 1 opción: ve directamente al PASO 3. No preguntes al usuario.
+- Si el usuario menciona el nombre de un dashboard concreto (ej: "el dashboard Ventas", "consums aigua"): úsalo como guía para los campos_requeridos, pero igualmente ejecuta la exploración completa (sin dashboard_id) para encontrar el panel_index correcto. NO llames a get_data_from_dashboard con dashboard_id sin haber identificado el panel_index primero.
 
 PASO 2 — SELECCIÓN (solo si hay múltiples opciones):
 Presenta las opciones numeradas (1, 2, 3...) en prosa fluida con el link del dashboard. Destaca la diferencia clave: con/sin filtros, distintos alcances o períodos.
@@ -1140,7 +1154,8 @@ Ejemplo: "Opción 1 — [Dashboard «Ventas»](url) — Todos los países sin fi
 PASO 3 — DATOS:
 ⚠ FAST PATH: Si el mensaje del usuario contiene "dashboard_id: X" y "panel_index: Y" (en cualquier idioma o formato), extrae X e Y directamente y llama a get_data_from_dashboard con esos valores exactos. NO vuelvas a explorar, NO hagas preguntas.
 Si el usuario elige con lenguaje natural ("la primera", "la dos", "esa", "the first", "option 2"), busca el dashboard_id y panel_index de la opción correspondiente en el último resultado de exploración del historial.
-Llama a get_data_from_dashboard CON dashboard_id y panel_index. NUNCA vuelvas al PASO 1 para una opción ya elegida.
+Llama a get_data_from_dashboard CON dashboard_id y SIEMPRE con panel_index cuando hayas identificado qué panel quieres. NUNCA omitas panel_index cuando ya sabes el panel: omitirlo ejecuta TODOS los paneles del dashboard y devuelve errores de panels que no son relevantes. Si no sabes qué panel_index usar, haz primero exploración (PASO 1) para identificarlo.
+NUNCA vuelvas al PASO 1 para una opción ya elegida.
 
 PASO 4 — RESPUESTA:
 Presenta los datos en tabla markdown. Los valores deben ser idénticos a "datos.filas".
