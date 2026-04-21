@@ -6198,6 +6198,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>puntos agrupados</source>
         <target>zgrupowane punkty</target>
       </trans-unit>
+      <trans-unit id="saveAsModel" datatype="html">
+        <source>Guardar como, para el modelo de datos</source>
+        <target>Zapisz jako, dla modelu danych</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

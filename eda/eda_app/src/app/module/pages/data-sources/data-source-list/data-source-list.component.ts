@@ -6,6 +6,7 @@ import { AlertService, DataSourceService } from '@eda/services/service.index';
 import Swal, { SweetAlertOptions } from 'sweetalert2';
 import { DataSourceDetailComponent } from '../data-source-detail/data-source-detail.component';
 import { PrimengModule } from 'app/core/primeng.module';
+import { DatasourceSaveAsDialog } from '../data-source-save-as/datasource-save-as.dialog';
 
 import * as _ from 'lodash';
 
@@ -13,7 +14,7 @@ import * as _ from 'lodash';
     standalone: true,
     selector: 'app-data-source-list',
     templateUrl: './data-source-list.component.html',
-    imports: [ PrimengModule, DataSourceDetailComponent ],
+    imports: [ PrimengModule, DataSourceDetailComponent, DatasourceSaveAsDialog ],
     styleUrls: ['./data-source-list.component.css']
 })
 export class DataSourceListComponent implements OnInit, OnDestroy {
@@ -22,10 +23,13 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
     public id: string;
     public navigationSubscription: any;
     public selectedNode : TreeNode;
+    public isSaveAsDialogVisible = false;
+
 
     //Strings
     public refreshSTR = $localize`:@@Refresh:Volver a cargar el modelo de datos almacenado`;
     public saveModelSTR = $localize`:@@saveModel:Guardar modelo de datos`;
+    public saveAsModelSTR = $localize`:@@saveAsModel:Guardar como, para el modelo de datos`;
     public updateModelSTR = $localize`:@@updateModel:Actualizar modelo de datos desde la base de datos origen para buscar nuevas tablas y columnas`;
     public updateModelXLCSV = $localize`:@@updateModelXLCSV:Actualizar el fichero origen para buscar nuevas tablas y columnas`;
     public deleteModelSTR = $localize`:@@deleteModel:Borrar modelo de datos`;
@@ -160,6 +164,27 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
 
     openUpdateFilePage(): void {
         this.router.navigate(['/data-source', this.id, 'update-file']);
+    }
+
+    dataModelServiceSaveAs() {
+        this.isSaveAsDialogVisible = true;
+    }
+
+    saveDatasourceAs(result: { name: string } | null) {
+        this.isSaveAsDialogVisible = false;
+        if (!result?.name) return;
+        this.spinnerService.on();
+        this.dataModelService.copyDataSource(this.id, result.name).subscribe({
+            next: (res) => {
+                this.spinnerService.off();
+                this.alertService.addSuccess($localize`:@@ModelSaved:Modelo guardado correctamente`);
+                this.router.navigate(['/data-source', res.data_source_id]);
+            },
+            error: (err) => {
+                this.spinnerService.off();
+                this.alertService.addError(err);
+            }
+        });
     }
 
 }

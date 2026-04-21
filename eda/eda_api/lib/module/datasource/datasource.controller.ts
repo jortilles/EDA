@@ -618,6 +618,32 @@ export class DataSourceController {
         }
     }
 
+    static async CopyDataSource(req: Request, res: Response, next: NextFunction) {
+        try {
+            const original = await DataSource.findById(req.params.id);
+            if (!original) {
+                return next(new HttpException(404, 'DataSource not found'));
+            }
+            const newName = req.body.name;
+            const copy = new DataSource({
+                ds: {
+                    connection: original.ds.connection,
+                    metadata: {
+                        ...original.ds.metadata,
+                        model_name: newName,
+                        model_owner: [req.user._id],
+                        model_granted_roles: []
+                    },
+                    model: original.ds.model
+                }
+            });
+            const saved = await copy.save();
+            return res.status(201).json({ ok: true, data_source_id: saved._id });
+        } catch (err) {
+            next(err);
+        }
+    }
+
     static async removeCacheFromModel(req: Request, res: Response, next: NextFunction) {
         try {
             const queries = await CachedQuery.deleteMany({ 'cachedQuery.model_id': req.body.id }).exec();

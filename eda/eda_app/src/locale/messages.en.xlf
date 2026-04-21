@@ -6287,6 +6287,10 @@ OR<ph id="5"/>
   <source>puntos agrupados</source>
   <target>clustered points</target>
 </trans-unit>
+<trans-unit id="saveAsModel" datatype="html">
+  <source>Guardar como, para el modelo de datos</source>
+  <target>Save as, for the data mode</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

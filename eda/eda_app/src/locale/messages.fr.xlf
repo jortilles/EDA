@@ -6533,6 +6533,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>puntos agrupados</source>
         <target>points regroupés</target>
       </trans-unit>
+      <trans-unit id="saveAsModel" datatype="html">
+        <source>Guardar como, para el modelo de datos</source>
+        <target>Enregistrer sous, pour le modèle de données</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

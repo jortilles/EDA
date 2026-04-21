@@ -19,6 +19,12 @@
               <polyline points="7 3 7 8 15 8"></polyline>
             </svg>
           </button>
+          <button class="p-1.5 rounded-md hover:bg-muted" pButton [pTooltip]="saveAsModelSTR" (click)="dataModelServiceSaveAs()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <rect x="3" y="3" width="13" height="13" rx="2" ry="2"></rect>
+            </svg>
+          </button>
           @if(['excel','csv'].includes(connectionType)){
             <button class="p-1.5 rounded-md hover:bg-muted" pButton [pTooltip]="updateModelXLCSV" (click)="openUpdateFilePage()">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -66,9 +72,12 @@
       </p-tree>
     </div>
   </div>
-<div class="w-[70%]">
 
-  <app-data-source-detail (onTableCreated)="reLoadModelFromDb()"></app-data-source-detail>
-</div>
+  <div class="w-[70%]">
+    <app-data-source-detail (onTableCreated)="reLoadModelFromDb()"></app-data-source-detail>
+  </div>
   
+  @if (isSaveAsDialogVisible) {
+    <app-datasource-save-as (close)="saveDatasourceAs($event)"></app-datasource-save-as>
+  }
 </div>

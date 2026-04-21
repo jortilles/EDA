@@ -6565,6 +6565,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>puntos agrupados</source>
         <target>punts agrupats</target>
       </trans-unit>
+      <trans-unit id="saveAsModel" datatype="html">
+        <source>Guardar como, para el modelo de datos</source>
+        <target>Guardar com, per al model de dades</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
