@@ -235,6 +235,8 @@ function createMcpServer(requestUser?: any) {
                 const grupo: any[]    = data.group ?? [];
                 const comunes: any[]  = data.publics ?? [];
                 const publicos: any[] = data.shared ?? [];
+                console.log('[MCP] list_dashboards — metadata recibida | privados:', privados.length, '| grupo:', grupo.length, '| comunes:', comunes.length, '| públicos:', publicos.length);
+                if (privados[0]) console.log('[MCP] list_dashboards — ejemplo privado[0]:', JSON.stringify({ _id: privados[0]._id, title: privados[0].config?.title, visible: privados[0].config?.visible }));
 
                 const baseUrl = getBaseUrl();
                 console.log('[MCP] list_dashboards — baseUrl:', baseUrl || '(vacío)');
@@ -282,6 +284,10 @@ function createMcpServer(requestUser?: any) {
                     throw new Error(`/datasource/namesForDashboard HTTP ${response.status}: ${body}`);
                 }
                 const data: any = await response.json();
+                console.log('[MCP] list_datasources — metadata recibida | total ds:', (data.ds ?? []).length);
+                (data.ds ?? []).forEach((ds: any, i: number) => {
+                    console.log(`[MCP] list_datasources — ds[${i}]:`, JSON.stringify({ _id: ds._id, model_name: ds.model_name, model_description: ds.model_description ?? null }));
+                });
 
                 const baseUrl = getBaseUrl();
                 console.log('[MCP] list_datasources — baseUrl:', baseUrl || '(vacío)');
@@ -325,6 +331,14 @@ function createMcpServer(requestUser?: any) {
                 }
                 const data: any = await response.json();
                 if (!data.ok) return { content: [{ type: 'text', text: `Datasource no encontrado o sin acceso: ${id}` }], isError: true };
+                const ds = data.dataSource;
+                console.log('[MCP] get_datasource — metadata recibida:', JSON.stringify({
+                    _id: ds?._id,
+                    model_name: ds?.ds?.metadata?.model_name ?? null,
+                    model_description: ds?.ds?.metadata?.model_description ?? null,
+                    ia_visibility: ds?.ds?.metadata?.ia_visibility ?? null,
+                    tables: Array.isArray(ds?.ds?.model?.tables) ? ds.ds.model.tables.length : (ds?.ds?.model ? Object.keys(ds.ds.model).length : 0),
+                }));
                 const filtered = filterDatasourceForAI(data.dataSource);
                 if (!filtered) return { content: [{ type: 'text', text: `Datasource ${id} excluido por ia_visibility: NONE` }], isError: true };
                 const baseUrl = getBaseUrl();
@@ -362,6 +376,13 @@ function createMcpServer(requestUser?: any) {
                 if (!data.ok) return { content: [{ type: 'text', text: `Dashboard no encontrado: ${id}` }], isError: true };
 
                 const db = data.dashboard;
+                console.log('[MCP] get_dashboard — metadata recibida:', JSON.stringify({
+                    _id: id,
+                    title: db?.config?.title ?? null,
+                    visible: db?.config?.visible ?? null,
+                    panels: Array.isArray(db?.config?.panel) ? db.config.panel.length : 0,
+                    ds: db?.config?.ds?._id ?? null,
+                }));
                 const baseUrl = getBaseUrl();
                 console.log('[MCP] get_dashboard — baseUrl:', baseUrl || '(vacío)', '| id:', id);
                 const dashboardLink = baseUrl ? `${baseUrl}/dashboard/${encodeURIComponent(id)}` : '';
