@@ -754,7 +754,7 @@ function createMcpServer(requestUser?: any) {
                     };
 
                     console.log('[MCP] MODO DATOS finalizado | panels ejecutados:', resultados.length, '| chars:', JSON.stringify(respuesta).length);
-                    return { content: [{ type: 'text', text: JSON.stringify(respuesta, null, 2) }] };
+                    return { content: [{ type: 'text', text: JSON.stringify(respuesta) }] };
                 }
 
                 // ── MODO EXPLORACIÓN: sin dashboard_id ─────────────────────────────────
@@ -1004,7 +1004,10 @@ function createMcpServer(requestUser?: any) {
 
                 const totalOpciones = opcionesArr.length;
                 const truncada = opcionesArr.length > MAX_OPTIONS;
-                opcionesArr = opcionesArr.slice(0, MAX_OPTIONS).map((o, i) => ({ ...o, opcion_num: i + 1 }));
+                opcionesArr = opcionesArr.slice(0, MAX_OPTIONS).map((o, i) => {
+                    const { campos_descripciones: _cd, tablas_descripciones: _td, ...rest } = o;
+                    return { ...rest, opcion_num: i + 1 };
+                });
                 console.log('[MCP] MODO EXPLORACIÓN finalizado | opciones únicas:', totalOpciones, truncada ? `(top ${MAX_OPTIONS} por relevancia)` : '');
 
                 const notaSinResultados = camposLower.length > 0
@@ -1022,7 +1025,7 @@ function createMcpServer(requestUser?: any) {
                             : `Hay ${opcionesArr.length} opciones en total. IMPORTANTE: muestra al usuario SOLO las opciones cuyo dashboard_nombre o panel_titulo estén relacionados con la pregunta "${question}". Si una opción claramente no tiene relación con la pregunta (ej: pregunta sobre agua pero la opción es de ventas), NO la incluyas en la lista. Preséntaselas numeradas en prosa fluida con el link del dashboard, destacando la diferencia clave entre ellas (con/sin filtros, distintos alcances). Si tras filtrar queda solo 1 opción relevante, ve directamente al PASO 3 sin preguntar. Espera la selección del usuario ANTES de ejecutar el modo datos cuando haya varias relevantes.` + notaTruncada,
                 };
 
-                return { content: [{ type: 'text', text: JSON.stringify(respuestaExploracion, null, 2) }] };
+                return { content: [{ type: 'text', text: JSON.stringify(respuestaExploracion) }] };
 
             } catch (err: any) {
                 console.error('[MCP] get_data_from_dashboard error:', err.message, err.stack);
@@ -1211,7 +1214,7 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
             const response = await anthropic.messages.create({
                 model: MODEL || 'claude-haiku-4-5',
                 max_tokens: MAX_TOKENS || 4096,
-                system: `Eres un asistente de análisis de datos integrado en EDA (Enterprise Data Analytics). Tu trabajo es responder preguntas usando ÚNICAMENTE los datos que devuelven las herramientas MCP. NUNCA uses tu conocimiento general sobre los datos del negocio del usuario.
+                system: [{ type: 'text' as const, text: `Eres un asistente de análisis de datos integrado en EDA (Enterprise Data Analytics). Tu trabajo es responder preguntas usando ÚNICAMENTE los datos que devuelven las herramientas MCP. NUNCA uses tu conocimiento general sobre los datos del negocio del usuario.
 
 ══════════════════════════════════════════
 REGLA ABSOLUTA — FIDELIDAD TOTAL
@@ -1286,7 +1289,7 @@ VISIBILIDAD Y SEGURIDAD
 • Los datasources y dashboards que no aparecen en los tools NO EXISTEN para ti. No los menciones ni insinúes su existencia.
 • No expongas información técnica interna (IDs de panels, nombres de tablas de BD, queries SQL) salvo que el usuario lo pida explícitamente.
 
-Responde siempre en el idioma del usuario.`,
+Responde siempre en el idioma del usuario.`, cache_control: { type: 'ephemeral' as const } }],
                 messages: history,
                 tools: anthropicTools,
             });
@@ -1310,7 +1313,7 @@ Responde siempre en el idioma del usuario.`,
                     if (filtered.length > 1) {
                         responsePayload.options = filtered.map((o: any) => ({
                             num: o.opcion_num,
-                            label: `${o.dashboard_nombre}${o.tiene_filtros ? ` — ${o.alcance}` : ''}`,
+                            label: `${o.dashboard_nombre} — ${o.panel_titulo}`,
                             dashboard_id: o.dashboard_id,
                             panel_index: o.panel_index,
                             dashboard_url: o.dashboard_url,
