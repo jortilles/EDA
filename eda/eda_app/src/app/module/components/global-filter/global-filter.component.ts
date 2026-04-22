@@ -574,6 +574,7 @@ export class GlobalFilterComponent implements OnInit {
                 }
 
                 this.applyGlobalFilter(this.globalFilter);
+                this.dashboardService._notSaved.next(true);
             }
         }
 

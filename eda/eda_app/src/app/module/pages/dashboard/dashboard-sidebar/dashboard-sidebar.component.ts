@@ -415,6 +415,7 @@ export class DashboardSidebarComponent {
 
     this.dashboard.panels.push(panel);
     this.stylesProviderService.loadedPanels++;
+    this.dashboardService._notSaved.next(true);
     this.hidePopover();
   }
 
@@ -434,6 +435,7 @@ export class DashboardSidebarComponent {
     });
 
     this.dashboard.panels.push(panel);
+    this.dashboardService._notSaved.next(true);
     this.hidePopover();
   }
 
@@ -452,6 +454,7 @@ export class DashboardSidebarComponent {
     });
 
     this.dashboard.panels.push(panel);
+    this.dashboardService._notSaved.next(true);
     this.hidePopover();
   }
 

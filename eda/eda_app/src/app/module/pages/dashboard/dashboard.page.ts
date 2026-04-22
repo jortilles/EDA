@@ -290,6 +290,7 @@ export class DashboardPage implements OnInit {
       //this.globalFilter?.initGlobalFilters(dashboard.config.filters || []);// Filtres del dashboard
       this.globalFilter?.initGlobalFilters( this.checkFiltersVisibility( dashboard.config.filters , data.datasource.model.tables ) ||[]);// Filtres del dashboard
       this.initPanels(dashboard);
+      this.cleanupInvalidFilterBindings();
       this.sortPanelsForMobile();
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
       this.getUrlParams();
@@ -525,13 +526,45 @@ export class DashboardPage implements OnInit {
 
     for (const filter of this.globalFilter.globalFilters) {
       filter.panelList = filter.panelList.filter((id: string) => id !== panel);
+      if (filter.pathList && filter.pathList[panel]) {
+        delete filter.pathList[panel];
+      }
     }
+
+    this.dashboardService._notSaved.next(true);
 
     let valor = this.getBottomMostItem();
     const rowHeight = this.gridsterOptions.fixedRowHeight || 150;
     this.height = valor !== undefined ? (valor.y + valor.rows + 4) * rowHeight + 150 : 750;
     this.cdr.detectChanges();
     this.stylesProviderService.loadedPanels--;
+  }
+
+  private cleanupInvalidFilterBindings(): void {
+    const panelIds = new Set(this.panels.map(p => p.id));
+    const globalFilterIds = new Set(this.globalFilter?.globalFilters?.map(f => f.id) || []);
+
+    for (const filter of this.globalFilter?.globalFilters || []) {
+      if (filter.panelList) {
+        filter.panelList = filter.panelList.filter((id: string) => panelIds.has(id));
+      }
+
+      if (filter.pathList) {
+        for (const key in filter.pathList) {
+          if (!panelIds.has(key)) {
+            delete filter.pathList[key];
+          }
+        }
+      }
+    }
+
+    for (const panel of this.panels) {
+      if (panel.globalFilterMap && Array.isArray(panel.globalFilterMap)) {
+        panel.globalFilterMap = panel.globalFilterMap.filter((conn: any) => 
+          globalFilterIds.has(conn.targetId)
+        );
+      }
+    }
   }
 
   public reloadOnGlobalFilter(): void {
@@ -1103,9 +1136,11 @@ export class DashboardPage implements OnInit {
       delete (globalFilter.isnew);
 
       if (globalFilter.pathList) {
-        for (const key in globalFilter.ist) {
-          const selectedTableNodes = globalFilter.pathList[key].selectedTableNodes;
-          delete (selectedTableNodes.parent);
+        for (const key in globalFilter.pathList) {
+          const selectedTableNodes = globalFilter.pathList[key]?.selectedTableNodes;
+          if (selectedTableNodes) {
+            delete (selectedTableNodes.parent);
+          }
         }
       }
 
