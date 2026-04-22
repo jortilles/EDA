@@ -525,7 +525,12 @@ export class DashboardPage implements OnInit {
 
     for (const filter of this.globalFilter.globalFilters) {
       filter.panelList = filter.panelList.filter((id: string) => id !== panel);
+      if (filter.pathList && filter.pathList[panel]) {
+        delete filter.pathList[panel];
+      }
     }
+
+    this.dashboardService._notSaved.next(true);
 
     let valor = this.getBottomMostItem();
     const rowHeight = this.gridsterOptions.fixedRowHeight || 150;
@@ -1103,9 +1108,11 @@ export class DashboardPage implements OnInit {
       delete (globalFilter.isnew);
 
       if (globalFilter.pathList) {
-        for (const key in globalFilter.ist) {
-          const selectedTableNodes = globalFilter.pathList[key].selectedTableNodes;
-          delete (selectedTableNodes.parent);
+        for (const key in globalFilter.pathList) {
+          const selectedTableNodes = globalFilter.pathList[key]?.selectedTableNodes;
+          if (selectedTableNodes) {
+            delete (selectedTableNodes.parent);
+          }
         }
       }
 

@@ -2116,6 +2116,7 @@ public tableNodeExpand(event: any): void {
     public onCloseFilterMapperDialog(response?: any): void {
         if (response) {
             this.panel.globalFilterMap = response.connections || [];
+            this.dashboardService._notSaved.next(true);
         }
 
         this.display_v.filterMapperDialog = false;
