@@ -10,6 +10,7 @@ import { CachedQueryService } from '../../services/cache-service/cached-query.se
 import { QueryOptions } from 'mongoose'
 import ServerLogService from '../../services/server-log/server-log.service'
 import _ from 'lodash'
+/*SDA CUSTOM*/ import { getSdaDbErrorMessage, resolveSdaDbLang } from './SdaDbErrorMessages'
 const cache_config = require('../../../config/cache.config')
 const eda_api_config = require('../../../config/eda_api_config');
 export class DashboardController {
@@ -1454,7 +1455,7 @@ export class DashboardController {
       }
     } catch (err) {
       console.log(err)
-      next(new HttpException(500, 'Error quering database'))
+/* SDA CUSTOM */ next(new HttpException(500, await DashboardController.buildDbErrorMessageForRequest(err, req)))
     }
   }
 
@@ -1649,14 +1650,10 @@ export class DashboardController {
       }
     } catch (err) {
       console.log(err)
-      next(new HttpException(500, 'Error quering database'))
+/* SDA CUSTOM */ next(new HttpException(500, await DashboardController.buildDbErrorMessageForRequest(err, req)))
     }
   }
-
-
-  
   //Check if a value is not numeric
-  
   static isNotNumeric(val) {
 
     let isNotNumeric = false;
@@ -1794,7 +1791,7 @@ export class DashboardController {
       return res.status(200).json(output)
     } catch (err) {
       console.log(err)
-      next(new HttpException(500, 'Error quering database'))
+/* SDA CUSTOM */ next(new HttpException(500, await DashboardController.buildDbErrorMessageForRequest(err, req)))
     }
   }
 
@@ -1933,6 +1930,113 @@ export class DashboardController {
 
     return res.status(200).json({ ok: true })
   }
+
+/* SDA CUSTOM */ static async isPublicDashboardRequest(req: Request): Promise<boolean> {
+/* SDA CUSTOM */   const anonymousUserId = '135792467811111111111112';
+/* SDA CUSTOM */   const requestUserId = req?.user?._id;
+/* SDA CUSTOM */   const isAnonymous = !req?.user || requestUserId == anonymousUserId;
+/* SDA CUSTOM */   let visibility = req?.body?.dashboard?.config?.visible || req?.body?.dashboard?.visible;
+/* SDA CUSTOM */
+/* SDA CUSTOM */   if (!visibility && req?.body?.dashboard?.dashboard_id) {
+/* SDA CUSTOM */     try {
+/* SDA CUSTOM */       const dashboard = await Dashboard.findById(req.body.dashboard.dashboard_id, 'config.visible').exec();
+/* SDA CUSTOM */       visibility = dashboard?.config?.visible;
+/* SDA CUSTOM */     } catch (e) {
+/* SDA CUSTOM */       visibility = undefined;
+/* SDA CUSTOM */     }
+/* SDA CUSTOM */   }
+/* SDA CUSTOM */
+/* SDA CUSTOM */   const isPublicDashboard = visibility === 'public' || visibility === 'shared';
+/* SDA CUSTOM */
+/* SDA CUSTOM */   return isAnonymous && isPublicDashboard;
+/* SDA CUSTOM */ }
+
+/* SDA CUSTOM */ static async buildDbErrorMessageForRequest(err: any, req: Request): Promise<string> {
+/* SDA CUSTOM */   const lang = DashboardController.resolveDbErrorLangFromRequest(req);
+/* SDA CUSTOM */
+/* SDA CUSTOM */   if (await DashboardController.isPublicDashboardRequest(req)) {
+/* SDA CUSTOM */     return 'Error';
+/* SDA CUSTOM */   }
+/* SDA CUSTOM */
+/* SDA CUSTOM */   return DashboardController.parseDbErrorMySQL(err, lang);
+/* SDA CUSTOM */ }
+
+/* SDA CUSTOM */ static resolveDbErrorLangFromRequest(req: Request): string {
+/* SDA CUSTOM */   const supportedLangs = ['es', 'ca', 'en', 'gl'];
+/* SDA CUSTOM */   const queryLang = (req?.query as any)?.lang;
+/* SDA CUSTOM */   const paramLang = (req?.params as any)?.lang;
+/* SDA CUSTOM */   const bodyLang = (req?.body as any)?.lang;
+/* SDA CUSTOM */   const headerLang = req?.headers?.['x-sda-lang'];
+/* SDA CUSTOM */   const explicitLang = [queryLang, paramLang, bodyLang, headerLang].find(value => typeof value === 'string') as string | undefined;
+/* SDA CUSTOM */
+/* SDA CUSTOM */   if (explicitLang) {
+/* SDA CUSTOM */     const normalized = explicitLang.toLowerCase();
+/* SDA CUSTOM */     return supportedLangs.includes(normalized) ? normalized : 'en';
+/* SDA CUSTOM */   }
+/* SDA CUSTOM */
+/* SDA CUSTOM */   const refererLike = String(req?.headers?.referer || req?.headers?.referrer || req?.headers?.origin || '').toLowerCase();
+/* SDA CUSTOM */   const match = refererLike.match(/\/(es|ca|en|gl|pl)\//);
+/* SDA CUSTOM */
+/* SDA CUSTOM */   if (match && match[1]) {
+/* SDA CUSTOM */     return supportedLangs.includes(match[1]) ? match[1] : 'en';
+/* SDA CUSTOM */   }
+/* SDA CUSTOM */
+/* SDA CUSTOM */   return 'en';
+/* SDA CUSTOM */ }
+
+/*SDA CUSTOM*/ static parseDbErrorMySQL(err: any, lang?: string | false): string {
+/*SDA CUSTOM*/   /** Parse a MySQL/MariaDB error and return a localized descriptive message for the user. */
+/*SDA CUSTOM*/   const msg: string = err?.message || '';
+/*SDA CUSTOM*/   const code: string = err?.code || '';
+/*SDA CUSTOM*/   const l = resolveSdaDbLang(lang);
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // Error number: 1054; Symbol: ER_BAD_FIELD_ERROR
+/*SDA CUSTOM*/   if (code === 'ER_BAD_FIELD_ERROR' || err?.errno === 1054) {
+/*SDA CUSTOM*/     const match = msg.match(/Unknown column '([^']+)'/i);
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('unknownColumn', l, match ? match[1] : '?');
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // Error number: 1146; Symbol: ER_NO_SUCH_TABLE; SQLSTATE: 42S02
+/*SDA CUSTOM*/   if (code === 'ER_NO_SUCH_TABLE' || err?.errno === 1146) {
+/*SDA CUSTOM*/     const match = msg.match(/Table '([^']+)' doesn't exist/i);
+/*SDA CUSTOM*/     const tableName = match ? match[1].split('.').pop() : '?';
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('unknownTable', l, tableName);
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // Error number: 1045/1698; Symbol: ER_ACCESS_DENIED_ERROR / ER_ACCESS_DENIED_NO_PASSWORD_ERROR
+/*SDA CUSTOM*/   if (code === 'ER_ACCESS_DENIED_ERROR' || code === 'ER_ACCESS_DENIED_NO_PASSWORD_ERROR' ||
+/*SDA CUSTOM*/       err?.errno === 1045 || err?.errno === 1698 || /Access denied for user/i.test(msg)) {
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('accessDenied', l);
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // Error number: 1064; Symbol: ER_PARSE_ERROR
+/*SDA CUSTOM*/   if (code === 'ER_PARSE_ERROR' || err?.errno === 1064) {
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('syntaxError', l);
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // Error number: 1040; Symbol: ER_CON_COUNT_ERROR
+/*SDA CUSTOM*/   if (code === 'ER_CON_COUNT_ERROR' || err?.errno === 1040) {
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('tooManyConnections', l);
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // Error number: 1205; Symbol: ER_LOCK_WAIT_TIMEOUT
+/*SDA CUSTOM*/   if (code === 'ER_LOCK_WAIT_TIMEOUT' || err?.errno === 1205) {
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('lockTimeout', l);
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // Node.js connection errors
+/*SDA CUSTOM*/   if (code === 'ECONNREFUSED' || code === 'ER_GET_CONNECTION_TIMEOUT') {
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('connectionRefused', l);
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   // Generic fallback with the original MySQL/MariaDB message
+/*SDA CUSTOM*/   if (msg) {
+/*SDA CUSTOM*/     const truncated = msg.length > 500 ? msg.substring(0, 500) + '...' : msg;
+/*SDA CUSTOM*/     return getSdaDbErrorMessage('generic', l, truncated);
+/*SDA CUSTOM*/   }
+/*SDA CUSTOM*/
+/*SDA CUSTOM*/   return getSdaDbErrorMessage('fallback', l);
+/*SDA CUSTOM*/ }
 }
 
 function insertServerLog(
