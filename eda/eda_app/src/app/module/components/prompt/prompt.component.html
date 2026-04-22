@@ -6,7 +6,8 @@
     <div class="chat-messages p-[0.2em] 2xl:p-3" #messagesContainer>
         <div *ngFor="let m of messages" [ngClass]="{'msg-user': m.role==='user', 'msg-assistant': m.role==='assistant', 'msg-system': m.role==='system', 'msg-error': m.role==='error'}" class="chat-message">
             <div class="bubble">
-                <pre class="msg-content">{{ m.content }}</pre>
+                <pre *ngIf="m.role !== 'assistant'" class="msg-content">{{ m.content }}</pre>
+                <div *ngIf="m.role === 'assistant'" class="msg-content markdown-body" [innerHTML]="renderMarkdown(m.content)"></div>
                 
                 <div class="flex align-items-center">
                     <div class="msg-meta">{{ m.role }} · {{ m.timestamp | date:'shortTime' }}</div>

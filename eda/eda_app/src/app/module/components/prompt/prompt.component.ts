@@ -3,6 +3,7 @@ import { SharedModule } from "@eda/shared/shared.module";
 import { AssistantService } from '@eda/services/api/assistant.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 // Componentes
 import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
@@ -47,7 +48,7 @@ export class PromptComponent implements OnInit, AfterViewInit {
     // Estado de resolución de filtros: se activa cuando el backend responde con awaiting_resolution o awaiting_selection
     private resolutionState: { options: string[], unresolvedFilter: any, pendingResult: any } | null = null;
 
-    constructor(private assistantService: AssistantService) {}
+    constructor(private assistantService: AssistantService, private sanitizer: DomSanitizer) {}
 
     // Iniciamos el scroll a la misma altura donde termino el ultimo mensaje de respuesta del asistente
     ngAfterViewInit(): void {
@@ -299,5 +300,17 @@ export class PromptComponent implements OnInit, AfterViewInit {
         }).catch(err => {
             console.error('Error al copiar:', err);
         });
+    }
+
+    renderMarkdown(content: string): SafeHtml {
+        const escaped = content
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+        const html = '<p>' + escaped
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/\n/g, '<br>') + '</p>';
+        return this.sanitizer.bypassSecurityTrustHtml(html);
     }
 }
