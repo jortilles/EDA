@@ -565,7 +565,7 @@ function createMcpServer(requestUser?: any) {
                             : `Filtros: ${[...new Set(allActiveFilterCols)].join(', ')}`;
                         const chartType = panel.content?.chart_type ?? panel.content?.edaChart ?? null;
 
-                        console.log(`[MCP] panel ${idx} (${panel.title}) — model_id:`, query?.model_id ?? 'FALTA', '| fields:', innerFields.length, '| filtros:', activeFilters.length);
+                        console.log(`[MCP] panel ${idx} (${panel.title}) — model_id:`, query?.model_id ?? 'FALTA', '| fields:', innerFields.length, '| filtros:', activeFilters.length, '| description:', JSON.stringify(panel.description ?? null));
 
                         if (!query?.model_id || innerFields.length === 0) {
                             console.log(`[MCP] panel ${idx} — SALTADO (sin datasource o sin campos)`);
@@ -915,7 +915,7 @@ function createMcpServer(requestUser?: any) {
                                 dashboard_modificado: db.config?.modifiedAt ?? null,
                                 panel_index: idx,
                                 panel_titulo: panel.title ?? '',
-                                // panel_descripcion: panel.content?.description ?? '',  // activar cuando exista
+                                panel_descripcion: panel.description ?? panel.content?.description ?? '',
                                 datasource_nombre: accessibleDsIds.get(query.model_id) ?? null,
                                 campos: fieldNames,
                                 campos_descripciones: camposDescripciones,
@@ -923,7 +923,7 @@ function createMcpServer(requestUser?: any) {
                                 tiene_filtros: activeFilters.length > 0,
                                 alcance,
                             });
-                            console.log(`[MCP] exploración — nueva opción única [${opcionesMap.size}]: datasource=${query.model_id} | alcance=${alcance}`);
+                            console.log(`[MCP] exploración — nueva opción única [${opcionesMap.size}]: dashboard="${db.config?.title}" | panel="${panel.title}" | description=${JSON.stringify(panel.description ?? null)} | alcance=${alcance}`);
                         } else {
                             console.log(`[MCP] exploración — panel duplicado saltado (mismo datasource+filtros): dashboard=${db.config?.title}, panel=${idx}`);
                         }
@@ -951,8 +951,11 @@ function createMcpServer(requestUser?: any) {
                         // No explicit keywords: rank by how well panel/dashboard title matches the question
                         const titleQ = questionMatch(o.panel_titulo ?? '');
                         const dashQ  = questionMatch(o.dashboard_nombre ?? '');
-                        const noFilterBonus = o.tiene_filtros ? 0 : 0.1;
-                        return titleQ * 3 + dashQ * 1.5 + noFilterBonus;
+                        const textScore = titleQ * 3 + dashQ * 1.5;
+                        // noFilterBonus solo si hay alguna señal textual (evita que paneles sin filtros
+                        // y sin relación temática pasen el umbral de score > 0)
+                        const noFilterBonus = (textScore > 0 && !o.tiene_filtros) ? 0.1 : 0;
+                        return textScore + noFilterBonus;
                     }
                     const fieldNamesLower: string[] = (o.campos as string[]).map((n: string) => n.toLowerCase());
 
@@ -965,8 +968,8 @@ function createMcpServer(requestUser?: any) {
                     // Dashboard name — contextual signal (topic of the dashboard)
                     const dashboardScore = kwMatch(o.dashboard_nombre ?? '');
 
-                    // Panel description — primary signal once available (uncomment when metadata exists)
-                    // const descriptionScore = kwMatch(o.panel_descripcion ?? '');
+                    // Panel description — señal primaria (mayor peso)
+                    const descriptionScore = kwMatch(o.panel_descripcion ?? '');
 
                     // Column descriptions from datasource schema
                     const fieldDescScore = kwMatch((o.campos_descripciones ?? []).join(' '));
@@ -986,11 +989,11 @@ function createMcpServer(requestUser?: any) {
                     ).length;
                     const fieldPrecision = fieldNamesLower.length > 0 ? coveredFields / fieldNamesLower.length : 0;
 
-                    // No-filter: slight preference for canonical (unfiltered) data
-                    const noFilterBonus = o.tiene_filtros ? 0 : 0.2;
+                    // No-filter bonus solo si hay señal textual positiva
+                    const textTotal = descriptionScore * 4 + titleScore * 3 + fieldDescScore * 2.5 + tableDescScore * 2 + datasourceScore * 2 + dashboardScore * 1.5 + exactFieldScore * 2 + fieldPrecision;
+                    const noFilterBonus = (textTotal > 0 && !o.tiene_filtros) ? 0.2 : 0;
 
-                    return titleScore * 3 + fieldDescScore * 2.5 + tableDescScore * 2 + datasourceScore * 2 + dashboardScore * 1.5 + exactFieldScore * 2 + fieldPrecision + noFilterBonus;
-                    // When panel description is ready: + descriptionScore * 4
+                    return textTotal + noFilterBonus;
                 };
 
                 let opcionesArr = Array.from(opcionesMap.values());
