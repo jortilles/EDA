@@ -96,12 +96,46 @@ export class PromptService {
 
             if (state === 'user_selected') {
                 const resolvedFilter = QueryResolver.getFilters([{ ...unresolvedFilter, values: selectedValues }])[0];
+                const allFilters = [...pendingResult.resolvedFilters, resolvedFilter];
+
+                const tablesInvolved = [...new Set(pendingResult.currentQuery.map((c: any) => c.table_id))].join(', ');
+
+                const fieldLines = pendingResult.currentQuery.map((c: any) => {
+                    const label = c.display_name?.default ?? c.column_name;
+                    const selectedAgg = c.aggregation_type?.find((a: any) => a.selected);
+                    const aggLabel = selectedAgg && selectedAgg.value !== 'none' ? ` — ${selectedAgg.display_name}` : '';
+                    return `  • ${label}${aggLabel}`;
+                }).join('\n');
+
+                const filterTypeLabel: Record<string, string> = {
+                    '=': '=', '!=': '≠', '>': '>', '<': '<', '>=': '≥', '<=': '≤',
+                    'like': 'contiene', 'not_like': 'no contiene',
+                    'in': 'en', 'not_in': 'no en', 'between': 'entre',
+                    'not_null': 'no es nulo', 'not_null_nor_empty': 'no es nulo ni vacío', 'null_or_empty': 'es nulo o vacío',
+                };
+                const filterLines = allFilters.map((f: any) => {
+                    const op = filterTypeLabel[f.filter_type] ?? f.filter_type;
+                    const v1 = f.filter_elements?.[0]?.value1;
+                    const v2 = f.filter_elements?.[1]?.value2;
+                    const values = f.filter_type === 'between' && v1 && v2
+                        ? `${v1[0]} y ${v2[0]}`
+                        : Array.isArray(v1) && v1.length > 0 ? v1.join(', ') : '';
+                    return `  • ${f.filter_column} ${op}${values ? ` ${values}` : ''}`;
+                }).join('\n');
+
+                const structuredSummary = `Tabla: **${tablesInvolved}**\n\nCampos seleccionados:\n${fieldLines}\n\nFiltros aplicados:\n${filterLines}`;
+
+                const { text: summaryText } = await provider.complete([
+                    { role: 'system', content: 'Eres un asistente de análisis de datos. Responde siempre en español, de forma breve y natural. Sin emojis.' },
+                    { role: 'user', content: `El usuario confirmó los valores de un filtro y la consulta quedó completamente configurada:\n\n${structuredSummary}\n\nGenera una frase corta y natural confirmando que la configuración está lista.` }
+                ], []);
+
                 return {
                     type: 'query_ready',
-                    output_text: 'Se ha configurado con éxito la consulta solicitada, con los valores selecionados.',
+                    output_text: `${summaryText ?? 'Consulta configurada con los valores seleccionados.'}\n\n${structuredSummary}`,
                     currentQuery: pendingResult.currentQuery,
                     principalTable: pendingResult.principalTable,
-                    selectedFilters: [...pendingResult.resolvedFilters, resolvedFilter],
+                    selectedFilters: allFilters,
                     filteredColumns: pendingResult.filteredColumns
                 };
             }
