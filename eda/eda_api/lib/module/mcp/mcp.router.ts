@@ -1302,13 +1302,24 @@ Responde siempre en el idioma del usuario.`,
                 const text = (response.content.find((b: any) => b.type === 'text') as any)?.text ?? '';
                 const responsePayload: any = { ok: true, response: text };
                 if (lastExplorationOptions.length > 1) {
-                    responsePayload.options = lastExplorationOptions.map((o: any) => ({
-                        num: o.opcion_num,
-                        label: `${o.dashboard_nombre}${o.tiene_filtros ? ` — ${o.alcance}` : ''}`,
-                        dashboard_id: o.dashboard_id,
-                        panel_index: o.panel_index,
-                        dashboard_url: o.dashboard_url,
-                    }));
+                    // Only include options whose number the AI actually mentioned in its text.
+                    // Matches: "1.", "1 —", "Opción 1", "Opcion 1", standalone digit followed by separator.
+                    const mentionedNums = new Set<number>();
+                    for (const m of text.matchAll(/\b([1-9])\s*[.\-–—:]/g)) mentionedNums.add(parseInt(m[1]));
+                    for (const m of text.matchAll(/[Oo]pci[oó]n\s+([1-9])/g)) mentionedNums.add(parseInt(m[1]));
+                    const filtered = mentionedNums.size > 0
+                        ? lastExplorationOptions.filter((o: any) => mentionedNums.has(o.opcion_num))
+                        : lastExplorationOptions;
+                    console.log('[CHAT] end_turn — opciones mencionadas en texto:', [...mentionedNums], '| mostrando:', filtered.length, 'de', lastExplorationOptions.length);
+                    if (filtered.length > 1) {
+                        responsePayload.options = filtered.map((o: any) => ({
+                            num: o.opcion_num,
+                            label: `${o.dashboard_nombre}${o.tiene_filtros ? ` — ${o.alcance}` : ''}`,
+                            dashboard_id: o.dashboard_id,
+                            panel_index: o.panel_index,
+                            dashboard_url: o.dashboard_url,
+                        }));
+                    }
                     lastExplorationOptions = [];
                 }
                 return res.status(200).json(responsePayload);
