@@ -223,6 +223,28 @@ export class PromptService {
 
             result.selectedFilters = filters.length === 0 ? [] : QueryResolver.getFilters(filters);
             result.filteredColumns = filters.length === 0 ? [] : QueryResolver.getFilteredColumns(filters, currentQuery);
+
+            if (filters.length > 0) {
+                const filterTypeLabel: Record<string, string> = {
+                    '=': '=', '!=': '≠', '>': '>', '<': '<', '>=': '≥', '<=': '≤',
+                    'like': 'contiene', 'not_like': 'no contiene',
+                    'in': 'en', 'not_in': 'no en',
+                    'between': 'entre',
+                    'not_null': 'no es nulo',
+                    'not_null_nor_empty': 'no es nulo ni vacío',
+                    'null_or_empty': 'es nulo o vacío',
+                };
+                const filterLines = filters.map((f: any) => {
+                    const op = filterTypeLabel[f.filter_type] ?? f.filter_type;
+                    const values = Array.isArray(f.values) && f.values.length > 0
+                        ? f.filter_type === 'between'
+                            ? `${f.values[0]} y ${f.values[1]}`
+                            : f.values.join(', ')
+                        : '';
+                    return `  • ${f.column} ${op}${values ? ` ${values}` : ''}`;
+                }).join('\n');
+                result.output_text += `\n\nFiltros aplicados:\n${filterLines}`;
+            }
         }
 
         return result;
