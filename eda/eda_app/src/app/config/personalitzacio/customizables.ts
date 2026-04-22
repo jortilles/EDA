@@ -121,7 +121,7 @@ export const ChartsPalettes = [
 
 export const LogoImage = 'assets/images/logos/logo.png';
 
-export const LogoSidebar = 'assets/images/logos/logo.png';
+export const LogoSidebar = 'assets/images/logos/logoDDP.png';
 
 export const SubLogoImage = 'assets/images/logos/logo_500.png';
 

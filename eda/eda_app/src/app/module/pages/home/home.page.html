@@ -7,8 +7,8 @@
   <div class="shrink-0 max-w-[2000px] w-full mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4 space-y-4">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-      <div class="flex items-center gap-2">
-        <eda-icon name="home" class="text-[#00B0BA]" />
+      <div class="flex items-center gap-2 justify-center">
+        <eda-icon name="home" class="text-[#BE0926]" />
         <h1 class="text-2xl font-semibold" i18n="@@sidebarMyDashboards">Mis informes</h1>
       </div>
       <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
@@ -80,7 +80,7 @@
         </div>
         @if(!isObserver){
           <button
-            class="bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white font-bold px-4 py-2 rounded flex items-center"
+            class="bg-[#BE0926] text-white font-bold px-4 py-2 rounded flex items-center"
             (click)="onCreateDashboard()">
             <span i18n="@@tituloNuevoInforme">Crear nuevo informe</span>
           </button>
