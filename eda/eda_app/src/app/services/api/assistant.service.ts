@@ -29,6 +29,12 @@ export class AssistantService extends ApiService{
     );
   }
 
+  getSuggestions(schema: any[]): Observable<string[]> {
+    return this.post(`${this.AiRouter}/suggestions`, { schema }).pipe(
+      map((resp: any) => resp.suggestions ?? [])
+    );
+  }
+
   getConfig(): Observable<any> {
     return this.get(`${this.AiRouter}/config`);
   }

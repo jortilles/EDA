@@ -37,8 +37,12 @@ export class PromptComponent implements OnInit, AfterViewInit {
     @Input() messages: ChatMessage[];
     @Output() messagesChange = new EventEmitter<ChatMessage[]>();
 
+    private static suggestionsCache = new Map<string, string[]>();
+
     inputText = '';
     sending = false;
+    suggestions: string[] = [];
+    loadingSuggestions = false;
     schema: any[] = [] ; // Esquema de todas las tablas y sus columnas
     firstTime: boolean = true;
     private shouldAutoScroll: boolean = true;
@@ -57,9 +61,29 @@ export class PromptComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit(): void {
-        const tables = this.edaBlankPanel.tables
-        console.log('tables::: ', tables);
+        const tables = this.edaBlankPanel.tables;
         this.initSchema(tables);
+        this.loadSuggestions();
+    }
+
+    private loadSuggestions(): void {
+        const dsId = this.edaBlankPanel.dataSource._id;
+        const cached = PromptComponent.suggestionsCache.get(dsId);
+        if (cached) {
+            this.suggestions = cached;
+            return;
+        }
+        this.loadingSuggestions = true;
+        this.assistantService.getSuggestions(this.schema).subscribe({
+            next: (suggestions) => {
+                this.suggestions = suggestions;
+                PromptComponent.suggestionsCache.set(dsId, suggestions);
+                this.loadingSuggestions = false;
+            },
+            error: () => {
+                this.loadingSuggestions = false;
+            }
+        });
     }
 
     initSchema(tables: any[]) {
@@ -300,6 +324,17 @@ export class PromptComponent implements OnInit, AfterViewInit {
         }).catch(err => {
             console.error('Error al copiar:', err);
         });
+    }
+
+    sendSuggestion(text: string): void {
+        this.inputText = text;
+        this.sendMessage();
+    }
+
+    autoResize(event: Event): void {
+        const textarea = event.target as HTMLTextAreaElement;
+        textarea.style.height = 'auto';
+        textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
     }
 
     renderMarkdown(content: string): SafeHtml {

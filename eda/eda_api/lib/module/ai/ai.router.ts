@@ -10,6 +10,8 @@ router.get('/available', authGuard, AiController.aIavailable);
 
 router.post('/prompt', authGuard, AiController.aIprompt);
 
+router.post('/suggestions', authGuard, AiController.aiSuggestions);
+
 router.get('/config', authGuard, AiController.aIgetConfig);
 
 router.post('/config', authGuard, AiController.aIsaveConfig);

@@ -131,6 +131,17 @@ export class AiController {
 
     }
 
+    static async aiSuggestions(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { schema } = req.body;
+            const suggestions = await PromptService.generateSuggestions(schema ?? []);
+            res.status(200).json({ ok: true, suggestions });
+        } catch (err) {
+            console.log(err);
+            next(new HttpException(400, 'Error generating suggestions'));
+        }
+    }
+
     static async aIgetConfig(_req: Request, res: Response, next: NextFunction) {
         try {
             const config = getAiConfig();

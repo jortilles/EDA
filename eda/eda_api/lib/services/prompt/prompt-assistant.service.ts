@@ -34,6 +34,27 @@ interface PromptParameters {
 
 export class PromptService {
 
+    static async generateSuggestions(schema: any[]): Promise<string[]> {
+        const config = getAiConfig();
+        const provider = AIProviderFactory.create(config);
+
+        const schemaText = schema.map((t: any) =>
+            `Tabla: ${t.table}${t.description ? ` (${t.description})` : ''}\nColumnas: ${t.columns.map((c: any) => `${c.column} (${c.column_type})`).join(', ')}`
+        ).join('\n\n');
+
+        const { text } = await provider.complete([
+            { role: 'system', content: 'Eres un asistente de análisis de datos. Dado un esquema de base de datos, genera exactamente 3 preguntas cortas y naturales en español que un usuario de negocio querría hacer sobre estos datos. Devuelve SOLO un array JSON de strings, sin explicación ni markdown. Ejemplo: ["Pregunta 1", "Pregunta 2", "Pregunta 3"]' },
+            { role: 'user', content: `Esquema disponible:\n${schemaText}\n\nGenera 3 preguntas de inicio.` }
+        ], []);
+
+        try {
+            const parsed = JSON.parse(text ?? '[]');
+            return Array.isArray(parsed) ? parsed.slice(0, 4) : [];
+        } catch {
+            return [];
+        }
+    }
+
     static async processPrompt(params: PromptParameters) {
 
         const { text, history, data, schema, parameters } = params;
