@@ -2,9 +2,12 @@
   <!-- Header -->
   <div class="flex items-center justify-between mb-2 w-full drag-handler min-h-12">
     <!-- Contenedor con alineación dinámica para el título -->
-    <div class="flex-1">
-      <h2 class="text-base md:text-lg font-base pt-3" [ngStyle]="panelText">{{ panel.title || title }}</h2>
-      <!--small class="text-xs text-red-500">W: {{ screenWidth }}px</small-->
+    <div class="flex-1 flex items-baseline gap-2 pt-3 pb-1 min-w-0">
+      <h2 class="text-base md:text-lg font-base shrink-0" [ngStyle]="panelText">{{ panel.title || title }}</h2>
+      @if (panel.description) {
+        <span class="text-gray-400 shrink-0">—</span>
+        <span class="text-sm text-gray-400 truncate">{{ panel.description }}</span>
+      }
     </div>
 
     <!-- WhatIf inline section -->
@@ -70,28 +73,53 @@
   <eda-dialog2 [display]="display_v.page_dialog" width="95vw" [ngStyle]="panelContent" [overflow]="'hidden'" height="100vh">
 
     <!-- Header -->
-    <div header class="w-full flex items-center justify-between px-2 py-0 xl:py-2">
-      <div class="flex items-center">
-        <div class="p-1 md:p-2">
-          @if (!titleClick) {
-            <div class="w-full flex items-start justify-between px-1 py-1 md:px-2 md:py-2 gap-x-4">
-              <h2 class="text-lg  font-semibold">
-                {{panel.title.trim().length > 0 ? panel.title : '\uD83D\uDD89'}}
-              </h2>
-              <button (click)="startEditTitle()" class="rounded-md  cursor-pointer hover:bg-muted h-fit">
-                <eda-icon class="pointer-events-none" name="pencil"></eda-icon>
-              </button>
-            </div>
-          } @else {
-              <input 
-                type="text" 
-                [(ngModel)]="panel.title" 
-                autofocusOnShow 
-                (focusout)="titleClick=false;"
-                class="w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4]"
-              >
-          }
-        </div>
+    <div header class="w-full flex items-center justify-between px-2 py-0 xl:py-2 gap-x-4">
+      <!-- Title -->
+      <div class="flex items-center gap-2 p-1 md:p-2">
+        @if (!titleClick) {
+          <h2 class="text-lg font-semibold">
+            {{panel.title.trim().length > 0 ? panel.title : '🖉'}}
+          </h2>
+          <button (click)="startEditTitle()" class="rounded-md cursor-pointer hover:bg-muted h-fit">
+            <eda-icon class="pointer-events-none" name="pencil"></eda-icon>
+          </button>
+        } @else {
+          <input
+            type="text"
+            [(ngModel)]="panel.title"
+            autofocusOnShow
+            (focusout)="titleClick=false;"
+            (keydown.enter)="titleClick=false"
+            (keydown.escape)="titleClick=false"
+            i18n-placeholder="@@panelTitlePlaceholder"
+            placeholder="Título del panel"
+            class="px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4]"
+          >
+        }
+      </div>
+
+      <!-- Description (independent, right side) -->
+      <div class="flex items-center gap-2 p-1 md:p-2 flex-1">
+        @if (!descriptionClick) {
+          <h2 class="text-lg font-semibold text-gray-400">
+            {{ panel.description || 'Añadir descripción...' }}
+          </h2>
+          <button (click)="descriptionClick=true" class="rounded-md cursor-pointer hover:bg-muted h-fit">
+            <eda-icon class="pointer-events-none" name="pencil"></eda-icon>
+          </button>
+        } @else {
+          <input
+            type="text"
+            [(ngModel)]="panel.description"
+            autofocusOnShow
+            (focusout)="descriptionClick=false;"
+            (keydown.enter)="descriptionClick=false"
+            (keydown.escape)="descriptionClick=false"
+            i18n-placeholder="@@panelDescriptionPlaceholder"
+            placeholder="Descripción (opcional)"
+            class="px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4]"
+          >
+        }
       </div>
 
       <p-dropdown 

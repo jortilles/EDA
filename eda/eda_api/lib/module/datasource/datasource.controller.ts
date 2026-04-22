@@ -112,8 +112,8 @@ export class DataSourceController {
         try {
             //si no lleva filtro, pasamos directamente a recuperarlos todos           
             const datasources = JSON.stringify(filter) !== '{}' ?
-                await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec() :
-                await DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec();
+                await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner ds.metadata.ia_visibility', options).exec() :
+                await DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner ds.metadata.model_description ds.metadata.ia_visibility', options).exec();
 
             if (!datasources) {
                 return next(new HttpException(500, 'Error loading DataSources'));
@@ -149,11 +149,11 @@ export class DataSourceController {
                         }
                     });
                     if (users.includes(userID) || roles.length > 0 || allCanSee == 'true' || req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/) {
-                        output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
+                        output.push({ _id: e._id, model_name: e.ds.metadata.model_name, model_description: e.ds.metadata.model_description ?? null, ia_visibility: e.ds.metadata.ia_visibility ?? 'FULL' });
                     }
 
                 } else {
-                    output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
+                    output.push({ _id: e._id, model_name: e.ds.metadata.model_name, model_description: e.ds.metadata.model_description ?? null, ia_visibility: e.ds.metadata.ia_visibility ?? 'FULL' });
                 }
             }
             output.sort((a, b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 :

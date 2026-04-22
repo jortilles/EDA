@@ -6291,6 +6291,14 @@ OR<ph id="5"/>
   <source>Guardar como, para el modelo de datos</source>
   <target>Save as, for the data mode</target>
 </trans-unit>
+<trans-unit id="chatOptionSelectedLabel" datatype="html">
+  <source>Opción</source>
+  <target>Option</target>
+</trans-unit>
+<trans-unit id="chatErrorConnecting" datatype="html">
+  <source>Error al conectar con el asistente.</source>
+  <target>Error connecting to the assistant.</target>
+</trans-unit>
 </body>
 </file>
 </xliff>
