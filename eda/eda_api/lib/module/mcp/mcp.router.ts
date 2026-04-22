@@ -38,20 +38,15 @@ const MCP_PASSWORD: string = eda_api_config.mcp_password || '';
 
 // --- Auth interno (sin HTTP) ---
 async function loginInternal(): Promise<string> {
-
-    console.log('[MCP] loginInternal — email:', MCP_EMAIL || '(vacío)', '| password configurado:', !!MCP_PASSWORD);
     if (!MCP_EMAIL || !MCP_PASSWORD) {
         throw new Error('MCP_EMAIL y MCP_PASSWORD no están configurados en el servidor.');
     }
     const user: any = await User.findOne({ email: MCP_EMAIL }).exec();
-    console.log('[MCP] Usuario encontrado:', user ? user.email : 'NO ENCONTRADO');
     if (!user) throw new Error(`Usuario no encontrado: ${MCP_EMAIL}`);
-    const passwordOk = bcrypt.compareSync(MCP_PASSWORD, user.password);
-    console.log('[MCP] loginInternal — password válido:', passwordOk);
-    if (!passwordOk) throw new Error('Credenciales incorrectas.');
+    if (!bcrypt.compareSync(MCP_PASSWORD, user.password)) throw new Error('Credenciales incorrectas.');
     user.password = ':)';
     const token = jwt.sign({ user }, SEED, { expiresIn: 14400 });
-    console.log('[MCP] loginInternal — token generado OK para:', user.email, '| role:', user.role);
+    console.log('[MCP] loginInternal — OK | usuario:', user.email, '| role:', user.role);
     return token;
 }
 
@@ -88,8 +83,6 @@ async function getAllDashboards(userId: string) {
     console.log('[MCP] getAllDashboards — privados:', privados.length, '| grupo:', grupo.length, '| comunes:', comunes.length, '| públicos:', publicos.length);
     return { privados, grupo, comunes, publicos };
 }
-
-
 
 // --- Filtrado ia_visibility ---
 function filterDatasourceForAI(ds: any): any | null {
@@ -148,9 +141,7 @@ function filterDatasourceForAI(ds: any): any | null {
 // --- Datasources accesibles vía /datasource/namesForDashboard ---
 // Devuelve Map<id, model_name> — excluye ia_visibility=NONE (filtrado en el controlador)
 async function getAccessibleDatasourceIds(user: any): Promise<Map<string, string>> {
-    const { MCP_URL } = getAnthropicConfig();
-    const apiBase = MCP_URL.replace(/\/ia$/, '');
-    const token = jwt.sign({ user }, SEED, { expiresIn: 14400 });
+    const { apiBase, token } = buildApiCall(user);
     const url = `${apiBase}/datasource/namesForDashboard?token=${token}`;
 
     console.log('[MCP] getAccessibleDatasourceIds — GET', apiBase + '/datasource/namesForDashboard');
@@ -502,17 +493,6 @@ function createMcpServer(requestUser?: any) {
                 ? campos_requeridos.map((c: string) => c.toLowerCase())
                 : [];
 
-            // Helper: resume los filtros activos de un panel en texto legible
-            const summarizeFilters = (filters: any[]): string => {
-                if (!filters || filters.length === 0) return 'Sin filtros';
-                return filters.map((f: any) => {
-                    const col = f.filter_column ?? '?';
-                    const type = f.filter_type ?? '?';
-                    const vals = (f.filter_elements ?? []).flatMap((e: any) => Array.isArray(e.value1) ? e.value1 : [e.value1]).filter(Boolean);
-                    return vals.length > 0 ? `${col} ${type} (${vals.join(', ')})` : `${col} ${type}`;
-                }).join(' | ');
-            };
-
             try {
                 const user = await resolveUser(requestUser);
                 console.log('[MCP] get_data_from_dashboard - usuario:', user?.email ?? user?._id ?? '(desconocido)');
@@ -801,10 +781,33 @@ function createMcpServer(requestUser?: any) {
                     }
                 };
 
+                // Cache de conjuntos de columnas visibles por model_id para filtrado O(1) por panel
+                const visibleColsCache = new Map<string, Set<string> | null>();
+                const getVisibleCols = async (modelId: string): Promise<Set<string> | null> => {
+                    if (visibleColsCache.has(modelId)) return visibleColsCache.get(modelId)!;
+                    const schema = await getDsSchema(modelId);
+                    if (!schema?.tables) { visibleColsCache.set(modelId, null); return null; }
+                    const cols = new Set<string>(
+                        ([] as string[]).concat(
+                            ...(schema.tables as any[]).map((t: any) =>
+                                (t.columns ?? []).map((c: any) => c.column_name ?? c.name ?? '')
+                            )
+                        ).filter(Boolean)
+                    );
+                    visibleColsCache.set(modelId, cols);
+                    return cols;
+                };
+
+                // Cargar todos los dashboards completos en paralelo para reducir latencia de red/BD
+                const fullDashboards = await Promise.all(
+                    allDashboards.map((d: any) => Dashboard.findById(d._id).exec())
+                );
+
                 const opcionesMap = new Map<string, any>();
 
-                for (const d of allDashboards) {
-                    const db: any = await Dashboard.findById(d._id).exec();
+                for (let di = 0; di < allDashboards.length; di++) {
+                    const d = allDashboards[di];
+                    const db: any = fullDashboards[di];
                     if (!db) continue;
                     const panels: any[] = Array.isArray(db.config?.panel) ? db.config.panel : [];
                     const dashboardLink = baseUrl ? `${baseUrl}/dashboard/${encodeURIComponent(d._id)}` : '';
@@ -821,21 +824,14 @@ function createMcpServer(requestUser?: any) {
                             continue;
                         }
 
-                        // Schema del datasource: filtra columnas/tablas NONE y aporta descripciones
                         const dsSchema = await getDsSchema(query.model_id);
+                        const visibleCols = await getVisibleCols(query.model_id);
 
-                        // Excluir campos cuya columna tiene ia_visibility=NONE en el schema
-                        const visibleFields = dsSchema?.tables
+                        // Excluir campos con ia_visibility=NONE usando lookup O(1) por columna
+                        const visibleFields = visibleCols
                             ? fields.filter((f: any) => {
                                 const fn: string = f.field_name ?? '';
-                                if (!fn) return true;
-                                for (const t of dsSchema.tables) {
-                                    const col = (t.columns ?? []).find((c: any) =>
-                                        (c.column_name ?? c.name) === fn
-                                    );
-                                    if (col) return true; // exists in filtered schema → visible
-                                }
-                                return false; // not found in filtered schema → NONE, skip
+                                return !fn || visibleCols.has(fn);
                             })
                             : fields;
                         if (visibleFields.length === 0) continue; // all fields are NONE, skip panel
@@ -933,10 +929,8 @@ function createMcpServer(requestUser?: any) {
 
                 const MAX_OPTIONS = 5;
 
-                // Relevance scoring — fraction of keywords found in each signal corpus
-                // Score = titleScore*3 + fieldDescScore*2.5 + tableDescScore*2 + datasourceScore*2 + dashboardScore*1.5 + exactFieldScore*2 + fieldPrecision + noFilterBonus
-                // When panel_descripcion is added: + descriptionScore * 4  (uncomment below)
-                const questionWords = (question ?? '').toLowerCase().split(/\s+/).filter((w: string) => w.length > 3);
+                // Relevance scoring: cada señal tiene peso proporcional a su confiabilidad semántica
+                const questionWords = (question ?? '').toLowerCase().split(/\s+/).filter((w: string) => w.length >= 3);
                 const kwMatch = (text: string): number => {
                     if (!text || camposLower.length === 0) return 0;
                     const t = text.toLowerCase();
@@ -949,12 +943,12 @@ function createMcpServer(requestUser?: any) {
                 };
                 const scoreOption = (o: any): number => {
                     if (camposLower.length === 0) {
-                        // No explicit keywords: rank by how well panel/dashboard title matches the question
                         const titleQ = questionMatch(o.panel_titulo ?? '');
+                        const descQ  = questionMatch(o.panel_descripcion ?? '');
                         const dashQ  = questionMatch(o.dashboard_nombre ?? '');
-                        const textScore = titleQ * 3 + dashQ * 1.5;
-                        // noFilterBonus solo si hay alguna señal textual (evita que paneles sin filtros
-                        // y sin relación temática pasen el umbral de score > 0)
+                        const textScore = titleQ * 3 + descQ * 2.5 + dashQ * 1.5;
+                        // noFilterBonus solo si hay señal textual positiva (evita que paneles sin relación
+                        // temática pasen el umbral de relevancia por no tener filtros)
                         const noFilterBonus = (textScore > 0 && !o.tiene_filtros) ? 0.1 : 0;
                         return textScore + noFilterBonus;
                     }
@@ -997,16 +991,16 @@ function createMcpServer(requestUser?: any) {
                     return textTotal + noFilterBonus;
                 };
 
-                let opcionesArr = Array.from(opcionesMap.values());
-                opcionesArr.sort((a, b) => scoreOption(b) - scoreOption(a));
+                // Puntuar una sola vez y reutilizar para ordenar y filtrar
+                const scored = Array.from(opcionesMap.values()).map(o => ({ o, s: scoreOption(o) }));
+                scored.sort((a, b) => b.s - a.s);
 
-                // Filtrar opciones irrelevantes: si la pregunta tiene palabras clave significativas
-                // y alguna opción puntúa > 0, descartar las que puntúan 0.
-                const scores = opcionesArr.map(o => scoreOption(o));
-                const maxScore = scores.length > 0 ? Math.max(...scores) : 0;
-                if (maxScore > 0) {
-                    opcionesArr = opcionesArr.filter((_, i) => scores[i] > 0);
-                }
+                // Descartar opciones con score 0 cuando hay alguna con score > 0
+                // (evita que paneles sin relación temática aparezcan junto a resultados relevantes)
+                const maxScore = scored.length > 0 ? scored[0].s : 0;
+                let opcionesArr = maxScore > 0
+                    ? scored.filter(x => x.s > 0).map(x => x.o)
+                    : scored.map(x => x.o);
 
                 const totalOpciones = opcionesArr.length;
                 const truncada = opcionesArr.length > MAX_OPTIONS;
