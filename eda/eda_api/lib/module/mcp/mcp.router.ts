@@ -501,6 +501,25 @@ function createMcpServer(requestUser?: any) {
                 // ── MODO DATOS: dashboard_id proporcionado ──────────────────────────────
                 if (dashboard_id) {
                     console.log('[MCP] get_data_from_dashboard - MODO DATOS →', dashboard_id);
+
+                    // SEGURIDAD (pendiente de activar): verificar permisos de acceso al dashboard
+                    // usando el endpoint HTTP de EDA en lugar de ir directo a MongoDB.
+                    // Dashboard.findById bypassa la capa de permisos de EDA: cualquier usuario
+                    // que conozca un dashboard_id puede ejecutar sus queries aunque no tenga acceso.
+                    // Para activar: descomentar este bloque y eliminar el Dashboard.findById de abajo.
+                    //
+                    // const { apiBase: _apiBase, token: _token } = buildApiCall(user);
+                    // const _checkRes = await fetch(`${_apiBase}/dashboard/${encodeURIComponent(dashboard_id)}?token=${_token}`);
+                    // if (!_checkRes.ok) {
+                    //     console.warn('[MCP] MODO DATOS — acceso denegado (HTTP):', dashboard_id, '| status:', _checkRes.status);
+                    //     return { content: [{ type: 'text', text: `Dashboard no encontrado: ${dashboard_id}` }], isError: true };
+                    // }
+                    // const _checkData: any = await _checkRes.json();
+                    // if (!_checkData.ok) {
+                    //     console.warn('[MCP] MODO DATOS — acceso denegado (ok:false):', dashboard_id);
+                    //     return { content: [{ type: 'text', text: `Dashboard no encontrado: ${dashboard_id}` }], isError: true };
+                    // }
+
                     const db: any = await Dashboard.findById(dashboard_id).exec();
                     if (!db) {
                         console.warn('[MCP] get_data_from_dashboard - dashboard NO encontrado:', dashboard_id);
