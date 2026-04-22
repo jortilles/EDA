@@ -172,7 +172,27 @@ export class PromptService {
 
             result.currentQuery = currentQueryTool;
             result.principalTable = principalTable;
-            result.output_text = currentQueryTool.length === 0 ? 'Podrías ser más preciso en tu consulta.' : 'Se ha configurado con éxito la consulta solicitada.';
+
+            if (currentQueryTool.length === 0) {
+                result.output_text = 'Podrías ser más preciso en tu consulta.';
+            } else {
+                const tablesInvolved = [...new Set(currentQueryTool.map((c: any) => c.table_id))].join(', ');
+                const fieldLines = currentQueryTool.map((c: any) => {
+                    const label = c.display_name?.default ?? c.column_name;
+                    const selectedAgg = c.aggregation_type?.find((a: any) => a.selected);
+                    const aggLabel = selectedAgg && selectedAgg.value !== 'none' ? ` — ${selectedAgg.display_name}` : '';
+                    return `  • ${label}${aggLabel}`;
+                }).join('\n');
+                const limitLine = result.queryLimit !== 5000 ? `\n\nLímite de filas: ${result.queryLimit}` : '';
+                const structuredSummary = `Tabla: **${tablesInvolved}**\n\nCampos seleccionados:\n${fieldLines}${limitLine}`;
+
+                const { text: summaryText } = await provider.complete([
+                    { role: 'system', content: 'Eres un asistente de análisis de datos. Responde siempre en español, de forma breve y natural. Sin emojis.' },
+                    { role: 'user', content: `El usuario solicitó una consulta y se configuró lo siguiente:\n\n${structuredSummary}\n\nGenera una frase corta y natural confirmando la configuración realizada.` }
+                ], []);
+
+                result.output_text = `${summaryText ?? 'Consulta configurada correctamente.'}\n\n${structuredSummary}`;
+            }
         }
 
         if (toolGetFilters) {

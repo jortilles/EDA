@@ -12,6 +12,16 @@ export class OpenAIProvider implements IAIProvider {
     }
 
     async complete(messages: NormalizedMessage[], tools: NormalizedTool[]): Promise<NormalizedResponse> {
+        if (tools.length === 0) {
+            const response: any = await this.client.responses.create({
+                model: this.model,
+                input: messages,
+            });
+            const textItem = (response.output ?? []).find((item: any) => item.type === 'message');
+            const text = textItem?.content?.find((c: any) => c.type === 'output_text')?.text ?? '';
+            return { toolCalls: [], text };
+        }
+
         const openAITools = tools.map(tool => ({
             type: "function" as const,
             name: tool.name,
