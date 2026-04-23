@@ -1412,4 +1412,64 @@ McpRouter.get('/chat/config', authGuard, (_req: Request, res: Response) => {
     res.json({ available: AVAILABLE });
 });
 
+// --- Endpoint para integraciones externas (n8n, etc.) ---
+// POST /ia/dashboards/:id
+// Llama directamente al tool get_data_from_dashboard sin pasar por Claude.
+// Auth: JWT Bearer opcional → si no viene, usa loginInternal (MCP_EMAIL/MCP_PASSWORD).
+// Body: { question: string, panel_index?: number }
+McpRouter.post('/dashboards/:id', async (req: Request, res: Response) => {
+    const { MCP_URL } = getAnthropicConfig();
+    const dashboard_id: string = req.params.id;
+    const { question } = req.body;
+
+    if (!question) {
+        return res.status(400).json({ ok: false, response: 'Se requiere el campo question en el body.' });
+    }
+
+    console.log('[DASHBOARDS] POST /ia/dashboards/:id — id:', dashboard_id, '| question:', question);
+
+    // Auth: JWT Bearer si viene, loginInternal si no
+    let reqUser: any = null;
+    const authHeader = req.headers['authorization'] as string;
+    if (authHeader?.startsWith('Bearer ')) {
+        try {
+            const decoded: any = jwt.verify(authHeader.slice(7), SEED);
+            reqUser = decoded.user;
+            console.log('[DASHBOARDS] Auth via JWT — usuario:', reqUser?.email ?? '(desconocido)');
+        } catch (e: any) {
+            console.warn('[DASHBOARDS] JWT inválido:', e.message, '→ fallback a loginInternal');
+        }
+    }
+
+    const mcpClient = new Client({ name: 'eda-dashboards', version: '1.0.0' });
+
+    try {
+        const user = await resolveUser(reqUser);
+        const userToken = jwt.sign({ user }, SEED, { expiresIn: 14400 });
+
+        const transport = new StreamableHTTPClientTransport(new URL(MCP_URL), {
+            requestInit: { headers: { 'x-user-token': userToken } },
+        });
+        await mcpClient.connect(transport);
+
+        const toolArgs: any = { dashboard_id, question };
+
+        console.log('[DASHBOARDS] Llamando get_data_from_dashboard —', JSON.stringify(toolArgs));
+        const result = await mcpClient.callTool({ name: 'get_data_from_dashboard', arguments: toolArgs });
+        const resultText = (result.content as any[])
+            .filter((c: any) => c.type === 'text')
+            .map((c: any) => c.text)
+            .join('\n');
+
+        console.log('[DASHBOARDS] Resultado OK — length:', resultText.length);
+        return res.status(200).json({ ok: true, response: resultText });
+
+    } catch (err: any) {
+        console.error('[DASHBOARDS] Error:', err.message);
+        return res.status(500).json({ ok: false, response: `Error: ${err.message}` });
+    } finally {
+        try { await mcpClient.close(); } catch (_) {}
+    }
+});
+
 export default McpRouter;
