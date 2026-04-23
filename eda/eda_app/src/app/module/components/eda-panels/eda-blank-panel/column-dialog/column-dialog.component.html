@@ -206,16 +206,26 @@
             @if (!(display.calendar && display.between) && !filter.switch && (!['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(filterSelected?.value))) {
               <span class="p-float-label h-[3.2rem] w-full">
 
-                <div class="date-picker-single">
-                    <eda-date-picker 
-                      (onDatesChanges)="processPickerEvent($event)" 
-                      [filterSelected]="filterSelected"
-                      [selectionMode]="'single'"
-                    >
-                    </eda-date-picker>
-                </div>
+                @if(selectedColumn?.column_type === 'date') {
+                  <div class="date-picker-single">
+                      <eda-date-picker 
+                        (onDatesChanges)="processPickerEvent($event)" 
+                        [filterSelected]="filterSelected"
+                        [selectionMode]="'single'"
+                      >
+                      </eda-date-picker>
+                  </div>
+                }
 
                 @if(!showFormatDateSection){
+                  <input
+                    id="float-input1"
+                    class="w-full h-full rounded-md border border-gray-300 px-3 py-2"
+                    [type]="inputType"
+                    [(ngModel)]="filterValue.value1"
+                    (input)="handleValidForm({ value1: filterValue.value1 })"
+                    pInputText
+                  />
                   <label i18n="@@valor1Label">Valor 1</label>
                 }
               </span>
