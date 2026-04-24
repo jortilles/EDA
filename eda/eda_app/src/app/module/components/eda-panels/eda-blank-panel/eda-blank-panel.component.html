@@ -2,11 +2,10 @@
   <!-- Header -->
   <div class="flex items-center justify-between mb-2 w-full drag-handler min-h-12">
     <!-- Contenedor con alineación dinámica para el título -->
-    <div class="flex-1 flex items-baseline gap-2 pt-3 pb-1 min-w-0">
-      <h2 class="text-base md:text-lg font-base shrink-0" [ngStyle]="panelText">{{ panel.title || title }}</h2>
+    <div class="flex-1 flex flex-col pt-3 pb-1 min-w-0">
+      <h2 class="text-base md:text-lg font-base" [ngStyle]="panelText">{{ panel.title || title }}</h2>
       @if (panel.description) {
-        <span class="text-gray-400 shrink-0">—</span>
-        <span class="text-sm text-gray-400 truncate">{{ panel.description }}</span>
+        <span class="text-sm text-gray-400 whitespace-pre-line break-words">{{ panel.description }}</span>
       }
     </div>
 
