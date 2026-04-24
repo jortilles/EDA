@@ -183,11 +183,20 @@
             </div>
           }
           @if (msg.role === 'user') {
-            <div class="chat-bubble chat-bubble--user whitespace-pre-wrap">{{ msg.content }}</div>
+            <div class="chat-bubble chat-bubble--user whitespace-pre-wrap">{{ msg.displayContent ?? msg.content }}</div>
           } @else {
             <div class="chat-bubble chat-bubble--assistant chat-message-content" [innerHTML]="renderMarkdown(msg.content)"></div>
           }
         </div>
+        @if (msg.role === 'assistant' && msg.options && msg.options.length > 0) {
+          <div class="flex flex-col gap-2 pl-8 mt-1">
+            @for (opt of msg.options; track opt.num) {
+              <button class="chat-suggestion text-left" (click)="selectOption(opt)">
+                {{ opt.num }}. {{ opt.label }}
+              </button>
+            }
+          </div>
+        }
       }
       @if (chatLoading()) {
         <div class="chat-msg-row">

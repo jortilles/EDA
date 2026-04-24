@@ -1284,24 +1284,6 @@ public startCountdown(seconds: number) {
         if (params['cnproperties']) {
           this.connectionProperties = JSON.parse(decodeURIComponent(params['cnproperties']));
         }
-        if (params['MODEEDIT'] === 'TRUE') {
-          const user = localStorage.getItem('user');
-          console.log('hola');
-          console.log(user);
-          console.log('hola');
-          console.log(this.canIedit());
-
-          // restriccions = condicions per poder mostrar panell de edicio
-          const restriccions = true;
-          if(restriccions){
-            // si el usuario puede customizar, le mostraremos el panel de customización
-            this.showCustomizeDialog = true;
-            // setTimeout(() => {
-            //   this.showCustomizeDialog = false;
-            // },3000);
-          }
-
-        }
 
       } catch(e){
         console.error('getUrlParams: '+ e);
