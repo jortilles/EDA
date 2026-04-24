@@ -11,7 +11,6 @@ import Dashboard from '../dashboard/model/dashboard.model';
 import DataSource from '../datasource/model/datasource.model';
 import User from '../admin/users/model/user.model';
 import Group from '../admin/groups/model/group.model';
-import ManagerConnectionService from '../../services/connection/manager-connection.service';
 
 const getAnthropicConfig = () => {
     const configPath = path.resolve(__dirname, '../../../config/anthropic.config.js');
@@ -502,29 +501,21 @@ function createMcpServer(requestUser?: any) {
                 if (dashboard_id) {
                     console.log('[MCP] get_data_from_dashboard - MODO DATOS →', dashboard_id);
 
-                    // SEGURIDAD (pendiente de activar): verificar permisos de acceso al dashboard
-                    // usando el endpoint HTTP de EDA en lugar de ir directo a MongoDB.
-                    // Dashboard.findById bypassa la capa de permisos de EDA: cualquier usuario
-                    // que conozca un dashboard_id puede ejecutar sus queries aunque no tenga acceso.
-                    // Para activar: descomentar este bloque y eliminar el Dashboard.findById de abajo.
-                    //
-                    // const { apiBase: _apiBase, token: _token } = buildApiCall(user);
-                    // const _checkRes = await fetch(`${_apiBase}/dashboard/${encodeURIComponent(dashboard_id)}?token=${_token}`);
-                    // if (!_checkRes.ok) {
-                    //     console.warn('[MCP] MODO DATOS — acceso denegado (HTTP):', dashboard_id, '| status:', _checkRes.status);
-                    //     return { content: [{ type: 'text', text: `Dashboard no encontrado: ${dashboard_id}` }], isError: true };
-                    // }
-                    // const _checkData: any = await _checkRes.json();
-                    // if (!_checkData.ok) {
-                    //     console.warn('[MCP] MODO DATOS — acceso denegado (ok:false):', dashboard_id);
-                    //     return { content: [{ type: 'text', text: `Dashboard no encontrado: ${dashboard_id}` }], isError: true };
-                    // }
-
-                    const db: any = await Dashboard.findById(dashboard_id).exec();
-                    if (!db) {
-                        console.warn('[MCP] get_data_from_dashboard - dashboard NO encontrado:', dashboard_id);
+                    // Verificar acceso al dashboard via HTTP — aplica la capa de permisos
+                    // de EDA (visibilidad, grupo, etc.) en lugar de ir directo a MongoDB.
+                    const { apiBase: dbApiBase, token: dbToken } = buildApiCall(user);
+                    console.log('[MCP] MODO DATOS — GET', `${dbApiBase}/dashboard/${dashboard_id}`);
+                    const dbResponse = await fetch(`${dbApiBase}/dashboard/${encodeURIComponent(dashboard_id)}?token=${dbToken}`);
+                    if (!dbResponse.ok) {
+                        console.warn('[MCP] MODO DATOS — acceso denegado:', dashboard_id, '| status:', dbResponse.status);
                         return { content: [{ type: 'text', text: `Dashboard no encontrado: ${dashboard_id}` }], isError: true };
                     }
+                    const dbData: any = await dbResponse.json();
+                    if (!dbData.ok) {
+                        console.warn('[MCP] MODO DATOS — acceso denegado (ok:false):', dashboard_id);
+                        return { content: [{ type: 'text', text: `Dashboard no encontrado: ${dashboard_id}` }], isError: true };
+                    }
+                    const db: any = dbData.dashboard;
 
                     const allPanels: any[] = Array.isArray(db.config?.panel) ? db.config.panel : [];
                     const dashboardLink = baseUrl ? `${baseUrl}/dashboard/${encodeURIComponent(dashboard_id)}` : '';
@@ -552,17 +543,10 @@ function createMcpServer(requestUser?: any) {
                         const innerFields: any[] = query?.query?.fields ?? [];
                         let fieldNames = innerFields.map((f: any) => f.display_name ?? f.field_name).filter(Boolean);
                         const activeFilters: any[] = query?.query?.filters ?? [];
-                        const panelId0: string = panel.id ?? '';
-                        const globalFiltersForSummary = (Array.isArray(db.config?.filters) ? db.config.filters : [])
-                            .filter((gf: any) => gf && !gf.isdeleted && (gf.selectedItems ?? []).length > 0 &&
-                                (gf.applyToAll === true || (Array.isArray(gf.panelList) && gf.panelList.includes(panelId0))));
-                        const allActiveFilterCols = [
-                            ...activeFilters.map((f: any) => f.filter_column).filter(Boolean),
-                            ...globalFiltersForSummary.map((gf: any) => gf.selectedColumn?.column_name ?? gf.column?.value?.column_name).filter(Boolean),
-                        ];
-                        const filterSummary = allActiveFilterCols.length === 0
+                        const filterCols = [...new Set(activeFilters.map((f: any) => f.filter_column).filter(Boolean))];
+                        const filterSummary = filterCols.length === 0
                             ? 'Sin filtros'
-                            : `Filtros: ${[...new Set(allActiveFilterCols)].join(', ')}`;
+                            : `Filtros: ${filterCols.join(', ')}`;
                         const chartType = panel.content?.chart_type ?? panel.content?.edaChart ?? null;
 
                         console.log(`[MCP] panel ${idx} (${panel.title}) — model_id:`, query?.model_id ?? 'FALTA', '| fields:', innerFields.length, '| filtros:', activeFilters.length, '| description:', JSON.stringify(panel.description ?? null));
@@ -585,66 +569,6 @@ function createMcpServer(requestUser?: any) {
                             const modelId: string = query.model_id;
                             const innerQuery: any = JSON.parse(JSON.stringify(query.query));
 
-                            // ── Aplicar filtros globales del dashboard al panel ────────────────
-                            const panelId: string = panel.id ?? '';
-                            const globalFilters: any[] = Array.isArray(db.config?.filters) ? db.config.filters : [];
-                            const applicableGlobalFilters = globalFilters.filter((gf: any) => {
-                                if (!gf || gf.isdeleted) return false;
-                                // Sin valores seleccionados → no aplica
-                                const items = gf.selectedItems ?? [];
-                                if (!items.length) return false;
-                                return gf.applyToAll === true ||
-                                    (Array.isArray(gf.panelList) && gf.panelList.includes(panelId));
-                            });
-
-                            if (applicableGlobalFilters.length > 0) {
-                                console.log(`[MCP] panel ${idx} — aplicando ${applicableGlobalFilters.length} filtro(s) global(es) del dashboard`);
-                                if (!Array.isArray(innerQuery.filters)) innerQuery.filters = [];
-
-                                for (const gf of applicableGlobalFilters) {
-                                    const colType: string = gf.selectedColumn?.column_type ?? gf.column?.value?.column_type ?? 'text';
-                                    const filterTable: string = gf.selectedTable?.table_name ?? gf.table?.value ?? '';
-                                    const filterColumn: string = gf.selectedColumn?.column_name ?? gf.column?.value?.column_name ?? '';
-                                    const isDate = colType === 'date';
-
-                                    let filterElements: any[];
-                                    if (isDate) {
-                                        filterElements = [
-                                            { value1: gf.selectedItems[0] ? [gf.selectedItems[0]] : [] },
-                                            { value2: gf.selectedItems[1] ? [gf.selectedItems[1]] : [] }
-                                        ];
-                                    } else {
-                                        filterElements = [{ value1: gf.selectedItems }];
-                                    }
-
-                                    const formattedFilter: any = {
-                                        filter_id: gf.id,
-                                        filter_table: filterTable,
-                                        filter_column: filterColumn,
-                                        filter_column_type: colType,
-                                        filter_type: isDate ? 'between' : 'in',
-                                        filter_elements: filterElements,
-                                        isGlobal: true,
-                                        applyToAll: gf.applyToAll ?? false,
-                                        filterBeforeGrouping: true,
-                                        computed_column: gf.selectedColumn?.computed_column,
-                                        SQLexpression: gf.selectedColumn?.SQLexpression,
-                                    };
-
-                                    // Si tiene pathList (EDA2) lo añadimos también
-                                    if (gf.pathList) {
-                                        const pathListCopy = JSON.parse(JSON.stringify(gf.pathList));
-                                        for (const key in pathListCopy) {
-                                            delete pathListCopy[key].selectedTableNodes;
-                                        }
-                                        formattedFilter.pathList = pathListCopy;
-                                        formattedFilter.autorelation = gf.autorelation;
-                                    }
-
-                                    innerQuery.filters.push(formattedFilter);
-                                }
-                            }
-                            // ─────────────────────────────────────────────────────────────────
 
                             // ── Filtrar campos con ia_visibility=NONE ──────────────────────────
                             try {
@@ -679,65 +603,59 @@ function createMcpServer(requestUser?: any) {
                             innerQuery.joinType    = innerQuery.joinType   ?? 'inner';
                             innerQuery.forSelector = false;
 
-                            // Compatibilidad: si un filtro no tiene filterBeforeGrouping,
-                            // asumir true (WHERE) igual que hace el dashboard controller.
-                            // Sin esto, columnas de texto sin aggregation_type van al HAVING
-                            // y generan SQL inválido con 'undefined'.
-                            for (const f of (innerQuery.filters ?? [])) {
-                                if (!f.hasOwnProperty('filterBeforeGrouping')) {
-                                    f.filterBeforeGrouping = true;
-                                }
+                            // Ejecutar via /dashboard/query — aplica securityCheck,
+                            // forbiddenTables y toda la capa de permisos de EDA.
+                            // El controller también gestiona filterBeforeGrouping internamente.
+                            const { apiBase, token: queryToken } = buildApiCall(user);
+                            console.log(`[MCP] panel ${idx} — POST ${apiBase}/dashboard/query | model_id:`, modelId);
+                            const queryResponse = await fetch(`${apiBase}/dashboard/query?token=${queryToken}`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    model_id: modelId,
+                                    query: innerQuery,
+                                    dashboard: { dashboard_id, panel_id: panel.id ?? '' },
+                                }),
+                            });
+                            if (!queryResponse.ok) {
+                                const errText = await queryResponse.text();
+                                throw new Error(`/dashboard/query HTTP ${queryResponse.status}: ${errText.substring(0, 300)}`);
                             }
-
-                            console.log(`[MCP] panel ${idx} — getConnection(${modelId})...`);
-                            const connection = await ManagerConnectionService.getConnection(modelId);
-                            console.log(`[MCP] panel ${idx} — connection OK | tipo:`, (connection as any)?.constructor?.name ?? typeof connection);
-
-                            const dataModel = await connection.getDataSource(modelId);
-                            const dsName: string = (dataModel as any)?.ds?.metadata?.model_name ?? modelId;
-                            console.log(`[MCP] panel ${idx} — dataSource OK | nombre:`, dsName, '| tipo BD:', (dataModel as any)?.ds?.connection?.type ?? '?');
-
-                            const dataModelObject = JSON.parse(JSON.stringify(dataModel));
-                            let builtQuery = await connection.getQueryBuilded(innerQuery, dataModelObject, user, innerQuery.queryLimit);
-                            console.log(`[MCP] panel ${idx} — query construida (tipo: ${typeof builtQuery}):`, typeof builtQuery === 'string' ? builtQuery.substring(0, 400) : JSON.stringify(builtQuery).substring(0, 400));
-
-                            // Detectar bug del query builder de EDA: genera SQL con 'undefined' literal
-                            // cuando aplica una función numérica a una columna de texto en los filtros.
-                            // Fallback: reintentar sin filtros y avisar al usuario en el resultado.
-                            let filtrosFallback = false;
-                            const queryStr: string = typeof builtQuery === 'string' ? builtQuery : JSON.stringify(builtQuery);
-                            if (/\bundefined\s*\(/.test(queryStr) || / undefined /.test(queryStr)) {
-                                console.warn(`[MCP] panel ${idx} — query contiene 'undefined' (bug EDA query builder), reintentando sin filtros`);
-                                const fallbackInner = JSON.parse(JSON.stringify(innerQuery));
-                                fallbackInner.filters = [];
-                                builtQuery = await connection.getQueryBuilded(fallbackInner, dataModelObject, user, fallbackInner.queryLimit);
-                                filtrosFallback = true;
+                            const queryData: any = await queryResponse.json();
+                            // Respuesta del controller: [labels, rows]
+                            //   labels → array de nombres técnicos de columna
+                            //   rows   → array de arrays de valores
+                            // Caso especial: [['noDataAllowed'], [[]]] si el usuario no tiene acceso
+                            const [responseLabels, responseRows] = Array.isArray(queryData) ? queryData : [[], []];
+                            if (responseLabels?.[0] === 'noDataAllowed') {
+                                throw new Error('El usuario no tiene permiso para ver los datos de este panel.');
                             }
+                            const rows: any[][] = Array.isArray(responseRows) ? responseRows.filter((r: any) => Array.isArray(r) && r.length > 0) : [];
+                            console.log(`[MCP] panel ${idx} — rows: ${rows.length} | labels: ${(responseLabels ?? []).join(', ')}`);
 
-                            connection.client = await connection.getclient();
-                            const rawResults = await connection.execQuery(builtQuery);
-                            console.log(`[MCP] panel ${idx} — rawResults: isArray=${Array.isArray(rawResults)} | length=${Array.isArray(rawResults) ? rawResults.length : 'N/A'}`);
-                            if (Array.isArray(rawResults) && rawResults.length > 0) {
-                                console.log(`[MCP] panel ${idx} — primera fila:`, JSON.stringify(rawResults[0]));
-                            }
+                            // Mapear nombres técnicos devueltos por el controller a display_names.
+                            // El controller puede haber eliminado columnas (forbiddenTables), así que
+                            // usamos responseLabels como fuente de verdad — no fieldNames directamente.
+                            const displayNameMap = new Map<string, string>();
+                            (innerQuery.fields ?? []).forEach((f: any) => {
+                                const tech = f.field_name ?? f.column_name ?? '';
+                                if (tech) displayNameMap.set(tech, f.display_name ?? f.field_name ?? tech);
+                            });
+                            const columnas: string[] = (responseLabels as string[]).map(
+                                (lbl: string) => displayNameMap.get(lbl) ?? lbl
+                            );
 
-                            if (Array.isArray(rawResults) && rawResults.length > 0) {
-                                const headers = Object.keys(rawResults[0]);
-                                const rows = rawResults.map((r: any) => headers.map(h => r[h]));
-                                const resultado: any = {
+                            if (rows.length > 0) {
+                                resultados.push({
                                     panel_index: idx,
                                     panel_titulo: panel.title ?? '(sin título)',
                                     tipo: chartType,
-                                    campos: fieldNames,
+                                    campos: columnas,
                                     filtros_activos: filterSummary,
                                     tiene_filtros: activeFilters.length > 0,
-                                    modelo_datos: dsName,
-                                    datos: { columnas: headers, filas: rows, total_filas: rows.length },
-                                };
-                                if (filtrosFallback) {
-                                    resultado.advertencia = `AVISO: los filtros del panel no se pudieron aplicar por un error de configuración en EDA (función SQL no definida). Los datos mostrados NO tienen filtros activos — pueden incluir más registros de los esperados. El panel debe revisarse en EDA para corregir los filtros.`;
-                                }
-                                resultados.push(resultado);
+                                    modelo_datos: accessibleDsIds.get(modelId) ?? modelId,
+                                    datos: { columnas, filas: rows, total_filas: rows.length },
+                                });
                             } else {
                                 resultados.push({
                                     panel_index: idx,
@@ -1410,6 +1328,66 @@ Responde siempre en el idioma del usuario.`, cache_control: { type: 'ephemeral' 
 McpRouter.get('/chat/config', authGuard, (_req: Request, res: Response) => {
     const { AVAILABLE } = getAnthropicConfig();
     res.json({ available: AVAILABLE });
+});
+
+// --- Endpoint para integraciones externas (n8n, etc.) ---
+// POST /ia/dashboards/:id
+// Llama directamente al tool get_data_from_dashboard sin pasar por Claude.
+// Auth: JWT Bearer opcional → si no viene, usa loginInternal (MCP_EMAIL/MCP_PASSWORD).
+// Body: { question: string, panel_index?: number }
+McpRouter.post('/dashboards/:id', async (req: Request, res: Response) => {
+    const { MCP_URL } = getAnthropicConfig();
+    const dashboard_id: string = req.params.id;
+    const { question } = req.body;
+
+    if (!question) {
+        return res.status(400).json({ ok: false, response: 'Se requiere el campo question en el body.' });
+    }
+
+    console.log('[DASHBOARDS] POST /ia/dashboards/:id — id:', dashboard_id, '| question:', question);
+
+    // Auth: JWT Bearer si viene, loginInternal si no
+    let reqUser: any = null;
+    const authHeader = req.headers['authorization'] as string;
+    if (authHeader?.startsWith('Bearer ')) {
+        try {
+            const decoded: any = jwt.verify(authHeader.slice(7), SEED);
+            reqUser = decoded.user;
+            console.log('[DASHBOARDS] Auth via JWT — usuario:', reqUser?.email ?? '(desconocido)');
+        } catch (e: any) {
+            console.warn('[DASHBOARDS] JWT inválido:', e.message, '→ fallback a loginInternal');
+        }
+    }
+
+    const mcpClient = new Client({ name: 'eda-dashboards', version: '1.0.0' });
+
+    try {
+        const user = await resolveUser(reqUser);
+        const userToken = jwt.sign({ user }, SEED, { expiresIn: 14400 });
+
+        const transport = new StreamableHTTPClientTransport(new URL(MCP_URL), {
+            requestInit: { headers: { 'x-user-token': userToken } },
+        });
+        await mcpClient.connect(transport);
+
+        const toolArgs: any = { dashboard_id, question };
+
+        console.log('[DASHBOARDS] Llamando get_data_from_dashboard —', JSON.stringify(toolArgs));
+        const result = await mcpClient.callTool({ name: 'get_data_from_dashboard', arguments: toolArgs });
+        const resultText = (result.content as any[])
+            .filter((c: any) => c.type === 'text')
+            .map((c: any) => c.text)
+            .join('\n');
+
+        console.log('[DASHBOARDS] Resultado OK — length:', resultText.length);
+        return res.status(200).json({ ok: true, response: resultText });
+
+    } catch (err: any) {
+        console.error('[DASHBOARDS] Error:', err.message);
+        return res.status(500).json({ ok: false, response: `Error: ${err.message}` });
+    } finally {
+        try { await mcpClient.close(); } catch (_) {}
+    }
 });
 
 export default McpRouter;
