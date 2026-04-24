@@ -543,17 +543,10 @@ function createMcpServer(requestUser?: any) {
                         const innerFields: any[] = query?.query?.fields ?? [];
                         let fieldNames = innerFields.map((f: any) => f.display_name ?? f.field_name).filter(Boolean);
                         const activeFilters: any[] = query?.query?.filters ?? [];
-                        const panelId0: string = panel.id ?? '';
-                        const globalFiltersForSummary = (Array.isArray(db.config?.filters) ? db.config.filters : [])
-                            .filter((gf: any) => gf && !gf.isdeleted && (gf.selectedItems ?? []).length > 0 &&
-                                (gf.applyToAll === true || (Array.isArray(gf.panelList) && gf.panelList.includes(panelId0))));
-                        const allActiveFilterCols = [
-                            ...activeFilters.map((f: any) => f.filter_column).filter(Boolean),
-                            ...globalFiltersForSummary.map((gf: any) => gf.selectedColumn?.column_name ?? gf.column?.value?.column_name).filter(Boolean),
-                        ];
-                        const filterSummary = allActiveFilterCols.length === 0
+                        const filterCols = [...new Set(activeFilters.map((f: any) => f.filter_column).filter(Boolean))];
+                        const filterSummary = filterCols.length === 0
                             ? 'Sin filtros'
-                            : `Filtros: ${[...new Set(allActiveFilterCols)].join(', ')}`;
+                            : `Filtros: ${filterCols.join(', ')}`;
                         const chartType = panel.content?.chart_type ?? panel.content?.edaChart ?? null;
 
                         console.log(`[MCP] panel ${idx} (${panel.title}) — model_id:`, query?.model_id ?? 'FALTA', '| fields:', innerFields.length, '| filtros:', activeFilters.length, '| description:', JSON.stringify(panel.description ?? null));
@@ -576,66 +569,6 @@ function createMcpServer(requestUser?: any) {
                             const modelId: string = query.model_id;
                             const innerQuery: any = JSON.parse(JSON.stringify(query.query));
 
-                            // ── Aplicar filtros globales del dashboard al panel ────────────────
-                            const panelId: string = panel.id ?? '';
-                            const globalFilters: any[] = Array.isArray(db.config?.filters) ? db.config.filters : [];
-                            const applicableGlobalFilters = globalFilters.filter((gf: any) => {
-                                if (!gf || gf.isdeleted) return false;
-                                // Sin valores seleccionados → no aplica
-                                const items = gf.selectedItems ?? [];
-                                if (!items.length) return false;
-                                return gf.applyToAll === true ||
-                                    (Array.isArray(gf.panelList) && gf.panelList.includes(panelId));
-                            });
-
-                            if (applicableGlobalFilters.length > 0) {
-                                console.log(`[MCP] panel ${idx} — aplicando ${applicableGlobalFilters.length} filtro(s) global(es) del dashboard`);
-                                if (!Array.isArray(innerQuery.filters)) innerQuery.filters = [];
-
-                                for (const gf of applicableGlobalFilters) {
-                                    const colType: string = gf.selectedColumn?.column_type ?? gf.column?.value?.column_type ?? 'text';
-                                    const filterTable: string = gf.selectedTable?.table_name ?? gf.table?.value ?? '';
-                                    const filterColumn: string = gf.selectedColumn?.column_name ?? gf.column?.value?.column_name ?? '';
-                                    const isDate = colType === 'date';
-
-                                    let filterElements: any[];
-                                    if (isDate) {
-                                        filterElements = [
-                                            { value1: gf.selectedItems[0] ? [gf.selectedItems[0]] : [] },
-                                            { value2: gf.selectedItems[1] ? [gf.selectedItems[1]] : [] }
-                                        ];
-                                    } else {
-                                        filterElements = [{ value1: gf.selectedItems }];
-                                    }
-
-                                    const formattedFilter: any = {
-                                        filter_id: gf.id,
-                                        filter_table: filterTable,
-                                        filter_column: filterColumn,
-                                        filter_column_type: colType,
-                                        filter_type: isDate ? 'between' : 'in',
-                                        filter_elements: filterElements,
-                                        isGlobal: true,
-                                        applyToAll: gf.applyToAll ?? false,
-                                        filterBeforeGrouping: true,
-                                        computed_column: gf.selectedColumn?.computed_column,
-                                        SQLexpression: gf.selectedColumn?.SQLexpression,
-                                    };
-
-                                    // Si tiene pathList (EDA2) lo añadimos también
-                                    if (gf.pathList) {
-                                        const pathListCopy = JSON.parse(JSON.stringify(gf.pathList));
-                                        for (const key in pathListCopy) {
-                                            delete pathListCopy[key].selectedTableNodes;
-                                        }
-                                        formattedFilter.pathList = pathListCopy;
-                                        formattedFilter.autorelation = gf.autorelation;
-                                    }
-
-                                    innerQuery.filters.push(formattedFilter);
-                                }
-                            }
-                            // ─────────────────────────────────────────────────────────────────
 
                             // ── Filtrar campos con ia_visibility=NONE ──────────────────────────
                             try {
