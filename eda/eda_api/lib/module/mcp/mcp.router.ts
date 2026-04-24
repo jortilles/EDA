@@ -678,7 +678,11 @@ function createMcpServer(requestUser?: any) {
                             const queryResponse = await fetch(`${apiBase}/dashboard/query?token=${queryToken}`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ model_id: modelId, query: innerQuery }),
+                                body: JSON.stringify({
+                                    model_id: modelId,
+                                    query: innerQuery,
+                                    dashboard: { dashboard_id, panel_id: panel.id ?? '' },
+                                }),
                             });
                             if (!queryResponse.ok) {
                                 const errText = await queryResponse.text();
