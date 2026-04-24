@@ -24,7 +24,6 @@ export class OAUTHController {
     static async login(req: Request, res: Response, next: NextFunction) {
         try {
 
-            console.log('coño');
             console.log(ENTORNS);
 
             console.log(ENTORNS.some((p: { NIF_ENS: string }) => p.NIF_ENS === 'companyId'));
@@ -188,6 +187,14 @@ export class OAUTHController {
             } catch (err: any) {
                 console.error(`Error creando o actualizando grupo "${companyName}":`, err.message);
             }
+
+            const seenIds = new Set<string>();
+            role_id = role_id.filter((r: any) => {
+                const id = (r._id || r).toString();
+                if (seenIds.has(id)) return false;
+                seenIds.add(id);
+                return true;
+            });
 
             ////////////////////////////////////////////////////////
             //////////////// FIN DE CREACION DE ROL ////////////////
