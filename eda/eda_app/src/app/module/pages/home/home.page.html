@@ -63,7 +63,7 @@
                 <div class="space-y-1">
                   <label class="text-xs font-medium text-muted-foreground" i18n="@@tagsFilterLabel">Tags</label>
                   <p-multiSelect
-                    [options]="tags | slice:0:-1"
+                    [options]="tags | slice:0:-2"
                     [(ngModel)]="advancedTags"
                     (ngModelChange)="applyAdvancedFilters()"
                     optionLabel="label"
@@ -117,16 +117,16 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Public Reports -->
         <ng-container
-          *ngTemplateOutlet="reportsTemplate; context: { reports: sharedReports, title: publicTitle }"></ng-container>
+          *ngTemplateOutlet="reportsTemplate; context: { reports: sharedReports, title: publicTitle, colKey: 'shared' }"></ng-container>
         <!-- Commons -->
         <ng-container
-          *ngTemplateOutlet="reportsTemplate; context: { reports: publicReports, title: commonTitle }"></ng-container>
+          *ngTemplateOutlet="reportsTemplate; context: { reports: publicReports, title: commonTitle, colKey: 'public' }"></ng-container>
         <!-- Groups -->
         <ng-container
-          *ngTemplateOutlet="reportsTemplate; context: { reports: roleReports, title: groupTitle }"></ng-container>
+          *ngTemplateOutlet="reportsTemplate; context: { reports: roleReports, title: groupTitle, colKey: 'group' }"></ng-container>
         <!-- Private -->
         <ng-container
-          *ngTemplateOutlet="reportsTemplate; context: { reports: privateReports, title: privateTitle }"></ng-container>
+          *ngTemplateOutlet="reportsTemplate; context: { reports: privateReports, title: privateTitle, colKey: 'private' }"></ng-container>
       </div>
     </div>
   </div><!-- cierre dashboards -->
@@ -243,118 +243,175 @@
 </div><!-- cierre flex-row wrapper -->
 
 
-<!-- Template report card -->
-<ng-template #reportsTemplate let-reports="reports" let-title="title">
-  <div class="space-y-4">
-    <h2 class="text-lg font-semibold">{{ title }}</h2>
-    @for (report of reports; track report._id) {
-    <div class="rounded-lg border bg-card text-card-foreground shadow-sm" [attr.id]="'dashboard-' + report._id">
-      <div class="px-4 py-2 cursor-pointer" (mousedown)="openReport(report, $event)">
-        @if(!isEditing || editingReportId !== report._id){
-        <h3 class="text-base font-semibold flex items-center justify-between gap-1">
-          <span>{{ report.config?.title }}</span>
-          <!-- Info icon with tooltip -->
-          <span class="relative group/info inline-flex shrink-0 ml-auto" (mousedown)="$event.stopPropagation()">
-            <i class="pi pi-info-circle cursor-pointer text-gray-500"></i>
-            <div class="absolute z-50 right-0 bottom-full mb-1 w-[32rem] rounded-md border bg-popover p-3 shadow-lg text-sm text-popover-foreground opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-200 pointer-events-none">
-              <div class="font-semibold text-base mb-2 break-words">{{ report.config?.title }}</div>
-              <div class="space-y-1">
-                @if(report.config?.ds?.name) {
-                  <div class="flex gap-1">
-                    <span class="text-muted-foreground shrink-0" i18n="@@DatadourceTitle">Datasource:</span>
-                    <span class="break-words">{{ report.config.ds.name }}</span>
-                  </div>
-                }
-                @if(report.config?.author && report.config?.author != 'Undefined') {
-                  <div class="flex gap-1">
-                    <span class="text-muted-foreground shrink-0" i18n="@@authorTooltipLabel">Autor:</span>
-                    <span class="break-words">{{ report.config.author }}</span>
-                  </div>
-                }
-                @if(report.config?.createdAt) {
-                  <div class="flex gap-1">
-                    <span class="text-muted-foreground shrink-0" i18n="@@createdAtTooltipLabel">Creado:</span>
-                    <span>{{ formatDate(report.config.createdAt) }}</span>
-                  </div>
-                }
-                @if(report.config?.modifiedAt) {
-                  <div class="flex gap-1">
-                    <span class="text-muted-foreground shrink-0" i18n="@@modifiedAtTooltipLabel">Modificado:</span>
-                    <span>{{ formatDate(report.config.modifiedAt) }}</span>
-                  </div>
-                }
-                @if(report.config?.tag && report.config.tag.length > 0) {
-                  <div class="flex gap-1 flex-wrap">
-                    <span class="text-muted-foreground shrink-0" i18n="@@tagsTooltipLabel">Tags:</span>
-                    @if(isArray(report.config.tag)) {
-                      @for(tag of report.config.tag; track tag) {
-                        <span class="bg-muted rounded px-1">{{ tag?.value ?? tag }}</span>
-                      }
-                    } @else {
-                      <span class="bg-muted rounded px-1">{{ report.config.tag }}</span>
+<!-- Template: single dashboard card -->
+<ng-template #reportCard let-report>
+  <div class="rounded-lg border bg-card text-card-foreground shadow-sm" [attr.id]="'dashboard-' + report._id">
+    <div class="px-4 py-2 cursor-pointer" (mousedown)="openReport(report, $event)">
+      @if(!isEditing || editingReportId !== report._id){
+      <h3 class="text-base font-semibold flex items-center justify-between gap-1">
+        <span>{{ report.config?.title }}</span>
+        <!-- Info icon with tooltip -->
+        <span class="relative group/info inline-flex shrink-0 ml-auto" (mousedown)="$event.stopPropagation()">
+          <i class="pi pi-info-circle cursor-pointer text-gray-500"></i>
+          <div class="absolute z-50 right-0 bottom-full mb-1 w-[32rem] rounded-md border bg-popover p-3 shadow-lg text-sm text-popover-foreground opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-200 pointer-events-none">
+            <div class="font-semibold text-base mb-2 break-words">{{ report.config?.title }}</div>
+            <div class="space-y-1">
+              @if(report.config?.ds?.name) {
+                <div class="flex gap-1">
+                  <span class="text-muted-foreground shrink-0" i18n="@@DatadourceTitle">Datasource:</span>
+                  <span class="break-words">{{ report.config.ds.name }}</span>
+                </div>
+              }
+              @if(report.config?.author && report.config?.author != 'Undefined') {
+                <div class="flex gap-1">
+                  <span class="text-muted-foreground shrink-0" i18n="@@authorTooltipLabel">Autor:</span>
+                  <span class="break-words">{{ report.config.author }}</span>
+                </div>
+              }
+              @if(report.config?.createdAt) {
+                <div class="flex gap-1">
+                  <span class="text-muted-foreground shrink-0" i18n="@@createdAtTooltipLabel">Creado:</span>
+                  <span>{{ formatDate(report.config.createdAt) }}</span>
+                </div>
+              }
+              @if(report.config?.modifiedAt) {
+                <div class="flex gap-1">
+                  <span class="text-muted-foreground shrink-0" i18n="@@modifiedAtTooltipLabel">Modificado:</span>
+                  <span>{{ formatDate(report.config.modifiedAt) }}</span>
+                </div>
+              }
+              @if(report.config?.tag && report.config.tag.length > 0) {
+                <div class="flex gap-1 flex-wrap">
+                  <span class="text-muted-foreground shrink-0" i18n="@@tagsTooltipLabel">Tags:</span>
+                  @if(isArray(report.config.tag)) {
+                    @for(tag of report.config.tag; track tag) {
+                      <span class="bg-muted rounded px-1">{{ tag?.value ?? tag }}</span>
                     }
-                  </div>
-                }
-              </div>
+                  } @else {
+                    <span class="bg-muted rounded px-1">{{ report.config.tag }}</span>
+                  }
+                </div>
+              }
             </div>
-          </span>
-        </h3>
-        }@else {
-        <input class="edit-title-input text-base font-semibold px-2 py-1" [(ngModel)]="editTitle"
-          (blur)="handleEditing('done', report)" (keydown.enter)="handleEditing('done', report)"
-          (keydown.escape)="handleEditing('cancel', report)" (click)="$event.stopPropagation()" autofocus />
+          </div>
+        </span>
+      </h3>
+      }@else {
+      <input class="edit-title-input text-base font-semibold px-2 py-1" [(ngModel)]="editTitle"
+        (blur)="handleEditing('done', report)" (keydown.enter)="handleEditing('done', report)"
+        (keydown.escape)="handleEditing('cancel', report)" (click)="$event.stopPropagation()" autofocus />
+      }
+    </div>
+    <div class="grid grid-cols-3 items-center border-t px-4 py-2 gap-2">
+      <div class="text-sm text-muted-foreground truncate min-w-0">
+        @if (report.config?.author && report.config?.author != 'Undefined') {
+        <span class="truncate block" [title]="report.config.author">{{report.config.author}}</span>
         }
       </div>
-      <div class="grid grid-cols-3 items-center border-t px-4 py-2 gap-2">
-        <div class="text-sm text-muted-foreground truncate min-w-0">
-          @if (report.config?.author && report.config?.author != 'Undefined') {
-          <span class="truncate block" [title]="report.config.author">{{report.config.author}}</span>
-          }
-        </div>
-        <div class="text-sm text-muted-foreground text-center">
-          @if (report.config?.modifiedAt) {
-          <span>{{report.config.modifiedAt}}</span>
-          }
-        </div>
-        <div class="flex items-center justify-end">
-          @if(report.config.visible=='shared' || report.config.visible=='open' ){
-            <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="copyReport(report)"
-              title="Copiar enlace público" i18n-title="@@copyPublicLinkTooltip">
-              <eda-icon name="link" size="sm" class="mr-1"></eda-icon>
+      <div class="text-sm text-muted-foreground text-center">
+        @if (report.config?.modifiedAt) {
+        <span>{{report.config.modifiedAt}}</span>
+        }
+      </div>
+      <div class="flex items-center justify-end">
+        @if(report.config.visible=='shared' || report.config.visible=='open' ){
+          <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="copyReport(report)"
+            title="Copiar enlace público" i18n-title="@@copyPublicLinkTooltip">
+            <eda-icon name="link" size="sm" class="mr-1"></eda-icon>
+          </button>
+        }
+        @if(!isObserver){
+          @if(canEditReport(report)){
+            @if (!isEditing || editingReportId !== report._id) {
+            <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="renameReport(report)"
+              title="Editar nombre" i18n-title="@@renameReportTooltip">
+              <eda-icon name="pencil" class="mr-1"></eda-icon>
             </button>
-          }
-          @if(!isObserver){
-            @if(canEditReport(report)){
-              @if (!isEditing || editingReportId !== report._id) {
-              <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="renameReport(report)"
-                title="Editar nombre" i18n-title="@@renameReportTooltip">
-                <eda-icon name="pencil" class="mr-1"></eda-icon>
-              </button>
-              }@else {
-              <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="handleEditing('done', report)"
-                title="Confirmar nombre" i18n-title="@@confirmRenameTooltip">
-                <eda-icon name="check" class="mr-1"></eda-icon>
-              </button>
-              }
+            }@else {
+            <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="handleEditing('done', report)"
+              title="Confirmar nombre" i18n-title="@@confirmRenameTooltip">
+              <eda-icon name="check" class="mr-1"></eda-icon>
+            </button>
             }
-  
-            <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="cloneReport(report)"
-              title="Duplicar informe" i18n-title="@@duplicateReportTooltip">
-              <eda-icon name="document-duplicated"></eda-icon>
-            </button>
-            <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="deleteReport(report)"
-              title="Eliminar informe" i18n-title="@@deleteReportTooltip">
-              <eda-icon name="bin"></eda-icon>
-            </button>
           }
-        </div>
+
+          <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="cloneReport(report)"
+            title="Duplicar informe" i18n-title="@@duplicateReportTooltip">
+            <eda-icon name="document-duplicated"></eda-icon>
+          </button>
+          <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="deleteReport(report)"
+            title="Eliminar informe" i18n-title="@@deleteReportTooltip">
+            <eda-icon name="bin"></eda-icon>
+          </button>
+        }
       </div>
     </div>
-    }
-    @empty {
-    <div class="mt-4 rounded-lg bg-muted p-4 text-center text-muted-foreground">
-      <span i18n="@@withoutContentYet">Sin contenido</span>
-    </div>
+  </div>
+</ng-template>
+
+<!-- Template: column of reports with folder/flat view -->
+<ng-template #reportsTemplate let-reports="reports" let-title="title" let-colKey="colKey">
+  <div class="space-y-4">
+    <h2 class="text-lg font-semibold">{{ title }}</h2>
+
+    @if (expandedFolder(); as exp) {
+      @if (exp.colKey === colKey) {
+        <!-- Columna origen: mostrar sus dashboards con ese tag -->
+        @for (report of getReportsByTag(reports, exp.tag); track report._id) {
+          <ng-container *ngTemplateOutlet="reportCard; context: { $implicit: report }"></ng-container>
+        }
+        @empty {
+          <div class="mt-4 rounded-lg bg-muted p-4 text-center text-muted-foreground">
+            <span i18n="@@withoutContentYet">Sin contenido</span>
+          </div>
+        }
+      } @else {
+        <!-- Otras columnas: vacías cuando hay carpeta expandida -->
+        <div class="mt-4 rounded-lg bg-muted p-4 text-center text-muted-foreground">
+          <span i18n="@@withoutContentYet">Sin contenido</span>
+        </div>
+      }
+    } @else if (viewMode() === 'folders') {
+      <!-- Folder card per tag (alphabetical) -->
+      @for (tag of getTagsInReports(reports); track tag) {
+        <div class="rounded-lg border bg-card shadow-sm cursor-pointer group transition-colors hover:border-teal-400"
+          (click)="clickFolder(tag, colKey)">
+          <div class="px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="shrink-0 flex items-center justify-center w-8 h-8 rounded-md bg-muted group-hover:bg-teal-50 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-muted-foreground group-hover:text-teal-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/>
+                </svg>
+              </div>
+              <span class="font-medium text-sm truncate group-hover:text-teal-600 transition-colors">{{ tag }}</span>
+            </div>
+            <span class="shrink-0 text-xs font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded-full ml-2">
+              {{ getReportsByTag(reports, tag).length }}
+            </span>
+          </div>
+        </div>
+      }
+
+      <!-- Untagged dashboards below folders -->
+      @for (report of getUntaggedReports(reports); track report._id) {
+        <ng-container *ngTemplateOutlet="reportCard; context: { $implicit: report }"></ng-container>
+      }
+
+      @if (reports.length === 0) {
+        <div class="mt-4 rounded-lg bg-muted p-4 text-center text-muted-foreground">
+          <span i18n="@@withoutContentYet">Sin contenido</span>
+        </div>
+      }
+    } @else {
+      <!-- Flat view (specific tag selected in filter bar) -->
+      @for (report of reports; track report._id) {
+        <ng-container *ngTemplateOutlet="reportCard; context: { $implicit: report }"></ng-container>
+      }
+      @empty {
+        <div class="mt-4 rounded-lg bg-muted p-4 text-center text-muted-foreground">
+          <span i18n="@@withoutContentYet">Sin contenido</span>
+        </div>
+      }
     }
   </div>
 </ng-template>

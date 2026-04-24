@@ -2849,7 +2849,17 @@
     <source> Todos  </source>
     <target> Tous </target>
   </trans-unit>
-  
+
+  <trans-unit id="AllTagsFlat">
+    <source>Todo</source>
+    <target>Tout</target>
+  </trans-unit>
+
+  <trans-unit id="AllTagsGrouped">
+    <source>Todo agrupado</source>
+    <target>Tout groupé</target>
+  </trans-unit>
+
   <trans-unit id="NoneTags">
     <source> Ninguno  </source>
     <target> Aucun </target>
