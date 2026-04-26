@@ -42,7 +42,8 @@ export class AiSearchComponent implements OnInit {
     private nlToSqlService = inject(NlToSqlService);
 
     @Input() dataSource: any;
-    @Input() dataSource_id: string;
+    @Input() dataSourceId: string;
+    @Input() mode: 'hybrid' | 'query-object' | 'direct' = 'hybrid';
     @Input() available: boolean = false;
     @Input() hasPanels: boolean = false;
 
@@ -66,6 +67,7 @@ export class AiSearchComponent implements OnInit {
     copied: boolean = false;
 
     ngOnInit(): void {
+        this.selectedMode = this.mode;
         this.checkAvailability();
     }
 
@@ -82,7 +84,7 @@ export class AiSearchComponent implements OnInit {
     }
 
     async search(): Promise<void> {
-        if (!this.naturalLanguage.trim() || !this.dataSource_id) {
+        if (!this.naturalLanguage.trim() || !this.dataSourceId) {
             return;
         }
 
@@ -100,7 +102,7 @@ export class AiSearchComponent implements OnInit {
             const resp = await lastValueFrom(
                 this.nlToSqlService.generateSqlWithDataSource(
                     this.naturalLanguage,
-                    this.dataSource_id,
+                    this.dataSourceId,
                     options
                 )
             );

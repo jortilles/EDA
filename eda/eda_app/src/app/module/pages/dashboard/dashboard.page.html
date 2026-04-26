@@ -25,11 +25,11 @@
 
       <!-- AI Search Section -->
       <div class="ai-search-container mb-3">
-        <app-ai-search
+        <ai-search
           [dataSourceId]="dataSource?._id"
           [mode]="'hybrid'"
           (applyQuery)="handleAiSearchApply($event)"
-        ></app-ai-search>
+        ></ai-search>
       </div>
 
       <!-- Filters Section -->
