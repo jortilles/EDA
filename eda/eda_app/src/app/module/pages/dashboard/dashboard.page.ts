@@ -18,6 +18,8 @@ import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive
 import { CommonModule } from '@angular/common';
 import { ChatgptService } from '@eda/services/api/chatgpt.service';
 import { EdaTitlePanelComponent, EdaTabsPanelComponent } from '@eda/components/component.index';
+import { AiSearchComponent, AiSearchApplyEvent } from '@eda/components/ai-search/ai-search.component';
+import { QueryObjectResult, DirectSqlResult } from '@eda/services/api/nl-to-sql.service';
 
 // Imports del sidebar
 import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.service';
@@ -65,7 +67,8 @@ const STANDALONE_COMPONENTS = [
   ImportPanelDialog,
   DependentFilters,
   EdaTitlePanelComponent,
-  EdaTabsPanelComponent
+  EdaTabsPanelComponent,
+  AiSearchComponent
 ]
 @Component({
   selector: 'app-v2-dashboard-page',
@@ -1349,5 +1352,116 @@ public startCountdown(seconds: number) {
       this.panels.sort((a, b) => Math.floor(a.y / 10) - Math.floor(b.y / 10) || Math.floor(a.x / 10) - Math.floor(b.x / 10));
       this.updateMobileHeight();
     }
+  }
+
+  public handleAiSearchApply(event: AiSearchApplyEvent): void {
+    if (event.mode === 'create-new') {
+      this.createNewPanelWithQuery(event.queryObject, event.directSql);
+    } else {
+      this.applyQueryToCurrentPanel(event.queryObject, event.directSql);
+    }
+  }
+
+  private createNewPanelWithQuery(queryObject?: QueryObjectResult, directSql?: DirectSqlResult): void {
+    const newPanel = new EdaPanel({
+      id: this.fileUtils.generateUUID(),
+      title: $localize`:@@newPanelTitle:Nuevo Panel`,
+      type: EdaPanelType.BLANK,
+      dragAndDrop: true,
+      resizable: true,
+      w: 20,
+      h: 10,
+      cols: 20,
+      rows: 10,
+    });
+
+    this.panels.push(newPanel);
+    this.dashboardService._notSaved.next(true);
+    this.stylesProviderService.loadedPanels++;
+
+    this.cdr.detectChanges();
+
+    setTimeout(() => {
+      const panelComponent = this.edaPanels.last;
+      if (panelComponent) {
+        this.applyQueryToPanel(panelComponent, queryObject, directSql);
+      }
+    }, 100);
+  }
+
+  private applyQueryToCurrentPanel(queryObject?: QueryObjectResult, directSql?: DirectSqlResult): void {
+    const panelComponent = this.edaPanels.first;
+    if (panelComponent) {
+      this.applyQueryToPanel(panelComponent, queryObject, directSql);
+    } else {
+      this.alertService.addError($localize`:@@noPanelToApply:No hay panel disponible para aplicar la consulta`);
+    }
+  }
+
+  private applyQueryToPanel(
+    panelComponent: EdaBlankPanelComponent,
+    queryObject?: QueryObjectResult,
+    directSql?: DirectSqlResult
+  ): void {
+    if (queryObject) {
+      this.applyQueryObjectToPanel(panelComponent, queryObject);
+    } else if (directSql) {
+      this.applyDirectSqlToPanel(panelComponent, directSql);
+    }
+
+    this.dashboardService._notSaved.next(true);
+    this.alertService.addSuccess($localize`:@@queryApplied:Consulta aplicada correctamente. Clic en "Guardar" para confirmar los cambios.`);
+  }
+
+  private applyQueryObjectToPanel(
+    panelComponent: EdaBlankPanelComponent,
+    queryObject: QueryObjectResult
+  ): void {
+    if (queryObject.currentQuery && queryObject.currentQuery.length > 0) {
+      panelComponent.newCurrentQueryUpdate(queryObject.currentQuery);
+    }
+
+    if (queryObject.principalTable) {
+      panelComponent.principalTableUpdate({
+        principalTable: queryObject.principalTable,
+        currentQuery: queryObject.currentQuery,
+        queryLimit: queryObject.queryLimit
+      });
+    }
+
+    if (queryObject.selectedFilters && queryObject.selectedFilters.length > 0) {
+      panelComponent.newSelectedFiltersUpdate({
+        selectedFilters: queryObject.selectedFilters,
+        filteredColumns: []
+      });
+    }
+
+    if (queryObject.queryLimit) {
+      panelComponent.queryLimit = queryObject.queryLimit;
+    }
+
+    if (panelComponent.currentQuery && panelComponent.currentQuery.length > 0) {
+      panelComponent.openEditarConsulta();
+    }
+  }
+
+  private applyDirectSqlToPanel(
+    panelComponent: EdaBlankPanelComponent,
+    directSql: DirectSqlResult
+  ): void {
+    panelComponent.selectedQueryMode = 'SQL';
+    panelComponent.currentSQLQuery = directSql.sql;
+
+    if (directSql.tables_used && directSql.tables_used.length > 0) {
+      const principalTable = directSql.tables_used[0];
+      const originTable = panelComponent.sqlOriginTables?.find(
+        (t: any) => t.value === principalTable
+      );
+      if (originTable) {
+        panelComponent.sqlOriginTable = originTable;
+      }
+    }
+
+    panelComponent.openEditarConsulta();
   }
 }
