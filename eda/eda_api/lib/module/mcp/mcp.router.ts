@@ -1066,33 +1066,45 @@ function createMcpServer(requestUser?: any) {
                 // Buscar datasources relevantes como sugerencia de fallback (solo cuando no hay opciones)
                 let fallbackSugerencias: any[] = [];
                 if (opcionesArr.length === 0) {
+                    // Términos de búsqueda: campos explícitos > palabras significativas de la pregunta (len>=4)
+                    const fallbackTerms = camposLower.length > 0
+                        ? camposLower
+                        : questionWords.filter((w: string) => w.length >= 4);
                     for (const [dsId, dsName] of accessibleDsIds) {
                         const schema = await getDsSchema(dsId);
                         if (!schema?.tables) continue;
                         const allDsCols: string[] = (schema.tables as any[]).flatMap((t: any) =>
                             (t.columns ?? []).map((c: any) => c.column_name ?? c.name ?? '')
                         ).filter(Boolean);
-                        // Términos de búsqueda: campos explícitos > palabras significativas de la pregunta (len>=4)
-                        const fallbackTerms = camposLower.length > 0
-                            ? camposLower
-                            : questionWords.filter((w: string) => w.length >= 4);
+                        // También buscar en nombres de tabla (singular/plural puede estar en la tabla, no en la columna)
+                        const allTableNames: string[] = (schema.tables as any[])
+                            .map((t: any) => t.table_name ?? t.name ?? '').filter(Boolean);
+                        // Matching bidireccional: "genero"↔"generos", "asistente"↔"asistentes"
+                        const biMatch = (a: string, b: string) => a.includes(b) || b.includes(a);
                         const matchingCols = fallbackTerms.length > 0
-                            ? allDsCols.filter(cn => fallbackTerms.some((kw: string) => cn.toLowerCase().includes(kw)))
+                            ? allDsCols.filter(cn => fallbackTerms.some((kw: string) => biMatch(cn.toLowerCase(), kw)))
                             : [];
-                        if (matchingCols.length > 0) {
-                            fallbackSugerencias.push({ datasource_id: dsId, datasource_nombre: dsName, campos_relevantes: matchingCols.slice(0, 8) });
+                        const tableMatch = fallbackTerms.length > 0 &&
+                            allTableNames.some(tn => fallbackTerms.some((kw: string) => biMatch(tn.toLowerCase(), kw)));
+                        if (matchingCols.length > 0 || tableMatch) {
+                            // Si solo matchea por tabla, mostrar las primeras columnas como referencia
+                            const relevantCols = matchingCols.length > 0 ? matchingCols : allDsCols.slice(0, 5);
+                            fallbackSugerencias.push({ datasource_id: dsId, datasource_nombre: dsName, campos_relevantes: relevantCols.slice(0, 8) });
                         }
                     }
                     fallbackSugerencias = fallbackSugerencias.slice(0, 2);
                     console.log('[MCP] exploración — fallback sugerencias:', fallbackSugerencias.length);
                 }
 
+                const buildFallbackNota = (contexto: string) => fallbackSugerencias.length > 0
+                    ? `${contexto} ACCIÓN OBLIGATORIA — tu única respuesta al usuario debe ser exactamente esta pregunta (nada más): "No he encontrado dashboards con esta información. ¿Quieres que consulte directamente el modelo de datos ${fallbackSugerencias[0].datasource_nombre} (campos disponibles: ${fallbackSugerencias[0].campos_relevantes.join(', ')})?" Si el usuario confirma (cualquier afirmación), llama INMEDIATAMENTE a get_data_from_dashboard con datasource_id="${fallbackSugerencias[0].datasource_id}" y campos_consulta=${JSON.stringify(fallbackSugerencias[0].campos_relevantes)}. NUNCA digas que no puedes hacer la consulta. NUNCA des recomendaciones alternativas.`
+                    : '';
                 const notaSinResultados = opcionesArr.length > 0 ? '' : camposLower.length > 0
                     ? fallbackSugerencias.length > 0
-                        ? `No se han encontrado paneles en dashboards con los campos [${camposLower.join(', ')}]. Hay datasources con campos relacionados disponibles (ver fallback_sugerencias). INSTRUCCIÓN: Presenta la pregunta de confirmación al usuario con el formato exacto: "No he encontrado dashboards con estos datos. ¿Quieres que consulte [lista los campos relevantes del datasource] del modelo de datos [nombre del datasource]?" Espera la confirmación del usuario. Si confirma, llama de nuevo con datasource_id=[id] y campos_consulta=[campos elegidos]. Si rechaza, informa que no hay datos disponibles.`
+                        ? buildFallbackNota(`No se han encontrado paneles en dashboards con los campos [${camposLower.join(', ')}].`)
                         : `No se han encontrado paneles que contengan los campos [${camposLower.join(', ')}]. Informa al usuario. Si crees que la pregunta es válida, vuelve a llamar a este tool SIN campos_requeridos para ver todas las opciones disponibles y presentarlas al usuario.`
                     : fallbackSugerencias.length > 0
-                        ? `No se han encontrado paneles accesibles. Hay datasources disponibles (ver fallback_sugerencias). INSTRUCCIÓN: Presenta la pregunta de confirmación al usuario: "No he encontrado dashboards con estos datos. ¿Quieres que consulte [campos relevantes] del modelo de datos [nombre]?" Espera confirmación y si acepta, llama con datasource_id y campos_consulta.`
+                        ? buildFallbackNota('No se han encontrado paneles accesibles en dashboards.')
                         : 'No se han encontrado paneles accesibles con datos. Informa al usuario.';
                 const notaTruncada = truncada ? ` AVISO: se muestran las ${MAX_OPTIONS} opciones más relevantes de ${totalOpciones} encontradas. El resto fueron descartadas por menor relevancia.` : '';
 
@@ -1284,11 +1296,11 @@ Espera la selección del usuario ANTES de ejecutar el PASO 3.
 NUNCA uses letras (A, B, C) ni emojis de número. Solo números arábigos seguidos de punto.
 Ejemplo: "Opción 1 — [Dashboard «Ventas»](url) — Todos los países sin filtrar. Opción 2 — [Dashboard «EU»](url) — Solo España y Francia."
 
-PASO 2b — FALLBACK (solo si exploración devuelve 0 opciones y hay fallback_sugerencias):
-El tool devolverá fallback_sugerencias con datasources relacionados. Presenta al usuario la pregunta de confirmación EXACTA indicada en nota_al_asistente, mencionando los campos y el nombre del modelo. Espera su respuesta:
-- Si confirma: llama a get_data_from_dashboard con datasource_id=[id del datasource sugerido] y campos_consulta=[campos relevantes]. NO uses dashboard_id.
-- Si rechaza: informa que no hay datos disponibles.
-Al mostrar los datos de fallback, al final añade siempre: «📌 Datos de [datasource_nombre](datasource_url) (consulta directa al modelo de datos)»
+PASO 2b — FALLBACK OBLIGATORIO (cuando exploración devuelve 0 opciones y hay fallback_sugerencias):
+⚠ REGLA ABSOLUTA: Si el resultado contiene fallback_sugerencias no vacío, tu ÚNICA respuesta al usuario es la pregunta de confirmación indicada en nota_al_asistente. Nada de recomendaciones, nada de "no puedo", nada de "contacta al administrador".
+- Si el usuario confirma (cualquier afirmación: "sí", "adelante", "haz la consulta", "consulta directamente", "hazlo", "sí quiero"): llama INMEDIATAMENTE a get_data_from_dashboard con datasource_id y campos_consulta de fallback_sugerencias[0]. NO uses dashboard_id. NO expliques nada antes.
+- Si el usuario rechaza: informa que no hay datos disponibles.
+Al mostrar los datos del fallback, añade al final: «📌 Datos de [datasource_nombre](datasource_url) (consulta directa al modelo de datos)»
 
 PASO 3 — DATOS:
 ⚠ FAST PATH: Si el mensaje del usuario contiene "dashboard_id: X" y "panel_index: Y" (en cualquier idioma o formato), extrae X e Y directamente y llama a get_data_from_dashboard con esos valores exactos. NO vuelvas a explorar, NO hagas preguntas.
