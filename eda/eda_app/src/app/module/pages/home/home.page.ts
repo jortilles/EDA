@@ -430,14 +430,29 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
 
   private initTagSelection(): void {
-    const todoFlatOption = { label: this.allTagsFlatLabel, value: this.allTagsFlatValue };
-    this.selectedTags.set(todoFlatOption);
-    sessionStorage.setItem('activeTags', JSON.stringify(todoFlatOption));
-    this.viewMode.set('flat');
+    const todoGroupedOption = { label: this.allTagsGroupedLabel, value: this.allTagsValue };
+    this.selectedTags.set(todoGroupedOption);
+    sessionStorage.setItem('activeTags', JSON.stringify(todoGroupedOption));
+    this.viewMode.set('folders');
   }
 
   public clickFolder(tag: string, colKey: string): void {
+    const current = this.expandedFolder();
+    if (current?.tag === tag && current?.colKey === colKey) {
+      this.closeFolder();
+      return;
+    }
     this.expandedFolder.set({ tag, colKey });
+    this.selectedTags.set({ label: tag, value: tag });
+  }
+
+  public closeFolder(event?: MouseEvent): void {
+    event?.stopPropagation();
+    this.expandedFolder.set(null);
+    const todoGroupedOption = { label: this.allTagsGroupedLabel, value: this.allTagsValue };
+    this.selectedTags.set(todoGroupedOption);
+    sessionStorage.setItem('activeTags', JSON.stringify(todoGroupedOption));
+    this.viewMode.set('folders');
   }
 
   public getTagsInReports(reports: any[]): string[] {
