@@ -973,66 +973,7 @@ function createMcpServer(requestUser?: any) {
 
     console.log('[MCP] createMcpServer - get_data_from_dashboard registrado');
 
-    server.registerTool(
-        'server_status',
-        { description: 'Devuelve el estado del servidor MCP de EDA: configuración activa, credenciales MCP, conteo de dashboards y datasources, y estado de autenticación.' },
-        async () => {
-            console.log('[MCP] tool: server_status - ejecutando');
-            const { EDA_APP_URL, MODEL, AVAILABLE, MAX_TOKENS } = getAnthropicConfig();
-
-            const lines: string[] = [
-                '# Estado del servidor EDA MCP',
-                '',
-                '## Configuración',
-                `  EDA_APP_URL : ${EDA_APP_URL || '(no configurado)'}`,
-                `  MODEL       : ${MODEL || '(no configurado)'}`,
-                `  AVAILABLE   : ${AVAILABLE}`,
-                `  MAX_TOKENS  : ${MAX_TOKENS}`,
-                '',
-                '## Credenciales MCP',
-                `  MCP_EMAIL   : ${MCP_EMAIL || '(no configurado)'}`,
-                `  MCP_PASSWORD: ${MCP_PASSWORD ? '(configurado)' : '(no configurado)'}`,
-                '',
-            ];
-
-            // Test autenticación
-            try {
-                const user = await resolveUser(requestUser);
-                lines.push('## Autenticación');
-                lines.push(`  Estado : OK`);
-                lines.push(`  Fuente : ${requestUser ? 'usuario de la sesión' : 'usuario MCP del config'}`);
-                lines.push(`  Usuario: ${user?.email ?? '(desconocido)'}`);
-                lines.push(`  Rol    : ${user?.role ?? '(desconocido)'}`);
-                lines.push('');
-            } catch (authErr: any) {
-                lines.push('## Autenticación');
-                lines.push(`  Estado : ERROR — ${authErr.message}`);
-                lines.push('');
-            }
-
-            // Conteo de dashboards y datasources
-            try {
-                const [totalDashboards, totalDatasources] = await Promise.all([
-                    Dashboard.countDocuments().exec(),
-                    DataSource.countDocuments().exec(),
-                ]);
-                lines.push('## Base de datos');
-                lines.push(`  Dashboards : ${totalDashboards}`);
-                lines.push(`  Datasources: ${totalDatasources}`);
-                lines.push('');
-            } catch (dbErr: any) {
-                lines.push('## Base de datos');
-                lines.push(`  ERROR: ${dbErr.message}`);
-                lines.push('');
-            }
-
-            const statusText = lines.join('\n');
-            console.log('[MCP] server_status:\n' + statusText);
-            return { content: [{ type: 'text', text: statusText }] };
-        }
-    );
-
-    console.log('[MCP] createMcpServer - server_status registrado. Total tools: 6');
+    console.log('[MCP] createMcpServer - server_status registrado. Total tools: 5');
 
     return server;
 }
