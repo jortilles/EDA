@@ -9,6 +9,7 @@ export enum EdaPanelType {
 export class EdaPanel {
     public id: string;
     public title: string;
+    public description: string = '';
     public type: EdaPanelType;
     public w: number;
     public h: number;

@@ -713,6 +713,10 @@ export class DataSourceService extends ApiService implements OnDestroy {
     }
 
 
+    copyDataSource(id: string, name: string): Observable<any> {
+        return this.post(`${this.globalDSRoute}/copy/${id}`, { name });
+    }
+
     removeCache(id:string): Observable<any> {
         return this.post(`${this.globalDSRoute}/remove-cache`, {id:id});
     }

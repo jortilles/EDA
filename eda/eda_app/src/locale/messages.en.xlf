@@ -2614,6 +2614,16 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>All  </target>
 </trans-unit>
 
+<trans-unit id="AllTagsFlat">
+<source>Todo</source>
+<target>All</target>
+</trans-unit>
+
+<trans-unit id="AllTagsGrouped">
+<source>Todo agrupado</source>
+<target>All grouped</target>
+</trans-unit>
+
 <trans-unit id="NoneTags">
 <source> Ninguno  </source>
 <target>None </target>
@@ -6286,6 +6296,18 @@ OR<ph id="5"/>
 <trans-unit id="mapClusteredPoints" datatype="html">
   <source>puntos agrupados</source>
   <target>clustered points</target>
+</trans-unit>
+<trans-unit id="saveAsModel" datatype="html">
+  <source>Guardar como, para el modelo de datos</source>
+  <target>Save as, for the data mode</target>
+</trans-unit>
+<trans-unit id="chatOptionSelectedLabel" datatype="html">
+  <source>Opción</source>
+  <target>Option</target>
+</trans-unit>
+<trans-unit id="chatErrorConnecting" datatype="html">
+  <source>Error al conectar con el asistente.</source>
+  <target>Error connecting to the assistant.</target>
 </trans-unit>
 </body>
 </file>

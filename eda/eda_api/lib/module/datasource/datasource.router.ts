@@ -308,6 +308,8 @@ router.post('/reload/:id', authGuard, roleGuard, DataSourceController.RefreshDat
  *     tags:
  *       - DataSource Routes 
  */
+router.post('/copy/:id', authGuard, roleGuard, DataSourceController.CopyDataSource);
+
 router.post('/remove-cache', authGuard, roleGuard, DataSourceController.removeCacheFromModel);
 
 

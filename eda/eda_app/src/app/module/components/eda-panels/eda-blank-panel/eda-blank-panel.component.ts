@@ -179,6 +179,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     /** Page variables */
     public titleClick: boolean = false;
+    public descriptionClick: boolean = false;
     public title: string = '';
     // Display variables
     public display_v = {
@@ -359,6 +360,8 @@ export class EdaBlankPanelComponent implements OnInit {
     async ngOnInit() {
         this.index = 0;
         this.readonly = this.panel.readonly;
+        if (this.panel.description === undefined) this.panel.description = '';
+        console.log(`[Panel init] id=${this.panel.id} title="${this.panel.title}" description="${this.panel.description}"`);
 
         await this.setTablesData();
 
@@ -706,6 +709,7 @@ public tableNodeExpand(event: any): void {
             const edaChart = this.panelChart?.props.edaChart;
 
             this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters };
+            console.log(`[Panel save] id=${this.panel.id} title="${this.panel.title}" description="${this.panel.description}"`);
 
             /**This is to repaint on panel redimension */
             if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst','radar'].includes(chart)) {

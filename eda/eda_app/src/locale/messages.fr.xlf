@@ -2849,7 +2849,17 @@
     <source> Todos  </source>
     <target> Tous </target>
   </trans-unit>
-  
+
+  <trans-unit id="AllTagsFlat">
+    <source>Todo</source>
+    <target>Tout</target>
+  </trans-unit>
+
+  <trans-unit id="AllTagsGrouped">
+    <source>Todo agrupado</source>
+    <target>Tout groupé</target>
+  </trans-unit>
+
   <trans-unit id="NoneTags">
     <source> Ninguno  </source>
     <target> Aucun </target>
@@ -6532,6 +6542,18 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="mapClusteredPoints" datatype="html">
         <source>puntos agrupados</source>
         <target>points regroupés</target>
+      </trans-unit>
+      <trans-unit id="saveAsModel" datatype="html">
+        <source>Guardar como, para el modelo de datos</source>
+        <target>Enregistrer sous, pour le modèle de données</target>
+      </trans-unit>
+      <trans-unit id="chatOptionSelectedLabel" datatype="html">
+        <source>Opción</source>
+        <target>Option</target>
+      </trans-unit>
+      <trans-unit id="chatErrorConnecting" datatype="html">
+        <source>Error al conectar con el asistente.</source>
+        <target>Erreur de connexion à l'assistant.</target>
       </trans-unit>
     </body>
   </file>

@@ -2515,6 +2515,16 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Wszystko</target>
   </trans-unit>
 
+  <trans-unit id="AllTagsFlat">
+    <source>Todo</source>
+    <target>Wszystko</target>
+  </trans-unit>
+
+  <trans-unit id="AllTagsGrouped">
+    <source>Todo agrupado</source>
+    <target>Wszystko pogrupowane</target>
+  </trans-unit>
+
 
   <trans-unit id="NoneTags">
     <source> Ninguno  </source>
@@ -6197,6 +6207,18 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="mapClusteredPoints" datatype="html">
         <source>puntos agrupados</source>
         <target>zgrupowane punkty</target>
+      </trans-unit>
+      <trans-unit id="saveAsModel" datatype="html">
+        <source>Guardar como, para el modelo de datos</source>
+        <target>Zapisz jako, dla modelu danych</target>
+      </trans-unit>
+      <trans-unit id="chatOptionSelectedLabel" datatype="html">
+        <source>Opción</source>
+        <target>Opcja</target>
+      </trans-unit>
+      <trans-unit id="chatErrorConnecting" datatype="html">
+        <source>Error al conectar con el asistente.</source>
+        <target>Błąd połączenia z asystentem.</target>
       </trans-unit>
 </body>
 </file>
