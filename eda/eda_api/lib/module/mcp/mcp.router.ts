@@ -742,21 +742,27 @@ function createMcpServer(requestUser?: any) {
                         return { content: [{ type: 'text', text: `No se encontraron columnas válidas en el datasource ${datasource_id} para: [${camposConsulta.join(', ')}]. Usa get_datasource para obtener los nombres exactos.` }], isError: true };
                     }
 
-                    const queryFields = selectedCols.map((col: any) => ({
+                    console.log ('------------------------------------')
+                    console.log ('------------------------------------')
+                    console.log ('table id', selectedCols[0]._table)
+                    console.log (selectedCols)
+                    console.log ('------------------------------------')
+
+                    const queryFields = selectedCols.map((col: any, idx: number) => ({
                         field_name: col.column_name ?? col.name,
                         column_name: col.column_name ?? col.name,
                         column_type: col.column_type ?? 'text',
                         table_id: col._table ?? '',
                         display_name: col.display_name ?? col.column_name ?? col.name,
                         aggregation_type: [],
-                        order: 'None',
+                        order: idx,
                         format: 'No',
                         cumulativeSum: false,
                         ordenation: 'ASC',
                     }));
 
                     // Use the table of the first selected column as rootTable
-                    const rootTable = selectedCols[0]?._table ?? '';
+                    const rootTable = (selectedCols[0]?._table ?? '') || (queryFields[0]?.table_id ?? '');
                     const fallbackQuery = {
                         queryMode: 'EDA',
                         rootTable,
