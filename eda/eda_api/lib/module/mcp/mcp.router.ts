@@ -1404,4 +1404,9 @@ Responde siempre en el idioma del usuario.`, cache_control: { type: 'ephemeral' 
     }
 });
 
+McpRouter.get('/chat/config', authGuard, (_req: Request, res: Response) => {
+    const { AVAILABLE } = getAnthropicConfig();
+    res.json({ available: AVAILABLE });
+});
+
 export default McpRouter;
