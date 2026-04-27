@@ -1070,42 +1070,52 @@ function createMcpServer(requestUser?: any) {
                     const fallbackTerms = camposLower.length > 0
                         ? camposLower
                         : questionWords.filter((w: string) => w.length >= 4);
+                    console.log('[MCP] fallback — iniciando búsqueda | términos:', fallbackTerms, '| datasources a revisar:', accessibleDsIds.size);
+                    // Normalizar: quita acentos y pasa a minúsculas ("género"→"genero")
+                    const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+                    // Matching bidireccional con normalización: "genero"↔"géneros", "asistente"↔"asistentes"
+                    const biMatch = (a: string, b: string) => { const na = norm(a); const nb = norm(b); return na.includes(nb) || nb.includes(na); };
+                    const normTerms = fallbackTerms.map(norm);
+                    console.log('[MCP] fallback — términos normalizados:', normTerms);
                     for (const [dsId, dsName] of accessibleDsIds) {
                         const schema = await getDsSchema(dsId);
-                        if (!schema?.tables) continue;
-                        const allDsCols: string[] = (schema.tables as any[]).flatMap((t: any) =>
-                            (t.columns ?? []).map((c: any) => c.column_name ?? c.name ?? '')
+                        if (!schema?.tables) {
+                            console.log('[MCP] fallback — ds sin schema saltado:', dsName);
+                            continue;
+                        }
+                        const allDsCols: string[] = ([] as string[]).concat(
+                            ...(schema.tables as any[]).map((t: any) =>
+                                (t.columns ?? []).map((c: any) => c.column_name ?? c.name ?? '') as string[]
+                            )
                         ).filter(Boolean);
-                        // También buscar en nombres de tabla (singular/plural puede estar en la tabla, no en la columna)
                         const allTableNames: string[] = (schema.tables as any[])
                             .map((t: any) => t.table_name ?? t.name ?? '').filter(Boolean);
-                        // Matching bidireccional: "genero"↔"generos", "asistente"↔"asistentes"
-                        const biMatch = (a: string, b: string) => a.includes(b) || b.includes(a);
                         const matchingCols = fallbackTerms.length > 0
-                            ? allDsCols.filter(cn => fallbackTerms.some((kw: string) => biMatch(cn.toLowerCase(), kw)))
+                            ? allDsCols.filter(cn => fallbackTerms.some((kw: string) => biMatch(cn, kw)))
                             : [];
-                        const tableMatch = fallbackTerms.length > 0 &&
-                            allTableNames.some(tn => fallbackTerms.some((kw: string) => biMatch(tn.toLowerCase(), kw)));
+                        const matchingTables = fallbackTerms.length > 0
+                            ? allTableNames.filter(tn => fallbackTerms.some((kw: string) => biMatch(tn, kw)))
+                            : [];
+                        const tableMatch = matchingTables.length > 0;
+                        console.log(`[MCP] fallback — ds "${dsName}" | tablas: [${allTableNames.join(', ')}] | cols match: [${matchingCols.join(', ')}] | table match: [${matchingTables.join(', ')}]`);
                         if (matchingCols.length > 0 || tableMatch) {
-                            // Si solo matchea por tabla, mostrar las primeras columnas como referencia
                             const relevantCols = matchingCols.length > 0 ? matchingCols : allDsCols.slice(0, 5);
+                            console.log(`[MCP] fallback — ✓ ds "${dsName}" incluido | cols relevantes: [${relevantCols.slice(0, 8).join(', ')}]`);
                             fallbackSugerencias.push({ datasource_id: dsId, datasource_nombre: dsName, campos_relevantes: relevantCols.slice(0, 8) });
                         }
                     }
                     fallbackSugerencias = fallbackSugerencias.slice(0, 2);
-                    console.log('[MCP] exploración — fallback sugerencias:', fallbackSugerencias.length);
+                    console.log('[MCP] fallback — resultado final:', fallbackSugerencias.length, 'sugerencias:', fallbackSugerencias.map((s: any) => s.datasource_nombre));
                 }
 
-                const buildFallbackNota = (contexto: string) => fallbackSugerencias.length > 0
-                    ? `${contexto} ACCIÓN OBLIGATORIA — tu única respuesta al usuario debe ser exactamente esta pregunta (nada más): "No he encontrado dashboards con esta información. ¿Quieres que consulte directamente el modelo de datos ${fallbackSugerencias[0].datasource_nombre} (campos disponibles: ${fallbackSugerencias[0].campos_relevantes.join(', ')})?" Si el usuario confirma (cualquier afirmación), llama INMEDIATAMENTE a get_data_from_dashboard con datasource_id="${fallbackSugerencias[0].datasource_id}" y campos_consulta=${JSON.stringify(fallbackSugerencias[0].campos_relevantes)}. NUNCA digas que no puedes hacer la consulta. NUNCA des recomendaciones alternativas.`
+                const buildFallbackNota = () => fallbackSugerencias.length > 0
+                    ? `ACCIÓN OBLIGATORIA — tu única respuesta al usuario debe ser exactamente esta pregunta (nada más, sin mencionar dashboards, paneles, modelos ni datasources): "No he encontrado información sobre tu pregunta. ¿Quieres que consulte directamente la base de datos?" Si el usuario confirma (cualquier afirmación), llama INMEDIATAMENTE a get_data_from_dashboard con datasource_id="${fallbackSugerencias[0].datasource_id}" y campos_consulta=${JSON.stringify(fallbackSugerencias[0].campos_relevantes)}. NUNCA digas que no puedes hacer la consulta. NUNCA des recomendaciones alternativas. NUNCA expliques qué es un modelo de datos ni menciones el nombre interno del datasource.`
                     : '';
-                const notaSinResultados = opcionesArr.length > 0 ? '' : camposLower.length > 0
-                    ? fallbackSugerencias.length > 0
-                        ? buildFallbackNota(`No se han encontrado paneles en dashboards con los campos [${camposLower.join(', ')}].`)
-                        : `No se han encontrado paneles que contengan los campos [${camposLower.join(', ')}]. Informa al usuario. Si crees que la pregunta es válida, vuelve a llamar a este tool SIN campos_requeridos para ver todas las opciones disponibles y presentarlas al usuario.`
-                    : fallbackSugerencias.length > 0
-                        ? buildFallbackNota('No se han encontrado paneles accesibles en dashboards.')
-                        : 'No se han encontrado paneles accesibles con datos. Informa al usuario.';
+                const notaSinResultados = opcionesArr.length > 0 ? '' : fallbackSugerencias.length > 0
+                    ? buildFallbackNota()
+                    : camposLower.length > 0
+                        ? `No se han encontrado paneles que contengan los campos [${camposLower.join(', ')}]. Informa al usuario con un mensaje simple. Si crees que la pregunta es válida, vuelve a llamar a este tool SIN campos_requeridos para ver todas las opciones disponibles.`
+                        : 'No se han encontrado datos accesibles. Informa al usuario con un mensaje simple.';
                 const notaTruncada = truncada ? ` AVISO: se muestran las ${MAX_OPTIONS} opciones más relevantes de ${totalOpciones} encontradas. El resto fueron descartadas por menor relevancia.` : '';
 
                 const respuestaExploracion: any = {
@@ -1297,10 +1307,10 @@ NUNCA uses letras (A, B, C) ni emojis de número. Solo números arábigos seguid
 Ejemplo: "Opción 1 — [Dashboard «Ventas»](url) — Todos los países sin filtrar. Opción 2 — [Dashboard «EU»](url) — Solo España y Francia."
 
 PASO 2b — FALLBACK OBLIGATORIO (cuando exploración devuelve 0 opciones y hay fallback_sugerencias):
-⚠ REGLA ABSOLUTA: Si el resultado contiene fallback_sugerencias no vacío, tu ÚNICA respuesta al usuario es la pregunta de confirmación indicada en nota_al_asistente. Nada de recomendaciones, nada de "no puedo", nada de "contacta al administrador".
+⚠ REGLA ABSOLUTA: Si el resultado contiene fallback_sugerencias no vacío, tu ÚNICA respuesta al usuario es la pregunta de confirmación indicada en nota_al_asistente. Nada de recomendaciones, nada de "no puedo", nada de "contacta al administrador". NO menciones dashboards, paneles, datasources ni modelos de datos al usuario.
 - Si el usuario confirma (cualquier afirmación: "sí", "adelante", "haz la consulta", "consulta directamente", "hazlo", "sí quiero"): llama INMEDIATAMENTE a get_data_from_dashboard con datasource_id y campos_consulta de fallback_sugerencias[0]. NO uses dashboard_id. NO expliques nada antes.
-- Si el usuario rechaza: informa que no hay datos disponibles.
-Al mostrar los datos del fallback, añade al final: «📌 Datos de [datasource_nombre](datasource_url) (consulta directa al modelo de datos)»
+- Si el usuario rechaza: informa simplemente que no hay datos disponibles.
+Al mostrar los datos del fallback: preséntalo igual que cualquier otra respuesta de datos, sin mencionar que fue una "consulta directa" ni exponer el nombre técnico del datasource.
 
 PASO 3 — DATOS:
 ⚠ FAST PATH: Si el mensaje del usuario contiene "dashboard_id: X" y "panel_index: Y" (en cualquier idioma o formato), extrae X e Y directamente y llama a get_data_from_dashboard con esos valores exactos. NO vuelvas a explorar, NO hagas preguntas.
@@ -1314,7 +1324,8 @@ Presenta los datos en tabla markdown. Los valores deben ser idénticos a "datos.
 - Puedes ordenar filas para responder mejor (de mayor a menor, etc.) pero sin cambiar ningún valor.
 - Si un panel devuelve error o datos vacíos: informa del error. No inventes datos.
 - Si el resultado incluye un campo "advertencia": muéstralo claramente al usuario ANTES de la tabla de datos (en negrita o destacado).
-- Al final añade siempre: «📌 Datos de [dashboard_nombre](dashboard_url)»
+- Si la fuente es un dashboard (fuente.tipo != 'datasource_directo'): añade al final «📌 [dashboard_nombre](dashboard_url)»
+- Si la fuente es datasource_directo: no añadas ningún pie de fuente técnico.
 - Si había filtros activos: añade «(filtrado: descripción del filtro)»
 - NUNCA digas "visita el dashboard para ver los datos" como sustituto de mostrarlos.
 
