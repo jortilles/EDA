@@ -742,19 +742,29 @@ function createMcpServer(requestUser?: any) {
                         return { content: [{ type: 'text', text: `No se encontraron columnas válidas en el datasource ${datasource_id} para: [${camposConsulta.join(', ')}]. Usa get_datasource para obtener los nombres exactos.` }], isError: true };
                     }
 
-                    console.log ('------------------------------------')
-                    console.log ('------------------------------------')
-                    console.log ('table id', selectedCols[0]._table)
-                    console.log (selectedCols)
-                    console.log ('------------------------------------')
+                    // Agrupar por tabla y quedarse solo con la tabla que tenga más columnas seleccionadas.
+                    // El query-builder no puede generar JOINs sin un modelo de relaciones explícito,
+                    // así que mezclar columnas de tablas distintas produce SQL inválido.
+                    const tableGroups = new Map<string, any[]>();
+                    for (const col of selectedCols) {
+                        const t = col._table || '';
+                        if (!tableGroups.has(t)) tableGroups.set(t, []);
+                        tableGroups.get(t)!.push(col);
+                    }
+                    let singleTableCols = selectedCols;
+                    let bestCount = 0;
+                    for (const [, cols] of tableGroups) {
+                        if (cols.length > bestCount) { bestCount = cols.length; singleTableCols = cols; }
+                    }
 
-                    const queryFields = selectedCols.map((col: any, idx: number) => ({
+                    const queryFields = singleTableCols.map((col: any, idx: number) => ({
                         field_name: col.column_name ?? col.name,
                         column_name: col.column_name ?? col.name,
                         column_type: col.column_type ?? 'text',
                         table_id: col._table ?? '',
-                        display_name: col.display_name ?? col.column_name ?? col.name,
-                        aggregation_type: [],
+                        display_name: (typeof col.display_name === 'string' ? col.display_name : col.display_name?.default) ?? col.column_name ?? col.name,
+                        aggregation_type: 'none',
+                        minimumFractionDigits: col.minimumFractionDigits ?? 0,
                         order: idx,
                         format: 'No',
                         cumulativeSum: false,
@@ -762,7 +772,7 @@ function createMcpServer(requestUser?: any) {
                     }));
 
                     // Use the table of the first selected column as rootTable
-                    const rootTable = (selectedCols[0]?._table ?? '') || (queryFields[0]?.table_id ?? '');
+                    const rootTable = (singleTableCols[0]?._table ?? '') || (queryFields[0]?.table_id ?? '');
                     const fallbackQuery = {
                         queryMode: 'EDA',
                         rootTable,
