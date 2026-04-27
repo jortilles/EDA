@@ -479,6 +479,8 @@ function createMcpServer(requestUser?: any) {
                 campos_requeridos: z.array(z.string()).optional().describe('Palabras clave de los campos que deben aparecer en el panel (ej: ["country","credit"]). En modo exploración, solo se devuelven paneles donde TODOS los campos mencionados estén presentes (coincidencia parcial, case-insensitive). El asistente debe inferir estas palabras clave de la pregunta del usuario.'),
                 dashboard_id: z.string().optional().describe('ID del dashboard a consultar (opcional). Si no se proporciona, se lista el catálogo de opciones disponibles.'),
                 panel_index: z.number().optional().describe('Índice del panel dentro del dashboard (0-based). Si se omite, se ejecutan todos los panels del dashboard.'),
+                datasource_id: z.string().optional().describe('ID del datasource para consulta directa (modo fallback). Úsalo SOLO cuando el usuario haya confirmado explícitamente consultar un modelo de datos directamente, al no haberse encontrado paneles en dashboards.'),
+                campos_consulta: z.array(z.string()).optional().describe('Nombres técnicos de columnas a consultar en modo fallback (obtenidos de get_datasource). Si se omite, se usan los campos más relevantes del modelo según la pregunta.'),
             },
         },
         async (args: any) => {
@@ -487,7 +489,7 @@ function createMcpServer(requestUser?: any) {
             console.log('[MCP] get_data_from_dashboard - dashboard_id:', args?.dashboard_id ?? '(no proporcionado → modo exploración)');
             console.log('[MCP] get_data_from_dashboard - panel_index:', args?.panel_index ?? '(no proporcionado → todos)');
             console.log('[MCP] get_data_from_dashboard - campos_requeridos:', args?.campos_requeridos ?? '(no proporcionados → sin filtro de campos)');
-            const { question, dashboard_id, panel_index, campos_requeridos } = args;
+            const { question, dashboard_id, panel_index, campos_requeridos, datasource_id, campos_consulta } = args;
             const camposLower: string[] = Array.isArray(campos_requeridos)
                 ? campos_requeridos.map((c: string) => c.toLowerCase())
                 : [];
@@ -692,6 +694,111 @@ function createMcpServer(requestUser?: any) {
 
                     console.log('[MCP] MODO DATOS finalizado | panels ejecutados:', resultados.length, '| chars:', JSON.stringify(respuesta).length);
                     return { content: [{ type: 'text', text: JSON.stringify(respuesta) }] };
+                }
+
+                // ── MODO FALLBACK: datasource_id sin dashboard_id ──────────────────────
+                if (datasource_id) {
+                    console.log('[MCP] get_data_from_dashboard - MODO FALLBACK →', datasource_id);
+
+                    const accessibleDsFb = await getAccessibleDatasourceIds(user);
+                    if (!accessibleDsFb.has(datasource_id)) {
+                        return { content: [{ type: 'text', text: `Datasource no encontrado o sin acceso: ${datasource_id}` }], isError: true };
+                    }
+
+                    const dsDoc = await DataSource.findById(datasource_id).exec();
+                    const filteredSchema = dsDoc ? filterDatasourceForAI(dsDoc) : null;
+                    if (!filteredSchema) {
+                        return { content: [{ type: 'text', text: `Datasource ${datasource_id} no disponible o excluido (ia_visibility: NONE).` }], isError: true };
+                    }
+
+                    const allCols: any[] = (filteredSchema.tables ?? []).flatMap((t: any) =>
+                        (t.columns ?? []).map((c: any) => ({ ...c, _table: t.table_name ?? t.name ?? '' }))
+                    );
+
+                    // Seleccionar columnas: las pedidas por el AI o las más relevantes según la pregunta
+                    const camposConsulta: string[] = Array.isArray(campos_consulta) && campos_consulta.length > 0
+                        ? campos_consulta
+                        : (() => {
+                            const qWords = (question ?? '').toLowerCase().split(/\s+/).filter((w: string) => w.length >= 3);
+                            const scored = allCols.map((c: any) => {
+                                const name = (c.column_name ?? c.name ?? '').toLowerCase();
+                                const desc = (c.description?.default ?? c.description ?? '').toLowerCase();
+                                const hits = qWords.filter((w: string) => name.includes(w) || desc.includes(w)).length;
+                                return { name: c.column_name ?? c.name ?? '', score: hits };
+                            }).filter(x => x.name);
+                            scored.sort((a, b) => b.score - a.score);
+                            // Top 10 más relevantes (o todos si hay pocos)
+                            return scored.slice(0, 10).map(x => x.name);
+                        })();
+
+                    const selectedCols = camposConsulta
+                        .map(cn => allCols.find((c: any) => (c.column_name ?? c.name) === cn))
+                        .filter(Boolean);
+
+                    if (selectedCols.length === 0) {
+                        return { content: [{ type: 'text', text: `No se encontraron columnas válidas en el datasource ${datasource_id} para: [${camposConsulta.join(', ')}]. Usa get_datasource para obtener los nombres exactos.` }], isError: true };
+                    }
+
+                    const queryFields = selectedCols.map((col: any) => ({
+                        field_name: col.column_name ?? col.name,
+                        column_type: col.column_type ?? 'text',
+                        display_name: col.display_name ?? col.column_name ?? col.name,
+                        aggregation_type: [],
+                        order: 'None',
+                        format: 'No',
+                        cumulativeSum: false,
+                        ordenation: 'ASC',
+                    }));
+
+                    const fallbackQuery = {
+                        queryMode: 'EDA',
+                        rootTable: '',
+                        joinType: 'inner',
+                        forSelector: false,
+                        fields: queryFields,
+                        filters: [],
+                        order: [],
+                        limit: 1000,
+                    };
+
+                    const { apiBase: fbApiBase, token: fbToken } = buildApiCall(user);
+                    console.log(`[MCP] MODO FALLBACK — POST ${fbApiBase}/dashboard/query | datasource_id:`, datasource_id, '| campos:', camposConsulta);
+                    const fbResponse = await fetch(`${fbApiBase}/dashboard/query?token=${fbToken}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ model_id: datasource_id, query: fallbackQuery, dashboard: { dashboard_id: null, panel_id: '' } }),
+                    });
+                    if (!fbResponse.ok) {
+                        const errText = await fbResponse.text();
+                        throw new Error(`/dashboard/query HTTP ${fbResponse.status}: ${errText.substring(0, 300)}`);
+                    }
+                    const fbData: any = await fbResponse.json();
+                    const [fbLabels, fbRows] = Array.isArray(fbData) ? fbData : [[], []];
+                    if (fbLabels?.[0] === 'noDataAllowed') {
+                        return { content: [{ type: 'text', text: 'El usuario no tiene permiso para ver los datos de este modelo de datos.' }], isError: true };
+                    }
+                    const rows: any[][] = Array.isArray(fbRows) ? fbRows.filter((r: any) => Array.isArray(r) && r.length > 0) : [];
+                    const displayMap = new Map<string, string>();
+                    queryFields.forEach((f: any) => { if (f.field_name) displayMap.set(f.field_name, f.display_name ?? f.field_name); });
+                    const columnas: string[] = (fbLabels as string[]).map((lbl: string) => displayMap.get(lbl) ?? lbl);
+
+                    const baseUrlFb = getBaseUrl();
+                    const dsUrl = baseUrlFb ? `${baseUrlFb}/data-source/${encodeURIComponent(datasource_id)}` : '';
+
+                    const respuestaFallback = {
+                        fuente: {
+                            tipo: 'datasource_directo',
+                            datasource_id,
+                            datasource_nombre: filteredSchema.model_name ?? datasource_id,
+                            datasource_url: dsUrl,
+                        },
+                        pregunta: question,
+                        datos: rows.length > 0 ? { columnas, filas: rows, total_filas: rows.length } : null,
+                        mensaje: rows.length === 0 ? 'Sin resultados' : undefined,
+                    };
+
+                    console.log('[MCP] MODO FALLBACK finalizado | rows:', rows.length, '| columnas:', columnas.join(', '));
+                    return { content: [{ type: 'text', text: JSON.stringify(respuestaFallback) }] };
                 }
 
                 // ── MODO EXPLORACIÓN: sin dashboard_id ─────────────────────────────────
@@ -947,14 +1054,39 @@ function createMcpServer(requestUser?: any) {
                 });
                 console.log('[MCP] MODO EXPLORACIÓN finalizado | opciones únicas:', totalOpciones, truncada ? `(top ${MAX_OPTIONS} por relevancia)` : '');
 
-                const notaSinResultados = camposLower.length > 0
-                    ? `No se han encontrado paneles que contengan los campos [${camposLower.join(', ')}]. Informa al usuario. Si crees que la pregunta es válida, vuelve a llamar a este tool SIN campos_requeridos para ver todas las opciones disponibles y presentarlas al usuario.`
-                    : 'No se han encontrado paneles accesibles con datos. Informa al usuario.';
+                // Buscar datasources relevantes como sugerencia de fallback (solo cuando no hay opciones)
+                let fallbackSugerencias: any[] = [];
+                if (opcionesArr.length === 0) {
+                    for (const [dsId, dsName] of accessibleDsIds) {
+                        const schema = await getDsSchema(dsId);
+                        if (!schema?.tables) continue;
+                        const allDsCols: string[] = (schema.tables as any[]).flatMap((t: any) =>
+                            (t.columns ?? []).map((c: any) => c.column_name ?? c.name ?? '')
+                        ).filter(Boolean);
+                        const matchingCols = camposLower.length > 0
+                            ? allDsCols.filter(cn => camposLower.some(kw => cn.toLowerCase().includes(kw)))
+                            : allDsCols.slice(0, 5);
+                        if (matchingCols.length > 0) {
+                            fallbackSugerencias.push({ datasource_id: dsId, datasource_nombre: dsName, campos_relevantes: matchingCols.slice(0, 8) });
+                        }
+                    }
+                    fallbackSugerencias = fallbackSugerencias.slice(0, 2);
+                    console.log('[MCP] exploración — fallback sugerencias:', fallbackSugerencias.length);
+                }
+
+                const notaSinResultados = opcionesArr.length > 0 ? '' : camposLower.length > 0
+                    ? fallbackSugerencias.length > 0
+                        ? `No se han encontrado paneles en dashboards con los campos [${camposLower.join(', ')}]. Hay datasources con campos relacionados disponibles (ver fallback_sugerencias). INSTRUCCIÓN: Presenta la pregunta de confirmación al usuario con el formato exacto: "No he encontrado dashboards con estos datos. ¿Quieres que consulte [lista los campos relevantes del datasource] del modelo de datos [nombre del datasource]?" Espera la confirmación del usuario. Si confirma, llama de nuevo con datasource_id=[id] y campos_consulta=[campos elegidos]. Si rechaza, informa que no hay datos disponibles.`
+                        : `No se han encontrado paneles que contengan los campos [${camposLower.join(', ')}]. Informa al usuario. Si crees que la pregunta es válida, vuelve a llamar a este tool SIN campos_requeridos para ver todas las opciones disponibles y presentarlas al usuario.`
+                    : fallbackSugerencias.length > 0
+                        ? `No se han encontrado paneles accesibles. Hay datasources disponibles (ver fallback_sugerencias). INSTRUCCIÓN: Presenta la pregunta de confirmación al usuario: "No he encontrado dashboards con estos datos. ¿Quieres que consulte [campos relevantes] del modelo de datos [nombre]?" Espera confirmación y si acepta, llama con datasource_id y campos_consulta.`
+                        : 'No se han encontrado paneles accesibles con datos. Informa al usuario.';
                 const notaTruncada = truncada ? ` AVISO: se muestran las ${MAX_OPTIONS} opciones más relevantes de ${totalOpciones} encontradas. El resto fueron descartadas por menor relevancia.` : '';
 
-                const respuestaExploracion = {
+                const respuestaExploracion: any = {
                     pregunta: question,
                     opciones_unicas: opcionesArr,
+                    ...(fallbackSugerencias.length > 0 ? { fallback_sugerencias: fallbackSugerencias } : {}),
                     nota_al_asistente: opcionesArr.length === 0
                         ? notaSinResultados
                         : opcionesArr.length === 1
@@ -1139,6 +1271,12 @@ Espera la selección del usuario ANTES de ejecutar el PASO 3.
 NUNCA uses letras (A, B, C) ni emojis de número. Solo números arábigos seguidos de punto.
 Ejemplo: "Opción 1 — [Dashboard «Ventas»](url) — Todos los países sin filtrar. Opción 2 — [Dashboard «EU»](url) — Solo España y Francia."
 
+PASO 2b — FALLBACK (solo si exploración devuelve 0 opciones y hay fallback_sugerencias):
+El tool devolverá fallback_sugerencias con datasources relacionados. Presenta al usuario la pregunta de confirmación EXACTA indicada en nota_al_asistente, mencionando los campos y el nombre del modelo. Espera su respuesta:
+- Si confirma: llama a get_data_from_dashboard con datasource_id=[id del datasource sugerido] y campos_consulta=[campos relevantes]. NO uses dashboard_id.
+- Si rechaza: informa que no hay datos disponibles.
+Al mostrar los datos de fallback, al final añade siempre: «📌 Datos de [datasource_nombre](datasource_url) (consulta directa al modelo de datos)»
+
 PASO 3 — DATOS:
 ⚠ FAST PATH: Si el mensaje del usuario contiene "dashboard_id: X" y "panel_index: Y" (en cualquier idioma o formato), extrae X e Y directamente y llama a get_data_from_dashboard con esos valores exactos. NO vuelvas a explorar, NO hagas preguntas.
 Si el usuario elige con lenguaje natural ("la primera", "la dos", "esa", "the first", "option 2"), busca el dashboard_id y panel_index de la opción correspondiente en el último resultado de exploración del historial.
@@ -1261,71 +1399,6 @@ Responde siempre en el idioma del usuario.`, cache_control: { type: 'ephemeral' 
     } catch (err: any) {
         console.error('[CHAT] Error:', err.message);
         return res.status(500).json({ ok: false, response: `Error del asistente: ${err.message}` });
-    } finally {
-        try { await mcpClient.close(); } catch (_) {}
-    }
-});
-
-McpRouter.get('/chat/config', authGuard, (_req: Request, res: Response) => {
-    const { AVAILABLE } = getAnthropicConfig();
-    res.json({ available: AVAILABLE });
-});
-
-// --- Endpoint para integraciones externas (n8n, etc.) ---
-// POST /ia/dashboards/:id
-// Llama directamente al tool get_data_from_dashboard sin pasar por Claude.
-// Auth: JWT Bearer opcional → si no viene, usa loginInternal (MCP_EMAIL/MCP_PASSWORD).
-// Body: { question: string, panel_index?: number }
-McpRouter.post('/dashboards/:id', async (req: Request, res: Response) => {
-    const { MCP_URL } = getAnthropicConfig();
-    const dashboard_id: string = req.params.id;
-    const { question } = req.body;
-
-    if (!question) {
-        return res.status(400).json({ ok: false, response: 'Se requiere el campo question en el body.' });
-    }
-
-    console.log('[DASHBOARDS] POST /ia/dashboards/:id — id:', dashboard_id, '| question:', question);
-
-    // Auth: JWT Bearer si viene, loginInternal si no
-    let reqUser: any = null;
-    const authHeader = req.headers['authorization'] as string;
-    if (authHeader?.startsWith('Bearer ')) {
-        try {
-            const decoded: any = jwt.verify(authHeader.slice(7), SEED);
-            reqUser = decoded.user;
-            console.log('[DASHBOARDS] Auth via JWT — usuario:', reqUser?.email ?? '(desconocido)');
-        } catch (e: any) {
-            console.warn('[DASHBOARDS] JWT inválido:', e.message, '→ fallback a loginInternal');
-        }
-    }
-
-    const mcpClient = new Client({ name: 'eda-dashboards', version: '1.0.0' });
-
-    try {
-        const user = await resolveUser(reqUser);
-        const userToken = jwt.sign({ user }, SEED, { expiresIn: 14400 });
-
-        const transport = new StreamableHTTPClientTransport(new URL(MCP_URL), {
-            requestInit: { headers: { 'x-user-token': userToken } },
-        });
-        await mcpClient.connect(transport);
-
-        const toolArgs: any = { dashboard_id, question };
-
-        console.log('[DASHBOARDS] Llamando get_data_from_dashboard —', JSON.stringify(toolArgs));
-        const result = await mcpClient.callTool({ name: 'get_data_from_dashboard', arguments: toolArgs });
-        const resultText = (result.content as any[])
-            .filter((c: any) => c.type === 'text')
-            .map((c: any) => c.text)
-            .join('\n');
-
-        console.log('[DASHBOARDS] Resultado OK — length:', resultText.length);
-        return res.status(200).json({ ok: true, response: resultText });
-
-    } catch (err: any) {
-        console.error('[DASHBOARDS] Error:', err.message);
-        return res.status(500).json({ ok: false, response: `Error: ${err.message}` });
     } finally {
         try { await mcpClient.close(); } catch (_) {}
     }
