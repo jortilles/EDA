@@ -191,15 +191,15 @@
           <div class="flex flex-col gap-2 pl-8 mt-1">
             @for (opt of msg.options; track opt.num) {
               @if (opt.type === 'paste') {
-                <button class="chat-suggestion chat-suggestion--secondary text-left" (click)="selectOption(opt)">
+                <button class="chat-suggestion" (click)="selectOption(opt)">
                   {{ chatFallbackSearchIn }}
                 </button>
               } @else if (opt.type === 'datasource') {
-                <button class="chat-suggestion chat-suggestion--primary text-left" (click)="selectOption(opt)">
+                <button class="chat-suggestion" (click)="selectOption(opt)">
                   {{ chatFallbackYes }}
                 </button>
               } @else {
-                <button class="chat-suggestion text-left" (click)="selectOption(opt)">
+                <button class="chat-suggestion" (click)="selectOption(opt)">
                   {{ opt.num }}. {{ opt.label }}
                 </button>
               }

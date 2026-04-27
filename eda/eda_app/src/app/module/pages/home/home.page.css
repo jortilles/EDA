@@ -58,26 +58,6 @@
   background: #f0fdfe;
   color: #00B0BA;
 }
-.chat-suggestion--primary {
-  background: #00B0BA;
-  border-color: #00B0BA;
-  color: white;
-  font-weight: 500;
-}
-.chat-suggestion--primary:hover {
-  background: #009aa3;
-  border-color: #009aa3;
-  color: white;
-}
-.chat-suggestion--secondary {
-  border-style: dashed;
-  color: #6b7280;
-}
-.chat-suggestion--secondary:hover {
-  border-color: #9ca3af;
-  background: #f9fafb;
-  color: #374151;
-}
 
 /* ---- Messages background ---- */
 .chat-messages-bg {

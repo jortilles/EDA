@@ -794,7 +794,7 @@ function createMcpServer(requestUser?: any) {
                     });
                     if (!fbResponse.ok) {
                         const errText = await fbResponse.text();
-                        throw new Error(`/dashboard/query HTTP ${fbResponse.status}: ${errText.substring(0, 300)}`);
+                        throw new Error(`/dashboard/querpm2 ly HTTP ${fbResponse.status}: ${errText.substring(0, 300)}`);
                     }
                     const fbData: any = await fbResponse.json();
                     const [fbLabels, fbRows] = Array.isArray(fbData) ? fbData : [[], []];
@@ -1337,6 +1337,7 @@ PASO 2b — FALLBACK OBLIGATORIO (cuando exploración devuelve 0 opciones y hay 
 - Si el usuario confirma (cualquier afirmación: "sí", "adelante", "haz la consulta", "consulta directamente", "hazlo", "sí quiero", o cualquier variante equivalente): llama INMEDIATAMENTE a get_data_from_dashboard con datasource_id y campos_consulta de fallback_sugerencias[0]. NO uses dashboard_id. NO expliques nada antes.
 - Si el usuario rechaza: informa simplemente que no hay datos disponibles.
 Al mostrar los datos del fallback: preséntalo igual que cualquier otra respuesta de datos, sin mencionar que fue una "consulta directa" ni exponer el nombre técnico del datasource.
+- Si el resultado del fallback tiene datos null o 0 filas: responde únicamente "No hay datos disponibles sobre tu pregunta." Sin describir tablas, sin mencionar qué campos existen, sin sugerir cargar datos ni explicar la estructura del sistema.
 
 PASO 2c — CONSULTA DIRECTA EXPLÍCITA (el usuario pide expresamente consultar un datasource):
 Si el usuario pide directamente consultar un datasource/base de datos concreto (ej: "consulta al datasource de X", "busca en la base de datos X", "consulta directamente X"):
