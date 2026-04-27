@@ -2614,6 +2614,16 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>All  </target>
 </trans-unit>
 
+<trans-unit id="AllTagsFlat">
+<source>Todo</source>
+<target>All</target>
+</trans-unit>
+
+<trans-unit id="AllTagsGrouped">
+<source>Todo agrupado</source>
+<target>All grouped</target>
+</trans-unit>
+
 <trans-unit id="NoneTags">
 <source> Ninguno  </source>
 <target>None </target>

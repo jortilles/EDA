@@ -2515,6 +2515,16 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Wszystko</target>
   </trans-unit>
 
+  <trans-unit id="AllTagsFlat">
+    <source>Todo</source>
+    <target>Wszystko</target>
+  </trans-unit>
+
+  <trans-unit id="AllTagsGrouped">
+    <source>Todo agrupado</source>
+    <target>Wszystko pogrupowane</target>
+  </trans-unit>
+
 
   <trans-unit id="NoneTags">
     <source> Ninguno  </source>
