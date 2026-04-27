@@ -92,9 +92,12 @@ function filterDatasourceForAI(ds: any): any | null {
     if (modelVisibility === 'NONE') return null;
 
     const modelRaw = raw?.ds?.model;
-    const tables: any[] = Array.isArray(modelRaw)
-        ? modelRaw
-        : (modelRaw && typeof modelRaw === 'object' ? Object.values(modelRaw) : []);
+    // ds.model is { tables: [...], ... } in EDA — access .tables directly
+    const tables: any[] = Array.isArray(modelRaw?.tables)
+        ? modelRaw.tables
+        : Array.isArray(modelRaw)
+            ? modelRaw
+            : [];
     const filteredTables = tables
         .filter((table: any) => (table.ia_visibility ?? 'FULL') !== 'NONE')
         .map((table: any) => {
@@ -741,7 +744,9 @@ function createMcpServer(requestUser?: any) {
 
                     const queryFields = selectedCols.map((col: any) => ({
                         field_name: col.column_name ?? col.name,
+                        column_name: col.column_name ?? col.name,
                         column_type: col.column_type ?? 'text',
+                        table_id: col._table ?? '',
                         display_name: col.display_name ?? col.column_name ?? col.name,
                         aggregation_type: [],
                         order: 'None',
@@ -750,9 +755,11 @@ function createMcpServer(requestUser?: any) {
                         ordenation: 'ASC',
                     }));
 
+                    // Use the table of the first selected column as rootTable
+                    const rootTable = selectedCols[0]?._table ?? '';
                     const fallbackQuery = {
                         queryMode: 'EDA',
-                        rootTable: '',
+                        rootTable,
                         joinType: 'inner',
                         forSelector: false,
                         fields: queryFields,
@@ -1308,9 +1315,15 @@ Ejemplo: "Opción 1 — [Dashboard «Ventas»](url) — Todos los países sin fi
 
 PASO 2b — FALLBACK OBLIGATORIO (cuando exploración devuelve 0 opciones y hay fallback_sugerencias):
 ⚠ REGLA ABSOLUTA: Si el resultado contiene fallback_sugerencias no vacío, tu ÚNICA respuesta al usuario es la pregunta de confirmación indicada en nota_al_asistente. Nada de recomendaciones, nada de "no puedo", nada de "contacta al administrador". NO menciones dashboards, paneles, datasources ni modelos de datos al usuario.
-- Si el usuario confirma (cualquier afirmación: "sí", "adelante", "haz la consulta", "consulta directamente", "hazlo", "sí quiero"): llama INMEDIATAMENTE a get_data_from_dashboard con datasource_id y campos_consulta de fallback_sugerencias[0]. NO uses dashboard_id. NO expliques nada antes.
+- Si el usuario confirma (cualquier afirmación: "sí", "adelante", "haz la consulta", "consulta directamente", "hazlo", "sí quiero", o cualquier variante equivalente): llama INMEDIATAMENTE a get_data_from_dashboard con datasource_id y campos_consulta de fallback_sugerencias[0]. NO uses dashboard_id. NO expliques nada antes.
 - Si el usuario rechaza: informa simplemente que no hay datos disponibles.
 Al mostrar los datos del fallback: preséntalo igual que cualquier otra respuesta de datos, sin mencionar que fue una "consulta directa" ni exponer el nombre técnico del datasource.
+
+PASO 2c — CONSULTA DIRECTA EXPLÍCITA (el usuario pide expresamente consultar un datasource):
+Si el usuario pide directamente consultar un datasource/base de datos concreto (ej: "consulta al datasource de X", "busca en la base de datos X", "consulta directamente X"):
+1. Llama a list_datasources para obtener el ID del datasource mencionado.
+2. Llama a get_datasource con ese ID para obtener el esquema (tablas y columnas).
+3. Llama a get_data_from_dashboard con datasource_id=<id> y campos_consulta=<columnas relevantes para la pregunta original>. NUNCA digas que no puedes hacer la consulta directa.
 
 PASO 3 — DATOS:
 ⚠ FAST PATH: Si el mensaje del usuario contiene "dashboard_id: X" y "panel_index: Y" (en cualquier idioma o formato), extrae X e Y directamente y llama a get_data_from_dashboard con esos valores exactos. NO vuelvas a explorar, NO hagas preguntas.
