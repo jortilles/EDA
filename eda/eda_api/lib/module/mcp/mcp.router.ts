@@ -1134,7 +1134,7 @@ function createMcpServer(requestUser?: any) {
                 }
 
                 const buildFallbackNota = () => fallbackSugerencias.length > 0
-                    ? `ACCIÓN OBLIGATORIA — tu única respuesta al usuario debe ser exactamente esta pregunta en el idioma que te hablen (nada más, sin mencionar dashboards ni paneles): "No he encontrado ningún informe que contenga información sobre tu pregunta. ¿Quieres que busque en ${fallbackSugerencias[0].datasource_nombre}?" Si el usuario confirma (cualquier afirmación), llama INMEDIATAMENTE a get_data_from_dashboard con datasource_id="${fallbackSugerencias[0].datasource_id}" y campos_consulta=${JSON.stringify(fallbackSugerencias[0].campos_relevantes)}. NUNCA digas que no puedes hacer la consulta. NUNCA des recomendaciones alternativas.`
+                    ? `ACCIÓN OBLIGATORIA — Formula UNA sola pregunta de confirmación AL USUARIO en el mismo idioma en que el usuario te está hablando. Pregúntale si quiere que busques los datos disponibles. NO menciones el nombre técnico del datasource, ni dashboards, ni paneles. Ejemplo orientativo (adáptalo al idioma del usuario): "No he encontrado informes con esa información. ¿Quieres que busque directamente en los datos disponibles?" Si el usuario confirma (cualquier afirmación): llama INMEDIATAMENTE a get_data_from_dashboard con datasource_id="${fallbackSugerencias[0].datasource_id}" y campos_consulta=${JSON.stringify(fallbackSugerencias[0].campos_relevantes)}. NUNCA digas que no puedes hacer la consulta.`
                     : '';
                 const notaSinResultados = opcionesArr.length > 0 ? '' : fallbackSugerencias.length > 0
                     ? buildFallbackNota()
@@ -1408,11 +1408,14 @@ Responde siempre en el idioma del usuario.`, cache_control: { type: 'ephemeral' 
                     lastExplorationOptions = [];
                 }
                 if (lastFallbackSugerencias.length > 0) {
+                    const fb = lastFallbackSugerencias[0];
                     responsePayload.options = [
                         {
                             num: 1,
                             label: 'Sí',
                             type: 'datasource',
+                            datasource_id: fb.datasource_id,
+                            campos_consulta: fb.campos_relevantes ?? [],
                         },
                         {
                             num: 2,

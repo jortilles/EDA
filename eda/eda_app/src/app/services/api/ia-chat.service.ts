@@ -10,6 +10,8 @@ export interface ChatOption {
   panel_index?: number;
   dashboard_url?: string;
   pasteText?: string;
+  datasource_id?: string;
+  campos_consulta?: string[];
 }
 
 export interface ChatMessage {

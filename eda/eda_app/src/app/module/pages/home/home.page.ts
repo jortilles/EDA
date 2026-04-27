@@ -213,7 +213,9 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     let apiMsg: string;
     if (option.type === 'datasource') {
       displayLabel = option.label;
-      apiMsg = 'sí';
+      apiMsg = option.datasource_id
+        ? `sí (ejecuta get_data_from_dashboard con datasource_id="${option.datasource_id}"${option.campos_consulta?.length ? ` y campos_consulta=${JSON.stringify(option.campos_consulta)}` : ''})`
+        : 'sí';
     } else {
       displayLabel = $localize`:@@chatOptionSelectedLabel:Opción` + ` ${option.num}: ${option.label}`;
       apiMsg = `${displayLabel} (dashboard_id: ${option.dashboard_id}, panel_index: ${option.panel_index})`;
