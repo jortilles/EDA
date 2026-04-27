@@ -154,6 +154,14 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.sendChatMessage();
   }
 
+  pasteToInput(text: string): void {
+    if (this.chatInputEl?.nativeElement) {
+      this.chatInputEl.nativeElement.value = text;
+      this.chatInputEl.nativeElement.dispatchEvent(new Event('input'));
+      this.chatInputEl.nativeElement.focus();
+    }
+  }
+
   onChatKeydown(event: KeyboardEvent): void {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
@@ -188,12 +196,23 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   selectOption(option: ChatOption): void {
+    if (option.type === 'paste') {
+      this.pasteToInput(option.pasteText ?? '');
+      return;
+    }
     if (this.chatLoading()) return;
     // Ocultar las opciones del mensaje que contenía esta selección
     const msgWithOptions = [...this.chatHistory].reverse().find(m => m.role === 'assistant' && m.options && m.options.length > 0);
     if (msgWithOptions) msgWithOptions.options = [];
-    const displayLabel = $localize`:@@chatOptionSelectedLabel:Opción` + ` ${option.num}: ${option.label}`;
-    const apiMsg = `${displayLabel} (dashboard_id: ${option.dashboard_id}, panel_index: ${option.panel_index})`;
+    let displayLabel: string;
+    let apiMsg: string;
+    if (option.type === 'datasource') {
+      displayLabel = option.label;
+      apiMsg = 'sí';
+    } else {
+      displayLabel = $localize`:@@chatOptionSelectedLabel:Opción` + ` ${option.num}: ${option.label}`;
+      apiMsg = `${displayLabel} (dashboard_id: ${option.dashboard_id}, panel_index: ${option.panel_index})`;
+    }
     this.chatHistory.push({ role: 'user', content: apiMsg, displayContent: displayLabel });
     this.chatLoading.set(true);
     this.shouldScrollChat = true;

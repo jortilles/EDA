@@ -190,9 +190,19 @@
         @if (msg.role === 'assistant' && msg.options && msg.options.length > 0) {
           <div class="flex flex-col gap-2 pl-8 mt-1">
             @for (opt of msg.options; track opt.num) {
-              <button class="chat-suggestion text-left" (click)="selectOption(opt)">
-                {{ opt.num }}. {{ opt.label }}
-              </button>
+              @if (opt.type === 'paste') {
+                <button class="chat-suggestion chat-suggestion--secondary text-left" (click)="selectOption(opt)">
+                  {{ opt.label }}
+                </button>
+              } @else if (opt.type === 'datasource') {
+                <button class="chat-suggestion chat-suggestion--primary text-left" (click)="selectOption(opt)">
+                  {{ opt.label }}
+                </button>
+              } @else {
+                <button class="chat-suggestion text-left" (click)="selectOption(opt)">
+                  {{ opt.num }}. {{ opt.label }}
+                </button>
+              }
             }
           </div>
         }

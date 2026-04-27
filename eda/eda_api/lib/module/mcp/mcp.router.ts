@@ -635,8 +635,9 @@ function createMcpServer(requestUser?: any) {
                             if (responseLabels?.[0] === 'noDataAllowed') {
                                 throw new Error('El usuario no tiene permiso para ver los datos de este panel.');
                             }
-                            const rows: any[][] = Array.isArray(responseRows) ? responseRows.filter((r: any) => Array.isArray(r) && r.length > 0) : [];
-                            console.log(`[MCP] panel ${idx} — rows: ${rows.length} | labels: ${(responseLabels ?? []).join(', ')}`);
+                            const allRows: any[][] = Array.isArray(responseRows) ? responseRows.filter((r: any) => Array.isArray(r) && r.length > 0) : [];
+                            const rows = allRows.slice(0, 20);
+                            console.log(`[MCP] panel ${idx} — rows: ${allRows.length} (mostrando ${rows.length}) | labels: ${(responseLabels ?? []).join(', ')}`);
 
                             // Mapear nombres técnicos devueltos por el controller a display_names.
                             // El controller puede haber eliminado columnas (forbiddenTables), así que
@@ -659,7 +660,7 @@ function createMcpServer(requestUser?: any) {
                                     filtros_activos: filterSummary,
                                     tiene_filtros: activeFilters.length > 0,
                                     modelo_datos: accessibleDsIds.get(modelId) ?? modelId,
-                                    datos: { columnas, filas: rows, total_filas: rows.length },
+                                    datos: { columnas, filas: rows, total_filas: allRows.length, truncado: allRows.length > 20 },
                                 });
                             } else {
                                 resultados.push({
@@ -800,7 +801,8 @@ function createMcpServer(requestUser?: any) {
                     if (fbLabels?.[0] === 'noDataAllowed') {
                         return { content: [{ type: 'text', text: 'El usuario no tiene permiso para ver los datos de este modelo de datos.' }], isError: true };
                     }
-                    const rows: any[][] = Array.isArray(fbRows) ? fbRows.filter((r: any) => Array.isArray(r) && r.length > 0) : [];
+                    const allFbRows: any[][] = Array.isArray(fbRows) ? fbRows.filter((r: any) => Array.isArray(r) && r.length > 0) : [];
+                    const rows = allFbRows.slice(0, 20);
                     const displayMap = new Map<string, string>();
                     queryFields.forEach((f: any) => { if (f.field_name) displayMap.set(f.field_name, f.display_name ?? f.field_name); });
                     const columnas: string[] = (fbLabels as string[]).map((lbl: string) => displayMap.get(lbl) ?? lbl);
@@ -816,11 +818,11 @@ function createMcpServer(requestUser?: any) {
                             datasource_url: dsUrl,
                         },
                         pregunta: question,
-                        datos: rows.length > 0 ? { columnas, filas: rows, total_filas: rows.length } : null,
+                        datos: rows.length > 0 ? { columnas, filas: rows, total_filas: allFbRows.length, truncado: allFbRows.length > 20 } : null,
                         mensaje: rows.length === 0 ? 'Sin resultados' : undefined,
                     };
 
-                    console.log('[MCP] MODO FALLBACK finalizado | rows:', rows.length, '| columnas:', columnas.join(', '));
+                    console.log('[MCP] MODO FALLBACK finalizado | rows:', allFbRows.length, '(mostrando', rows.length, ') | columnas:', columnas.join(', '));
                     return { content: [{ type: 'text', text: JSON.stringify(respuestaFallback) }] };
                 }
 
@@ -1274,6 +1276,7 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
         let iterations = 0;
         const MAX_ITERATIONS = 10;
         let lastExplorationOptions: any[] = [];
+        let lastFallbackSugerencias: any[] = [];
 
         while (iterations < MAX_ITERATIONS) {
             iterations++;
@@ -1349,7 +1352,7 @@ NUNCA vuelvas al PASO 1 para una opción ya elegida.
 
 PASO 4 — RESPUESTA:
 Presenta los datos en tabla markdown. Los valores deben ser idénticos a "datos.filas".
-- Si total_filas > 30: muestra las 30 filas más relevantes e indica "Mostrando 30 de N filas".
+- Si truncado es true: indica "Mostrando 20 de N filas" (N = total_filas). Nunca muestres más de 20 filas.
 - Puedes ordenar filas para responder mejor (de mayor a menor, etc.) pero sin cambiar ningún valor.
 - Si un panel devuelve error o datos vacíos: informa del error. No inventes datos.
 - Si el resultado incluye un campo "advertencia": muéstralo claramente al usuario ANTES de la tabla de datos (en negrita o destacado).
@@ -1402,6 +1405,23 @@ Responde siempre en el idioma del usuario.`, cache_control: { type: 'ephemeral' 
                     }
                     lastExplorationOptions = [];
                 }
+                if (lastFallbackSugerencias.length > 0) {
+                    const primary = lastFallbackSugerencias[0];
+                    responsePayload.options = [
+                        {
+                            num: 1,
+                            label: primary.datasource_nombre,
+                            type: 'datasource',
+                        },
+                        {
+                            num: 2,
+                            label: `Buscar en ${primary.datasource_nombre}`,
+                            type: 'paste',
+                            pasteText: `busca en el datasource: ${primary.datasource_nombre}`,
+                        },
+                    ];
+                    lastFallbackSugerencias = [];
+                }
                 return res.status(200).json(responsePayload);
             }
 
@@ -1434,6 +1454,11 @@ Responde siempre en el idioma del usuario.`, cache_control: { type: 'ephemeral' 
                                         lastExplorationOptions = parsed.opciones_unicas;
                                     } else {
                                         lastExplorationOptions = [];
+                                    }
+                                    if (Array.isArray(parsed?.fallback_sugerencias) && parsed.fallback_sugerencias.length > 0) {
+                                        lastFallbackSugerencias = parsed.fallback_sugerencias;
+                                    } else {
+                                        lastFallbackSugerencias = [];
                                     }
                                 } catch (_) {}
                             }
