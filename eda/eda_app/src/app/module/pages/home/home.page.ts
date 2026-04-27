@@ -108,6 +108,11 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   public chatSuggestion2: string = $localize`:@@chatSuggestion2:¿Qué datasources hay?`;
   public chatSuggestion3: string = $localize`:@@chatSuggestion3:Estado del servidor`;
 
+  // Chat fallback option labels
+  readonly chatFallbackYes: string = $localize`:@@chatFallbackYes:Sí`;
+  readonly chatFallbackSearchIn: string = $localize`:@@chatFallbackSearchIn:Buscar en...`;
+  readonly chatFallbackSearchInPrefix: string = $localize`:@@chatFallbackSearchInPrefix:Buscar en: `;
+
   constructor(private userService: UserService, private groupService: GroupService) { }
 
   ngOnInit(): void {
@@ -197,7 +202,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   selectOption(option: ChatOption): void {
     if (option.type === 'paste') {
-      this.pasteToInput(option.pasteText ?? '');
+      this.pasteToInput(this.chatFallbackSearchInPrefix);
       return;
     }
     if (this.chatLoading()) return;

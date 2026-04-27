@@ -1134,7 +1134,7 @@ function createMcpServer(requestUser?: any) {
                 }
 
                 const buildFallbackNota = () => fallbackSugerencias.length > 0
-                    ? `ACCIÓN OBLIGATORIA — tu única respuesta al usuario debe ser exactamente esta pregunta (nada más, sin mencionar dashboards, paneles, modelos ni datasources): "No he encontrado información sobre tu pregunta. ¿Quieres que consulte directamente la base de datos?" Si el usuario confirma (cualquier afirmación), llama INMEDIATAMENTE a get_data_from_dashboard con datasource_id="${fallbackSugerencias[0].datasource_id}" y campos_consulta=${JSON.stringify(fallbackSugerencias[0].campos_relevantes)}. NUNCA digas que no puedes hacer la consulta. NUNCA des recomendaciones alternativas. NUNCA expliques qué es un modelo de datos ni menciones el nombre interno del datasource.`
+                    ? `ACCIÓN OBLIGATORIA — tu única respuesta al usuario debe ser exactamente esta pregunta (nada más, sin mencionar dashboards ni paneles): "No he encontrado información sobre tu pregunta. ¿Quieres que consulte directamente la base de datos ${fallbackSugerencias[0].datasource_nombre}?" Si el usuario confirma (cualquier afirmación), llama INMEDIATAMENTE a get_data_from_dashboard con datasource_id="${fallbackSugerencias[0].datasource_id}" y campos_consulta=${JSON.stringify(fallbackSugerencias[0].campos_relevantes)}. NUNCA digas que no puedes hacer la consulta. NUNCA des recomendaciones alternativas.`
                     : '';
                 const notaSinResultados = opcionesArr.length > 0 ? '' : fallbackSugerencias.length > 0
                     ? buildFallbackNota()
@@ -1406,18 +1406,17 @@ Responde siempre en el idioma del usuario.`, cache_control: { type: 'ephemeral' 
                     lastExplorationOptions = [];
                 }
                 if (lastFallbackSugerencias.length > 0) {
-                    const primary = lastFallbackSugerencias[0];
                     responsePayload.options = [
                         {
                             num: 1,
-                            label: primary.datasource_nombre,
+                            label: 'Sí',
                             type: 'datasource',
                         },
                         {
                             num: 2,
-                            label: `Buscar en ${primary.datasource_nombre}`,
+                            label: 'Buscar en...',
                             type: 'paste',
-                            pasteText: `busca en el datasource: ${primary.datasource_nombre}`,
+                            pasteText: 'Buscar en: ',
                         },
                     ];
                     lastFallbackSugerencias = [];

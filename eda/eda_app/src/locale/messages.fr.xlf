@@ -6555,6 +6555,18 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Error al conectar con el asistente.</source>
         <target>Erreur de connexion à l'assistant.</target>
       </trans-unit>
+      <trans-unit id="chatFallbackYes" datatype="html">
+        <source>Sí</source>
+        <target>Oui</target>
+      </trans-unit>
+      <trans-unit id="chatFallbackSearchIn" datatype="html">
+        <source>Buscar en...</source>
+        <target>Rechercher dans...</target>
+      </trans-unit>
+      <trans-unit id="chatFallbackSearchInPrefix" datatype="html">
+        <source>Buscar en: </source>
+        <target>Rechercher dans : </target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

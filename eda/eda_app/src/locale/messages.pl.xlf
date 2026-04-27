@@ -6220,6 +6220,18 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Error al conectar con el asistente.</source>
         <target>Błąd połączenia z asystentem.</target>
       </trans-unit>
+      <trans-unit id="chatFallbackYes" datatype="html">
+        <source>Sí</source>
+        <target>Tak</target>
+      </trans-unit>
+      <trans-unit id="chatFallbackSearchIn" datatype="html">
+        <source>Buscar en...</source>
+        <target>Szukaj w...</target>
+      </trans-unit>
+      <trans-unit id="chatFallbackSearchInPrefix" datatype="html">
+        <source>Buscar en: </source>
+        <target>Szukaj w : </target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

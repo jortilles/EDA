@@ -192,11 +192,11 @@
             @for (opt of msg.options; track opt.num) {
               @if (opt.type === 'paste') {
                 <button class="chat-suggestion chat-suggestion--secondary text-left" (click)="selectOption(opt)">
-                  {{ opt.label }}
+                  {{ chatFallbackSearchIn }}
                 </button>
               } @else if (opt.type === 'datasource') {
                 <button class="chat-suggestion chat-suggestion--primary text-left" (click)="selectOption(opt)">
-                  {{ opt.label }}
+                  {{ chatFallbackYes }}
                 </button>
               } @else {
                 <button class="chat-suggestion text-left" (click)="selectOption(opt)">
