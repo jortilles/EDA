@@ -429,11 +429,14 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
 
-  private initTagSelection(): void {
+  private async initTagSelection(): Promise<void> {
+    const dashboards = await lastValueFrom(this.dashboardService.getDashboards());
+    const moreThan20Dashboards = dashboards.dashboards.length > 20;
     const todoGroupedOption = { label: this.allTagsGroupedLabel, value: this.allTagsValue };
-    this.selectedTags.set(todoGroupedOption);
-    sessionStorage.setItem('activeTags', JSON.stringify(todoGroupedOption));
-    this.viewMode.set('folders');
+    const todoFlatOption = { label: this.allTagsFlatLabel, value: this.allTagsFlatValue };
+    this.selectedTags.set(moreThan20Dashboards ? todoGroupedOption : todoFlatOption);
+    sessionStorage.setItem('activeTags', JSON.stringify(moreThan20Dashboards ? todoGroupedOption : todoFlatOption));
+    this.viewMode.set(moreThan20Dashboards ? 'folders' : 'flat');
   }
 
   public clickFolder(tag: string, colKey: string): void {
@@ -443,7 +446,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       return;
     }
     this.expandedFolder.set({ tag, colKey });
-    this.selectedTags.set({ label: tag, value: tag });
+    this.viewMode.set('flat');
   }
 
   public closeFolder(event?: MouseEvent): void {
