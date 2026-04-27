@@ -134,7 +134,6 @@ export class DashboardPage implements OnInit {
   public stopRefresh: boolean = false;
 
   // Custom data portal
-  public showCustomizeDialog: boolean = false;
   public applyCustomizeHTML: string = '';
   public finalCustimizeHTML: string = '';
 
