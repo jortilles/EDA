@@ -1046,6 +1046,15 @@ function createMcpServer(requestUser?: any) {
                     ? scored.filter(x => x.s > 0).map(x => x.o)
                     : scored.map(x => x.o);
 
+                // Si no hay coincidencia semántica y la pregunta tenía criterios concretos,
+                // vaciar las opciones para activar el fallback a datasource directo.
+                // (maxScore===0 con criterios = todos los dashboards son irrelevantes para la pregunta)
+                const sinResultadosRelevantes = maxScore === 0 && (camposLower.length > 0 || questionWords.length >= 2);
+                if (sinResultadosRelevantes) {
+                    console.log('[MCP] exploración — sin resultados relevantes (maxScore=0), activando fallback hacia datasource | opciones descartadas:', scored.length);
+                    opcionesArr = [];
+                }
+
                 const totalOpciones = opcionesArr.length;
                 const truncada = opcionesArr.length > MAX_OPTIONS;
                 opcionesArr = opcionesArr.slice(0, MAX_OPTIONS).map((o, i) => {
@@ -1063,9 +1072,13 @@ function createMcpServer(requestUser?: any) {
                         const allDsCols: string[] = (schema.tables as any[]).flatMap((t: any) =>
                             (t.columns ?? []).map((c: any) => c.column_name ?? c.name ?? '')
                         ).filter(Boolean);
-                        const matchingCols = camposLower.length > 0
-                            ? allDsCols.filter(cn => camposLower.some(kw => cn.toLowerCase().includes(kw)))
-                            : allDsCols.slice(0, 5);
+                        // Términos de búsqueda: campos explícitos > palabras significativas de la pregunta (len>=4)
+                        const fallbackTerms = camposLower.length > 0
+                            ? camposLower
+                            : questionWords.filter((w: string) => w.length >= 4);
+                        const matchingCols = fallbackTerms.length > 0
+                            ? allDsCols.filter(cn => fallbackTerms.some((kw: string) => cn.toLowerCase().includes(kw)))
+                            : [];
                         if (matchingCols.length > 0) {
                             fallbackSugerencias.push({ datasource_id: dsId, datasource_nombre: dsName, campos_relevantes: matchingCols.slice(0, 8) });
                         }
