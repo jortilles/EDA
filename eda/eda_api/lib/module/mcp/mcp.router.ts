@@ -712,22 +712,38 @@ function createMcpServer(requestUser?: any) {
 
                 // ── MODO FALLBACK: datasource_id sin dashboard_id ──────────────────────
                 if (datasource_id) {
-                    console.log('[MCP] get_data_from_dashboard - MODO FALLBACK →', datasource_id);
+                    console.log('[MCP][FALLBACK] ═══════════════════════════════════════');
+                    console.log('[MCP][FALLBACK] INICIO MODO FALLBACK');
+                    console.log('[MCP][FALLBACK] datasource_id:', datasource_id);
+                    console.log('[MCP][FALLBACK] question:', question);
+                    console.log('[MCP][FALLBACK] campos_consulta recibidos:', JSON.stringify(campos_consulta));
 
                     const accessibleDsFb = await getAccessibleDatasourceIds(user);
-                    if (!accessibleDsFb.has(datasource_id)) {
+                    const hasAccess = accessibleDsFb.has(datasource_id);
+                    console.log('[MCP][FALLBACK] datasources accesibles:', accessibleDsFb.size, '| tiene acceso a datasource_id:', hasAccess);
+                    if (!hasAccess) {
+                        console.log('[MCP][FALLBACK] ERROR: datasource no accesible o no encontrado');
                         return { content: [{ type: 'text', text: `Datasource no encontrado o sin acceso: ${datasource_id}` }], isError: true };
                     }
 
                     const dsDoc = await DataSource.findById(datasource_id).exec();
+                    console.log('[MCP][FALLBACK] dsDoc encontrado:', !!dsDoc, '| nombre:', (dsDoc as any)?.ds?.metadata?.model_name ?? '(sin nombre)');
                     const filteredSchema = dsDoc ? filterDatasourceForAI(dsDoc) : null;
+                    console.log('[MCP][FALLBACK] filteredSchema:', filteredSchema ? `OK (${filteredSchema.tables?.length ?? 0} tablas)` : 'NULL');
                     if (!filteredSchema) {
                         return { content: [{ type: 'text', text: `Datasource ${datasource_id} no disponible o excluido (ia_visibility: NONE).` }], isError: true };
                     }
 
+                    console.log('[MCP][FALLBACK] tablas en schema:');
+                    (filteredSchema.tables ?? []).forEach((t: any, ti: number) => {
+                        const cols = (t.columns ?? []).map((c: any) => c.column_name ?? c.name ?? '(?)');
+                        console.log(`[MCP][FALLBACK]   tabla[${ti}] name="${t.table_name ?? t.name}" | ${cols.length} cols: [${cols.join(', ')}]`);
+                    });
+
                     const allCols: any[] = (filteredSchema.tables ?? []).flatMap((t: any) =>
                         (t.columns ?? []).map((c: any) => ({ ...c, _table: t.table_name ?? t.name ?? '' }))
                     );
+                    console.log('[MCP][FALLBACK] allCols total:', allCols.length, '| ejemplos:', allCols.slice(0, 5).map((c: any) => `${c.column_name ?? c.name}@${c._table}`).join(', '));
 
                     // Seleccionar columnas: las pedidas por el AI o las más relevantes según la pregunta
                     const camposConsulta: string[] = Array.isArray(campos_consulta) && campos_consulta.length > 0
@@ -745,12 +761,24 @@ function createMcpServer(requestUser?: any) {
                             return scored.slice(0, 10).map(x => x.name);
                         })();
 
+                    console.log('[MCP][FALLBACK] camposConsulta efectivos:', JSON.stringify(camposConsulta));
+
                     const selectedCols = camposConsulta
-                        .map(cn => allCols.find((c: any) => (c.column_name ?? c.name) === cn))
+                        .map(cn => {
+                            const found = allCols.find((c: any) => (c.column_name ?? c.name) === cn);
+                            if (!found) console.log(`[MCP][FALLBACK]   campo "${cn}" → NO ENCONTRADO en allCols`);
+                            else console.log(`[MCP][FALLBACK]   campo "${cn}" → encontrado en tabla "${found._table}" | column_type=${found.column_type ?? found.type}`);
+                            return found;
+                        })
                         .filter(Boolean);
 
+                    console.log('[MCP][FALLBACK] selectedCols count:', selectedCols.length, '/', camposConsulta.length);
+
                     if (selectedCols.length === 0) {
-                        return { content: [{ type: 'text', text: `No se encontraron columnas válidas en el datasource ${datasource_id} para: [${camposConsulta.join(', ')}]. Usa get_datasource para obtener los nombres exactos.` }], isError: true };
+                        console.log('[MCP][FALLBACK] ERROR: 0 columnas seleccionadas — fallback sin columnas válidas');
+                        const allColNames = allCols.map((c: any) => c.column_name ?? c.name).join(', ');
+                        console.log('[MCP][FALLBACK] columnas disponibles en datasource:', allColNames);
+                        return { content: [{ type: 'text', text: `No se encontraron columnas válidas en el datasource ${datasource_id} para: [${camposConsulta.join(', ')}]. Columnas disponibles: [${allColNames}]` }], isError: true };
                     }
 
                     // Agrupar por tabla y quedarse solo con la tabla que tenga más columnas seleccionadas.
@@ -764,14 +792,16 @@ function createMcpServer(requestUser?: any) {
                     }
                     let singleTableCols = selectedCols;
                     let bestCount = 0;
-                    for (const [, cols] of tableGroups) {
+                    for (const [tname, cols] of tableGroups) {
+                        console.log(`[MCP][FALLBACK] tabla "${tname}": ${cols.length} cols seleccionadas`);
                         if (cols.length > bestCount) { bestCount = cols.length; singleTableCols = cols; }
                     }
+                    console.log('[MCP][FALLBACK] tabla ganadora:', singleTableCols[0]?._table, '| cols:', singleTableCols.map((c: any) => c.column_name ?? c.name).join(', '));
 
                     const queryFields = singleTableCols.map((col: any, idx: number) => ({
                         field_name: col.column_name ?? col.name,
                         column_name: col.column_name ?? col.name,
-                        column_type: col.column_type ?? 'text',
+                        column_type: col.column_type ?? col.type ?? 'text',
                         table_id: col._table ?? '',
                         display_name: (typeof col.display_name === 'string' ? col.display_name : col.display_name?.default) ?? col.column_name ?? col.name,
                         aggregation_type: 'none',
@@ -796,19 +826,32 @@ function createMcpServer(requestUser?: any) {
                     };
 
                     const { apiBase: fbApiBase, token: fbToken } = buildApiCall(user);
-                    console.log(`[MCP] MODO FALLBACK — POST ${fbApiBase}/dashboard/query | datasource_id:`, datasource_id, '| campos:', camposConsulta);
+                    console.log('[MCP][FALLBACK] rootTable:', rootTable);
+                    console.log('[MCP][FALLBACK] queryFields:', JSON.stringify(queryFields));
+                    console.log('[MCP][FALLBACK] query completo enviado:', JSON.stringify({ model_id: datasource_id, query: fallbackQuery }));
+                    console.log(`[MCP][FALLBACK] POST ${fbApiBase}/dashboard/query`);
+
                     const fbResponse = await fetch(`${fbApiBase}/dashboard/query?token=${fbToken}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ model_id: datasource_id, query: fallbackQuery, dashboard: { dashboard_id: null, panel_id: '' } }),
                     });
+                    console.log('[MCP][FALLBACK] HTTP status:', fbResponse.status, fbResponse.statusText);
                     if (!fbResponse.ok) {
                         const errText = await fbResponse.text();
-                        throw new Error(`/dashboard/querpm2 ly HTTP ${fbResponse.status}: ${errText.substring(0, 300)}`);
+                        console.log('[MCP][FALLBACK] ERROR HTTP:', errText.substring(0, 500));
+                        throw new Error(`/dashboard/query HTTP ${fbResponse.status}: ${errText.substring(0, 300)}`);
                     }
                     const fbData: any = await fbResponse.json();
+                    console.log('[MCP][FALLBACK] respuesta raw (primeros 500 chars):', JSON.stringify(fbData).substring(0, 500));
                     const [fbLabels, fbRows] = Array.isArray(fbData) ? fbData : [[], []];
+                    console.log('[MCP][FALLBACK] fbLabels:', JSON.stringify(fbLabels));
+                    console.log('[MCP][FALLBACK] fbRows tipo:', typeof fbRows, Array.isArray(fbRows) ? `(array de ${fbRows.length})` : '');
+                    if (Array.isArray(fbRows) && fbRows.length > 0) {
+                        console.log('[MCP][FALLBACK] primera fila:', JSON.stringify(fbRows[0]));
+                    }
                     if (fbLabels?.[0] === 'noDataAllowed') {
+                        console.log('[MCP][FALLBACK] noDataAllowed — sin permisos');
                         return { content: [{ type: 'text', text: 'El usuario no tiene permiso para ver los datos de este modelo de datos.' }], isError: true };
                     }
                     const allFbRows: any[][] = Array.isArray(fbRows) ? fbRows.filter((r: any) => Array.isArray(r) && r.length > 0) : [];
@@ -832,7 +875,8 @@ function createMcpServer(requestUser?: any) {
                         mensaje: rows.length === 0 ? 'Sin resultados' : undefined,
                     };
 
-                    console.log('[MCP] MODO FALLBACK finalizado | rows:', allFbRows.length, '(mostrando', rows.length, ') | columnas:', columnas.join(', '));
+                    console.log('[MCP][FALLBACK] RESULTADO: rows totales:', allFbRows.length, '| mostrando:', rows.length, '| columnas:', columnas.join(', '));
+                    console.log('[MCP][FALLBACK] ═══════════════════════════════════════');
                     return { content: [{ type: 'text', text: JSON.stringify(respuestaFallback) }] };
                 }
 
@@ -942,24 +986,25 @@ function createMcpServer(requestUser?: any) {
                             }
                         }
 
-                        // Filtrar por campos_requeridos: cada keyword debe aparecer en AL MENOS UNA señal:
-                        // nombre de campo, descripción de columna/tabla, título del panel o nombre del dashboard.
-                        // (no se exige que cada campo esté cubierto — paneles con campos extra son válidos)
+                        // Filtrar por campos_requeridos: al menos el 50 % de los keywords deben aparecer
+                        // en alguna señal (nombre de campo, descripción, título del panel, nombre del dashboard).
                         if (camposLower.length > 0) {
                             const fieldNamesLower = fieldNames.map((n: string) => n.toLowerCase());
                             const allDescText = [...camposDescripciones, ...tablasDescripciones].join(' ').toLowerCase();
                             const panelTitleLower = (panel.title ?? '').toLowerCase();
                             const dashboardNameLower = (db.config?.title ?? '').toLowerCase();
-                            const allRequired = camposLower.every((kw: string) =>
+                            const matchCount = camposLower.filter((kw: string) =>
                                 fieldNamesLower.some((fn: string) => fn.includes(kw)) ||
                                 allDescText.includes(kw) ||
                                 panelTitleLower.includes(kw) ||
                                 dashboardNameLower.includes(kw)
-                            );
-                            if (!allRequired) {
-                                console.log(`[MCP] exploración — panel saltado (faltan campos requeridos) | dashboard=${db.config?.title}, idx=${idx} | campos=${fieldNames.join(',')} | requeridos=${camposLower.join(',')}`);
+                            ).length;
+                            const matchRatio = matchCount / camposLower.length;
+                            if (matchRatio < 0.5) {
+                                console.log(`[MCP] exploración — panel saltado (cobertura insuficiente ${(matchRatio * 100).toFixed(0)}%<50%) | dashboard=${db.config?.title}, idx=${idx} | campos=${fieldNames.join(',')} | requeridos=${camposLower.join(',')}`);
                                 continue;
                             }
+                            console.log(`[MCP] exploración — panel OK (cobertura ${(matchRatio * 100).toFixed(0)}%) | dashboard=${db.config?.title}, idx=${idx}`);
                         }
 
                         const activeFilters: any[] = query?.query?.filters ?? [];
@@ -1079,6 +1124,12 @@ function createMcpServer(requestUser?: any) {
                 const scored = Array.from(opcionesMap.values()).map(o => ({ o, s: scoreOption(o) }));
                 scored.sort((a, b) => b.s - a.s);
 
+                console.log('[MCP] exploración — questionWords:', questionWords, '| camposLower:', camposLower);
+                console.log('[MCP] exploración — opciones totales antes de scoring:', scored.length);
+                scored.forEach(({ o, s }) => {
+                    console.log(`[MCP] exploración — score=${s.toFixed(3)} | dashboard="${o.dashboard_nombre}" | panel="${o.panel_titulo}" | campos=[${(o.campos ?? []).join(', ')}] | datasource="${o.datasource_nombre}"`);
+                });
+
                 // Descartar opciones con score 0 cuando hay alguna con score > 0
                 // (evita que paneles sin relación temática aparezcan junto a resultados relevantes)
                 const maxScore = scored.length > 0 ? scored[0].s : 0;
@@ -1090,6 +1141,7 @@ function createMcpServer(requestUser?: any) {
                 // vaciar las opciones para activar el fallback a datasource directo.
                 // (maxScore===0 con criterios = todos los dashboards son irrelevantes para la pregunta)
                 const sinResultadosRelevantes = maxScore === 0 && (camposLower.length > 0 || questionWords.length >= 2);
+                console.log('[MCP] exploración — maxScore:', maxScore, '| sinResultadosRelevantes:', sinResultadosRelevantes);
                 if (sinResultadosRelevantes) {
                     console.log('[MCP] exploración — sin resultados relevantes (maxScore=0), activando fallback hacia datasource | opciones descartadas:', scored.length);
                     opcionesArr = [];
@@ -1141,8 +1193,8 @@ function createMcpServer(requestUser?: any) {
                         const coveredTermCount = fallbackTerms.filter((kw: string) =>
                             allDsCols.some(cn => biMatch(cn, kw)) || allTableNames.some(tn => biMatch(tn, kw))
                         ).length;
-                        // Require at least ceil(N/3) terms to match to avoid false positives on generic columns
-                        const requiredMatches = Math.min(3, Math.max(1, Math.ceil(fallbackTerms.length / 3)));
+                        // Require at least 50% of terms to match to mirror the exploration filter
+                        const requiredMatches = Math.max(1, Math.ceil(fallbackTerms.length / 2));
                         console.log(`[MCP] fallback — ds "${dsName}" | tablas: [${allTableNames.join(', ')}] | cols match: [${matchingCols.join(', ')}] | table match: [${matchingTables.join(', ')}] | covered: ${coveredTermCount}/${fallbackTerms.length} (req: ${requiredMatches})`);
                         if ((matchingCols.length > 0 || tableMatch) && coveredTermCount >= requiredMatches) {
                             const relevantCols = matchingCols.length > 0 ? matchingCols : allDsCols.slice(0, 5);
@@ -1351,7 +1403,7 @@ FLUJO PARA PREGUNTAS SOBRE DATOS
 
 PASO 1 — EXPLORACIÓN (obligatorio al inicio de cada NUEVA consulta de datos — no para seguimientos):
 Llama a get_data_from_dashboard SIN dashboard_id.
-- Extrae palabras clave de CAMPOS de la pregunta y pásalas en campos_requeridos. IMPORTANTE: los campos en EDA pueden estar en español, catalán o inglés. Incluye SIEMPRE las traducciones en los tres idiomas (ej: pregunta "concerts" → ["concerts","conciertos","concerts","concert"]; pregunta "vendes per país" → ["vendes","ventas","sales","país","país","country"]; pregunta "gastos festes" → ["gastos","despeses","expenses","festes","fiestas","events"]).
+- Extrae palabras clave de CAMPOS de la pregunta y pásalas en campos_requeridos. IMPORTANTE: los campos en EDA pueden estar en español, catalán o inglés. Incluye SIEMPRE las traducciones en los tres idiomas (ej: pregunta "concerts" → ["concerts","conciertos","concerts","concert"]; pregunta "vendes per país" → ["vendes","ventas","sales","país","país","country"]; pregunta "gastos festes" → ["gastos","despeses","expenses","festes","fiestas","events"]). El sistema acepta paneles donde al menos el 50% de los keywords aparezcan — no es necesario que todos coincidan.
 - Si la pregunta no menciona campos concretos, omite campos_requeridos para obtener todas las opciones disponibles.
 - Si nota_al_asistente indica 0 opciones y usaste campos_requeridos: vuelve a llamar SIN campos_requeridos antes de informar al usuario. Si sigue siendo 0, informa que no hay datos disponibles.
 - Si nota_al_asistente indica 1 opción: ve directamente al PASO 3. No preguntes al usuario.
