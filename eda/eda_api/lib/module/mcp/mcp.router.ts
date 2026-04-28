@@ -1437,8 +1437,8 @@ function createMcpServer(requestUser?: any) {
                 const notaSinResultados = opcionesArr.length > 0 ? '' : fallbackSugerencias.length > 0
                     ? buildFallbackNota()
                     : camposLower.length > 0
-                        ? `No se han encontrado paneles que contengan los campos [${camposLower.join(', ')}]. Informa al usuario con un mensaje simple. Si crees que la pregunta es válida, vuelve a llamar a este tool SIN campos_requeridos para ver todas las opciones disponibles.`
-                        : 'No se han encontrado datos accesibles. Informa al usuario con un mensaje simple.';
+                        ? `No se han encontrado paneles con los campos [${camposLower.join(', ')}]. OBLIGATORIO: llama de nuevo a este tool SIN campos_requeridos. Si el resultado sigue siendo 0 opciones, responde ÚNICAMENTE con la frase "No hay datos disponibles sobre tu pregunta." traducida al idioma del usuario. PROHIBIDO ABSOLUTO: no ofrezcas alternativas, no sugiereas verificar nada, no menciones dashboards ni bases de datos, no añadas ninguna frase adicional. Solo esa frase exacta.`
+                        : `Responde ÚNICAMENTE con la frase "No hay datos disponibles sobre tu pregunta." traducida al idioma del usuario. PROHIBIDO ABSOLUTO: no ofrezcas alternativas, no sugiereas verificar nada, no menciones dashboards ni bases de datos, no añadas ninguna frase adicional. Solo esa frase exacta.`;
                 const notaTruncada = truncada ? ` AVISO: se muestran las ${MAX_OPTIONS} opciones más relevantes de ${totalOpciones} encontradas. El resto fueron descartadas por menor relevancia.` : '';
 
                 const respuestaExploracion: any = {
@@ -1607,8 +1607,8 @@ NUNCA inventes, estimes ni completes información por tu cuenta.
 CONTEXTO DE CONVERSACIÓN
 ══════════════════════════════════════════
 • Si el mensaje del usuario es un seguimiento de datos ya mostrados ("ordénalos", "¿cuántos son?", "el más alto", "muéstrame solo los de X", "¿y el total?", "explícame el primero"), responde DIRECTAMENTE sin llamar ningún tool — trabaja con los datos de la respuesta anterior.
-• Detecta cambio de tema: si el usuario introduce un sujeto nuevo o pide datos sobre algo diferente a lo anterior, inicia una nueva exploración.
-• Mantén el contexto de filtros y selecciones del turno anterior al responder preguntas de seguimiento.
+• Detecta cambio de tema: si el usuario menciona una empresa, producto, entidad o concepto distinto al de la conversación anterior (ej: antes hablaba de ODOO y ahora pregunta por "pizza a punt", o antes hablaba de ventas y ahora pregunta por RRHH), trata la pregunta como completamente nueva. Inicia exploración desde cero SIN asumir nada del contexto anterior ni de qué sistemas o dashboards se han consultado antes. NO hagas asociaciones entre el nuevo tema y el contexto previo.
+• Mantén el contexto de filtros y selecciones del turno anterior SOLO si el usuario claramente sigue hablando del mismo sujeto.
 
 REGLAS DE USO DE TOOLS:
 • Llama siempre al tool ANTES de responder. Nunca respondas preguntas sobre datos del negocio desde tu memoria.
