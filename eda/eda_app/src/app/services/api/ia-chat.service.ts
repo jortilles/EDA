@@ -12,6 +12,9 @@ export interface ChatOption {
   pasteText?: string;
   datasource_id?: string;
   campos_consulta?: string[];
+  dashboard_nombre?: string;
+  panel_titulo?: string;
+  tiene_filtros?: boolean;
 }
 
 export interface ChatMessage {

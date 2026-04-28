@@ -197,7 +197,7 @@
           }
         </div>
         @if (msg.role === 'assistant' && msg.options && msg.options.length > 0) {
-          <div class="flex flex-col gap-2 pl-8 mt-1">
+          <div class="flex flex-col gap-1.5 pl-8 mt-1">
             @for (opt of msg.options; track opt.num) {
               @if (opt.type === 'paste') {
                 <button class="chat-suggestion" (click)="selectOption(opt)">
@@ -208,8 +208,18 @@
                   {{ chatFallbackYes }}
                 </button>
               } @else {
-                <button class="chat-suggestion" (click)="selectOption(opt)">
-                  {{ opt.num }}. {{ opt.label }}
+                <!-- Exploration option card -->
+                <button class="chat-option-card" (click)="selectOption(opt)">
+                  <span class="chat-option-num">{{ opt.num }}</span>
+                  <span class="chat-option-content">
+                    <span class="chat-option-panel">{{ opt.panel_titulo || opt.label }}</span>
+                    @if (opt.dashboard_nombre) {
+                      <span class="chat-option-dash">{{ opt.dashboard_nombre }}</span>
+                    }
+                  </span>
+                  @if (opt.tiene_filtros) {
+                    <span class="chat-option-filter-badge" title="Con filtros">▾</span>
+                  }
                 </button>
               }
             }
