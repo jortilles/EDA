@@ -112,8 +112,8 @@ export class DataSourceController {
         try {
             //si no lleva filtro, pasamos directamente a recuperarlos todos           
             const datasources = JSON.stringify(filter) !== '{}' ?
-                await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec() :
-                await DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec();
+                await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner ds.metadata.ia_visibility', options).exec() :
+                await DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner ds.metadata.model_description ds.metadata.ia_visibility', options).exec();
 
             if (!datasources) {
                 return next(new HttpException(500, 'Error loading DataSources'));
@@ -149,11 +149,11 @@ export class DataSourceController {
                         }
                     });
                     if (users.includes(userID) || roles.length > 0 || allCanSee == 'true' || req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/) {
-                        output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
+                        output.push({ _id: e._id, model_name: e.ds.metadata.model_name, model_description: e.ds.metadata.model_description ?? null, ia_visibility: e.ds.metadata.ia_visibility ?? 'FULL' });
                     }
 
                 } else {
-                    output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
+                    output.push({ _id: e._id, model_name: e.ds.metadata.model_name, model_description: e.ds.metadata.model_description ?? null, ia_visibility: e.ds.metadata.ia_visibility ?? 'FULL' });
                 }
             }
             output.sort((a, b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 :
@@ -613,6 +613,32 @@ export class DataSourceController {
                 
                 return (new HttpException(500, `Error updating the datasource`));
             }
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async CopyDataSource(req: Request, res: Response, next: NextFunction) {
+        try {
+            const original = await DataSource.findById(req.params.id);
+            if (!original) {
+                return next(new HttpException(404, 'DataSource not found'));
+            }
+            const newName = req.body.name;
+            const copy = new DataSource({
+                ds: {
+                    connection: original.ds.connection,
+                    metadata: {
+                        ...original.ds.metadata,
+                        model_name: newName,
+                        model_owner: [req.user._id],
+                        model_granted_roles: []
+                    },
+                    model: original.ds.model
+                }
+            });
+            const saved = await copy.save();
+            return res.status(201).json({ ok: true, data_source_id: saved._id });
         } catch (err) {
             next(err);
         }

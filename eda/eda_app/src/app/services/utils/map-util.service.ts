@@ -17,6 +17,7 @@ export class MapUtilsService extends ApiService {
   private zoom: number = null;
   public auxZoom: number = null;
   public layerGroup = L.layerGroup([]);
+  private labelGroup = L.layerGroup([]);
   private isSmallestValue: boolean;
 
   constructor(protected http: HttpClient, private _sanitizer: DomSanitizer) {
@@ -33,6 +34,57 @@ export class MapUtilsService extends ApiService {
     return this.mapsObservables$[mapID];
   }
 
+  clusterData(map: L.Map, data: Array<any>, pixelRadius: number = 40): Array<any> {
+    if (!data || data.length === 0) return data;
+
+    let numIdx = -1;
+    for (const d of data) {
+      d.forEach((v: any, i: number) => {
+        if (typeof v === 'number' && i > 1 && numIdx === -1) numIdx = i;
+      });
+      if (numIdx > -1) break;
+    }
+
+    const assigned = new Set<number>();
+    const result: Array<any> = [];
+
+    for (let i = 0; i < data.length; i++) {
+      if (assigned.has(i)) continue;
+      const lat = parseFloat(data[i][0]);
+      const lon = parseFloat(data[i][1]);
+      if (isNaN(lat) || isNaN(lon)) { result.push(data[i]); assigned.add(i); continue; }
+
+      const pixelI = map.latLngToContainerPoint([lon, lat] as LatLngExpression);
+      const group: Array<any> = [data[i]];
+      assigned.add(i);
+
+      for (let j = i + 1; j < data.length; j++) {
+        if (assigned.has(j)) continue;
+        const lat2 = parseFloat(data[j][0]);
+        const lon2 = parseFloat(data[j][1]);
+        if (isNaN(lat2) || isNaN(lon2)) continue;
+        const pixelJ = map.latLngToContainerPoint([lon2, lat2] as LatLngExpression);
+        if (pixelI.distanceTo(pixelJ) <= pixelRadius) { group.push(data[j]); assigned.add(j); }
+      }
+
+      if (group.length === 1) {
+        result.push(data[i]);
+      } else {
+        const centLat = group.reduce((s: number, p: any) => s + parseFloat(p[0]), 0) / group.length;
+        const centLon = group.reduce((s: number, p: any) => s + parseFloat(p[1]), 0) / group.length;
+        const aggregated: any = [...group[0]];
+        aggregated[0] = centLat;
+        aggregated[1] = centLon;
+        if (numIdx > -1) {
+          aggregated[numIdx] = group.reduce((s: number, p: any) => s + (p[numIdx] || 0), 0);
+        }
+        aggregated._clusterCount = group.length;
+        result.push(aggregated);
+      }
+    }
+    return result;
+  }
+
   makeMarkers = (
     map: L.Map,
     data: Array<any>,
@@ -46,6 +98,10 @@ export class MapUtilsService extends ApiService {
     let numericValue: number;
     let smallestValue: number = Infinity;
     mapActualConfig["groups"] = mapActualConfig["groups"].reverse().map(function (v) {return v / 10;});
+
+    this.layerGroup.clearLayers();
+    this.labelGroup.clearLayers();
+
     //Encontrar campo numerico y menor valor
     for (const d of data) {
       let n = 0;
@@ -80,8 +136,8 @@ export class MapUtilsService extends ApiService {
       const lon = parseFloat(d[1]); // / 10000;
       const properties = {
         weight: 1,
-        radius: radius,
-        color: "black",
+        radius: d._clusterCount ? Math.min(radius * 1.4, 35) : radius,
+        color: d._clusterCount ? "white" : "black",
         fillColor: color,
         fillOpacity: 0.8,
       };
@@ -103,12 +159,19 @@ export class MapUtilsService extends ApiService {
         circle.on("click", () => {
           this.linkDashboard(d[2], linkedDashboardProps);
         });
-        circle.addTo(map)
-        //En vez de añadir cada circulo creamos un grupo de layers con todos los circulos.
-        // Facilita el tratamiento de estos.
+        if (d._clusterCount) {
+          const icon = L.divIcon({
+            className: '',
+            html: `<span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-weight:bold;font-size:11px;pointer-events:none">${d._clusterCount}</span>`,
+            iconSize: [0, 0],
+          });
+          this.labelGroup.addLayer(L.marker([lon, lat] as LatLngExpression, { icon, interactive: false }));
+        }
         this.layerGroup.addLayer(circle);
       }
     }
+    this.layerGroup.addTo(map);
+    this.labelGroup.addTo(map);
   };
 
   private linkDashboard = (value, linkedDashboard: LinkedDashboardProps) => {
@@ -127,11 +190,15 @@ export class MapUtilsService extends ApiService {
   private makePopup = (data: any, labels: Array<string>): string => {
     const me = this;
     let div = "";
+    if (data._clusterCount) {
+      div += `<div><strong>${data._clusterCount} ${$localize`:@@mapClusteredPoints:puntos agrupados`}</strong></div>`;
+    }
     for (let i = 2; i < 4; i++) {
       if (data[i] !== undefined) {
+        const label = labels[i] !== undefined ? labels[i] : `Field ${i-1}`;
         div += `<div> ${me._sanitizer.sanitize(
           SecurityContext.HTML,
-          labels[i]
+          label
         )} :  ${data[i]} </div>`;
       }
     }

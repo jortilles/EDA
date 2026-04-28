@@ -855,9 +855,11 @@ export class GlobalFilterComponent implements OnInit {
                                 let formatedFilter = this.globalFilterService.formatFilter(filter);
 
                                 let pathList: any;
-                                Object.entries(formatedFilter.pathList).forEach(([clave, valor]: any) => {
-                                    if(clave === panel.id) pathList = valor.path;
-                                });
+                                if (formatedFilter.pathList) {
+                                    Object.entries(formatedFilter.pathList).forEach(([clave, valor]: any) => {
+                                        if(clave === panel.id) pathList = valor.path;
+                                    });
+                                }
 
                                 // Añadimos los joins del filtro que viene por url
                                 formatedFilter.joins = pathList;

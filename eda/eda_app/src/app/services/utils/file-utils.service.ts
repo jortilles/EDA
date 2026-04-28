@@ -3,6 +3,11 @@ import { URL_SERVICES } from '../../config/config';
 import ExcelJS from 'exceljs/dist/exceljs.bare.min.js';
 import { saveAs } from 'file-saver';
 import * as _ from 'lodash';
+import {
+    AlignmentType, BorderStyle, Document, HeadingLevel, ImageRun,
+    Packer, Paragraph, ShadingType, Table, TableCell, TableLayoutType,
+    TableRow, TextRun, VerticalMergeType, WidthType,
+} from 'docx';
 
 // Colores corporativos para el export de dashboard
 const HEADER_BG   = 'FF2E75B6';   // azul cabecera
@@ -524,6 +529,294 @@ export class FileUtiles {
             return isNaN(n) ? raw : n;
         }
         return raw;
+    }
+
+    // ─── Export Dashboard a Word ──────────────────────────────────────────────
+
+    /** Ancho de contenido objetivo en px (página A4 con márgenes de 1.25cm) */
+    private static readonly WORD_CONTENT_PX = 750;
+
+    /** Colores para el documento Word (RRGGBB sin alfa) */
+    private static readonly W_HEADER_BG = 'FFFFFF';   // cabecera: fondo blanco
+    private static readonly W_HEADER_FG = '2E75B6';   // cabecera: texto azul
+    private static readonly W_TITLE_BG  = 'FFFFFF';   // título panel: fondo blanco
+    private static readonly W_TITLE_FG  = '2E75B6';   // título panel: texto azul
+    private static readonly W_TOTAL_BG  = 'D6E4F0';   // fila totales: azul muy claro
+    private static readonly W_DATA_FG   = '000000';   // datos: texto negro
+
+    private static readonly W_NO_BORDER = {
+        top:    { style: BorderStyle.NONE, size: 0, color: 'auto' },
+        bottom: { style: BorderStyle.NONE, size: 0, color: 'auto' },
+        left:   { style: BorderStyle.NONE, size: 0, color: 'auto' },
+        right:  { style: BorderStyle.NONE, size: 0, color: 'auto' },
+        insideH:{ style: BorderStyle.NONE, size: 0, color: 'auto' },
+        insideV:{ style: BorderStyle.NONE, size: 0, color: 'auto' },
+    };
+
+    /**
+     * Genera un .docx con todos los paneles del dashboard respetando su
+     * posición 2D (x/y del grid de Gridster).
+     * - Tablas: tabla Word con cabeceras estilizadas y totales.
+     * - Tablas cruzadas: cabeceras multi-nivel con merge de celdas.
+     * - Gráficos: imagen PNG embebida a escala correcta.
+     * - Paneles en la misma fila → lado a lado en una tabla de layout sin bordes.
+     */
+    async exportDashboardToWord(panels: DashboardPanelExport[], dashboardTitle: string): Promise<void> {
+        const CW = FileUtiles.WORD_CONTENT_PX;
+        const sectionChildren: any[] = [];
+
+        // ── Título del dashboard ──────────────────────────────────────────────
+        sectionChildren.push(
+            new Paragraph({
+                children: [new TextRun({ text: dashboardTitle, bold: true, size: 36, color: FileUtiles.W_TITLE_FG })],
+                spacing: { after: 160 },
+                border:  { bottom: { style: BorderStyle.SINGLE, size: 8, color: FileUtiles.W_HEADER_BG } },
+            }),
+            new Paragraph({ text: '', spacing: { after: 80 } }),
+        );
+
+        // ── Agrupar paneles por fila de grid ──────────────────────────────────
+        const rowGroups = new Map<number, DashboardPanelExport[]>();
+        for (const panel of panels) {
+            if (!rowGroups.has(panel.gridY)) rowGroups.set(panel.gridY, []);
+            rowGroups.get(panel.gridY).push(panel);
+        }
+        const sortedYs = Array.from(rowGroups.keys()).sort((a, b) => a - b);
+
+        for (const groupY of sortedYs) {
+            const group = rowGroups.get(groupY)!.sort((a, b) => a.gridX - b.gridX);
+
+            if (group.length === 1) {
+                const panelWidthPx = Math.round(group[0].gridCols / FileUtiles.GRID_TOTAL_COLS * CW);
+                sectionChildren.push(...this._buildWordPanel(group[0], panelWidthPx));
+            } else {
+                // Paneles lado a lado dentro de una tabla de layout sin bordes
+                const cells = group.map(panel => {
+                    const pct      = Math.round(panel.gridCols / FileUtiles.GRID_TOTAL_COLS * 100);
+                    const widthPx  = Math.round(panel.gridCols / FileUtiles.GRID_TOTAL_COLS * CW);
+                    return new TableCell({
+                        width:   { size: pct, type: WidthType.PERCENTAGE },
+                        borders: FileUtiles.W_NO_BORDER,
+                        margins: { right: 200, left: 0, top: 0, bottom: 0 },
+                        children: this._buildWordPanel(panel, widthPx),
+                    });
+                });
+                sectionChildren.push(
+                    new Table({
+                        layout: TableLayoutType.FIXED,
+                        width:   { size: 100, type: WidthType.PERCENTAGE },
+                        borders: FileUtiles.W_NO_BORDER,
+                        rows: [new TableRow({ children: cells })],
+                    }),
+                );
+            }
+
+            sectionChildren.push(new Paragraph({ text: '', spacing: { after: 160 } }));
+        }
+
+        const doc = new Document({
+            sections: [{
+                properties: { page: { margin: { top: 720, right: 900, bottom: 720, left: 900 } } },
+                children: sectionChildren,
+            }],
+        });
+
+        const blob = await Packer.toBlob(doc);
+        saveAs(blob, `${dashboardTitle}.docx`);
+    }
+
+    /** Construye los elementos Word de un panel individual (título + contenido). */
+    private _buildWordPanel(panel: DashboardPanelExport, widthPx: number): any[] {
+        const items: any[] = [];
+
+        // Título del panel (fondo blanco, texto azul)
+        if (panel.title) {
+            items.push(new Paragraph({
+                children: [new TextRun({ text: panel.title, bold: true, size: 22, color: FileUtiles.W_TITLE_FG })],
+                spacing:  { before: 60, after: 80 },
+            }));
+        }
+
+        if (panel.type === 'chart' && panel.imageBase64) {
+            const base64 = panel.imageBase64.includes(',') ? panel.imageBase64.split(',')[1] : panel.imageBase64;
+            if (this._isValidPngBase64(base64)) {
+                const imgData  = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+                const naturalW = panel.imageWidth  || 600;
+                const naturalH = panel.imageHeight || 400;
+                const scale    = Math.min(1, widthPx / naturalW);
+                items.push(new Paragraph({
+                    children: [new ImageRun({
+                        type: 'png',
+                        data: imgData,
+                        transformation: { width: Math.round(naturalW * scale), height: Math.round(naturalH * scale) },
+                    })],
+                    spacing: { after: 100 },
+                }));
+            }
+        } else if (panel.type === 'table' && panel.tableData) {
+            items.push(this._buildWordPlainTable(panel.tableData));
+        } else if (panel.type === 'crosstable' && panel.tableData) {
+            items.push(this._buildWordCrossTable(panel.tableData));
+        }
+
+        return items;
+    }
+
+    /** Tabla plana → Word Table con cabecera azul, filas alternas y totales. */
+    private _buildWordPlainTable(table: any): any {
+        const cols: any[] = table.cols || [];
+        if (cols.length === 0) return new Paragraph({ text: '' });
+
+        const colPct = Math.round(100 / cols.length);
+        const rows:   any[] = [];
+
+        // Cabecera: fondo blanco, texto azul
+        rows.push(new TableRow({
+            tableHeader: true,
+            children: cols.map(col => new TableCell({
+                width:    { size: colPct, type: WidthType.PERCENTAGE },
+                children: [new Paragraph({
+                    children:  [new TextRun({ text: col.header ?? '', bold: true, color: FileUtiles.W_HEADER_FG, size: 18 })],
+                    alignment: AlignmentType.CENTER,
+                })],
+            })),
+        }));
+
+        // Datos: fondo blanco, texto negro, sin banding
+        (table._value || []).forEach((dataRow: any) => {
+            rows.push(new TableRow({
+                children: cols.map(col => {
+                    const val = this._parseCell(dataRow[col.field], col.type);
+                    return new TableCell({
+                        width:    { size: colPct, type: WidthType.PERCENTAGE },
+                        children: [new Paragraph({
+                            children:  [new TextRun({ text: val != null ? String(val) : '', size: 18, color: FileUtiles.W_DATA_FG })],
+                            alignment: col.type === 'EdaColumnNumber' ? AlignmentType.RIGHT : AlignmentType.LEFT,
+                        })],
+                    });
+                }),
+            }));
+        });
+
+        // Totales: azul muy claro
+        const totals: any[] = table.totalsRow || [];
+        if (totals.length > 0) {
+            rows.push(new TableRow({
+                children: totals.slice(0, cols.length).map((item: any) => new TableCell({
+                    shading:  { fill: FileUtiles.W_TOTAL_BG, type: ShadingType.SOLID },
+                    width:    { size: colPct, type: WidthType.PERCENTAGE },
+                    children: [new Paragraph({
+                        children:  [new TextRun({ text: item.data ?? '', bold: true, size: 18 })],
+                        alignment: AlignmentType.RIGHT,
+                    })],
+                })),
+            }));
+        }
+
+        return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows });
+    }
+
+    /** Tabla cruzada → Word Table con cabeceras multi-nivel mergeadas. */
+    private _buildWordCrossTable(table: any): any {
+        const series: any[] = table.series || [];
+        const cols:   any[] = table.cols   || [];
+        if (cols.length === 0) return new Paragraph({ text: '' });
+
+        const colPct = Math.round(100 / cols.length);
+        const rows:   any[] = [];
+
+        if (series.length > 0) {
+            // Rastrear cuántas filas más sigue el rowspan de cada columna
+            const rsTracker = new Array(cols.length).fill(0);
+
+            series.forEach((serie: any) => {
+                const cells: any[] = [];
+                let c = 0;
+                let labelIdx = 0;
+
+                while (c < cols.length) {
+                    if (rsTracker[c] > 0) {
+                        // Celda vacía de continuación vertical
+                        cells.push(new TableCell({
+                            verticalMerge: VerticalMergeType.CONTINUE,
+                            width:    { size: colPct, type: WidthType.PERCENTAGE },
+                            children: [new Paragraph({ text: '' })],
+                        }));
+                        rsTracker[c]--;
+                        c++;
+                    } else if (labelIdx < serie.labels.length) {
+                        const lbl = serie.labels[labelIdx++];
+                        const cs  = lbl.colspan || 1;
+                        const rs  = lbl.rowspan || 1;
+
+                        cells.push(new TableCell({
+                            columnSpan:    cs > 1 ? cs : undefined,
+                            verticalMerge: rs > 1 ? VerticalMergeType.RESTART : undefined,
+                            width:    { size: colPct * cs, type: WidthType.PERCENTAGE },
+                            children: [new Paragraph({
+                                children:  [new TextRun({ text: lbl.title ?? '', bold: true, color: FileUtiles.W_HEADER_FG, size: 18 })],
+                                alignment: AlignmentType.CENTER,
+                            })],
+                        }));
+
+                        // Marcar columnas cubiertas por rowspan
+                        if (rs > 1) {
+                            for (let k = c; k < c + cs; k++) rsTracker[k] = rs - 1;
+                        }
+                        c += cs;
+                    } else {
+                        c++;
+                    }
+                }
+                rows.push(new TableRow({ children: cells }));
+            });
+
+        } else {
+            // Cabecera plana: fondo blanco, texto azul
+            rows.push(new TableRow({
+                tableHeader: true,
+                children: cols.map((col: any) => new TableCell({
+                    width:    { size: colPct, type: WidthType.PERCENTAGE },
+                    children: [new Paragraph({
+                        children:  [new TextRun({ text: col.header ?? '', bold: true, color: FileUtiles.W_HEADER_FG, size: 18 })],
+                        alignment: AlignmentType.CENTER,
+                    })],
+                })),
+            }));
+        }
+
+        // Datos: fondo blanco, texto negro, sin banding
+        (table._value || []).forEach((dataRow: any) => {
+            rows.push(new TableRow({
+                children: cols.map((col: any) => {
+                    const val = this._parseCell(dataRow[col.field], col.type);
+                    return new TableCell({
+                        width:    { size: colPct, type: WidthType.PERCENTAGE },
+                        children: [new Paragraph({
+                            children:  [new TextRun({ text: val != null ? String(val) : '', size: 18, color: FileUtiles.W_DATA_FG })],
+                            alignment: col.type === 'EdaColumnNumber' ? AlignmentType.RIGHT : AlignmentType.LEFT,
+                        })],
+                    });
+                }),
+            }));
+        });
+
+        // Totales: azul muy claro
+        const totals: any[] = table.totalsRow || [];
+        if (totals.length > 0) {
+            rows.push(new TableRow({
+                children: totals.slice(0, cols.length).map((item: any) => new TableCell({
+                    shading:  { fill: FileUtiles.W_TOTAL_BG, type: ShadingType.SOLID },
+                    width:    { size: colPct, type: WidthType.PERCENTAGE },
+                    children: [new Paragraph({
+                        children:  [new TextRun({ text: item.data ?? '', bold: true, size: 18 })],
+                        alignment: AlignmentType.RIGHT,
+                    })],
+                })),
+            }));
+        }
+
+        return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows });
     }
 
     // ─── Export CSV individual (sin cambios) ──────────────────────────────────

@@ -10,7 +10,7 @@ import { UserService } from '@eda/services/api/user.service';
 import { GroupService } from '@eda/services/api/group.service';
 import { AlertService, DashboardService } from '@eda/services/service.index';
 import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
-import { IaChatService, ChatMessage } from '@eda/services/api/ia-chat.service';
+import { IaChatService, ChatMessage, ChatOption } from '@eda/services/api/ia-chat.service';
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
 import { CommonModule } from '@angular/common';
@@ -36,6 +36,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   private zone = inject(NgZone);
 
   // --- Chat IA ---
+  private markdownCache = new Map<string, SafeHtml>();
   @ViewChild('chatMessages') private chatMessagesRef!: ElementRef;
   @ViewChild('chatInputEl') private chatInputEl!: ElementRef<HTMLTextAreaElement>;
   chatOpen = signal(false);
@@ -54,6 +55,14 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   
   tags: any[] = [];
   selectedTags = signal<any>(JSON.parse(sessionStorage.getItem('activeTags') ? sessionStorage.getItem('activeTags') : '[]'));
+  
+  //Sistema de carpetas
+  viewMode = signal<'folders' | 'flat'>('flat');
+  expandedFolder = signal<{ tag: string; colKey: string } | null>(null);
+  readonly allTagsValue = $localize`:@@AllTags:Todos`;
+  readonly allTagsFlatValue = 'TodosFlat';
+  readonly allTagsFlatLabel = $localize`:@@AllTagsFlat:Todo`;
+  readonly allTagsGroupedLabel = $localize`:@@AllTagsGrouped:Todo agrupado`;
 
   isOpenTags = signal(false)
   searchTagTerm = signal("")
@@ -102,6 +111,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   constructor(private userService: UserService, private groupService: GroupService) { }
 
   ngOnInit(): void {
+    this.initTagSelection();
     this.loadReports();
     this.ifAnonymousGetOut();
     this.iaChatService.getConfig().subscribe({
@@ -163,13 +173,39 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
     this.iaChatService.sendMessage(this.chatHistory).subscribe({
       next: (res) => {
-        this.chatHistory.push({ role: 'assistant', content: res.response });
+        this.chatHistory.push({ role: 'assistant', content: res.response, options: res.options ?? [] });
         this.chatLoading.set(false);
         this.shouldScrollChat = true;
         setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
       },
       error: () => {
-        this.chatHistory.push({ role: 'assistant', content: 'Error al conectar con el asistente.' });
+        this.chatHistory.push({ role: 'assistant', content: $localize`:@@chatErrorConnecting:Error al conectar con el asistente.` });
+        this.chatLoading.set(false);
+        this.shouldScrollChat = true;
+        setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+      },
+    });
+  }
+
+  selectOption(option: ChatOption): void {
+    if (this.chatLoading()) return;
+    // Ocultar las opciones del mensaje que contenía esta selección
+    const msgWithOptions = [...this.chatHistory].reverse().find(m => m.role === 'assistant' && m.options && m.options.length > 0);
+    if (msgWithOptions) msgWithOptions.options = [];
+    const displayLabel = $localize`:@@chatOptionSelectedLabel:Opción` + ` ${option.num}: ${option.label}`;
+    const apiMsg = `${displayLabel} (dashboard_id: ${option.dashboard_id}, panel_index: ${option.panel_index})`;
+    this.chatHistory.push({ role: 'user', content: apiMsg, displayContent: displayLabel });
+    this.chatLoading.set(true);
+    this.shouldScrollChat = true;
+    this.iaChatService.sendMessage(this.chatHistory).subscribe({
+      next: (res) => {
+        this.chatHistory.push({ role: 'assistant', content: res.response, options: res.options ?? [] });
+        this.chatLoading.set(false);
+        this.shouldScrollChat = true;
+        setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+      },
+      error: () => {
+        this.chatHistory.push({ role: 'assistant', content: $localize`:@@chatErrorConnecting:Error al conectar con el asistente.` });
         this.chatLoading.set(false);
         this.shouldScrollChat = true;
         setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
@@ -178,54 +214,118 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   renderMarkdown(text: string): SafeHtml {
+    if (this.markdownCache.has(text)) return this.markdownCache.get(text)!;
+
     const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-    // 1. Extraer bloques de código
+    // 1. Code blocks → sentinel
     const codeBlocks: string[] = [];
     let html = text.replace(/```[\w]*\n?([\s\S]*?)```/g, (_, code) => {
       const idx = codeBlocks.push(esc(code.trim())) - 1;
       return `\x00CODE${idx}\x00`;
     });
 
-    // 2. Código inline
+    // 2. Inline code → sentinel
     const inlineCodes: string[] = [];
     html = html.replace(/`([^`\n]+)`/g, (_, code) => {
       const idx = inlineCodes.push(esc(code)) - 1;
       return `\x00INLINE${idx}\x00`;
     });
 
-    // 3. URLs → links clicables
-    html = html.replace(/(https?:\/\/[^\s<>")\]\n]+)/g,
-      '<a href="$1" target="_blank" rel="noopener noreferrer" class="chat-link">$1</a>');
+    // 3. Named links [text](url) → sentinel (before bare URL processing)
+    const linkBlocks: string[] = [];
+    html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (_, label, url) => {
+      const idx = linkBlocks.push(
+        `<a href="${url}" target="_blank" rel="noopener noreferrer" class="chat-link">${label}</a>`
+      ) - 1;
+      return `\x00LINK${idx}\x00`;
+    });
 
-    // 4. Negrita
+    // 4. Tables (line-by-line, after link extraction so links work inside cells)
+    const tableBlocks: string[] = [];
+    const rawLines = html.split('\n');
+    const processedLines: string[] = [];
+    let li = 0;
+    while (li < rawLines.length) {
+      const cur = rawLines[li].trim();
+      const nxt = rawLines[li + 1]?.trim() ?? '';
+      if (cur.startsWith('|') && /^\|(?:[ \t]*:?-+:?[ \t]*\|)+$/.test(nxt)) {
+        const headers = cur.split('|').slice(1, -1)
+          .map(h => `<th>${h.trim()}</th>`).join('');
+        li += 2; // skip header + separator row
+        const bodyRows: string[] = [];
+        while (li < rawLines.length && rawLines[li].trim().startsWith('|')) {
+          const cells = rawLines[li].trim().split('|').slice(1, -1)
+            .map(c => `<td>${c.trim()}</td>`).join('');
+          bodyRows.push(`<tr>${cells}</tr>`);
+          li++;
+        }
+        const tHtml = `<div class="chat-table-wrapper"><table class="chat-table"><thead><tr>${headers}</tr></thead><tbody>${bodyRows.join('')}</tbody></table></div>`;
+        const tIdx = tableBlocks.push(tHtml) - 1;
+        processedLines.push(`\x00TABLE${tIdx}\x00`);
+      } else {
+        processedLines.push(rawLines[li]);
+        li++;
+      }
+    }
+    html = processedLines.join('\n');
+
+    // 5. Bare URLs → sentinel
+    html = html.replace(/(https?:\/\/[^\s<>")\]\n\x00]+)/g, (_, url) => {
+      const display = url.length > 55 ? url.substring(0, 52) + '…' : url;
+      const idx = linkBlocks.push(
+        `<a href="${url}" target="_blank" rel="noopener noreferrer" class="chat-link">${esc(display)}</a>`
+      ) - 1;
+      return `\x00LINK${idx}\x00`;
+    });
+
+    // 6. Bold
     html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 
-    // 5. Headers
+    // 7. Italic (*text* and _text_)
+    html = html.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+    html = html.replace(/\b_([^_\n]+)_\b/g, '<em>$1</em>');
+
+    // 8. Strikethrough
+    html = html.replace(/~~(.+?)~~/g, '<del>$1</del>');
+
+    // 9. Headers
     html = html.replace(/^### (.+)$/gm, '<div class="chat-h3">$1</div>');
     html = html.replace(/^## (.+)$/gm, '<div class="chat-h2">$1</div>');
     html = html.replace(/^# (.+)$/gm, '<div class="chat-h1">$1</div>');
 
-    // 6. Listas con viñeta
+    // 10. Horizontal rule
+    html = html.replace(/^---+$/gm, '<hr class="chat-hr">');
+
+    // 11. Ordered lists 1. 2. 3.
+    html = html.replace(/^[ \t]*\d+\. (.+)$/gm, '<li class="ol-li">$1</li>');
+    html = html.replace(/(<li class="ol-li">[\s\S]*?<\/li>)/g, '<ol class="chat-ol">$1</ol>');
+    html = html.replace(/<\/ol>\s*<ol class="chat-ol">/g, '');
+
+    // 12. Bullet lists
     html = html.replace(/^[ \t]*[-*] (.+)$/gm, '<li>$1</li>');
     html = html.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul class="chat-list">$1</ul>');
     html = html.replace(/<\/ul>\s*<ul class="chat-list">/g, '');
 
-    // 7. Saltos de línea y párrafos
+    // 13. Paragraphs and line breaks
     html = html.replace(/\n\n+/g, '</p><p class="mt-2">');
     html = html.replace(/\n/g, '<br>');
 
-    // 8. Restaurar bloques de código
+    // 14. Restore all sentinels
+    tableBlocks.forEach((t, i) => { html = html.replace(`\x00TABLE${i}\x00`, t); });
     codeBlocks.forEach((code, i) => {
-      html = html.replace(`\x00CODE${i}\x00`,
-        `<pre class="chat-code-block"><code>${code}</code></pre>`);
+      html = html.replace(`\x00CODE${i}\x00`, `<pre class="chat-code-block"><code>${code}</code></pre>`);
     });
     inlineCodes.forEach((code, i) => {
-      html = html.replace(`\x00INLINE${i}\x00`,
-        `<code class="chat-inline-code">${code}</code>`);
+      html = html.replace(`\x00INLINE${i}\x00`, `<code class="chat-inline-code">${code}</code>`);
+    });
+    linkBlocks.forEach((link, i) => {
+      html = html.replace(`\x00LINK${i}\x00`, link);
     });
 
-    return this.sanitizer.bypassSecurityTrustHtml('<p>' + html + '</p>');
+    const result = this.sanitizer.bypassSecurityTrustHtml('<p>' + html + '</p>');
+    this.markdownCache.set(text, result);
+    return result;
   }
 
   private setIsObserver = async () => {
@@ -283,7 +383,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
     // Agregar opciones adicionales
     this.tags.unshift({ label: $localize`:@@NoTag:Sin Etiqueta`, value: $localize`:@@NoTag:Sin Etiqueta`, });
-    this.tags.push({ label: $localize`:@@AllTags:Todos`, value: $localize`:@@AllTags:Todos` });
+    this.tags.push({ label: this.allTagsFlatLabel, value: this.allTagsFlatValue });
+    if (this.allDashboards.length >= 20) {
+      this.tags.push({ label: this.allTagsGroupedLabel, value: this.allTagsValue });
+    }
     this.filterByTags();
   }
 
@@ -292,7 +395,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     // Crear la URL completa del informe    
     const urlTree = this.router.createUrlTree(['/dashboard', report._id]);
     const relativeUrl = this.router.serializeUrl(urlTree);
-    const absoluteUrl = window.location.origin + relativeUrl;
 
     // Manejar clic medio o Ctrl+clic para abrir en nueva pestaña
     if (event.button === 1 || event.ctrlKey) {
@@ -305,24 +407,74 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
 
-public handleTagSelect(option: any): void {
-  const currentFilters = this.selectedTags(); // Filtros de tags
-  const isSelected = currentFilters.value === option.value;
+  public handleTagSelect(option: any): void {
+    const currentFilters = this.selectedTags();
+    const isSelected = currentFilters.value === option.value;
 
-  if (isSelected) {
-    // Eliminar tag
-    this.selectedTags.set({"label":$localize`:@@AllTags:Todos`,"value":$localize`:@@AllTags:Todos`});
-    sessionStorage.setItem("activeTags", JSON.stringify({"label":$localize`:@@AllTags:Todos`,"value":$localize`:@@AllTags:Todos`}));
-  } else {
-    // Añadir tag
-    this.selectedTags.set(option);
+    if (isSelected) {
+      const todoFlatOption = { label: this.allTagsFlatLabel, value: this.allTagsFlatValue };
+      this.selectedTags.set(todoFlatOption);
+      sessionStorage.setItem("activeTags", JSON.stringify(todoFlatOption));
+      this.viewMode.set('flat');
+      this.expandedFolder.set(null);
+    } else {
+      this.selectedTags.set(option);
+      sessionStorage.setItem("activeTags", JSON.stringify(option));
+      this.viewMode.set(option.value === $localize`:@@AllTags:Todos` ? 'folders' : 'flat');
+      this.expandedFolder.set(null);
+    }
 
-    sessionStorage.setItem("activeTags", JSON.stringify(option));
+    this.isOpenTags.set(false);
+    this.reapplyFilters();
   }
 
-  this.isOpenTags.set(false);
-  this.reapplyFilters();
-}
+
+  private async initTagSelection(): Promise<void> {
+    const dashboards = await lastValueFrom(this.dashboardService.getDashboards());
+    const moreThan20Dashboards = dashboards.dashboards.length > 20;
+    const todoGroupedOption = { label: this.allTagsGroupedLabel, value: this.allTagsValue };
+    const todoFlatOption = { label: this.allTagsFlatLabel, value: this.allTagsFlatValue };
+    this.selectedTags.set(moreThan20Dashboards ? todoGroupedOption : todoFlatOption);
+    sessionStorage.setItem('activeTags', JSON.stringify(moreThan20Dashboards ? todoGroupedOption : todoFlatOption));
+    this.viewMode.set(moreThan20Dashboards ? 'folders' : 'flat');
+  }
+
+  public clickFolder(tag: string, colKey: string): void {
+    const current = this.expandedFolder();
+    if (current?.tag === tag && current?.colKey === colKey) {
+      this.closeFolder();
+      return;
+    }
+    this.expandedFolder.set({ tag, colKey });
+    this.viewMode.set('flat');
+  }
+
+  public closeFolder(event?: MouseEvent): void {
+    event?.stopPropagation();
+    this.expandedFolder.set(null);
+    const todoGroupedOption = { label: this.allTagsGroupedLabel, value: this.allTagsValue };
+    this.selectedTags.set(todoGroupedOption);
+    sessionStorage.setItem('activeTags', JSON.stringify(todoGroupedOption));
+    this.viewMode.set('folders');
+  }
+
+  public getTagsInReports(reports: any[]): string[] {
+    const tagSet = new Set<string>();
+    for (const report of reports) {
+      for (const tag of this.normTagArr(report.config)) {
+        if (tag && tag.trim()) tagSet.add(tag);
+      }
+    }
+    return Array.from(tagSet).sort((a, b) => a.localeCompare(b));
+  }
+
+  public getReportsByTag(reports: any[], tag: string): any[] {
+    return reports.filter(r => this.normTagArr(r.config).includes(tag));
+  }
+
+  public getUntaggedReports(reports: any[]): any[] {
+    return reports.filter(r => this.normTagArr(r.config).filter(t => t.trim()).length === 0);
+  }
 
   public filteredTags(): any[] {
     return this.tags.filter((option) => option.label.toLowerCase().includes(this.searchTagTerm().toLowerCase()))
@@ -355,10 +507,10 @@ public handleTagSelect(option: any): void {
   }
 
   // Esta función actualiza los reports, y es llamada cada vez que se modifican los tags
-  public filterByTags() { 
+  public filterByTags() {
     const tags = sessionStorage.getItem("activeTags") || "[]";
-    // Si tiene la etiqueta Todos o no tiene etiqueta mostraremos todos los informes
-    if (tags.includes( $localize`:@@AllTags:Todos`) || tags === '[]') {
+    // Si tiene la etiqueta Todos (carpetas o lista plana) o no tiene etiqueta mostraremos todos los informes
+    if (tags.includes($localize`:@@AllTags:Todos`) || tags.includes(this.allTagsFlatValue) || tags === '[]') {
       this.publicReports  = this.reportMap.public;
       this.sharedReports  = this.reportMap.shared;
       this.privateReports = this.reportMap.private;
@@ -423,7 +575,7 @@ public handleTagSelect(option: any): void {
 
   private getActiveTagBase() {
     const activeTags = sessionStorage.getItem('activeTags') || '[]';
-    const hasActiveTag = !activeTags.includes($localize`:@@AllTags:Todos`) && activeTags !== '[]';
+    const hasActiveTag = !activeTags.includes($localize`:@@AllTags:Todos`) && !activeTags.includes(this.allTagsFlatValue) && activeTags !== '[]';
     return {
       public:  hasActiveTag ? this.checkTagsIntoReports(this.reportMap.public,  activeTags) : this.reportMap.public,
       shared:  hasActiveTag ? this.checkTagsIntoReports(this.reportMap.shared,  activeTags) : this.reportMap.shared,

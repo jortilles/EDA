@@ -43,13 +43,13 @@
 
             <!-- Switch -->
             <div class="pt-4 border-t border-gray-200">
-                @if (!disabled) {
-                <h6 i18n="@@noMail" class="text-gray-600 font-medium">Sin alertas de correo</h6>
-                }
-                @else {
+                @if (enabled) {
                 <h6 i18n="@@opcionMail" class="text-gray-600 font-medium">Enviar por email</h6>
                 }
-                <p-inputSwitch id="switchCache" class="mt-3" [(ngModel)]="disabled"
+                @else {
+                <h6 i18n="@@noMail" class="text-gray-600 font-medium">Sin alertas de correo</h6>
+                }
+                <p-inputSwitch id="switchCache" class="mt-3" [(ngModel)]="enabled"
                     tooltipPosition="left"></p-inputSwitch>
             </div>
         </div>

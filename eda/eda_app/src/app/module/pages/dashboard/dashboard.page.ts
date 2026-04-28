@@ -134,7 +134,6 @@ export class DashboardPage implements OnInit {
   public stopRefresh: boolean = false;
 
   // Custom data portal
-  public showCustomizeDialog: boolean = false;
   public applyCustomizeHTML: string = '';
   public finalCustimizeHTML: string = '';
 
@@ -1014,150 +1013,71 @@ export class DashboardPage implements OnInit {
         setTimeout(() => panel.panelChart?.updateComponent(), 100);
       }
     });
-    
-    // LiveDashboardTimer
-    let isvalid = true;
-    const emptyQuery = this.edaPanels.some((panel) => panel.currentQuery.length === 0);
-
-
-      if (emptyQuery) isvalid = false;
-
-      if (!isvalid) {
-        this.alertService.addError($localize`:@@SaveWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`)
-      }else{
-        
-        
-            this.triggerTimer();
-            const body = {
-              config: {
-                title: this.title,
-                panel: [],
-                ds: { _id: this.dataSource._id },
-                filters: this.cleanFiltersData(),
-                applyToAllfilter: this.applyToAllfilter,
-                visible: this.dashboard.config.visible,
-                tag: this.selectedTags,
-                refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
-                clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
-                // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
-                sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig, 
-                onlyIcanEdit: this.dashboard.config.onlyIcanEdit, //Ssólo yo puedo editar el dashboard --> publico con enlace
-                styles: this.dashboard.config.styles,
-                urls: this.dashboard.config.urls,
-                author: this.dashboard.config?.author
-              },
-              group: this.dashboard.group ? _.map(this.dashboard.group) : undefined,
-            }
-        
-            body.config.panel = this.savePanels();
-          }
-
   }
 
-  // Metodo a revisar, este solo refresh a los paneles que no son js
   refreshPanelsOthersCharts() {
     this.edaPanels.forEach(async (panel) => {
-        if (panel.currentQuery.length > 0) {
-            const chartType = panel.graphicType;
-            const isChartJS = ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'pyramid', 'radar', 'knob'].includes(chartType);
-            
-            // Solo re-ejecutar query para charts NO ChartJS
-            if (!isChartJS) {
-                panel.display_v.chart = '';
-                await panel.runQueryFromDashboard(true);
-            } 
-            
-            // Siempre llamar a updateComponent para aplicar nuevos colores
-            setTimeout(() => panel.panelChart?.updateComponent(), 100);
+      if (panel.currentQuery.length > 0) {
+        const chartType = panel.graphicType;
+        const isChartJS = ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'pyramid', 'radar', 'knob'].includes(chartType);
+        if (!isChartJS) {
+          panel.display_v.chart = '';
+          await panel.runQueryFromDashboard(true);
         }
+        setTimeout(() => panel.panelChart?.updateComponent(), 100);
+      }
     });
-    
-    // LiveDashboardTimer
-    let isvalid = true;
-    const emptyQuery = this.edaPanels.some((panel) => panel.currentQuery.length === 0);
-
-    if (emptyQuery) isvalid = false;
-
-    if (!isvalid) {
-        this.alertService.addError($localize`:@@SaveWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`)
-    } else {
-        this.triggerTimer();
-        const body = {
-            config: {
-                title: this.title,
-                panel: [],
-                ds: { _id: this.dataSource._id },
-                filters: this.cleanFiltersData(),
-                applyToAllfilter: this.applyToAllfilter,
-                visible: this.dashboard.config.visible,
-                tag: this.selectedTags,
-                refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
-                clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
-                sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig, 
-                onlyIcanEdit: this.dashboard.config.onlyIcanEdit,
-                styles: this.dashboard.config.styles,
-                urls: this.dashboard.config.urls,
-                author: this.dashboard.config?.author
-            },
-            group: this.dashboard.group ? _.map(this.dashboard.group) : undefined,
-        }
-    
-        body.config.panel = this.savePanels();
-    }
-}
+  }
 
 
   public async saveDashboard() {
-    // LiveDashboardTimer
-    let isvalid = true;
     const emptyQuery = this.edaPanels.some((panel) => panel.currentQuery.length === 0);
+    if (emptyQuery) {
+      this.alertService.addError($localize`:@@SaveWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`);
+      return;
+    }
 
+    this.triggerTimer();
+    const body = {
+      config: {
+        title: this.title,
+        panel: [] as any[],
+        ds: { _id: this.dataSource._id },
+        filters: this.cleanFiltersData(),
+        applyToAllfilter: this.applyToAllfilter,
+        visible: this.dashboard.config.visible,
+        tag: this.selectedTags,
+        refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
+        clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
+        createdAt: this.dashboard.config.createdAt || new Date().toISOString(),
+        modifiedAt: new Date().toISOString(),
+        sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig,
+        mailingAlertsEnabled: false as boolean,
+        onlyIcanEdit: this.dashboard.config.onlyIcanEdit,
+        styles: this.dashboard.config.styles,
+        urls: this.dashboard.config.urls,
+        author: this.dashboard.config?.author,
+        orderDependentFilters: this.globalFilter?.orderDependentFilters,
+      },
+      group: this.dashboard.group ? _.map(this.dashboard.group) : undefined,
+    };
 
+    body.config.panel = this.savePanels();
+    body.config.mailingAlertsEnabled = body.config.panel.some((panel: any) =>
+      panel.content?.chart === 'kpi' &&
+      panel.content?.query?.output?.config?.alertLimits?.some((a: any) => a.mailing?.enabled === true)
+    );
 
-      if (emptyQuery) isvalid = false;
+    try {
+      await lastValueFrom(this.dashboardService.updateDashboard(this.dashboardId, body));
+      this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
+      this.dashboardService._notSaved.next(false);
+    } catch (err) {
+      this.alertService.addError(err);
+      throw err;
+    }
 
-      if (!isvalid) {
-        this.alertService.addError($localize`:@@SaveWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`)
-      }else{
-        
-        
-            this.triggerTimer();
-            const body = {
-              config: {
-                title: this.title,
-                panel: [],
-                ds: { _id: this.dataSource._id },
-                filters: this.cleanFiltersData(),
-                applyToAllfilter: this.applyToAllfilter,
-                visible: this.dashboard.config.visible,
-                tag: this.selectedTags,
-                refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
-                clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
-                createdAt: this.dashboard.config.createdAt || new Date().toISOString(),
-                modifiedAt: new Date().toISOString(),
-                // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
-                sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig, 
-                onlyIcanEdit: this.dashboard.config.onlyIcanEdit, // NO puedo Editar dashboard --> publico con enlace
-                styles: this.dashboard.config.styles,
-                urls: this.dashboard.config.urls,
-                author: this.dashboard.config?.author,
-                orderDependentFilters: this.globalFilter?.orderDependentFilters,
-              },
-              group: this.dashboard.group ? _.map(this.dashboard.group) : undefined,
-            }
-        
-            body.config.panel = this.savePanels();
-
-            try {
-              await lastValueFrom(this.dashboardService.updateDashboard(this.dashboardId, body));
-              this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
-              this.dashboardService._notSaved.next(false);
-            } catch (err) {
-              this.alertService.addError(err);
-              throw err;
-            }
-      }
-      this.checkImportedPanels(this.dashboard);
+    this.checkImportedPanels(this.dashboard);
   }
 
   private savePanels(): any[] {
@@ -1362,24 +1282,6 @@ public startCountdown(seconds: number) {
         }
         if (params['cnproperties']) {
           this.connectionProperties = JSON.parse(decodeURIComponent(params['cnproperties']));
-        }
-        if (params['MODEEDIT'] === 'TRUE') {
-          const user = localStorage.getItem('user');
-          console.log('hola');
-          console.log(user);
-          console.log('hola');
-          console.log(this.canIedit());
-
-          // restriccions = condicions per poder mostrar panell de edicio
-          const restriccions = true;
-          if(restriccions){
-            // si el usuario puede customizar, le mostraremos el panel de customización
-            this.showCustomizeDialog = true;
-            // setTimeout(() => {
-            //   this.showCustomizeDialog = false;
-            // },3000);
-          }
-
         }
 
       } catch(e){

@@ -27,6 +27,7 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
   private groups: Array<number>;
   private mapActualConfig = null;
   private paletaActual: string[];
+  private validData: Array<any> = [];
 
   constructor(
     private mapUtilsService: MapUtilsService, 
@@ -65,17 +66,17 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
   }
 
   private initMap = (): void => {
-    let validData = [];
+    this.validData = [];
     for (let i = 0; i < this.inject.data.length; i++) {
       if (this.inject.data[i][0] !== null && this.inject.data[i][1] !== null) {
-        validData.push(this.inject.data[i]);
+        this.validData.push(this.inject.data[i]);
       }
     }
 
     if (L.DomUtil.get(this.inject.div_name) !== null) {
       this.map = L.map(this.inject.div_name, {
-        center: this.mapUtilsService.getCoordinates() as unknown as LatLngExpression ?? 
-                this.getCenter(validData),
+        center: this.mapUtilsService.getCoordinates() as unknown as LatLngExpression ??
+                this.getCenter(this.validData),
         zoom: this.mapUtilsService.getZoom() ?? this.inject.zoom ?? 12,
         dragging: this.draggable,
         scrollWheelZoom: this.draggable,
@@ -92,15 +93,16 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
       tiles.addTo(this.map);
 
       const colors = this.assignedColors.map(c => c.color);
-      this.mapActualConfig = { 
-        colors: colors, 
-        logarithmicScale: this.logarithmicScale, 
-        groups: this.groups ?? this.getLogarithmicGroups(this.inject.data.map((row) => row[this.dataIndex])) 
+      this.mapActualConfig = {
+        colors: colors,
+        logarithmicScale: this.logarithmicScale,
+        groups: this.groups ?? this.getLogarithmicGroups(this.inject.data.map((row) => row[this.dataIndex]))
       };
 
+      const clustered = this.mapUtilsService.clusterData(this.map, this.validData);
       this.mapUtilsService.makeMarkers(
         this.map,
-        validData,
+        clustered,
         this.inject.labels,
         this.inject.linkedDashboard,
         this.mapActualConfig
@@ -115,6 +117,16 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
       this.map.on("zoomend", (event) => {
         this.inject.zoom = this.map.getZoom();
         this.mapUtilsService.setZoom(this.inject.zoom);
+        const colors = this.assignedColors.map(c => c.color);
+        this.mapActualConfig = {
+          colors,
+          logarithmicScale: this.logarithmicScale,
+          groups: this.groups ?? this.getLogarithmicGroups(this.inject.data.map((row) => row[this.dataIndex]))
+        };
+        const reclustered = this.mapUtilsService.clusterData(this.map, this.validData);
+        this.mapUtilsService.makeMarkers(
+          this.map, reclustered, this.inject.labels, this.inject.linkedDashboard, this.mapActualConfig
+        );
       });
     }
   };
@@ -163,25 +175,21 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
   };
 
   public reDrawCircles = (colors: string[]) => {
-    // Borrar actual layer
-    this.map.removeLayer(this.mapUtilsService.layerGroup);
-    
-    // Actualizar assignedColors
     this.assignedColors = [
       {value: 'start', color: colors[0]},
       {value: 'end', color: colors[1]}
     ];
 
-    // Objeto que recoge datos para hacer mapa markers
-    this.mapActualConfig = { 
-      colors: colors, 
-      logarithmicScale: this.logarithmicScale, 
+    this.mapActualConfig = {
+      colors: colors,
+      logarithmicScale: this.logarithmicScale,
       groups: this.groups ?? this.getLogarithmicGroups(this.inject.data.map((row) => row[this.dataIndex]))
     };
 
+    const clustered = this.mapUtilsService.clusterData(this.map, this.validData);
     this.mapUtilsService.makeMarkers(
       this.map,
-      this.inject.data,
+      clustered,
       this.inject.labels,
       this.inject.linkedDashboard,
       this.mapActualConfig

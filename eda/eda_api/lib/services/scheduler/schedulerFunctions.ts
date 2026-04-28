@@ -27,33 +27,14 @@ export class SchedulerFunctions {
    */
 
   static checkScheduleDays(quantity: number, hours: string, minutes: string, currLastUpdated: string) {
-    let now = this.totLocalISOTime(new Date());
-    let date = new Date(Date.parse(now));
+    const now = new Date(this.totLocalISOTime(new Date()));
+    const lastUpdated = new Date(Date.parse(currLastUpdated));
 
-    date.setHours( parseInt(hours));
-    date.setMinutes(0);
-    let lastUpdated = new Date(Date.parse(currLastUpdated));
-    console.log('Ultima actualizacion');
-    console.log(lastUpdated);
-    //console.log('Fecha de referencia');
-    //console.log(date);
+    const nextSend = new Date(lastUpdated);
+    nextSend.setDate(nextSend.getDate() + quantity);
+    nextSend.setHours(parseInt(hours), parseInt(minutes), 0, 0);
 
-    let min = lastUpdated.getMinutes() + parseInt(minutes);
-    let hour = lastUpdated.getHours() + parseInt(hours);
-    let day = lastUpdated.setDate(lastUpdated.getDate() + quantity);
-    let month = lastUpdated.setMonth(lastUpdated.getMonth());
-    let year = lastUpdated.setFullYear(lastUpdated.getFullYear(),month, day);
-
-    let nextUpdate = new Date(year, month, day, hour, min)
-    
-    if(nextUpdate >= date){
-      //Se ha recargado hoy...
-      console.log('Actualizando caché a las : ' + date)
-            return true;
-    }else{
-      return false;
-      }
-      
+    return now >= nextSend;
   }
 
   static totLocalISOTime = (date:Date) => {

@@ -1,0 +1,22 @@
+<eda-dialog2 [display]="display" i18n-header="@@saveAsHeader"
+  header="Guardar como..." width="40vw" height="auto"
+  [disableApply]="disableApply()"
+  (apply)="onApply()"
+  (close)="onClose()">
+
+  <div content class="p-6">
+    <form [formGroup]="form" (ngSubmit)="onApply()">
+      <div class="col-12">
+        <input
+          formControlName="name"
+          type="text"
+          pInputText
+          i18n-placeholder="@@labelDameNombre"
+          placeholder="Dame un nombre *"
+          required
+          class="w-full p-2 border rounded-md bg-gray-100 text-gray-700 focus:outline-none focus:ring focus:ring-gray-300"
+        />
+      </div>
+    </form>
+  </div>
+</eda-dialog2>

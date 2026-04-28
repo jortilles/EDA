@@ -1,5 +1,6 @@
 import { EdaDialogCloseEvent, EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { AfterViewChecked, Component, Input, OnInit, ViewChild } from '@angular/core';
+import { KpiMailConfigModal } from '@eda/components/kpi-mail-config/kpi-mail-config.modal';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { UserService } from '@eda/services/service.index';
@@ -14,12 +15,12 @@ import { ColorPickerModule } from 'primeng/colorpicker';
     selector: 'app-kpi-dialog',
     templateUrl: './kpi-dialog.component.html',
     styleUrls: ['./kpi-dialog.component.css'],
-    imports: [FormsModule, CommonModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent]
+    imports: [FormsModule, CommonModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent, KpiMailConfigModal]
 })
 export class KpiEditDialogComponent implements OnInit, AfterViewChecked {
     @Input() controller: any;
     @ViewChild('PanelChartComponent', { static: false }) panelChartComponent: PanelChartComponent;
-    @ViewChild('mailConfig', { static: false }) mailConfig: any;
+    public mailConfigOpen: boolean = false;
 
     public panelChartConfig: PanelChart = new PanelChart();
     
@@ -38,16 +39,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewChecked {
     public modifiedFontPoints: number = 0;
     public panelBaseResultSize: number = 0;
 
-    public units: string;
-    public quantity: number;
-    public hours: any;
-    public hoursSTR = $localize`:@@hours:Hora/s`;
-    public daysSTR = $localize`:@@days:Día/s`;
-    public mailMessage = '';
     public currentAlert = null;
-    public users: any;
-    public selectedUsers: any;
-    public enabled: boolean;
     public canIRunAlerts: boolean = false;
     public edaChart: any;
     public chartContent: any;
@@ -234,64 +226,22 @@ export class KpiEditDialogComponent implements OnInit, AfterViewChecked {
         this.color = hex;
     }
 
-    openConfigDialog($event, alert) {
-        this.userService.getUsers().subscribe(
-            res => this.users = res.map(user => ({ label: user.name, value: user })),
-            err => console.log(err)
-        );
-
-        this.enabled = alert.mailing.enabled;
-        this.hours = `${alert.mailing.hours || '00'}:${alert.mailing.minutes || '00'}`;
-        this.units = alert.mailing.units;
-        this.quantity = alert.mailing.quantity;
-        this.selectedUsers = alert.mailing.users;
-        this.mailMessage = alert.mailing.mailMessage;
+    openConfigDialog(alert) {
         this.currentAlert = alert;
-        this.mailConfig.toggle($event);
+        this.mailConfigOpen = true;
     }
 
-    saveMailingConfig() {
-        const hours = this.hours && typeof this.hours === 'string' ? this.hours.slice(0, 2) :
-            this.hours ? this.fillWithZeros(this.hours.getHours()) : null;
-        const minutes = this.hours && typeof this.hours === 'string' ? this.hours.slice(3, 5) :
-            this.hours ? this.fillWithZeros(this.hours.getMinutes()) : null;
-
-        this.currentAlert.mailing = {
-            units: this.units,
-            quantity: this.quantity,
-            hours: hours,
-            minutes: minutes,
-            users: this.selectedUsers,
-            mailMessage: this.mailMessage,
-            lastUpdated: '2000-01-01T00:00:01.000',
-            enabled: this.enabled
+    onMailConfigApply(mailingConfig: any) {
+        if (this.currentAlert) {
+            this.currentAlert.mailing = mailingConfig;
         }
-
+        this.mailConfigOpen = false;
         this.currentAlert = null;
-        this.units = null;
-        this.quantity = null;
-        this.hours = null;
-        this.mailMessage = null;
-        this.selectedUsers = [];
-        this.mailConfig.hide();
     }
 
     closeMailingConfig() {
         this.currentAlert = null;
-        this.units = null;
-        this.quantity = null;
-        this.hours = null;
-        this.mailMessage = null;
-        this.selectedUsers = [];
-        this.mailConfig.hide();
-    }
-
-    fillWithZeros(n: number) {
-        return n < 10 ? `0${n}` : `${n}`;
-    }
-
-    disableMailConfirm() {
-        return (!this.quantity || !this.units || !(this.selectedUsers.length > 0) || !this.mailMessage)
+        this.mailConfigOpen = false;
     }
 
     onPaletteSelected() {
