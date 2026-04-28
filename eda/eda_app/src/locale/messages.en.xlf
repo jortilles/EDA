@@ -6309,6 +6309,18 @@ OR<ph id="5"/>
   <source>Error al conectar con el asistente.</source>
   <target>Error connecting to the assistant.</target>
 </trans-unit>
+<trans-unit id="chatFallbackYes" datatype="html">
+  <source>Sí</source>
+  <target>Yes</target>
+</trans-unit>
+<trans-unit id="chatFallbackSearchIn" datatype="html">
+  <source>Buscar en...</source>
+  <target>Search in...</target>
+</trans-unit>
+<trans-unit id="chatFallbackSearchInPrefix" datatype="html">
+  <source>Buscar en: </source>
+  <target>Search in: </target>
+</trans-unit>
 </body>
 </file>
 </xliff>

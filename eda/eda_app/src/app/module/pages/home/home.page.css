@@ -59,6 +59,13 @@
   color: #00B0BA;
 }
 
+/* ---- Filter warning on option buttons ---- */
+.chat-option-filter-warning {
+  font-size: 0.65rem;
+  color: #d97706;
+  margin-top: 0.125rem;
+}
+
 /* ---- Messages background ---- */
 .chat-messages-bg {
   background: #f8fafb;

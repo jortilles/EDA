@@ -108,6 +108,11 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   public chatSuggestion2: string = $localize`:@@chatSuggestion2:¿Qué datasources hay?`;
   public chatSuggestion3: string = $localize`:@@chatSuggestion3:Estado del servidor`;
 
+  // Chat fallback option labels
+  readonly chatFallbackYes: string = $localize`:@@chatFallbackYes:Sí`;
+  readonly chatFallbackSearchIn: string = $localize`:@@chatFallbackSearchIn:Buscar en...`;
+  readonly chatFallbackSearchInPrefix: string = $localize`:@@chatFallbackSearchInPrefix:Buscar en: `;
+
   constructor(private userService: UserService, private groupService: GroupService) { }
 
   ngOnInit(): void {
@@ -139,6 +144,12 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     }
   }
 
+  resetChat(): void {
+    this.chatHistory = [];
+    this.chatLoading.set(false);
+    setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+  }
+
   toggleChat(): void {
     const opening = !this.chatOpen();
     this.chatOpen.set(opening);
@@ -152,6 +163,14 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       this.chatInputEl.nativeElement.value = text;
     }
     this.sendChatMessage();
+  }
+
+  pasteToInput(text: string): void {
+    if (this.chatInputEl?.nativeElement) {
+      this.chatInputEl.nativeElement.value = text;
+      this.chatInputEl.nativeElement.dispatchEvent(new Event('input'));
+      this.chatInputEl.nativeElement.focus();
+    }
   }
 
   onChatKeydown(event: KeyboardEvent): void {
@@ -188,12 +207,25 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   selectOption(option: ChatOption): void {
+    if (option.type === 'paste') {
+      this.pasteToInput(this.chatFallbackSearchInPrefix);
+      return;
+    }
     if (this.chatLoading()) return;
     // Ocultar las opciones del mensaje que contenía esta selección
     const msgWithOptions = [...this.chatHistory].reverse().find(m => m.role === 'assistant' && m.options && m.options.length > 0);
     if (msgWithOptions) msgWithOptions.options = [];
-    const displayLabel = $localize`:@@chatOptionSelectedLabel:Opción` + ` ${option.num}: ${option.label}`;
-    const apiMsg = `${displayLabel} (dashboard_id: ${option.dashboard_id}, panel_index: ${option.panel_index})`;
+    let displayLabel: string;
+    let apiMsg: string;
+    if (option.type === 'datasource') {
+      displayLabel = option.label;
+      apiMsg = option.datasource_id
+        ? `sí (ejecuta get_data_from_dashboard con datasource_id="${option.datasource_id}"${option.campos_consulta?.length ? ` y campos_consulta=${JSON.stringify(option.campos_consulta)}` : ''})`
+        : 'sí';
+    } else {
+      displayLabel = $localize`:@@chatOptionSelectedLabel:Opción` + ` ${option.num}: ${option.label}`;
+      apiMsg = `${displayLabel} (dashboard_id: ${option.dashboard_id}, panel_index: ${option.panel_index})`;
+    }
     this.chatHistory.push({ role: 'user', content: apiMsg, displayContent: displayLabel });
     this.chatLoading.set(true);
     this.shouldScrollChat = true;
