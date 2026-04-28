@@ -86,7 +86,7 @@
                             (onChange)="handleFilterChange(filterSelected)">
                         </p-dropdown>
 
-                        <label i18n="@@tiposFiltrosLabel" for="types">
+                        <!--SDA CUSTOM--><label i18n="@@tiposFiltrosLabel" for="types">
                             Tipos de filtro
                         </label>
 
@@ -162,7 +162,7 @@
                             <p-dropdown id="types" [options]="filterBeforeAfter.elements" [(ngModel)]="filterBeforeAfterSelected" optionLabel="label"
                                 [autoDisplayFirst]="true" [style]="{'width': '100%'}"
                                 (onChange)="whereHavingSwitch(filterBeforeAfterSelected)">
-                            </p-dropdown>
+                            <!--SDA CUSTOM--></p-dropdown>
 
                             <!-- <label i18n="@@tiposFiltrosLabel" for="types">
                                 Tipos de filtro
@@ -318,7 +318,7 @@
 
                             <div class="col-3" style="margin-left: 25px; padding: 25px;">
 
-                                <p-button (onClick)="addFilter()" [disabled]="display.filterButton"
+                                <!--SDA CUSTOM--><p-button (onClick)="addFilter()" [disabled]="display.filterButton"
                                     i18n-label="@@addFilterBtn" label="Añadir filtro"></p-button>
 
                             </div>
@@ -454,7 +454,7 @@
                 </div>
 
                 <div class="col-9 ">
-                    <h4 i18n="@@FiltersH4">
+                    <!--SDA CUSTOM--><h4 i18n="@@inputFilter">
                         Filtros
                     </h4>
                     <hr>
@@ -520,14 +520,14 @@
     <div footer>
         <!-- por defecto está habilitado.  Si el botón "añadir filtro" está habilitado este se desactiva.-->
         <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-            <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-success"
+            <!--SDA CUSTOM--><button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-success"
                 i18n-label="@@guardarButton" icon="fa fa-check" label="Confirmar"
                 id="eda_column_dialog_confirmar" [disabled]="!display.filterButton">
             </button>
 
 <!-- SDA CUSTOM CANCEL BUTTON-->
-             <button type="button" pButton (click)="cancelDialog()" class="p-button-raised p-button-danger"
-                i18n-label="@@DeleteGroupCancel" icon="fa fa-times" label="Cancelar" id="eda_column_dialog_cancel">
+             <!--SDA CUSTOM--><button type="button" pButton (click)="cancelDialog()" class="p-button-raised p-button-danger"
+                i18n-label="@@cancelarButton" icon="fa fa-times" label="Cancelar" id="eda_column_dialog_cancel">
             </button>
 <!-- END SDA CUSTOM -->
         </div>

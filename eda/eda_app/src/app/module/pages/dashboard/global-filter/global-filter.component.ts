@@ -28,7 +28,9 @@ export class GlobalFilterComponent implements OnInit {
     // flag para ver ultimo panel
     private lastPanel: any;
 
-    public filtrar: string = $localize`:@@filterButtonDashboard:Filtrar`;
+    // SDA CUSTOM - Replace eliminated duplicate ID filterButtonDashboard with canonical filtrarH4
+/* SDA CUSTOM */    public filtrar: string = $localize`:@@filtrarH4:Filtrar`;
+    // END SDA CUSTOM
     /*SDA CUSTOM*/ public resumen: string = $localize`:@@filterSummary:Resumen de filtros`;
 /* SDA CUSTOM */ public selectedItemsLabel: string = $localize`:@@globalFilterSelectedItemsLabel:elementos seleccionados`;
 /*SDA CUSTOM*/ private tooltipHideTimeout: any;

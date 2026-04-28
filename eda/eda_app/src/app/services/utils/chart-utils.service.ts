@@ -115,7 +115,9 @@ export class ChartUtilsService {
         { display_name: $localize`:@@dates4:NO`, value: 'No', selected: false }
     ];
 
-    public histoGramRangesTxt: string = $localize`:@@histoGramRangesTxt:Rango`;
+    // SDA CUSTOM - Replace eliminated duplicate ID histoGramRangesTxt with canonical rangeDescriptionB
+/* SDA CUSTOM */    public histoGramRangesTxt: string = $localize`:@@rangeDescriptionB:Rango`;
+    // END SDA CUSTOM
 
 
     /*

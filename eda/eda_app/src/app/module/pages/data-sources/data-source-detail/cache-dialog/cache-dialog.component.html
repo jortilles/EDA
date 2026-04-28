@@ -53,7 +53,7 @@
 
   <div footer>
     <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-      <!--SDA CUSTOM--> <button *ngIf="dataModelService.model_id!='111111111111111111111111'" type="button" pButton (click)="saveConfig()" class="ui-button" i18n-label="@@guardarBtn"
+      <!--SDA CUSTOM--> <button *ngIf="dataModelService.model_id!='111111111111111111111111'" type="button" pButton (click)="saveConfig()" class="ui-button" i18n-label="@@guardarButton"
         [disabled]="checkForm()" icon="fa fa-check" label="Confirmar">
       </button>
       <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-danger" i18n-label="@@cerrarBtn"

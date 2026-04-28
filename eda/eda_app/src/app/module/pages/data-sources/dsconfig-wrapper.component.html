@@ -17,7 +17,7 @@
           <div class="form-group">
             <label i18n="@@inputTipo">TIPO *</label>
             <p-dropdown [options]="dbTypes" formControlName="type" id="eda_ds_type"
-              i18n-placeholder="@@placholderSelectTipo" placeholder="Selecciona un tipo" optionLabel="name"
+              i18n-placeholder="@@placeholderSelectTipo" placeholder="Selecciona un tipo" optionLabel="name"
               [style]="{width:'100%', 'min-height':'38px'}" (onChange)="selectDefaultPort()">
             </p-dropdown>
           </div>
@@ -117,7 +117,7 @@
 
             <div class="col-12 md:col-4">
               <div class="form-group">
-                <label i18n="@@inputFilter">FILTROS</label>
+                <!--SDA CUSTOM--><label i18n="@@inputFilter">FILTROS</label>
                 <input type="text" class="form-control" formControlName="filter" id="eda_ds_filter" pInputText [pTooltip]="filterTooltip" tooltipPosition="left">
               </div>
             </div>
@@ -142,7 +142,7 @@
 
           <div class="col-12 md:col-4">
             <div class="form-group">
-              <label i18n="@@inputFilter">FILTROS</label>
+              <!--SDA CUSTOM--><label i18n="@@inputFilter">FILTROS</label>
               <input type="text" class="form-control" formControlName="filter" id="eda_ds_filter" pInputText>
             </div>
           </div>
@@ -168,7 +168,7 @@
           </p-checkbox>
         </div>
         <div class="col-12 md:col-12" style="text-align: right;">
-          <button type="submit" pButton icon="fa fa-save" i18n-label="@@guardarBtn" label="Guardar"
+          <!--SDA CUSTOM--><button type="submit" pButton icon="fa fa-save" i18n-label="@@guardarButton" label="Guardar"
             id="eda_ds_guardar"></button>
         </div>
       </div>

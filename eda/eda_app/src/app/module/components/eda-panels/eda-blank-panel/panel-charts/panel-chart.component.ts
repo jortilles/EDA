@@ -71,7 +71,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public fontSize: number;
 
 
-    public histoGramRangesTxt: string = $localize`:@@histoGramRangesTxt:Rango`;
+    // SDA CUSTOM - Replace eliminated duplicate ID histoGramRangesTxt with canonical rangeDescriptionB
+/* SDA CUSTOM */    public histoGramRangesTxt: string = $localize`:@@rangeDescriptionB:Rango`;
+    // END SDA CUSTOM
     public histoGramDescTxt: string = $localize`:@@histoGramDescTxt:Número de`;
     public histoGramDescTxt2: string = $localize`:@@histoGramDescTxt2:en este rango`;
 

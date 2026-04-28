@@ -71,7 +71,9 @@ export class GroupListComponent implements OnInit {
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: $localize`:@@DeleteGroupButton:Si, ¡Eliminalo!`,
-            cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
+            // SDA CUSTOM - Replace eliminated duplicate ID DeleteGroupCancel with canonical cancelarButton
+/* SDA CUSTOM */            cancelButtonText: $localize`:@@cancelarButton:Cancelar`
+            // END SDA CUSTOM
         }).then(borrado => {
             if ( borrado.value ) {
                 this.groupService.deleteGroup(group._id).subscribe(

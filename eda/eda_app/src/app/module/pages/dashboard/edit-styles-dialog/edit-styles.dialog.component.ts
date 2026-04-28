@@ -33,13 +33,19 @@ export class EditStylesDialogComponent extends EdaDialogAbstract {
 	public dashBoardStyles: DashboardStyles;
 
 	public titleHeader: string = $localize`:@@dashboardTitleEdit:Título del informe`;
-	public filtersHeader: string = $localize`:@@filtersEdit:Filtros`;
-	public panelTitleHeader: string = $localize`:@@panelTitleEdit:Título del panel`;
+	// SDA CUSTOM - Replace eliminated duplicate ID filtersEdit with canonical inputFilter
+/* SDA CUSTOM */	public filtersHeader: string = $localize`:@@inputFilter:Filtros`;
+	// END SDA CUSTOM
+	// SDA CUSTOM - Replace eliminated duplicate ID panelTitleEdit with canonical samplePanelName
+/* SDA CUSTOM */	public panelTitleHeader: string = $localize`:@@samplePanelName:Título del panel`;
+	// END SDA CUSTOM
 	public panelContentHeader: string = $localize`:@@panelContentEdit:Contenido del panel`;
 	public samplePanelTitle: string = $localize`:@@samplePanelTitle:Previsualización`;
 	public samplePanelDBName: string = $localize`:@@samplePanelName:Título del informe`;
 	public samplePanelName: string = $localize`:@@samplePanelName:Título del panel`;
-	public filtrar: string = $localize`:@@filterButtonDashboard:Filtrar`;
+	// SDA CUSTOM - Replace eliminated duplicate ID filterButtonDashboard with canonical filtrarH4
+/* SDA CUSTOM */	public filtrar: string = $localize`:@@filtrarH4:Filtrar`;
+	// END SDA CUSTOM
 	public css: string;
 
 	public left: string = $localize`:@@left:Izquierda`;

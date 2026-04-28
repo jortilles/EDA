@@ -394,7 +394,7 @@ export class HomeSdaComponent implements OnInit {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: $localize`:@@ConfirmDeleteModel:Yes, delete it!`,
-      cancelButtonText: $localize`:@@DeleteGroupCancel:Cancel`
+      cancelButtonText: $localize`:@@cancelarButton:Cancel`
     }).then(deleted => {
       if (deleted.value) {
         this.dashboardService.deleteDashboard(dashboard._id).subscribe(

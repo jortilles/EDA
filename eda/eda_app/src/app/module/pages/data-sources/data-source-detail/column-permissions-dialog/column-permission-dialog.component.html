@@ -69,9 +69,9 @@
   <div footer>
 
     <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-      <button type="button" pButton (click)="savePermission()"
+      <!--SDA CUSTOM--><button type="button" pButton (click)="savePermission()"
         [disabled]="( (selectedUsers.length < 1 && selectedRoles.length < 1) || (selectedValues.length < 1 && !all && !none   ) )  && !dynamic "
-        class="ui-button" icon="fa fa-check" i18n-label="@@guardarBtn" label="Confirmar"
+        class="ui-button" icon="fa fa-check" i18n-label="@@guardarButton" label="Confirmar"
         id="eda_column_permission_confirmar"></button>
       <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-danger" i18n-label="@@cerrarBtn"
         label="Cerrar"></button>

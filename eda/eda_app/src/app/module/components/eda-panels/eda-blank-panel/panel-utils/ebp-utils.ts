@@ -25,7 +25,9 @@ export const EbpUtils = {
         description += `\n${str}`;
         break;
       case 'barline':
-        str = $localize`:@@chartInfo3:Un gráfico de barras necesita una o más categorías y una série numéricas. Además, si hay mas de una série los datos numéricos deben agregarse.`;
+        // SDA CUSTOM - Use unified chartInfo3
+        str = $localize`:@@chartInfo3:Un gráfico de barras necesita una o más categorías y una serie numérica. Además, si hay mas de una serie los datos numéricos deben agregarse.`;
+        // END SDA CUSTOM
         description += `\n${str}`;
         break;
       case 'stackedbar':
@@ -45,11 +47,11 @@ export const EbpUtils = {
           description += `\n${str}`;
           break;
       case 'horizontalBar':
-        str = $localize`:@@chartInfo6:Un gráfico de barras necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.`;
+        str = $localize`:@@chartInfo3:Un gráfico de barras necesita una o más categorías y una serie numérica. Además, si hay mas de una serie los datos numéricos deben agregarse.`;
         description += `\n${str}`;
         break;
-      case 'bar': 
-        str = $localize`:@@chartInfo7:Un gráfico de barras necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.`;
+      case 'bar':
+        str = $localize`:@@chartInfo3:Un gráfico de barras necesita una o más categorías y una serie numérica. Además, si hay mas de una serie los datos numéricos deben agregarse.`;
         description += `\n${str}`;
         break;
       case 'bubblechart':
@@ -101,20 +103,22 @@ export const EbpUtils = {
         str = $localize`:@@chartInfoFunnel:Un embudo necesita una categoría y un valor numérico`;
         description += `\n${str}`;
         break;
-      case "treetable": 
+      case "treetable":
         str = $localize`:@@chartInfoTreetable:Un Treetable necesita como mínimo una categoría y dos valores numéricos, en caso se inicie la consulta con dos valores numéricos, estos deberán ser ids con una relación hijo y padre, del cual el hijo deberá iniciar con 0.`;
         description += `\n${str}`;
         break;
-      case "radar": 
+      case "radar":
         str = $localize`:@@chartInfoRadar:Un radar necesita como mínimo una categoría y al menos un valor numérico.`;
         description += `\n${str}`;
         break;
-      case 'pyramid': 
+      case 'pyramid':
         str = $localize`:@@chartInfoPyramid:Un gráfico de piramide necesita de dos categorías y un valor numérico`;
         description += `\n${str}`;
         break;
       default:
-        description = $localize`:@@chartInfo13:Los datos seleccionados no permiten utilizar este gráfico.`;
+        // SDA CUSTOM - Reuse chartInfo1 instead of duplicated chartInfo13
+        description = $localize`:@@chartInfo1:Los datos seleccionados no permiten utilizar este gráfico.`;
+        // END SDA CUSTOM
         break;
     }
 
@@ -124,10 +128,10 @@ export const EbpUtils = {
   // text for available values
   getOptionDescriptionValid: (value: string) => {
     let description = '';
-    let str: string; 
+    let str: string;
     // let str2: string;
     switch (value) {
-      case "treetable": 
+      case "treetable":
         str = $localize`:@@chartInfoTreetableAvailable:Una tabla árbol se puede configurar de dos formas. Mediante campos que se van anidando por medio de agrupaciones o mediante la definición de dos columnas numéricas que definan una relación padre-hijo. Si las dos primeras columnas son numéricas, se asumirá que describen una relación padre hijo.`;
         description += `\n${str}`;
         break;
@@ -232,7 +236,7 @@ export const EbpUtils = {
       case 'radar':
         description = 'radar';
         break;
-      case 'treetable': 
+      case 'treetable':
         description = 'account_tree';
         break;
     }

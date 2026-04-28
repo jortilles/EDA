@@ -51,7 +51,9 @@ export class UsersFitxaComponent extends EdaDialogAbstract {
 
         if (this.controller.params.id) {
 
-            let title = $localize`:@@userDetailHeader: USUARIO`
+            // SDA CUSTOM - Replace eliminated duplicate ID userDetailHeader with canonical userTable
+/* SDA CUSTOM */            let title = $localize`:@@userTable: USUARIO`
+            // END SDA CUSTOM
             this.dialog.setTitle(`${title} - ${_.toUpper(this.controller.params.name)}`);
             this.btnLabel = $localize`:@@userDetailSaveButton:GUARDAR`;
             //this.form.controls['password'].disable({ onlySelf: true })
@@ -131,7 +133,9 @@ export class UsersFitxaComponent extends EdaDialogAbstract {
                 this.userService.createUser(this.user).subscribe(
                     res => {
                         this.onClose(EdaDialogCloseEvent.NEW);
-                        Swal.fire($localize`:@@CreatedUser:Usuario creado`, res.email, 'success');
+                            // SDA CUSTOM - Replace eliminated duplicate ID CreatedUser with canonical UserCreated
+    /* SDA CUSTOM */                        Swal.fire($localize`:@@UserCreated:Usuario creado`, res.email, 'success');
+                            // END SDA CUSTOM
                     }, err => {
                         Swal.fire($localize`:@@RegisterError:Error al registrarse`, err.text, 'error');
                     }

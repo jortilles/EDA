@@ -72,7 +72,7 @@ export class DataSourcesComponent {
         
                     this.dataSourceService.addDataSource(connection).subscribe(
                         res => {
-                            let title = $localize`:@@DatadourceTitle:Fuente de datos: `
+                            let title = $localize`:@@DatasourceTitle:Fuente de datos: `
                             Swal.fire({
                                 title: `${title} ${this.form.value.name}`,
                                 text: $localize`:@@DatasourceText:Creada correctamente`,

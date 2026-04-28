@@ -156,13 +156,13 @@
                                             <p i18n="@@indicaciones11">
                                                 Tenemos un filtro en el informe para el campo 'city' de la tabla CUSTOMERS
                                             </p>
-                                            <li i18n="@@indicaciones12"> Consulta sin filtros vinculados</li>
+                                            <!--SDA CUSTOM--><li i18n="@@indicaciones12"> Consulta sin filtros vinculados</li>
                                             <ul>
                                                 <li style="font-weight: bold;">
                                                     SELECT c.customername FROM CUSTOMERS c WHERE c.customername IN ('Julia', 'John')
                                                 </li>
                                             </ul>
-                                            <li i18n="@@indicaciones13"> Consulta con filtros vinculados</li>
+                                            <!--SDA CUSTOM--><li i18n="@@indicaciones13"> Consulta con filtros vinculados</li>
                                             <ul>
                                                 <li style=" font-weight: bold">
                                                     SELECT c.customername
@@ -175,7 +175,7 @@
                                             <p i18n="@@indicaciones14">
                                                 Tenemos un filtro en el informe para el campo 'office_id' de la tabla OFFICES
                                             </p>
-                                            <li i18n="@@indicaciones15"> Consulta sin filtros vinculados</li>
+                                            <!--SDA CUSTOM--><li i18n="@@indicaciones12"> Consulta sin filtros vinculados</li>
                                             <ul>
                                                 <li style=" font-weight: bold;">
                                                     SELECT e.employee_name
@@ -183,7 +183,7 @@
                                                     WHERE e.employee_name IN ('Julia', 'John')
                                                 </li>
                                             </ul>
-                                            <li i18n="@@indicaciones16"> Consulta con filtros vinculados</li>
+                                            <!--SDA CUSTOM--><li i18n="@@indicaciones13"> Consulta con filtros vinculados</li>
                                             <ul>
                                                 <li style="font-weight: bold">
                                                     <p>SELECT e.employee_name FROM EMPLOYEE e</p>
@@ -263,12 +263,12 @@
 
                         <div class="col-6 md:col-2 pl-2">
                             <div class="d-flex justify-content-between"  style="min-height: 45px;">
-                                <h4 *ngIf="!userSelectedTable" i18n="@@atributosH4"  i18n-title="@@atributsTitle" title="Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes">
+                                <!--SDA CUSTOM--><h4 *ngIf="!userSelectedTable" i18n="@@atributosH4"  i18n-title="@@atributsTitle" title="Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes">
                                     Atributos
                                 </h4>
                                 <h5 *ngIf="userSelectedTable" i18n-title="@@atributsTitle" title="Clique sobre un entidad para ver sus atributos." >
-                                    <span i18n="@@atributosH4">Atributos de:</span>
-                                    <span class="d-block font-weight-bold" i18n="@@atributosH4interpolation" i18n-title="@@atributsTitle">{{getNiceTableName(userSelectedTable)}}</span>
+                                    <!--SDA CUSTOM--><span i18n="@@atributosH4">Atributos de:</span>
+                                    <!--SDA CUSTOM--><span class="d-block font-weight-bold" i18n="@@atributosH4interpolation" i18n-title="@@atributsTitle">{{getNiceTableName(userSelectedTable)}}</span>
                                 </h5>
  <!--SDA CUSTOM-->              <div *ngIf="userService.isAdmin && showHiddId">
  <!--SDA CUSTOM-->                  <span i18n-title="@@hiddenAttributes" title="Mostrar/ocultar campos ocultos" class="pointer icon-hover" (click)="changeHiddenMode()">
@@ -608,14 +608,14 @@
       <div class="p-dialog-buttonpanel p-widget-content p-helper-clearfix text-right" >
             <!--SDA CUSTOM --><button *ngIf="!hiddenButtonExecuter && selectedQueryMode!='EDA'" type="button" pButton (click)="runManualQuery()" [disabled]="disableRunQuery()"
                 icon="fa fa-flask" class="p-button-success ml-2" i18n-label="@@ejecutarBtn" label="Ejecutar">
-            </button>
+            <!--SDA CUSTOM--></button>
 
             <!--SDA CUSTOM --><button *ngIf="selectedQueryMode!='EDA'" type="submit" pButton (click)="savePanel()" [disabled]="display_v.btnSave" icon="fa fa-check"
-                class="p-button ml-2" i18n-label="@@guardarBtn" label="Confirmar" id="eda_blak_panel_confirmar">
+                class="p-button ml-2" i18n-label="@@guardarButton" label="Confirmar" id="eda_blak_panel_confirmar">
             </button>
 
-            <button type="button" pButton (click)="closeEditarConsulta()" icon="fa fa-times"
-                class="p-button-danger ml-2" i18n-label="@@cancelarBtn" label="Cancelar" id="eda_blak_panel_cancelar">
+            <!--SDA CUSTOM--><button type="button" pButton (click)="closeEditarConsulta()" icon="fa fa-times"
+                class="p-button-danger ml-2" i18n-label="@@cancelarButton" label="Cancelar" id="eda_blak_panel_cancelar">
             </button>
         </div>
     </p-footer>

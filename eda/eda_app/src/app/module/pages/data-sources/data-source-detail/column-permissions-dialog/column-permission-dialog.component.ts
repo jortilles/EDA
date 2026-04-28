@@ -34,7 +34,7 @@ export class ColumnPermissionDialogComponent extends EdaDialogAbstract {
     public type : string; 
 
     public usersLabel = $localize`:@@usersPermissions:Permisos de usuario`;
-    public groupsLabel = $localize`:@@groupsPersmissions:Permisos de grupo`;
+    public groupsLabel = $localize`:@@groupsPermissions:Permisos de grupo`;
     public usersDefaultLabel = $localize`:@@users:Usuarios`;
     public groupsDefaultLabel = $localize`:@@groups:Grupos`;
 
@@ -52,7 +52,9 @@ export class ColumnPermissionDialogComponent extends EdaDialogAbstract {
         this.dialog = new EdaDialog({
             show: () => this.onShow(),
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-            title: $localize`:@@AddPermiso:Añadir permiso`
+            // SDA CUSTOM - Replace eliminated duplicate ID AddPermiso with canonical addPermission
+/* SDA CUSTOM */            title: $localize`:@@addPermission:Añadir permiso`
+            // END SDA CUSTOM
         });
 
         this.dialog.style = { width: '40%', height:'65%', top:"-4em", left:'1em'};

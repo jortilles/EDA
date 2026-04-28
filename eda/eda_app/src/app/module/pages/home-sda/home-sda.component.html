@@ -479,10 +479,10 @@
                   {{ type.label }}
                 </option>
               </select>
-              <button
+              <!--SDA CUSTOM--><button
                 class="btn btn-sm btn-secondary ml-2"
                 (click)="cancelEditingType()"
-                i18n="@@cancelarBtn"
+                i18n="@@cancelarButton"
               >
                 Cancelar
               </button>
@@ -645,10 +645,10 @@
               <option *ngFor="let type of dashboardTypes" [value]="type.type" [hidden]="type.type === 'shared' && !isAdmin">                  {{ type.label }}
                 </option>
               </select>
-              <button
+              <!--SDA CUSTOM--><button
                 class="btn btn-sm btn-secondary ml-2"
                 (click)="cancelEditingType()"
-                i18n="@@cancelarBtn"
+                i18n="@@cancelarButton"
               >
                 Cancelar
               </button>

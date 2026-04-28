@@ -190,13 +190,13 @@ export class ModelSettingsComponent implements OnInit {
     this.dashboardService.updateDashboard(this.loadedDashboard._id, this.loadedDashboard).subscribe(
       () => {
 
-        this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
+        this.alertService.addSuccess($localize`:@@dashboardSaved:Informe guardado correctamente`);
       },
       err => {
         this.dashboardService.addNewDashboard(this.loadedDashboard).subscribe(
           () => {
 
-            this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
+            this.alertService.addSuccess($localize`:@@dashboardSaved:Informe guardado correctamente`);
           },
           err => {
             this.alertService.addError(err);

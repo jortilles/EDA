@@ -64,7 +64,7 @@
         </div>
 
         <div  *ngIf=showNumberOfColumns class="col-2" style="margin-top: 2em;">
-            <h6 i18n="@@histogramColum" class="custom-border-b1">
+            <!--SDA CUSTOM--><h6 i18n="@@atributosH4" class="custom-border-b1">
                 Columnas
             </h6>
         <div   *ngIf=showNumberOfColumns [pTooltip]="columnsTooltip" tooltipPosition="left">
@@ -113,12 +113,12 @@
 
         <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
 
-            <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check"
+            <!--SDA CUSTOM--><button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check"
                 class="p-button-raised p-button-success" i18n-label="@@guardarButton" label="Confirmar"
                 id="eda_chart_dialog_confirmar">
             </button>
 
-            <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times"
+            <!--SDA CUSTOM--><button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times"
                 class="p-button-raised p-button-danger" i18n-label="@@cancelarButton" label="Cancelar">
             </button>
 

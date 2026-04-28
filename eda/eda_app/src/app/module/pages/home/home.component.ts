@@ -94,14 +94,14 @@ export class HomeComponent implements OnInit {
                 grups: [],
                 shared: []
             };
-            
+
             const res = await this.dashboardService.getDashboards().toPromise();
             this.dashboards.privats = res.dashboards.sort((a, b) => (a.config.title > b.config.title) ? 1 : ((b.config.title > a.config.title) ? -1 : 0));
             this.dashboards.publics = res.publics.sort((a, b) => (a.config.title > b.config.title) ? 1 : ((b.config.title > a.config.title) ? -1 : 0));
             this.dashboards.grups = res.group.sort((a, b) => (a.config.title > b.config.title) ? 1 : ((b.config.title > a.config.title) ? -1 : 0));
             this.dashboards.shared = res.shared.sort((a, b) => (a.config.title > b.config.title) ? 1 : ((b.config.title > a.config.title) ? -1 : 0));
             this.groups = _.map(_.uniqBy(res.group, 'group._id'), 'group');
-            
+
             this.isAdmin = res.isAdmin;
             this.IsDataSourceCreator = res.isDataSourceCreator;
             /**Get unique tags */
@@ -116,7 +116,7 @@ export class HomeComponent implements OnInit {
                     a.forEach(b => tagsC.push(b))
                 }
             })
-            this.tags = tagsC; 
+            this.tags = tagsC;
             this.tags = this.tags.filter(tag => tag !== null);
             this.tags = this.tags.filter(tag => tag !== undefined);
             this.tags.unshift({ label: this.noTagLabel, value: 0 }); //afegim el "sense etiqueta"
@@ -135,7 +135,7 @@ export class HomeComponent implements OnInit {
             this.alertService.addError(err);
             throw err;
         }
-        
+
     }
 
     public deleteDashboard(dashboard): void {
@@ -148,7 +148,9 @@ export class HomeComponent implements OnInit {
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
-            cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
+            // SDA CUSTOM - Replace eliminated duplicate ID DeleteGroupCancel with canonical cancelarButton
+/* SDA CUSTOM */            cancelButtonText: $localize`:@@cancelarButton:Cancelar`
+            // END SDA CUSTOM
         }).then(async (borrado) => {
             if (borrado.value) {
                 try {
@@ -171,7 +173,7 @@ export class HomeComponent implements OnInit {
     public filterDashboards(tag: any) {
         this.selectedTag = tag.value;
         if (tag.value === 0) tag.value = null;
-        if (tag.value === 1) this.visibleDashboards = _.cloneDeep(this.dashboards); 
+        if (tag.value === 1) this.visibleDashboards = _.cloneDeep(this.dashboards);
         else {
             const publicsTags = this.tagExtractor(this.dashboards.publics, this.selectedTag)
             this.visibleDashboards.publics = this.dashboards.publics.filter(db => publicsTags.includes(db))
@@ -183,7 +185,7 @@ export class HomeComponent implements OnInit {
             this.visibleDashboards.privats = this.dashboards.privats.filter(db =>  privatsTags.includes(db) );
         }
     }
-    
+
     tagExtractor = (dashboardList, tag) => {
         let dbList = []
         dashboardList.forEach(a => {
@@ -194,7 +196,7 @@ export class HomeComponent implements OnInit {
                 }
             })
             return dbList;
-        }       
+        }
 
     public goToDashboard(dashboard): void {
         if (dashboard) {
@@ -203,7 +205,7 @@ export class HomeComponent implements OnInit {
             this.alertService.addError($localize`:@@ErrorMessage:Ha ocurrido un error`);
         }
     }
-    
+
 
     public filterTitle(text: any){
         const stringToFind = text.target.value.toString().toUpperCase();

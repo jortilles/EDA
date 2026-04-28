@@ -125,7 +125,7 @@
         </div>
 
         <div *ngIf="columnPanel.computed_column === 'no'" style="margin-bottom: 1em; margin-top: 0.5em;">
-            <h5 class="title-datamodel" i18n="@@agregacionh5">
+            <!--SDA CUSTOM--><h5 class="title-datamodel" i18n="@@aggregationText">
                 Agregación
             </h5>
             <p>
@@ -299,7 +299,7 @@
                     </div>
 
                     <div class="col-12  xl:col-4">
-                        <h5 class="title-datamodel" i18n="@@inputFilter">
+                        <!--SDA CUSTOM--><h5 class="title-datamodel" i18n="@@inputFilter">
                             Filtros
                         </h5>
                         <input pInputText type="text" [(ngModel)]="modelPanel.metadata.filter" (keyup)="update()">

@@ -67,7 +67,9 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public addView:string = $localize`:@@addView:Añadir vista`;
     public addTagDataSource:string = $localize`:@@addTagDataSource: Añadir Tag`;
     public addCSV:string = $localize`:@@addCSV:Añadir tabla desde csv`;
-    public addRelation:string = $localize`:@@addRelationButton:Añadir relación`;
+    // SDA CUSTOM - Replace eliminated duplicate ID addRelationButton with canonical addRelation
+/* SDA CUSTOM */    public addRelation:string = $localize`:@@addRelation:Añadir relación`;
+    // END SDA CUSTOM
     public addCalculatedCol:string = $localize`:@@addCalculatedCol:Añadir columna  calculada`;
     public addPermission:string = $localize`:@@addPermission:Añadir permiso`;
     public addValueList:string = $localize`:@@addValueList:Añadir lista de valores posibles`;
@@ -530,7 +532,9 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
-            cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
+            // SDA CUSTOM - Replace eliminated duplicate ID DeleteGroupCancel with canonical cancelarButton
+/* SDA CUSTOM */            cancelButtonText: $localize`:@@cancelarButton:Cancelar`
+            // END SDA CUSTOM
         }).then(async (borrado) => {
             if (borrado.value) {
                 try {

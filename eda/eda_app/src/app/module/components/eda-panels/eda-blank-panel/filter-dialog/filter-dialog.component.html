@@ -24,7 +24,7 @@
                         (onChange)="handleFilterChange(filterSelected)">
                     </p-dropdown>
 
-                    <label for="types" i18n="@@tiposFiltroLabel">
+                    <!--SDA CUSTOM--><label for="types" i18n="@@tiposFiltrosLabel">
                         Tipos de filtro
                     </label>
 
@@ -96,7 +96,7 @@
                         <p-dropdown id="types" [options]="filterBeforeAfter.elements" [(ngModel)]="filterBeforeAfterSelected" optionLabel="label"
                             [autoDisplayFirst]="true" [style]="{'width': '100%'}" 
                             (onChange)="whereHavingSwitch(filterBeforeAfterSelected)">
-                        </p-dropdown>
+                        <!--SDA CUSTOM--></p-dropdown>
 
                         <!-- <label i18n="@@tiposFiltrosLabel" for="types">
                             Tipos de filtro
@@ -145,8 +145,8 @@
                     
                                 <div class="col-12 md:col-8" style="margin: 0, auto; display: flex; align-items: center; justify-content: center;">
                     
-                                    <p-button (onClick)="addFilter()" [disabled]="display.filterButton"
-                                        i18n-label="@@addFilterButton" label="Añadir filtro">
+                                    <!--SDA CUSTOM--><p-button (onClick)="addFilter()" [disabled]="display.filterButton"
+                                        i18n-label="@@addFilterBtn" label="Añadir filtro">
                                     </p-button>
                     
                                 </div>
@@ -376,7 +376,7 @@
             <div class="col-12 md:col-2" style="margin: 0, auto; padding: 25px;">
 
                 <p-button (onClick)="addFilter()" [disabled]="display.filterButton"
-                    i18n-label="@@addFilterButton" label="Añadir filtro">
+                    i18n-label="@@addFilterBtn" label="Añadir filtro">
                 </p-button>
 
             </div>
@@ -388,12 +388,12 @@
 
     <div footer>
         <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-            <button type="button" pButton (click)="closeDialog()" icon="fa fa-times"
-                class="p-button-danger ml-2" i18n-label="@@cancelarBtn" label="Cancelar" >
+            <!--SDA CUSTOM--><button type="button" pButton (click)="closeDialog()" icon="fa fa-times"
+                class="p-button-danger ml-2" i18n-label="@@cancelarButton" label="Cancelar" >
             </button>
 
-            <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-success "  [disabled]="!display.filterButton" 
-                i18n-label="@@guardarBtn" label="Confirmar" icon="fa fa-check">
+            <!--SDA CUSTOM--><button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-success "  [disabled]="!display.filterButton" 
+                i18n-label="@@guardarButton" label="Confirmar" icon="fa fa-check">
             </button>
         </div>
     </div>

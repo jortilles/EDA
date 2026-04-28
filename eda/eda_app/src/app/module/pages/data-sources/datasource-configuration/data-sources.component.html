@@ -14,7 +14,7 @@
         <div class="form-group">
           <label i18n="@@inputTipo">TIPO *</label>
           <p-dropdown [options]="dbTypes" formControlName="type" id="eda_ds_type"
-            i18n-placeholder="@@placholderSelectTipo" placeholder="Selecciona un tipo" optionLabel="name"
+            i18n-placeholder="@@placeholderSelectTipo" placeholder="Selecciona un tipo" optionLabel="name"
             [style]="{width:'100%', padding:'.35rem .75rem'}" (onChange)="selectDefaultPort()">
           </p-dropdown>
         </div>
@@ -57,7 +57,7 @@
           <input type="text" class="form-control" formControlName="db" id="eda_ds_db" pInputText>
         </div>
       </div>
-      
+
       <div *ngIf="form.value.type && form.value.type.value ==='mysql'"  class="col-6 ui-md-2">
         <div class="form-group">
           <label i18n="@@inputPoolDb">Pool Limit</label>
@@ -97,7 +97,7 @@
 
 
     <div class="footer text-right" style="background: none">
-      <button type="submit" pButton icon="fa fa-save" i18n-label="@@guardarBtn" label="Guardar"
+      <!--SDA CUSTOM--><button type="submit" pButton icon="fa fa-save" i18n-label="@@guardarButton" label="Guardar"
         id="eda_ds_guardar"></button>
     </div>
 

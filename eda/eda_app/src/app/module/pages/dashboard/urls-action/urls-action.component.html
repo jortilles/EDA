@@ -129,8 +129,8 @@ Una vez configurado podrás invocarlo siempre que que quieras desde el botón.
 
     <div footer>
         <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
-            <button [disabled]="(clonedUrls | json)!==({}|json)" type="submit" pButton icon="fa fa-save"
-                i18n-label="@@guardarBtn" label="Confirmar" icon="fa fa-check" id="eda_add_dashboard_confirmar"
+            <!--SDA CUSTOM--><button [disabled]="(clonedUrls | json)!==({}|json)" type="submit" pButton icon="fa fa-save"
+                i18n-label="@@guardarButton" label="Confirmar" icon="fa fa-check" id="eda_add_dashboard_confirmar"
                 (click)="urlsConfirmed()"></button>
             <button type="button" pButton icon="fa fa-times" (click)="closeDialog()"
                 class="p-button-raised p-button-danger" i18n-label="@@cerrarBtn" label="Cancelar"></button>

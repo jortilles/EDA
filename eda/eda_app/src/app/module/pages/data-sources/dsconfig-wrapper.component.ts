@@ -130,7 +130,7 @@ export class DsConfigWrapperComponent implements OnInit {
 		try {
 			await this.dataSourceService.testConnection(connection).toPromise();
 			const res = await this.dataSourceService.addDataSource(connection).toPromise();
-			let title = $localize`:@@DatadourceTitle:Fuente de datos: `
+			let title = $localize`:@@DatasourceTitle:Fuente de datos: `
 			Swal.fire({
 				title: `${title} ${this.form.value.name}`,
 				text: $localize`:@@DatasourceText:Creada correctamente`,
@@ -170,7 +170,7 @@ export class DsConfigWrapperComponent implements OnInit {
 		try {
 			await this.dataSourceService.testConnection(connection).toPromise();
 			const res = await this.dataSourceService.addDataSource(connection).toPromise();
-			let title = $localize`:@@DatadourceTitle:Fuente de datos: `;
+			let title = $localize`:@@DatasourceTitle:Fuente de datos: `;
 			Swal.fire({
 				title: `${title} ${this.form.value.name}`,
 				text: $localize`:@@DatasourceText:Creada correctamente`,
