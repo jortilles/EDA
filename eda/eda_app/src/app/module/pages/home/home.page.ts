@@ -144,6 +144,12 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     }
   }
 
+  resetChat(): void {
+    this.chatHistory = [];
+    this.chatLoading.set(false);
+    setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+  }
+
   toggleChat(): void {
     const opening = !this.chatOpen();
     this.chatOpen.set(opening);
