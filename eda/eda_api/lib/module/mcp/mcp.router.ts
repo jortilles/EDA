@@ -1118,11 +1118,24 @@ function createMcpServer(requestUser?: any) {
                         const panel = panels[idx];
                         const query = panel.content?.query;
                         const fields: any[] = query?.query?.fields ?? [];
-                        if (!query?.model_id || fields.length === 0) continue;
+
+                        // ── LOG METADATOS PANEL ──────────────────────────────────────────
+                        const rawPanelDescEarly = panel.description ?? panel.content?.description ?? '';
+                        console.log(`[META] dashboard="${db.config?.title}" idx=${idx} title="${panel.title ?? '(sin titulo)'}"`);
+                        console.log(`[META]   model_id=${query?.model_id ?? 'FALTA'} | fields=${fields.length}`);
+                        console.log(`[META]   description raw type="${typeof rawPanelDescEarly}" value=${JSON.stringify(rawPanelDescEarly).substring(0, 120)}`);
+                        console.log(`[META]   content.description type="${typeof panel.content?.description}" value=${JSON.stringify(panel.content?.description ?? null).substring(0, 80)}`);
+                        console.log(`[META]   field_names=[${fields.map((f: any) => f.display_name ?? f.field_name).filter(Boolean).join(', ')}]`);
+                        // ────────────────────────────────────────────────────────────────
+
+                        if (!query?.model_id || fields.length === 0) {
+                            console.log(`[META]   → SALTADO (sin model_id o sin fields)`);
+                            continue;
+                        }
 
                         // Filtrar por permisos de datasource (namesForDashboard)
                         if (!accessibleDsIds.has(query.model_id)) {
-                            console.log(`[MCP] exploración — panel saltado (datasource sin acceso) | model_id=${query.model_id} | dashboard=${db.config?.title}`);
+                            console.log(`[META]   → SALTADO (datasource sin acceso) | model_id=${query.model_id}`);
                             continue;
                         }
 
@@ -1136,7 +1149,10 @@ function createMcpServer(requestUser?: any) {
                                 return !fn || visibleCols.has(fn);
                             })
                             : fields;
-                        if (visibleFields.length === 0) continue; // all fields are NONE, skip panel
+                        if (visibleFields.length === 0) {
+                            console.log(`[META]   → SALTADO (todos los campos son ia_visibility=NONE)`);
+                            continue;
+                        }
 
                         const fieldNames = visibleFields.map((f: any) => f.display_name ?? f.field_name).filter(Boolean);
 
@@ -1165,25 +1181,37 @@ function createMcpServer(requestUser?: any) {
                             }
                         }
 
+                        console.log(`[META]   col_descs=[${camposDescripciones.map(d => `"${d.substring(0,40)}"`).join(', ')}]`);
+                        console.log(`[META]   table_descs=[${tablasDescripciones.map(d => `"${d.substring(0,40)}"`).join(', ')}]`);
+
                         // Filtrar por campos_requeridos: al menos el 50 % de los keywords deben aparecer
                         // en alguna señal (nombre de campo, descripción, título del panel, nombre del dashboard).
+                        const rawPanelDesc = panel.description ?? panel.content?.description ?? '';
+                        const panelDescStr: string = typeof rawPanelDesc === 'string' ? rawPanelDesc : (rawPanelDesc?.default ?? '');
+                        console.log(`[META]   panelDescStr="${panelDescStr.substring(0, 100)}"`);
                         if (camposLower.length > 0) {
                             const fieldNamesLower = fieldNames.map((n: string) => n.toLowerCase());
                             const allDescText = [...camposDescripciones, ...tablasDescripciones].join(' ').toLowerCase();
                             const panelTitleLower = (panel.title ?? '').toLowerCase();
+                            const panelDescLower = panelDescStr.toLowerCase();
                             const dashboardNameLower = (db.config?.title ?? '').toLowerCase();
-                            const matchCount = camposLower.filter((kw: string) =>
-                                fieldNamesLower.some((fn: string) => fn.includes(kw)) ||
-                                allDescText.includes(kw) ||
-                                panelTitleLower.includes(kw) ||
-                                dashboardNameLower.includes(kw)
-                            ).length;
+                            let matchCount = 0;
+                            for (const kw of camposLower) {
+                                const inField    = fieldNamesLower.some((fn: string) => fn.includes(kw));
+                                const inColDesc  = allDescText.includes(kw);
+                                const inPanelTitle = panelTitleLower.includes(kw);
+                                const inPanelDesc  = panelDescLower.includes(kw);
+                                const inDashboard  = dashboardNameLower.includes(kw);
+                                const matched = inField || inColDesc || inPanelTitle || inPanelDesc || inDashboard;
+                                if (matched) matchCount++;
+                                console.log(`[META]   kw="${kw}" → field:${inField} colDesc:${inColDesc} panelTitle:${inPanelTitle} panelDesc:${inPanelDesc} dashboard:${inDashboard} ✔:${matched}`);
+                            }
                             const matchRatio = matchCount / camposLower.length;
                             if (matchRatio < 0.5) {
-                                console.log(`[MCP] exploración — panel saltado (cobertura insuficiente ${(matchRatio * 100).toFixed(0)}%<50%) | dashboard=${db.config?.title}, idx=${idx} | campos=${fieldNames.join(',')} | requeridos=${camposLower.join(',')}`);
+                                console.log(`[META]   → SALTADO por pre-filtro (${(matchRatio*100).toFixed(0)}% < 50%) | dashboard=${db.config?.title}, idx=${idx}`);
                                 continue;
                             }
-                            console.log(`[MCP] exploración — panel OK (cobertura ${(matchRatio * 100).toFixed(0)}%) | dashboard=${db.config?.title}, idx=${idx}`);
+                            console.log(`[META]   → PASA pre-filtro (${(matchRatio*100).toFixed(0)}%) | dashboard=${db.config?.title}, idx=${idx}`);
                         }
 
                         const activeFilters: any[] = query?.query?.filters ?? [];
@@ -1215,7 +1243,7 @@ function createMcpServer(requestUser?: any) {
                                 dashboard_modificado: db.config?.modifiedAt ?? null,
                                 panel_index: idx,
                                 panel_titulo: panel.title ?? '',
-                                panel_descripcion: panel.description ?? panel.content?.description ?? '',
+                                panel_descripcion: panelDescStr,
                                 datasource_nombre: accessibleDsIds.get(query.model_id) ?? null,
                                 campos: fieldNames,
                                 campos_descripciones: camposDescripciones,
