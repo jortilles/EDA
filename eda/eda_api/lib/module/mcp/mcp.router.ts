@@ -1165,8 +1165,20 @@ function createMcpServer(requestUser?: any) {
                     console.log('[MCP] fallback — iniciando búsqueda | términos:', fallbackTerms, '| datasources a revisar:', accessibleDsIds.size);
                     // Normalizar: quita acentos y pasa a minúsculas ("género"→"genero")
                     const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-                    // Matching bidireccional con normalización: "genero"↔"géneros", "asistente"↔"asistentes"
-                    const biMatch = (a: string, b: string) => { const na = norm(a); const nb = norm(b); return na.includes(nb) || nb.includes(na); };
+                    // Stem básico para plurales Romance/inglés: quita "-es" (>6 chars) o "-s" (>5 chars)
+                    const stem = (s: string) => {
+                        if (s.length > 6 && s.endsWith('es')) return s.slice(0, -2);
+                        if (s.length > 5 && s.endsWith('s')) return s.slice(0, -1);
+                        return s;
+                    };
+                    // flexMatch: bidireccional normalizado + comparación por stems para plurales cross-idioma
+                    // Ej: "assistents"↔"asistentes", "consums"↔"consumo", "professions"↔"profesiones"
+                    const flexMatch = (a: string, b: string): boolean => {
+                        const na = norm(a); const nb = norm(b);
+                        if (na.includes(nb) || nb.includes(na)) return true;
+                        const sa = stem(na); const sb = stem(nb);
+                        return sa.includes(sb) || sb.includes(sa);
+                    };
                     const normTerms = fallbackTerms.map(norm);
                     console.log('[MCP] fallback — términos normalizados:', normTerms);
                     for (const [dsId, dsName] of accessibleDsIds) {
@@ -1182,25 +1194,29 @@ function createMcpServer(requestUser?: any) {
                         ).filter(Boolean);
                         const allTableNames: string[] = (schema.tables as any[])
                             .map((t: any) => t.table_name ?? t.name ?? '').filter(Boolean);
+                        // Also check the datasource name itself so "Asistentes" matches "assistents"
+                        const dsNameMatch = fallbackTerms.some((kw: string) => flexMatch(dsName, kw));
                         const matchingCols = fallbackTerms.length > 0
-                            ? allDsCols.filter(cn => fallbackTerms.some((kw: string) => biMatch(cn, kw)))
+                            ? allDsCols.filter(cn => fallbackTerms.some((kw: string) => flexMatch(cn, kw)))
                             : [];
                         const matchingTables = fallbackTerms.length > 0
-                            ? allTableNames.filter(tn => fallbackTerms.some((kw: string) => biMatch(tn, kw)))
+                            ? allTableNames.filter(tn => fallbackTerms.some((kw: string) => flexMatch(tn, kw)))
                             : [];
                         const tableMatch = matchingTables.length > 0;
-                        // Count how many distinct search terms are covered (columns + table names)
+                        // Count how many distinct search terms are covered (columns + table names + datasource name)
                         const coveredTermCount = fallbackTerms.filter((kw: string) =>
-                            allDsCols.some(cn => biMatch(cn, kw)) || allTableNames.some(tn => biMatch(tn, kw))
+                            allDsCols.some(cn => flexMatch(cn, kw)) ||
+                            allTableNames.some(tn => flexMatch(tn, kw)) ||
+                            flexMatch(dsName, kw)
                         ).length;
                         // Require at least 50% of terms to match to mirror the exploration filter
                         const requiredMatches = Math.max(1, Math.ceil(fallbackTerms.length / 2));
-                        console.log(`[MCP] fallback — ds "${dsName}" | tablas: [${allTableNames.join(', ')}] | cols match: [${matchingCols.join(', ')}] | table match: [${matchingTables.join(', ')}] | covered: ${coveredTermCount}/${fallbackTerms.length} (req: ${requiredMatches})`);
-                        if ((matchingCols.length > 0 || tableMatch) && coveredTermCount >= requiredMatches) {
+                        console.log(`[MCP] fallback — ds "${dsName}" | dsNameMatch:${dsNameMatch} | tablas: [${allTableNames.join(', ')}] | cols match: [${matchingCols.join(', ')}] | table match: [${matchingTables.join(', ')}] | covered: ${coveredTermCount}/${fallbackTerms.length} (req: ${requiredMatches})`);
+                        if ((matchingCols.length > 0 || tableMatch || dsNameMatch) && coveredTermCount >= requiredMatches) {
                             const relevantCols = matchingCols.length > 0 ? matchingCols : allDsCols.slice(0, 5);
                             console.log(`[MCP] fallback — ✓ ds "${dsName}" incluido | cols relevantes: [${relevantCols.slice(0, 8).join(', ')}]`);
                             fallbackSugerencias.push({ datasource_id: dsId, datasource_nombre: dsName, campos_relevantes: relevantCols.slice(0, 8) });
-                        } else if (matchingCols.length > 0 || tableMatch) {
+                        } else if (matchingCols.length > 0 || tableMatch || dsNameMatch) {
                             console.log(`[MCP] fallback — ✗ ds "${dsName}" descartado (cobertura insuficiente: ${coveredTermCount} < ${requiredMatches} términos)`);
                         }
                     }
@@ -1412,10 +1428,12 @@ Llama a get_data_from_dashboard SIN dashboard_id.
 PASO 2 — SELECCIÓN (solo si hay múltiples opciones relevantes):
 Muestra SOLO las opciones cuyo dashboard o panel estén relacionados con la pregunta del usuario. Si una opción no tiene relación (ej: pregunta de agua → panel de ventas), NO la incluyas.
 Si tras filtrar queda 1 sola opción relevante, ve directamente al PASO 3 sin preguntar.
-Si hay varias relevantes, preséntaselas numeradas (1, 2, 3...) en prosa fluida con el link del dashboard. Destaca la diferencia clave: con/sin filtros, distintos alcances o períodos.
+Si hay varias relevantes, preséntaselas en formato compacto: una línea por opción, número en negrita, título del panel y dashboard como link. Añade SOLO la diferencia clave si la hay (ej: con filtros, período, territorio). No escribas frases largas.
+Formato exacto (adapta el idioma):
+**1.** [«Panel título»](url) · *Dashboard nombre* · sin filtros
+**2.** [«Panel título»](url) · *Dashboard nombre* · filtros por año
 Espera la selección del usuario ANTES de ejecutar el PASO 3.
-NUNCA uses letras (A, B, C) ni emojis de número. Solo números arábigos seguidos de punto.
-Ejemplo: "Opción 1 — [Dashboard «Ventas»](url) — Todos los países sin filtrar. Opción 2 — [Dashboard «EU»](url) — Solo España y Francia."
+NUNCA uses letras (A, B, C) ni emojis de número. Solo números arábigos en negrita.
 
 PASO 2b — FALLBACK OBLIGATORIO (cuando exploración devuelve 0 opciones y hay fallback_sugerencias):
 ⚠ REGLA ABSOLUTA: Si el resultado contiene fallback_sugerencias no vacío, tu ÚNICA respuesta al usuario es la pregunta de confirmación indicada en nota_al_asistente. Nada de recomendaciones, nada de "no puedo", nada de "contacta al administrador". NO menciones dashboards, paneles, datasources ni modelos de datos al usuario.

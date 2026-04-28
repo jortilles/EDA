@@ -116,8 +116,17 @@
 }
 .chat-option-filter-badge {
   flex-shrink: 0;
-  font-size: 0.6rem;
-  color: #f59e0b;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  color: #d97706;
+  font-size: 0.625rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
 }
 
