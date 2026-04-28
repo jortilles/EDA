@@ -555,7 +555,6 @@
     <target>Fondo de etiquetas</target>
   </trans-unit>
   <!-- END SDA CUSTOM -->
-  </body>
   <!-- SDA CUSTOM - Logs viewer labels -->
   <trans-unit id="LogsViewer" datatype="html">
     <source>Visor de logs</source>
