@@ -300,9 +300,28 @@ export class DashboardPage implements OnInit {
       }
       
       
-      if (this.dashboard.config.styles?.palette && this.dashboard.config.styles?.stylesApplied) { 
+      if (this.dashboard.config.styles?.palette && this.dashboard.config.styles?.stylesApplied) {
         this.assignStyles();
         this.stylesProviderService.setStyles(this.styles, true)
+      }
+
+      if (!this.panelTitle) {
+        const defaultColor = '#000000';
+        const defaultFamily = this.stylesProviderService.DEFAULT_FONT_FAMILY;
+        const defaultSize = '20px';
+        this.panelTitle = {
+          color: defaultColor,
+          'font-size': defaultSize,
+          'font-family': defaultFamily,
+          display: 'flex',
+          'justify-content': 'flex-start'
+        };
+        this.panelTabText = {
+          color: defaultColor,
+          'font-size': defaultSize,
+          'font-family': defaultFamily,
+        };
+        this.panelTabAlign = { 'text-align': 'left' };
       }
 
       if (dashboard.config.refreshTime) {
