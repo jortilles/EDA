@@ -59,75 +59,11 @@
   color: #00B0BA;
 }
 
-/* ---- Exploration option cards ---- */
-.chat-option-card {
-  width: 100%;
-  padding: 0.45rem 0.625rem;
-  border-radius: 0.625rem;
-  border: 1px solid #b2ecee;
-  background: linear-gradient(135deg, #f5fdfe 0%, #edf9fa 100%);
-  text-align: left;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: border-color 0.15s, background 0.15s, transform 0.1s;
-  animation: chatMsgIn 0.2s ease both;
-}
-.chat-option-card:hover {
-  border-color: #00B0BA;
-  background: #e0f7f8;
-  transform: translateX(2px);
-}
-.chat-option-num {
-  flex-shrink: 0;
-  width: 1.125rem;
-  height: 1.125rem;
-  border-radius: 50%;
-  background: #00B0BA;
-  color: white;
-  font-size: 0.6rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.chat-option-content {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.0625rem;
-}
-.chat-option-panel {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #1f2937;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.chat-option-dash {
-  font-size: 0.6875rem;
-  color: #6b7280;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.chat-option-filter-badge {
-  flex-shrink: 0;
-  width: 1rem;
-  height: 1rem;
-  border-radius: 50%;
-  background: #fef3c7;
-  border: 1px solid #f59e0b;
+/* ---- Filter warning on option buttons ---- */
+.chat-option-filter-warning {
+  font-size: 0.65rem;
   color: #d97706;
-  font-size: 0.625rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
+  margin-top: 0.125rem;
 }
 
 /* ---- Messages background ---- */

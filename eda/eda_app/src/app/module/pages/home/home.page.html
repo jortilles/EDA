@@ -208,17 +208,10 @@
                   {{ chatFallbackYes }}
                 </button>
               } @else {
-                <!-- Exploration option card -->
-                <button class="chat-option-card" (click)="selectOption(opt)">
-                  <span class="chat-option-num">{{ opt.num }}</span>
-                  <span class="chat-option-content">
-                    <span class="chat-option-panel">{{ opt.panel_titulo || opt.label }}</span>
-                    @if (opt.dashboard_nombre) {
-                      <span class="chat-option-dash">{{ opt.dashboard_nombre }}</span>
-                    }
-                  </span>
-                  @if (opt.tiene_filtros) {
-                    <span class="chat-option-filter-badge" title="Con filtros activos">⚡</span>
+                <button class="chat-suggestion" (click)="selectOption(opt)">
+                  {{ opt.num }}. {{ opt.panel_titulo || opt.label }}
+                  @if (opt.tiene_filtros && opt.filtros_nombres) {
+                    <div class="chat-option-filter-warning">⚠ Filtros aplicados: {{ opt.filtros_nombres }}</div>
                   }
                 </button>
               }
