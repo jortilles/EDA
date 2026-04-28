@@ -1685,6 +1685,7 @@ Responde siempre en el idioma del usuario.`, cache_control: { type: 'ephemeral' 
                             panel_titulo: o.panel_titulo,
                             tiene_filtros: o.tiene_filtros ?? false,
                             dashboard_id: o.dashboard_id,
+                            filtros_nombres: (o.alcance ?? '').replace(/^Filtros:\s*/i, '').replace(/^Sin filtros$/i, '') || '',
                             panel_index: o.panel_index,
                             dashboard_url: o.dashboard_url,
                         }));

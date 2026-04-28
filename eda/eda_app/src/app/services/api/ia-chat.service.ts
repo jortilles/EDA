@@ -15,6 +15,7 @@ export interface ChatOption {
   dashboard_nombre?: string;
   panel_titulo?: string;
   tiene_filtros?: boolean;
+  filtros_nombres?: string;
 }
 
 export interface ChatMessage {
