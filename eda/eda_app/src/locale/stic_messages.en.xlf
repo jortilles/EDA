@@ -431,6 +431,359 @@
     <source>Desbloquear panel</source>
     <target>Unlock panel</target>
   </trans-unit>
+  <!-- SDA CUSTOM - Logs viewer labels -->
+  <trans-unit id="LogsViewer" datatype="html">
+    <source>Visor de logs</source>
+    <target>Logs viewer</target>
+  </trans-unit>
+  <trans-unit id="FilterByPeriod" datatype="html">
+    <source>Periodo:</source>
+    <target>Period:</target>
+  </trans-unit>
+  <trans-unit id="FilterByDate" datatype="html">
+    <source>Fecha:</source>
+    <target>Date:</target>
+  </trans-unit>
+  <trans-unit id="SelectPeriodPlaceholder" datatype="html">
+    <source>Selecciona periodo</source>
+    <target>Select period</target>
+  </trans-unit>
+  <trans-unit id="Today" datatype="html">
+    <source>Hoy</source>
+    <target>Today</target>
+  </trans-unit>
+  <trans-unit id="Yesterday" datatype="html">
+    <source>Ayer</source>
+    <target>Yesterday</target>
+  </trans-unit>
+  <trans-unit id="Last5Days" datatype="html">
+    <source>Últimos 5 días</source>
+    <target>Last 5 days</target>
+  </trans-unit>
+  <trans-unit id="Last10Days" datatype="html">
+    <source>Últimos 10 días</source>
+    <target>Last 10 days</target>
+  </trans-unit>
+  <trans-unit id="Date" datatype="html">
+    <source>Fecha</source>
+    <target>Date</target>
+  </trans-unit>
+  <trans-unit id="Level" datatype="html">
+    <source>Nivel</source>
+    <target>Level</target>
+  </trans-unit>
+  <trans-unit id="Action" datatype="html">
+    <source>Acción</source>
+    <target>Action</target>
+  </trans-unit>
+  <trans-unit id="User" datatype="html">
+    <source>Usuario</source>
+    <target>User</target>
+  </trans-unit>
+  <trans-unit id="IP" datatype="html">
+    <source>IP</source>
+    <target>IP</target>
+  </trans-unit>
+  <trans-unit id="Type" datatype="html">
+    <source>Tipo</source>
+    <target>Type</target>
+  </trans-unit>
+  <trans-unit id="Search" datatype="html">
+    <source>Buscar...</source>
+    <target>Search...</target>
+  </trans-unit>
+  <trans-unit id="FilterColumn" datatype="html">
+    <source>Filtro...</source>
+    <target>Filter...</target>
+  </trans-unit>
+  <trans-unit id="ShowingRecordsTemplate" datatype="html">
+    <source>Mostrando {first} a {last} de {totalRecords} registros</source>
+    <target>Showing {first} to {last} of {totalRecords} records</target>
+  </trans-unit>
+  <trans-unit id="NoLogsFound" datatype="html">
+    <source>No se encontraron logs para esta fecha.</source>
+    <target>No logs found for this date.</target>
+  </trans-unit>
+  <trans-unit id="LogsQueryFailureTitle" datatype="html">
+    <source>Detalles del error de consulta</source>
+    <target>Query failure details</target>
+  </trans-unit>
+  <trans-unit id="LogsReportName" datatype="html">
+    <source>Nombre del informe:</source>
+    <target>Report name:</target>
+  </trans-unit>
+  <trans-unit id="LogsReportId" datatype="html">
+    <source>ID del informe:</source>
+    <target>Report ID:</target>
+  </trans-unit>
+  <trans-unit id="LogsPanelName" datatype="html">
+    <source>Nombre del panel:</source>
+    <target>Panel name:</target>
+  </trans-unit>
+  <trans-unit id="LogsPanelId" datatype="html">
+    <source>ID del panel:</source>
+    <target>Panel ID:</target>
+  </trans-unit>
+  <trans-unit id="LogsMode" datatype="html">
+    <source>Modo:</source>
+    <target>Mode:</target>
+  </trans-unit>
+  <trans-unit id="LogsError" datatype="html">
+    <source>Error:</source>
+    <target>Error:</target>
+  </trans-unit>
+  <trans-unit id="LogsSql" datatype="html">
+    <source>SQL:</source>
+    <target>SQL:</target>
+  </trans-unit>
+  <trans-unit id="LogsCopySql" datatype="html">
+    <source>Copiar SQL</source>
+    <target>Copy SQL</target>
+  </trans-unit>
+  <trans-unit id="LogsViewDetails" datatype="html">
+    <source>Ver detalles</source>
+    <target>View details</target>
+  </trans-unit>
+  <trans-unit id="LogsSqlNotAvailable" datatype="html">
+    <source>SQL no disponible</source>
+    <target>No SQL available</target>
+  </trans-unit>
+  <trans-unit id="LogsSqlCopied" datatype="html">
+    <source>SQL copiado</source>
+    <target>SQL copied</target>
+  </trans-unit>
+  <trans-unit id="LogsCopyFailed" datatype="html">
+    <source>Error al copiar</source>
+    <target>Copy failed</target>
+  </trans-unit>
+  <trans-unit id="HideDashboardAccessed" datatype="html">
+    <source>Mostrar accesos a informes</source>
+    <target>Show report accesses</target>
+  </trans-unit>
+  <!-- SDA CUSTOM - Logs action labels i18n -->
+  <trans-unit id="LogsActionAccess">
+    <source>Access</source>
+    <target>Access</target>
+  </trans-unit>
+  <trans-unit id="LogsActionCreation">
+    <source>Creation</source>
+    <target>Creation</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdate">
+    <source>Update</source>
+    <target>Update</target>
+  </trans-unit>
+  <trans-unit id="LogsActionRename">
+    <source>Rename</source>
+    <target>Rename</target>
+  </trans-unit>
+  <trans-unit id="LogsActionVisibilityChange">
+    <source>Visibility Change</source>
+    <target>Visibility change</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDeletion">
+    <source>Deletion</source>
+    <target>Deletion</target>
+  </trans-unit>
+  <trans-unit id="LogsActionQueryFailure">
+    <source>Query Failure</source>
+    <target>Query failure</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserCreation">
+    <source>User Creation</source>
+    <target>User creation</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserUpdate">
+    <source>User Update</source>
+    <target>User update</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserDeletion">
+    <source>User Deletion</source>
+    <target>User deletion</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserRolesChange">
+    <source>User Roles Change</source>
+    <target>User roles change</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserPasswordChange">
+    <source>User Password Change</source>
+    <target>User password change</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupCreation">
+    <source>Group Creation</source>
+    <target>Group creation</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupUpdate">
+    <source>Group Update</source>
+    <target>Group update</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupDeletion">
+    <source>Group Deletion</source>
+    <target>Group deletion</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupMembershipChange">
+    <source>Group Membership Change</source>
+    <target>Group membership change</target>
+  </trans-unit>
+  <trans-unit id="LogsActionModelUpdateStart">
+    <source>Model Update Start</source>
+    <target>Model update start</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUsersGroupsSync">
+    <source>Users/Groups Sync</source>
+    <target>Users/Groups sync</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUsersGroupsSyncFailure">
+    <source>Users/Groups Sync Failure</source>
+    <target>Users/Groups sync failure</target>
+  </trans-unit>
+  <trans-unit id="LogsActionRoleMapping">
+    <source>Role Mapping</source>
+    <target>Role mapping</target>
+  </trans-unit>
+  <trans-unit id="LogsActionRoleMappingFailure">
+    <source>Role Mapping Failure</source>
+    <target>Role mapping failure</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDataModelBuild">
+    <source>Data Model Build</source>
+    <target>Data model build</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDataModelBuildFailure">
+    <source>Data Model Build Failure</source>
+    <target>Data model build failure</target>
+  </trans-unit>
+  <trans-unit id="LogsActionModelUpdateCompleted">
+    <source>Model Update Completed</source>
+    <target>Model update completed</target>
+  </trans-unit>
+  <trans-unit id="LogsActionModelPushFailure">
+    <source>Model Push Failure</source>
+    <target>Model push failure</target>
+  </trans-unit>
+  <trans-unit id="LogsActionModelUpdateFailure">
+    <source>Model Update Failure</source>
+    <target>Model update failure</target>
+  </trans-unit>
+  <trans-unit id="LogsActionAttempt">
+    <source>Attempt</source>
+    <target>Attempt</target>
+  </trans-unit>
+  <trans-unit id="LogsActionLogin">
+    <source>Login</source>
+    <target>Login</target>
+  </trans-unit>
+  <!-- SDA CUSTOM - Logs action column labels i18n -->
+  <trans-unit id="LogsActionNewLogin">
+    <source>Login</source>
+    <target>Login</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDashboardAccessed">
+    <source>Dashboard Accessed</source>
+    <target>Dashboard accessed</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDashboardCreated">
+    <source>Dashboard Created</source>
+    <target>Dashboard created</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDashboardUpdated">
+    <source>Dashboard Updated</source>
+    <target>Dashboard updated</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDashboardRenamed">
+    <source>Dashboard Renamed</source>
+    <target>Dashboard renamed</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDashboardVisibilityChanged">
+    <source>Dashboard Visibility Changed</source>
+    <target>Dashboard visibility changed</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDashboardDeleted">
+    <source>Dashboard Deleted</source>
+    <target>Dashboard deleted</target>
+  </trans-unit>
+  <trans-unit id="LogsActionPanelQueryFailed">
+    <source>Panel Query Failed</source>
+    <target>Panel query failed</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserCreated">
+    <source>User Created</source>
+    <target>User created</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserUpdated">
+    <source>User Updated</source>
+    <target>User updated</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserDeleted">
+    <source>User Deleted</source>
+    <target>User deleted</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserRolesChanged">
+    <source>User Roles Changed</source>
+    <target>User roles changed</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserPasswordChanged">
+    <source>User Password Changed</source>
+    <target>User password changed</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupCreated">
+    <source>Group Created</source>
+    <target>Group created</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupUpdated">
+    <source>Group Updated</source>
+    <target>Group updated</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupDeleted">
+    <source>Group Deleted</source>
+    <target>Group deleted</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupMembershipChanged">
+    <source>Group Membership Changed</source>
+    <target>Group membership changed</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelStarted">
+    <source>Update Model Started</source>
+    <target>Model update started</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelUsersAndGroupsSynced">
+    <source>Update Model Users/Groups Synced</source>
+    <target>Users/Groups synced</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelUsersAndGroupsSyncFailed">
+    <source>Update Model Users/Groups Sync Failed</source>
+    <target>Users/Groups sync failed</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelRolesMapped">
+    <source>Update Model Roles Mapped</source>
+    <target>Roles mapped</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelRolesMappingFailed">
+    <source>Update Model Roles Mapping Failed</source>
+    <target>Role mapping failed</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelDataModelBuilt">
+    <source>Update Model Data Model Built</source>
+    <target>Data model built</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelDataModelBuildFailed">
+    <source>Update Model Data Model Build Failed</source>
+    <target>Data model build failed</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelCompleted">
+    <source>Update Model Completed</source>
+    <target>Model update completed</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelPushFailed">
+    <source>Update Model Push Failed</source>
+    <target>Model push failed</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelFailed">
+    <source>Update Model Failed</source>
+    <target>Model update failed</target>
+  </trans-unit>
+  <!-- END SDA CUSTOM -->
+  <!-- END SDA CUSTOM -->
 </body>
 </file>
 </xliff>

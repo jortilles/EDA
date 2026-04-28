@@ -1,0 +1,130 @@
+<!-- SDA CUSTOM - Match Home SDA page width/margins (no container side padding) -->
+<div class="logs-sda-page">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0" i18n="@@LogsViewer">Visor de logs</h3>
+            <div class="d-flex align-items-center">
+                <span class="mr-2" i18n="@@FilterByPeriod">Periodo:</span>
+                <p-dropdown [options]="periods" [(ngModel)]="selectedPeriod" (onChange)="onPeriodChange()"
+                    [autoDisplayFirst]="false" [showClear]="false" [placeholder]="selectPeriodPlaceholder"
+                    class="mr-3"></p-dropdown>
+                <!-- SDA CUSTOM - Show date picker restricted to days where logs may exist (last 10 days) -->
+                <span class="mr-2" i18n="@@FilterByDate">Fecha:</span>
+                <p-calendar styleClass="logs-sda-calendar" [(ngModel)]="selectedDate" (onSelect)="onDateChange()"
+                    dateFormat="yy-mm-dd" [showIcon]="true" [firstDayOfWeek]="firstDayOfWeek"
+                    [locale]="calendarLocale" [minDate]="minSelectableDate" [maxDate]="maxSelectableDate"
+                    [readonlyInput]="true" [panelStyleClass]="'logs-sda-calendar-panel'"></p-calendar>
+                <!-- END SDA CUSTOM -->
+            </div>
+            <!-- SDA CUSTOM - Toggle to hide DashboardAccessed entries and global search in header -->
+            <div class="d-flex align-items-center ml-3">
+              <label for="showDashboardAccessed" class="mb-0 ml-2 mr-2 text-white" style="cursor:pointer;white-space:nowrap"
+              i18n="@@HideDashboardAccessed">Mostrar accesos a informes</label>
+              <p-inputSwitch [(ngModel)]="showDashboardAccessed" inputId="showDashboardAccessed" class="mr-3"></p-inputSwitch>
+                <span class="logs-search-wrapper">
+                    <i class="fa fa-search logs-search-icon"></i>
+                    <input #gb pInputText type="text" (input)="dt.filterGlobal(gb.value, 'contains')"
+                        placeholder="Buscar..." i18n-placeholder="@@Search"
+                        class="logs-search-input" />
+                </span>
+            </div>
+            <!-- END SDA CUSTOM -->
+        </div>
+        <div class="card-body">
+            <!-- SDA CUSTOM - Remove log type selector and keep only application log view -->
+            <!-- END SDA CUSTOM -->
+
+            <!-- App Logs Table -->
+            <div>
+                <!-- SDA CUSTOM - Use custom sort to keep correct chronological ordering -->
+                <p-table #dt [value]="filteredLogs" [columns]="cols" [paginator]="true" [rows]="20" [responsive]="true"
+                    [rowsPerPageOptions]="[10, 20, 50, 100, 500]" [showCurrentPageReport]="true"
+                    [currentPageReportTemplate]="showingRecordsTemplate"
+                    [autoLayout]="true" [customSort]="true" (sortFunction)="onTableSort($event)" sortField="date_str" [sortOrder]="-1">
+                <!-- END SDA CUSTOM -->
+                    <ng-template pTemplate="header" let-columns>
+                        <tr>
+                            <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                                {{col.header}}
+                                <p-sortIcon [field]="col.field"></p-sortIcon>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th *ngFor="let col of columns">
+                                <input #f pInputText type="text" (input)="dt.filter(f.value, col.field, 'contains')"
+                                    [placeholder]="filterColumnPlaceholder" class="form-control form-control-sm" />
+                            </th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-rowData let-columns="columns">
+                        <tr>
+                            <td *ngFor="let col of columns">
+                                <span *ngIf="col.field === 'level'" class="badge"
+                                    [ngClass]="{'badge-info': rowData[col.field] === 'info', 'badge-danger': rowData[col.field] === 'error', 'badge-warning': rowData[col.field] === 'warn'}">
+                                    {{rowData[col.field]}}
+                                </span>
+                                <span *ngIf="col.field !== 'level'">
+                                    <!-- SDA CUSTOM - Display date with leading zeros for time -->
+                                    <span *ngIf="col.field === 'date_str'">{{formatDateForDisplay(rowData[col.field])}}</span>
+                                    <!-- SDA CUSTOM - Show action label -->
+                                    <span *ngIf="col.field === 'actionLabel'">{{rowData.actionLabel}}</span>
+                                    <!-- SDA CUSTOM - Show type column with operation + dashboard link -->
+                                    <span *ngIf="col.field === 'typeFilterText'">
+                                        <span>{{rowData.typeOperationLabel}}</span>
+                                        <span *ngIf="rowData.typeDashboardTitle"> - </span>
+                                        <!-- SDA CUSTOM - Open dashboard link in a new tab -->
+                                        <a *ngIf="rowData.typeCanLinkDashboard" [routerLink]="['/dashboard', rowData.typeDashboardId]" target="_blank" rel="noopener noreferrer">{{rowData.typeDashboardTitle}}</a>
+                                        <!-- END SDA CUSTOM -->
+                                        <span *ngIf="!rowData.typeCanLinkDashboard && rowData.typeDashboardTitle">{{rowData.typeDashboardTitle}}</span>
+                                        <!-- SDA CUSTOM - Show deletion detail with recoverable ID -->
+                                        <span *ngIf="(rowData.action === 'DashboardDeleted' || rowData.action === 'UserDeleted') && rowData.typeDetail"> ({{rowData.typeDetail}})</span>
+                                        <!-- END SDA CUSTOM -->
+                                        <!-- SDA CUSTOM - Open popup with failed query details -->
+                                        <button *ngIf="rowData.action === 'PanelQueryFailed'" type="button" class="btn btn-link btn-sm p-0 ml-2" (click)="openQueryErrorDialog(rowData)" i18n="@@LogsViewDetails">Ver detalles</button>
+                                        <!-- END SDA CUSTOM -->
+                                    </span>
+                                    <span *ngIf="col.field !== 'date_str' && col.field !== 'typeFilterText' && col.field !== 'actionLabel'">{{rowData[col.field]}}</span>
+                                    <!-- END SDA CUSTOM -->
+                                    <!-- END SDA CUSTOM -->
+                                </span>
+                            </td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td [attr.colspan]="cols.length" class="text-center" i18n="@@NoLogsFound">No se encontraron
+                                logs para esta fecha.</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+                <!-- SDA CUSTOM - Popup with query failure details -->
+                <p-dialog [header]="queryFailureTitle" [(visible)]="queryErrorDialogVisible" [modal]="true" [closable]="true" [dismissableMask]="true" [style]="{width: '70vw', maxWidth: '980px'}">
+                    <div *ngIf="selectedQueryError" class="query-error-details">
+                        <!-- SDA CUSTOM - i18n labels for query error fields -->
+                        <p><strong i18n="@@LogsReportName">Nombre del informe:</strong> {{selectedQueryError.reportName}}</p>
+                        <p><strong i18n="@@LogsReportId">ID del informe:</strong> {{selectedQueryError.reportId}}</p>
+                        <p><strong i18n="@@LogsPanelName">Nombre del panel:</strong> {{selectedQueryError.panelName}}</p>
+                        <p><strong i18n="@@LogsPanelId">ID del panel:</strong> {{selectedQueryError.panelId}}</p>
+                        <p><strong i18n="@@LogsMode">Modo:</strong> {{selectedQueryError.mode}}</p>
+                        <p><strong i18n="@@LogsError">Error:</strong> {{selectedQueryError.error}}</p>
+                        <!-- END SDA CUSTOM -->
+                        <div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <strong i18n="@@LogsSql">SQL:</strong>
+                                <!-- SDA CUSTOM - Copy SQL button in query error popup -->
+                                <button type="button" class="btn btn-outline-secondary btn-sm" (click)="copyQuerySqlToClipboard()" i18n="@@LogsCopySql">Copiar SQL</button>
+                                <!-- END SDA CUSTOM -->
+                            </div>
+                            <!-- SDA CUSTOM - Copy status feedback -->
+                            <small *ngIf="queryErrorCopyStatus" class="text-muted d-block mt-1">{{queryErrorCopyStatus}}</small>
+                            <!-- END SDA CUSTOM -->
+                            <pre class="mt-2 p-2 bg-light border rounded" style="white-space: pre-wrap; max-height: 300px; overflow-y: auto;">{{selectedQueryError.sql}}</pre>
+                        </div>
+                    </div>
+                </p-dialog>
+                <!-- END SDA CUSTOM -->
+            </div>
+        </div>
+    </div>
+</div>

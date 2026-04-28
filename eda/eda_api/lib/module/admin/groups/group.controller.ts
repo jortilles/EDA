@@ -11,6 +11,7 @@ import * as fs from 'fs';
 import { ActiveDirectoryService } from '../../../services/active-directory/active-directory.service';
 import { GroupActiveDirectoryModel } from 'services/active-directory/model/group-active-directory.model'
 import { groupCollapsed } from 'console'
+/* SDA CUSTOM */ import ServerLogService from '../../../services/server-log/server-log-sda.service';
 
 
 
@@ -163,6 +164,13 @@ export class GroupController {
           ).exec()
         }
 
+        /* SDA CUSTOM */ // SDA CUSTOM - Audit log for group creation and initial membership
+        /* SDA CUSTOM */ insertServerLog(req, 'info', 'GroupCreated', req.user.name, buildGroupLogType(groupSaved && groupSaved._id, groupSaved && groupSaved.name, `members:${(body.users || []).length}`));
+        /* SDA CUSTOM */ if ((body.users || []).length > 0) {
+        /* SDA CUSTOM */   insertServerLog(req, 'info', 'GroupMembershipChanged', req.user.name, buildGroupLogType(groupSaved && groupSaved._id, groupSaved && groupSaved.name, `membership:0->${(body.users || []).length}`));
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ // END SDA CUSTOM
+
         res.status(201).json({ ok: true, group: groupSaved })
       })
     } catch (err) {
@@ -185,6 +193,11 @@ export class GroupController {
           )
         }
 
+        /* SDA CUSTOM */ // SDA CUSTOM - Capture previous group values to audit updates
+        /* SDA CUSTOM */ const previousName = group.name;
+        /* SDA CUSTOM */ const previousUsers = ((group.users || []) as any[]).map(user => user.toString()).sort();
+        /* SDA CUSTOM */ // END SDA CUSTOM
+
         group.name = body.name
         group.users = body.users
         req.params.id === '135792467811111111111110' ? group.role = 'EDA_ADMIN_ROLE' : group.role = 'EDA_USER_ROLE';
@@ -204,6 +217,14 @@ export class GroupController {
             { _id: { $in: body.users } },
             { $push: { role: req.params.id } }
           ).exec()
+
+          /* SDA CUSTOM */ // SDA CUSTOM - Audit log for group update and membership changes
+          /* SDA CUSTOM */ const currentUsers = ((body.users || []) as any[]).map(user => user.toString()).sort();
+          /* SDA CUSTOM */ insertServerLog(req, 'info', 'GroupUpdated', req.user.name, buildGroupLogType(groupSaved && groupSaved._id, groupSaved && groupSaved.name, `updated_from:${previousName}`));
+          /* SDA CUSTOM */ if (!areStringArraysEqual(previousUsers, currentUsers)) {
+          /* SDA CUSTOM */   insertServerLog(req, 'info', 'GroupMembershipChanged', req.user.name, buildGroupLogType(groupSaved && groupSaved._id, groupSaved && groupSaved.name, `membership:${previousUsers.length}->${currentUsers.length}`));
+          /* SDA CUSTOM */ }
+          /* SDA CUSTOM */ // END SDA CUSTOM
 
           return res.status(200).json({ ok: true, group: groupSaved })
         })
@@ -233,6 +254,10 @@ export class GroupController {
           if (!groupDeleted) {
             return next(new HttpException(400, 'Group not exists'))
           }
+
+          /* SDA CUSTOM */ // SDA CUSTOM - Audit log for group deletion
+          /* SDA CUSTOM */ insertServerLog(req, 'info', 'GroupDeleted', req.user.name, buildGroupLogType(groupDeleted && groupDeleted._id, groupDeleted && groupDeleted.name, 'deleted'));
+          /* SDA CUSTOM */ // END SDA CUSTOM
 
           return res.status(200).json({ ok: true })
         }
@@ -277,3 +302,36 @@ export class GroupController {
   }
 
 }
+
+/* SDA CUSTOM */ // SDA CUSTOM - Centralized server log writer for group audit events
+/* SDA CUSTOM */ function insertServerLog(req: Request, level: string, action: string, userMail: string, type: string) {
+/* SDA CUSTOM */   const ip = req.headers['x-forwarded-for'] || req.get('origin');
+/* SDA CUSTOM */   var date = new Date();
+/* SDA CUSTOM */   var month = date.getMonth() + 1;
+/* SDA CUSTOM */   var monthstr = month < 10 ? '0' + month.toString() : month.toString();
+/* SDA CUSTOM */   var day = date.getDate();
+/* SDA CUSTOM */   var daystr = day < 10 ? '0' + day.toString() : day.toString();
+/* SDA CUSTOM */   var date_str = date.getFullYear() + '-' + monthstr + '-' + daystr + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+/* SDA CUSTOM */   ServerLogService.log({ level, action, userMail, ip, type, date_str });
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ // END SDA CUSTOM
+
+/* SDA CUSTOM */ // SDA CUSTOM - Build normalized payload for group audit events
+/* SDA CUSTOM */ function buildGroupLogType(targetGroupId: any, targetGroupName: string, extra?: string) {
+/* SDA CUSTOM */   const safeId = (targetGroupId || '').toString().replace(/\|,\|/g, ' ');
+/* SDA CUSTOM */   const safeName = (targetGroupName || '-').toString().replace(/\|,\|/g, ' ');
+/* SDA CUSTOM */   if (!extra) return `${safeId}--${safeName}`;
+/* SDA CUSTOM */   const safeExtra = extra.toString().replace(/\|,\|/g, ' ');
+/* SDA CUSTOM */   return `${safeId}--${safeName}--${safeExtra}`;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ // END SDA CUSTOM
+
+/* SDA CUSTOM */ // SDA CUSTOM - Compare two string arrays regardless of order
+/* SDA CUSTOM */ function areStringArraysEqual(first: string[], second: string[]) {
+/* SDA CUSTOM */   if ((first || []).length !== (second || []).length) return false;
+/* SDA CUSTOM */   for (let i = 0; i < first.length; i++) {
+/* SDA CUSTOM */     if (first[i] !== second[i]) return false;
+/* SDA CUSTOM */   }
+/* SDA CUSTOM */   return true;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ // END SDA CUSTOM

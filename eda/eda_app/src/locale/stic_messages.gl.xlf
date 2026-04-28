@@ -431,6 +431,359 @@
     <source>Desbloquear panel</source>
     <target>Desbloquear panel</target>
   </trans-unit>
+  <!-- SDA CUSTOM - Logs viewer labels -->
+  <trans-unit id="LogsViewer" datatype="html">
+    <source>Visor de logs</source>
+    <target>Visor de rexistros</target>
+  </trans-unit>
+  <trans-unit id="FilterByPeriod" datatype="html">
+    <source>Periodo:</source>
+    <target>Período:</target>
+  </trans-unit>
+  <trans-unit id="FilterByDate" datatype="html">
+    <source>Fecha:</source>
+    <target>Data:</target>
+  </trans-unit>
+  <trans-unit id="SelectPeriodPlaceholder" datatype="html">
+    <source>Selecciona periodo</source>
+    <target>Selecciona período</target>
+  </trans-unit>
+  <trans-unit id="Today" datatype="html">
+    <source>Hoy</source>
+    <target>Hoxe</target>
+  </trans-unit>
+  <trans-unit id="Yesterday" datatype="html">
+    <source>Ayer</source>
+    <target>Onte</target>
+  </trans-unit>
+  <trans-unit id="Last5Days" datatype="html">
+    <source>Últimos 5 días</source>
+    <target>Últimos 5 días</target>
+  </trans-unit>
+  <trans-unit id="Last10Days" datatype="html">
+    <source>Últimos 10 días</source>
+    <target>Últimos 10 días</target>
+  </trans-unit>
+  <trans-unit id="Date" datatype="html">
+    <source>Fecha</source>
+    <target>Data</target>
+  </trans-unit>
+  <trans-unit id="Level" datatype="html">
+    <source>Nivel</source>
+    <target>Nivel</target>
+  </trans-unit>
+  <trans-unit id="Action" datatype="html">
+    <source>Acción</source>
+    <target>Acción</target>
+  </trans-unit>
+  <trans-unit id="User" datatype="html">
+    <source>Usuario</source>
+    <target>Usuario</target>
+  </trans-unit>
+  <trans-unit id="IP" datatype="html">
+    <source>IP</source>
+    <target>IP</target>
+  </trans-unit>
+  <trans-unit id="Type" datatype="html">
+    <source>Tipo</source>
+    <target>Tipo</target>
+  </trans-unit>
+  <trans-unit id="Search" datatype="html">
+    <source>Buscar...</source>
+    <target>Buscar...</target>
+  </trans-unit>
+  <trans-unit id="FilterColumn" datatype="html">
+    <source>Filtro...</source>
+    <target>Filtro...</target>
+  </trans-unit>
+  <trans-unit id="ShowingRecordsTemplate" datatype="html">
+    <source>Mostrando {first} a {last} de {totalRecords} registros</source>
+    <target>Mostrando {first} a {last} de {totalRecords} rexistros</target>
+  </trans-unit>
+  <trans-unit id="NoLogsFound" datatype="html">
+    <source>No se encontraron logs para esta fecha.</source>
+    <target>Non se atoparon rexistros para esta data.</target>
+  </trans-unit>
+  <trans-unit id="LogsQueryFailureTitle" datatype="html">
+    <source>Detalles del error de consulta</source>
+    <target>Detalles do erro de consulta</target>
+  </trans-unit>
+  <trans-unit id="LogsReportName" datatype="html">
+    <source>Nombre del informe:</source>
+    <target>Nome do informe:</target>
+  </trans-unit>
+  <trans-unit id="LogsReportId" datatype="html">
+    <source>ID del informe:</source>
+    <target>ID do informe:</target>
+  </trans-unit>
+  <trans-unit id="LogsPanelName" datatype="html">
+    <source>Nombre del panel:</source>
+    <target>Nome do panel:</target>
+  </trans-unit>
+  <trans-unit id="LogsPanelId" datatype="html">
+    <source>ID del panel:</source>
+    <target>ID do panel:</target>
+  </trans-unit>
+  <trans-unit id="LogsMode" datatype="html">
+    <source>Modo:</source>
+    <target>Modo:</target>
+  </trans-unit>
+  <trans-unit id="LogsError" datatype="html">
+    <source>Error:</source>
+    <target>Erro:</target>
+  </trans-unit>
+  <trans-unit id="LogsSql" datatype="html">
+    <source>SQL:</source>
+    <target>SQL:</target>
+  </trans-unit>
+  <trans-unit id="LogsCopySql" datatype="html">
+    <source>Copiar SQL</source>
+    <target>Copiar SQL</target>
+  </trans-unit>
+  <trans-unit id="LogsViewDetails" datatype="html">
+    <source>Ver detalles</source>
+    <target>Ver detalles</target>
+  </trans-unit>
+  <trans-unit id="LogsSqlNotAvailable" datatype="html">
+    <source>SQL no disponible</source>
+    <target>SQL non dispoñible</target>
+  </trans-unit>
+  <trans-unit id="LogsSqlCopied" datatype="html">
+    <source>SQL copiado</source>
+    <target>SQL copiado</target>
+  </trans-unit>
+  <trans-unit id="LogsCopyFailed" datatype="html">
+    <source>Error al copiar</source>
+    <target>Erro ao copiar</target>
+  </trans-unit>
+  <trans-unit id="HideDashboardAccessed" datatype="html">
+    <source>Mostrar accesos a informes</source>
+    <target>Mostrar accesos aos informes</target>
+  </trans-unit>
+  <!-- SDA CUSTOM - Logs action labels i18n -->
+  <trans-unit id="LogsActionAccess">
+    <source>Access</source>
+    <target>Acceso</target>
+  </trans-unit>
+  <trans-unit id="LogsActionCreation">
+    <source>Creation</source>
+    <target>Creación</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdate">
+    <source>Update</source>
+    <target>Actualización</target>
+  </trans-unit>
+  <trans-unit id="LogsActionRename">
+    <source>Rename</source>
+    <target>Renomeado</target>
+  </trans-unit>
+  <trans-unit id="LogsActionVisibilityChange">
+    <source>Visibility Change</source>
+    <target>Cambio de visibilidade</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDeletion">
+    <source>Deletion</source>
+    <target>Eliminación</target>
+  </trans-unit>
+  <trans-unit id="LogsActionQueryFailure">
+    <source>Query Failure</source>
+    <target>Fallo de consulta</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserCreation">
+    <source>User Creation</source>
+    <target>Creación de usuario</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserUpdate">
+    <source>User Update</source>
+    <target>Actualización de usuario</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserDeletion">
+    <source>User Deletion</source>
+    <target>Eliminación de usuario</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserRolesChange">
+    <source>User Roles Change</source>
+    <target>Cambio de roles de usuario</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserPasswordChange">
+    <source>User Password Change</source>
+    <target>Cambio de contrasinal de usuario</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupCreation">
+    <source>Group Creation</source>
+    <target>Creación de grupo</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupUpdate">
+    <source>Group Update</source>
+    <target>Actualización de grupo</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupDeletion">
+    <source>Group Deletion</source>
+    <target>Eliminación de grupo</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupMembershipChange">
+    <source>Group Membership Change</source>
+    <target>Cambio de membresía de grupo</target>
+  </trans-unit>
+  <trans-unit id="LogsActionModelUpdateStart">
+    <source>Model Update Start</source>
+    <target>Inicio de actualización do modelo</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUsersGroupsSync">
+    <source>Users/Groups Sync</source>
+    <target>Sincronización de usuarios/grupos</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUsersGroupsSyncFailure">
+    <source>Users/Groups Sync Failure</source>
+    <target>Fallo en sincronización de usuarios/grupos</target>
+  </trans-unit>
+  <trans-unit id="LogsActionRoleMapping">
+    <source>Role Mapping</source>
+    <target>Mapeo de roles</target>
+  </trans-unit>
+  <trans-unit id="LogsActionRoleMappingFailure">
+    <source>Role Mapping Failure</source>
+    <target>Fallo en mapeo de roles</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDataModelBuild">
+    <source>Data Model Build</source>
+    <target>Construción do modelo de datos</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDataModelBuildFailure">
+    <source>Data Model Build Failure</source>
+    <target>Fallo en construción do modelo de datos</target>
+  </trans-unit>
+  <trans-unit id="LogsActionModelUpdateCompleted">
+    <source>Model Update Completed</source>
+    <target>Actualización do modelo completada</target>
+  </trans-unit>
+  <trans-unit id="LogsActionModelPushFailure">
+    <source>Model Push Failure</source>
+    <target>Fallo en push do modelo</target>
+  </trans-unit>
+  <trans-unit id="LogsActionModelUpdateFailure">
+    <source>Model Update Failure</source>
+    <target>Fallo en actualización do modelo</target>
+  </trans-unit>
+  <trans-unit id="LogsActionAttempt">
+    <source>Attempt</source>
+    <target>Intento</target>
+  </trans-unit>
+  <trans-unit id="LogsActionLogin">
+    <source>Login</source>
+    <target>Inicio de sesión</target>
+  </trans-unit>
+  <!-- SDA CUSTOM - Logs action column labels i18n -->
+  <trans-unit id="LogsActionNewLogin">
+    <source>Login</source>
+    <target>Inicio de sesión</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDashboardAccessed">
+    <source>Dashboard Accessed</source>
+    <target>Acceso a informe</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDashboardCreated">
+    <source>Dashboard Created</source>
+    <target>Informe creado</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDashboardUpdated">
+    <source>Dashboard Updated</source>
+    <target>Informe actualizado</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDashboardRenamed">
+    <source>Dashboard Renamed</source>
+    <target>Informe renomeado</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDashboardVisibilityChanged">
+    <source>Dashboard Visibility Changed</source>
+    <target>Visibilidade do informe cambiada</target>
+  </trans-unit>
+  <trans-unit id="LogsActionDashboardDeleted">
+    <source>Dashboard Deleted</source>
+    <target>Informe eliminado</target>
+  </trans-unit>
+  <trans-unit id="LogsActionPanelQueryFailed">
+    <source>Panel Query Failed</source>
+    <target>Consulta do panel fallida</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserCreated">
+    <source>User Created</source>
+    <target>Usuario creado</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserUpdated">
+    <source>User Updated</source>
+    <target>Usuario actualizado</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserDeleted">
+    <source>User Deleted</source>
+    <target>Usuario eliminado</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserRolesChanged">
+    <source>User Roles Changed</source>
+    <target>Roles de usuario cambiados</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUserPasswordChanged">
+    <source>User Password Changed</source>
+    <target>Contrasinal de usuario cambiada</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupCreated">
+    <source>Group Created</source>
+    <target>Grupo creado</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupUpdated">
+    <source>Group Updated</source>
+    <target>Grupo actualizado</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupDeleted">
+    <source>Group Deleted</source>
+    <target>Grupo eliminado</target>
+  </trans-unit>
+  <trans-unit id="LogsActionGroupMembershipChanged">
+    <source>Group Membership Changed</source>
+    <target>Membresía de grupo cambiada</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelStarted">
+    <source>Update Model Started</source>
+    <target>Actualización do modelo iniciada</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelUsersAndGroupsSynced">
+    <source>Update Model Users/Groups Synced</source>
+    <target>Usuarios/Grupos sincronizados</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelUsersAndGroupsSyncFailed">
+    <source>Update Model Users/Groups Sync Failed</source>
+    <target>Fallo en sincronización de Usuarios/Grupos</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelRolesMapped">
+    <source>Update Model Roles Mapped</source>
+    <target>Roles mapeados</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelRolesMappingFailed">
+    <source>Update Model Roles Mapping Failed</source>
+    <target>Fallo en mapeo de roles</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelDataModelBuilt">
+    <source>Update Model Data Model Built</source>
+    <target>Modelo de datos construído</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelDataModelBuildFailed">
+    <source>Update Model Data Model Build Failed</source>
+    <target>Fallo en construción do modelo de datos</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelCompleted">
+    <source>Update Model Completed</source>
+    <target>Actualización do modelo completada</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelPushFailed">
+    <source>Update Model Push Failed</source>
+    <target>Fallo en push do modelo</target>
+  </trans-unit>
+  <trans-unit id="LogsActionUpdateModelFailed">
+    <source>Update Model Failed</source>
+    <target>Fallo en actualización do modelo</target>
+  </trans-unit>
+  <!-- END SDA CUSTOM -->
+  <!-- END SDA CUSTOM -->
 </body>
 </file>
 </xliff>

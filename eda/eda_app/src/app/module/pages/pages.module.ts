@@ -39,6 +39,7 @@ import { MailManagementComponent } from './mail-management/mail-management.compo
 import {DashboardMailDialogComponent} from './dashboard/email-dialog/dashboard-mail-dialog.component';
 import { UrlsActionComponent } from './dashboard/urls-action/urls-action.component';
 import { LogsComponent } from './logs/logs.component';
+/* SDA CUSTOM */ import { LogsSdaComponent } from './logs-sda/logs-sda.component';
 
 
 /*SDA CUSTOM*/ import {AboutComponent} from './about/about.component';
@@ -100,6 +101,7 @@ import { CalculatedColumnEditDialogComponent } from './data-sources/data-source-
         EditStylesDialogComponent,
         UrlsActionComponent,
         LogsComponent,
+        /*SDA CUSTOM*/LogsSdaComponent,
         /*SDA CUSTOM*/ HomeSdaComponent,
         /*SDA CUSTOM*/ AboutComponent,
         /*SDA CUSTOM*/ CalculatedColumnEditDialogComponent

@@ -1,0 +1,112 @@
+.raw-logs-container {
+    border: 1px solid #444;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
+
+/* SDA CUSTOM - Keep same page dimensions/margins as Home SDA (full width, no container gutters) */
+.logs-sda-page {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.logs-sda-page .card {
+    margin: 0;
+    border-radius: 0;
+}
+/* END SDA CUSTOM */
+
+/* SDA CUSTOM - Ensure high contrast between title and header background */
+.card-header {
+    background-color: #242A33 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.card-header h3,
+.card-header span {
+    color: #ffffff !important;
+}
+
+.card-header h3 {
+    font-weight: 700;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.45);
+}
+/* END SDA CUSTOM */
+
+.badge-info {
+    background-color: #17a2b8;
+}
+
+.badge-danger {
+    background-color: #dc3545;
+}
+
+.badge-warning {
+    background-color: #ffc107;
+}
+
+.btn-group .btn {
+    min-width: 150px;
+}
+
+th {
+    white-space: nowrap;
+}
+
+::ng-deep .p-calendar .p-inputtext {
+    width: 200px;
+}
+
+/* SDA CUSTOM - Fix search icon vertical/horizontal alignment in logs table caption */
+.logs-search-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.logs-search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    line-height: 1;
+    margin-top: 0 !important;
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+.logs-search-input {
+    min-width: 220px;
+    padding-left: 2rem;
+    height: 36px;
+}
+/* END SDA CUSTOM */
+
+/* SDA CUSTOM - Keep calendar popup inside viewport by anchoring it to right side of control */
+:host ::ng-deep .logs-sda-calendar {
+    position: relative;
+}
+
+:host ::ng-deep .logs-sda-calendar .p-datepicker,
+:host ::ng-deep .logs-sda-calendar .ui-datepicker,
+:host ::ng-deep .logs-sda-calendar-panel {
+    left: auto !important;
+    right: 0 !important;
+    transform-origin: top right;
+}
+/* END SDA CUSTOM */
+
+/* SDA CUSTOM - Subtle hover feedback for active row in logs table */
+::ng-deep .p-table .p-datatable-tbody > tr,
+::ng-deep .p-datatable .p-datatable-tbody > tr,
+::ng-deep .ui-table .ui-table-tbody > tr {
+    transition: background-color 0.15s ease-in-out;
+}
+
+::ng-deep .p-table .p-datatable-tbody > tr:hover,
+::ng-deep .p-datatable .p-datatable-tbody > tr:hover,
+::ng-deep .ui-table .ui-table-tbody > tr:hover {
+    background-color: rgba(23, 162, 184, 0.14) !important;
+}
+/* END SDA CUSTOM */

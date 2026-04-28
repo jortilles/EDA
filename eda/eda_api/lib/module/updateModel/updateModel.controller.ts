@@ -9,6 +9,7 @@ import { pushModelToMongo } from "./service/push.Model.to.Mongo";
 import path from 'path';
 import fs from "fs";
 import { CleanModel } from "./service/cleanModel";
+/* SDA CUSTOM */ import ServerLogService from '../../services/server-log/server-log-sda.service';
 
 const sinergiaDatabase = require("../../../config/sinergiacrm.config");
 let mariadbModule: any;
@@ -36,6 +37,9 @@ export class updateModel {
     const mariadb = await getMariaDb();
     connection = await mariadb.createConnection(sinergiaDatabase.sinergiaConn);
     console.timeLog("UpdateModel", "(Create connection)");
+    /* SDA CUSTOM */ // SDA CUSTOM - Audit updateModel start event
+    /* SDA CUSTOM */ insertServerLog(req, 'info', 'UpdateModelStarted', getUpdateModelActor(req), buildUpdateModelLogType('start', 'connection_opened'));
+    /* SDA CUSTOM */ // END SDA CUSTOM
 
     try {
       /** Checks if columns and tables defined in the model exist */
@@ -191,8 +195,14 @@ export class updateModel {
                                                 roles
                                               );
                                               console.timeLog("UpdateModel", "(Syncs users and groups)");
+                                              /* SDA CUSTOM */ // SDA CUSTOM - Audit users/groups sync result
+                                              /* SDA CUSTOM */ insertServerLog(req, 'info', 'UpdateModelUsersAndGroupsSynced', getUpdateModelActor(req), buildUpdateModelLogType('users_groups', `users:${(users_crm || []).length}--roles:${(roles || []).length}`));
+                                              /* SDA CUSTOM */ // END SDA CUSTOM
                                             } catch (e) {
                                               console.log("Error 1", e);
+                                              /* SDA CUSTOM */ // SDA CUSTOM - Audit users/groups sync failure
+                                              /* SDA CUSTOM */ insertServerLog(req, 'error', 'UpdateModelUsersAndGroupsSyncFailed', getUpdateModelActor(req), buildUpdateModelLogType('users_groups', stringifyLogError(e)));
+                                              /* SDA CUSTOM */ // END SDA CUSTOM
                                               res.status(500).json({ status: "ko" });
                                             }
 
@@ -205,13 +215,20 @@ export class updateModel {
                                                 dynamicPermisssionsForUser
                                               );
                                               console.timeLog("UpdateModel", "(Converts CRM roles to EDA)");
+                                              /* SDA CUSTOM */ // SDA CUSTOM - Audit granted roles conversion result
+                                              /* SDA CUSTOM */ insertServerLog(req, 'info', 'UpdateModelRolesMapped', getUpdateModelActor(req), buildUpdateModelLogType('roles', `granted_roles:${(grantedRolesAt || []).length}`));
+                                              /* SDA CUSTOM */ // END SDA CUSTOM
                                             } catch (e) {
                                               console.log("Error 2", e);
+                                              /* SDA CUSTOM */ // SDA CUSTOM - Audit granted roles conversion failure
+                                              /* SDA CUSTOM */ insertServerLog(req, 'error', 'UpdateModelRolesMappingFailed', getUpdateModelActor(req), buildUpdateModelLogType('roles', stringifyLogError(e)));
+                                              /* SDA CUSTOM */ // END SDA CUSTOM
                                               res.status(500).json({ status: "ko" });
                                             }
 
                                             try {
-                                              modelToExport = updateModel.createModel(
+                                              /* SDA CUSTOM */ modelToExport = updateModel.createModel(
+                                                /* SDA CUSTOM */ req,
                                                 tables,
                                                 columns,
                                                 relations,
@@ -221,8 +238,14 @@ export class updateModel {
                                                 cache_config_SDA
                                               );
                                               console.timeLog("UpdateModel", "(Creating Model)");
+                                              /* SDA CUSTOM */ // SDA CUSTOM - Audit model build stage completion
+                                              /* SDA CUSTOM */ insertServerLog(req, 'info', 'UpdateModelDataModelBuilt', getUpdateModelActor(req), buildUpdateModelLogType('build_model', `tables:${(tables || []).length}--columns:${(columns || []).length}--relations:${(relations || []).length}`));
+                                              /* SDA CUSTOM */ // END SDA CUSTOM
                                             } catch (e) {
                                               console.log("Error 3", e);
+                                              /* SDA CUSTOM */ // SDA CUSTOM - Audit model build stage failure
+                                              /* SDA CUSTOM */ insertServerLog(req, 'error', 'UpdateModelDataModelBuildFailed', getUpdateModelActor(req), buildUpdateModelLogType('build_model', stringifyLogError(e)));
+                                              /* SDA CUSTOM */ // END SDA CUSTOM
                                               res.status(500).json({ status: "ko" });
                                             }
                                           });
@@ -239,6 +262,9 @@ export class updateModel {
         });
     } catch (e) {
       console.log("Error : ", e);
+      /* SDA CUSTOM */ // SDA CUSTOM - Audit unhandled updateModel failure
+      /* SDA CUSTOM */ insertServerLog(req, 'error', 'UpdateModelFailed', getUpdateModelActor(req), buildUpdateModelLogType('unhandled', stringifyLogError(e)));
+      /* SDA CUSTOM */ // END SDA CUSTOM
     }
   }
   
@@ -501,7 +527,8 @@ export class updateModel {
     return destGrantedRoles;
   }
 
-  static createModel(
+  /* SDA CUSTOM */ static createModel(
+    /* SDA CUSTOM */ req: Request,
     tables: any,
     columns: any,
     relations: any,
@@ -549,7 +576,7 @@ export class updateModel {
       destTables.push(tabla);
     }
 
-    this.extractJsonModelAndPushToMongo(destTables, grantedRoles, res, cache_configSDA);
+    /* SDA CUSTOM */ this.extractJsonModelAndPushToMongo(req, destTables, grantedRoles, res, cache_configSDA);
 
     return destTables;
   }
@@ -671,7 +698,7 @@ export class updateModel {
   }
 
   /** Formats and pushes the final model to MongoDB */
-  static async extractJsonModelAndPushToMongo(tables: any, grantedRoles: any, res: any, cache_configSDA: any) {
+  /* SDA CUSTOM */ static async extractJsonModelAndPushToMongo(req: Request, tables: any, grantedRoles: any, res: any, cache_configSDA: any) {
     // Format tables as JSON
     console.timeLog("UpdateModel", "(Start JSON formatting)");
     
@@ -732,10 +759,51 @@ export class updateModel {
       });
       console.timeLog("UpdateModel", "(Metadata file written)");
       await new pushModelToMongo().pushModel(main_model, res);
+      /* SDA CUSTOM */ // SDA CUSTOM - Audit final updateModel success
+      /* SDA CUSTOM */ insertServerLog(req, 'info', 'UpdateModelCompleted', getUpdateModelActor(req), buildUpdateModelLogType('completed', `tables:${(tables || []).length}--granted_roles:${(grantedRoles || []).length}`));
+      /* SDA CUSTOM */ // END SDA CUSTOM
       res.status(200).json({ status: "ok" });
     } catch (e) {
       console.log("Error :", e);
+      /* SDA CUSTOM */ // SDA CUSTOM - Audit final updateModel push failure
+      /* SDA CUSTOM */ insertServerLog(req, 'error', 'UpdateModelPushFailed', getUpdateModelActor(req), buildUpdateModelLogType('push_model', stringifyLogError(e)));
+      /* SDA CUSTOM */ // END SDA CUSTOM
       res.status(500).json({ status: "ko" });
     }
   }
 }
+
+/* SDA CUSTOM */ // SDA CUSTOM - Helpers to standardize updateModel audit payloads
+/* SDA CUSTOM */ function sanitizeLogSegment(value: any) {
+/* SDA CUSTOM */   return (value || '-').toString().replace(/\|,\|/g, ' ').replace(/\r|\n/g, ' ').replace(/--/g, '-');
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ function buildUpdateModelLogType(stage: string, detail?: string) {
+/* SDA CUSTOM */   const safeStage = sanitizeLogSegment(stage);
+/* SDA CUSTOM */   if (!detail) return `${safeStage}`;
+/* SDA CUSTOM */   const safeDetail = sanitizeLogSegment(detail);
+/* SDA CUSTOM */   return `${safeStage}--${safeDetail}`;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ function stringifyLogError(error: any) {
+/* SDA CUSTOM */   if (!error) return 'unknown_error';
+/* SDA CUSTOM */   if (error.message) return sanitizeLogSegment(error.message);
+/* SDA CUSTOM */   return sanitizeLogSegment(error.toString());
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ function getUpdateModelActor(req: Request) {
+/* SDA CUSTOM */   const requestUser = (req as any) && (req as any).user && (req as any).user.name ? (req as any).user.name : undefined;
+/* SDA CUSTOM */   return sanitizeLogSegment(requestUser || 'system-update-model');
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ function insertServerLog(req: Request, level: string, action: string, userMail: string, type: string) {
+/* SDA CUSTOM */   const ip = req.headers['x-forwarded-for'] || req.get('origin');
+/* SDA CUSTOM */   var date = new Date();
+/* SDA CUSTOM */   var month = date.getMonth() + 1;
+/* SDA CUSTOM */   var monthstr = month < 10 ? "0" + month.toString() : month.toString();
+/* SDA CUSTOM */   var day = date.getDate();
+/* SDA CUSTOM */   var daystr = day < 10 ? "0" + day.toString() : day.toString();
+/* SDA CUSTOM */   var date_str = date.getFullYear() + "-" + monthstr + "-" + daystr + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+/* SDA CUSTOM */   ServerLogService.log({ level, action, userMail, ip, type, date_str });
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ // END SDA CUSTOM

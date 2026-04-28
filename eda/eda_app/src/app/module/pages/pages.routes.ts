@@ -12,6 +12,7 @@ import { ModelSettingsComponent } from './model-settings/model-settings.componen
 /*SDA CUSTOM*/import { HomeSdaComponent } from './home-sda/home-sda.component';
 /*SDA CUSTOM*/ import { AboutComponent } from './about/about.component';
 import { LogsComponent } from './logs/logs.component';
+/* SDA CUSTOM */ import { LogsSdaComponent } from './logs-sda/logs-sda.component';
 
 
 // Guard
@@ -31,14 +32,15 @@ const pagesRoutes: Routes = [
     { path: 'data-source/:id', component: DataSourceListComponent, canActivate: [VerifyTokenGuard], runGuardsAndResolvers: 'paramsChange' },
 
     { path: 'groups-management', component: GroupListComponent, canActivate: [VerifyTokenGuard] },
-    { path: 'users-management', component: UsersLlistaComponent, canActivate: [VerifyTokenGuard]},
-    { path: 'models-management', component: ModelSettingsComponent, canActivate:[VerifyTokenGuard]},
-    { path: 'alerts-management', component: AlertsManagementComponent, canActivate:[VerifyTokenGuard]},
-    { path: 'mail-management', component: MailManagementComponent, canActivate:[VerifyTokenGuard]},
+    { path: 'users-management', component: UsersLlistaComponent, canActivate: [VerifyTokenGuard] },
+    { path: 'models-management', component: ModelSettingsComponent, canActivate: [VerifyTokenGuard] },
+    { path: 'alerts-management', component: AlertsManagementComponent, canActivate: [VerifyTokenGuard] },
+    { path: 'mail-management', component: MailManagementComponent, canActivate: [VerifyTokenGuard] },
     /*SDA CUSTOM*/ { path: 'about', component: AboutComponent, canActivate: [VerifyTokenGuard] },
     /*SDA CUSTOM*/ { path: 'home', component: HomeSdaComponent, canActivate: [VerifyTokenGuard] },
-    { path: 'logs', component: LogsComponent, canActivate:[VerifyTokenGuard]},
+    /*SDA CUSTOM*/ { path: 'logs-sda', component: LogsSdaComponent, canActivate: [VerifyTokenGuard] },
+    { path: 'logs', component: LogsComponent, canActivate: [VerifyTokenGuard] },
     { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 
-export const PAGES_ROUTES = RouterModule.forChild( pagesRoutes );
+export const PAGES_ROUTES = RouterModule.forChild(pagesRoutes);

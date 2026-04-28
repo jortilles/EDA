@@ -3,7 +3,9 @@ import { HttpException } from '../../global/model/index';
 import { ActiveDirectoryService } from '../../../services/active-directory/active-directory.service';
 import User, { IUser } from './model/user.model';
 import Group, { IGroup } from '../groups/model/group.model';
-import ServerLogService from '../../../services/server-log/server-log.service';
+// SDA CUSTOM - Use SDA daily log service instead of winston-based service
+import ServerLogService from '../../../services/server-log/server-log-sda.service';
+// END SDA CUSTOM
 import * as path from 'path';
 import * as fs from 'fs';
 import { QueryOptions } from 'mongoose';
@@ -30,8 +32,6 @@ export class UserController {
             let token: string;
             let user: IUser = new User({ name: '', email: '', password: '', img: '', role: [] });
 
-            insertServerLog(req, 'info', 'newLogin', body.email, 'attempt');
-
             // Busca artxiu de configuracio activedirectory
             const ldapPath = path.resolve(__dirname, `../../../../config/activedirectory.json`);
 
@@ -49,7 +49,7 @@ export class UserController {
                                     Object.assign(user, userEda);
                                     user.password = ':)';
                                     token = await jwt.sign({ user }, SEED, { expiresIn: 14400 }); // 4 hours
-                                    insertServerLog(req, 'info', 'newLogin', body.email, 'login');
+                                    insertServerLog(req, 'info', 'newLogin', user.name.toString(), 'login');
                                     return res.status(200).json({ user, token: token, id: user._id });
 
                     } 
@@ -144,7 +144,7 @@ export class UserController {
                     user.password = ':)';
                     token = await jwt.sign({ user }, SEED, { expiresIn: 14400 }); // 4 hours
 
-                    insertServerLog(req, 'info', 'newLogin', body.email, 'login');
+                    insertServerLog(req, 'info', 'newLogin', user.name.toString(), 'login');
 
                     return res.status(200).json({ user, token: token, id: user._id });
                 
@@ -204,6 +204,10 @@ export class UserController {
                 await Group.updateMany({}, { $pull: { users: userSaved._id } });
                 // Introduim de nou els grups seleccionat al usuari actualitzat
                 await Group.updateMany({ _id: { $in: body.role } }, { $push: { users: userSaved._id } }).exec();
+
+                /* SDA CUSTOM */ // SDA CUSTOM - Audit log for user creation
+                /* SDA CUSTOM */ insertServerLog(req, 'info', 'UserCreated', req.user.name, buildUserLogType(userSaved && userSaved._id, userSaved && userSaved.email, userSaved && userSaved.name, `roles:${(body.role || []).length}`));
+                /* SDA CUSTOM */ // END SDA CUSTOM
 
                 return res.status(201).json({ ok: true, user: userSaved, userToken: req.user });
             });
@@ -285,6 +289,11 @@ export class UserController {
                 if (err) {
                     return next(new HttpException(500, 'User not found with this id'));
                 }
+                /* SDA CUSTOM */ // SDA CUSTOM - Prevent null dereference when user id does not exist
+                /* SDA CUSTOM */ if (!user) {
+                /* SDA CUSTOM */     return next(new HttpException(400, 'User not found with this id'));
+                /* SDA CUSTOM */ }
+                /* SDA CUSTOM */ // END SDA CUSTOM
                 let options:QueryOptions = {};
                 Group.find({ _id: { $in: user.role } }, 'name role', options, (err, groups) => {
                     if (err) {
@@ -311,6 +320,11 @@ export class UserController {
                 if (err) {
                     return next(new HttpException(500, 'User not found with this id'));
                 }
+                /* SDA CUSTOM */ // SDA CUSTOM - Prevent null dereference when user id does not exist
+                /* SDA CUSTOM */ if (!user) {
+                /* SDA CUSTOM */     return next(new HttpException(400, 'User not found with this id'));
+                /* SDA CUSTOM */ }
+                /* SDA CUSTOM */ // END SDA CUSTOM
                 let options:QueryOptions = {};
                 Group.find({ _id: { $in: user.role } }, 'name role',options, (err, groups) => {
                     if (err) {
@@ -334,6 +348,11 @@ export class UserController {
                 if (err) {
                     return next(new HttpException(500, 'User not found with this id'));
                 }
+                /* SDA CUSTOM */ // SDA CUSTOM - Prevent null dereference when user id does not exist
+                /* SDA CUSTOM */ if (!user) {
+                /* SDA CUSTOM */     return next(new HttpException(400, 'User not found with this id'));
+                /* SDA CUSTOM */ }
+                /* SDA CUSTOM */ // END SDA CUSTOM
                 let options:QueryOptions = {};
                 Group.find({ _id: { $in: user.role } }, 'name role',options, (err, groups) => {
                     if (err) {
@@ -378,6 +397,13 @@ export class UserController {
                     return next(new HttpException(400, `User with this id not found`));
                 }
 
+                /* SDA CUSTOM */ // SDA CUSTOM - Capture previous user values to audit sensitive changes
+                /* SDA CUSTOM */ const previousEmail = user.email;
+                /* SDA CUSTOM */ const previousName = user.name;
+                /* SDA CUSTOM */ const previousRoles = ((user.role || []) as any[]).map(role => String(role)).filter(r => r).sort();
+                /* SDA CUSTOM */ const isPasswordUpdated = !!(body.password && body.password !== '');
+                /* SDA CUSTOM */ // END SDA CUSTOM
+
                 user.name = body.name;
                 user.email = body.email;
                 user.role = body.role;
@@ -398,6 +424,19 @@ export class UserController {
                     await Group.updateMany({}, { $pull: { users: { $in: [req.params.id] } } }).exec();
                     // Introduim de nou els grups seleccionat al usuari actualitzat
                     await Group.updateMany({ _id: { $in: body.role } }, { $push: { users: req.params.id } }).exec();
+
+                    /* SDA CUSTOM */ // SDA CUSTOM - Audit log for user update and role/password changes
+                    /* SDA CUSTOM */ const currentRoles = body.role !== undefined
+                    /* SDA CUSTOM */     ? ((body.role || []) as any[]).map(role => role && role._id ? String(role._id) : String(role)).filter(r => r).sort()
+                    /* SDA CUSTOM */     : previousRoles;
+                    /* SDA CUSTOM */ insertServerLog(req, 'info', 'UserUpdated', req.user.name, buildUserLogType(userSaved && userSaved._id, userSaved && userSaved.email, userSaved && userSaved.name, `updated_from:${previousEmail}`));
+                    /* SDA CUSTOM */ if (!areStringArraysEqual(previousRoles, currentRoles)) {
+                    /* SDA CUSTOM */     insertServerLog(req, 'info', 'UserRolesChanged', req.user.name, buildUserLogType(userSaved && userSaved._id, userSaved && userSaved.email, userSaved && userSaved.name, `roles:${previousRoles.length}->${currentRoles.length}`));
+                    /* SDA CUSTOM */ }
+                    /* SDA CUSTOM */ if (isPasswordUpdated) {
+                    /* SDA CUSTOM */     insertServerLog(req, 'info', 'UserPasswordChanged', req.user.name, buildUserLogType(userSaved && userSaved._id, userSaved && userSaved.email, userSaved && userSaved.name, `password_changed_for:${previousName}`));
+                    /* SDA CUSTOM */ }
+                    /* SDA CUSTOM */ // END SDA CUSTOM
 
                     userSaved.password = ':)';
 
@@ -421,6 +460,10 @@ export class UserController {
                 if (!userRemoved) {
                     return next(new HttpException(400, 'Not exists user with this id'));
                 }
+
+                /* SDA CUSTOM */ // SDA CUSTOM - Audit log for user deletion with recoverable ID
+                /* SDA CUSTOM */ insertServerLog(req, 'info', 'UserDeleted', req.user.name, buildUserLogType(userRemoved && userRemoved._id, userRemoved && userRemoved.email, userRemoved && userRemoved.name, `deleted--id:${userRemoved && userRemoved._id}`));
+                /* SDA CUSTOM */ // END SDA CUSTOM
 
                 return res.status(200).json({ ok: true, user: userRemoved });
             });
@@ -465,3 +508,24 @@ function insertServerLog(req: Request, level: string, action: string, userMail: 
     var date_str = date.getFullYear() + "-" + monthstr + "-" + daystr + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     ServerLogService.log({ level, action, userMail, ip, type, date_str});
 }
+
+/* SDA CUSTOM */ // SDA CUSTOM - Build normalized payload for user audit events
+/* SDA CUSTOM */ function buildUserLogType(targetUserId: any, targetUserEmail: any, targetUserName: any, extra?: any) {
+/* SDA CUSTOM */     const safeId = (targetUserId || '').toString().replace(/\|,\|/g, ' ');
+/* SDA CUSTOM */     const safeEmail = (targetUserEmail || '-').toString().replace(/\|,\|/g, ' ');
+/* SDA CUSTOM */     const safeName = (targetUserName || '-').toString().replace(/\|,\|/g, ' ');
+/* SDA CUSTOM */     if (!extra) return `${safeId}--${safeEmail}--${safeName}`;
+/* SDA CUSTOM */     const safeExtra = extra.toString().replace(/\|,\|/g, ' ');
+/* SDA CUSTOM */     return `${safeId}--${safeEmail}--${safeName}--${safeExtra}`;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ // END SDA CUSTOM
+
+/* SDA CUSTOM */ // SDA CUSTOM - Compare two string arrays regardless of order
+/* SDA CUSTOM */ function areStringArraysEqual(first: string[], second: string[]) {
+/* SDA CUSTOM */     if ((first || []).length !== (second || []).length) return false;
+/* SDA CUSTOM */     for (let i = 0; i < first.length; i++) {
+/* SDA CUSTOM */         if (first[i] !== second[i]) return false;
+/* SDA CUSTOM */     }
+/* SDA CUSTOM */     return true;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ // END SDA CUSTOM
