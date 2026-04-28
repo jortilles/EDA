@@ -35,6 +35,185 @@ const eda_api_config = require('../../../config/eda_api_config');
 const MCP_EMAIL: string = eda_api_config.mcp_email || '';
 const MCP_PASSWORD: string = eda_api_config.mcp_password || '';
 
+
+// ============================================================
+// TIPOS Y FUNCIONES DE MEJORA
+// ============================================================
+
+interface ToolResponse {
+    data: any[];
+    opciones_unicas: Array<{opcion_num: number; dashboard_nombre: string; panel_titulo: string; tiene_filtros?: boolean; datasource_id?: string; dashboard_id?: string; panel_index?: number;}>;
+    fallback_sugerencias: any[];
+    error: string | null;
+    filters_applied: Record<string, any>;
+    raw_text: string;
+}
+
+interface ChatContext {
+    requestId: string;
+    userId: string;
+    userEmail: string;
+    userRole: string;
+    query: string;
+    startTime: Date;
+    selectedDashboards: string[];
+    appliedFilters: Record<string, any>;
+    toolsCalled: Array<{name: string; params: any; success: boolean; duration: number; retries: number; error?: string;}>;
+    responseGenerated: boolean;
+    totalDuration: number;
+}
+
+function parseToolResponse(resultText: string): ToolResponse {
+    const response: ToolResponse = {data: [], opciones_unicas: [], fallback_sugerencias: [], error: null, filters_applied: {}, raw_text: resultText};
+    if (!resultText || resultText.trim() === '') {response.error = 'Respuesta vacía del tool'; return response;}
+    try {
+        const parsed = JSON.parse(resultText);
+        if (Array.isArray(parsed.opciones_unicas)) {response.opciones_unicas = parsed.opciones_unicas.filter((o: any) => o.opcion_num && (o.dashboard_nombre || o.dashboard_id) && (o.panel_titulo || o.panel_index !== undefined));}
+        if (Array.isArray(parsed.fallback_sugerencias)) {response.fallback_sugerencias = parsed.fallback_sugerencias.filter((s: any) => s.datasource_id && (s.campos_relevantes || s.nombre));}
+        response.data = parsed.data || [];
+        response.filters_applied = parsed.filters_applied || {};
+        response.error = parsed.error || null;
+        if (response.data.length === 0 && !response.error) {response.error = 'Sin datos para los parámetros especificados';}
+    } catch (parseErr: any) {response.error = `Error parseando: ${parseErr.message}`;}
+    return response;
+}
+
+function extractTextContent(result: any): string {
+    try {
+        if (!result || !result.content) return '';
+        const textContent = (result.content as any[]).filter((c: any) => c.type === 'text').map((c: any) => c.text).join('\n').trim();
+        if (!textContent) return JSON.stringify({error: 'Empty response'});
+        return textContent;
+    } catch (err: any) {return JSON.stringify({error: `Extraction failed: ${err.message}`});}
+}
+
+function calculateDynamicTimeout(params: any): number {
+    let timeout = 30_000;
+    if (params.filters && Object.keys(params.filters).length > 2) timeout += 10_000;
+    if (params.time_range === 'all_time' || params.time_range === 'last_year') timeout += 5_000;
+    if (params.limit && params.limit > 1000) timeout += 10_000;
+    return Math.min(timeout, 60_000);
+}
+
+async function callToolWithRetry(mcpClient: any, toolName: string, initialParams: any, requestId: string): Promise<{result: ToolResponse; retries: number}> {
+    const strategies = [(params: any) => ({...params, filters: {}}), (params: any) => ({...params, time_range: 'last_90_days'}), (params: any) => ({...params, sort_by: 'relevance'})];
+    let lastResponse: ToolResponse | null = null;
+    const MAX_RETRIES = 3;
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        try {
+            const params = attempt === 0 ? initialParams : strategies[attempt - 1]?.(initialParams) || initialParams;
+            console.log(`[${requestId}] [TOOL] ${toolName} - Intento ${attempt + 1}/${MAX_RETRIES + 1}`);
+            const TOOL_TIMEOUT_MS = calculateDynamicTimeout(params);
+            const timeoutPromise = new Promise<never>((_, reject) => setTimeout(() => reject(new Error(`Tool timeout`)), TOOL_TIMEOUT_MS));
+            const result = await Promise.race([mcpClient.callTool({name: toolName, arguments: params}), timeoutPromise]);
+            const resultText = extractTextContent(result);
+            const parsed = parseToolResponse(resultText);
+            if (parsed.data.length > 0 || parsed.opciones_unicas.length > 0) {
+                console.log(`[${requestId}] ✅ ${toolName} exitoso en intento ${attempt + 1}`);
+                return {result: parsed, retries: attempt};
+            }
+            lastResponse = parsed;
+            if (attempt === MAX_RETRIES) return {result: parsed, retries: attempt};
+            await new Promise(r => setTimeout(r, 1000));
+        } catch (err: any) {
+            console.error(`[${requestId}] ❌ ${toolName} error: ${err.message}`);
+            if (attempt === MAX_RETRIES) throw err;
+            await new Promise(r => setTimeout(r, 1000));
+        }
+    }
+    return {result: lastResponse || parseToolResponse(''), retries: MAX_RETRIES};
+}
+
+function createChatContext(user: any, query: string): ChatContext {
+    return {requestId: `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`, userId: user._id?.toString() || 'unknown', userEmail: user.email || 'unknown', userRole: user.role || 'user', query, startTime: new Date(), selectedDashboards: [], appliedFilters: {}, toolsCalled: [], responseGenerated: false, totalDuration: 0};
+}
+
+function logToolCall(ctx: ChatContext, toolName: string, params: any, success: boolean, duration: number, retries: number, error?: string) {
+    ctx.toolsCalled.push({name: toolName, params, success, duration, retries, error});
+    const status = success ? '✅' : '❌';
+    console.log(`[${ctx.requestId}] ${status} ${toolName} | ${duration}ms | Retries: ${retries}`);
+}
+
+function finalizeChatContext(ctx: ChatContext): void {
+    ctx.totalDuration = Date.now() - ctx.startTime.getTime();
+    ctx.responseGenerated = true;
+    const successRate = ctx.toolsCalled.length > 0 ? ((ctx.toolsCalled.filter(t => t.success).length / ctx.toolsCalled.length) * 100).toFixed(1) : 0;
+    console.log(`[${ctx.requestId}] Duration: ${ctx.totalDuration}ms | Tools: ${ctx.toolsCalled.length} | Success: ${successRate}%`);
+}
+
+function inferToolParametersFromQuery(query: string): Record<string, any> {
+    const params: Record<string, any> = {};
+    const topMatch = query.match(/top\s+(\d+)|primeros?\s+(\d+)/i);
+    if (topMatch) params.limit = parseInt(topMatch[1] || topMatch[2]);
+    const timePatterns = {'last_week': /últim[ao]s?\s+(7\s+)?días|semana\s+pasada/i, 'last_month': /mes\s+pasado|últim[ao] mes/i, 'last_quarter': /trimestre|últim[ao]s?\s+3 meses/i, 'last_year': /año\s+pasad[ao]|últim[ao] año/i};
+    for (const [range, pattern] of Object.entries(timePatterns)) {if (pattern.test(query)) {params.time_range = range; break;}}
+    if (query.match(/vs\.|comparar|diferencia/i)) params.mode = 'comparison';
+    else if (query.match(/top|mayor|menor|ranking/i)) params.mode = 'ranking';
+    else if (query.match(/tendencia|evolución/i)) params.mode = 'trend';
+    if (query.match(/mayor|más alto|máximo/i)) params.sort_by = 'desc';
+    else if (query.match(/menor|más bajo|mínimo/i)) params.sort_by = 'asc';
+    return params;
+}
+
+async function verifyMcpConnection(mcpClient: any): Promise<boolean> {
+    try {
+        console.log('[MCP] Verificando conexión...');
+        await Promise.race([mcpClient.callTool({name: 'list_dashboards', arguments: {page: 1, limit: 1}}), new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))]);
+        console.log('[MCP] ✅ Conexión OK');
+        return true;
+    } catch (err: any) {
+        console.error('[MCP] ❌ Error:', err.message);
+        return false;
+    }
+}
+
+function extractMentionedOptionNumbers(text: string): Set<number> {
+    const mentioned = new Set<number>();
+    const patterns = [/(?:^|\n)\s*([1-9])\s*[.\-–—:]/gm, /opci[oó]n\s+([1-9])/gi, /número\s+([1-9])/gi, /^([1-9])[\s\.].*$/gm];
+    for (const pattern of patterns) {
+        for (const match of text.matchAll(pattern)) {
+            const num = parseInt(match[1]);
+            if (num >= 1 && num <= 9) mentioned.add(num);
+        }
+    }
+    return mentioned;
+}
+
+function buildEnhancedSystemPrompt(user: any): string {
+    return `Tu nombre es AsistenteEDA. Eres un especialista en análisis de datos.
+
+USUARIO: ${user.name || user.email} (${user.role || 'Usuario'})
+FECHA: ${new Date().toLocaleString('es-ES')}
+
+REGLAS DE PRECISIÓN:
+
+1️⃣ ENTENDER LA PREGUNTA
+   - "ventas por región" ≠ "total ventas"
+   - Identifica: métrica, dimensión, período
+   - Si es ambigua, pregunta antes de buscar
+
+2️⃣ BÚSQUEDA ESTRATÉGICA
+   - Si hay múltiples opciones, EXPLORA TODAS
+   - Valida que cada opción tenga lo que necesitas
+   - No descartes fallback_sugerencias sin intentar
+
+3️⃣ VALIDACIÓN DE DATOS
+   - Si ves error/empty, intenta parámetros alternativos
+   - Nunca inventes números
+   - Sé honesto: "No encontré estos datos"
+
+4️⃣ PRESENTACIÓN CLARA
+   - Menciona siempre el panel y dashboard usado
+   - Contexto de filtros aplicados
+   - Resumen de datos encontrados
+
+5️⃣ MANEJO DE FALLBACK
+   - Explora alternativas si ves fallback_sugerencias
+   - Contextualiza: "No exactamente [X], pero sí [Y]"
+
+Responde en español.`;
+}
+
 // --- Auth interno (sin HTTP) ---
 async function loginInternal(): Promise<string> {
     if (!MCP_EMAIL || !MCP_PASSWORD) {
@@ -1343,6 +1522,8 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
         const reqUser = (req as any).user;
         const userToken = reqUser ? jwt.sign({ user: reqUser }, SEED, { expiresIn: 14400 }) : '';
         console.log('[CHAT] x-user-token a enviar — usuario:', reqUser?.email ?? reqUser?._id ?? '(ninguno)', '| token generado:', !!userToken);
+        const lastUserMsg = [...messages].reverse().find((m: any) => m.role === 'user')?.content ?? '';
+        const ctx = createChatContext(reqUser || {}, typeof lastUserMsg === 'string' ? lastUserMsg : '');
         const transport = new StreamableHTTPClientTransport(new URL(MCP_URL), {
             requestInit: { headers: { 'x-user-token': userToken } },
         });
@@ -1376,7 +1557,9 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
             const response = await anthropic.messages.create({
                 model: MODEL || 'claude-haiku-4-5',
                 max_tokens: MAX_TOKENS || 4096,
-                system: [{ type: 'text' as const, text: `Eres un asistente de análisis de datos integrado en EDA (Enterprise Data Analytics). Tu trabajo es responder preguntas usando ÚNICAMENTE los datos que devuelven las herramientas MCP. NUNCA uses tu conocimiento general sobre los datos del negocio del usuario.
+                system: [
+                    { type: 'text' as const, text: buildEnhancedSystemPrompt(reqUser || {}) },
+                    { type: 'text' as const, text: `Eres un asistente de análisis de datos integrado en EDA (Enterprise Data Analytics). Tu trabajo es responder preguntas usando ÚNICAMENTE los datos que devuelven las herramientas MCP. NUNCA uses tu conocimiento general sobre los datos del negocio del usuario.
 
 ══════════════════════════════════════════
 REGLA ABSOLUTA — FIDELIDAD TOTAL
@@ -1478,7 +1661,8 @@ VISIBILIDAD Y SEGURIDAD
 • Solo trabaja con los datasources y dashboards que devuelven los tools. Si un tool incluye una nota de "existen X adicionales sin acceso", transmítela al usuario.
 • No expongas información técnica interna (IDs, nombres de tablas de BD, queries SQL) salvo que el usuario lo pida explícitamente.
 
-Responde siempre en el idioma del usuario.`, cache_control: { type: 'ephemeral' as const } }],
+Responde siempre en el idioma del usuario.`, cache_control: { type: 'ephemeral' as const } },
+                ],
                 messages: history,
                 tools: anthropicTools,
             });
@@ -1489,12 +1673,7 @@ Responde siempre en el idioma del usuario.`, cache_control: { type: 'ephemeral' 
                 const text = (response.content.find((b: any) => b.type === 'text') as any)?.text ?? '';
                 const responsePayload: any = { ok: true, response: text };
                 if (lastExplorationOptions.length > 1) {
-                    // Only include options whose number the AI actually mentioned in its text.
-                    // Matches: "1.", "1 —", "Opción 1", "Opcion 1", standalone digit followed by separator.
-                    const mentionedNums = new Set<number>();
-                    // Detecta números al inicio de línea para evitar falsos positivos en medio de frases
-                    for (const m of text.matchAll(/(?:^|\n)\s*([1-9])\s*[.\-–—:]/gm)) mentionedNums.add(parseInt(m[1]));
-                    for (const m of text.matchAll(/[Oo]pci[oó]n\s+([1-9])/g)) mentionedNums.add(parseInt(m[1]));
+                    const mentionedNums = extractMentionedOptionNumbers(text);
                     const filtered = mentionedNums.size > 0
                         ? lastExplorationOptions.filter((o: any) => mentionedNums.has(o.opcion_num))
                         : lastExplorationOptions;
@@ -1532,6 +1711,7 @@ Responde siempre en el idioma del usuario.`, cache_control: { type: 'ephemeral' 
                     ];
                     lastFallbackSugerencias = [];
                 }
+                finalizeChatContext(ctx);
                 return res.status(200).json(responsePayload);
             }
 
@@ -1539,12 +1719,13 @@ Responde siempre en el idioma del usuario.`, cache_control: { type: 'ephemeral' 
                 const toolBlocks = response.content.filter((b: any) => b.type === 'tool_use') as any[];
                 history.push({ role: 'assistant', content: response.content });
 
-                const TOOL_TIMEOUT_MS = 30_000;
                 const toolResults: Anthropic.ToolResultBlockParam[] = await Promise.all(
                     toolBlocks.map(async (block: any) => {
                         console.log('[CHAT] Ejecutando tool MCP:', block.name, '| input:', JSON.stringify(block.input));
                         let resultText = '';
+                        const toolStart = Date.now();
                         try {
+                            const TOOL_TIMEOUT_MS = calculateDynamicTimeout(block.input);
                             const timeoutPromise = new Promise<never>((_, reject) =>
                                 setTimeout(() => reject(new Error(`Tool "${block.name}" timeout tras ${TOOL_TIMEOUT_MS / 1000}s`)), TOOL_TIMEOUT_MS)
                             );
@@ -1552,11 +1733,9 @@ Responde siempre en el idioma del usuario.`, cache_control: { type: 'ephemeral' 
                                 mcpClient.callTool({ name: block.name, arguments: block.input }),
                                 timeoutPromise,
                             ]);
-                            resultText = (result.content as any[])
-                                .filter((c: any) => c.type === 'text')
-                                .map((c: any) => c.text)
-                                .join('\n');
+                            resultText = extractTextContent(result);
                             console.log('[CHAT] Tool MCP', block.name, 'result length:', resultText.length);
+                            logToolCall(ctx, block.name, block.input, true, Date.now() - toolStart, 0);
                             if (block.name === 'get_data_from_dashboard') {
                                 try {
                                     const parsed = JSON.parse(resultText);
@@ -1575,6 +1754,7 @@ Responde siempre en el idioma del usuario.`, cache_control: { type: 'ephemeral' 
                         } catch (toolErr: any) {
                             console.error('[CHAT] Tool MCP error:', block.name, toolErr.message);
                             resultText = `Error: ${toolErr.message}`;
+                            logToolCall(ctx, block.name, block.input, false, Date.now() - toolStart, 0, toolErr.message);
                         }
                         return {
                             type: 'tool_result' as const,
@@ -1594,6 +1774,7 @@ Responde siempre en el idioma del usuario.`, cache_control: { type: 'ephemeral' 
         const lastAssistantText = [...history].reverse()
             .reduce((acc: any[], m: any) => acc.concat(Array.isArray(m.content) ? m.content : []), [])
             .find((b: any) => b.type === 'text')?.text ?? '';
+        finalizeChatContext(ctx);
         return res.status(200).json({ ok: true, response: lastAssistantText || '(Sin respuesta del asistente)' });
 
     } catch (err: any) {
