@@ -380,6 +380,7 @@ export class EdaTableComponent implements OnInit {
 
 /* SDA CUSTOM */ // maintains the order of the crosstable
 /* SDA CUSTOM */ this.inject.sortedColumn = { field: event.field, order: event.order };
+/* SDA CUSTOM */ this.inject.checkTotals(null);
     }
 
     public getColor(valor: number) {

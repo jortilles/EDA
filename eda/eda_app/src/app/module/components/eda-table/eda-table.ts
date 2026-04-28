@@ -470,13 +470,27 @@ export class EdaTable {
                     });
             }
             else {
-                if (firstNonNumericRow) {
+/**SDA CUSTOM  */if (firstNonNumericRow && col.type !== 'EdaColumnPercentage') {
                     this.partialTotalsRow.push({ data: `${this.SubTotals} `, border: " ", class: 'sub-total-row-header', type: col.type });
                     firstNonNumericRow = false;
                 } else {
 /**SDA CUSTOM  */   // WE ADD THE PERCENTAGE COLUMNS HERE
+                    if (!this.pivot && col.type === 'EdaColumnPercentage') {
+/**SDA CUSTOM  */       // For non-pivot tables: sum the % values of the rows in this group
+                        const lastValue = Math.min(offset + this.initRows, this._value.length);
+                        const percentageSum = this._value.slice(offset, lastValue).reduce((sum, row) => {
+                            const val = parseFloat(String(row[col.field]).replace('%', ''));
+                            return sum + (isNaN(val) ? 0 : val);
+                        }, 0);
+                        this.partialTotalsRow.push({
+/**SDA CUSTOM  */         data: Math.min(100, percentageSum).toFixed(2) + '%', border: ' ', class: 'total-row-header text-right', type: col.type  /* when summarizing, results are capped at 100% */
+                        });
+/**SDA CUSTOM  */   } else if (!this.pivot) {
+/**SDA CUSTOM  */   // Non-pivot non-percentage column (text, date, etc.) → leave blank
+/**SDA CUSTOM  */   this.partialTotalsRow.push({ data: '', border: ' ', class: 'sub-total-row-header', type: col.type });
+                    } else {
 /**SDA CUSTOM  */   //  To match we need to delete the % and add one or two space at the beginning
-/**SDA CUSTOM  */   // If the field starts with ~( no field name ) we add two spaces otherwise just one
+/**SDA CUSTOM  */   // If the field starts with ~ ( no field name ) we add two spaces otherwise just one
 /**SDA CUSTOM  */   const baseField = (col.field.trimStart().startsWith('~') ? '  ' : ' ') + col.field.replace('%', '').trim();
 /**SDA CUSTOM  */
 /**SDA CUSTOM  */   const value: number = Number(partialRow[baseField]); // Actual row value
@@ -491,6 +505,7 @@ export class EdaTable {
 /**SDA CUSTOM  */   this.partialTotalsRow.push({
 /**SDA CUSTOM  */       data: percentage + '%', border: ' ', class: 'total-row-header text-right', type: col.type
 /**SDA CUSTOM  */   });
+                    }
                 }
             }
         });
@@ -511,29 +526,36 @@ export class EdaTable {
                 if (i < values.length) {
                     const currentCol = this.cols.filter(col => col.field === keys[j])[0];
                     if (currentCol.type === "EdaColumnNumber") {
-
-                        let decimalplaces = 0;
-                        try{
-                            let c =  <EdaColumnNumber>currentCol;
-                            decimalplaces =  c.decimals;  /** esta mierda se hace  para ajustar el número de dicimales porque 3.1+2.5 puede dar 5.600004 */
-                        }catch(e){
-                            console.log('error getting decimal places');
-                            console.log(e);
-                        }
-
                         if(values[i][keys[j]]===''){
-                            row[keys[j]] = parseFloat(row[keys[j]] ) + 0;
-                            row[keys[j]] = row[keys[j]].toFixed(decimalplaces );
+                            row[keys[j]] = parseFloat(row[keys[j]]) + 0;
                         }
                         else {
-                            row[keys[j]] = parseFloat(row[keys[j]] ) + parseFloat(values[i][keys[j]]);
-                            row[keys[j]] = row[keys[j]].toFixed(decimalplaces );
+                            row[keys[j]] = parseFloat(row[keys[j]]) + parseFloat(values[i][keys[j]]);
                         }
-
                     } else {
                         row[keys[j]] = NaN;
                     }
                 }
+            }
+        }
+
+        // Apply rounding once after all rows are accumulated to avoid mid-sum rounding errors
+        for (let j = 0; j < keys.length; j++) {
+            const currentCol = this.cols.filter(col => col.field === keys[j])[0];
+            if (currentCol.type === "EdaColumnNumber") {
+                let decimalplaces: number = (currentCol as any).decimals;
+                // If decimals is not a valid positive integer, detect from actual data values
+                if (!Number.isInteger(decimalplaces) || decimalplaces <= 0) {
+                    decimalplaces = 0;
+                    for (let i = 0; i < values.length; i++) {
+                        const strVal = String(values[i][keys[j]]);
+                        const dotIndex = strVal.indexOf('.');
+                        if (dotIndex !== -1) {
+                            decimalplaces = Math.max(decimalplaces, strVal.length - dotIndex - 1);
+                        }
+                    }
+                }
+                row[keys[j]] = parseFloat(row[keys[j]]).toFixed(decimalplaces);
             }
         }
 
@@ -551,12 +573,21 @@ export class EdaTable {
                     });
             }
             else {
-                if (firstNonNumericRow) {
+/**SDA CUSTOM  */if (firstNonNumericRow && col.type !== 'EdaColumnPercentage') {
 /**SDA CUSTOM  */   // add header
                     this.totalsRow.push({ data: `${this.Totals} `, border: " ", class: 'total-row-header', type: col.type });
                     firstNonNumericRow = false;
                 } else {
 /**SDA CUSTOM  */   //  WE ADD THE PERCENTAGE COLUMNS HERE
+                    if (!this.pivot && col.type === 'EdaColumnPercentage') {
+/**SDA CUSTOM  */       // Total row always = 100% (grand total / grand total by definition, avoids rounding errors)
+                        this.totalsRow.push({
+/**SDA CUSTOM  */         data: '100%', border: ' ', class: 'total-row-header text-right', type: col.type
+                        });
+/**SDA CUSTOM  */   } else if (!this.pivot) {
+/**SDA CUSTOM  */   // Non-pivot non-percentage column (text, date, etc.) → leave blank
+/**SDA CUSTOM  */   this.totalsRow.push({ data: '', border: ' ', class: 'total-row-header', type: col.type });
+                    } else {
 /**SDA CUSTOM  */   //  To match we need to delete the % and add one or two space at the beginning
 /**SDA CUSTOM  */   // If the field starts with ~( no field name ) we add two spaces otherwise just one
 /**SDA CUSTOM  */   const baseField = (col.field.trimStart().startsWith('~') ? '  ' : ' ') + col.field.replace('%', '').trim();
@@ -573,6 +604,7 @@ export class EdaTable {
 /**SDA CUSTOM  */   this.totalsRow.push({
 /**SDA CUSTOM  */       data: percentage + '%', border: ' ', class: 'total-row-header text-right', type: col.type
 /**SDA CUSTOM  */   });
+                    }
 /**SDA CUSTOM  */}
             }
         });
@@ -660,7 +692,8 @@ export class EdaTable {
         for (let i = 0; i < values.length; i += 1) {
             const obj = [];
             for (let e = 0; e < values[i].length; e += 1) {
-                    if( ! ['EdaColumnPercentage', 'EdaColumnNumber'].includes(  this.cols[e].type ) ) {
+/**SDA CUSTOM  */   const colType = (this.cols.find(c => c.field === labels[e]) || {}).type;
+/**SDA CUSTOM  */   if( ! ['EdaColumnPercentage', 'EdaColumnNumber'].includes( colType ) ) {
                         obj[labels[e]] =  this.origValues[i][labels[e]];
                     }else{
                         obj[labels[e]] = values[i][e];
