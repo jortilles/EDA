@@ -17,6 +17,9 @@ export class PanelChart {
   public draggable: boolean;
   public coordinates: Array<Array<number>>;
   public zoom: number;
+  /* SDA CUSTOM */ public canEdit: boolean;
+  /* SDA CUSTOM */ public canSave: boolean;
+  /* SDA CUSTOM */ public locked: boolean;
 
   constructor(init?: Partial<PanelChart>) {
     Object.assign(this, init);

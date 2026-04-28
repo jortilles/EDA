@@ -23,6 +23,12 @@ export class EdaKpiComponent implements OnInit {
     containerWidth: number = 20;
 
     showChart: boolean = true;
+    /* SDA CUSTOM */ private readonly minFontScale = 0.6;
+    /* SDA CUSTOM */ private readonly maxFontScale = 2.0;
+    /* SDA CUSTOM */ private readonly fontScaleStep = 0.1;
+    /* SDA CUSTOM */ private readonly scaleTolerance = 0.15;
+    /* SDA CUSTOM */ private baseWidth: number | undefined;
+    /* SDA CUSTOM */ public isHovered = false;
 
     constructor() { }
 
@@ -33,20 +39,11 @@ export class EdaKpiComponent implements OnInit {
     ngOnInit() {;
         try {
             registerLocaleData(es);
-
-            if (this.inject.alertLimits?.length > 0) {
-                this.inject.alertLimits.forEach(alert => {
-                    const operand = alert.operand, warningColor = alert.color;
-                    const value1 = this.inject.value, value2 = alert.value;
-                    if (this.color !== this.defaultColor) this.defaultColor = this.color;
-                    switch (operand) {
-                        case '<': this.color = value1 < value2 ? warningColor : this.defaultColor; break;
-                        case '=': this.color = value1 === value2 ? warningColor : this.defaultColor; break;
-                        case '>': this.color = value1 > value2 ? warningColor : this.defaultColor; break;
-                        default: this.color = this.defaultColor;
-                    }
-                });
+            /* SDA CUSTOM */ if (typeof this.inject?.fontScale !== 'number') {
+                /* SDA CUSTOM */ this.inject.fontScale = 1;
             }
+            /* SDA CUSTOM */ this.setBaseColor(this.inject?.color);
+            /* SDA CUSTOM */ this.applyAlertColors();
 
         } catch (e) {
             console.log('No alert limits defined (alertLimits)');
@@ -54,17 +51,42 @@ export class EdaKpiComponent implements OnInit {
         }
     }
 
+    /* SDA CUSTOM */ setBaseColor(color: string): void {
+        /* SDA CUSTOM */ if (color) {
+            /* SDA CUSTOM */ this.defaultColor = color;
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ this.color = this.defaultColor;
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */ applyAlertColors(): void {
+        /* SDA CUSTOM */ if (this.inject.alertLimits?.length > 0) {
+            /* SDA CUSTOM */ this.inject.alertLimits.forEach(alert => {
+                /* SDA CUSTOM */ const operand = alert.operand, warningColor = alert.color;
+                /* SDA CUSTOM */ const value1 = this.inject.value, value2 = alert.value;
+                /* SDA CUSTOM */ switch (operand) {
+                    /* SDA CUSTOM */ case '<': this.color = value1 < value2 ? warningColor : this.defaultColor; break;
+                    /* SDA CUSTOM */ case '=': this.color = value1 === value2 ? warningColor : this.defaultColor; break;
+                    /* SDA CUSTOM */ case '>': this.color = value1 > value2 ? warningColor : this.defaultColor; break;
+                    /* SDA CUSTOM */ default: this.color = this.defaultColor;
+                /* SDA CUSTOM */ }
+            /* SDA CUSTOM */ });
+        /* SDA CUSTOM */ }
+    /* SDA CUSTOM */ }
+
     public initDimensions() {
         if (this.kpiContainer) {
             const widthKpiContainer = this.kpiContainer.nativeElement.offsetWidth;
             const heightKpiContainer = this.kpiContainer.nativeElement.offsetHeight;
             const sufixContainerReference = this.sufixContainer.nativeElement;
-    
+
             if (widthKpiContainer > 0) {
                 this.containerHeight = heightKpiContainer;
                 this.containerWidth = widthKpiContainer;
+                /* SDA CUSTOM */ if (!this.baseWidth) {
+                    /* SDA CUSTOM */ this.baseWidth = widthKpiContainer;
+                /* SDA CUSTOM */ }
             }
-    
+
             //Auto margin
             sufixContainerReference.style.margin = "auto"
         }
@@ -72,17 +94,48 @@ export class EdaKpiComponent implements OnInit {
 
     setSufix(): void {
         this.sufixClick = !this.sufixClick;
-        this.onNotify.emit({ sufix: this.inject.sufix })
+        /* SDA CUSTOM */ this.onNotify.emit({ sufix: this.inject.sufix, fontScale: this.inject.fontScale })
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */ onMouseEnter(): void {
+        /* SDA CUSTOM */ this.isHovered = true;
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */ onMouseLeave(): void {
+        /* SDA CUSTOM */ this.isHovered = false;
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */ shouldShowControls(): boolean {
+        /* SDA CUSTOM */ return !!this.inject?.showResizeControls && this.isHovered;
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */ increaseFont(): void {
+        /* SDA CUSTOM */ this.updateFontScale(this.fontScaleStep);
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */ decreaseFont(): void {
+        /* SDA CUSTOM */ this.updateFontScale(-this.fontScaleStep);
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */ private updateFontScale(delta: number): void {
+        /* SDA CUSTOM */ const current = typeof this.inject.fontScale === 'number' ? this.inject.fontScale : 1;
+        /* SDA CUSTOM */ const next = this.clampFontScale(current + delta);
+        /* SDA CUSTOM */ this.inject.fontScale = next;
+        /* SDA CUSTOM */ if (this.containerWidth > 0) {
+            /* SDA CUSTOM */ this.baseWidth = this.containerWidth;
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ this.onNotify.emit({ sufix: this.inject.sufix, fontScale: this.inject.fontScale });
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */ private clampFontScale(value: number): number {
+        /* SDA CUSTOM */ return Math.max(this.minFontScale, Math.min(this.maxFontScale, value));
     }
 
     getStyle(): any {
         return { 'font-weight': 'bold', 'font-size': this.getFontSize(), display: 'flex', 'justify-content': 'center', color: this.color }
     }
 
-    /**
-     * This function returns a string with the given font size (in px) based on the panel width and height 
-     * @returns {string}
-    */
+    /* SDA CUSTOM */ // This function returns a string with the given font size (in px) based on the panel width and height
     getFontSize(): string {
         this.initDimensions();
 
@@ -110,9 +163,22 @@ export class EdaKpiComponent implements OnInit {
         if (this.showChart) {
             resultSize = resultSize / 1.8;
         }
-      
+
+        /* SDA CUSTOM */ const scale = this.getEffectiveScale();
+        /* SDA CUSTOM */ resultSize = resultSize * scale;
+
         return resultSize.toFixed().toString() + 'px';
     }
+
+    /* SDA CUSTOM */ private getEffectiveScale(): number {
+        /* SDA CUSTOM */ const scale = typeof this.inject.fontScale === 'number' ? this.inject.fontScale : 1;
+        /* SDA CUSTOM */ if (!this.baseWidth || this.baseWidth <= 0 || this.containerWidth <= 0) {
+            /* SDA CUSTOM */ return scale;
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ const ratio = this.containerWidth / this.baseWidth;
+        /* SDA CUSTOM */ const withinTolerance = ratio >= (1 - this.scaleTolerance) && ratio <= (1 + this.scaleTolerance);
+        /* SDA CUSTOM */ return withinTolerance ? scale : 1;
+    /* SDA CUSTOM */ }
 
     public updateChart(): void {
         if (this.inject.edaChart && this.edaChartComponent) {

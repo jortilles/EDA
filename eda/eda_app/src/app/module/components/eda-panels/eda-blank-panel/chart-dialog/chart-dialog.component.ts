@@ -65,7 +65,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
         this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
 
-  
+
         this.drops.pointStyles = [
             { label: 'Puntos', value: 'circle' },
             { label: 'Triangulos', value: 'triangle' },
@@ -120,21 +120,26 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
             case 'doughnut':
             case 'polarArea':
                 if (this.chart.chartLabels) {
-                    this.series = this.chart.chartLabels.map((c, inx) => ({
-                        label: c,
-                        bg: this.rgb2hex(this.chart.chartColors[0].backgroundColor[inx])
-                    }));
-                    this.chart.chartColors[0].backgroundColor = this.series.map(d => (this.hex2rgb(d.bg, 90)));
+                    /* SDA CUSTOM */ this.series = this.chart.chartLabels.map((c, inx) => ({
+                    /* SDA CUSTOM */     label: c,
+                    /* SDA CUSTOM */     bg: this.normalizeHexColor(this.chart.chartColors?.[0]?.backgroundColor?.[inx], '#67757c')
+                    /* SDA CUSTOM */ }));
+                    /* SDA CUSTOM */ this.chart.chartColors[0].backgroundColor = this.series.map(d => (this.hex2rgb(d.bg, 90)));
                 }
                 break;
             default:
 
-                this.series = this.chart.chartDataset.map(dataset => ({
-                    label: dataset.label,
-                    bg: this.rgb2hex(dataset.backgroundColor),
-                    border: dataset.borderColor
-                }));
-                this.chart.chartColors = this.series.map(s => ({ backgroundColor: this.hex2rgb(s.bg, 90), borderColor:  this.hex2rgb(s.border, 90) }));
+                /* SDA CUSTOM */ this.series = this.chart.chartDataset.map((dataset, index) => {
+                /* SDA CUSTOM */     const chartColor = this.chart?.chartColors?.[index] || {};
+                /* SDA CUSTOM */     const bg = this.normalizeHexColor(dataset.backgroundColor, this.normalizeHexColor(chartColor.backgroundColor, '#67757c'));
+                /* SDA CUSTOM */     const border = this.normalizeHexColor(dataset.borderColor, this.normalizeHexColor(chartColor.borderColor, bg));
+                /* SDA CUSTOM */     return {
+                /* SDA CUSTOM */         label: dataset.label,
+                /* SDA CUSTOM */         bg,
+                /* SDA CUSTOM */         border
+                /* SDA CUSTOM */     };
+                /* SDA CUSTOM */ });
+                /* SDA CUSTOM */ this.chart.chartColors = this.series.map(s => ({ backgroundColor: this.hex2rgb(s.bg, 90), borderColor:  this.hex2rgb(s.border || s.bg, 100) }));
                 break;
         }
         if (!this.originalSeries || this.originalSeries.length === 0)
@@ -145,7 +150,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         if (this.chart.chartDataset) {
             const newDatasets = [];
             const dataset = this.chart.chartDataset;
-            
+
 
             for (let i = 0, n = dataset.length; i < n; i += 1) {
                 if (dataset[i].label === event.label) {
@@ -155,7 +160,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
                 } else {
                     if (!_.isArray(dataset[i].backgroundColor)) {
                         dataset[i].backgroundColor = this.chart.chartColors[i].backgroundColor;
-                        dataset[i].borderColor = this.chart.chartColors[i].backgroundColor;
+                        /* SDA CUSTOM */ dataset[i].borderColor = this.chart.chartColors[i].borderColor || this.chart.chartColors[i].backgroundColor;
                         this.chart.chartColors[i] = _.pick(dataset[i], [  'backgroundColor', 'borderColor']);
                     } else {
                         if (this.chart.chartLabels) {
@@ -180,7 +185,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
             //     for (let i = 0, n = dataset.length; i < n; i += 1) {
             //         if (dataset[i].label === event.label) {
             //             //dataset[i].hoverBackgroundColor = this.hex2rgb(event.bg, 90);
-            //             //dataset[i].hoverBorderColor = 'rgb(255,255,255)'; 
+            //             //dataset[i].hoverBorderColor = 'rgb(255,255,255)';
             //             dataset[i].backgroundColor = this.hex2rgb(event.bg, 90);
             //             dataset[i].borderColor = this.hex2rgb(event.bg, 100);
             //             this.chart.chartColors[i] = _.pick(dataset[i], [ 'backgroundColor', 'borderColor']);
@@ -224,7 +229,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         config.numberOfColumns = this.numberOfColumns;
         config.colors = this.chart.chartColors;
         properties.config = c;
-        /**Update chart */  
+        /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
         setTimeout(_ => {
             this.chart = this.panelChartComponent.componentRef.instance.inject;
@@ -287,7 +292,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         });
 
     }
-    
+
     setShowLables(){
 
         const properties = this.panelChartConfig;
@@ -316,6 +321,42 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
             ('0' + parseInt(rgb[2], 10).toString(16)).slice(-2) +
             ('0' + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';
     }
+
+    /* SDA CUSTOM */ // SDA CUSTOM - Normalize color values for dialog inputs
+    /**
+     * Normalizes a color input into a 6-digit hexadecimal string.
+     *
+     * Rules:
+     * - If the value is an array, the first element is used.
+     * - Accepts #RGB and expands it to #RRGGBB.
+     * - Accepts #RRGGBB and returns it unchanged.
+     * - Accepts rgb(...) / rgba(...) and converts it to hex using rgb2hex.
+     * - If the value cannot be normalized, returns fallback.
+     *
+     * @param color Color value to normalize.
+     * @param fallback Default value when the input is invalid.
+     * @returns A color in #RRGGBB format or fallback.
+     */
+    /* SDA CUSTOM */ private normalizeHexColor(color: any, fallback: string = ''): string {
+    /* SDA CUSTOM */     const resolvedColor = Array.isArray(color) ? color[0] : color;
+    /* SDA CUSTOM */     if (typeof resolvedColor !== 'string') {
+    /* SDA CUSTOM */         return fallback;
+    /* SDA CUSTOM */     }
+    /* SDA CUSTOM */     const trimmed = resolvedColor.trim();
+    /* SDA CUSTOM */     const shortHexMatch = /^#([0-9a-fA-F]{3})$/.exec(trimmed);
+    /* SDA CUSTOM */     if (shortHexMatch) {
+    /* SDA CUSTOM */         const [r, g, b] = shortHexMatch[1].split('');
+    /* SDA CUSTOM */         return `#${r}${r}${g}${g}${b}${b}`;
+    /* SDA CUSTOM */     }
+    /* SDA CUSTOM */     if (/^#([0-9a-fA-F]{6})$/.test(trimmed)) {
+    /* SDA CUSTOM */         return trimmed;
+    /* SDA CUSTOM */     }
+    /* SDA CUSTOM */     if (/^rgba?\(/i.test(trimmed)) {
+    /* SDA CUSTOM */         return this.rgb2hex(trimmed) || fallback;
+    /* SDA CUSTOM */     }
+    /* SDA CUSTOM */     return fallback;
+    /* SDA CUSTOM */ }
+    /* SDA CUSTOM */ // END SDA CUSTOM
 
     hex2rgb(hex, opacity = 100): string {
         hex = hex.replace('#', '');
@@ -387,7 +428,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
         return haveDate && chartAllowed && onlyTwoCols && monthformat && aggregation;
 
-    } 
+    }
 
     onChangeDirection() {
     }

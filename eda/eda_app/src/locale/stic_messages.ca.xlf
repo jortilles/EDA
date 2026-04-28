@@ -356,8 +356,10 @@
     <target>Cerca un tipus</target>
   </trans-unit>
   <trans-unit id="modoEDAAlert" datatype="html">
-    <source>Este panel utiliza el modo EDA, que está obsoleto y dejará de funcionar futuras versiones de SinergiaDA. Por esa misma razón no se pueden hacer cambios sobre este informe. Para garantizar su funcionamiento se recomienda rehacerlo usando el <b>Modo Árbol</b>.</source>
-    <target>Aquest panell utilitza el mode <b>EDA</b>, que està obsolet i deixarà de funcionar futures versions de SinergiaDA. Per aquesta mateixa raó no es poden fer canvis sobre aquest informe. Per garantir el seu funcionament es recomana refer-lo fent servir el <b>Mode Arbre</b>.</target>
+    <source>Este panel utiliza el modo EDA, que está obsoleto y dejará de funcionar futuras versiones de SinergiaDA. Por esa misma razón no se pueden hacer cambios sobre este informe. Para garantizar su funcionamiento se recomienda rehacerlo usando el <b>Modo Árbol</b>.
+    </source>
+    <target>Aquest panell utilitza el mode <b>EDA</b>, que està obsolet i deixarà de funcionar futures versions de SinergiaDA. Per aquesta mateixa raó no es poden fer canvis sobre aquest informe. Per garantir el seu funcionament es recomana refer-lo fent servir el <b>Mode Arbre</b>.
+    </target>
   </trans-unit>
   <trans-unit id="clearAllFilters" datatype="html">
     <source>Eliminar todos los filtros</source>
@@ -431,6 +433,128 @@
     <source>Desbloquear panel</source>
     <target>Desbloqueja el panell</target>
   </trans-unit>
+  <trans-unit id="colorKpiLabel">
+    <source>Color del KPI</source>
+    <target>Color del KPI</target>
+  </trans-unit>
+  <trans-unit id="colorChartLabel">
+    <source>Color del gráfico</source>
+    <target>Color del gràfic</target>
+  </trans-unit>
+  <trans-unit id="appearanceSection">
+    <source>Apariencia</source>
+    <target>Aparença</target>
+  </trans-unit>
+  <trans-unit id="panelTitleOptions">
+    <source>Opciones de visualización</source>
+    <target>Opcions de visualització</target>
+  </trans-unit>
+  <trans-unit id="resetSectionButton">
+    <source>Restaurar</source>
+    <target>Restableix</target>
+  </trans-unit>
+  <trans-unit id="colorLabelIndicator">
+    <source>Color del indicador</source>
+    <target>Color de l'indicador</target>
+  </trans-unit>
+  <trans-unit id="colorLabelSeries">
+    <source>Color de la serie</source>
+    <target>Color de la sèrie</target>
+  </trans-unit>
+  <trans-unit id="colorLabelLine">
+    <source>Color de línea</source>
+    <target>Color de línia</target>
+  </trans-unit>
+  <trans-unit id="colorLabelArea">
+    <source>Color de área</source>
+    <target>Color d'àrea</target>
+  </trans-unit>
+  <trans-unit id="axisScaleH6">
+    <source>Ejes y escala</source>
+    <target>Eixos i escala</target>
+  </trans-unit>
+  <trans-unit id="labelsValuesH6">
+    <source>Etiquetas y valores</source>
+    <target>Etiquetes i valors</target>
+  </trans-unit>
+  <trans-unit id="widthLabelLine">
+    <source>Grosor de línea</source>
+    <target>Gruix de línia</target>
+  </trans-unit>
+  <trans-unit id="lineStyleLabel">
+    <source>Tipo de línea</source>
+    <target>Tipus de línia</target>
+  </trans-unit>
+  <trans-unit id="lineStyleSolid">
+    <source>Sólida</source>
+    <target>Sòlida</target>
+  </trans-unit>
+  <trans-unit id="lineStyleDashed">
+    <source>Discontinua</source>
+    <target>Discontínua</target>
+  </trans-unit>
+  <trans-unit id="lineStyleDotted">
+    <source>Punteada</source>
+    <target>De punts</target>
+  </trans-unit>
+  <trans-unit id="xAxisShowLabel">
+    <source>Mostrar eje X</source>
+    <target>Mostra l'eix X</target>
+  </trans-unit>
+  <trans-unit id="xAxisLabelsLabel">
+    <source>Mostrar etiquetas del eje X</source>
+    <target>Mostra les etiquetes de l'eix X</target>
+  </trans-unit>
+  <trans-unit id="xAxisAllLabelsLabel">
+    <source>Mostrar todas las etiquetas</source>
+    <target>Mostra totes les etiquetes</target>
+  </trans-unit>
+  <trans-unit id="xAxisLabelCountLabel">
+    <source>Máximo de etiquetas</source>
+    <target>Màxim d'etiquetes</target>
+  </trans-unit>
+  <!-- SDA CUSTOM - KPI/chart option labels -->
+  <trans-unit id="showChartLabels">
+    <source>Mostrar etiquetas del gráfico</source>
+    <target>Mostra les etiquetes del gràfic</target>
+  </trans-unit>
+  <trans-unit id="showValueLabelsLabel">
+    <source>Mostrar valores en el gráfico</source>
+    <target>Mostra els valors al gràfic</target>
+  </trans-unit>
+  <trans-unit id="showChartLabelsPercent">
+    <source>Mostrar Etiquetas en Porcentajes</source>
+    <target>Mostra les etiquetes en percentatge</target>
+  </trans-unit>
+  <trans-unit id="showValuePercentLabel">
+    <source>Mostrar valores en porcentaje</source>
+    <target>Mostra els valors en percentatge</target>
+  </trans-unit>
+  <trans-unit id="valueLabelsTooltip">
+    <source>Mostrar u ocultar los valores en el gráfico</source>
+    <target>Mostra o oculta els valors al gràfic</target>
+  </trans-unit>
+  <trans-unit id="valueLabelsPercentTooltip">
+    <source>Mostrar u ocultar los valores en porcentaje en el gráfico</source>
+    <target>Mostra o oculta els valors en percentatge al gràfic</target>
+  </trans-unit>
+  <trans-unit id="colorChartBorderLabel">
+    <source>Color del borde</source>
+    <target>Color de la vora</target>
+  </trans-unit>
+  <trans-unit id="colorChartFillLabel">
+    <source>Color de relleno</source>
+    <target>Color d'emplenat</target>
+  </trans-unit>
+  <trans-unit id="labelColorLabel">
+    <source>Color del texto de etiquetas</source>
+    <target>Color del text de les etiquetes</target>
+  </trans-unit>
+  <trans-unit id="labelBackgroundColorLabel">
+    <source>Fondo de etiquetas</source>
+    <target>Fons de les etiquetes</target>
+  </trans-unit>
+  <!-- END SDA CUSTOM -->
   <!-- SDA CUSTOM - Logs viewer labels -->
   <trans-unit id="LogsViewer" datatype="html">
     <source>Visor de logs</source>

@@ -1,31 +1,200 @@
 <eda-dialog [inject]="dialog">
-  
+
   <div body class="grid h-100 p-5">
 
-    <div class="col-7" style="background-color: var(--panel-color); width: 90%; height: 15vh;">
-      <panel-chart *ngIf="display" #PanelChartComponent [props]="panelChartConfig" class="component"></panel-chart>
+    <div class="col-7 kpi-preview-column">
+      <div class="kpi-preview-sticky">
+        <div class="kpi-preview" [style.aspect-ratio]="previewAspectRatio">
+          <panel-chart *ngIf="display" #PanelChartComponent [props]="panelChartConfig" class="component"></panel-chart>
+        </div>
+      </div>
     </div>
 
     <div class="col-4 col-offset-1">
-
-        <div class="col-12">
-            <h6 i18n="@@colorsChartH6" class="custom-border-b1">
-                Colores
-            </h6>
-            <div class="grid chart-color-selection">
-                <ng-container *ngFor="let serie of series; let i = index">
-                    <div class=" col-6 ">
-                        <input type="text" pInputText style="width: 40%" [value]="serie.label" disabled="true" [style.border-color]="serie.border" />
-                        <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie)" format="hex" appendTo="body"></p-colorPicker>
-                        <input type="text" pInputText class="eda-color-pick" [(ngModel)]="serie.bg" (input)="handleInputColor(serie)" minlength="7" >
-                    </div>
-                </ng-container>
-            </div>
+      <div class="kpi-options-shell">
+        <div class="kpi-options-shell__header">
+          <h5 i18n="@@panelTitleOptions" class="kpi-options-title">Opciones de visualización</h5>
         </div>
+      <!-- SDA CUSTOM - Compact options panel wrapper with internal scroll indicator -->
+      <div class="kpi-config-panel-wrapper">
+      <div class="kpi-config-panel">
+          <div class="kpi-config-section" [class.is-expanded]="isAppearanceExpanded">
+              <div class="kpi-section-head" role="button" tabindex="0"
+                (click)="toggleSection('appearance')"
+                (keydown.enter)="toggleSection('appearance')"
+                (keydown.space)="toggleSection('appearance')">
+                <h6 i18n="@@appearanceSection" class="custom-border-b1">
+                  Apariencia
+                </h6>
+                <div class="kpi-section-actions">
+                  <i class="pi" [ngClass]="isAppearanceExpanded ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+                  <button pButton type="button" class="p-button-text p-button-sm"
+                    (click)="$event.stopPropagation(); resetAppearanceSection()" i18n-label="@@resetSectionButton" label="Restaurar">
+                  </button>
+                </div>
+              </div>
+              <div class="grid chart-color-selection" *ngIf="isAppearanceExpanded">
+                <div class="col-12 chart-color-row">
+                  <span i18n="@@colorLabelIndicator" class="chart-color-label">Color del indicador</span>
+                  <span class="chart-color-controls">
+                    <input type="text" [(ngModel)]="kpiColor" pInputText class="chart-color-input" (input)="applyKpiColor(120)" />
+                    <span class="chart-color-picker">
+                      <p-colorPicker [(ngModel)]="kpiColor" appendTo="body" (onChange)="applyKpiColor(0, true)"></p-colorPicker>
+                    </span>
+                  </span>
+                </div>
+                <ng-container *ngFor="let serie of series; let i = index">
+                  <div class="col-12 chart-color-row chart-color-row--spaced">
+                    <span *ngIf="i === 0 && !showChartFillColor" i18n="@@colorLabelSeries" class="chart-color-label">Color de la serie</span>
+                    <span *ngIf="i === 0 && showChartFillColor" i18n="@@colorChartBorderLabel" class="chart-color-label">Color del borde</span>
+                    <span class="chart-color-controls">
+                      <input type="text" pInputText [(ngModel)]="serie.bg" class="chart-color-input" (input)="handleInputColor(serie, 120)" minlength="7" >
+                      <span class="chart-color-picker">
+                        <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie, 0, true)" format="hex" appendTo="body"></p-colorPicker>
+                      </span>
+                    </span>
+                  </div>
+                </ng-container>
+                <!-- SDA CUSTOM - KPI chart line color -->
+                <div class="col-12 chart-color-row chart-color-row--spaced" *ngIf="showChartLineColor">
+                  <span i18n="@@colorLabelLine" class="chart-color-label">Color de línea</span>
+                  <span class="chart-color-controls">
+                    <input type="text" pInputText [(ngModel)]="chartLineColor" class="chart-color-input" (input)="applyChartLineColor(120)" minlength="7" >
+                    <span class="chart-color-picker">
+                      <p-colorPicker [(ngModel)]="chartLineColor" (onChange)="applyChartLineColor(0, true)" format="hex" appendTo="body"></p-colorPicker>
+                    </span>
+                  </span>
+                </div>
+                <!-- END SDA CUSTOM -->
+                <!-- SDA CUSTOM - KPI area fill color -->
+                <div class="col-12 chart-color-row chart-color-row--spaced" *ngIf="showChartFillColor">
+                  <span i18n="@@colorLabelArea" class="chart-color-label">Color de área</span>
+                  <span class="chart-color-controls">
+                    <input type="text" pInputText [(ngModel)]="chartFillColor" class="chart-color-input" (input)="applyChartFillColor(120)" minlength="7" >
+                    <span class="chart-color-picker">
+                      <p-colorPicker [(ngModel)]="chartFillColor" (onChange)="applyChartFillColor(0, true)" format="hex" appendTo="body"></p-colorPicker>
+                    </span>
+                  </span>
+                </div>
+                <!-- END SDA CUSTOM -->
+                <div class="col-12 chart-color-row chart-color-row--spaced" *ngIf="showLineSettings">
+                  <span i18n="@@widthLabelLine" class="chart-color-label">Grosor de línea</span>
+                  <span class="chart-color-controls">
+                    <input type="number" min="1" max="10" step="1" [(ngModel)]="lineWidth" pInputText class="chart-color-input" (input)="applyLineStyle(120)" />
+                  </span>
+                </div>
+                <div class="col-12 chart-color-row chart-color-row--spaced" *ngIf="showLineSettings">
+                  <span i18n="@@lineStyleLabel" class="chart-color-label">Tipo de línea</span>
+                  <span class="chart-color-controls">
+                    <p-dropdown class="line-style-dropdown" [options]="lineStyleOptions" optionLabel="label" optionValue="value" [(ngModel)]="lineStyle" (onChange)="applyLineStyle()" appendTo="body"></p-dropdown>
+                  </span>
+                </div>
+              </div>
+          </div>
 
+          <div class="kpi-config-section" *ngIf="showAxisSettings" [class.is-expanded]="isAxisScaleExpanded">
+              <div class="kpi-section-head" role="button" tabindex="0"
+                (click)="toggleSection('axisScale')"
+                (keydown.enter)="toggleSection('axisScale')"
+                (keydown.space)="toggleSection('axisScale')">
+                <h6 i18n="@@axisScaleH6" class="custom-border-b1">
+                    Ejes y escala
+                </h6>
+                <div class="kpi-section-actions">
+                  <i class="pi" [ngClass]="isAxisScaleExpanded ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+                  <button pButton type="button" class="p-button-text p-button-sm"
+                    (click)="$event.stopPropagation(); resetAxisScaleSection()" i18n-label="@@resetSectionButton" label="Restaurar">
+                  </button>
+                </div>
+              </div>
+              <div class="grid chart-color-selection" *ngIf="isAxisScaleExpanded">
+                <div class="col-12 chart-color-row">
+                  <span i18n="@@xAxisShowLabel" class="chart-color-label">Mostrar eje X</span>
+                  <span class="chart-color-controls">
+                    <p-inputSwitch [(ngModel)]="showXAxis" (onChange)="applyXAxisSettings()"></p-inputSwitch>
+                  </span>
+                </div>
+                <div class="col-12 chart-color-row chart-color-row--spaced">
+                  <span i18n="@@xAxisLabelsLabel" class="chart-color-label">Mostrar etiquetas del eje X</span>
+                  <span class="chart-color-controls">
+                    <p-inputSwitch [(ngModel)]="showXAxisLabels" (onChange)="applyXAxisSettings()"></p-inputSwitch>
+                  </span>
+                </div>
+                <div class="col-12 chart-color-row chart-color-row--spaced">
+                  <span i18n="@@xAxisAllLabelsLabel" class="chart-color-label">Mostrar todas las etiquetas</span>
+                  <span class="chart-color-controls">
+                    <p-inputSwitch [(ngModel)]="showAllXAxisLabels" (onChange)="toggleAllXAxisLabels()" [disabled]="!showXAxisLabels"></p-inputSwitch>
+                  </span>
+                </div>
+                <div class="col-12 chart-color-row chart-color-row--spaced">
+                  <span i18n="@@xAxisLabelCountLabel" class="chart-color-label">Máximo de etiquetas</span>
+                  <span class="chart-color-controls">
+                    <input type="number" min="1" max="200" step="1" [(ngModel)]="xAxisLabelCount" pInputText class="chart-color-input" (input)="handleXAxisLabelCountInput(120)" [disabled]="!showXAxisLabels || showAllXAxisLabels" />
+                  </span>
+                </div>
+              </div>
+          </div>
+
+          <!-- SDA CUSTOM - KPI chart label options -->
+          <div class="kpi-config-section" *ngIf="showLabelSettings" [class.is-expanded]="isLabelsValuesExpanded">
+              <div class="kpi-section-head" role="button" tabindex="0"
+                (click)="toggleSection('labelsValues')"
+                (keydown.enter)="toggleSection('labelsValues')"
+                (keydown.space)="toggleSection('labelsValues')">
+                <h6 i18n="@@labelsValuesH6" class="custom-border-b1">
+                  Etiquetas y valores
+                </h6>
+                <div class="kpi-section-actions">
+                  <i class="pi" [ngClass]="isLabelsValuesExpanded ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+                  <button pButton type="button" class="p-button-text p-button-sm"
+                    (click)="$event.stopPropagation(); resetLabelsValuesSection()" i18n-label="@@resetSectionButton" label="Restaurar">
+                  </button>
+                </div>
+              </div>
+              <div class="grid chart-color-selection" *ngIf="isLabelsValuesExpanded">
+                <div class="col-12 chart-color-row">
+                  <span i18n="@@showValueLabelsLabel" class="chart-color-label">Mostrar valores en el gráfico</span>
+                  <span class="chart-color-controls" [pTooltip]="valueLabelsTooltip" tooltipPosition="left">
+                    <p-inputSwitch [(ngModel)]="showLabels" (onChange)="setShowLabels()"></p-inputSwitch>
+                  </span>
+                </div>
+                <div class="col-12 chart-color-row chart-color-row--spaced">
+                  <span i18n="@@showValuePercentLabel" class="chart-color-label">Mostrar valores en porcentaje</span>
+                  <span class="chart-color-controls" [pTooltip]="valueLabelsPercentTooltip" tooltipPosition="left">
+                    <p-inputSwitch [(ngModel)]="showLabelsPercent" (onChange)="setShowLabelsPercent()"></p-inputSwitch>
+                  </span>
+                </div>
+                <!-- SDA CUSTOM - KPI label color option -->
+                <div class="col-12 chart-color-row chart-color-row--spaced">
+                  <span i18n="@@labelColorLabel" class="chart-color-label">Color del texto de etiquetas</span>
+                  <span class="chart-color-controls">
+                    <input type="text" pInputText [(ngModel)]="labelColor" class="chart-color-input" (input)="setLabelColor(120)" minlength="7" >
+                    <span class="chart-color-picker">
+                      <p-colorPicker [(ngModel)]="labelColor" (onChange)="setLabelColor(0, true)" format="hex" appendTo="body"></p-colorPicker>
+                    </span>
+                  </span>
+                </div>
+                <div class="col-12 chart-color-row chart-color-row--spaced">
+                  <span i18n="@@labelBackgroundColorLabel" class="chart-color-label">Fondo de etiquetas</span>
+                  <span class="chart-color-controls">
+                    <input type="text" pInputText [(ngModel)]="labelBackgroundColor" class="chart-color-input" (input)="setLabelBackgroundColor(120)" minlength="7" >
+                    <span class="chart-color-picker">
+                      <p-colorPicker [(ngModel)]="labelBackgroundColor" (onChange)="setLabelBackgroundColor(0, true)" format="hex" appendTo="body"></p-colorPicker>
+                    </span>
+                  </span>
+                </div>
+                <!-- END SDA CUSTOM -->
+              </div>
+          </div>
+          <!-- END SDA CUSTOM -->
+        </div>
+        <div class="kpi-config-scroll-indicator" aria-hidden="true"></div>
+        </div>
+        <!-- END SDA CUSTOM -->
+      </div>
     </div>
 
-    <div class="col-12 mt-5">
+    <div class="col-12 mt-2">
       <h6 i18n="@@kpiAlertH6" class="custom-border-b1">
         Generar alerta
       </h6>
@@ -91,6 +260,7 @@
               </div>
             </li>
           </ul>
+
         </div>
       </div>
     </div>
@@ -161,7 +331,7 @@
 
       </div>
 
-      <div class="col-12"> 
+      <div class="col-12">
         <h6 *ngIf="!enabled" i18n="@@noMail">Sin alertas de correo</h6>
         <h6 *ngIf="enabled" i18n="@@opcionMail">Enviar per email</h6>
         <p-inputSwitch id="switchCache" class="col-1" [(ngModel)]="enabled" tooltipPosition="left">

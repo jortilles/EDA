@@ -54,3 +54,231 @@ ul li:hover {
 .wrap-alert i:last-child {
   margin-left: auto;
 }
+
+.chart-color-input {
+  width: 76px !important;
+  min-width: 76px;
+  flex: 0 0 76px;
+  height: 26px;
+  font-size: 12px;
+  padding: 2px 6px;
+}
+
+/* SDA CUSTOM - Responsive chart color row with container query */
+.chart-color-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(110px, 160px);
+  align-items: center;
+  gap: 4px;
+  min-height: 24px;
+}
+
+@container (max-width: 320px) {
+  .chart-color-row {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-color-controls {
+    justify-content: flex-start;
+  }
+}
+/* END SDA CUSTOM */
+
+.chart-color-row--spaced {
+  margin-top: 2px;
+}
+
+/* SDA CUSTOM - Label with wrap support for small containers */
+.chart-color-label {
+  white-space: normal;
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  line-height: 1.2;
+}
+/* END SDA CUSTOM */
+
+.chart-color-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.chart-color-picker .p-colorpicker-preview {
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+}
+
+.chart-color-picker .p-colorpicker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.line-style-dropdown {
+  width: 108px;
+}
+
+.line-style-dropdown .p-dropdown {
+  width: 100%;
+  height: 26px;
+  font-size: 12px;
+}
+
+.kpi-preview {
+  background-color: var(--panel-color);
+  width: 100%;
+  max-height: 24vh;
+  min-height: 150px;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+}
+
+.kpi-preview-sticky {
+  position: sticky;
+  top: 0.5rem;
+}
+
+.kpi-options-shell {
+  border: 1px solid #d7dde6;
+  border-radius: 10px;
+  background: #f7f9fc;
+  padding: 10px 10px 8px 10px;
+}
+
+.kpi-options-shell__header {
+  border-bottom: 1px solid #e3e8ef;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+}
+
+.kpi-options-title {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.kpi-options-subtitle {
+  margin: 3px 0 0 0;
+  font-size: 11px;
+  line-height: 1.25;
+  color: #5f6b7a;
+}
+
+.kpi-preview .component,
+.kpi-preview panel-chart {
+  width: 100%;
+  height: 100%;
+}
+
+/* SDA CUSTOM - Compact KPI options panel with own scroll */
+.kpi-config-panel-wrapper {
+  position: relative;
+}
+
+/* SDA CUSTOM - Container query context for responsive grid layout */
+.kpi-config-panel {
+  max-height: 34vh;
+  overflow-y: auto;
+  padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  container-type: inline-size;
+}
+/* END SDA CUSTOM */
+
+.kpi-config-section {
+  padding: 6px 8px 8px 8px;
+  border: 1px solid #d9e0ea;
+  border-radius: 8px;
+  background: #ffffff;
+  overflow: visible;
+}
+
+.kpi-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+  padding: 6px 8px;
+  border: 1px solid #dfe6f1;
+  border-radius: 6px;
+  background: #f4f7fb;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.kpi-section-head:hover {
+  background: #eef3fb;
+  border-color: #cfd9e8;
+}
+
+.kpi-config-section.is-expanded .kpi-section-head {
+  background: #eef3fb;
+  border-color: #c7d4e8;
+}
+
+.kpi-section-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.kpi-section-actions .pi {
+  font-size: 13px;
+  color: #43546a;
+}
+
+.kpi-section-head .p-button {
+  font-size: 11px;
+  padding: 0;
+}
+
+.kpi-config-section .custom-border-b1 {
+  margin: 0;
+  border-bottom: none !important;
+  font-size: 12px;
+  line-height: 1.1;
+  font-weight: bold;
+}
+
+.chart-color-selection {
+  row-gap: 2px;
+  overflow: visible;
+}
+
+.kpi-config-scroll-indicator {
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  height: 14px;
+  margin-top: -14px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.95));
+}
+/* END SDA CUSTOM */
+
+.kpi-config-panel .p-inputswitch {
+  height: 18px;
+  width: 34px;
+}
+
+.kpi-config-panel .p-inputswitch .p-inputswitch-slider::before {
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  margin-left: -7px;
+}
+
+@media (max-width: 1200px) {
+  .kpi-preview-sticky {
+    position: static;
+  }
+}

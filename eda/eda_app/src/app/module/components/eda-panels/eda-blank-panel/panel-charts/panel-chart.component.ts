@@ -487,17 +487,32 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.value = this.props.data.values[0][0];
         chartConfig.header = this.props.query[0]?.display_name?.default;
         chartConfig.showChart = false;
+        /* SDA CUSTOM */ chartConfig.showResizeControls = !!this.props?.canEdit && !!this.props?.canSave && !this.props?.locked;
 
         const config: any = this.props.config;
         const alertLimits = config?.config?.alertLimits || [];
 
         if (config) {
             chartConfig.sufix = (<KpiConfig>config.getConfig())?.sufix || '';
+            /* SDA CUSTOM */ chartConfig.fontScale = (<KpiConfig>config.getConfig())?.fontScale || 1;
+            /* SDA CUSTOM */ chartConfig.color = (<KpiConfig>config.getConfig())?.color || null;
+            /* SDA CUSTOM */ chartConfig.lineWidth = (<KpiConfig>config.getConfig())?.lineWidth ?? 2;
+            /* SDA CUSTOM */ chartConfig.lineStyle = (<KpiConfig>config.getConfig())?.lineStyle ?? 'solid';
+            /* SDA CUSTOM */ chartConfig.showXAxis = (<KpiConfig>config.getConfig())?.showXAxis ?? true;
+            /* SDA CUSTOM */ chartConfig.showXAxisLabels = (<KpiConfig>config.getConfig())?.showXAxisLabels ?? true;
+            /* SDA CUSTOM */ chartConfig.xAxisLabelCount = (<KpiConfig>config.getConfig())?.xAxisLabelCount ?? 0;
             chartConfig.alertLimits = alertLimits;
             chartConfig.edaChart =  (<KpiConfig>config.getConfig())?.edaChart;
         } else {
             chartConfig.sufix = '';
             chartConfig.alertLimits = [];
+            /* SDA CUSTOM */ chartConfig.fontScale = 1;
+            /* SDA CUSTOM */ chartConfig.color = null;
+            /* SDA CUSTOM */ chartConfig.lineWidth = 2;
+            /* SDA CUSTOM */ chartConfig.lineStyle = 'solid';
+            /* SDA CUSTOM */ chartConfig.showXAxis = true;
+            /* SDA CUSTOM */ chartConfig.showXAxisLabels = true;
+            /* SDA CUSTOM */ chartConfig.xAxisLabelCount = 0;
         }
 
         this.createEdaKpiComponent(chartConfig);
@@ -513,7 +528,23 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onNotify.subscribe(data => {
-            const kpiConfig = new KpiConfig({ sufix: data.sufix, alertLimits: inject.alertLimits });
+            /* SDA CUSTOM */ const currentConfig = <KpiConfig>this.props.config.getConfig();
+            /* SDA CUSTOM */ const kpiConfig = new KpiConfig({
+                /* SDA CUSTOM */ sufix: data.sufix,
+                /* SDA CUSTOM */ alertLimits: inject.alertLimits,
+                /* SDA CUSTOM */ color: inject.color ?? currentConfig?.color ?? null,
+                /* SDA CUSTOM */ fontScale: data.fontScale,
+                /* SDA CUSTOM */ lineWidth: inject.lineWidth,
+                /* SDA CUSTOM */ lineStyle: inject.lineStyle,
+                /* SDA CUSTOM */ showXAxis: inject.showXAxis,
+                /* SDA CUSTOM */ showXAxisLabels: inject.showXAxisLabels,
+                /* SDA CUSTOM */ xAxisLabelCount: inject.xAxisLabelCount,
+                /* SDA CUSTOM */ showLabels: currentConfig?.showLabels ?? false,
+                /* SDA CUSTOM */ showLabelsPercent: currentConfig?.showLabelsPercent ?? false,
+                /* SDA CUSTOM */ labelColor: currentConfig?.labelColor ?? '#000000',
+                /* SDA CUSTOM */ labelBackgroundColor: currentConfig?.labelBackgroundColor ?? '',
+                /* SDA CUSTOM */ edaChart: currentConfig?.edaChart
+            /* SDA CUSTOM */ });
             (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
         })
     }
@@ -599,17 +630,30 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
   /*SDA CUSTOM*/          chartOptions.chartOptions.layout = {};
   /*SDA CUSTOM*/      }
 
+    /* SDA CUSTOM */ /*SDA CUSTOM*/      const showValueLabels = !!(cfg?.showLabels || cfg?.showLabelsPercent);
+    /* SDA CUSTOM */ /*SDA CUSTOM*/      const topPadding = showValueLabels ? 24 : 15;
+
   /*SDA CUSTOM*/      chartOptions.chartOptions.layout.padding = {
-  /*SDA CUSTOM*/          top: 15,
+    /* SDA CUSTOM */ /*SDA CUSTOM*/          top: topPadding,
   /*SDA CUSTOM*/          right: 15,
   /*SDA CUSTOM*/          bottom: 25,
   /*SDA CUSTOM*/          left: 20
   /*SDA CUSTOM*/      };
+
+    /* SDA CUSTOM */ /*SDA CUSTOM*/      if (!chartOptions.chartOptions.plugins) {
+    /* SDA CUSTOM */ /*SDA CUSTOM*/          chartOptions.chartOptions.plugins = {};
+    /* SDA CUSTOM */ /*SDA CUSTOM*/      }
+    /* SDA CUSTOM */ /*SDA CUSTOM*/      if (!chartOptions.chartOptions.plugins.datalabels) {
+    /* SDA CUSTOM */ /*SDA CUSTOM*/          chartOptions.chartOptions.plugins.datalabels = {};
+    /* SDA CUSTOM */ /*SDA CUSTOM*/      }
+    /* SDA CUSTOM */ /*SDA CUSTOM*/      chartOptions.chartOptions.plugins.datalabels.clamp = true;
+    /* SDA CUSTOM */ /*SDA CUSTOM*/      chartOptions.chartOptions.plugins.datalabels.clip = false;
   /*SDA CUSTOM*/
 
         // let chartConfig: any = {};
         chartConfig.edaChart = {}
         chartConfig.showChart = true;
+        /* SDA CUSTOM */ chartConfig.showResizeControls = !!this.props?.canEdit && !!this.props?.canSave && !this.props?.locked;
         chartConfig.edaChart.edaChart = chartSubType;
         chartConfig.edaChart.chartType = chartType;
         chartConfig.edaChart.chartLabels = chartData[0];
@@ -622,6 +666,48 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             chartConfig.edaChart.chartDataset[0].backgroundColor = chartConfig.edaChart.chartColors[0].backgroundColor;
             chartConfig.edaChart.chartDataset[0].borderColor = chartConfig.edaChart.chartColors[0].borderColor;
         }
+
+        /* SDA CUSTOM */ // SDA CUSTOM - KPI bar border visibility
+        /* SDA CUSTOM */ if (chartType === 'bar' && chartConfig.edaChart?.chartDataset?.length) {
+        /* SDA CUSTOM */     const borderWidth = cfg?.lineWidth ?? 2;
+        /* SDA CUSTOM */     chartConfig.edaChart.chartDataset.forEach(dataset => {
+        /* SDA CUSTOM */         dataset.borderWidth = dataset.borderWidth ?? borderWidth;
+        /* SDA CUSTOM */     });
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ // END SDA CUSTOM
+
+        /* SDA CUSTOM */ const lineWidth = cfg?.lineWidth ?? 2;
+        /* SDA CUSTOM */ const lineStyle = cfg?.lineStyle ?? 'solid';
+        /* SDA CUSTOM */ chartConfig.lineWidth = lineWidth;
+        /* SDA CUSTOM */ chartConfig.lineStyle = lineStyle;
+        /* SDA CUSTOM */ if (['line', 'area'].includes(chartType)) {
+            /* SDA CUSTOM */ this.applyKpiLineStyle(chartConfig.edaChart.chartDataset, lineWidth, lineStyle);
+        /* SDA CUSTOM */ }
+
+        /* SDA CUSTOM */ const showXAxis = cfg?.showXAxis ?? true;
+        /* SDA CUSTOM */ const showXAxisLabels = cfg?.showXAxisLabels ?? true;
+        /* SDA CUSTOM */ const xAxisLabelCount = cfg?.xAxisLabelCount ?? 0;
+        /* SDA CUSTOM */ const labelColor = cfg?.labelColor ?? chartOptions.chartOptions?.plugins?.datalabels?.color ?? '#000000';
+        /* SDA CUSTOM */ const labelBackgroundColor = cfg?.labelBackgroundColor ?? chartOptions.chartOptions?.plugins?.datalabels?.backgroundColor ?? '';
+        /* SDA CUSTOM */ chartConfig.showXAxis = showXAxis;
+        /* SDA CUSTOM */ chartConfig.showXAxisLabels = showXAxisLabels;
+        /* SDA CUSTOM */ chartConfig.xAxisLabelCount = xAxisLabelCount;
+        /* SDA CUSTOM */ chartConfig.showLabels = cfg?.showLabels ?? false;
+        /* SDA CUSTOM */ chartConfig.showLabelsPercent = cfg?.showLabelsPercent ?? false;
+        /* SDA CUSTOM */ chartConfig.labelColor = labelColor;
+        /* SDA CUSTOM */ chartConfig.labelBackgroundColor = labelBackgroundColor;
+        /* SDA CUSTOM */ if (!chartConfig.edaChart.chartOptions.plugins) {
+        /* SDA CUSTOM */     chartConfig.edaChart.chartOptions.plugins = {};
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ if (!chartConfig.edaChart.chartOptions.plugins.datalabels) {
+        /* SDA CUSTOM */     chartConfig.edaChart.chartOptions.plugins.datalabels = {};
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ chartConfig.edaChart.chartOptions.plugins.datalabels.color = labelColor;
+        /* SDA CUSTOM */ chartConfig.edaChart.chartOptions.plugins.datalabels.backgroundColor = labelBackgroundColor || null;
+        /* SDA CUSTOM */ if (chartType === 'bar') {
+        /* SDA CUSTOM */     chartConfig.edaChart.chartOptions.plugins.datalabels.borderRadius = 4;
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ this.applyKpiXAxisOptions(chartConfig.edaChart.chartOptions, showXAxis, showXAxisLabels, xAxisLabelCount, chartConfig.edaChart.chartLabels);
 
 
         // KPI Config
@@ -656,9 +742,31 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (propsConfig) {
             chartConfig.sufix = (<KpiConfig>propsConfig.getConfig())?.sufix || '';
             chartConfig.alertLimits = alertLimits;
+            /* SDA CUSTOM */ chartConfig.fontScale = (<KpiConfig>propsConfig.getConfig())?.fontScale || 1;
+            /* SDA CUSTOM */ chartConfig.color = (<KpiConfig>propsConfig.getConfig())?.color || null;
+            /* SDA CUSTOM */ chartConfig.lineWidth = (<KpiConfig>propsConfig.getConfig())?.lineWidth ?? lineWidth;
+            /* SDA CUSTOM */ chartConfig.lineStyle = (<KpiConfig>propsConfig.getConfig())?.lineStyle ?? lineStyle;
+            /* SDA CUSTOM */ chartConfig.showXAxis = (<KpiConfig>propsConfig.getConfig())?.showXAxis ?? showXAxis;
+            /* SDA CUSTOM */ chartConfig.showXAxisLabels = (<KpiConfig>propsConfig.getConfig())?.showXAxisLabels ?? showXAxisLabels;
+            /* SDA CUSTOM */ chartConfig.xAxisLabelCount = (<KpiConfig>propsConfig.getConfig())?.xAxisLabelCount ?? xAxisLabelCount;
+            /* SDA CUSTOM */ chartConfig.showLabels = (<KpiConfig>propsConfig.getConfig())?.showLabels ?? chartConfig.showLabels;
+            /* SDA CUSTOM */ chartConfig.showLabelsPercent = (<KpiConfig>propsConfig.getConfig())?.showLabelsPercent ?? chartConfig.showLabelsPercent;
+            /* SDA CUSTOM */ chartConfig.labelColor = (<KpiConfig>propsConfig.getConfig())?.labelColor ?? labelColor;
+            /* SDA CUSTOM */ chartConfig.labelBackgroundColor = (<KpiConfig>propsConfig.getConfig())?.labelBackgroundColor ?? labelBackgroundColor;
         } else {
             chartConfig.sufix = '';
             chartConfig.alertLimits = [];
+            /* SDA CUSTOM */ chartConfig.fontScale = 1;
+            /* SDA CUSTOM */ chartConfig.color = null;
+            /* SDA CUSTOM */ chartConfig.lineWidth = lineWidth;
+            /* SDA CUSTOM */ chartConfig.lineStyle = lineStyle;
+            /* SDA CUSTOM */ chartConfig.showXAxis = showXAxis;
+            /* SDA CUSTOM */ chartConfig.showXAxisLabels = showXAxisLabels;
+            /* SDA CUSTOM */ chartConfig.xAxisLabelCount = xAxisLabelCount;
+            /* SDA CUSTOM */ chartConfig.showLabels = chartConfig.showLabels ?? false;
+            /* SDA CUSTOM */ chartConfig.showLabelsPercent = chartConfig.showLabelsPercent ?? false;
+            /* SDA CUSTOM */ chartConfig.labelColor = labelColor;
+            /* SDA CUSTOM */ chartConfig.labelBackgroundColor = labelBackgroundColor;
         }
 
         this.createEdaKpiChartComponent(chartConfig);
@@ -670,6 +778,123 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if(Math.floor(value) === value) return 0;
         return value.toString().split(".")[1].length || 0;
     }
+
+    /* SDA CUSTOM */ private applyKpiLineStyle(datasets: any[], lineWidth: number, lineStyle: string): void {
+        /* SDA CUSTOM */ if (!Array.isArray(datasets)) {
+            /* SDA CUSTOM */ return;
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ const dash = this.getKpiLineDash(lineStyle);
+        /* SDA CUSTOM */ datasets.forEach(dataset => {
+            /* SDA CUSTOM */ dataset.borderWidth = lineWidth;
+            /* SDA CUSTOM */ dataset.borderDash = dash;
+        /* SDA CUSTOM */ });
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */ private getKpiLineDash(style: string): number[] {
+        /* SDA CUSTOM */ switch (style) {
+            /* SDA CUSTOM */ case 'dashed':
+                /* SDA CUSTOM */ return [8, 4];
+            /* SDA CUSTOM */ case 'dotted':
+                /* SDA CUSTOM */ return [2, 4];
+            /* SDA CUSTOM */ case 'solid':
+            /* SDA CUSTOM */ default:
+                /* SDA CUSTOM */ return [];
+        /* SDA CUSTOM */ }
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */ private applyKpiXAxisOptions(
+        /* SDA CUSTOM */ chartOptions: any,
+        /* SDA CUSTOM */ showAxis: boolean,
+        /* SDA CUSTOM */ showLabels: boolean,
+        /* SDA CUSTOM */ labelCount: number,
+        /* SDA CUSTOM */ chartLabels: any[]
+    /* SDA CUSTOM */ ): void {
+        /* SDA CUSTOM */ if (!chartOptions) {
+            /* SDA CUSTOM */ return;
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ const labelsLength = Array.isArray(chartLabels) ? chartLabels.length : 0;
+        /* SDA CUSTOM */ const useAll = !labelCount || labelCount <= 0;
+        /* SDA CUSTOM */ const maxTicksLimit = useAll ? labelsLength : labelCount;
+
+        /* SDA CUSTOM */ if (!chartOptions.scales) {
+            /* SDA CUSTOM */ chartOptions.scales = {};
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ if (!chartOptions.scales.x) {
+            /* SDA CUSTOM */ chartOptions.scales.x = {};
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ if (!chartOptions.scales.x.ticks) {
+            /* SDA CUSTOM */ chartOptions.scales.x.ticks = {};
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ if (!chartOptions.scales.x.grid) {
+            /* SDA CUSTOM */ chartOptions.scales.x.grid = {};
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ chartOptions.scales.x.display = showAxis || showLabels;
+        /* SDA CUSTOM */ chartOptions.scales.x.grid.drawBorder = showAxis;
+        /* SDA CUSTOM */ chartOptions.scales.x.ticks.display = showLabels;
+        /* SDA CUSTOM */ chartOptions.scales.x.ticks.maxTicksLimit = maxTicksLimit || undefined;
+        /* SDA CUSTOM */ chartOptions.scales.x.ticks.autoSkip = false;
+        /* SDA CUSTOM */ chartOptions.scales.x.ticks.callback = this.buildKpiXAxisTickCallback(useAll, labelsLength, labelCount, chartLabels);
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */ private buildKpiXAxisTickCallback(
+        /* SDA CUSTOM */ useAll: boolean,
+        /* SDA CUSTOM */ labelsLength: number,
+        /* SDA CUSTOM */ labelCount: number,
+        /* SDA CUSTOM */ chartLabels: any[]
+    /* SDA CUSTOM */ ): ((value: any, index: number) => string) | undefined {
+        /* SDA CUSTOM */ if (labelsLength === 0) {
+            /* SDA CUSTOM */ return undefined;
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ if (useAll || !labelCount || labelCount <= 0) {
+            /* SDA CUSTOM */ return (value, index) => {
+                /* SDA CUSTOM */ const label = Array.isArray(chartLabels)
+                    /* SDA CUSTOM */ ? (chartLabels[index] ?? chartLabels[value])
+                    /* SDA CUSTOM */ : value;
+                /* SDA CUSTOM */ return `${label ?? ''}`;
+            /* SDA CUSTOM */ };
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ const maxCount = Math.min(labelCount, labelsLength);
+        /* SDA CUSTOM */ if (maxCount <= 1) {
+            /* SDA CUSTOM */ return (value, index) => {
+                /* SDA CUSTOM */ if (index !== 0) {
+                    /* SDA CUSTOM */ return '';
+                /* SDA CUSTOM */ }
+                /* SDA CUSTOM */ const label = Array.isArray(chartLabels)
+                    /* SDA CUSTOM */ ? (chartLabels[index] ?? chartLabels[value])
+                    /* SDA CUSTOM */ : value;
+                /* SDA CUSTOM */ return `${label ?? ''}`;
+            /* SDA CUSTOM */ };
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ const indices = this.getKpiXAxisLabelIndices(labelsLength, maxCount);
+        /* SDA CUSTOM */ return (value, index) => {
+            /* SDA CUSTOM */ if (!indices.has(index)) {
+                /* SDA CUSTOM */ return '';
+            /* SDA CUSTOM */ }
+            /* SDA CUSTOM */ const label = Array.isArray(chartLabels)
+                /* SDA CUSTOM */ ? (chartLabels[index] ?? chartLabels[value])
+                /* SDA CUSTOM */ : value;
+            /* SDA CUSTOM */ return `${label ?? ''}`;
+        /* SDA CUSTOM */ };
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */ private getKpiXAxisLabelIndices(labelsLength: number, labelCount: number): Set<number> {
+        /* SDA CUSTOM */ const indices = new Set<number>();
+        /* SDA CUSTOM */ if (labelsLength <= 0) {
+            /* SDA CUSTOM */ return indices;
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ if (labelCount <= 1) {
+            /* SDA CUSTOM */ indices.add(0);
+            /* SDA CUSTOM */ return indices;
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ const steps = labelCount - 1;
+        /* SDA CUSTOM */ for (let i = 0; i < labelCount; i += 1) {
+            /* SDA CUSTOM */ const index = Math.round((i * (labelsLength - 1)) / steps);
+            /* SDA CUSTOM */ indices.add(index);
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */ indices.add(0);
+        /* SDA CUSTOM */ indices.add(labelsLength - 1);
+        /* SDA CUSTOM */ return indices;
+    /* SDA CUSTOM */ }
 
 
     /**
@@ -683,7 +908,24 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject = inject;
 
         this.componentRef.instance.onNotify.subscribe(data => {
-            const kpiConfig = new KpiConfig({ sufix: data.sufix, alertLimits: inject.alertLimits||[], edaChart: inject.edaChart });
+            /* SDA CUSTOM */ const currentConfig = <KpiConfig>this.props.config.getConfig();
+            /* SDA CUSTOM */ const kpiConfig = new KpiConfig({
+                /* SDA CUSTOM */ sufix: data.sufix,
+                /* SDA CUSTOM */ alertLimits: inject.alertLimits||[],
+                /* SDA CUSTOM */ edaChart: inject.edaChart,
+                /* SDA CUSTOM */ fontScale: data.fontScale,
+                /* SDA CUSTOM */ lineWidth: inject.lineWidth,
+                /* SDA CUSTOM */ lineStyle: inject.lineStyle,
+                /* SDA CUSTOM */ showXAxis: inject.showXAxis,
+                /* SDA CUSTOM */ showXAxisLabels: inject.showXAxisLabels,
+                /* SDA CUSTOM */ xAxisLabelCount: inject.xAxisLabelCount,
+                /* SDA CUSTOM */ // SDA CUSTOM - Preserve KPI label settings
+                /* SDA CUSTOM */ showLabels: inject.showLabels ?? currentConfig?.showLabels ?? false,
+                /* SDA CUSTOM */ showLabelsPercent: inject.showLabelsPercent ?? currentConfig?.showLabelsPercent ?? false,
+                /* SDA CUSTOM */ labelColor: inject.labelColor ?? currentConfig?.labelColor ?? '#000000',
+                /* SDA CUSTOM */ labelBackgroundColor: inject.labelBackgroundColor ?? currentConfig?.labelBackgroundColor ?? '',
+                /* SDA CUSTOM */ // END SDA CUSTOM
+            /* SDA CUSTOM */ });
             (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
         })
         this.configUpdated.emit();

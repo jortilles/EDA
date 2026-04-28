@@ -431,6 +431,128 @@
     <source>Desbloquear panel</source>
     <target>Unlock panel</target>
   </trans-unit>
+  <trans-unit id="colorKpiLabel">
+    <source>Color del KPI</source>
+    <target>KPI color</target>
+  </trans-unit>
+  <trans-unit id="colorChartLabel">
+    <source>Color del gráfico</source>
+    <target>Chart color</target>
+  </trans-unit>
+  <trans-unit id="appearanceSection">
+    <source>Apariencia</source>
+    <target>Appearance</target>
+  </trans-unit>
+  <trans-unit id="panelTitleOptions">
+    <source>Opciones de visualización</source>
+    <target>Display options</target>
+  </trans-unit>
+  <trans-unit id="resetSectionButton">
+    <source>Restaurar</source>
+    <target>Reset</target>
+  </trans-unit>
+  <trans-unit id="colorLabelIndicator">
+    <source>Color del indicador</source>
+    <target>Indicator color</target>
+  </trans-unit>
+  <trans-unit id="colorLabelSeries">
+    <source>Color de la serie</source>
+    <target>Series color</target>
+  </trans-unit>
+  <trans-unit id="colorLabelLine">
+    <source>Color de línea</source>
+    <target>Line color</target>
+  </trans-unit>
+  <trans-unit id="colorLabelArea">
+    <source>Color de área</source>
+    <target>Area color</target>
+  </trans-unit>
+  <trans-unit id="axisScaleH6">
+    <source>Ejes y escala</source>
+    <target>Axes and scale</target>
+  </trans-unit>
+  <trans-unit id="labelsValuesH6">
+    <source>Etiquetas y valores</source>
+    <target>Labels and values</target>
+  </trans-unit>
+  <trans-unit id="widthLabelLine">
+    <source>Grosor de línea</source>
+    <target>Line thickness</target>
+  </trans-unit>
+  <trans-unit id="lineStyleLabel">
+    <source>Tipo de línea</source>
+    <target>Line type</target>
+  </trans-unit>
+  <trans-unit id="lineStyleSolid">
+    <source>Sólida</source>
+    <target>Solid</target>
+  </trans-unit>
+  <trans-unit id="lineStyleDashed">
+    <source>Discontinua</source>
+    <target>Dashed</target>
+  </trans-unit>
+  <trans-unit id="lineStyleDotted">
+    <source>Punteada</source>
+    <target>Dotted</target>
+  </trans-unit>
+  <trans-unit id="xAxisShowLabel">
+    <source>Mostrar eje X</source>
+    <target>Show X-axis</target>
+  </trans-unit>
+  <trans-unit id="xAxisLabelsLabel">
+    <source>Mostrar etiquetas del eje X</source>
+    <target>Show X-axis labels</target>
+  </trans-unit>
+  <trans-unit id="xAxisAllLabelsLabel">
+    <source>Mostrar todas las etiquetas</source>
+    <target>Show all labels</target>
+  </trans-unit>
+  <trans-unit id="xAxisLabelCountLabel">
+    <source>Máximo de etiquetas</source>
+    <target>Maximum labels</target>
+  </trans-unit>
+  <!-- SDA CUSTOM - KPI/chart option labels -->
+  <trans-unit id="showChartLabels">
+    <source>Mostrar etiquetas del gráfico</source>
+    <target>Show chart labels</target>
+  </trans-unit>
+  <trans-unit id="showValueLabelsLabel">
+    <source>Mostrar valores en el gráfico</source>
+    <target>Show values on chart</target>
+  </trans-unit>
+  <trans-unit id="showChartLabelsPercent">
+    <source>Mostrar Etiquetas en Porcentajes</source>
+    <target>Show labels as percentages</target>
+  </trans-unit>
+  <trans-unit id="showValuePercentLabel">
+    <source>Mostrar valores en porcentaje</source>
+    <target>Show values as percentage</target>
+  </trans-unit>
+  <trans-unit id="valueLabelsTooltip">
+    <source>Mostrar u ocultar los valores en el gráfico</source>
+    <target>Show or hide values on chart</target>
+  </trans-unit>
+  <trans-unit id="valueLabelsPercentTooltip">
+    <source>Mostrar u ocultar los valores en porcentaje en el gráfico</source>
+    <target>Show or hide percentage values on chart</target>
+  </trans-unit>
+  <trans-unit id="colorChartBorderLabel">
+    <source>Color del borde</source>
+    <target>Border color</target>
+  </trans-unit>
+  <trans-unit id="colorChartFillLabel">
+    <source>Color de relleno</source>
+    <target>Fill color</target>
+  </trans-unit>
+  <trans-unit id="labelColorLabel">
+    <source>Color del texto de etiquetas</source>
+    <target>Label text color</target>
+  </trans-unit>
+  <trans-unit id="labelBackgroundColorLabel">
+    <source>Fondo de etiquetas</source>
+    <target>Label background</target>
+  </trans-unit>
+  <!-- END SDA CUSTOM -->
   <!-- SDA CUSTOM - Logs viewer labels -->
   <trans-unit id="LogsViewer" datatype="html">
     <source>Visor de logs</source>

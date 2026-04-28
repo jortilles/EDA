@@ -46,15 +46,28 @@ export const ChartsConfigUtils = {
       config = {
         sufix: ebp.panelChart.componentRef.instance.inject.sufix,
         alertLimits: ebp.panelChart.componentRef.instance.inject.alertLimits,
+        /* SDA CUSTOM */ fontScale: ebp.panelChart.componentRef.instance.inject.fontScale,
+        /* SDA CUSTOM */ color: ebp.panelChart.componentRef.instance.inject.color,
+        /* SDA CUSTOM */ lineWidth: ebp.panelChart.componentRef.instance.inject.lineWidth,
+        /* SDA CUSTOM */ lineStyle: ebp.panelChart.componentRef.instance.inject.lineStyle,
+        /* SDA CUSTOM */ showXAxis: ebp.panelChart.componentRef.instance.inject.showXAxis,
+        /* SDA CUSTOM */ showXAxisLabels: ebp.panelChart.componentRef.instance.inject.showXAxisLabels,
+        /* SDA CUSTOM */ xAxisLabelCount: ebp.panelChart.componentRef.instance.inject.xAxisLabelCount,
+        /* SDA CUSTOM */ labelColor: ebp.panelChart.componentRef.instance.inject.labelColor,
+        /* SDA CUSTOM */ labelBackgroundColor: ebp.panelChart.componentRef.instance.inject.labelBackgroundColor,
+        /* SDA CUSTOM */ showLabels: ebp.panelChart.componentRef.instance.inject.showLabels,
+        /* SDA CUSTOM */ showLabelsPercent: ebp.panelChart.componentRef.instance.inject.showLabelsPercent,
         edaChart: {}
       }
 
-      if (kpiChart.edaChart) {
+      /* SDA CUSTOM */ if (kpiChart?.edaChart) {
         config.edaChart.colors = kpiChart.chartColors;
         config.edaChart.chartType = ebp.panelChart.props.chartType;
+        /* SDA CUSTOM */ config.edaChart.showLabels = ebp.panelChart.componentRef.instance.inject.showLabels;
+        /* SDA CUSTOM */ config.edaChart.showLabelsPercent = ebp.panelChart.componentRef.instance.inject.showLabelsPercent;
 
-        // colors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['colors'] : [], 
-        // chartType: ebp.panelChart.props.chartType, 
+        // colors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['colors'] : [],
+        // chartType: ebp.panelChart.props.chartType,
       }
 
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'dynamicText') {
@@ -71,7 +84,7 @@ export const ChartsConfigUtils = {
         legendPosition: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.legendPosition : null,
         color: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.color : null,
         draggable: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.draggable : null,
-        
+
       }
     } else if(ebp.panelChart.props.chartType === 'treetable') {
       config = {
@@ -104,9 +117,9 @@ export const ChartsConfigUtils = {
       };
     } else{
       // Chart.js
-      config = { 
-        colors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['colors'] : [], 
-        chartType: ebp.panelChart.props.chartType, 
+      config = {
+        /* SDA CUSTOM */ colors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['colors'] : [],
+        /* SDA CUSTOM */ chartType: ebp.panelChart.props.chartType,
         addTrend: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addTrend'] : false,
         addComparative: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addComparative'] : false,
         showLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabels'] : false,

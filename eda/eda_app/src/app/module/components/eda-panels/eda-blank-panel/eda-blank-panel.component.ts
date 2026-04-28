@@ -312,6 +312,14 @@ export class EdaBlankPanelComponent implements OnInit {
 
     /* SDA CUSTOM */  public toggleLock() {
     /* SDA CUSTOM */    this.panel.locked = !this.panel.locked;
+    /* SDA CUSTOM */    if (this.panelChartConfig) {
+    /* SDA CUSTOM */      this.panelChartConfig.locked = this.panel.locked;
+    /* SDA CUSTOM */    }
+    /* SDA CUSTOM */    const showResizeControls = this.getEditMode() && !!this.inject?.canSave && !this.panel.locked;
+    /* SDA CUSTOM */    const chartInstance = this.panelChart?.componentRef?.instance;
+    /* SDA CUSTOM */    if (chartInstance?.inject) {
+    /* SDA CUSTOM */      chartInstance.inject.showResizeControls = showResizeControls;
+    /* SDA CUSTOM */    }
     /* SDA CUSTOM */    this.dashboardService._notSaved.next(true);
     /* SDA CUSTOM */  }
 
@@ -638,6 +646,9 @@ export class EdaBlankPanelComponent implements OnInit {
             maps: this.inject.dataSource.model.maps,
             size: { x: this.panel.w, y: this.panel.h },
             linkedDashboardProps: this.panel.linkedDashboardProps,
+            /* SDA CUSTOM */ canEdit: this.getEditMode(),
+            /* SDA CUSTOM */ canSave: !!this.inject?.canSave,
+            /* SDA CUSTOM */ locked: this.panel.locked,
         });
     }
 
@@ -1432,6 +1443,18 @@ export class EdaBlankPanelComponent implements OnInit {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             this.panel.content.query.output.config.alertLimits = response.alerts;
             this.panel.content.query.output.config.sufix = response.sufix;
+            /* SDA CUSTOM */ this.panel.content.query.output.config.fontScale = response.fontScale;
+            /* SDA CUSTOM */ this.panel.content.query.output.config.lineWidth = response.lineWidth;
+            /* SDA CUSTOM */ this.panel.content.query.output.config.lineStyle = response.lineStyle;
+            /* SDA CUSTOM */ this.panel.content.query.output.config.showXAxis = response.showXAxis;
+            /* SDA CUSTOM */ this.panel.content.query.output.config.showXAxisLabels = response.showXAxisLabels;
+            /* SDA CUSTOM */ this.panel.content.query.output.config.xAxisLabelCount = response.xAxisLabelCount;
+            /* SDA CUSTOM */ // SDA CUSTOM - KPI chart label settings
+            /* SDA CUSTOM */ this.panel.content.query.output.config.labelColor = response.labelColor;
+            /* SDA CUSTOM */ this.panel.content.query.output.config.labelBackgroundColor = response.labelBackgroundColor;
+            /* SDA CUSTOM */ this.panel.content.query.output.config.showLabels = response.showLabels;
+            /* SDA CUSTOM */ this.panel.content.query.output.config.showLabelsPercent = response.showLabelsPercent;
+            /* SDA CUSTOM */ // END SDA CUSTOM
 
             let layout: any;
             if (response.edaChart) {
@@ -1450,7 +1473,24 @@ export class EdaBlankPanelComponent implements OnInit {
                 );
             }
 
-            const config = new ChartConfig(new KpiConfig({ sufix: response.sufix, alertLimits: response.alerts, edaChart: layout }));
+            /* SDA CUSTOM */ const config = new ChartConfig(new KpiConfig({
+                /* SDA CUSTOM */ sufix: response.sufix,
+                /* SDA CUSTOM */ fontScale: response.fontScale,
+                /* SDA CUSTOM */ alertLimits: response.alerts,
+                /* SDA CUSTOM */ edaChart: layout,
+                /* SDA CUSTOM */ color: response.color,
+                /* SDA CUSTOM */ lineWidth: response.lineWidth,
+                /* SDA CUSTOM */ lineStyle: response.lineStyle,
+                /* SDA CUSTOM */ showXAxis: response.showXAxis,
+                /* SDA CUSTOM */ showXAxisLabels: response.showXAxisLabels,
+                /* SDA CUSTOM */ xAxisLabelCount: response.xAxisLabelCount,
+                /* SDA CUSTOM */ // SDA CUSTOM - KPI chart label settings
+                /* SDA CUSTOM */ labelColor: response.labelColor,
+                /* SDA CUSTOM */ labelBackgroundColor: response.labelBackgroundColor,
+                /* SDA CUSTOM */ showLabels: response.showLabels,
+                /* SDA CUSTOM */ showLabelsPercent: response.showLabelsPercent,
+                /* SDA CUSTOM */ // END SDA CUSTOM
+            /* SDA CUSTOM */ }));
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, response.chartType, response.chartSubType, config);
             this.dashboardService._notSaved.next(true);
         }
