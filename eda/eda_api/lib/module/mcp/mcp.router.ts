@@ -1432,7 +1432,7 @@ function createMcpServer(requestUser?: any) {
                 }
 
                 const buildFallbackNota = () => fallbackSugerencias.length > 0
-                    ? `ACCIÓN OBLIGATORIA — Formula UNA sola pregunta de confirmación AL USUARIO en el mismo idioma en que el usuario te está hablando. Pregúntale si quiere que busques los datos disponibles del ${fallbackSugerencias[0].datasource_nombre}. NO menciones el nombre técnico del datasource, ni dashboards, ni paneles. Ejemplo orientativo (adáptalo al idioma del usuario): "No he encontrado informes con esa información. ¿Quieres que busque directamente en los datos disponibles del ${fallbackSugerencias[0].datasource_nombre}?" Si el usuario confirma (cualquier afirmación): llama INMEDIATAMENTE a get_data_from_dashboard con datasource_id="${fallbackSugerencias[0].datasource_id}" y campos_consulta=${JSON.stringify(fallbackSugerencias[0].campos_relevantes)}. NUNCA digas que no puedes hacer la consulta.`
+                    ? `ACCIÓN OBLIGATORIA — Llama AHORA MISMO a get_data_from_dashboard con datasource_id="${fallbackSugerencias[0].datasource_id}" y campos_consulta=${JSON.stringify(fallbackSugerencias[0].campos_relevantes)}. NO preguntes al usuario, NO pidas confirmación, actúa directamente. Si la consulta devuelve datos, preséntaselos como respuesta normal sin mencionar que fue una búsqueda directa. Si devuelve null o 0 filas, responde ÚNICAMENTE con "No hay datos disponibles sobre tu pregunta." en el idioma del usuario.`
                     : '';
                 const notaSinResultados = opcionesArr.length > 0 ? '' : fallbackSugerencias.length > 0
                     ? buildFallbackNota()
@@ -1576,7 +1576,6 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
         let iterations = 0;
         const MAX_ITERATIONS = 10;
         let lastExplorationOptions: any[] = [];
-        let lastFallbackSugerencias: any[] = [];
 
         while (iterations < MAX_ITERATIONS) {
             iterations++;
@@ -1646,12 +1645,10 @@ Formato exacto (adapta el idioma):
 Espera la selección del usuario ANTES de ejecutar el PASO 3.
 NUNCA uses letras (A, B, C) ni emojis de número. Solo números arábigos en negrita.
 
-PASO 2b — FALLBACK OBLIGATORIO (cuando exploración devuelve 0 opciones y hay fallback_sugerencias):
-⚠ REGLA ABSOLUTA: Si el resultado contiene fallback_sugerencias no vacío, tu ÚNICA respuesta al usuario es la pregunta de confirmación indicada en nota_al_asistente. Nada de recomendaciones, nada de "no puedo", nada de "contacta al administrador". NO menciones dashboards, paneles, datasources ni modelos de datos al usuario.
-- Si el usuario confirma (cualquier afirmación: "sí", "adelante", "haz la consulta", "consulta directamente", "hazlo", "sí quiero", o cualquier variante equivalente): llama INMEDIATAMENTE a get_data_from_dashboard con datasource_id y campos_consulta de fallback_sugerencias[0]. NO uses dashboard_id. NO expliques nada antes.
-- Si el usuario rechaza: informa simplemente que no hay datos disponibles.
-Al mostrar los datos del fallback: preséntalo igual que cualquier otra respuesta de datos, sin mencionar que fue una "consulta directa" ni exponer el nombre técnico del datasource.
-- Si el resultado del fallback tiene datos null o 0 filas: CRÍTICO — responde ÚNICAMENTE "No hay datos disponibles sobre tu pregunta." (traducido al idioma del usuario). PROHIBIDO: no inventes valores, no estimes, no describas tablas ni campos, no ofrezcas alternativas. Solo esa frase.
+PASO 2b — FALLBACK AUTOMÁTICO (cuando exploración devuelve 0 opciones y hay fallback_sugerencias):
+⚠ REGLA ABSOLUTA: Si el resultado contiene fallback_sugerencias no vacío, sigue la instrucción de nota_al_asistente: llama INMEDIATAMENTE a get_data_from_dashboard con datasource_id y campos_consulta de fallback_sugerencias[0]. NO preguntes al usuario, NO pidas confirmación, actúa directamente.
+- Si la consulta devuelve datos: preséntaselos al usuario como respuesta normal, sin mencionar que fue una "consulta directa" ni exponer el nombre técnico del datasource.
+- Si el resultado tiene datos null o 0 filas: CRÍTICO — responde ÚNICAMENTE "No hay datos disponibles sobre tu pregunta." (traducido al idioma del usuario). PROHIBIDO: no inventes valores, no estimes, no describas tablas ni campos, no ofrezcas alternativas. Solo esa frase.
 
 PASO 2c — CONSULTA DIRECTA EXPLÍCITA (el usuario pide expresamente consultar un datasource):
 Si el usuario pide directamente consultar un datasource/base de datos concreto (ej: "consulta al datasource de X", "busca en la base de datos X", "consulta directamente X"):
@@ -1720,25 +1717,6 @@ Responde siempre en el idioma del usuario.`, cache_control: { type: 'ephemeral' 
                     }
                     lastExplorationOptions = [];
                 }
-                if (lastFallbackSugerencias.length > 0) {
-                    const fb = lastFallbackSugerencias[0];
-                    responsePayload.options = [
-                        {
-                            num: 1,
-                            label: 'Sí',
-                            type: 'datasource',
-                            datasource_id: fb.datasource_id,
-                            campos_consulta: fb.campos_relevantes ?? [],
-                        },
-                        {
-                            num: 2,
-                            label: 'Buscar en...',
-                            type: 'paste',
-                            pasteText: 'Buscar en: ',
-                        },
-                    ];
-                    lastFallbackSugerencias = [];
-                }
                 finalizeChatContext(ctx);
                 return res.status(200).json(responsePayload);
             }
@@ -1771,11 +1749,6 @@ Responde siempre en el idioma del usuario.`, cache_control: { type: 'ephemeral' 
                                         lastExplorationOptions = parsed.opciones_unicas;
                                     } else {
                                         lastExplorationOptions = [];
-                                    }
-                                    if (Array.isArray(parsed?.fallback_sugerencias) && parsed.fallback_sugerencias.length > 0) {
-                                        lastFallbackSugerencias = parsed.fallback_sugerencias;
-                                    } else {
-                                        lastFallbackSugerencias = [];
                                     }
                                 } catch (_) {}
                             }
