@@ -1648,7 +1648,7 @@ NUNCA uses letras (A, B, C) ni emojis de número. Solo números arábigos en neg
 PASO 2b — FALLBACK AUTOMÁTICO (cuando exploración devuelve 0 opciones y hay fallback_sugerencias):
 ⚠ REGLA ABSOLUTA: Si el resultado contiene fallback_sugerencias no vacío, sigue la instrucción de nota_al_asistente: llama INMEDIATAMENTE a get_data_from_dashboard con datasource_id y campos_consulta de fallback_sugerencias[0]. NO preguntes al usuario, NO pidas confirmación, actúa directamente.
 - Si la consulta devuelve datos: preséntaselos al usuario como respuesta normal, sin mencionar que fue una "consulta directa" ni exponer el nombre técnico del datasource.
-- Si el resultado tiene datos null o 0 filas: CRÍTICO — responde ÚNICAMENTE "No hay datos disponibles sobre tu pregunta." (traducido al idioma del usuario). PROHIBIDO: no inventes valores, no estimes, no describas tablas ni campos, no ofrezcas alternativas. Solo esa frase.
+- Si el resultado tiene datos null o 0 filas: CRÍTICO — responde ÚNICAMENTE informa que no hay datos disponibles sobre tu pregunta. (traducido al idioma del usuario). PROHIBIDO: no inventes valores, no estimes, no describas tablas ni campos, no ofrezcas alternativas. Solo esa frase.
 
 PASO 2c — CONSULTA DIRECTA EXPLÍCITA (el usuario pide expresamente consultar un datasource):
 Si el usuario pide directamente consultar un datasource/base de datos concreto (ej: "consulta al datasource de X", "busca en la base de datos X", "consulta directamente X"):
