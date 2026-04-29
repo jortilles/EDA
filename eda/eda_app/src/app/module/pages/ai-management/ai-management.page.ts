@@ -24,13 +24,21 @@ export class AiManagementPage implements OnInit {
   isSubmitting = signal(false);
   availableEnabled = signal(false);
   showApiKey = signal(false);
+  showAwsSecretKey = signal(false);
 
   aiForm: FormGroup;
+
+  get isBedrock(): boolean {
+    return this.aiForm.get('PROVIDER')?.value === 'bedrock';
+  }
 
   constructor() {
     this.aiForm = this.fb.group({
       PROVIDER: ['openai', Validators.required],
       API_KEY: ['', Validators.required],
+      AWS_ACCESS_KEY: [''],
+      AWS_SECRET_KEY: [''],
+      AWS_REGION: [''],
       MODEL: ['', Validators.required],
       CONTEXT: ['', Validators.required],
       AVAILABLE: [false],
@@ -50,6 +58,9 @@ export class AiManagementPage implements OnInit {
       this.aiForm.patchValue({
         PROVIDER: cfg.PROVIDER ?? 'openai',
         API_KEY: this.API_KEY_PLACEHOLDER,
+        AWS_ACCESS_KEY: cfg.AWS_ACCESS_KEY ?? '',
+        AWS_SECRET_KEY: cfg.AWS_SECRET_KEY ? this.AWS_SECRET_PLACEHOLDER : '',
+        AWS_REGION: cfg.AWS_REGION ?? '',
         MODEL: cfg.MODEL,
         CONTEXT: cfg.CONTEXT,
         AVAILABLE: cfg.AVAILABLE,
@@ -74,6 +85,11 @@ export class AiManagementPage implements OnInit {
   }
 
   readonly API_KEY_PLACEHOLDER = 'you should know..... ;)';
+  readonly AWS_SECRET_PLACEHOLDER = 'you should know..... ;)';
+
+  toggleShowAwsSecretKey() {
+    this.showAwsSecretKey.update(v => !v);
+  }
 
   async handleSubmit() {
     if (this.aiForm.invalid) return;
@@ -82,6 +98,9 @@ export class AiManagementPage implements OnInit {
       const payload = { ...this.aiForm.value };
       if (payload.API_KEY === this.API_KEY_PLACEHOLDER) {
         delete payload.API_KEY;
+      }
+      if (payload.AWS_SECRET_KEY === this.AWS_SECRET_PLACEHOLDER) {
+        delete payload.AWS_SECRET_KEY;
       }
       this.iaFormStateService.setFormData(payload); 
       await lastValueFrom(this.assistantService.saveConfig(payload));

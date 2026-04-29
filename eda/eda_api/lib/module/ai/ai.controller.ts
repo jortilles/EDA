@@ -150,6 +150,9 @@ export class AiController {
                 config: {
                     PROVIDER: config.PROVIDER,
                     API_KEY: config.API_KEY,
+                    AWS_ACCESS_KEY: config.AWS_ACCESS_KEY,
+                    AWS_SECRET_KEY: config.AWS_SECRET_KEY,
+                    AWS_REGION: config.AWS_REGION,
                     MODEL: config.MODEL,
                     CONTEXT: config.CONTEXT,
                     AVAILABLE: config.AVAILABLE,
@@ -163,12 +166,15 @@ export class AiController {
 
     static async aIsaveConfig(req: Request, res: Response, next: NextFunction) {
         try {
-            const { PROVIDER, API_KEY, MODEL, CONTEXT, AVAILABLE, LIMIT } = req.body;
+            const { PROVIDER, API_KEY, AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_REGION, MODEL, CONTEXT, AVAILABLE, LIMIT } = req.body;
             const configPath = path.resolve(__dirname, '../../../config/ai.config.js');
             const currentConfig = getAiConfig();
             const finalApiKey = (API_KEY !== undefined && API_KEY !== null) ? API_KEY : currentConfig.API_KEY;
             const finalProvider = PROVIDER ?? currentConfig.PROVIDER;
-            const content = `module.exports = { \n    PROVIDER: '${finalProvider}',\n    API_KEY: '${finalApiKey}',\n    MODEL: '${MODEL}',\n    CONTEXT: '${CONTEXT}',\n    AVAILABLE: ${AVAILABLE},\n    LIMIT: ${LIMIT},\n    MAX_LIMIT: ${currentConfig.MAX_LIMIT},\n};\n`;
+            const finalAwsAccessKey = AWS_ACCESS_KEY ?? currentConfig.AWS_ACCESS_KEY ?? '';
+            const finalAwsSecretKey = (AWS_SECRET_KEY !== undefined && AWS_SECRET_KEY !== null) ? AWS_SECRET_KEY : currentConfig.AWS_SECRET_KEY ?? '';
+            const finalAwsRegion = AWS_REGION ?? currentConfig.AWS_REGION ?? '';
+            const content = `module.exports = { \n    PROVIDER: '${finalProvider}',\n    API_KEY: '${finalApiKey}',\n    AWS_ACCESS_KEY: '${finalAwsAccessKey}',\n    AWS_SECRET_KEY: '${finalAwsSecretKey}',\n    AWS_REGION: '${finalAwsRegion}',\n    MODEL: '${MODEL}',\n    CONTEXT: '${CONTEXT}',\n    AVAILABLE: ${AVAILABLE},\n    LIMIT: ${LIMIT},\n    MAX_LIMIT: ${currentConfig.MAX_LIMIT},\n};\n`;
             fs.writeFile(configPath, content, 'utf8', (err) => {
                 if (err) return next(new HttpException(500, 'Error saving the AI configuration'));
                 return res.status(200).json({ ok: true });
