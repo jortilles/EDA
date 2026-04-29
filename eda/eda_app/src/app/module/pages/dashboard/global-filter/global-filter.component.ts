@@ -499,9 +499,9 @@ export class GlobalFilterComponent implements OnInit {
             dataSource: this.dashboard.dataSource._id,
             dashboard: '',
             panel: '',
+            /* SDA CUSTOM */ groupByEnabled: true,
             filters: []
         };
-
 
         try {
             const query = this.queryBuilderService.normalQuery([targetColumn], queryParams);

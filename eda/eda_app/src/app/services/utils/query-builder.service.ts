@@ -12,6 +12,7 @@ export interface QueryParams {
     config?: any;
     queryLimit? : number;
     joinType?:string;
+    /* SDA CUSTOM */ groupByEnabled?: boolean,
     forSelector?: boolean;
     connectionProperties?: any;
     rootTable?: string;
@@ -67,6 +68,7 @@ export class QueryBuilderService extends ApiService {
                 queryMode: 'EDA',
                 SQLexpression : null,
                 queryLimit : null,
+                /* SDA CUSTOM */ groupByEnabled: true,
                 joinType: 'left', //puede que necesite el joinType
                 rootTable: null,
                 sortedFilters: [],
@@ -138,6 +140,7 @@ export class QueryBuilderService extends ApiService {
                 // modeSQL : modeSQL,
                 SQLexpression : SQLexpression,
                 queryLimit : params.queryLimit,
+                /* SDA CUSTOM */ groupByEnabled: params.groupByEnabled,
                 joinType: params.joinType,
                 forSelector: params.forSelector,
                 rootTable: params.rootTable,

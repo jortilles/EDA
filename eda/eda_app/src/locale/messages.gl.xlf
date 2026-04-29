@@ -2163,6 +2163,18 @@
         <source>Tipo de intersección:</source>
         <target>Tipo de intersección:</target>
       </trans-unit>
+      <trans-unit id="groupByEnabledHide">
+        <source>Agrupar</source>
+        <target>Agrupar</target>
+      </trans-unit>
+      <trans-unit id="groupByDisabledReason">
+        <source>No se puede cambiar el agrupamiento porque hay campos con agregaciones configuradas. Elimina las agregaciones primero.</source>
+        <target>Antes de cambiar la agrupación, debe eliminar las agregaciones configuradas en los campos.</target>
+      </trans-unit>
+      <trans-unit id="groupByDisabledAggregations">
+        <source>En modo agrupar desactivado, las agregaciones en los campos están deshabilitadas automáticamente.</source>
+        <target>Si el modo agrupar está desactivado las agregaciones en los campos se deshabilitan automáticamente.</target>
+      </trans-unit>
       <trans-unit id="addCSV">
         <source>Añadir tabla desde CSV</source>
         <target>Añadir tabla desde CSV</target>

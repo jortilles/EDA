@@ -158,6 +158,11 @@ export class EdaBlankPanelComponent implements OnInit {
     public joinType: string = 'inner';
     public sortedFilters: any[] = [];
     public temporalSortedFilters: any[] = [];
+    /* SDA CUSTOM */ public atLeastThereIsOneWithAggregation: boolean = false;
+    /* SDA CUSTOM */ public groupByEnabled: boolean = true;
+    /* SDA CUSTOM */ public groupByLabel: string = $localize`:@@groupBy:Agrupar`;
+    /* SDA CUSTOM */ public groupByDisabledReasonMessage: string = $localize`:@@groupByDisabledReason:No se puede cambiar el agrupamiento porque hay campos con agregaciones configuradas. Elimina las agregaciones primero.`;
+    /* SDA CUSTOM */ public groupByDisabledAggregationsMessage: string = $localize`:@@groupByDisabledAggregations:En modo agrupar desactivado, las agregaciones en los campos están deshabilitadas automáticamente.`;
 
     public queryModes: any[] = [
         /* SDA CUSTOM */ { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA', disabled: true},
@@ -502,12 +507,14 @@ export class EdaBlankPanelComponent implements OnInit {
      */
 
     public async buildGlobalconfiguration(panelContent: any) {
-
         const modeSQL = panelContent.query.query.modeSQL;
+        /* SDA CUSTOM */ const groupByEnabled = panelContent.query.query.groupByEnabled;
         const queryMode = this.selectedQueryMode;
         /*SDA CUSTOM*/ this.showHiddenColumn = true;
 
+
         const currentQuery = panelContent.query.query.fields;
+
 
         if ((queryMode && queryMode != 'SQL') || modeSQL === false) {
 
@@ -538,11 +545,13 @@ export class EdaBlankPanelComponent implements OnInit {
                 console.error(e);
                 throw e;
             }
+
+
         }
 
-
         this.queryLimit = panelContent.query.query.queryLimit;
-/*SDA CUSTOM*/ this.joinType = panelContent.query.query.joinType || 'inner';
+        /*SDA CUSTOM*/ this.joinType = panelContent.query.query.joinType || 'inner';
+        /* SDA CUSTOM */ this.groupByEnabled = groupByEnabled ?? true;
         PanelInteractionUtils.handleFilters(this, panelContent.query.query);
         PanelInteractionUtils.handleFilterColumns(this, panelContent.query.query.filters, panelContent.query.query.fields);
         this.chartForm.patchValue({chart: this.chartUtils.chartTypes.find(o => o.subValue === panelContent.edaChart)});
@@ -562,6 +571,10 @@ export class EdaBlankPanelComponent implements OnInit {
 
         // Verify if it is a cross table to show it on home screen
         this.dragAndDropAvailable = !this.chartTypes.filter( grafico => grafico.subValue === 'crosstable')[0].ngIf;
+
+
+        const currentQueryCheck = this.currentQuery;
+        this.atLeastThereIsOneWithAggregation = this.checkAtLeastOneWithAggregation(currentQueryCheck);
     }
 
 
@@ -905,6 +918,10 @@ export class EdaBlankPanelComponent implements OnInit {
             this.configController = new EdaDialogController({
                 params: p,
                 close: (event, response) => {
+
+                    /* SDA CUSTOM  */ const currenQuery = this.currentQuery;
+                    /* SDA CUSTOM  */ this.atLeastThereIsOneWithAggregation = this.checkAtLeastOneWithAggregation(currenQuery);
+
                     if (response.duplicated) {
                         this.currentQuery.push(response.column);
                         this.configController = undefined;
@@ -974,6 +991,14 @@ export class EdaBlankPanelComponent implements OnInit {
         }
 
     }
+
+/* SDA CUSTOM  */    checkAtLeastOneWithAggregation(currentQuery: any) {
+/* SDA CUSTOM  */        return currentQuery.some(column => {
+/* SDA CUSTOM  */            return column.aggregation_type.some((at: any) => {
+/* SDA CUSTOM  */                return (at.selected && (at.display_name !== 'None'))
+/* SDA CUSTOM  */            })
+/* SDA CUSTOM  */        })
+/* SDA CUSTOM  */    }
 
     /**
      * find table by name
@@ -1640,6 +1665,9 @@ export class EdaBlankPanelComponent implements OnInit {
 /**SDA CUSTOM  */           event.stopPropagation();
 /**SDA CUSTOM  */           this.alertService.addError($localize`:@@cannotRemoveLastColumn:No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.`);
 /**SDA CUSTOM  */       }
+
+/* SDA CUSTOM  */       const currenQuery = this.currentQuery;
+/* SDA CUSTOM  */       this.atLeastThereIsOneWithAggregation = this.checkAtLeastOneWithAggregation(currenQuery);
                    }
 
     public getOptionDescription = (value: string): string => EbpUtils.getOptionDescription(value);
@@ -1678,7 +1706,6 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public async getQuery($event) {
-
         this.display_v.minispinnerSQL = true;
         this.queryFromServer = null;
 

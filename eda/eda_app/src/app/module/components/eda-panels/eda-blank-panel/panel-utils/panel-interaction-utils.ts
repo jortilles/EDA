@@ -457,7 +457,7 @@ export const PanelInteractionUtils = {
     const displayName = column.display_name.default
     const initializeAgregations = (column, tmpAggTypes) => {
       column.aggregation_type.forEach((agg) => {
-        tmpAggTypes.push({ display_name: agg.display_name, value: agg.value, selected: agg.value === 'sum' });
+        /* SDA CUSTOM */ tmpAggTypes.push({ display_name: agg.display_name, value: agg.value, selected: ebp.groupByEnabled ? agg.value === 'sum' : agg.value === 'none' });
       });
     }
 
@@ -494,6 +494,10 @@ export const PanelInteractionUtils = {
     if (findColumn) {
       findColumn.aggregation_type = _.cloneDeep(ebp.aggregationsTypes);
     }
+
+/* SDA CUSTOM */    const currenQuery = ebp.currentQuery;
+/* SDA CUSTOM */    ebp.atLeastThereIsOneWithAggregation = ebp.checkAtLeastOneWithAggregation(currenQuery);
+
   },
 
   

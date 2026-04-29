@@ -377,7 +377,7 @@
 
                             </div>
 
-                            <div class="grid">
+<div class="grid">
                                 <div class="col-3 md:col-12 infoFiltres">
                                     <span i18n="@@topQueryH4">
                                         Mostrar Top: &nbsp;
@@ -386,7 +386,7 @@
                                 </div>
                                 <!-- SDA CUSTOM div class="col-4 md:col-12 flex infoJoin" -->
                                 <!-- SDA CUSTOM-->
-                                 <div class="col-6 md:col-12 flex infoJoin" >
+                                 <div class="col-3 md:col-12 flex infoJoin" >
 
                                     <span i18n="@@joinTypeH4">
                                         Tipo de intersección: &nbsp;
@@ -397,10 +397,14 @@
                                         </ng-template>
                                     </p-selectButton>
                                 </div>
-
-                                <!-- div class="col-2 col-offset-3 md:col-12 infoFiltres d-flex justify-content-end">
-                                    <button pButton (click)="onWhatIfDialog()" icon="pi pi-question-circle" class="p-button-info p-button-outlined button-whatif ml-2" label="What IF"></button>
-                                </div-->
+<!-- SDA CUSTOM -->             <div class="col-3 md:col-12 flex infoJoin">
+<!-- SDA CUSTOM -->                 <h5 class="title-datamodel" style="margin: 0; margin-right: 4px; margin-top: 2px;">{{groupByLabel}}</h5>
+<!-- SDA CUSTOM -->                     <!-- Info icon when switch is disabled -->
+<!-- SDA CUSTOM -->                     <i *ngIf="atLeastThereIsOneWithAggregation" class="pi pi-exclamation-circle" [pTooltip]="groupByDisabledReasonMessage" tooltipPosition="left" style="color: #ff9800; cursor: help; font-size: 1.1em; margin-right: 4px;"></i>
+<!-- SDA CUSTOM -->                     <!-- Info icon when in Do not group mode -->
+<!-- SDA CUSTOM -->                     <i *ngIf="!groupByEnabled && !atLeastThereIsOneWithAggregation" class="pi pi-info-circle" [pTooltip]="groupByDisabledAggregationsMessage" tooltipPosition="left" style="color: #2196f3; cursor: help; font-size: 1.1em; margin-right: 4px;"></i>
+<!-- SDA CUSTOM -->                     <p-inputSwitch [(ngModel)]="groupByEnabled" [disabled]="atLeastThereIsOneWithAggregation"></p-inputSwitch>
+<!-- SDA CUSTOM -->             </div>
 
                                 <div class="col-3 md:col-12 buttonAndOr d-flex justify-content-end">
                                     <button pButton (click)="filterAndOrDialog()" icon="pi pi-filter" class="p-button-outlined ml-2" i18n-label="@@filterSettings" label="Configuración de filtros"></button>
@@ -622,7 +626,7 @@
 
 </eda-page-dialog>
 
-<app-column-dialog *ngIf="configController" [controller]="configController" (updateSortedFiltersColumnDialog)="updateSortedFiltersColumnDialogFunction($event)"></app-column-dialog>
+<!-- SDA CUSTOM --> <app-column-dialog *ngIf="configController" [controller]="configController" (updateSortedFiltersColumnDialog)="updateSortedFiltersColumnDialogFunction($event)" [(groupByEnabled)]="groupByEnabled"></app-column-dialog>
 
 <app-filter-dialog *ngIf="filterController" [controller]="filterController" (updateSortedFiltersFilterDialog)="updateSortedFiltersFilterDialogFunction($event)"></app-filter-dialog>
 

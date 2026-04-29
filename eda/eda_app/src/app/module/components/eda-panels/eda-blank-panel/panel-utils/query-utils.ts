@@ -361,6 +361,7 @@ export const QueryUtils = {
       queryLimit: ebp.queryLimit,
       joinType: ebp.joinType,
       rootTable: ebp.rootTable?.table_name,
+      /* SDA CUSTOM */ groupByEnabled: ebp.groupByEnabled,
       connectionProperties: ebp.connectionProperties,
       sortedFilters: ebp.sortedFilters,
     };

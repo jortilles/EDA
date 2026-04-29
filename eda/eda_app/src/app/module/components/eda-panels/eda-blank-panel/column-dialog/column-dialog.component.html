@@ -34,11 +34,8 @@
             <hr>
 
             <div class="aggregation-list" >
-                <div class="aggregation-box" *ngFor="let aggregation of aggregationsTypes"
-                    (click)="allowedAggregations && addAggregation(aggregation)"
-                    [ngStyle]="{'cursor': !allowedAggregations ? 'not-allowed' : 'pointer'}"
-                    [ngClass]="aggregation.selected === true ? 'aggregation-active' : ''">
-                    <span>{{getAggName(aggregation.value)}}</span>
+<!--SDA CUSTOM-->                <div class="aggregation-box" *ngFor="let aggregation of aggregationsTypes" (click)="allowedAggregations && groupByEnabled && addAggregation(aggregation)" [ngStyle]="{'cursor': (!allowedAggregations || !groupByEnabled) ? 'not-allowed' : 'pointer'}" [ngClass]="aggregation.selected === true ? 'aggregation-active' : ''">
+<!--SDA CUSTOM-->                 <span>{{getAggName(aggregation.value)}}</span>
                 </div>
             </div>
 

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
+/* SDA CUSTOM */ import { Component, EventEmitter, Output, ViewChild, Input } from '@angular/core';
 import { SelectItem } from 'primeng/api';
 import { EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract, EdaDatePickerComponent } from '@eda/shared/components/shared-components.index';
 import {
@@ -24,6 +24,8 @@ import { aggTypes } from 'app/config/aggretation-types';
 export class ColumnDialogComponent extends EdaDialogAbstract {
 
     @ViewChild('myCalendar', { static: false }) datePicker: EdaDatePickerComponent;
+/* SDA CUSTOM */    @Input() groupByEnabled: boolean;
+/* SDA CUSTOM */    @Output() groupByEnabledChange: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Output() updateSortedFiltersColumnDialog: EventEmitter<any> = new EventEmitter<any>();
 
     public dialog: EdaDialog;

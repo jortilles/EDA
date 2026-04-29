@@ -210,7 +210,7 @@ export class MySqlBuilderService extends QueryBuilderService {
   }
 
   public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
-    tables: Array<any>, limit: number,  joinType: string, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any, sortedFilters: any[]) {
+    /* SDA CUSTOM */ tables: Array<any>, limit: number,  joinType: string, valueListJoins: Array<any>, groupByEnabled:boolean ,schema: string, database: string, forSelector: any, sortedFilters: any[]) {
 
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
     let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
@@ -262,9 +262,9 @@ export class MySqlBuilderService extends QueryBuilderService {
     }
 
     // GroupBy
-    if (grouping.length > 0) {
-      myQuery += '\ngroup by ' + grouping.join(', ');
-    }
+    /* SDA CUSTOM */ if (grouping.length > 0 && ((groupByEnabled))) {
+    /* SDA CUSTOM */   myQuery += '\ngroup by ' + grouping.join(', ');
+    /* SDA CUSTOM */ }
 
     //HAVING 
     myQuery += this.getHavingFilters(havingFilters);

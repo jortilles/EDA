@@ -8,7 +8,7 @@ export class SQLserviceBuilderService extends QueryBuilderService {
     }
 
   public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
-    tables: Array<any>, limit: number,  joinType: string, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any ) {
+    /* SDA CUSTOM */ tables: Array<any>, limit: number,  joinType: string, valueListJoins: Array<any>, groupByEnabled:boolean, schema: string, database: string, forSelector: any ) {
       
     let SCHEMA = `${schema}`;
 
