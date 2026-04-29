@@ -66,44 +66,61 @@ export class CustomizedDashboardComponent implements OnInit, OnDestroy {
     const isDataSourceCreator = localStorage.getItem('isDataSourceCreator') === 'true';
     this.canEdit = isAdmin || isDataSourceCreator;
 
-    // Load public dashboards
     try {
       const { publics } = await lastValueFrom(this.dashboardService.getDashboards());
-      this.publicDashboards = publics || [];
+      this.publicDashboards = (publics || []).sort((a: any, b: any) =>
+        (a.config?.title || '').localeCompare(b.config?.title || '')
+      );
     } catch (err) {
       console.error('[CustomizedDashboard] Error loading public dashboards:', err);
     }
 
-    // Load sidebar HTML
-    this.customHTMLService.getByKey('customHTML').subscribe({
+    this.customHTMLService.getByKey('portalConfig').subscribe({
       next: ({ value }) => {
-        this.sidebarHtml = value;
+        const config = this._parsePortalConfig(value);
+        this.sidebarHtml = config.html;
+        this.selectedInitialDashboardId = config.initialDashboardId;
         this._applySidebarHtml(this.sidebarHtml);
-      },
-      error: () => {
-        this.sidebarHtml = this._buildSidebarHtml();
-        this._applySidebarHtml(this.sidebarHtml);
-      }
-    });
-
-    // Load initial dashboard
-    this.customHTMLService.getByKey('initialDashboard').subscribe({
-      next: ({ value }) => {
-        this.selectedInitialDashboardId = value || '';
         this._updateIframeSrc();
       },
       error: () => {
-        this._updateIframeSrc();
+        // Fallback: intentar recuperar la clave legacy 'customHTML'
+        this.customHTMLService.getByKey('customHTML').subscribe({
+          next: ({ value }) => {
+            this.sidebarHtml = value || this._buildSidebarHtml();
+            this._applySidebarHtml(this.sidebarHtml);
+            this._updateIframeSrc();
+          },
+          error: () => {
+            this.sidebarHtml = this._buildSidebarHtml();
+            this._applySidebarHtml(this.sidebarHtml);
+            this._updateIframeSrc();
+          }
+        });
       }
     });
   }
 
   saveSidebar(): void {
-    this.customHTMLService.upsert('customHTML', this.sidebarHtml).subscribe({
+    const config = JSON.stringify({ html: this.sidebarHtml, initialDashboardId: this.selectedInitialDashboardId });
+    this.customHTMLService.upsert('portalConfig', config).subscribe({
       next: () => this.haveUnsavedChanges = false,
-      error: (err) => console.error('Error saving sidebar', err)
+      error: (err) => console.error('Error saving portal config', err)
     });
     this.alertService.addSuccess($localize`:@@customHtmlSaved:HTML personalizado guardado correctamente.`);
+  }
+
+  private _parsePortalConfig(value: string): { html: string; initialDashboardId: string } {
+    try {
+      const parsed = JSON.parse(value);
+      return {
+        html: parsed.html || this._buildSidebarHtml(),
+        initialDashboardId: parsed.initialDashboardId || ''
+      };
+    } catch {
+      // Compatibilidad con la clave antigua 'customHTML' que guardaba HTML plano, eliminar a posterior
+      return { html: value || this._buildSidebarHtml(), initialDashboardId: '' };
+    }
   }
 
   onDialogReset(): void {
@@ -121,7 +138,7 @@ export class CustomizedDashboardComponent implements OnInit, OnDestroy {
 
   private _updateIframeSrc(): void {
     if (this.selectedInitialDashboardId) {
-      const url = `#/public/${this.selectedInitialDashboardId}`;
+      const url = `#/public/${this.selectedInitialDashboardId}?panelMode=true`;
       this.iframeSrc = this.sanitizer.bypassSecurityTrustResourceUrl(url);
     } else {
       this.iframeSrc = '';
@@ -151,17 +168,13 @@ export class CustomizedDashboardComponent implements OnInit, OnDestroy {
   onDialogApply(): void {
     this.sidebarHtml = this.editingHtml;
     this._applySidebarHtml(this.sidebarHtml);
-    this.haveUnsavedChanges = true;
 
-    // Save initial dashboard if changed
     if (this.editingInitialDashboardId !== this.selectedInitialDashboardId) {
       this.selectedInitialDashboardId = this.editingInitialDashboardId;
       this._updateIframeSrc();
-      this.customHTMLService.upsert('initialDashboard', this.selectedInitialDashboardId).subscribe({
-        error: (err) => console.error('Error saving initial dashboard', err)
-      });
     }
 
+    this.haveUnsavedChanges = true;
     this.showEditDialog = false;
     this.editingHtml = '';
     this.sidebarLocked = false;
