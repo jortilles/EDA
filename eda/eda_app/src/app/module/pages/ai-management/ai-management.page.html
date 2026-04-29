@@ -11,6 +11,24 @@
         <form [formGroup]="aiForm" (ngSubmit)="handleSubmit()">
           <div class="grid gap-6">
 
+            <!-- PROVIDER -->
+            <div class="space-y-2">
+              <label for="provider" class="text-sm font-medium" i18n="@@aiProvider">PROVEEDOR</label>
+              <div class="relative">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="absolute left-3 top-3 h-4 w-4 text-gray-500 pointer-events-none">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"></path>
+                </svg>
+                <select id="provider" formControlName="PROVIDER"
+                  class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 appearance-none">
+                  <option value="openai">OpenAI</option>
+                  <option value="anthropic">Anthropic</option>
+                </select>
+              </div>
+            </div>
+
             <!-- API KEY -->
             <div class="space-y-2">
               <label for="api_key" class="text-sm font-medium" i18n="@@aiApiKey">API KEY</label>

@@ -148,6 +148,7 @@ export class AiController {
             return res.status(200).json({
                 ok: true,
                 config: {
+                    PROVIDER: config.PROVIDER,
                     API_KEY: config.API_KEY,
                     MODEL: config.MODEL,
                     CONTEXT: config.CONTEXT,
@@ -162,11 +163,12 @@ export class AiController {
 
     static async aIsaveConfig(req: Request, res: Response, next: NextFunction) {
         try {
-            const { API_KEY, MODEL, CONTEXT, AVAILABLE, LIMIT } = req.body;
+            const { PROVIDER, API_KEY, MODEL, CONTEXT, AVAILABLE, LIMIT } = req.body;
             const configPath = path.resolve(__dirname, '../../../config/ai.config.js');
             const currentConfig = getAiConfig();
             const finalApiKey = (API_KEY !== undefined && API_KEY !== null) ? API_KEY : currentConfig.API_KEY;
-            const content = `module.exports = { \n    PROVIDER: '${currentConfig.PROVIDER}',\n    API_KEY: '${finalApiKey}',\n    MODEL: '${MODEL}',\n    CONTEXT: '${CONTEXT}',\n    AVAILABLE: ${AVAILABLE},\n    LIMIT: ${LIMIT},\n    MAX_LIMIT: ${currentConfig.MAX_LIMIT},\n};\n`;
+            const finalProvider = PROVIDER ?? currentConfig.PROVIDER;
+            const content = `module.exports = { \n    PROVIDER: '${finalProvider}',\n    API_KEY: '${finalApiKey}',\n    MODEL: '${MODEL}',\n    CONTEXT: '${CONTEXT}',\n    AVAILABLE: ${AVAILABLE},\n    LIMIT: ${LIMIT},\n    MAX_LIMIT: ${currentConfig.MAX_LIMIT},\n};\n`;
             fs.writeFile(configPath, content, 'utf8', (err) => {
                 if (err) return next(new HttpException(500, 'Error saving the AI configuration'));
                 return res.status(200).json({ ok: true });

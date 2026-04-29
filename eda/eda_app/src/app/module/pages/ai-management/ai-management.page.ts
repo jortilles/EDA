@@ -29,6 +29,7 @@ export class AiManagementPage implements OnInit {
 
   constructor() {
     this.aiForm = this.fb.group({
+      PROVIDER: ['openai', Validators.required],
       API_KEY: ['', Validators.required],
       MODEL: ['', Validators.required],
       CONTEXT: ['', Validators.required],
@@ -47,6 +48,7 @@ export class AiManagementPage implements OnInit {
       const res = await lastValueFrom(this.assistantService.getConfig());
       const cfg = res.config;
       this.aiForm.patchValue({
+        PROVIDER: cfg.PROVIDER ?? 'openai',
         API_KEY: this.API_KEY_PLACEHOLDER,
         MODEL: cfg.MODEL,
         CONTEXT: cfg.CONTEXT,
