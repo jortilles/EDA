@@ -1,12 +1,10 @@
-<eda-dialog2 [header]="title" width="80vw" height="90vh" [overflow]="'auto'" (apply)="saveChartConfig()"
+<eda-dialog2 [header]="title" width="80vw" height="90vh" [overflow]="'hidden'" (apply)="saveChartConfig()"
   (close)="closeChartConfig()">
   <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-full">
-    <!-- Chart Preview -->
+
+    <!-- Preview -->
     <div #previewContainer class="flex-1 flex items-center justify-center border-b md:border-b-0 md:border-r bg-slate-100 min-h-0 min-w-0 overflow-hidden" style="padding: 1.5rem;">
-      <!-- Panel simulation box: scaled to exact proportions of the real panel -->
-      <div class="relative bg-white border border-slate-300 shadow-md overflow-hidden flex flex-col"
-           [style]="previewBoxStyle">
-        <!-- KPI area: fills remaining space, KPI centered -->
+      <div class="relative border border-slate-300 shadow-md overflow-hidden flex flex-col" [style]="previewBoxStyle">
         <div class="flex-1 min-h-0 relative">
           <panel-chart #PanelChartComponent [props]="panelChartConfig" class="absolute inset-0 h-full w-full"></panel-chart>
         </div>
@@ -14,257 +12,315 @@
     </div>
 
     <!-- Settings -->
-    <div class="p-6 flex-1 overflow-y-auto">
-      @if (edaChart !== 'kpi' ) {
-      <div [ngClass]="edaChart !== 'kpi' ? 'mb-6 grid grid-cols-2 gap-4': ' grid mb-6'">
+    <div class="flex-1 flex flex-col overflow-hidden">
+
+      <!-- Tab buttons: siempre visibles -->
+      <div class="px-6 pt-6 pb-4 grid grid-cols-2 gap-4">
+        <button
+          [class]="'py-2 px-4 text-center rounded-md transition-all ' + (activeTab === 'aspecto' ? 'bg-[#00BFB3] text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-700')"
+          (click)="setActiveTab('aspecto')" i18n="@@kpiAspecto">
+          Aspecto
+        </button>
         <button
           [class]="'py-2 px-4 text-center rounded-md transition-all ' + (activeTab === 'alerts' ? 'bg-[#00BFB3] text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-700')"
           (click)="setActiveTab('alerts')" i18n="@@kpiAlerts">
           Alertas
         </button>
-        <button
-          [class]="'py-2 px-4 text-center rounded-md transition-all ' + (activeTab === 'colors' ? 'bg-[#00BFB3] text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-700')"
-          (click)="setActiveTab('colors')" i18n="@@colorsChartH6">
-          Colores
-        </button>
       </div>
-    }
 
-      <!-- Colors Tab -->
-      @if (activeTab === 'colors') {
-      <div class="space-y-6">
-        <div class="grid gap-6">
-          <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase">Colors</h3>
+      <!-- Tab content scrollable -->
+      <div class="flex-1 overflow-y-auto px-6 pb-6">
 
-          <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm mb-6"
-            [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
-            <option [ngValue]="null" disabled hidden i18n="@@selectPalette">
-              -- Seleccione una paleta --
-            </option>
-            @for (palette of allPalettes; track $index) {
-            <option [ngValue]="{name: palette.name, paleta: palette.paleta}">{{ palette.name }}</option>
-            }
-          </select>
+      <!-- TAB: Aspecto -->
+      @if (activeTab === 'aspecto') {
+        <div class="space-y-6">
+          <div class="grid gap-6">
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            @for (item of series; track item.value) {
-            <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
-              <span class="font-medium">{{ item.value }}</span>
-              <div class="flex items-center gap-2">
-                <input [(ngModel)]="item.color" class="text-md text-slate-500 font-mono justify-items-end w-[3.5vw]">
-                <p-colorPicker [(ngModel)]="item.color" (onChange)="handleInputColor(item)" format="hex"
-                  appendTo="body"></p-colorPicker>
+            <!-- Tamaño -->
+            <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
+              <div class="px-4 py-1.5 border-b bg-white">
+                <h3 class="font-medium text-slate-800 flex items-center gap-2">
+                  <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">1</span>
+                  <span i18n="@@kpiSize">Modificar el tamaño del KPI</span>
+                </h3>
+              </div>
+              <div class="p-4 inline-flex w-full gap-4 items-center justify-between">
+                <span i18n="@@increaseKpiSize">Incrementar el tamaño del KPI</span>
+                <input type="number" [ngModel]="modifiedFontPoints" min="-90" max="300"
+                  (ngModelChange)="modifyKpiSize($event)"
+                  class="w-1/2 px-3 py-2 border rounded-md bg-white text-center" />
               </div>
             </div>
-            }
-          </div>
-        </div>
-      </div>
-      }
 
+            <!-- Colores del KPI -->
+            <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
+              <div class="px-4 py-1.5 border-b bg-white">
+                <h3 class="font-medium text-slate-800 flex items-center gap-2">
+                  <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">2</span>
+                  <span i18n="@@kpiVisualStyle">Estilo visual del KPI</span>
+                </h3>
+              </div>
+              <div class="p-4 grid gap-4 md:grid-cols-2">
 
-
-      @else {
-
-      <div class="space-y-6">
-        <div class="grid gap-6">
-
-          <!-- Sección 1: Tamaño -->
-          <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
-            <div class="px-4 py-3 border-b bg-white">
-              <h3 class="font-medium text-slate-800 flex items-center gap-2">
-                <span
-                  class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">
-                  1
-                </span>
-                <span i18n="@@kpiSize">Modificar el tamaño del KPI</span>
-              </h3>
-            </div>
-            <div class="p-4 inline-flex w-full gap-4 items-center justify-between">
-              <span i18n="@@increaseKpiSize">Incrementar el tamaño del KPI</span>
-              <input type="number" [ngModel]="modifiedFontPoints" min="-90" max="300"
-                (ngModelChange)="modifyKpiSize($event)"
-                class="w-1/2 px-3 py-2 border rounded-md bg-white text-center" />
-            </div>
-          </div>
-
-          <!-- Sección 2: Configurar nueva alerta -->
-          <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
-            <div class="px-4 py-3 border-b bg-white">
-              <h3 class="font-medium text-slate-800 flex items-center gap-2">
-                <span
-                  class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">
-                  2
-                </span>
-                <span i18n="@@setNewAlert">Configurar nueva alerta</span>
-              </h3>
-            </div>
-
-            <div class="p-4">
-              <div class="grid gap-6 md:grid-cols-3">
-                <div class="space-y-3">
-                  <label class="text-sm font-medium" i18n="@@condition">Condición</label>
-                  <div class="bg-white border rounded-md p-2 space-y-2">
-                    <div class="flex items-center space-x-2 p-2 rounded hover:bg-slate-50">
-                      <input type="radio" id="op-less" name="operand" value="<" [(ngModel)]="operand" class="h-4 w-4" />
-                      <label for="op-less" class="cursor-pointer w-full">
-                        <span class="font-medium" i18n="@@lessThan">Menor que</span>
-                        <span class="ml-2 text-slate-500">(&lt;)</span>
-                      </label>
-                    </div>
-                    <div class="flex items-center space-x-2 p-2 rounded hover:bg-slate-50">
-                      <input type="radio" id="op-equal" name="operand" value="=" [(ngModel)]="operand"
-                        class="h-4 w-4" />
-                      <label for="op-equal" class="cursor-pointer w-full">
-                        <span class="font-medium" i18n="@@equalTo">Igual a</span>
-                        <span class="ml-2 text-slate-500">(=)</span>
-                      </label>
-                    </div>
-                    <div class="flex items-center space-x-2 p-2 rounded hover:bg-slate-50">
-                      <input type="radio" id="op-greater" name="operand" value=">" [(ngModel)]="operand"
-                        class="h-4 w-4" />
-                      <label for="op-greater" class="cursor-pointer w-full">
-                        <span class="font-medium" i18n=@@greaterThan>Mayor que</span>
-                        <span class="ml-2 text-slate-500">(&gt;)</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="space-y-3">
-                  <label for="value" class="text-sm font-medium" i18n="@@thresholdValue">
-                    Valor umbral
-                  </label>
-                  <input id="value" type="text" i18n-placeholder="@@forExample" placeholder="Ej: 50.5"
-                    [(ngModel)]="value" class="w-full px-3 py-2 border rounded-md bg-white" />
-                  <p class="text-xs text-slate-500 italic" i18n="@@numValTrigAlert">Valor numérico que activará la
-                    alerta</p>
-                </div>
-
-                <div class="space-y-3">
-                  <label for="color" class="text-sm font-medium" i18n="@@alertColor">
-                    Color de alerta
-                  </label>
-                  <div class="flex gap-3">
-                    <div class="flex-1">
-                      <input id="color" type="text" [(ngModel)]="color"
-                        class="w-full px-3 py-2 border rounded-md font-mono bg-white" />
-                    </div>
-
-                    <p-colorPicker
-                      class="w-fit h-fit rounded-md border shadow-sm transition-transform hover:scale-105 cursor-pointer"
-                      [(ngModel)]="color" (onChange)="handleInputColor(color)" format="hex" appendTo="body" />
-
+                <!-- Color de fondo -->
+                <div class="space-y-2">
+                  <label class="text-sm font-medium" i18n="@@kpiBgColor">Color de fondo</label>
+                  <div class="flex items-center gap-3">
+                    <input type="text" [(ngModel)]="kpiBackgroundColor" (ngModelChange)="updateKpiBackground()"
+                      placeholder="#ffffff"
+                      class="flex-1 px-3 py-2 border rounded-md font-mono bg-white text-sm" />
+                    <p-colorPicker [(ngModel)]="kpiBackgroundColor" (onChange)="updateKpiBackground()"
+                      format="hex" appendTo="body"
+                      class="rounded-md border shadow-sm transition-transform hover:scale-105 cursor-pointer" />
                   </div>
                   <div class="flex items-center gap-2">
-                    <div (click)="setColor('#ef4444')" class="w-4 h-4 rounded-full bg-red-500"></div>
-                    <div (click)="setColor('#eab308')" class="w-4 h-4 rounded-full bg-yellow-500"></div>
-                    <div (click)="setColor('#22c55e')" class="w-4 h-4 rounded-full bg-green-500"></div>
-                    <div (click)="setColor('#3b82f6')" class="w-4 h-4 rounded-full bg-blue-500"></div>
-                    <div (click)="setColor('#a855f7')" class="w-4 h-4 rounded-full bg-purple-500"></div>
+                    @for(c of ['#ffffff','#f1f5f9','#e2e8f0','#1e293b','#0f172a']; track c){
+                      <div (click)="kpiBackgroundColor=c; updateKpiBackground()"
+                        [style.background-color]="c"
+                        class="w-4 h-4 rounded-full border border-slate-200 cursor-pointer hover:scale-110 transition-transform"></div>
+                    }
+                  </div>
+                </div>
+
+                <!-- Color del texto -->
+                <div class="space-y-2">
+                  <label class="text-sm font-medium" i18n="@@kpiTextColor">Color del texto</label>
+                  <div class="flex items-center gap-3">
+                    <input type="text" [(ngModel)]="kpiTextColor" (ngModelChange)="updateKpiTextColor()"
+                      placeholder="#67757c"
+                      class="flex-1 px-3 py-2 border rounded-md font-mono bg-white text-sm" />
+                    <p-colorPicker [(ngModel)]="kpiTextColor" (onChange)="updateKpiTextColor()"
+                      format="hex" appendTo="body"
+                      class="rounded-md border shadow-sm transition-transform hover:scale-105 cursor-pointer" />
+                  </div>
+                  <div class="flex items-center gap-2">
+                    @for(c of ['#67757c','#1e293b','#ffffff','#00BFB3','#3b82f6','#ef4444']; track c){
+                      <div (click)="kpiTextColor=c; updateKpiTextColor()"
+                        [style.background-color]="c"
+                        class="w-4 h-4 rounded-full border border-slate-200 cursor-pointer hover:scale-110 transition-transform"></div>
+                    }
+                  </div>
+                </div>
+
+                <!-- Imagen prefijo -->
+                <div class="space-y-2 md:col-span-2">
+                  <label class="text-sm font-medium" i18n="@@kpiPrefixImage">Imagen prefijo</label>
+                  <div class="flex items-center gap-3">
+                    <label class="flex items-center gap-1 px-3 py-2 rounded border text-sm bg-slate-50 hover:bg-slate-100 cursor-pointer">
+                      <i class="pi pi-upload"></i>
+                      <span i18n="@@uploadImage">Subir imagen</span>
+                      <input type="file" accept="image/*" class="hidden" (change)="onPrefixImageSelected($event)" />
+                    </label>
+                    @if(prefixImage){
+                      <img [src]="prefixImage" alt="preview"
+                        style="max-height:2rem; max-width:6rem; object-fit:contain;"
+                        class="border rounded bg-slate-50 p-1" />
+                      <span (click)="prefixImage=''; updatePrefixImage()"
+                        class="cursor-pointer text-slate-400 hover:text-slate-700 select-none text-sm">✕</span>
+                    }
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Colores de series (solo KPI+chart) -->
+            @if(edaChart !== 'kpi'){
+              <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
+                <div class="px-4 py-1.5 border-b bg-white">
+                  <h3 class="font-medium text-slate-800 flex items-center gap-2">
+                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">3</span>
+                    <span i18n="@@colorsChartH6">Colores del gráfico</span>
+                  </h3>
+                </div>
+                <div class="p-4 space-y-4">
+                  <select class="w-full sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
+                    <option [ngValue]="null" disabled hidden i18n="@@selectPalette">-- Seleccione una paleta --</option>
+                    @for (palette of allPalettes; track $index) {
+                      <option [ngValue]="{name: palette.name, paleta: palette.paleta}">{{ palette.name }}</option>
+                    }
+                  </select>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @for (item of series; track item.value) {
+                      <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+                        <span class="font-medium">{{ item.value }}</span>
+                        <div class="flex items-center gap-2">
+                          <input [(ngModel)]="item.color" class="text-md text-slate-500 font-mono justify-items-end w-[3.5vw]">
+                          <p-colorPicker [(ngModel)]="item.color" (onChange)="handleInputColor(item)" format="hex" appendTo="body"></p-colorPicker>
+                        </div>
+                      </div>
+                    }
                   </div>
                 </div>
               </div>
+            }
 
-              <div class="mt-4 flex items-center justify-between">
-                <div class="text-sm text-slate-600">
-                  <span class="font-medium" i18n="@@alertsPreview">Vista previa: </span>
-                  <span i18n="@@valueKPI">Cuando el valor KPI es</span><span class="font-mono">{{operand}}</span> que
-                  <span class="font-mono">{{value || "X"}}</span>,
-                  <span class="ml-1 font-medium" [style.color]="color" i18n="@@textChangeColor">
-                    el texto cambiará a este color
-                  </span>
+          </div>
+        </div>
+      }
+
+      <!-- TAB: Alertas -->
+      @if (activeTab === 'alerts') {
+        <div class="space-y-6">
+          <div class="grid gap-6">
+
+            <!-- Configurar nueva alerta -->
+            <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
+              <div class="px-4 py-1.5 border-b bg-white">
+                <h3 class="font-medium text-slate-800 flex items-center gap-2">
+                  <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">1</span>
+                  <span i18n="@@setNewAlert">Configurar nueva alerta</span>
+                </h3>
+              </div>
+              <div class="p-4">
+                <div class="grid gap-6 md:grid-cols-3">
+                  <div class="space-y-3">
+                    <label class="text-sm font-medium" i18n="@@condition">Condición</label>
+                    <div class="bg-white border rounded-md p-2 space-y-2">
+                      <div class="flex items-center space-x-2 p-2 rounded hover:bg-slate-50">
+                        <input type="radio" id="op-less" name="operand" value="<" [(ngModel)]="operand" class="h-4 w-4" />
+                        <label for="op-less" class="cursor-pointer w-full">
+                          <span class="font-medium" i18n="@@lessThan">Menor que</span>
+                          <span class="ml-2 text-slate-500">(&lt;)</span>
+                        </label>
+                      </div>
+                      <div class="flex items-center space-x-2 p-2 rounded hover:bg-slate-50">
+                        <input type="radio" id="op-equal" name="operand" value="=" [(ngModel)]="operand" class="h-4 w-4" />
+                        <label for="op-equal" class="cursor-pointer w-full">
+                          <span class="font-medium" i18n="@@equalTo">Igual a</span>
+                          <span class="ml-2 text-slate-500">(=)</span>
+                        </label>
+                      </div>
+                      <div class="flex items-center space-x-2 p-2 rounded hover:bg-slate-50">
+                        <input type="radio" id="op-greater" name="operand" value=">" [(ngModel)]="operand" class="h-4 w-4" />
+                        <label for="op-greater" class="cursor-pointer w-full">
+                          <span class="font-medium" i18n="@@greaterThan">Mayor que</span>
+                          <span class="ml-2 text-slate-500">(&gt;)</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="space-y-3">
+                    <label for="value" class="text-sm font-medium" i18n="@@thresholdValue">Valor umbral</label>
+                    <input id="value" type="text" i18n-placeholder="@@forExample" placeholder="Ej: 50.5"
+                      [(ngModel)]="value" class="w-full px-3 py-2 border rounded-md bg-white" />
+                    <p class="text-xs text-slate-500 italic" i18n="@@numValTrigAlert">Valor numérico que activará la alerta</p>
+                  </div>
+
+                  <div class="space-y-3">
+                    <label for="alertColor" class="text-sm font-medium" i18n="@@alertColor">Color de alerta</label>
+                    <div class="flex gap-3">
+                      <div class="flex-1">
+                        <input id="alertColor" type="text" [(ngModel)]="color"
+                          class="w-full px-3 py-2 border rounded-md font-mono bg-white" />
+                      </div>
+                      <p-colorPicker
+                        class="w-fit h-fit rounded-md border shadow-sm transition-transform hover:scale-105 cursor-pointer"
+                        [(ngModel)]="color" (onChange)="handleInputColor(color)" format="hex" appendTo="body" />
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <div (click)="setColor('#ef4444')" class="w-4 h-4 rounded-full bg-red-500 cursor-pointer"></div>
+                      <div (click)="setColor('#eab308')" class="w-4 h-4 rounded-full bg-yellow-500 cursor-pointer"></div>
+                      <div (click)="setColor('#22c55e')" class="w-4 h-4 rounded-full bg-green-500 cursor-pointer"></div>
+                      <div (click)="setColor('#3b82f6')" class="w-4 h-4 rounded-full bg-blue-500 cursor-pointer"></div>
+                      <div (click)="setColor('#a855f7')" class="w-4 h-4 rounded-full bg-purple-500 cursor-pointer"></div>
+                    </div>
+                  </div>
                 </div>
-                <button (click)="addAlert()"
-                  class="px-4 py-2 bg-[#00BFB3] text-white rounded-md flex items-center gap-2 hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  [disabled]="!value" i18n="@@addAlert">
-                  <span>Añadir alerta</span>
-                </button>
+
+                <div class="mt-4 flex items-center justify-between">
+                  <div class="text-sm text-slate-600">
+                    <span class="font-medium" i18n="@@alertsPreview">Vista previa: </span>
+                    <span i18n="@@valueKPI">Cuando el valor KPI es</span><span class="font-mono">{{operand}}</span> que
+                    <span class="font-mono">{{value || "X"}}</span>,
+                    <span class="ml-1 font-medium" [style.color]="color" i18n="@@textChangeColor">el texto cambiará a este color</span>
+                  </div>
+                  <button (click)="addAlert()"
+                    class="px-4 py-2 bg-[#00BFB3] text-white rounded-md flex items-center gap-2 hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    [disabled]="!value" i18n="@@addAlert">
+                    <span>Añadir alerta</span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
 
-          @if(alerts.length > 0){
-            <div class="bg-white rounded-lg border overflow-hidden">
-            <div class="px-4 py-3 border-b bg-gradient-to-r from-slate-50 to-slate-100">
-              <h3 class="font-medium text-slate-800 flex items-center gap-2">
-                <span
-                  class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">
-                  3
-                </span>
-                <span i18n="@@alertsConfigured">Alertas configuradas</span> ({{alerts.length}})
-              </h3>
-            </div>
-            <div class="overflow-hidden">
-              <table class="w-full text-sm">
-                <thead>
-                  <tr class="bg-slate-50 text-slate-600">
-                    <th class="text-left p-3 font-medium" i18n="@@condition">Condición</th>
-                    <th class="text-left p-3 font-medium" i18n="@@value">Valor</th>
-                    <th class="text-left p-3 font-medium" i18n="@@colorKpiH6">Color</th>
-                    <th class="text-right p-3 font-medium" i18n="@@actions">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let alert of alerts; let i = index" class="border-t hover:bg-slate-50">
-                    <td class="p-3">
-                      <div class="flex items-center gap-2">
-                        <span class="font-mono bg-slate-100 px-2 py-1 rounded text-slate-700">
-                          {{alert.operand}}
-                        </span>
-                        <span [ngSwitch]="alert.operand">
-                          <span *ngSwitchCase="'<'" i18n="@@lessThan">Menor que</span>
-                          <span *ngSwitchCase="'='" i18n="@@equalTo">Igual a</span>
-                          <span *ngSwitchCase="'>'" i18n="@@greaterThan">Mayor que</span>
-                          <span *ngSwitchDefault>{{ alert.operand }}</span>
-                        </span>
-                      </div>
-                    </td>
-                    <td class="p-3 font-mono">{{alert.value}}</td>
-                    <td class="p-3">
-                      <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 rounded-full" [style.backgroundColor]="alert.color"></div>
-                        <code class="bg-slate-100 px-2 py-1 rounded text-xs">{{alert.color}}</code>
-                      </div>
-                    </td>
-                    <td class="p-3 text-right">
-                      <button (click)="deleteAlert(alert)"
-                        class="h-8 w-8 p-0 inline-flex items-center justify-center rounded-md hover:bg-slate-100">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M18 6 6 18"></path>
-                          <path d="m6 6 12 12"></path>
-                        </svg>
-                        <span class="sr-only" i18n="@@deleteBtn">Eliminar</span>
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="bg-slate-50 px-4 py-3 text-sm text-slate-500 italic border-t" i18n="@@orderAlerts">
-              Las alertas se aplicarán en orden de creación. Haga clic en el botón X para eliminar una alerta.
-            </div>
-          </div>
-          }
-          
+            @if(alerts.length > 0){
+              <div class="bg-white rounded-lg border overflow-hidden">
+                <div class="px-4 py-3 border-b bg-gradient-to-r from-slate-50 to-slate-100">
+                  <h3 class="font-medium text-slate-800 flex items-center gap-2">
+                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">2</span>
+                    <span i18n="@@alertsConfigured">Alertas configuradas</span> ({{alerts.length}})
+                  </h3>
+                </div>
+                <div class="overflow-hidden">
+                  <table class="w-full text-sm">
+                    <thead>
+                      <tr class="bg-slate-50 text-slate-600">
+                        <th class="text-left p-3 font-medium" i18n="@@condition">Condición</th>
+                        <th class="text-left p-3 font-medium" i18n="@@value">Valor</th>
+                        <th class="text-left p-3 font-medium" i18n="@@colorKpiH6">Color</th>
+                        <th class="text-right p-3 font-medium" i18n="@@actions">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let alert of alerts; let i = index" class="border-t hover:bg-slate-50">
+                        <td class="p-3">
+                          <div class="flex items-center gap-2">
+                            <span class="font-mono bg-slate-100 px-2 py-1 rounded text-slate-700">{{alert.operand}}</span>
+                            <span [ngSwitch]="alert.operand">
+                              <span *ngSwitchCase="'<'" i18n="@@lessThan">Menor que</span>
+                              <span *ngSwitchCase="'='" i18n="@@equalTo">Igual a</span>
+                              <span *ngSwitchCase="'>'" i18n="@@greaterThan">Mayor que</span>
+                              <span *ngSwitchDefault>{{ alert.operand }}</span>
+                            </span>
+                          </div>
+                        </td>
+                        <td class="p-3 font-mono">{{alert.value}}</td>
+                        <td class="p-3">
+                          <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 rounded-full" [style.backgroundColor]="alert.color"></div>
+                            <code class="bg-slate-100 px-2 py-1 rounded text-xs">{{alert.color}}</code>
+                          </div>
+                        </td>
+                        <td class="p-3 text-right">
+                          <button (click)="deleteAlert(alert)"
+                            class="h-8 w-8 p-0 inline-flex items-center justify-center rounded-md hover:bg-slate-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>
+                            </svg>
+                            <span class="sr-only" i18n="@@deleteBtn">Eliminar</span>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="bg-slate-50 px-4 py-3 text-sm text-slate-500 italic border-t" i18n="@@orderAlerts">
+                  Las alertas se aplicarán en orden de creación. Haga clic en el botón X para eliminar una alerta.
+                </div>
+              </div>
+            }
 
-          @if(alerts.length === 0){
-            <div class="bg-white rounded-lg border p-8 text-center">
-            <div class="mx-auto w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-3">
-              <span class="text-slate-400 text-xl">!</span>
-            </div>
-            <h3 class="text-slate-800 font-medium mb-1" i18n="@@noAlertsConfigured">No hay alertas configuradas</h3>
-            <p class="text-slate-500 text-sm" i18n="@@useFormAlertConfigure">
-              Configure una alerta usando el formulario de arriba para visualizar cambios en el gráfico.
-            </p>
+            @if(alerts.length === 0){
+              <div class="bg-white rounded-lg border p-8 text-center">
+                <div class="mx-auto w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-3">
+                  <span class="text-slate-400 text-xl">!</span>
+                </div>
+                <h3 class="text-slate-800 font-medium mb-1" i18n="@@noAlertsConfigured">No hay alertas configuradas</h3>
+                <p class="text-slate-500 text-sm" i18n="@@useFormAlertConfigure">
+                  Configure una alerta usando el formulario de arriba para visualizar cambios en el gráfico.
+                </p>
+              </div>
+            }
+
           </div>
-          }
         </div>
-      </div>
       }
-      <!-- Alerts Tab -->
+
+      </div><!-- end tab content -->
     </div>
   </div>
-
 </eda-dialog2>

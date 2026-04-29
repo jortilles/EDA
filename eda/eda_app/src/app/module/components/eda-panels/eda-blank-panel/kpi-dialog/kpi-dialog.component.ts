@@ -1,5 +1,5 @@
 import { EdaDialogCloseEvent, EdaDialog2Component } from '@eda/shared/components/shared-components.index';
-import { AfterViewChecked, AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { UserService } from '@eda/services/service.index';
@@ -16,7 +16,7 @@ import { ColorPickerModule } from 'primeng/colorpicker';
     styleUrls: ['./kpi-dialog.component.css'],
     imports: [FormsModule, CommonModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent]
 })
-export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewChecked {
+export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
     @Input() controller: any;
     @ViewChild('PanelChartComponent', { static: false }) panelChartComponent: PanelChartComponent;
     @ViewChild('mailConfig', { static: false }) mailConfig: any;
@@ -43,6 +43,11 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     public panelTitle: string = '';
     private panelWidth: number = 400;
     private panelHeight: number = 300;
+    private resizeObserver: ResizeObserver;
+
+    public kpiBackgroundColor: string = '';
+    public kpiTextColor: string = '';
+    public prefixImage: string = '';
 
     public units: string;
     public quantity: number;
@@ -58,7 +63,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     public edaChart: any;
     public chartContent: any;
     public display: boolean = false;
-    public activeTab: "colors" | "alerts" = "alerts";
+    public activeTab: "aspecto" | "alerts" = "aspecto";
     public selectedPalette: { name: string; paleta: any } | null = null;
     public allPalettes: any = this.stylesProviderService.ChartsPalettes;
     public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
@@ -78,7 +83,15 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     }
 
     ngAfterViewInit(): void {
-        setTimeout(() => this.computePreviewBox(), 0);
+        setTimeout(() => this.computePreviewBox(), 50);
+        this.resizeObserver = new ResizeObserver(() => this.computePreviewBox());
+        if (this.previewContainer) {
+            this.resizeObserver.observe(this.previewContainer.nativeElement);
+        }
+    }
+
+    ngOnDestroy(): void {
+        this.resizeObserver?.disconnect();
     }
 
     private computePreviewBox(): void {
@@ -120,6 +133,10 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.originalAlerts = [...(config.alertLimits || [])];
         this.alerts = [...this.originalAlerts];
         this.modifiedFontPoints = config.modifiedFontPoints || 0;
+        this.kpiBackgroundColor = config.backgroundColor || '';
+        this.kpiTextColor = config.kpiColor || '';
+        this.prefixImage = config.prefixImage || '';
+        this.activeTab = 'aspecto';
 
         if (this.panelBaseResultSize > 0) {
         setTimeout(() => {
@@ -132,7 +149,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         }
     }
 
-    setActiveTab(tab: "colors" | "alerts"): void {
+    setActiveTab(tab: "aspecto" | "alerts"): void {
         this.activeTab = tab;
     }
 
@@ -150,6 +167,9 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
             chartSubType: this.panelChartConfig.edaChart,
             assignedColors: [...this.assignedColors],
             modifiedFontPoints: this.modifiedFontPoints,
+            backgroundColor: this.kpiBackgroundColor,
+            kpiColor: this.kpiTextColor,
+            prefixImage: this.prefixImage,
         });
     }
 
@@ -343,6 +363,43 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
 
         // Aplicar colores
         this.applyColorsToChart();
+    }
+
+    updateKpiBackground() {
+        const instance = this.panelChartComponent?.componentRef?.instance;
+        if (instance) {
+            instance.inject.backgroundColor = this.kpiBackgroundColor;
+            this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
+        }
+    }
+
+    updateKpiTextColor() {
+        const instance = this.panelChartComponent?.componentRef?.instance;
+        if (instance) {
+            instance.inject.kpiColor = this.kpiTextColor;
+            instance.color = this.kpiTextColor || instance.defaultColor;
+            this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
+        }
+    }
+
+    onPrefixImageSelected(event: Event): void {
+        const input = event.target as HTMLInputElement;
+        const file = input?.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            this.prefixImage = reader.result as string;
+            this.updatePrefixImage();
+        };
+        reader.readAsDataURL(file);
+    }
+
+    updatePrefixImage() {
+        const instance = this.panelChartComponent?.componentRef?.instance;
+        if (instance) {
+            instance.inject.prefixImage = this.prefixImage;
+            this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
+        }
     }
 
     modifyKpiSize(newValue?: number) {

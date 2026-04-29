@@ -51,8 +51,11 @@ export const ChartsConfigUtils = {
       config = {
         sufix: ebp.panelChart.componentRef.instance.inject.sufix,
         alertLimits: ebp.panelChart.componentRef.instance.inject.alertLimits,
-        assignedColors: ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || null,  // Guardar assignedColors
+        assignedColors: ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || null,
         modifiedFontPoints: ebp.panelChart.componentRef.instance.inject.modifiedFontPoints || 0,
+        backgroundColor: ebp.panelChart.componentRef.instance.inject.backgroundColor || '',
+        kpiColor: ebp.panelChart.componentRef.instance.inject.kpiColor || '',
+        prefixImage: ebp.panelChart.componentRef.instance.inject.prefixImage || '',
         edaChart: {}
       }
 
