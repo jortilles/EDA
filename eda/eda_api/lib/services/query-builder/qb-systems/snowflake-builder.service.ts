@@ -8,10 +8,10 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
     }
 
         /** esto se usa para las consultas que hacemos a bbdd para generar el modelo */
-    public simpleQuery(columns: string[], origin: string) {
+   public simpleQuery(columns: string[], origin: string, view: boolean) {
     
         const schema = this.dataModel.ds.connection.schema;
-        if (schema) {
+        if (schema && !view) {
             origin = `"${schema}"."${origin}"`;
         }
         return `SELECT DISTINCT ${columns.join(', ')} \nFROM ${origin}`;

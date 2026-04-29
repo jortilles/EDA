@@ -55,6 +55,14 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   
   tags: any[] = [];
   selectedTags = signal<any>(JSON.parse(sessionStorage.getItem('activeTags') ? sessionStorage.getItem('activeTags') : '[]'));
+  
+  //Sistema de carpetas
+  viewMode = signal<'folders' | 'flat'>('flat');
+  expandedFolder = signal<{ tag: string; colKey: string } | null>(null);
+  readonly allTagsValue = $localize`:@@AllTags:Todos`;
+  readonly allTagsFlatValue = 'TodosFlat';
+  readonly allTagsFlatLabel = $localize`:@@AllTagsFlat:Todo`;
+  readonly allTagsGroupedLabel = $localize`:@@AllTagsGrouped:Todo agrupado`;
 
   isOpenTags = signal(false)
   searchTagTerm = signal("")
@@ -100,9 +108,15 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   public chatSuggestion2: string = $localize`:@@chatSuggestion2:¿Qué datasources hay?`;
   public chatSuggestion3: string = $localize`:@@chatSuggestion3:Estado del servidor`;
 
+  // Chat fallback option labels
+  readonly chatFallbackYes: string = $localize`:@@chatFallbackYes:Sí`;
+  readonly chatFallbackSearchIn: string = $localize`:@@chatFallbackSearchIn:Buscar en...`;
+  readonly chatFallbackSearchInPrefix: string = $localize`:@@chatFallbackSearchInPrefix:Buscar en: `;
+
   constructor(private userService: UserService, private groupService: GroupService) { }
 
   ngOnInit(): void {
+    this.initTagSelection();
     this.loadReports();
     this.ifAnonymousGetOut();
     this.iaChatService.getConfig().subscribe({
@@ -130,6 +144,12 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     }
   }
 
+  resetChat(): void {
+    this.chatHistory = [];
+    this.chatLoading.set(false);
+    setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+  }
+
   toggleChat(): void {
     const opening = !this.chatOpen();
     this.chatOpen.set(opening);
@@ -143,6 +163,14 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       this.chatInputEl.nativeElement.value = text;
     }
     this.sendChatMessage();
+  }
+
+  pasteToInput(text: string): void {
+    if (this.chatInputEl?.nativeElement) {
+      this.chatInputEl.nativeElement.value = text;
+      this.chatInputEl.nativeElement.dispatchEvent(new Event('input'));
+      this.chatInputEl.nativeElement.focus();
+    }
   }
 
   onChatKeydown(event: KeyboardEvent): void {
@@ -179,12 +207,25 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   selectOption(option: ChatOption): void {
+    if (option.type === 'paste') {
+      this.pasteToInput(this.chatFallbackSearchInPrefix);
+      return;
+    }
     if (this.chatLoading()) return;
     // Ocultar las opciones del mensaje que contenía esta selección
     const msgWithOptions = [...this.chatHistory].reverse().find(m => m.role === 'assistant' && m.options && m.options.length > 0);
     if (msgWithOptions) msgWithOptions.options = [];
-    const displayLabel = $localize`:@@chatOptionSelectedLabel:Opción` + ` ${option.num}: ${option.label}`;
-    const apiMsg = `${displayLabel} (dashboard_id: ${option.dashboard_id}, panel_index: ${option.panel_index})`;
+    let displayLabel: string;
+    let apiMsg: string;
+    if (option.type === 'datasource') {
+      displayLabel = option.label;
+      apiMsg = option.datasource_id
+        ? `sí (ejecuta get_data_from_dashboard con datasource_id="${option.datasource_id}"${option.campos_consulta?.length ? ` y campos_consulta=${JSON.stringify(option.campos_consulta)}` : ''})`
+        : 'sí';
+    } else {
+      displayLabel = $localize`:@@chatOptionSelectedLabel:Opción` + ` ${option.num}: ${option.label}`;
+      apiMsg = `${displayLabel} (dashboard_id: ${option.dashboard_id}, panel_index: ${option.panel_index})`;
+    }
     this.chatHistory.push({ role: 'user', content: apiMsg, displayContent: displayLabel });
     this.chatLoading.set(true);
     this.shouldScrollChat = true;
@@ -374,7 +415,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
     // Agregar opciones adicionales
     this.tags.unshift({ label: $localize`:@@NoTag:Sin Etiqueta`, value: $localize`:@@NoTag:Sin Etiqueta`, });
-    this.tags.push({ label: $localize`:@@AllTags:Todos`, value: $localize`:@@AllTags:Todos` });
+    this.tags.push({ label: this.allTagsFlatLabel, value: this.allTagsFlatValue });
+    if (this.allDashboards.length >= 20) {
+      this.tags.push({ label: this.allTagsGroupedLabel, value: this.allTagsValue });
+    }
     this.filterByTags();
   }
 
@@ -383,7 +427,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     // Crear la URL completa del informe    
     const urlTree = this.router.createUrlTree(['/dashboard', report._id]);
     const relativeUrl = this.router.serializeUrl(urlTree);
-    const absoluteUrl = window.location.origin + relativeUrl;
 
     // Manejar clic medio o Ctrl+clic para abrir en nueva pestaña
     if (event.button === 1 || event.ctrlKey) {
@@ -396,24 +439,74 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
 
-public handleTagSelect(option: any): void {
-  const currentFilters = this.selectedTags(); // Filtros de tags
-  const isSelected = currentFilters.value === option.value;
+  public handleTagSelect(option: any): void {
+    const currentFilters = this.selectedTags();
+    const isSelected = currentFilters.value === option.value;
 
-  if (isSelected) {
-    // Eliminar tag
-    this.selectedTags.set({"label":$localize`:@@AllTags:Todos`,"value":$localize`:@@AllTags:Todos`});
-    sessionStorage.setItem("activeTags", JSON.stringify({"label":$localize`:@@AllTags:Todos`,"value":$localize`:@@AllTags:Todos`}));
-  } else {
-    // Añadir tag
-    this.selectedTags.set(option);
+    if (isSelected) {
+      const todoFlatOption = { label: this.allTagsFlatLabel, value: this.allTagsFlatValue };
+      this.selectedTags.set(todoFlatOption);
+      sessionStorage.setItem("activeTags", JSON.stringify(todoFlatOption));
+      this.viewMode.set('flat');
+      this.expandedFolder.set(null);
+    } else {
+      this.selectedTags.set(option);
+      sessionStorage.setItem("activeTags", JSON.stringify(option));
+      this.viewMode.set(option.value === $localize`:@@AllTags:Todos` ? 'folders' : 'flat');
+      this.expandedFolder.set(null);
+    }
 
-    sessionStorage.setItem("activeTags", JSON.stringify(option));
+    this.isOpenTags.set(false);
+    this.reapplyFilters();
   }
 
-  this.isOpenTags.set(false);
-  this.reapplyFilters();
-}
+
+  private async initTagSelection(): Promise<void> {
+    const dashboards = await lastValueFrom(this.dashboardService.getDashboards());
+    const moreThan20Dashboards = dashboards.dashboards.length > 20;
+    const todoGroupedOption = { label: this.allTagsGroupedLabel, value: this.allTagsValue };
+    const todoFlatOption = { label: this.allTagsFlatLabel, value: this.allTagsFlatValue };
+    this.selectedTags.set(moreThan20Dashboards ? todoGroupedOption : todoFlatOption);
+    sessionStorage.setItem('activeTags', JSON.stringify(moreThan20Dashboards ? todoGroupedOption : todoFlatOption));
+    this.viewMode.set(moreThan20Dashboards ? 'folders' : 'flat');
+  }
+
+  public clickFolder(tag: string, colKey: string): void {
+    const current = this.expandedFolder();
+    if (current?.tag === tag && current?.colKey === colKey) {
+      this.closeFolder();
+      return;
+    }
+    this.expandedFolder.set({ tag, colKey });
+    this.viewMode.set('flat');
+  }
+
+  public closeFolder(event?: MouseEvent): void {
+    event?.stopPropagation();
+    this.expandedFolder.set(null);
+    const todoGroupedOption = { label: this.allTagsGroupedLabel, value: this.allTagsValue };
+    this.selectedTags.set(todoGroupedOption);
+    sessionStorage.setItem('activeTags', JSON.stringify(todoGroupedOption));
+    this.viewMode.set('folders');
+  }
+
+  public getTagsInReports(reports: any[]): string[] {
+    const tagSet = new Set<string>();
+    for (const report of reports) {
+      for (const tag of this.normTagArr(report.config)) {
+        if (tag && tag.trim()) tagSet.add(tag);
+      }
+    }
+    return Array.from(tagSet).sort((a, b) => a.localeCompare(b));
+  }
+
+  public getReportsByTag(reports: any[], tag: string): any[] {
+    return reports.filter(r => this.normTagArr(r.config).includes(tag));
+  }
+
+  public getUntaggedReports(reports: any[]): any[] {
+    return reports.filter(r => this.normTagArr(r.config).filter(t => t.trim()).length === 0);
+  }
 
   public filteredTags(): any[] {
     return this.tags.filter((option) => option.label.toLowerCase().includes(this.searchTagTerm().toLowerCase()))
@@ -446,10 +539,10 @@ public handleTagSelect(option: any): void {
   }
 
   // Esta función actualiza los reports, y es llamada cada vez que se modifican los tags
-  public filterByTags() { 
+  public filterByTags() {
     const tags = sessionStorage.getItem("activeTags") || "[]";
-    // Si tiene la etiqueta Todos o no tiene etiqueta mostraremos todos los informes
-    if (tags.includes( $localize`:@@AllTags:Todos`) || tags === '[]') {
+    // Si tiene la etiqueta Todos (carpetas o lista plana) o no tiene etiqueta mostraremos todos los informes
+    if (tags.includes($localize`:@@AllTags:Todos`) || tags.includes(this.allTagsFlatValue) || tags === '[]') {
       this.publicReports  = this.reportMap.public;
       this.sharedReports  = this.reportMap.shared;
       this.privateReports = this.reportMap.private;
@@ -514,7 +607,7 @@ public handleTagSelect(option: any): void {
 
   private getActiveTagBase() {
     const activeTags = sessionStorage.getItem('activeTags') || '[]';
-    const hasActiveTag = !activeTags.includes($localize`:@@AllTags:Todos`) && activeTags !== '[]';
+    const hasActiveTag = !activeTags.includes($localize`:@@AllTags:Todos`) && !activeTags.includes(this.allTagsFlatValue) && activeTags !== '[]';
     return {
       public:  hasActiveTag ? this.checkTagsIntoReports(this.reportMap.public,  activeTags) : this.reportMap.public,
       shared:  hasActiveTag ? this.checkTagsIntoReports(this.reportMap.shared,  activeTags) : this.reportMap.shared,

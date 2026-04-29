@@ -1,6 +1,6 @@
 {
   "name": "app-eda",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "scripts": {
     "ng": "ng",
     "start": "ng serve -o --configuration=ca",
@@ -52,6 +52,7 @@
     "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
     "lodash": "^4.17.21",
+    "marked": "^18.0.2",
     "moment": "^2.29.3",
     "ng2-charts": "5.0.4",
     "ngx-csv-parser": "^2.0.0",

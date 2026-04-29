@@ -5,9 +5,17 @@ import { ApiService } from './api.service';
 export interface ChatOption {
   num: number;
   label: string;
-  dashboard_id: string;
-  panel_index: number;
-  dashboard_url: string;
+  type?: 'dashboard' | 'datasource' | 'paste';
+  dashboard_id?: string;
+  panel_index?: number;
+  dashboard_url?: string;
+  pasteText?: string;
+  datasource_id?: string;
+  campos_consulta?: string[];
+  dashboard_nombre?: string;
+  panel_titulo?: string;
+  tiene_filtros?: boolean;
+  filtros_nombres?: string;
 }
 
 export interface ChatMessage {

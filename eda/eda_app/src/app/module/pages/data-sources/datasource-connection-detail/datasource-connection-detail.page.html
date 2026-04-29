@@ -52,15 +52,6 @@
             </p>
           </div>
 
-          <!-- Description Field -->
-          <div class="space-y-2 md:col-span-2">
-            <label for="description" class="block font-medium" i18n="@@inputDescripcionModelo">Descripción</label>
-            <textarea id="description" formControlName="description" rows="3"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3] resize-none"
-              i18n-placeholder="@@placeholderDescripcionModelo"
-              placeholder="Describe el propósito y contenido de este modelo de datos..."></textarea>
-          </div>
-
           <!-- Type Field -->
           <div class="space-y-2">
             <label for="type" class="block font-medium" i18n="@@type">
@@ -72,6 +63,16 @@
               <option *ngFor="let type of databaseTypes" [value]="type.value">{{ type.label }}</option>
             </select>
           </div>
+
+          <!-- Description Field -->
+          <div class="space-y-2 md:col-span-2">
+            <label for="description" class="block font-medium" i18n="@@inputDescripcionModelo">Descripción</label>
+            <textarea id="description" formControlName="description" rows="3"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3] resize-none"
+              i18n-placeholder="@@placeholderDescripcionModelo"
+              placeholder="Describe el propósito y contenido de este modelo de datos..."></textarea>
+          </div>
+
 
           @if (!['bigquery', 'excel','csv', 'jsonwebservice'].includes(connectionForm.get('type')?.value)) {
           <!-- Server Field -->

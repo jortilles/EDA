@@ -69,9 +69,21 @@
     </div>
 
     <!-- Iframe -->
-    <div class="flex-1 border">
-        <iframe src='https://demo.edalitics.com/es/#/public/6801ea526c2a8f2c431e9b28?panelMode=true'
-            class="w-full h-full" id="showDashboard" name="placeholder" frameborder="0"></iframe>
+    <div class="flex-1 border flex items-center justify-center bg-gray-50">
+        @if (iframeSrc) {
+            <iframe [src]="iframeSrc"
+                class="w-full h-full" id="showDashboard" name="placeholder" frameborder="0"></iframe>
+        } @else {
+            <div class="text-center text-gray-400 space-y-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+                </svg>
+                <p class="text-sm" i18n="@@noInitialDashboard">No hay ningún dashboard inicial configurado.</p>
+                @if (canEdit) {
+                    <p class="text-xs" i18n="@@configureInitialDashboard">Edita el portal para seleccionar uno.</p>
+                }
+            </div>
+        }
     </div>
 
 </div>
@@ -89,31 +101,54 @@
         (close)="onDialogClose()"
         (reset)="onDialogReset()">
 
-        <div content class="flex" style="height: calc(80vh - 130px)">
+        <div content class="flex flex-col" style="height: calc(80vh - 130px)">
 
-            <!-- Columna izquierda: HTML editable -->
-            <div class="flex-1 flex flex-col p-4 border-r">
-                <h4 class="text-xs text-gray-500 mb-2 font-semibold">HTML del sidebar</h4>
-                <textarea
-                    [(ngModel)]="editingHtml"
-                    (ngModelChange)="onEditingHtmlChange($event)"
-                    class="flex-1 w-full font-mono text-xs border rounded p-3 resize-none outline-none focus:ring-1 focus:ring-blue-300"
-                    spellcheck="false">
-                </textarea>
-            </div>
+            <!-- Columnas: HTML + preview -->
+            <div class="flex flex-1 overflow-hidden">
 
-            <!-- Columna derecha: preview en vivo -->
-            <div class="w-[16vw] p-4 pt-10 shrink-0 flex flex-col overflow-hidden">
-                <div class="flex-1 overflow-auto">
-                    <div [innerHTML]="safeEditingHtml" class="h-full"></div>
+                <!-- Columna izquierda: HTML editable -->
+                <div class="flex-1 flex flex-col p-4 border-r">
+                    <h4 class="text-xs text-gray-500 mb-2 font-semibold">HTML del sidebar</h4>
+                    <textarea
+                        [(ngModel)]="editingHtml"
+                        (ngModelChange)="onEditingHtmlChange($event)"
+                        class="flex-1 w-full font-mono text-xs border rounded p-3 resize-none outline-none focus:ring-1 focus:ring-blue-300"
+                        spellcheck="false">
+                    </textarea>
                 </div>
-                <!-- Footer no editable -->
-                <div [style.background-color]="previewBgColor">
-                    <span i18n="@@hechoCon" class="pt-3 pb-1 pl-[10%] block text-white text-xs font-bold">HECHO CON</span>
-                    <div class="pb-3 flex justify-center">
-                        <img src="assets/images/Logo-edalitics.png" class="w-[70%]" alt="">
+
+                <!-- Columna derecha: preview en vivo -->
+                <div class="w-[16vw] p-4 pt-10 shrink-0 flex flex-col overflow-hidden">
+                    <div class="flex-1 overflow-auto">
+                        <div [innerHTML]="safeEditingHtml" class="h-full"></div>
+                    </div>
+                    <!-- Footer no editable -->
+                    <div [style.background-color]="previewBgColor">
+                        <span i18n="@@hechoCon" class="pt-3 pb-1 pl-[10%] block text-white text-xs font-bold">HECHO CON</span>
+                        <div class="pb-3 flex justify-center">
+                            <img src="assets/images/Logo-edalitics.png" class="w-[70%]" alt="">
+                        </div>
                     </div>
                 </div>
+
+            </div>
+
+            <!-- Sección inferior: dashboard inicial -->
+            <div class="border-t px-4 py-3 flex items-center gap-4 bg-gray-50 flex-shrink-0">
+                <label class="text-xs font-semibold text-gray-600 whitespace-nowrap" i18n="@@initialDashboardLabel">
+                    Dashboard inicial:
+                </label>
+                <select
+                    [(ngModel)]="editingInitialDashboardId"
+                    class="flex-1 max-w-xs border rounded px-2 py-1.5 text-xs text-gray-700 outline-none focus:ring-1 focus:ring-blue-300 bg-white">
+                    <option value="" i18n="@@noneOption">— Ninguno —</option>
+                    @for (dashboard of publicDashboards; track dashboard._id) {
+                        <option [value]="dashboard._id">{{ dashboard.config?.title || dashboard._id }}</option>
+                    }
+                </select>
+                @if (publicDashboards.length === 0) {
+                    <span class="text-xs text-gray-400" i18n="@@noPublicDashboards">No hay dashboards públicos disponibles.</span>
+                }
             </div>
 
         </div>

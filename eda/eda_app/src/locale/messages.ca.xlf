@@ -2890,7 +2890,17 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source> Todos  </source>
     <target>Tots </target>
   </trans-unit>
-  
+
+  <trans-unit id="AllTagsFlat">
+    <source>Todo</source>
+    <target>Tot</target>
+  </trans-unit>
+
+  <trans-unit id="AllTagsGrouped">
+    <source>Todo agrupado</source>
+    <target>Tot agrupat</target>
+  </trans-unit>
+
   <trans-unit id="NoneTags">
     <source> Ninguno  </source>
     <target>Cap </target>
@@ -6596,6 +6606,26 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="chatErrorConnecting" datatype="html">
         <source>Error al conectar con el asistente.</source>
         <target>Error en connectar amb l'assistent.</target>
+      </trans-unit>
+      <trans-unit id="chatFallbackYes" datatype="html">
+        <source>Sí</source>
+        <target>Sí</target>
+      </trans-unit>
+      <trans-unit id="chatFallbackSearchIn" datatype="html">
+        <source>Buscar en...</source>
+        <target>Cercar a...</target>
+      </trans-unit>
+      <trans-unit id="chatFallbackSearchInPrefix" datatype="html">
+        <source>Buscar en: </source>
+        <target>Cercar a: </target>
+      </trans-unit>
+      <trans-unit id="whereDoWeBegin" datatype="html">
+        <source>¿ Por dónde empezamos ?</source>
+        <target>Per on comencem?</target>
+      </trans-unit>
+      <trans-unit id="analyzingTheScheme" datatype="html">
+        <source>Analizando el esquema</source>
+        <target>Analitzant l'esquema</target>
       </trans-unit>
     </body>
   </file>
