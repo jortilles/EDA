@@ -6555,6 +6555,14 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Error al conectar con el asistente.</source>
         <target>Erreur de connexion à l'assistant.</target>
       </trans-unit>
+      <trans-unit id="whereDoWeBegin" datatype="html">
+        <source>¿ Por dónde empezamos ?</source>
+        <target>Par où commençons-nous ?</target>
+      </trans-unit>
+      <trans-unit id="analyzingTheScheme" datatype="html">
+        <source>Analizando el esquema</source>
+        <target>Analyse du schéma</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

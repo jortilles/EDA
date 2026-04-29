@@ -6220,6 +6220,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Error al conectar con el asistente.</source>
         <target>Błąd połączenia z asystentem.</target>
       </trans-unit>
+      <trans-unit id="whereDoWeBegin" datatype="html">
+        <source>¿ Por dónde empezamos ?</source>
+        <target>Od czego zaczynamy?</target>
+      </trans-unit>
+      <trans-unit id="analyzingTheScheme" datatype="html">
+        <source>Analizando el esquema</source>
+        <target>Analizując schemat</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

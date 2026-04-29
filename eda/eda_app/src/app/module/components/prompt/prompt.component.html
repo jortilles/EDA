@@ -7,8 +7,11 @@
 
         <!-- Chips de sugerencias cuando el chat está vacío -->
         <div *ngIf="messages.length === 0" class="suggestions-container">
-            <p class="suggestions-hint">¿Por dónde empezamos?</p>
-            <div *ngIf="loadingSuggestions" class="suggestions-loading">Analizando el esquema...</div>
+            <p class="suggestions-hint">
+                <span i18n="@@whereDoWeBegin">¿ Por dónde empezamos ?</span>
+            </p>
+            <div *ngIf="loadingSuggestions" class="suggestions-loading">
+                <span i18n="@@analyzingTheScheme">Analizando el esquema</span></div>
             <div *ngIf="!loadingSuggestions && suggestions.length > 0" class="suggestions-chips">
                 <button *ngFor="let s of suggestions" class="suggestion-chip" (click)="sendSuggestion(s)">{{ s }}</button>
             </div>
