@@ -24,6 +24,22 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
     public navigationSubscription: any;
     public selectedNode : TreeNode;
     public isSaveAsDialogVisible = false;
+    public searchTerm = '';
+
+    get filteredTreeData(): any[] {
+        if (!this.searchTerm.trim()) return this.treeData;
+        return this.filterNodes(this.treeData, this.searchTerm.toLowerCase());
+    }
+
+    private filterNodes(nodes: any[], term: string): any[] {
+        return nodes.reduce((acc: any[], node: any) => {
+            const filteredChildren = node.children ? this.filterNodes(node.children, term) : [];
+            if (node.label?.toLowerCase().includes(term) || filteredChildren.length) {
+                acc.push({ ...node, children: filteredChildren, expanded: filteredChildren.length > 0 });
+            }
+            return acc;
+        }, []);
+    }
 
 
     //Strings

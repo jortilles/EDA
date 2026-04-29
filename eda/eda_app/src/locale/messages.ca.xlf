@@ -6587,6 +6587,18 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Error al conectar con el asistente.</source>
         <target>Error en connectar amb l'assistent.</target>
       </trans-unit>
+      <trans-unit id="chatFallbackYes" datatype="html">
+        <source>Sí</source>
+        <target>Sí</target>
+      </trans-unit>
+      <trans-unit id="chatFallbackSearchIn" datatype="html">
+        <source>Buscar en...</source>
+        <target>Cercar a...</target>
+      </trans-unit>
+      <trans-unit id="chatFallbackSearchInPrefix" datatype="html">
+        <source>Buscar en: </source>
+        <target>Cercar a: </target>
+      </trans-unit>
       <trans-unit id="whereDoWeBegin" datatype="html">
         <source>¿ Por dónde empezamos ?</source>
         <target>Per on comencem?</target>

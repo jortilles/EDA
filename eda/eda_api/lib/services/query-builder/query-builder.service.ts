@@ -75,7 +75,7 @@ export abstract class QueryBuilderService {
 
     abstract analizedQuery(params: EdaQueryParams): any[];
 
-    abstract simpleQuery(columns: string[], origin: string);
+    abstract simpleQuery(columns: string[], origin: string, view:boolean);
 
 
 
@@ -86,6 +86,7 @@ export abstract class QueryBuilderService {
         let graph = this.buildGraph();
         /* Agafem els noms de les taules, origen i destí (és arbitrari), les columnes i el tipus d'agregació per construïr la consulta */
         let origin = this.queryTODO.rootTable || this.queryTODO.fields.find(x => x.order === 0).table_id;
+        let view = this.tables.filter(table => table.table_name.trim() === origin.trim()).map(table => { return table.query ? true: false })[0];
         let dest = [];
         const valueListList = [];
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
@@ -360,8 +361,9 @@ export abstract class QueryBuilderService {
         const forSelector = this.queryTODO.forSelector;
         const fields = this.queryTODO.fields;
         const sortedFilters = this.queryTODO.sortedFilters;
+
         if (this.queryTODO.simple) {
-            this.query = this.simpleQuery(columns, origin);
+            this.query = this.simpleQuery(columns, origin, view);
             return this.query;
         } else if (this.queryTODO.analized) {
             return this.analizedQuery({

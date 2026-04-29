@@ -149,12 +149,21 @@
           <p class="text-[10px] text-gray-400 leading-tight" i18n="@@chatAssistantSubtitle">Asistente IA para facilitar tu trabajo</p>
         </div>
       </div>
-      <button (click)="toggleChat()" i18n-title="@@chatCloseBtn" title="Cerrar"
-        class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-      </button>
+      <div class="flex items-center gap-1">
+        <button (click)="resetChat()" [disabled]="chatLoading() || chatHistory.length === 0"
+          i18n-title="@@chatResetBtn" title="Nueva conversación"
+          class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors disabled:opacity-30">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+        </button>
+        <button (click)="toggleChat()" i18n-title="@@chatCloseBtn" title="Cerrar"
+          class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
     </div>
 
     <!-- Mensajes -->
@@ -188,11 +197,24 @@
           }
         </div>
         @if (msg.role === 'assistant' && msg.options && msg.options.length > 0) {
-          <div class="flex flex-col gap-2 pl-8 mt-1">
+          <div class="flex flex-col gap-1.5 pl-8 mt-1">
             @for (opt of msg.options; track opt.num) {
-              <button class="chat-suggestion text-left" (click)="selectOption(opt)">
-                {{ opt.num }}. {{ opt.label }}
-              </button>
+              @if (opt.type === 'paste') {
+                <button class="chat-suggestion" (click)="selectOption(opt)">
+                  {{ chatFallbackSearchIn }}
+                </button>
+              } @else if (opt.type === 'datasource') {
+                <button class="chat-suggestion" (click)="selectOption(opt)">
+                  {{ chatFallbackYes }}
+                </button>
+              } @else {
+                <button class="chat-suggestion" (click)="selectOption(opt)">
+                  {{ opt.num }}. {{ opt.panel_titulo || opt.label }}
+                  @if (opt.tiene_filtros && opt.filtros_nombres) {
+                    <div class="chat-option-filter-warning">⚠ Filtros aplicados: {{ opt.filtros_nombres }}</div>
+                  }
+                </button>
+              }
             }
           </div>
         }
@@ -200,10 +222,7 @@
       @if (chatLoading()) {
         <div class="chat-msg-row">
           <div class="chat-msg-avatar">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
-              <path d="M20 3v4"/><path d="M22 5h-4"/>
-            </svg>
+            <img src="assets/images/logos/logo.png" alt="Edalitics" class="w-3.5 h-3.5 object-contain" style="filter: brightness(0) invert(1);">
           </div>
           <div class="chat-bubble chat-bubble--assistant px-4 py-3 flex items-center gap-1.5">
             <span class="chat-dot" style="animation-delay:0ms"></span>

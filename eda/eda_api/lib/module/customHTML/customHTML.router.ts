@@ -4,7 +4,7 @@ import { CustomHTMLController } from './customHTML.controller';
 
 const router = express.Router();
 
-router.get('/:key', authGuard, CustomHTMLController.get);
+router.get('/:key', CustomHTMLController.get);
 router.put('/:key', authGuard, CustomHTMLController.upsert);
 
 export default router;
