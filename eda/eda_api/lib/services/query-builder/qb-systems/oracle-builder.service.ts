@@ -8,10 +8,9 @@ export class OracleBuilderService extends QueryBuilderService {
     }
 
         /** esto se usa para las consultas que hacemos a bbdd para generar el modelo */
-    public simpleQuery(columns: string[], origin: string) {
-    
+    public simpleQuery(columns: string[], origin: string, view: boolean) {
         const schema = this.dataModel.ds.connection.schema;
-        if (schema) {
+        if (schema && !view) {
             origin = `"${schema}"."${origin}"`;
         }
         return `SELECT DISTINCT ${columns.join(', ')} \nFROM ${origin}`;
@@ -23,6 +22,7 @@ export class OracleBuilderService extends QueryBuilderService {
     let o = tables.filter(table => table.name === origin)
       .map(table => { return table.query ? this.cleanViewString(table.query) : table.name })[0];
     let myQuery = `SELECT ${columns.join(', ')} \n `;
+
     let vista = tables.filter(table => table.name === origin).map(table => { return table.query ? true: false })[0];
     if( vista ){  // Es una vista a nivel de modelo. NO la pongo entre comillas
       myQuery += `FROM ${o}`;
@@ -31,14 +31,16 @@ export class OracleBuilderService extends QueryBuilderService {
     }
 
 
-
     /** SI ES UN SELECT PARA UN SELECTOR  VOLDRÉ VALORS ÚNICS */
-       if (forSelector === true) {
-        myQuery = schema
-          ? `SELECT DISTINCT ${columns.join(', ')} \nFROM "${schema}"."${o}"`
-          : `SELECT DISTINCT ${columns.join(', ')} \nFROM "${o}"`;
+    if (forSelector === true) {
+      if(vista){
+        myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM  ${o} `;
+      }else if(schema){
+        myQuery =  `SELECT DISTINCT ${columns.join(', ')} \nFROM "${schema}"."${o}"`
+      }else{
+        myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM "${o}"`;
       }
-  
+    }
            
       let joinString: any[];
       let alias: any;

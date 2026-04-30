@@ -2349,6 +2349,10 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <source> Últimos 120 días </source>
 <target>Last 120 days </target>
 </trans-unit>
+<trans-unit id="DatePickerLast365">
+<source> Últimos 365 días </source>
+<target>Last 365 days </target>
+</trans-unit>
 <trans-unit id="DateSelectRange">
 <source>Selecciona un rango</source>
 <target>Select range</target>
@@ -2608,6 +2612,16 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <trans-unit id="AllTags">
 <source> Todos  </source>
 <target>All  </target>
+</trans-unit>
+
+<trans-unit id="AllTagsFlat">
+<source>Todo</source>
+<target>All</target>
+</trans-unit>
+
+<trans-unit id="AllTagsGrouped">
+<source>Todo agrupado</source>
+<target>All grouped</target>
 </trans-unit>
 
 <trans-unit id="NoneTags">
@@ -3122,6 +3136,51 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <trans-unit id="mailConfOk">
 <source>Credenciales correctas </source>
 <target> Credencials are oK</target>
+</trans-unit>
+
+<trans-unit id="alertMailDeleted">
+<source>Alerta de correo eliminada</source>
+<target>Mail alert deleted</target>
+</trans-unit>
+
+<trans-unit id="dashboardMailDeleted">
+<source>Configuración de envío eliminada</source>
+<target>Send configuration deleted</target>
+</trans-unit>
+
+<trans-unit id="mailSentNow">
+<source>Envío iniciado correctamente</source>
+<target>Send triggered successfully</target>
+</trans-unit>
+
+<trans-unit id="sendingNow">
+<source>Enviando...</source>
+<target>Sending...</target>
+</trans-unit>
+
+<trans-unit id="sendScheduledMails">
+<source>Enviar todos los correos programados</source>
+<target>Send all scheduled emails</target>
+</trans-unit>
+
+<trans-unit id="adminEmail">
+<source>Gestión de correo</source>
+<target>Mail Management</target>
+</trans-unit>
+
+<trans-unit id="adminEmailSubtitle">
+<source>Configure los ajustes y credenciales de su servidor de correo electrónico</source>
+<target>Configure your email server settings and credentials</target>
+</trans-unit>
+
+<trans-unit id="alertsConfigSubtitle">
+<source>Administra tus configuraciones de alertas</source>
+<target>Manage your alert configurations</target>
+</trans-unit>
+
+<trans-unit id="dashbaordsMailingSubtitle">
+<source>Administrar las configuraciones de correo electrónico del panel</source>
+<target>Manage panel email configurations</target>
 </trans-unit>
 
 <trans-unit id="checkCredentials">
@@ -4255,22 +4314,6 @@ Once configured you can invoke it whenever you want from the button.</target>
 <source>No hay imagen seleccionada</source>
 <target>No image selected</target>
 </trans-unit>
-<trans-unit id="adminEmail">
-<source>Gestión de correo</source>
-<target>Mail Management</target>
-</trans-unit>
-<trans-unit id="adminEmailSubtitle">
-<source>Configure los ajustes y credenciales de su servidor de correo electrónico</source>
-<target>Configure your email server settings and credentials</target>
-</trans-unit>
-<trans-unit id="alertsConfigSubtitle">
-<source>Administra tus configuraciones de alertas</source>
-<target>Manage your alert configurations</target>
-</trans-unit>
-<trans-unit id="dashbaordsMailingSubtitle">
-<source>Administrar las configuraciones de correo electrónico del panel</source>
-<target>Manage dashboard email configurations</target>
-</trans-unit>
 <trans-unit id="chartDisplayTitle">
 <source>Visualización</source>
 <target>Display</target>
@@ -4309,6 +4352,31 @@ Once configured you can invoke it whenever you want from the button.</target>
 <trans-unit id="tooltipBlockedByTrendOrPrediction">
 <source>Bloqueado porque tendencia o predicción está activa</source>
 <target>Blocked because trend or prediction is active</target>
+</trans-unit>
+
+<trans-unit id="showLegend">
+<source>Mostrar Leyenda</source>
+<target>Show Legend</target>
+</trans-unit>
+
+<trans-unit id="chartLegendOptionDescription">
+<source>Muestra la leyenda del gráfico</source>
+<target>Show chart legend</target>
+</trans-unit>
+
+<trans-unit id="showGridLines">
+<source>Mostrar Líneas Guía</source>
+<target>Show Grid Lines</target>
+</trans-unit>
+
+<trans-unit id="chartGridLinesOptionDescription">
+<source>Muestra u oculta las líneas guía del gráfico</source>
+<target>Show or hide chart grid lines</target>
+</trans-unit>
+
+<trans-unit id="histogramColum">
+<source>Columnas</source>
+<target>Columns</target>
 </trans-unit>
 
 <trans-unit id="chartLabelOption">
@@ -4904,6 +4972,26 @@ Once configured you can invoke it whenever you want from the button.</target>
 <trans-unit id="enableBaseLayer">
 <source>Activar capa base</source>
 <target>Enable base layer</target>
+</trans-unit>
+
+<trans-unit id="logarithmicScaleTooltip">
+<source>Aplica escala logarítmica a los valores del mapa</source>
+<target>Applies logarithmic scale to map values</target>
+</trans-unit>
+
+<trans-unit id="activeMouseFunctionsTooltip">
+<source>Permite arrastrar y hacer zoom con el ratón</source>
+<target>Allows dragging and zooming with the mouse</target>
+</trans-unit>
+
+<trans-unit id="enableBaseLayerTooltip">
+<source>Muestra u oculta la capa base del mapa</source>
+<target>Show or hide the map base layer</target>
+</trans-unit>
+
+<trans-unit id="layerColor">
+<source>Color de capa</source>
+<target>Layer color</target>
 </trans-unit>
 
 <trans-unit id="topleftPosition">
@@ -5807,6 +5895,10 @@ OR<ph id="5"/>
   <source>Próximos 120 días</source>
   <target>Next 120 days</target>
 </trans-unit>
+<trans-unit id="DatePickerNext365">
+  <source>Próximos 365 días</source>
+  <target>Next 365 days</target>
+</trans-unit>
 <trans-unit id="DatePickerAll">
   <source>Todas</source>
   <target>All</target>
@@ -6200,6 +6292,42 @@ OR<ph id="5"/>
 <trans-unit id="chatFabTitle" datatype="html">
   <source>Asistente IA</source>
   <target>AI Assistant</target>
+</trans-unit>
+<trans-unit id="mapClusteredPoints" datatype="html">
+  <source>puntos agrupados</source>
+  <target>clustered points</target>
+</trans-unit>
+<trans-unit id="saveAsModel" datatype="html">
+  <source>Guardar como, para el modelo de datos</source>
+  <target>Save as, for the data mode</target>
+</trans-unit>
+<trans-unit id="chatOptionSelectedLabel" datatype="html">
+  <source>Opción</source>
+  <target>Option</target>
+</trans-unit>
+<trans-unit id="chatErrorConnecting" datatype="html">
+  <source>Error al conectar con el asistente.</source>
+  <target>Error connecting to the assistant.</target>
+</trans-unit>
+<trans-unit id="chatFallbackYes" datatype="html">
+  <source>Sí</source>
+  <target>Yes</target>
+</trans-unit>
+<trans-unit id="chatFallbackSearchIn" datatype="html">
+  <source>Buscar en...</source>
+  <target>Search in...</target>
+</trans-unit>
+<trans-unit id="chatFallbackSearchInPrefix" datatype="html">
+  <source>Buscar en: </source>
+  <target>Search in: </target>
+</trans-unit>
+<trans-unit id="whereDoWeBegin" datatype="html">
+  <source>¿ Por dónde empezamos ?</source>
+  <target>Where do we start?</target>
+</trans-unit>
+<trans-unit id="analyzingTheScheme" datatype="html">
+  <source>Analizando el esquema</source>
+  <target>Analyzing the scheme</target>
 </trans-unit>
 </body>
 </file>

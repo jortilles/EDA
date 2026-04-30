@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { lastValueFrom } from 'rxjs';
 import { AlertService, SpinnerService } from '@eda/services/service.index';
-import { ChatgptService } from '@eda/services/api/chatgpt.service';
+import { AssistantService } from '@eda/services/api/assistant.service';
 import { IaFormStateService } from '@eda/services/shared/IaFormState.service';
 
 @Component({
@@ -16,7 +16,7 @@ export class AiManagementPage implements OnInit {
 
   private fb = inject(FormBuilder);
   private alertService = inject(AlertService);
-  private chatgptService = inject(ChatgptService);
+  private assistantService = inject(AssistantService);
   private spinnerService = inject(SpinnerService);
   private iaFormStateService = inject(IaFormStateService)
 
@@ -24,12 +24,21 @@ export class AiManagementPage implements OnInit {
   isSubmitting = signal(false);
   availableEnabled = signal(false);
   showApiKey = signal(false);
+  showAwsSecretKey = signal(false);
 
   aiForm: FormGroup;
 
+  get isBedrock(): boolean {
+    return this.aiForm.get('PROVIDER')?.value === 'bedrock';
+  }
+
   constructor() {
     this.aiForm = this.fb.group({
+      PROVIDER: ['openai', Validators.required],
       API_KEY: ['', Validators.required],
+      AWS_ACCESS_KEY: [''],
+      AWS_SECRET_KEY: [''],
+      AWS_REGION: [''],
       MODEL: ['', Validators.required],
       CONTEXT: ['', Validators.required],
       AVAILABLE: [false],
@@ -44,16 +53,21 @@ export class AiManagementPage implements OnInit {
   private async loadConfig() {
     try {
       this.spinnerService.on();
-      const res = await lastValueFrom(this.chatgptService.getConfig());
+      const res = await lastValueFrom(this.assistantService.getConfig());
       const cfg = res.config;
       this.aiForm.patchValue({
+        PROVIDER: cfg.PROVIDER ?? 'openai',
         API_KEY: this.API_KEY_PLACEHOLDER,
+        AWS_ACCESS_KEY: cfg.AWS_ACCESS_KEY ?? '',
+        AWS_SECRET_KEY: cfg.AWS_SECRET_KEY ? this.AWS_SECRET_PLACEHOLDER : '',
+        AWS_REGION: cfg.AWS_REGION ?? '',
         MODEL: cfg.MODEL,
         CONTEXT: cfg.CONTEXT,
         AVAILABLE: cfg.AVAILABLE,
         LIMIT: cfg.LIMIT,
       });
       this.availableEnabled.set(cfg.AVAILABLE);
+      this.iaFormStateService.setFormData(cfg);
     } catch (err: any) {
       this.alertService.addError(err);
     } finally {
@@ -71,6 +85,11 @@ export class AiManagementPage implements OnInit {
   }
 
   readonly API_KEY_PLACEHOLDER = 'you should know..... ;)';
+  readonly AWS_SECRET_PLACEHOLDER = 'you should know..... ;)';
+
+  toggleShowAwsSecretKey() {
+    this.showAwsSecretKey.update(v => !v);
+  }
 
   async handleSubmit() {
     if (this.aiForm.invalid) return;
@@ -80,8 +99,11 @@ export class AiManagementPage implements OnInit {
       if (payload.API_KEY === this.API_KEY_PLACEHOLDER) {
         delete payload.API_KEY;
       }
+      if (payload.AWS_SECRET_KEY === this.AWS_SECRET_PLACEHOLDER) {
+        delete payload.AWS_SECRET_KEY;
+      }
       this.iaFormStateService.setFormData(payload); 
-      await lastValueFrom(this.chatgptService.saveConfig(payload));
+      await lastValueFrom(this.assistantService.saveConfig(payload));
       this.alertService.addSuccess($localize`:@@aiConfigSaved:Configuración de IA guardada correctamente`);
     } catch (err: any) {
       this.alertService.addError(err);

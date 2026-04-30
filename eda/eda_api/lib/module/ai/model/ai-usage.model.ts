@@ -1,12 +1,11 @@
 import * as mongoose from 'mongoose';
 import { IUser } from '../../admin/users/model/user.model' 
 
-// Propuesta para poder utilizar como modelo del ChatGpt
 
-export interface IChatGpt extends mongoose.Document {
+export interface IAIUsage extends mongoose.Document {
     user: IUser;
     prompt: string;
-    reponse?: string;
+    response?: string;
     modelUsed: string;
     temperature?: number;
     createdAt: Date;
@@ -16,7 +15,7 @@ export interface IChatGpt extends mongoose.Document {
     };
 }
 
-const ChatGptSchema = new mongoose.Schema({
+const AISchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     prompt: { type: String, required: true },
     response: { type: String },
@@ -31,4 +30,4 @@ const ChatGptSchema = new mongoose.Schema({
 })
 
 
-export default mongoose.model<IChatGpt>('ChatGpt', ChatGptSchema);
+export default mongoose.model<IAIUsage>('AIUsage', AISchema);

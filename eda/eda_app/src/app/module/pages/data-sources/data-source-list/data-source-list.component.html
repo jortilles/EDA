@@ -1,6 +1,6 @@
-<div class="my-10 px-4 flex">
-  <div class="rounded-lg border-r bg-background overflow-auto max-h-[95vh] w-[30%]">
-    <div class="p-4 border-b">
+<div class="my-10 px-4 flex overflow-hidden">
+  <div class="rounded-lg border-r bg-background flex flex-col h-[calc(100vh-5rem)] w-[30%]">
+    <div class="p-4 border-b shrink-0">
       <div class="flex items-center justify-between">
         <h2 class="text-lg font-semibold" i18n="@@tituloCard">Modelo de datos</h2>
         <div class="flex gap-2">
@@ -17,6 +17,12 @@
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
               <polyline points="17 21 17 13 7 13 7 21"></polyline>
               <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+          </button>
+          <button class="p-1.5 rounded-md hover:bg-muted" pButton [pTooltip]="saveAsModelSTR" (click)="dataModelServiceSaveAs()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <rect x="3" y="3" width="13" height="13" rx="2" ry="2"></rect>
             </svg>
           </button>
           @if(['excel','csv'].includes(connectionType)){
@@ -52,9 +58,23 @@
         </div>
       </div>
     </div>
-    
-    <div class="p-2">
-      <p-tree id="datasource-list" [style]="{'width':'100%'}" [value]="treeData" [filter]="false"
+
+    <div class="px-3 py-2 border-b shrink-0">
+      <div class="flex items-center gap-2 rounded-md border px-2 py-1 bg-muted/40">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground shrink-0">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input class="bg-transparent text-sm outline-none w-full placeholder:text-muted-foreground"
+          type="text"
+          i18n-placeholder="@@buscarTabla"
+          placeholder="Buscar..."
+          (input)="searchTerm = $any($event.target).value" />
+      </div>
+    </div>
+
+    <div class="p-2 overflow-auto flex-1">
+      <p-tree id="datasource-list" [style]="{'width':'100%'}" [value]="filteredTreeData" [filter]="false"
         selectionMode="single" [(selection)]="selectedFile" (onNodeSelect)="nodeSelect($event)"
         (onNodeUnselect)="nodeUnselect($event)" (onNodeExpand)="nodeSelect($event)">
         <ng-template let-node pTemplate="selected">
@@ -66,9 +86,12 @@
       </p-tree>
     </div>
   </div>
-<div class="w-[70%]">
 
-  <app-data-source-detail (onTableCreated)="reLoadModelFromDb()"></app-data-source-detail>
-</div>
+  <div class="w-[70%] h-[calc(100vh-5rem)] overflow-auto">
+    <app-data-source-detail (onTableCreated)="reLoadModelFromDb()"></app-data-source-detail>
+  </div>
   
+  @if (isSaveAsDialogVisible) {
+    <app-datasource-save-as (close)="saveDatasourceAs($event)"></app-datasource-save-as>
+  }
 </div>

@@ -303,6 +303,85 @@
                 </div>
               </div>
             }
+          @if(alerts.length > 0){
+            <div class="bg-white rounded-lg border overflow-hidden">
+            <div class="px-4 py-3 border-b bg-gradient-to-r from-slate-50 to-slate-100">
+              <h3 class="font-medium text-slate-800 flex items-center gap-2">
+                <span
+                  class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">
+                  3
+                </span>
+                <span i18n="@@alertsConfigured">Alertas configuradas</span> ({{alerts.length}})
+              </h3>
+            </div>
+            <div class="overflow-hidden">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="bg-slate-50 text-slate-600">
+                    <th class="text-left p-3 font-medium" i18n="@@condition">Condición</th>
+                    <th class="text-left p-3 font-medium" i18n="@@value">Valor</th>
+                    <th class="text-left p-3 font-medium" i18n="@@colorKpiH6">Color</th>
+                    <th class="text-right p-3 font-medium" i18n="@@actions">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let alert of alerts; let i = index" class="border-t hover:bg-slate-50">
+                    <td class="p-3">
+                      <div class="flex items-center gap-2">
+                        <span class="font-mono bg-slate-100 px-2 py-1 rounded text-slate-700">
+                          {{alert.operand}}
+                        </span>
+                        <span [ngSwitch]="alert.operand">
+                          <span *ngSwitchCase="'<'" i18n="@@lessThan">Menor que</span>
+                          <span *ngSwitchCase="'='" i18n="@@equalTo">Igual a</span>
+                          <span *ngSwitchCase="'>'" i18n="@@greaterThan">Mayor que</span>
+                          <span *ngSwitchDefault>{{ alert.operand }}</span>
+                        </span>
+                      </div>
+                    </td>
+                    <td class="p-3 font-mono">{{alert.value}}</td>
+                    <td class="p-3">
+                      <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 rounded-full" [style.backgroundColor]="alert.color"></div>
+                        <code class="bg-slate-100 px-2 py-1 rounded text-xs">{{alert.color}}</code>
+                      </div>
+                    </td>
+                    <td class="p-3 text-right">
+                      <div class="inline-flex items-center gap-1">
+                        @if (canIRunAlerts) {
+                        <button (click)="openConfigDialog(alert)"
+                          class="h-8 w-8 p-0 inline-flex items-center justify-center rounded-md hover:bg-slate-100 transition-colors"
+                          [class.text-[#00BFB3]]="alert.mailing?.enabled"
+                          [class.text-slate-300]="!alert.mailing?.enabled"
+                          title="Configurar envío por email">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                          </svg>
+                        </button>
+                        }
+                        <button (click)="deleteAlert(alert)"
+                          class="h-8 w-8 p-0 inline-flex items-center justify-center rounded-md hover:bg-slate-100">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 6 6 18"></path>
+                            <path d="m6 6 12 12"></path>
+                          </svg>
+                          <span class="sr-only" i18n="@@deleteBtn">Eliminar</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="bg-slate-50 px-4 py-3 text-sm text-slate-500 italic border-t" i18n="@@orderAlerts">
+              Las alertas se aplicarán en orden de creación. Haga clic en el botón X para eliminar una alerta.
+            </div>
+          </div>
+          }
+          
 
             @if(alerts.length === 0){
               <div class="bg-white rounded-lg border p-8 text-center">
@@ -324,3 +403,12 @@
     </div>
   </div>
 </eda-dialog2>
+
+
+@if (mailConfigOpen) {
+  <app-kpi-mail-config
+    [alert]="currentAlert"
+    (apply)="onMailConfigApply($event)"
+    (close)="closeMailingConfig()">
+  </app-kpi-mail-config>
+}

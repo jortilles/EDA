@@ -54,17 +54,17 @@ th{
      background: rgba(228, 228, 228, 0.5) !important;
 }
 
-/* Row banding: filas pares con el mismo gris que el header — solo en td para no componer la transparencia dos veces */
-.eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) > td {
+/* Row banding: filas pares con el mismo gris que el header — excluir celdas con color de gradiente/semáforo */
+.eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) > td:not([class*="table-gradient"]):not([class*="table-semaphore"]) {
      background: rgba(228, 228, 228, 0.5) !important;
 }
 .eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
      background: transparent !important;
 }
 
-/* Filas impares: transparentes para que se vea el color de fondo del panel (aplicado en p-table) */
+/* Filas impares: transparentes para que se vea el color de fondo del panel — excluir celdas con color */
 .eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(odd),
-.eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(odd) > td {
+.eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(odd) > td:not([class*="table-gradient"]):not([class*="table-semaphore"]) {
      background: transparent !important;
 }
 

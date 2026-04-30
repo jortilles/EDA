@@ -106,9 +106,9 @@ export class DashboardSidebarComponent {
   inputVisible: boolean = false;
   refreshTime: number = null;
   clickFiltersEnabled: boolean = true;
-  onlyIcanEdit: boolean = false; // Solo yo pueedo editar. pero puedo guardar como
+  onlyIcanEdit: boolean = true; // Solo yo pueedo editar. pero puedo guardar como
   isReadOnly: boolean = false; // es un dashbaord de solo lecturas
-  isEditable; boolean = false; // puede editar el dashboard
+  isEditable: boolean = false; // puede editar el dashboard
   mostrarOpciones = false;
   mostrarFiltros = false;
   mostrarDescargas = false;
@@ -277,8 +277,8 @@ export class DashboardSidebarComponent {
       },
       {
         id: 'enableEdition',
-        label: this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`,
-        icon: this.onlyIcanEdit ? "pi pi-check" : "pi pi-ban",
+        label: this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada` : $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada`,
+        icon: this.onlyIcanEdit ? "pi pi-ban" : "pi pi-check",
         command: () => {
           this.toggleEdit();
         }
@@ -305,6 +305,12 @@ export class DashboardSidebarComponent {
             label: $localize`:@@dashboardSidebarDownloadExcel:Descargar Excel`,
             icon: "pi pi-file-excel",
             command: () => this.exportDashboardAsExcel()
+          },
+          {
+            id: 'downloadWord',
+            label: $localize`:@@dashboardSidebarDownloadWord:Descargar Word`,
+            icon: "pi pi-file-word",
+            command: () => this.exportDashboardAsWord()
           },
         ]
       },
@@ -520,7 +526,7 @@ export class DashboardSidebarComponent {
           mailingAlertsEnabled: this.getMailingAlertsEnabled(),
           sendViaMailConfig: this.dashboard.sendViaMailConfig,
           author: JSON.parse(localStorage.getItem('user')).name,
-          onlyIcanEdit: this.onlyIcanEdit, //TODO ==> Done?
+          onlyIcanEdit: this.onlyIcanEdit,
           styles: this.stylesProviderService.generateDefaultStyles(),
         },
         group: (newDashboard.group || []).map((g: any) => g._id),
@@ -594,13 +600,13 @@ export class DashboardSidebarComponent {
     this.isMailConfigDialogVisible = false;
   }
 
-  public saveMailConfig(sendViaMailConfig: any) {
+  public async saveMailConfig(sendViaMailConfig: any) {
     // Cerrar panel
     this.isMailConfigDialogVisible = false;
 
     // Clonar info del sendViaMailConfig
     const configToSave = {
-      enabled: true,
+      enabled: sendViaMailConfig.enabled,
       hours: sendViaMailConfig.hours,
       lastUpdated: sendViaMailConfig.lastUpdated,
       mailMessage: sendViaMailConfig.mailMessage,
@@ -610,8 +616,10 @@ export class DashboardSidebarComponent {
       users: sendViaMailConfig.users
     };
 
-    // Asignar datos al config
+    // Asignar datos al config y persistir en BD
     this.dashboard.dashboard.config.sendViaMailConfig = configToSave;
+    await this.dashboard.saveDashboard();
+
   }
 
 
@@ -750,74 +758,96 @@ export class DashboardSidebarComponent {
   public async exportDashboardAsExcel(): Promise<void> {
     this.hidePopover();
     this.spinner.on();
-
     try {
-      const panelComponents = this.dashboard.edaPanels?.toArray() ?? [];
-      // El agrupamiento 2D (por gridY) se hace dentro de FileUtiles.exportDashboardToExcel
-      const sorted = panelComponents;
-
-      const panelDataList: DashboardPanelExport[] = [];
-
-      for (const panelComp of sorted) {
-        if (!panelComp.panel?.content) continue;
-
-        const chartType = panelComp.panelChart?.props?.chartType ?? '';
-        const title     = panelComp.panel.title ?? '';
-
-        const gridPos = {
-          gridX:    panelComp.panel.x    ?? 0,
-          gridY:    panelComp.panel.y    ?? 0,
-          gridCols: panelComp.panel.cols ?? 20,
-          gridRows: panelComp.panel.rows ?? 10,
-        };
-
-        if (['table', 'crosstable'].includes(chartType)) {
-          // Acceso directo a la instancia EdaTable activa
-          const tableInstance = panelComp.panelChart?.currentConfig;
-          if (tableInstance) {
-            panelDataList.push({
-              title,
-              type: chartType as 'table' | 'crosstable',
-              tableData: tableInstance,
-              ...gridPos,
-            });
-          }
-        } else {
-          // Capturar el panel completo como imagen PNG usando html2canvas
-          // (más robusto que dom-to-image frente a hojas CSS cross-origin)
-          const hostEl: HTMLElement = panelComp.elRef?.nativeElement;
-          if (hostEl) {
-            try {
-              const CAPTURE_SCALE = 1.5;
-              const canvas = await html2canvas(hostEl, {
-                backgroundColor: '#ffffff',
-                useCORS: false,       // no intentar cargar recursos externos
-                allowTaint: true,     // permitir canvas "manchado" si hay recursos cross-origin
-                logging: false,
-                scale: CAPTURE_SCALE,
-              });
-              const dataUrl = canvas.toDataURL('image/png');
-              // Dividir por la escala de captura para obtener el tamaño CSS real del panel
-              panelDataList.push({
-                title, type: 'chart', imageBase64: dataUrl,
-                imageWidth:  Math.round(canvas.width  / CAPTURE_SCALE),
-                imageHeight: Math.round(canvas.height / CAPTURE_SCALE),
-                ...gridPos,
-              });
-            } catch (imgErr) {
-              console.warn(`[ExportExcel] No se pudo capturar imagen del panel "${title}":`, imgErr);
-              panelDataList.push({ title, type: 'other', ...gridPos });
-            }
-          }
-        }
-      }
-
+      const panelDataList = await this._collectPanelData();
       await this.fileUtils.exportDashboardToExcel(panelDataList, this.dashboard.title);
-
     } catch (err) {
       console.error('[ExportExcel] Error exportando dashboard a Excel:', err);
     } finally {
       this.spinner.off();
+    }
+  }
+
+  public async exportDashboardAsWord(): Promise<void> {
+    this.hidePopover();
+    this.spinner.on();
+    try {
+      const panelDataList = await this._collectPanelData();
+      await this.fileUtils.exportDashboardToWord(panelDataList, this.dashboard.title);
+    } catch (err) {
+      console.error('[ExportWord] Error exportando dashboard a Word:', err);
+    } finally {
+      this.spinner.off();
+    }
+  }
+
+  /**
+   * Recorre todos los paneles y devuelve su contenido listo para exportar.
+   * Para gráficos, oculta temporalmente el header del panel antes de capturar
+   * la imagen para evitar que el título aparezca duplicado.
+   */
+  private async _collectPanelData(): Promise<DashboardPanelExport[]> {
+    const panelDataList: DashboardPanelExport[] = [];
+
+    for (const panelComp of this.dashboard.edaPanels?.toArray() ?? []) {
+      if (!panelComp.panel?.content) continue;
+
+      const chartType = panelComp.panelChart?.props?.chartType ?? '';
+      const title     = panelComp.panel.title ?? '';
+      const gridPos   = {
+        gridX:    panelComp.panel.x    ?? 0,
+        gridY:    panelComp.panel.y    ?? 0,
+        gridCols: panelComp.panel.cols ?? 20,
+        gridRows: panelComp.panel.rows ?? 10,
+      };
+
+      if (['table', 'crosstable'].includes(chartType)) {
+        const tableInstance = panelComp.panelChart?.currentConfig;
+        if (tableInstance) {
+          panelDataList.push({ title, type: chartType as 'table' | 'crosstable', tableData: tableInstance, ...gridPos });
+        }
+      } else {
+        const captured = await this._captureChartImage(panelComp.elRef?.nativeElement, title);
+        panelDataList.push({ ...captured, title, ...gridPos });
+      }
+    }
+
+    return panelDataList;
+  }
+
+  /**
+   * Captura el área del gráfico como PNG, ocultando previamente el header
+   * (.drag-handler) para que el título del panel no aparezca en la imagen.
+   */
+  private async _captureChartImage(
+    hostEl: HTMLElement | undefined,
+    panelTitle: string
+  ): Promise<Pick<DashboardPanelExport, 'type' | 'imageBase64' | 'imageWidth' | 'imageHeight'>> {
+    if (!hostEl) return { type: 'other' };
+
+    const headerEl = hostEl.querySelector('.drag-handler') as HTMLElement | null;
+    if (headerEl) headerEl.style.visibility = 'hidden';
+
+    try {
+      const SCALE = 1.5;
+      const canvas = await html2canvas(hostEl, {
+        backgroundColor: '#ffffff',
+        useCORS: false,
+        allowTaint: true,
+        logging: false,
+        scale: SCALE,
+      });
+      return {
+        type: 'chart',
+        imageBase64:  canvas.toDataURL('image/png'),
+        imageWidth:   Math.round(canvas.width  / SCALE),
+        imageHeight:  Math.round(canvas.height / SCALE),
+      };
+    } catch (err) {
+      console.warn(`[Export] No se pudo capturar imagen del panel "${panelTitle}":`, err);
+      return { type: 'other' };
+    } finally {
+      if (headerEl) headerEl.style.visibility = '';
     }
   }
 
@@ -893,17 +923,14 @@ export class DashboardSidebarComponent {
     this.editingTitle = false;
   }
 
-
-  
-  public isReadOnlyCheck() {
+ public isReadOnlyCheck() {
     const user = localStorage.getItem('user');
     const userName = JSON.parse(user).name;
     const imProperty = userName === this.dashboard.dashboard.config.author;
     const isObserver = JSON.parse(user).role.includes('135792467811111111111113');
-    const onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ? this.dashboard.dashboard.config.onlyIcanEdit:false ;
-    return userName === 'edaanonim' || (onlyIcanEdit && imProperty) && isObserver;
+    const onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ? this.dashboard.dashboard.config.onlyIcanEdit: true ;
+    return userName === 'edaanonim' || (!onlyIcanEdit && !imProperty) || isObserver;
   }
-
 
   public isEditableCheck() {
     const user = localStorage.getItem('user');
@@ -934,8 +961,8 @@ export class DashboardSidebarComponent {
     this.onlyIcanEdit = !this.onlyIcanEdit;
 
     // Actualizar label e icono según estado
-    clickItem.label = this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`;
-    clickItem.icon = this.onlyIcanEdit ? "pi pi-check" : "pi pi-ban";
+    clickItem.label = this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada` : $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada`;
+    clickItem.icon = this.onlyIcanEdit ? "pi pi-ban" : "pi pi-check";
   }
 
   toggleDownload() {

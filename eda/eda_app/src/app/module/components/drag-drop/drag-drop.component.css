@@ -11,14 +11,16 @@
   .container-1 {
     width: 320px;
     max-width: 100%;
-    margin: 0 25px 25px 0;
-    display: inline-block;
-    vertical-align: top;
+    margin: 0 25px 0 0;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
   }
-  
+
   .list-1 {
     border: solid 0px #ffffff;
-    min-height: 228px;
+    min-height: 72px;
+    flex: 1;
     background: #dbdfe480 !important;    /* cambiar de color */
     border-bottom-left-radius: 4px; /* Borde redondeado en la esquina inferior izquierda */
     border-bottom-right-radius: 4px; /* Borde redondeado en la esquina inferior derecha */
@@ -111,8 +113,9 @@
   .container-3 {
     width: 600px;
     max-width: 100%;
-    display: inline-block;
-    vertical-align: top;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
   }
 
   @media(min-width: 1450px) {
@@ -129,7 +132,8 @@
   
   .list-3 {
     border: solid 0px #ffffff;
-    min-height: 129px;
+    min-height: 72px;
+    flex: 1;
     background: #6f9c672e; /* cambiar de color */
     display: flex;
     flex-direction: row;

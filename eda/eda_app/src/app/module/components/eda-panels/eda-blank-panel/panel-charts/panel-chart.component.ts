@@ -286,7 +286,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0]?.name,
             dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps,
-            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines, cfg.showPredictionLines, cfg.numberOfColumns, this.props.edaChart, ticksOptions, false, this.styleProviderService);
+            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines, cfg.showPredictionLines, cfg.numberOfColumns, this.props.edaChart, ticksOptions, false, cfg.showGridLines ?? true, this.styleProviderService);
 
         if (cfg.showPredictionLines === true && chartData[1]?.length > 0){
             this._hideConnectingDot(chartData);
@@ -627,7 +627,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     const chartOptions = this.chartUtils.initChartOptions(
         chartType, dataDescription.numericColumns[0]?.name,
         dataDescription.otherColumns, manySeries, false, dimensions, null,
-        minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines, cfg.showPredictionLines, cfg.numberOfColumns, chartSubType, ticksOptions, false, this.styleProviderService
+        minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines, cfg.showPredictionLines, cfg.numberOfColumns, chartSubType, ticksOptions, false, cfg.showGridLines ?? true, this.styleProviderService
     );
 
     // Inicializar chartConfig
@@ -1194,10 +1194,18 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 tableColumns.push(new EdaColumnText({ header: label, field: label, description: label }));
             }
         } else {
+            // Build a consumable copy of labels to correctly match each column by column_name.
+            // This handles cases where currentQuery is reordered differently from the server labels
+            const availableLabels = [...labels];
+
             for (let i = 0, n = this.props.query.length; i < n; i += 1) {
 
-                const label = labels[i];
                 const r: Column = this.props.query[i];
+                // Find the label matching this column's column_name (consume it to handle duplicates)
+                const labelIdx = availableLabels.findIndex(l => l === r.column_name);
+                const label = labelIdx !== -1
+                    ? availableLabels.splice(labelIdx, 1)[0]
+                    : (availableLabels.shift() ?? labels[i]);
 
                 if (_.isEqual(r.column_type, 'date')) {
                     tableColumns.push(new EdaColumnDate({ header: r.display_name.default, field: label, description: r.description.default }));
