@@ -3,7 +3,7 @@
   <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-full">
 
     <!-- Preview -->
-    <div #previewContainer class="flex-1 flex items-center justify-center border-b md:border-b-0 md:border-r bg-slate-100 min-h-0 min-w-0 overflow-hidden" style="padding: 1.5rem;">
+    <div #previewContainer class="flex-1 flex items-center h-[77vh] justify-center border-b md:border-b-0 md:border-r bg-slate-100 min-h-0 min-w-0 overflow-hidden" style="padding: 1.5rem;">
       <div class="relative border border-slate-300 shadow-md overflow-hidden flex flex-col" [style]="previewBoxStyle">
         <div class="flex-1 min-h-0 relative">
           <panel-chart #PanelChartComponent [props]="panelChartConfig" class="absolute inset-0 h-full w-full"></panel-chart>
@@ -12,7 +12,7 @@
     </div>
 
     <!-- Settings -->
-    <div class="flex-1 flex flex-col overflow-hidden">
+    <div class="flex-1 flex flex-col h-[77vh] overflow-auto">
 
       <!-- Tab buttons: siempre visibles -->
       <div class="px-6 pt-6 pb-4 grid grid-cols-2 gap-4">
@@ -143,7 +143,7 @@
                   </select>
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     @for (item of series; track item.value) {
-                      <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+                      <div class="flex items-center bg-white justify-between border rounded-lg p-3">
                         <span class="font-medium">{{ item.value }}</span>
                         <div class="flex items-center gap-2">
                           <input [(ngModel)]="item.color" class="text-md text-slate-500 font-mono justify-items-end w-[3.5vw]">

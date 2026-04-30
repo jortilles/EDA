@@ -6,7 +6,7 @@
 
 @if(inject.showChart){
   <div class="absolute inset-0 overflow-hidden">
-    <div #kpiContainer class="absolute top-0 left-0 w-full z-10 flex justify-center items-center overflow-hidden" style="height: 30%;">
+    <div #kpiContainer class="absolute top-0 left-0 w-full z-10 flex justify-center items-center" style="height: 30%;">
       <ng-container *ngTemplateOutlet="kpiValueContainer;"></ng-container>
     </div>
     <div class="absolute bottom-0 left-0 w-full overflow-hidden" style="height: 70%;">
