@@ -637,12 +637,19 @@ function createMcpServer(requestUser?: any) {
                     '',
                 ];
 
-                if (panels.length === 0) {
+                // Excluir paneles decorativos (title=1, tabs=2) — solo procesar tipo BLANK (0 o sin tipo)
+                const dataOnlyPanels = panels.filter((p: any) => (p.type ?? 0) === 0);
+                panels.forEach((p: any, i: number) => {
+                    if ((p.type ?? 0) !== 0) {
+                        console.log(`[MCP] get_dashboard — panel decorativo EXCLUIDO idx=${i} title="${p.title ?? '(sin titulo)'}" type=${p.type}`);
+                    }
+                });
+                if (dataOnlyPanels.length === 0) {
                     lines.push('(sin panels)');
                 } else {
                     lines.push('--- Panels ---');
-                    for (let i = 0; i < panels.length; i++) {
-                        const panel = panels[i];
+                    for (let i = 0; i < dataOnlyPanels.length; i++) {
+                        const panel = dataOnlyPanels[i];
                         const fields: any[] = panel.content?.query?.query?.fields ?? [];
                         const fieldNames = fields.map((f: any) => f.display_name ?? f.field_name).filter(Boolean);
                         const desc = panel.description ? ` — ${panel.description}` : '';
@@ -715,9 +722,13 @@ function createMcpServer(requestUser?: any) {
                     const dashboardLink = baseUrl ? `${baseUrl}/dashboard/${encodeURIComponent(dashboard_id)}` : '';
                     console.log('[MCP] get_data_from_dashboard - dashboard:', db.config?.title, '| panels total:', allPanels.length, '| panel_index solicitado:', panel_index ?? 'todos');
 
-                    // Excluir panels cuyos datasources tienen ia_visibility=NONE
+                    // Excluir paneles decorativos (title=1, tabs=2) y datasources con ia_visibility=NONE
                     const accessibleDsIds = await getAccessibleDatasourceIds(user);
                     const visiblePanels = allPanels.filter((p: any) => {
+                        if ((p.type ?? 0) !== 0) {
+                            console.log(`[MCP] MODO DATOS — panel decorativo (type=${p.type}) omitido: ${p.title}`);
+                            return false;
+                        }
                         const mid = p.content?.query?.model_id;
                         if (!mid) return true;
                         const visible = accessibleDsIds.has(mid);
@@ -825,7 +836,7 @@ function createMcpServer(requestUser?: any) {
                                 throw new Error('El usuario no tiene permiso para ver los datos de este panel.');
                             }
                             const allRows: any[][] = Array.isArray(responseRows) ? responseRows.filter((r: any) => Array.isArray(r) && r.length > 0) : [];
-                            const rows = allRows.slice(0, 20);
+                            const rows = allRows.slice(0, 10);
                             console.log(`[MCP] panel ${idx} — rows: ${allRows.length} (mostrando ${rows.length}) | labels: ${(responseLabels ?? []).join(', ')}`);
 
                             // Mapear nombres técnicos devueltos por el controller a display_names.
@@ -849,7 +860,7 @@ function createMcpServer(requestUser?: any) {
                                     filtros_activos: filterSummary,
                                     tiene_filtros: activeFilters.length > 0,
                                     modelo_datos: accessibleDsIds.get(modelId) ?? modelId,
-                                    datos: { columnas, filas: rows, total_filas: allRows.length, truncado: allRows.length > 20 },
+                                    datos: { columnas, filas: rows, total_filas: allRows.length, truncado: allRows.length > 10 },
                                 });
                             } else {
                                 resultados.push({
@@ -1034,7 +1045,7 @@ function createMcpServer(requestUser?: any) {
                         return { content: [{ type: 'text', text: 'El usuario no tiene permiso para ver los datos de este modelo de datos.' }], isError: true };
                     }
                     const allFbRows: any[][] = Array.isArray(fbRows) ? fbRows.filter((r: any) => Array.isArray(r) && r.length > 0) : [];
-                    const rows = allFbRows.slice(0, 20);
+                    const rows = allFbRows.slice(0, 10);
                     const displayMap = new Map<string, string>();
                     queryFields.forEach((f: any) => { if (f.field_name) displayMap.set(f.field_name, f.display_name ?? f.field_name); });
                     const columnas: string[] = (fbLabels as string[]).map((lbl: string) => displayMap.get(lbl) ?? lbl);
@@ -1050,7 +1061,7 @@ function createMcpServer(requestUser?: any) {
                             datasource_url: dsUrl,
                         },
                         pregunta: question,
-                        datos: rows.length > 0 ? { columnas, filas: rows, total_filas: allFbRows.length, truncado: allFbRows.length > 20 } : null,
+                        datos: rows.length > 0 ? { columnas, filas: rows, total_filas: allFbRows.length, truncado: allFbRows.length > 10 } : null,
                         mensaje: rows.length === 0 ? 'Sin resultados' : undefined,
                     };
 
@@ -1116,6 +1127,13 @@ function createMcpServer(requestUser?: any) {
 
                     for (let idx = 0; idx < panels.length; idx++) {
                         const panel = panels[idx];
+
+                        // Saltar paneles decorativos: title (type=1), tabs (type=2)
+                        if ((panel.type ?? 0) !== 0) {
+                            console.log(`[META] dashboard="${db.config?.title}" idx=${idx} title="${panel.title ?? '(sin titulo)'}" → SALTADO (panel decorativo type=${panel.type})`);
+                            continue;
+                        }
+
                         const query = panel.content?.query;
                         const fields: any[] = query?.query?.fields ?? [];
 
@@ -1589,6 +1607,19 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
                     { type: 'text' as const, text: `Eres un asistente de análisis de datos integrado en EDA (Enterprise Data Analytics). Tu trabajo es responder preguntas usando ÚNICAMENTE los datos que devuelven las herramientas MCP. NUNCA uses tu conocimiento general sobre los datos del negocio del usuario.
 
 ══════════════════════════════════════════
+══════════════════════════════════════════
+FORMATO DE RESPUESTA
+══════════════════════════════════════════
+Usa markdown en todas tus respuestas. Nunca uses texto plano o llano.
+• TABLAS DE DATOS: tabla markdown con cabeceras en negrita. Máximo 10 filas. Si hay más, indica «Mostrando top 10 de N».
+• LISTAS DE OPCIONES (dashboards, paneles): cada opción en su línea, número en **negrita**, título como link, metadatos en *cursiva*. Nunca como texto corrido.
+• METADATOS (autor, fecha, filtros, datasource): usa **negrita** para las etiquetas y valor normal al lado. Ejemplo: **Autor:** Marc · **Última modificación:** 12/04/2025. Nunca los pongas como "campo: valor, campo2: valor2" en una sola línea larga.
+• FILTROS ACTIVOS: en *cursiva* entre paréntesis, justo debajo del título de la tabla. Ejemplo: *(filtrado: Año = 2024, País = España)*
+• FUENTE: siempre al final como link con 📌. Ejemplo: 📌 [Nom del dashboard](url)
+• Usa separadores horizontales (---) o saltos de línea generosos para separar secciones distintas de una respuesta larga.
+• NUNCA uses texto corrido del tipo "Dashboard: X, Filtros: Y, Datasource: Z". Siempre estructura con listas o bloques.
+══════════════════════════════════════════
+
 REGLA ABSOLUTA — FIDELIDAD TOTAL
 ══════════════════════════════════════════
 NUNCA inventes, estimes ni completes información por tu cuenta.
@@ -1664,14 +1695,14 @@ NUNCA vuelvas al PASO 1 para una opción ya elegida.
 
 PASO 4 — RESPUESTA:
 Presenta los datos en tabla markdown. Los valores deben ser idénticos a "datos.filas".
-- Si total_filas > 30: muestra las 30 más relevantes e indica "Mostrando 30 de N filas". Nunca muestres más de 30 filas.
+- Si total_filas > 10: muestra las 10 más relevantes e indica «Mostrando top 10 de N». Nunca muestres más de 10 filas.
 - Puedes ordenar filas para responder mejor (de mayor a menor, etc.) pero sin cambiar ningún valor.
 - Si un panel devuelve error o datos vacíos: informa del error. No inventes datos.
 - Si el resultado incluye un campo "advertencia": muéstralo claramente al usuario ANTES de la tabla de datos (en negrita o destacado).
 - Si la fuente es un dashboard: añade al final «📌 [dashboard_nombre](dashboard_url)»
 - Si datos es null o 0 filas: CRÍTICO — responde ÚNICAMENTE con una sola frase en el idioma del usuario diciendo que no hay datos disponibles sobre su pregunta. PROHIBIDO ABSOLUTO: no inventes valores, no estimes cantidades, no describas qué podría haber, no menciones campos ni tablas, no ofrezcas alternativas, no añadas ninguna frase adicional. Solo esa frase, nada más.
 - Si hay datos: muéstralos directamente en tabla. PROHIBIDO añadir comentarios sobre la calidad de los datos, si parecen datos de demo, si faltan campos, o si el datasource parece incorrecto. PROHIBIDO hacer preguntas al usuario después de mostrar datos ("¿quieres que busque...?", "¿necesitas más información?", etc.). Muestra los datos y para.
-- Si había filtros activos: añade «(filtrado: descripción del filtro)»
+- Si había filtros activos: indica entre paréntesis en cursiva los filtros aplicados justo debajo del título de la tabla, no en línea aparte.
 - NUNCA digas "visita el dashboard para ver los datos" como sustituto de mostrarlos.
 
 ══════════════════════════════════════════
