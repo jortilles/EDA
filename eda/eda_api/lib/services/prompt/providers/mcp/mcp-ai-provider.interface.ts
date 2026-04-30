@@ -1,4 +1,4 @@
-import { NormalizedTool } from './ai-provider.interface';
+import { NormalizedTool } from '../ai-provider.interface';
 
 export interface MCPToolCallInfo {
     id: string;

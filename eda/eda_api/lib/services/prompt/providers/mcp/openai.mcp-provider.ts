@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { NormalizedTool } from './ai-provider.interface';
+import { NormalizedTool } from '../ai-provider.interface';
 import { IMCPAIProvider, MCPHistoryMessage, MCPToolCallInfo, MCPTurnResult } from './mcp-ai-provider.interface';
 
 export class OpenAIMCPProvider implements IMCPAIProvider {
