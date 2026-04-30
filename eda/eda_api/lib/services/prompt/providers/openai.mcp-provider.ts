@@ -37,11 +37,17 @@ export class OpenAIMCPProvider implements IMCPAIProvider {
             ...this.toOpenAIHistory(history),
         ];
 
+        // Force tool use on the first iteration (before any tool_result exists in history).
+        // GPT models otherwise answer from training knowledge instead of calling tools.
+        const hasToolResults = history.some(m => m.type === 'tool_result');
+        const toolChoice = hasToolResults ? 'auto' as const : 'required' as const;
+
         const response = await this.client.chat.completions.create({
             model: this.model,
             max_tokens: maxTokens,
             messages,
             tools: openAITools,
+            tool_choice: toolChoice,
         });
 
         const choice = response.choices[0];
