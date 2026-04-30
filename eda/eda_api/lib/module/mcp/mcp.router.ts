@@ -13,7 +13,7 @@ import User from '../admin/users/model/user.model';
 import Group from '../admin/groups/model/group.model';
 
 const getAnthropicConfig = () => {
-    const configPath = path.resolve(__dirname, '../../../config/anthropic.config.js');
+    const configPath = path.resolve(__dirname, '../../../config/ai.config.js');
     delete require.cache[require.resolve(configPath)];
     return require(configPath);
 };
