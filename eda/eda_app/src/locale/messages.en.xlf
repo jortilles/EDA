@@ -6349,6 +6349,10 @@ OR<ph id="5"/>
   <source>Analizando el esquema</source>
   <target>Analyzing the scheme</target>
 </trans-unit>
+<trans-unit id="noDataWithSelectedFilters" datatype="html">
+  <source>No hay datos con los filtros seleccionados.</source>
+  <target>There is no data with the selected filters.</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

@@ -1,3 +1,10 @@
+.filter-btn {
+  transition: background-color 0.2s ease;
+}
+.filter-btn:hover {
+  background-color: #fad9dc !important;
+}
+
 .filter-label::after {
   content: "\00a0"; /* 1 espacio */
 }

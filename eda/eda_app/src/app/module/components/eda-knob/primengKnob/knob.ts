@@ -206,7 +206,8 @@ export class Knob {
     containerClass() {
         return {
             'p-knob p-component': true,
-            'p-disabled': this.disabled
+            // Cliente de Girona no lo desea
+            // 'p-disabled': this.disabled
         };
     }
 

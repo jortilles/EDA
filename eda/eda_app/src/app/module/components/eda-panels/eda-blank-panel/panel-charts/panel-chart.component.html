@@ -3,7 +3,9 @@
 @if(NO_DATA){
   <ng-container>
     <div class="d-flex justify-content-center place-self-center">
-        <img src="assets/images/nodata.png" style="width: 250px;" alt="no data" />
+        <h1 style="font-size: 13px; color: #9ca3af; font-weight: 400; letter-spacing: 0.02em; user-select: none;">
+          <span i18n="@@noDataWithSelectedFilters">No hay datos con los filtros seleccionados.</span>
+        </h1>
     </div>
   </ng-container>
 }

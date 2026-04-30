@@ -6260,6 +6260,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Analizando el esquema</source>
         <target>Analizując schemat</target>
       </trans-unit>
+      <trans-unit id="noDataWithSelectedFilters" datatype="html">
+        <source>No hay datos con los filtros seleccionados.</source>
+        <target>Brak danych dla wybranych filtrów.</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

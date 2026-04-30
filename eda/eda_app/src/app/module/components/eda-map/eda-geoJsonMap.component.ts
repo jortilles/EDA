@@ -286,7 +286,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
       weight: 0.1,
       opacity: 1,
       color: "#FFFFFF",
-      fillOpacity: 0.5,
+      fillOpacity: 1,
       fillColor: fillColor,
     };
   };

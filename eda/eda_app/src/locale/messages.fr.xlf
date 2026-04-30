@@ -6595,6 +6595,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Analizando el esquema</source>
         <target>Analyse du schéma</target>
       </trans-unit>
+      <trans-unit id="noDataWithSelectedFilters" datatype="html">
+        <source>No hay datos con los filtros seleccionados.</source>
+        <target>Il n'y a pas de données avec les filtres sélectionnés.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

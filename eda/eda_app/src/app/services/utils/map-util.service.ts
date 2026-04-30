@@ -233,7 +233,7 @@ export class MapUtilsService extends ApiService {
         this.labelProcessingHelper(row[labelIndex]) ===
           this.labelProcessingHelper(layer_id)
     )[0];
-    let div = "";
+    let div = `<div style="font-size: 18px; min-width: 185px; padding: 4px 2px;">`;
     for (let i = 0; i < labels.length; i++) {
       if (row !== undefined) {
         let value =
@@ -242,15 +242,16 @@ export class MapUtilsService extends ApiService {
                 maximumFractionDigits: 6,
               })} ( ${((parseFloat(row[i]) / totalSum) * 100).toFixed(2)}% )`
             : row[i];
-        div += `<div> ${me._sanitizer.sanitize(
+        div += `<div style="margin-bottom: 4px;"><strong>${me._sanitizer.sanitize(
           SecurityContext.HTML,
           labels[i]
-        )} :  ${value} </div>`;
+        )}</strong>: ${value}</div>`;
       } else {
-        div = `<div> No data </div>`;
+        div = `<div style="font-size: 14px;">Sin datos</div>`;
       }
     }
-    return `` + div;
+    div += `</div>`;
+    return div;
   };
 
   public getColor = (radius: number, length: number, colorLimits: string[]) => {

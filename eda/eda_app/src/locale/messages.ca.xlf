@@ -6627,6 +6627,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Analizando el esquema</source>
         <target>Analitzant l'esquema</target>
       </trans-unit>
+      <trans-unit id="noDataWithSelectedFilters" datatype="html">
+        <source>No hay datos con los filtros seleccionados.</source>
+        <target>No hi ha dades amb els filtres seleccionats.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
