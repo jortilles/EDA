@@ -14,6 +14,7 @@ import Group from '../admin/groups/model/group.model';
 
 const getAnthropicConfig = () => {
     const configPath = path.resolve(__dirname, '../../../config/ai.config.js');
+    console.log(configPath);
     delete require.cache[require.resolve(configPath)];
     return require(configPath);
 };
