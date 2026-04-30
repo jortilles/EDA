@@ -1,5 +1,5 @@
 import { EdaDialogCloseEvent, EdaDialog2Component } from '@eda/shared/components/shared-components.index';
-import { AfterViewChecked, Component, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { KpiMailConfigModal } from '@eda/components/kpi-mail-config/kpi-mail-config.modal';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
@@ -20,6 +20,8 @@ import { ColorPickerModule } from 'primeng/colorpicker';
 export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
     @Input() controller: any;
     @ViewChild('PanelChartComponent', { static: false }) panelChartComponent: PanelChartComponent;
+    @ViewChild('mailConfig', { static: false }) mailConfig: any;
+    @ViewChild('previewContainer', { static: false }) previewContainer: ElementRef;
     public mailConfigOpen: boolean = false;
 
     public panelChartConfig: PanelChart = new PanelChart();
