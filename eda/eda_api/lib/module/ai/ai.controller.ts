@@ -157,6 +157,9 @@ export class AiController {
                     CONTEXT: config.CONTEXT,
                     AVAILABLE: config.AVAILABLE,
                     LIMIT: config.LIMIT,
+                    MAX_TOKENS: config.MAX_TOKENS,
+                    EDA_APP_URL: config.EDA_APP_URL,
+                    MCP_URL: config.MCP_URL,
                 }
             });
         } catch (err) {
@@ -166,7 +169,7 @@ export class AiController {
 
     static async aIsaveConfig(req: Request, res: Response, next: NextFunction) {
         try {
-            const { PROVIDER, API_KEY, AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_REGION, MODEL, CONTEXT, AVAILABLE, LIMIT } = req.body;
+            const { PROVIDER, API_KEY, AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_REGION, MODEL, CONTEXT, AVAILABLE, LIMIT, MAX_TOKENS, EDA_APP_URL, MCP_URL } = req.body;
             const configPath = path.resolve(__dirname, '../../../config/ai.config.js');
             const currentConfig = getAiConfig();
             const finalApiKey = (API_KEY !== undefined && API_KEY !== null) ? API_KEY : currentConfig.API_KEY;
@@ -174,7 +177,10 @@ export class AiController {
             const finalAwsAccessKey = AWS_ACCESS_KEY ?? currentConfig.AWS_ACCESS_KEY ?? '';
             const finalAwsSecretKey = (AWS_SECRET_KEY !== undefined && AWS_SECRET_KEY !== null) ? AWS_SECRET_KEY : currentConfig.AWS_SECRET_KEY ?? '';
             const finalAwsRegion = AWS_REGION ?? currentConfig.AWS_REGION ?? '';
-            const content = `module.exports = { \n    PROVIDER: '${finalProvider}',\n    API_KEY: '${finalApiKey}',\n    AWS_ACCESS_KEY: '${finalAwsAccessKey}',\n    AWS_SECRET_KEY: '${finalAwsSecretKey}',\n    AWS_REGION: '${finalAwsRegion}',\n    MODEL: '${MODEL}',\n    CONTEXT: '${CONTEXT}',\n    AVAILABLE: ${AVAILABLE},\n    LIMIT: ${LIMIT},\n    MAX_LIMIT: ${currentConfig.MAX_LIMIT},\n};\n`;
+            const finalMaxTokens = MAX_TOKENS ?? currentConfig.MAX_TOKENS ?? 1000;
+            const finalEdaAppUrl = EDA_APP_URL ?? currentConfig.EDA_APP_URL ?? '';
+            const finalMcpUrl = MCP_URL ?? currentConfig.MCP_URL ?? '';
+            const content = `module.exports = { \n    PROVIDER: '${finalProvider}',\n    API_KEY: '${finalApiKey}',\n    AWS_ACCESS_KEY: '${finalAwsAccessKey}',\n    AWS_SECRET_KEY: '${finalAwsSecretKey}',\n    AWS_REGION: '${finalAwsRegion}',\n    MODEL: '${MODEL}',\n    CONTEXT: '${CONTEXT}',\n    AVAILABLE: ${AVAILABLE},\n    LIMIT: ${LIMIT},\n    MAX_LIMIT: ${currentConfig.MAX_LIMIT},\n    MAX_TOKENS: ${finalMaxTokens},\n    EDA_APP_URL: '${finalEdaAppUrl}',\n    MCP_URL: '${finalMcpUrl}',\n};\n`;
             fs.writeFile(configPath, content, 'utf8', (err) => {
                 if (err) return next(new HttpException(500, 'Error saving the AI configuration'));
                 return res.status(200).json({ ok: true });
