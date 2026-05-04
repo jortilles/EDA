@@ -10,11 +10,11 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'chat-eda-ia',
+  selector: 'chat-eda-ai',
   standalone: true,
   imports: [SharedModule, FormsModule, CommonModule, EdaDialog2Component],
-  templateUrl: './chat-eda-ia.component.html',
-  styleUrl: './chat-eda-ia.component.css'
+  templateUrl: './chat-eda-ai.component.html',
+  styleUrl: './chat-eda-ai.component.css'
 })
 export class ChatEdaAIComponent implements OnInit, AfterViewChecked{
 
