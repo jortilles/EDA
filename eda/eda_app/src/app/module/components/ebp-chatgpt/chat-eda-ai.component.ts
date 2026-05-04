@@ -10,13 +10,13 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-ebp-chatgpt',
+  selector: 'chat-eda-ia',
   standalone: true,
   imports: [SharedModule, FormsModule, CommonModule, EdaDialog2Component],
-  templateUrl: './ebp-chatgpt.component.html',
-  styleUrl: './ebp-chatgpt.component.css'
+  templateUrl: './chat-eda-ia.component.html',
+  styleUrl: './chat-eda-ia.component.css'
 })
-export class EbpChatgptComponent implements OnInit, AfterViewChecked{
+export class ChatEdaAIComponent implements OnInit, AfterViewChecked{
 
   @Input() dataChatGpt: any;
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
@@ -65,8 +65,6 @@ export class EbpChatgptComponent implements OnInit, AfterViewChecked{
         console.error(err);
       }
     })
-
-    // this.scrollToBottom();
 
   }
 

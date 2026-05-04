@@ -45,7 +45,7 @@ import { FilterDialogComponent } from '@eda/components/component.index';
 import { WhatIfDialogComponent } from '@eda/components/component.index';
 import { FilterMapperDialog } from '@eda/components/filter-mapper-dialog/filter-mapper.dialog';
 import { FilterMapperComponent } from '@eda/components/filter-mapper/filter-mapper.component';
-import { EbpChatgptComponent } from '@eda/components/ebp-chatgpt/ebp-chatgpt.component';
+import { ChatEdaAIComponent } from '@eda/components/ebp-chatgpt/chat-eda-ai.component';
 import { LinkDashboardsComponent } from '@eda/components/component.index';
 import { DashboardPage } from 'app/module/pages/dashboard/dashboard.page';
 import { EdadynamicTextComponent } from '@eda/components/component.index';
@@ -105,7 +105,7 @@ const DIALOGS_COMPONENTS = [
 const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass, CumSumAlertDialogComponent];
 const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule];
 const STANDALONE_COMPONENTS = [
-    EdaDialog2Component, WhatIfDialogComponent, EbpChatgptComponent, FilterMapperComponent, EdadynamicTextComponent, EdaTitlePanelComponent,
+    EdaDialog2Component, WhatIfDialogComponent, ChatEdaAIComponent, FilterMapperComponent, EdadynamicTextComponent, EdaTitlePanelComponent,
     PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
     DragDropComponent, ChartTypeSelectorDialogComponent,
     IconComponent, FocusOnShowDirective, PromptComponent,
