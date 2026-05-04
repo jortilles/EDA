@@ -639,11 +639,6 @@ function createMcpServer(requestUser?: any) {
 
                 // Excluir paneles decorativos (title=1, tabs=2) — solo procesar tipo BLANK (0 o sin tipo)
                 const dataOnlyPanels = panels.filter((p: any) => (p.type ?? 0) === 0);
-                panels.forEach((p: any, i: number) => {
-                    if ((p.type ?? 0) !== 0) {
-                        console.log(`[MCP] get_dashboard — panel decorativo EXCLUIDO idx=${i} title="${p.title ?? '(sin titulo)'}" type=${p.type}`);
-                    }
-                });
                 if (dataOnlyPanels.length === 0) {
                     lines.push('(sin panels)');
                 } else {
