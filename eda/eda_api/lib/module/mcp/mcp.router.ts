@@ -435,11 +435,7 @@ function createMcpServer(requestUser?: any) {
                     for (const d of items) {
                         const link = baseUrl ? ` — ${baseUrl}/dashboard/${encodeURIComponent(d._id)}` : '';
                         const author = d.config?.author ?? d.user?.name ?? '(desconocido)';
-                        const createdAt = d.config?.createdAt ? new Date(d.config.createdAt).toLocaleDateString('es-ES') : null;
-                        const modifiedAt = d.config?.modifiedAt ? new Date(d.config.modifiedAt).toLocaleDateString('es-ES') : null;
                         const meta: string[] = [`autor: ${author}`];
-                        if (createdAt) meta.push(`creado: ${createdAt}`);
-                        if (modifiedAt) meta.push(`modificado: ${modifiedAt}`);
                         lines.push(`  - [${d._id}] ${d.config?.title ?? '(sin título)'} (${meta.join(' | ')})${link}`);
                     }
                     return lines;
