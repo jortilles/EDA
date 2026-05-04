@@ -42,6 +42,9 @@ export class AiManagementPage implements OnInit {
       CONTEXT: ['', Validators.required],
       AVAILABLE: [false],
       LIMIT: [100, [Validators.required, Validators.min(1)]],
+      MAX_TOKENS: [1000, [Validators.required, Validators.min(1)]],
+      EDA_APP_URL: ['', Validators.required],
+      MCP_URL: ['', Validators.required],
     });
   }
 
@@ -64,6 +67,9 @@ export class AiManagementPage implements OnInit {
         CONTEXT: cfg.CONTEXT,
         AVAILABLE: cfg.AVAILABLE,
         LIMIT: cfg.LIMIT,
+        MAX_TOKENS: cfg.MAX_TOKENS ? cfg.MAX_TOKENS : 1000,
+        EDA_APP_URL: cfg.EDA_APP_URL ? cfg.EDA_APP_URL : '',
+        MCP_URL: cfg.MCP_URL ? cfg.MCP_URL : '',
       });
       this.availableEnabled.set(cfg.AVAILABLE);
       this.iaFormStateService.setFormData(cfg);

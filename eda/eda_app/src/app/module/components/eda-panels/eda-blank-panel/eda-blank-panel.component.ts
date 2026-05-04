@@ -45,7 +45,7 @@ import { FilterDialogComponent } from '@eda/components/component.index';
 import { WhatIfDialogComponent } from '@eda/components/component.index';
 import { FilterMapperDialog } from '@eda/components/filter-mapper-dialog/filter-mapper.dialog';
 import { FilterMapperComponent } from '@eda/components/filter-mapper/filter-mapper.component';
-import { EbpChatgptComponent } from '@eda/components/ebp-chatgpt/ebp-chatgpt.component';
+import { ChatEdaAIComponent } from '@eda/components/ebp-chatgpt/chat-eda-ai.component';
 import { LinkDashboardsComponent } from '@eda/components/component.index';
 import { DashboardPage } from 'app/module/pages/dashboard/dashboard.page';
 import { EdadynamicTextComponent } from '@eda/components/component.index';
@@ -106,7 +106,7 @@ const DIALOGS_COMPONENTS = [
 const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass, CumSumAlertDialogComponent];
 const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule];
 const STANDALONE_COMPONENTS = [
-    EdaDialog2Component, WhatIfDialogComponent, EbpChatgptComponent, FilterMapperComponent, EdadynamicTextComponent, EdaTitlePanelComponent,
+    EdaDialog2Component, WhatIfDialogComponent, ChatEdaAIComponent, FilterMapperComponent, EdadynamicTextComponent, EdaTitlePanelComponent,
     PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
     DragDropComponent, ChartTypeSelectorDialogComponent,
     IconComponent, FocusOnShowDirective, PromptComponent,
@@ -1688,6 +1688,9 @@ public tableNodeExpand(event: any): void {
             alertLimits: response.alerts,
             sufix: response.sufix,
             modifiedFontPoints: response.modifiedFontPoints || 0,
+            backgroundColor: response.backgroundColor || '',
+            kpiColor: response.kpiColor || '',
+            prefixImage: response.prefixImage || '',
         };
 
         let layout: any;
@@ -1711,12 +1714,15 @@ public tableNodeExpand(event: any): void {
         }
         
         const config = new ChartConfig(
-            new KpiConfig({ 
-                sufix: response.sufix, 
-                alertLimits: response.alerts, 
+            new KpiConfig({
+                sufix: response.sufix,
+                alertLimits: response.alerts,
                 edaChart: layout,
                 assignedColors: response.assignedColors,
                 modifiedFontPoints: response.modifiedFontPoints || 0,
+                backgroundColor: response.backgroundColor || '',
+                kpiColor: response.kpiColor || '',
+                prefixImage: response.prefixImage || '',
             })
         );
         
@@ -2335,6 +2341,7 @@ startEditTitle() {
                     filter_type: e.filter.filter_type,
                     filter_column_type: e.filter.filter_column_type,
                     filter_elements: e.filter.filter_elements,
+                    filter_codes: e.filter.filter_codes,
                     filter_id: e.filter.filter_id,
                     value: 'and',
                 };
@@ -2360,6 +2367,7 @@ startEditTitle() {
                     filter_type: e.filter.filter_type,
                     filter_column_type: e.filter.filter_column_type,
                     filter_elements: e.filter.filter_elements,
+                    filter_codes: e.filter.filter_codes,
                     filter_id: e.filter.filter_id,
                     value: 'and',
                 };

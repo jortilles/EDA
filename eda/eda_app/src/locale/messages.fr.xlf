@@ -4990,14 +4990,9 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Renseignez-vous sur les données de votre panel ...</target>
 </trans-unit>
 
-<trans-unit id="askEddie">
-  <source>Pregúntale a Eddie 😊</source>
-  <target>Demandez à Eddie 😊</target>
-</trans-unit>
-
-<trans-unit id="askEddieNoIcon">
-  <source>Pregúntale a Eddie</source>
-  <target>Demandez à Eddie</target>
+<trans-unit id="askEdaliticsText">
+  <source>Pregúntale a Edalitics</source>
+  <target>Demandez à Edalitics</target>
 </trans-unit>
 
 <trans-unit id="GPTChat">

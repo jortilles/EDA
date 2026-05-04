@@ -4483,14 +4483,9 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <target>Zapytaj o dane panelowe ...</target>
 </trans-unit>
 
-<trans-unit id="askEddie">
-  <source>Pregúntale a Eddie 😊</source>
-  <target>Zapytaj Eddiego 😊</target>
-</trans-unit>
-
-<trans-unit id="askEddieNoIcon">
-  <source>Pregúntale a Eddie</source>
-  <target>Zapytaj Eddiego</target>
+<trans-unit id="askEdaliticsText">
+  <source>Pregúntale a Edalitics</source>
+  <target>Zapytaj Edalitics</target>
 </trans-unit>
 
 <trans-unit id="GPTChat">

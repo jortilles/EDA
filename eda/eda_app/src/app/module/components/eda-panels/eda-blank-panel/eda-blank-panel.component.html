@@ -1226,7 +1226,7 @@
 }
 
 @if(isVisibleEbpChatGpt) {
-  <app-ebp-chatgpt (close)="closeChatGpt($event)" [dataChatGpt]="dataChatGpt"></app-ebp-chatgpt>
+  <chat-eda-ai (close)="closeChatGpt($event)" [dataChatGpt]="dataChatGpt"></chat-eda-ai>
 }
 @if (display_v.whatIf_dialog) {
   <app-whatif-dialog [(currentQuery)]="currentQuery" (close)="onCloseWhatIfDialog()"></app-whatif-dialog>

@@ -208,9 +208,10 @@ export class DashboardPage implements OnInit {
     this.stopRefresh = true;
     this.dashboard.config.stopRefresh = true;
     clearInterval(this.countdownInterval);
-      if (this.edaPanelsSubscription) {
-          this.edaPanelsSubscription.unsubscribe();
-      }
+    this.mobileResizeObserver?.disconnect();
+    if (this.edaPanelsSubscription) {
+        this.edaPanelsSubscription.unsubscribe();
+    }
   }
 
 
@@ -520,6 +521,12 @@ export class DashboardPage implements OnInit {
     if (this.sidebar) {
       this.sidebar.showPopover(event);
     }
+  }
+
+  public isTablePanel(panel: any): boolean {
+    const isTableChart = ['table', 'crosstable', 'treetable'].includes(panel.content?.chart);
+    const isTitleOrTabs = panel.type === 1 || panel.type === 2;
+    return isTableChart || isTitleOrTabs;
   }
 
   public canIedit(): boolean {
@@ -1345,26 +1352,45 @@ public startCountdown(seconds: number) {
     return tableMatch && columnMatch && labelMatch;
   }
 
-  // Funciones auxiliares para mobile 
+  // Funciones auxiliares para mobile
+  private readonly MOBILE_MARGIN = 8; // debe coincidir con margin-bottom del CSS
+  private mobileResizeObserver: ResizeObserver | null = null;
+
   private updateMobileHeight(): void {
-    const interval = setInterval(() => {
-      if (this.stylesProviderService.loadedPanels <= 0) {
-        clearInterval(interval);
-        const gridsterEl = document.querySelector('gridster') as HTMLElement;
-        if (gridsterEl) {
-          this.height = gridsterEl.offsetHeight + 50;
-          this.cdr.detectChanges();
-        }
+    if (this.mobileResizeObserver) return;
+
+    const gridsterEl = document.querySelector('gridster') as HTMLElement;
+    if (!gridsterEl) return;
+
+    const measure = () => {
+      const isMobile = window.innerWidth < (this.gridsterOptions.mobileBreakpoint || 640);
+      if (!isMobile) {
+        this.mobileResizeObserver?.disconnect();
+        this.mobileResizeObserver = null;
+        return;
       }
-    }, 100);
-    setTimeout(() => clearInterval(interval), 15000);
+      const items = gridsterEl.querySelectorAll('gridster-item') as NodeListOf<HTMLElement>;
+      if (!items?.length) return;
+
+      let total = 50;
+      items.forEach(item => total += item.offsetHeight + this.MOBILE_MARGIN);
+
+      if (total > 100 && total !== this.height) {
+        this.height = total;
+        this.cdr.detectChanges();
+      }
+    };
+
+    this.mobileResizeObserver = new ResizeObserver(measure);
+    this.mobileResizeObserver.observe(gridsterEl);
+    measure();
   }
   
   private sortPanelsForMobile(): void {
     if (!this.panels?.length) return;
     const isMobile = window.innerWidth < (this.gridsterOptions.mobileBreakpoint || 640);
     if (isMobile) {
-      this.panels.sort((a, b) => Math.floor(a.y / 10) - Math.floor(b.y / 10) || Math.floor(a.x / 10) - Math.floor(b.x / 10));
+      this.panels.sort((a, b) => a.y - b.y || a.x - b.x);
       this.updateMobileHeight();
     }
   }
