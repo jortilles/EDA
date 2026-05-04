@@ -1347,17 +1347,28 @@ public startCountdown(seconds: number) {
 
   // Funciones auxiliares para mobile 
   private updateMobileHeight(): void {
-    const interval = setInterval(() => {
-      if (this.stylesProviderService.loadedPanels <= 0) {
-        clearInterval(interval);
+    // Retry with increasing delays to let the DOM render panel positions
+    [300, 800, 2000].forEach(delay => {
+      setTimeout(() => {
         const gridsterEl = document.querySelector('gridster') as HTMLElement;
-        if (gridsterEl) {
-          this.height = gridsterEl.offsetHeight + 50;
-          this.cdr.detectChanges();
+        const items = gridsterEl?.querySelectorAll('gridster-item') as NodeListOf<HTMLElement>;
+        if (!gridsterEl || !items?.length) return;
+
+        let maxBottom = 0;
+        items.forEach(item => {
+          const bottom = item.offsetTop + item.offsetHeight;
+          if (bottom > maxBottom) maxBottom = bottom;
+        });
+
+        if (maxBottom > 100) {
+          const newHeight = maxBottom + 100;
+          if (newHeight !== this.height) {
+            this.height = newHeight;
+            this.cdr.detectChanges();
+          }
         }
-      }
-    }, 100);
-    setTimeout(() => clearInterval(interval), 15000);
+      }, delay);
+    });
   }
   
   private sortPanelsForMobile(): void {
