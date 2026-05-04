@@ -522,6 +522,10 @@ export class DashboardPage implements OnInit {
     }
   }
 
+  public isTablePanel(panel: any): boolean {
+    return ['table', 'crosstable', 'treetable'].includes(panel.content?.chart);
+  }
+
   public canIedit(): boolean {
     let result: boolean = false;
     result = this.userService.isAdmin;

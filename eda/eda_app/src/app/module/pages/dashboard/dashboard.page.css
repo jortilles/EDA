@@ -41,6 +41,11 @@
     margin-bottom: 8px !important;
   }
 
+  /* Las tablas cogen toda su altura para evitar overflow */
+  gridster-item.mobile-table-panel {
+    height: auto !important;
+  }
+
   /* El contenedor interno ocupa el 100% del gridster-item */
   gridster-item .gridster-item-content {
     position: absolute !important;
