@@ -232,6 +232,7 @@ export class GlobalFilterComponent implements OnInit {
 
                     if (filterApplied) {
                         filterApplied.filter_elements = this.globalFilterService.assertGlobalFilterItems(filter);
+                        filterApplied.filter_codes = this.globalFilterService.assertGlobalFilterCodes(filter);
                     } else {
                         const formatedFilter = this.globalFilterService.formatFilter(filter);
                         ebp.assertGlobalFilter(formatedFilter);
