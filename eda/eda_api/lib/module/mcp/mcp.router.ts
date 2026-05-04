@@ -818,12 +818,22 @@ function createMcpServer(requestUser?: any) {
                                 if (!sortField && qFields.length > 0) sortField = qFields[qFields.length - 1];
                                 if (sortField) {
                                     const sortName = sortField.display_name ?? sortField.field_name;
-                                    qFields.forEach((f: any) => {
-                                        f.ordenation_type = (f.display_name ?? f.field_name) === sortName
-                                            ? rankIntent.direction : 'No';
-                                    });
+                                    // Aplicar dirección al campo de ranking
+                                    sortField.ordenation_type = rankIntent.direction;
+                                    // Moverlo a la posición 0 para que sea la clave primaria del ORDER BY;
+                                    // los demás campos conservan su ordenación original como secundaria.
+                                    const sortIdx = qFields.indexOf(sortField);
+                                    if (sortIdx > 0) {
+                                        qFields.splice(sortIdx, 1);
+                                        qFields.unshift(sortField);
+                                        innerQuery.fields = qFields;
+                                    }
                                     if (rankIntent.topN) innerQuery.queryLimit = rankIntent.topN;
-                                    console.log(`[MCP] panel ${idx} — order by "${sortName}" ${rankIntent.direction} | queryLimit:`, rankIntent.topN ?? '(sin cambio)');
+                                    const secondary = qFields.slice(1)
+                                        .filter((f: any) => f.ordenation_type && f.ordenation_type !== 'No')
+                                        .map((f: any) => `"${f.display_name ?? f.field_name}" ${f.ordenation_type}`)
+                                        .join(', ');
+                                    console.log(`[MCP] panel ${idx} — ORDER BY "${sortName}" ${rankIntent.direction}${secondary ? `, ${secondary}` : ''} | queryLimit:`, rankIntent.topN ?? '(sin cambio)');
                                 }
                             }
                             // ─────────────────────────────────────────────────────────────────
