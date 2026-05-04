@@ -1375,7 +1375,7 @@ public startCountdown(seconds: number) {
     if (!this.panels?.length) return;
     const isMobile = window.innerWidth < (this.gridsterOptions.mobileBreakpoint || 640);
     if (isMobile) {
-      this.panels.sort((a, b) => Math.floor(a.y / 10) - Math.floor(b.y / 10) || Math.floor(a.x / 10) - Math.floor(b.x / 10));
+      this.panels.sort((a, b) => a.y - b.y || a.x - b.x);
       this.updateMobileHeight();
     }
   }
