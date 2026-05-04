@@ -12,8 +12,8 @@
         </div>
 
         <!-- Panel: overlay absoluto que sale desde left:0, encima del tab y del iframe -->
-        <div class="absolute top-0 left-0 h-full flex flex-col shadow-2xl transition-transform duration-300"
-             style="width: 16vw; min-width: 200px; z-index: 20;"
+        <div class="absolute top-0 left-0 h-full flex flex-col shadow-2xl transition-transform duration-300 min-w-[16dvw]"
+             style="width: 16dvw ; z-index: 20;"
              [style.transform]="sidebarOpen ? 'translateX(0)' : 'translateX(-100%)'"
              (mouseenter)="openSidebar()" (mouseleave)="closeSidebar()">
 
