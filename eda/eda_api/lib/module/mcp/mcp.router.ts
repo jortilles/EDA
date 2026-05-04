@@ -98,34 +98,6 @@ function calculateDynamicTimeout(params: any): number {
     return Math.min(timeout, 60_000);
 }
 
-async function callToolWithRetry(mcpClient: any, toolName: string, initialParams: any, requestId: string): Promise<{result: ToolResponse; retries: number}> {
-    const strategies = [(params: any) => ({...params, filters: {}}), (params: any) => ({...params, time_range: 'last_90_days'}), (params: any) => ({...params, sort_by: 'relevance'})];
-    let lastResponse: ToolResponse | null = null;
-    const MAX_RETRIES = 3;
-    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-        try {
-            const params = attempt === 0 ? initialParams : strategies[attempt - 1]?.(initialParams) || initialParams;
-            console.log(`[${requestId}] [TOOL] ${toolName} - Intento ${attempt + 1}/${MAX_RETRIES + 1}`);
-            const TOOL_TIMEOUT_MS = calculateDynamicTimeout(params);
-            const timeoutPromise = new Promise<never>((_, reject) => setTimeout(() => reject(new Error(`Tool timeout`)), TOOL_TIMEOUT_MS));
-            const result = await Promise.race([mcpClient.callTool({name: toolName, arguments: params}), timeoutPromise]);
-            const resultText = extractTextContent(result);
-            const parsed = parseToolResponse(resultText);
-            if (parsed.data.length > 0 || parsed.opciones_unicas.length > 0) {
-                console.log(`[${requestId}] ✅ ${toolName} exitoso en intento ${attempt + 1}`);
-                return {result: parsed, retries: attempt};
-            }
-            lastResponse = parsed;
-            if (attempt === MAX_RETRIES) return {result: parsed, retries: attempt};
-            await new Promise(r => setTimeout(r, 1000));
-        } catch (err: any) {
-            console.error(`[${requestId}] ❌ ${toolName} error: ${err.message}`);
-            if (attempt === MAX_RETRIES) throw err;
-            await new Promise(r => setTimeout(r, 1000));
-        }
-    }
-    return {result: lastResponse || parseToolResponse(''), retries: MAX_RETRIES};
-}
 
 function createChatContext(user: any, query: string): ChatContext {
     return {requestId: `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`, userId: user._id?.toString() || 'unknown', userEmail: user.email || 'unknown', userRole: user.role || 'user', query, startTime: new Date(), selectedDashboards: [], appliedFilters: {}, toolsCalled: [], responseGenerated: false, totalDuration: 0};
@@ -144,31 +116,6 @@ function finalizeChatContext(ctx: ChatContext): void {
     console.log(`[${ctx.requestId}] Duration: ${ctx.totalDuration}ms | Tools: ${ctx.toolsCalled.length} | Success: ${successRate}%`);
 }
 
-function inferToolParametersFromQuery(query: string): Record<string, any> {
-    const params: Record<string, any> = {};
-    const topMatch = query.match(/top\s+(\d+)|primeros?\s+(\d+)/i);
-    if (topMatch) params.limit = parseInt(topMatch[1] || topMatch[2]);
-    const timePatterns = {'last_week': /últim[ao]s?\s+(7\s+)?días|semana\s+pasada/i, 'last_month': /mes\s+pasado|últim[ao] mes/i, 'last_quarter': /trimestre|últim[ao]s?\s+3 meses/i, 'last_year': /año\s+pasad[ao]|últim[ao] año/i};
-    for (const [range, pattern] of Object.entries(timePatterns)) {if (pattern.test(query)) {params.time_range = range; break;}}
-    if (query.match(/vs\.|comparar|diferencia/i)) params.mode = 'comparison';
-    else if (query.match(/top|mayor|menor|ranking/i)) params.mode = 'ranking';
-    else if (query.match(/tendencia|evolución/i)) params.mode = 'trend';
-    if (query.match(/mayor|más alto|máximo/i)) params.sort_by = 'desc';
-    else if (query.match(/menor|más bajo|mínimo/i)) params.sort_by = 'asc';
-    return params;
-}
-
-async function verifyMcpConnection(mcpClient: any): Promise<boolean> {
-    try {
-        console.log('[MCP] Verificando conexión...');
-        await Promise.race([mcpClient.callTool({name: 'list_dashboards', arguments: {page: 1, limit: 1}}), new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))]);
-        console.log('[MCP] ✅ Conexión OK');
-        return true;
-    } catch (err: any) {
-        console.error('[MCP] ❌ Error:', err.message);
-        return false;
-    }
-}
 
 function extractMentionedOptionNumbers(text: string): Set<number> {
     const mentioned = new Set<number>();
@@ -353,6 +300,16 @@ function buildApiCall(user: any): { apiBase: string; token: string } {
     const apiBase = MCP_URL.replace(/\/ia$/, '');
     const token = jwt.sign({ user }, SEED, { expiresIn: 14400 });
     return { apiBase, token };
+}
+
+// --- Detección de intent de ranking en preguntas (top N, mejores, peores) ---
+function detectRankingIntent(q: string): { topN: number | null; direction: 'Asc' | 'Desc' | null } {
+    const nMatch = q.match(/\btop\s+(\d+)\b|\bmejores?\s+(\d+)\b|\bpeores?\s+(\d+)\b|(\d+)\s+(?:mejores?|peores?|primeros?|últimos?|principales?)\b|\bprimeros?\s+(\d+)\b|\búltimos?\s+(\d+)\b/i);
+    const topN = nMatch ? parseInt(nMatch[1] ?? nMatch[2] ?? nMatch[3] ?? nMatch[4] ?? nMatch[5]) : null;
+    const isDesc = /\btop\b|\bmejores?\b|\bmayores?\b|\bmás\s+(?:alto|grande|vendido|comprado|importante)\b|\bmayor\b|\bmáximo\b|\bprimeros?\b|\bprincipales?\b|\bmás\s+vendido|\bmás\s+comprado/i.test(q);
+    const isAsc = /\bpeores?\b|\bmenores?\b|\bmás\s+(?:bajo|pequeño|barato|lento)\b|\bmenor\b|\bmínimo\b|\búltimos?\b/i.test(q);
+    const direction = isDesc ? 'Desc' : isAsc ? 'Asc' : null;
+    return { topN, direction };
 }
 
 // --- MCP Server ---
@@ -736,6 +693,8 @@ function createMcpServer(requestUser?: any) {
                         : visiblePanels.map((p, idx) => ({ panel: p, idx }));
 
                     const resultados: any[] = [];
+                    const rankIntent = detectRankingIntent(question ?? '');
+                    if (rankIntent.direction) console.log('[MCP] ranking detectado — direction:', rankIntent.direction, '| topN:', rankIntent.topN ?? '(sin número)');
 
                     for (const { panel, idx } of panelsToRun) {
                         const query = panel.content?.query;
@@ -794,6 +753,32 @@ function createMcpServer(requestUser?: any) {
                             } catch (schemaErr: any) {
                                 if ((schemaErr.message ?? '').includes('ia_visibility=NONE')) throw schemaErr;
                                 console.warn(`[MCP] panel ${idx} — no se pudo verificar ia_visibility de campos:`, schemaErr.message);
+                            }
+                            // ─────────────────────────────────────────────────────────────────
+
+                            // ── Aplicar ordenación y límite si se detectó intent de ranking ──
+                            if (rankIntent.direction) {
+                                const qFields: any[] = innerQuery.fields ?? [];
+                                const qWords = (question ?? '').toLowerCase().split(/\s+/);
+                                let sortField = qFields.find((f: any) => {
+                                    const name = (f.display_name ?? f.field_name ?? '').toLowerCase();
+                                    return qWords.some((w: string) => w.length > 3 && name.includes(w));
+                                });
+                                if (!sortField) {
+                                    sortField = qFields.find((f: any) =>
+                                        f.aggregation_type && f.aggregation_type !== 'none' && f.aggregation_type !== 'No'
+                                    );
+                                }
+                                if (!sortField && qFields.length > 0) sortField = qFields[qFields.length - 1];
+                                if (sortField) {
+                                    const sortName = sortField.display_name ?? sortField.field_name;
+                                    qFields.forEach((f: any) => {
+                                        f.ordenation_type = (f.display_name ?? f.field_name) === sortName
+                                            ? rankIntent.direction : 'No';
+                                    });
+                                    if (rankIntent.topN) innerQuery.queryLimit = rankIntent.topN;
+                                    console.log(`[MCP] panel ${idx} — order by "${sortName}" ${rankIntent.direction} | queryLimit:`, rankIntent.topN ?? '(sin cambio)');
+                                }
                             }
                             // ─────────────────────────────────────────────────────────────────
 
