@@ -83,8 +83,8 @@ export class EdaFilterAndOrComponent implements OnInit {
       draggable: { enabled: true },
       resizable: { enabled: false },
       mobileBreakpoint: 150,// ---- Mobile control ----
-      minCols: 10,
-      maxCols: 10,
+      minCols: 11,
+      maxCols: 11,
       minRows: 9,
       maxRows: 9,
       margin: 0.2,
@@ -110,11 +110,13 @@ export class EdaFilterAndOrComponent implements OnInit {
       if(previousDashboard) {
         this.dashboard = _.cloneDeep(this.sortedFilters);
         this.dashboardClone = _.cloneDeep(this.sortedFilters);
+        this.updateGridDimensions();
         this.creacionQueryFiltros(this.dashboard);
       } else {
         if(this.sortedFilters.length !== 0) {
           this.dashboard = _.cloneDeep(this.sortedFilters);
           this.dashboardClone = _.cloneDeep(this.sortedFilters);
+          this.updateGridDimensions();
           this.creacionQueryFiltros(this.sortedFilters);
         } else {
           this.initAndOrFilters();
@@ -208,6 +210,7 @@ export class EdaFilterAndOrComponent implements OnInit {
     });
 
     this.dashboardClone = _.cloneDeep(this.dashboard);
+    this.updateGridDimensions();
     this.creacionQueryFiltros(this.dashboard);
   }
 
@@ -488,5 +491,19 @@ export class EdaFilterAndOrComponent implements OnInit {
 
   public getNiceTableName(table: any) {
     return this.tables.find(t => t.table_name === table)?.display_name?.default;
+  }
+
+  private updateGridDimensions(): void {
+    const base = 9;
+    const extra = Math.max(0, this.dashboard.length - base);
+    
+    this.options = {
+      ...this.options,
+      minCols: 11 + extra,
+      maxCols: 11 + extra,
+      minRows: base + extra,
+      maxRows: base + extra,
+    };
+
   }
 }
