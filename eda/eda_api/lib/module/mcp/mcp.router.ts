@@ -302,13 +302,39 @@ function buildApiCall(user: any): { apiBase: string; token: string } {
     return { apiBase, token };
 }
 
-// --- Detección de intent de ranking en preguntas (top N, mejores, peores) ---
+// --- Detección de intent de ranking (ES / CA / EN, tolerante a errores de tilde) ---
 function detectRankingIntent(q: string): { topN: number | null; direction: 'Asc' | 'Desc' | null } {
-    const nMatch = q.match(/\btop\s+(\d+)\b|\bmejores?\s+(\d+)\b|\bpeores?\s+(\d+)\b|(\d+)\s+(?:mejores?|peores?|primeros?|últimos?|principales?)\b|\bprimeros?\s+(\d+)\b|\búltimos?\s+(\d+)\b/i);
-    const topN = nMatch ? parseInt(nMatch[1] ?? nMatch[2] ?? nMatch[3] ?? nMatch[4] ?? nMatch[5]) : null;
-    const isDesc = /\btop\b|\bmejores?\b|\bmayores?\b|\bmás\s+(?:alto|grande|vendido|comprado|importante)\b|\bmayor\b|\bmáximo\b|\bprimeros?\b|\bprincipales?\b|\bmás\s+vendido|\bmás\s+comprado/i.test(q);
-    const isAsc = /\bpeores?\b|\bmenores?\b|\bmás\s+(?:bajo|pequeño|barato|lento)\b|\bmenor\b|\bmínimo\b|\búltimos?\b/i.test(q);
-    const direction = isDesc ? 'Desc' : isAsc ? 'Asc' : null;
+    // Normalizar: minúsculas + quitar tildes/diacríticos
+    const norm = q.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    const words = new Set(norm.match(/\b\w+\b/g) ?? []);
+
+    const descWords = new Set([
+        // EN
+        'top', 'best', 'highest', 'most', 'largest', 'biggest', 'max', 'maximum', 'first',
+        // ES
+        'mejor', 'mejores', 'mas', 'mayor', 'mayores', 'maximo', 'maximos',
+        'primero', 'primeros', 'principal', 'principales',
+        // CA
+        'millor', 'millors', 'major', 'majors', 'maxim', 'maxims', 'primer', 'primers',
+    ]);
+    const ascWords = new Set([
+        // EN
+        'worst', 'lowest', 'least', 'smallest', 'min', 'minimum', 'last', 'bottom',
+        // ES
+        'peor', 'peores', 'menor', 'menores', 'minimo', 'minimos', 'ultimo', 'ultimos',
+        // CA
+        'pitjor', 'pitjors', 'minim', 'minims', 'ultim', 'ultims', 'darrer', 'darrers',
+    ]);
+
+    const isDesc = [...words].some(w => descWords.has(w));
+    const isAsc  = [...words].some(w => ascWords.has(w));
+    // Si hay ambos (e.g. "más ventas y menos devoluciones") no aplicar ordenación
+    const direction: 'Asc' | 'Desc' | null = isDesc && !isAsc ? 'Desc' : isAsc && !isDesc ? 'Asc' : null;
+
+    // Primer número entre 1-500 de la pregunta (evita capturar años como 2024)
+    const nums = norm.match(/\b(\d+)\b/g);
+    const topN = direction && nums ? (nums.map(Number).find(n => n > 0 && n <= 500) ?? null) : null;
+
     return { topN, direction };
 }
 
@@ -631,6 +657,9 @@ function createMcpServer(requestUser?: any) {
                 panel_index: z.number().optional().describe('Índice del panel dentro del dashboard (0-based). Si se omite, se ejecutan todos los panels del dashboard.'),
                 datasource_id: z.string().optional().describe('ID del datasource para consulta directa (modo fallback). Úsalo SOLO cuando el usuario haya confirmado explícitamente consultar un modelo de datos directamente, al no haberse encontrado paneles en dashboards.'),
                 campos_consulta: z.array(z.string()).optional().describe('Nombres técnicos de columnas a consultar en modo fallback (obtenidos de get_datasource). Si se omite, se usan los campos más relevantes del modelo según la pregunta.'),
+                ordenar_campo: z.string().optional().describe('display_name del campo por el que ordenar los resultados. Rellénalo cuando la pregunta implique ranking ("mejores", "top", "más alto", "lowest", etc.). Infiere el campo de la pregunta (ej: "clientes con más ventas" → campo de ventas/importe).'),
+                ordenar_direccion: z.enum(['Asc', 'Desc']).optional().describe('Dirección del orden: Desc = mayor primero (mejores, top, más alto), Asc = menor primero (peores, mínimo, lowest). Rellénalo junto con ordenar_campo.'),
+                limite_filas: z.number().optional().describe('Número máximo de filas a devolver. Rellénalo cuando el usuario pida "top N", "los 5 mejores", "give me 10", etc.'),
             },
         },
         async (args: any) => {
@@ -639,7 +668,11 @@ function createMcpServer(requestUser?: any) {
             console.log('[MCP] get_data_from_dashboard - dashboard_id:', args?.dashboard_id ?? '(no proporcionado → modo exploración)');
             console.log('[MCP] get_data_from_dashboard - panel_index:', args?.panel_index ?? '(no proporcionado → todos)');
             console.log('[MCP] get_data_from_dashboard - campos_requeridos:', args?.campos_requeridos ?? '(no proporcionados → sin filtro de campos)');
-            const { question, dashboard_id, panel_index, campos_requeridos, datasource_id, campos_consulta } = args;
+            console.log('[MCP] get_data_from_dashboard - ordenar_campo:', args?.ordenar_campo ?? '(no proporcionado)');
+            console.log('[MCP] get_data_from_dashboard - ordenar_direccion:', args?.ordenar_direccion ?? '(no proporcionado)');
+            console.log('[MCP] get_data_from_dashboard - limite_filas:', args?.limite_filas ?? '(no proporcionado)');
+            const { question, dashboard_id, panel_index, campos_requeridos, datasource_id, campos_consulta,
+                    ordenar_campo, ordenar_direccion, limite_filas } = args;
             const camposLower: string[] = Array.isArray(campos_requeridos)
                 ? campos_requeridos.map((c: string) => c.toLowerCase())
                 : [];
@@ -693,8 +726,15 @@ function createMcpServer(requestUser?: any) {
                         : visiblePanels.map((p, idx) => ({ panel: p, idx }));
 
                     const resultados: any[] = [];
-                    const rankIntent = detectRankingIntent(question ?? '');
-                    if (rankIntent.direction) console.log('[MCP] ranking detectado — direction:', rankIntent.direction, '| topN:', rankIntent.topN ?? '(sin número)');
+                    // Parámetros explícitos de la IA tienen prioridad; detectRankingIntent actúa de fallback
+                    const fallback = detectRankingIntent(question ?? '');
+                    const rankIntent = {
+                        direction: (ordenar_direccion ?? fallback.direction) as 'Asc' | 'Desc' | null,
+                        topN:      limite_filas    ?? fallback.topN,
+                        campo:     ordenar_campo   ?? null,
+                    };
+                    const rankSource = ordenar_direccion ? 'IA' : fallback.direction ? 'fallback' : 'ninguno';
+                    console.log(`[MCP] ranking — fuente: ${rankSource} | direction: ${rankIntent.direction ?? 'none'} | topN: ${rankIntent.topN ?? 'none'} | campo: ${rankIntent.campo ?? 'auto'}`);
 
                     for (const { panel, idx } of panelsToRun) {
                         const query = panel.content?.query;
@@ -759,12 +799,18 @@ function createMcpServer(requestUser?: any) {
                             // ── Aplicar ordenación y límite si se detectó intent de ranking ──
                             if (rankIntent.direction) {
                                 const qFields: any[] = innerQuery.fields ?? [];
-                                const qWords = (question ?? '').toLowerCase().split(/\s+/);
-                                let sortField = qFields.find((f: any) => {
-                                    const name = (f.display_name ?? f.field_name ?? '').toLowerCase();
-                                    return qWords.some((w: string) => w.length > 3 && name.includes(w));
-                                });
+                                let sortField: any = null;
+                                if (rankIntent.campo) {
+                                    // 1. Campo explícito indicado por la IA (coincidencia exacta o parcial)
+                                    const campoLow = rankIntent.campo.toLowerCase();
+                                    sortField = qFields.find((f: any) =>
+                                        (f.display_name ?? f.field_name ?? '').toLowerCase() === campoLow
+                                    ) ?? qFields.find((f: any) =>
+                                        (f.display_name ?? f.field_name ?? '').toLowerCase().includes(campoLow)
+                                    );
+                                }
                                 if (!sortField) {
+                                    // 2. Fallback: primer campo métrico (aggregation != none)
                                     sortField = qFields.find((f: any) =>
                                         f.aggregation_type && f.aggregation_type !== 'none' && f.aggregation_type !== 'No'
                                     );
@@ -1556,11 +1602,15 @@ PASO 3 — DATOS:
 Si el usuario elige con lenguaje natural ("la primera", "la dos", "esa", "the first", "option 2"), busca el dashboard_id y panel_index de la opción correspondiente en el último resultado de exploración del historial.
 Llama a get_data_from_dashboard CON dashboard_id y SIEMPRE con panel_index cuando hayas identificado qué panel quieres. NUNCA omitas panel_index cuando ya sabes el panel: omitirlo ejecuta TODOS los paneles del dashboard y devuelve errores de panels que no son relevantes. Si no sabes qué panel_index usar, haz primero exploración (PASO 1) para identificarlo.
 NUNCA vuelvas al PASO 1 para una opción ya elegida.
+RANKING: Si la pregunta implica ordenación o top N (palabras como "mejores", "peores", "top", "más alto", "lowest", "millors", "pitjors", o cualquier equivalente en cualquier idioma), rellena SIEMPRE estos parámetros al llamar a get_data_from_dashboard:
+- ordenar_campo: el display_name del campo numérico más relevante según la pregunta (ej: "ventas", "importe", "creditlimit"). Si no estás seguro, omítelo.
+- ordenar_direccion: "Desc" si quiere los mayores/mejores, "Asc" si quiere los menores/peores.
+- limite_filas: el número N si el usuario lo especifica ("top 10", "las 5", "give me 8"). Si no especifica número, omítelo.
 
 PASO 4 — RESPUESTA:
 Presenta los datos en tabla markdown. Los valores deben ser idénticos a "datos.filas".
-- Si total_filas > 10: muestra las 10 más relevantes e indica «Mostrando top 10 de N». Nunca muestres más de 10 filas.
-- Puedes ordenar filas para responder mejor (de mayor a menor, etc.) pero sin cambiar ningún valor.
+- Si total_filas > 10: muestra las 10 primeras filas (ya vienen ordenadas correctamente desde la base de datos) e indica «Mostrando top 10 de N». Nunca muestres más de 10 filas.
+- NUNCA reordenes las filas tú mismo: el orden de "datos.filas" es el orden correcto devuelto por la base de datos. Preséntalo tal cual.
 - Si un panel devuelve error o datos vacíos: informa del error. No inventes datos.
 - Si el resultado incluye un campo "advertencia": muéstralo claramente al usuario ANTES de la tabla de datos (en negrita o destacado).
 - Si la fuente es un dashboard: añade al final «📌 [dashboard_nombre](dashboard_url)»
