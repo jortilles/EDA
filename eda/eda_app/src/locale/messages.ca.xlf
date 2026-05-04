@@ -5051,14 +5051,9 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Pregunta sobre les dades del teu panell ...</target>
 </trans-unit>
 
-<trans-unit id="askEddie">
-  <source>Pregúntale a Eddie 😊</source>
-  <target>Pregunta-li a Eddie 😊</target>
-</trans-unit>
-
-<trans-unit id="askEddieNoIcon">
-  <source>Pregúntale a Eddie</source>
-  <target>Pregunta-li a Eddie</target>
+<trans-unit id="askEdaliticsText">
+  <source>Pregúntale a Edalitics</source>
+  <target>Pregunta-li a Edalitics</target>
 </trans-unit>
 
 <trans-unit id="GPTChat">

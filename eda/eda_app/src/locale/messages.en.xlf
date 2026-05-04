@@ -4621,14 +4621,9 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Ask about your panel data...</target>
 </trans-unit>
 
-<trans-unit id="askEddie">
-<source>Pregúntale a Eddie 😊</source>
-<target>Ask Eddie 😊</target>
-</trans-unit>
-
-<trans-unit id="askEddieNoIcon">
-<source>Pregúntale a Eddie</source>
-<target>Ask Eddie</target>
+<trans-unit id="askEdaliticsText">
+<source>Pregúntale a Edalitics</source>
+<target>Ask Edalitics</target>
 </trans-unit>
 
 <trans-unit id="GPTChat">
