@@ -208,9 +208,10 @@ export class DashboardPage implements OnInit {
     this.stopRefresh = true;
     this.dashboard.config.stopRefresh = true;
     clearInterval(this.countdownInterval);
-      if (this.edaPanelsSubscription) {
-          this.edaPanelsSubscription.unsubscribe();
-      }
+    this.mobileResizeObserver?.disconnect();
+    if (this.edaPanelsSubscription) {
+        this.edaPanelsSubscription.unsubscribe();
+    }
   }
 
 
@@ -523,7 +524,9 @@ export class DashboardPage implements OnInit {
   }
 
   public isTablePanel(panel: any): boolean {
-    return ['table', 'crosstable', 'treetable'].includes(panel.content?.chart);
+    const isTableChart = ['table', 'crosstable', 'treetable'].includes(panel.content?.chart);
+    const isTitleOrTabs = panel.type === 1 || panel.type === 2;
+    return isTableChart || isTitleOrTabs;
   }
 
   public canIedit(): boolean {
@@ -1349,30 +1352,38 @@ public startCountdown(seconds: number) {
     return tableMatch && columnMatch && labelMatch;
   }
 
-  // Funciones auxiliares para mobile 
+  // Funciones auxiliares para mobile
+  private readonly MOBILE_MARGIN = 8; // debe coincidir con margin-bottom del CSS
+  private mobileResizeObserver: ResizeObserver | null = null;
+
   private updateMobileHeight(): void {
-    // Retry with increasing delays to let the DOM render panel positions
-    [300, 800, 2000].forEach(delay => {
-      setTimeout(() => {
-        const gridsterEl = document.querySelector('gridster') as HTMLElement;
-        const items = gridsterEl?.querySelectorAll('gridster-item') as NodeListOf<HTMLElement>;
-        if (!gridsterEl || !items?.length) return;
+    if (this.mobileResizeObserver) return;
 
-        let maxBottom = 0;
-        items.forEach(item => {
-          const bottom = item.offsetTop + item.offsetHeight;
-          if (bottom > maxBottom) maxBottom = bottom;
-        });
+    const gridsterEl = document.querySelector('gridster') as HTMLElement;
+    if (!gridsterEl) return;
 
-        if (maxBottom > 100) {
-          const newHeight = maxBottom + 100;
-          if (newHeight !== this.height) {
-            this.height = newHeight;
-            this.cdr.detectChanges();
-          }
-        }
-      }, delay);
-    });
+    const measure = () => {
+      const isMobile = window.innerWidth < (this.gridsterOptions.mobileBreakpoint || 640);
+      if (!isMobile) {
+        this.mobileResizeObserver?.disconnect();
+        this.mobileResizeObserver = null;
+        return;
+      }
+      const items = gridsterEl.querySelectorAll('gridster-item') as NodeListOf<HTMLElement>;
+      if (!items?.length) return;
+
+      let total = 50;
+      items.forEach(item => total += item.offsetHeight + this.MOBILE_MARGIN);
+
+      if (total > 100 && total !== this.height) {
+        this.height = total;
+        this.cdr.detectChanges();
+      }
+    };
+
+    this.mobileResizeObserver = new ResizeObserver(measure);
+    this.mobileResizeObserver.observe(gridsterEl);
+    measure();
   }
   
   private sortPanelsForMobile(): void {

@@ -42,7 +42,14 @@
   }
 
   /* Las tablas cogen toda su altura para evitar overflow */
-  gridster-item.mobile-table-panel {
+  .gridster-item.mobile-table-panel {
+    height: auto !important;
+  }
+
+  /* Con height:auto en el padre, el hijo absolute colapsa a 0.
+     Lo ponemos relative para que fluya con el contenido. */
+  .gridster-item.mobile-table-panel .gridster-item-content {
+    position: relative !important;
     height: auto !important;
   }
 
