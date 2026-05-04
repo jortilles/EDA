@@ -539,14 +539,21 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const alertLimits = config?.config?.alertLimits || [];
 
         if (config) {
-            chartConfig.sufix = (<KpiConfig>config.getConfig())?.sufix || '';
+            const kpiCfg = <KpiConfig>config.getConfig();
+            chartConfig.sufix = kpiCfg?.sufix || '';
             chartConfig.alertLimits = alertLimits;
-            chartConfig.modifiedFontPoints = (<KpiConfig>config.getConfig())?.modifiedFontPoints || 0;
-            chartConfig.edaChart =  (<KpiConfig>config.getConfig())?.edaChart;
+            chartConfig.modifiedFontPoints = kpiCfg?.modifiedFontPoints || 0;
+            chartConfig.edaChart = kpiCfg?.edaChart;
+            chartConfig.backgroundColor = kpiCfg?.backgroundColor || '';
+            chartConfig.kpiColor = kpiCfg?.kpiColor || '';
+            chartConfig.prefixImage = kpiCfg?.prefixImage || '';
         } else {
             chartConfig.sufix = '';
             chartConfig.alertLimits = [];
             chartConfig.modifiedFontPoints = 0;
+            chartConfig.backgroundColor = '';
+            chartConfig.kpiColor = '';
+            chartConfig.prefixImage = '';
         }
 
         this.createEdaKpiComponent(chartConfig);
@@ -561,7 +568,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef = this.entry.createComponent(EdaKpiComponent);
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onNotify.subscribe(data => {
-            const kpiConfig = new KpiConfig({ sufix: data.sufix, alertLimits: inject.alertLimits, modifiedFontPoints: inject.modifiedFontPoints || 0 });
+            const kpiConfig = new KpiConfig({
+                sufix: data.sufix,
+                alertLimits: inject.alertLimits,
+                modifiedFontPoints: inject.modifiedFontPoints || 0,
+                backgroundColor: inject.backgroundColor || '',
+                kpiColor: inject.kpiColor || '',
+                prefixImage: inject.prefixImage || '',
+            });
             (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
         })
     }
@@ -686,13 +700,20 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     const alertLimits = propsConfig?.config?.alertLimits || [];
 
     if (propsConfig) {
-        chartConfig.sufix = (<KpiConfig>propsConfig.getConfig())?.sufix || '';
+        const kpiCfgChart = <KpiConfig>propsConfig.getConfig();
+        chartConfig.sufix = kpiCfgChart?.sufix || '';
         chartConfig.alertLimits = alertLimits;
-        chartConfig.modifiedFontPoints = (<KpiConfig>propsConfig.getConfig())?.modifiedFontPoints || 0;
+        chartConfig.modifiedFontPoints = kpiCfgChart?.modifiedFontPoints || 0;
+        chartConfig.backgroundColor = kpiCfgChart?.backgroundColor || '';
+        chartConfig.kpiColor = kpiCfgChart?.kpiColor || '';
+        chartConfig.prefixImage = kpiCfgChart?.prefixImage || '';
     } else {
         chartConfig.sufix = '';
         chartConfig.alertLimits = [];
         chartConfig.modifiedFontPoints = 0;
+        chartConfig.backgroundColor = '';
+        chartConfig.kpiColor = '';
+        chartConfig.prefixImage = '';
     }
 
     this.createEdaKpiChartComponent(chartConfig);
@@ -716,15 +737,18 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject = inject;
 
         this.componentRef.instance.onNotify.subscribe(data => {
-            const kpiConfig = new KpiConfig({ sufix: data.sufix, alertLimits: inject.alertLimits||[], edaChart: inject.edaChart, modifiedFontPoints: inject.modifiedFontPoints || 0 });
+            const kpiConfig = new KpiConfig({
+                sufix: data.sufix,
+                alertLimits: inject.alertLimits || [],
+                edaChart: inject.edaChart,
+                modifiedFontPoints: inject.modifiedFontPoints || 0,
+                backgroundColor: inject.backgroundColor || '',
+                kpiColor: inject.kpiColor || '',
+                prefixImage: inject.prefixImage || '',
+            });
             (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
         })
-        this.configUpdated.emit(this.currentConfig);;
-
-        this.componentRef = this.entry.createComponent(EdaChartComponent);
-        this.componentRef.instance.inject = inject;
-        // this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
-        this.configUpdated.emit(this.currentConfig);;
+        this.configUpdated.emit(this.currentConfig);
     }
 
 

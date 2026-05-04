@@ -16,7 +16,7 @@ import { EdaBlankPanelComponent, IPanelAction } from '@eda/components/eda-panels
 import { FormsModule } from '@angular/forms';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 import { CommonModule } from '@angular/common';
-import { ChatgptService } from '@eda/services/api/chatgpt.service';
+import { AssistantService } from '@eda/services/api/assistant.service';
 import { EdaTitlePanelComponent, EdaTabsPanelComponent } from '@eda/components/component.index';
 
 // Imports del sidebar
@@ -153,7 +153,7 @@ export class DashboardPage implements OnInit {
 
   public selectedTags: any[] = [];
 
-  constructor(public chatgptService: ChatgptService, private cdr: ChangeDetectorRef) {
+  constructor(public assistantService: AssistantService, private cdr: ChangeDetectorRef) {
 
   }
 
@@ -165,7 +165,7 @@ export class DashboardPage implements OnInit {
       (data) => this.notSaved = data
     );
 
-    this.chatgptService.availableChatGpt().subscribe((resp: any) => {
+    this.assistantService.availableChatGpt().subscribe((resp: any) => {
       if(resp.response.available) {
         this.availableChatGpt = true;
       } else {
@@ -300,9 +300,28 @@ export class DashboardPage implements OnInit {
       }
       
       
-      if (this.dashboard.config.styles?.palette && this.dashboard.config.styles?.stylesApplied) { 
+      if (this.dashboard.config.styles?.palette && this.dashboard.config.styles?.stylesApplied) {
         this.assignStyles();
         this.stylesProviderService.setStyles(this.styles, true)
+      }
+
+      if (!this.panelTitle) {
+        const defaultColor = '#000000';
+        const defaultFamily = this.stylesProviderService.DEFAULT_FONT_FAMILY;
+        const defaultSize = '20px';
+        this.panelTitle = {
+          color: defaultColor,
+          'font-size': defaultSize,
+          'font-family': defaultFamily,
+          display: 'flex',
+          'justify-content': 'flex-start'
+        };
+        this.panelTabText = {
+          color: defaultColor,
+          'font-size': defaultSize,
+          'font-family': defaultFamily,
+        };
+        this.panelTabAlign = { 'text-align': 'left' };
       }
 
       if (dashboard.config.refreshTime) {

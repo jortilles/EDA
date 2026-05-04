@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef, HostBinding } from '@angular/core';
 import { StyleProviderService } from '@eda/services/service.index';
 import { registerLocaleData } from '@angular/common';
 import { EdaKpi } from './eda-kpi';
@@ -18,6 +18,12 @@ import { CommonModule } from '@angular/common';
 export class EdaKpiComponent implements OnInit, AfterViewInit {
     @Input() inject: EdaKpi;
     @Output() onNotify: EventEmitter<any> = new EventEmitter();
+
+    @HostBinding('style.display') readonly hostDisplay = 'block';
+    @HostBinding('style.position') readonly hostPosition = 'relative';
+    @HostBinding('style.width') readonly hostWidth = '100%';
+    @HostBinding('style.height') readonly hostHeight = '100%';
+    @HostBinding('style.background-color') get hostBg() { return this.inject?.backgroundColor || ''; }
     @ViewChild('kpiContainer') kpiContainer: ElementRef;
     @ViewChild('sufixContainer') sufixContainer: ElementRef;
     @ViewChild('EdaChart', { static: false }) edaChartComponent: EdaChartComponent;
@@ -43,6 +49,11 @@ export class EdaKpiComponent implements OnInit, AfterViewInit {
         try {
             registerLocaleData(es);
 
+            if (this.inject.kpiColor) {
+                this.defaultColor = this.inject.kpiColor;
+                this.color = this.inject.kpiColor;
+            }
+
             if (this.inject.alertLimits?.length > 0) {
                 this.inject.alertLimits.forEach(alert => {
                     const operand = alert.operand, warningColor = alert.color;
@@ -62,6 +73,7 @@ export class EdaKpiComponent implements OnInit, AfterViewInit {
             console.log(e);
         }
     }
+
 
     public initDimensions() {
         if (this.kpiContainer) {
@@ -110,9 +122,26 @@ export class EdaKpiComponent implements OnInit, AfterViewInit {
 
     getStyle(): any {
         return {
-            'font-weight': 'bold', 'font-size': this.getFontSize(), display: 'flex', 'justify-content': 'center',
-            color : this.color, 'font-family': this.family
-        }
+            'font-weight': 'bold',
+            'font-size': this.getFontSize(),
+            'line-height': '1',
+            color: this.color,
+            'font-family': this.family,
+        };
+    }
+
+    getImageStyle(): any {
+        const size = this.getFontSize();
+        const maxW = this.containerWidth > 0 ? `${Math.round(this.containerWidth * 0.5)}px` : '50%';
+        return {
+            height: size,
+            'max-height': size,
+            width: 'auto',
+            'max-width': maxW,
+            'object-fit': 'contain',
+            'flex-shrink': '0',
+            display: 'block',
+        };
     }
 
     /**

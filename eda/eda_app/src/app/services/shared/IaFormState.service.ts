@@ -1,11 +1,11 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { ChatgptService } from '@eda/services/api/chatgpt.service';
+import { AssistantService } from '@eda/services/api/assistant.service';
 import { lastValueFrom } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class IaFormStateService {
 
-    private chatgptService = inject(ChatgptService);
+    private assistantService = inject(AssistantService);
 
     formData = signal({
         API_KEY: "",
@@ -21,7 +21,7 @@ export class IaFormStateService {
 
     private async loadConfig() {
         try {
-            const res = await lastValueFrom(this.chatgptService.getConfig());
+            const res = await lastValueFrom(this.assistantService.getConfig());
             this.formData.set(res.config);
         } catch(error) {
             console.log('Error en la carga de la configuración de la IA: ', error);

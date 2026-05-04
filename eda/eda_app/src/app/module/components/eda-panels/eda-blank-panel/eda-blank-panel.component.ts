@@ -1690,6 +1690,9 @@ public tableNodeExpand(event: any): void {
             alertLimits: response.alerts,
             sufix: response.sufix,
             modifiedFontPoints: response.modifiedFontPoints || 0,
+            backgroundColor: response.backgroundColor || '',
+            kpiColor: response.kpiColor || '',
+            prefixImage: response.prefixImage || '',
         };
 
         let layout: any;
@@ -1713,12 +1716,15 @@ public tableNodeExpand(event: any): void {
         }
         
         const config = new ChartConfig(
-            new KpiConfig({ 
-                sufix: response.sufix, 
-                alertLimits: response.alerts, 
+            new KpiConfig({
+                sufix: response.sufix,
+                alertLimits: response.alerts,
                 edaChart: layout,
                 assignedColors: response.assignedColors,
                 modifiedFontPoints: response.modifiedFontPoints || 0,
+                backgroundColor: response.backgroundColor || '',
+                kpiColor: response.kpiColor || '',
+                prefixImage: response.prefixImage || '',
             })
         );
         

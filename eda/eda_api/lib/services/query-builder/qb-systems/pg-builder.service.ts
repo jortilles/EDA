@@ -5,10 +5,10 @@ import * as _ from 'lodash';
 export class PgBuilderService extends QueryBuilderService {
 
       /** esto se usa para las consultas que hacemos a bbdd para generar el modelo */
-    public simpleQuery(columns: string[], origin: string) {
+   public simpleQuery(columns: string[], origin: string, view: boolean) {
     
         const schema = this.dataModel.ds.connection.schema;
-        if (schema) {
+        if (schema && !view) {
             origin = `"${schema}"."${origin}"`;
         }
         return `SELECT DISTINCT ${columns.join(', ')} \nFROM ${origin}`;
@@ -192,16 +192,20 @@ export class PgBuilderService extends QueryBuilderService {
       myQuery += `FROM "${schema}"."${o}"`;
     }
     
-    
+
+
     /** SI ES UN SELECT PARA UN SELECTOR  VOLDRÉ VALORS ÚNICS */
     if (forSelector === true) {
-
-      if( vista ){  // Es una vista. NO la pongo entre comillas
-        myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
-      }else{  // Es una tabla. La pongo entre comillas
-        myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM "${schema}"."${o}"`;
+      if(vista){
+         myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
+      }else if(schema){
+        myQuery =  `SELECT DISTINCT ${columns.join(', ')} \nFROM "${schema}"."${o}"`
+      }else{
+        myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM "${o}"`;
       }
     }
+
+
 
     // JOINS
     let joinString: any[];

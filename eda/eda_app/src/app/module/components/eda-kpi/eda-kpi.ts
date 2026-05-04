@@ -10,4 +10,7 @@ export class EdaKpi {
     edaChart: EdaChart;
     showChart: boolean;
     modifiedFontPoints: number;
+    backgroundColor: string;
+    kpiColor: string;
+    prefixImage: string;
 }

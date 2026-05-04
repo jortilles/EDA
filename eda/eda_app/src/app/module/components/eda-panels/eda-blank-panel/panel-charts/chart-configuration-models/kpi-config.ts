@@ -6,6 +6,9 @@ export class KpiConfig {
     alertLimits: any[] = [];
     edaChart: ChartJsConfig;
     modifiedFontPoints: number = 0;
+    backgroundColor: string = '';
+    kpiColor: string = '';
+    prefixImage: string = '';
     constructor(init?: Partial<KpiConfig>) {
         this.edaChart = new ChartJsConfig(
             init?.edaChart?.colors || [],

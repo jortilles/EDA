@@ -1,11 +1,14 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { DomSanitizer, SafeHtml, SafeResourceUrl } from '@angular/platform-browser';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { CustomHTMLService } from '@eda/services/api/customHTML.service';
+import { DashboardService } from '@eda/services/api/dashboard.service';
 import { AlertService } from '@eda/services/service.index';
+import { lastValueFrom } from 'rxjs';
+
 @Component({
   selector: 'app-customized-dashboard',
   standalone: true,
@@ -14,6 +17,7 @@ import { AlertService } from '@eda/services/service.index';
 })
 export class CustomizedDashboardComponent implements OnInit, OnDestroy {
   private alertService = inject(AlertService);
+  private dashboardService = inject(DashboardService);
   public canEdit: boolean = false;
   public showEditDialog: boolean = false;
   public haveUnsavedChanges: boolean = false;
@@ -29,6 +33,11 @@ export class CustomizedDashboardComponent implements OnInit, OnDestroy {
 
   public sidebarBgColor: string = '#96adb5';
   public previewBgColor: string = '#96adb5';
+
+  public publicDashboards: any[] = [];
+  public selectedInitialDashboardId: string = '';
+  public editingInitialDashboardId: string = '';
+  public iframeSrc: string | SafeResourceUrl = '';
 
   constructor(private sanitizer: DomSanitizer, private customHTMLService: CustomHTMLService) {}
 
@@ -51,31 +60,67 @@ export class CustomizedDashboardComponent implements OnInit, OnDestroy {
     if (this.isPinned) this.sidebarOpen = true;
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const isAdmin = user?.role?.includes('135792467811111111111110') ?? false;
     const isDataSourceCreator = localStorage.getItem('isDataSourceCreator') === 'true';
     this.canEdit = isAdmin || isDataSourceCreator;
-    this.customHTMLService.getByKey('customHTML').subscribe({
+
+    try {
+      const { publics } = await lastValueFrom(this.dashboardService.getDashboards());
+      this.publicDashboards = (publics || []).sort((a: any, b: any) =>
+        (a.config?.title || '').localeCompare(b.config?.title || '')
+      );
+    } catch (err) {
+      console.error('[CustomizedDashboard] Error loading public dashboards:', err);
+    }
+
+    this.customHTMLService.getByKey('portalConfig').subscribe({
       next: ({ value }) => {
-        console.log('[CustomizedDashboard] HTML cargado desde BD:', value);
-        this.sidebarHtml = value;
+        const config = this._parsePortalConfig(value);
+        this.sidebarHtml = config.html;
+        this.selectedInitialDashboardId = config.initialDashboardId;
         this._applySidebarHtml(this.sidebarHtml);
+        this._updateIframeSrc();
       },
-      error: (err) => {
-        console.log('[CustomizedDashboard] No hay HTML guardado, usando el por defecto. Error:', err);
-        this.sidebarHtml = this._buildSidebarHtml();
-        this._applySidebarHtml(this.sidebarHtml);
+      error: () => {
+        // Fallback: intentar recuperar la clave legacy 'customHTML'
+        this.customHTMLService.getByKey('customHTML').subscribe({
+          next: ({ value }) => {
+            this.sidebarHtml = value || this._buildSidebarHtml();
+            this._applySidebarHtml(this.sidebarHtml);
+            this._updateIframeSrc();
+          },
+          error: () => {
+            this.sidebarHtml = this._buildSidebarHtml();
+            this._applySidebarHtml(this.sidebarHtml);
+            this._updateIframeSrc();
+          }
+        });
       }
     });
   }
 
   saveSidebar(): void {
-    this.customHTMLService.upsert('customHTML', this.sidebarHtml).subscribe({
+    const config = JSON.stringify({ html: this.sidebarHtml, initialDashboardId: this.selectedInitialDashboardId });
+    this.customHTMLService.upsert('portalConfig', config).subscribe({
       next: () => this.haveUnsavedChanges = false,
-      error: (err) => console.error('Error saving sidebar', err)
+      error: (err) => console.error('Error saving portal config', err)
     });
     this.alertService.addSuccess($localize`:@@customHtmlSaved:HTML personalizado guardado correctamente.`);
+  }
+
+  private _parsePortalConfig(value: string): { html: string; initialDashboardId: string } {
+    try {
+      const parsed = JSON.parse(value);
+      return {
+        html: parsed.html || this._buildSidebarHtml(),
+        initialDashboardId: parsed.initialDashboardId || ''
+      };
+    } catch {
+      // Compatibilidad con la clave antigua 'customHTML' que guardaba HTML plano, eliminar a posterior
+      return { html: value || this._buildSidebarHtml(), initialDashboardId: '' };
+    }
   }
 
   onDialogReset(): void {
@@ -83,6 +128,7 @@ export class CustomizedDashboardComponent implements OnInit, OnDestroy {
     this.editingHtml = original;
     this.safeEditingHtml = this.sanitizer.bypassSecurityTrustHtml(original);
     this.previewBgColor = this._extractBgColor(original);
+    this.editingInitialDashboardId = this.selectedInitialDashboardId;
   }
 
   private _applySidebarHtml(html: string): void {
@@ -90,14 +136,23 @@ export class CustomizedDashboardComponent implements OnInit, OnDestroy {
     this.sidebarBgColor = this._extractBgColor(html);
   }
 
+  private _updateIframeSrc(): void {
+    if (this.selectedInitialDashboardId) {
+      const url = `#/public/${this.selectedInitialDashboardId}?panelMode=true`;
+      this.iframeSrc = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    } else {
+      this.iframeSrc = '';
+    }
+  }
+
   openEditDialog(): void {
     this.editingHtml = this.sidebarHtml;
     this.safeEditingHtml = this.sanitizer.bypassSecurityTrustHtml(this.editingHtml);
     this.previewBgColor = this._extractBgColor(this.editingHtml);
+    this.editingInitialDashboardId = this.selectedInitialDashboardId;
     this.showEditDialog = true;
     this.sidebarLocked = true;
   }
-
 
   onEditingHtmlChange(value: string): void {
     this.safeEditingHtml = this.sanitizer.bypassSecurityTrustHtml(value);
@@ -113,6 +168,12 @@ export class CustomizedDashboardComponent implements OnInit, OnDestroy {
   onDialogApply(): void {
     this.sidebarHtml = this.editingHtml;
     this._applySidebarHtml(this.sidebarHtml);
+
+    if (this.editingInitialDashboardId !== this.selectedInitialDashboardId) {
+      this.selectedInitialDashboardId = this.editingInitialDashboardId;
+      this._updateIframeSrc();
+    }
+
     this.haveUnsavedChanges = true;
     this.showEditDialog = false;
     this.editingHtml = '';
@@ -134,7 +195,7 @@ export class CustomizedDashboardComponent implements OnInit, OnDestroy {
     return `<div class="flex flex-col h-full text-white" style="background-color: #96adb5">
       <div class="flex-1 overflow-auto px-4 py-4">
         <ul class="space-y-2">
-          
+
           <li>
             <div class="flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-white/10 transition">
               <span>📊</span>

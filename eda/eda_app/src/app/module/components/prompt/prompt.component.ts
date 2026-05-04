@@ -1,8 +1,9 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { SharedModule } from "@eda/shared/shared.module";
-import { ChatgptService } from '@eda/services/api/chatgpt.service';
+import { AssistantService } from '@eda/services/api/assistant.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 // Componentes
 import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
@@ -36,8 +37,12 @@ export class PromptComponent implements OnInit, AfterViewInit {
     @Input() messages: ChatMessage[];
     @Output() messagesChange = new EventEmitter<ChatMessage[]>();
 
+    private static suggestionsCache = new Map<string, string[]>();
+
     inputText = '';
     sending = false;
+    suggestions: string[] = [];
+    loadingSuggestions = false;
     schema: any[] = [] ; // Esquema de todas las tablas y sus columnas
     firstTime: boolean = true;
     private shouldAutoScroll: boolean = true;
@@ -47,7 +52,7 @@ export class PromptComponent implements OnInit, AfterViewInit {
     // Estado de resolución de filtros: se activa cuando el backend responde con awaiting_resolution o awaiting_selection
     private resolutionState: { options: string[], unresolvedFilter: any, pendingResult: any } | null = null;
 
-    constructor(private chatgptService: ChatgptService) {}
+    constructor(private assistantService: AssistantService, private sanitizer: DomSanitizer) {}
 
     // Iniciamos el scroll a la misma altura donde termino el ultimo mensaje de respuesta del asistente
     ngAfterViewInit(): void {
@@ -56,9 +61,29 @@ export class PromptComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit(): void {
-        const tables = this.edaBlankPanel.tables
-        console.log('tables::: ', tables);
+        const tables = this.edaBlankPanel.tables;
         this.initSchema(tables);
+        this.loadSuggestions();
+    }
+
+    private loadSuggestions(): void {
+        const dsId = this.edaBlankPanel.dataSource._id;
+        const cached = PromptComponent.suggestionsCache.get(dsId);
+        if (cached) {
+            this.suggestions = cached;
+            return;
+        }
+        this.loadingSuggestions = true;
+        this.assistantService.getSuggestions(this.schema).subscribe({
+            next: (suggestions) => {
+                this.suggestions = suggestions;
+                PromptComponent.suggestionsCache.set(dsId, suggestions);
+                this.loadingSuggestions = false;
+            },
+            error: () => {
+                this.loadingSuggestions = false;
+            }
+        });
     }
 
     initSchema(tables: any[]) {
@@ -135,7 +160,7 @@ export class PromptComponent implements OnInit, AfterViewInit {
         // console.log('firstTime: ', firstTime);
         
 
-        this.chatgptService.sendPrompt(text, histoty, data, schema, parameters).subscribe({
+        this.assistantService.sendPrompt(text, histoty, data, schema, parameters).subscribe({
             next: (resp) => {
                 // Esperamos que `resp` contenga la respuesta ya procesada como texto. Adapta según tu backend.
                 const currentQuery = resp.response.currentQuery;
@@ -186,7 +211,8 @@ export class PromptComponent implements OnInit, AfterViewInit {
             },
             error: (err) => {
                 console.error('Error al enviar prompt:', err);
-                this.messages.push({ role: 'error', content: 'Error: límite diario de consultas superado. Inténtelo más tarde.', timestamp: Date.now() });
+                const msg = err?.error?.response ?? err?.message ?? 'Error desconocido';
+                this.messages.push({ role: 'error', content: msg, timestamp: Date.now() });
                 this.loading = false;
                 this.sending = false;
             }
@@ -298,5 +324,28 @@ export class PromptComponent implements OnInit, AfterViewInit {
         }).catch(err => {
             console.error('Error al copiar:', err);
         });
+    }
+
+    sendSuggestion(text: string): void {
+        this.inputText = text;
+        this.sendMessage();
+    }
+
+    autoResize(event: Event): void {
+        const textarea = event.target as HTMLTextAreaElement;
+        textarea.style.height = 'auto';
+        textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+    }
+
+    renderMarkdown(content: string): SafeHtml {
+        const escaped = content
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+        const html = '<p>' + escaped
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/\n/g, '<br>') + '</p>';
+        return this.sanitizer.bypassSecurityTrustHtml(html);
     }
 }

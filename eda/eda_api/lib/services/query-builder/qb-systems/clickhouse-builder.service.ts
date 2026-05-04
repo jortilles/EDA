@@ -5,10 +5,10 @@ import * as _ from 'lodash';
 export class ClickHouseBuilderService extends QueryBuilderService {
 
       /** esto se usa para las consultas que hacemos a bbdd para generar el modelo */
-    public simpleQuery(columns: string[], origin: string) {
+      public simpleQuery(columns: string[], origin: string, view: boolean) {
     
         const schema = this.dataModel.ds.connection.schema;
-        if (schema) {
+        if (schema && !view) {
             origin = `\`${schema}\`.\`${origin}\``;
         }
         return `SELECT DISTINCT ${columns.join(', ')} \nFROM ${origin}`;
@@ -152,13 +152,21 @@ export class ClickHouseBuilderService extends QueryBuilderService {
     _schema: string, _database: string, forSelector: any, sortedFilters?: any[]
   ) {
     let o = tables.filter(t => t.name === origin).map(t => t.query ? this.cleanViewString(t.query) : t.name)[0];
-
+    let vista = tables.filter(table => table.name === origin).map(table => { return table.query ? true: false })[0];
     let myQuery: string;
+
+
     if (forSelector === true) {
-      myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM \`${o}\``;
-    } else {
-      myQuery = `SELECT ${columns.join(', ')} \nFROM \`${o}\``;
+      if(vista){
+        myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o} `;
+      }else if(_schema){
+          myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM \`${_schema}\`.\`${o}\` `;
+      }else{
+          myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM \`${o}\``;
+      }
     }
+
+
 
     // JOINS
     let joinString: any[];

@@ -5,7 +5,7 @@
     <div class="flex-1 flex flex-col pt-3 pb-1 min-w-0">
       <h2 class="text-base md:text-lg font-base" [ngStyle]="panelText">{{ panel.title || title }}</h2>
       @if (panel.description) {
-        <span class="text-sm text-gray-400 whitespace-pre-line break-words">{{ panel.description }}</span>
+        <span class="text-sm whitespace-pre-line break-words" [ngStyle]="{'color': panelText?.color || '#000000'}">{{ panel.description }}</span>
       }
     </div>
 
@@ -72,9 +72,9 @@
   <eda-dialog2 [display]="display_v.page_dialog" width="95vw" [ngStyle]="panelContent" [overflow]="'hidden'" height="100vh">
 
     <!-- Header -->
-    <div header class="w-full flex items-center justify-between px-2 py-0 xl:py-2 gap-x-4">
+    <div header class="w-full flex items-center px-2 py-0 gap-x-4">
       <!-- Title -->
-      <div class="flex items-center gap-2 p-1 md:p-2">
+      <div class="flex items-center gap-2 pr-[5vw]">
         @if (!titleClick) {
           <h2 class="text-lg font-semibold">
             {{panel.title.trim().length > 0 ? panel.title : '🖉'}}
@@ -92,13 +92,13 @@
             (keydown.escape)="titleClick=false"
             i18n-placeholder="@@panelTitlePlaceholder"
             placeholder="Título del panel"
-            class="px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4]"
+            class="px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4] w-[15vw]"
           >
         }
       </div>
 
       <!-- Description (independent, right side) -->
-      <div class="flex items-center gap-2 p-1 md:p-2 flex-1">
+      <div class="flex items-center gap-2 flex-1 pr-[10vw] ">
         @if (!descriptionClick) {
           <h2 class="text-lg font-semibold text-gray-400">
             {{ panel.description || 'Añadir descripción...' }}
@@ -116,7 +116,7 @@
             (keydown.escape)="descriptionClick=false"
             i18n-placeholder="@@panelDescriptionPlaceholder"
             placeholder="Descripción (opcional)"
-            class="px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4]"
+            class="px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4] w-full"
           >
         }
       </div>
