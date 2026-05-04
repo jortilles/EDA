@@ -1,8 +1,9 @@
 import { NextFunction, Request, response, Response } from "express";
 import { HttpException } from "../global/model/index";
 import AIUsage from "./model/ai-usage.model" // A utilizar proximamente
-import OpenAI from "openai";
 import { PromptService } from "../../services/prompt/prompt-assistant.service";
+import { AIProviderFactory } from "../../services/prompt/providers/ai-provider.factory";
+import { NormalizedMessage } from "../../services/prompt/providers/ai-provider.interface";
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -16,34 +17,27 @@ const getAiConfig = () => {
 export class AiController {
 
     static async aIresponse(req: Request, res: Response, next: NextFunction) {
-
-
         try {
             const { input } = req.body;
-            const { API_KEY, MODEL, CONTEXT } = getAiConfig();
+            const config = getAiConfig();
 
-            const openai = new OpenAI({
-                apiKey: API_KEY
-            });
+            const provider = AIProviderFactory.create(config);
+            const messages: NormalizedMessage[] = [
+                { role: 'system', content: config.CONTEXT },
+                { role: 'user', content: input }
+            ];
 
-            const response = await openai.chat.completions.create({
-                model: MODEL,
-                messages: [
-                    { role: "user", content: CONTEXT },
-                    { role: "user", content: input }
-                ],
-            })
+            const result = await provider.complete(messages, []);
 
             res.status(200).json({
                 ok: true,
-                response: response
-            })
-            
+                text: result.text ?? ''
+            });
+
         } catch (err) {
             console.log(err);
-            next(new HttpException(400, 'some Error occurred loading the AI'))
+            next(new HttpException(400, 'some Error occurred loading the AI'));
         }
-
     }
 
     static async aIavailable(req: Request, res: Response, next: NextFunction) {

@@ -10,8 +10,10 @@ export class AssistantService extends ApiService{
 
   public AiRouter = '/assistant';
 
-  responseChatGpt(message: string): Observable<any> {
-    return this.post(`${this.AiRouter}/response`, {input: message})
+  sendChat(message: string): Observable<string> {
+    return this.post(`${this.AiRouter}/response`, { input: message }).pipe(
+      map((res: any) => res.text ?? '')
+    );
   }
 
   availableChatGpt(): Observable<any> {

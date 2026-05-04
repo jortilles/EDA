@@ -1,11 +1,8 @@
-import { AfterViewChecked, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, EventEmitter, inject, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
-
-// Modulos necesarios
 import { SharedModule } from "@eda/shared/shared.module";
-
-// Servicio ChatGpt
 import { AssistantService } from '@eda/services/api/assistant.service';
+import { IaFormStateService } from '@eda/services/shared/IaFormState.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -16,56 +13,56 @@ import { CommonModule } from '@angular/common';
   templateUrl: './chat-eda-ai.component.html',
   styleUrl: './chat-eda-ai.component.css'
 })
-export class ChatEdaAIComponent implements OnInit, AfterViewChecked{
+export class ChatEdaAIComponent implements OnInit, AfterViewChecked {
 
   @Input() dataChatGpt: any;
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('messageContainer') private messageContainer!: ElementRef;
-  
+
+  private assistantService = inject(AssistantService);
+  private iaFormStateService = inject(IaFormStateService);
+
   public display: boolean = false;
   public messages: { sender: 'user' | 'bot'; content: string }[] = [];
   public userInput: string = '';
   public loading = false;
 
-  constructor(private assistantService: AssistantService) {}
-
-  ngOnInit(): void {
+  get providerName(): string {
+    return this.iaFormStateService.formData().PROVIDER ?? 'IA';
   }
+
+  ngOnInit(): void {}
 
   ngAfterViewChecked() {
     this.scrollToBottom();
   }
 
-  sendMessage() { 
-    let input = this.userInput.trim();
+  sendMessage() {
+    const trimmed = this.userInput.trim();
+    if (!trimmed) return;
 
-    if(!input) return;
-
-    const stringifiedData = this.dataChatGpt.values.map(row => {
-      return this.dataChatGpt.labels.map((label, i) => `${label}: ${row[i]}`).join(', ');
+    const stringifiedData = this.dataChatGpt.values.map((row: any) => {
+      return this.dataChatGpt.labels.map((label: string, i: number) => `${label}: ${row[i]}`).join(', ');
     }).join('\n');
 
-    input = 'Responde con esta data: ' + stringifiedData + ` ${this.userInput}`
+    const input = 'Responde con esta data: ' + stringifiedData + ` ${trimmed}`;
 
-    this.messages.push({ sender: 'user', content: this.userInput });
+    this.messages.push({ sender: 'user', content: trimmed });
     this.userInput = '';
     this.loading = true;
 
-    this.assistantService.responseChatGpt(input).subscribe({
-      next: (response) => {
-
-        const content = response.response.choices[0].message?.content;
-        this.messages.push({ sender: 'bot', content: content });
+    this.assistantService.sendChat(input).subscribe({
+      next: (text) => {
+        this.messages.push({ sender: 'bot', content: text });
         this.loading = false;
         this.scrollToBottom();
       },
       error: (err) => {
-        this.messages.push({ sender: 'bot', content: 'Error al conectar con ChatGPT.' });
+        this.messages.push({ sender: 'bot', content: `Error al conectar con la IA.` });
         this.loading = false;
         console.error(err);
       }
-    })
-
+    });
   }
 
   scrollToBottom(): void {
