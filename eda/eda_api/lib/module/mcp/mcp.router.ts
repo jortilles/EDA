@@ -4,8 +4,10 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { z } from 'zod';
-import Anthropic from '@anthropic-ai/sdk';
 import * as path from 'path';
+import { MCPAIProviderFactory } from '../../services/prompt/providers/mcp/mcp-ai-provider.factory';
+import { MCPHistoryMessage } from '../../services/prompt/providers/mcp/mcp-ai-provider.interface';
+import { NormalizedTool } from '../../services/prompt/providers/ai-provider.interface';
 import { authGuard } from '../../guards/auth-guard';
 import Dashboard from '../dashboard/model/dashboard.model';
 import DataSource from '../datasource/model/datasource.model';
@@ -13,7 +15,8 @@ import User from '../admin/users/model/user.model';
 import Group from '../admin/groups/model/group.model';
 
 const getAnthropicConfig = () => {
-    const configPath = path.resolve(__dirname, '../../../config/anthropic.config.js');
+    const configPath = path.resolve(__dirname, '../../../config/ai.config.js');
+    console.log(configPath);
     delete require.cache[require.resolve(configPath)];
     return require(configPath);
 };
@@ -432,11 +435,7 @@ function createMcpServer(requestUser?: any) {
                     for (const d of items) {
                         const link = baseUrl ? ` — ${baseUrl}/dashboard/${encodeURIComponent(d._id)}` : '';
                         const author = d.config?.author ?? d.user?.name ?? '(desconocido)';
-                        const createdAt = d.config?.createdAt ? new Date(d.config.createdAt).toLocaleDateString('es-ES') : null;
-                        const modifiedAt = d.config?.modifiedAt ? new Date(d.config.modifiedAt).toLocaleDateString('es-ES') : null;
                         const meta: string[] = [`autor: ${author}`];
-                        if (createdAt) meta.push(`creado: ${createdAt}`);
-                        if (modifiedAt) meta.push(`modificado: ${modifiedAt}`);
                         lines.push(`  - [${d._id}] ${d.config?.title ?? '(sin título)'} (${meta.join(' | ')})${link}`);
                     }
                     return lines;
@@ -831,7 +830,7 @@ function createMcpServer(requestUser?: any) {
                                 throw new Error('El usuario no tiene permiso para ver los datos de este panel.');
                             }
                             const allRows: any[][] = Array.isArray(responseRows) ? responseRows.filter((r: any) => Array.isArray(r) && r.length > 0) : [];
-                            const rows = allRows.slice(0, 10);
+                            const rows = allRows;
                             console.log(`[MCP] panel ${idx} — rows: ${allRows.length} (mostrando ${rows.length}) | labels: ${(responseLabels ?? []).join(', ')}`);
 
                             // Mapear nombres técnicos devueltos por el controller a display_names.
@@ -1481,125 +1480,10 @@ function createMcpServer(requestUser?: any) {
     return server;
 }
 
-// --- Express router ---
-const McpRouter = express.Router();
-
-// Log de arranque con valores clave
-{
-    const { EDA_APP_URL, MODEL, AVAILABLE, MAX_TOKENS } = getAnthropicConfig();
-    console.log('[MCP] ========== ROUTER INICIADO ==========');
-    console.log('[MCP] EDA_APP_URL :', EDA_APP_URL || '(no configurado)');
-    console.log('[MCP] MODEL       :', MODEL || '(no configurado)');
-    console.log('[MCP] AVAILABLE   :', AVAILABLE);
-    console.log('[MCP] MAX_TOKENS  :', MAX_TOKENS);
-    console.log('[MCP] MCP_EMAIL   :', MCP_EMAIL || '(no configurado)');
-    console.log('[MCP] MCP_PASSWORD:', MCP_PASSWORD ? '(configurado)' : '(no configurado)');
-    console.log('[MCP] =========================================');
-}
-
-McpRouter.post('/', async (req: Request, res: Response) => {
-    // callInterceptor sets req.query = undefined; restore it so the MCP SDK can access it
-    if (!req.query) (req as any).query = (req as any).qs || {};
-
-    console.log('[MCP] POST /ia/mcp — method:', req.body?.method, '| tool:', req.body?.params?.name ?? '-', '| Accept:', req.headers.accept);
-
-    // Intentar recuperar el usuario del header x-user-token (enviado desde /chat)
-    let requestUser: any = null;
-    const userToken = req.headers['x-user-token'] as string;
-    console.log('[MCP] x-user-token presente:', !!userToken);
-    if (userToken) {
-        console.log('[MCP] Intentando verificar x-user-token...');
-        try {
-            const decoded: any = jwt.verify(userToken, SEED);
-            requestUser = decoded.user;
-            console.log('[MCP] x-user-token OK — usuario:', requestUser?.email ?? '(sin email)', '| id:', requestUser?._id ?? '(sin id)', '| role:', requestUser?.role ?? '(sin role)');
-        } catch (e: any) {
-            console.warn('[MCP] x-user-token inválido:', e.message, '→ fallback a loginInternal');
-        }
-    } else {
-        console.log('[MCP] Sin x-user-token → se usará loginInternal con el usuario del config');
-    }
-
-    try {
-        const server = createMcpServer(requestUser);
-        const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
-        res.on('close', () => transport.close());
-        await server.connect(transport);
-        await transport.handleRequest(req, res, req.body);
-    } catch (err: any) {
-        console.error('[MCP] Error handling request:', err.message);
-        if (!res.headersSent) {
-            res.status(500).json({ error: err.message });
-        }
-    }
-});
-
-McpRouter.get('/', (_req: Request, res: Response) => {
-    res.json({ service: 'eda-mcp', version: '1.0.0', status: 'ok', transport: 'Streamable HTTP' });
-});
-
-McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
-    const { API_KEY, MODEL, AVAILABLE, MAX_TOKENS, EDA_APP_URL, MCP_URL } = getAnthropicConfig();
-
-    if (!AVAILABLE) {
-        return res.status(503).json({ ok: false, response: 'El asistente de IA no está disponible. Configura la API key de Anthropic.' });
-    }
-
-    const { messages } = req.body;
-    const userId = (req as any).user?._id?.toString() ?? '';
-
-    if (!messages || !Array.isArray(messages)) {
-        return res.status(400).json({ ok: false, response: 'Se requiere el campo messages[].' });
-    }
-
-    console.log('[CHAT] POST /ia/chat — mensajes:', messages.length, '| user:', userId);
-    console.log('[CHAT] Config — MODEL:', MODEL, '| MAX_TOKENS:', MAX_TOKENS, '| EDA_APP_URL:', EDA_APP_URL || '(no configurado)');
-
-    const mcpClient = new Client({ name: 'eda-chat', version: '1.0.0' });
-
-    try {
-        console.log('[CHAT] Conectando a MCP:', MCP_URL || '(no configurado)');
-        // authGuard ya verificó el JWT y dejó req.user disponible — generamos un token fresco desde ahí
-        const reqUser = (req as any).user;
-        const userToken = reqUser ? jwt.sign({ user: reqUser }, SEED, { expiresIn: 14400 }) : '';
-        console.log('[CHAT] x-user-token a enviar — usuario:', reqUser?.email ?? reqUser?._id ?? '(ninguno)', '| token generado:', !!userToken);
-        const lastUserMsg = [...messages].reverse().find((m: any) => m.role === 'user')?.content ?? '';
-        const ctx = createChatContext(reqUser || {}, typeof lastUserMsg === 'string' ? lastUserMsg : '');
-        const transport = new StreamableHTTPClientTransport(new URL(MCP_URL), {
-            requestInit: { headers: { 'x-user-token': userToken } },
-        });
-        await mcpClient.connect(transport);
-        console.log('[CHAT] Conexión MCP establecida OK');
-
-        const { tools: mcpTools } = await mcpClient.listTools();
-        console.log('[CHAT] Tools MCP disponibles (' + mcpTools.length + '):', mcpTools.map((t: any) => t.name).join(', '));
-
-        const anthropicTools: Anthropic.Tool[] = mcpTools.map((tool: any) => ({
-            name: tool.name,
-            description: tool.description || '',
-            input_schema: tool.inputSchema || { type: 'object', properties: {} },
-        }));
-
-        const anthropic = new Anthropic({ apiKey: API_KEY });
-        const history: Anthropic.MessageParam[] = messages.map((m: any) => ({
-            role: m.role as 'user' | 'assistant',
-            content: m.content,
-        }));
-
-        let iterations = 0;
-        const MAX_ITERATIONS = 10;
-        let lastExplorationOptions: any[] = [];
-
-        while (iterations < MAX_ITERATIONS) {
-            iterations++;
-            console.log('[CHAT] Iteración', iterations, '— llamando a Anthropic...');
-
-            const response = await anthropic.messages.create({
-                model: MODEL || 'claude-haiku-4-5',
-                max_tokens: MAX_TOKENS || 4096,
-                system: [
-                    { type: 'text' as const, text: buildEnhancedSystemPrompt(reqUser || {}) },
-                    { type: 'text' as const, text: `Eres un asistente de análisis de datos integrado en EDA (Enterprise Data Analytics). Tu trabajo es responder preguntas usando ÚNICAMENTE los datos que devuelven las herramientas MCP. NUNCA uses tu conocimiento general sobre los datos del negocio del usuario.
+// ============================================================
+// SYSTEM PROMPT DEL CHAT IA
+// ============================================================
+const CHAT_MAIN_SYSTEM_PROMPT = `Eres un asistente de análisis de datos integrado en EDA (Enterprise Data Analytics). Tu trabajo es responder preguntas usando ÚNICAMENTE los datos que devuelven las herramientas MCP. NUNCA uses tu conocimiento general sobre los datos del negocio del usuario.
 
 ══════════════════════════════════════════
 ══════════════════════════════════════════
@@ -1712,23 +1596,140 @@ VISIBILIDAD Y SEGURIDAD
 • Solo trabaja con los datasources y dashboards que devuelven los tools. Si un tool incluye una nota de "existen X adicionales sin acceso", transmítela al usuario.
 • No expongas información técnica interna (IDs, nombres de tablas de BD, queries SQL) salvo que el usuario lo pida explícitamente.
 
-Responde siempre en el idioma del usuario.`, cache_control: { type: 'ephemeral' as const } },
-                ],
-                messages: history,
-                tools: anthropicTools,
-            });
+Responde siempre en el idioma del usuario.`;
 
-            console.log('[CHAT] stop_reason:', response.stop_reason, '| content blocks:', response.content.length);
+// --- Express router ---
+const McpRouter = express.Router();
 
-            if (response.stop_reason === 'end_turn') {
-                const text = (response.content.find((b: any) => b.type === 'text') as any)?.text ?? '';
+// Log de arranque con valores clave
+{
+    const { EDA_APP_URL, MODEL, AVAILABLE, MAX_TOKENS } = getAnthropicConfig();
+    console.log('[MCP] ========== ROUTER INICIADO ==========');
+    console.log('[MCP] EDA_APP_URL :', EDA_APP_URL || '(no configurado)');
+    console.log('[MCP] MODEL       :', MODEL || '(no configurado)');
+    console.log('[MCP] AVAILABLE   :', AVAILABLE);
+    console.log('[MCP] MAX_TOKENS  :', MAX_TOKENS);
+    console.log('[MCP] MCP_EMAIL   :', MCP_EMAIL || '(no configurado)');
+    console.log('[MCP] MCP_PASSWORD:', MCP_PASSWORD ? '(configurado)' : '(no configurado)');
+    console.log('[MCP] =========================================');
+}
+
+McpRouter.post('/', async (req: Request, res: Response) => {
+    // callInterceptor sets req.query = undefined; restore it so the MCP SDK can access it
+    if (!req.query) (req as any).query = (req as any).qs || {};
+
+    console.log('[MCP] POST /ia/mcp — method:', req.body?.method, '| tool:', req.body?.params?.name ?? '-', '| Accept:', req.headers.accept);
+
+    // Intentar recuperar el usuario del header x-user-token (enviado desde /chat)
+    let requestUser: any = null;
+    const userToken = req.headers['x-user-token'] as string;
+    console.log('[MCP] x-user-token presente:', !!userToken);
+    if (userToken) {
+        console.log('[MCP] Intentando verificar x-user-token...');
+        try {
+            const decoded: any = jwt.verify(userToken, SEED);
+            requestUser = decoded.user;
+            console.log('[MCP] x-user-token OK — usuario:', requestUser?.email ?? '(sin email)', '| id:', requestUser?._id ?? '(sin id)', '| role:', requestUser?.role ?? '(sin role)');
+        } catch (e: any) {
+            console.warn('[MCP] x-user-token inválido:', e.message, '→ fallback a loginInternal');
+        }
+    } else {
+        console.log('[MCP] Sin x-user-token → se usará loginInternal con el usuario del config');
+    }
+
+    try {
+        const server = createMcpServer(requestUser);
+        const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
+        res.on('close', () => transport.close());
+        await server.connect(transport);
+        await transport.handleRequest(req, res, req.body);
+    } catch (err: any) {
+        console.error('[MCP] Error handling request:', err.message);
+        if (!res.headersSent) {
+            res.status(500).json({ error: err.message });
+        }
+    }
+});
+
+McpRouter.get('/', (_req: Request, res: Response) => {
+    res.json({ service: 'eda-mcp', version: '1.0.0', status: 'ok', transport: 'Streamable HTTP' });
+});
+
+McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
+    const { MODEL, AVAILABLE, MAX_TOKENS, EDA_APP_URL, MCP_URL } = getAnthropicConfig();
+
+    if (!AVAILABLE) {
+        return res.status(503).json({ ok: false, response: 'El asistente de IA no está disponible. Configura la API key en la configuración.' });
+    }
+
+    const { messages } = req.body;
+    const userId = (req as any).user?._id?.toString() ?? '';
+
+    if (!messages || !Array.isArray(messages)) {
+        return res.status(400).json({ ok: false, response: 'Se requiere el campo messages[].' });
+    }
+
+    console.log('[CHAT] POST /ia/chat — mensajes:', messages.length, '| user:', userId);
+    console.log('[CHAT] Config — MODEL:', MODEL, '| MAX_TOKENS:', MAX_TOKENS, '| EDA_APP_URL:', EDA_APP_URL || '(no configurado)');
+
+    const mcpClient = new Client({ name: 'eda-chat', version: '1.0.0' });
+
+    try {
+        console.log('[CHAT] Conectando a MCP:', MCP_URL || '(no configurado)');
+        const reqUser = (req as any).user;
+        const userToken = reqUser ? jwt.sign({ user: reqUser }, SEED, { expiresIn: 14400 }) : '';
+        console.log('[CHAT] x-user-token a enviar — usuario:', reqUser?.email ?? reqUser?._id ?? '(ninguno)', '| token generado:', !!userToken);
+        const lastUserMsg = [...messages].reverse().find((m: any) => m.role === 'user')?.content ?? '';
+        const ctx = createChatContext(reqUser || {}, typeof lastUserMsg === 'string' ? lastUserMsg : '');
+        const transport = new StreamableHTTPClientTransport(new URL(MCP_URL), {
+            requestInit: { headers: { 'x-user-token': userToken } },
+        });
+        await mcpClient.connect(transport);
+        console.log('[CHAT] Conexión MCP establecida OK');
+
+        const { tools: mcpTools } = await mcpClient.listTools();
+        console.log('[CHAT] Tools MCP disponibles (' + mcpTools.length + '):', mcpTools.map((t: any) => t.name).join(', '));
+
+        const normalizedTools: NormalizedTool[] = mcpTools.map((tool: any) => ({
+            name: tool.name,
+            description: tool.description || '',
+            parameters: tool.inputSchema || { type: 'object', properties: {} },
+        }));
+
+        const aiConfig = getAnthropicConfig();
+        const provider = MCPAIProviderFactory.create(aiConfig);
+
+        const history: MCPHistoryMessage[] = messages.map((m: any) => ({
+            type: m.role as 'user' | 'assistant',
+            content: m.content,
+        }));
+
+        let iterations = 0;
+        const MAX_ITERATIONS = 10;
+        let lastExplorationOptions: any[] = [];
+
+        while (iterations < MAX_ITERATIONS) {
+            iterations++;
+            console.log('[CHAT] Iteración', iterations, '— llamando a IA...');
+
+            const turnResult = await provider.turn(
+                [buildEnhancedSystemPrompt(reqUser || {}), CHAT_MAIN_SYSTEM_PROMPT],
+                history,
+                normalizedTools,
+                MAX_TOKENS || 4096
+            );
+
+            console.log('[CHAT] done:', turnResult.done, '| toolCalls:', turnResult.toolCalls?.length ?? 0);
+
+            if (turnResult.done) {
+                const text = turnResult.text ?? '';
                 const responsePayload: any = { ok: true, response: text };
                 if (lastExplorationOptions.length > 1) {
                     const mentionedNums = extractMentionedOptionNumbers(text);
                     const filtered = mentionedNums.size > 0
                         ? lastExplorationOptions.filter((o: any) => mentionedNums.has(o.opcion_num))
                         : lastExplorationOptions;
-                    console.log('[CHAT] end_turn — opciones mencionadas en texto:', [...mentionedNums], '| mostrando:', filtered.length, 'de', lastExplorationOptions.length);
+                    console.log('[CHAT] done — opciones mencionadas en texto:', [...mentionedNums], '| mostrando:', filtered.length, 'de', lastExplorationOptions.length);
                     if (filtered.length > 1) {
                         responsePayload.options = filtered.map((o: any) => ({
                             num: o.opcion_num,
@@ -1748,62 +1749,53 @@ Responde siempre en el idioma del usuario.`, cache_control: { type: 'ephemeral' 
                 return res.status(200).json(responsePayload);
             }
 
-            if (response.stop_reason === 'tool_use') {
-                const toolBlocks = response.content.filter((b: any) => b.type === 'tool_use') as any[];
-                history.push({ role: 'assistant', content: response.content });
+            // Tool calls — ejecutar y añadir al historial normalizado
+            const toolCalls = turnResult.toolCalls!;
+            history.push({ type: 'assistant_tool_calls', toolCalls });
 
-                const toolResults: Anthropic.ToolResultBlockParam[] = await Promise.all(
-                    toolBlocks.map(async (block: any) => {
-                        console.log('[CHAT] Ejecutando tool MCP:', block.name, '| input:', JSON.stringify(block.input));
-                        let resultText = '';
-                        const toolStart = Date.now();
-                        try {
-                            const TOOL_TIMEOUT_MS = calculateDynamicTimeout(block.input);
-                            const timeoutPromise = new Promise<never>((_, reject) =>
-                                setTimeout(() => reject(new Error(`Tool "${block.name}" timeout tras ${TOOL_TIMEOUT_MS / 1000}s`)), TOOL_TIMEOUT_MS)
-                            );
-                            const result = await Promise.race([
-                                mcpClient.callTool({ name: block.name, arguments: block.input }),
-                                timeoutPromise,
-                            ]);
-                            resultText = extractTextContent(result);
-                            console.log('[CHAT] Tool MCP', block.name, 'result length:', resultText.length);
-                            logToolCall(ctx, block.name, block.input, true, Date.now() - toolStart, 0);
-                            if (block.name === 'get_data_from_dashboard') {
-                                try {
-                                    const parsed = JSON.parse(resultText);
-                                    if (Array.isArray(parsed?.opciones_unicas) && parsed.opciones_unicas.length > 1) {
-                                        lastExplorationOptions = parsed.opciones_unicas;
-                                    } else {
-                                        lastExplorationOptions = [];
-                                    }
-                                } catch (_) {}
-                            }
-                        } catch (toolErr: any) {
-                            console.error('[CHAT] Tool MCP error:', block.name, toolErr.message);
-                            resultText = `Error: ${toolErr.message}`;
-                            logToolCall(ctx, block.name, block.input, false, Date.now() - toolStart, 0, toolErr.message);
+            const toolResults = await Promise.all(
+                toolCalls.map(async (tc) => {
+                    console.log('[CHAT] Ejecutando tool MCP:', tc.name, '| input:', JSON.stringify(tc.arguments));
+                    let resultText = '';
+                    const toolStart = Date.now();
+                    try {
+                        const TOOL_TIMEOUT_MS = calculateDynamicTimeout(tc.arguments);
+                        const timeoutPromise = new Promise<never>((_, reject) =>
+                            setTimeout(() => reject(new Error(`Tool "${tc.name}" timeout tras ${TOOL_TIMEOUT_MS / 1000}s`)), TOOL_TIMEOUT_MS)
+                        );
+                        const result = await Promise.race([
+                            mcpClient.callTool({ name: tc.name, arguments: tc.arguments }),
+                            timeoutPromise,
+                        ]);
+                        resultText = extractTextContent(result);
+                        console.log('[CHAT] Tool MCP', tc.name, 'result length:', resultText.length);
+                        logToolCall(ctx, tc.name, tc.arguments, true, Date.now() - toolStart, 0);
+                        if (tc.name === 'get_data_from_dashboard') {
+                            try {
+                                const parsed = JSON.parse(resultText);
+                                if (Array.isArray(parsed?.opciones_unicas) && parsed.opciones_unicas.length > 1) {
+                                    lastExplorationOptions = parsed.opciones_unicas;
+                                } else {
+                                    lastExplorationOptions = [];
+                                }
+                            } catch (_) {}
                         }
-                        return {
-                            type: 'tool_result' as const,
-                            tool_use_id: block.id,
-                            content: resultText,
-                        };
-                    })
-                );
+                    } catch (toolErr: any) {
+                        console.error('[CHAT] Tool MCP error:', tc.name, toolErr.message);
+                        resultText = `Error: ${toolErr.message}`;
+                        logToolCall(ctx, tc.name, tc.arguments, false, Date.now() - toolStart, 0, toolErr.message);
+                    }
+                    return { id: tc.id, content: resultText };
+                })
+            );
 
-                history.push({ role: 'user', content: toolResults });
-                continue;
+            for (const r of toolResults) {
+                history.push({ type: 'tool_result', toolCallId: r.id, content: r.content });
             }
-
-            break;
         }
 
-        const lastAssistantText = [...history].reverse()
-            .reduce((acc: any[], m: any) => acc.concat(Array.isArray(m.content) ? m.content : []), [])
-            .find((b: any) => b.type === 'text')?.text ?? '';
         finalizeChatContext(ctx);
-        return res.status(200).json({ ok: true, response: lastAssistantText || '(Sin respuesta del asistente)' });
+        return res.status(200).json({ ok: true, response: '(Sin respuesta del asistente)' });
 
     } catch (err: any) {
         console.error('[CHAT] Error:', err.message);
