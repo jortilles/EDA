@@ -113,6 +113,7 @@ export class QueryBuilderService extends ApiService {
             col.joins = select[i].joins || [];
             col.autorelation = select[i].autorelation;
             col.ranges = select[i].ranges || [];
+            col.ia_medatada_permissions = select[i].ia_medatada_permissions;
             queryColumns.push(col);
             labels.push(select[i].column_name);
         }

@@ -48,6 +48,7 @@ export class EditColumnPanel {
     computed_column:string;
     minimumFractionDigits:number;
     valueListSource:ValueListSource;
+    ia_medatada_permissions: {dataSource: string, table: string, column: string};
 }
 
 export class EditModelPanel {
