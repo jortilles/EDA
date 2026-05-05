@@ -504,6 +504,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject.noRepetitions = config.noRepetitions;
         this.componentRef.instance.inject.ordering = config.ordering;
         this.componentRef.instance.inject.negativeNumbers = config.negativeNumbers;
+        this.componentRef.instance.inject.crossSortOrder = config.crossSortOrder || 'alphabetical';
         this.configUpdated.emit(this.currentConfig);;
     }
 
