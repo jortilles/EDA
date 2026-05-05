@@ -660,6 +660,11 @@ function createMcpServer(requestUser?: any) {
                 ordenar_campo: z.string().optional().describe('display_name del campo por el que ordenar los resultados. Rellénalo cuando la pregunta implique ranking ("mejores", "top", "más alto", "lowest", etc.). Infiere el campo de la pregunta (ej: "clientes con más ventas" → campo de ventas/importe).'),
                 ordenar_direccion: z.enum(['Asc', 'Desc']).optional().describe('Dirección del orden: Desc = mayor primero (mejores, top, más alto), Asc = menor primero (peores, mínimo, lowest). Rellénalo junto con ordenar_campo.'),
                 limite_filas: z.number().optional().describe('Número máximo de filas a devolver. Rellénalo cuando el usuario pida "top N", "los 5 mejores", "give me 10", etc.'),
+                sin_agregacion: z.boolean().optional().describe('true si el usuario quiere filas de detalle sin agrupar (ej: "lista de todos los pedidos", "ver cada registro", "sin agrupar", "detalle completo"). Elimina todas las agregaciones del panel y devuelve filas individuales con límite de 500.'),
+                campos_agregacion: z.array(z.object({
+                    campo: z.string().describe('display_name del campo a modificar'),
+                    tipo: z.enum(['sum', 'count', 'avg', 'min', 'max', 'count_distinct']).describe('Tipo de agregación a aplicar'),
+                })).optional().describe('Overrides de agregación por campo. Úsalo cuando el panel no tiene la agregación que el usuario necesita (ej: pregunta "total de ventas" pero el panel no suma). Solo modifica los campos especificados, el resto se mantiene intacto.'),
             },
         },
         async (args: any) => {
@@ -671,8 +676,10 @@ function createMcpServer(requestUser?: any) {
             console.log('[MCP] get_data_from_dashboard - ordenar_campo:', args?.ordenar_campo ?? '(no proporcionado)');
             console.log('[MCP] get_data_from_dashboard - ordenar_direccion:', args?.ordenar_direccion ?? '(no proporcionado)');
             console.log('[MCP] get_data_from_dashboard - limite_filas:', args?.limite_filas ?? '(no proporcionado)');
+            console.log('[MCP] get_data_from_dashboard - sin_agregacion:', args?.sin_agregacion ?? '(no proporcionado)');
+            console.log('[MCP] get_data_from_dashboard - campos_agregacion:', args?.campos_agregacion ? JSON.stringify(args.campos_agregacion) : '(no proporcionado)');
             const { question, dashboard_id, panel_index, campos_requeridos, datasource_id, campos_consulta,
-                    ordenar_campo, ordenar_direccion, limite_filas } = args;
+                    ordenar_campo, ordenar_direccion, limite_filas, sin_agregacion, campos_agregacion } = args;
             const camposLower: string[] = Array.isArray(campos_requeridos)
                 ? campos_requeridos.map((c: string) => c.toLowerCase())
                 : [];
@@ -835,6 +842,26 @@ function createMcpServer(requestUser?: any) {
                                         .join(', ');
                                     console.log(`[MCP] panel ${idx} — ORDER BY "${sortName}" ${rankIntent.direction}${secondary ? `, ${secondary}` : ''} | queryLimit:`, rankIntent.topN ?? '(sin cambio)');
                                 }
+                            }
+                            // ─────────────────────────────────────────────────────────────────
+
+                            // ── Aplicar overrides de agregación ───────────────────────────────
+                            if (sin_agregacion === true) {
+                                // Quitar todas las agregaciones → filas de detalle
+                                (innerQuery.fields ?? []).forEach((f: any) => { f.aggregation_type = 'none'; });
+                                innerQuery.queryLimit = 500;
+                                console.log(`[MCP] panel ${idx} — sin_agregacion: todas las agregaciones eliminadas | queryLimit: 500`);
+                            } else if (Array.isArray(campos_agregacion) && campos_agregacion.length > 0) {
+                                // Overrides puntuales por campo
+                                const overrideMap = new Map<string, string>(
+                                    campos_agregacion.map((ca: any) => [ca.campo.toLowerCase(), ca.tipo])
+                                );
+                                (innerQuery.fields ?? []).forEach((f: any) => {
+                                    const name = (f.display_name ?? f.field_name ?? '').toLowerCase();
+                                    const override = overrideMap.get(name);
+                                    if (override) f.aggregation_type = override;
+                                });
+                                console.log(`[MCP] panel ${idx} — campos_agregacion overrides:`, campos_agregacion.map((ca: any) => `${ca.campo}→${ca.tipo}`).join(', '));
                             }
                             // ─────────────────────────────────────────────────────────────────
 
@@ -1620,6 +1647,10 @@ RANKING: Si la pregunta implica ordenación o top N (palabras como "mejores", "p
 - ordenar_direccion: "Desc" si quiere los mayores/mejores, "Asc" si quiere los menores/peores.
 - limite_filas: el número N si el usuario lo especifica ("top 10", "las 5", "give me 8"). Si no especifica número, omítelo.
 RANKING DOBLE: Si el usuario pide en una misma pregunta tanto los mejores COMO los peores (ej: "top 5 más alto y top 5 más bajo"), DEBES llamar a get_data_from_dashboard DOS VECES: una con ordenar_direccion="Desc" y otra con ordenar_direccion="Asc". PROHIBIDO responder un ranking con datos del otro. Cada tabla debe provenir de su propia llamada al tool.
+AGREGACIÓN: Rellena estos parámetros cuando la pregunta requiera modificar cómo se agrupan los datos:
+- sin_agregacion=true: cuando el usuario quiere filas individuales de detalle sin agrupar (ej: "lista de todos los pedidos", "ver cada registro", "sin agrupar", "detalle completo", "todas las filas"). El sistema aplicará automáticamente un límite de 500 filas.
+- campos_agregacion: cuando el panel no tiene la agregación que el usuario necesita (ej: el panel muestra nombres pero el usuario pide "total de ventas por cliente" y el panel no suma). Especifica solo los campos a modificar con su tipo: sum, count, avg, min, max, count_distinct.
+- Si el panel ya tiene las agregaciones correctas para la pregunta, NO rellenes estos parámetros.
 
 PASO 4 — RESPUESTA:
 Presenta los datos en tabla markdown. Los valores deben ser idénticos a "datos.filas".
