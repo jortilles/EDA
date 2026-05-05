@@ -231,6 +231,7 @@ export class ColumnDialogComponent {
         const valueListSource = this.selectedColumn.valueListSource;
         const joins = this.selectedColumn.joins;
         const autorelation = this.selectedColumn.autorelation;
+        const data = this.dropDownFields;
         const computed_column = this.selectedColumn.computed_column;
         const SQLexpression = this.selectedColumn.SQLexpression;
         const filterBeforeGrouping = this.filterBeforeAfter.filterBeforeGrouping;
@@ -246,6 +247,7 @@ export class ColumnDialogComponent {
             valueListSource,
             autorelation,
             joins,
+            data,
             computed_column,
             SQLexpression,
             filterBeforeGrouping,

@@ -342,6 +342,7 @@ export class GlobalFiltersService {
             filter_column_type: columnType,
             filter_type: isDate ? 'between' : 'in',
             filter_elements: this.assertGlobalFilterItems(globalFilter),
+            filter_codes: this.assertGlobalFilterCodes(globalFilter),
             pathList: pathList,
             isGlobal: true,
             isAutocompleted: globalFilter.isAutocompleted,
@@ -354,6 +355,36 @@ export class GlobalFiltersService {
         }
 
         return formatedFilter;
+    }
+
+    public assertGlobalFilterCodes(globalFilter: any) {
+        const columnType = globalFilter.column?.value?.column_type || globalFilter.selectedColumn?.column_type;
+        const isDate = columnType === 'date';
+        const year_length = 4;
+        const year_month_length = 7;
+
+        if (isDate && globalFilter.selectedItems[0] && !globalFilter.selectedItems[1]) {
+            const year = globalFilter.selectedItems[0];
+            if (globalFilter.selectedItems[0].length === year_length) {
+                globalFilter.selectedItems[0] = `${year}-01-01`;
+                globalFilter.selectedItems[1] = `${year}-12-31`;
+            }
+            else if (globalFilter.selectedItems[0].length === year_month_length) {
+                const year_month = globalFilter.selectedItems[0];
+                const year = parseInt(year_month.slice(0, 5))
+                const month = parseInt(year_month.slice(5, 7));
+                let days = new Date(year, month, 0).getDate();
+                let daysstr = days < 10 ? `0${days}` : `${days}`
+                globalFilter.selectedItems[0] = `${year_month}-01`;
+                globalFilter.selectedItems[1] = `${year_month}-${daysstr}`;
+            } else {
+                globalFilter.selectedItems[1] = globalFilter.selectedItems[0]
+            }
+        }
+
+        return isDate
+            ? [{ value1: globalFilter.selectedItems[0] ? [globalFilter.selectedItems[0]] : [] }, { value2: globalFilter.selectedItems[1] ? [globalFilter.selectedItems[1]] : [] }]
+            : [{ value1: globalFilter.selectedIdValues }];
     }
 
     public assertGlobalFilterItems(globalFilter: any) {
