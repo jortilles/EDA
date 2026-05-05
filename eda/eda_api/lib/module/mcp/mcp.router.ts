@@ -1620,6 +1620,7 @@ PASO 2 — SELECCIÓN (solo si hay múltiples opciones relevantes):
 Muestra SOLO las opciones cuyo dashboard o panel estén relacionados con la pregunta del usuario. Si una opción no tiene relación (ej: pregunta de agua → panel de ventas), NO la incluyas.
 Si tras filtrar queda 1 sola opción relevante, ve directamente al PASO 3 sin preguntar.
 Si hay varias relevantes, preséntaselas en formato compacto: una línea por opción, número en negrita, título del panel y dashboard como link. Añade SOLO la diferencia clave si la hay (ej: con filtros, período, territorio). No escribas frases largas.
+⚠ CRÍTICO — NUMERACIÓN: usa SIEMPRE el número "opcion_num" EXACTO devuelto por el tool para cada opción. NUNCA renumeres ni reordenes las opciones. Si el tool devuelve opcion_num=3 para "Ventas odoo", escríbelo como "**3.**", no como "**1.**". El frontend renderiza botones con esos mismos números: si no coinciden, el usuario seleccionará el panel equivocado.
 Formato exacto (adapta el idioma):
 **1.** [«Panel título»](url) · *Dashboard nombre* · sin filtros
 **2.** [«Panel título»](url) · *Dashboard nombre* · filtros por año
@@ -1648,7 +1649,7 @@ RANKING: Si la pregunta implica ordenación o top N (palabras como "mejores", "p
 - limite_filas: el número N si el usuario lo especifica ("top 10", "las 5", "give me 8"). Si no especifica número, omítelo.
 RANKING DOBLE: Si el usuario pide en una misma pregunta tanto los mejores COMO los peores (ej: "top 5 más alto y top 5 más bajo"), DEBES llamar a get_data_from_dashboard DOS VECES: una con ordenar_direccion="Desc" y otra con ordenar_direccion="Asc". PROHIBIDO responder un ranking con datos del otro. Cada tabla debe provenir de su propia llamada al tool.
 AGREGACIÓN: Rellena estos parámetros cuando la pregunta requiera modificar cómo se agrupan los datos:
-- sin_agregacion=true: cuando el usuario quiere filas individuales de detalle sin agrupar (ej: "lista de todos los pedidos", "ver cada registro", "sin agrupar", "detalle completo", "todas las filas"). El sistema aplicará automáticamente un límite de 500 filas.
+- sin_agregacion=true: cuando el usuario quiere filas individuales de detalle sin agrupar (ej: "listado de ventas", "lista de pedidos", "ver cada registro", "sin agrupar", "detalle completo", "todas las filas", "cada venta", "cada pedido"). Cualquier pregunta con "listado", "lista", "detalle" o "cada [entidad]" debe activarlo. El sistema aplicará automáticamente un límite de 500 filas.
 - campos_agregacion: cuando el panel no tiene la agregación que el usuario necesita (ej: el panel muestra nombres pero el usuario pide "total de ventas por cliente" y el panel no suma). Especifica solo los campos a modificar con su tipo: sum, count, avg, min, max, count_distinct.
 - Si el panel ya tiene las agregaciones correctas para la pregunta, NO rellenes estos parámetros.
 
@@ -1805,24 +1806,21 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
                 const text = turnResult.text ?? '';
                 const responsePayload: any = { ok: true, response: text };
                 if (lastExplorationOptions.length > 1) {
-                    const mentionedNums = extractMentionedOptionNumbers(text);
-                    const filtered = mentionedNums.size > 0
-                        ? lastExplorationOptions.filter((o: any) => mentionedNums.has(o.opcion_num))
-                        : lastExplorationOptions;
-                    console.log('[CHAT] done — opciones mencionadas en texto:', [...mentionedNums], '| mostrando:', filtered.length, 'de', lastExplorationOptions.length);
-                    if (filtered.length > 1) {
-                        responsePayload.options = filtered.map((o: any) => ({
-                            num: o.opcion_num,
-                            label: `${o.dashboard_nombre} — ${o.panel_titulo}`,
-                            dashboard_nombre: o.dashboard_nombre,
-                            panel_titulo: o.panel_titulo,
-                            tiene_filtros: o.tiene_filtros ?? false,
-                            dashboard_id: o.dashboard_id,
-                            filtros_nombres: (o.alcance ?? '').replace(/^Filtros:\s*/i, '').replace(/^Sin filtros$/i, '') || '',
-                            panel_index: o.panel_index,
-                            dashboard_url: o.dashboard_url,
-                        }));
-                    }
+                    // Siempre mostrar TODAS las opciones en el orden exacto del tool.
+                    // El filtrado por números mencionados en texto era frágil (markdown bold lo rompía)
+                    // y causaba desajuste entre el texto de la IA y los botones del frontend.
+                    console.log('[CHAT] done — mostrando todas las opciones:', lastExplorationOptions.length);
+                    responsePayload.options = lastExplorationOptions.map((o: any) => ({
+                        num: o.opcion_num,
+                        label: `${o.dashboard_nombre} — ${o.panel_titulo}`,
+                        dashboard_nombre: o.dashboard_nombre,
+                        panel_titulo: o.panel_titulo,
+                        tiene_filtros: o.tiene_filtros ?? false,
+                        dashboard_id: o.dashboard_id,
+                        filtros_nombres: (o.alcance ?? '').replace(/^Filtros:\s*/i, '').replace(/^Sin filtros$/i, '') || '',
+                        panel_index: o.panel_index,
+                        dashboard_url: o.dashboard_url,
+                    }));
                     lastExplorationOptions = [];
                 }
                 finalizeChatContext(ctx);
