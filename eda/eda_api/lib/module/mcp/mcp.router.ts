@@ -116,19 +116,6 @@ function finalizeChatContext(ctx: ChatContext): void {
     console.log(`[${ctx.requestId}] Duration: ${ctx.totalDuration}ms | Tools: ${ctx.toolsCalled.length} | Success: ${successRate}%`);
 }
 
-
-function extractMentionedOptionNumbers(text: string): Set<number> {
-    const mentioned = new Set<number>();
-    const patterns = [/(?:^|\n)\s*([1-9])\s*[.\-–—:]/gm, /opci[oó]n\s+([1-9])/gi, /número\s+([1-9])/gi, /^([1-9])[\s\.].*$/gm];
-    for (const pattern of patterns) {
-        for (const match of text.matchAll(pattern)) {
-            const num = parseInt(match[1]);
-            if (num >= 1 && num <= 9) mentioned.add(num);
-        }
-    }
-    return mentioned;
-}
-
 function buildEnhancedSystemPrompt(user: any): string {
     return `Tu nombre es AsistenteEDA. Eres un especialista en análisis de datos.
 
@@ -179,12 +166,6 @@ async function loginInternal(): Promise<string> {
 }
 
 // --- Helpers para obtener dashboards por usuario ---
-// Nomenclatura igual que el home:
-//   privados → visible:'private',  campo raíz: user = userId
-//   grupo    → visible:'group',    campo raíz: group contiene groupIds del usuario
-//   comunes  → visible:'public'|'common'
-//   publicos → visible:'shared'|'open'
-// Si es admin, devuelve TODOS clasificados por visibilidad.
 async function getAllDashboards(userId: string) {
     const groups = await Group.find({ users: { $in: [userId] } }).exec();
     const isAdmin = groups.some((g: any) => g.role === 'EDA_ADMIN_ROLE');
