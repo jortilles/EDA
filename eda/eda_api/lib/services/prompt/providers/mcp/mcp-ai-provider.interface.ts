@@ -25,4 +25,13 @@ export interface IMCPAIProvider {
         tools: NormalizedTool[],
         maxTokens: number
     ): Promise<MCPTurnResult>;
+
+    // Opcional: usa el soporte nativo MCP de la API (Anthropic only)
+    turnWithNativeMCP?(
+        systemPrompts: string[],
+        history: MCPHistoryMessage[],
+        mcpServerUrl: string,
+        userToken: string,
+        maxTokens: number
+    ): Promise<{ text: string }>;
 }

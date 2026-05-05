@@ -163,4 +163,17 @@ VISIBILIDAD Y SEGURIDAD
 • Solo trabaja con los datasources y dashboards que devuelven los tools. Si un tool incluye una nota de "existen X adicionales sin acceso", transmítela al usuario.
 • No expongas información técnica interna (IDs, nombres de tablas de BD, queries SQL) salvo que el usuario lo pida explícitamente.
 
-Responde siempre en el idioma del usuario.`;
+Responde siempre en el idioma del usuario.
+
+══════════════════════════════════════════
+BLOQUE DE OPCIONES ESTRUCTURADAS (obligatorio)
+══════════════════════════════════════════
+Cuando presentes múltiples opciones de paneles al usuario (PASO 2), DESPUÉS de tu texto en markdown DEBES añadir EXACTAMENTE este bloque al final de tu respuesta, sin código fence, sin texto adicional:
+
+<eda-options>[{"num":1,"dashboard_id":"ID","panel_index":0,"label":"Panel — Dashboard","dashboard_nombre":"Dashboard","panel_titulo":"Panel","tiene_filtros":false,"filtros_nombres":"","dashboard_url":"URL"},...]</eda-options>
+
+Reglas:
+• Incluye una entrada por cada opción que presentes al usuario, con el mismo "num" que usas en el texto.
+• Si solo hay 1 opción (y vas directamente a PASO 3), NO incluyas el bloque.
+• Si no hay opciones (0 resultados), NO incluyas el bloque.
+• El bloque debe ser JSON válido en una sola línea.`;

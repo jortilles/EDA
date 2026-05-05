@@ -55,6 +55,41 @@ export class AnthropicMCPProvider implements IMCPAIProvider {
         return { done: true, text };
     }
 
+    async turnWithNativeMCP(
+        systemPrompts: string[],
+        history: MCPHistoryMessage[],
+        mcpServerUrl: string,
+        userToken: string,
+        maxTokens: number
+    ): Promise<{ text: string }> {
+        const system = systemPrompts.map((text, i) => ({
+            type: 'text' as const,
+            text,
+            ...(i === systemPrompts.length - 1 ? { cache_control: { type: 'ephemeral' as const } } : {}),
+        }));
+
+        const response = await (this.client as any).beta.messages.create({
+            model:       this.model,
+            max_tokens:  maxTokens,
+            system,
+            messages:    this.toAnthropicHistory(history),
+            mcp_servers: [{
+                type:                'url',
+                url:                 mcpServerUrl,
+                name:                'eda-mcp',
+                authorization_token: userToken,
+            }],
+            betas: ['mcp-client-2025-04-04'],
+        });
+
+        const text = ((response.content ?? []) as any[])
+            .filter((b: any) => b.type === 'text')
+            .map((b: any) => b.text as string)
+            .join('');
+
+        return { text };
+    }
+
     private toAnthropicHistory(history: MCPHistoryMessage[]): Anthropic.MessageParam[] {
         const messages: Anthropic.MessageParam[] = [];
         let i = 0;

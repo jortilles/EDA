@@ -257,6 +257,36 @@ export function filterDatasourceForAI(ds: any): any | null {
 }
 
 // ============================================================
+// EXTRACCIÓN DE OPCIONES DEL TEXTO FINAL (rama MCP nativa)
+// ============================================================
+
+// Claude embebe un bloque <eda-options>[...]</eda-options> en su respuesta cuando hay múltiples opciones.
+// Esta función lo extrae, lo parsea y devuelve el texto limpio + el array de opciones para el frontend.
+export function extractOptionsFromResponse(rawText: string): { text: string; options?: any[] } {
+    const match = rawText.match(/<eda-options>([\s\S]*?)<\/eda-options>/);
+    if (!match) return { text: rawText };
+
+    try {
+        const parsed: any[] = JSON.parse(match[1].trim());
+        const text = rawText.replace(match[0], '').trim();
+        const options = parsed.map((o: any) => ({
+            num:              o.num,
+            label:            o.label ?? `${o.dashboard_nombre} — ${o.panel_titulo}`,
+            dashboard_nombre: o.dashboard_nombre,
+            panel_titulo:     o.panel_titulo,
+            tiene_filtros:    o.tiene_filtros ?? false,
+            dashboard_id:     o.dashboard_id,
+            filtros_nombres:  o.filtros_nombres ?? '',
+            panel_index:      o.panel_index,
+            dashboard_url:    o.dashboard_url ?? '',
+        }));
+        return { text, options };
+    } catch (_) {
+        return { text: rawText };
+    }
+}
+
+// ============================================================
 // HELPERS DE CONSULTA
 // ============================================================
 // --- Detección de intent de ranking (ES / CA / EN, tolerante a errores de tilde) ---
