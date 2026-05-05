@@ -93,12 +93,16 @@ export class EdaTable {
     public SubTotals:string = $localize`:@@SubTotals:SubTotales`;
     public Trend:string = $localize`:@@addtrend:Tendencia`;
     public ordering: any[];
+    /** Controls the sort mode for pivot/cross tables: 'alphabetical' | 'value' (desc) | 'valueAsc' (asc). */
+    public crossSortOrder: string = 'alphabetical';
 
 
     public constructor(init: Partial<EdaTable>) {
         Object.assign(this, init);
         this.initRows = init['visibleRows'] || 10;
-        if (!this.sortedColumn) this.sortedColumn = { field: null, order: null }
+        if (!this.sortedColumn) this.sortedColumn = { field: null, order: null };
+        // Guard for configs saved before crossSortOrder existed (undefined after Object.assign).
+        if (!this.crossSortOrder) this.crossSortOrder = 'alphabetical';
     }
 
     get value() {
@@ -108,7 +112,19 @@ export class EdaTable {
     set value(values: any[]) {
         if( this.origValues.length == 0 ){
             this.origValues = _.cloneDeep(values);
-        } 
+        }
+        if (this.pivot) {
+            // Save the original pre-pivot column definitions on the first call so they can be
+            // restored on subsequent calls (e.g. when crossSortOrder changes).  After PivotTable()
+            // runs, this.cols is replaced with pivot-result columns whose field names no longer
+            // match the original query columns, so generatePivotParams / generateCrossParams
+            // would fail to look up aggregation columns without this restore step.
+            if (this.oldcols.length === 0) {
+                this.oldcols = [...this.cols];
+            } else {
+                this.cols = [...this.oldcols];
+            }
+        }
         this.clear();
         this._value = values;
         /* Inicialitzar filtres */
@@ -883,6 +899,35 @@ export class EdaTable {
         }
     }
 
+    /**
+     * Sorts an array of dimension values by their aggregate metric total computed from the
+     * raw (pre-pivot) rows.  Used to order row/column headers by value before the pivot
+     * table is built, so the resulting table is sorted without needing a post-processing step.
+     *
+     * @param values       Unique dimension values to sort (e.g. ['Jan', 'Feb', 'Mar']).
+     * @param fieldName    Column name in oldRows that holds the dimension value.
+     * @param oldRows      Raw pre-pivot rows used to compute the totals.
+     * @param metricFields Column names of the numeric metrics to sum.
+     * @param descending   True → highest total first; false → lowest total first.
+     */
+    private sortValuesByTotal(values: string[], fieldName: string, oldRows: any[], metricFields: string[], descending: boolean = true): string[] {
+        // Accumulate the sum of all metrics for each distinct dimension value.
+        const totals = new Map<string, number>();
+        values.forEach(v => totals.set(String(v), 0));
+        oldRows.forEach(row => {
+            const v = String(row[fieldName]);
+            if (totals.has(v)) {
+                metricFields.forEach(metric => {
+                    const val = parseFloat(row[metric]);
+                    if (!isNaN(val)) totals.set(v, totals.get(v) + val);
+                });
+            }
+        });
+        return descending
+            ? [...values].sort((a, b) => (totals.get(String(b)) || 0) - (totals.get(String(a)) || 0))
+            : [...values].sort((a, b) => (totals.get(String(a)) || 0) - (totals.get(String(b)) || 0));
+    }
+
     extractNumberFromRange(input: string): number {
         const regex = /(?:<|<=|>|>=)?\s*(-?\d+)\s*(?:-|<|<=|>|>=)?\s*(-?\d+)?/;
         const match = input?.trim().match(regex);
@@ -1361,33 +1406,39 @@ export class EdaTable {
      * Generates params to build crosstable
      */
     generatePivotParams(): PivotTableSerieParams {
-        //get old rows to build new ones 
         const oldRows = this.getValues();
-        //get index for numeric and text/date columns
         const typesIndex = this.getColsInfo();
-        //Get left column 
         const mainCol = this.cols[typesIndex.text[0]];
         const mainColLabel = Object.keys(oldRows[0])[typesIndex.text[0]];
-        const mainColValues = _.orderBy(_.uniq(_.map(this.value, mainCol.field)));
-        //get aggregation columns
+
         const aggregatedColLabels = [];
         for (let i = 0; i < typesIndex.numeric.length; i++) {
             aggregatedColLabels.push(Object.keys(oldRows[0])[typesIndex.numeric[i]]);
         }
-        //get pivot columns
+
+        let mainColValues = _.orderBy(_.uniq(_.map(this.value, mainCol.field)));
+
         const pivotCols = [];
         const pivotColsLabels = [];
         for (let i = 1; i < typesIndex.text.length; i++) {
             pivotCols.push(this.cols[typesIndex.text[i]]);
             pivotColsLabels.push(Object.keys(oldRows[0])[typesIndex.text[i]]);
         }
-        //get distinct values of pivot columns (new-columns names)
-        const newCols = [];
 
+        const newCols = [];
         pivotCols.forEach(pivotCol => {
             newCols.push(_.orderBy(_.uniq(_.map(this.value, pivotCol.field))));
         });
 
+        // When value-based sorting is active, replace alphabetical order with totals-based order
+        // for both row values (mainColValues) and each column dimension (newCols).
+        if (this.crossSortOrder === 'value' || this.crossSortOrder === 'valueAsc') {
+            const descending = this.crossSortOrder === 'value';
+            mainColValues = this.sortValuesByTotal(mainColValues, mainColLabel, oldRows, aggregatedColLabels, descending);
+            pivotColsLabels.forEach((pivotLabel, i) => {
+                newCols[i] = this.sortValuesByTotal(newCols[i], pivotLabel, oldRows, aggregatedColLabels, descending);
+            });
+        }
 
         const params = {
             mainCol: mainCol,
@@ -1446,6 +1497,21 @@ export class EdaTable {
         const newCols = [];
         axes[0].itemX.forEach(e => newCols.push(_.orderBy(_.uniq(_.map(this.value, e.column_name)))));
         axes[0].itemY.forEach(e => newCols.push(_.orderBy(_.uniq(_.map(this.value, e.column_name)))));
+
+        // Sort each X-axis dimension (rows) and each Y-axis dimension (columns) by their
+        // aggregate metric total instead of alphabetically.  X dimensions occupy newCols[0..nX-1]
+        // and Y dimensions occupy newCols[nX..end].
+        if (this.crossSortOrder === 'value' || this.crossSortOrder === 'valueAsc') {
+            const descending = this.crossSortOrder === 'value';
+            axes[0].itemX.forEach((e: any, i: number) => {
+                newCols[i] = this.sortValuesByTotal(newCols[i], e.column_name, oldRows, aggregatedColLabels, descending);
+            });
+            axes[0].itemY.forEach((e: any, j: number) => {
+                newCols[axes[0].itemX.length + j] = this.sortValuesByTotal(
+                    newCols[axes[0].itemX.length + j], e.column_name, oldRows, aggregatedColLabels, descending
+                );
+            });
+        }
 
         const params = {
             mainCols: mainCols,

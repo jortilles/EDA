@@ -2799,6 +2799,26 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Liczby ujemne</target>
   </trans-unit>
 
+  <trans-unit id="addCrossSorting">
+    <source>Ordenación</source>
+    <target>Sortowanie</target>
+  </trans-unit>
+
+  <trans-unit id="sortByValue">
+    <source>Por valor descendente</source>
+    <target>Według wartości malejąco</target>
+  </trans-unit>
+
+  <trans-unit id="sortByValueAsc">
+    <source>Por valor ascendente</source>
+    <target>Według wartości rosnąco</target>
+  </trans-unit>
+
+  <trans-unit id="sortAlphabetical">
+    <source>Alfabética</source>
+    <target>Alfabetycznie</target>
+  </trans-unit>
+
   <trans-unit id="withNegativeNumbers">
     <source>Con números negativos</source>
     <target>Z liczbami ujemnymi</target>
