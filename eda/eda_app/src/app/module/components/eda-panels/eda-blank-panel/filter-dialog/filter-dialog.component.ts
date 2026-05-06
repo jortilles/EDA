@@ -156,22 +156,9 @@ export class FilterDialogComponent {
     }
 
     carrega() {
-        this.applyFilterTypesByColumn();
         this.carregarFilters();
         this.handleInputTypes();
         this.handleAggregationType();
-    }
-
-    private applyFilterTypesByColumn(): void {
-        const exclude: Record<string, string[]> = {
-            numeric: ['like', 'not_like'],
-            date:    ['like', 'not_like'],
-            text:    ['>', '<', '>=', '<=', 'between'],
-        };
-        const toExclude = exclude[this.selectedColumn.column_type] ?? [];
-        if (toExclude.length) {
-            this.filter.types = this.filter.types.filter((t: any) => !toExclude.includes(t.value));
-        }
     }
 
     handleInputTypes() {
@@ -221,9 +208,6 @@ export class FilterDialogComponent {
     }
 
     getAggregationText(value: any) {
-
-        console.log('value:::: ', value);
-
         const label = aggTypes.filter(agg => {
             return (agg.value === value.aggregation_type);
         })[0].label;
