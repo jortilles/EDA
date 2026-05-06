@@ -4,7 +4,7 @@
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
       <div class="p-6">
         <h2 class="text-xl font-semibold" i18n="@@aiManagementTitle">Gestión de IA</h2>
-        <p class="text-gray-500 dark:text-gray-400" i18n="@@aiManagementSubtitle">Configure los parámetros del asistente de inteligencia artificial</p>
+        <p class="text-gray-500 dark:text-gray-400" i18n="@@aiManagementSubtitle">Configura los parámetros del asistente de inteligencia artificial</p>
       </div>
 
       <div class="p-6 pt-0">
@@ -134,7 +134,7 @@
 
             <!-- MODEL -->
             <div class="space-y-2">
-              <label for="model" class="text-sm font-medium" i18n="@@aiModel">MODELO</label>
+              <label for="model" class="text-sm font-medium" i18n="@@aiModel">MODELO DE IA</label>
               <div class="relative">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -154,6 +154,38 @@
               <textarea id="context" formControlName="CONTEXT" rows="3"
                 placeholder="Instrucciones de contexto para el asistente..."
                 class="flex w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400 resize-none"></textarea>
+            </div>
+
+            <!-- EDA APP URL -->
+            <div class="space-y-2">
+              <label for="edaapp" class="text-sm font-medium" i18n="@@aiEDAApp">EDA APP URL</label>
+              <div class="relative">
+                <svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-3 h-4 w-4 text-gray-500">
+                  <g id="Icon-Set-Filled" sketch:type="MSLayerGroup" transform="translate(-154.000000, -724.000000)" fill="#000000">
+                    <path d="M184.785,727.613 L183.355,726.184 C181.775,724.604 178.58,724.42 177,726 L170,733 C168.944,734.056 169.095,735.881 169.451,737.228 L179,728 C179.79,727.21 181.21,728.21 182,729 C182.79,729.79 183.79,731.21 183,732 L173.741,741.518 C175.088,741.873 176.944,742.056 178,741 L185,734 C186.58,732.421 186.365,729.193 184.785,727.613 L184.785,727.613 Z M162,753 C161.21,753.79 159.79,752.79 159,752 C158.21,751.21 157.21,749.79 158,749 L167.228,739.451 C165.881,739.095 164.056,738.944 163,740 L156,747 C154.42,748.58 154.604,751.775 156.184,753.354 L157.614,754.785 C159.193,756.365 162.42,756.58 164,755 L171,748 C172.056,746.944 171.874,745.088 171.518,743.741 L162,753 L162,753 Z M173.702,737.282 C173.307,736.888 172.667,736.888 172.272,737.282 L167.267,742.287 C166.872,742.683 166.872,743.322 167.267,743.718 C167.662,744.112 168.302,744.112 168.697,743.718 L173.702,738.713 C174.097,738.317 174.097,737.678 173.702,737.282 L173.702,737.282 Z" id="permalink" sketch:type="MSShapeGroup">
+                    </path>
+                  </g>
+                </svg>
+                <input id="edaapp" type="text" formControlName="EDA_APP_URL"
+                  placeholder="https://example.com/eda"
+                  class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
+              </div>
+            </div>
+
+            <!-- MCP URL -->
+            <div class="space-y-2">
+              <label for="mcpurl" class="text-sm font-medium" i18n="@@aiMCPURL">MCP URL</label>
+              <div class="relative">
+                <svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-3 h-4 w-4 text-gray-500">
+                  <g id="Icon-Set-Filled" sketch:type="MSLayerGroup" transform="translate(-154.000000, -724.000000)" fill="#000000">
+                    <path d="M184.785,727.613 L183.355,726.184 C181.775,724.604 178.58,724.42 177,726 L170,733 C168.944,734.056 169.095,735.881 169.451,737.228 L179,728 C179.79,727.21 181.21,728.21 182,729 C182.79,729.79 183.79,731.21 183,732 L173.741,741.518 C175.088,741.873 176.944,742.056 178,741 L185,734 C186.58,732.421 186.365,729.193 184.785,727.613 L184.785,727.613 Z M162,753 C161.21,753.79 159.79,752.79 159,752 C158.21,751.21 157.21,749.79 158,749 L167.228,739.451 C165.881,739.095 164.056,738.944 163,740 L156,747 C154.42,748.58 154.604,751.775 156.184,753.354 L157.614,754.785 C159.193,756.365 162.42,756.58 164,755 L171,748 C172.056,746.944 171.874,745.088 171.518,743.741 L162,753 L162,753 Z M173.702,737.282 C173.307,736.888 172.667,736.888 172.272,737.282 L167.267,742.287 C166.872,742.683 166.872,743.322 167.267,743.718 C167.662,744.112 168.302,744.112 168.697,743.718 L173.702,738.713 C174.097,738.317 174.097,737.678 173.702,737.282 L173.702,737.282 Z" id="permalink" sketch:type="MSShapeGroup">
+                    </path>
+                  </g>
+                </svg>
+                <input id="mcpurl" type="text" formControlName="MCP_URL"
+                  placeholder="https://example.com/ia"
+                  class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
+              </div>
             </div>
 
             <!-- LIMIT y AVAILABLE -->

@@ -6340,6 +6340,58 @@ OR<ph id="5"/>
   <source>Analizando el esquema</source>
   <target>Analyzing the scheme</target>
 </trans-unit>
+<trans-unit id="aiManagementTitle" datatype="html">
+  <source>Gestión de IA</source>
+  <target>AI Management</target>
+</trans-unit>
+<trans-unit id="aiManagementSubtitle" datatype="html">
+  <source>Configura los parámetros del asistente de inteligencia artificial</source>
+  <target>Configure the parameters of the artificial intelligence assistant</target>
+</trans-unit>
+<trans-unit id="aiProvider" datatype="html">
+  <source>PROVEEDOR</source>
+  <target>PROVIDER</target>
+</trans-unit>
+<trans-unit id="aiApiKey" datatype="html">
+  <source>API KEY</source>
+  <target>API KEY</target>
+</trans-unit>
+<trans-unit id="aiAwsAccessKey" datatype="html">
+  <source>CLAVE DE ACCESO DE AWS</source>
+  <target>AWS ACCESS KEY</target>
+</trans-unit>
+<trans-unit id="aiAwsRegion" datatype="html">
+  <source>REGIÓN DE AWS</source>
+  <target>AWS REGION</target>
+</trans-unit>
+<trans-unit id="aiAwsSecretKey" datatype="html">
+  <source>CLAVE SECRETA DE AWS</source>
+  <target>AWS SECRET KEY</target>
+</trans-unit>
+<trans-unit id="aiModel" datatype="html">
+  <source>MODELO DE IA</source>
+  <target>AI MODEL</target>
+</trans-unit>
+<trans-unit id="aiContext" datatype="html">
+  <source>CONTEXTO</source>
+  <target>CONTEXT</target>
+</trans-unit>
+<trans-unit id="aiEDAApp" datatype="html">
+  <source>EDA APP URL</source>
+  <target>EDA APP URL</target>
+</trans-unit>
+<trans-unit id="aiMCPURL" datatype="html">
+  <source>MCP URL</source>
+  <target>MCP URL</target>
+</trans-unit>
+<trans-unit id="aiLimit" datatype="html">
+  <source>LÍMITE</source>
+  <target>LIMIT</target>
+</trans-unit>
+<trans-unit id="aiAvailable" datatype="html">
+  <source>DISPONIBLE</source>
+  <target>AVAILABLE</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

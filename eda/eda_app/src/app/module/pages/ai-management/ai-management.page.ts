@@ -71,6 +71,8 @@ export class AiManagementPage implements OnInit {
         MAX_TOKENS: cfg.MAX_TOKENS ? cfg.MAX_TOKENS : 1000,
         EDA_APP_URL: cfg.EDA_APP_URL ? cfg.EDA_APP_URL : '',
         MCP_URL: cfg.MCP_URL ? cfg.MCP_URL : '',
+        MCP_EMAIL: cfg.MCP_EMAIL ? cfg.MCP_EMAIL : '',
+        MCP_PASSWORD: cfg.MCP_PASSWORD ? cfg.MCP_PASSWORD : '',
       });
       this.availableEnabled.set(cfg.AVAILABLE);
       this.iaFormStateService.setFormData(cfg);
