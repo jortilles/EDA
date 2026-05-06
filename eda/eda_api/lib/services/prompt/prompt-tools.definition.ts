@@ -87,9 +87,30 @@ const getFieldsTool: NormalizedTool = {
                                         type: "string",
                                         description: "Column sorting: if ascending, type Asc; if descending, type Desc; and if neither, the default value is No.",
                                         enum: ["Asc", "Desc", "No"]
+                                    },
+                                    ia_metadata_permissions: {
+                                        type: "object",
+                                        description: "Permission levels for this column. Always provided by the schema — never create or modify this field.",
+                                        properties: {
+                                            column: {
+                                                type: "string",
+                                                enum: ["FULL", "DECLARATION", "NONE"],
+                                                description: "FULL: AI can use field name and its values. DECLARATION: AI can reference the field name but must not read, expose, or process its values. NONE: column is fully hidden from AI."
+                                            },
+                                            table: {
+                                                type: "string",
+                                                enum: ["FULL", "DECLARATION", "NONE"]
+                                            },
+                                            dataSource: {
+                                                type: "string",
+                                                enum: ["FULL", "DECLARATION", "NONE"]
+                                            }
+                                        },
+                                        required: ["column", "table", "dataSource"],
+                                        additionalProperties: false
                                     }
                                 },
-                                required: ['column', "column_type", "ordenation_type"],
+                                required: ['column', "column_type", "ordenation_type", "ia_metadata_permissions"],
                                 additionalProperties: false
                             }
                         }
