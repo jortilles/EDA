@@ -321,10 +321,6 @@ export function createMcpServer(requestUser?: any) {
                 ordenar_direccion:  z.enum(['Asc', 'Desc']).optional().describe('Dirección del orden: Desc = mayor primero (mejores, top, más alto), Asc = menor primero (peores, mínimo, lowest). Rellénalo junto con ordenar_campo.'),
                 limite_filas:       z.number().optional().describe('Número máximo de filas a devolver. Rellénalo cuando el usuario pida "top N", "los 5 mejores", "give me 10", etc.'),
                 sin_agregacion:     z.boolean().optional().describe('true si el usuario quiere filas de detalle sin agrupar (ej: "lista de todos los pedidos", "ver cada registro", "sin agrupar", "detalle completo"). Elimina todas las agregaciones del panel y devuelve filas individuales con límite de 500.'),
-                campos_agregacion:  z.array(z.object({
-                    campo: z.string().describe('display_name del campo a modificar'),
-                    tipo:  z.enum(['sum', 'count', 'avg', 'min', 'max', 'count_distinct']).describe('Tipo de agregación a aplicar'),
-                })).optional().describe('Overrides de agregación por campo. Úsalo cuando el panel no tiene la agregación que el usuario necesita (ej: pregunta "total de ventas" pero el panel no suma). Solo modifica los campos especificados, el resto se mantiene intacto.'),
             },
         },
         async (args: any) => {
@@ -337,9 +333,8 @@ export function createMcpServer(requestUser?: any) {
             console.log('[MCP] get_data_from_dashboard - ordenar_direccion:', args?.ordenar_direccion ?? '(no proporcionado)');
             console.log('[MCP] get_data_from_dashboard - limite_filas:', args?.limite_filas ?? '(no proporcionado)');
             console.log('[MCP] get_data_from_dashboard - sin_agregacion:', args?.sin_agregacion ?? '(no proporcionado)');
-            console.log('[MCP] get_data_from_dashboard - campos_agregacion:', args?.campos_agregacion ? JSON.stringify(args.campos_agregacion) : '(no proporcionado)');
             const { question, dashboard_id, panel_index, campos_requeridos, datasource_id, campos_consulta,
-                    ordenar_campo, ordenar_direccion, limite_filas, sin_agregacion, campos_agregacion } = args;
+                    ordenar_campo, ordenar_direccion, limite_filas, sin_agregacion } = args;
             const camposLower: string[] = Array.isArray(campos_requeridos)
                 ? campos_requeridos.map((c: string) => c.toLowerCase())
                 : [];
@@ -497,16 +492,6 @@ export function createMcpServer(requestUser?: any) {
                                 (innerQuery.fields ?? []).forEach((f: any) => { f.aggregation_type = 'none'; });
                                 innerQuery.queryLimit = 500;
                                 console.log(`[MCP] panel ${idx} — sin_agregacion: todas las agregaciones eliminadas | queryLimit: 500`);
-                            } else if (Array.isArray(campos_agregacion) && campos_agregacion.length > 0) {
-                                const overrideMap = new Map<string, string>(
-                                    campos_agregacion.map((ca: any) => [ca.campo.toLowerCase(), ca.tipo])
-                                );
-                                (innerQuery.fields ?? []).forEach((f: any) => {
-                                    const name = (f.display_name ?? f.field_name ?? '').toLowerCase();
-                                    const override = overrideMap.get(name);
-                                    if (override) f.aggregation_type = override;
-                                });
-                                console.log(`[MCP] panel ${idx} — campos_agregacion overrides:`, campos_agregacion.map((ca: any) => `${ca.campo}→${ca.tipo}`).join(', '));
                             }
 
                             innerQuery.queryMode   = innerQuery.queryMode  ?? 'EDA';

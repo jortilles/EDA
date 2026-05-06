@@ -134,10 +134,8 @@ RANKING: Si la pregunta implica ordenación o top N (palabras como "mejores", "p
 - ordenar_direccion: "Desc" si quiere los mayores/mejores, "Asc" si quiere los menores/peores.
 - limite_filas: el número N si el usuario lo especifica ("top 10", "las 5", "give me 8"). Si no especifica número, omítelo.
 RANKING DOBLE: Si el usuario pide en una misma pregunta tanto los mejores COMO los peores (ej: "top 5 más alto y top 5 más bajo"), DEBES llamar a get_data_from_dashboard DOS VECES: una con ordenar_direccion="Desc" y otra con ordenar_direccion="Asc". PROHIBIDO responder un ranking con datos del otro. Cada tabla debe provenir de su propia llamada al tool.
-AGREGACIÓN: Rellena estos parámetros cuando la pregunta requiera modificar cómo se agrupan los datos:
+AGREGACIÓN: Rellena este parámetro cuando la pregunta requiera filas de detalle sin agrupar:
 - sin_agregacion=true: cuando el usuario quiere filas individuales de detalle sin agrupar (ej: "listado de ventas", "lista de pedidos", "ver cada registro", "sin agrupar", "detalle completo", "todas las filas", "cada venta", "cada pedido"). Cualquier pregunta con "listado", "lista", "detalle" o "cada [entidad]" debe activarlo. El sistema aplicará automáticamente un límite de 500 filas.
-- campos_agregacion: cuando el panel no tiene la agregación que el usuario necesita (ej: el panel muestra nombres pero el usuario pide "total de ventas por cliente" y el panel no suma). Especifica solo los campos a modificar con su tipo: sum, count, avg, min, max, count_distinct.
-- Si el panel ya tiene las agregaciones correctas para la pregunta, NO rellenes estos parámetros.
 
 PASO 4 — RESPUESTA:
 Presenta los datos en tabla markdown. Los valores deben ser idénticos a "datos.filas".
