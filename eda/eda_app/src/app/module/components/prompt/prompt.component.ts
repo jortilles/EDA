@@ -92,12 +92,15 @@ export class PromptComponent implements OnInit, AfterViewInit {
         tables.forEach((table: any) => {
             let columns = [];
             table.columns.forEach((column: any) => {
-                columns.push({
-                    column: column.column_name,
-                    column_type: column.column_type,
-                    description: column.description?.default,
-                    ia_visibility: column.ia_visibility,
-                });
+                if(column.visible) {
+                    columns.push({
+                        column: column.column_name,
+                        column_type: column.column_type,
+                        description: column.description?.default,
+                        ia_visibility: column.ia_visibility,
+                    });
+                }
+
             });
             schema.push({
                 table: table.table_name,
