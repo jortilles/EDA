@@ -6307,6 +6307,18 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>DISPONIBLE</source>
         <target>DOSTĘPNY</target>
       </trans-unit>
+      <trans-unit id="navegableFrom" datatype="html">
+        <source>Navegable desde</source>
+        <target>Możliwość nawigacji z</target>
+      </trans-unit>
+      <trans-unit id="noParentAttributes" datatype="html">
+        <source>Añade más atributos para activar la navegación</source>
+        <target>Dodaj więcej atrybutów, aby włączyć nawigację</target>
+      </trans-unit>
+      <trans-unit id="noParentText" datatype="html">
+        <source>Sin padre</source>
+        <target>Brak rodzica</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

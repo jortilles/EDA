@@ -96,22 +96,81 @@
                         <td [class]="col.styleClass" [width]="col.width" (click)="handleClick(lodash.get(rowData, col.field), col.field )" style="cursor: pointer; height: 35px;" [ngClass]="getStyleClass(col, rowData)" [ngStyle]="getTextStyle()">
                             <ng-container [ngSwitch]="col.type">
                                 <!-- ngSwitch TEXT -->
-                                        
+
                                 <ng-container *ngSwitchCase="'EdaColumnText'">
-                                    @if( inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field){
-                                        <div [pTooltip]="getLinkTooltip(col)">
-                                            {{ lodash.get(rowData, col.field) }}
+                                   @if( inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field){
+                                    <div class="flex items-center w-full" [pTooltip]="getLinkTooltip(col)">
+                                        
+                                        <span class="flex-1 truncate min-w-0">
+                                        {{ lodash.get(rowData, col.field) }}
+                                        </span>
+
+                                        <div class="flex items-center gap-4">
+                                        @if(haveChild(col.field)){
+                                            <button class="nav-btn" title="Navegar"
+                                            (click)="handleNavIn(col.field, lodash.get(rowData, col.field), $event)">
+                                            +
+                                            </button>
+                                        }
+                                        @if(isChild(col.field)){
+                                            <button class="nav-btn" title="Volver"
+                                            (click)="handleNavOut(getChildRootKey(col.field), $event)">
+                                            -
+                                            </button>
+                                        }
                                         </div>
+
+                                    </div>
                                     }
 
                                     @if( (!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field) && !col.rangeOption){
-                                        <div>
-                                            {{ lodash.get(rowData, col.field) }}
+                                    <div class="flex items-center w-full">
+                                        
+                                        <span class="flex-1 truncate min-w-0">
+                                        {{ lodash.get(rowData, col.field) }}
+                                        </span>
+
+                                        <div class="flex items-center gap-4">
+                                        @if(haveChild(col.field)){
+                                            <button class="nav-btn" title="Navegar"
+                                            (click)="handleNavIn(col.field, lodash.get(rowData, col.field), $event)">
+                                            +
+                                            </button>
+                                        }
+                                        @if(isChild(col.field)){
+                                            <button class="nav-btn" title="Volver"
+                                            (click)="handleNavOut(getChildRootKey(col.field), $event)">
+                                            -
+                                            </button>
+                                        }
                                         </div>
+
+                                    </div>
                                     }
 
                                     @if( (!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field) && col.rangeOption) {
-                                        <div [innerHTML]="formatValoresRango(rowData, col.field)"></div>
+                                    <div class="flex items-center w-full">
+                                        
+                                        <span class="flex-1 truncate min-w-0"
+                                            [innerHTML]="formatValoresRango(rowData, col.field)">
+                                        </span>
+
+                                        <div class="flex items-center gap-4">
+                                        @if(haveChild(col.field)){
+                                            <button class="nav-btn" title="Navegar"
+                                            (click)="handleNavIn(col.field, lodash.get(rowData, col.field), $event)">
+                                            +
+                                            </button>
+                                        }
+                                        @if(isChild(col.field)){
+                                            <button class="nav-btn" title="Volver"
+                                            (click)="handleNavOut(getChildRootKey(col.field), $event)">
+                                            -
+                                            </button>
+                                        }
+                                        </div>
+
+                                    </div>
                                     }
                                 </ng-container>
                                 

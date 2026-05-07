@@ -21,4 +21,5 @@ export interface Column {
     autorelation: boolean;
     joins: string[];
     ranges: number[];
+    downChild?: { table_id: string; column_name: string; display_name: string };
 }

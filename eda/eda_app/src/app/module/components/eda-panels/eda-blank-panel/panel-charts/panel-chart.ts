@@ -18,6 +18,10 @@ export class PanelChart {
   public coordinates: Array<Array<number>>;
   public zoom: number;
   public predictionConfig?: any;
+  public childNavConfig?: {
+    parentFields: string[];
+    childFieldMap: {[columnName: string]: string};
+  };
   constructor(init?: Partial<PanelChart>) {
     Object.assign(this, init);
   }

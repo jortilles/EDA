@@ -130,3 +130,18 @@ th{
     color: inherit;
 }
 
+/* estilos del + / - de columnas navegables */
+.nav-btn {
+  font-size: 1.5rem;
+  line-height: calc(1.75 / 1.125);
+  color: #00bcd4;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.nav-btn:hover {
+  color: #007c8a;
+}

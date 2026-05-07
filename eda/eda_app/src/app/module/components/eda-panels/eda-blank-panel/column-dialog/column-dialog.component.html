@@ -65,7 +65,7 @@
                   }
                 </div>
               </div>
-    
+
               @if (availableRange) {
                 <input
                   type="text"
@@ -73,14 +73,14 @@
                   [(ngModel)]="rangeString"
                   [disabled]="showRange"
                   (input)="validateInput($event)">
-    
+
                 <button
                   class="confirm-button"
                   (click)="addRange(rangeString)"
                   [disabled]="(!rangeString || rangeString.length === 0) || showRange">
                   <span i18n="@@addRange">Añadir Rango</span>
                 </button>
-    
+
                 @if (showRange) {
                   <div class="col-12 foot-card" style="margin-top: 5px;">
                     <p-scrollPanel [style]="{width: '100%', height: '160px'}" styleClass="custombar1">
@@ -94,6 +94,29 @@
                 }
               }
             </div>
+          }
+        </div>
+
+        <!-- Navegable -->
+        <div class="mt-10">
+          <h4 i18n="@@navegableFrom">Navegable desde</h4>
+          <div class="mt-2">
+            <p-dropdown
+              [options]="childOptions"
+              [(ngModel)]="selectedParent"
+              optionLabel="label"
+              optionValue="value"
+              [autoDisplayFirst]="false"
+              [showClear]="true"
+              [disabled]="childOptions.length === 0"
+              i18n-placeholder="@@noParentText"
+              placeholder="Sin padre"
+              [style]="{'width': '100%'}"
+              appendTo="body">
+            </p-dropdown>
+          </div>
+          @if(childOptions.length === 0) {
+            <small class="text-gray-400" i18n="@@noParentAttributes">Añade más atributos para activar la navegación</small>
           }
         </div>
 

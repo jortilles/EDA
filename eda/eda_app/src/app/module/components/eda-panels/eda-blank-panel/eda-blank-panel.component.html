@@ -40,14 +40,15 @@
   <div class="flex items-center justify-center flex-grow overflow-y-auto rounded-lg" [class.spinner-panel]="display_v.minispinner">
     @if (display_v.saved_panel && !display_v.minispinner) {
       <div class="relative w-full h-full">
-        <panel-chart 
-          #PanelChartComponent [props]="panelChartConfig" 
+        <panel-chart
+          #PanelChartComponent [props]="panelChartConfig"
           (configUpdated)="setChartProperties($event)"
-          (onChartClick)="onChartClick($event)" 
-          [ngStyle]="panelContent" 
-          [ngClass]="isSpecialChart(panelChartConfig.chartType) 
-            ? 'h-full w-full flex justify-center content-center overflow-hidden flex-wrap' 
-            : 'h-full w-full block overflow-hidden content-center pb-2'" 
+          (onChartClick)="onChartClick($event)"
+          (onNavEvent)="handleNavEvent($event)"
+          [ngStyle]="panelContent"
+          [ngClass]="isSpecialChart(panelChartConfig.chartType)
+            ? 'h-full w-full flex justify-center content-center overflow-hidden flex-wrap'
+            : 'h-full w-full block overflow-hidden content-center pb-2'"
           style="flex-wrap:wrap!important;"></panel-chart>
       </div>
     }
@@ -558,7 +559,7 @@
                               <span [innerHTML]="getDisplayFilterStr(filter)"></span>
                             </div>
                           }
-                        </div>
+                                </div>
 
                       </div>
                     }

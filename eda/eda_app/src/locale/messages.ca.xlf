@@ -6674,6 +6674,18 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>DISPONIBLE</source>
         <target>DISPONIBLE</target>
       </trans-unit>
+      <trans-unit id="navegableFrom" datatype="html">
+        <source>Navegable desde</source>
+        <target>Navegable des de</target>
+      </trans-unit>
+      <trans-unit id="noParentAttributes" datatype="html">
+        <source>Añade más atributos para activar la navegación</source>
+        <target>Afegeix més atributs per activar la navegació</target>
+      </trans-unit>
+      <trans-unit id="noParentText" datatype="html">
+        <source>Sin padre</source>
+        <target>Sense pare</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
