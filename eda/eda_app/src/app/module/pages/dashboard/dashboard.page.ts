@@ -607,6 +607,9 @@ export class DashboardPage implements OnInit {
         (!event?.data.panel.content.query.query.queryMode || event?.data.panel.content.query.query.queryMode === 'EDA');
     }
 
+    // Cancelamos evento si la columna es navegable
+    if(this.checkNavigableColumn(event)) return;
+
     if (modeEDA && event.code === "ADDFILTER" && this.validateDashboard('GLOBALFILTER') && filtersEnabled && !isImportedPanel) {
       this.alertService.addSuccess($localize`:@@filteredReportMessage:Por favor, espera un momento mientras procesamos la selección.`);
       const data = event?.data;
@@ -1393,5 +1396,16 @@ public startCountdown(seconds: number) {
       this.panels.sort((a, b) => a.y - b.y || a.x - b.x);
       this.updateMobileHeight();
     }
+  }
+
+  // Función para comprobar si la columna clicada es navegable
+  public checkNavigableColumn(event: any):boolean {
+    const columnClicked = event?.data?.filterBy;
+    const navigationLinks: any[] = event?.data?.panel?.content?.navigationLinks || [];
+    const linkedParentColumnNames = navigationLinks.map((link: any) => link.parentColumn);
+    const linkedChildColumnNames = navigationLinks.map((link: any) => link.childColumn);
+
+    // si la tabla tiene enlaces de navegación, y clickamos la columna que lo tiene, no aplicamos filtros al hacer clic en ella, para evitar conflictos entre ambos tipos de acciones
+    return columnClicked && [linkedParentColumnNames, linkedChildColumnNames].flat().includes(columnClicked);
   }
 }

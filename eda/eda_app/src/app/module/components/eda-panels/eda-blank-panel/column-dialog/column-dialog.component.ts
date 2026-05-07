@@ -919,6 +919,7 @@ export class ColumnDialogComponent {
 
         this.childOptions = allCandidates
             .filter(col => {
+                if (col.column_type === 'numeric') return false;
                 if (col.table_id === this.selectedColumn.table_id &&
                     col.column_name === this.selectedColumn.column_name) return false;
                 if (col.downChild &&
