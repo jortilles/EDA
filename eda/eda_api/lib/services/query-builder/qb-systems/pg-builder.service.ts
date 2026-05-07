@@ -278,7 +278,7 @@ export class PgBuilderService extends QueryBuilderService {
 
         const column = this.findColumn(f.filter_table, f.filter_column);
         const colname = this.getFilterColname(column);
-        if (f.filter_type === 'not_null') {
+        if (['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type)) {
           filtersString += '\nand ' + this.filterToString(f);
         } else {
           let nullValueIndex = f.filter_elements[0].value1.indexOf(null);
@@ -771,7 +771,7 @@ export class PgBuilderService extends QueryBuilderService {
     }
     const colname=this.getFilterColname(column);
     let colType = column.column_type;
-    
+
     if( filterObject.filter_dynamic == true){
         colType = 'dynamic';
     }
@@ -780,22 +780,30 @@ export class PgBuilderService extends QueryBuilderService {
     switch (this.setFilterType(filterObject.filter_type)) {
       case 0:
         if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
-        if (filterObject.filter_type === 'like') { 
+        if (filterObject.filter_type === 'like') {
           return `${colname}  ${'ilike'} '%${filterObject.filter_elements[0].value1}%' `;
         }
-        if (filterObject.filter_type === 'not_like') { 
+        if (filterObject.filter_type === 'not_like') {
           filterObject.filter_type = 'not like'
           return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
-        }        
+        }
         return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
       case 1:
         if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
         return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:
-        return `${colname}  ${filterObject.filter_type} 
+        return `${colname}  ${filterObject.filter_type}
                         ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
       case 3:
         return `${colname} is not null`;
+      case 5:
+        return colType === 'text'
+          ? `(${colname} is not null and ${colname} != '')`
+          : `${colname} is not null`;
+      case 6:
+        return colType === 'text'
+          ? `(${colname} is null or ${colname} = '')`
+          : `${colname} is null`;
     }
   }
 
@@ -831,8 +839,8 @@ export class PgBuilderService extends QueryBuilderService {
         const column = this.findHavingColumn(f);
         const colname = this.getHavingColname(column);
 
-        if (f.filter_type === 'not_null') {
-          filtersString += `\nand ${colname}  is not null `;
+        if (['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type)) {
+          filtersString += '\nand ' + this.havingToString(f);
         } else {
           /* Control de nulos... se genera la consutla de forma diferente */
           let nullValueIndex = f.filter_elements[0].value1.indexOf(null);
@@ -900,22 +908,30 @@ public getHavingColname(column: any){
     switch (this.setFilterType(filterObject.filter_type)) {
       case 0:
         if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
-        if (filterObject.filter_type === 'like') { 
+        if (filterObject.filter_type === 'like') {
           return `${colname}  ${'ilike'} '%${filterObject.filter_elements[0].value1}%' `;
         }
-        if (filterObject.filter_type === 'not_like') { 
+        if (filterObject.filter_type === 'not_like') {
           filterObject.filter_type = 'not like'
           return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
-        }        
+        }
         return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
       case 1:
         if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
         return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:
-        return `${colname}  ${filterObject.filter_type} 
+        return `${colname}  ${filterObject.filter_type}
                         ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
       case 3:
         return `${colname} is not null`;
+      case 5:
+        return colType === 'text'
+          ? `(${colname} is not null and ${colname} != '')`
+          : `${colname} is not null`;
+      case 6:
+        return colType === 'text'
+          ? `(${colname} is null or ${colname} = '')`
+          : `${colname} is null`;
     }
   }
 

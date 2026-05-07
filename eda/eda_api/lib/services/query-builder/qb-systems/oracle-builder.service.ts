@@ -262,7 +262,7 @@ export class OracleBuilderService extends QueryBuilderService {
 
         const column = this.findColumn(f.filter_table, f.filter_column);
         const colname = this.getFilterColname(column);
-        if (f.filter_type === 'not_null') {
+        if (['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type)) {
           filtersString += '\nand ' + this.filterToString(f);
         } else {
           let nullValueIndex = f.filter_elements[0].value1.indexOf(null);
@@ -580,13 +580,17 @@ export class OracleBuilderService extends QueryBuilderService {
                         ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
       case 3:
         return `${colname} is not null`;
+      case 5:
+        return `${colname} is not null`;
+      case 6:
+        return `${colname} is null`;
     }
   }
 
   /**
-   * 
-   * @param column 
-   * @returns coumn name in string mode for filtering. 
+   *
+   * @param column
+   * @returns coumn name in string mode for filtering.
    */
   public getFilterColname(column: any){
     let colname:String ;
@@ -613,7 +617,7 @@ export class OracleBuilderService extends QueryBuilderService {
         const column = this.findHavingColumn(f);
         const colname = this.getHavingColname(column);
 
-        if (f.filter_type === 'not_null') {
+        if (['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type)) {
           filtersString += '\nand ' + this.havingToString(f );
         } else {
           let nullValueIndex = f.filter_elements[0].value1.indexOf(null);
@@ -698,6 +702,10 @@ export class OracleBuilderService extends QueryBuilderService {
                         ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
       case 3:
         return `${colname} is not null`;
+      case 5:
+        return `${colname} is not null`;
+      case 6:
+        return `${colname} is null`;
     }
   }
   
