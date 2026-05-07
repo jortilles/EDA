@@ -2468,7 +2468,6 @@ startEditTitle() {
                     joins: col.joins || [],
                     autorelation: col.autorelation,
                     ranges: col.ranges || [],
-                    ia_medatada_permissions: col.ia_medatada_permissions,
                     description: col.description || { default: '', localizad: [] },
                     visible: col.visible ?? true,
                 };

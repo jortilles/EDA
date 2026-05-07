@@ -96,7 +96,6 @@ export class PromptComponent implements OnInit, AfterViewInit {
                     column: column.column_name,
                     column_type: column.column_type,
                     description: column.description?.default,
-                    ia_metadata_permissions: column?.ia_metadata_permissions,
                 });
             });
             schema.push({
@@ -105,6 +104,9 @@ export class PromptComponent implements OnInit, AfterViewInit {
                 columns: columns,
             })
         })
+
+        console.log('this.edaBlankPanel: ', this.edaBlankPanel)
+        console.log('schema: ', schema)
 
         this.schema = schema;
     }
