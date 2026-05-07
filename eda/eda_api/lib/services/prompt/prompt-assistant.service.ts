@@ -34,7 +34,6 @@ interface PromptParameters {
 
 export class PromptService {
 
-    // Función que filtra las columnas que tienen NONE
     private static filterSchemaForAI(schema: any[]): any[] {
         return schema
             .map((table: any) => ({
@@ -42,6 +41,12 @@ export class PromptService {
                 columns: (table.columns ?? []).filter((col: any) => col.ia_visibility !== 'NONE')
             }))
             .filter((table: any) => table.columns.length > 0);
+    }
+
+    private static isDeclarationColumn(column: string, table: string, schema: any[]): boolean {
+        const tableSchema = schema.find((t: any) => t.table?.toLowerCase() === table?.toLowerCase());
+        const col = tableSchema?.columns?.find((c: any) => c.column?.toLowerCase() === column?.toLowerCase());
+        return col?.ia_visibility === 'DECLARATION';
     }
 
     static async generateSuggestions(schema: any[]): Promise<string[]> {
@@ -89,6 +94,14 @@ export class PromptService {
             const { state, unresolvedFilter, pendingResult, pattern, selectedValues } = parameters.filterResolution;
 
             if (state === 'get_all') {
+                if (PromptService.isDeclarationColumn(unresolvedFilter.column, unresolvedFilter.table, schema)) {
+                    return {
+                        type: 'awaiting_resolution',
+                        output_text: `No puedo mostrar los valores disponibles para la columna "${unresolvedFilter.column}" ya que está configurada con acceso restringido. Por favor, escribe el valor directamente.`,
+                        unresolvedFilter,
+                        pendingResult
+                    };
+                }
                 const options = await QueryResolver.getAllFilterOptions(unresolvedFilter, parameters);
                 if (options.length === 0) {
                     return {
@@ -109,6 +122,14 @@ export class PromptService {
             }
 
             if (state === 'search_pattern') {
+                if (PromptService.isDeclarationColumn(unresolvedFilter.column, unresolvedFilter.table, schema)) {
+                    return {
+                        type: 'awaiting_resolution',
+                        output_text: `No puedo mostrar los valores disponibles para la columna "${unresolvedFilter.column}" ya que está configurada con acceso restringido. Por favor, escribe el valor directamente.`,
+                        unresolvedFilter,
+                        pendingResult
+                    };
+                }
                 const options = await QueryResolver.searchFilterByPattern(unresolvedFilter, pattern!, parameters);
                 if (options.length === 0) {
                     return {
@@ -279,12 +300,28 @@ export class PromptService {
             if (filters.length > 0 && parameters?.dataSource_id) {
                 const validation = await QueryResolver.validateTextFilters(filters, parameters);
                 if (validation.unresolvedFilter) {
-                    const options = await QueryResolver.getAllFilterOptions(validation.unresolvedFilter, parameters);
-                    const numberedList = options.map((opt: string, i: number) => `${i + 1}. ${opt}`).join('\n');
+                    const { unresolvedFilter } = validation;
                     const notFoundText = validation.notFound.join('", "');
+
+                    if (PromptService.isDeclarationColumn(unresolvedFilter.column, unresolvedFilter.table, schema)) {
+                        return {
+                            type: 'awaiting_resolution',
+                            output_text: `No puedo mostrar los valores disponibles para la columna "${unresolvedFilter.column}" ya que está configurada con acceso restringido. Por favor, escribe el valor directamente.`,
+                            unresolvedFilter,
+                            pendingResult: {
+                                currentQuery: result.currentQuery,
+                                principalTable: result.principalTable,
+                                filteredColumns: QueryResolver.getFilteredColumns(validation.resolvedFiltersRaw, result.currentQuery),
+                                resolvedFilters: QueryResolver.getFilters(validation.resolvedFiltersRaw)
+                            }
+                        };
+                    }
+
+                    const options = await QueryResolver.getAllFilterOptions(unresolvedFilter, parameters);
+                    const numberedList = options.map((opt: string, i: number) => `${i + 1}. ${opt}`).join('\n');
                     return {
                         type: 'awaiting_resolution',
-                        output_text: `No encontré "${notFoundText}" en la columna "${validation.unresolvedFilter.column}". Aquí tienes las opciones disponibles:\n\n${numberedList}\n\n¿Cuáles quieres usar?`,
+                        output_text: `No encontré "${notFoundText}" en la columna "${unresolvedFilter.column}". Aquí tienes las opciones disponibles:\n\n${numberedList}\n\n¿Cuáles quieres usar?`,
                         options,
                         unresolvedFilter: validation.unresolvedFilter,
                         pendingResult: {
