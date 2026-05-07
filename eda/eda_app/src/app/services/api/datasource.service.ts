@@ -456,12 +456,18 @@ export class DataSourceService extends ApiService implements OnDestroy {
             const tableVisibility = panel.ia_visibility || 'FULL';
             tmp_model[tableIndex].ia_visibility = tableVisibility;
             tmp_model[tableIndex].query = panel.query;
-            tmp_model[tableIndex].columns.forEach((col: any) => col.ia_visibility = tableVisibility);
+            tmp_model[tableIndex].columns.forEach((col: any) => {
+                col.ia_visibility = tableVisibility;
+                col.ia_medatada_permissions = {
+                    dataSource: col.ia_medatada_permissions?.dataSource || tableVisibility,
+                    table: tableVisibility,
+                    column: tableVisibility
+                };
+            });
 
             this._databaseModel.next(tmp_model);
 
         } else if (panel.type === 'columna') {
-
 
             const tableIndex = this._databaseModel.getValue().findIndex((table: { display_name: { default: any; }; }) => table.display_name.default === panel.parent);
             const columnindex = this._databaseModel.getValue()[tableIndex].columns.findIndex((col: { column_name: any; }) => col.column_name === panel.technical_name);
@@ -481,12 +487,21 @@ export class DataSourceService extends ApiService implements OnDestroy {
             tmp_model[tableIndex].columns[columnindex].column_granted_roles = panel.column_granted_roles;
             tmp_model[tableIndex].columns[columnindex].row_granted_roles = panel.row_granted_roles;
             tmp_model[tableIndex].columns[columnindex].visible = panel.visible;
-            tmp_model[tableIndex].columns[columnindex].ia_visibility = panel.ia_visibility || 'FULL';
+
+            const columnVisibility = panel.ia_visibility || 'FULL';
+            const tableModel = tmp_model[tableIndex];
+            const existingPermissions = tmp_model[tableIndex].columns[columnindex].ia_medatada_permissions;
+            tmp_model[tableIndex].columns[columnindex].ia_visibility = columnVisibility;
+            tmp_model[tableIndex].columns[columnindex].ia_medatada_permissions = {
+                dataSource: existingPermissions?.dataSource || tableModel.ia_visibility || 'FULL',
+                table: existingPermissions?.table || tableModel.ia_visibility || 'FULL',
+                column: columnVisibility
+            };
 
             if( panel.valueListSource  ){
                 tmp_model[tableIndex].columns[columnindex].valueListSource = panel.valueListSource;
             }
-            
+
             this._databaseModel.next(tmp_model);
 
         } else if (panel.type === 'root') {
@@ -495,7 +510,14 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 const tmp_model = this._databaseModel.getValue();
                 tmp_model.forEach((table: any) => {
                     table.ia_visibility = modelVisibility;
-                    table.columns.forEach((col: any) => col.ia_visibility = modelVisibility);
+                    table.columns.forEach((col: any) => {
+                        col.ia_visibility = modelVisibility;
+                        col.ia_medatada_permissions = {
+                            dataSource: modelVisibility,
+                            table: modelVisibility,
+                            column: modelVisibility
+                        };
+                    });
                 });
                 this._databaseModel.next(tmp_model);
             }

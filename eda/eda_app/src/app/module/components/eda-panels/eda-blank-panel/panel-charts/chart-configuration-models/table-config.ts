@@ -5,16 +5,18 @@ export class TableConfig {
   withColSubTotals: Boolean;
   withColTotals: Boolean;
   withRowTotals: Boolean;
-  withTrend : Boolean; 
+  withTrend : Boolean;
   sortedSerie : any;
   sortedColumn : any;
   styles : Array<any>;
   noRepetitions: boolean;
   ordering: any[];
   negativeNumbers: boolean;
+  /** Sort mode for cross/pivot tables: 'alphabetical' | 'value' (desc) | 'valueAsc' (asc). */
+  crossSortOrder: string;
 
   constructor(
-    onlyPercentages: Boolean, 
+    onlyPercentages: Boolean,
     resultAsPecentage: Boolean,
     visibleRows: number,
     withColSubTotals: Boolean,
@@ -27,6 +29,7 @@ export class TableConfig {
     noRepetitions: boolean,
     negativeNumbers: boolean,
     ordering: any[],
+    crossSortOrder: string = 'alphabetical',
 
     ) {
       this.onlyPercentages = onlyPercentages;
@@ -42,6 +45,7 @@ export class TableConfig {
       this.noRepetitions = noRepetitions;
       this.ordering = ordering;
       this.negativeNumbers = negativeNumbers;
+      this.crossSortOrder = crossSortOrder;
   }
 
 }

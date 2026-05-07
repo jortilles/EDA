@@ -2017,6 +2017,34 @@
           <context context-type="linenumber">64</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="addCrossSorting" datatype="html">
+        <source>Ordenación</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/table-dialog/table-dialog.component.ts</context>
+          <context context-type="linenumber">75</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sortByValue" datatype="html">
+        <source>Por valor descendente</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/table-dialog/table-dialog.component.ts</context>
+          <context context-type="linenumber">76</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sortByValueAsc" datatype="html">
+        <source>Por valor ascendente</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/table-dialog/table-dialog.component.ts</context>
+          <context context-type="linenumber">77</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sortAlphabetical" datatype="html">
+        <source>Alfabética</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/table-dialog/table-dialog.component.ts</context>
+          <context context-type="linenumber">78</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="tableTitleDialog" datatype="html">
         <source>Propiedades de la tabla</source>
         <context-group purpose="location">

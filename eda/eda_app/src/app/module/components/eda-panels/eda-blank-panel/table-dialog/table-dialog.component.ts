@@ -49,6 +49,7 @@ export class TableDialogComponent{
   public noRepetitions : boolean = false;
   public negativeNumbers : boolean = false;
   public ordering: Array<any> = [];
+  public crossSortOrder: string = 'alphabetical';
 
   /**Strings */
   public addTotals: string = $localize`:@@addTotals:Totales`;
@@ -71,6 +72,10 @@ export class TableDialogComponent{
   public withNegativeNumbers: string = $localize`:@@withNegativeNumbers: Con números negativos`;
   public withoutNegativeNumbers: string = $localize`:@@withoutNegativeNumbers: Sin números negativos`;
   public seeNegativeNumbers: string = $localize`:@@seeNegativeNumbers: Números negativos`;
+  public addCrossSorting: string = $localize`:@@addCrossSorting:Ordenación`;
+  public sortByValueLabel: string = $localize`:@@sortByValue:Por valor descendente`;
+  public sortByValueAscLabel: string = $localize`:@@sortByValueAsc:Por valor ascendente`;
+  public sortAlphabeticalLabel: string = $localize`:@@sortAlphabetical:Alfabética`;
 
   public tableTitleDialog = $localize`:@@tableTitleDialog:Propiedades de la tabla`;
   public display: boolean = false;
@@ -109,6 +114,7 @@ export class TableDialogComponent{
       this.noRepetitions = config.noRepetitions;
       this.ordering = config.ordering;
       this.negativeNumbers = config.negativeNumbers;
+      this.crossSortOrder = config.crossSortOrder || 'alphabetical';
     } else {
       this.panelChartConfig.config = new ChartConfig(
         new TableConfig(false, false, 5, false, false, false, false, null, null, null, false, false, [])
@@ -397,7 +403,7 @@ export class TableDialogComponent{
 
     const properties = new TableConfig(this.onlyPercentages, this.resultAsPecentage, rows,
       this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles,
-      this.noRepetitions, this.negativeNumbers, this.ordering);
+      this.noRepetitions, this.negativeNumbers, this.ordering, this.crossSortOrder);
 
     // Aplicar cambios de predicción al dashboard solo al confirmar
     const panelID = this.controller?.params?.panelId;
@@ -460,6 +466,25 @@ export class TableDialogComponent{
     } finally {
       this.gradientMenuController = undefined;
     }
+  }
+
+  /**
+   * Applies a new sort mode to the cross table preview without closing the dialog.
+   * The EdaTable keeps the raw pre-pivot rows in origValues.  Clearing origValues and
+   * re-assigning the data forces the value setter to rebuild the pivot from scratch
+   * using the updated crossSortOrder, while also restoring the original column
+   * definitions (oldcols) so generateCrossParams can resolve axis columns correctly.
+   */
+  private setCrossSortOrder(value: string) {
+    this.crossSortOrder = value;
+    const inject = this.myPanelChartComponent.componentRef.instance.inject;
+    inject.crossSortOrder = value;
+    // Clone before clearing so origValues is not wiped before we can read it.
+    const origData = _.cloneDeep(inject.origValues);
+    inject.origValues = [];
+    inject.value = origData;
+    inject.checkTotals(null);
+    this.setItems();
   }
 
   private setItems() {
@@ -590,6 +615,27 @@ export class TableDialogComponent{
             }
           }),
           disabled: this.onlyPercentages
+        },
+        {
+          label: this.addCrossSorting,
+          icon: "pi pi-sort-amount-down",
+          items: [
+            {
+              label: this.sortAlphabeticalLabel,
+              icon: this.crossSortOrder === 'alphabetical' ? 'pi pi-check' : 'pi pi-sort-alpha-down',
+              command: () => this.setCrossSortOrder('alphabetical')
+            },
+            {
+              label: this.sortByValueLabel,
+              icon: this.crossSortOrder === 'value' ? 'pi pi-check' : 'pi pi-sort-amount-down',
+              command: () => this.setCrossSortOrder('value')
+            },
+            {
+              label: this.sortByValueAscLabel,
+              icon: this.crossSortOrder === 'valueAsc' ? 'pi pi-check' : 'pi pi-sort-amount-up',
+              command: () => this.setCrossSortOrder('valueAsc')
+            }
+          ]
         }
 
       ];

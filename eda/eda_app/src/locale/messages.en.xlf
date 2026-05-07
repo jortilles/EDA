@@ -2893,6 +2893,22 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <source>Números negativos</source>
 <target>Negative numbers</target>
 </trans-unit>
+<trans-unit id="addCrossSorting">
+<source>Ordenación</source>
+<target>Sorting</target>
+</trans-unit>
+<trans-unit id="sortByValue">
+<source>Por valor descendente</source>
+<target>By descending value</target>
+</trans-unit>
+<trans-unit id="sortByValueAsc">
+<source>Por valor ascendente</source>
+<target>By ascending value</target>
+</trans-unit>
+<trans-unit id="sortAlphabetical">
+<source>Alfabética</source>
+<target>Alphabetical</target>
+</trans-unit>
 <trans-unit id="withNegativeNumbers">
 <source>Con números negativos</source>
 <target>With negative numbers</target>

@@ -3138,6 +3138,26 @@
     <target>Nombres négatifs</target>
   </trans-unit>
 
+  <trans-unit id="addCrossSorting">
+    <source>Ordenación</source>
+    <target>Tri</target>
+  </trans-unit>
+
+  <trans-unit id="sortByValue">
+    <source>Por valor descendente</source>
+    <target>Par valeur décroissante</target>
+  </trans-unit>
+
+  <trans-unit id="sortByValueAsc">
+    <source>Por valor ascendente</source>
+    <target>Par valeur croissante</target>
+  </trans-unit>
+
+  <trans-unit id="sortAlphabetical">
+    <source>Alfabética</source>
+    <target>Alphabétique</target>
+  </trans-unit>
+
   <trans-unit id="withNegativeNumbers">
     <source>Con números negativos</source>
     <target>Avec des nombres négatifs</target>
