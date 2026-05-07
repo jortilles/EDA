@@ -107,6 +107,7 @@ export class QueryBuilderService extends ApiService {
             col.tableCount = select[i].tableCount;
             col.minimumFractionDigits = select[i].minimumFractionDigits;
             col.cumulativeSum = select[i].cumulativeSum;
+            col.dateNav = select[i].dateNav || false;
             col.valueListSource = select[i].valueListSource;
             col.whatif_column = select[i].whatif_column || false;
             col.whatif = select[i].whatif;

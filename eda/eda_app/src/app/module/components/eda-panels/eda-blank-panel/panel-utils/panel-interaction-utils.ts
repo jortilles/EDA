@@ -313,6 +313,7 @@ export const PanelInteractionUtils = {
             
             if (column) {
                 column.format = contentColumn.hasOwnProperty("format")?contentColumn.format:null ; // Agregando el Formato
+                column.dateNav = contentColumn.dateNav || false;
                 column.whatif_column = contentColumn.whatif_column || false;
                 column.whatif = contentColumn.whatif || {};
                 column.joins = contentColumn.joins || [];
@@ -347,6 +348,7 @@ export const PanelInteractionUtils = {
                         duplicatedColumn.whatif_column = contentColumn.whatif_column || false;
                         duplicatedColumn.whatif = contentColumn.whatif || {};
                         duplicatedColumn.format = contentColumn.hasOwnProperty("format")?contentColumn.format:null ; // Agregando el Formato
+                        duplicatedColumn.dateNav = contentColumn.dateNav || false;
                         PanelInteractionUtils.handleAggregationType4DuplicatedColumns(ebp, duplicatedColumn);
                         // Moc la columna directament perque es una duplicada.... o no....
 
