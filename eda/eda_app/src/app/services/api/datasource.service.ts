@@ -444,8 +444,12 @@ export class DataSourceService extends ApiService implements OnDestroy {
 
     updateDataModel(panel: any) {
         if (panel.type === 'tabla') {
+            const ia_visibility = panel.ia_visibility;
             const tableIndex = this._databaseModel.getValue().findIndex((table: { table_name: any; }) => table.table_name === panel.technical_name);
             const tmp_model = this._databaseModel.getValue();
+
+            // Cascada retroactiva para modificar ia_visibility del dataSource
+            if(ia_visibility === 'FULL')  this._modelPanel.getValue().metadata.ia_visibility = 'FULL';
 
             tmp_model[tableIndex].display_name.default = panel.name;
             tmp_model[tableIndex].description.default = panel.description;
@@ -461,10 +465,23 @@ export class DataSourceService extends ApiService implements OnDestroy {
             this._databaseModel.next(tmp_model);
 
         } else if (panel.type === 'columna') {
-
+            const ia_visibility = panel.ia_visibility;
             const tableIndex = this._databaseModel.getValue().findIndex((table: { display_name: { default: any; }; }) => table.display_name.default === panel.parent);
             const columnindex = this._databaseModel.getValue()[tableIndex].columns.findIndex((col: { column_name: any; }) => col.column_name === panel.technical_name);
             const tmp_model = this._databaseModel.getValue();
+
+            // Cascada retroactiva para modificar ia_visibility del dataSource y de la tabla
+            if(ia_visibility === 'FULL' || ia_visibility === 'DECLARATION'){
+                tmp_model[tableIndex].ia_visibility = 'FULL';
+
+                const tmp_panel = this._tablePanel.getValue();
+                tmp_panel.ia_visibility = 'FULL';
+                this._tablePanel.next(tmp_panel);
+
+                const tmp_model_panel = this._modelPanel.getValue();
+                tmp_model_panel.metadata.ia_visibility = 'FULL';
+                this._modelPanel.next(tmp_model_panel);
+            }
 
             tmp_model[tableIndex].columns[columnindex].display_name.default = panel.name;
             tmp_model[tableIndex].columns[columnindex].column_type = panel.column_type;
