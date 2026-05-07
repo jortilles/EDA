@@ -89,6 +89,7 @@ export class ColumnDialogComponent {
     public dropDownFields: SelectItem[] = [];
     public limitSelectionFields: number;
     public cumulativeSum: boolean;
+    public dateNavEnabled: boolean = false;
     public cumulativeSumTooltip: string = $localize`:@@cumulativeSumTooltip:Si activas ésta función se calculará la suma acumulativa 
                                             para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.`
     public title: string;
@@ -397,6 +398,7 @@ export class ColumnDialogComponent {
     public addCumulativeSum(): void {
         const newCol = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
         this.cumulativeSum = newCol?.cumulativeSum;
+        this.dateNavEnabled = !!newCol?.dateNav;
     }
 
     handleCumulativeSum() {
@@ -421,6 +423,11 @@ export class ColumnDialogComponent {
         return ['month', 'week', 'day'].includes(current.value);
     }
 
+    handleDateNavEnabled() {
+        const newCol = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
+        if (!newCol) return;
+        newCol.dateNav = this.dateNavEnabled;
+    }
 
     handleFilterChange(filter: FilterType) {
         if (filter) {

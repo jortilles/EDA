@@ -137,7 +137,7 @@ th{
   color: #00bcd4;
   background: transparent;
   border: none;
-  cursor: pointer;
+  cursor: auto;
   padding: 0 2px;
   line-height: 1;
   flex-shrink: 0;
