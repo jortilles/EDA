@@ -125,7 +125,16 @@ export class OAUTHController {
             // Usamos identifier como fallback si email no existe
             email = email || identifier;
 
-            const userEda = await UserController.getUserInfoByEmail(email, true);
+            // 1. Buscar por email real
+            let userEda = await UserController.getUserInfoByEmail(email, true);
+
+            // 2. Si no se encuentra, buscar por identifier (usuarios que tienen el NIF como email)
+            if (!userEda && identifier && identifier !== email) {
+                userEda = await UserController.getUserInfoByEmail(identifier, true);
+                if (userEda) {
+                    console.log(`Usuario encontrado por identifier (${identifier}), se actualizará el email a: ${email}`);
+                }
+            }
 
             console.log('userEda: ', userEda);
 
@@ -259,6 +268,8 @@ export class OAUTHController {
             // Agregamos el Token en la redicción exitosa
             const sep = relayState.includes('?') ? '&' : '?';
             const redirectTo = `${relayState}${sep}token=${encodeURIComponent(token)}`;
+
+            //console.log('redirectTo: ', redirectTo);
 
             return res.redirect(302, redirectTo);
 
