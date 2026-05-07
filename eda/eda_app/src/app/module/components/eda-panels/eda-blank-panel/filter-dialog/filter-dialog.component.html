@@ -63,9 +63,9 @@
               ></eda-date-picker>
 
             }
-            @if (!display.calendar && !filter.switch && (selectedColumn.column_type !== 'date')) {
+            @if (display.filterValue && !display.calendar && !filter.switch) {
             <!-- Valores vacios y nulos -->
-            <span class="p-float-label h-[3.2rem] w-full">
+            <span class="p-float-label h-[3.2rem] w-full" >
               <input
                 id="float-input1"
                 class="w-full h-full rounded-md border border-gray-300 px-3 py-2"

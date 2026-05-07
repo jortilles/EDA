@@ -102,7 +102,7 @@ export class FilterDialogComponent {
     ) {
 
         this.filter.types = this.chartUtils.filterTypes;
-        this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
+        this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0];
     }
 
     ngOnInit(): void {
@@ -122,7 +122,8 @@ export class FilterDialogComponent {
         const autorelation = this.selectedColumn.autorelation;
         const filterBeforeGrouping = this.filterBeforeAfter.filterBeforeGrouping
         const aggregation_type = this.aggregationType ? this.aggregationType.value : null;
-
+        const data = this.dropDownFields;
+        
         const filter = this.columnUtils.setFilter({
             obj: this.filterValue,
             table,
@@ -135,6 +136,7 @@ export class FilterDialogComponent {
             joins,
             filterBeforeGrouping,
             aggregation_type,
+            data,
         });
         
         this.filter.selecteds.push(filter);
@@ -156,9 +158,22 @@ export class FilterDialogComponent {
     }
 
     carrega() {
+        this.applyFilterTypesByColumn();
         this.carregarFilters();
         this.handleInputTypes();
         this.handleAggregationType();
+    }
+
+    private applyFilterTypesByColumn(): void {
+        const exclude: Record<string, string[]> = {
+            numeric: ['like', 'not_like'],
+            date:    ['like', 'not_like'],
+            text:    ['>', '<', '>=', '<=', 'between'],
+        };
+        const toExclude = exclude[this.selectedColumn.column_type] ?? [];
+        if (toExclude.length) {
+            this.filter.types = this.filter.types.filter((t: any) => !toExclude.includes(t.value));
+        }
     }
 
     handleInputTypes() {
@@ -208,9 +223,6 @@ export class FilterDialogComponent {
     }
 
     getAggregationText(value: any) {
-
-        console.log('value:::: ', value);
-
         const label = aggTypes.filter(agg => {
             return (agg.value === value.aggregation_type);
         })[0].label;
