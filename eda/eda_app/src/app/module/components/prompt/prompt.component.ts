@@ -96,6 +96,7 @@ export class PromptComponent implements OnInit, AfterViewInit {
                     column: column.column_name,
                     column_type: column.column_type,
                     description: column.description?.default,
+                    ia_visibility: column.ia_visibility,
                 });
             });
             schema.push({

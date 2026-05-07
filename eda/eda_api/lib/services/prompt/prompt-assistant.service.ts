@@ -34,11 +34,24 @@ interface PromptParameters {
 
 export class PromptService {
 
+    // Función que filtra las columnas que tienen NONE
+    private static filterSchemaForAI(schema: any[]): any[] {
+        return schema
+            .map((table: any) => ({
+                ...table,
+                columns: (table.columns ?? []).filter((col: any) => col.ia_visibility !== 'NONE')
+            }))
+            .filter((table: any) => table.columns.length > 0);
+    }
+
     static async generateSuggestions(schema: any[]): Promise<string[]> {
         const config = getAiConfig();
         const provider = AIProviderFactory.create(config);
 
-        const schemaText = schema.map((t: any) =>
+        // Filtracion de solo columnas permitidas, es decir difenretes de NONE
+        const visibleSchema = PromptService.filterSchemaForAI(schema);
+
+        const schemaText = visibleSchema.map((t: any) =>
             `Tabla: ${t.table}${t.description ? ` (${t.description})` : ''}\nColumnas: ${t.columns.map((c: any) => `${c.column} (${c.column_type})`).join(', ')}`
         ).join('\n\n');
 
@@ -180,8 +193,11 @@ export class PromptService {
             };
         }) : [];
 
+        // Filtracion de solo columnas permitidas, es decir difenretes de NONE
+        const visibleSchema = PromptService.filterSchemaForAI(schema);
+
         const messages: NormalizedMessage[] = [
-            { role: "system", content: `${config.CONTEXT}\n\n${PromptUtil.buildSystemMessage(schema)}` },
+            { role: "system", content: `${config.CONTEXT}\n\n${PromptUtil.buildSystemMessage(visibleSchema)}` },
             ...safeHistory,
             { role: "user", content: text }
         ];
@@ -195,6 +211,11 @@ export class PromptService {
         const toolGetAssistantResponse = toolCalls.find(t => t.name === "getAssistantResponse");
         const toolGetFields = toolCalls.find(t => t.name === "getFields");
         const toolGetFilters = toolCalls.find(t => t.name === "getFilters");
+
+        console.log('toolGetAssistantResponse: ',toolGetAssistantResponse)
+        console.log('toolGetFields: ',toolGetFields)
+        console.log('toolGetFilters: ',toolGetFilters)
+
 
         if (toolGetAssistantResponse) {
             return { output_text: toolGetAssistantResponse.arguments?.message ?? 'Hola, ¿en qué puedo ayudarte?' };

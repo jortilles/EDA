@@ -87,9 +87,22 @@ const getFieldsTool: NormalizedTool = {
                                         type: "string",
                                         description: "Column sorting: if ascending, type Asc; if descending, type Desc; and if neither, the default value is No.",
                                         enum: ["Asc", "Desc", "No"]
+                                    },
+                                    ia_visibility: {
+                                        type: "string",
+                                        description: `
+                                        Here we have three possible options:
+
+                                        "FULL": You can view both the column name and its values.
+                                        "DECLARATION": You can view only the column name.
+                                        "NONE": You cannot view either the column name or its values.
+
+                                        This configuration is defined in the dataSource settings and applies to the application's users.
+                                        `,
+                                        enum: ["FULL", "DECLARATION", "NONE"]
                                     }
                                 },
-                                required: ['column', "column_type", "ordenation_type"],
+                                required: ['column', "column_type", "ordenation_type", "ia_visibility"],
                                 additionalProperties: false
                             }
                         }
