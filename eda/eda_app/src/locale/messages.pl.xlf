@@ -6319,6 +6319,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Sin padre</source>
         <target>Brak rodzica</target>
       </trans-unit>
+      <trans-unit id="volver" datatype="html">
+        <source>Volver</source>
+        <target>Wróć</target>
+      </trans-unit>
+      <trans-unit id="navegar" datatype="html">
+        <source>Navegar</source>
+        <target>Poruszaj się</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

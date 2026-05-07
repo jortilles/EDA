@@ -6686,6 +6686,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Sin padre</source>
         <target>Sense pare</target>
       </trans-unit>
+      <trans-unit id="volver" datatype="html">
+        <source>Volver</source>
+        <target>Tornar</target>
+      </trans-unit>
+      <trans-unit id="navegar" datatype="html">
+        <source>Navegar</source>
+        <target>Navegar</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

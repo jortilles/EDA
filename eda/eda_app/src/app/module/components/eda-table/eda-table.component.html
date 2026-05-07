@@ -107,13 +107,13 @@
 
                                         <div class="flex items-center gap-4">
                                         @if(haveChild(col.field)){
-                                            <button class="nav-btn" title="Navegar"
+                                            <button class="nav-btn" title="Navegar" i18n-title="@@navegar"
                                             (click)="handleNavIn(col.field, lodash.get(rowData, col.field), $event)">
                                             +
                                             </button>
                                         }
                                         @if(isChild(col.field)){
-                                            <button class="nav-btn" title="Volver"
+                                            <button class="nav-btn" title="Volver" i18n-title="@@volver"
                                             (click)="handleNavOut(getChildRootKey(col.field), $event)">
                                             -
                                             </button>
@@ -132,13 +132,13 @@
 
                                         <div class="flex items-center gap-4">
                                         @if(haveChild(col.field)){
-                                            <button class="nav-btn" title="Navegar"
+                                            <button class="nav-btn" title="Navegar" i18n-title="@@navegar"
                                             (click)="handleNavIn(col.field, lodash.get(rowData, col.field), $event)">
                                             +
                                             </button>
                                         }
                                         @if(isChild(col.field)){
-                                            <button class="nav-btn" title="Volver"
+                                            <button class="nav-btn" title="Volver" i18n-title="@@volver"
                                             (click)="handleNavOut(getChildRootKey(col.field), $event)">
                                             -
                                             </button>
@@ -157,13 +157,13 @@
 
                                         <div class="flex items-center gap-4">
                                         @if(haveChild(col.field)){
-                                            <button class="nav-btn" title="Navegar"
+                                            <button class="nav-btn" title="Navegar" i18n-title="@@navegar"
                                             (click)="handleNavIn(col.field, lodash.get(rowData, col.field), $event)">
                                             +
                                             </button>
                                         }
                                         @if(isChild(col.field)){
-                                            <button class="nav-btn" title="Volver"
+                                            <button class="nav-btn" title="Volver" i18n-title="@@volver"
                                             (click)="handleNavOut(getChildRootKey(col.field), $event)">
                                             -
                                             </button>
@@ -193,16 +193,35 @@
                                 </ng-container>
                                 <!-- ngSwitch NUMBER -->
                                 <ng-container *ngSwitchCase="'EdaColumnDate'">
-                                    <!-- {{ lodash.get(rowData, col.field) }} -->
                                     @if(inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field){
-                                        <div [pTooltip]="getLinkTooltip(col)">
-                                            {{ lodash.get(rowData, col.field) }}
+                                        <div class="flex items-center w-full" [pTooltip]="getLinkTooltip(col)">
+                                            <span class="flex-1 truncate min-w-0">{{ lodash.get(rowData, col.field) }}</span>
+                                            <div class="flex items-center gap-4">
+                                                @if(haveChild(col.field)){
+                                                    <button class="nav-btn" title="Navegar" i18n-title="@@navegar"
+                                                    (click)="handleNavIn(col.field, lodash.get(rowData, col.field), $event)">+</button>
+                                                }
+                                                @if(isChild(col.field)){
+                                                    <button class="nav-btn" title="Volver" i18n-title="@@volver"
+                                                    (click)="handleNavOut(getChildRootKey(col.field), $event)">-</button>
+                                                }
+                                            </div>
                                         </div>
                                     }
 
                                     @if(!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field){
-                                        <div>
-                                            {{ lodash.get(rowData, col.field) }}
+                                        <div class="flex items-center w-full">
+                                            <span class="flex-1 truncate min-w-0">{{ lodash.get(rowData, col.field) }}</span>
+                                            <div class="flex items-center gap-4">
+                                                @if(haveChild(col.field)){
+                                                    <button class="nav-btn" title="Navegar" i18n-title="@@navegar"
+                                                    (click)="handleNavIn(col.field, lodash.get(rowData, col.field), $event)">+</button>
+                                                }
+                                                @if(isChild(col.field)){
+                                                    <button class="nav-btn" title="Volver" i18n-title="@@volver"
+                                                    (click)="handleNavOut(getChildRootKey(col.field), $event)">-</button>
+                                                }
+                                            </div>
                                         </div>
                                     }
                                 </ng-container>
