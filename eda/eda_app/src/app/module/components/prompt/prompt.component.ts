@@ -8,6 +8,12 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 // Componentes
 import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 
+// Interfaz de sugerencia de gráficos con el asistente IA
+interface ChartSuggestion {
+    type: string;
+    subType: string;
+    label: string;
+}
 // Interfaz de mensajes del chat con IA
 interface ChatMessage {
     id?: string | number;
@@ -15,6 +21,7 @@ interface ChatMessage {
     content: string;
     timestamp?: number;
     copied?: boolean;
+    suggestedCharts?: ChartSuggestion[];
 }
 
 
@@ -32,6 +39,7 @@ export class PromptComponent implements OnInit, AfterViewInit {
     @Output() newCurrentQuery: EventEmitter<any[]> = new EventEmitter();
     @Output() newSelectedFilters: EventEmitter<any> = new EventEmitter();
     @Output() principalTable: EventEmitter<any> = new EventEmitter();
+    @Output() chartSelected = new EventEmitter<{ type: string, subType: string }>();
 
     // Variable almacenada temporalmente en el EDA-BLANK-PANEL
     @Input() messages: ChatMessage[];
@@ -202,7 +210,12 @@ export class PromptComponent implements OnInit, AfterViewInit {
                 }
 
                 const text = resp.response.output_text
-                const assistantMessage: ChatMessage = { role: 'assistant', content: text ?? String(text), timestamp: Date.now() };
+                const assistantMessage: ChatMessage = {
+                    role: 'assistant',
+                    content: text ?? String(text),
+                    timestamp: Date.now(),
+                    suggestedCharts: resp.response.suggestedCharts ?? []
+                };
                                 
                 this.messages.push(assistantMessage);
 
@@ -322,6 +335,12 @@ export class PromptComponent implements OnInit, AfterViewInit {
 
         // Deduplicar en caso de que varias palabras resuelvan al mismo valor
         return [...new Set(results.length > 0 ? results : [trimmed])];
+    }
+
+    // Función que maneja las sugerencias de gráficos posibles para la consulta
+    selectChart(msg: ChatMessage, chart: ChartSuggestion): void {
+        msg.suggestedCharts = [];
+        this.chartSelected.emit({ type: chart.type, subType: chart.subType });
     }
 
     copyMessage(message: ChatMessage) {

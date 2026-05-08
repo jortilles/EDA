@@ -420,12 +420,13 @@
                   <!-- Asistente con Inteligencia Artificial => Cuando el currentQuery es cero -->
                   @if(currentQuery.length === 0 && promptAvailable()) {
                     <div class=" ml-3 p-2">
-                      <Prompt 
-                        [(messages)]="promptMessages" 
-                        [edaBlankPanel]="this" 
-                        (newCurrentQuery)="newCurrentQueryUpdate($event)" 
+                      <Prompt
+                        [(messages)]="promptMessages"
+                        [edaBlankPanel]="this"
+                        (newCurrentQuery)="newCurrentQueryUpdate($event)"
                         (principalTable)="principalTableUpdate($event)"
                         (newSelectedFilters)="newSelectedFiltersUpdate($event)"
+                        (chartSelected)="onChartSuggestionSelected($event)"
                       >
                       </Prompt>
                     </div>
@@ -785,12 +786,13 @@
                       <div class="grid grid-cols-1  border rounded-lg bg-gray-50 min-h-[30vh] overflow-y-auto p-2">
 
                           <div class=" ml-3 p-2">
-                            <Prompt 
-                              [(messages)]="promptMessages" 
-                              [edaBlankPanel]="this" 
-                              (newCurrentQuery)="newCurrentQueryUpdate($event)" 
+                            <Prompt
+                              [(messages)]="promptMessages"
+                              [edaBlankPanel]="this"
+                              (newCurrentQuery)="newCurrentQueryUpdate($event)"
                               (principalTable)="principalTableUpdate($event)"
                               (newSelectedFilters)="newSelectedFiltersUpdate($event)"
+                              (chartSelected)="onChartSuggestionSelected($event)"
                             >
                             </Prompt>
                           </div>

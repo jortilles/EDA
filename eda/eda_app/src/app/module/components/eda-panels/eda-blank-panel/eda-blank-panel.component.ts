@@ -2313,6 +2313,17 @@ public tableNodeExpand(event: any): void {
         this.currentQuery = event;
     }
 
+    onChartSuggestionSelected(event: { type: string, subType: string }): void {
+        const chartType = this.chartUtils.chartTypes.find(
+            o => o.value === event.type && o.subValue === event.subType
+        );
+        if (chartType) {
+            this.chartForm.patchValue({ chart: chartType });
+        }
+        QueryUtils.runManualQuery(this);
+        this.indextab = 1;
+    }
+
     principalTableUpdate(event: any) {
 
         const {principalTable, currentQuery, queryLimit} = event
@@ -2340,14 +2351,14 @@ public tableNodeExpand(event: any): void {
         this.filtredColumns = _.cloneDeep(filteredColumns)
     }
 
-trackByTable(index: number, table: any): any {
-    return table.value;
-}
+    trackByTable(index: number, table: any): any {
+        return table.value;
+    }
 
-startEditTitle() {
-    this.editingTitle = true;
-    this.titleClick=true;
-}
+    startEditTitle() {
+        this.editingTitle = true;
+        this.titleClick=true;
+    }
 
     // ─── AND/OR Filter Dialog ────────────────────────────────────────────────
 

@@ -43,6 +43,93 @@ export class PromptService {
             .filter((table: any) => table.columns.length > 0);
     }
 
+    private static suggestCharts(currentQuery: any[]): { type: string, subType: string, label: string }[] {
+        
+        const numeric = currentQuery.filter((c: any) => c.column_type === 'numeric');
+        const text    = currentQuery.filter((c: any) => c.column_type === 'text');
+        const date    = currentQuery.filter((c: any) => c.column_type === 'date');
+        const coord   = currentQuery.filter((c: any) => c.column_type === 'coordinate');
+
+        console.log('numeric: ', numeric.length)
+        console.log('text: ', text.length)
+        console.log('date: ', date.length)
+        console.log('coord: ', coord.length)
+
+        const suggestions: { type: string, subType: string, label: string }[] = [];
+
+        // Coordinate map
+        if (coord.length === 2) {
+            suggestions.push({ type: 'coordinatesMap', subType: 'coordinatesMap', label: 'Mapa' });
+        }
+
+        // KPI: exactly 1 column, numeric
+        if (currentQuery.length === 1 && numeric.length === 1) {
+            suggestions.push({ type: 'kpi', subType: 'kpi', label: 'KPI' });
+        }
+
+        // Knob (Velocímetro): 1 or 2 columns, all numeric
+        if (currentQuery.length <= 2 && numeric.length === currentQuery.length && numeric.length >= 1) {
+            suggestions.push({ type: 'knob', subType: 'knob', label: 'Velocímetro' });
+        }
+
+        // Pie & Polar: exactly 1 numeric + 1 text or date (2 columns total)
+        if (currentQuery.length === 2 && numeric.length === 1 || (currentQuery.length === 2 && numeric.length === 2)) {
+            suggestions.push({ type: 'doughnut',  subType: 'doughnut',  label: 'Pastel' });
+            suggestions.push({ type: 'polarArea', subType: 'polarArea', label: 'Área polar' });
+            suggestions.push({ type: 'kpibar', subType: 'kpibar', label: 'Kpi Bar' });
+            suggestions.push({ type: 'kpiline', subType: 'kpiline', label: 'Kpi Line' });
+            suggestions.push({ type: 'kpiline', subType: 'kpiarea', label: 'Kpi Area' });
+        }
+
+        // Bar & Line
+        if (numeric.length>=1 && currentQuery.length>1 && (currentQuery.length - numeric.length)<2 || numeric.length===1 && currentQuery.length>1 && currentQuery.length<4) {
+            suggestions.push({ type: 'line', subType: 'line', label: 'Líneas' });
+            suggestions.push({ type: 'line', subType: 'area', label: 'Área' });
+            suggestions.push({ type: 'bar', subType: 'bar',           label: 'Barras' });
+            suggestions.push({ type: 'bar', subType: 'horizontalBar', label: 'Barras horizontales' });
+            suggestions.push({ type: 'bar', subType: 'stackedbar', label: 'Barras apiladas' });
+        }
+
+        // Histogram: exactly 1 numeric column only
+        if (currentQuery.length === 1 && numeric.length === 1) {
+            suggestions.push({ type: 'bar', subType: 'histogram', label: 'Histograma' });
+        }
+
+        if ((currentQuery.length-numeric.length) === 1 && numeric.length >= 1 && currentQuery.length>=2) {
+            suggestions.push({ type: 'radar', subType: 'radar', label: 'Radar' });
+        }
+
+        if (currentQuery.length === 3 && numeric.length === 1 ) {
+            suggestions.push({ type: 'bar', subType: 'pyramid', label: 'Piramide' });
+        }
+
+        if (currentQuery.length > 2 && (currentQuery.length-numeric.length)>=1 && numeric.length === 1 ) {
+            suggestions.push({ type: 'sunburst', subType: 'sunburst', label: 'Sunburst' });
+        }
+
+        if (currentQuery.length > 2 ) {
+            suggestions.push({ type: 'treetable', subType: 'treetable', label: 'Tabla árbol' });
+        }
+
+        if (numeric.length === 1 && (currentQuery.length-numeric.length) === 1) {
+            suggestions.push({ type: 'funnel', subType: 'funnel', label: 'Funnel' });
+        }
+
+        if (numeric.length === 1 && (currentQuery.length-numeric.length) > 0) {
+            suggestions.push({ type: 'treeMap', subType: 'treeMap', label: 'TreeMap' });
+        }
+
+        // Crosstable: at least 3 columns, at least 1 numeric
+        if (currentQuery.length > 2 && numeric.length >= 1) {
+            suggestions.push({ type: 'crosstable', subType: 'crosstable', label: 'Tabla cruzada' });
+        }
+
+        // Table: always
+        suggestions.push({ type: 'table', subType: 'table', label: 'Tabla' });
+
+        return suggestions;
+    }
+
     private static isDeclarationColumn(column: string, table: string, schema: any[]): boolean {
         const tableSchema = schema.find((t: any) => t.table?.toLowerCase() === table?.toLowerCase());
         const col = tableSchema?.columns?.find((c: any) => c.column?.toLowerCase() === column?.toLowerCase());
@@ -246,6 +333,7 @@ export class PromptService {
             return { output_text: 'No pude identificar los campos necesarios. ¿Podrías reformular la consulta?' };
         }
 
+        // Definición del Result enviado al Frontend
         const result: any = {
             output_text: '',
             currentQuery: [],
@@ -269,6 +357,7 @@ export class PromptService {
 
             result.currentQuery = currentQueryTool;
             result.principalTable = principalTable;
+            result.suggestedCharts = currentQueryTool.length > 0 ? PromptService.suggestCharts(currentQueryTool) : [];
 
             if (currentQueryTool.length === 0) {
                 result.output_text = 'Podrías ser más preciso en tu consulta.';
