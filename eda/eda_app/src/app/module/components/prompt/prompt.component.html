@@ -1,4 +1,4 @@
-<div class="chat-wrapper">
+<div class="chat-wrapper" (mousedown)="$event.stopPropagation()">
     <div class="chat-header p-0 xl:py-3 xl:px-4">
         <h3 i18n="@@assistantTitle" class="text-base font-semibold">Pregunta en lenguaje natural: </h3>
     </div>
