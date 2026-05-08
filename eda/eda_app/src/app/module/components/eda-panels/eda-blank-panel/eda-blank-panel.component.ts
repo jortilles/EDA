@@ -2327,7 +2327,9 @@ public tableNodeExpand(event: any): void {
         this.userSelectedTable = principalTable;
                 
         let columns: any[] = []
-        columns = rootTable.columns.filter((col: any) => !currentQuery.some((e: any) => e.column_name === col.column_name))
+        columns = rootTable.columns.filter((col: any) => {
+            if(col.visible) return !currentQuery.some((e: any) => e.column_name === col.column_name)
+        })
 
         this.columns = columns;
     }

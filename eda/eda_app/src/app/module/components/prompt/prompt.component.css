@@ -19,8 +19,8 @@ background: #fafafa;
 
 .chat-messages {
 flex: 1 1 auto;
-min-height: 80px;
-max-height: 80px;
+min-height: 160px;
+max-height: 160px;
 overflow-y: auto;
 background: #fff;
 }
@@ -28,8 +28,8 @@ background: #fff;
 
 @media (min-width: 1536px) {
   .chat-messages {
-    min-height: 200px;
-    max-height: 200px;
+    min-height: 272px;
+    max-height: 272px;
   }
 }
 
