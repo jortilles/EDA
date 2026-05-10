@@ -32,8 +32,7 @@ export * from './api/createTable.service';
 export * from './api/mail.service';
 export * from './api/excel-formatter.service';
 export * from './api/log.service';
-
-
+export { NlToSqlService } from './api/nl-to-sql.service';
 
 // Guards
 export { LoginGuardGuard } from './guards/login-guard.guard';
