@@ -1,0 +1,304 @@
+@if (available) {
+<div class="ai-search-wrapper">
+    <!-- Search Input Section -->
+    <div class="search-section">
+        <div class="search-header">
+            <div class="search-title">
+                <i class="pi pi-sparkles text-primary"></i>
+                <span class="text-lg font-semibold">AI 智能搜索</span>
+            </div>
+            <div class="mode-selector">
+                <p-dropdown 
+                    [options]="modeOptions" 
+                    [(ngModel)]="selectedMode" 
+                    optionLabel="label" 
+                    optionValue="value"
+                    [showClear]="false"
+                    styleClass="mode-dropdown">
+                </p-dropdown>
+            </div>
+        </div>
+
+        <div class="search-input-container">
+            <textarea 
+                [(ngModel)]="naturalLanguage"
+                (keydown)="onKeydown($event)"
+                placeholder="用自然语言描述你想查询的数据，例如："
+                rows="2"
+                class="search-textarea"
+                pInputTextarea
+                [disabled]="isLoading"
+            ></textarea>
+            <div class="search-actions">
+                <button 
+                    pButton 
+                    type="button" 
+                    icon="pi pi-search"
+                    label="搜索"
+                    (click)="search()"
+                    [loading]="isLoading"
+                    [disabled]="!naturalLanguage.trim() || isLoading"
+                    class="p-button-primary search-btn"
+                ></button>
+                @if (lastResult || errorMessage) {
+                    <button 
+                        pButton 
+                        type="button" 
+                        icon="pi pi-times"
+                        (click)="clear()"
+                        class="p-button-text p-button-secondary"
+                    ></button>
+                }
+            </div>
+        </div>
+
+        <div class="search-hints">
+            <span class="hint-label">示例：</span>
+            <span class="hint-text" (click)="useHint('显示各产品类别的销售额总和')">显示各产品类别的销售额总和</span>
+            <span class="hint-text" (click)="useHint('按月份统计订单数量')">按月份统计订单数量</span>
+            <span class="hint-text" (click)="useHint('找出销售额最高的前10个客户')">找出销售额最高的前10个客户</span>
+        </div>
+    </div>
+
+    <!-- Error Message -->
+    @if (errorMessage) {
+        <div class="error-message">
+            <i class="pi pi-exclamation-circle"></i>
+            <span>{{ errorMessage }}</span>
+        </div>
+    }
+
+    <!-- Loading Indicator -->
+    @if (isLoading) {
+        <div class="loading-container">
+            <p-progressSpinner 
+                [style]="{width: '40px', height: '40px'}" 
+                strokeWidth="5" 
+                fill="#EEEEEE"
+                animationDuration=".5s"
+            ></p-progressSpinner>
+            <span class="loading-text">AI 正在生成 SQL，请稍候...</span>
+        </div>
+    }
+
+    <!-- Results Section -->
+    @if (lastResult && !isLoading) {
+        <div class="results-section">
+            <p-tabView [(activeIndex)]="activeTab">
+                <!-- Summary Tab -->
+                <p-tabPanel header="摘要">
+                    <ng-template pTemplate="content">
+                        <div class="result-summary">
+                            <div class="summary-item">
+                                <span class="summary-label">查询描述：</span>
+                                <span class="summary-value">{{ lastResult.naturalLanguage }}</span>
+                            </div>
+
+                            @if (isHybridResult(lastResult.result)) {
+                                <div class="summary-item">
+                                    <span class="summary-label">推荐模式：</span>
+                                    <p-chip 
+                                        [label]="lastResult.result.recommended === 'query-object' ? '查询对象' : '直接 SQL'"
+                                        [styleClass]="lastResult.result.recommended === 'query-object' ? 'p-chip-info' : 'p-chip-success'"
+                                    ></p-chip>
+                                </div>
+
+                                @if (lastResult.result.query_object?.currentQuery?.length) {
+                                    <div class="summary-item">
+                                        <span class="summary-label">查询字段：</span>
+                                        <div class="chips-container">
+                                            @for (col of lastResult.result.query_object.currentQuery; track col.column_name) {
+                                                <p-chip 
+                                                    [label]="col.display_name?.default || col.column_name"
+                                                    styleClass="p-chip-info"
+                                                ></p-chip>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (lastResult.result.direct_sql?.sql) {
+                                    <div class="summary-item">
+                                        <span class="summary-label">使用表：</span>
+                                        <div class="chips-container">
+                                            @for (table of lastResult.result.direct_sql.tables_used; track table) {
+                                                <p-chip 
+                                                    [label]="table"
+                                                    styleClass="p-chip-warning"
+                                                ></p-chip>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+
+                                <div class="summary-item explanation">
+                                    <span class="summary-label">说明：</span>
+                                    <div class="explanation-text">
+                                        {{ lastResult.result.recommended === 'query-object' 
+                                            ? lastResult.result.query_object?.explanation 
+                                            : lastResult.result.direct_sql?.explanation }}
+                                    </div>
+                                </div>
+                            }
+
+                            @if (isQueryObjectResult(lastResult.result)) {
+                                @if (lastResult.result.currentQuery?.length) {
+                                    <div class="summary-item">
+                                        <span class="summary-label">查询字段：</span>
+                                        <div class="chips-container">
+                                            @for (col of lastResult.result.currentQuery; track col.column_name) {
+                                                <p-chip 
+                                                    [label]="col.display_name?.default || col.column_name"
+                                                    styleClass="p-chip-info"
+                                                ></p-chip>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (lastResult.result.selectedFilters?.length) {
+                                    <div class="summary-item">
+                                        <span class="summary-label">筛选条件：</span>
+                                        <div class="chips-container">
+                                            @for (filter of lastResult.result.selectedFilters; track filter.filter_id) {
+                                                <p-chip 
+                                                    [label]="filter.filter_column || filter.column?.value?.column_name"
+                                                    styleClass="p-chip-warning"
+                                                ></p-chip>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+
+                                <div class="summary-item explanation">
+                                    <span class="summary-label">说明：</span>
+                                    <div class="explanation-text">{{ lastResult.result.explanation }}</div>
+                                </div>
+                            }
+
+                            @if (isDirectSqlResult(lastResult.result)) {
+                                <div class="summary-item">
+                                    <span class="summary-label">数据库类型：</span>
+                                    <p-chip [label]="lastResult.result.db_type" styleClass="p-chip-success"></p-chip>
+                                </div>
+
+                                @if (lastResult.result.tables_used?.length) {
+                                    <div class="summary-item">
+                                        <span class="summary-label">使用表：</span>
+                                        <div class="chips-container">
+                                            @for (table of lastResult.result.tables_used; track table) {
+                                                <p-chip [label]="table" styleClass="p-chip-info"></p-chip>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (lastResult.result.assumptions?.length) {
+                                    <div class="summary-item">
+                                        <span class="summary-label">假设：</span>
+                                        <ul class="assumptions-list">
+                                            @for (assumption of lastResult.result.assumptions; track assumption) {
+                                                <li>{{ assumption }}</li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+
+                                @if (lastResult.result.warnings?.length) {
+                                    <div class="summary-item warnings">
+                                        <span class="summary-label">警告：</span>
+                                        <ul class="warnings-list">
+                                            @for (warning of lastResult.result.warnings; track warning) {
+                                                <li><i class="pi pi-exclamation-triangle"></i> {{ warning }}</li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+
+                                <div class="summary-item explanation">
+                                    <span class="summary-label">说明：</span>
+                                    <div class="explanation-text">{{ lastResult.result.explanation }}</div>
+                                </div>
+                            }
+                        </div>
+                    </ng-template>
+                </p-tabPanel>
+
+                <!-- SQL Tab -->
+                @if ((isHybridResult(lastResult.result) && lastResult.result.direct_sql?.sql) || 
+                     isDirectSqlResult(lastResult.result)) {
+                    <p-tabPanel header="SQL 语句">
+                        <ng-template pTemplate="content">
+                            <div class="sql-container">
+                                <pre class="sql-text">
+@if (isHybridResult(lastResult.result)) {
+{{ lastResult.result.direct_sql?.sql }}
+} @else if (isDirectSqlResult(lastResult.result)) {
+{{ lastResult.result.sql }}
+}</pre>
+                                <button 
+                                    pButton 
+                                    type="button" 
+                                    [icon]="copied ? 'pi pi-check' : 'pi pi-copy'"
+                                    [label]="copied ? '已复制' : '复制 SQL'"
+                                    (click)="copySql()"
+                                    class="p-button-text copy-btn"
+                                    [ngClass]="{'p-button-success': copied}"
+                                ></button>
+                            </div>
+                        </ng-template>
+                    </p-tabPanel>
+                }
+
+                <!-- Query Object Tab -->
+                @if ((isHybridResult(lastResult.result) && lastResult.result.query_object) || 
+                     isQueryObjectResult(lastResult.result)) {
+                    <p-tabPanel header="查询对象">
+                        <ng-template pTemplate="content">
+                            <div class="query-object-container">
+                                <pre class="query-object-text">
+@if (isHybridResult(lastResult.result)) {
+{{ lastResult.result.query_object | json }}
+} @else if (isQueryObjectResult(lastResult.result)) {
+{{ lastResult.result | json }}
+}</pre>
+                            </div>
+                        </ng-template>
+                    </p-tabPanel>
+                }
+            </p-tabView>
+
+            <!-- Apply Actions -->
+            <div class="apply-actions">
+                @if (hasPanels) {
+                    <button 
+                        pButton 
+                        type="button" 
+                        icon="pi pi-refresh"
+                        label="应用到当前面板"
+                        (click)="applyToCurrentPanel()"
+                        class="p-button-info apply-btn"
+                    ></button>
+                }
+                <button 
+                    pButton 
+                    type="button" 
+                    icon="pi pi-plus"
+                    label="创建新面板"
+                    (click)="createNewPanel()"
+                    class="p-button-success apply-btn"
+                ></button>
+            </div>
+        </div>
+    }
+</div>
+}
+
+@if (!available) {
+<div class="ai-search-unavailable">
+    <div class="unavailable-content">
+        <i class="pi pi-cog text-gray-400 text-3xl"></i>
+        <span class="text-gray-500">AI 搜索功能未配置，请在系统设置中配置 OpenAI API 密钥</span>
+    </div>
+</div>
+}
