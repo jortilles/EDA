@@ -21,6 +21,7 @@ export class PanelChart {
   public childNavConfig?: {
     parentFields: string[];
     childFieldMap: {[columnName: string]: string};
+    navColumnSubstitution: {[originalName: string]: string};
   };
   constructor(init?: Partial<PanelChart>) {
     Object.assign(this, init);

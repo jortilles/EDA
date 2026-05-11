@@ -342,10 +342,14 @@ export const QueryUtils = {
 
           if(ebp.currentQuery.length>2 && (ebp.currentQuery.find( valor => valor.column_type === 'numeric') !== undefined)) {
             const config = ebp.panelChartConfig.config.getConfig(); // Adquiera la configuración config
-            ebp.currentQuery = ebp.newCurrentQuery(ebp.currentQuery, ebp.initAxes(ebp.currentQuery)); // Reordeno el currentQuery                
-            config['ordering'] = [{axes: ebp.initAxes(ebp.currentQuery)}]; // Agrego el nuevo axes a la config
+            // Excluir nav-children de la query para que no aparezcan en los ejes de la tabla cruzada
+            const _navChildKeys = new Set<string>();
+            ebp.currentQuery.forEach((col: any) => { if (col.downChild) _navChildKeys.add(`${col.downChild.table_id}.${col.downChild.column_name}`); });
+            const _queryForAxes = ebp.currentQuery.filter((col: any) => !_navChildKeys.has(`${col.table_id}.${col.column_name}`));
+            ebp.currentQuery = ebp.newCurrentQuery(ebp.currentQuery, ebp.initAxes(_queryForAxes)); // Reordeno el currentQuery
+            config['ordering'] = [{axes: ebp.initAxes(_queryForAxes)}]; // Agrego el nuevo axes a la config
             ebp.copyConfigCrossTable = JSON.parse(JSON.stringify(config));
-          } 
+          }
         }
       }
 

@@ -617,13 +617,15 @@ public tableNodeExpand(event: any): void {
             this.display_v.minispinner = true;
 
             PanelInteractionUtils.handleGlobalFilterMapper(this);
-            console.log('hola', panelContent);
             // Setup currentQuery + navChildren + navState
             this.restoreNavState(panelContent);
-            debugger;
             this.restoreDateNavState(panelContent);
 
             this.setupQueryContext(panelContent);
+
+            // Pre-populate selectedFilters/globalFilters from saved query so that initEdaQuery
+            // (used when hasNavChildren=true) has the permanent filters available.
+            PanelInteractionUtils.handleFilters(this, panelContent.query.query);
 
             const hasNavChildren = Object.keys(this.navChildren || {}).length > 0 || this.currentQuery.some((col: any) => col.downChild);
             const queryToRun = hasNavChildren ? QueryUtils.initEdaQuery(this) : panelContent.query;
@@ -737,7 +739,10 @@ public tableNodeExpand(event: any): void {
             const chart = this.chartForm?.value.chart?.value ? this.chartForm?.value.chart?.value : this.chartForm?.value.chart;
             const edaChart = this.panelChart?.props.edaChart;
             const navigationLinks: any[] = this.buildNavigationLinks(query);
-            const savedNavState = (this.navState || []).map((entry: any) => ({
+            // When navigation is active (currentIndex > 0), child columns are saved directly
+            // in query.query.fields by buildNavigationLinks — no need to persist navState.
+            const hasActiveNav = (this.navState || []).some((e: any) => e.currentIndex > 0);
+            const savedNavState = hasActiveNav ? [] : (this.navState || []).map((entry: any) => ({
                 rootKey: entry.rootKey,
                 navPathKeys: entry.navPath.map((col: any) => ({ table_id: col.table_id, column_name: col.column_name })),
                 currentIndex: entry.currentIndex,
@@ -750,9 +755,6 @@ public tableNodeExpand(event: any): void {
                 currentFormatIndex: entry.currentFormatIndex,
                 navFilters: entry.navFilters
             }));
-            console.log('Guardando estado de navegación:', savedNavState);
-            console.log('Guardando estado de navegación por fechas:', savedDateNavState);
-            console.log(this)
             this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters, navigationLinks, savedNavState, savedDateNavState };
 
             /**This is to repaint on panel redimension */
@@ -983,20 +985,25 @@ public tableNodeExpand(event: any): void {
 
         
         if(subType === 'crosstable'){
+            // Excluir nav-children para que no aparezcan en los ejes del editor drag-drop
+            const _navChildKeysCT = new Set<string>();
+            this.currentQuery.forEach((col: any) => { if (col.downChild) _navChildKeysCT.add(`${col.downChild.table_id}.${col.downChild.column_name}`); });
+            const _queryForAxesCT = this.currentQuery.filter((col: any) => !_navChildKeysCT.has(`${col.table_id}.${col.column_name}`));
+
             if(config===null){
                 if(Object.keys(this.copyConfigCrossTable).length !== 0) {
                     this.axes = this.copyConfigCrossTable['ordering'][0].axes;
                     configCrossTable['ordering'] = [{axes: this.axes}];
                 } else {
-                    this.axes = this.initAxes(this.currentQuery);
+                    this.axes = this.initAxes(_queryForAxesCT);
                     configCrossTable['ordering'] = [{axes: this.axes}];
                 }
             } else {
                 if(config['config']['ordering'] === undefined) {
-                    this.axes = this.initAxes(this.currentQuery);
+                    this.axes = this.initAxes(_queryForAxesCT);
                 } else {
                     if(config['config']['ordering'].length === 0) {
-                        this.axes = this.initAxes(this.currentQuery);
+                        this.axes = this.initAxes(_queryForAxesCT);
                     } else {
                         this.axes = config['config']['ordering'][0]['axes']
                     }
@@ -2444,59 +2451,124 @@ startEditTitle() {
     // ---- NAVIGATION FEATURE ----
     // Build navigationLinks from all currentQuery columns that have downChild.
     public buildNavigationLinks(query: any): any[] {
-            // Children are also in currentQuery (restored by restoreNavigationLinks), so
-            // multi-level chains (city → postal) are captured by this single pass.
-            const navigationLinks: any[] = this.currentQuery
-                .filter((col: any) => col.downChild)
-                .map((col: any) => ({
-                    parentTable: col.table_id,
-                    parentColumn: col.column_name,
-                    childTable: col.downChild.table_id,
-                    childColumn: col.downChild.column_name,
-                    childDisplayName: col.downChild.display_name
-                }));
+        // When navigation is active, save the effective (child) columns directly so that
+        // on reload the panel shows the child without needing navState restoration.
+        const navSubstitutions = new Map<string, any>(); // parentKey → active child col
+        const colNameSub: {[parentColName: string]: any} = {}; // column_name → child col (for ordering update)
+        for (const entry of (this.navState || [])) {
+            if (entry.currentIndex > 0) {
+                navSubstitutions.set(entry.rootKey, entry.navPath[entry.currentIndex]);
+                colNameSub[entry.navPath[0].column_name] = entry.navPath[entry.currentIndex];
+            }
+        }
 
-            // Exclude nav children from fields — they live in navigationLinks, not in query fields
-            const childKeySet = new Set(navigationLinks.map((l: any) => `${l.childTable}.${l.childColumn}`));
-            const queryFields = this.currentQuery.filter((col: any) =>
-                !childKeySet.has(`${col.table_id}.${col.column_name}`)
-            );
-            query.query.fields = queryFields.map((col: any, i: number) => {
-                const selectedAgg = Array.isArray(col.aggregation_type)
-                    ? col.aggregation_type.find((a: any) => a.selected)
-                    : null;
-                const aggValue = selectedAgg ? selectedAgg.value
-                    : (typeof col.aggregation_type === 'string' ? col.aggregation_type : 'none');
-                return {
-                    table_id: col.table_id,
-                    column_name: col.column_name,
-                    display_name: col.display_name?.default ?? col.display_name,
-                    column_type: col.column_type,
-                    old_column_type: col.old_column_type || col.column_type,
-                    computed_column: col.computed_column,
-                    SQLexpression: col.SQLexpression,
-                    aggregation_type: aggValue,
-                    ordenation_type: col.ordenation_type,
-                    format: col.format,
-                    order: i,
-                    column_granted_roles: col.column_granted_roles,
-                    row_granted_roles: col.row_granted_roles,
-                    tableCount: col.tableCount,
-                    minimumFractionDigits: col.minimumFractionDigits,
-                    cumulativeSum: col.cumulativeSum,
-                    valueListSource: col.valueListSource,
-                    whatif_column: col.whatif_column || false,
-                    whatif: col.whatif,
-                    joins: col.joins || [],
-                    autorelation: col.autorelation,
-                    ranges: col.ranges || [],
-                    ia_medatada_permissions: col.ia_medatada_permissions,
-                    description: col.description || { default: '', localizad: [] },
-                    visible: col.visible ?? true,
-                };
+        // Identify nav children whose parent is NOT being navigated (they remain as nav options).
+        // If the parent IS being navigated, the child becomes the effective column — don't exclude it.
+        const navigableChildKeys = new Set<string>();
+        for (const col of this.currentQuery) {
+            if (col.downChild) {
+                const colKey = `${col.table_id}.${col.column_name}`;
+                if (!navSubstitutions.has(colKey)) {
+                    navigableChildKeys.add(`${col.downChild.table_id}.${col.downChild.column_name}`);
+                }
+            }
+        }
+
+        // Build effective column list: skip non-navigated nav children; replace navigated parents with child.
+        // Track pushed keys to avoid duplicates (child col may appear both as substitution and directly).
+        const effectiveCols: any[] = [];
+        const pushedColKeys = new Set<string>();
+        for (const col of this.currentQuery) {
+            const colKey = `${col.table_id}.${col.column_name}`;
+            if (navigableChildKeys.has(colKey)) continue;
+            const activeChild = navSubstitutions.get(colKey);
+            const colToPush = activeChild || col;
+            const pushKey = `${colToPush.table_id}.${colToPush.column_name}`;
+            if (pushedColKeys.has(pushKey)) continue;
+            pushedColKeys.add(pushKey);
+            effectiveCols.push(colToPush);
+        }
+
+        // Build navigationLinks from effective columns (only remaining parent→child links).
+        const navigationLinks: any[] = effectiveCols
+            .filter((col: any) => col.downChild)
+            .map((col: any) => ({
+                parentTable: col.table_id,
+                parentColumn: col.column_name,
+                childTable: col.downChild.table_id,
+                childColumn: col.downChild.column_name,
+                childDisplayName: col.downChild.display_name
+            }));
+
+        // Exclude remaining nav children from saved fields.
+        const childKeySet = new Set(navigationLinks.map((l: any) => `${l.childTable}.${l.childColumn}`));
+        const queryFields = effectiveCols.filter((col: any) =>
+            !childKeySet.has(`${col.table_id}.${col.column_name}`)
+        );
+        query.query.fields = queryFields.map((col: any, i: number) => {
+            const selectedAgg = Array.isArray(col.aggregation_type)
+                ? col.aggregation_type.find((a: any) => a.selected)
+                : null;
+            const aggValue = selectedAgg ? selectedAgg.value
+                : (typeof col.aggregation_type === 'string' ? col.aggregation_type : 'none');
+            return {
+                table_id: col.table_id,
+                column_name: col.column_name,
+                display_name: col.display_name?.default ?? col.display_name,
+                column_type: col.column_type,
+                old_column_type: col.old_column_type || col.column_type,
+                computed_column: col.computed_column,
+                SQLexpression: col.SQLexpression,
+                aggregation_type: aggValue,
+                ordenation_type: col.ordenation_type,
+                format: col.format,
+                order: i,
+                column_granted_roles: col.column_granted_roles,
+                row_granted_roles: col.row_granted_roles,
+                tableCount: col.tableCount,
+                minimumFractionDigits: col.minimumFractionDigits,
+                cumulativeSum: col.cumulativeSum,
+                valueListSource: col.valueListSource,
+                whatif_column: col.whatif_column || false,
+                whatif: col.whatif,
+                joins: col.joins || [],
+                autorelation: col.autorelation,
+                ranges: col.ranges || [],
+                ia_medatada_permissions: col.ia_medatada_permissions,
+                description: col.description || { default: '', localizad: [] },
+                visible: col.visible ?? true,
+            };
+        });
+
+        // Update cross-table ordering axes to use child column names instead of parent names.
+        if (Object.keys(colNameSub).length > 0 && query.output?.config?.ordering) {
+            query.output.config.ordering = JSON.parse(JSON.stringify(query.output.config.ordering));
+            for (const axGroup of query.output.config.ordering) {
+                if (!axGroup.axes?.[0]) continue;
+                const ax = axGroup.axes[0];
+                for (const item of [...(ax.itemX || []), ...(ax.itemY || []), ...(ax.itemZ || [])]) {
+                    const child = colNameSub[item.column_name];
+                    if (child) {
+                        item.column_name = child.column_name;
+                        item.column_type = child.column_type;
+                        item.description = child.display_name?.default ?? child.display_name ?? item.description;
+                    }
+                }
+            }
+        }
+
+        // When navigation was active, keep nav filters as permanent local filters so they apply on reload.
+        // handleFilters classifies by isGlobal: must be false to land in selectedFilters.
+        // Otherwise strip them (runtime-only).
+        if (navSubstitutions.size > 0) {
+            query.query.filters = (query.query.filters || []).map((f: any) => {
+                if (!f.isNavFilter) return f;
+                const { isNavFilter, isGlobal, ...rest } = f;
+                return { ...rest, isGlobal: false };
             });
-        // Nav filters live in selectedFilters at runtime but must not be persisted in query.query.filters
-        query.query.filters = (query.query.filters || []).filter((f: any) => !f.isNavFilter);
+        } else {
+            query.query.filters = (query.query.filters || []).filter((f: any) => !f.isNavFilter);
+        }
 
         return navigationLinks;
     }
@@ -2717,11 +2789,13 @@ startEditTitle() {
 
     public computeChildNavConfig(): {
         parentFields: string[],
-        childFieldMap: {[k: string]: string}
+        childFieldMap: {[k: string]: string},
+        navColumnSubstitution: {[originalName: string]: string}
     } {
         const effectiveFields = QueryUtils.getEffectiveFields(this);
         const parentFields: string[] = [];
         const childFieldMap: {[k: string]: string} = {};
+        const navColumnSubstitution: {[originalName: string]: string} = {};
 
         for (const col of effectiveFields) {
             if (col.downChild) parentFields.push(col.column_name);
@@ -2729,6 +2803,11 @@ startEditTitle() {
         for (const entry of this.navState) {
             const activeCol = entry.navPath[entry.currentIndex];
             childFieldMap[activeCol.column_name] = entry.rootKey;
+            // Build substitution map: original column_name → effective column_name
+            const rootColName = entry.navPath[0]?.column_name;
+            if (rootColName && activeCol && rootColName !== activeCol.column_name) {
+                navColumnSubstitution[rootColName] = activeCol.column_name;
+            }
         }
 
         // Date nav columns — year→month→day on the same column, no child columns needed
@@ -2754,7 +2833,7 @@ startEditTitle() {
             }
         }
 
-        return { parentFields, childFieldMap };
+        return { parentFields, childFieldMap, navColumnSubstitution };
     }
 
     /**
@@ -2845,7 +2924,6 @@ startEditTitle() {
 
     /** Restores navState from persisted savedNavState using currentQuery/navChildren refs. */
     private restoreNavState(panelContent: any): void {
-        console.log('aaaaaaaaaa', panelContent);
         const saved = panelContent.savedNavState || [];
         if (!saved.length) return;
         this.navState = [];
@@ -2862,7 +2940,6 @@ startEditTitle() {
                 navFilters: entry.navFilters
             });
         }
-        console.log(saved, this.navState);
     }
 
     private restoreDateNavState(panelContent: any): void {

@@ -470,6 +470,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             ? this._prepareTablePredictionData(this.props.data.labels, this.props.data.values, queryLen)
             : { tableLabels: this.props.data.labels, tableValues: this.props.data.values };
         this.componentRef.instance.inject = this.initializeTable(type, config, tableLabels);
+        // Must be set before inject.value triggers PivotTable(), which reads navColumnSubstitution
+        if (this.props.childNavConfig) {
+            this.componentRef.instance.inject.navColumnSubstitution = this.props.childNavConfig.navColumnSubstitution || {};
+        }
         this.componentRef.instance.inject.value = this.chartUtils.transformDataQueryForTable(tableLabels, tableValues);
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
 
@@ -496,6 +500,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (this.props.childNavConfig) {
             this.componentRef.instance.inject.parentFields = this.props.childNavConfig.parentFields;
             this.componentRef.instance.inject.childFieldMap = this.props.childNavConfig.childFieldMap;
+            this.componentRef.instance.inject.navColumnSubstitution = this.props.childNavConfig.navColumnSubstitution || {};
             // Emisores de eventos de navigation feature
             this.componentRef.instance.inject.onNavIn.subscribe((event: any) =>
                 this.onNavEvent.emit({ ...event, navType: 'in' })
