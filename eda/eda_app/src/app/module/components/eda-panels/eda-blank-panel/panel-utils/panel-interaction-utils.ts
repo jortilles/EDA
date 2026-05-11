@@ -386,6 +386,18 @@ export const PanelInteractionUtils = {
         );
         return (aIdx === -1 ? Infinity : aIdx) - (bIdx === -1 ? Infinity : bIdx);
     });
+
+    // Backward compat: panels saved before dateNav was added to normalQuery have
+    // dateNav: undefined in their fields. If savedDateNavState has entries, restore
+    // dateNav = true on the matching currentQuery columns so that nav buttons and the
+    // column-dialog switch show correctly without requiring a manual re-save.
+    const savedDateNavState = panelContent.savedDateNavState || [];
+    for (const entry of savedDateNavState) {
+        const col = ebp.currentQuery.find((c: any) =>
+            `${c.table_id}.${c.column_name}` === entry.columnKey
+        );
+        if (col) col.dateNav = true;
+    }
   },
 
   handleCurrentQuery2: (ebp: EdaBlankPanelComponent): void => {

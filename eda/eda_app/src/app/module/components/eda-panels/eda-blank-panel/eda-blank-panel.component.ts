@@ -305,6 +305,15 @@ export class EdaBlankPanelComponent implements OnInit {
         navFilters: any[];
     }> = [];
 
+    /* estado de navegacion por fechas (en run time año→mes→día) */
+    public dateNavState: Array<{
+        columnKey: string;
+        initialFormat: string;
+        formatChain: string[];
+        currentFormatIndex: number;
+        navFilters: any[];
+    }> = [];
+
     /* estructura de todos los hijos de navegacion */
     public navChildren: {[parentKey: string]: any} = {};
     
@@ -608,10 +617,13 @@ public tableNodeExpand(event: any): void {
             this.display_v.minispinner = true;
 
             PanelInteractionUtils.handleGlobalFilterMapper(this);
-
+            console.log('hola', panelContent);
             // Setup currentQuery + navChildren + navState
-            this.setupQueryContext(panelContent);
             this.restoreNavState(panelContent);
+            debugger;
+            this.restoreDateNavState(panelContent);
+
+            this.setupQueryContext(panelContent);
 
             const hasNavChildren = Object.keys(this.navChildren || {}).length > 0 || this.currentQuery.some((col: any) => col.downChild);
             const queryToRun = hasNavChildren ? QueryUtils.initEdaQuery(this) : panelContent.query;
@@ -731,8 +743,17 @@ public tableNodeExpand(event: any): void {
                 currentIndex: entry.currentIndex,
                 navFilters: entry.navFilters
             }));
-
-            this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters, navigationLinks, savedNavState };
+            const savedDateNavState = (this.dateNavState || []).map((entry: any) => ({
+                columnKey: entry.columnKey,
+                initialFormat: entry.initialFormat,
+                formatChain: entry.formatChain,
+                currentFormatIndex: entry.currentFormatIndex,
+                navFilters: entry.navFilters
+            }));
+            console.log('Guardando estado de navegación:', savedNavState);
+            console.log('Guardando estado de navegación por fechas:', savedDateNavState);
+            console.log(this)
+            this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters, navigationLinks, savedNavState, savedDateNavState };
 
             /**This is to repaint on panel redimension */
             if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst','radar'].includes(chart)) {
@@ -1335,6 +1356,7 @@ public tableNodeExpand(event: any): void {
         this.columns = [];
         this.currentQuery = [];
         this.navState = [];
+        this.dateNavState = [];
         this.indextab = 0;
         this.sortedFilters = _.cloneDeep(this.temporalSortedFilters);
         EdaFilterAndOrComponent.reiniciarDashboard();
@@ -2485,6 +2507,9 @@ startEditTitle() {
     }
 
     private handleNavIn(event: {field: string, value: any}): void {
+        const dateNavCol = this.currentQuery.find((col: any) => col.column_name === event.field && col.dateNav === true);
+        if (dateNavCol) { this.handleDateNavIn(dateNavCol, String(event.value)); return; }
+
         // Check if the clicked column is already an active nav substitution (deep chain case)
         const existingNav = this.navState.find(d => {
             const activeCol = d.navPath[d.currentIndex];
@@ -2534,6 +2559,13 @@ startEditTitle() {
     }
 
     private handleNavOut(event: {rootKey: string}): void {
+        // Route to date nav handler: either active drill-in entry OR format-only zoom-out
+        const isDateNavActive = this.dateNavState.some(e => e.columnKey === event.rootKey);
+        const isDateNavZoomOut = !isDateNavActive && this.currentQuery.some(
+            (c: any) => `${c.table_id}.${c.column_name}` === event.rootKey && c.dateNav
+        );
+        if (isDateNavActive || isDateNavZoomOut) { this.handleDateNavOut(event.rootKey); return; }
+
         const entry = this.navState.find(d => d.rootKey === event.rootKey);
         if (!entry) return;
 
@@ -2569,7 +2601,124 @@ startEditTitle() {
         };
     }
 
-    public computeChildNavConfig(): { parentFields: string[], childFieldMap: {[k: string]: string} } {
+    /** Maps any col.format value to the nav granularity level used in the drill-down chain. */
+    private mapToNavFormat(format: string): 'year' | 'month' | 'day' {
+        if (format === 'year') return 'year';
+        if (format === 'month') return 'month';
+        return 'day'; // day, week, week_day, day_hour, day_hour_minute, timestamp, No, null…
+    }
+
+    private computeDateRange(value: string, navFmt: 'year' | 'month' | 'day'): { start: string; end: string } {
+        if (navFmt === 'year') {
+            return { start: `${value}-01-01`, end: `${value}-12-31` };
+        } else if (navFmt === 'month') {
+            const parts = value.split('-');
+            const yr = Number(parts[0]);
+            const mo = Number(parts[1]);
+            const lastDay = new Date(yr, mo, 0).getDate();
+            const mm = String(mo).padStart(2, '0');
+            return { start: `${yr}-${mm}-01`, end: `${yr}-${mm}-${String(lastDay).padStart(2, '0')}` };
+        }
+        return { start: value, end: value };
+    }
+
+    private buildDateRangeFilter(col: any, value: string, navFmt: 'year' | 'month' | 'day'): any {
+        const { start, end } = this.computeDateRange(value, navFmt);
+        return {
+            filter_id: `datenav_${col.table_id}_${col.column_name}_${Date.now()}`,
+            filter_table: col.table_id,
+            filter_column: col.column_name,
+            filter_column_type: 'date',
+            filter_type: 'between',
+            filter_elements: [{ value1: [start] }, { value2: [end] }],
+            filter_codes: [{ value1: [start] }, { value2: [end] }],
+            isGlobal: 'nav',
+            isNavFilter: true,
+            filterBeforeGrouping: true,
+            joins: col.joins || [],
+            removed: false
+        };
+    }
+
+    private updateColumnFormatInQuery(col: any, format: string): void {
+        const found = this.currentQuery.find((c: any) =>
+            c.table_id === col.table_id && c.column_name === col.column_name
+        );
+        if (found) found.format = format;
+    }
+
+    private handleDateNavIn(col: any, value: string): void {
+        const colKey = `${col.table_id}.${col.column_name}`;
+        const existing = this.dateNavState.find(e => e.columnKey === colKey);
+        const fullChain: ('year' | 'month' | 'day')[] = ['year', 'month', 'day'];
+
+        if (existing) {
+            const navFmt = existing.formatChain[existing.currentFormatIndex] as 'year' | 'month' | 'day';
+            const filter = this.buildDateRangeFilter(col, value, navFmt);
+            existing.navFilters.push(filter);
+            this.selectedFilters.push(filter);
+            existing.currentFormatIndex++;
+            this.updateColumnFormatInQuery(col, existing.formatChain[existing.currentFormatIndex]);
+        } else {
+            // Use col.format directly — 'No' and anything other than year/month maps to 'day'
+            const navFmt = this.mapToNavFormat(col.format);
+            let navValue = value;
+            let startIdx = fullChain.indexOf(navFmt);
+
+            // day-level (No, day, timestamp, week, etc.): extract year, restart from year→month
+            if (navFmt === 'day') {
+                navValue = String(value).split('-')[0];
+                startIdx = 0;
+            }
+
+            const chain = fullChain.slice(startIdx);
+            if (chain.length < 2) return;
+
+            const filter = this.buildDateRangeFilter(col, navValue, chain[0]);
+            this.dateNavState.push({
+                columnKey: colKey,
+                initialFormat: chain[0],
+                formatChain: chain,
+                currentFormatIndex: 1,
+                navFilters: [filter]
+            });
+            this.selectedFilters.push(filter);
+            this.updateColumnFormatInQuery(col, chain[1]);
+        }
+        QueryUtils.runQuery(this, false);
+    }
+
+    private handleDateNavOut(rootKey: string): void {
+        const entry = this.dateNavState.find(e => e.columnKey === rootKey);
+        const col = this.currentQuery.find((c: any) => `${c.table_id}.${c.column_name}` === rootKey);
+        if (!col) return;
+
+        if (!entry) {
+            // No active drill-in: pure format zoom-out (No/day → month, month → year)
+            const navFmt = this.mapToNavFormat(col.format);
+            if (navFmt === 'day') {
+                this.updateColumnFormatInQuery(col, 'month');
+            } else if (col.format === 'month') {
+                this.updateColumnFormatInQuery(col, 'year');
+            }
+        } else if (entry.currentFormatIndex <= 1) {
+            const filterIds = new Set(entry.navFilters.map((f: any) => f.filter_id));
+            this.selectedFilters = this.selectedFilters.filter((f: any) => !filterIds.has(f.filter_id));
+            this.updateColumnFormatInQuery(col, entry.initialFormat);
+            this.dateNavState = this.dateNavState.filter(e => e.columnKey !== rootKey);
+        } else {
+            const removed = entry.navFilters.pop();
+            if (removed) this.selectedFilters = this.selectedFilters.filter((f: any) => f.filter_id !== removed.filter_id);
+            entry.currentFormatIndex--;
+            this.updateColumnFormatInQuery(col, entry.formatChain[entry.currentFormatIndex]);
+        }
+        QueryUtils.runQuery(this, false);
+    }
+
+    public computeChildNavConfig(): {
+        parentFields: string[],
+        childFieldMap: {[k: string]: string}
+    } {
         const effectiveFields = QueryUtils.getEffectiveFields(this);
         const parentFields: string[] = [];
         const childFieldMap: {[k: string]: string} = {};
@@ -2581,6 +2730,30 @@ startEditTitle() {
             const activeCol = entry.navPath[entry.currentIndex];
             childFieldMap[activeCol.column_name] = entry.rootKey;
         }
+
+        // Date nav columns — year→month→day on the same column, no child columns needed
+        for (const col of effectiveFields) {
+            if (!col.dateNav) continue;
+            const colKey = `${col.table_id}.${col.column_name}`;
+            const activeEntry = this.dateNavState.find(e => e.columnKey === colKey);
+            if (activeEntry) {
+                if (activeEntry.currentFormatIndex < activeEntry.formatChain.length - 1) {
+                    parentFields.push(col.column_name);
+                }
+                childFieldMap[col.column_name] = colKey;
+            } else {
+                const navFmt = this.mapToNavFormat(col.format);
+                if (navFmt === 'day') {
+                    childFieldMap[col.column_name] = colKey;
+                } else if (col.format === 'month') {
+                    parentFields.push(col.column_name);
+                    childFieldMap[col.column_name] = colKey;
+                } else {
+                    parentFields.push(col.column_name);
+                }
+            }
+        }
+
         return { parentFields, childFieldMap };
     }
 
@@ -2672,6 +2845,7 @@ startEditTitle() {
 
     /** Restores navState from persisted savedNavState using currentQuery/navChildren refs. */
     private restoreNavState(panelContent: any): void {
+        console.log('aaaaaaaaaa', panelContent);
         const saved = panelContent.savedNavState || [];
         if (!saved.length) return;
         this.navState = [];
@@ -2688,6 +2862,28 @@ startEditTitle() {
                 navFilters: entry.navFilters
             });
         }
+        console.log(saved, this.navState);
+    }
+
+    private restoreDateNavState(panelContent: any): void {
+        const saved = panelContent.savedDateNavState || [];
+        if (!saved.length) return;
+        this.dateNavState = saved.map((entry: any) => ({
+            columnKey: entry.columnKey,
+            initialFormat: entry.initialFormat,
+            formatChain: entry.formatChain,
+            currentFormatIndex: entry.currentFormatIndex,
+            navFilters: entry.navFilters || []
+        }));
+        // Re-add nav filters to selectedFilters so future +/- clicks can remove them
+        for (const entry of this.dateNavState) {
+            for (const f of entry.navFilters) {
+                if (!this.selectedFilters.find((sf: any) => sf.filter_id === f.filter_id)) {
+                    this.selectedFilters.push(f);
+                }
+            }
+        }
+        console.log(saved, this.dateNavState);
     }
 
     // ---- END NAVIGATION FEATURE ----
