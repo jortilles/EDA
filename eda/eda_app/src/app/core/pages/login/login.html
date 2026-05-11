@@ -63,8 +63,8 @@
             </div>
 
             <button type="submit"
-                class="w-full py-2 text-white rounded-md bg-[#BE0926] hover:bg-[#BE0926] transition-colors">
-                <span i18n="@@signinBtn">Entrar</span>
+                class="w-full py-2 text-[#BE0926] border-[0.5px] border-[#dadce0] rounded-md bg-[#fff] hover:bg-[#FCEFF1] transition-colors">
+                <span i18n="@@signinBtn" class="font-medium">Entrar</span>
             </button>
 
             <!-- <a routerLink="/forgot-password"
@@ -95,7 +95,7 @@
 
         @if (singleSignOnOauthAvailable) {
             <button 
-                class="w-full py-2 xl:py-1 text-black rounded-md bg-white border-[0.5px] border-[#dadce0] hover:bg-[#E1E9FF] transition-colors focus:outline-none focus:ring-0"
+                class="w-full py-2 xl:py-1 text-[#fff] rounded-md bg-[#BE0926] border-[0.5px] border-[#dadce0] hover:bg-[#C92A43] transition-colors focus:outline-none focus:ring-0"
                 (click)="loginButtonOauth()"
                 >
                 <div class="flex items-center">
