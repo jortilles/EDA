@@ -2632,6 +2632,7 @@ startEditTitle() {
             this.selectedFilters.push(filter);
         }
 
+        this.syncNavigationLinksToPanel();
         QueryUtils.runQuery(this, false);
     }
 
@@ -2659,6 +2660,7 @@ startEditTitle() {
             entry.currentIndex--;
         }
 
+        this.syncNavigationLinksToPanel();
         QueryUtils.runQuery(this, false);
     }
 
@@ -2838,6 +2840,7 @@ startEditTitle() {
             }
         }
 
+        this.syncNavigationLinksToPanel();
         return { parentFields, childFieldMap, navColumnSubstitution };
     }
 
@@ -2978,6 +2981,26 @@ startEditTitle() {
                 });
             }
         }
+
+        // Keep panel.content.navigationLinks in sync so checkNavigableColumn always works
+        this.syncNavigationLinksToPanel();
+    }
+
+    /**
+     * Rebuilds panel.content.navigationLinks from currentQuery so that checkNavigableColumn
+     * in the dashboard always has accurate data — even without saving.
+     */
+    private syncNavigationLinksToPanel(): void {
+        if (!this.panel?.content) return;
+        this.panel.content.navigationLinks = (this.currentQuery || [])
+            .filter((col: any) => col.downChild)
+            .map((col: any) => ({
+                parentTable: col.table_id,
+                parentColumn: col.column_name,
+                childTable: col.downChild.table_id,
+                childColumn: col.downChild.column_name,
+                childDisplayName: col.downChild.display_name
+            }));
     }
 
     /** All active nav filters flattened — shown in the filter summary panel. */
