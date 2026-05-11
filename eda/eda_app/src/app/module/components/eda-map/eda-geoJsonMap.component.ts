@@ -283,7 +283,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
       this.bindDataToProperties(feature.properties[field])
     );
     return {
-      weight: 0.1,
+      weight: 0.9,
       opacity: 1,
       color: "#FFFFFF",
       fillOpacity: 1,
