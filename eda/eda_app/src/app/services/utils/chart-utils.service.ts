@@ -683,6 +683,7 @@ export class ChartUtilsService {
                 notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
                 notAllowed.splice(notAllowed.indexOf('line'), 1);
                 notAllowed.splice(notAllowed.indexOf('area'), 1);
+                notAllowed.splice(notAllowed.indexOf('stackedbar'), 1);
                 notAllowed.splice(notAllowed.indexOf('stackedbar100'), 1);
             }
         if(dataDescription.otherColumns.length===1 && dataDescription.numericColumns.length>=1 && dataDescription.totalColumns>=2 ){

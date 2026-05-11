@@ -6646,6 +6646,70 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>No hay datos con los filtros seleccionados.</source>
         <target>No hi ha dades amb els filtres seleccionats.</target>
       </trans-unit>
+      <trans-unit id="aiManagementTitle" datatype="html">
+        <source>Gestión de IA</source>
+        <target>Gestió d'IA</target>
+      </trans-unit>
+      <trans-unit id="aiManagementSubtitle" datatype="html">
+        <source>Configura los parámetros del asistente de inteligencia artificial</source>
+        <target>Configura els paràmetres de l'assistent d'intel·ligència artificial</target>
+      </trans-unit>
+      <trans-unit id="aiProvider" datatype="html">
+        <source>PROVEEDOR</source>
+        <target>PROVEÏDOR</target>
+      </trans-unit>
+      <trans-unit id="aiApiKey" datatype="html">
+        <source>API KEY</source>
+        <target>API KEY</target>
+      </trans-unit>
+      <trans-unit id="aiAwsAccessKey" datatype="html">
+        <source>CLAVE DE ACCESO DE AWS</source>
+        <target>CLAU D'ACCES A AWS</target>
+      </trans-unit>
+      <trans-unit id="aiAwsRegion" datatype="html">
+        <source>REGIÓN DE AWS</source>
+        <target>REGIÓ D'AWS</target>
+      </trans-unit>
+      <trans-unit id="aiAwsSecretKey" datatype="html">
+        <source>CLAVE SECRETA DE AWS</source>
+        <target>CLAU SECRETA D'AWS</target>
+      </trans-unit>
+      <trans-unit id="aiModel" datatype="html">
+        <source>MODELO DE IA</source>
+        <target>MODEL D'IA</target>
+      </trans-unit>
+      <trans-unit id="aiContext" datatype="html">
+        <source>CONTEXTO</source>
+        <target>CONTEXT</target>
+      </trans-unit>
+      <trans-unit id="aiEDAApp" datatype="html">
+        <source>EDA APP URL</source>
+        <target>EDA APP URL</target>
+      </trans-unit>
+      <trans-unit id="aiMCPURL" datatype="html">
+        <source>MCP URL</source>
+        <target>MCP URL</target>
+      </trans-unit>
+      <trans-unit id="aiLimit" datatype="html">
+        <source>LÍMITE</source>
+        <target>LIMIT</target>
+      </trans-unit>
+      <trans-unit id="aiAvailable" datatype="html">
+        <source>DISPONIBLE</source>
+        <target>DISPONIBLE</target>
+      </trans-unit>
+      <trans-unit id="navegableFrom" datatype="html">
+        <source>Navegable desde</source>
+        <target>Navegable des de</target>
+      </trans-unit>
+      <trans-unit id="noParentAttributes" datatype="html">
+        <source>Añade más atributos para activar la navegación</source>
+        <target>Afegeix més atributs per activar la navegació</target>
+      </trans-unit>
+      <trans-unit id="noParentText" datatype="html">
+        <source>Sin padre</source>
+        <target>Sense pare</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

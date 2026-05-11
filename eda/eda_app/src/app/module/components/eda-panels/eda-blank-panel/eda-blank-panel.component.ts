@@ -296,6 +296,17 @@ export class EdaBlankPanelComponent implements OnInit {
     
     /**panel chart component configuration */
     public panelChartConfig: PanelChart = new PanelChart();
+
+    /* estado de navegacion en run time no se guarda*/
+    public navState: Array<{
+        rootKey: string;
+        navPath: any[];
+        currentIndex: number;
+        navFilters: any[];
+    }> = [];
+
+    /* estructura de todos los hijos de navegacion */
+    public navChildren: {[parentKey: string]: any} = {};
     
     public connectionProperties: any;
 
@@ -361,7 +372,6 @@ export class EdaBlankPanelComponent implements OnInit {
         this.index = 0;
         this.readonly = this.panel.readonly;
         if (this.panel.description === undefined) this.panel.description = '';
-        console.log(`[Panel init] id=${this.panel.id} title="${this.panel.title}" description="${this.panel.description}"`);
 
         await this.setTablesData();
 
@@ -563,7 +573,7 @@ public tableNodeExpand(event: any): void {
      * @return  merged filters
      */
     mergeFilters(localFilters: any[], globalFilters: any[]) {
-        const out = localFilters.filter(f => f.isGlobal === false);
+        const out = localFilters.filter(f => f.isGlobal !== true);
         globalFilters.forEach(f => out.push(f));
         return out;
     }
@@ -592,13 +602,18 @@ public tableNodeExpand(event: any): void {
     async loadChartsData(panelContent: any) {
         try {
             if (!panelContent?.query) return;
-            
+
             this.display_v.minispinner = true;
-            
+
             PanelInteractionUtils.handleGlobalFilterMapper(this);
-            
-            
-            const response = await QueryUtils.switchAndRun(this, panelContent.query);
+
+            // Setup currentQuery + navChildren + navState
+            this.setupQueryContext(panelContent);
+            this.restoreNavState(panelContent);
+
+            const hasNavChildren = Object.keys(this.navChildren || {}).length > 0 || this.currentQuery.some((col: any) => col.downChild);
+            const queryToRun = hasNavChildren ? QueryUtils.initEdaQuery(this) : panelContent.query;
+            const response = await QueryUtils.switchAndRun(this, queryToRun);
             
             const [labels, values] = response;
             
@@ -645,6 +660,7 @@ public tableNodeExpand(event: any): void {
                 }
 
                 PanelInteractionUtils.handleCurrentQuery2(this);
+                this.restoreNavigationLinks(panelContent);
                 this.reloadTablesData();
                 PanelInteractionUtils.loadTableNodes(this);
 
@@ -655,6 +671,7 @@ public tableNodeExpand(event: any): void {
             } else {
                 this.rootTable = null; // no root table in EDA mode
                 PanelInteractionUtils.handleCurrentQuery(this);
+                this.restoreNavigationLinks(panelContent);
                 this.columns = this.columns.filter(c => !c.isdeleted);
             }
         }
@@ -705,9 +722,15 @@ public tableNodeExpand(event: any): void {
             const query = this.initObjectQuery();
             const chart = this.chartForm?.value.chart?.value ? this.chartForm?.value.chart?.value : this.chartForm?.value.chart;
             const edaChart = this.panelChart?.props.edaChart;
+            const navigationLinks: any[] = this.buildNavigationLinks(query);
+            const savedNavState = (this.navState || []).map((entry: any) => ({
+                rootKey: entry.rootKey,
+                navPathKeys: entry.navPath.map((col: any) => ({ table_id: col.table_id, column_name: col.column_name })),
+                currentIndex: entry.currentIndex,
+                navFilters: entry.navFilters
+            }));
 
-            this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters };
-            console.log(`[Panel save] id=${this.panel.id} title="${this.panel.title}" description="${this.panel.description}"`);
+            this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters, navigationLinks, savedNavState };
 
             /**This is to repaint on panel redimension */
             if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst','radar'].includes(chart)) {
@@ -765,9 +788,8 @@ public tableNodeExpand(event: any): void {
      */
     private renderChart(query: any, chartLabels: any[], chartData: any[], type: string, subType: string, config: ChartConfig) {
         const chartConfig = config || new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
-
         this.panelChartConfig = new PanelChart({
-            query: query,
+            query: QueryUtils.getEffectiveFields(this),
             data: { labels: chartLabels, values: chartData },
             chartType: type,
             config: chartConfig,
@@ -775,6 +797,7 @@ public tableNodeExpand(event: any): void {
             maps: this.dataSource.model.maps,
             linkedDashboardProps: this.panel.linkedDashboardProps,
             predictionConfig: this.panel.content?.query?.query?.predictionConfig,
+            childNavConfig: this.computeChildNavConfig(),
         });
     }
 
@@ -807,6 +830,7 @@ public tableNodeExpand(event: any): void {
         }
     }
 
+    
 
     public changeChartTypeCheck(type: string, subType: string, config?: ChartConfig) {
         if (subType=='tableanalized') {
@@ -1111,6 +1135,7 @@ public tableNodeExpand(event: any): void {
         const p = {
             selectedColumn: _.cloneDeep(column),
             currentQuery: this.currentQuery,
+            navChildren: this.navChildren,
             inject: this.inject,
             panel: this.panel,
             table: this.findTable(column.table_id)?.display_name?.default,
@@ -1307,6 +1332,7 @@ public tableNodeExpand(event: any): void {
         this.display_v.saved_panel = false;
         this.columns = [];
         this.currentQuery = [];
+        this.navState = [];
         this.indextab = 0;
         this.sortedFilters = _.cloneDeep(this.temporalSortedFilters);
         EdaFilterAndOrComponent.reiniciarDashboard();
@@ -1898,6 +1924,16 @@ public tableNodeExpand(event: any): void {
                     }
                     this.sortedFilters = []; // resets the values because one or more filters were deleted
                 }
+                // Clean up downChild references to the removed column
+                const removedKey = `${c.table_id}.${c.column_name}`;
+                for (const col of this.currentQuery) {
+                    if (col.downChild &&
+                        `${col.downChild.table_id}.${col.downChild.column_name}` === removedKey) {
+                        delete col.downChild;
+                    }
+                }
+                // Clean up any nav state for this column
+                this.navState = this.navState.filter(d => d.rootKey !== removedKey);
             }
         }
         else {
@@ -2275,6 +2311,17 @@ public tableNodeExpand(event: any): void {
         this.currentQuery = event;
     }
 
+    onChartSuggestionSelected(event: { type: string, subType: string }): void {
+        const chartType = this.chartUtils.chartTypes.find(
+            o => o.value === event.type && o.subValue === event.subType
+        );
+        if (chartType) {
+            this.chartForm.patchValue({ chart: chartType });
+        }
+        QueryUtils.runManualQuery(this);
+        this.indextab = 1;
+    }
+
     principalTableUpdate(event: any) {
 
         const {principalTable, currentQuery, queryLimit} = event
@@ -2289,7 +2336,9 @@ public tableNodeExpand(event: any): void {
         this.userSelectedTable = principalTable;
                 
         let columns: any[] = []
-        columns = rootTable.columns.filter((col: any) => !currentQuery.some((e: any) => e.column_name === col.column_name))
+        columns = rootTable.columns.filter((col: any) => {
+            if(col.visible) return !currentQuery.some((e: any) => e.column_name === col.column_name)
+        })
 
         this.columns = columns;
     }
@@ -2300,14 +2349,14 @@ public tableNodeExpand(event: any): void {
         this.filtredColumns = _.cloneDeep(filteredColumns)
     }
 
-trackByTable(index: number, table: any): any {
-    return table.value;
-}
+    trackByTable(index: number, table: any): any {
+        return table.value;
+    }
 
-startEditTitle() {
-    this.editingTitle = true;
-    this.titleClick=true;
-}
+    startEditTitle() {
+        this.editingTitle = true;
+        this.titleClick=true;
+    }
 
     // ─── AND/OR Filter Dialog ────────────────────────────────────────────────
 
@@ -2381,4 +2430,275 @@ startEditTitle() {
         }
     }
 
+    // ---- NAVIGATION FEATURE ----
+    // Build navigationLinks from all currentQuery columns that have downChild.
+    public buildNavigationLinks(query: any): any[] {
+            // Children are also in currentQuery (restored by restoreNavigationLinks), so
+            // multi-level chains (city → postal) are captured by this single pass.
+            const navigationLinks: any[] = this.currentQuery
+                .filter((col: any) => col.downChild)
+                .map((col: any) => ({
+                    parentTable: col.table_id,
+                    parentColumn: col.column_name,
+                    childTable: col.downChild.table_id,
+                    childColumn: col.downChild.column_name,
+                    childDisplayName: col.downChild.display_name
+                }));
+
+            // Exclude nav children from fields — they live in navigationLinks, not in query fields
+            const childKeySet = new Set(navigationLinks.map((l: any) => `${l.childTable}.${l.childColumn}`));
+            const queryFields = this.currentQuery.filter((col: any) =>
+                !childKeySet.has(`${col.table_id}.${col.column_name}`)
+            );
+            query.query.fields = queryFields.map((col: any, i: number) => {
+                const selectedAgg = Array.isArray(col.aggregation_type)
+                    ? col.aggregation_type.find((a: any) => a.selected)
+                    : null;
+                const aggValue = selectedAgg ? selectedAgg.value
+                    : (typeof col.aggregation_type === 'string' ? col.aggregation_type : 'none');
+                return {
+                    table_id: col.table_id,
+                    column_name: col.column_name,
+                    display_name: col.display_name?.default ?? col.display_name,
+                    column_type: col.column_type,
+                    old_column_type: col.old_column_type || col.column_type,
+                    computed_column: col.computed_column,
+                    SQLexpression: col.SQLexpression,
+                    aggregation_type: aggValue,
+                    ordenation_type: col.ordenation_type,
+                    format: col.format,
+                    order: i,
+                    column_granted_roles: col.column_granted_roles,
+                    row_granted_roles: col.row_granted_roles,
+                    tableCount: col.tableCount,
+                    minimumFractionDigits: col.minimumFractionDigits,
+                    cumulativeSum: col.cumulativeSum,
+                    valueListSource: col.valueListSource,
+                    whatif_column: col.whatif_column || false,
+                    whatif: col.whatif,
+                    joins: col.joins || [],
+                    autorelation: col.autorelation,
+                    ranges: col.ranges || [],
+                    description: col.description || { default: '', localizad: [] },
+                    visible: col.visible ?? true,
+                };
+            });
+        // Nav filters live in selectedFilters at runtime but must not be persisted in query.query.filters
+        query.query.filters = (query.query.filters || []).filter((f: any) => !f.isNavFilter);
+
+        return navigationLinks;
+    }
+
+    public handleNavEvent(event: any): void {
+        if (event.navType === 'in') this.handleNavIn(event);
+        else if (event.navType === 'out') this.handleNavOut(event);
+    }
+
+    private handleNavIn(event: {field: string, value: any}): void {
+        // Check if the clicked column is already an active nav substitution (deep chain case)
+        const existingNav = this.navState.find(d => {
+            const activeCol = d.navPath[d.currentIndex];
+            return activeCol && activeCol.column_name === event.field;
+        });
+
+        if (existingNav) {
+            // Extend existing chain: e.g. clicking + on City when Country→City is active
+            const activeCol = existingNav.navPath[existingNav.currentIndex];
+            if (!activeCol?.downChild) return;
+            const activeColKey = `${activeCol.table_id}.${activeCol.column_name}`;
+            // Look in navChildren first (post-load), fall back to currentQuery (edit session)
+            const nextCol = this.navChildren[activeColKey]
+                || this.currentQuery.find((col: any) =>
+                    col.table_id === activeCol.downChild.table_id &&
+                    col.column_name === activeCol.downChild.column_name
+                );
+            if (!nextCol) return;
+            existingNav.navPath.push(nextCol);
+            existingNav.currentIndex++;
+            const filter = this.buildNavFilter(activeCol, event.value);
+            existingNav.navFilters.push(filter);
+            this.selectedFilters.push(filter);
+        } else {
+            // Start a new chain from a root column
+            const rootCol = this.currentQuery.find((col: any) => col.column_name === event.field);
+            if (!rootCol?.downChild) return;
+            const rootKey = `${rootCol.table_id}.${rootCol.column_name}`;
+            // Look in navChildren first (post-load), fall back to currentQuery (edit session)
+            const childCol = this.navChildren[rootKey]
+                || this.currentQuery.find((col: any) =>
+                    col.table_id === rootCol.downChild.table_id &&
+                    col.column_name === rootCol.downChild.column_name
+                );
+            if (!childCol) return;
+            const filter = this.buildNavFilter(rootCol, event.value);
+            this.navState.push({
+                rootKey,
+                navPath: [rootCol, childCol],
+                currentIndex: 1,
+                navFilters: [filter]
+            });
+            this.selectedFilters.push(filter);
+        }
+
+        QueryUtils.runQuery(this, false);
+    }
+
+    private handleNavOut(event: {rootKey: string}): void {
+        const entry = this.navState.find(d => d.rootKey === event.rootKey);
+        if (!entry) return;
+
+        if (entry.currentIndex <= 1) {
+            const filterIds = new Set(entry.navFilters.map((f: any) => f.filter_id));
+            this.selectedFilters = this.selectedFilters.filter((f: any) => !filterIds.has(f.filter_id));
+            this.navState = this.navState.filter(d => d.rootKey !== event.rootKey);
+        } else {
+            const removed = entry.navFilters.pop();
+            if (removed) {
+                this.selectedFilters = this.selectedFilters.filter((f: any) => f.filter_id !== removed.filter_id);
+            }
+            entry.navPath.pop();
+            entry.currentIndex--;
+        }
+
+        QueryUtils.runQuery(this, false);
+    }
+
+    private buildNavFilter(col: any, value: any): any {
+        return {
+            filter_id: `nav_${col.table_id}_${col.column_name}_${Date.now()}`,
+            filter_table: col.table_id,
+            filter_column: col.column_name,
+            filter_column_type: col.column_type,
+            filter_type: '=',
+            filter_elements: [{ value1: [String(value)] }],
+            isGlobal: 'nav',
+            isNavFilter: true,
+            filterBeforeGrouping: true,
+            joins: col.joins || [],
+            removed: false
+        };
+    }
+
+    public computeChildNavConfig(): { parentFields: string[], childFieldMap: {[k: string]: string} } {
+        const effectiveFields = QueryUtils.getEffectiveFields(this);
+        const parentFields: string[] = [];
+        const childFieldMap: {[k: string]: string} = {};
+
+        for (const col of effectiveFields) {
+            if (col.downChild) parentFields.push(col.column_name);
+        }
+        for (const entry of this.navState) {
+            const activeCol = entry.navPath[entry.currentIndex];
+            childFieldMap[activeCol.column_name] = entry.rootKey;
+        }
+        return { parentFields, childFieldMap };
+    }
+
+    /**
+     * Restores parent→child navigation links from panel.content.navigationLinks after load.
+     * Sets downChild on parent columns in currentQuery, populates navChildren, and adds
+     * child columns back to currentQuery so they appear in the column list (enabling
+     * grandchild configuration). savePanel excludes children from query.fields via childKeySet.
+     */
+    private restoreNavigationLinks(panelContent: any): void {
+        const links: any[] = panelContent.navigationLinks || [];
+        this.navChildren = {};
+        if (!links.length) return;
+
+        // 1. Set downChild on parent columns present in currentQuery
+        for (const link of links) {
+            const parentCol = this.currentQuery.find((c: any) =>
+                c.table_id === link.parentTable && c.column_name === link.parentColumn
+            );
+            if (parentCol) {
+                parentCol.downChild = {
+                    table_id: link.childTable,
+                    column_name: link.childColumn,
+                    display_name: link.childDisplayName
+                };
+            }
+        }
+
+        // 2. Build navChildren map and add child columns to currentQuery so they remain
+        //    visible in the column list (required to configure grandchildren).
+        for (const link of links) {
+            const parentKey = `${link.parentTable}.${link.parentColumn}`;
+            const childTable = this.tables.find((t: any) => t.table_name === link.childTable);
+            if (!childTable) continue;
+            const childColModel = childTable.columns.find((c: any) => c.column_name === link.childColumn);
+            if (!childColModel) continue;
+
+            const child = _.cloneDeep(childColModel);
+            child.table_id = link.childTable;
+
+            // If this child is itself a parent in another link, propagate its downChild
+            const furtherLink = links.find((l: any) =>
+                l.parentTable === link.childTable && l.parentColumn === link.childColumn
+            );
+            if (furtherLink) {
+                child.downChild = {
+                    table_id: furtherLink.childTable,
+                    column_name: furtherLink.childColumn,
+                    display_name: furtherLink.childDisplayName
+                };
+            }
+
+            this.navChildren[parentKey] = child;
+
+            // Add to currentQuery if not already present
+            const alreadyInQuery = this.currentQuery.find((c: any) =>
+                c.table_id === link.childTable && c.column_name === link.childColumn
+            );
+            if (!alreadyInQuery) {
+                this.currentQuery.push(child);
+            }
+        }
+    }
+
+    /** All active nav filters flattened — shown in the filter summary panel. */
+    get navFiltersSummary(): any[] {
+        return (this.navState || []).flatMap((d: any) => d.navFilters);
+    }
+
+    /** Sets up currentQuery + navChildren from panelContent before the query runs. */
+    private setupQueryContext(panelContent: any): void {
+        const { modeSQL } = panelContent.query.query;
+        const queryMode = this.selectedQueryMode;
+        const isEdaMode = queryMode && queryMode !== 'SQL';
+        if (isEdaMode || modeSQL === false) {
+            if (queryMode === 'EDA2') {
+                this.rootTable = this.tables.find((t: any) => t.table_name === this.rootTable);
+                for (const column of panelContent.query.query.fields) {
+                    PanelInteractionUtils.assertTable(this, column);
+                }
+                PanelInteractionUtils.handleCurrentQuery2(this);
+            } else {
+                this.rootTable = null;
+                PanelInteractionUtils.handleCurrentQuery(this);
+            }
+            this.restoreNavigationLinks(panelContent);
+        }
+    }
+
+    /** Restores navState from persisted savedNavState using currentQuery/navChildren refs. */
+    private restoreNavState(panelContent: any): void {
+        const saved = panelContent.savedNavState || [];
+        if (!saved.length) return;
+        this.navState = [];
+        for (const entry of saved) {
+            const navPath = (entry.navPathKeys || []).map((ref: any) =>
+                this.currentQuery.find((c: any) => c.table_id === ref.table_id && c.column_name === ref.column_name)
+                || this.navChildren[`${ref.table_id}.${ref.column_name}`]
+            ).filter(Boolean);
+            if (navPath.length === 0) continue;
+            this.navState.push({
+                rootKey: entry.rootKey,
+                navPath,
+                currentIndex: entry.currentIndex,
+                navFilters: entry.navFilters
+            });
+        }
+    }
+
+    // ---- END NAVIGATION FEATURE ----
 }

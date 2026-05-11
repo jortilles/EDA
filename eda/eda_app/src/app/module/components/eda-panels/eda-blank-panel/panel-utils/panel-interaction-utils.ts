@@ -236,6 +236,15 @@ export const PanelInteractionUtils = {
       // Separar filtros globales y locales
       ebp.globalFilters = clonedFilters.filter(f => f.isGlobal === true);
       ebp.selectedFilters = clonedFilters.filter(f => f.isGlobal === false);
+
+      // Añadir los filtros de navegación a selectedFilters si no están ya incluidos
+      for (const entry of (ebp.navState || [])) {
+          for (const navFilter of (entry.navFilters || [])) {
+              if (!ebp.selectedFilters.find((f: any) => f.filter_id === navFilter.filter_id)) {
+                  ebp.selectedFilters.push(navFilter);
+              }
+          }
+      }
   },
 
   handleFilterColumns: (ebp: EdaBlankPanelComponent, filterList: Array<any>, query: Array<any>): void => {
@@ -284,6 +293,7 @@ export const PanelInteractionUtils = {
   },
 
   handleCurrentQuery: (ebp: EdaBlankPanelComponent): void => {
+    ebp.currentQuery = []; // Reiniciamos currentQuery para cargarlo con las columnas del panelContent, que es la fuente de verdad.
     const panelContent = ebp.panel.content;
     const currentQuery = panelContent.query.query.fields;
     const queryTables = [...new Set(currentQuery.map((field: any) => field.table_id))];

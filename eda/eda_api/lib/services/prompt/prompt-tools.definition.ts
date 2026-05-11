@@ -88,29 +88,21 @@ const getFieldsTool: NormalizedTool = {
                                         description: "Column sorting: if ascending, type Asc; if descending, type Desc; and if neither, the default value is No.",
                                         enum: ["Asc", "Desc", "No"]
                                     },
-                                    ia_metadata_permissions: {
-                                        type: "object",
-                                        description: "Permission levels for this column. Always provided by the schema — never create or modify this field.",
-                                        properties: {
-                                            column: {
-                                                type: "string",
-                                                enum: ["FULL", "DECLARATION", "NONE"],
-                                                description: "FULL: AI can use field name and its values. DECLARATION: AI can reference the field name but must not read, expose, or process its values. NONE: column is fully hidden from AI."
-                                            },
-                                            table: {
-                                                type: "string",
-                                                enum: ["FULL", "DECLARATION", "NONE"]
-                                            },
-                                            dataSource: {
-                                                type: "string",
-                                                enum: ["FULL", "DECLARATION", "NONE"]
-                                            }
-                                        },
-                                        required: ["column", "table", "dataSource"],
-                                        additionalProperties: false
+                                    ia_visibility: {
+                                        type: "string",
+                                        description: `
+                                        Here we have three possible options:
+
+                                        "FULL": You can view both the column name and its values.
+                                        "DECLARATION": You can view only the column name.
+                                        "NONE": You cannot view either the column name or its values.
+
+                                        This configuration is defined in the dataSource settings and applies to the application's users.
+                                        `,
+                                        enum: ["FULL", "DECLARATION", "NONE"]
                                     }
                                 },
-                                required: ['column', "column_type", "ordenation_type", "ia_metadata_permissions"],
+                                required: ['column', "column_type", "ordenation_type", "ia_visibility"],
                                 additionalProperties: false
                             }
                         }

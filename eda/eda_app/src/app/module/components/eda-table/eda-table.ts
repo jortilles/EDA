@@ -45,6 +45,11 @@ export class EdaTable {
     public onNotify: EventEmitter<any> = new EventEmitter();
     public onSortPivotEvent: EventEmitter<any> = new EventEmitter();
     public onSortColEvent: EventEmitter<any> = new EventEmitter();
+    public onNavIn: EventEmitter<{field: string, value: any}> = new EventEmitter();
+    public onNavOut: EventEmitter<{rootKey: string}> = new EventEmitter();
+
+    public parentFields: string[] = [];
+    public childFieldMap: {[columnName: string]: string} = {};
 
     public _value: any[] = [];
     

@@ -19,8 +19,8 @@ background: #fafafa;
 
 .chat-messages {
 flex: 1 1 auto;
-min-height: 80px;
-max-height: 80px;
+min-height: 160px;
+max-height: 160px;
 overflow-y: auto;
 background: #fff;
 }
@@ -28,8 +28,8 @@ background: #fff;
 
 @media (min-width: 1536px) {
   .chat-messages {
-    min-height: 200px;
-    max-height: 200px;
+    min-height: 272px;
+    max-height: 272px;
   }
 }
 
@@ -122,6 +122,70 @@ background: #fff;
 }
 
 
+
+/* Sugerencias de gráficos */
+.chart-suggestions {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid #ddd;
+}
+
+.chart-suggestion-hint,
+.chart-suggestion-question {
+    font-size: 12px;
+    color: #666;
+    margin: 0 0 6px 0;
+}
+
+.chart-suggestion-question {
+    margin-top: 6px;
+    margin-bottom: 0;
+}
+
+.chart-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.chart-chip {
+    padding: 4px 12px;
+    border-radius: 16px;
+    border: 1px solid #a0b0c8;
+    background: #eef3fa;
+    font-size: 12px;
+    color: #2c5282;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.chart-chip:hover {
+    background: #d0e0f5;
+    border-color: #4a7fc1;
+}
+
+/* Logo animado en Escribiendo... */
+.logo-thinking {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    animation: logo-crazy 1.4s ease-in-out infinite;
+    transform-origin: center;
+}
+
+@keyframes logo-crazy {
+    0%   { transform: scale(1)    rotate(0deg)   translate(0px, 0px); }
+    10%  { transform: scale(1.25) rotate(8deg)   translate(1px, -2px); }
+    20%  { transform: scale(0.9)  rotate(-6deg)  translate(-2px, 1px); }
+    30%  { transform: scale(1.3)  rotate(12deg)  translate(2px, -3px); }
+    40%  { transform: scale(0.85) rotate(-10deg) translate(-1px, 2px); }
+    50%  { transform: scale(1.2)  rotate(6deg)   translate(1px, -1px); }
+    60%  { transform: scale(0.95) rotate(-8deg)  translate(-2px, 2px); }
+    70%  { transform: scale(1.15) rotate(10deg)  translate(2px, -2px); }
+    80%  { transform: scale(1)    rotate(-4deg)  translate(-1px, 1px); }
+    90%  { transform: scale(1.1)  rotate(5deg)   translate(1px, -1px); }
+    100% { transform: scale(1)    rotate(0deg)   translate(0px, 0px); }
+}
 
 /* Estilos de el boton de copiado */
 .copy-btn {
