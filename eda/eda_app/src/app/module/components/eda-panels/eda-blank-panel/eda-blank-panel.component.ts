@@ -617,15 +617,9 @@ public tableNodeExpand(event: any): void {
             this.display_v.minispinner = true;
 
             PanelInteractionUtils.handleGlobalFilterMapper(this);
-            // Setup currentQuery + navChildren + navState
-            this.restoreNavState(panelContent);
-            this.restoreDateNavState(panelContent);
-
-            this.setupQueryContext(panelContent);
-
-            // Pre-populate selectedFilters/globalFilters from saved query so that initEdaQuery
-            // (used when hasNavChildren=true) has the permanent filters available.
-            PanelInteractionUtils.handleFilters(this, panelContent.query.query);
+            this.setupQueryContext(panelContent);          // 1. build currentQuery + navChildren
+            this.restoreDateNavState(panelContent);        // 2. restore date nav (uses currentQuery to update formats)
+            PanelInteractionUtils.handleFilters(this, panelContent.query.query); // 3. populate selectedFilters (reads dateNavState)
 
             const hasNavChildren = Object.keys(this.navChildren || {}).length > 0 || this.currentQuery.some((col: any) => col.downChild);
             const queryToRun = hasNavChildren ? QueryUtils.initEdaQuery(this) : panelContent.query;
@@ -739,15 +733,6 @@ public tableNodeExpand(event: any): void {
             const chart = this.chartForm?.value.chart?.value ? this.chartForm?.value.chart?.value : this.chartForm?.value.chart;
             const edaChart = this.panelChart?.props.edaChart;
             const navigationLinks: any[] = this.buildNavigationLinks(query);
-            // When navigation is active (currentIndex > 0), child columns are saved directly
-            // in query.query.fields by buildNavigationLinks — no need to persist navState.
-            const hasActiveNav = (this.navState || []).some((e: any) => e.currentIndex > 0);
-            const savedNavState = hasActiveNav ? [] : (this.navState || []).map((entry: any) => ({
-                rootKey: entry.rootKey,
-                navPathKeys: entry.navPath.map((col: any) => ({ table_id: col.table_id, column_name: col.column_name })),
-                currentIndex: entry.currentIndex,
-                navFilters: entry.navFilters
-            }));
             const savedDateNavState = (this.dateNavState || []).map((entry: any) => ({
                 columnKey: entry.columnKey,
                 initialFormat: entry.initialFormat,
@@ -755,7 +740,7 @@ public tableNodeExpand(event: any): void {
                 currentFormatIndex: entry.currentFormatIndex,
                 navFilters: entry.navFilters
             }));
-            this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters, navigationLinks, savedNavState, savedDateNavState };
+            this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters, navigationLinks, savedDateNavState };
 
             /**This is to repaint on panel redimension */
             if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst','radar'].includes(chart)) {
@@ -2528,6 +2513,7 @@ startEditTitle() {
                 tableCount: col.tableCount,
                 minimumFractionDigits: col.minimumFractionDigits,
                 cumulativeSum: col.cumulativeSum,
+                dateNav: col.dateNav || false,
                 valueListSource: col.valueListSource,
                 whatif_column: col.whatif_column || false,
                 whatif: col.whatif,
@@ -2557,20 +2543,39 @@ startEditTitle() {
             }
         }
 
-        // When navigation was active, keep nav filters as permanent local filters so they apply on reload.
-        // handleFilters classifies by isGlobal: must be false to land in selectedFilters.
-        // Otherwise strip them (runtime-only).
-        if (navSubstitutions.size > 0) {
-            query.query.filters = (query.query.filters || []).map((f: any) => {
-                if (!f.isNavFilter) return f;
+        // Regular nav filters (country=Spain) are saved as permanent local filters (isGlobal:false)
+        // so they apply on reload via handleFilters → selectedFilters.
+        // Date nav filters are always stripped — they are saved in savedDateNavState and
+        // re-applied on reload by restoreDateNavState + handleFilters.
+        query.query.filters = (query.query.filters || []).reduce((acc: any[], f: any) => {
+            if (!f.isNavFilter) { acc.push(f); return acc; }
+            if (f.filter_id?.startsWith('datenav_')) return acc; // strip; goes via savedDateNavState
+            if (navSubstitutions.size > 0) {
                 const { isNavFilter, isGlobal, ...rest } = f;
-                return { ...rest, isGlobal: false };
-            });
-        } else {
-            query.query.filters = (query.query.filters || []).filter((f: any) => !f.isNavFilter);
-        }
+                acc.push({ ...rest, isGlobal: false });
+            }
+            // else: regular nav filter with no active nav → strip (runtime-only)
+            return acc;
+        }, []);
 
-        return navigationLinks;
+        // Save active navigation state so that on reload the -/+ buttons and navState are restored.
+        // Each active entry stores the parent column (now in filters) and child column (now in fields).
+        const activeNavLinks: any[] = [];
+        for (const [parentKey, childCol] of navSubstitutions.entries()) {
+            const entry = this.navState.find((e: any) => e.rootKey === parentKey);
+            const rootCol = entry?.navPath?.[0];
+            if (!rootCol) continue;
+            activeNavLinks.push({
+                parentTable: rootCol.table_id,
+                parentColumn: rootCol.column_name,
+                childTable: childCol.table_id,
+                childColumn: childCol.column_name,
+                childDisplayName: childCol.display_name,
+                active: true,
+                navFilters: entry.navFilters || []
+            });
+        }
+        return [...navigationLinks, ...activeNavLinks];
     }
 
     public handleNavEvent(event: any): void {
@@ -2895,6 +2900,84 @@ startEditTitle() {
                 this.currentQuery.push(child);
             }
         }
+
+        // Restore active navigations: when Country→City was active at save time, City was saved
+        // in fields and Country only in filters. We need to add Country back to currentQuery
+        // (with downChild) and recreate navState so the -/+ buttons work correctly.
+        const activeLinks = links.filter((l: any) => l.active);
+        for (const link of activeLinks) {
+            const parentKey = `${link.parentTable}.${link.parentColumn}`;
+
+            // Get parent col from model and configure downChild
+            const parentTableModel = this.tables.find((t: any) => t.table_name === link.parentTable);
+            if (!parentTableModel) continue;
+            const parentColModel = parentTableModel.columns.find((c: any) => c.column_name === link.parentColumn);
+            if (!parentColModel) continue;
+
+            const parentCol = _.cloneDeep(parentColModel);
+            parentCol.table_id = link.parentTable;
+            parentCol.downChild = {
+                table_id: link.childTable,
+                column_name: link.childColumn,
+                display_name: link.childDisplayName
+            };
+
+            // Add parent to currentQuery (it was replaced by child in saved fields)
+            const parentInQuery = this.currentQuery.find((c: any) =>
+                c.table_id === link.parentTable && c.column_name === link.parentColumn
+            );
+            if (!parentInQuery) {
+                this.currentQuery.push(parentCol);
+            } else {
+                parentInQuery.downChild = parentCol.downChild;
+            }
+
+            // Get child col — should already be in currentQuery (was saved in fields)
+            const childTableModel = this.tables.find((t: any) => t.table_name === link.childTable);
+            if (!childTableModel) continue;
+            const childColModel2 = childTableModel.columns.find((c: any) => c.column_name === link.childColumn);
+            if (!childColModel2) continue;
+
+            const childColActive = _.cloneDeep(childColModel2);
+            childColActive.table_id = link.childTable;
+
+            // If child is itself a parent in another link, propagate downChild
+            const furtherLink2 = links.find((l2: any) =>
+                l2.parentTable === link.childTable && l2.parentColumn === link.childColumn
+            );
+            if (furtherLink2) {
+                childColActive.downChild = {
+                    table_id: furtherLink2.childTable,
+                    column_name: furtherLink2.childColumn,
+                    display_name: furtherLink2.childDisplayName
+                };
+            }
+
+            // Ensure child is in currentQuery; update downChild if needed
+            const childInQuery = this.currentQuery.find((c: any) =>
+                c.table_id === link.childTable && c.column_name === link.childColumn
+            );
+            if (childInQuery) {
+                if (furtherLink2) childInQuery.downChild = childColActive.downChild;
+            } else {
+                this.currentQuery.push(childColActive);
+            }
+
+            // Register in navChildren map
+            this.navChildren[parentKey] = childInQuery || childColActive;
+
+            // Recreate navState entry (guard against double-call from setupQueryContext + buildGlobalconfiguration)
+            if (!this.navState.find((e: any) => e.rootKey === parentKey)) {
+                const navParent = parentInQuery || parentCol;
+                const navChild = childInQuery || childColActive;
+                this.navState.push({
+                    rootKey: parentKey,
+                    navPath: [navParent, navChild],
+                    currentIndex: 1,
+                    navFilters: link.navFilters || []
+                });
+            }
+        }
     }
 
     /** All active nav filters flattened — shown in the filter summary panel. */
@@ -2922,26 +3005,6 @@ startEditTitle() {
         }
     }
 
-    /** Restores navState from persisted savedNavState using currentQuery/navChildren refs. */
-    private restoreNavState(panelContent: any): void {
-        const saved = panelContent.savedNavState || [];
-        if (!saved.length) return;
-        this.navState = [];
-        for (const entry of saved) {
-            const navPath = (entry.navPathKeys || []).map((ref: any) =>
-                this.currentQuery.find((c: any) => c.table_id === ref.table_id && c.column_name === ref.column_name)
-                || this.navChildren[`${ref.table_id}.${ref.column_name}`]
-            ).filter(Boolean);
-            if (navPath.length === 0) continue;
-            this.navState.push({
-                rootKey: entry.rootKey,
-                navPath,
-                currentIndex: entry.currentIndex,
-                navFilters: entry.navFilters
-            });
-        }
-    }
-
     private restoreDateNavState(panelContent: any): void {
         const saved = panelContent.savedDateNavState || [];
         if (!saved.length) return;
@@ -2952,15 +3015,15 @@ startEditTitle() {
             currentFormatIndex: entry.currentFormatIndex,
             navFilters: entry.navFilters || []
         }));
-        // Re-add nav filters to selectedFilters so future +/- clicks can remove them
+        // Restore the active drill-in format on each date column so the backend
+        // returns data at the correct granularity (month/day instead of year).
         for (const entry of this.dateNavState) {
-            for (const f of entry.navFilters) {
-                if (!this.selectedFilters.find((sf: any) => sf.filter_id === f.filter_id)) {
-                    this.selectedFilters.push(f);
-                }
-            }
+            const activeFormat = entry.formatChain[entry.currentFormatIndex];
+            if (!activeFormat) continue;
+            const col = this.currentQuery.find((c: any) => `${c.table_id}.${c.column_name}` === entry.columnKey);
+            if (col) col.format = activeFormat;
         }
-        console.log(saved, this.dateNavState);
+        // selectedFilters are populated by handleFilters (which reads this.dateNavState)
     }
 
     // ---- END NAVIGATION FEATURE ----

@@ -237,8 +237,15 @@ export const PanelInteractionUtils = {
       ebp.globalFilters = clonedFilters.filter(f => f.isGlobal === true);
       ebp.selectedFilters = clonedFilters.filter(f => f.isGlobal === false);
 
-      // Añadir los filtros de navegación a selectedFilters si no están ya incluidos
+      // Add active nav filters (regular and date nav) to selectedFilters
       for (const entry of (ebp.navState || [])) {
+          for (const navFilter of (entry.navFilters || [])) {
+              if (!ebp.selectedFilters.find((f: any) => f.filter_id === navFilter.filter_id)) {
+                  ebp.selectedFilters.push(navFilter);
+              }
+          }
+      }
+      for (const entry of (ebp.dateNavState || [])) {
           for (const navFilter of (entry.navFilters || [])) {
               if (!ebp.selectedFilters.find((f: any) => f.filter_id === navFilter.filter_id)) {
                   ebp.selectedFilters.push(navFilter);
