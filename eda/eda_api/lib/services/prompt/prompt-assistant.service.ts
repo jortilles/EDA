@@ -88,6 +88,7 @@ export class PromptService {
             suggestions.push({ type: 'bar', subType: 'bar',           label: 'Barras' });
             suggestions.push({ type: 'bar', subType: 'horizontalBar', label: 'Barras horizontales' });
             suggestions.push({ type: 'bar', subType: 'stackedbar', label: 'Barras apiladas' });
+            suggestions.push({ type: 'bar', subType: 'stackedbar100', label: 'Barras apiladas al 100%' });
         }
 
         // Histogram: exactly 1 numeric column only
