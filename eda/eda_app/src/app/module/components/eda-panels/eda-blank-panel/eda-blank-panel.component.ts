@@ -314,8 +314,6 @@ export class EdaBlankPanelComponent implements OnInit {
         navFilters: any[];
     }> = [];
 
-    /* estructura de todos los hijos de navegacion */
-    public navChildren: {[parentKey: string]: any} = {};
     
     public connectionProperties: any;
 
@@ -617,11 +615,11 @@ public tableNodeExpand(event: any): void {
             this.display_v.minispinner = true;
 
             PanelInteractionUtils.handleGlobalFilterMapper(this);
-            this.setupQueryContext(panelContent);          // 1. build currentQuery + navChildren
+            this.setupQueryContext(panelContent);          // 1. build currentQuery + navState
             this.restoreDateNavState(panelContent);        // 2. restore date nav (uses currentQuery to update formats)
             PanelInteractionUtils.handleFilters(this, panelContent.query.query); // 3. populate selectedFilters (reads dateNavState)
 
-            const hasNavChildren = Object.keys(this.navChildren || {}).length > 0 || this.currentQuery.some((col: any) => col.downChild);
+            const hasNavChildren = this.currentQuery.some((col: any) => col.downChild);
             const queryToRun = hasNavChildren ? QueryUtils.initEdaQuery(this) : panelContent.query;
             const response = await QueryUtils.switchAndRun(this, queryToRun);
             
@@ -1158,7 +1156,6 @@ public tableNodeExpand(event: any): void {
         const p = {
             selectedColumn: _.cloneDeep(column),
             currentQuery: this.currentQuery,
-            navChildren: this.navChildren,
             inject: this.inject,
             panel: this.panel,
             table: this.findTable(column.table_id)?.display_name?.default,
@@ -2767,8 +2764,6 @@ startEditTitle() {
     private restoreNavigationLinks(panelContent: any): void {
         const links: any[] = panelContent.navigationLinks || [];
         const activeNodes: any[] = panelContent.navActiveNodes || [];
-        this.navChildren = {};
-
         // 1. Set downChild on parent columns already present in currentQuery
         for (const link of links) {
             const parentCol = this.currentQuery.find((c: any) =>
@@ -2842,7 +2837,6 @@ startEditTitle() {
         return (this.navState || []).flatMap((d: any) => d.navFilters);
     }
 
-    /** Sets up currentQuery + navChildren from panelContent before the query runs. */
     private setupQueryContext(panelContent: any): void {
         const { modeSQL } = panelContent.query.query;
         const queryMode = this.selectedQueryMode;

@@ -920,11 +920,8 @@ export class ColumnDialogComponent {
 
     private initParentOption(): void {
         const currentQuery: any[] = this.controller.params.currentQuery;
-        const navChildren: {[k: string]: any} = this.controller.params.navChildren || {};
-        // Include navChildren values as potential parents (for multi-level chains)
-        const allCandidates = [...currentQuery, ...Object.values(navChildren)];
 
-        this.childOptions = allCandidates
+        this.childOptions = currentQuery
             .filter(col => {
                 if (col.column_type === 'numeric') return false;
                 if (col.column_type === 'date' && col.dateNav) return false;
@@ -937,21 +934,18 @@ export class ColumnDialogComponent {
             })
             .map(col => ({ label: col.display_name.default, value: col }));
 
-        const currentParent = allCandidates.find(col =>
+        this.selectedParent = currentQuery.find(col =>
             col.downChild &&
             col.downChild.table_id === this.selectedColumn.table_id &&
             col.downChild.column_name === this.selectedColumn.column_name
-        );
-        this.selectedParent = currentParent || null;
+        ) || null;
     }
 
     public onParentChange(parentCol: any): void {
         const currentQuery: any[] = this.controller.params.currentQuery;
-        const navChildren: {[k: string]: any} = this.controller.params.navChildren || {};
-        const allCols = [...currentQuery, ...Object.values(navChildren)];
 
-        // Remove any existing parent link pointing to selectedColumn (search both sources)
-        for (const col of allCols) {
+        // Remove any existing parent link pointing to selectedColumn
+        for (const col of currentQuery) {
             if (col.downChild &&
                 col.downChild.table_id === this.selectedColumn.table_id &&
                 col.downChild.column_name === this.selectedColumn.column_name) {
@@ -961,11 +955,7 @@ export class ColumnDialogComponent {
         }
 
         if (parentCol) {
-            // Find parentCol in currentQuery first, then navChildren
-            const parentInQuery = this.findColumn(parentCol, currentQuery)
-                || allCols.find((c: any) =>
-                    c.table_id === parentCol.table_id && c.column_name === parentCol.column_name
-                );
+            const parentInQuery = this.findColumn(parentCol, currentQuery);
             if (parentInQuery) {
                 parentInQuery.downChild = {
                     table_id: this.selectedColumn.table_id,
