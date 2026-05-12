@@ -730,9 +730,17 @@ public tableNodeExpand(event: any): void {
             this.display_v.saved_panel = true;
 
             const query = this.initObjectQuery();
+            // Nav filters are runtime-only — strip before saving so they don't pollute
+            // the saved filters. They are restored via navActiveNodes.navFilters on reload.
+            query.query.filters = (query.query.filters || []).filter((f: any) => !f.isNavFilter);
             const chart = this.chartForm?.value.chart?.value ? this.chartForm?.value.chart?.value : this.chartForm?.value.chart;
             const edaChart = this.panelChart?.props.edaChart;
             const navigationLinks: any[] = this.buildNavigationLinks(query);
+            const navActiveNodes = (this.navState || []).map((entry: any) => ({
+                parentKey: entry.rootKey,
+                currentIndex: entry.currentIndex,
+                navFilters: entry.navFilters || []
+            }));
             const savedDateNavState = (this.dateNavState || []).map((entry: any) => ({
                 columnKey: entry.columnKey,
                 initialFormat: entry.initialFormat,
@@ -740,7 +748,7 @@ public tableNodeExpand(event: any): void {
                 currentFormatIndex: entry.currentFormatIndex,
                 navFilters: entry.navFilters
             }));
-            this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters, navigationLinks, savedDateNavState };
+            this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters, navigationLinks, navActiveNodes, savedDateNavState };
 
             /**This is to repaint on panel redimension */
             if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst','radar'].includes(chart)) {
@@ -2436,79 +2444,11 @@ startEditTitle() {
     // ---- NAVIGATION FEATURE ----
     // Build navigationLinks from all currentQuery columns that have downChild.
     public buildNavigationLinks(query: any): any[] {
-        // When navigation is active, save the effective (child) columns directly so that
-        // on reload the panel shows the child without needing navState restoration.
-        const navSubstitutions = new Map<string, any>(); // parentKey → active child col
-        const colNameSub: {[parentColName: string]: any} = {}; // column_name → child col (for ordering update)
-        for (const entry of (this.navState || [])) {
-            if (entry.currentIndex > 0) {
-                navSubstitutions.set(entry.rootKey, entry.navPath[entry.currentIndex]);
-                colNameSub[entry.navPath[0].column_name] = entry.navPath[entry.currentIndex];
-            }
-        }
-
-        // Identify nav children whose parent is NOT being navigated (they remain as nav options).
-        // If the parent IS being navigated, the child becomes the effective column — don't exclude it.
-        const navigableChildKeys = new Set<string>();
-        for (const col of this.currentQuery) {
-            if (col.downChild) {
-                const colKey = `${col.table_id}.${col.column_name}`;
-                if (!navSubstitutions.has(colKey)) {
-                    navigableChildKeys.add(`${col.downChild.table_id}.${col.downChild.column_name}`);
-                }
-            }
-        }
-
-        // Build effective column list: skip non-navigated nav children; replace navigated parents with child.
-        // Track pushed keys to avoid duplicates (child col may appear both as substitution and directly).
-        const effectiveCols: any[] = [];
-        const pushedColKeys = new Set<string>();
-        for (const col of this.currentQuery) {
-            const colKey = `${col.table_id}.${col.column_name}`;
-            if (navigableChildKeys.has(colKey)) continue;
-            const activeChild = navSubstitutions.get(colKey);
-            const colToPush = activeChild || col;
-            const pushKey = `${colToPush.table_id}.${colToPush.column_name}`;
-            if (pushedColKeys.has(pushKey)) continue;
-            pushedColKeys.add(pushKey);
-            effectiveCols.push(colToPush);
-        }
-
-        // Build navigationLinks from effective columns (only remaining parent→child links).
-        const navigationLinks: any[] = effectiveCols
-            .filter((col: any) => col.downChild)
-            .map((col: any) => ({
-                parentTable: col.table_id,
-                parentColumn: col.column_name,
-                childTable: col.downChild.table_id,
-                childColumn: col.downChild.column_name,
-                childDisplayName: col.downChild.display_name
-            }));
-
-        // Exclude remaining nav children from saved fields.
-        const childKeySet = new Set(navigationLinks.map((l: any) => `${l.childTable}.${l.childColumn}`));
-        const queryFields = effectiveCols.filter((col: any) =>
-            !childKeySet.has(`${col.table_id}.${col.column_name}`)
-        );
-
-        // Include active nav parents in saved fields as hidden placeholders.
-        // Marked with _isNavParent so the serializer writes visible: false for them only.
-        // This ensures handleCurrentQuery always loads the parent into currentQuery on reload,
-        // so the child column can always find its parent (for back-navigation) without depending
-        // solely on restoreNavigationLinks to reconstruct the parent at runtime.
-        for (const [parentKey] of navSubstitutions.entries()) {
-            const entry = this.navState.find((e: any) => e.rootKey === parentKey);
-            const rootCol = entry?.navPath?.[0];
-            if (!rootCol) continue;
-            const alreadyInFields = queryFields.some((f: any) =>
-                f.table_id === rootCol.table_id && f.column_name === rootCol.column_name
-            );
-            if (!alreadyInFields) {
-                queryFields.push({ ...rootCol, _isNavParent: true });
-            }
-        }
-
-        query.query.fields = queryFields.map((col: any, i: number) => {
+        // Save ALL currentQuery columns as fields — parents, children, and regular columns alike.
+        // getEffectiveFields decides which columns appear in the SQL query at runtime
+        // based on active nav state (navActiveNodes). Children are always in fields so the
+        // full hierarchy is always available on reload without any reconstruction needed.
+        query.query.fields = this.currentQuery.map((col: any, i: number) => {
             const selectedAgg = Array.isArray(col.aggregation_type)
                 ? col.aggregation_type.find((a: any) => a.selected)
                 : null;
@@ -2540,60 +2480,20 @@ startEditTitle() {
                 ranges: col.ranges || [],
                 ia_medatada_permissions: col.ia_medatada_permissions,
                 description: col.description || { default: '', localizad: [] },
-                visible: col.visible ?? true,
+                visible: true,
             };
         });
 
-        // Update cross-table ordering axes to use child column names instead of parent names.
-        if (Object.keys(colNameSub).length > 0 && query.output?.config?.ordering) {
-            query.output.config.ordering = JSON.parse(JSON.stringify(query.output.config.ordering));
-            for (const axGroup of query.output.config.ordering) {
-                if (!axGroup.axes?.[0]) continue;
-                const ax = axGroup.axes[0];
-                for (const item of [...(ax.itemX || []), ...(ax.itemY || []), ...(ax.itemZ || [])]) {
-                    const child = colNameSub[item.column_name];
-                    if (child) {
-                        item.column_name = child.column_name;
-                        item.column_type = child.column_type;
-                        item.description = child.display_name?.default ?? child.display_name ?? item.description;
-                    }
-                }
-            }
-        }
-
-        // Regular nav filters (country=Spain) are saved as permanent local filters (isGlobal:false)
-        // so they apply on reload via handleFilters → selectedFilters.
-        // Date nav filters are always stripped — they are saved in savedDateNavState and
-        // re-applied on reload by restoreDateNavState + handleFilters.
-        query.query.filters = (query.query.filters || []).reduce((acc: any[], f: any) => {
-            if (!f.isNavFilter) { acc.push(f); return acc; }
-            if (f.filter_id?.startsWith('datenav_')) return acc; // strip; goes via savedDateNavState
-            if (navSubstitutions.size > 0) {
-                const { isNavFilter, isGlobal, ...rest } = f;
-                acc.push({ ...rest, isGlobal: false });
-            }
-            // else: regular nav filter with no active nav → strip (runtime-only)
-            return acc;
-        }, []);
-
-        // Save active navigation state so that on reload the -/+ buttons and navState are restored.
-        // Each active entry stores the parent column (now in filters) and child column (now in fields).
-        const activeNavLinks: any[] = [];
-        for (const [parentKey, childCol] of navSubstitutions.entries()) {
-            const entry = this.navState.find((e: any) => e.rootKey === parentKey);
-            const rootCol = entry?.navPath?.[0];
-            if (!rootCol) continue;
-            activeNavLinks.push({
-                parentTable: rootCol.table_id,
-                parentColumn: rootCol.column_name,
-                childTable: childCol.table_id,
-                childColumn: childCol.column_name,
-                childDisplayName: childCol.display_name,
-                active: true,
-                navFilters: entry.navFilters || []
-            });
-        }
-        return [...navigationLinks, ...activeNavLinks];
+        // Return the full parent→child hierarchy.
+        return this.currentQuery
+            .filter((col: any) => col.downChild)
+            .map((col: any) => ({
+                parentTable: col.table_id,
+                parentColumn: col.column_name,
+                childTable: col.downChild.table_id,
+                childColumn: col.downChild.column_name,
+                childDisplayName: col.downChild.display_name
+            }));
     }
 
     public handleNavEvent(event: any): void {
@@ -2615,10 +2515,7 @@ startEditTitle() {
             // Extend existing chain: e.g. clicking + on City when Country→City is active
             const activeCol = existingNav.navPath[existingNav.currentIndex];
             if (!activeCol?.downChild) return;
-            const activeColKey = `${activeCol.table_id}.${activeCol.column_name}`;
-            // Look in navChildren first (post-load), fall back to currentQuery (edit session)
-            const nextCol = this.navChildren[activeColKey]
-                || this.currentQuery.find((col: any) =>
+            const nextCol = this.currentQuery.find((col: any) =>
                     col.table_id === activeCol.downChild.table_id &&
                     col.column_name === activeCol.downChild.column_name
                 );
@@ -2633,9 +2530,7 @@ startEditTitle() {
             const rootCol = this.currentQuery.find((col: any) => col.column_name === event.field);
             if (!rootCol?.downChild) return;
             const rootKey = `${rootCol.table_id}.${rootCol.column_name}`;
-            // Look in navChildren first (post-load), fall back to currentQuery (edit session)
-            const childCol = this.navChildren[rootKey]
-                || this.currentQuery.find((col: any) =>
+            const childCol = this.currentQuery.find((col: any) =>
                     col.table_id === rootCol.downChild.table_id &&
                     col.column_name === rootCol.downChild.column_name
                 );
@@ -2863,17 +2758,18 @@ startEditTitle() {
     }
 
     /**
-     * Restores parent→child navigation links from panel.content.navigationLinks after load.
-     * Sets downChild on parent columns in currentQuery, populates navChildren, and adds
-     * child columns back to currentQuery so they appear in the column list (enabling
-     * grandchild configuration). savePanel excludes children from query.fields via childKeySet.
+     * Restores parent→child navigation links from saved panel content after load.
+     * Since all columns (parents and children) are now saved in query.query.fields,
+     * handleCurrentQuery already loads them into currentQuery before this is called.
+     * This function only needs to: (1) set downChild on parents from navigationLinks,
+     * and (2) restore active nav state from navActiveNodes.
      */
     private restoreNavigationLinks(panelContent: any): void {
         const links: any[] = panelContent.navigationLinks || [];
+        const activeNodes: any[] = panelContent.navActiveNodes || [];
         this.navChildren = {};
-        if (!links.length) return;
 
-        // 1. Set downChild on parent columns present in currentQuery
+        // 1. Set downChild on parent columns already present in currentQuery
         for (const link of links) {
             const parentCol = this.currentQuery.find((c: any) =>
                 c.table_id === link.parentTable && c.column_name === link.parentColumn
@@ -2887,120 +2783,40 @@ startEditTitle() {
             }
         }
 
-        // 2. Build navChildren map and add child columns to currentQuery so they remain
-        //    visible in the column list (required to configure grandchildren).
-        for (const link of links) {
-            const parentKey = `${link.parentTable}.${link.parentColumn}`;
-            const childTable = this.tables.find((t: any) => t.table_name === link.childTable);
-            if (!childTable) continue;
-            const childColModel = childTable.columns.find((c: any) => c.column_name === link.childColumn);
-            if (!childColModel) continue;
+        // 2. Restore active nav state from navActiveNodes.
+        // navPath is reconstructed by following downChild links from the root in currentQuery.
+        // Guard against double-call from setupQueryContext + buildGlobalconfiguration.
+        for (const activeNode of activeNodes) {
+            if (this.navState.find((e: any) => e.rootKey === activeNode.parentKey)) continue;
 
-            const child = _.cloneDeep(childColModel);
-            child.table_id = link.childTable;
-
-            // If this child is itself a parent in another link, propagate its downChild
-            const furtherLink = links.find((l: any) =>
-                l.parentTable === link.childTable && l.parentColumn === link.childColumn
+            const rootCol = this.currentQuery.find((c: any) =>
+                `${c.table_id}.${c.column_name}` === activeNode.parentKey
             );
-            if (furtherLink) {
-                child.downChild = {
-                    table_id: furtherLink.childTable,
-                    column_name: furtherLink.childColumn,
-                    display_name: furtherLink.childDisplayName
-                };
+            if (!rootCol?.downChild) continue;
+
+            const navPath: any[] = [rootCol];
+            let current = rootCol;
+            while (current.downChild) {
+                const next = this.currentQuery.find((c: any) =>
+                    c.table_id === current.downChild.table_id &&
+                    c.column_name === current.downChild.column_name
+                );
+                if (!next) break;
+                navPath.push(next);
+                current = next;
             }
 
-            this.navChildren[parentKey] = child;
+            const currentIndex = Math.min(activeNode.currentIndex ?? 1, navPath.length - 1);
+            if (currentIndex < 1) continue;
 
-            // Add to currentQuery if not already present
-            const alreadyInQuery = this.currentQuery.find((c: any) =>
-                c.table_id === link.childTable && c.column_name === link.childColumn
-            );
-            if (!alreadyInQuery) {
-                this.currentQuery.push(child);
-            }
+            this.navState.push({
+                rootKey: activeNode.parentKey,
+                navPath,
+                currentIndex,
+                navFilters: activeNode.navFilters || []
+            });
         }
 
-        // Restore active navigations: when Country→City was active at save time, City was saved
-        // in fields and Country only in filters. We need to add Country back to currentQuery
-        // (with downChild) and recreate navState so the -/+ buttons work correctly.
-        const activeLinks = links.filter((l: any) => l.active);
-        for (const link of activeLinks) {
-            const parentKey = `${link.parentTable}.${link.parentColumn}`;
-
-            // Get parent col from model and configure downChild
-            const parentTableModel = this.tables.find((t: any) => t.table_name === link.parentTable);
-            if (!parentTableModel) continue;
-            const parentColModel = parentTableModel.columns.find((c: any) => c.column_name === link.parentColumn);
-            if (!parentColModel) continue;
-
-            const parentCol = _.cloneDeep(parentColModel);
-            parentCol.table_id = link.parentTable;
-            parentCol.downChild = {
-                table_id: link.childTable,
-                column_name: link.childColumn,
-                display_name: link.childDisplayName
-            };
-
-            // Add parent to currentQuery (it was replaced by child in saved fields)
-            const parentInQuery = this.currentQuery.find((c: any) =>
-                c.table_id === link.parentTable && c.column_name === link.parentColumn
-            );
-            if (!parentInQuery) {
-                this.currentQuery.push(parentCol);
-            } else {
-                parentInQuery.downChild = parentCol.downChild;
-            }
-
-            // Get child col — should already be in currentQuery (was saved in fields)
-            const childTableModel = this.tables.find((t: any) => t.table_name === link.childTable);
-            if (!childTableModel) continue;
-            const childColModel2 = childTableModel.columns.find((c: any) => c.column_name === link.childColumn);
-            if (!childColModel2) continue;
-
-            const childColActive = _.cloneDeep(childColModel2);
-            childColActive.table_id = link.childTable;
-
-            // If child is itself a parent in another link, propagate downChild
-            const furtherLink2 = links.find((l2: any) =>
-                l2.parentTable === link.childTable && l2.parentColumn === link.childColumn
-            );
-            if (furtherLink2) {
-                childColActive.downChild = {
-                    table_id: furtherLink2.childTable,
-                    column_name: furtherLink2.childColumn,
-                    display_name: furtherLink2.childDisplayName
-                };
-            }
-
-            // Ensure child is in currentQuery; update downChild if needed
-            const childInQuery = this.currentQuery.find((c: any) =>
-                c.table_id === link.childTable && c.column_name === link.childColumn
-            );
-            if (childInQuery) {
-                if (furtherLink2) childInQuery.downChild = childColActive.downChild;
-            } else {
-                this.currentQuery.push(childColActive);
-            }
-
-            // Register in navChildren map
-            this.navChildren[parentKey] = childInQuery || childColActive;
-
-            // Recreate navState entry (guard against double-call from setupQueryContext + buildGlobalconfiguration)
-            if (!this.navState.find((e: any) => e.rootKey === parentKey)) {
-                const navParent = parentInQuery || parentCol;
-                const navChild = childInQuery || childColActive;
-                this.navState.push({
-                    rootKey: parentKey,
-                    navPath: [navParent, navChild],
-                    currentIndex: 1,
-                    navFilters: link.navFilters || []
-                });
-            }
-        }
-
-        // Keep panel.content.navigationLinks in sync so checkNavigableColumn always works
         this.syncNavigationLinksToPanel();
     }
 
