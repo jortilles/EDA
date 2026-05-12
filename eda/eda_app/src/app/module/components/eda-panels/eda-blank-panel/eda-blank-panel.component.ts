@@ -2490,6 +2490,24 @@ startEditTitle() {
         const queryFields = effectiveCols.filter((col: any) =>
             !childKeySet.has(`${col.table_id}.${col.column_name}`)
         );
+
+        // Include active nav parents in saved fields as hidden placeholders.
+        // Marked with _isNavParent so the serializer writes visible: false for them only.
+        // This ensures handleCurrentQuery always loads the parent into currentQuery on reload,
+        // so the child column can always find its parent (for back-navigation) without depending
+        // solely on restoreNavigationLinks to reconstruct the parent at runtime.
+        for (const [parentKey] of navSubstitutions.entries()) {
+            const entry = this.navState.find((e: any) => e.rootKey === parentKey);
+            const rootCol = entry?.navPath?.[0];
+            if (!rootCol) continue;
+            const alreadyInFields = queryFields.some((f: any) =>
+                f.table_id === rootCol.table_id && f.column_name === rootCol.column_name
+            );
+            if (!alreadyInFields) {
+                queryFields.push({ ...rootCol, _isNavParent: true });
+            }
+        }
+
         query.query.fields = queryFields.map((col: any, i: number) => {
             const selectedAgg = Array.isArray(col.aggregation_type)
                 ? col.aggregation_type.find((a: any) => a.selected)
