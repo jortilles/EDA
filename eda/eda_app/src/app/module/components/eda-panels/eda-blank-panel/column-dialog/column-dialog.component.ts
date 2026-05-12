@@ -99,8 +99,11 @@ export class ColumnDialogComponent {
     public rangeString: string;
     public selectedRange: string = '';
     public showRange: boolean = false;
-    public availableRange: boolean = true;   
-    public allowedAggregations: boolean = true; 
+    public availableRange: boolean = true;
+    public allowedAggregations: boolean = true;
+
+    public childOptions: {label: string, value: any}[] = [];
+    public selectedParent: any = null;
     public ptooltipViewTextRanges: string = $localize`:@@ptooltipViewTextRanges:Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango válido - 12:18:50:100 `;
     public ptooltipNotAvailableRanges: string = $localize`:@@ptooltipNotAvailableRanges:No es posible crear un rango nuevo por que ya existe uno configurado`;
     public rangeDescriptionNumberError: string = $localize`:@@rangeDescriptionNumberError:El correcto orden de los límites del rango van de menor a mayor`;
@@ -140,6 +143,7 @@ export class ColumnDialogComponent {
 
         this.carregarValidacions();
         this.verifyRange();
+        this.initParentOption();
 
         const columnType = this.selectedColumn.column_type;
 
@@ -231,6 +235,7 @@ export class ColumnDialogComponent {
         const valueListSource = this.selectedColumn.valueListSource;
         const joins = this.selectedColumn.joins;
         const autorelation = this.selectedColumn.autorelation;
+        const data = this.dropDownFields;
         const computed_column = this.selectedColumn.computed_column;
         const SQLexpression = this.selectedColumn.SQLexpression;
         const filterBeforeGrouping = this.filterBeforeAfter.filterBeforeGrouping;
@@ -246,6 +251,7 @@ export class ColumnDialogComponent {
             valueListSource,
             autorelation,
             joins,
+            data,
             computed_column,
             SQLexpression,
             filterBeforeGrouping,
@@ -828,6 +834,7 @@ export class ColumnDialogComponent {
     }
 
     onApply(){
+        this.onParentChange(this.selectedParent);
         this.closeDialog();
     }
 
@@ -902,6 +909,62 @@ export class ColumnDialogComponent {
         resultado += `>= ${rango[rango.length - 1]}`;
 
         return resultado;
+    }
+
+    private initParentOption(): void {
+        const currentQuery: any[] = this.controller.params.currentQuery;
+        const navChildren: {[k: string]: any} = this.controller.params.navChildren || {};
+        // Include navChildren values as potential parents (for multi-level chains)
+        const allCandidates = [...currentQuery, ...Object.values(navChildren)];
+
+        this.childOptions = allCandidates
+            .filter(col => {
+                if (col.table_id === this.selectedColumn.table_id &&
+                    col.column_name === this.selectedColumn.column_name) return false;
+                if (col.downChild &&
+                    !(col.downChild.table_id === this.selectedColumn.table_id &&
+                      col.downChild.column_name === this.selectedColumn.column_name)) return false;
+                return true;
+            })
+            .map(col => ({ label: col.display_name.default, value: col }));
+
+        const currentParent = allCandidates.find(col =>
+            col.downChild &&
+            col.downChild.table_id === this.selectedColumn.table_id &&
+            col.downChild.column_name === this.selectedColumn.column_name
+        );
+        this.selectedParent = currentParent || null;
+    }
+
+    public onParentChange(parentCol: any): void {
+        const currentQuery: any[] = this.controller.params.currentQuery;
+        const navChildren: {[k: string]: any} = this.controller.params.navChildren || {};
+        const allCols = [...currentQuery, ...Object.values(navChildren)];
+
+        // Remove any existing parent link pointing to selectedColumn (search both sources)
+        for (const col of allCols) {
+            if (col.downChild &&
+                col.downChild.table_id === this.selectedColumn.table_id &&
+                col.downChild.column_name === this.selectedColumn.column_name) {
+                delete col.downChild;
+                break;
+            }
+        }
+
+        if (parentCol) {
+            // Find parentCol in currentQuery first, then navChildren
+            const parentInQuery = this.findColumn(parentCol, currentQuery)
+                || allCols.find((c: any) =>
+                    c.table_id === parentCol.table_id && c.column_name === parentCol.column_name
+                );
+            if (parentInQuery) {
+                parentInQuery.downChild = {
+                    table_id: this.selectedColumn.table_id,
+                    column_name: this.selectedColumn.column_name,
+                    display_name: this.selectedColumn.display_name.default
+                };
+            }
+        }
     }
 
     verifyRange() {

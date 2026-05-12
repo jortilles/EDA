@@ -62,6 +62,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     @Input() props: PanelChart;
     @Output() configUpdated: EventEmitter<any> = new EventEmitter<any>(null);
     @Output() onChartClick: EventEmitter<any> = new EventEmitter<any>();
+    @Output() onNavEvent: EventEmitter<any> = new EventEmitter<any>();
     @ViewChild('chartComponent', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
 
 
@@ -490,6 +491,19 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         });
         this.currentConfig = this.componentRef.instance.inject;
         this.componentRef.instance.inject.linkedDashboardProps = this.props.linkedDashboardProps;
+
+        // Child navigation support
+        if (this.props.childNavConfig) {
+            this.componentRef.instance.inject.parentFields = this.props.childNavConfig.parentFields;
+            this.componentRef.instance.inject.childFieldMap = this.props.childNavConfig.childFieldMap;
+            // Emisores de eventos de navigation feature
+            this.componentRef.instance.inject.onNavIn.subscribe((event: any) =>
+                this.onNavEvent.emit({ ...event, navType: 'in' })
+            );
+            this.componentRef.instance.inject.onNavOut.subscribe((event: any) =>
+                this.onNavEvent.emit({ ...event, navType: 'out' })
+            );
+        }
     }
 
     private setTableProperties(config: TableConfig) {
@@ -504,6 +518,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject.noRepetitions = config.noRepetitions;
         this.componentRef.instance.inject.ordering = config.ordering;
         this.componentRef.instance.inject.negativeNumbers = config.negativeNumbers;
+        this.componentRef.instance.inject.crossSortOrder = config.crossSortOrder || 'alphabetical';
         this.configUpdated.emit(this.currentConfig);;
     }
 

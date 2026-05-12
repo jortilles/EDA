@@ -24,7 +24,7 @@ export class MailController {
       const config = { ...body, family: 4 };
 
       // If SMTP and no password provided, use saved one
-      if (configType !== 'GMAIL' && !config.auth?.pass) {
+      if (configType === 'SMPT' && !config.auth?.pass) {
         try {
           const saved = readConfig();
           config.auth.pass = saved.auth?.pass ?? null;

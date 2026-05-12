@@ -8,6 +8,7 @@ export class IaFormStateService {
     private assistantService = inject(AssistantService);
 
     formData = signal({
+        PROVIDER: "",
         API_KEY: "",
         MODEL: "",
         CONTEXT: "",

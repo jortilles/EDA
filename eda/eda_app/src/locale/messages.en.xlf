@@ -2893,6 +2893,22 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <source>Números negativos</source>
 <target>Negative numbers</target>
 </trans-unit>
+<trans-unit id="addCrossSorting">
+<source>Ordenación</source>
+<target>Sorting</target>
+</trans-unit>
+<trans-unit id="sortByValue">
+<source>Por valor descendente</source>
+<target>By descending value</target>
+</trans-unit>
+<trans-unit id="sortByValueAsc">
+<source>Por valor ascendente</source>
+<target>By ascending value</target>
+</trans-unit>
+<trans-unit id="sortAlphabetical">
+<source>Alfabética</source>
+<target>Alphabetical</target>
+</trans-unit>
 <trans-unit id="withNegativeNumbers">
 <source>Con números negativos</source>
 <target>With negative numbers</target>
@@ -4621,14 +4637,9 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Ask about your panel data...</target>
 </trans-unit>
 
-<trans-unit id="askEddie">
-<source>Pregúntale a Eddie 😊</source>
-<target>Ask Eddie 😊</target>
-</trans-unit>
-
-<trans-unit id="askEddieNoIcon">
-<source>Pregúntale a Eddie</source>
-<target>Ask Eddie</target>
+<trans-unit id="askEdaliticsText">
+<source>Pregúntale a Edalitics</source>
+<target>Ask Edalitics</target>
 </trans-unit>
 
 <trans-unit id="GPTChat">
@@ -6328,6 +6339,70 @@ OR<ph id="5"/>
 <trans-unit id="analyzingTheScheme" datatype="html">
   <source>Analizando el esquema</source>
   <target>Analyzing the scheme</target>
+</trans-unit>
+<trans-unit id="aiManagementTitle" datatype="html">
+  <source>Gestión de IA</source>
+  <target>AI Management</target>
+</trans-unit>
+<trans-unit id="aiManagementSubtitle" datatype="html">
+  <source>Configura los parámetros del asistente de inteligencia artificial</source>
+  <target>Configure the parameters of the artificial intelligence assistant</target>
+</trans-unit>
+<trans-unit id="aiProvider" datatype="html">
+  <source>PROVEEDOR</source>
+  <target>PROVIDER</target>
+</trans-unit>
+<trans-unit id="aiApiKey" datatype="html">
+  <source>API KEY</source>
+  <target>API KEY</target>
+</trans-unit>
+<trans-unit id="aiAwsAccessKey" datatype="html">
+  <source>CLAVE DE ACCESO DE AWS</source>
+  <target>AWS ACCESS KEY</target>
+</trans-unit>
+<trans-unit id="aiAwsRegion" datatype="html">
+  <source>REGIÓN DE AWS</source>
+  <target>AWS REGION</target>
+</trans-unit>
+<trans-unit id="aiAwsSecretKey" datatype="html">
+  <source>CLAVE SECRETA DE AWS</source>
+  <target>AWS SECRET KEY</target>
+</trans-unit>
+<trans-unit id="aiModel" datatype="html">
+  <source>MODELO DE IA</source>
+  <target>AI MODEL</target>
+</trans-unit>
+<trans-unit id="aiContext" datatype="html">
+  <source>CONTEXTO</source>
+  <target>CONTEXT</target>
+</trans-unit>
+<trans-unit id="aiEDAApp" datatype="html">
+  <source>EDA APP URL</source>
+  <target>EDA APP URL</target>
+</trans-unit>
+<trans-unit id="aiMCPURL" datatype="html">
+  <source>MCP URL</source>
+  <target>MCP URL</target>
+</trans-unit>
+<trans-unit id="aiLimit" datatype="html">
+  <source>LÍMITE</source>
+  <target>LIMIT</target>
+</trans-unit>
+<trans-unit id="aiAvailable" datatype="html">
+  <source>DISPONIBLE</source>
+  <target>AVAILABLE</target>
+</trans-unit>
+<trans-unit id="navegableFrom" datatype="html">
+  <source>Navegable desde</source>
+  <target>Navegable from</target>
+</trans-unit>
+<trans-unit id="noParentAttributes" datatype="html">
+  <source>Añade más atributos para activar la navegación</source>
+  <target>Add more attributes to enable navigation</target>
+</trans-unit>
+<trans-unit id="noParentText" datatype="html">
+  <source>Sin padre</source>
+  <target>No parent</target>
 </trans-unit>
 </body>
 </file>

@@ -38,6 +38,8 @@ export class PromptUtil {
     ══ INFERENCE ══
     - Use synonyms, context, and possible typos to map user terms to real schema names
     - Filter values must match exactly what the user wrote
+    - When the user refers to an entity by name. PREFER text/name columns over numeric identifier columns (IDs, codes, numbers). 
+    - If the name column is in a different table than the metric, include that table in the query so the join can be resolved
 
     ══ DATABASE ══
     ${JSON.stringify(schema, null, 2)}

@@ -1,0 +1,67 @@
+<eda-dialog2
+  [display]="display"
+  header="Pregúntale a Edalitics" i18n-header="@@askEdaliticsText" width="55vw" height="90vh"
+  [disableApply]="disableApply()"
+  draggable=true
+  (apply)="onApply()"
+  (close)="onClose()"
+  class="cursor-move"
+>
+
+  <div content class="p-3 lg:p-6 h-[75vh] lg:h-[80vh] flex flex-col overflow-x-hidden">
+    <div class="flex-1 bg-gray-100 h-full flex justify-center p-2 lg:p-4 overflow-hidden overflow-x-hidden">
+      <div class="w-full bg-white rounded-xl shadow-md p-3 lg:p-6 flex flex-col gap-2 lg:gap-4 h-auto overflow-x-hidden">
+
+        <!-- Contenedor scrollable para mensajes -->
+        <div #messageContainer class="flex-1 overflow-y-auto space-y-2 pr-1 lg:pr-2">
+
+          @if(messages.length === 0){
+            <p class="text-base lg:text-lg text-gray-400 text-center mt-8 px-6 select-none" i18n="@@askPanelData">
+              Pregunta sobre los datos de tu panel...
+            </p>
+          }
+
+          <div *ngFor="let msg of messages"
+          class="text-sm lg:text-base h-auto animate-in fade-in slide-in-from-bottom duration-300">
+            <div
+              [ngClass]="{
+                'bg-blue-500 text-white justify-self-end': msg.sender === 'user',
+                'bg-gray-200 text-gray-900 justify-self-start': msg.sender === 'bot'
+              }"
+              class="rounded-xl px-3 py-1.5 lg:px-4 lg:py-2 max-w-[85%] lg:max-w-xl w-fit break-words"
+            >
+              {{ msg.content }}
+            </div>
+          </div>
+
+          <!-- Indicador de carga -->
+          @if(loading){
+            <div class="text-gray-500 text-sm lg:text-base italic animate-pulse self-start pl-6 lg:pl-14 break-words max-w-[70%] overflow-x-hidden">
+              <span i18n="@@escribiendo">Escribiendo...</span>
+            </div>
+          }
+        </div>
+
+        <!-- Formulario fijo abajo -->
+        <form (ngSubmit)="sendMessage()" class="flex gap-2 items-center pt-1 lg:pt-2">
+          <input
+            #chatInput
+            [(ngModel)]="userInput"
+            name="chatInput"
+            class="flex-1 border rounded-full px-3 py-1.5 lg:px-4 lg:py-2 text-sm lg:text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+            i18n-placeholder="@@escribeMensaje"
+            placeholder="Escribe tu mensaje..."
+            autocomplete="off"
+          />
+          <button
+            type="submit"
+            [disabled]="loading"
+            class="bg-blue-500 text-white px-3 py-1.5 lg:px-4 lg:py-2 text-sm lg:text-base rounded-full hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
+            <span i18n="@@enviar">Enviar</span>
+          </button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</eda-dialog2>

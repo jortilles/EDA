@@ -392,10 +392,50 @@ export const QueryUtils = {
 
 
   /**
+   * Devuelve los campos efectivos para la ejecución de la consulta, excluyendo los hijos navegables
+   * y aplicando las sustituciones de navegación activas. Si no tiene nada de navegable devolvera el currentQuery SIN MODIFICACIONES.
+   */
+  getEffectiveFields: (ebp: EdaBlankPanelComponent): any[] => {
+    // Solo mostraremos los campos padre en la consulta, los hijos navegables se muestran solo como sustituciones de navegación cuando corresponda. Para ello, primero identificamos qué columnas son hijos navegables...
+    const navigableChildKeys = new Set<string>();
+    for (const col of ebp.currentQuery) {
+      if (col.downChild) {
+        navigableChildKeys.add(`${col.downChild.table_id}.${col.downChild.column_name}`);
+      }
+    }
+
+    // Map parent col key → active nav target
+    const navSubstitutions = new Map<string, any>();
+    for (const entry of (ebp.navState || [])) {
+      navSubstitutions.set(entry.rootKey, entry.navPath[entry.currentIndex]);
+    }
+
+    const effectiveFields: any[] = [];
+    for (const col of ebp.currentQuery) {
+      const colKey = `${col.table_id}.${col.column_name}`;
+
+      // skip hijos navegables 
+      if (navigableChildKeys.has(colKey)) continue;
+
+      // sustituir el campo padre con su destino de navegación activa cuando la navegación está activa
+      if (navSubstitutions.has(colKey)) {
+        effectiveFields.push(navSubstitutions.get(colKey));
+      } else {
+        effectiveFields.push(col);
+      }
+    }
+
+    return effectiveFields;
+  },
+
+  /**
    * Builds a query object
    */
   initEdaQuery: (ebp: EdaBlankPanelComponent): Query => {
     const config = ChartsConfigUtils.setConfig(ebp);
+    const hasNavChildren = Object.keys(ebp.navChildren || {}).length > 0
+      || (ebp.currentQuery || []).some((col: any) => col.downChild);
+    const fields = hasNavChildren ? QueryUtils.getEffectiveFields(ebp) : ebp.currentQuery;
 
     const params = {
       table: '',
@@ -413,7 +453,7 @@ export const QueryUtils = {
       predictionConfig: ebp.panel?.content?.query?.query?.predictionConfig || undefined,
       sortedFilters: ebp.sortedFilters,
     };
-    return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode);
+    return ebp.queryBuilder.normalQuery(fields, params, ebp.selectedQueryMode);
   },
 
 

@@ -158,10 +158,12 @@ static async acs(req: Request, res: Response, next: NextFunction) {
 }
 
     static metadata(_req: Request, res: Response) {
-        const publicCert = (process.env.SAML_SP_PUBLIC_CERT || '').replace(/\\n/g, '\n') || undefined;
+        const publicCert = (process.env.SAML_SP_PUBLIC_CERT || '').replace(/\\n/g, '\n')
+            || SAMLconfig.publicCert
+            || null;
         const xml = samlStrategy.generateServiceProviderMetadata(
-        /* decryptionCert */ undefined,
-        /* signingCert    */ publicCert
+            /* decryptionCert */ null,
+            /* signingCert    */ publicCert
         );
         res.type('application/xml').send(xml);
     }

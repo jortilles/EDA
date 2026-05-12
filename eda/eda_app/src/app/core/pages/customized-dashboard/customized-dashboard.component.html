@@ -13,7 +13,7 @@
 
         <!-- Panel: overlay absoluto que sale desde left:0, encima del tab y del iframe -->
         <div class="absolute top-0 left-0 h-full flex flex-col shadow-2xl transition-transform duration-300"
-             style="width: 16vw; min-width: 200px; z-index: 20;"
+             [style.min-width]="sidebarWidth" [style.width]="sidebarWidth" style="z-index: 20;"
              [style.transform]="sidebarOpen ? 'translateX(0)' : 'translateX(-100%)'"
              (mouseenter)="openSidebar()" (mouseleave)="closeSidebar()">
 
@@ -63,8 +63,8 @@
 
     <!-- Spacer: empuja el iframe cuando el sidebar abre (total = 16vw, menos los 40px fijos de la barra) -->
     <div class="flex-shrink-0"
-         [style.width]="sidebarOpen ? 'calc(16vw - 40px)' : '0px'"
-         [style.min-width]="sidebarOpen ? 'calc(200px - 40px)' : '0px'"
+         [style.width]="sidebarOpen ? 'calc(' + sidebarWidth + ' - 40px)' : '0px'"
+         [style.min-width]="sidebarOpen ? 'calc(' + sidebarWidth + ' - 40px)' : '0px'"
          style="transition: width 300ms ease-in-out, min-width 300ms ease-in-out;">
     </div>
 

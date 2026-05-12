@@ -83,8 +83,8 @@ export class EdaFilterAndOrComponent implements OnInit {
       draggable: { enabled: true },
       resizable: { enabled: false },
       mobileBreakpoint: 150,// ---- Mobile control ----
-      minCols: 10,
-      maxCols: 10,
+      minCols: 11,
+      maxCols: 11,
       minRows: 9,
       maxRows: 9,
       margin: 0.2,
@@ -110,11 +110,13 @@ export class EdaFilterAndOrComponent implements OnInit {
       if(previousDashboard) {
         this.dashboard = _.cloneDeep(this.sortedFilters);
         this.dashboardClone = _.cloneDeep(this.sortedFilters);
+        this.updateGridDimensions();
         this.creacionQueryFiltros(this.dashboard);
       } else {
         if(this.sortedFilters.length !== 0) {
           this.dashboard = _.cloneDeep(this.sortedFilters);
           this.dashboardClone = _.cloneDeep(this.sortedFilters);
+          this.updateGridDimensions();
           this.creacionQueryFiltros(this.sortedFilters);
         } else {
           this.initAndOrFilters();
@@ -165,12 +167,16 @@ export class EdaFilterAndOrComponent implements OnInit {
     this.selectedFilters.forEach((sf) => {
       if (sf.filterBeforeGrouping !== false) {
         this.dashboard.push({
-          cols: 3, rows: 1, y: k, x: 0,
+          cols: 3, 
+          rows: 1, 
+          y: k, 
+          x: 0,
           filter_table: sf.filter_table,
           filter_column: sf.filter_column,
           filter_type: sf.filter_type,
           filter_column_type: sf.filter_column_type,
           filter_elements: sf.filter_elements,
+          filter_codes: sf.filter_codes,
           filter_id: sf.filter_id,
           isGlobal: sf.isGlobal,
           value: 'and',
@@ -185,12 +191,16 @@ export class EdaFilterAndOrComponent implements OnInit {
     this.globalFilters.forEach((gf) => {
       if (gf.filterBeforeGrouping !== false) {
         this.dashboard.push({
-          cols: 3, rows: 1, y: k + temporalLength, x: 0,
+          cols: 3, 
+          rows: 1, 
+          y: k + temporalLength, 
+          x: 0,
           filter_table: gf.filter_table,
           filter_column: gf.filter_column,
           filter_type: gf.filter_type,
           filter_column_type: gf.filter_column_type,
           filter_elements: gf.filter_elements,
+          filter_codes: gf.filter_codes,
           filter_id: gf.filter_id,
           isGlobal: gf.isGlobal,
           value: 'and',
@@ -200,6 +210,7 @@ export class EdaFilterAndOrComponent implements OnInit {
     });
 
     this.dashboardClone = _.cloneDeep(this.dashboard);
+    this.updateGridDimensions();
     this.creacionQueryFiltros(this.dashboard);
   }
 
@@ -480,5 +491,19 @@ export class EdaFilterAndOrComponent implements OnInit {
 
   public getNiceTableName(table: any) {
     return this.tables.find(t => t.table_name === table)?.display_name?.default;
+  }
+
+  private updateGridDimensions(): void {
+    const base = 9;
+    const extra = Math.max(0, this.dashboard.length - base);
+    
+    this.options = {
+      ...this.options,
+      minCols: 11 + extra,
+      maxCols: 11 + extra,
+      minRows: base + extra,
+      maxRows: base + extra,
+    };
+
   }
 }

@@ -92,16 +92,16 @@ export class EdaTableComponent implements OnInit {
         if (this.inject.linkedDashboardProps && this.inject.linkedDashboardProps.sourceCol === colname) {
             const props = this.inject.linkedDashboardProps;
             const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${item}`;
-            
+
             window.open(url, "_blank");
-            
+
         } else {
             let filterBy = colname;
             let label = item;
             // Buscar el tipo de columna para verificar si es html
             const col = this.inject.cols.find(c => c.field === colname);
             const colType = col ? col.type : null;
-            
+
             // No emitir evento para columnas numéricas ni HTML
             if (typeof label !== 'number' && colType !== 'EdaColumnHtml') {
                 this.onClick.emit({ label, filterBy });
@@ -571,9 +571,6 @@ export class EdaTableComponent implements OnInit {
         return null; // Si no hay coincidencia
     }
 
-    
-
-
     public getColor(valor: number) { 
 
         // modificar el true por una variable que se modifica en la edición de valores negativos. 
@@ -583,4 +580,28 @@ export class EdaTableComponent implements OnInit {
         }
     }
 
+    // Funciones para la navegación
+    handleNavIn(field: string, value: any, event: MouseEvent): void {
+        // no lanzamos filtro de click
+        event.stopPropagation();
+        this.inject.onNavIn.emit({ field, value });
+    }
+    
+    handleNavOut(rootKey: string, event: MouseEvent): void {
+        // no lanzamos filtro de click
+        event.stopPropagation();
+        this.inject.onNavOut.emit({ rootKey });
+    }
+
+    haveChild(colField: string): boolean {
+        return (this.inject.parentFields || []).includes(colField);
+    }
+
+    isChild(colField: string): boolean {
+        return !!(this.inject.childFieldMap || {})[colField];
+    }
+
+    getChildRootKey(colField: string): string {
+        return (this.inject.childFieldMap || {})[colField] || '';
+    }
 }

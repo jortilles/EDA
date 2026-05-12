@@ -1,4 +1,4 @@
-<div class="chat-wrapper">
+<div class="chat-wrapper" (mousedown)="$event.stopPropagation()">
     <div class="chat-header p-0 xl:py-3 xl:px-4">
         <h3 i18n="@@assistantTitle" class="text-base font-semibold">Pregunta en lenguaje natural: </h3>
     </div>
@@ -21,6 +21,19 @@
             <div class="bubble">
                 <pre *ngIf="m.role !== 'assistant'" class="msg-content">{{ m.content }}</pre>
                 <div *ngIf="m.role === 'assistant'" class="msg-content markdown-body" [innerHTML]="renderMarkdown(m.content)"></div>
+
+                <!-- Sugerencias de gráficos -->
+                <div *ngIf="m.suggestedCharts && m.suggestedCharts.length > 0" class="chart-suggestions">
+                    <p class="chart-suggestion-hint">Puedes ver esta información en los siguientes gráficos:</p>
+                    <div class="chart-chips">
+                        <button *ngFor="let chart of m.suggestedCharts"
+                                class="chart-chip"
+                                (click)="selectChart(m, chart)">
+                            {{ chart.label }}
+                        </button>
+                    </div>
+                    <p class="chart-suggestion-question">¿Te gustaría que implemente alguno de ellos?</p>
+                </div>
 
                 <div class="flex align-items-center">
                     <div class="msg-meta">{{ m.role }} · {{ m.timestamp | date:'shortTime' }}</div>
@@ -51,7 +64,8 @@
         @if(loading){
             <div class="chat-message msg-assistant">
                 <div class="bubble">
-                    <div class="text-gray-500 text-base italic animate-pulse break-words max-w-[100%] overflow-x-hidden">
+                    <div class="text-gray-500 text-base italic animate-pulse flex items-center gap-2">
+                        <img src="assets/images/logos/logo.png" class="logo-thinking" alt="" />
                         <span i18n="@@escribiendo">Escribiendo...</span>
                     </div>
                 </div>

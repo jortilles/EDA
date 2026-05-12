@@ -24,7 +24,10 @@ export class CustomizedDashboardComponent implements OnInit, OnDestroy {
   public sidebarOpen: boolean = true;
   public sidebarLocked: boolean = false;
   public isPinned: boolean = true;
+  public isMobile: boolean = window.innerWidth <= 768;
   private _closeTimer: ReturnType<typeof setTimeout> | null = null;
+
+  get sidebarWidth(): string { return this.isMobile ? '30dvw' : '16dvw'; }
 
   public sidebarHtml: string = '';
   public editingHtml: string = '';

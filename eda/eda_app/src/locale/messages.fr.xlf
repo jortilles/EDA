@@ -3138,6 +3138,26 @@
     <target>Nombres négatifs</target>
   </trans-unit>
 
+  <trans-unit id="addCrossSorting">
+    <source>Ordenación</source>
+    <target>Tri</target>
+  </trans-unit>
+
+  <trans-unit id="sortByValue">
+    <source>Por valor descendente</source>
+    <target>Par valeur décroissante</target>
+  </trans-unit>
+
+  <trans-unit id="sortByValueAsc">
+    <source>Por valor ascendente</source>
+    <target>Par valeur croissante</target>
+  </trans-unit>
+
+  <trans-unit id="sortAlphabetical">
+    <source>Alfabética</source>
+    <target>Alphabétique</target>
+  </trans-unit>
+
   <trans-unit id="withNegativeNumbers">
     <source>Con números negativos</source>
     <target>Avec des nombres négatifs</target>
@@ -4986,14 +5006,9 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Renseignez-vous sur les données de votre panel ...</target>
 </trans-unit>
 
-<trans-unit id="askEddie">
-  <source>Pregúntale a Eddie 😊</source>
-  <target>Demandez à Eddie 😊</target>
-</trans-unit>
-
-<trans-unit id="askEddieNoIcon">
-  <source>Pregúntale a Eddie</source>
-  <target>Demandez à Eddie</target>
+<trans-unit id="askEdaliticsText">
+  <source>Pregúntale a Edalitics</source>
+  <target>Demandez à Edalitics</target>
 </trans-unit>
 
 <trans-unit id="GPTChat">
@@ -6574,6 +6589,70 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="analyzingTheScheme" datatype="html">
         <source>Analizando el esquema</source>
         <target>Analyse du schéma</target>
+      </trans-unit>
+      <trans-unit id="aiManagementTitle" datatype="html">
+        <source>Gestión de IA</source>
+        <target>Gestion de l'IA</target>
+      </trans-unit>
+      <trans-unit id="aiManagementSubtitle" datatype="html">
+        <source>Configura los parámetros del asistente de inteligencia artificial</source>
+        <target>Configure les paramètres de l'assistant d'intelligence artificielle</target>
+      </trans-unit>
+      <trans-unit id="aiProvider" datatype="html">
+        <source>PROVEEDOR</source>
+        <target>FOURNISSEUR</target>
+      </trans-unit>
+      <trans-unit id="aiApiKey" datatype="html">
+        <source>API KEY</source>
+        <target>API KEY</target>
+      </trans-unit>
+      <trans-unit id="aiAwsAccessKey" datatype="html">
+        <source>CLAVE DE ACCESO DE AWS</source>
+        <target>CLÉ D'ACCÈS AWS</target>
+      </trans-unit>
+      <trans-unit id="aiAwsRegion" datatype="html">
+        <source>REGIÓN DE AWS</source>
+        <target>RÉGION AWS</target>
+      </trans-unit>
+      <trans-unit id="aiAwsSecretKey" datatype="html">
+        <source>CLAVE SECRETA DE AWS</source>
+        <target>CLÉ SECRÈTE AWS</target>
+      </trans-unit>
+      <trans-unit id="aiModel" datatype="html">
+        <source>MODELO DE IA</source>
+        <target>MODEL D'IA</target>
+      </trans-unit>
+      <trans-unit id="aiContext" datatype="html">
+        <source>CONTEXTO</source>
+        <target>CONTEXT</target>
+      </trans-unit>
+      <trans-unit id="aiEDAApp" datatype="html">
+        <source>EDA APP URL</source>
+        <target>EDA APP URL</target>
+      </trans-unit>
+      <trans-unit id="aiMCPURL" datatype="html">
+        <source>MCP URL</source>
+        <target>MCP URL</target>
+      </trans-unit>
+      <trans-unit id="aiLimit" datatype="html">
+        <source>LÍMITE</source>
+        <target>LIMITE</target>
+      </trans-unit>
+      <trans-unit id="aiAvailable" datatype="html">
+        <source>DISPONIBLE</source>
+        <target>DISPONIBLE</target>
+      </trans-unit>
+      <trans-unit id="navegableFrom" datatype="html">
+        <source>Navegable desde</source>
+        <target>Navigable depuis</target>
+      </trans-unit>
+      <trans-unit id="noParentAttributes" datatype="html">
+        <source>Añade más atributos para activar la navegación</source>
+        <target>Ajoutez plus d'attributs pour activer la navigation</target>
+      </trans-unit>
+      <trans-unit id="noParentText" datatype="html">
+        <source>Sin padre</source>
+        <target>Sans parent</target>
       </trans-unit>
     </body>
   </file>
