@@ -452,7 +452,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     } else {
       this.selectedTags.set(option);
       sessionStorage.setItem("activeTags", JSON.stringify(option));
-      this.viewMode.set(option.value === $localize`:@@AllTags:Todos` ? 'folders' : 'flat');
+      this.viewMode.set(option.value === this.allTagsValue ? 'folders' : 'flat');
       this.expandedFolder.set(null);
     }
 
@@ -463,7 +463,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   private async initTagSelection(): Promise<void> {
     const dashboards = await lastValueFrom(this.dashboardService.getDashboards());
-    const moreThan20Dashboards = dashboards.dashboards.length > 20;
+    const AllDashboards = [...dashboards.publics, ...dashboards.shared, ...dashboards.dashboards, ...dashboards.group];
+    const moreThan20Dashboards = AllDashboards.length > 20;
     const todoGroupedOption = { label: this.allTagsGroupedLabel, value: this.allTagsValue };
     const todoFlatOption = { label: this.allTagsFlatLabel, value: this.allTagsFlatValue };
     this.selectedTags.set(moreThan20Dashboards ? todoGroupedOption : todoFlatOption);
