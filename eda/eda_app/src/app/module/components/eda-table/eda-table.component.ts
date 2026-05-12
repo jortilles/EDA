@@ -582,14 +582,10 @@ export class EdaTableComponent implements OnInit {
 
     // Funciones para la navegación
     handleNavIn(field: string, value: any, event: MouseEvent): void {
-        // no lanzamos filtro de click
-        event.stopPropagation();
         this.inject.onNavIn.emit({ field, value });
     }
     
     handleNavOut(rootKey: string, event: MouseEvent): void {
-        // no lanzamos filtro de click
-        event.stopPropagation();
         this.inject.onNavOut.emit({ rootKey });
     }
 
