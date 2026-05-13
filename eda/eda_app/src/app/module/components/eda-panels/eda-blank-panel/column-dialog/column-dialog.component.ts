@@ -427,6 +427,9 @@ export class ColumnDialogComponent {
         const newCol = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
         if (!newCol) return;
         newCol.dateNav = this.dateNavEnabled;
+        if (this.dateNavEnabled) {
+            this.selectedParent = null;
+        }
     }
 
     handleFilterChange(filter: FilterType) {

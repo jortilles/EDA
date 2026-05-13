@@ -2575,6 +2575,28 @@ startEditTitle() {
     }
 
     private buildNavFilter(col: any, value: any): any {
+        // Date columns that display truncated values need a range filter, not equality.
+        // 'No'/null uses the builder's default DATE_FORMAT('%Y-%m-%d'), same as 'day'.
+        if (col.column_type === 'date' && (!col.format || ['year', 'month', 'day', 'No'].includes(col.format))) {
+            const navFmt = this.mapToNavFormat(col.format);
+            const { start, end } = this.computeDateRange(String(value), navFmt);
+            return {
+                filter_id: `nav_${col.table_id}_${col.column_name}_${Date.now()}`,
+                filter_table: col.table_id,
+                filter_column: col.column_name,
+                filter_column_type: col.column_type,
+                filter_type: 'between',
+                filter_elements: [
+                    { value1: [start] },
+                    { value2: [end] }
+                ],
+                isGlobal: 'nav',
+                isNavFilter: true,
+                filterBeforeGrouping: true,
+                joins: col.joins || [],
+                removed: false
+            };
+        }
         return {
             filter_id: `nav_${col.table_id}_${col.column_name}_${Date.now()}`,
             filter_table: col.table_id,
@@ -2608,6 +2630,7 @@ startEditTitle() {
             const mm = String(mo).padStart(2, '0');
             return { start: `${yr}-${mm}-01`, end: `${yr}-${mm}-${String(lastDay).padStart(2, '0')}` };
         }
+        // day: the mysql/pg builder appends 23:59:59 to the end value automatically
         return { start: value, end: value };
     }
 
@@ -2714,40 +2737,47 @@ startEditTitle() {
         const childFieldMap: {[k: string]: string} = {};
         const navColumnSubstitution: {[originalName: string]: string} = {};
 
-        for (const col of effectiveFields) {
-            if (col.downChild) parentFields.push(col.column_name);
-        }
+        // Columns currently substituting a nav parent — they only show "-" (back button)
+        const activeNavChildNames = new Set<string>();
         for (const entry of this.navState) {
             const activeCol = entry.navPath[entry.currentIndex];
             childFieldMap[activeCol.column_name] = entry.rootKey;
-            // Build substitution map: original column_name → effective column_name
+            activeNavChildNames.add(activeCol.column_name);
             const rootColName = entry.navPath[0]?.column_name;
             if (rootColName && activeCol && rootColName !== activeCol.column_name) {
                 navColumnSubstitution[rootColName] = activeCol.column_name;
             }
         }
 
-        // Date nav columns — year→month→day on the same column, no child columns needed
         for (const col of effectiveFields) {
-            if (!col.dateNav) continue;
-            const colKey = `${col.table_id}.${col.column_name}`;
-            const activeEntry = this.dateNavState.find(e => e.columnKey === colKey);
-            if (activeEntry) {
-                if (activeEntry.currentFormatIndex < activeEntry.formatChain.length - 1) {
-                    parentFields.push(col.column_name);
-                }
-                childFieldMap[col.column_name] = colKey;
-            } else {
-                const navFmt = this.mapToNavFormat(col.format);
-                if (navFmt === 'day') {
-                    childFieldMap[col.column_name] = colKey;
-                } else if (col.format === 'month') {
-                    parentFields.push(col.column_name);
+            // Active nav-children already have their childFieldMap entry set above — skip
+            if (activeNavChildNames.has(col.column_name)) continue;
+
+            if (col.dateNav === true) {
+                // Case 1: DATE NAV — same column navigates year→month→day via format changes
+                const colKey = `${col.table_id}.${col.column_name}`;
+                const activeEntry = this.dateNavState.find(e => e.columnKey === colKey);
+                if (activeEntry) {
+                    if (activeEntry.currentFormatIndex < activeEntry.formatChain.length - 1) {
+                        parentFields.push(col.column_name);
+                    }
                     childFieldMap[col.column_name] = colKey;
                 } else {
-                    parentFields.push(col.column_name);
+                    const navFmt = this.mapToNavFormat(col.format);
+                    if (navFmt === 'year') {
+                        parentFields.push(col.column_name);                   // only "+" (zoom in to month)
+                    } else if (navFmt === 'month') {
+                        parentFields.push(col.column_name);                   // "+" (zoom in to day)
+                        childFieldMap[col.column_name] = colKey;              // "-" (zoom out to year)
+                    } else {
+                        childFieldMap[col.column_name] = colKey;              // only "-" (zoom out to month)
+                    }
                 }
+            } else if (col.downChild) {
+                // Case 2: CHILD NAV — links to a different child column, acts like text nav
+                parentFields.push(col.column_name);                           // only "+" (navigate to child)
             }
+            // Case 3: NOT NAVIGABLE — no buttons
         }
 
         this.syncNavigationLinksToPanel();
