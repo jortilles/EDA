@@ -954,32 +954,28 @@ public tableNodeExpand(event: any): void {
         }
 
         // Controlar si se ejecuta una tabla cruzada
-        // Se verifica si la longitud de la variable axes
-        // Referencia a config
-        const configCrossTable = this.panelChartConfig.config.getConfig()
-
-        
         if(subType === 'crosstable'){
-            if(config===null){
+            const configCrossTable = this.panelChartConfig?.config?.getConfig();
+            const existingOrdering = config ? (config.getConfig() as any)?.['ordering'] : undefined;
+
+            if(!config){
                 if(Object.keys(this.copyConfigCrossTable).length !== 0) {
                     this.axes = this.copyConfigCrossTable['ordering'][0].axes;
-                    configCrossTable['ordering'] = [{axes: this.axes}];
+                    if(configCrossTable) configCrossTable['ordering'] = [{axes: this.axes}];
                 } else {
                     this.axes = this.initAxes(this.currentQuery);
-                    configCrossTable['ordering'] = [{axes: this.axes}];
+                    if(configCrossTable) configCrossTable['ordering'] = [{axes: this.axes}];
                 }
             } else {
-                if(config['config']['ordering'] === undefined) {
+                if(existingOrdering === undefined || existingOrdering.length === 0) {
                     this.axes = this.initAxes(this.currentQuery);
                 } else {
-                    if(config['config']['ordering'].length === 0) {
-                        this.axes = this.initAxes(this.currentQuery);
-                    } else {
-                        this.axes = config['config']['ordering'][0]['axes']
-                    }
+                    this.axes = existingOrdering[0]['axes'];
                 }
             }
         }
+
+        this.cdr.detectChanges();
     }
 
     /**
