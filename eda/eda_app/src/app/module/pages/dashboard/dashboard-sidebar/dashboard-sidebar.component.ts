@@ -125,7 +125,7 @@ export class DashboardSidebarComponent {
     this.hayFiltros = this.dashboard.globalFilter.globalFilters.length > 0;
     this.refreshTime = this.dashboard.dashboard.config.refreshTime || null;
     this.clickFiltersEnabled = this.dashboard.dashboard.config.clickFiltersEnabled ?? true;
-    this.onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ;
+    this.onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ?? true;
     this.isReadOnly = this.isReadOnlyCheck();
     this.isEditable = this.isEditableCheck();
     this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
@@ -277,8 +277,8 @@ export class DashboardSidebarComponent {
       },
       {
         id: 'enableEdition',
-        label: this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada` : $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada`,
-        icon: this.onlyIcanEdit ? "pi pi-ban" : "pi pi-check",
+        label: this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`,
+        icon: this.onlyIcanEdit ? "pi pi-check" : "pi pi-ban",
         command: () => {
           this.toggleEdit();
         }
@@ -961,8 +961,8 @@ export class DashboardSidebarComponent {
     this.onlyIcanEdit = !this.onlyIcanEdit;
 
     // Actualizar label e icono según estado
-    clickItem.label = this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada` : $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada`;
-    clickItem.icon = this.onlyIcanEdit ? "pi pi-ban" : "pi pi-check";
+    clickItem.label = this.onlyIcanEdit ? $localize`:@@onlyIcanEditTagEnable:Edición privada habilitada` : $localize`:@@onlyIcanEditTagDisable:Edición privada deshabilitada`;
+    clickItem.icon = this.onlyIcanEdit ? "pi pi-check" : "pi pi-ban";
   }
 
   toggleDownload() {
