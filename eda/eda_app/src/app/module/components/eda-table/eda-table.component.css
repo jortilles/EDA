@@ -68,8 +68,22 @@ th{
      background: transparent !important;
 }
 
-.p-datatable-auto-layout>.p-datatable-wrapper {
-  overflow: hidden;
+/* Fit table to container width — no horizontal scroll */
+.eda-table ::ng-deep .p-datatable-wrapper {
+    overflow-x: hidden !important;
+}
+
+.eda-table ::ng-deep .p-datatable table {
+    table-layout: fixed !important;
+    width: 100% !important;
+    min-width: 0 !important;
+}
+
+.eda-table ::ng-deep .p-datatable td,
+.eda-table ::ng-deep .p-datatable th {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
