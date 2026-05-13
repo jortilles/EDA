@@ -437,8 +437,8 @@ export class DashboardController {
             dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
               dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
          }else{
-            dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
-              dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
+            dashboard.config.ds.name = ds?.ds?.metadata?.model_name ?? 'N/A';
+              dashboard.config.ds.type = ds?.ds?.connection?.type ?? 'N/A';
           }
 
 
