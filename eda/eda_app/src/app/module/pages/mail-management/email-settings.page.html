@@ -9,7 +9,7 @@
             su servidor de correo electrónico</p>
         </div>
         <button type="button" (click)="handleSendNow()" [disabled]="isSendingNow()"
-          class="inline-flex items-center justify-center rounded-md bg-[#00BFB3] px-4 py-2 text-sm font-medium text-white hover:bg-[#00BFB3]/90 disabled:opacity-50 disabled:pointer-events-none transition-colors">
+          class="btn-corporate-primary inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50 disabled:pointer-events-none transition-colors">
           {{ sendNowLabel() }}
         </button>
       </div>
@@ -22,9 +22,7 @@
             <div class="flex gap-2">
               <button type="button" (click)="unifiedForm.patchValue({configType: 'SMPT'})"
                 class="flex items-center gap-2 px-4 py-2 rounded-md border text-sm font-medium transition-colors"
-                [ngClass]="configType === 'SMPT'
-                  ? 'border-[#00BFB3] text-[#00BFB3] bg-[#00BFB3]/10'
-                  : 'border-gray-200 text-gray-500 hover:bg-gray-50'">
+                [ngClass]="configType === 'SMPT' ? 'config-tab-active' : 'config-tab-inactive'">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
@@ -36,9 +34,7 @@
               </button>
               <button type="button" (click)="unifiedForm.patchValue({configType: 'GMAIL'})"
                 class="flex items-center gap-2 px-4 py-2 rounded-md border text-sm font-medium transition-colors"
-                [ngClass]="configType === 'GMAIL'
-                  ? 'border-[#00BFB3] text-[#00BFB3] bg-[#00BFB3]/10'
-                  : 'border-gray-200 text-gray-500 hover:bg-gray-50'">
+                [ngClass]="configType === 'GMAIL' ? 'config-tab-active' : 'config-tab-inactive'">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
@@ -59,14 +55,14 @@
                   <circle cx="12" cy="7" r="4"></circle>
                 </svg>
                 <input id="user" type="email" formControlName="user" placeholder="usuario@dominio.com"
-                  class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] disabled:cursor-not-allowed disabled:opacity-50" />
+                  class="input-corporate flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm placeholder:text-gray-500 disabled:cursor-not-allowed disabled:opacity-50" />
               </div>
             </div>
 
             @if(configType === 'SMPT') {
               <!-- Sección SMTP -->
               <div class="rounded-lg border p-4 space-y-4"
-                [ngClass]="configType === 'SMPT' ? 'border-[#00BFB3]/40 bg-[#00BFB3]/5' : 'border-gray-200 bg-gray-50 opacity-60'">
+                [ngClass]="configType === 'SMPT' ? 'section-active' : 'border-gray-200 bg-gray-50 opacity-60'">
                 <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">SMTP</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div class="space-y-2">
@@ -74,14 +70,14 @@
                     <input id="host" type="text" formControlName="host"
                       [placeholder]="configType !== 'SMPT' ? 'XXXX' : 'smtp.dominio.com'"
                       [attr.disabled]="configType !== 'SMPT' ? true : null"
-                      class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100" />
+                      class="input-corporate flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100" />
                   </div>
                   <div class="space-y-2">
                     <label i18n="@@inputPort" for="port" class="text-sm font-medium">PUERTO</label>
                     <input id="port" type="text" formControlName="port"
                       [placeholder]="configType !== 'SMPT' ? 'XXXX' : '587'"
                       [attr.disabled]="configType !== 'SMPT' ? true : null"
-                      class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100" />
+                      class="input-corporate flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100" />
                   </div>
                 </div>
                 <div class="space-y-2">
@@ -89,14 +85,14 @@
                   <input id="password" type="password" formControlName="password"
                     [placeholder]="configType !== 'SMPT' ? 'XXXX' : ''"
                     [attr.disabled]="configType !== 'SMPT' ? true : null"
-                    class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100" />
+                    class="input-corporate flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100" />
                 </div>
             </div>
             }
             @else{
               <!-- Sección Gmail OAuth2 -->
               <div class="rounded-lg border p-4 space-y-4"
-                [ngClass]="configType === 'GMAIL' ? 'border-[#00BFB3]/40 bg-[#00BFB3]/5' : 'border-gray-200 bg-gray-50 opacity-60'">
+                [ngClass]="configType === 'GMAIL' ? 'section-active' : 'border-gray-200 bg-gray-50 opacity-60'">
                 <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Gmail OAuth2</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div class="space-y-2">
@@ -104,14 +100,14 @@
                     <input id="clientId" type="text" formControlName="clientId"
                       [placeholder]="configType !== 'GMAIL' ? 'XXXX' : 'xxxxx.apps.googleusercontent.com'"
                       [attr.disabled]="configType !== 'GMAIL' ? true : null"
-                      class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100" />
+                      class="input-corporate flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100" />
                   </div>
                   <div class="space-y-2">
                     <label for="clientSecret" class="text-sm font-medium">CLIENT SECRET</label>
                     <input id="clientSecret" type="password" formControlName="clientSecret"
                       [placeholder]="configType !== 'GMAIL' ? 'XXXX' : 'GOCSPX-...'"
                       [attr.disabled]="configType !== 'GMAIL' ? true : null"
-                      class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100" />
+                      class="input-corporate flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100" />
                   </div>
                 </div>
                 <div class="space-y-2">
@@ -119,19 +115,17 @@
                   <input id="refreshToken" type="password" formControlName="refreshToken"
                     [placeholder]="configType !== 'GMAIL' ? 'XXXX' : '1//03...'"
                     [attr.disabled]="configType !== 'GMAIL' ? true : null"
-                    class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100" />
+                    class="input-corporate flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100" />
                 </div>
               </div>
             }
-
-
 
             <!-- TLS -->
             <div class="flex items-center space-x-2">
               <label for="tls" class="text-sm font-medium">TLS</label>
               <button type="button" role="switch" [attr.aria-checked]="tlsEnabled()" (click)="toggleTls()"
-                class="inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3]"
-                [class.bg-[#00BFB3]]="tlsEnabled()" [class.bg-gray-200]="!tlsEnabled()">
+                class="input-corporate inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors"
+                [class.toggle-active]="tlsEnabled()" [class.bg-gray-200]="!tlsEnabled()">
                 <span class="pointer-events-none block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition-transform"
                   [class.translate-x-5]="tlsEnabled()" [class.translate-x-0]="!tlsEnabled()"></span>
               </button>
@@ -140,11 +134,11 @@
             <!-- Acciones -->
             <div class="flex justify-between">
               <button (click)="handleCheckCredentials()" [disabled]="isChecking()"
-                class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] disabled:pointer-events-none disabled:opacity-50 border border-gray-200 bg-white hover:bg-gray-100 h-10 px-4 py-2">
+                class="input-corporate inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 border border-gray-200 bg-white hover:bg-gray-100 h-10 px-4 py-2">
                 {{ isChecking() ? "Checking..." : "Check credentials" }}
               </button>
               <button (click)="handleSubmit()" [disabled]="isSubmitting()"
-                class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] disabled:pointer-events-none disabled:opacity-50 bg-[#00BFB3] text-white hover:bg-[#00BFB3]/90 h-10 px-4 py-2">
+                class="btn-corporate-primary inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2">
                 {{ isSubmitting() ? "Saving..." : "Confirm" }}
               </button>
             </div>
@@ -163,7 +157,7 @@
         </div>
         @if (loadingSignal()) {
         <div class="p-6 flex flex-col items-center justify-center space-y-4 h-[35vh]">
-          <div class="h-10 w-10 border-4 border-[#00BFB3] border-t-transparent rounded-full animate-spin"></div>
+          <div class="spinner-corporate h-10 w-10 border-4 border-t-transparent rounded-full animate-spin"></div>
           <p class="text-gray-600 dark:text-gray-300 font-medium">Cargando dashboards...</p>
         </div>
         } @else {
@@ -177,7 +171,7 @@
                       <div class="flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                          class="mr-2 h-4 w-4 text-[#00BFB3]">
+                          class="mr-2 h-4 w-4 text-corporate-primary">
                           <path d="M18.387 12C19.198 15.799 21 17 21 17H3s3-2 3-9a6 6 0 0 1 7-5.916"></path>
                           <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                           <path d="M18 2v6"></path><path d="M21 5h-6"></path>
@@ -189,7 +183,7 @@
                       <div class="flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                          class="mr-2 h-4 w-4 text-[#00BFB3]">
+                          class="mr-2 h-4 w-4 text-corporate-primary">
                           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                         </svg>
                         PANEL
@@ -199,7 +193,7 @@
                       <div class="flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                          class="mr-2 h-4 w-4 text-[#00BFB3]">
+                          class="mr-2 h-4 w-4 text-corporate-primary">
                           <rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect>
                           <rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect>
                         </svg>
@@ -210,7 +204,7 @@
                       <div class="flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                          class="mr-2 h-4 w-4 text-[#00BFB3]">
+                          class="mr-2 h-4 w-4 text-corporate-primary">
                           <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
                           <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
                           <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
@@ -225,7 +219,7 @@
                   @for (item of alertsPaged(); track item.id) {
                   <tr class="border-b transition-colors hover:bg-gray-50">
                     <td class="px-4 py-3 align-middle">
-                      <span class="inline-flex items-center gap-1 font-mono font-semibold text-[#00BFB3] bg-[#00BFB3]/10 px-2 py-0.5 rounded text-xs">{{ item.alerts }}</span>
+                      <span class="badge-corporate inline-flex items-center gap-1 font-mono font-semibold px-2 py-0.5 rounded text-xs">{{ item.alerts }}</span>
                     </td>
                     <td class="px-4 py-3 align-middle text-gray-700">{{ item.panel }}</td>
                     <td class="px-4 py-3 align-middle text-gray-700">{{ item.dashboard }}</td>
@@ -233,7 +227,7 @@
                     <td class="px-4 py-3 align-middle text-right whitespace-nowrap">
                       <div class="inline-flex items-center gap-2">
                         <a [href]="getDashboardUrl(item.id)" target="_blank" rel="noopener noreferrer"
-                          class="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#00BFB3] hover:border-[#00BFB3] transition-colors">
+                          class="link-corporate inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
@@ -263,7 +257,7 @@
           </div>
           <div class="flex items-center justify-end space-x-2 py-4">
             <select [(ngModel)]="alertsPerPage"
-              class="flex h-10 w-[70px] items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800">
+              class="input-corporate flex h-10 w-[70px] items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800">
               <option value="10">10</option>
               <option value="20">20</option>
               <option value="50">50</option>
@@ -282,7 +276,7 @@
         </div>
         @if (loadingSignal()) {
         <div class="p-6 flex flex-col items-center justify-center space-y-4 h-[35vh]">
-          <div class="h-10 w-10 border-4 border-[#00BFB3] border-t-transparent rounded-full animate-spin"></div>
+          <div class="spinner-corporate h-10 w-10 border-4 border-t-transparent rounded-full animate-spin"></div>
           <p class="text-gray-600 dark:text-gray-300 font-medium">Cargando dashboards...</p>
         </div>
         } @else {
@@ -296,7 +290,7 @@
                       <div class="flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                          class="mr-2 h-4 w-4 text-[#00BFB3]">
+                          class="mr-2 h-4 w-4 text-corporate-primary">
                           <rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect>
                           <rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect>
                         </svg>
@@ -307,7 +301,7 @@
                       <div class="flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                          class="mr-2 h-4 w-4 text-[#00BFB3]">
+                          class="mr-2 h-4 w-4 text-corporate-primary">
                           <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
                           <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
                           <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
@@ -326,7 +320,7 @@
                     <td class="px-4 py-3 align-middle text-right whitespace-nowrap">
                       <div class="inline-flex items-center gap-2">
                         <a [href]="getDashboardUrl(item.id)" target="_blank" rel="noopener noreferrer"
-                          class="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#00BFB3] hover:border-[#00BFB3] transition-colors">
+                          class="link-corporate inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
@@ -356,7 +350,7 @@
           </div>
           <div class="flex items-center justify-end space-x-2 py-4">
             <select [(ngModel)]="dashboardsPerPage"
-              class="flex h-10 w-[70px] items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800">
+              class="input-corporate flex h-10 w-[70px] items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800">
               <option value="10">10</option>
               <option value="20">20</option>
               <option value="50">50</option>
