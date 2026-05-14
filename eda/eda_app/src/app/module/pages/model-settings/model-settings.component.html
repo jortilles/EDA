@@ -15,10 +15,11 @@
                 <p-dropdown [options]="dataSources" formControlName="model" [placeholder]="header1"  [filter]="true" [filterBy]="'label'" 
                   [style]="{width:'50%', padding:'.35rem .75rem'}" (onChange)="exportModel()"> </p-dropdown>
               </div>
-              <div *ngIf="exportModelForm.value.model!=null" class="download-container">
-                <a style="margin: auto" title="Download JSON" [href]="downloadJsonModelHref" download="model.json">
+              <!-- SDA CUSTOM --> <div *ngIf="exportModelForm.value.model!=null" class="download-container">
+                <!-- SDA CUSTOM --> <a style="margin: auto" [title]="downloadJsonTitle" [href]="downloadJsonModelHref" download="model.json">
                   <i class="fa fa-download"></i> {{downloadModel}}</a>
-              </div>
+              <!-- SDA CUSTOM --> </div>
+              <!-- END SDA CUSTOM -->
             </form>
           </div>
 
@@ -70,9 +71,11 @@
                   [style]="{width:'50%', padding:'.35rem .75rem'}" (onChange)="exportDashboard()"> </p-dropdown>
               </div>
               <div *ngIf="dashBoardForm.value.dashboard!=null" class="download-container">
-                <a style="margin: auto" title="Download JSON" [href]="downloadJsonDashboardHref"
-                  download="dashboard.json">
-                  <i class="fa fa-download"></i> {{downloadDashboard}}</a>
+                <!-- SDA CUSTOM --> <a style="margin: auto" [title]="downloadJsonTitle" [href]="downloadJsonDashboardHref" download="dashboard.json" [class.disabled]="loadingDashboardExport" (click)="onDownloadDashboardClick($event)">
+                <!-- SDA CUSTOM -->  <i *ngIf="!loadingDashboardExport" class="fa fa-fw fa-download"></i>
+                <!-- SDA CUSTOM -->  <i *ngIf="loadingDashboardExport" class="fa fa-fw fa-spinner fa-spin"></i>
+                <!-- SDA CUSTOM -->   {{downloadDashboard}}
+                <!-- SDA CUSTOM --> </a>
               </div>
             </form>
           </div>

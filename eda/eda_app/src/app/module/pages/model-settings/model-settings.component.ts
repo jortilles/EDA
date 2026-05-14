@@ -23,6 +23,7 @@ export class ModelSettingsComponent implements OnInit {
   private globalDSRoute = '/datasource';
   public downloadJsonModelHref: any;
   public downloadJsonDashboardHref: any;
+  /* SDA CUSTOM */ public loadingDashboardExport: boolean = false;
   public files: any;
 
   //STRINGS
@@ -38,6 +39,7 @@ export class ModelSettingsComponent implements OnInit {
   public modelSaved : string = $localize`:@@ModelSaved:Modelo guardado correctamente`;
   public downloadModel : string  = $localize`:@@downloadModel:Descargar modelo`;
   public downloadDashboard : string  = $localize`:@@downloadDashboard:Descargar informe`;
+  /* SDA CUSTOM */ public downloadJsonTitle : string  = $localize`:@@downloadJsonTitle:Download JSON`;
 
   //FORMS
   public exportModelForm: UntypedFormGroup;
@@ -122,17 +124,27 @@ export class ModelSettingsComponent implements OnInit {
 
   }
 
+/* SDA CUSTOM */  onDownloadDashboardClick(event: MouseEvent): void {
+/* SDA CUSTOM */    if (this.loadingDashboardExport) {
+/* SDA CUSTOM */      event.preventDefault();
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */  }
+
   exportDashboard() {
     const id = this.dashBoardForm.value.dashboard._id;
+    /* SDA CUSTOM */ this.downloadJsonDashboardHref = null;
+    /* SDA CUSTOM */ this.loadingDashboardExport = true;
 
     this.dashboardService.getDashboard(id).subscribe(
       data => {
         let theJSON = JSON.stringify(data.dashboard);
         let uri = this.sanitizer.bypassSecurityTrustUrl("data:text/json;charset=UTF-8," + encodeURIComponent(theJSON));
         this.downloadJsonDashboardHref = uri;
+        /* SDA CUSTOM */ this.loadingDashboardExport = false;
       },
       err => {
-        this.alertService.addError(err);
+        this.loadingDashboardExport = false;
+        /* SDA CUSTOM */ this.alertService.addError(err);
       });
 
   }
@@ -159,9 +171,15 @@ export class ModelSettingsComponent implements OnInit {
 
           panels.forEach(panel => {
             const fields = panel.content.query.query.fields;
+            
+/* SDA CUSTOM */ // Panels are not verified in SQL mode
+/* SDA CUSTOM */ if(panel.content.query.query?.modeSQL) return
+/* SDA CUSTOM */
             fields.forEach(field => {
 
-              const table = tables.filter(t => t.table_name === field.table_id);
+              // Joined fields encode the join path in table_id (e.g. "sda_project.id.joincolumn"); extract just the table name
+/* SDA CUSTOM */const realTableId = field.table_id.split('.')[0];
+/* SDA CUSTOM */const table = tables.filter(t => t.table_name === realTableId);
               if (table.length > 0) {
                 const column = table[0].columns.filter(column => column.column_name === field.column_name)[0];
                 if (!column) {
@@ -180,13 +198,12 @@ export class ModelSettingsComponent implements OnInit {
       }
       fileReader.readAsText(file);
     } catch (err) {
-      console.log(err);
+      /* SDA CUSTOM */ this.alertService.addError(err);
     }
 
   }
 
   async importDashboard() {
-
     this.dashboardService.updateDashboard(this.loadedDashboard._id, this.loadedDashboard).subscribe(
       () => {
 
@@ -282,7 +299,7 @@ export class ModelSettingsComponent implements OnInit {
       fileReader.readAsText(file);
 
     } catch (err) {
-      console.log(err);
+      /* SDA CUSTOM */ this.alertService.addError(err);
     }
 
   }

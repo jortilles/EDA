@@ -904,8 +904,11 @@
     <source>Update Model Failed</source>
     <target>Model update failed</target>
   </trans-unit>
-  <!-- END SDA CUSTOM -->
-  <!-- END SDA CUSTOM -->
+<!-- END SDA CUSTOM -->
+  <!-- SDA CUSTOM - Download JSON title -->
+  <trans-unit id="downloadJsonTitle">
+    <source>Download JSON</source>
+    <target>Download JSON</target>
+  </trans-unit>
 </body>
-</file>
 </xliff>

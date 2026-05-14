@@ -907,7 +907,11 @@
     <target>Fallo en actualización del modelo</target>
   </trans-unit>
   <!-- END SDA CUSTOM -->
-  <!-- END SDA CUSTOM -->
+<!-- END SDA CUSTOM -->
+  <!-- SDA CUSTOM - Download JSON title -->
+  <trans-unit id="downloadJsonTitle">
+    <source>Download JSON</source>
+    <target>Descargar JSON</target>
+  </trans-unit>
 </body>
-</file>
 </xliff>
