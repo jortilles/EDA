@@ -1,7 +1,7 @@
 <div class="container mx-auto my-10 py-10 px-4 bg-background rounded-lg">
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold tracking-tight" i18n="@@adminDatasource">Gestión de fuentes de datos</h1>
-    <button (click)="handleCreateDataSource()" class="bg-[#00BFB3] hover:bg-[#00BFB3]/90 px-4 py-2 rounded font-semibold text-white flex items-center">
+    <button (click)="handleCreateDataSource()" class="btn-corporate-gradient px-4 py-2 rounded font-semibold text-white flex items-center">
       <eda-icon name="plus" class="mr-2"></eda-icon>
       <span i18n="@@addDatasource">Crear DataSource</span>
     </button>
@@ -37,10 +37,10 @@
   <p class="mt-1 font-semibold text-right text-gray-500">{{ filteredDataSources.length }} <span i18n="@@foundDatasource">datasources encontrados</span></p>
   
   <div class="flex justify-center items-center mt-4 bg-white px-4 py-2 rounded-md text-gray-500">
-    <button (click)="setPage(1)" [disabled]="currentPage === 1" class="flex items-center justify-center w-12 h-12 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:opacity-40 disabled:pointer-events-none">
+    <button (click)="setPage(1)" [disabled]="currentPage === 1" class="paginator-btn flex items-center justify-center w-12 h-12 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors disabled:opacity-40 disabled:pointer-events-none">
       <eda-icon name="chevron-double-left" size="sm"></eda-icon>
     </button>
-    <button (click)="setPage(currentPage - 1)" [disabled]="currentPage === 1" class="flex items-center justify-center w-12 h-12 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:opacity-40 disabled:pointer-events-none">
+    <button (click)="setPage(currentPage - 1)" [disabled]="currentPage === 1" class="paginator-btn flex items-center justify-center w-12 h-12 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors disabled:opacity-40 disabled:pointer-events-none">
       <eda-icon name="chevron-left" size="sm"></eda-icon>
     </button>
     <select [ngModel]="currentPage" (ngModelChange)="setPage(+$event)" class="h-12 mx-2 border border-gray-300 rounded-md px-2 text-sm font-semibold text-gray-700 bg-white">
@@ -49,10 +49,10 @@
       }
     </select>
     <span class="text-sm font-semibold px-1">/ {{ totalPages() }}</span>
-    <button (click)="setPage(currentPage + 1)" [disabled]="currentPage === totalPages()" class="flex items-center justify-center w-12 h-12 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:opacity-40 disabled:pointer-events-none">
+    <button (click)="setPage(currentPage + 1)" [disabled]="currentPage === totalPages()" class="paginator-btn flex items-center justify-center w-12 h-12 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors disabled:opacity-40 disabled:pointer-events-none">
       <eda-icon name="chevron-right" size="sm"></eda-icon>
     </button>
-    <button (click)="setPage(totalPages())" [disabled]="currentPage === totalPages()" class="flex items-center justify-center w-12 h-12 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:opacity-40 disabled:pointer-events-none">
+    <button (click)="setPage(totalPages())" [disabled]="currentPage === totalPages()" class="paginator-btn flex items-center justify-center w-12 h-12 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors disabled:opacity-40 disabled:pointer-events-none">
       <eda-icon name="chevron-double-right" size="sm"></eda-icon>
     </button>
     <select [ngModel]="itemsPerPage" (ngModelChange)="itemsPerPage = +$event; setPage(1)" class="h-12 mx-2 ml-4 border border-gray-300 rounded-md px-2 text-sm text-gray-700 bg-white">

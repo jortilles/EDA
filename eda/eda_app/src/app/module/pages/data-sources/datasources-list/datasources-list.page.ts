@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
   templateUrl: './datasources-list.page.html',
   standalone: true,
   imports: [SharedModule, CommonModule, FormsModule, IconComponent],
+  styleUrls: ['./datasources-list.page.css']
 })
 export class DataSourceListPage implements OnInit {
   private datasourceService = inject(DataSourceNamesService);
