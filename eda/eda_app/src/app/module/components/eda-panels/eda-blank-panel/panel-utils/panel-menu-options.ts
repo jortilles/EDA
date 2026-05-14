@@ -4,6 +4,16 @@ import * as _ from 'lodash';
 import { EdaContextMenuItem, EdaDialogController } from "@eda/shared/components/shared-components.index";
 
 export const PanelOptions = {
+/* SDA CUSTOM */  isAnonymousUser: (): boolean => {
+/* SDA CUSTOM */    try {
+/* SDA CUSTOM */      const user = localStorage.getItem('user');
+/* SDA CUSTOM */      if (!user) return false;
+/* SDA CUSTOM */      const parsedUser = JSON.parse(user);
+/* SDA CUSTOM */      return parsedUser?.name === 'edaanonim';
+/* SDA CUSTOM */    } catch (_e) {
+/* SDA CUSTOM */      return false;
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */  },
   editQuery: (panelComponent: EdaBlankPanelComponent) => {
     return new EdaContextMenuItem({
       label: $localize`:@@panelOptions1:Editar consulta`,
@@ -36,13 +46,13 @@ export const PanelOptions = {
       command: () => {
 
         if (Object.entries(panelComponent.graficos).length !== 0 && panelComponent.chartData.length !== 0) {
-          
+
           if (['line', 'area', 'doughnut', 'polarArea', 'bar', 'horizontalBar', 'barline', 'histogram', 'pyramid', 'radar'].includes(panelComponent.graficos.chartType)) {
 
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.chartController = new EdaDialogController({
               params: {
-                panelId: _.get(panelComponent.panel, 'id'), 
+                panelId: _.get(panelComponent.panel, 'id'),
                 chart: panelComponent.graficos,
                 config: panelComponent.panelChartConfig
             },
@@ -102,7 +112,7 @@ export const PanelOptions = {
               close: (event, response) => { panelComponent.onCloseKpiProperties(event, response) }
             });
 
-          } 
+          }
           else if (panelComponent.graficos.chartType === 'dynamicText') {
 
             panelComponent.contextMenu.hideContextMenu();
@@ -115,7 +125,7 @@ export const PanelOptions = {
               close: (event, response) => { panelComponent.onClosedynamicTextProperties(event, response) }
             });
 
-          } 
+          }
           else if (panelComponent.graficos.chartType === 'parallelSets') {
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.sankeyController = new EdaDialogController({
@@ -126,7 +136,7 @@ export const PanelOptions = {
               close: (event, response) => { panelComponent.onCloseSankeyProperties(event, response) }
             });
 
-          } 
+          }
           else if(panelComponent.graficos.chartType === 'treeMap'){
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.treeMapController = new EdaDialogController({
@@ -285,16 +295,21 @@ export const PanelOptions = {
     const menu = [];
     const editmode = panelComponent.getEditMode();
     const type = panelComponent.getChartType();
-    
+
+  /* SDA CUSTOM */    if (PanelOptions.isAnonymousUser()) {
+/* SDA CUSTOM */      menu.push(PanelOptions.exportExcel(panelComponent));
+/* SDA CUSTOM */      return menu;
+/* SDA CUSTOM */    }
+
     if (editmode) {
         menu.push(PanelOptions.editQuery(panelComponent));
     }
 
     menu.push(PanelOptions.editChart(panelComponent));
-    
+
     if (editmode && type) {
         if (![ "crosstable", "kpi", "dynamicText"].includes(type) && !type.includes('kpi')) {
-            menu.push(PanelOptions.linkPanel(panelComponent)); 
+            menu.push(PanelOptions.linkPanel(panelComponent));
         }
     }
 

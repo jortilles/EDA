@@ -19,14 +19,14 @@
             </div>
         </ng-container>
 
-<!-- SDA CUSTOM -->    <div *ngIf="getEditMode()" class="d-flex align-items-center">
+<!-- SDA CUSTOM -->    <div *ngIf="getEditMode() || isAnonymousUser()" class="d-flex align-items-center">
 <!-- SDA CUSTOM -->      <div *ngIf="inject.canSave" class="mr-2 pointer" (click)="toggleLock()" [attr.title]="panel.locked ? unlockPanelTooltip : lockPanelTooltip">
 <!-- SDA CUSTOM -->        <i [className]="panel.locked ? 'fa fa-lock' : 'fa fa-unlock'" [style.color]="panel.locked ? 'red' : 'green'"></i>
 <!-- SDA CUSTOM -->      </div>
 
-        <div id="edit" [ngClass]="{'edit-blink': lodash.isEmpty(panel.content) }" style="width: 25px;">
-            <i class="fa fa-ellipsis-v btn" (click)="contextMenu.showContextMenu($event)"></i>
-        </div>
+<!-- SDA CUSTOM -->      <div id="edit" [ngClass]="{'edit-blink': lodash.isEmpty(panel.content) }" style="width: 25px;">
+<!-- SDA CUSTOM -->          <i class="fa fa-ellipsis-v btn" (click)="contextMenu.showContextMenu($event)"></i>
+<!-- SDA CUSTOM -->      </div>
 <!-- SDA CUSTOM -->    </div>
     </div>
 </div>

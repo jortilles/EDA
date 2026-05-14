@@ -397,6 +397,15 @@ export class EdaBlankPanelComponent implements OnInit {
         return (userName !== 'edaanonim' && !this.inject.isObserver);
     }
 
+/* SDA CUSTOM */    public isAnonymousUser(): boolean {
+/* SDA CUSTOM */        const user = localStorage.getItem('user');
+/* SDA CUSTOM */        if (!user) {
+/* SDA CUSTOM */            return false;
+/* SDA CUSTOM */        }
+/* SDA CUSTOM */        const userName = JSON.parse(user).name;
+/* SDA CUSTOM */        return userName === 'edaanonim';
+/* SDA CUSTOM */    }
+
     public showWhatIfSection(): boolean {
         return this.currentQuery.some((query: any) => query.whatif_column);
     }
