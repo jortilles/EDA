@@ -4,6 +4,7 @@ export const CORPORATE_COLORS = {
     primary:         '#00B0BA',      // Color principal (botones, iconos, gradientes)
     primaryGradient: '#00c9b1',      // Extremo final de gradientes (header chat, FAB, burbujas)
     primaryRgb:      '0, 176, 186',  // Valor RGB del primario para opacidades (box-shadow, rgba)
+    primaryHsl:      '0 100% 37%', // Componentes HSL del primario para --ring (Tailwind focus ring)
 
     // Colores específicos del chatbot
     chat: {

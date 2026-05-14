@@ -146,6 +146,7 @@ export class AppComponent implements OnInit {
         root.style.setProperty('--corporate-primary',          CORPORATE_COLORS.primary);
         root.style.setProperty('--corporate-primary-gradient', CORPORATE_COLORS.primaryGradient);
         root.style.setProperty('--corporate-primary-rgb',      CORPORATE_COLORS.primaryRgb);
+        root.style.setProperty('--ring',                       CORPORATE_COLORS.primaryHsl);
         // Chat
         root.style.setProperty('--corporate-primary-light',     CORPORATE_COLORS.chat.avatarBg);
         root.style.setProperty('--corporate-primary-light-alt', CORPORATE_COLORS.chat.avatarBgAlt);

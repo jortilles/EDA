@@ -44,7 +44,7 @@
               Nombre <span class="text-red-500">*</span>
             </label>
             <input id="name" type="text" formControlName="name" placeholder="My Database Connection"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md input-corporate"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md"
               [class.border-red-500]="connectionForm.get('name')?.invalid && connectionForm.get('name')?.touched" />
             <p *ngIf="connectionForm.get('name')?.invalid && connectionForm.get('name')?.touched"
               class="text-red-500 text-sm" i18n="@@nameRequired">
@@ -58,7 +58,7 @@
               Tipo <span class="text-red-500">*</span>
             </label>
             <select id="type" formControlName="type"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md input-corporate bg-white"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md bg-white"
               (change)="selectDefaultPort()">
               <option *ngFor="let type of databaseTypes" [value]="type.value">{{ type.label }}</option>
             </select>
@@ -68,7 +68,7 @@
           <div class="space-y-2 md:col-span-2">
             <label for="description" class="block font-medium" i18n="@@inputDescripcionModelo">Descripción</label>
             <textarea id="description" formControlName="description" rows="3"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md input-corporate resize-none"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md resize-none"
               i18n-placeholder="@@placeholderDescripcionModelo"
               placeholder="Describe el propósito y contenido de este modelo de datos..."></textarea>
           </div>
@@ -88,7 +88,7 @@
             }
             <div class="relative">
               <input id="server" type="text" formControlName="host" placeholder="database.example.com"
-                class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md input-corporate"
+                class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md"
                 [class.border-red-500]="connectionForm.get('host')?.invalid && connectionForm.get('host')?.touched" />
               <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-2.5 h-4 w-4 text-gray-500" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -115,7 +115,7 @@
               Puerto <span class="text-red-500">*</span>
             </label>
             <input id="port" type="text" formControlName="port" placeholder="5432"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md input-corporate"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md"
               [class.border-red-500]="connectionForm.get('port')?.invalid && connectionForm.get('port')?.touched" />
             <p *ngIf="connectionForm.get('port')?.invalid && connectionForm.get('port')?.touched"
               class="text-red-500 text-sm" i18n="@@portRequired">
@@ -130,7 +130,7 @@
             </label>
             <div class="relative">
               <input id="database" type="text" formControlName="database" placeholder="my_database"
-                class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md input-corporate"
+                class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md"
                 [class.border-red-500]="connectionForm.get('database')?.invalid && connectionForm.get('database')?.touched" />
               <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-2.5 h-4 w-4 text-gray-500" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -151,7 +151,7 @@
               Esquema
             </label>
             <input id="schema" type="text" formControlName="schema" placeholder="public"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md input-corporate" />
+              class="w-full px-3 py-2 border border-gray-300 rounded-md" />
           </div>
 
           <!-- User Field -->
@@ -161,7 +161,7 @@
             </label>
             <div class="relative">
               <input id="user" type="text" formControlName="user" placeholder="username"
-                class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md input-corporate"
+                class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md"
                 [class.border-red-500]="connectionForm.get('user')?.invalid && connectionForm.get('user')?.touched" />
               <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-2.5 h-4 w-4 text-gray-500" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -183,7 +183,7 @@
             <div class="relative">
               <input id="password" [type]="showPassword ? 'text' : 'password'" formControlName="password"
                 placeholder="••••••••"
-                class="w-full pl-9 pr-10 py-2 border border-gray-300 rounded-md input-corporate"
+                class="w-full pl-9 pr-10 py-2 border border-gray-300 rounded-md"
                 [class.border-red-500]="connectionForm.get('password')?.invalid && connectionForm.get('password')?.touched" />
               <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-2.5 h-4 w-4 text-gray-500" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -218,7 +218,7 @@
             </label>
             <div class="relative">
               <input id="database" type="text" formControlName="database" placeholder="my_database"
-                class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md input-corporate"
+                class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md"
                 [class.border-red-500]="connectionForm.get('database')?.invalid && connectionForm.get('database')?.touched" />
               <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-2.5 h-4 w-4 text-gray-500" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -282,7 +282,7 @@
 
             <div class="relative">
               <input id="server" type="text" formControlName="server" placeholder="database.example.com"
-                class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md input-corporate"
+                class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md"
                 [class.border-red-500]="connectionForm.get('server')?.invalid && connectionForm.get('server')?.touched" />
               <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-2.5 h-4 w-4 text-gray-500" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -336,7 +336,7 @@
                 Separador <span class="text-red-500">*</span>
               </label>
               <input id="separator" type="text" formControlName="separator" placeholder="Separador del modelo"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md input-corporate"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md"
                 [class.border-red-500]="connectionForm.get('separator')?.invalid && connectionForm.get('separator')?.touched"
                 (keyup)="retryCsvWithNewSeparator()" />
               @if(connectionForm.get('separator')?.invalid && connectionForm.get('separator')?.touched){
@@ -453,7 +453,7 @@
               SID
             </label>
             <select id="sid" formControlName="sid"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md input-corporate bg-white">
+              class="w-full px-3 py-2 border border-gray-300 rounded-md bg-white">
               <option *ngFor="let sid of sidOptions" [value]="sid.value">{{ sid.label }}</option>
             </select>
           </div>
@@ -466,7 +466,7 @@
               Pool Limit
             </label>
             <input id="poolLimit" type="number" formControlName="poolLimit"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md input-corporate" />
+              class="w-full px-3 py-2 border border-gray-300 rounded-md" />
           </div>
           }
 
@@ -477,7 +477,7 @@
               Warehouse
             </label>
             <input id="warehouse" type="text" formControlName="warehouse"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md input-corporate" />
+              class="w-full px-3 py-2 border border-gray-300 rounded-md" />
           </div>
           }
 
@@ -492,7 +492,7 @@
               </svg>
             </label>
             <input id="filters" type="text" formControlName="filter" placeholder="e.g., schema:public,table:users"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md input-corporate" />
+              class="w-full px-3 py-2 border border-gray-300 rounded-md" />
             <p class="text-sm text-gray-500 mt-1" i18n="@@optionalFilterDescription">Optional filters to limit the scope
               of your connection</p>
           </div>

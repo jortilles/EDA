@@ -81,5 +81,18 @@
     padding-left: 3em;
 }
 
+:host ::ng-deep #datasource-list .p-treenode-content.p-highlight        { background-color: rgba(var(--corporate-primary-rgb), 0.1) !important; color: inherit !important;}
+:host ::ng-deep #datasource-list .p-treenode-content.p-highlight:active {  border: none!important;}
+:host ::ng-deep #datasource-list .p-treenode-content.p-highlight:hover  { background-color: rgba(var(--corporate-primary-rgb), 0.15) !important; }
+:host ::ng-deep #datasource-list .p-tree-toggler                        { border-radius: 4px !important; box-shadow: none !important; border: none !important; background: transparent !important; }
+:host ::ng-deep #datasource-list .p-tree-toggler:focus                  { box-shadow: none !important; outline: none !important; }
+
+.btn-corporate-primary          { background-color: var(--corporate-primary) !important; color: white; }
+.btn-corporate-primary:hover    { background: linear-gradient(to right, var(--corporate-primary), var(--corporate-primary-gradient)) !important; transition: background 0.8s ease; }
+
+.toggle-active                  { background-color: var(--corporate-primary) !important; }
+.btn-type-active                { background-color: var(--corporate-primary) !important; color: white !important; border-color: var(--corporate-primary) !important; }
+.text-corporate-primary         { color: var(--corporate-primary); }
+
 
 
