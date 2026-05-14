@@ -26,6 +26,7 @@ type Group = {
   templateUrl: './group-list.page.html',
   standalone: true,
   imports: [SharedModule, CommonModule, FormsModule, IconComponent, PickListModule, EdaDialog2Component],
+  styleUrls: ['./group-list.page.css']
 })
 export class GroupListPage implements OnInit {
   private groupService = inject(GroupService);

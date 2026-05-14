@@ -1,7 +1,7 @@
 <div class="container mx-auto my-10 py-10 px-4 bg-background rounded-lg">
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold tracking-tight" i18n="@@adminGroupsTitle">Gestión de Grupos</h1>
-    <button (click)="handleCreateGroup()" class="bg-[#00BFB3] hover:bg-[#00BFB3]/90 px-4 py-2 rounded font-semibold text-white flex items-center">
+    <button (click)="handleCreateGroup()" class="btn-corporate-gradient px-4 py-2 rounded font-semibold text-white flex items-center">
       <eda-icon name="plus" class="mr-2"></eda-icon>
       <span i18n="@@addGroup">Crear Grupo</span>
     </button>
@@ -25,7 +25,7 @@
         <tr>
           <td class="p-3 truncate">{{ group.name }}</td>
           <td class="p-3 truncate">
-            <span [ngClass]="{'bg-[#00BFB3] text-white px-2 py-1 rounded': group.role === 'EDA_ADMIN_ROLE'}">
+            <span [ngClass]="{'badge-primary': group.role === 'EDA_ADMIN_ROLE'}">
               {{ group.role }}
             </span>
           </td>
