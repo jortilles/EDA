@@ -10,9 +10,9 @@
           (mouseleave)="hideOverlay(item)"
         >
           <button
-            class="w-12 h-12 rounded-lg hover:bg-[#00BFB3] hover:text-white transition-colors flex items-center justify-center"
+            class="sidebar-btn w-12 h-12 rounded-lg transition-colors flex items-center justify-center"
             [ngClass]="{
-              'text-white bg-[#00BFB3]': item.isActive || item.showOverlay,
+              'sidebar-btn-active': item.isActive || item.showOverlay,
               'bg-muted': !item.isActive && !item.showOverlay
             }"
             [title]="item.label || ''" (mousedown)="menuCommand(item, $event)" >
@@ -33,7 +33,7 @@
                       @if (subItem.path && !subItem.command) {
                             <a 
                               [routerLink]="subItem.path"
-                              class="flex items-center  gap-2 p-2 rounded-md bg-white hover:text-[#00BFB3] transition-colors"
+                              class="sidebar-submenu-link flex items-center gap-2 p-2 rounded-md bg-white transition-colors"
                             >
                               @if(subItem.icon) {
                                 <eda-icon [name]="subItem.icon" class="h-4 pb-6" />
@@ -41,7 +41,7 @@
                               {{ subItem.label }}
                             </a>
                       } @else {
-                        <button class="flex items-center gap-2 p-2 bg-white hover:text-[#00BFB3] transition-colors focus:outline-none" (click)="menuCommand(subItem, $event)">
+                        <button class="sidebar-submenu-link flex items-center gap-2 p-2 bg-white transition-colors focus:outline-none" (click)="menuCommand(subItem, $event)">
                           @if(subItem.icon) {
                             <eda-icon [name]="subItem.icon" class="h-4 pb-6" />
                           }

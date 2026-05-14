@@ -16,6 +16,11 @@ export const CORPORATE_COLORS = {
         linkHoverColor: '#005f65',   // Color de enlaces al hacer hover
     },
 
+    // Colores específicos del sidebar izquierdo
+    sidebar: {
+        ring: '#00bcd4',  // Ring del input al editar el título del dashboard
+    },
+
     // Colores específicos de carpetas (home — vista de carpetas y filtros de tags)
     folder: {
         iconBg:          '#ccfbf1',  // Fondo del icono de carpeta cerrada
