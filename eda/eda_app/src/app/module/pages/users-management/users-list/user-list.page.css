@@ -1,3 +1,6 @@
 .btn-corporate-gradient       { background: linear-gradient(to right, var(--corporate-primary), var(--corporate-primary-gradient)); }
 .btn-corporate-gradient:hover { opacity: 0.9; }
 .badge-primary                { background-color: var(--corporate-primary); color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; }
+
+.paginator-btn:hover          { background-color: #f3f4f6; color: #374151; }
+.paginator-btn:focus          { outline: none; box-shadow: 0 0 0 2px var(--corporate-primary); }
