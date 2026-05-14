@@ -25,6 +25,7 @@ type User = {
   templateUrl: './user-list.page.html',
   standalone: true,
   imports: [SharedModule, CommonModule, FormsModule, IconComponent, MultiSelectModule, EdaDialog2Component],
+  styleUrls: ['./user-list.page.css']
 })
 export class UserListPage implements OnInit {
   private userService = inject(UserService);

@@ -1,7 +1,7 @@
 <div class="container mx-auto my-10 py-10 px-4 bg-background rounded-lg">
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold tracking-tight" i18n="@@adminUsers">Gestión de Usuarios</h1>
-    <button (click)="handleCreateUser()" class="bg-[#00BFB3] hover:bg-[#00BFB3]/90 px-4 py-2 rounded font-semibold text-white flex items-center">
+    <button (click)="handleCreateUser()" class="btn-corporate-gradient px-4 py-2 rounded font-semibold text-white flex items-center">
       <eda-icon name="plus" class="mr-2"></eda-icon>
       <span i18n="@@addUser">Crear Usuario</span>
     </button>
@@ -27,7 +27,7 @@
           <td class="p-3 truncate">{{ user.email }}</td>
           <td class="p-3 truncate">{{ user.name }}</td>
           <td class="p-3 truncate">
-            <span [ngClass]="{'bg-[#00BFB3] text-white px-2 py-1 rounded': user.role === 'EDA_ADMIN'}">
+            <span [ngClass]="{'badge-primary': user.role === 'EDA_ADMIN'}">
               {{ user.role }}
             </span>
           </td>
