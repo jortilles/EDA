@@ -1731,7 +1731,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     }
 
-    public canIedit(): boolean {
+   public canIedit(): boolean {
+        /* SDA CUSTOM */ if (this.inject?.isObserver) return false;
+        /* SDA CUSTOM */
         let result: boolean = false;
         result = this.userService.isAdmin;
         // si no es admin...

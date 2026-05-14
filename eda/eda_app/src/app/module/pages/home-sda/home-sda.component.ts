@@ -601,6 +601,7 @@ public filterGroups() {
    * @returns Boolean indicating if the user can edit the dashboard
    */
   public canIEdit(dashboard): boolean {
+    if (this.isObserver) return false;
     let result: boolean = false;
     result = this.isAdmin;
     if (result == false) {

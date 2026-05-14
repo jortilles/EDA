@@ -687,4 +687,9 @@ export class GlobalFilterComponent implements OnInit {
 /*SDA CUSTOM*/          this.tooltipHideTimeout = null;
 /*SDA CUSTOM*/      }, 150);
 /*SDA CUSTOM*/  }
+
+/*SDA CUSTOM*/ // Check if filter is read-only for current user
+/*SDA CUSTOM*/ public isFilterReadOnly(filter: any): boolean {
+/*SDA CUSTOM*/     return !this.isAdmin && !this.isDashboardCreator && filter.visible === 'readOnly';
+/*SDA CUSTOM*/ }
 }

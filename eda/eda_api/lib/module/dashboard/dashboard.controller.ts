@@ -17,6 +17,14 @@ const cache_config = require('../../../config/cache.config')
 const eda_api_config = require('../../../config/eda_api_config');
 export class DashboardController {
 
+/* SDA CUSTOM */  static async isReadOnlyUser(req: Request): Promise<boolean> {
+/* SDA CUSTOM */    try {
+/* SDA CUSTOM */      const groups = await Group.find({ users: { $in: req.user._id } }).exec();
+/* SDA CUSTOM */      return groups.some(g => g.name === 'EDA_RO');
+/* SDA CUSTOM */    } catch (err) {
+/* SDA CUSTOM */      return false;
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */  }
 
   static async getDashboards(req: Request, res: Response, next: NextFunction) {
     try {
@@ -666,6 +674,12 @@ export class DashboardController {
 
   static async create(req: Request, res: Response, next: NextFunction) {
     try {
+      /* SDA CUSTOM */ const isReadOnly = await DashboardController.isReadOnlyUser(req);
+      /* SDA CUSTOM */ if (isReadOnly) {
+      /* SDA CUSTOM */   return next(new HttpException(403, 'Read-only users cannot create dashboards'));
+      /* SDA CUSTOM */ }
+      /* SDA CUSTOM */
+
       const body = req.body
 
       const dashboard: IDashboard = new Dashboard({
@@ -703,6 +717,12 @@ export class DashboardController {
 
   static async update(req: Request, res: Response, next: NextFunction) {
     try {
+      /* SDA CUSTOM */ const isReadOnly = await DashboardController.isReadOnlyUser(req);
+      /* SDA CUSTOM */ if (isReadOnly) {
+      /* SDA CUSTOM */   return next(new HttpException(403, 'Read-only users cannot update dashboards'));
+      /* SDA CUSTOM */ }
+      /* SDA CUSTOM */
+
       const body = req.body;
 
       Dashboard.findById(req.params.id, (err, dashboard: IDashboard) => {
@@ -771,6 +791,12 @@ export class DashboardController {
      */
     static async updateSpecific(req: Request, res: Response, next: NextFunction) {
       try {
+        /* SDA CUSTOM */ const isReadOnly = await DashboardController.isReadOnlyUser(req);
+        /* SDA CUSTOM */ if (isReadOnly) {
+        /* SDA CUSTOM */   return next(new HttpException(403, 'Read-only users cannot update dashboards'));
+        /* SDA CUSTOM */ }
+        /* SDA CUSTOM */
+
         const { id } = req.params;
         const { data } = req.body;
         const { key, newValue } = data;
@@ -832,6 +858,12 @@ export class DashboardController {
   static async delete(req: Request, res: Response, next: NextFunction) {
     let options: QueryOptions = {}
     try {
+      /* SDA CUSTOM */ const isReadOnly = await DashboardController.isReadOnlyUser(req);
+      /* SDA CUSTOM */ if (isReadOnly) {
+      /* SDA CUSTOM */   return next(new HttpException(403, 'Read-only users cannot delete dashboards'));
+      /* SDA CUSTOM */ }
+      /* SDA CUSTOM */
+
       Dashboard.findByIdAndDelete(req.params.id, options, (err, dashboard) => {
         if (err) {
           return next(new HttpException(500, 'Error removing dashboard'))
@@ -1913,6 +1945,12 @@ export class DashboardController {
    */
   static async clone(req: Request, res: Response, next: NextFunction) {
     try {
+      /* SDA CUSTOM */ const isReadOnly = await DashboardController.isReadOnlyUser(req);
+      /* SDA CUSTOM */ if (isReadOnly) {
+      /* SDA CUSTOM */   return next(new HttpException(403, 'Read-only users cannot clone dashboards'));
+      /* SDA CUSTOM */ }
+      /* SDA CUSTOM */
+
       const dashboardId = req.params.id;
       console.log('Attempting to clone dashboard with ID:', dashboardId);
       

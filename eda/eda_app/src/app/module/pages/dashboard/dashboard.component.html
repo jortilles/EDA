@@ -111,21 +111,24 @@
     </div>
     <hr>
 
-    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="onAddWidget()">
+    <!-- SDA CUSTOM - Solo visible para no observadores -->
+    <div *ngIf="display_v.edit_mode && !inject?.isObserver" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="onAddWidget()">
         <div>
             <i id="newPanel" class="fa fa-columns"></i>
             <span i18n="@@opcionPanel" class="ml-2">NUEVO PANEL</span>
         </div>
     </div>
 
-    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="onAddTitle()">
+    <!-- SDA CUSTOM - Solo visible para no observadores -->
+    <div *ngIf="display_v.edit_mode && !inject?.isObserver" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="onAddTitle()">
         <div>
             <i class="fa fa-columns"></i>
             <span i18n="@@opcionTitulo" class="ml-2">NUEVO TEXTO</span>
         </div>
     </div>
 
-    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="gFilter?.onShowGlobalFilter(true)">
+    <!-- SDA CUSTOM - Solo visible para no observadores -->
+    <div *ngIf="display_v.edit_mode && !inject?.isObserver" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="gFilter?.onShowGlobalFilter(true)">
         <div>
             <i id="newFilter" class="fa fa-filter"></i>
             <span i18n="@@opcionFiltro" class="ml-2">NUEVO FILTRO</span>
@@ -134,6 +137,7 @@
 
     <hr>
 
+    <!-- SDA CUSTOM - Ahora visible para todos -->
     <div class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="onResetWidgets()">
         <div>
             <i class="fa fa-ban"></i>
@@ -141,7 +145,8 @@
         </div>
     </div>
 
-    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1">
+    <!-- SDA CUSTOM - Solo visible para no observadores -->
+    <div *ngIf="display_v.edit_mode && !inject?.isObserver" class="right-sidebar-blocks-options block-options-bg pointer mt-1">
         <div>
             <div>
                 <i class="fa fa-tag" ></i>
@@ -163,7 +168,8 @@
         </div>
     </div>
 
-    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1">
+    <!-- SDA CUSTOM - Solo visible para no observadores -->
+    <div *ngIf="display_v.edit_mode && !inject?.isObserver" class="right-sidebar-blocks-options block-options-bg pointer mt-1">
         <div>
             <span class="ml-2">LIVE DASHBOARD</span>
             <input style="width: 100%; margin-top: 0.2rem;" [placeholder]="Seconds_to_refresh" type="number" pInputText [(ngModel)]="refreshTime">
@@ -172,26 +178,30 @@
 
 
     <hr>
-    <div *ngIf="display_v.edit_mode && canIedit()" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="saveDashboard()">
+    <!-- SDA CUSTOM - Solo visible para no observadores -->
+    <div *ngIf="display_v.edit_mode && canIedit() && !inject?.isObserver" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="saveDashboard()">
         <div>
             <i id="saveDashboard" class="fa fa-save"></i>
             <!--SDA CUSTOM--><span i18n="@@userDetailSaveButton" class="ml-2">GUARDAR</span>
         </div>
     </div>
-    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="saveAs()">
+    <!-- SDA CUSTOM - Solo visible para no observadores (guardar como crea nuevo informe) -->
+    <div *ngIf="display_v.edit_mode && !inject?.isObserver" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="saveAs()">
         <div>
             <i id="saveDashboard" class="fa fa-save"></i>
             <span i18n="@@opcionGuardarComo" class="ml-2">GUARDAR COMO</span>
         </div>
     </div>
-    <div *ngIf="display_v.edit_mode && canIedit()" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="deleteReport()">
+    <!-- SDA CUSTOM - Solo visible para no observadores -->
+    <div *ngIf="display_v.edit_mode && canIedit() && !inject?.isObserver" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="deleteReport()">
         <div>
             <i class="fa fa-trash"></i>
             <span i18n="@@eliminarInforme" class="ml-2">ELIMINAR INFORME</span>
         </div>
     </div>
 
-    <div *ngIf="display_v.edit_mode">
+    <!-- SDA CUSTOM - Solo visible para no observadores -->
+    <div *ngIf="display_v.edit_mode && !inject?.isObserver">
         <form [formGroup]="form" *ngIf="canIedit()" >
             <div >
                 <!-- SDA CUSTOM --> <p-selectButton [options]="getFilteredVisibleTypes()" formControlName="visible" (onChange)="handleSelectedBtn($event)">
@@ -207,15 +217,18 @@
                 </p-multiSelect>
             </div>
         </form>
-        <button id="copy-link" (click)="copyURL()" *ngIf="display_v.shared">
-            <span>
-                <i class="fa fa-files-o" aria-hidden="true"></i>
-                copiar URL pública
-            </span>
-        </button>
     </div>
 
-    <div *ngIf="display_v.edit_mode && canIedit()"  [pTooltip]="canIeditTooltip" tooltipPosition="above" class="canIeditClass ml-3">
+    <!-- SDA CUSTOM - Visible para todos los usuarios -->
+    <button id="copy-link" (click)="copyURL()" *ngIf="display_v.shared">
+        <span>
+            <i class="fa fa-files-o" aria-hidden="true"></i>
+            copiar URL pública
+        </span>
+    </button>
+
+    <!-- SDA CUSTOM - Solo visible para no observadores -->
+    <div *ngIf="display_v.edit_mode && canIedit() && !inject?.isObserver"  [pTooltip]="canIeditTooltip" tooltipPosition="above" class="canIeditClass ml-3">
         <div i18n="@@onlyIcanEditTag" class="canIeditClassLabel"  >
             Edición privada:
         </div>
@@ -227,7 +240,8 @@
     </div>
 
     <hr>
-    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="editStyles()">
+    <!-- SDA CUSTOM - Solo visible para no observadores -->
+    <div *ngIf="display_v.edit_mode && !inject?.isObserver" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="editStyles()">
         <div>
             <i class="fa fa-paint-brush"></i>
             <span i18n="@@opcionEditarEstilos" class="ml-2">EDITAR ESTILOS</span>
@@ -248,7 +262,8 @@
         </div>
     </div>
 
-    <div  *ngIf="display_v.edit_mode && canIedit()" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="openMailConfig();">
+    <!-- SDA CUSTOM - Solo visible para no observadores -->
+    <div  *ngIf="display_v.edit_mode && canIedit() && !inject?.isObserver" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="openMailConfig();">
         <div>
             <i class="fa fa-envelope-o"></i>
             <span i18n="@@opcionMail" class="ml-2">ENVIAR POR EMAIL</span>
