@@ -968,14 +968,11 @@ public tableNodeExpand(event: any): void {
             }
 
         }
-
         // Controlar si se ejecuta una tabla cruzada
         // Se verifica si la longitud de la variable axes
         // Referencia a config
-        const configCrossTable = this.panelChartConfig.config.getConfig()
-
-        
         if(subType === 'crosstable'){
+            const configCrossTable = this.panelChartConfig.config.getConfig()
             // Excluir nav-children para que no aparezcan en los ejes del editor drag-drop
             const _navChildKeysCT = new Set<string>();
             this.currentQuery.forEach((col: any) => { if (col.downChild) _navChildKeysCT.add(`${col.downChild.table_id}.${col.downChild.column_name}`); });
@@ -2357,14 +2354,14 @@ public tableNodeExpand(event: any): void {
         this.filtredColumns = _.cloneDeep(filteredColumns)
     }
 
-trackByTable(index: number, table: any): any {
-    return table.value;
-}
+    trackByTable(_index: number, table: any): any {
+        return table.value;
+    }
 
-startEditTitle() {
-    this.editingTitle = true;
-    this.titleClick=true;
-}
+    startEditTitle() {
+        this.editingTitle = true;
+        this.titleClick=true;
+    }
 
     // ─── AND/OR Filter Dialog ────────────────────────────────────────────────
 
@@ -2493,117 +2490,183 @@ startEditTitle() {
             }));
     }
 
+    // ─── NAVIGATION FEATURE ────────────────────────────────────────────────────
+    // Three mutually exclusive navigation types exist for columns:
+    //   1. DATE NAV   (col.dateNav === true)  → drills down year→month→day on the same column
+    //   2. CHILD NAV  (col.downChild set)     → substitutes the column with a child column
+    //   3. NOT NAVIGABLE                      → no "+" or "-" buttons shown
+
+    /** Entry point for nav events from the table: routes "in" (+) and "out" (-) clicks. */
     public handleNavEvent(event: any): void {
         if (event.navType === 'in') this.handleNavIn(event);
         else if (event.navType === 'out') this.handleNavOut(event);
     }
 
+    // ─── Auxiliary helpers ──────────────────────────────────────────────────────
+
+    /** Finds a column in currentQuery by table_id and column_name. */
+    private findColInQuery(tableId: string, colName: string): any {
+        return this.currentQuery.find((c: any) => c.table_id === tableId && c.column_name === colName);
+    }
+
+    /**
+     * Finds the active navState entry whose current column matches `field`.
+     * Used to detect if clicking "+" on an already-active child should extend the chain.
+     */
+    private findActiveNavEntryForField(field: string): any | undefined {
+        return this.navState.find(d => {
+            const activeCol = d.navPath[d.currentIndex];
+            return activeCol && activeCol.column_name === field;
+        });
+    }
+
+    /**
+     * Returns true if `rootKey` corresponds to a dateNav column — either with an
+     * active drill-in entry in dateNavState, or in its original format (format-only zoom).
+     */
+    private isDateNavKey(rootKey: string): boolean {
+        if (this.dateNavState.some(e => e.columnKey === rootKey)) return true;
+        return this.currentQuery.some(
+            (c: any) => `${c.table_id}.${c.column_name}` === rootKey && c.dateNav
+        );
+    }
+
+    /**
+     * Builds the full navPath for a root column by following downChild links in currentQuery.
+     * Used when restoring navigation state after a panel load.
+     */
+    private buildNavPathFromRoot(rootCol: any): any[] {
+        const navPath: any[] = [rootCol];
+        let current = rootCol;
+        while (current.downChild) {
+            const next = this.findColInQuery(current.downChild.table_id, current.downChild.column_name);
+            if (!next) break;
+            navPath.push(next);
+            current = next;
+        }
+        return navPath;
+    }
+
+    /**
+     * Extends an existing child-nav chain one step deeper.
+     * Called when clicking "+" on a column that is already an active child substitute.
+     */
+    private extendNavChain(entry: any, value: any): void {
+        const activeCol = entry.navPath[entry.currentIndex];
+        if (!activeCol?.downChild) return;
+        const nextCol = this.findColInQuery(activeCol.downChild.table_id, activeCol.downChild.column_name);
+        if (!nextCol) return;
+        entry.navPath.push(nextCol);
+        entry.currentIndex++;
+        const filter = this.buildNavFilter(activeCol, value);
+        entry.navFilters.push(filter);
+        this.selectedFilters.push(filter);
+    }
+
+    /**
+     * Starts a new child-nav chain from a root column.
+     * Creates a navState entry and adds the initial filter to selectedFilters.
+     */
+    private startNavChain(field: string, value: any): void {
+        const rootCol = this.currentQuery.find((col: any) => col.column_name === field);
+        if (!rootCol?.downChild) return;
+        const rootKey = `${rootCol.table_id}.${rootCol.column_name}`;
+        const childCol = this.findColInQuery(rootCol.downChild.table_id, rootCol.downChild.column_name);
+        if (!childCol) return;
+        const filter = this.buildNavFilter(rootCol, value);
+        this.navState.push({
+            rootKey,
+            navPath: [rootCol, childCol],
+            currentIndex: 1,
+            navFilters: [filter]
+        });
+        this.selectedFilters.push(filter);
+    }
+
+    /**
+     * Handles "+" (navigate in) click from the table.
+     * Routes to date-nav for dateNav columns; otherwise handles child nav.
+     */
     private handleNavIn(event: {field: string, value: any}): void {
+        // Date nav columns use their own drill-down logic
         const dateNavCol = this.currentQuery.find((col: any) => col.column_name === event.field && col.dateNav === true);
         if (dateNavCol) { this.handleDateNavIn(dateNavCol, String(event.value)); return; }
 
-        // Check if the clicked column is already an active nav substitution (deep chain case)
-        const existingNav = this.navState.find(d => {
-            const activeCol = d.navPath[d.currentIndex];
-            return activeCol && activeCol.column_name === event.field;
-        });
-
-        if (existingNav) {
-            // Extend existing chain: e.g. clicking + on City when Country→City is active
-            const activeCol = existingNav.navPath[existingNav.currentIndex];
-            if (!activeCol?.downChild) return;
-            const nextCol = this.currentQuery.find((col: any) =>
-                    col.table_id === activeCol.downChild.table_id &&
-                    col.column_name === activeCol.downChild.column_name
-                );
-            if (!nextCol) return;
-            existingNav.navPath.push(nextCol);
-            existingNav.currentIndex++;
-            const filter = this.buildNavFilter(activeCol, event.value);
-            existingNav.navFilters.push(filter);
-            this.selectedFilters.push(filter);
+        // Child nav: extend an existing chain or start a new one
+        const existingEntry = this.findActiveNavEntryForField(event.field);
+        if (existingEntry) {
+            this.extendNavChain(existingEntry, event.value);
         } else {
-            // Start a new chain from a root column
-            const rootCol = this.currentQuery.find((col: any) => col.column_name === event.field);
-            if (!rootCol?.downChild) return;
-            const rootKey = `${rootCol.table_id}.${rootCol.column_name}`;
-            const childCol = this.currentQuery.find((col: any) =>
-                    col.table_id === rootCol.downChild.table_id &&
-                    col.column_name === rootCol.downChild.column_name
-                );
-            if (!childCol) return;
-            const filter = this.buildNavFilter(rootCol, event.value);
-            this.navState.push({
-                rootKey,
-                navPath: [rootCol, childCol],
-                currentIndex: 1,
-                navFilters: [filter]
-            });
-            this.selectedFilters.push(filter);
+            this.startNavChain(event.field, event.value);
         }
 
         this.syncNavigationLinksToPanel();
         QueryUtils.runQuery(this, false);
     }
 
+    /** Removes all filters and the navState entry for a fully resolved nav chain. */
+    private removeFullNavEntry(entry: any): void {
+        const filterIds = new Set(entry.navFilters.map((f: any) => f.filter_id));
+        this.selectedFilters = this.selectedFilters.filter((f: any) => !filterIds.has(f.filter_id));
+        this.navState = this.navState.filter(d => d.rootKey !== entry.rootKey);
+    }
+
+    /** Steps back one level in a child-nav chain: removes the last filter and pops the path. */
+    private stepBackNavChain(entry: any): void {
+        const removed = entry.navFilters.pop();
+        if (removed) {
+            this.selectedFilters = this.selectedFilters.filter((f: any) => f.filter_id !== removed.filter_id);
+        }
+        entry.navPath.pop();
+        entry.currentIndex--;
+    }
+
+    /**
+     * Handles "-" (navigate out) click from the table.
+     * Routes to date-nav for dateNav columns; otherwise steps back in the child-nav chain.
+     */
     private handleNavOut(event: {rootKey: string}): void {
-        // Route to date nav handler: either active drill-in entry OR format-only zoom-out
-        const isDateNavActive = this.dateNavState.some(e => e.columnKey === event.rootKey);
-        const isDateNavZoomOut = !isDateNavActive && this.currentQuery.some(
-            (c: any) => `${c.table_id}.${c.column_name}` === event.rootKey && c.dateNav
-        );
-        if (isDateNavActive || isDateNavZoomOut) { this.handleDateNavOut(event.rootKey); return; }
+        // Date nav columns (active drill-ins and format-only zoom) use the date nav flow
+        if (this.isDateNavKey(event.rootKey)) { this.handleDateNavOut(event.rootKey); return; }
 
         const entry = this.navState.find(d => d.rootKey === event.rootKey);
         if (!entry) return;
 
+        // At level 1: remove entire chain; deeper: step back one level
         if (entry.currentIndex <= 1) {
-            const filterIds = new Set(entry.navFilters.map((f: any) => f.filter_id));
-            this.selectedFilters = this.selectedFilters.filter((f: any) => !filterIds.has(f.filter_id));
-            this.navState = this.navState.filter(d => d.rootKey !== event.rootKey);
+            this.removeFullNavEntry(entry);
         } else {
-            const removed = entry.navFilters.pop();
-            if (removed) {
-                this.selectedFilters = this.selectedFilters.filter((f: any) => f.filter_id !== removed.filter_id);
-            }
-            entry.navPath.pop();
-            entry.currentIndex--;
+            this.stepBackNavChain(entry);
         }
 
         this.syncNavigationLinksToPanel();
         QueryUtils.runQuery(this, false);
     }
 
+    /**
+     * Builds a navigation filter for a child-nav "+" click.
+     * Date columns showing truncated values (year/month/day/No) use BETWEEN because
+     * equality fails against full DATETIME values in the database.
+     * Text and number columns use a simple equality filter.
+     */
     private buildNavFilter(col: any, value: any): any {
-        // Date columns that display truncated values need a range filter, not equality.
-        // 'No'/null uses the builder's default DATE_FORMAT('%Y-%m-%d'), same as 'day'.
         if (col.column_type === 'date' && (!col.format || ['year', 'month', 'day', 'No'].includes(col.format))) {
             const navFmt = this.mapToNavFormat(col.format);
             const { start, end } = this.computeDateRange(String(value), navFmt);
-            return {
-                filter_id: `nav_${col.table_id}_${col.column_name}_${Date.now()}`,
-                filter_table: col.table_id,
-                filter_column: col.column_name,
-                filter_column_type: col.column_type,
-                filter_type: 'between',
-                filter_elements: [
-                    { value1: [start] },
-                    { value2: [end] }
-                ],
-                isGlobal: 'nav',
-                isNavFilter: true,
-                filterBeforeGrouping: true,
-                joins: col.joins || [],
-                removed: false
-            };
+            return this.makeNavFilterObject(col, 'between', [{ value1: [start] }, { value2: [end] }]);
         }
+        return this.makeNavFilterObject(col, '=', [{ value1: [String(value)] }]);
+    }
+
+    /** Constructs the shared base structure for a nav filter object. */
+    private makeNavFilterObject(col: any, filterType: string, filterElements: any[]): any {
         return {
             filter_id: `nav_${col.table_id}_${col.column_name}_${Date.now()}`,
             filter_table: col.table_id,
             filter_column: col.column_name,
             filter_column_type: col.column_type,
-            filter_type: '=',
-            filter_elements: [{ value1: [String(value)] }],
+            filter_type: filterType,
+            filter_elements: filterElements,
             isGlobal: 'nav',
             isNavFilter: true,
             filterBeforeGrouping: true,
@@ -2612,13 +2675,23 @@ startEditTitle() {
         };
     }
 
-    /** Maps any col.format value to the nav granularity level used in the drill-down chain. */
+    /**
+     * Maps col.format to the three nav granularity levels.
+     * Any format that is not explicitly 'year' or 'month' (including 'day', 'No', null,
+     * 'week', 'timestamp', etc.) maps to 'day' — the finest granularity.
+     */
     private mapToNavFormat(format: string): 'year' | 'month' | 'day' {
         if (format === 'year') return 'year';
         if (format === 'month') return 'month';
         return 'day'; // day, week, week_day, day_hour, day_hour_minute, timestamp, No, null…
     }
 
+    /**
+     * Computes the inclusive date range [start, end] for a BETWEEN filter.
+     *  - year  → 'YYYY-01-01' … 'YYYY-12-31'
+     *  - month → 'YYYY-MM-01' … 'YYYY-MM-last'
+     *  - day   → value … value  (SQL builder appends ' 23:59:59' to end automatically)
+     */
     private computeDateRange(value: string, navFmt: 'year' | 'month' | 'day'): { start: string; end: string } {
         if (navFmt === 'year') {
             return { start: `${value}-01-01`, end: `${value}-12-31` };
@@ -2630,10 +2703,11 @@ startEditTitle() {
             const mm = String(mo).padStart(2, '0');
             return { start: `${yr}-${mm}-01`, end: `${yr}-${mm}-${String(lastDay).padStart(2, '0')}` };
         }
-        // day: the mysql/pg builder appends 23:59:59 to the end value automatically
+        // day: SQL builder appends ' 23:59:59' to end automatically — do not add it here
         return { start: value, end: value };
     }
 
+    /** Builds a BETWEEN date-range filter used by date-nav drill-down. */
     private buildDateRangeFilter(col: any, value: string, navFmt: 'year' | 'month' | 'day'): any {
         const { start, end } = this.computeDateRange(value, navFmt);
         return {
@@ -2652,19 +2726,30 @@ startEditTitle() {
         };
     }
 
+    /**
+     * Updates the format of a column in currentQuery in-place.
+     * Date-nav uses this to switch the backend's DATE_FORMAT grouping as the user drills in/out.
+     */
     private updateColumnFormatInQuery(col: any, format: string): void {
-        const found = this.currentQuery.find((c: any) =>
-            c.table_id === col.table_id && c.column_name === col.column_name
-        );
+        const found = this.findColInQuery(col.table_id, col.column_name);
         if (found) found.format = format;
     }
 
+    /**
+     * Handles "+" click on a dateNav column.
+     * If already drilled in, advances one step in the format chain.
+     * If not yet drilled in, starts from the column's current format:
+     *   year  → drills to month
+     *   month → drills to day
+     *   day/No/other → extracts the year and drills year→month→day from the start
+     */
     private handleDateNavIn(col: any, value: string): void {
         const colKey = `${col.table_id}.${col.column_name}`;
         const existing = this.dateNavState.find(e => e.columnKey === colKey);
         const fullChain: ('year' | 'month' | 'day')[] = ['year', 'month', 'day'];
 
         if (existing) {
+            // Advance one step in the active drill-in chain
             const navFmt = existing.formatChain[existing.currentFormatIndex] as 'year' | 'month' | 'day';
             const filter = this.buildDateRangeFilter(col, value, navFmt);
             existing.navFilters.push(filter);
@@ -2672,19 +2757,19 @@ startEditTitle() {
             existing.currentFormatIndex++;
             this.updateColumnFormatInQuery(col, existing.formatChain[existing.currentFormatIndex]);
         } else {
-            // Use col.format directly — 'No' and anything other than year/month maps to 'day'
+            // Start a new drill-in from the column's current format level
             const navFmt = this.mapToNavFormat(col.format);
             let navValue = value;
             let startIdx = fullChain.indexOf(navFmt);
 
-            // day-level (No, day, timestamp, week, etc.): extract year, restart from year→month
+            // day-level: values are full dates (e.g. "2021-03-15") → extract year and restart
             if (navFmt === 'day') {
                 navValue = String(value).split('-')[0];
                 startIdx = 0;
             }
 
             const chain = fullChain.slice(startIdx);
-            if (chain.length < 2) return;
+            if (chain.length < 2) return; // Already at finest granularity
 
             const filter = this.buildDateRangeFilter(col, navValue, chain[0]);
             this.dateNavState.push({
@@ -2700,13 +2785,35 @@ startEditTitle() {
         QueryUtils.runQuery(this, false);
     }
 
+    /** Removes all filters for a dateNav entry and restores the column to its initial format. */
+    private removeFullDateNavEntry(entry: any, col: any): void {
+        const filterIds = new Set(entry.navFilters.map((f: any) => f.filter_id));
+        this.selectedFilters = this.selectedFilters.filter((f: any) => !filterIds.has(f.filter_id));
+        this.updateColumnFormatInQuery(col, entry.initialFormat);
+        this.dateNavState = this.dateNavState.filter(e => e.columnKey !== entry.columnKey);
+    }
+
+    /** Steps back one level in an active dateNav drill-in: removes last filter, decrements format index. */
+    private stepBackDateNav(entry: any, col: any): void {
+        const removed = entry.navFilters.pop();
+        if (removed) this.selectedFilters = this.selectedFilters.filter((f: any) => f.filter_id !== removed.filter_id);
+        entry.currentFormatIndex--;
+        this.updateColumnFormatInQuery(col, entry.formatChain[entry.currentFormatIndex]);
+    }
+
+    /**
+     * Handles "-" click on a dateNav column. Three sub-cases:
+     *   a) No active drill-in: pure format zoom-out (day→month, month→year)
+     *   b) Active drill-in at level 1: remove all filters and restore original format
+     *   c) Active drill-in deeper: step back one level in the chain
+     */
     private handleDateNavOut(rootKey: string): void {
         const entry = this.dateNavState.find(e => e.columnKey === rootKey);
         const col = this.currentQuery.find((c: any) => `${c.table_id}.${c.column_name}` === rootKey);
         if (!col) return;
 
         if (!entry) {
-            // No active drill-in: pure format zoom-out (No/day → month, month → year)
+            // No active drill-in: zoom out one format level
             const navFmt = this.mapToNavFormat(col.format);
             if (navFmt === 'day') {
                 this.updateColumnFormatInQuery(col, 'month');
@@ -2714,19 +2821,55 @@ startEditTitle() {
                 this.updateColumnFormatInQuery(col, 'year');
             }
         } else if (entry.currentFormatIndex <= 1) {
-            const filterIds = new Set(entry.navFilters.map((f: any) => f.filter_id));
-            this.selectedFilters = this.selectedFilters.filter((f: any) => !filterIds.has(f.filter_id));
-            this.updateColumnFormatInQuery(col, entry.initialFormat);
-            this.dateNavState = this.dateNavState.filter(e => e.columnKey !== rootKey);
+            // At the shallowest drill-in: remove everything and restore initial format
+            this.removeFullDateNavEntry(entry, col);
         } else {
-            const removed = entry.navFilters.pop();
-            if (removed) this.selectedFilters = this.selectedFilters.filter((f: any) => f.filter_id !== removed.filter_id);
-            entry.currentFormatIndex--;
-            this.updateColumnFormatInQuery(col, entry.formatChain[entry.currentFormatIndex]);
+            // Deeper than level 1: step back one level in the chain
+            this.stepBackDateNav(entry, col);
         }
         QueryUtils.runQuery(this, false);
     }
 
+    /**
+     * Collects state for all columns currently active as child substitutes (child nav).
+     * These columns show only "-" (back button) and are skipped in the main loop of
+     * computeChildNavConfig to avoid overwriting their childFieldMap entry.
+     */
+    private buildActiveNavChildrenState(): {
+        childFieldMap: {[k: string]: string},
+        navColumnSubstitution: {[k: string]: string},
+        activeNavChildNames: Set<string>
+    } {
+        const childFieldMap: {[k: string]: string} = {};
+        const navColumnSubstitution: {[k: string]: string} = {};
+        const activeNavChildNames = new Set<string>();
+
+        for (const entry of this.navState) {
+            const activeCol = entry.navPath[entry.currentIndex];
+            childFieldMap[activeCol.column_name] = entry.rootKey;  // "-" button on the child
+            activeNavChildNames.add(activeCol.column_name);
+            const rootColName = entry.navPath[0]?.column_name;
+            if (rootColName && rootColName !== activeCol.column_name) {
+                navColumnSubstitution[rootColName] = activeCol.column_name; // swap root→child in query
+            }
+        }
+
+        return { childFieldMap, navColumnSubstitution, activeNavChildNames };
+    }
+
+    /**
+     * Computes which nav buttons ("+" and "-") each column should show.
+     * Returns three maps consumed by the table component.
+     *
+     * parentFields:          column_names that show "+" (can navigate deeper)
+     * childFieldMap:         column_name → rootKey for columns that show "-" (can go back)
+     * navColumnSubstitution: root column_name → active child column_name (for query substitution)
+     *
+     * Three mutually exclusive cases per column:
+     *   1. DATE NAV  (dateNav === true) → buttons driven by dateNavState and format chain
+     *   2. CHILD NAV (downChild set)    → shows "+" to navigate to child column
+     *   3. NOT NAVIGABLE               → no buttons
+     */
     public computeChildNavConfig(): {
         parentFields: string[],
         childFieldMap: {[k: string]: string},
@@ -2734,50 +2877,42 @@ startEditTitle() {
     } {
         const effectiveFields = QueryUtils.getEffectiveFields(this);
         const parentFields: string[] = [];
-        const childFieldMap: {[k: string]: string} = {};
-        const navColumnSubstitution: {[originalName: string]: string} = {};
 
-        // Columns currently substituting a nav parent — they only show "-" (back button)
-        const activeNavChildNames = new Set<string>();
-        for (const entry of this.navState) {
-            const activeCol = entry.navPath[entry.currentIndex];
-            childFieldMap[activeCol.column_name] = entry.rootKey;
-            activeNavChildNames.add(activeCol.column_name);
-            const rootColName = entry.navPath[0]?.column_name;
-            if (rootColName && activeCol && rootColName !== activeCol.column_name) {
-                navColumnSubstitution[rootColName] = activeCol.column_name;
-            }
-        }
+        // Pre-fill childFieldMap and substitution map for active child-nav entries
+        const { childFieldMap, navColumnSubstitution, activeNavChildNames } = this.buildActiveNavChildrenState();
 
         for (const col of effectiveFields) {
-            // Active nav-children already have their childFieldMap entry set above — skip
+            // Active nav-children already have their entry set above — skip them
             if (activeNavChildNames.has(col.column_name)) continue;
 
             if (col.dateNav === true) {
-                // Case 1: DATE NAV — same column navigates year→month→day via format changes
+                // Case 1: DATE NAV — same column drills year→month→day via format changes
                 const colKey = `${col.table_id}.${col.column_name}`;
                 const activeEntry = this.dateNavState.find(e => e.columnKey === colKey);
+
                 if (activeEntry) {
+                    // Drill-in active: "+" only if more levels remain, always "-"
                     if (activeEntry.currentFormatIndex < activeEntry.formatChain.length - 1) {
-                        parentFields.push(col.column_name);
+                        parentFields.push(col.column_name);       // "+" (can go deeper)
                     }
-                    childFieldMap[col.column_name] = colKey;
+                    childFieldMap[col.column_name] = colKey;      // "-" (go back)
                 } else {
+                    // No active drill-in: button state depends on current format
                     const navFmt = this.mapToNavFormat(col.format);
                     if (navFmt === 'year') {
-                        parentFields.push(col.column_name);                   // only "+" (zoom in to month)
+                        parentFields.push(col.column_name);       // only "+" → can drill to month
                     } else if (navFmt === 'month') {
-                        parentFields.push(col.column_name);                   // "+" (zoom in to day)
-                        childFieldMap[col.column_name] = colKey;              // "-" (zoom out to year)
+                        parentFields.push(col.column_name);       // "+" → can drill to day
+                        childFieldMap[col.column_name] = colKey;  // "-" → can zoom out to year
                     } else {
-                        childFieldMap[col.column_name] = colKey;              // only "-" (zoom out to month)
+                        childFieldMap[col.column_name] = colKey;  // only "-" → can zoom out to month
                     }
                 }
             } else if (col.downChild) {
-                // Case 2: CHILD NAV — links to a different child column, acts like text nav
-                parentFields.push(col.column_name);                           // only "+" (navigate to child)
+                // Case 2: CHILD NAV — shows "+" to navigate down to child column
+                parentFields.push(col.column_name);
             }
-            // Case 3: NOT NAVIGABLE — no buttons
+            // Case 3: NOT NAVIGABLE — no buttons (no dateNav, no downChild)
         }
 
         this.syncNavigationLinksToPanel();
@@ -2785,20 +2920,18 @@ startEditTitle() {
     }
 
     /**
-     * Restores parent→child navigation links from saved panel content after load.
-     * Since all columns (parents and children) are now saved in query.query.fields,
-     * handleCurrentQuery already loads them into currentQuery before this is called.
-     * This function only needs to: (1) set downChild on parents from navigationLinks,
-     * and (2) restore active nav state from navActiveNodes.
+     * Restores parent→child navigation links from saved panel content after a dashboard load.
+     * Steps:
+     *   1. Set downChild on parent columns in currentQuery from saved navigationLinks
+     *   2. Restore active navState entries from saved navActiveNodes
      */
     private restoreNavigationLinks(panelContent: any): void {
         const links: any[] = panelContent.navigationLinks || [];
         const activeNodes: any[] = panelContent.navActiveNodes || [];
-        // 1. Set downChild on parent columns already present in currentQuery
+
+        // Step 1: rehydrate downChild references on parent columns
         for (const link of links) {
-            const parentCol = this.currentQuery.find((c: any) =>
-                c.table_id === link.parentTable && c.column_name === link.parentColumn
-            );
+            const parentCol = this.findColInQuery(link.parentTable, link.parentColumn);
             if (parentCol) {
                 parentCol.downChild = {
                     table_id: link.childTable,
@@ -2808,9 +2941,7 @@ startEditTitle() {
             }
         }
 
-        // 2. Restore active nav state from navActiveNodes.
-        // navPath is reconstructed by following downChild links from the root in currentQuery.
-        // Guard against double-call from setupQueryContext + buildGlobalconfiguration.
+        // Step 2: restore active nav state — guard against double-call from setupQueryContext + buildGlobalconfiguration
         for (const activeNode of activeNodes) {
             if (this.navState.find((e: any) => e.rootKey === activeNode.parentKey)) continue;
 
@@ -2819,18 +2950,7 @@ startEditTitle() {
             );
             if (!rootCol?.downChild) continue;
 
-            const navPath: any[] = [rootCol];
-            let current = rootCol;
-            while (current.downChild) {
-                const next = this.currentQuery.find((c: any) =>
-                    c.table_id === current.downChild.table_id &&
-                    c.column_name === current.downChild.column_name
-                );
-                if (!next) break;
-                navPath.push(next);
-                current = next;
-            }
-
+            const navPath = this.buildNavPathFromRoot(rootCol);
             const currentIndex = Math.min(activeNode.currentIndex ?? 1, navPath.length - 1);
             if (currentIndex < 1) continue;
 
@@ -2847,7 +2967,7 @@ startEditTitle() {
 
     /**
      * Rebuilds panel.content.navigationLinks from currentQuery so that checkNavigableColumn
-     * in the dashboard always has accurate data — even without saving.
+     * in the dashboard always has accurate data — even before the panel is saved.
      */
     private syncNavigationLinksToPanel(): void {
         if (!this.panel?.content) return;
@@ -2862,11 +2982,15 @@ startEditTitle() {
             }));
     }
 
-    /** All active nav filters flattened — shown in the filter summary panel. */
+    /** All active child-nav filters flattened — shown in the filter summary panel. */
     get navFiltersSummary(): any[] {
         return (this.navState || []).flatMap((d: any) => d.navFilters);
     }
 
+    /**
+     * Initializes currentQuery and navState from saved panel content.
+     * Called once per panel load before filters and date-nav state are restored.
+     */
     private setupQueryContext(panelContent: any): void {
         const { modeSQL } = panelContent.query.query;
         const queryMode = this.selectedQueryMode;
@@ -2886,9 +3010,14 @@ startEditTitle() {
         }
     }
 
+    /**
+     * Restores dateNavState from saved panel content and applies the active drill-in format
+     * to each date column in currentQuery so the backend returns data at the correct granularity.
+     */
     private restoreDateNavState(panelContent: any): void {
         const saved = panelContent.savedDateNavState || [];
         if (!saved.length) return;
+
         this.dateNavState = saved.map((entry: any) => ({
             columnKey: entry.columnKey,
             initialFormat: entry.initialFormat,
@@ -2896,16 +3025,16 @@ startEditTitle() {
             currentFormatIndex: entry.currentFormatIndex,
             navFilters: entry.navFilters || []
         }));
-        // Restore the active drill-in format on each date column so the backend
-        // returns data at the correct granularity (month/day instead of year).
+
+        // Apply the active format so the backend groups at the right granularity
         for (const entry of this.dateNavState) {
             const activeFormat = entry.formatChain[entry.currentFormatIndex];
             if (!activeFormat) continue;
             const col = this.currentQuery.find((c: any) => `${c.table_id}.${c.column_name}` === entry.columnKey);
             if (col) col.format = activeFormat;
         }
-        // selectedFilters are populated by handleFilters (which reads this.dateNavState)
+        // selectedFilters are populated by handleFilters, which reads this.dateNavState
     }
 
-    // ---- END NAVIGATION FEATURE ----
+    // ─── END NAVIGATION FEATURE ────────────────────────────────────────────────
 }
