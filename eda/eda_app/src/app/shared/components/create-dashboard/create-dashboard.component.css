@@ -1,0 +1,8 @@
+app-create-dashboard .p-dropdown,
+app-create-dashboard .p-multiselect         { border: 1px solid var(--corporate-primary) !important; box-shadow: none !important; }
+
+.visibility-selector .p-button.p-highlight           { background: var(--corporate-primary) !important; border-color: var(--corporate-primary) !important; color: white !important; }
+.visibility-selector .p-button:not(.p-highlight):hover { background: var(--corporate-primary) !important; border-color: var(--corporate-primary) !important; color: white !important; opacity: 0.25; }
+
+.input-corporate:focus-visible              { outline: none; box-shadow: 0 0 0 2px var(--corporate-primary); }
+.visibility-selector .p-button:focus        { box-shadow: 0 0 0 2px var(--corporate-primary) !important; }
