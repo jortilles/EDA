@@ -1,23 +1,53 @@
+// Personalización de colores corporativos
+export const CORPORATE_COLORS = {
+    // Colores base de marca — usados en toda la aplicación
+    primary:         '#00B0BA',      // Color principal (botones, iconos, gradientes)
+    primaryGradient: '#00c9b1',      // Extremo final de gradientes (header chat, FAB, burbujas)
+    primaryRgb:      '0, 176, 186',  // Valor RGB del primario para opacidades (box-shadow, rgba)
+
+    // Colores específicos del chatbot
+    chat: {
+        avatarBg:       '#e0f7f8',   // Fondo del avatar del robot (header y mensajes)
+        avatarBgAlt:    '#ccf2f0',   // Fondo alternativo del avatar (gradiente empty state)
+        avatarBorder:   '#b2ecee',   // Borde del avatar y cabecera de tabla
+        surfaceHover:   '#f0fdfe',   // Fondo hover en sugerencias y filas de tabla
+        tableHeader:    '#007a82',   // Color del texto en cabeceras de tabla
+        linkColor:      '#00838a',   // Color de enlaces en mensajes
+        linkHoverColor: '#005f65',   // Color de enlaces al hacer hover
+    },
+
+    // Colores específicos de carpetas (home — vista de carpetas y filtros de tags)
+    folder: {
+        iconBg:          '#ccfbf1',  // Fondo del icono de carpeta cerrada
+        iconBgHover:     '#99f6e4',  // Fondo del icono de carpeta hover o abierta
+        iconColor:       '#14b8a6',  // Color del icono de carpeta cerrada
+        borderHover:     '#2dd4bf',  // Borde de la tarjeta carpeta al hacer hover o al estar abierta
+        iconColorHover:  '#0d9488',  // Color del icono y texto al hacer hover o al estar abierta
+        cardBgOpen:      '#f0fdfa',  // Fondo de la tarjeta cuando la carpeta está abierta
+        labelColorOpen:  '#0f766e',  // Color del nombre de la carpeta cuando está abierta
+    },
+};
+
 export const ChartsPalettes = [
     {
         paleta: [
-  '#10B4BD',
-  '#3C88CA',
-  '#685CD9',
-  '#8B5DD2',
-  '#A36AC7',
-  '#BB78BD',
-  '#D285B3',
-  '#EA93A9',
-  '#F7A68E',
-  '#FCB37A',
-  '#FDB0BA',
-  '#FBBFA6',
-  '#F9C98F',
-  '#F6D278',
-  '#ECE45A'
-]
-        , name: 'Gradiente'
+            '#10B4BD',
+            '#3C88CA',
+            '#685CD9',
+            '#8B5DD2',
+            '#A36AC7',
+            '#BB78BD',
+            '#D285B3',
+            '#EA93A9',
+            '#F7A68E',
+            '#FCB37A',
+            '#FDB0BA',
+            '#FBBFA6',
+            '#F9C98F',
+            '#F6D278',
+            '#ECE45A'
+        ], 
+        name: 'Gradiente'
     },
     {
         paleta: [

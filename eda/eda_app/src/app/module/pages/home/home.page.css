@@ -11,8 +11,8 @@
 
 /* ---- Chat header ---- */
 .chat-header {
-  background: linear-gradient(135deg, #00B0BA 0%, #00c9b1 100%);
-  box-shadow: 0 2px 8px rgba(0,176,186,0.25);
+  background: linear-gradient(135deg, var(--corporate-primary) 0%, var(--corporate-primary-gradient) 100%);
+  box-shadow: 0 2px 8px rgba(var(--corporate-primary-rgb), 0.25);
 }
 
 /* ---- Robot avatar en header ---- */
@@ -20,8 +20,8 @@
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 50%;
-  background: #e0f7f8;
-  border: 2px solid #b2ecee;
+  background: var(--corporate-primary-light);
+  border: 2px solid var(--corporate-primary-border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -33,11 +33,11 @@
   width: 4rem;
   height: 4rem;
   border-radius: 50%;
-  background: linear-gradient(135deg, #e0f7f8 0%, #ccf2f0 100%);
+  background: linear-gradient(135deg, var(--corporate-primary-light) 0%, var(--corporate-primary-light-alt) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #00B0BA;
+  color: var(--corporate-primary);
 }
 
 /* ---- Suggestions ---- */
@@ -54,9 +54,9 @@
   transition: border-color 0.15s, background 0.15s;
 }
 .chat-suggestion:hover {
-  border-color: #00B0BA;
-  background: #f0fdfe;
-  color: #00B0BA;
+  border-color: var(--corporate-primary);
+  background: var(--corporate-primary-surface);
+  color: var(--corporate-primary);
 }
 
 /* ---- Filter warning on option buttons ---- */
@@ -94,7 +94,7 @@
   width: 1.75rem;
   height: 1.75rem;
   border-radius: 50%;
-  background: linear-gradient(135deg, #00B0BA, #00c9b1);
+  background: linear-gradient(135deg, var(--corporate-primary), var(--corporate-primary-gradient));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -111,7 +111,7 @@
   line-height: 1.5;
 }
 .chat-bubble--user {
-  background: linear-gradient(135deg, #00B0BA, #00c9b1);
+  background: linear-gradient(135deg, var(--corporate-primary), var(--corporate-primary-gradient));
   color: white;
   border-bottom-right-radius: 0.25rem;
 }
@@ -130,7 +130,7 @@
   display: inline-block;
   width: 0.5rem;
   height: 0.5rem;
-  background: #00B0BA;
+  background: var(--corporate-primary);
   border-radius: 50%;
   animation: chatDot 1.2s ease-in-out infinite;
 }
@@ -144,7 +144,7 @@
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 0.5rem;
-  background: linear-gradient(135deg, #00B0BA, #00c9b1);
+  background: linear-gradient(135deg, var(--corporate-primary), var(--corporate-primary-gradient));
   color: white;
   display: flex;
   align-items: center;
@@ -164,18 +164,18 @@
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 50%;
-  background: linear-gradient(135deg, #00B0BA, #00c9b1);
+  background: linear-gradient(135deg, var(--corporate-primary), var(--corporate-primary-gradient));
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 14px rgba(0,176,186,0.45);
+  box-shadow: 0 4px 14px rgba(var(--corporate-primary-rgb), 0.45);
   transition: transform 0.2s, box-shadow 0.2s;
   animation: fabIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 .chat-fab:hover {
   transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(0,176,186,0.55);
+  box-shadow: 0 6px 20px rgba(var(--corporate-primary-rgb), 0.55);
 }
 @keyframes fabIn {
   from { opacity: 0; transform: scale(0.5); }
@@ -192,7 +192,7 @@
 
 /* Links */
 .chat-message-content ::ng-deep a.chat-link {
-  color: #00838a;
+  color: var(--corporate-primary-darker);
   text-decoration: underline;
   text-underline-offset: 2px;
   font-weight: 500;
@@ -201,7 +201,7 @@
   transition: color 0.15s;
 }
 .chat-message-content ::ng-deep a.chat-link:hover {
-  color: #005f65;
+  color: var(--corporate-primary-darkest);
   text-decoration: none;
 }
 
@@ -240,14 +240,14 @@
   min-width: 200px;
 }
 .chat-message-content ::ng-deep .chat-table thead tr {
-  background: linear-gradient(90deg, #e8f9fa, #f0fefe);
+  background: linear-gradient(90deg, var(--corporate-primary-light), var(--corporate-primary-surface));
 }
 .chat-message-content ::ng-deep .chat-table th {
   padding: 0.4rem 0.65rem;
   text-align: left;
   font-weight: 600;
-  color: #007a82;
-  border-bottom: 2px solid #b2ecee;
+  color: var(--corporate-primary-dark);
+  border-bottom: 2px solid var(--corporate-primary-border);
   white-space: nowrap;
 }
 .chat-message-content ::ng-deep .chat-table td {
@@ -262,7 +262,7 @@
   background: #f8fcfc;
 }
 .chat-message-content ::ng-deep .chat-table tbody tr:hover {
-  background: #f0fdfe;
+  background: var(--corporate-primary-surface);
 }
 
 /* Horizontal rule */
@@ -341,3 +341,27 @@
   border-color: hsl(var(--ring));
   box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
 }
+
+/* ---- Utility classes para colores corporativos ---- */
+.text-corporate-primary { color: var(--corporate-primary); }
+.btn-corporate-gradient {
+  background: linear-gradient(to right, var(--corporate-primary), var(--corporate-primary-gradient));
+}
+
+/* ---- Folder cards ---- */
+.folder-card:hover                  { border-color: var(--folder-border-hover); }
+.folder-card:hover .folder-icon-wrap { background-color: var(--folder-icon-bg-hover); }
+.folder-card:hover .folder-icon      { color: var(--folder-icon-color-hover); }
+.folder-card:hover .folder-label     { color: var(--folder-icon-color-hover); }
+.folder-card:hover .folder-chevron   { color: var(--folder-icon-color); }
+
+.folder-icon-wrap  { background-color: var(--folder-icon-bg); transition: background-color 0.3s; }
+.folder-icon       { color: var(--folder-icon-color); transition: color 0.3s; }
+.folder-label      { transition: color 0.3s; }
+.folder-chevron    { transition: color 0.3s; }
+
+.folder-card-open               { border-color: var(--folder-border-hover); background-color: var(--folder-card-bg-open); }
+.folder-icon-wrap-open          { background-color: var(--folder-icon-bg-hover); }
+.folder-icon-open               { color: var(--folder-icon-color-hover); }
+.folder-label-open              { color: var(--folder-label-open); }
+.folder-chevron-open            { color: var(--folder-icon-color-hover); }

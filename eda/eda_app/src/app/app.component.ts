@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { AlertService, UserService, SpinnerService } from './services/service.index';
 import { Router, RouterModule } from '@angular/router';
+import { CORPORATE_COLORS } from './config/personalitzacio/customizables';
 
 import { PrimeNGConfig } from 'primeng/api';
 
@@ -31,10 +32,12 @@ export class AppComponent implements OnInit {
 
 
     ngOnInit(): void {
+        this.initializeCorporateColors();
         this.initializeAlertService();
         this.initializeSpinnerService();
         this.setTranslations();
     }
+
 
     private initializeSpinnerService(): void {
         // Spinner Service
@@ -136,6 +139,28 @@ export class AppComponent implements OnInit {
         }
 
     }
-
-
+    
+    private initializeCorporateColors(): void {
+        const root = document.documentElement;
+        // Base
+        root.style.setProperty('--corporate-primary',          CORPORATE_COLORS.primary);
+        root.style.setProperty('--corporate-primary-gradient', CORPORATE_COLORS.primaryGradient);
+        root.style.setProperty('--corporate-primary-rgb',      CORPORATE_COLORS.primaryRgb);
+        // Chat
+        root.style.setProperty('--corporate-primary-light',     CORPORATE_COLORS.chat.avatarBg);
+        root.style.setProperty('--corporate-primary-light-alt', CORPORATE_COLORS.chat.avatarBgAlt);
+        root.style.setProperty('--corporate-primary-border',    CORPORATE_COLORS.chat.avatarBorder);
+        root.style.setProperty('--corporate-primary-surface',   CORPORATE_COLORS.chat.surfaceHover);
+        root.style.setProperty('--corporate-primary-dark',      CORPORATE_COLORS.chat.tableHeader);
+        root.style.setProperty('--corporate-primary-darker',    CORPORATE_COLORS.chat.linkColor);
+        root.style.setProperty('--corporate-primary-darkest',   CORPORATE_COLORS.chat.linkHoverColor);
+        // Folder
+        root.style.setProperty('--folder-border-hover',     CORPORATE_COLORS.folder.borderHover);
+        root.style.setProperty('--folder-icon-bg',          CORPORATE_COLORS.folder.iconBg);
+        root.style.setProperty('--folder-icon-bg-hover',    CORPORATE_COLORS.folder.iconBgHover);
+        root.style.setProperty('--folder-icon-color',       CORPORATE_COLORS.folder.iconColor);
+        root.style.setProperty('--folder-icon-color-hover', CORPORATE_COLORS.folder.iconColorHover);
+        root.style.setProperty('--folder-card-bg-open',     CORPORATE_COLORS.folder.cardBgOpen);
+        root.style.setProperty('--folder-label-open',       CORPORATE_COLORS.folder.labelColorOpen);
+    }
 }

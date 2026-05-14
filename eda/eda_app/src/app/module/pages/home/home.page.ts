@@ -17,6 +17,7 @@ import { CommonModule } from '@angular/common';
 import { EdaDatePickerComponent } from '@eda/shared/components/eda-date-picker/eda-date-picker.component';
 import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/datePickerConfig';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { CORPORATE_COLORS } from '@eda/configs/index';
 
 @Component({
   selector: 'app-v2-home-page',
@@ -26,6 +27,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
   styleUrls: ['./home.page.css']
 })
 export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
+  readonly corporateColors = CORPORATE_COLORS;
   private createDashboardService = inject(CreateDashboardService);
   private dashboardService = inject(DashboardService);
   private alertService = inject(AlertService);
