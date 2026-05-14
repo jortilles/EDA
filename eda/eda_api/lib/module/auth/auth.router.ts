@@ -16,8 +16,19 @@ const EDA_API_CONFIG = require('../../../config/eda_api_config');
 const router = express.Router();
 
 
-// Crear un endpoint para entregar el valor de la configuracion de login (Tipos de logins activos)
-// Ejemplo: SAML, Google y Microsoft.
+/**
+ * @openapi
+ * /auth/typeLogin:
+ *   get:
+ *     description: Returns the active login types configured in the system (e.g. local, SAML, Google, Microsoft). Used by the frontend to display the appropriate login buttons.
+ *     responses:
+ *       200:
+ *         description: Active login type configuration returned successfully.
+ *       500:
+ *         description: Server error retrieving login type configuration.
+ *     tags:
+ *       - Authentication Routes
+ */
 router.get('/typeLogin', loginType.loginTypeSelection);
 
 if(EDA_API_CONFIG.authentication_type?.type === 'sso_mixto'){

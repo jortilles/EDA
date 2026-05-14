@@ -33,6 +33,42 @@ const McpRouter = express.Router();
     console.log('[MCP] =========================================');
 }
 
+/**
+ * @openapi
+ * /ia:
+ *   post:
+ *     description: MCP (Model Context Protocol) server endpoint. Handles MCP protocol requests including tool calls and resource access via Streamable HTTP transport.
+ *     parameters:
+ *       - name: x-user-token
+ *         in: header
+ *         type: string
+ *         description: Optional JWT user token to associate the MCP request with an authenticated EDA user
+ *       - name: body
+ *         in: body
+ *         schema:
+ *           type: object
+ *           properties:
+ *             method:
+ *               type: string
+ *               description: MCP protocol method name (e.g. tools/call, tools/list)
+ *             params:
+ *               type: object
+ *               description: MCP method parameters
+ *     responses:
+ *       200:
+ *         description: MCP request processed successfully.
+ *       500:
+ *         description: Server error processing MCP request.
+ *     tags:
+ *       - MCP Routes
+ *   get:
+ *     description: Returns the MCP service status and version information.
+ *     responses:
+ *       200:
+ *         description: MCP service info returned (service name, version, status, transport type).
+ *     tags:
+ *       - MCP Routes
+ */
 McpRouter.post('/', async (req: Request, res: Response) => {
     // callInterceptor sets req.query = undefined; restore it so the MCP SDK can access it
     if (!req.query) (req as any).query = (req as any).qs || {};
@@ -74,6 +110,45 @@ McpRouter.get('/', (_req: Request, res: Response) => {
     res.json({ service: 'eda-mcp', version: '1.0.0', status: 'ok', transport: 'Streamable HTTP' });
 });
 
+/**
+ * @openapi
+ * /ia/chat:
+ *   post:
+ *     description: AI chat assistant endpoint. Accepts a conversation history and uses an LLM with MCP tools to answer questions about EDA dashboards and data. Requires authentication.
+ *     parameters:
+ *       - name: body
+ *         in: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           required:
+ *             - messages
+ *           properties:
+ *             messages:
+ *               type: array
+ *               description: Conversation history in chronological order
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   role:
+ *                     type: string
+ *                     enum: [user, assistant]
+ *                   content:
+ *                     type: string
+ *     responses:
+ *       200:
+ *         description: AI response returned. May include optional dashboard/panel options array for exploration results.
+ *       400:
+ *         description: Missing or invalid messages array.
+ *       401:
+ *         description: Unauthorized - authentication required.
+ *       503:
+ *         description: AI assistant is not available (API key not configured).
+ *       500:
+ *         description: Server error processing chat request.
+ *     tags:
+ *       - MCP Routes
+ */
 McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
     const { MODEL, AVAILABLE, MAX_TOKENS, EDA_APP_URL, MCP_URL } = MCPUtils.getAnthropicConfig();
 
@@ -221,6 +296,19 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
     }
 });
 
+/**
+ * @openapi
+ * /ia/chat/config:
+ *   get:
+ *     description: Returns the availability status of the AI chat assistant. Requires authentication.
+ *     responses:
+ *       200:
+ *         description: Returns object with available boolean indicating if the AI chat is enabled.
+ *       401:
+ *         description: Unauthorized - authentication required.
+ *     tags:
+ *       - MCP Routes
+ */
 McpRouter.get('/chat/config', authGuard, (_req: Request, res: Response) => {
     const { AVAILABLE } = MCPUtils.getAnthropicConfig();
     res.json({ available: AVAILABLE });
