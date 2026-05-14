@@ -5604,6 +5604,31 @@ OR<ph id="5"/>
 <target>It is only possible to use filters defined within the current dashboard.</target>
 </trans-unit>
 
+<trans-unit id="uniqueRecords1">
+  <source>La opción <ph id="0"/>Registros únicos<ph id="1"/> aplica un <ph id="2"/>GROUP BY<ph id="3"/> sobre todos los atributos de la consulta. Úsala cuando quieras eliminar duplicados y agrupar los resultados por la combinación de todos los campos seleccionados.</source>
+  <target>The option <ph id="0"/>Unique Records<ph id="1"/> applies a <ph id="2"/>GROUP BY<ph id="3"/> over all attributes in the query. Use it when you want to remove duplicates and group the results by the combination of all selected fields.</target>
+</trans-unit>
+
+<trans-unit id="uniqueRecords3">
+  <source>Al activarla, las métricas numéricas se agrupan junto al resto de atributos, lo que puede alterar el resultado esperado si ya existen agregaciones definidas.</source>
+  <target>When activated, numeric metrics are grouped together with the rest of the attributes, which may alter the expected result if there are already defined aggregations.</target>
+</trans-unit>
+
+<trans-unit id="dynamicFilters1">
+  <source>Al hacer clic en otros paneles del dashboard se crean <ph id="0"/>filtros dinámicos<ph id="1"/> que afectan al resto de paneles. Activar esta opción hace que este panel <ph id="2"/>ignore<ph id="3"/> esos filtros dinámicos y siempre muestre sus datos completos, independientemente de las selecciones del usuario en otros paneles.</source>
+  <target>When clicking on other panels in the dashboard, <ph id="0"/>dynamic filters<ph id="1"/> are created that affect the remaining panels. Activating this option makes this panel <ph id="2"/>ignore<ph id="3"/> those dynamic filters and always display its complete data, regardless of the user's selections in other panels.</target>
+</trans-unit>
+
+<trans-unit id="dynamicFilters3">
+  <source>Los filtros de panel y globales definidos manualmente sí se siguen aplicando con normalidad.</source>
+  <target>The manually defined panel and global filters are still applied as usual.</target>
+</trans-unit>
+
+<trans-unit id="dynamicFilters4">
+  <source>Esta opción no afecta a los filtros creados desde el selector de filtros del dashboard.</source>
+  <target>This option does not affect the filters created from the dashboard's filter selector.</target>
+</trans-unit>
+
 <trans-unit id="dashboardSidebarDependentFilters">
 <source>Filtros dependientes</source>
 <target>Dependent filters</target>

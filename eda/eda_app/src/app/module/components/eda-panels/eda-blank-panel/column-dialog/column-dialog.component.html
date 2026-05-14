@@ -11,7 +11,7 @@
     } @else {
       <input
         autofocusOnShow
-        class="column-dialog-title-input px-2 py-1 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4] text-base font-semibold min-w-[200px]"
+        class="column-dialog-title-input px-2 py-1 bg-gray-100 rounded-md focus:outline-none text-base font-semibold min-w-[200px]"
         [(ngModel)]="editableTitle"
         (keydown.enter)="saveTitle()"
         (keydown.escape)="cancelEditTitle()"

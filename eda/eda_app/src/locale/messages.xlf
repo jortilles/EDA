@@ -5518,6 +5518,43 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
           <context context-type="sourcefile">src/app/services/utils/map-util.service.ts</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="whereDoWeBegin" datatype="html">
+        <source>¿ Por dónde empezamos ?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/prompt/prompt.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="uniqueRecords1" datatype="html">
+        <source>La opción <x id="START_TAG_STRONG" ctype="x-strong"/>Registros únicos<x id="CLOSE_TAG_STRONG" ctype="x-strong"/> aplica un <x id="START_TAG_STRONG_1" ctype="x-strong"/>GROUP BY<x id="CLOSE_TAG_STRONG_1" ctype="x-strong"/> sobre todos los atributos de la consulta. Úsala cuando quieras eliminar duplicados y agrupar los resultados por la combinación de todos los campos seleccionados.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="uniqueRecords3" datatype="html">
+        <source>Al activarla, las métricas numéricas se agrupan junto al resto de atributos, lo que puede alterar el resultado esperado si ya existen agregaciones definidas.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="dynamicFilters1" datatype="html">
+        <source>Al hacer clic en otros paneles del dashboard se crean <x id="START_TAG_STRONG" ctype="x-strong"/>filtros dinámicos<x id="CLOSE_TAG_STRONG" ctype="x-strong"/> que afectan al resto de paneles. Activar esta opción hace que este panel <x id="START_TAG_STRONG_1" ctype="x-strong"/>ignore<x id="CLOSE_TAG_STRONG_1" ctype="x-strong"/> esos filtros dinámicos y siempre muestre sus datos completos, independientemente de las selecciones del usuario en otros paneles.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="dynamicFilters3" datatype="html">
+        <source>Los filtros de panel y globales definidos manualmente sí se siguen aplicando con normalidad.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="dynamicFilters4" datatype="html">
+        <source>Esta opción no afecta a los filtros creados desde el selector de filtros del dashboard.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>

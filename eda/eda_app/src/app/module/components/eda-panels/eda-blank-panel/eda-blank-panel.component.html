@@ -93,7 +93,7 @@
             (keydown.escape)="titleClick=false"
             i18n-placeholder="@@panelTitlePlaceholder"
             placeholder="Título del panel"
-            class="px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4] w-[15vw]"
+            class="px-3 py-2 bg-gray-100 rounded-md focus:outline-none w-[15vw]"
           >
         }
       </div>
@@ -117,7 +117,7 @@
             (keydown.escape)="descriptionClick=false"
             i18n-placeholder="@@panelDescriptionPlaceholder"
             placeholder="Descripción (opcional)"
-            class="px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4] w-full"
+            class="px-3 py-2 bg-gray-100 rounded-md focus:outline-none w-full"
           >
         }
       </div>
@@ -140,7 +140,7 @@
             (click)="indextab = 0" 
             i18n="@@vistaSeleccionador"
             class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200"
-            [ngClass]="indextab === 0 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
+            [ngClass]="indextab === 0 ? 'tab-active border-b-2' : 'text-gray-600'"
           >
             {{ selectedQueryMode !== 'SQL' ? editQuery : editSQLQuery }}
           </h3>
@@ -149,7 +149,7 @@
             (click)="indextab = 1" 
             i18n="@@vistaPrevia"
             class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200"
-            [ngClass]="indextab === 1 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
+            [ngClass]="indextab === 1 ? 'tab-active border-b-2' : 'text-gray-600'"
           >
             Vista previa
           </h3>
@@ -189,8 +189,7 @@
                         @for (entity of tablesToShow; track entity.table_name) {
                           <button
                             class="flex w-full items-center justify-between rounded-md px-3 py-2"
-                            [class.bg-[#00BFB3]]="userSelectedTable === entity.table_name"
-                            [class.text-primary-foreground]="userSelectedTable === entity.table_name"
+                            [class.btn-panel-active]="userSelectedTable === entity.table_name"
                             (click)="loadColumns(entity)"
                           >
                             <span class="text-left font-bold" [title]="entity.description.default">
@@ -324,7 +323,7 @@
                       Mostrar los siguientes atributos:
                     </h3>
                     <div 
-                      class="flex gap-1 rounded-lg border min-h-[25px] overflow-y-auto w-auto h-auto select-list bg-green-100"
+                      class="flex gap-1 rounded-lg border min-h-[25px] overflow-y-auto w-auto h-auto select-list"
                       cdkDropList 
                       #selectList="cdkDropList" 
                       cdkDropListOrientation="horizontal"
@@ -367,7 +366,7 @@
                   <div class="pb-6">
                     <h3 class="text-lg mb-2 mt-2 font-bold" i18n="@@filtrosH4">Filtrar los resultados por:</h3>
                     <div 
-                      class="flex gap-1 rounded-lg border p-2 min-h-[25px] bg-emerald-50 filter-list  text-base"
+                      class="flex gap-1 rounded-lg border p-2 min-h-[25px] filter-list text-base"
                       cdkDropList 
                       #filterList="cdkDropList" 
                       cdkDropListOrientation="horizontal"
@@ -399,7 +398,7 @@
                       }
       
                       @if (filtredColumns.length === 0) {
-                        <div class=" text-muted-foreground text-center py-2">
+                        <div class=" text-muted-foreground text-center py-2 font-bold">
                           {{draggFilters}}
                         </div>
                       }
@@ -439,7 +438,7 @@
                         <div class="flex items-center gap-2">
                           <h3 
                             class="cursor-pointer text-lg font-bold font-sans transition-colors duration-200"
-                            [ngClass]="display_v.advancedSetting=== 0 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
+                            [ngClass]="display_v.advancedSetting=== 0 ? 'tab-active border-b-2' : 'text-gray-600'"
                             (click)="display_v.advancedSetting = 0" 
                             i18n="@@yourQuerySQL"
                           >
@@ -494,7 +493,7 @@
                       <div class="relative inline-block cols-span-1">
                         <h3
                           class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-[max-content]"
-                          [ngClass]="display_v.advancedSetting === 1 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
+                          [ngClass]="display_v.advancedSetting === 1 ? 'tab-active border-b-2' : 'text-gray-600'"
                           (click)="display_v.advancedSetting = 1" 
                           i18n="@@AdvanceOptions"
                         >
@@ -506,7 +505,7 @@
                         <div class="relative inline-block cols-span-1">
                           <h3
                             class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-[max-content]"
-                            [ngClass]="display_v.advancedSetting === 2 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
+                            [ngClass]="display_v.advancedSetting === 2 ? 'tab-active border-b-2' : 'text-gray-600'"
                             (click)="display_v.advancedSetting = 2" 
                             i18n="@@askTheAIText"
                           >
@@ -580,8 +579,8 @@
                             <div class="col-span-2">
                               <div class="flex">
                                 <button *ngFor="let type of joinTypeOptions" (click)="onJoinTypeChange(type)"
-                                  [ngClass]="{'bg-[#00BFB3] text-white': joinType === type.joinType, 'bg-white text-black': joinType !== type.joinType}"
-                                  class="w-[3.5vw] px-3 py-2 border rounded-lg mr-2 hover:bg-[#00BFB3] hover:text-white">
+                                  [ngClass]="{'btn-panel-active': joinType === type.joinType, 'bg-white text-black': joinType !== type.joinType}"
+                                  class="w-[3.5vw] px-3 py-2 border rounded-lg mr-2 btn-panel-hover">
                                   {{ type.label }}
                                 </button>
                               </div>
@@ -597,7 +596,7 @@
                             <div class="col-span-2">
           
                               <button class="w-fit px-3 py-2 row-span-1 border rounded-lg
-                                            bg-white text-black hover:bg-[#00BFB3] hover:text-white" (click)="onWhatIfDialog()">
+                                            bg-white text-black btn-panel-hover" (click)="onWhatIfDialog()">
                                 What If?
                               </button>
                             </div>
@@ -611,7 +610,7 @@
                               </h3>
                             </div>
                             <div class="col-span-2">
-                              <button class="w-fit px-3 py-2 border rounded-lg bg-white text-black hover:bg-[#00BFB3] hover:text-white" (click)="filterAndOrDialog()">
+                              <button class="w-fit px-3 py-2 border rounded-lg bg-white text-black btn-panel-hover" (click)="filterAndOrDialog()">
                                 <span i18n="@@configurarFiltrosAvanzados">Configurar</span>
                               </button>
                             </div>
@@ -629,10 +628,10 @@
                                 type="button"
                                 (click)="toggleGroupBy()"
                                 [ngClass]="{
-                                  'bg-[#00BFB3] text-white': groupByEnabled,
-                                  'bg-white text-black': !groupByEnabled
+                                  'btn-panel-active': groupByEnabled,
+                                  'btn-panel-hover bg-white text-black': !groupByEnabled
                                 }"
-                                class="w-10 px-3 py-2 border rounded-lg hover:bg-[#00BFB3] hover:text-white text-center"
+                                class="w-10 px-3 py-2 border rounded-lg text-center"
                               >
                                 {{ groupByEnabled ? 'Si' : 'No' }}
                               </button>
@@ -651,10 +650,10 @@
                                 type="button"
                                 (click)="dynamicFiltersInteraction()"
                                 [ngClass]="{
-                                  'bg-[#00BFB3] text-white': dynamicFilters,
-                                  'bg-white text-black': !dynamicFilters
+                                  'btn-panel-active': dynamicFilters,
+                                  'btn-panel-hover bg-white text-black': !dynamicFilters
                                 }"
-                                class="w-10 px-3 py-2 border rounded-lg hover:bg-[#00BFB3] hover:text-white text-center"
+                                class="w-10 px-3 py-2 border rounded-lg text-center"
                               >
                                 {{ dynamicFilters ? 'Si' : 'No' }}
                               </button>
@@ -776,6 +775,77 @@
                                   </ul>
                                 </div>
                               </details>
+
+                              <!-- Registros únicos -->
+                              <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
+                                <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
+                                  <div class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                      class="text-blue-500 mr-2">
+                                      <rect x="3" y="3" width="7" height="7"></rect>
+                                      <rect x="14" y="3" width="7" height="7"></rect>
+                                      <rect x="14" y="14" width="7" height="7"></rect>
+                                      <rect x="3" y="14" width="7" height="7"></rect>
+                                    </svg>
+                                    <span i18n="@@uniqueRecordsGrouping">Registros únicos (agrupación)</span>
+                                  </div>
+                                  <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                  </svg>
+                                </summary>
+                                <div class="text-base text-gray-600 pl-2 pb-4 pt-2">
+                                  <p class="mb-2" i18n="@@uniqueRecords1">
+                                    La opción <strong>Registros únicos</strong> aplica un <strong>GROUP BY</strong> sobre todos los
+                                    atributos de la consulta. Úsala cuando quieras eliminar duplicados y agrupar los resultados por
+                                    la combinación de todos los campos seleccionados.
+                                  </p>
+                                  <h4 class="text-base font-base mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
+                                  <ul class="list-disc pl-6">
+                                    <li i18n="@@uniqueRecords3">
+                                      Al activarla, las métricas numéricas se agrupan junto al resto de atributos, lo que puede
+                                      alterar el resultado esperado si ya existen agregaciones definidas.
+                                    </li>
+                                  </ul>
+                                </div>
+                              </details>
+
+                              <!-- Filtros dinámicos -->
+                              <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
+                                <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
+                                  <div class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                      class="text-blue-500 mr-2">
+                                      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                                    </svg>
+                                    <span i18n="@@dynamicFiltersText">Filtros dinámicos</span>
+                                  </div>
+                                  <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                  </svg>
+                                </summary>
+                                <div class="text-base text-gray-600 pl-2 pb-4 pt-2">
+                                  <p class="mb-2" i18n="@@dynamicFilters1">
+                                    Al hacer clic en otros paneles del dashboard se crean <strong>filtros dinámicos</strong> que
+                                    afectan al resto de paneles. Activar esta opción hace que este panel <strong>ignore</strong>
+                                    esos filtros dinámicos y siempre muestre sus datos completos, independientemente de las
+                                    selecciones del usuario en otros paneles.
+                                  </p>
+                                  <h4 class="text-base font-base mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
+                                  <ul class="list-disc pl-6">
+                                    <li i18n="@@dynamicFilters3">
+                                      Los filtros de panel y globales definidos manualmente sí se siguen aplicando con normalidad.
+                                    </li>
+                                    <li i18n="@@dynamicFilters4">
+                                      Esta opción no afecta a los filtros creados desde el selector de filtros del dashboard.
+                                    </li>
+                                  </ul>
+                                </div>
+                              </details>
+
                             </div>
                           </div>
                         </div>
@@ -817,7 +887,7 @@
                   <h3 class="font-semibold text-gray-700" i18n="@@sqlExpColumn">Expresión SQL</h3>
                   <div class="relative">
                     <textarea [(ngModel)]="currentSQLQuery"
-                      class="w-full h-64 p-3 border border-gray-300 rounded-md font-mono text-base resize-none focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
+                      class="w-full h-64 p-3 border border-gray-300 rounded-md font-mono text-base resize-none focus:outline-none focus:border-[var(--corporate-primary)]"
                       placeholder="SELECT * FROM customers">
                     </textarea>
 
@@ -829,7 +899,7 @@
                       <label class="text-base font-base text-gray-700 mb-1 block" i18n="@@originTable">Tabla
                         origen</label>
                         <select [(ngModel)]="sqlOriginTable"
-                          class="w-full px-3 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]">
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:border-[var(--corporate-primary)]">
                           <option *ngFor="let table of sqlOriginTables" [ngValue]="table"> {{ table.label }} </option>
                         </select>
                     </div>

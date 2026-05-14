@@ -30,7 +30,7 @@
 }
 
 ::ng-deep .p-tabview .p-tabview-nav .p-highlight {
-  color: #00BFB3;
+  color: var(--corporate-primary);
   border-bottom: 2px solid;
 }
 
@@ -307,7 +307,7 @@ eda-blank-panel :root {
   /*  overflow: visible; */
   overflow-wrap: break-word;
   margin-top: 0.5em;
-
+  background-color: rgba(var(--corporate-primary-rgb), 0.08);
 }
 
 .filter-list {
@@ -320,6 +320,7 @@ eda-blank-panel :root {
   min-height: 40px;
   overflow-wrap: break-word;
   margin-top: 0.5em;
+  background-color: rgba(var(--corporate-primary-rgb), 0.08);
 }
 
 .our-table-box {
@@ -395,10 +396,10 @@ eda-blank-panel :root {
 }
 
 .select-box:hover {
-  background: rgba(0, 191, 179, 0.30);
+  background: rgba(var(--corporate-primary-rgb), 0.3);
   transform: scale(1.03);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border-color: var(--header-bg-color);
+  border-color: var(--corporate-primary);
 }
 
 
@@ -489,9 +490,9 @@ eda-blank-panel :root {
 }
 
 .aggregation-active {
-  background-color: #00BFB3;
+  background-color: var(--corporate-primary);
   color: white;
-  border-color: #00BFB3;
+  border-color: var(--corporate-primary);
 }
 
 .aggregation-unactive{}
@@ -732,7 +733,7 @@ span.state-label {
   border-radius: 0.375rem;
   padding: 0.5rem 1rem;   
   color: white;            
-  background: linear-gradient(to right, #00B0BA, #14B8A6); 
+  background: linear-gradient(to right, var(--corporate-primary), var(--corporate-primary-gradient));
   border: none;
   cursor: pointer;
 }
@@ -765,6 +766,11 @@ span.state-label {
 .addFilter-button:hover:enabled {
   background: linear-gradient(to right, #ffffff, #f3f3f3);
 }
+
+.tab-active        { color: var(--corporate-primary); border-color: var(--corporate-primary); }
+.btn-panel-active  { background-color: var(--corporate-primary) !important; color: white !important; border-color: var(--corporate-primary) !important; }
+.btn-panel-active:hover { background-color: white !important; color: #6b7280 !important; border-color: #d1d5db !important; }
+.btn-panel-hover:hover { background-color: var(--corporate-primary) !important; color: white !important; }
 
 .execute-button:hover:enabled {
   background: #f9fafb;

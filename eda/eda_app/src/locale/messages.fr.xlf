@@ -5716,6 +5716,31 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <target>Il est uniquement possible d'utiliser les filtres définis dans le tableau de bord actuel.</target>
       </trans-unit>
 
+      <trans-unit id="uniqueRecords1">
+        <source>La opción <ph id="0"/>Registros únicos<ph id="1"/> aplica un <ph id="2"/>GROUP BY<ph id="3"/> sobre todos los atributos de la consulta. Úsala cuando quieras eliminar duplicados y agrupar los resultados por la combinación de todos los campos seleccionados.</source>
+        <target>L'option <ph id="0"/>Enregistrements uniques<ph id="1"/> applique un <ph id="2"/>GROUP BY<ph id="3"/> à tous les attributs de la requête. Utilisez-la lorsque vous souhaitez éliminer les doublons et regrouper les résultats selon la combinaison de tous les champs sélectionnés.</target>
+      </trans-unit>
+
+      <trans-unit id="uniqueRecords3">
+        <source>Al activarla, las métricas numéricas se agrupan junto al resto de atributos, lo que puede alterar el resultado esperado si ya existen agregaciones definidas.</source>
+        <target>Lorsqu'elle est activée, les métriques numériques sont regroupées avec le reste des attributs, ce qui peut modifier le résultat attendu si des agrégations sont déjà définies.</target>
+      </trans-unit>
+
+      <trans-unit id="dynamicFilters1">
+        <source>Al hacer clic en otros paneles del dashboard se crean <ph id="0"/>filtros dinámicos<ph id="1"/> que afectan al resto de paneles. Activar esta opción hace que este panel <ph id="2"/>ignore<ph id="3"/> esos filtros dinámicos y siempre muestre sus datos completos, independientemente de las selecciones del usuario en otros paneles.</source>
+        <target>Cliquer sur d'autres panneaux du tableau de bord crée des <ph id="0"/>filtres dynamiques<ph id="1"/> qui affectent les autres panneaux. Activer cette option fait que ce panneau <ph id="2"/>ignore<ph id="3"/> ces filtres dynamiques et affiche toujours ses données complètes, indépendamment des sélections de l'utilisateur sur les autres panneaux.</target>
+      </trans-unit>
+
+      <trans-unit id="dynamicFilters3">
+        <source>Los filtros de panel y globales definidos manualmente sí se siguen aplicando con normalidad.</source>
+        <target>Les filtres de panneau et globaux définis manuellement continuent de s'appliquer normalement.</target>
+      </trans-unit>
+
+      <trans-unit id="dynamicFilters4">
+        <source>Esta opción no afecta a los filtros creados desde el selector de filtros del dashboard.</source>
+        <target>Cette option n'affecte pas les filtres créés depuis le sélecteur de filtres du tableau de bord.</target>
+      </trans-unit>
+
       <trans-unit id="dashboardSidebarDependentFilters">
         <source>Filtros dependientes</source>
         <target>Filtres dépendants</target>
