@@ -86,8 +86,8 @@ export class EdaFilterAndOrComponent implements OnInit {
       resizable: {
         enabled: false // Element that is not resized
       },
-      minCols: 10,
-      maxCols: 10,
+/* SDA CUSTOM */      minCols: 11,
+/* SDA CUSTOM */      maxCols: 11,
       minRows: 9, // Make this value dynamic - pending
       maxRows: 9, // Make this value dynamic - pending
       margin: 0.2, // Reduce the margin between cells
@@ -118,11 +118,13 @@ export class EdaFilterAndOrComponent implements OnInit {
       if(previousDashboard) {
         this.dashboard = _.cloneDeep(this.sortedFilters);
         this.dashboardClone = _.cloneDeep(this.sortedFilters);
+/* SDA CUSTOM */        this.updateGridDimensions();
         this.creacionQueryFiltros(this.dashboard);
       } else {
         if(this.sortedFilters.length !== 0) {
           this.dashboard = _.cloneDeep(this.sortedFilters);
           this.dashboardClone = _.cloneDeep(this.sortedFilters);
+/* SDA CUSTOM */          this.updateGridDimensions();
           this.creacionQueryFiltros(this.sortedFilters);
 
         } else {
@@ -192,6 +194,9 @@ export class EdaFilterAndOrComponent implements OnInit {
 
     // A clone of the dashboard is created
     this.dashboardClone = _.cloneDeep(this.dashboard);
+
+    // Update grid dimensions based on dashboard length
+/* SDA CUSTOM */    this.updateGridDimensions();
 
     // At the beginning of the execution
     this.creacionQueryFiltros(this.dashboard);
@@ -569,6 +574,18 @@ export class EdaFilterAndOrComponent implements OnInit {
 
   public getNiceTableName(table: any) {
     return this.tables.find( t => t.table_name === table)?.display_name?.default;
+  }
+
+/* SDA CUSTOM */  private updateGridDimensions(): void {
+/* SDA CUSTOM */  const base = 9;
+/* SDA CUSTOM */    const extra = Math.max(0, this.dashboard.length - base);
+/* SDA CUSTOM */    this.options = {
+/* SDA CUSTOM */      ...this.options,
+/* SDA CUSTOM */      minCols: 11 + extra,
+/* SDA CUSTOM */      maxCols: 11 + extra,
+/* SDA CUSTOM */      minRows: base + extra,
+/* SDA CUSTOM */      maxRows: base + extra,
+/* SDA CUSTOM */    };
   }
 
 }
