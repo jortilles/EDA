@@ -4,7 +4,7 @@
     <!-- Header -->
     <div class="border-b bg-gray-50 rounded-t-lg p-6">
       <h2 class="text-2xl font-bold flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#00BFB3]" fill="none" viewBox="0 0 24 24"
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-corporate-primary" fill="none" viewBox="0 0 24 24"
           stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round"
             d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7C5 4 4 5 4 7z" />
@@ -21,13 +21,13 @@
     <form [formGroup]="connectionForm" (ngSubmit)="onSubmit()">
       <!-- Tabs -->
       <div class="grid grid-cols-2 max-w-3xl mx-4 mt-4 bg-gray-100 rounded-md p-1">
-        <button type="button" class="py-2 px-4 rounded-md text-sm font-medium transition-colors"
+        <button type="button" class="tab-ds-btn py-2 px-4 rounded-md text-sm font-medium transition-colors"
           [class.bg-white]="activeTab === 'basic'" [class.shadow]="activeTab === 'basic'"
           [class.text-gray-900]="activeTab === 'basic'" [class.text-gray-500]="activeTab !== 'basic'"
           (click)="setActiveTab('basic')" i18n="@@basicInformation">
           Información básica
         </button>
-        <button type="button" class="py-2 px-4 rounded-md text-sm font-medium transition-colors"
+        <button type="button" class="tab-ds-btn py-2 px-4 rounded-md text-sm font-medium transition-colors"
           [class.bg-white]="activeTab === 'advanced'" [class.shadow]="activeTab === 'advanced'"
           [class.text-gray-900]="activeTab === 'advanced'" [class.text-gray-500]="activeTab !== 'advanced'"
           (click)="setActiveTab('advanced')" i18n="@@advancedSettings">
@@ -44,7 +44,7 @@
               Nombre <span class="text-red-500">*</span>
             </label>
             <input id="name" type="text" formControlName="name" placeholder="My Database Connection"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md input-corporate"
               [class.border-red-500]="connectionForm.get('name')?.invalid && connectionForm.get('name')?.touched" />
             <p *ngIf="connectionForm.get('name')?.invalid && connectionForm.get('name')?.touched"
               class="text-red-500 text-sm" i18n="@@nameRequired">
@@ -58,7 +58,7 @@
               Tipo <span class="text-red-500">*</span>
             </label>
             <select id="type" formControlName="type"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3] bg-white"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md input-corporate bg-white"
               (change)="selectDefaultPort()">
               <option *ngFor="let type of databaseTypes" [value]="type.value">{{ type.label }}</option>
             </select>
@@ -68,7 +68,7 @@
           <div class="space-y-2 md:col-span-2">
             <label for="description" class="block font-medium" i18n="@@inputDescripcionModelo">Descripción</label>
             <textarea id="description" formControlName="description" rows="3"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3] resize-none"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md input-corporate resize-none"
               i18n-placeholder="@@placeholderDescripcionModelo"
               placeholder="Describe el propósito y contenido de este modelo de datos..."></textarea>
           </div>
@@ -88,7 +88,7 @@
             }
             <div class="relative">
               <input id="server" type="text" formControlName="host" placeholder="database.example.com"
-                class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
+                class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md input-corporate"
                 [class.border-red-500]="connectionForm.get('host')?.invalid && connectionForm.get('host')?.touched" />
               <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-2.5 h-4 w-4 text-gray-500" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -115,7 +115,7 @@
               Puerto <span class="text-red-500">*</span>
             </label>
             <input id="port" type="text" formControlName="port" placeholder="5432"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md input-corporate"
               [class.border-red-500]="connectionForm.get('port')?.invalid && connectionForm.get('port')?.touched" />
             <p *ngIf="connectionForm.get('port')?.invalid && connectionForm.get('port')?.touched"
               class="text-red-500 text-sm" i18n="@@portRequired">
@@ -130,7 +130,7 @@
             </label>
             <div class="relative">
               <input id="database" type="text" formControlName="database" placeholder="my_database"
-                class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
+                class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md input-corporate"
                 [class.border-red-500]="connectionForm.get('database')?.invalid && connectionForm.get('database')?.touched" />
               <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-2.5 h-4 w-4 text-gray-500" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -151,7 +151,7 @@
               Esquema
             </label>
             <input id="schema" type="text" formControlName="schema" placeholder="public"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]" />
+              class="w-full px-3 py-2 border border-gray-300 rounded-md input-corporate" />
           </div>
 
           <!-- User Field -->
@@ -161,7 +161,7 @@
             </label>
             <div class="relative">
               <input id="user" type="text" formControlName="user" placeholder="username"
-                class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
+                class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md input-corporate"
                 [class.border-red-500]="connectionForm.get('user')?.invalid && connectionForm.get('user')?.touched" />
               <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-2.5 h-4 w-4 text-gray-500" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -183,7 +183,7 @@
             <div class="relative">
               <input id="password" [type]="showPassword ? 'text' : 'password'" formControlName="password"
                 placeholder="••••••••"
-                class="w-full pl-9 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
+                class="w-full pl-9 pr-10 py-2 border border-gray-300 rounded-md input-corporate"
                 [class.border-red-500]="connectionForm.get('password')?.invalid && connectionForm.get('password')?.touched" />
               <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-2.5 h-4 w-4 text-gray-500" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -218,7 +218,7 @@
             </label>
             <div class="relative">
               <input id="database" type="text" formControlName="database" placeholder="my_database"
-                class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
+                class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md input-corporate"
                 [class.border-red-500]="connectionForm.get('database')?.invalid && connectionForm.get('database')?.touched" />
               <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-2.5 h-4 w-4 text-gray-500" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -238,16 +238,16 @@
               <div (dragenter)="handleDragIn($event, 'bigquery')" (dragleave)="handleDragOut($event, 'bigquery')"
                 (dragover)="handleDrag($event)" (drop)="handleDrop($event, 'bigquery')"
                 class="relative mt-2 flex h-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors"
-                [class.border-[#00BFB3]]="isDraggingBigQueryFile()" [class.bg-[#00BFB3]]="isDraggingBigQueryFile()"
+                [class.dropzone-active]="isDraggingBigQueryFile()"
                 [class.border-gray-300]="!isDraggingBigQueryFile()"
-                [class.hover:border-[#00BFB3]]="!isDraggingBigQueryFile()">
+                [class.dropzone-idle]="!isDraggingBigQueryFile()">
                 <input type="file" accept=".json" (change)="handleFileSelect($event, 'bigquery')"
                   class="absolute inset-0 z-50 h-full w-full cursor-pointer opacity-0" />
                 <div class="flex flex-col items-center justify-center text-sm">
                   @if (bigQueryFileName()) {
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="mb-2 h-6 w-6 text-[#00BFB3]">
+                    class="mb-2 h-6 w-6 text-corporate-primary">
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
                   <p class="text-sm font-medium">{{ bigQueryFileName() }}</p>
@@ -259,14 +259,14 @@
                     <polyline points="14 2 14 8 20 8"></polyline>
                   </svg>
                   <p class="mb-1 font-medium text-gray-600">
-                    <span class="text-[#00BFB3]">Click para subir</span> o arrastra y suelta
+                    <span class="text-corporate-primary">Click para subir</span> o arrastra y suelta
                   </p>
                   <p class="text-xs text-gray-500">JSON (max. 10MB)</p>
                   }
                 </div>
               </div>
               <button (click)="handleBigQueryImport()"
-                class="mt-4 w-full inline-flex items-center justify-center rounded-md font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-gray-800 dark:focus-visible:ring-[#00BFB3] bg-[#00BFB3] text-white hover:bg-[#00BFB3]/90 h-10 px-4 py-2"
+                class="mt-4 w-full inline-flex items-center justify-center rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 btn-corporate-primary"
                 [disabled]="!bigQueryFile()">
                 <eda-icon name="import" class="mr-2"></eda-icon>
                 Importar
@@ -282,7 +282,7 @@
 
             <div class="relative">
               <input id="server" type="text" formControlName="server" placeholder="database.example.com"
-                class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
+                class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md input-corporate"
                 [class.border-red-500]="connectionForm.get('server')?.invalid && connectionForm.get('server')?.touched" />
               <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-2.5 h-4 w-4 text-gray-500" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -299,8 +299,8 @@
           <div (dragenter)="handleDragIn($event, 'excel')" (dragleave)="handleDragOut($event, 'excel')"
             (dragover)="handleDrag($event)" (drop)="handleDrop($event, 'excel')"
             class="relative mt-2 flex h-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors"
-            [class.border-[#00BFB3]]="isDraggingExcelFile()" [class.bg-[#00BFB3]]="isDraggingExcelFile()"
-            [class.border-gray-300]="!isDraggingExcelFile()" [class.hover:border-[#00BFB3]]="!isDraggingExcelFile()">
+            [class.dropzone-active]="isDraggingExcelFile()"
+            [class.border-gray-300]="!isDraggingExcelFile()" [class.dropzone-idle]="!isDraggingExcelFile()">
             <input type="file" (change)="handleFileSelect($event, 'excel')"
               class="absolute inset-0 z-50 h-full w-full cursor-pointer opacity-0" (change)="excelFileLoaded($event)"
               accept=".xlsx" />
@@ -308,7 +308,7 @@
               @if (_excelFileName()) {
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="mb-2 h-6 w-6 text-[#00BFB3]">
+                class="mb-2 h-6 w-6 text-corporate-primary">
                 <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
               <p class="text-sm font-medium">{{ _excelFileName() }}</p>
@@ -322,7 +322,7 @@
                 <polyline points="14 2 14 8 20 8"></polyline>
               </svg>
               <p class="mb-1 font-medium text-gray-600">
-                <span class="text-[#00BFB3]">Click para subir</span> o arrastra y suelta
+                <span class="text-corporate-primary">Click para subir</span> o arrastra y suelta
               </p>
               <p class="text-xs text-gray-500">EXCEL (max. 10MB)</p>
               }
@@ -336,7 +336,7 @@
                 Separador <span class="text-red-500">*</span>
               </label>
               <input id="separator" type="text" formControlName="separator" placeholder="Separador del modelo"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md input-corporate"
                 [class.border-red-500]="connectionForm.get('separator')?.invalid && connectionForm.get('separator')?.touched"
                 (keyup)="retryCsvWithNewSeparator()" />
               @if(connectionForm.get('separator')?.invalid && connectionForm.get('separator')?.touched){
@@ -348,10 +348,9 @@
             <div (dragenter)="handleDragIn($event, 'csv')" (dragleave)="handleDragOut($event, 'csv')"
               (dragover)="handleDrag($event)" (drop)="handleDrop($event, 'csv')"
               class="relative mt-2 flex h-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors"
-              [class.border-[#00BFB3]]="isDraggingCsvFile() && connectionForm.get('separator')?.value"
-              [class.bg-[#00BFB3]]="isDraggingCsvFile() && connectionForm.get('separator')?.value"
+              [class.dropzone-active]="isDraggingCsvFile() && connectionForm.get('separator')?.value"
               [class.border-gray-300]="!isDraggingCsvFile() || !connectionForm.get('separator')?.value"
-              [class.hover:border-[#00BFB3]]="connectionForm.get('separator')?.value && !isDraggingCsvFile()">
+              [class.dropzone-idle]="connectionForm.get('separator')?.value && !isDraggingCsvFile()">
               <input type="file" #file (change)="handleFileSelect($event, 'csv'); onFilesAdded()"
                 class="absolute inset-0 z-50 h-full w-full cursor-pointer opacity-0"
                 accept=".csv" />
@@ -360,7 +359,7 @@
                 <div *ngIf="_csvFileName(); else noFile">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="mb-2 h-6 w-6 text-[#00BFB3]">
+                    class="mb-2 h-6 w-6 text-corporate-primary">
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
                   <p class="text-sm font-medium">{{ _csvFileName() }}</p>
@@ -373,7 +372,7 @@
                     <polyline points="14 2 14 8 20 8"></polyline>
                   </svg>
                   <p class="mb-1 font-medium text-gray-600">
-                    <span class="text-[#00BFB3]">Click para subir</span> o arrastra y suelta
+                    <span class="text-corporate-primary">Click para subir</span> o arrastra y suelta
                   </p>
                   <p class="text-xs text-gray-500">CSV (max. 10MB)</p>
                 </ng-template>
@@ -454,7 +453,7 @@
               SID
             </label>
             <select id="sid" formControlName="sid"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3] bg-white">
+              class="w-full px-3 py-2 border border-gray-300 rounded-md input-corporate bg-white">
               <option *ngFor="let sid of sidOptions" [value]="sid.value">{{ sid.label }}</option>
             </select>
           </div>
@@ -467,7 +466,7 @@
               Pool Limit
             </label>
             <input id="poolLimit" type="number" formControlName="poolLimit"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]" />
+              class="w-full px-3 py-2 border border-gray-300 rounded-md input-corporate" />
           </div>
           }
 
@@ -478,7 +477,7 @@
               Warehouse
             </label>
             <input id="warehouse" type="text" formControlName="warehouse"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]" />
+              class="w-full px-3 py-2 border border-gray-300 rounded-md input-corporate" />
           </div>
           }
 
@@ -493,7 +492,7 @@
               </svg>
             </label>
             <input id="filters" type="text" formControlName="filter" placeholder="e.g., schema:public,table:users"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]" />
+              class="w-full px-3 py-2 border border-gray-300 rounded-md input-corporate" />
             <p class="text-sm text-gray-500 mt-1" i18n="@@optionalFilterDescription">Optional filters to limit the scope
               of your connection</p>
           </div>
@@ -506,7 +505,7 @@
               <div class="flex items-start space-x-2">
                 <div class="flex h-5 items-center">
                   <input id="optimizeQueries" type="checkbox" formControlName="optimize"
-                    class="h-4 w-4 rounded border-gray-300 text-[#00BFB3] focus:ring-[#00BFB3]" />
+                    class="h-4 w-4 rounded border-gray-300 checkbox-corporate" />
                 </div>
                 <div class="grid gap-1.5 leading-none">
                   <div class="flex items-center gap-1">
@@ -532,7 +531,7 @@
               <div class="flex items-start space-x-2">
                 <div class="flex h-5 items-center">
                   <input id="allowCache" type="checkbox" formControlName="allowCache"
-                    class="h-4 w-4 rounded border-gray-300 text-[#00BFB3] focus:ring-[#00BFB3]" />
+                    class="h-4 w-4 rounded border-gray-300 checkbox-corporate" />
                 </div>
                 <div class="grid gap-1.5 leading-none">
                   <div class="flex items-center gap-1">
@@ -560,7 +559,7 @@
               <div class="flex items-start space-x-2">
                 <div class="flex h-5 items-center">
                   <input id="sslConnection" type="checkbox" formControlName="ssl"
-                    class="h-4 w-4 rounded border-gray-300 text-[#00BFB3] focus:ring-[#00BFB3]" />
+                    class="h-4 w-4 rounded border-gray-300 checkbox-corporate" />
                 </div>
                 <div class="grid gap-1.5 leading-none">
                   <div class="flex items-center gap-1">
@@ -597,7 +596,7 @@
         </button>
         }
         <button type="submit"
-          class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-[#00B0BA] to-teal-400 flex items-center"
+          class="px-4 py-2 rounded-md shadow-sm text-sm font-medium flex items-center btn-corporate-primary"
           i18n="@@guardarBtn">
           <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24"
             stroke="currentColor" stroke-width="2">
