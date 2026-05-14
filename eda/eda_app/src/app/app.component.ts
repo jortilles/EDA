@@ -156,7 +156,6 @@ export class AppComponent implements OnInit {
         root.style.setProperty('--corporate-primary-darker',    CORPORATE_COLORS.chat.linkColor);
         root.style.setProperty('--corporate-primary-darkest',   CORPORATE_COLORS.chat.linkHoverColor);
         // Sidebar
-        root.style.setProperty('--sidebar-ring', CORPORATE_COLORS.sidebar.ring);
         // Folder
         root.style.setProperty('--folder-border-hover',     CORPORATE_COLORS.folder.borderHover);
         root.style.setProperty('--folder-icon-bg',          CORPORATE_COLORS.folder.iconBg);
