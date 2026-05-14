@@ -348,6 +348,9 @@
   background: linear-gradient(to right, var(--corporate-primary), var(--corporate-primary-gradient));
 }
 
+/* ---- Dashboard report cards ---- */
+.report-card:hover { border-color: var(--folder-border-hover); }
+
 /* ---- Folder cards ---- */
 .folder-card:hover                  { border-color: var(--folder-border-hover); }
 .folder-card:hover .folder-icon-wrap { background-color: var(--folder-icon-bg-hover); }
