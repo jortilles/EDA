@@ -266,12 +266,29 @@ export class DataSourceController {
 
                 } else {
                     console.log('Importing existing datasource');
+                    const originalOwner = dataSource.ds.metadata.model_owner;
                     body.ds.connection.password = psswd === '__-(··)-__' ? dataSource.ds.connection.password : EnCrypterService.encrypt(body.ds.connection.password);
                     let cadena = JSON.stringify(body.ds);
                     cadena = cadena.split('$oid').join('id');
                     dataSource.ds = JSON.parse(cadena.toString());
                     ds = dataSource;
-                    ds.ds.metadata.model_owner = req.user._id;
+                    ds.ds.metadata.model_owner = originalOwner;
+
+                    if (String(req.user._id) !== String(originalOwner)) {
+                        const groups = await Group.find({ users: { $in: req.user._id } }).exec();
+                        const editorRole = groups.length > 0 ? groups[0].role : 'UNKNOWN';
+                        if (!Array.isArray(ds.ds.metadata.model_updates)) {
+                            ds.ds.metadata.model_updates = [];
+                        }
+                        ds.ds.metadata.model_updates.push({
+                            user: req.user._id,
+                            role: editorRole,
+                            date: new Date().toISOString()
+                        });
+                        if (ds.ds.metadata.model_updates.length > 50) {
+                            ds.ds.metadata.model_updates = ds.ds.metadata.model_updates.slice(-50);
+                        }
+                    }
                 }
 
 
