@@ -188,7 +188,7 @@
                       <div class="space-y-1 p-2">
                         @for (entity of tablesToShow; track entity.table_name) {
                           <button
-                            class="flex w-full items-center justify-between rounded-md px-3 py-2"
+                            class="flex w-full items-center justify-between rounded-md px-3 py-2 entity-item"
                             [class.btn-panel-active]="userSelectedTable === entity.table_name"
                             (click)="loadColumns(entity)"
                           >
@@ -275,7 +275,7 @@
                       [cdkDropListEnterPredicate]="isAllowed">
                       @for (attr of columns; track attr.name) {
                         <div
-                          class="flex w-full items-center gap-2 rounded-md px-3 py-2 bg-background hover:bg-muted/50 cursor-move"
+                          class="flex w-full items-center gap-2 rounded-md px-3 py-2 attr-item cursor-move"
                           cdkDrag [cdkDragData]="attr" 
                           (cdkDragDropped)="searchRelations(attr)" 
                           (click)="moveItem(attr)"
@@ -433,18 +433,18 @@
       
                   <!-- Advanced Settings -->
                   @if(currentQuery.length > 0){
-                    <div class="grid grid-cols-3 align-items-center">
+                    <div class="grid grid-cols-3 items-end">
                       <div class="relative inline-block cols-span-1">
                         <div class="flex items-center gap-2">
-                          <h3 
-                            class="cursor-pointer text-lg font-bold font-sans transition-colors duration-200"
+                          <h3
+                            class="cursor-pointer pb-2 mb-2 text-lg font-bold font-sans transition-colors duration-200"
                             [ngClass]="display_v.advancedSetting=== 0 ? 'tab-active border-b-2' : 'text-gray-600'"
-                            (click)="display_v.advancedSetting = 0" 
+                            (click)="display_v.advancedSetting = 0"
                             i18n="@@yourQuerySQL"
                           >
                             Mi consulta SQL
                           </h3>
-                          <span><i class="pi pi-info-circle cursor-pointer text-gray-500" [pTooltip]="ptooltipViewQuery" (click)="getQuery($event)"></i></span>
+                          <i class="pi pi-info-circle cursor-pointer text-gray-400 mb-4 text-sm" [pTooltip]="ptooltipViewQuery" (click)="getQuery($event)"></i>
                         </div>
                         <!-- Contenedor de query -->
                         @if(display_v.showQueryContainer) {
@@ -565,290 +565,192 @@
                     }
                     
                     @else if(display_v.advancedSetting === 1){
-                      <div class="grid grid-cols-2 border rounded-lg bg-gray-50 p-4 min-h-[30vh] overflow-y-auto">
-                        <!-- Join Type -->
-                        <div class="grid col-span-1 grid-rows-4 p-2">
-          
-                          <div class="grid grid-cols-4 row-span-1 items-center">
-                            <div class="col-span-2">
-                              <h3 i18n="@@joinTypeH4" class="text-base font-bold inline">
-                                Tipo de intersección:
-                              </h3>
+                      <div class="flex gap-4 border rounded-lg bg-gray-50 p-4 min-h-[30vh] overflow-y-auto">
+
+                        <!-- Opciones -->
+                        <div class="flex flex-col gap-3 w-[35%] shrink-0">
+                          <h3 class="text-sm font-semibold text-black-400 uppercase tracking-wide" i18n="@@AdvanceOptions">Opciones avanzadas</h3>
+
+                          <!-- Tipo de intersección -->
+                          <div class="flex items-center justify-between rounded-lg px-3 py-2 ">
+                            <span i18n="@@joinTypeH4" class="text-sm font-medium text-gray-700" pTooltip="Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN" i18n-pTooltip="@@tooltipJoinType" tooltipPosition="top">Tipo de intersección</span>
+                            <div class="flex gap-1">
+                              <button *ngFor="let type of joinTypeOptions" (click)="onJoinTypeChange(type)"
+                                [ngClass]="{'btn-panel-active': joinType === type.joinType, 'btn-panel-hover bg-white text-gray-600': joinType !== type.joinType}"
+                                class="px-3 py-1 text-sm border rounded-md transition-all">
+                                {{ type.label }}
+                              </button>
                             </div>
-          
-                            <div class="col-span-2">
-                              <div class="flex">
-                                <button *ngFor="let type of joinTypeOptions" (click)="onJoinTypeChange(type)"
-                                  [ngClass]="{'btn-panel-active': joinType === type.joinType, 'bg-white text-black': joinType !== type.joinType}"
-                                  class="w-[3.5vw] px-3 py-2 border rounded-lg mr-2 btn-panel-hover">
-                                  {{ type.label }}
-                                </button>
+                          </div>
+
+                          <!-- Escenarios What If -->
+                          <div class="flex items-center justify-between rounded-lg px-3 py-2 ">
+                            <span i18n="@@scenarios" class="text-sm font-medium text-gray-700" pTooltip="Crea atributos derivados aplicando operaciones matemáticas" i18n-pTooltip="@@tooltipScenarios" tooltipPosition="top">Escenarios</span>
+                            <button class="px-3 py-1 text-sm border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="onWhatIfDialog()">
+                              What If?
+                            </button>
+                          </div>
+
+                          <!-- Filtros avanzados AND/OR -->
+                          <div class="flex items-center justify-between rounded-lg px-3 py-2 ">
+                            <span i18n="@@filtrosAvanzados" class="text-sm font-medium text-gray-700" pTooltip="Combina los filtros del panel con operadores AND u OR" i18n-pTooltip="@@tooltipAdvancedFilters" tooltipPosition="top">Filtros avanzados (AND/OR)</span>
+                            <button class="px-3 py-1 text-sm border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="filterAndOrDialog()">
+                              <span i18n="@@configurarFiltrosAvanzados">Configurar</span>
+                            </button>
+                          </div>
+
+                          <!-- Registros únicos -->
+                          <div class="flex items-center justify-between rounded-lg px-3 py-2 ">
+                            <span i18n="@@uniqueRecordsGrouping" class="text-sm font-medium text-gray-700" pTooltip="Aplica GROUP BY a todos los campos para eliminar duplicados" i18n-pTooltip="@@tooltipUniqueRecords" tooltipPosition="top">Registros únicos (agrupación)</span>
+                            <button
+                              type="button"
+                              (click)="toggleGroupBy()"
+                              [ngClass]="{
+                                'btn-panel-active': groupByEnabled,
+                                'btn-panel-hover bg-white text-gray-600': !groupByEnabled
+                              }"
+                              class="px-3 py-1 text-sm border rounded-md transition-all min-w-[3rem] text-center">
+                              {{ groupByEnabled ? 'Sí' : 'No' }}
+                            </button>
+                          </div>
+
+                          <!-- Filtros dinámicos -->
+                          <div class="flex items-center justify-between rounded-lg px-3 py-2">
+                            <span i18n="@@dynamicFiltersText" class="text-sm font-medium text-gray-700" pTooltip="Actívalo para que este panel ignore los filtros dinámicos de otros paneles" i18n-pTooltip="@@tooltipDynamicFilters" tooltipPosition="top">Filtros dinámicos</span>
+                            <button
+                              type="button"
+                              (click)="dynamicFiltersInteraction()"
+                              [ngClass]="{
+                                'btn-panel-active': dynamicFilters,
+                                'btn-panel-hover bg-white text-gray-600': !dynamicFilters
+                              }"
+                              class="px-3 py-1 text-sm border rounded-md transition-all min-w-[3rem] text-center">
+                              {{ dynamicFilters ? 'Sí' : 'No' }}
+                            </button>
+                          </div>
+                        </div>
+
+                        <!-- Indicaciones -->
+                        <div class="flex flex-col gap-3 flex-1 min-w-0">
+                          <h3 class="text-sm font-semibold text-black-400 uppercase tracking-wide" i18n="@@indicaciones">Indicaciones</h3>
+
+                          <div class="rounded-lg  divide-y divide-gray-100 overflow-hidden">
+
+                            <!-- Tipo de intersección -->
+                            <details class="group" name="sqlIndicationOpenSection">
+                              <summary class="flex justify-between items-center cursor-pointer px-4 py-3 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center gap-2">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[var(--corporate-primary)] shrink-0">
+                                    <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                  </svg>
+                                  <span class="text-sm font-medium" i18n="@@joins">Tipo de intersección</span>
+                                </div>
+                                <svg class="h-4 w-4 text-gray-400 group-open:rotate-180 transition-transform shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                              </summary>
+                              <div class="px-4 pb-4 pt-2 text-sm text-gray-600 bg-gray-50">
+                                <p class="mb-2" i18n="@@joins1">La funcionalidad de <strong>Intersección de Joins</strong> permite definir cómo se relacionan las tablas de tu consulta mediante <strong>LEFT</strong>, <strong>INNER</strong> o <strong>RIGHT JOIN</strong>. Esto te da control sobre qué registros se incluyen en el resultado, dependiendo de la presencia o ausencia de coincidencias entre las tablas.</p>
+                                <p class="text-xs font-semibold text-gray-500 mb-1" i18n="@@indicaciones2">Limitaciones:</p>
+                                <ul class="list-disc pl-4 text-xs space-y-0.5">
+                                  <li i18n="@@joins3">Solo es posible hacer joins entre tablas definidas dentro del modelo o consulta actual.</li>
+                                </ul>
                               </div>
-          
-                            </div>
-                          </div>
-          
-                          <div class="grid grid-cols-4 row-span-1 items-center">
-                            <div class="col-span-2">
-                              <h3 class="text-base font-bold inline"><span i18n="@@scenarios">Escenarios: </span></h3>
-                            </div>
-          
-                            <div class="col-span-2">
-          
-                              <button class="w-fit px-3 py-2 row-span-1 border rounded-lg
-                                            bg-white text-black btn-panel-hover" (click)="onWhatIfDialog()">
-                                What If?
-                              </button>
-                            </div>
-                          </div>
+                            </details>
 
-                          
-                            <div class="grid grid-cols-4 items-center">
-                            <div class="col-span-2">
-                              <h3 class="text-base font-bold inline">
-                                <span i18n="@@filtrosAvanzados">Filtros avanzados (AND/OR): </span>
-                              </h3>
-                            </div>
-                            <div class="col-span-2">
-                              <button class="w-fit px-3 py-2 border rounded-lg bg-white text-black btn-panel-hover" (click)="filterAndOrDialog()">
-                                <span i18n="@@configurarFiltrosAvanzados">Configurar</span>
-                              </button>
-                            </div>
-                          </div>
-
-                          <div class="grid grid-cols-4 items-center">
-                            <div class="col-span-2 ">
-                              <h3 class="text-base font-bold inline">
-                                <span i18n="@@uniqueRecordsGrouping">Registros únicos (agrupación)?</span> 
-                              </h3>
-                            </div>
-
-                            <div class="col-span-2">
-                              <button
-                                type="button"
-                                (click)="toggleGroupBy()"
-                                [ngClass]="{
-                                  'btn-panel-active': groupByEnabled,
-                                  'btn-panel-hover bg-white text-black': !groupByEnabled
-                                }"
-                                class="w-10 px-3 py-2 border rounded-lg text-center"
-                              >
-                                {{ groupByEnabled ? 'Si' : 'No' }}
-                              </button>
-                            </div>
-                          </div>
-
-                          <div class="grid grid-cols-4 items-center">
-                            <div class="col-span-2 ">
-                              <h3 class="text-base font-bold inline">
-                                <span i18n="@@dynamicFiltersText">Filtros dinámicos</span> 
-                              </h3>
-                            </div>
-
-                            <div class="col-span-2">
-                              <button
-                                type="button"
-                                (click)="dynamicFiltersInteraction()"
-                                [ngClass]="{
-                                  'btn-panel-active': dynamicFilters,
-                                  'btn-panel-hover bg-white text-black': !dynamicFilters
-                                }"
-                                class="w-10 px-3 py-2 border rounded-lg text-center"
-                              >
-                                {{ dynamicFilters ? 'Si' : 'No' }}
-                              </button>
-                            </div>
-                          </div>
-          
-                        </div>
-          
-                        <div class="col-span-1">
-          
-                          <div class="p-3">
-                            <h3 class="font-semibold mb-4" i18n="@@indicaciones">Indicaciones</h3>
-          
-                            <div class="w-full">
-                              <!-- General Information -->
-                              <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
-                                <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
-                                  <div class="flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                      class="text-blue-500 mr-2">
-                                      <circle cx="12" cy="12" r="10"></circle>
-                                      <line x1="12" y1="16" x2="12" y2="12"></line>
-                                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                                    </svg>
-                                    <span i18n="@@joins">Tipo de interesección</span>
-                                  </div>
-                                  <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
-                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            <!-- What If -->
+                            <details class="group" name="sqlIndicationOpenSection">
+                              <summary class="flex justify-between items-center cursor-pointer px-4 py-3 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center gap-2">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[var(--corporate-primary)] shrink-0">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
                                   </svg>
-                                </summary>
-                                <div class="text-base text-gray-600 pl-2 pb-4 pt-2">
-                                  <p class="mb-2" i18n="@@joins1">
-                                    La funcionalidad de <strong>Intersección de Joins</strong> permite definir cómo se relacionan
-                                    las tablas de tu consulta mediante <strong>LEFT</strong>, <strong>INNER</strong> o
-                                    <strong>RIGHT JOIN</strong>. Esto te da control sobre qué registros se incluyen en el
-                                    resultado, dependiendo de la presencia o ausencia de coincidencias entre las tablas.
-                                  </p>
-          
-                                  <h4 class="text-base font-base mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
-          
-                                  <ul class="list-disc pl-6">
-                                    <li i18n="@@joins3">
-                                      Solo es posible hacer joins entre tablas definidas dentro del modelo o consulta actual.
-                                    </li>
-                                  </ul>
+                                  <span class="text-sm font-medium">What If</span>
                                 </div>
-                              </details>
-          
-                              <!-- Link query and panel filters -->
-                              <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
-                                <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
-                                  <div class="flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                      class="text-blue-500 mr-2">
-                                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                                    </svg>
-                                    <span>What if</span>
-                                  </div>
-                                  <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
-                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                  </svg>
-                                </summary>
-                                <div class="text-base text-gray-600 pl-2 pb-4 pt-2">
-                                  <p class="mb-2" i18n="@@whatif1"> La funcionalidad <strong>What If</strong> te permite crear
-                                    atributos nuevos a partir de otros atributos en tu gráfico. A estos nuevos campos se les puede
-                                    aplicar una operación matemática para modificar su valor según tus necesidades, y también es
-                                    posible cambiarles el nombre para identificarlos fácilmente.</p>
-                                  <h4 class="text-base font-base mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
-          
-                                  <ul class="list-disc pl-6">
-                                    <li i18n="@@whatif3">
-                                      Solo es posible crear nuevos atributos basados en los atributos existentes en el gráfico.
-                                    </li>
-                                    <li i18n="@@whatif4">
-                                      Esta opción solo está disponible con atributos de tipo numérico.
-                                    </li>
-                                  </ul>
-                                </div>
-                              </details>
-          
-                              <!-- Examples -->
-                              <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
-                                <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
-                                  <div class="flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                      class="text-blue-500 mr-2">
-                                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                      <polyline points="14 2 14 8 20 8"></polyline>
-                                      <line x1="16" y1="13" x2="8" y2="13"></line>
-                                      <line x1="16" y1="17" x2="8" y2="17"></line>
-                                      <polyline points="10 9 9 9 8 9"></polyline>
-                                    </svg>
-                                    <span i18n="@@filtrosAvanzados">Filtros avanzados</span>
-                                  </div>
-                                  <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
-                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                  </svg>
-                                </summary>
-                                <div class="text-base text-gray-600 pl-2 pb-4 pt-2">
-                                  <p class="mb-2" i18n="@@filtrosAvanzados1">
-                                    La funcionalidad <strong>Filtros Avanzados</strong> permite relacionar los filtros globales y
-                                    de panel utilizando operadores <strong>AND</strong> o <strong>OR</strong>. Esto posibilita que
-                                    los filtros no solo se apliquen como un conjunto fijo de condiciones, sino que puedan
-                                    interoperar entre sí según la relación definida.
-                                  </p>
-                                  <h4 class="text-base font-base mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
-          
-                                  <ul class="list-disc pl-6">
-                                    <li i18n="@@filtrosAvanzados3">
-                                      Solo es posible usar filtros definidos dentro del dashboard actual.
-                                    </li>
-                                  </ul>
-                                </div>
-                              </details>
+                                <svg class="h-4 w-4 text-gray-400 group-open:rotate-180 transition-transform shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                              </summary>
+                              <div class="px-4 pb-4 pt-2 text-sm text-gray-600 bg-gray-50">
+                                <p class="mb-2" i18n="@@whatif1">La funcionalidad <strong>What If</strong> te permite crear atributos nuevos a partir de otros atributos en tu gráfico. A estos nuevos campos se les puede aplicar una operación matemática para modificar su valor según tus necesidades, y también es posible cambiarles el nombre para identificarlos fácilmente.</p>
+                                <p class="text-xs font-semibold text-gray-500 mb-1" i18n="@@indicaciones2">Limitaciones:</p>
+                                <ul class="list-disc pl-4 text-xs space-y-0.5">
+                                  <li i18n="@@whatif3">Solo es posible crear nuevos atributos basados en los atributos existentes en el gráfico.</li>
+                                  <li i18n="@@whatif4">Esta opción solo está disponible con atributos de tipo numérico.</li>
+                                </ul>
+                              </div>
+                            </details>
 
-                              <!-- Registros únicos -->
-                              <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
-                                <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
-                                  <div class="flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                      class="text-blue-500 mr-2">
-                                      <rect x="3" y="3" width="7" height="7"></rect>
-                                      <rect x="14" y="3" width="7" height="7"></rect>
-                                      <rect x="14" y="14" width="7" height="7"></rect>
-                                      <rect x="3" y="14" width="7" height="7"></rect>
-                                    </svg>
-                                    <span i18n="@@uniqueRecordsGrouping">Registros únicos (agrupación)</span>
-                                  </div>
-                                  <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
-                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            <!-- Filtros avanzados -->
+                            <details class="group" name="sqlIndicationOpenSection">
+                              <summary class="flex justify-between items-center cursor-pointer px-4 py-3 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center gap-2">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[var(--corporate-primary)] shrink-0">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
                                   </svg>
-                                </summary>
-                                <div class="text-base text-gray-600 pl-2 pb-4 pt-2">
-                                  <p class="mb-2" i18n="@@uniqueRecords1">
-                                    La opción <strong>Registros únicos</strong> aplica un <strong>GROUP BY</strong> sobre todos los
-                                    atributos de la consulta. Úsala cuando quieras eliminar duplicados y agrupar los resultados por
-                                    la combinación de todos los campos seleccionados.
-                                  </p>
-                                  <h4 class="text-base font-base mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
-                                  <ul class="list-disc pl-6">
-                                    <li i18n="@@uniqueRecords3">
-                                      Al activarla, las métricas numéricas se agrupan junto al resto de atributos, lo que puede
-                                      alterar el resultado esperado si ya existen agregaciones definidas.
-                                    </li>
-                                  </ul>
+                                  <span class="text-sm font-medium" i18n="@@filtrosAvanzados">Filtros avanzados</span>
                                 </div>
-                              </details>
+                                <svg class="h-4 w-4 text-gray-400 group-open:rotate-180 transition-transform shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                              </summary>
+                              <div class="px-4 pb-4 pt-2 text-sm text-gray-600 bg-gray-50">
+                                <p class="mb-2" i18n="@@filtrosAvanzados1">La funcionalidad <strong>Filtros Avanzados</strong> permite relacionar los filtros globales y de panel utilizando operadores <strong>AND</strong> o <strong>OR</strong>. Esto posibilita que los filtros no solo se apliquen como un conjunto fijo de condiciones, sino que puedan interoperar entre sí según la relación definida.</p>
+                                <p class="text-xs font-semibold text-gray-500 mb-1" i18n="@@indicaciones2">Limitaciones:</p>
+                                <ul class="list-disc pl-4 text-xs space-y-0.5">
+                                  <li i18n="@@filtrosAvanzados3">Solo es posible usar filtros definidos dentro del dashboard actual.</li>
+                                </ul>
+                              </div>
+                            </details>
 
-                              <!-- Filtros dinámicos -->
-                              <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
-                                <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
-                                  <div class="flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                      class="text-blue-500 mr-2">
-                                      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-                                    </svg>
-                                    <span i18n="@@dynamicFiltersText">Filtros dinámicos</span>
-                                  </div>
-                                  <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform"
-                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            <!-- Registros únicos -->
+                            <details class="group" name="sqlIndicationOpenSection">
+                              <summary class="flex justify-between items-center cursor-pointer px-4 py-3 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center gap-2">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[var(--corporate-primary)] shrink-0">
+                                    <rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect>
                                   </svg>
-                                </summary>
-                                <div class="text-base text-gray-600 pl-2 pb-4 pt-2">
-                                  <p class="mb-2" i18n="@@dynamicFilters1">
-                                    Al hacer clic en otros paneles del dashboard se crean <strong>filtros dinámicos</strong> que
-                                    afectan al resto de paneles. Activar esta opción hace que este panel <strong>ignore</strong>
-                                    esos filtros dinámicos y siempre muestre sus datos completos, independientemente de las
-                                    selecciones del usuario en otros paneles.
-                                  </p>
-                                  <h4 class="text-base font-base mb-2" i18n="@@indicaciones2">Limitaciones:</h4>
-                                  <ul class="list-disc pl-6">
-                                    <li i18n="@@dynamicFilters3">
-                                      Los filtros de panel y globales definidos manualmente sí se siguen aplicando con normalidad.
-                                    </li>
-                                    <li i18n="@@dynamicFilters4">
-                                      Esta opción no afecta a los filtros creados desde el selector de filtros del dashboard.
-                                    </li>
-                                  </ul>
+                                  <span class="text-sm font-medium" i18n="@@uniqueRecordsGrouping">Registros únicos (agrupación)</span>
                                 </div>
-                              </details>
+                                <svg class="h-4 w-4 text-gray-400 group-open:rotate-180 transition-transform shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                              </summary>
+                              <div class="px-4 pb-4 pt-2 text-sm text-gray-600 bg-gray-50">
+                                <p class="mb-2" i18n="@@uniqueRecords1">La opción <strong>Registros únicos</strong> aplica un <strong>GROUP BY</strong> sobre todos los atributos de la consulta. Úsala cuando quieras eliminar duplicados y agrupar los resultados por la combinación de todos los campos seleccionados.</p>
+                                <p class="text-xs font-semibold text-gray-500 mb-1" i18n="@@indicaciones2">Limitaciones:</p>
+                                <ul class="list-disc pl-4 text-xs space-y-0.5">
+                                  <li i18n="@@uniqueRecords3">Al activarla, las métricas numéricas se agrupan junto al resto de atributos, lo que puede alterar el resultado esperado si ya existen agregaciones definidas.</li>
+                                </ul>
+                              </div>
+                            </details>
 
-                            </div>
+                            <!-- Filtros dinámicos -->
+                            <details class="group" name="sqlIndicationOpenSection">
+                              <summary class="flex justify-between items-center cursor-pointer px-4 py-3 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center gap-2">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[var(--corporate-primary)] shrink-0">
+                                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                                  </svg>
+                                  <span class="text-sm font-medium" i18n="@@dynamicFiltersText">Filtros dinámicos</span>
+                                </div>
+                                <svg class="h-4 w-4 text-gray-400 group-open:rotate-180 transition-transform shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                              </summary>
+                              <div class="px-4 pb-4 pt-2 text-sm text-gray-600 bg-gray-50">
+                                <p class="mb-2" i18n="@@dynamicFilters1">Al hacer clic en otros paneles del dashboard se crean <strong>filtros dinámicos</strong> que afectan al resto de paneles. Activar esta opción hace que este panel <strong>ignore</strong> esos filtros dinámicos y siempre muestre sus datos completos, independientemente de las selecciones del usuario en otros paneles.</p>
+                                <p class="text-xs font-semibold text-gray-500 mb-1" i18n="@@indicaciones2">Limitaciones:</p>
+                                <ul class="list-disc pl-4 text-xs space-y-0.5">
+                                  <li i18n="@@dynamicFilters3">Los filtros de panel y globales definidos manualmente sí se siguen aplicando con normalidad.</li>
+                                  <li i18n="@@dynamicFilters4">Esta opción no afecta a los filtros creados desde el selector de filtros del dashboard.</li>
+                                </ul>
+                              </div>
+                            </details>
+
                           </div>
                         </div>
+
                       </div>
                     }
 

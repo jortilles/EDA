@@ -5555,6 +5555,41 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
           <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
         </context-group>
       </trans-unit>
+
+      <trans-unit id="tooltipJoinType" datatype="html">
+        <source>Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+        </context-group>
+      </trans-unit>
+
+      <trans-unit id="tooltipScenarios" datatype="html">
+        <source>Crea atributos derivados aplicando operaciones matemáticas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+        </context-group>
+      </trans-unit>
+
+      <trans-unit id="tooltipAdvancedFilters" datatype="html">
+        <source>Combina los filtros del panel con operadores AND u OR</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+        </context-group>
+      </trans-unit>
+
+      <trans-unit id="tooltipUniqueRecords" datatype="html">
+        <source>Aplica GROUP BY a todos los campos para eliminar duplicados</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+        </context-group>
+      </trans-unit>
+
+      <trans-unit id="tooltipDynamicFilters" datatype="html">
+        <source>Actívalo para que este panel ignore los filtros dinámicos de otros paneles</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -5805,6 +5805,31 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Aquesta opció no afecta els filtres creats des del selector de filtres del dashboard.</target>
       </trans-unit>
 
+      <trans-unit id="tooltipJoinType">
+        <source>Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN</source>
+        <target>Defineix com s'uneixen les taules: LEFT, INNER o RIGHT JOIN</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipScenarios">
+        <source>Crea atributos derivados aplicando operaciones matemáticas</source>
+        <target>Crea atributs derivats aplicant operacions matemàtiques</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipAdvancedFilters">
+        <source>Combina los filtros del panel con operadores AND u OR</source>
+        <target>Combina els filtres del panell amb operadors AND o OR</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipUniqueRecords">
+        <source>Aplica GROUP BY a todos los campos para eliminar duplicados</source>
+        <target>Aplica GROUP BY a tots els camps per eliminar duplicats</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipDynamicFilters">
+        <source>Actívalo para que este panel ignore los filtros dinámicos de otros paneles</source>
+        <target>Activa-ho perquè aquest panell ignori els filtres dinàmics d'altres panells</target>
+      </trans-unit>
+
       <trans-unit id="dashboardSidebarDependentFilters">
         <source>Filtros dependientes</source>
         <target>Filtres dependents</target>

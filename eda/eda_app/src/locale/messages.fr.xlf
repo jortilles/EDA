@@ -5741,6 +5741,31 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <target>Cette option n'affecte pas les filtres créés depuis le sélecteur de filtres du tableau de bord.</target>
       </trans-unit>
 
+      <trans-unit id="tooltipJoinType">
+        <source>Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN</source>
+        <target>Définit comment les tables sont jointes : LEFT, INNER ou RIGHT JOIN</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipScenarios">
+        <source>Crea atributos derivados aplicando operaciones matemáticas</source>
+        <target>Crée des attributs dérivés en appliquant des opérations mathématiques</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipAdvancedFilters">
+        <source>Combina los filtros del panel con operadores AND u OR</source>
+        <target>Combine les filtres du panneau avec des opérateurs AND ou OR</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipUniqueRecords">
+        <source>Aplica GROUP BY a todos los campos para eliminar duplicados</source>
+        <target>Applique un GROUP BY à tous les champs pour éliminer les doublons</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipDynamicFilters">
+        <source>Actívalo para que este panel ignore los filtros dinámicos de otros paneles</source>
+        <target>Activez-le pour que ce panneau ignore les filtres dynamiques des autres panneaux</target>
+      </trans-unit>
+
       <trans-unit id="dashboardSidebarDependentFilters">
         <source>Filtros dependientes</source>
         <target>Filtres dépendants</target>

@@ -5330,6 +5330,31 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Ta opcja nie dotyczy filtrów utworzonych za pomocą selektora filtrów dashboardu.</target>
       </trans-unit>
 
+      <trans-unit id="tooltipJoinType">
+        <source>Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN</source>
+        <target>Definiuje sposób łączenia tabel: LEFT, INNER lub RIGHT JOIN</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipScenarios">
+        <source>Crea atributos derivados aplicando operaciones matemáticas</source>
+        <target>Tworzy atrybuty pochodne z zastosowaniem operacji matematycznych</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipAdvancedFilters">
+        <source>Combina los filtros del panel con operadores AND u OR</source>
+        <target>Łączy filtry panelu za pomocą operatorów AND lub OR</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipUniqueRecords">
+        <source>Aplica GROUP BY a todos los campos para eliminar duplicados</source>
+        <target>Stosuje GROUP BY do wszystkich pól w celu wyeliminowania duplikatów</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipDynamicFilters">
+        <source>Actívalo para que este panel ignore los filtros dinámicos de otros paneles</source>
+        <target>Włącz, aby ten panel ignorował dynamiczne filtry z innych paneli</target>
+      </trans-unit>
+
         <trans-unit id="joins">
         <source>Tipo de intersección</source>
         <target>Typ skrzyżowania</target>

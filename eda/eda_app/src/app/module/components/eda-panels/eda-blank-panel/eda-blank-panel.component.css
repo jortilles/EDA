@@ -772,6 +772,10 @@ span.state-label {
 .btn-panel-active:hover { background-color: white !important; color: #6b7280 !important; border-color: #d1d5db !important; }
 .btn-panel-hover:hover { background-color: var(--corporate-primary) !important; color: white !important; }
 
+.entity-item.btn-panel-active:hover  { background-color: var(--corporate-primary) !important; color: white !important; }
+.entity-item:not(.btn-panel-active):hover { background-color: rgba(var(--corporate-primary-rgb), 0.25); transition: background-color 0.15s ease; }
+.attr-item:hover { background-color: rgba(var(--corporate-primary-rgb), 0.25); transition: background-color 0.15s ease; }
+
 .execute-button:hover:enabled {
   background: #f9fafb;
   border-color: #d1d5db;
