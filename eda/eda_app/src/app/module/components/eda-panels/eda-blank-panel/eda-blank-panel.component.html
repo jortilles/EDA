@@ -139,7 +139,7 @@
           <h3 
             (click)="indextab = 0" 
             i18n="@@vistaSeleccionador"
-            class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200"
+            class="cursor-pointer  text-lg mb-2 font-bold font-sans transition-colors duration-200"
             [ngClass]="indextab === 0 ? 'tab-active border-b-2' : 'text-gray-600'"
           >
             {{ selectedQueryMode !== 'SQL' ? editQuery : editSQLQuery }}
@@ -148,7 +148,7 @@
           <h3 
             (click)="indextab = 1" 
             i18n="@@vistaPrevia"
-            class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200"
+            class="cursor-pointer  text-lg mb-2 font-bold font-sans transition-colors duration-200"
             [ngClass]="indextab === 1 ? 'tab-active border-b-2' : 'text-gray-600'"
           >
             Vista previa
@@ -437,53 +437,65 @@
                       <div class="relative inline-block cols-span-1">
                         <div class="flex items-center gap-2">
                           <h3
-                            class="cursor-pointer pb-2 mb-2 text-lg font-bold font-sans transition-colors duration-200"
+                            class="cursor-pointer mb-2 text-lg font-bold font-sans transition-colors duration-200"
                             [ngClass]="display_v.advancedSetting=== 0 ? 'tab-active border-b-2' : 'text-gray-600'"
                             (click)="display_v.advancedSetting = 0"
                             i18n="@@yourQuerySQL"
                           >
                             Mi consulta SQL
                           </h3>
-                          <i class="pi pi-info-circle cursor-pointer text-gray-400 mb-4 text-sm" [pTooltip]="ptooltipViewQuery" (click)="getQuery($event)"></i>
+                          <i class="pi pi-info-circle cursor-pointer text-gray-400 mb-2 text-sm" [pTooltip]="ptooltipViewQuery" (click)="getQuery($event)"></i>
                         </div>
                         <!-- Contenedor de query -->
                         @if(display_v.showQueryContainer) {
                           <div class="fixed inset-0 z-40" (click)="display_v.showQueryContainer = false"></div>
-                          <div id="query-container" class="absolute top-full left-0 mt-1 w-[35vw] h-[30vh] max-h-[80vh] bg-white z-50 shadow-lg rounded-lg p-4 border border-gray-300 flex flex-col">
+                          <div id="query-container" class="absolute top-full left-0 mt-2 w-[42vw] bg-white z-50 shadow-xl rounded-xl border border-gray-200 flex flex-col overflow-hidden">
+                            <!-- Header -->
+                            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50">
+                              <div class="flex items-center gap-2">
+                                <i class="pi pi-code text-[var(--corporate-primary)] text-sm"></i>
+                                <span class="text-sm font-semibold text-gray-700" i18n="@@yourQuerySQL">Mi consulta SQL</span>
+                              </div>
+                              <button
+                                (click)="display_v.showQueryContainer = false"
+                                class="flex items-center justify-center w-6 h-6 rounded text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition-colors"
+                              >
+                                <i class="pi pi-times text-xs"></i>
+                              </button>
+                            </div>
+                            <!-- Content -->
                             @if(display_v.minispinnerSQL) {
-                              <div class="flex justify-center items-center w-full min-h-[15vh]">
+                              <div class="flex justify-center items-center w-full min-h-[18vh] p-6">
                                 <p-progressSpinner [style]="{width:'4vw', height:'4vw'}" strokeWidth="5" fill="#EEEEEE"></p-progressSpinner>
                               </div>
                             }
                             @if(!display_v.minispinnerSQL) {
-                              <textarea 
-                                class="w-full flex-1 p-2 border rounded resize-none mb-2"
-                                [(ngModel)]="queryFromServer" 
-                                pInputTextarea 
-                                autoResize="autoResize"
-                              >
-                              </textarea>
-                              <div class="mt-2 flex gap-4">
-                                <button 
-                                  type="button" 
-                                  pButton 
-                                  icon="fa fa-database" 
-                                  class="p-button-success mt-2 w-fit"
-                                  (click)="migrateQuery()" 
-                                  i18n-label="@@openSqlMode" 
-                                  label="Abrir en modo SQL"
-                                >
-                                </button>
-                                <button 
-                                  type="button" 
-                                  pButton 
-                                  icon="pi pi-times" 
-                                  class="p-button-secondary mt-2 w-fit"
-                                  (click)="display_v.showQueryContainer = false" 
-                                  i18n-label="cancelarBtn" 
-                                  label="Cancelar"
-                                >
-                                </button>
+                              <div class="flex flex-col gap-3 p-4">
+                                <textarea
+                                  class="w-full h-[22vh] p-3 border border-gray-200 rounded-lg resize-none text-sm font-mono bg-gray-50 focus:outline-none focus:border-[var(--corporate-primary)] leading-relaxed"
+                                  [(ngModel)]="queryFromServer"
+                                  pInputTextarea
+                                  autoResize="autoResize"
+                                ></textarea>
+                                <div class="flex justify-end gap-2">
+                                  <button
+                                    type="button"
+                                    (click)="display_v.showQueryContainer = false"
+                                    class="cancel-button text-sm"
+                                    i18n="@@cancelarBtn"
+                                  >
+                                    Cancelar
+                                  </button>
+                                  <button
+                                    type="button"
+                                    (click)="migrateQuery()"
+                                    class="confirm-button text-sm"
+                                    i18n="@@openSqlMode"
+                                  >
+                                    <i class="fa fa-database mr-1.5 text-xs"></i>
+                                    Abrir en modo SQL
+                                  </button>
+                                </div>
                               </div>
                             }
                           </div>
@@ -492,7 +504,7 @@
         
                       <div class="relative inline-block cols-span-1">
                         <h3
-                          class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-[max-content]"
+                          class="cursor-pointer text-lg mb-2 font-bold font-sans transition-colors duration-200 w-[max-content]"
                           [ngClass]="display_v.advancedSetting === 1 ? 'tab-active border-b-2' : 'text-gray-600'"
                           (click)="display_v.advancedSetting = 1" 
                           i18n="@@AdvanceOptions"
@@ -504,7 +516,7 @@
                       @if(promptAvailable()) {
                         <div class="relative inline-block cols-span-1">
                           <h3
-                            class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-[max-content]"
+                            class="cursor-pointer text-lg mb-2 font-bold font-sans transition-colors duration-200 w-[max-content]"
                             [ngClass]="display_v.advancedSetting === 2 ? 'tab-active border-b-2' : 'text-gray-600'"
                             (click)="display_v.advancedSetting = 2" 
                             i18n="@@askTheAIText"
@@ -616,7 +628,7 @@
 
                           <!-- Filtros dinámicos -->
                           <div class="flex items-center justify-between rounded-lg px-3 py-2">
-                            <span i18n="@@dynamicFiltersText" class="text-sm font-medium text-gray-700" pTooltip="Actívalo para que este panel ignore los filtros dinámicos de otros paneles" i18n-pTooltip="@@tooltipDynamicFilters" tooltipPosition="top">Filtros dinámicos</span>
+                            <span i18n="@@dynamicFiltersText" class="text-sm font-medium text-gray-700" pTooltip="Actívalo para que este panel ignore los filtros dinámicos de otros paneles" tooltipPosition="top">Filtros dinámicos</span>
                             <button
                               type="button"
                               (click)="dynamicFiltersInteraction()"

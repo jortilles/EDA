@@ -16,6 +16,57 @@
   /* THIS MUST BE SET ALSO IN  eda_app\src\app\config\personalitzacio\customizables.ts */
 }
 
+/* ─── PrimeNG highlight override (lara-light-blue uses hardcoded blue — we override here) ─── */
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight,
+.p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item.p-highlight,
+.p-cascadeselect-panel .p-cascadeselect-items .p-cascadeselect-item.p-highlight,
+.p-listbox .p-listbox-list .p-listbox-item.p-highlight,
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight,
+.p-treeselect-panel .p-treeselect-items-wrapper .p-treenode .p-treenode-content.p-highlight,
+.p-datepicker table td > span.p-highlight,
+.p-datepicker .p-monthpicker .p-monthpicker-month.p-highlight,
+.p-datepicker .p-yearpicker .p-yearpicker-year.p-highlight {
+  color: var(--corporate-primary);
+  background: rgba(var(--corporate-primary-rgb), 0.12);
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight.p-focus,
+.p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item.p-highlight.p-focus,
+.p-listbox .p-listbox-list .p-listbox-item.p-highlight.p-focus,
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight.p-focus {
+  background: rgba(var(--corporate-primary-rgb), 0.2);
+}
+
+.p-checkbox .p-checkbox-box.p-highlight,
+.p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-highlight:hover,
+.p-input-filled .p-checkbox .p-checkbox-box.p-highlight {
+  border-color: var(--corporate-primary);
+  background: var(--corporate-primary);
+}
+
+.p-radiobutton .p-radiobutton-box.p-highlight,
+.p-radiobutton .p-radiobutton-box.p-highlight:not(.p-disabled):hover {
+  border-color: var(--corporate-primary);
+  background: var(--corporate-primary);
+}
+
+.p-selectbutton .p-button.p-highlight,
+.p-selectbutton .p-button.p-highlight:hover {
+  border-color: var(--corporate-primary);
+  background: var(--corporate-primary);
+  color: #ffffff;
+}
+
+/* ─── PrimeNG focus ring override (lara-light-blue uses hardcoded blue) ─── */
+.p-dropdown:not(.p-disabled).p-focus,
+.p-multiselect:not(.p-disabled).p-focus,
+.p-treeselect:not(.p-disabled).p-focus,
+.p-cascadeselect:not(.p-disabled).p-focus,
+.p-listbox.p-focus {
+  box-shadow: 0 0 0 0.2rem rgba(var(--corporate-primary-rgb), 0.25);
+  border-color: var(--corporate-primary);
+}
+
 /* TreeSelect del filtro global — panel appended to body, necesita estilos globales */
 .eda-treeselect-panel .p-treenode-children {
   padding-left: 1.5rem !important;

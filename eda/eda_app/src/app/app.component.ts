@@ -164,5 +164,18 @@ export class AppComponent implements OnInit {
         root.style.setProperty('--folder-icon-color-hover', CORPORATE_COLORS.folder.iconColorHover);
         root.style.setProperty('--folder-card-bg-open',     CORPORATE_COLORS.folder.cardBgOpen);
         root.style.setProperty('--folder-label-open',       CORPORATE_COLORS.folder.labelColorOpen);
+        // Buttons
+        root.style.setProperty('--btn-confirm-bg',           CORPORATE_COLORS.buttons.confirmBg);
+        root.style.setProperty('--btn-confirm-bg-end',       CORPORATE_COLORS.buttons.confirmBgEnd);
+        root.style.setProperty('--btn-confirm-hover-bg',     CORPORATE_COLORS.buttons.confirmHoverBg);
+        root.style.setProperty('--btn-confirm-hover-bg-end', CORPORATE_COLORS.buttons.confirmHoverBgEnd);
+        root.style.setProperty('--btn-aux-bg',               CORPORATE_COLORS.buttons.auxBg);
+        root.style.setProperty('--btn-aux-bg-end',           CORPORATE_COLORS.buttons.auxBgEnd);
+        root.style.setProperty('--btn-aux-hover-bg',         CORPORATE_COLORS.buttons.auxHoverBg);
+        root.style.setProperty('--btn-aux-hover-bg-end',     CORPORATE_COLORS.buttons.auxHoverBgEnd);
+        root.style.setProperty('--btn-cancel-bg',            CORPORATE_COLORS.buttons.cancelBg);
+        root.style.setProperty('--btn-cancel-bg-end',        CORPORATE_COLORS.buttons.cancelBgEnd);
+        root.style.setProperty('--btn-cancel-hover-bg',      CORPORATE_COLORS.buttons.cancelHoverBg);
+        root.style.setProperty('--btn-cancel-hover-bg-end',  CORPORATE_COLORS.buttons.cancelHoverBgEnd);
     }
 }

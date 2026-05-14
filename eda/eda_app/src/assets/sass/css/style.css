@@ -962,71 +962,69 @@ html body .waves-notransition {
 
 .cancel-button {
   display: flex;
-  gap: 7%;
+  gap: 0.5rem;
   align-items: center;
   border-radius: 0.375rem;
-  padding: 0.5rem 1rem;   
-  color: white;            
-  background: linear-gradient(to right, #ba001f, #ff2802); 
+  padding: 0.5rem 1rem;
+  color: white;
+  background: linear-gradient(to right, var(--btn-cancel-bg), var(--btn-cancel-bg-end));
   border: none;
   cursor: pointer;
 }
 
 .execute-button {
-    display: flex;
-  gap: 7%;
+  display: flex;
+  gap: 0.5rem;
   align-items: center;
-    border-radius: 0.375rem;
-  padding: 0.5rem 1rem;   
-  color: black;            
-  background: white; 
-  border: #e5e7eb solid 1px;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  color: white;
+  background: linear-gradient(to right, var(--btn-aux-bg), var(--btn-aux-bg-end));
+  border: none;
   cursor: pointer;
 }
 
-
 .execute-button:disabled {
-  background: #d1d5db;
-  color: #6b7280;     
+  background: #f3f4f6;
+  color: #9ca3af;
   cursor: not-allowed;
 }
 
 .confirm-button {
-    display: flex;
-  gap: 7%;
+  display: flex;
+  gap: 0.5rem;
   align-items: center;
   border-radius: 0.375rem;
-  padding: 0.5rem 1rem;   
-  color: white;            
-  background: linear-gradient(to right, #00B0BA, #14B8A6); 
+  padding: 0.5rem 1rem;
+  color: white;
+  background: linear-gradient(to right, var(--btn-confirm-bg), var(--btn-confirm-bg-end));
   border: none;
   cursor: pointer;
 }
 
 .confirm-button:disabled {
   background: #d1d5db;
-  color: #6b7280;     
+  color: #6b7280;
   cursor: not-allowed;
 }
+
 .cancel-button,
 .execute-button,
 .confirm-button {
-  transition: background 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+  transition: background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
-/* Hover general sin movimiento */
-.cancel-button:hover {
-  background: linear-gradient(to right, #d30026, #ff4b2b);
+.cancel-button:hover:not(:disabled) {
+  background: linear-gradient(to right, var(--btn-cancel-hover-bg), var(--btn-cancel-hover-bg-end));
 }
 
-.execute-button:hover {
-  background: #f9fafb;
-  border-color: #d1d5db;
-  color: #111827;
+.execute-button:hover:not(:disabled) {
+  background: linear-gradient(to right, var(--btn-aux-hover-bg), var(--btn-aux-hover-bg-end));
+  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
 }
 
-.confirm-button:hover {
-  background: linear-gradient(to right, #00c8d1, #2dd4bf);
+.confirm-button:hover:not(:disabled) {
+  background: linear-gradient(to right, var(--btn-confirm-hover-bg), var(--btn-confirm-hover-bg-end));
 }
 
 
