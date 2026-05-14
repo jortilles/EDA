@@ -1,5 +1,5 @@
 
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DashboardService, DataSourceService } from '@eda/services/service.index';
@@ -15,7 +15,8 @@ import { AlertService } from '@eda/services/service.index';
   templateUrl: './model-import-export.page.html',
   standalone: true,
   imports: [CommonModule, FormsModule, DropdownModule, IconComponent],
-  styles: []
+  styleUrls: ['./model-import-export.page.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class ModelImportExportPage implements OnInit {
   private dataSourceNamesService = inject(DataSourceNamesService);
