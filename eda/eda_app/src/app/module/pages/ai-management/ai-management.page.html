@@ -22,7 +22,7 @@
                   <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"></path>
                 </svg>
                 <select id="provider" formControlName="PROVIDER"
-                  class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 appearance-none">
+                  class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white input-corporate disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 appearance-none">
                   <option value="openai">OpenAI</option>
                   <option value="anthropic">Anthropic</option>
                   <option value="bedrock">Bedrock</option>
@@ -41,7 +41,7 @@
                 </svg>
                 <input id="api_key" [type]="showApiKey() ? 'text' : 'password'" formControlName="API_KEY"
                   placeholder="sk-proj-..."
-                  class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 !pr-10 text-sm ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
+                  class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 !pr-10 text-sm ring-offset-white placeholder:text-gray-500 input-corporate disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
                 <button type="button" (click)="toggleShowApiKey()"
                   class="absolute right-3 top-3 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200">
                   @if (showApiKey()) {
@@ -77,7 +77,7 @@
                     </svg>
                     <input id="aws_access_key" type="text" formControlName="AWS_ACCESS_KEY"
                       placeholder="AKIAIOSFODNN7EXAMPLE"
-                      class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
+                      class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white placeholder:text-gray-500 input-corporate disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
                   </div>
                 </div>
 
@@ -94,7 +94,7 @@
                     </svg>
                     <input id="aws_region" type="text" formControlName="AWS_REGION"
                       placeholder="eu-west-1"
-                      class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
+                      class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white placeholder:text-gray-500 input-corporate disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
                   </div>
                 </div>
 
@@ -111,7 +111,7 @@
                   </svg>
                   <input id="aws_secret_key" [type]="showAwsSecretKey() ? 'text' : 'password'" formControlName="AWS_SECRET_KEY"
                     placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
-                    class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 !pr-10 text-sm ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
+                    class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 !pr-10 text-sm ring-offset-white placeholder:text-gray-500 input-corporate disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
                   <button type="button" (click)="toggleShowAwsSecretKey()"
                     class="absolute right-3 top-3 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200">
                     @if (showAwsSecretKey()) {
@@ -144,7 +144,7 @@
                 </svg>
                 <input id="model" type="text" formControlName="MODEL"
                   placeholder="gpt-4.1"
-                  class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
+                  class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white placeholder:text-gray-500 input-corporate disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
               </div>
             </div>
 
@@ -153,7 +153,7 @@
               <label for="context" class="text-sm font-medium" i18n="@@aiContext">CONTEXTO</label>
               <textarea id="context" formControlName="CONTEXT" rows="3"
                 placeholder="Instrucciones de contexto para el asistente..."
-                class="flex w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400 resize-none"></textarea>
+                class="flex w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-gray-500 input-corporate disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400 resize-none"></textarea>
             </div>
 
             <!-- EDA APP URL -->
@@ -168,7 +168,7 @@
                 </svg>
                 <input id="edaapp" type="text" formControlName="EDA_APP_URL"
                   placeholder="https://example.com/eda"
-                  class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
+                  class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white placeholder:text-gray-500 input-corporate disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
               </div>
             </div>
 
@@ -184,7 +184,7 @@
                 </svg>
                 <input id="mcpurl" type="text" formControlName="MCP_URL"
                   placeholder="https://example.com/ia"
-                  class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
+                  class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white placeholder:text-gray-500 input-corporate disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
               </div>
             </div>
 
@@ -206,7 +206,7 @@
                     <line x1="3" y1="18" x2="3.01" y2="18"></line>
                   </svg>
                   <input id="limit" type="number" formControlName="LIMIT" min="1"
-                    class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
+                    class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white placeholder:text-gray-500 input-corporate disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
                 </div>
               </div>
 
@@ -216,7 +216,7 @@
                 <div class="flex items-center h-10 space-x-3">
                   <button type="button" role="switch" [attr.aria-checked]="availableEnabled()" (click)="toggleAvailable()"
                     class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"                    
-                    [ngClass]="{'bg-[#00BFB3]': availableEnabled(), 'bg-input': !availableEnabled()}">
+                    [ngClass]="{'toggle-active': availableEnabled(), 'bg-input': !availableEnabled()}">
                     <span
                       class="pointer-events-none block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition-transform"
                       [class.translate-x-5]="availableEnabled()" [class.translate-x-0]="!availableEnabled()"></span>
@@ -232,7 +232,7 @@
             <!-- Botón guardar -->
             <div class="flex justify-end">
               <button type="submit" [disabled]="isSubmitting() || aiForm.invalid"
-                class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#00BFB3] text-white hover:bg-[#00BFB3]/90 h-10 px-4 py-2">
+                class="btn-corporate-primary inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2">
                 {{ isSubmitting() ? 'Guardando...' : 'Guardar configuración' }}
               </button>
             </div>

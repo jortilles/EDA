@@ -11,6 +11,7 @@ import { IaFormStateService } from '@eda/services/shared/IaFormState.service';
   standalone: true,
   templateUrl: 'ai-management.page.html',
   imports: [CommonModule, ReactiveFormsModule],
+  styleUrls: ['./ai-management.page.css']
 })
 export class AiManagementPage implements OnInit {
 
