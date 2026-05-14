@@ -8,5 +8,3 @@
 .dropzone-active                { border-color: var(--corporate-primary) !important; background-color: var(--corporate-primary) !important; opacity: 0.8; }
 .dropzone-idle:hover            { border-color: var(--corporate-primary); }
 
-.tab-ds-btn:active              { outline: none; box-shadow: 0 0 0 2px var(--corporate-primary) !important; }
-.tab-ds-btn              { outline: none; box-shadow: none!important; }

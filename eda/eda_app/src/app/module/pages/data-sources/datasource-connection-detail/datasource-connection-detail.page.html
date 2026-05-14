@@ -21,13 +21,13 @@
     <form [formGroup]="connectionForm" (ngSubmit)="onSubmit()">
       <!-- Tabs -->
       <div class="grid grid-cols-2 max-w-3xl mx-4 mt-4 bg-gray-100 rounded-md p-1">
-        <button type="button" class="tab-ds-btn py-2 px-4 rounded-md text-sm font-medium transition-colors"
+        <button type="button" class="py-2 px-4 rounded-md text-sm font-medium transition-colors"
           [class.bg-white]="activeTab === 'basic'" [class.shadow]="activeTab === 'basic'"
           [class.text-gray-900]="activeTab === 'basic'" [class.text-gray-500]="activeTab !== 'basic'"
           (click)="setActiveTab('basic')" i18n="@@basicInformation">
           Información básica
         </button>
-        <button type="button" class="tab-ds-btn py-2 px-4 rounded-md text-sm font-medium transition-colors"
+        <button type="button" class="py-2 px-4 rounded-md text-sm font-medium transition-colors"
           [class.bg-white]="activeTab === 'advanced'" [class.shadow]="activeTab === 'advanced'"
           [class.text-gray-900]="activeTab === 'advanced'" [class.text-gray-500]="activeTab !== 'advanced'"
           (click)="setActiveTab('advanced')" i18n="@@advancedSettings">
