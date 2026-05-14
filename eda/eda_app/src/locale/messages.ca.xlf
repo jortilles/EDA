@@ -6468,6 +6468,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Pregunta en lenguaje natural: </source>
         <target>Pregunta en llenguatge natural: </target>
       </trans-unit>
+      <trans-unit id="assistantSubtitle">
+        <source>Construye tu consulta en lenguaje natural</source>
+        <target>Construeix la teva consulta en llenguatge natural</target>
+      </trans-unit>
       <trans-unit id="AIManagement" datatype="html">
         <source>Gestión del asistente</source>
         <target>Gestió de l'assistent</target>

@@ -6101,6 +6101,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Pregunta en lenguaje natural:</source>
         <target>Zapytaj w języku naturalnym:</target>
       </trans-unit>
+      <trans-unit id="assistantSubtitle">
+        <source>Construye tu consulta en lenguaje natural</source>
+        <target>Zbuduj swoje zapytanie w języku naturalnym</target>
+      </trans-unit>
       <trans-unit id="AIManagement" datatype="html">
         <source>Gestión del asistente</source>
         <target>Zarządzanie asystentem</target>

@@ -1,36 +1,52 @@
 // Personalización de colores corporativos
 export const CORPORATE_COLORS = {
     // Colores base de marca — usados en toda la aplicación
-    primary:         '#00B0BA',      // Color principal (botones, iconos, gradientes)
-    primaryGradient: '#00c9b1',      // Extremo final de gradientes (header chat, FAB, burbujas)
-    primaryRgb:      '0, 176, 186',  // Valor RGB del primario para opacidades (box-shadow, rgba)
-    primaryHsl:      '0 100% 37%', // Componentes HSL del primario para --ring (Tailwind focus ring)
+    primary:         '#E11D48',      // Color principal (botones, iconos, gradientes)
+    primaryGradient: '#FB7185',      // Extremo final de gradientes (header chat, FAB, burbujas)
+    primaryRgb:      '225, 29, 72',  // Valor RGB del primario para opacidades (box-shadow, rgba)
+    primaryHsl:      '347 91% 50%',  // Componentes HSL del primario para --ring (Tailwind focus ring)
 
     // Colores específicos del chatbot
     chat: {
-        avatarBg:       '#e0f7f8',   // Fondo del avatar del robot (header y mensajes)
-        avatarBgAlt:    '#ccf2f0',   // Fondo alternativo del avatar (gradiente empty state)
-        avatarBorder:   '#b2ecee',   // Borde del avatar y cabecera de tabla
-        surfaceHover:   '#f0fdfe',   // Fondo hover en sugerencias y filas de tabla
-        tableHeader:    '#007a82',   // Color del texto en cabeceras de tabla
-        linkColor:      '#00838a',   // Color de enlaces en mensajes
-        linkHoverColor: '#005f65',   // Color de enlaces al hacer hover
-    },
-
-    // Colores específicos del sidebar izquierdo
-    sidebar: {
-        ring: '#00bcd4',  // Ring del input al editar el título del dashboard
+        avatarBg:       '#ffe4e6',   // Fondo del avatar del robot (header y mensajes)
+        avatarBgAlt:    '#fecdd3',   // Fondo alternativo del avatar (gradiente empty state)
+        avatarBorder:   '#fda4af',   // Borde del avatar y cabecera de tabla
+        surfaceHover:   '#fff1f2',   // Fondo hover en sugerencias y filas de tabla
+        tableHeader:    '#be123c',   // Color del texto en cabeceras de tabla
+        linkColor:      '#e11d48',   // Color de enlaces en mensajes
+        linkHoverColor: '#9f1239',   // Color de enlaces al hacer hover
     },
 
     // Colores específicos de carpetas (home — vista de carpetas y filtros de tags)
     folder: {
-        iconBg:          '#ccfbf1',  // Fondo del icono de carpeta cerrada
-        iconBgHover:     '#99f6e4',  // Fondo del icono de carpeta hover o abierta
-        iconColor:       '#14b8a6',  // Color del icono de carpeta cerrada
-        borderHover:     '#2dd4bf',  // Borde de la tarjeta carpeta al hacer hover o al estar abierta
-        iconColorHover:  '#0d9488',  // Color del icono y texto al hacer hover o al estar abierta
-        cardBgOpen:      '#f0fdfa',  // Fondo de la tarjeta cuando la carpeta está abierta
-        labelColorOpen:  '#0f766e',  // Color del nombre de la carpeta cuando está abierta
+        iconBg:          '#ffe4e6',  // Fondo del icono de carpeta cerrada
+        iconBgHover:     '#fecdd3',  // Fondo del icono de carpeta hover o abierta
+        iconColor:       '#e11d48',  // Color del icono de carpeta cerrada
+        borderHover:     '#fb7185',  // Borde de la tarjeta carpeta al hacer hover o al estar abierta
+        iconColorHover:  '#be123c',  // Color del icono y texto al hacer hover o al estar abierta
+        cardBgOpen:      '#fff1f2',  // Fondo de la tarjeta cuando la carpeta está abierta
+        labelColorOpen:  '#9f1239',  // Color del nombre de la carpeta cuando está abierta
+    },
+
+    // Colores de botones de acción en diálogos
+    buttons: {
+        // Confirmar: acción principal afirmativa
+        confirmBg:        '#00B0BA',  // Inicio gradiente (rose-600)
+        confirmBgEnd:     '#00c9b1',  // Fin gradiente (rose-400)
+        confirmHoverBg:   '#006c72',  // Hover inicio (rose-800, más oscuro)
+        confirmHoverBgEnd:'#05a592',  // Hover fin (rose-700, más oscuro)
+
+        // Auxiliar: acción secundaria (ejecutar consulta, abrir SQL, previsualizar…)
+        auxBg:            '#1D4ED8',  // Inicio gradiente (blue-700)
+        auxBgEnd:         '#3B82F6',  // Fin gradiente (blue-500)
+        auxHoverBg:       '#1E40AF',  // Hover inicio (blue-800)
+        auxHoverBgEnd:    '#2563EB',  // Hover fin (blue-600)
+
+        // Cancelar: acción de descarte
+        cancelBg:         '#df4040',  // Inicio gradiente (red-400, más claro)
+        cancelBgEnd:      '#ec2828',  // Fin gradiente (red-300, más claro)
+        cancelHoverBg:    'rgb(177, 39, 39)',  // Hover inicio (red-500, más oscuro)
+        cancelHoverBgEnd: '#bd3636',  // Hover fin (red-400, más oscuro)
     },
 };
 

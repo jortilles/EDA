@@ -6436,6 +6436,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Pregunta en lenguaje natural: </source>
         <target>Posez votre question en langage naturel : </target>
       </trans-unit>
+      <trans-unit id="assistantSubtitle">
+        <source>Construye tu consulta en lenguaje natural</source>
+        <target>Construisez votre requête en langage naturel</target>
+      </trans-unit>
       <trans-unit id="AIManagement" datatype="html">
         <source>Gestión del asistente</source>
         <target>Gestion de l'assistant</target>

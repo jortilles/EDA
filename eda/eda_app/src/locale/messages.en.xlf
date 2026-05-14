@@ -6161,6 +6161,10 @@ OR<ph id="5"/>
   <source>Pregunta en lenguaje natural: </source>
   <target>Ask in natural language: </target>
 </trans-unit>
+<trans-unit id="assistantSubtitle">
+  <source>Construye tu consulta en lenguaje natural</source>
+  <target>Build your query using natural language</target>
+</trans-unit>
 <trans-unit id="AIManagement" datatype="html">
   <source>Gestión del asistente</source>
   <target>Assistant Management</target>
