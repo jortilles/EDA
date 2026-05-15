@@ -2572,6 +2572,26 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target> Panele niefiltrowane </target>
   </trans-unit>
 
+  <trans-unit id="tooltipApplyToAll">
+    <source>Si está activado, el filtro se aplica a todos los paneles del informe.</source>
+    <target>Jeśli włączone, filtr jest stosowany do wszystkich paneli raportu.</target>
+  </trans-unit>
+
+  <trans-unit id="tooltipAutocomplete">
+    <source>Si está activado, los valores se buscan dinámicamente mediante autocompletado.</source>
+    <target>Jeśli włączone, wartości są wyszukiwane dynamicznie za pomocą autouzupełniania.</target>
+  </trans-unit>
+
+  <trans-unit id="tooltipMandatory">
+    <source>Si está activado, el filtro debe tener un valor seleccionado para poder visualizar el informe.</source>
+    <target>Jeśli włączone, filtr musi mieć wybraną wartość, aby wyświetlić raport.</target>
+  </trans-unit>
+
+  <trans-unit id="tooltipVisibility">
+    <source>Público: todos pueden usarlo. Deshabilitado: otros usuarios pueden ver el filtro pero no modificarlo. Oculto: no visible para otros pero se aplica igualmente.</source>
+    <target>Publiczny: wszyscy mogą go używać. Wyłączony: inni użytkownicy widzą filtr, ale nie mogą go modyfikować. Ukryty: niewidoczny dla innych, ale nadal stosowany.</target>
+  </trans-unit>
+
   <trans-unit id="seconds_to_refresh">
     <source> Intervalo de recarga </source>
     <target>Częstotliwość odświeżania </target>

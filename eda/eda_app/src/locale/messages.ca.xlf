@@ -2946,6 +2946,25 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target> Panells no filtrats </target>
   </trans-unit>
 
+  <trans-unit id="tooltipApplyToAll">
+    <source>Si está activado, el filtro se aplica a todos los paneles del informe.</source>
+    <target>Si està activat, el filtre s'aplica a tots els panells de l'informe.</target>
+  </trans-unit>
+
+  <trans-unit id="tooltipAutocomplete">
+    <source>Si está activado, los valores se buscan dinámicamente mediante autocompletado.</source>
+    <target>Si està activat, els valors es busquen dinàmicament mitjançant autocompletat.</target>
+  </trans-unit>
+
+  <trans-unit id="tooltipMandatory">
+    <source>Si está activado, el filtro debe tener un valor seleccionado para poder visualizar el informe.</source>
+    <target>Si està activat, el filtre ha de tenir un valor seleccionat per poder visualitzar l'informe.</target>
+  </trans-unit>
+
+  <trans-unit id="tooltipVisibility">
+    <source>Público: todos pueden usarlo. Deshabilitado: otros usuarios pueden ver el filtro pero no modificarlo. Oculto: no visible para otros pero se aplica igualmente.</source>
+    <target>Públic: tothom pot usar-lo. Deshabilitat: altres usuaris poden veure el filtre però no modificar-lo. Ocult: no visible per a altres però s'aplica igualment.</target>
+  </trans-unit>
 
   <trans-unit id="seconds_to_refresh">
     <source> Intervalo de recarga </source>

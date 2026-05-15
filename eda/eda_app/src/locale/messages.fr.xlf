@@ -2905,6 +2905,26 @@
     <target> Panneaux non filtrés </target>
   </trans-unit>
 
+  <trans-unit id="tooltipApplyToAll">
+    <source>Si está activado, el filtro se aplica a todos los paneles del informe.</source>
+    <target>Si activé, le filtre s'applique à tous les panneaux du rapport.</target>
+  </trans-unit>
+
+  <trans-unit id="tooltipAutocomplete">
+    <source>Si está activado, los valores se buscan dinámicamente mediante autocompletado.</source>
+    <target>Si activé, les valeurs sont recherchées dynamiquement via la saisie automatique.</target>
+  </trans-unit>
+
+  <trans-unit id="tooltipMandatory">
+    <source>Si está activado, el filtro debe tener un valor seleccionado para poder visualizar el informe.</source>
+    <target>Si activé, le filtre doit avoir une valeur sélectionnée pour afficher le rapport.</target>
+  </trans-unit>
+
+  <trans-unit id="tooltipVisibility">
+    <source>Público: todos pueden usarlo. Deshabilitado: otros usuarios pueden ver el filtro pero no modificarlo. Oculto: no visible para otros pero se aplica igualmente.</source>
+    <target>Public: tout le monde peut l'utiliser. Désactivé: les autres utilisateurs peuvent voir le filtre mais pas le modifier. Masqué: non visible pour les autres mais appliqué quand même.</target>
+  </trans-unit>
+
   <trans-unit id="seconds_to_refresh">
     <source> Intervalo de recarga </source>
     <target> Intervalle de recharge </target>

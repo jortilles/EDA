@@ -80,6 +80,11 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public unselecteddot: string = $localize`:@@unselecteddot:Paneles no filtrados`;
     public aliasValuePh : string = $localize`:@@aliasValuePh: Alias del filtro (opcional)`;
 
+    public tooltipApplyToAll: string = $localize`:@@tooltipApplyToAll:Si está activado, el filtro se aplica a todos los paneles del informe.`;
+    public tooltipAutocomplete: string = $localize`:@@tooltipAutocomplete:Si está activado, los valores se buscan dinámicamente mediante autocompletado.`;
+    public tooltipMandatory: string = $localize`:@@tooltipMandatory:Si está activado, el filtro debe tener un valor seleccionado para poder visualizar el informe.`;
+    public tooltipVisibility: string = $localize`:@@tooltipVisibility:Público: todos pueden usarlo. Deshabilitado: otros usuarios pueden ver el filtro pero no modificarlo. Oculto: no visible para otros pero se aplica igualmente.`;
+
     public tables: any[] = [];
     public selectedTable: any;
 
@@ -104,7 +109,11 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public aliasValue: string = "";
     public showAlias: boolean = false;
 
-    // Legacy 
+    get dialogHeight(): string {
+        return this.globalFilter?.queryMode === 'EDA2' ? '80vh' : '45vh';
+    }
+
+    // Legacy
     public applyToAll: boolean = false;
     public isAutocompleted: boolean = false;
     public isMandatory: boolean = false;

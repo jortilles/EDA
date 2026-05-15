@@ -1,4 +1,4 @@
-<eda-dialog2 [header]="dialogHeader" width="60vw" height="80vh" (apply)="onApply()" [disableApply]="disableApply()"
+<eda-dialog2 [header]="dialogHeader" width="60vw" [height]="dialogHeight" (apply)="onApply()" [disableApply]="disableApply()"
     [overflow]="'auto'"  [showDelete]=true (delete)="onDelete()" (close)="onClose()">
 
     <div content content class="p-6">
@@ -13,10 +13,10 @@
     
           <div class="grid grid-cols-4 items-center">
             <div class="space-x-2 flex items-center h-max">
-              <label  i18n="@@aplyToAllPanelsH5">¿Aplica a todos los paneles?</label>
+              <label i18n="@@aplyToAllPanelsH5" [pTooltip]="tooltipApplyToAll" tooltipPosition="top">¿Aplica a todos los paneles?</label>
               <button type="button" role="switch" [attr.aria-checked]="applyToAll" (click)="applyToAllCheck()"
                 class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"
-                [ngClass]="{'bg-[#00BFB3]': applyToAll, 'bg-input': !applyToAll}">
+                [ngClass]="{'bg-[var(--corporate-primary)]': applyToAll, 'bg-input': !applyToAll}">
                 <span
                   class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform"
                   [ngClass]="{'translate-x-5': applyToAll, 'translate-x-0': !applyToAll}"></span>
@@ -24,11 +24,11 @@
             </div>
     
             <div class="space-x-2 flex items-center h-max">
-              <label i18n="@@autocompleteFilter" >¿Filtro autocomplete?</label>
+              <label i18n="@@autocompleteFilter" [pTooltip]="tooltipAutocomplete" tooltipPosition="top">¿Filtro autocomplete?</label>
               <button type="button" role="switch" [attr.aria-checked]="isAutocompleted"
                 (click)="autocompleteFilterCheck(this)"
                 class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"
-                [ngClass]="{'bg-[#00BFB3]': isAutocompleted, 'bg-input': !isAutocompleted}">
+                [ngClass]="{'bg-[var(--corporate-primary)]': isAutocompleted, 'bg-input': !isAutocompleted}">
                 <span
                   class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform"
                   [ngClass]="{'translate-x-5': isAutocompleted, 'translate-x-0': !isAutocompleted}"></span>
@@ -36,11 +36,11 @@
             </div>
 
             <div class="space-x-2 flex items-center h-max">
-              <label i18n="@@mandatoryFilter" >¿Filtro obligatorio?</label>
+              <label i18n="@@mandatoryFilter" [pTooltip]="tooltipMandatory" tooltipPosition="top">¿Filtro obligatorio?</label>
               <button type="button" role="switch" [attr.aria-checked]="isMandatory"
                 (click)="mandatoryFilterCheck(this)"
                 class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"
-                [ngClass]="{'bg-[#00BFB3]': isMandatory, 'bg-input': !isMandatory}">
+                [ngClass]="{'bg-[var(--corporate-primary)]': isMandatory, 'bg-input': !isMandatory}">
                 <span
                   class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform"
                   [ngClass]="{'translate-x-5': isMandatory, 'translate-x-0': !isMandatory}"></span>
@@ -49,7 +49,7 @@
 
             <div>
               <div class="flex flex-row space-x-1.5 items-center">
-                <label class="flex-none">{{header4}}:</label>
+                <label class="flex-none" [pTooltip]="tooltipVisibility" tooltipPosition="top">{{header4}}:</label>
                 <div class="relative flex-grow">
                   <p-dropdown 
                     [options]="publicRoHidden" [(ngModel)]="globalFilter.visible"
@@ -174,7 +174,7 @@
                             class="flex items-center justify-start w-full h-auto py-2 px-3 rounded-md font-medium transition-colors"
                             [ngClass]="{
                               'bg-gray-200 text-gray-600 cursor-not-allowed': isPanelReadOnly(panel),
-                              'bg-[#00BFB3] text-white': isPanelSelected(panel)
+                              'bg-[var(--corporate-primary)] text-white': isPanelSelected(panel)
                             }"
                             [class.border]="!isPanelSelected(panel)"
                             [class.border-gray-300]="!isPanelSelected(panel)"
@@ -220,7 +220,7 @@
                       <div class="flex items-center gap-2.5 min-w-0">
                         <span class="w-2.5 h-2.5 rounded-full flex-shrink-0"
                               [ngClass]="{
-                                'bg-[#00BFB3]': panel.active && panel.avaliable,
+                                'bg-[var(--corporate-primary)]': panel.active && panel.avaliable,
                                 'bg-red-400':   !panel.avaliable,
                                 'bg-gray-300':  panel.avaliable && !panel.active
                               }">
@@ -231,7 +231,7 @@
                           [ngClass]="{
                             'font-semibold text-[#00897B]': panel.active && panel.avaliable,
                             'text-red-400 cursor-not-allowed opacity-60': !panel.avaliable,
-                            'text-gray-700 hover:text-[#00BFB3]': panel.avaliable && !panel.active
+                            'text-gray-700 hover:text-[var(--corporate-primary)]': panel.avaliable && !panel.active
                           }"
                           [disabled]="!panel.avaliable">
                           {{ panel.title }}
@@ -273,7 +273,7 @@
                 <!-- Legend -->
                 <div class="flex flex-wrap items-center gap-5 pt-1 text-sm text-gray-600">
                   <div class="flex items-center gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded-full bg-[#00BFB3] flex-shrink-0"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-[var(--corporate-primary)] flex-shrink-0"></span>
                     <span>{{greendot}}</span>
                   </div>
                   <div class="flex items-center gap-1.5">

@@ -2669,6 +2669,26 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target> Non filtered panels </target>
 </trans-unit>
 
+<trans-unit id="tooltipApplyToAll">
+<source>Si está activado, el filtro se aplica a todos los paneles del informe.</source>
+<target>If enabled, the filter applies to all panels in the report.</target>
+</trans-unit>
+
+<trans-unit id="tooltipAutocomplete">
+<source>Si está activado, los valores se buscan dinámicamente mediante autocompletado.</source>
+<target>If enabled, values are fetched dynamically via autocomplete.</target>
+</trans-unit>
+
+<trans-unit id="tooltipMandatory">
+<source>Si está activado, el filtro debe tener un valor seleccionado para poder visualizar el informe.</source>
+<target>If enabled, the filter must have a selected value to display the report.</target>
+</trans-unit>
+
+<trans-unit id="tooltipVisibility">
+<source>Público: todos pueden usarlo. Deshabilitado: otros usuarios pueden ver el filtro pero no modificarlo. Oculto: no visible para otros pero se aplica igualmente.</source>
+<target>Public: everyone can use it. Disabled: other users can see the filter but not modify it. Hidden: not visible to others but still applied.</target>
+</trans-unit>
+
 <trans-unit id="seconds_to_refresh">
 <source> Intervalo de recarga </source>
 <target>Refresh interval </target>

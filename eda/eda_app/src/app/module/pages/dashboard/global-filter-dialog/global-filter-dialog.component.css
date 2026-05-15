@@ -1,99 +1,147 @@
 .filter-label::after {
-  content: "\00a0"; /* 1 espacio */
+  content: "\00a0";
 }
 
-/* Input de date picker */
+/* ── Text sizes (+1 level throughout) ──────────────────────── */
+h3 {
+    font-size: 1.2rem;
+}
+
+label {
+    font-size: 1rem;
+    cursor: default;
+}
+
+button {
+    font-size: 0.9rem;
+}
+
+span {
+    font-size: 0.9rem;
+}
+
+/* ── Date picker ────────────────────────────────────────────── */
 ::ng-deep eda-date-picker input {
-  height: 40px;
-  width: 100%;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid #d1d5db;
-  box-sizing: border-box;
+    height: 40px;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #d1d5db;
+    box-sizing: border-box;
+    font-size: 1rem;
 }
 
-/*****************/
-/* FILTROS Y CONTENEDORES */
-/*****************/
+/* ── PrimeNG dropdown / multiselect label ───────────────────── */
+:host ::ng-deep .p-dropdown .p-dropdown-label {
+    font-size: 1rem;
+}
 
-/* contiene todos los filtros*/
+:host ::ng-deep .p-dropdown-panel .p-dropdown-item {
+    font-size: 1rem;
+}
+
+:host ::ng-deep .p-multiselect .p-multiselect-label {
+    font-size: 1rem;
+}
+
+:host ::ng-deep .p-multiselect-panel .p-multiselect-item {
+    font-size: 1rem;
+}
+
+:host ::ng-deep .p-inputtext {
+    font-size: 1rem;
+}
+
+/* ── Filter containers (filter listing pages) ───────────────── */
 .filters-container {
-  display: flex;
-  flex-wrap: wrap;
-  align-content: flex-start;
-  gap: 1rem;
-  scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 1rem;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
 }
 
-/* filtro individual */
 .filter-card {
-  flex: 0 0 auto;
-  width: 15vw;
+    flex: 0 0 auto;
+    width: 15vw;
 }
 
-/*****************/
-/* AUTOCOMPLETE  */
-/*****************/
-
-/* Contenedor principal del autocomplete */
+/* ── Autocomplete (original styling) ────────────────────────── */
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container {
-  display: flex;
-  flex-direction: row-reverse; 
-  flex-wrap: nowrap;
-  gap: 0.25rem;
-  padding: 0.4rem 0.6rem;
-  border: 1px solid #d1d5db;
-  overflow-x: auto;
-  scrollbar-width: thin;
-  height: auto; 
-  width: 10vw;
-  box-shadow: none;
-  border-radius: 10px;
+    display: flex;
+    flex-direction: row-reverse;
+    flex-wrap: nowrap;
+    gap: 0.25rem;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid #d1d5db;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    height: auto;
+    width: 100%;
+    box-shadow: none;
+    border-radius: 10px;
+    font-size: 1rem;
 }
 
-/* chips - los tokens  */
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container .p-autocomplete-token {
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  padding: 0.25rem 0.5rem;
-  display: inline-flex;
-  align-items: center;
+    border-radius: 9999px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    background: rgba(var(--corporate-primary-rgb), 0.12);
+    color: var(--corporate-primary);
+    border: 1px solid rgba(var(--corporate-primary-rgb), 0.25);
 }
 
-/* Zona Input  */
+.modern-autocomplete ::ng-deep .p-autocomplete-multiple-container .p-autocomplete-token .p-autocomplete-token-icon {
+    color: var(--corporate-primary);
+    opacity: 0.7;
+}
+
 .modern-autocomplete ::ng-deep .p-autocomplete-input-token {
-  order: 999; 
-  flex: none;
-  font-size: 1.7vh;
-  width: 3vw;
-  height: 2.75vh;
-  border-right: 3px solid black;
-  margin-right: auto;
-  border: 1px solid #d1d5db;
-  border-radius: 1px;
-  background-color: #fff;
+    order: 999;
+    flex: none;
+    font-size: 1rem;
+    width: 3vw;
+    height: 2.75vh;
+    border-right: 3px solid black;
+    margin-right: auto;
+    border: 1px solid #d1d5db;
+    border-radius: 1px;
+    background-color: #fff;
 }
 
-/* Loader de autocomplete */
 .modern-autocomplete ::ng-deep .p-autocomplete-loader {
-  position: absolute; /* para poder moverlo libremente */
-  right: -1.2rem;      /* espacio desde el borde derecho */
-  top: 50%;           /* centrar vertical */
-  transform: translateY(-50%); /* centrar exacto */
-  color: #00BFB3;
-  z-index: 10;        /* por si hay otros elementos encima */
+    position: absolute;
+    right: -1.2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--corporate-primary);
+    z-index: 10;
 }
 
-/* INPUT PARA ESCRIBIR */
 .modern-autocomplete ::ng-deep .p-autocomplete-input-token input {
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
-/* Scrollbar thmub, cuando pones mouse encima*/
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
+    background-color: #cbd5e1;
+}
+
+/* ── Multiselect chips (non-autocomplete mode) ──────────────── */
+:host ::ng-deep .eda-filter-multiselect .p-multiselect-token {
+    background: rgba(var(--corporate-primary-rgb), 0.12);
+    color: var(--corporate-primary);
+    border: 1px solid rgba(var(--corporate-primary-rgb), 0.25);
+    border-radius: 9999px;
+}
+
+:host ::ng-deep .eda-filter-multiselect .p-multiselect-token-icon {
+    color: var(--corporate-primary);
+    opacity: 0.7;
 }
