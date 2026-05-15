@@ -190,7 +190,7 @@
 
               @if (!showFormatDateSection) {
                 <div class="flex items-center gap-2">
-                  <label class="text-sm text-gray-600" i18n="@@optionsLabel" for="filter_options">Opciones</label>
+                  <label class="text-base text-gray-600" i18n="@@optionsLabel" for="filter_options">Opciones</label>
                   <p-inputSwitch id="filter_options" [(ngModel)]="filter.switch" [disabled]="display.switchButton"
                     (onChange)="loadDropDrownData()">
                   </p-inputSwitch>

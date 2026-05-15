@@ -6,5 +6,168 @@
     .selectStyles {
         height: 34px;
     }
+}
 
+/* ── Section label ─────────────────────────────────────────── */
+.section-label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+    margin-bottom: 6px;
+}
+
+/* ── Switch label ──────────────────────────────────────────── */
+.filter-switch-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+}
+
+/* ── Add filter button ─────────────────────────────────────── */
+.addFilter-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 1.5rem;
+    height: 2.75rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #ffffff;
+    background: var(--corporate-primary);
+    flex-shrink: 0;
+    transition: filter 0.15s, box-shadow 0.15s;
+}
+
+.addFilter-button:hover:not(:disabled) {
+    filter: brightness(0.9);
+    box-shadow: 0 4px 12px rgba(var(--corporate-primary-rgb), 0.3);
+}
+
+.addFilter-button:disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* ── Aggregation chips ─────────────────────────────────────── */
+.aggregation-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.aggregation-box {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 2px solid #dee2e6;
+    background: #ffffff;
+    color: #495057;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: auto;
+    height: auto;
+    margin: 0;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.aggregation-box:hover {
+    border-color: var(--corporate-primary);
+    color: var(--corporate-primary);
+    background: rgba(var(--corporate-primary-rgb), 0.05);
+}
+
+.aggregation-active {
+    border-color: var(--corporate-primary) !important;
+    background: var(--corporate-primary) !important;
+    color: #ffffff !important;
+}
+
+.aggregation-unactive {
+    border-color: #dee2e6;
+    background: #ffffff;
+    color: #495057;
+}
+
+/* ── Active filter list — matches summary-item style ──────── */
+.filter-list-box {
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    background: #f8f9fa;
+    overflow: hidden;
+}
+
+.filter-row {
+    display: flex;
+    align-items: center;
+    padding: 0.4rem 0.75rem;
+    border-bottom: 1px solid #f0f0f0;
+    gap: 8px;
+}
+
+.filter-row:last-child {
+    border-bottom: none;
+}
+
+.filter-row-text {
+    flex: 1;
+    font-size: 0.85rem;
+    color: #374151;
+    line-height: 1.4;
+}
+
+.filter-row-scope {
+    font-size: 0.78rem;
+    color: #9ca3af;
+    font-style: italic;
+}
+
+.filter-row-remove {
+    color: #9ca3af;
+    cursor: pointer;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+    padding: 4px;
+    border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
+}
+
+.filter-row-remove:hover {
+    color: var(--corporate-primary);
+    background: rgba(var(--corporate-primary-rgb), 0.08);
+}
+
+.section-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+    border-bottom: 1px solid #e5e7eb;
+    margin: 0 0 0.5rem 0;
+}
+
+/* Filter tag rows */
+.filter-tag {
+    font-weight: 500;
+    color: #111827;
+    background-color: #f3f4f6;
+    border-bottom: 1px solid #e5e7eb;
+    transition: background-color 0.15s ease;
+}
+.filter-tag:last-child {
+    border-bottom: none;
+}
+.filter-tag:hover {
+    background-color: #e5e7eb;
 }
