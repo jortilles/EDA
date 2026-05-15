@@ -8,8 +8,8 @@
              style="filter: invert(51%) sepia(89%) saturate(400%) hue-rotate(145deg) brightness(95%);">
       </div>
       <div>
-        <p class="text-sm font-semibold leading-tight corporate-color" i18n="@@assistantTitle">Pregunta en lenguaje natural</p>
-        <p class="text-xs text-gray-400 leading-tight" i18n="@@assistantSubtitle">Construye tu consulta en lenguaje natural</p>
+        <p class="text-base font-semibold leading-tight corporate-color" i18n="@@assistantTitle">Pregunta en lenguaje natural</p>
+        <p class="text-sm text-gray-400 leading-tight" i18n="@@assistantSubtitle">Construye tu consulta en lenguaje natural</p>
       </div>
     </div>
   </div>
@@ -20,8 +20,8 @@
     <!-- Empty state -->
     <div *ngIf="messages.length === 0" class="prompt-empty">
       <div class="text-center">
-        <p class="text-sm font-medium text-gray-700" i18n="@@whereDoWeBegin">¿Por dónde empezamos?</p>
-        <p *ngIf="loadingSuggestions" class="text-xs text-gray-400 italic mt-1 animate-pulse" i18n="@@analyzingTheScheme">Analizando el esquema…</p>
+        <p class="text-base font-medium text-gray-700" i18n="@@whereDoWeBegin">¿Por dónde empezamos?</p>
+        <p *ngIf="loadingSuggestions" class="text-sm text-gray-400 italic mt-1 animate-pulse" i18n="@@analyzingTheScheme">Analizando el esquema…</p>
       </div>
       <div *ngIf="!loadingSuggestions && suggestions.length > 0" class="flex flex-col gap-2 w-full px-2">
         <button *ngFor="let s of suggestions" class="chat-suggestion" (click)="sendSuggestion(s)">{{ s }}</button>
