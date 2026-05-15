@@ -101,7 +101,7 @@
                                    @if( inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field){
                                     <div class="flex items-center w-full" [pTooltip]="getLinkTooltip(col)">
                                         
-                                        <span class="flex-1 truncate min-w-0">
+                                        <span class="flex-1 break-words">
                                         {{ lodash.get(rowData, col.field) }}
                                         </span>
 
@@ -126,7 +126,7 @@
                                     @if( (!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field) && !col.rangeOption){
                                     <div class="flex items-center w-full">
                                         
-                                        <span class="flex-1 truncate min-w-0">
+                                        <span class="flex-1 break-words">
                                         {{ lodash.get(rowData, col.field) }}
                                         </span>
 
@@ -151,7 +151,7 @@
                                     @if( (!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field) && col.rangeOption) {
                                     <div class="flex items-center w-full">
                                         
-                                        <span class="flex-1 truncate min-w-0"
+                                        <span class="flex-1 break-words"
                                             [innerHTML]="formatValoresRango(rowData, col.field)">
                                         </span>
 

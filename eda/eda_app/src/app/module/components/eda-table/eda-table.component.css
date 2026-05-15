@@ -68,8 +68,20 @@ th{
      background: transparent !important;
 }
 
+/* Eliminar scroll horizontal en todos los casos (con y sin autoLayout) */
+.eda-table ::ng-deep .p-datatable .p-datatable-wrapper,
 .p-datatable-auto-layout>.p-datatable-wrapper {
-  overflow: hidden;
+  overflow-x: hidden;
+}
+
+/* Permitir que el texto en las celdas haga wrap en lugar de desbordar */
+.eda-table ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+  word-break: break-word;
+  white-space: normal;
+}
+
+.eda-table ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  white-space: normal;
 }
 
 ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
