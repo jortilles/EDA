@@ -161,7 +161,7 @@
           @if (selectedQueryMode !== 'SQL') {
             <!-- Edit Query View -->
             <!-- Left Sidebar -->
-            <div class="flex w-full border-r h-[65vh] overflow-y-hidden">
+            <div class="flex w-full border-r h-[68vh] overflow-y-hidden">
 
               <!-- Entities Section -->
               <div class="w-1/6 border-r ">
@@ -182,7 +182,7 @@
                   </div>
                 </div>
 
-                <div class="overflow-y-auto h-[55vh] text-base">
+                <div class="overflow-y-auto h-[58vh] text-base">
 
                     <ng-template #entityList>
                       <div class="space-y-1 p-2">
@@ -268,7 +268,7 @@
                   </div>
                 }
 
-                <div class="flex w-full overflow-y-auto h-[55vh] text-base">
+                <div class="flex w-full overflow-y-auto h-[58vh] text-base">
                   <div class="w-full">
                     <div class="space-y-1 p-2" cdkDropList #columnsList="cdkDropList" [cdkDropListData]="columns"
                       [cdkDropListConnectedTo]="[selectList, filterList]" (cdkDropListDropped)="drop($event)"
@@ -1024,7 +1024,7 @@
   
       <!-- Preview View -->
       @if(indextab == 1){
-        <div class="overflow-y-auto" style="max-height: 65vh;">
+        <div class="overflow-y-auto" style="max-height: 68vh;">
         <div class="grid grid-cols-5 gap-x-4 ">
           <div class="col-span-4">
             <div class="rounded-lg border p-4 bg-muted/30 flex justify-center" style="height:60vh;">

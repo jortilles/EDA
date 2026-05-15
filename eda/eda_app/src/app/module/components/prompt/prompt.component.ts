@@ -231,7 +231,7 @@ export class PromptComponent implements OnInit, AfterViewInit {
             },
             error: (err) => {
                 console.error('Error al enviar prompt:', err);
-                const msg = err?.error?.response ?? err?.message ?? 'Error desconocido';
+                const msg = this.classifyError(err);
                 this.messages.push({ role: 'error', content: msg, timestamp: Date.now() });
                 this.loading = false;
                 this.sending = false;
@@ -355,6 +355,30 @@ export class PromptComponent implements OnInit, AfterViewInit {
     sendSuggestion(text: string): void {
         this.inputText = text;
         this.sendMessage();
+    }
+
+    private classifyError(err: any): string {
+        const status = err?.status;
+        const body = err?.error?.response ?? err?.error?.message ?? err?.message ?? '';
+        const lower = (typeof body === 'string' ? body : JSON.stringify(body)).toLowerCase();
+
+        if (status === 429 || lower.includes('rate limit') || lower.includes('too many requests'))
+            return 'Demasiadas solicitudes. Espera unos segundos antes de volver a intentarlo.';
+        if (status === 401 || status === 403)
+            return 'Credenciales no válidas o sin permisos para usar el asistente.';
+        if (status === 402 || lower.includes('insufficient_quota') || lower.includes('billing'))
+            return 'Cuota de la API agotada. Contacta con el administrador.';
+        if (status === 503 || status === 502)
+            return 'El servicio de IA no está disponible en este momento. Inténtalo más tarde.';
+        if (status === 504 || lower.includes('timeout') || lower.includes('timed out'))
+            return 'La respuesta tardó demasiado. Inténtalo de nuevo o simplifica tu pregunta.';
+        if (lower.includes('context_length_exceeded') || lower.includes('maximum context') || lower.includes('token'))
+            return 'Límite de tokens superado. La conversación es demasiado larga; inicia una nueva consulta.';
+        if (status === 0 || lower.includes('network') || lower.includes('failed to fetch'))
+            return 'Sin conexión. Comprueba tu red e inténtalo de nuevo.';
+        if (lower.includes('model') && (lower.includes('not available') || lower.includes('overloaded')))
+            return 'El modelo de IA no está disponible en este momento. Inténtalo más tarde.';
+        return body || 'Error al comunicarse con el asistente. Inténtalo de nuevo.';
     }
 
     autoResize(event: Event): void {
