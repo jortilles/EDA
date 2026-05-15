@@ -35,9 +35,9 @@
 }
 
 .eda-filter-legend .global-filter {
-    border: 2px solid #00B0BA;
-    background-color: #e0f7f8;
-    color: #007a82;
+    border: 2px solid var(--corporate-primary);
+    background-color: rgba(var(--corporate-primary-rgb), 0.08);
+    color: var(--corporate-primary);
 }
 
 .eda-filter-legend .panel-filter {
@@ -46,9 +46,12 @@
     color: #3d4a52;
 }
 
-/* ── Gridster container ───────────────────────────────────── */
+/* ── Gridster container — same visual as content-gridster ─── */
 .filter-and-or-container {
-    margin-top: 4px;
+    background-color: #fff;
+    margin-top: 5px;
+    border-radius: 10px;
+    border: 2px solid rgba(var(--corporate-primary-rgb), 0.2);
 }
 
 .filter-and-or-container .gridster {
@@ -78,24 +81,27 @@
     padding: 0 10px;
     border-radius: 10px;
     box-shadow: 0 1px 4px rgba(0,0,0,.08);
-    transition: box-shadow 0.2s ease, top 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94), left 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    will-change: top, left;
+    transition: .3s;
+}
+
+.filter-and-or-container .gridster-item.gridster-item-moving {
+    transition: 0s;
 }
 
 .filter-and-or-container .gridster-item:hover {
-    box-shadow: 0 3px 10px rgba(0,176,186,.18);
+    box-shadow: 0 3px 10px rgba(var(--corporate-primary-rgb), 0.18);
 }
 
 .filter-and-or-container .gridster-preview {
-    background-color: #e0f7f8;
+    background-color: rgba(var(--corporate-primary-rgb), 0.08);
     border-radius: 10px;
-    border: 1.5px dashed #00B0BA;
+    border: 1.5px dashed var(--corporate-primary);
     opacity: 0.6;
 }
 
 .filter-and-or-container .global-filter {
-    border: 2px solid #00B0BA;
-    background-color: #e8f9fa;
+    border: 2px solid var(--corporate-primary);
+    background-color: rgba(var(--corporate-primary-rgb), 0.5);
 }
 
 .filter-and-or-container .panel-filter {
@@ -128,30 +134,30 @@
     display: flex;
 }
 
-/* Botón izquierdo (OR): sin borde derecho, solo esquinas izquierdas redondeadas */
+/* Botón izquierdo (OR): sin borde derecho */
 .small-button .p-selectbutton .p-button:first-child {
     border-top-right-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
     border-right: none !important;
 }
 
-/* Botón derecho (AND): sin borde izquierdo, solo esquinas derechas redondeadas */
+/* Botón derecho (AND): sin borde izquierdo */
 .small-button .p-selectbutton .p-button:last-child {
     border-top-left-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
     border-left: none !important;
 }
 
-/* Override PrimeNG blue → corporate teal */
 .small-button .p-button.p-highlight {
-    background-color: #00B0BA !important;
-    border-color: #00B0BA !important;
+    background-color: var(--corporate-primary) !important;
+    border-color: var(--corporate-primary) !important;
     color: #ffffff !important;
 }
 
 .small-button .p-button.p-highlight:hover {
-    background-color: #009aa3 !important;
-    border-color: #009aa3 !important;
+    background-color: var(--corporate-primary) !important;
+    border-color: var(--corporate-primary) !important;
+    filter: brightness(0.9);
 }
 
 /* ── Filter label text ────────────────────────────────────── */
