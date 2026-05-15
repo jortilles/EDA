@@ -736,7 +736,7 @@ span.state-label {
   background: linear-gradient(to right, var(--btn-cancel-bg), var(--btn-cancel-bg-end));
   cursor: pointer;
   font-weight: 500;
-  color: var(--btn-cancel-text);
+  color: white;
   transition: all 0.2s ease-in-out;
 }
 

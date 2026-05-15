@@ -1077,6 +1077,18 @@ form label {
     padding-bottom: 20px;
 }
 
+/* p-inputSwitch corporate color */
+.p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
+    background: var(--corporate-primary) !important;
+}
+.p-inputswitch.p-inputswitch-checked:not(.p-disabled):hover .p-inputswitch-slider {
+    background: var(--corporate-primary) !important;
+    filter: brightness(0.88);
+}
+.p-inputswitch.p-focus .p-inputswitch-slider {
+    box-shadow: 0 0 0 0.2rem rgba(225, 29, 72, 0.25) !important;
+}
+
 /*******************
  Form validation error 
  ******************/

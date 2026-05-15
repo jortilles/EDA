@@ -20,17 +20,19 @@
     }
   </div>
 
-  <div content class="p-2 space-y-6">
-    <div class="grid gap-4"
+  <div content>
+    <div class="grid gap-3"
       [ngClass]="{
         'grid-cols-[0.75fr_0.75fr_0.75fr_3.75fr]': showFormatDateSection,
         'grid-cols-[1fr_1fr_4fr]': !showFormatDateSection}
       ">
-      <!-- Agregaciones -->
-      <div class="flex flex-col">
-        <div>
-          <h4 i18n="@@agregacionesH4">Agregaciones</h4>
-          <div class="aggregation-list mt-10">
+
+      <!-- Agregaciones + Rangos + Navegable -->
+      <div class="flex flex-col gap-3">
+
+        <div class="section-card">
+          <h4 class="section-title" i18n="@@agregacionesH4">Agregaciones</h4>
+          <div class="aggregation-list">
             @for (aggregation of aggregationsTypes; track aggregation) {
               @if (getAggName(aggregation.value)) {
                 <div class="aggregation-box"
@@ -45,87 +47,73 @@
         </div>
 
         <!-- Rangos -->
-        <div class="mt-10">
-          <!-- Rangos (ocupa toda la fila) -->
-          @if (selectedColumn.aggregation_type.length === 7) {
-            <div>
-              <div class="flex justify-start gap-1 items-center">
-                <h4 i18n="@@rangeTitle">Rangos: </h4>
-                <div>
-                  @if (availableRange) {
-                    <i class="pi pi-info-circle"
-                      style="cursor: pointer; margin-top: -5px; font-size: 1.2rem;"
-                      [pTooltip]="ptooltipViewTextRanges">
-                    </i>
-                  } @else {
-                    <i class="pi pi-info-circle"
-                      style="cursor: pointer; margin-top: -5px; font-size: 1.2rem;"
-                      [pTooltip]="ptooltipNotAvailableRanges">
-                    </i>
-                  }
+        @if (selectedColumn.aggregation_type.length === 7) {
+          <div class="section-card">
+            <h4 class="section-title flex items-center gap-1.5">
+              <span i18n="@@rangeTitle">Rangos</span>
+              <i class="pi pi-info-circle text-gray-400 cursor-pointer font-normal normal-case tracking-normal"
+                style="font-size: 0.8rem; letter-spacing: 0;"
+                [pTooltip]="availableRange ? ptooltipViewTextRanges : ptooltipNotAvailableRanges">
+              </i>
+            </h4>
+
+            @if (availableRange) {
+              <input
+                type="text"
+                class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm mb-2"
+                [(ngModel)]="rangeString"
+                [disabled]="showRange"
+                (input)="validateInput($event)">
+
+              <button
+                class="confirm-button w-full justify-center"
+                (click)="addRange(rangeString)"
+                [disabled]="(!rangeString || rangeString.length === 0) || showRange">
+                <span i18n="@@addRange">Añadir Rango</span>
+              </button>
+
+              @if (showRange) {
+                <div class="mt-2">
+                  <p-scrollPanel [style]="{width: '100%', height: '120px'}" styleClass="custombar1">
+                    <div class="pt-2 text-sm">
+                      <b i18n="@@rangeDescriptionB" class="mr-2">• Rango:</b>
+                      <i class="pi pi-times cursor-pointer float-right text-gray-400 hover:text-red-500" (click)="removeRange()"></i>
+                      <div [innerHTML]="selectedRange" class="px-4 py-1"></div>
+                    </div>
+                  </p-scrollPanel>
                 </div>
-              </div>
-
-              @if (availableRange) {
-                <input
-                  type="text"
-                  style="font-size: 1rem; margin-bottom: 10px; border: 1px solid #d9d9d9; border-radius: 6px; padding: 4px 8px;"
-                  [(ngModel)]="rangeString"
-                  [disabled]="showRange"
-                  (input)="validateInput($event)">
-
-                <button
-                  class="confirm-button"
-                  (click)="addRange(rangeString)"
-                  [disabled]="(!rangeString || rangeString.length === 0) || showRange">
-                  <span i18n="@@addRange">Añadir Rango</span>
-                </button>
-
-                @if (showRange) {
-                  <div class="col-12 foot-card" style="margin-top: 5px;">
-                    <p-scrollPanel [style]="{width: '100%', height: '160px'}" styleClass="custombar1">
-                      <div class="pt-3">
-                        <b i18n="@@rangeDescriptionB" class="mr-2 pull-left">• Rango:</b>
-                        <i class="pull-right ui-dropdown-clear-icon pi pi-times pointer md-3" (click)="removeRange()"></i>
-                        <div class="d-flex align-items-center" [innerHTML]="selectedRange" style="font-size: 1rem; padding: 10px 40px 5px 30px;"></div>
-                      </div>
-                    </p-scrollPanel>
-                  </div>
-                }
               }
-            </div>
-          }
-        </div>
+            }
+          </div>
+        }
 
         <!-- Navegable -->
-        <div class="mt-10">
-          <h4 i18n="@@navegableFrom">Navegable desde</h4>
-          <div class="mt-2">
-            <p-dropdown
-              [options]="childOptions"
-              [(ngModel)]="selectedParent"
-              optionLabel="label"
-              optionValue="value"
-              [autoDisplayFirst]="false"
-              [showClear]="true"
-              [disabled]="childOptions.length === 0"
-              i18n-placeholder="@@noParentText"
-              placeholder="Sin padre"
-              [style]="{'width': '100%'}"
-              appendTo="body">
-            </p-dropdown>
-          </div>
+        <div class="section-card">
+          <h4 class="section-title" i18n="@@navegableFrom">Navegable desde</h4>
+          <p-dropdown
+            [options]="childOptions"
+            [(ngModel)]="selectedParent"
+            optionLabel="label"
+            optionValue="value"
+            [autoDisplayFirst]="false"
+            [showClear]="true"
+            [disabled]="childOptions.length === 0"
+            i18n-placeholder="@@noParentText"
+            placeholder="Sin padre"
+            [style]="{'width': '100%'}"
+            appendTo="body">
+          </p-dropdown>
           @if(childOptions.length === 0) {
-            <small class="text-gray-400" i18n="@@noParentAttributes">Añade más atributos para activar la navegación</small>
+            <small class="text-gray-400 text-xs mt-1 block" i18n="@@noParentAttributes">Añade más atributos para activar la navegación</small>
           }
         </div>
 
       </div>
 
-      <!-- Ordernacion -->
-      <div>
-        <h4 i18n="@@ordenacionH4">Ordenación</h4>
-        <div class="aggregation-list mt-10">
+      <!-- Ordenación -->
+      <div class="section-card self-start">
+        <h4 class="section-title" i18n="@@ordenacionH4">Ordenación</h4>
+        <div class="aggregation-list">
           @for (ordenation of ordenationTypes; track ordenation) {
             <div class="aggregation-box"
               (click)="addOrdenation(ordenation)"
@@ -138,34 +126,30 @@
 
       <!-- FormatDate -->
       @if (showFormatDateSection) {
-        <div>
-          <h4 i18n="@@dateFormatH4">Format</h4>
+        <div class="section-card self-start">
+          <h4 class="section-title" i18n="@@dateFormatH4">Format</h4>
 
           @if (selectedColumn.computed_column === 'computed') {
-            <div class="p-message p-message-info" style="margin-bottom: 1em; padding: 0.5em;">
-              <i class="pi pi-exclamation-triangle" style="margin-right: 0.5em;"></i>
+            <div class="p-message p-message-info rounded p-2 mb-3 text-sm">
+              <i class="pi pi-exclamation-triangle mr-2"></i>
               <span i18n="@@noFormatsAvailable">Esta es una columna calculada y no tiene opciones de formato disponibles</span>
             </div>
           }
 
-          <div class="aggregation-list mt-10 w-full">
-            <div style="width: 100%;">
-              <p-dropdown
-                [style]="{width:'100%'}"
-                [(ngModel)]="formatDate"
-                [options]="formatDates"
-                [optionLabel]="'display_name'"
-                [autoDisplayFirst]="false"
-                [showClear]="true"
-                (onChange)="addFormatDate()"
-                appendTo="body"
-                styleClass="w-full">
-              </p-dropdown>
-            </div>
-          </div>
+          <p-dropdown
+            [style]="{width:'100%'}"
+            [(ngModel)]="formatDate"
+            [options]="formatDates"
+            [optionLabel]="'display_name'"
+            [autoDisplayFirst]="false"
+            [showClear]="true"
+            (onChange)="addFormatDate()"
+            appendTo="body"
+            styleClass="w-full">
+          </p-dropdown>
 
-          <div class="mt-5 ml-4" [pTooltip]="cumulativeSumTooltip" tooltipPosition="left">
-            <h6 i18n="@@cumulativeSum">Suma acumulativa</h6>
+          <div class="mt-4" [pTooltip]="cumulativeSumTooltip" tooltipPosition="left">
+            <p class="text-xs font-semibold text-gray-500 mb-1" i18n="@@cumulativeSum">Suma acumulativa</p>
             <p-inputSwitch
               id="cumulativeSum"
               [(ngModel)]="cumulativeSum"
@@ -177,178 +161,150 @@
       }
 
       <!-- Filtrar -->
-      <div>
-        <h4 i18n="@@filtrarH4">Filtrar</h4>
-        <div class="grid grid-cols-[42.5%,42.5%,15%] gap-4 items-start mt-10">
-          <div class="flex flex-col gap-4 w-[100%]">
-            <!-- Tipo de filtro  -->
-            <div>
-              <span class="p-float-label ">
-                <p-dropdown id="types" [options]="filter.types" [(ngModel)]="filterSelected" optionLabel="label"
-                  [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true"
-                  (onChange)="handleFilterChange(filterSelected)">
+      <div class="flex flex-col gap-3">
+
+        <div class="section-card">
+          <h4 class="section-title" i18n="@@filtrarH4">Filtrar</h4>
+          <div class="grid grid-cols-[42.5%_42.5%_15%] gap-3 items-start">
+
+            <!-- Tipo y ámbito de filtro + switch -->
+            <div class="flex flex-col gap-3 w-full">
+              <p-dropdown id="types" [options]="filter.types" [(ngModel)]="filterSelected" optionLabel="label"
+                [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true"
+                i18n-placeholder="@@tiposFiltrosLabel" placeholder="Tipos de filtro"
+                (onChange)="handleFilterChange(filterSelected)">
+              </p-dropdown>
+
+              @if (filterSelected && selectedColumn?.column_type === 'numeric' && !display.switchButton && aggregationSelected?.value !== 'none') {
+                <p-dropdown
+                  id="whereHaving"
+                  [options]="filterBeforeAfter.elements"
+                  [(ngModel)]="filterBeforeAfterSelected"
+                  optionLabel="label"
+                  [autoDisplayFirst]="true"
+                  [style]="{'width': '100%'}"
+                  i18n-placeholder="@@whereHavingLabel" placeholder="Ámbito del filtro"
+                  (onChange)="whereHavingSwitch(filterBeforeAfterSelected)">
                 </p-dropdown>
-                <label i18n="@@tiposFiltrosLabel" for="types">Tipos de filtro</label>
-              </span>
-            </div>
-            @if (filterSelected && selectedColumn?.column_type === 'numeric' && !display.switchButton && aggregationSelected?.value !== 'none') {
-              <div>
-                <span class="p-float-label">
-                  <p-dropdown
-                    id="whereHaving"
-                    [options]="filterBeforeAfter.elements"
-                    [(ngModel)]="filterBeforeAfterSelected"
-                    optionLabel="label"
-                    [autoDisplayFirst]="true"
-                    [style]="{'width': '100%'}"
-                    (onChange)="whereHavingSwitch(filterBeforeAfterSelected)">
-                  </p-dropdown>
-                  <label for="whereHaving" i18n="@@whereHavingLabel">Ámbito del filtro</label>
-                </span>
-              </div>
-            }
-            <!-- Switch y botón -->
-            @if (!showFormatDateSection) {
-              <div class="flex justify-between items-center w-full mt-4">
+              }
+
+              @if (!showFormatDateSection) {
                 <div class="flex items-center gap-2">
-                  <label i18n="@@optionsLabel" for="filter_options">Opciones</label>
-                  <br>
+                  <label class="text-sm text-gray-600" i18n="@@optionsLabel" for="filter_options">Opciones</label>
                   <p-inputSwitch id="filter_options" [(ngModel)]="filter.switch" [disabled]="display.switchButton"
                     (onChange)="loadDropDrownData()">
                   </p-inputSwitch>
                 </div>
-              </div>
-            }
-          </div>
+              }
+            </div>
 
-          <!-- Valores de los filtros -->
-          <div class="flex flex-col w-full gap-2">
-            @if (!!display.calendar && !!display.between) {
-              <eda-date-picker #myCalendar class="h-[3.2rem]" (onDatesChanges)="processPickerEvent($event)"></eda-date-picker>
-            }
-            @if (!(display.calendar && display.between) && !filter.switch && (!['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(filterSelected?.value))) {
-              <span class="p-float-label h-[3.2rem] w-full">
-
+            <!-- Valores de los filtros -->
+            <div class="flex flex-col w-full gap-3">
+              @if (!!display.calendar && !!display.between) {
+                <eda-date-picker #myCalendar class="h-[3.2rem]" (onDatesChanges)="processPickerEvent($event)"></eda-date-picker>
+              }
+              @if (!(display.calendar && display.between) && !filter.switch && (!['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(filterSelected?.value))) {
                 @if(selectedColumn?.column_type === 'date') {
                   <div class="date-picker-single">
-                      <eda-date-picker 
-                        (onDatesChanges)="processPickerEvent($event)" 
-                        [filterSelected]="filterSelected"
-                        [selectionMode]="'single'"
-                      >
-                      </eda-date-picker>
+                    <eda-date-picker
+                      (onDatesChanges)="processPickerEvent($event)"
+                      [filterSelected]="filterSelected"
+                      [selectionMode]="'single'">
+                    </eda-date-picker>
                   </div>
                 }
-
                 @if(!showFormatDateSection){
                   <input
                     id="float-input1"
-                    class="w-full h-full rounded-md border border-gray-300 px-3 py-2"
+                    class="w-full h-[3.2rem] rounded-md border border-gray-300 px-3 py-2"
                     [type]="inputType"
                     [(ngModel)]="filterValue.value1"
                     (input)="handleValidForm({ value1: filterValue.value1 })"
+                    i18n-placeholder="@@valor1Label" placeholder="Valor 1"
                     pInputText
                   />
-                  <label i18n="@@valor1Label">Valor 1</label>
                 }
-              </span>
-            }
-            @if (filter.switch) {
-              <div class="w-full">
-                <p-multiSelect
-                  [options]="dropDownFields"
-                  [(ngModel)]="filterValue.value1"
-                  [virtualScroll]="true"
-                  [itemSize]="34"
-                  [filter]="true"
-                  [style]="{width:'100%'}"
-                  [panelStyle]="{minWidth:'100%'}"
-                  (onChange)="handleValidForm({value1: filterValue.value1})"
-                  i18n-defaultLabel="@@groupSelect"
-                  defaultLabel="Selecciona..."
-                  [loading]="loading"
-                  [selectionLimit]="limitSelectionFields"
-                  id="float-input1">
-                </p-multiSelect>
-              </div>
-            }
-            <!-- Segundo valor por si el filtro es between  -->
-            @if (!!display.between) {
-              @if (!display.calendar && !filter.switch) {
-                <span class="p-float-label h-[3.2rem] w-full [&_.p-multiselect-label-container]:h-[3.05rem] [&_.p-multiselect-label-container]:flex [&_.p-multiselect-label-container]:items-center">
-                  <input id="float-input2" class="h-[3.2rem] w-full rounded-md border px-2 py-4" [type]="inputType"
-                    [(ngModel)]="filterValue.value2" (input)="handleValidForm({value2: filterValue.value2})" pInputText>
-                  <label i18n="@@valor2Label">Valor 2</label>
-                </span>
               }
               @if (filter.switch) {
-                <div class="w-full">
-                  <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value2" [virtualScroll]="true" [itemSize]="34"
-                    [filter]="true" [style]="{width:'100%'}" [panelStyle]="{minWidth:'100%'}"
-                    (onChange)="handleValidForm({value2: filterValue.value2})" i18n-defaultLabel="@@groupSelect" defaultLabel="Selecciona..."
-                    [selectionLimit]="limitSelectionFields" id="float-input2">
+                <div class="w-full h-[3.2rem] [&_.p-multiselect]:h-full [&_.p-multiselect-label-container]:h-full [&_.p-multiselect-label-container]:flex [&_.p-multiselect-label-container]:items-center">
+                  <p-multiSelect
+                    [options]="dropDownFields"
+                    [(ngModel)]="filterValue.value1"
+                    [virtualScroll]="true"
+                    [itemSize]="34"
+                    [filter]="true"
+                    [style]="{width:'100%', height:'100%'}"
+                    [panelStyle]="{minWidth:'100%'}"
+                    (onChange)="handleValidForm({value1: filterValue.value1})"
+                    i18n-defaultLabel="@@groupSelect"
+                    defaultLabel="Selecciona..."
+                    [loading]="loading"
+                    [selectionLimit]="limitSelectionFields"
+                    id="float-input1">
                   </p-multiSelect>
                 </div>
               }
-            }
-          </div>
+              @if (!!display.between) {
+                @if (!display.calendar && !filter.switch) {
+                  <input id="float-input2" class="h-[3.2rem] w-full rounded-md border border-gray-300 px-3 py-2" [type]="inputType"
+                    [(ngModel)]="filterValue.value2" (input)="handleValidForm({value2: filterValue.value2})"
+                    i18n-placeholder="@@valor2Label" placeholder="Valor 2" pInputText>
+                }
+                @if (filter.switch) {
+                  <div class="w-full h-[3.2rem] [&_.p-multiselect]:h-full [&_.p-multiselect-label-container]:h-full [&_.p-multiselect-label-container]:flex [&_.p-multiselect-label-container]:items-center">
+                    <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value2" [virtualScroll]="true" [itemSize]="34"
+                      [filter]="true" [style]="{width:'100%', height:'100%'}" [panelStyle]="{minWidth:'100%'}"
+                      (onChange)="handleValidForm({value2: filterValue.value2})" i18n-defaultLabel="@@groupSelect" defaultLabel="Selecciona..."
+                      [selectionLimit]="limitSelectionFields" id="float-input2">
+                    </p-multiSelect>
+                  </div>
+                }
+              }
+            </div>
 
-          <div class="flex flex-col gap-2 items-start ">
-
-            <button class="addFilter-button" (click)="addFilter()" [disabled]="display.filterButton">
-              <i class="fa fa-plus mr-2"></i>
-              <span i18n="@@addFilterBtn">Añadir filtro</span>
-            </button>
+            <!-- Botón añadir filtro -->
+            <div>
+              <button class="addFilter-button" (click)="addFilter()" [disabled]="display.filterButton">
+                <i class="fa fa-plus mr-1"></i>
+                <span i18n="@@addFilterBtn">Añadir filtro</span>
+              </button>
+            </div>
 
           </div>
         </div>
-        <!-- Filter List -->
+
+        <!-- Lista de filtros activos -->
         @if (filter.forDisplay.length > 0) {
-          <div class="mt-6">
-            <h5 i18n="@@filters">Filtros</h5>
-            <div class="w-full h-[23vh] overflow-auto mt-2 foot-card bg-gray-100 border-solid border-2 rounded-md">
+          <div class="section-card pt-3">
+            <h5 class="section-title" i18n="@@filters">Filtros activos</h5>
+            <div class="w-full h-auto max-h-[23vh] overflow-auto rounded-md bg-gray-100 border border-gray-200">
               <p-scrollPanel styleClass="custombar1">
                 @for (filtre of filter.forDisplay; track filtre) {
-                  @if (filtre.filter_elements.length === 0) {
-                    <p class="flex items-center">
-                      <b class="m-1">
+                  <div class="filter-tag flex items-center justify-between px-3 py-2">
+                    <span class="text-base font-semibold">
+                      @if (filtre.filter_elements.length === 0) {
                         * {{ selectedColumn.display_name.default }} is {{ filtre.filter_type }}
-                      </b>
-                      <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage" tooltipPosition="left">
-                        <b>&nbsp;[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]&nbsp;</b>
-                      </span>
-                      <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
-                    </p>
-                  }
-
-                  @if (filtre.filter_elements.length === 1) {
-                    <p class="flex items-center">
-                      <b class="m-1">
+                      }
+                      @if (filtre.filter_elements.length === 1) {
                         * {{ selectedColumn.display_name.default }} {{ filtre.filter_type }} "{{ filtre.filter_elements[0].value1 }}"
-                      </b>
-                      <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage" tooltipPosition="left">
-                        <b>&nbsp;[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]&nbsp;</b>
+                      }
+                      @if (filtre.filter_elements.length === 2) {
+                        * {{ selectedColumn.display_name.default }} {{ filtre.filter_type }} "{{ filtre.filter_elements[0].value1 }}" Y "{{ filtre.filter_elements[1].value2 }}"
+                      }
+                    </span>
+                    <div class="flex items-center gap-2 ml-2 shrink-0">
+                      <span class="text-xs text-gray-500 whitespace-nowrap">
+                        {{ filtre.filterBeforeGrouping ? whereMessage : havingMessage }}
                       </span>
-                      <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
-                    </p>
-                  }
-
-                  @if (filtre.filter_elements.length === 2) {
-                    <p class="flex items-center">
-                      <b class="m-1">
-                        * {{ selectedColumn.display_name.default }} {{ filtre.filter_type }} "{{ filtre.filter_elements[0].value1}}" Y "{{ filtre.filter_elements[1].value2 }}"
-                      </b>
-                      <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage" tooltipPosition="left">
-                        <b>&nbsp;[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]&nbsp;</b>
-                      </span>
-                      <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
-                    </p>
-                  }
+                      <i class="pi pi-times cursor-pointer text-gray-400 hover:text-red-500 text-xs" (click)="removeFilter(filtre)"></i>
+                    </div>
+                  </div>
                 }
               </p-scrollPanel>
             </div>
           </div>
         }
+
       </div>
 
     </div>
@@ -356,9 +312,8 @@
 </eda-dialog2>
 
 @if(display.duplicateColumn){
-  <eda-dialog2 header="Duplicar columna" width="60vw" height= "auto" (close)="onCancelDuplicateColumn()" (apply)="saveDuplicatedColumn()">
+  <eda-dialog2 header="Duplicar columna" width="60vw" height="auto" (close)="onCancelDuplicateColumn()" (apply)="saveDuplicatedColumn()">
     <div content class="p-2 space-y-6">
-      <!-- Duplicar columna -->
       <div class="col-12">
         <span>
           <label i18n="@@duplicatedColumnNameLabel" for="duplicatedColumnName" class="text-lg mr-6">
