@@ -1,49 +1,44 @@
 <eda-dialog2 [display]="display"
-    header="What If" width="50vw" height= "60vh" [overflow]="'auto'"
+    header="What If" width="50vw" height="60vh" [overflow]="'auto'"
     [disableApply]="disableApply()"
     (apply)="onApplyWhatIfDialog()"
     (close)="onCloseWhatIfDialog()">
 
-    <div content class="p-6 pt-2 space-y-2">
+    <div content class="py-6 pt-2 space-y-4">
+
       <!-- First row -->
       <div class="grid grid-cols-2 gap-4">
-        <div class="space-y-2">
-          <label for="mesura" class="text-sm font-medium text-gray-700 dark:text-gray-300"
-            i18n="@@measureLabel">
-            Mesura
-          </label>
+        <div class="space-y-1.5">
+          <label for="mesura" class="text-base font-medium text-gray-700" i18n="@@measureLabel">Mesura</label>
           <div class="relative">
-            <select 
-              id="mesura"  
+            <select
+              id="mesura"
               [(ngModel)]="whatIf.column"
-              class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none appearance-none">
+              class="w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-base text-gray-900 focus:outline-none appearance-none">
               <option [ngValue]="null" disabled selected>Seleccionar mesura</option>
               <option *ngFor="let option of columnOptions" [ngValue]="option.value">{{ option.label }}</option>
             </select>
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
-              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
               </svg>
             </div>
           </div>
         </div>
 
-        <div class="space-y-2">
-          <label for="operacio" class="text-sm font-medium text-gray-700 dark:text-gray-300"
-            i18n="@@operationLabel">
-            Operació
-          </label>
+        <div class="space-y-1.5">
+          <label for="operacio" class="text-base font-medium text-gray-700" i18n="@@operationLabel">Operació</label>
           <div class="relative">
-            <select 
-              id="operacio" 
+            <select
+              id="operacio"
               [(ngModel)]="whatIf.operator"
-              class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none appearance-none">
+              class="w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-base text-gray-900 focus:outline-none appearance-none">
               <option value="" disabled selected>Seleccionar operació</option>
               <option *ngFor="let option of ifOptions" [value]="option.value">{{ option.label }}</option>
             </select>
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
-              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
               </svg>
             </div>
           </div>
@@ -52,70 +47,74 @@
 
       <!-- Second row -->
       <div class="grid grid-cols-2 gap-4">
-        <div class="space-y-2">
-          <label for="valor" class="text-sm font-medium text-gray-700 dark:text-gray-300"
-            i18n="@@numericalValueLabel">
-            Valor numérico:
-          </label>
-          <div class="flex">
-            <input
-              id="valor"
-              type="number"
-              [(ngModel)]="whatIf.value"
-              class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none"
-            />
-          </div>
+        <div class="space-y-1.5">
+          <label for="valor" class="text-base font-medium text-gray-700" i18n="@@numericalValueLabel">Valor numérico</label>
+          <input
+            id="valor"
+            type="number"
+            [(ngModel)]="whatIf.value"
+            class="w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-base text-gray-900 focus:outline-none"
+          />
         </div>
 
-        <div class="space-y-2">
-          <label for="nouNom" class="text-sm font-medium text-gray-700 dark:text-gray-300"
-            i18n="@@newNameLabel">
-            Nuevo nombre:
-          </label>
-          <div class="flex">
+        <div class="space-y-1.5">
+          <label for="nouNom" class="text-base font-medium text-gray-700" i18n="@@newNameLabel">Nuevo nombre</label>
+          <div class="flex gap-2 items-stretch">
             <input
               id="nouNom"
               type="text"
               [(ngModel)]="whatIf.display_name"
-              class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none"
+              class="flex-1 rounded-md border border-gray-300 bg-white px-3 py-2.5 text-base text-gray-900 focus:outline-none"
             />
-            <button 
-              (click)="generateAlias()"
-              class="ml-2 inline-flex items-center justify-center rounded-md p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none">
-              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-              </svg>
-            </button>
+            <span class="relative group flex">
+              <button
+                (click)="generateAlias()"
+                class="h-full px-2.5 inline-flex items-center justify-center rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-900 border border-gray-300 focus:outline-none">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+              </button>
+              <span class="absolute bottom-full left -translate-x-1/2 mb-2 w-44 rounded-md bg-gray-800 text-white text-xs px-3 py-2 text-center shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50"
+                i18n="@@generateAliasTooltip">
+                Generar alias automático
+              </span>
+            </span>
           </div>
         </div>
       </div>
 
-      <!-- CurrentQuery -->
-      @if(currentQuery.length > 0){
-        <div class="mt-2 bg-gray-50 dark:bg-gray-700 rounded-md border border-gray-200 dark:border-gray-600 min-h-52 overflow-y-auto">
-          <div class="p-3 flex flex-wrap gap-2">
-            <ng-container *ngFor="let column of currentQuery">
+      <!-- Campos what-if existentes -->
+      @if(whatIfColumns().length > 0) {
+        <div class="rounded-md border border-gray-200 bg-gray-50 p-3">
+          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Campos configurados</p>
+          <div class="flex flex-wrap gap-2">
+            @for (column of currentQuery; track column) {
               @if (column?.whatif_column) {
-                <div 
-                  class="inline-flex items-center rounded-full bg-gray-200 dark:bg-gray-600 px-3 py-1 text-sm text-gray-800 dark:text-gray-200">
-                  {{column.display_name.default}}
-                  <button 
-                    (click)="removeWhatIfColumn(column)" 
-                    class="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-                    <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                <div class="whatif-chip inline-flex items-stretch rounded-lg overflow-hidden">
+                  <div class="flex flex-col justify-center px-3 py-2 gap-0.5">
+                    <span class="text-sm font-bold leading-none">{{ column.display_name.default }}</span>
+                    <span class="text-xs opacity-80 leading-none font-mono">
+                      {{ column.whatif?.origin?.display_name?.default ?? column.display_name.default }}
+                      {{ getOperatorSymbol(column.whatif?.operator) }}
+                      {{ column.whatif?.value }}
+                    </span>
+                  </div>
+                  <button
+                    (click)="removeWhatIfColumn(column)"
+                    class="px-2 flex items-center border-l border-white/20 opacity-70 hover:opacity-100 hover:bg-black/10 transition-all focus:outline-none">
+                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                   </button>
                 </div>
               }
-            </ng-container>
+            }
           </div>
         </div>
       }
+
     </div>
 
 </eda-dialog2>
 
-<p-confirmDialog  [style]="{width: '30vw'}" header="Confirmation" icon="pi pi-exclamation-triangle" appendTo="body"></p-confirmDialog>
-
-<!-- <button pButton icon="fa fa-check" class="p-button-info p-button-outlined button-add" label="Añadir" i18n-label="@@addBtn" (click)="addWhatIfColumn()" [disabled]="!whatIf.column || !whatIf.operator || !whatIf.value || !whatIf.display_name"></button>  -->
+<p-confirmDialog [style]="{width: '30vw'}" header="Confirmation" icon="pi pi-exclamation-triangle" appendTo="body"></p-confirmDialog>

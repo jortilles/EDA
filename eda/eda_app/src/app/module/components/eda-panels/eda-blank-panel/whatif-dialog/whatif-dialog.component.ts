@@ -46,15 +46,24 @@ export class WhatIfDialogComponent implements OnInit {
         this.columnOptions = columns.map((column: any) => ({ label: column.display_name.default, value: column}))
     }
 
+    public whatIfColumns(): any[] {
+        return this.currentQuery.filter((q: any) => q.whatif_column);
+    }
+
     public addWhatIfColumn(): void {
         if (this.whatIf.column && this.whatIf.operator && this.whatIf.value && this.whatIf.display_name) {
             const whatIfColumn = _.cloneDeep(this.whatIf.column);
             whatIfColumn.whatif_column = true;
             whatIfColumn.display_name.default = this.whatIf.display_name;
-            whatIfColumn.whatif = { operator: this.whatIf.operator, value: this.whatIf.value };
+            whatIfColumn.whatif = { operator: this.whatIf.operator, value: this.whatIf.value, origin: this.whatIf.column };
             this.currentQuery.push(whatIfColumn);
             this.whatIf = {};
         }
+    }
+
+    public getOperatorSymbol(op: string): string {
+        const map: Record<string, string> = { '+': '+', '-': '−', '*': '×', '/': '÷' };
+        return map[op] ?? op;
     }
 
     public generateAlias(): void {
@@ -73,27 +82,19 @@ export class WhatIfDialogComponent implements OnInit {
     }
 
     public disableApply(): boolean {
-        return !this.whatIf.column || !this.whatIf.operator || !this.whatIf.value || !this.whatIf.display_name;
+        const hasAdded = this.whatIfColumns().length > 0;
+        const formFilled = this.whatIf.column && this.whatIf.operator && this.whatIf.value && this.whatIf.display_name;
+        return !hasAdded && !formFilled;
     }
 
     public onApplyWhatIfDialog(): void {
+        // Si el formulario está relleno, añadir el campo pendiente antes de cerrar
         if (this.whatIf.column && this.whatIf.operator && this.whatIf.value && this.whatIf.display_name) {
-            const whatIfColumn = _.cloneDeep(this.whatIf.column);
-            whatIfColumn.whatif_column = true;
-            whatIfColumn.whatif = {
-                operator: this.whatIf.operator,
-                value: this.whatIf.value,
-                origin: this.whatIf.column
-            };
-
-            whatIfColumn.display_name.default = this.whatIf.display_name;
-
-
-            this.currentQuery.push(whatIfColumn);
-            this.whatIf = {};
-            this.display = false;
-            this.close.emit();
+            this.addWhatIfColumn();
         }
+        this.whatIf = {};
+        this.display = false;
+        this.close.emit();
     }
 
     public onCloseWhatIfDialog(): void {
