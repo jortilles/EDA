@@ -28,7 +28,7 @@
           <h4 class="text-lg flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="mr-2 h-4 w-4 text-[#00BFB3]">
+              class="mr-2 h-4 w-4 text-[var(--corporate-primary)]">
               <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
               <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
               <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
@@ -48,7 +48,7 @@
             @if(isEditable || item.id === 'refreshDashboard'){
               @if (item.id === "editFilters") {
                 @if(hayFiltros){
-                  <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
+                  <button class="sidebarLabels "
                     (click)="item.command()">
                     <i [class]="item.icon + ' text-gray-600'"></i>
                     <span>{{ item.label }}</span>
@@ -61,7 +61,7 @@
                       (cdkDropListDropped)="onDrop($event)">
 
                       @for (subItem of item.items; track subItem.label) {
-                      <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors" cdkDrag
+                      <button class="sidebarLabels" cdkDrag
                         (click)="subItem.command()">
                         <i [class]="subItem.icon + ' text-gray-600'"></i>
                         <span>{{ subItem.label }}</span>
@@ -73,7 +73,7 @@
                   }
                 }
                 @else{
-                  <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
+                  <button class="sidebarLabels"
                     (click)="item.command()">
                     <i [class]="item.icon + ' text-gray-600'"></i>
                     <span>{{ item.label }}</span>
@@ -96,7 +96,7 @@
             }
          }
 
-        <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
+        <button class="sidebarLabels "
           (click)="toggleOpciones()">
           <!-- <i class="pi pi-chevron-down text-gray-600"></i> -->
           <span i18n="@@dashboardSidebarMoreOptions">Más opciones</span>
@@ -110,7 +110,7 @@
             @for (item of itemsDesplegables().slice(1); track item.label) {
               @if(isEditable && !isReadOnly || item.id === 'download'){
                 @if (item.id === 'download') {
-                  <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
+                  <button class="sidebarLabels "
                     (click)="mostrarDescargas = !mostrarDescargas">
                     <i [class]="item.icon + ' text-gray-600'"></i>
                     <span>{{ item.label }}</span>
@@ -121,7 +121,7 @@
                   @if (mostrarDescargas) {
                     <div class="ml-6 flex flex-col gap-2">
                       @for (subItem of item.items; track subItem.label) {
-                        <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
+                        <button class="sidebarLabels "
                           (click)="subItem.command()">
                           <i [class]="subItem.icon + ' text-gray-600'"></i>
                           <span>{{ subItem.label }}</span>
@@ -130,7 +130,7 @@
                     </div>
                   }
                 } @else {
-                  <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
+                  <button class="sidebarLabels "
                     (click)="item.command()">
                     <i [class]="item.icon + ' text-gray-600'"></i>
                     <span>{{ item.label }}</span>

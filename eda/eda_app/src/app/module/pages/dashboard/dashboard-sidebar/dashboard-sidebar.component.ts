@@ -57,6 +57,7 @@ const ANGULAR_MODULES = [
   selector: 'app-dashboard-sidebar',
   standalone: true,
   imports: [ STANDALONE_COMPONENTS, ANGULAR_MODULES],
+  styleUrl: './dashboard-sidebar.component.css',
   templateUrl: './dashboard-sidebar.component.html',
   styles: `
     .overlay-backdrop {

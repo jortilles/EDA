@@ -1,0 +1,14 @@
+.sidebarLabels:hover{
+    background-color: rgba(var(--corporate-primary-rgb), 0.25);
+}
+
+.sidebarLabels{
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    width: 100%;
+    text-align: left;
+    align-items: center;
+    border-radius: 0.5rem;
+    transition: background-color 0.1s ease;
+}
