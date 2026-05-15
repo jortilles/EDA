@@ -40,20 +40,13 @@
 /* ---- Messages area ---- */
 .prompt-messages {
   flex: 1 1 auto;
-  min-height: 160px;
-  max-height: 160px;
+  min-height: var(--prompt-msg-h, clamp(140px, calc(100vh - 37rem), 50vh));
+  max-height: var(--prompt-msg-h, clamp(140px, calc(100vh - 37rem), 50vh));
   overflow-y: auto;
   padding: 0.75rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-}
-
-@media (min-width: 1536px) {
-  .prompt-messages {
-    min-height: 272px;
-    max-height: 272px;
-  }
 }
 
 /* ---- Dotted background ---- */
