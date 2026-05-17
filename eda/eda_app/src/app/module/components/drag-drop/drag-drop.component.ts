@@ -35,6 +35,7 @@ export class DragDropComponent implements OnChanges {
   
   initialization() {
 
+    if (!this.axes || !this.axes[0]) return;
     const copiaAxes = JSON.parse(JSON.stringify(this.axes));
     this.itemX = copiaAxes[0].itemX;
     this.itemY = copiaAxes[0].itemY;

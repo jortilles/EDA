@@ -1131,15 +1131,18 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 config['finalColor'] = assignedColors[1]?.color;
             }
 
-            // Preservar todos los valores existentes
-            this.props.config.setConfig(new MapConfig(
+            // Preservar todos los valores existentes — must carry assignedColors forward so
+            // the subsequent renderMap call finds them in the config.
+            const newMapConfig = new MapConfig(
                 config['coordinates'],
                 config['zoom'],
                 config['logarithmicScale'],
                 config['legendPosition'] || 'bottomleft',
                 config['color'] || assignedColors[0]?.color,
                 config['draggable'] !== undefined ? config['draggable'] : true
-            ));
+            );
+            (newMapConfig as any)['assignedColors'] = assignedColors;
+            this.props.config.setConfig(newMapConfig);
         }
         // Re-renderizar el mapa
         this.renderMap(this.props.chartType);
