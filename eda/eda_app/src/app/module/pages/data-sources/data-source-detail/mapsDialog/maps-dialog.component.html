@@ -6,13 +6,13 @@
     <!-- Tabs (2 pestañas: propiedades+columnas fusionadas, y mapas disponibles) -->
     <div class="grid w-full grid-cols-2 gap-3">
       <button
-        [ngClass]="{'bg-[#00BFB3] text-white': activeTab === 'step1' || activeTab === 'step2', 'bg-gray-100': activeTab === 'available'}"
+        [ngClass]="{'map-tab-active': activeTab === 'step1' || activeTab === 'step2', 'bg-gray-100': activeTab === 'available'}"
         class="px-3 py-2 font-semibold rounded-md transition-colors"
         (click)="setActiveTab('step1')">
         <span i18n="@@inputMapTables">Propiedades del mapa</span>
       </button>
       <button
-        [ngClass]="{'bg-[#00BFB3] text-white': activeTab === 'available', 'bg-gray-100': activeTab !== 'available'}"
+        [ngClass]="{'map-tab-active': activeTab === 'available', 'bg-gray-100': activeTab !== 'available'}"
         class="px-3 py-2 font-semibold rounded-md transition-colors"
         (click)="setActiveTab('available')">
         <span i18n="@@availableMaps">Mapas disponibles</span>
@@ -57,15 +57,13 @@
                 </svg>
                 <span i18n="@@inputMapField">Campo a usar para vincular el modelo con el mapa</span>
               </label>
-              <select
-                id="datamodel"
+              <p-dropdown class="map-dropdown"
+                inputId="datamodel"
                 formControlName="dataModelField"
-                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]">
-                <option value="" disabled selected i18n="@@selectField">Selecciona un campo</option>
-                @for(field of fields; track field.value){
-                  <option [value]="field.value">{{ field.label }}</option>
-                }
-              </select>
+                [options]="fields" optionLabel="label" optionValue="value"
+                i18n-placeholder="@@selectField" placeholder="Selecciona un campo"
+                [style]="{'width':'100%'}" appendTo="body">
+              </p-dropdown>
             </div>
 
             <!-- Map Name -->
@@ -133,15 +131,13 @@
                 </svg>
                 <span i18n="@@inputMapTables">Tablas</span>
               </label>
-              <select
-                id="table"
+              <p-dropdown class="map-dropdown"
+                inputId="table"
                 formControlName="selectedTable"
-                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]">
-                <option value="" disabled selected i18n="@@selectTable">Selecciona una tabla</option>
-                @for(table of tables; track $index){
-                  <option [value]="table.value">{{ table.label }}</option>
-                }
-              </select>
+                [options]="tables" optionLabel="label" optionValue="value"
+                i18n-placeholder="@@selectTable" placeholder="Selecciona una tabla"
+                [style]="{'width':'100%'}" appendTo="body">
+              </p-dropdown>
             </div>
 
             <!-- Column Selection -->
@@ -149,15 +145,13 @@
               <label for="column" class="block  font-medium">
                 <span i18n="@@inputMapColumns">Columnas</span>
               </label>
-              <select
-                id="column"
+              <p-dropdown class="map-dropdown"
+                inputId="column"
                 formControlName="selectedColumn"
-                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]">
-                <option value="" disabled selected i18n="@@selectColumn">Selecciona una columna</option>
-                @for(column of columns; track column.value){
-                  <option [value]="column.label">{{ column.label }}</option>
-                }
-              </select>
+                [options]="columns" optionLabel="label" optionValue="label"
+                i18n-placeholder="@@selectColumn" placeholder="Selecciona una columna"
+                [style]="{'width':'100%'}" appendTo="body">
+              </p-dropdown>
             </div>
 
             <!-- Link Button -->

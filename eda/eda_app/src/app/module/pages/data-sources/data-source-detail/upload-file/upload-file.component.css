@@ -1,6 +1,15 @@
 * {
   box-sizing: border-box;
 }
+
+.upload-dragging {
+  border-color: var(--corporate-primary) !important;
+  background-color: rgba(var(--corporate-primary-rgb), 0.08) !important;
+}
+
+.upload-hover:hover {
+  border-color: var(--corporate-primary);
+}
 #wrapper{
   margin:0.5em;
   margin-left:-0.5em;
