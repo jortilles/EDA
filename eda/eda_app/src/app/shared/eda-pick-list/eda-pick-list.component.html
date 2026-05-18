@@ -22,9 +22,9 @@
             <span i18n="@@itemsSelected1">Seleccionado</span>
           </div>
           <div class="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-lg min-h-[3rem]">
-            <span 
+            <span
               *ngFor="let item of displayedSelectedItems(); trackBy: trackByItemId"
-              class="inline-flex items-center gap-1 px-2 py-1 bg-gray-200 text-gray-800 rounded-md text-sm font-medium"
+              class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-sm font-medium pick-badge"
             >
               {{ item.label }}
               <button
@@ -58,21 +58,21 @@
           type="text"
           [(ngModel)]="searchTerm"
           [placeholder]="config.searchPlaceholder || 'Buscar elementos...'"
-          class="block w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+          class="block w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 pick-search"
         >
       </div>
     </div>
 
     <!-- Items List -->
     <div class="p-6 pt-0">
-      <div [class]="'border border-gray-200 rounded-md min-h-[17.5rem] overflow-y-auto'">
+      <div class="pick-list-items">
         @if(filteredItems().length === 0){
           <div class="flex items-center justify-center h-full text-gray-500" i18n="@@noItemsAvailable">
             {{ searchTerm() ? 'No se encontraron elementos' : 'No hay elementos disponibles' }}
           </div>
         }
         @if(filteredItems().length > 0){
-          <div class="p-2 space-y-1">
+          <div class="p-2 space-y-1 pick-items-scroll">
             <div
               *ngFor="let item of filteredItems(); trackBy: trackByItemId"
               (click)="toggleSelection(item)"
@@ -80,7 +80,7 @@
             >
               <div class="flex items-start justify-between">
                 <div class="flex-1">
-                  <div [class]="'font-medium text-sm ' + (isSelected(item.id) ? 'text-blue-600' : 'text-gray-900')">
+                  <div [class]="'font-medium text-sm ' + (isSelected(item.id) ? 'pick-label-selected' : 'text-gray-900')">
                     {{ item.label }}
                   </div>
                   @if(item.description){
@@ -91,7 +91,7 @@
                 </div>
                 @if(isSelected(item.id)){
                   <div class="ml-2 flex-shrink-0">
-                    <div class="w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center">
+                    <div class="pick-check">
                       <svg class="h-3 w-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                       </svg>

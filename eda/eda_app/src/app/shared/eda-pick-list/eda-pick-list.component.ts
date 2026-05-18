@@ -21,7 +21,8 @@ export interface PickListConfig {
   selector: "eda-pick-list",
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './eda-pick-list.component.html'
+  templateUrl: './eda-pick-list.component.html',
+  styleUrls: ['./eda-pick-list.component.css']
 })
 export class EdaPickListComponent {
   // @Input() availableItems: PickListItem[] = []
@@ -76,11 +77,8 @@ export class EdaPickListComponent {
   }
 
   getItemClasses(item: PickListItem): string {
-    const baseClasses = "p-3 rounded-md cursor-pointer transition-all duration-200 border "
-    const selectedClasses = "bg-blue-50 border-blue-200 hover:bg-blue-100"
-    const unselectedClasses = "border-transparent hover:bg-gray-50"
-
-    return baseClasses + (this.isSelected(item.id) ? selectedClasses : unselectedClasses)
+    const base = "p-3 rounded-md cursor-pointer transition-all duration-200 border "
+    return base + (this.isSelected(item.id) ? "pick-item-selected" : "pick-item-unselected border-transparent")
   }
 
   trackByItemId(index: number, item: PickListItem): string {

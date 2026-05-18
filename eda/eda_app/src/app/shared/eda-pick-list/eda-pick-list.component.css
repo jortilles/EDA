@@ -1,0 +1,68 @@
+/* ── Items list container ───────────────────────────────────── */
+.pick-list-items {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+}
+
+/* ── Inner scrollable list ──────────────────────────────────── */
+.pick-items-scroll {
+    max-height: 38vh;
+    min-height: 8rem;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--corporate-primary-rgb), 0.4) transparent;
+}
+
+.pick-items-scroll::-webkit-scrollbar {
+    width: 5px;
+}
+
+.pick-items-scroll::-webkit-scrollbar-thumb {
+    background-color: rgba(var(--corporate-primary-rgb), 0.4);
+    border-radius: 9999px;
+}
+
+/* ── Item rows ──────────────────────────────────────────────── */
+.pick-item-selected {
+    background: rgba(var(--corporate-primary-rgb), 0.07);
+    border-color: rgba(var(--corporate-primary-rgb), 0.3);
+}
+
+.pick-item-selected:hover {
+    background: rgba(var(--corporate-primary-rgb), 0.12);
+}
+
+.pick-item-unselected:hover {
+    background: rgba(var(--corporate-primary-rgb), 0.04);
+}
+
+/* ── Item label text ────────────────────────────────────────── */
+.pick-label-selected {
+    color: var(--corporate-primary);
+    font-weight: 500;
+}
+
+/* ── Checkmark circle ───────────────────────────────────────── */
+.pick-check {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 9999px;
+    background: var(--corporate-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ── Selected chip badges ───────────────────────────────────── */
+.pick-badge {
+    background: rgba(var(--corporate-primary-rgb), 0.1);
+    color: var(--corporate-primary);
+    border: 1px solid rgba(var(--corporate-primary-rgb), 0.25);
+}
+
+/* ── Search input focus ─────────────────────────────────────── */
+.pick-search:focus {
+    outline: none;
+    border-color: var(--corporate-primary) !important;
+    box-shadow: 0 0 0 1px var(--corporate-primary) !important;
+}
