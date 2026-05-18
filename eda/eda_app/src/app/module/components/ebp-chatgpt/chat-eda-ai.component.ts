@@ -27,7 +27,7 @@ export class ChatEdaAIComponent implements AfterViewChecked {
   private iaFormStateService = inject(IaFormStateService);
   private sanitizer = inject(DomSanitizer);
 
-  public messages: { sender: 'user' | 'bot'; content: string }[] = [];
+  public messages: { sender: 'user' | 'bot'; content: string; copied?: boolean }[] = [];
   public userInput: string = '';
   public loading = false;
 
@@ -103,5 +103,12 @@ export class ChatEdaAIComponent implements AfterViewChecked {
   renderMarkdown(content: string): SafeHtml {
     const html = marked.parse(content) as string;
     return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
+
+  copyMessage(msg: { content: string; copied?: boolean }) {
+    navigator.clipboard.writeText(msg.content).then(() => {
+      msg.copied = true;
+      setTimeout(() => msg.copied = false, 2000);
+    });
   }
 }

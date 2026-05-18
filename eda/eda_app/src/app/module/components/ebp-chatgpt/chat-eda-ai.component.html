@@ -13,7 +13,7 @@
       <div class="w-full bg-white rounded-xl shadow-md p-3 lg:p-6 flex flex-col gap-2 lg:gap-4 h-auto overflow-x-hidden">
 
         <!-- Contenedor scrollable para mensajes -->
-        <div #messageContainer class="flex-1 overflow-y-auto space-y-2 pr-1 lg:pr-2">
+        <div #messageContainer class="flex-1 overflow-y-auto space-y-3 pr-1 lg:pr-2">
 
           @if(messages.length === 0){
             <p class="text-base lg:text-lg text-gray-400 text-center mt-8 px-6 select-none" i18n="@@askPanelData">
@@ -22,23 +22,50 @@
           }
 
           <div *ngFor="let msg of messages"
-          class="text-sm lg:text-base h-auto animate-in fade-in slide-in-from-bottom duration-300">
-            <div
-              [ngClass]="{
-                'bg-blue-500 text-white justify-self-end': msg.sender === 'user',
-                'bg-gray-200 text-gray-900 justify-self-start': msg.sender === 'bot'
-              }"
-              class="rounded-xl px-3 py-1.5 lg:px-4 lg:py-2 max-w-[85%] lg:max-w-xl w-fit break-words"
-            >
-              <span *ngIf="msg.sender === 'user'">{{ msg.content }}</span>
-              <div *ngIf="msg.sender === 'bot'" class="markdown-content" [innerHTML]="renderMarkdown(msg.content)"></div>
+            class="flex text-sm lg:text-base animate-in fade-in slide-in-from-bottom duration-300"
+            [class.justify-end]="msg.sender === 'user'"
+            [class.justify-start]="msg.sender === 'bot'">
+
+            <div class="group relative"
+              [class.max-w-[75%]]="msg.sender === 'user'"
+              [class.max-w-[90%]]="msg.sender === 'bot'">
+
+              <div
+                [ngClass]="{
+                  'bg-blue-500 text-white': msg.sender === 'user',
+                  'bg-gray-200 text-gray-900': msg.sender === 'bot'
+                }"
+                class="rounded-xl px-3 py-1.5 lg:px-4 lg:py-2 break-words"
+              >
+                <span *ngIf="msg.sender === 'user'">{{ msg.content }}</span>
+                <div *ngIf="msg.sender === 'bot'" class="markdown-content" [innerHTML]="renderMarkdown(msg.content)"></div>
+              </div>
+
+              <!-- Botón copiar -->
+              <button
+                (click)="copyMessage(msg)"
+                title="Copiar"
+                class="absolute -bottom-5 opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-gray-600 p-0.5"
+                [class.right-0]="msg.sender === 'bot'"
+                [class.left-0]="msg.sender === 'user'">
+                <svg *ngIf="!msg.copied" xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2m-6 12h8a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-8a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2z"/>
+                </svg>
+                <svg *ngIf="msg.copied" xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                </svg>
+              </button>
             </div>
           </div>
 
           <!-- Indicador de carga -->
           @if(loading){
-            <div class="text-gray-500 text-sm lg:text-base italic animate-pulse self-start pl-6 lg:pl-14 break-words max-w-[70%] overflow-x-hidden">
-              <span i18n="@@escribiendo">Escribiendo...</span>
+            <div class="flex justify-start">
+              <div class="bg-gray-100 rounded-xl px-4 py-3">
+                <div class="dot-wave flex gap-1.5 items-center h-4">
+                  <span></span><span></span><span></span>
+                </div>
+              </div>
             </div>
           }
         </div>
