@@ -1845,7 +1845,8 @@ public tableNodeExpand(event: any): void {
     public initAxes(currenQuery) {
 
         let currenQueryCopy = [...currenQuery];
-            
+
+        // itemX = "Eje vertical" (filas), itemY = "Eje horizontal" (columnas), itemZ = medidas numéricas
         let vx = currenQuery.find( (v:any) => v.column_type==='text' || v.column_type==='date')
         let objx = {}
         let itemX = []
@@ -1857,13 +1858,12 @@ public tableNodeExpand(event: any): void {
             objx = {column_name: vx.column_name, column_type: vx.column_type, description: vx.display_name.default}
             itemX = [objx]
             if (indexX !== -1) {
-                currenQueryCopy.splice(indexX, 1); // Elimina el elemento encontrado
+                currenQueryCopy.splice(indexX, 1);
             }
         } else {
             objx = {column_name: vx.column_name, column_type: vx.column_type, description: vx.display_name.default}
             itemX = [objx]
         }
-
 
         let itemY = [];
         currenQueryCopy.forEach( (v:any) => {
@@ -1885,8 +1885,17 @@ public tableNodeExpand(event: any): void {
             itemZ.shift();
         }
 
+        // Columnas con downChild (familias padre-hijo) siempre deben estar en el eje vertical (itemX).
+        // Las que hayan quedado en itemY (horizontal) se mueven a itemX.
+        const navParentNames = new Set(currenQuery.filter((c: any) => c.downChild).map((c: any) => c.column_name));
+        const toMoveToVertical: any[] = [];
+        itemY = itemY.filter((item: any) => {
+            if (navParentNames.has(item.column_name)) { toMoveToVertical.push(item); return false; }
+            return true;
+        });
+        itemX.push(...toMoveToVertical);
+
         return [{ itemX: itemX, itemY: itemY, itemZ: itemZ }]
-            
 
     }
 
@@ -2231,7 +2240,7 @@ public tableNodeExpand(event: any): void {
                 }
             });
         });
-        
+
         axes[0].itemY.forEach(e => {
             currenQuery.forEach(cq => {
                 if(e.description===cq.display_name.default) {
@@ -2240,7 +2249,7 @@ public tableNodeExpand(event: any): void {
                 }
             });
         });
-        
+
         axes[0].itemZ.forEach(e => {
             currenQuery.forEach(cq => {
                 if(e.description===cq.display_name.default) {
@@ -2250,16 +2259,48 @@ public tableNodeExpand(event: any): void {
             });
         });
 
+        // Nav-child columns are excluded from axes (drag-drop never shows them) but must
+        // remain in currentQuery so the navigation hierarchy stays intact.
+        const navChildKeys = new Set(
+            newCurrentQuery
+                .filter((col: any) => col.downChild)
+                .map((col: any) => `${col.downChild.table_id}.${col.downChild.column_name}`)
+        );
+        currenQuery.forEach((col: any) => {
+            const key = `${col.table_id}.${col.column_name}`;
+            if (navChildKeys.has(key) && !newCurrentQuery.find((c: any) => c.table_id === col.table_id && c.column_name === col.column_name)) {
+                newCurrentQuery.push(col);
+            }
+        });
+
         return newCurrentQuery;
 
     }
 
     // Funcion que recibe la variable axes moficicada por el componente drag-drop
     public newAxesOrdering(newAxes) {
+        // itemX = eje vertical. Si el usuario arrastró un padre con hijos a itemY (horizontal)
+        // o itemZ (numérico), lo devolvemos a itemX para mantener la restricción.
+        if (newAxes[0]) {
+            const navParentNames = new Set(
+                this.currentQuery.filter((col: any) => col.downChild).map((col: any) => col.column_name)
+            );
+            const toMoveToVertical: any[] = [];
+            newAxes[0].itemY = newAxes[0].itemY.filter((item: any) => {
+                if (navParentNames.has(item.column_name)) { toMoveToVertical.push(item); return false; }
+                return true;
+            });
+            newAxes[0].itemZ = newAxes[0].itemZ.filter((item: any) => {
+                if (navParentNames.has(item.column_name)) { toMoveToVertical.push(item); return false; }
+                return true;
+            });
+            if (toMoveToVertical.length) newAxes[0].itemX.push(...toMoveToVertical);
+        }
+
         this.axes = newAxes;
         this.newAxesChanged = true; // Indica que se utilizara la tabla cruzada generica
         const config = this.panelChartConfig.config.getConfig(); // Adquiera la configuración config
-        this.currentQuery = this.newCurrentQuery(this.currentQuery, newAxes); // Reordeno el currentQuery                
+        this.currentQuery = this.newCurrentQuery(this.currentQuery, newAxes); // Reordeno el currentQuery
         config['ordering'] = [{axes: newAxes}]; // Agrego el nuevo axes a la config
         this.copyConfigCrossTable = JSON.parse(JSON.stringify(config));
         QueryUtils.runManualQuery(this) // Ejecutando con la nueva configuracion de currentQuery
