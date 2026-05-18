@@ -852,7 +852,9 @@ public tableNodeExpand(event: any): void {
     
 
     public changeChartTypeCheck(type: string, subType: string, config?: ChartConfig) {
-        const hadChildNav = this.currentQuery.some((col: any) => col.downChild);
+        // La navegación hijo tiene sentido en tablas y tablas cruzadas — solo limpiar al cambiar a otro tipo de gráfico
+        const isTableType = type === 'table' || subType === 'crosstable' || subType === 'table';
+        const hadChildNav = !isTableType && this.currentQuery.some((col: any) => col.downChild);
         if (hadChildNav) {
             NavigationUtils.clearChildNavigation(this);
         }
