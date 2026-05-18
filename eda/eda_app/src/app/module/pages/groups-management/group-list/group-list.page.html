@@ -33,7 +33,12 @@
             <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="handleEditGroup(group)">
               <eda-icon name="pencil"></eda-icon>
             </button>
-            <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="handleDeleteGroup(group._id)">
+            <button class="rounded-md p-2 hover:bg-muted"
+              [disabled]="PROTECTED_GROUP_IDS.has(group._id)"
+              [class.opacity-30]="PROTECTED_GROUP_IDS.has(group._id)"
+              [class.cursor-not-allowed]="PROTECTED_GROUP_IDS.has(group._id)"
+              [class.cursor-pointer]="!PROTECTED_GROUP_IDS.has(group._id)"
+              (click)="!PROTECTED_GROUP_IDS.has(group._id) && handleDeleteGroup(group._id)">
               <eda-icon name="bin"></eda-icon>
             </button>
           </td>
