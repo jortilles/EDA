@@ -56,14 +56,14 @@
 
       <div class="flex gap-3 w-1/2">
         <button (click)="properties = true" [ngClass]="{
-            'bg-[#00BFB3] text-white border-[#00BFB3]': properties === true,
+            'bg-[var(--corporate-primary)] text-white border-[var(--corporate-primary)]': properties === true,
             'border-transparent hover:bg-gray-200/40': properties === false
           }" class="flex-1 px-4 py-2 text-sm font-medium rounded-t-md border-b-2 focus:outline-none 
                 transition-colors duration-300 ease-in-out" i18n="@@properties">
           Properties
         </button>
         <button (click)="properties = false" [ngClass]="{
-            'bg-[#00BFB3] text-white border-[#00BFB3]': properties === false,
+            'bg-[var(--corporate-primary)] text-white border-[var(--corporate-primary)]': properties === false,
             'border-transparent hover:bg-gray-200/40': properties === true
           }" class="flex-1 px-4 py-2 text-sm font-medium rounded-t-md border-b-2 focus:outline-none 
                 transition-colors duration-300 ease-in-out">
@@ -93,7 +93,7 @@
               <h6 i18n="@@ChangeFontSize" class="mb-2 mt-2"> Tamaño de fuente </h6>
               <input type="range" min="-5" max="5" step="0.5" [(ngModel)]="titleFontSize"
                 (change)="setSampleTitleStyle()"
-                class="w-full border border-black rounded h-2 bg-gray-200 accent-blue-500" />
+                class="w-full border border-black rounded h-2 bg-gray-200 accent-[var(--corporate-primary)]" />
             </div>
 
             <div>
@@ -142,7 +142,7 @@
               <h6 i18n="@@ChangeFontSize" class="mb-2 mt-2">Tamaño de fuente</h6>
               <input type="range" min="-5" max="5" step="0.5" [(ngModel)]="filtersFontSize"
                 (change)="setSampleFIltersStyle()"
-                class="w-full border border-black rounded h-2 bg-gray-200 accent-blue-500" />
+                class="w-full border border-black rounded h-2 bg-gray-200 accent-[var(--corporate-primary)]" />
             </div>
             <div>
               <h6 i18n="@@ChangeFontColor" class="mt-2 mb-2">Color de la fuente</h6>
@@ -168,7 +168,7 @@
               <h6 i18n="@@ChangeFontSize" class="mb-2 mt-2">Tamaño de fuente</h6>
               <input type="range" min="-5" max="5" step="0.5" [(ngModel)]="panelTitleFontSize"
                 (change)="setPanelTitleStyle()"
-                class="w-full border border-black rounded h-2 bg-gray-200 accent-blue-500" />
+                class="w-full border border-black rounded h-2 bg-gray-200 accent-[var(--corporate-primary)]" />
             </div>
 
             <div>
@@ -217,7 +217,7 @@
               <h6 i18n="@@ChangeFontSize" class="mb-2 mt-2">Tamaño de fuente</h6>
               <input type="range" min="-5" max="5" step="0.5" [(ngModel)]="panelFontSize"
                 (change)="setPanelContentStyle()"
-                class="w-full border border-black rounded h-2 bg-gray-200 accent-blue-500" />
+                class="w-full border border-black rounded h-2 bg-gray-200 accent-[var(--corporate-primary)]" />
             </div>
             <div>
               <h6 i18n="@@ChangeFontColor" class="mt-2 mb-2">Color de la fuente</h6>
