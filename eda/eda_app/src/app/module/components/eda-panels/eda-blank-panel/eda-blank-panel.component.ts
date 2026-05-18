@@ -617,7 +617,9 @@ public tableNodeExpand(event: any): void {
 
             PanelInteractionUtils.handleGlobalFilterMapper(this);
             this.setupQueryContext(panelContent);          // 1. build currentQuery + navState
-            this.restoreDateNavState(panelContent);        // 2. restore date nav (uses currentQuery to update formats)
+            if (NavigationUtils.panelHasNavigation(panelContent)) {
+                this.restoreDateNavState(panelContent);    // 2. restore date nav (uses currentQuery to update formats)
+            }
             PanelInteractionUtils.handleFilters(this, panelContent.query.query); // 3. populate selectedFilters (reads dateNavState)
 
             const hasNavChildren = this.currentQuery.some((col: any) => col.downChild);
@@ -669,7 +671,7 @@ public tableNodeExpand(event: any): void {
                 }
 
                 PanelInteractionUtils.handleCurrentQuery2(this);
-                this.restoreNavigationLinks(panelContent);
+                if (NavigationUtils.panelHasNavigation(panelContent)) { this.restoreNavigationLinks(panelContent); }
                 this.reloadTablesData();
                 PanelInteractionUtils.loadTableNodes(this);
 
@@ -680,7 +682,7 @@ public tableNodeExpand(event: any): void {
             } else {
                 this.rootTable = null; // no root table in EDA mode
                 PanelInteractionUtils.handleCurrentQuery(this);
-                this.restoreNavigationLinks(panelContent);
+                if (NavigationUtils.panelHasNavigation(panelContent)) { this.restoreNavigationLinks(panelContent); }
                 this.columns = this.columns.filter(c => !c.isdeleted);
             }
         }
@@ -814,7 +816,7 @@ public tableNodeExpand(event: any): void {
             maps: this.dataSource.model.maps,
             linkedDashboardProps: this.panel.linkedDashboardProps,
             predictionConfig: this.panel.content?.query?.query?.predictionConfig,
-            childNavConfig: this.computeChildNavConfig(),
+            childNavConfig: NavigationUtils.hasNavigation(this) ? this.computeChildNavConfig() : { parentFields: [], childFieldMap: {}, navColumnSubstitution: {} },
         });
     }
 
@@ -2444,8 +2446,7 @@ public tableNodeExpand(event: any): void {
     }
 
     // ─── NAVIGATION FEATURE ────────────────────────────────────────────────────
-    // Logic lives in NavigationUtils — these are thin wrappers that pass `this`.
-
+    // La logica se encuentra en NavigationUtils - estos son thin wrappers que pasan `this`.
     public buildNavigationLinks(query: any): any[] {
         return NavigationUtils.buildNavigationLinks(this, query);
     }

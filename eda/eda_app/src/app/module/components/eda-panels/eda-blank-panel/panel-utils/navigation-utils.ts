@@ -3,6 +3,18 @@ import { QueryUtils } from './query-utils';
 
 export const NavigationUtils = {
 
+    // ─── Guards ─────────────────────────────────────────────────────────────────
+
+    /** True if currentQuery has at least one child-nav or date-nav column. */
+    hasNavigation(component: EdaBlankPanelComponent): boolean {
+        return component.currentQuery.some((col: any) => col.downChild || col.dateNav === true);
+    },
+
+    /** True if the saved panel content contains any navigation data worth restoring. */
+    panelHasNavigation(panelContent: any): boolean {
+        return (panelContent.navigationLinks?.length > 0) || (panelContent.savedDateNavState?.length > 0);
+    },
+
     // ─── Sync helpers ───────────────────────────────────────────────────────────
 
     /** Finds a column in currentQuery by table_id and column_name. */
