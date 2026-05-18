@@ -8,14 +8,3 @@
     box-shadow: 0 0 0 2px rgba(var(--corporate-primary-rgb), 0.15);
 }
 
-/* ── Dropdown panel items: corporate hover ──────────────────── */
-/* Panel is appended to body by PrimeNG, so :host scope can't reach it */
-::ng-deep .p-dropdown-panel .p-dropdown-item:not(.p-highlight):hover {
-    background: rgba(var(--corporate-primary-rgb), 0.08) !important;
-    color: var(--corporate-primary) !important;
-}
-
-::ng-deep .p-dropdown-panel .p-dropdown-item.p-highlight {
-    background: rgba(var(--corporate-primary-rgb), 0.12) !important;
-    color: var(--corporate-primary) !important;
-}

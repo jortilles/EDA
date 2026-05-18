@@ -1,5 +1,20 @@
 .checkbox-corporate             { accent-color: var(--corporate-primary); }
 
+
+:host ::ng-deep .p-dropdown .p-dropdown-label {
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+}
+
+/* ── Dropdown panel items (appendTo="body") ─────────────────── */
+::ng-deep .p-dropdown-panel .p-dropdown-item:not(.p-highlight):hover {
+    background: rgba(var(--corporate-primary-rgb), 0.08) !important;
+    color: var(--corporate-primary) !important;
+}
+
+
+
 .text-corporate-primary         { color: var(--corporate-primary); }
 
 .btn-corporate-primary          { background-color: var(--corporate-primary) !important; color: white; }

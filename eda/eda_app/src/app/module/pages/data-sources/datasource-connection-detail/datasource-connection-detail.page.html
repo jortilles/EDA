@@ -54,14 +54,19 @@
 
           <!-- Type Field -->
           <div class="space-y-2">
-            <label for="type" class="block font-medium" i18n="@@type">
+            <label for="type" class="block mb-[0.5rem] font-medium" i18n="@@type">
               Tipo <span class="text-red-500">*</span>
             </label>
-            <select id="type" formControlName="type"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md bg-white"
-              (change)="selectDefaultPort()">
-              <option *ngFor="let type of databaseTypes" [value]="type.value">{{ type.label }}</option>
-            </select>
+            <p-dropdown
+              inputId="type"
+              formControlName="type"
+              [options]="databaseTypes"
+              optionLabel="label"
+              optionValue="value"
+              [style]="{'width': '100%'}"
+              appendTo="body"
+              (onChange)="selectDefaultPort()">
+            </p-dropdown>
           </div>
 
           <!-- Description Field -->
