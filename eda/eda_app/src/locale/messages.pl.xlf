@@ -6319,6 +6319,22 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Sin padre</source>
         <target>Brak rodzica</target>
       </trans-unit>
+      <trans-unit id="noDataAvailable" datatype="html">
+        <source>Sin datos disponibles</source>
+        <target>Brak dostępnych danych</target>
+      </trans-unit>
+      <trans-unit id="noDataChatMessage" datatype="html">
+        <source>Para utilizar este chat necesitas tener un panel con datos seleccionado.</source>
+        <target>Aby korzystać z tego czatu, musisz mieć wybrany panel z danymi.</target>
+      </trans-unit>
+      <trans-unit id="copyToClipboard" datatype="html">
+        <source>Copiar</source>
+        <target>Kopiuj</target>
+      </trans-unit>
+      <trans-unit id="ctrlEnterToSend" datatype="html">
+        <source>Ctrl+Enter para enviar</source>
+        <target>Ctrl+Enter aby wysłać</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

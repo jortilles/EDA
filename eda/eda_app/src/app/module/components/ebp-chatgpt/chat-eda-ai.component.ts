@@ -45,6 +45,19 @@ export class ChatEdaAIComponent implements AfterViewChecked {
     }
   }
 
+  onKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter' && event.ctrlKey) {
+      event.preventDefault();
+      this.sendMessage();
+    }
+  }
+
+  autoResize(event: Event) {
+    const el = event.target as HTMLTextAreaElement;
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+  }
+
   sendMessage() {
     const trimmed = this.userInput.trim();
     if (!trimmed || this.loading) return;
@@ -60,6 +73,11 @@ export class ChatEdaAIComponent implements AfterViewChecked {
     this.messages.push({ sender: 'user', content: trimmed });
     this.userInput = '';
     this.loading = true;
+    setTimeout(() => {
+      if (this.chatInput?.nativeElement) {
+        this.chatInput.nativeElement.style.height = 'auto';
+      }
+    });
     this.shouldScroll = true;
     setTimeout(() => this.chatInput.nativeElement.focus());
 

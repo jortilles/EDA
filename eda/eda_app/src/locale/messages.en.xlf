@@ -6404,6 +6404,22 @@ OR<ph id="5"/>
   <source>Sin padre</source>
   <target>No parent</target>
 </trans-unit>
+<trans-unit id="noDataAvailable" datatype="html">
+  <source>Sin datos disponibles</source>
+  <target>No data available</target>
+</trans-unit>
+<trans-unit id="noDataChatMessage" datatype="html">
+  <source>Para utilizar este chat necesitas tener un panel con datos seleccionado.</source>
+  <target>To use this chat you need to have a panel with data selected.</target>
+</trans-unit>
+<trans-unit id="copyToClipboard" datatype="html">
+  <source>Copiar</source>
+  <target>Copy</target>
+</trans-unit>
+<trans-unit id="ctrlEnterToSend" datatype="html">
+  <source>Ctrl+Enter para enviar</source>
+  <target>Ctrl+Enter to send</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

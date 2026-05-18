@@ -6686,6 +6686,22 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Sin padre</source>
         <target>Sense pare</target>
       </trans-unit>
+      <trans-unit id="noDataAvailable" datatype="html">
+        <source>Sin datos disponibles</source>
+        <target>Sense dades disponibles</target>
+      </trans-unit>
+      <trans-unit id="noDataChatMessage" datatype="html">
+        <source>Para utilizar este chat necesitas tener un panel con datos seleccionado.</source>
+        <target>Per utilitzar aquest xat necessites tenir un tauler amb dades seleccionat.</target>
+      </trans-unit>
+      <trans-unit id="copyToClipboard" datatype="html">
+        <source>Copiar</source>
+        <target>Copiar</target>
+      </trans-unit>
+      <trans-unit id="ctrlEnterToSend" datatype="html">
+        <source>Ctrl+Enter para enviar</source>
+        <target>Ctrl+Enter per enviar</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

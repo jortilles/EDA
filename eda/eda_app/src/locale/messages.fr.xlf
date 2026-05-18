@@ -6654,6 +6654,22 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Sin padre</source>
         <target>Sans parent</target>
       </trans-unit>
+      <trans-unit id="noDataAvailable" datatype="html">
+        <source>Sin datos disponibles</source>
+        <target>Aucune donnée disponible</target>
+      </trans-unit>
+      <trans-unit id="noDataChatMessage" datatype="html">
+        <source>Para utilizar este chat necesitas tener un panel con datos seleccionado.</source>
+        <target>Pour utiliser ce chat, vous devez avoir un panneau avec des données sélectionné.</target>
+      </trans-unit>
+      <trans-unit id="copyToClipboard" datatype="html">
+        <source>Copiar</source>
+        <target>Copier</target>
+      </trans-unit>
+      <trans-unit id="ctrlEnterToSend" datatype="html">
+        <source>Ctrl+Enter para enviar</source>
+        <target>Ctrl+Entrée pour envoyer</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
