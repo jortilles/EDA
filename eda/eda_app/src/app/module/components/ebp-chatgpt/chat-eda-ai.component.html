@@ -30,7 +30,8 @@
               }"
               class="rounded-xl px-3 py-1.5 lg:px-4 lg:py-2 max-w-[85%] lg:max-w-xl w-fit break-words"
             >
-              {{ msg.content }}
+              <span *ngIf="msg.sender === 'user'">{{ msg.content }}</span>
+              <div *ngIf="msg.sender === 'bot'" class="markdown-content" [innerHTML]="renderMarkdown(msg.content)"></div>
             </div>
           </div>
 

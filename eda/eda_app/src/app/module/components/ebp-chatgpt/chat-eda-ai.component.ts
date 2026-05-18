@@ -5,6 +5,8 @@ import { AssistantService } from '@eda/services/api/assistant.service';
 import { IaFormStateService } from '@eda/services/shared/IaFormState.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { marked } from 'marked';
 
 @Component({
   selector: 'chat-eda-ai',
@@ -23,6 +25,7 @@ export class ChatEdaAIComponent implements AfterViewChecked {
 
   private assistantService = inject(AssistantService);
   private iaFormStateService = inject(IaFormStateService);
+  private sanitizer = inject(DomSanitizer);
 
   public messages: { sender: 'user' | 'bot'; content: string }[] = [];
   public userInput: string = '';
@@ -95,5 +98,10 @@ export class ChatEdaAIComponent implements AfterViewChecked {
   public onClose(): void {
     this.display = false;
     this.close.emit();
+  }
+
+  renderMarkdown(content: string): SafeHtml {
+    const html = marked.parse(content) as string;
+    return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 }

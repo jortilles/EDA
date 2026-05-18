@@ -1,0 +1,15 @@
+.markdown-content { line-height: 1.6; }
+.markdown-content p { margin: 0.4em 0; }
+.markdown-content strong { font-weight: 700; }
+.markdown-content em { font-style: italic; }
+.markdown-content h1, .markdown-content h2, .markdown-content h3 { font-weight: 700; margin: 0.6em 0 0.3em; }
+.markdown-content ul, .markdown-content ol { padding-left: 1.4em; margin: 0.4em 0; }
+.markdown-content li { margin: 0.15em 0; }
+.markdown-content hr { border: none; border-top: 1px solid #d1d5db; margin: 0.8em 0; }
+.markdown-content code { background: #f3f4f6; border-radius: 3px; padding: 0.1em 0.35em; font-size: 0.85em; }
+.markdown-content pre { background: #f3f4f6; border-radius: 6px; padding: 0.75em 1em; overflow-x: auto; margin: 0.5em 0; }
+.markdown-content pre code { background: none; padding: 0; }
+.markdown-content table { border-collapse: collapse; width: 100%; margin: 0.6em 0; font-size: 0.9em; }
+.markdown-content th, .markdown-content td { border: 1px solid #d1d5db; padding: 0.4em 0.75em; text-align: left; }
+.markdown-content th { background: #f3f4f6; font-weight: 700; }
+.markdown-content tr:nth-child(even) { background: #f9fafb; }
