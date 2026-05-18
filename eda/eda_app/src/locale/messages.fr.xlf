@@ -6670,6 +6670,14 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Ctrl+Enter para enviar</source>
         <target>Ctrl+Entrée pour envoyer</target>
       </trans-unit>
+      <trans-unit id="askEdaliticsPrefix" datatype="html">
+        <source>Pregúntale a </source>
+        <target>Demandez à </target>
+      </trans-unit>
+      <trans-unit id="askEdaliticsSubtitle" datatype="html">
+        <source>Análisis de datos con IA</source>
+        <target>Analyse de données par IA</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -6335,6 +6335,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Ctrl+Enter para enviar</source>
         <target>Ctrl+Enter aby wysłać</target>
       </trans-unit>
+      <trans-unit id="askEdaliticsPrefix" datatype="html">
+        <source>Pregúntale a </source>
+        <target>Zapytaj </target>
+      </trans-unit>
+      <trans-unit id="askEdaliticsSubtitle" datatype="html">
+        <source>Análisis de datos con IA</source>
+        <target>Analiza danych z AI</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

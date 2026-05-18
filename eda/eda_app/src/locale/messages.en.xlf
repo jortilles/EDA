@@ -6420,6 +6420,14 @@ OR<ph id="5"/>
   <source>Ctrl+Enter para enviar</source>
   <target>Ctrl+Enter to send</target>
 </trans-unit>
+<trans-unit id="askEdaliticsPrefix" datatype="html">
+  <source>Pregúntale a </source>
+  <target>Ask </target>
+</trans-unit>
+<trans-unit id="askEdaliticsSubtitle" datatype="html">
+  <source>Análisis de datos con IA</source>
+  <target>AI-powered data analysis</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

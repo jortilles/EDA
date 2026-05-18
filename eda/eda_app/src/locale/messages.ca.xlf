@@ -6702,6 +6702,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Ctrl+Enter para enviar</source>
         <target>Ctrl+Enter per enviar</target>
       </trans-unit>
+      <trans-unit id="askEdaliticsPrefix" datatype="html">
+        <source>Pregúntale a </source>
+        <target>Pregunta a </target>
+      </trans-unit>
+      <trans-unit id="askEdaliticsSubtitle" datatype="html">
+        <source>Análisis de datos con IA</source>
+        <target>Anàlisi de dades amb IA</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
