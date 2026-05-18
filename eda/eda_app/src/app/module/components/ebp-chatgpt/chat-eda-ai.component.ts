@@ -5,6 +5,8 @@ import { AssistantService } from '@eda/services/api/assistant.service';
 import { IaFormStateService } from '@eda/services/shared/IaFormState.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { marked } from 'marked';
 
 @Component({
   selector: 'chat-eda-ai',
@@ -23,8 +25,9 @@ export class ChatEdaAIComponent implements AfterViewChecked {
 
   private assistantService = inject(AssistantService);
   private iaFormStateService = inject(IaFormStateService);
+  private sanitizer = inject(DomSanitizer);
 
-  public messages: { sender: 'user' | 'bot'; content: string }[] = [];
+  public messages: { sender: 'user' | 'bot'; content: string; copied?: boolean }[] = [];
   public userInput: string = '';
   public loading = false;
 
@@ -42,6 +45,19 @@ export class ChatEdaAIComponent implements AfterViewChecked {
     }
   }
 
+  onKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter' && event.ctrlKey) {
+      event.preventDefault();
+      this.sendMessage();
+    }
+  }
+
+  autoResize(event: Event) {
+    const el = event.target as HTMLTextAreaElement;
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+  }
+
   sendMessage() {
     const trimmed = this.userInput.trim();
     if (!trimmed || this.loading) return;
@@ -57,6 +73,11 @@ export class ChatEdaAIComponent implements AfterViewChecked {
     this.messages.push({ sender: 'user', content: trimmed });
     this.userInput = '';
     this.loading = true;
+    setTimeout(() => {
+      if (this.chatInput?.nativeElement) {
+        this.chatInput.nativeElement.style.height = 'auto';
+      }
+    });
     this.shouldScroll = true;
     setTimeout(() => this.chatInput.nativeElement.focus());
 
@@ -95,5 +116,17 @@ export class ChatEdaAIComponent implements AfterViewChecked {
   public onClose(): void {
     this.display = false;
     this.close.emit();
+  }
+
+  renderMarkdown(content: string): SafeHtml {
+    const html = marked.parse(content) as string;
+    return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
+
+  copyMessage(msg: { content: string; copied?: boolean }) {
+    navigator.clipboard.writeText(msg.content).then(() => {
+      msg.copied = true;
+      setTimeout(() => msg.copied = false, 2000);
+    });
   }
 }

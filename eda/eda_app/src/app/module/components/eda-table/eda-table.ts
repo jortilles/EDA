@@ -50,6 +50,7 @@ export class EdaTable {
 
     public parentFields: string[] = [];
     public childFieldMap: {[columnName: string]: string} = {};
+    public navColumnSubstitution: {[originalName: string]: string} = {};
 
     public _value: any[] = [];
     
@@ -962,13 +963,28 @@ export class EdaTable {
         if(this.ordering!=undefined && this.ordering.length!==0) {
             axes = this.ordering[0].axes
 
+            // Filtrar axes: excluir items cuya columna efectiva no existe en this.cols (p.ej. nav-children
+            // que fueron excluidos de los campos efectivos de la query).
+            const navSub = this.navColumnSubstitution || {};
+            const effectiveXNames = new Set<string>();
+            const filteredItemX = axes[0].itemX.filter((x: any) => {
+                const eff = navSub[x.column_name] || x.column_name;
+                if (this.cols.some(c => c.field === eff)) { effectiveXNames.add(eff); return true; }
+                return false;
+            });
+            const filteredItemY = axes[0].itemY.filter((y: any) => {
+                const eff = navSub[y.column_name] || y.column_name;
+                return this.cols.some(c => c.field === eff) && !effectiveXNames.has(eff);
+            });
+            const filteredAxes = [{ ...axes[0], itemX: filteredItemX, itemY: filteredItemY }];
+
             const newSeriesLabels = [];
             axes[0].itemZ.forEach(e => {
                 newSeriesLabels.push(e.column_name)
             });
 
             newSeriesLabels.forEach((serie, index) => {
-                let colsRows = this.buildCrossSerie(index, axes)
+                let colsRows = this.buildCrossSerie(index, filteredAxes)
                 rowsToMerge.push(colsRows.rows);
                 colsToMerge.push(colsRows.cols);
                 if (index === 0) {
@@ -979,13 +995,13 @@ export class EdaTable {
             newLabels.metricsLabels = colsInfo.numericLabels;
             newLabels.metricsDescriptions = colsInfo.numericDescriptions;
             newLabels.textDescriptions = colsInfo.textDescriptions;
-            newLabels.axes = axes;
+            newLabels.axes = filteredAxes;
 
-            this._value = this.mergeCrossRows(rowsToMerge, axes); // Nueva función que genera las filas de la tabla cruzada
-            this.cols = this.mergeCrossColumns(colsToMerge, axes); // Nueva función que genera las columnas de la tabla cruzada
+            this._value = this.mergeCrossRows(rowsToMerge, filteredAxes); // Nueva función que genera las filas de la tabla cruzada
+            this.cols = this.mergeCrossColumns(colsToMerge, filteredAxes); // Nueva función que genera las columnas de la tabla cruzada
             this.buildCrossHeaders(newLabels, colsInfo); // Nueva función para la creación de los encabezados
 
-            return 
+            return
         }
 
         seriesLabels.forEach((serie, index) => {
@@ -1472,13 +1488,16 @@ export class EdaTable {
             })
         });
 
+        const navSub = this.navColumnSubstitution || {};
+
         //get pivot columns
         const pivotCols = [];
         const pivotColsLabels = [];
 
         this.cols.forEach(e => {
             axes[0].itemY.forEach(y => {
-                if(e.field === y.column_name) {
+                const effectiveName = navSub[y.column_name] || y.column_name;
+                if(e.field === effectiveName) {
                     pivotCols.push(e);
                     pivotColsLabels.push(e.field)
                 }
@@ -1491,7 +1510,8 @@ export class EdaTable {
 
         this.cols.forEach(e => {
             axes[0].itemX.forEach(x => {
-                if(e.field === x.column_name) {
+                const effectiveName = navSub[x.column_name] || x.column_name;
+                if(e.field === effectiveName) {
                     mainCols.push(e);
                     mainColsLabels.push(e.field)
                 }
@@ -1500,8 +1520,14 @@ export class EdaTable {
 
         //get distinct values of pivot columns (new-columns names)
         const newCols = [];
-        axes[0].itemX.forEach(e => newCols.push(_.orderBy(_.uniq(_.map(this.value, e.column_name)))));
-        axes[0].itemY.forEach(e => newCols.push(_.orderBy(_.uniq(_.map(this.value, e.column_name)))));
+        axes[0].itemX.forEach(e => {
+            const effectiveName = navSub[e.column_name] || e.column_name;
+            newCols.push(_.orderBy(_.uniq(_.map(this.value, effectiveName))));
+        });
+        axes[0].itemY.forEach(e => {
+            const effectiveName = navSub[e.column_name] || e.column_name;
+            newCols.push(_.orderBy(_.uniq(_.map(this.value, effectiveName))));
+        });
 
         // Sort each X-axis dimension (rows) and each Y-axis dimension (columns) by their
         // aggregate metric total instead of alphabetically.  X dimensions occupy newCols[0..nX-1]
@@ -1509,11 +1535,13 @@ export class EdaTable {
         if (this.crossSortOrder === 'value' || this.crossSortOrder === 'valueAsc') {
             const descending = this.crossSortOrder === 'value';
             axes[0].itemX.forEach((e: any, i: number) => {
-                newCols[i] = this.sortValuesByTotal(newCols[i], e.column_name, oldRows, aggregatedColLabels, descending);
+                const effectiveName = navSub[e.column_name] || e.column_name;
+                newCols[i] = this.sortValuesByTotal(newCols[i], effectiveName, oldRows, aggregatedColLabels, descending);
             });
             axes[0].itemY.forEach((e: any, j: number) => {
+                const effectiveName = navSub[e.column_name] || e.column_name;
                 newCols[axes[0].itemX.length + j] = this.sortValuesByTotal(
-                    newCols[axes[0].itemX.length + j], e.column_name, oldRows, aggregatedColLabels, descending
+                    newCols[axes[0].itemX.length + j], effectiveName, oldRows, aggregatedColLabels, descending
                 );
             });
         }
@@ -1543,13 +1571,15 @@ export class EdaTable {
 
         let mains = [];
 
+        const _navSub = this.navColumnSubstitution || {};
         labels.axes[0].itemX.forEach((e, j) => {
             const colName = labels.axes[0].itemX[j].column_name;
-            const matchingCol = this.cols.find(c => c.field === colName);
+            const effectiveName = _navSub[colName] || colName;
+            const matchingCol = this.cols.find(c => c.field === effectiveName);
             mains.push({
-                title: labels.axes[0].itemX[j].description,
-                column: colName,
-                rowspan: numRows, colspan: 1, sortable: true, description: labels.axes[0].itemX[j].description,
+                title: matchingCol?.header || labels.axes[0].itemX[j].description,
+                column: effectiveName,
+                rowspan: numRows, colspan: 1, sortable: true, description: matchingCol?.header || labels.axes[0].itemX[j].description,
                 rangeOption: matchingCol?.rangeOption || false
             })
         });

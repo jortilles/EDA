@@ -1,6 +1,6 @@
 <eda-dialog2
   [display]="display"
-  header="Pregúntale a Edalitics" i18n-header="@@askEdaliticsText" width="55vw" height="90vh"
+  width="55vw" height="90vh"
   [disableApply]="disableApply()"
   draggable=true
   (apply)="onApply()"
@@ -8,60 +8,124 @@
   class="cursor-move"
 >
 
-  <div content class="p-3 lg:p-6 h-[75vh] lg:h-[80vh] flex flex-col overflow-x-hidden">
-    <div class="flex-1 bg-gray-100 h-full flex justify-center p-2 lg:p-4 overflow-hidden overflow-x-hidden">
-      <div class="w-full bg-white rounded-xl shadow-md p-3 lg:p-6 flex flex-col gap-2 lg:gap-4 h-auto overflow-x-hidden">
+  <div header class="flex items-center gap-3">
+    <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background-color: #00BFB3">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-5l-3 3v-3z"/>
+      </svg>
+    </div>
+    <div class="flex flex-col leading-tight">
+      <span class="text-base font-semibold text-gray-800">
+        <span i18n="@@askEdaliticsPrefix">Pregúntale a </span><span style="color: #00BFB3">Edalitics</span>
+      </span>
+      <span class="text-xs text-gray-400 font-normal" i18n="@@askEdaliticsSubtitle">Análisis de datos con IA</span>
+    </div>
+  </div>
 
-        <!-- Contenedor scrollable para mensajes -->
-        <div #messageContainer class="flex-1 overflow-y-auto space-y-2 pr-1 lg:pr-2">
+  <div content class="h-[75vh] lg:h-[80vh] flex flex-col overflow-hidden p-3 lg:p-4 bg-gray-100" style="border-radius: 2%">
+    <div class="w-full bg-white rounded-xl shadow-md flex flex-col flex-1 overflow-hidden">
 
-          @if(messages.length === 0){
-            <p class="text-base lg:text-lg text-gray-400 text-center mt-8 px-6 select-none" i18n="@@askPanelData">
-              Pregunta sobre los datos de tu panel...
-            </p>
-          }
+      <!-- Contenedor scrollable para mensajes -->
+      <div #messageContainer class="messages-area flex-1 overflow-y-auto space-y-3 p-5">
 
-          <div *ngFor="let msg of messages"
-          class="text-sm lg:text-base h-auto animate-in fade-in slide-in-from-bottom duration-300">
-            <div
-              [ngClass]="{
-                'bg-blue-500 text-white justify-self-end': msg.sender === 'user',
-                'bg-gray-200 text-gray-900 justify-self-start': msg.sender === 'bot'
-              }"
-              class="rounded-xl px-3 py-1.5 lg:px-4 lg:py-2 max-w-[85%] lg:max-w-xl w-fit break-words"
-            >
-              {{ msg.content }}
+        @if(!dataChatGpt?.values?.length){
+          <div class="flex flex-col items-center justify-center h-full gap-4 select-none px-8 text-center">
+            <div class="w-14 h-14 rounded-full flex items-center justify-center" style="background-color: #e6f9f8">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="#00BFB3" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2a4 4 0 0 1 4-4h0a4 4 0 0 1 4 4v2M9 17H5a2 2 0 0 1-2-2v-1a4 4 0 0 1 4-4h.5M15 17h4a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-.5M12 7a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+              </svg>
+            </div>
+            <div>
+              <p i18n="@@noDataAvailable" class="text-gray-700 font-semibold text-base">Sin datos disponibles</p>
+              <p i18n="@@noDataChatMessage" class="text-gray-400 text-sm mt-1">Para utilizar este chat necesitas tener un panel con datos seleccionado.</p>
             </div>
           </div>
+        } @else if(messages.length === 0){
+          <p class="text-base lg:text-lg text-gray-400 text-center mt-8 px-6 select-none" i18n="@@askPanelData">
+            Pregunta sobre los datos de tu panel...
+          </p>
+        }
 
-          <!-- Indicador de carga -->
-          @if(loading){
-            <div class="text-gray-500 text-sm lg:text-base italic animate-pulse self-start pl-6 lg:pl-14 break-words max-w-[70%] overflow-x-hidden">
-              <span i18n="@@escribiendo">Escribiendo...</span>
+        @for (msg of messages; track $index) {
+          <div
+            class="flex text-sm lg:text-base animate-in fade-in slide-in-from-bottom duration-300"
+            [class.justify-end]="msg.sender === 'user'"
+            [class.justify-start]="msg.sender === 'bot'">
+
+            <div class="group relative"
+              [class.max-w-[75%]]="msg.sender === 'user'"
+              [class.max-w-[90%]]="msg.sender === 'bot'">
+
+              <div
+                [ngClass]="{
+                  'user-bubble text-white': msg.sender === 'user',
+                  'bg-gray-200 text-gray-900': msg.sender === 'bot'
+                }"
+                class="rounded-xl px-3 py-1.5 lg:px-4 lg:py-2 break-words"
+              >
+                <span *ngIf="msg.sender === 'user'">{{ msg.content }}</span>
+                <div *ngIf="msg.sender === 'bot'" class="markdown-content" [innerHTML]="renderMarkdown(msg.content)"></div>
+              </div>
+
+              <!-- Botón copiar -->
+              <button
+                (click)="copyMessage(msg)"
+                title="Copiar" i18n-title="@@copyToClipboard"
+                class="copy-btn absolute -bottom-5 opacity-0 group-hover:opacity-100 transition-opacity p-0.5"
+                [class.right-0]="msg.sender === 'bot'"
+                [class.left-0]="msg.sender === 'user'">
+                <svg *ngIf="!msg.copied" xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2m-6 12h8a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-8a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2z"/>
+                </svg>
+                <svg *ngIf="msg.copied" xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                </svg>
+              </button>
             </div>
-          }
-        </div>
+          </div>
+        }
 
-        <!-- Formulario fijo abajo -->
-        <form (ngSubmit)="sendMessage()" class="flex gap-2 items-center pt-1 lg:pt-2">
-          <input
+        <!-- Indicador de carga -->
+        @if(loading){
+          <div class="flex justify-start">
+            <div class="bg-gray-100 rounded-xl px-4 py-3">
+              <div class="dot-wave flex gap-1.5 items-center h-4">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Formulario fijo abajo -->
+      <div class="border-t border-gray-200 px-4 py-3">
+        <form (ngSubmit)="sendMessage()" class="flex gap-2 items-end">
+          <textarea
             #chatInput
             [(ngModel)]="userInput"
             name="chatInput"
-            class="flex-1 border rounded-full px-3 py-1.5 lg:px-4 lg:py-2 text-sm lg:text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+            rows="1"
+            (keydown)="onKeydown($event)"
+            (input)="autoResize($event)"
+            [disabled]="!dataChatGpt?.values?.length"
+            class="flex-1 border rounded-2xl px-4 py-2 text-sm lg:text-base focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3] resize-none overflow-hidden leading-relaxed disabled:bg-gray-50 disabled:cursor-not-allowed"
             i18n-placeholder="@@escribeMensaje"
             placeholder="Escribe tu mensaje..."
             autocomplete="off"
-          />
+          ></textarea>
           <button
             type="submit"
-            [disabled]="loading"
-            class="bg-blue-500 text-white px-3 py-1.5 lg:px-4 lg:py-2 text-sm lg:text-base rounded-full hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
-            <span i18n="@@enviar">Enviar</span>
+            [disabled]="loading || !userInput.trim() || !dataChatGpt?.values?.length"
+            class="send-btn flex items-center justify-center w-9 h-9 rounded-full transition disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
           </button>
         </form>
-
+        <p i18n="@@ctrlEnterToSend" class="text-xs text-gray-400 mt-1.5 ml-1 select-none">Ctrl+Enter para enviar</p>
       </div>
+
     </div>
   </div>
 </eda-dialog2>

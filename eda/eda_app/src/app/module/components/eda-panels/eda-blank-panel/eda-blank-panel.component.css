@@ -10,6 +10,10 @@
   content: '×';
 }
 
+::ng-deep .preview-table-wrapper td {
+  cursor: auto !important;
+}
+
 ::ng-deep .p-tabview {
   height: 100%;
 }
