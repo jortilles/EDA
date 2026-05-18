@@ -3,8 +3,8 @@
     background-color: #fff; 
     margin-top: 5px;
     padding: 2px;
-    border-radius: 10px;
-    border: 2px solid #d1e7dd;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(var(--corporate-primary-rgb), 0.5);
 }
 
 .gridster {
@@ -27,7 +27,7 @@
 }
 
 .gridster-item:hover {
-    background-color: #9AEAD7;
+    background-color: rgba(var(--corporate-primary-rgb), 0.5);
 }
 
 
@@ -55,10 +55,10 @@
 }
 
 ::ng-deep gridster.display-grid .gridster-column {
-  border-left-color: #d1e7dd !important;
-  border-right-color: #d1e7dd !important;
+  border-left-color: rgba(var(--corporate-primary-rgb), 0.5) !important;
+  border-right-color: rgba(var(--corporate-primary-rgb), 0.5) !important;
 }
 ::ng-deep gridster.display-grid .gridster-row {
-  border-top-color: #d1e7dd !important;
-  border-bottom-color: #d1e7dd !important;
+  border-top-color: rgba(var(--corporate-primary-rgb), 0.5) !important;
+  border-bottom-color: rgba(var(--corporate-primary-rgb), 0.5) !important;
 }
