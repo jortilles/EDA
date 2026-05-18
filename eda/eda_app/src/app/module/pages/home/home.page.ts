@@ -16,13 +16,14 @@ import * as _ from 'lodash';
 import { CommonModule } from '@angular/common';
 import { EdaDatePickerComponent } from '@eda/shared/components/eda-date-picker/eda-date-picker.component';
 import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/datePickerConfig';
+import { DropdownModule } from 'primeng/dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { CORPORATE_COLORS } from '@eda/configs/index';
 
 @Component({
   selector: 'app-v2-home-page',
   standalone: true,
-  imports: [FormsModule, NgTemplateOutlet, IconComponent, CommonModule, EdaDatePickerComponent, MultiSelectModule],
+  imports: [FormsModule, NgTemplateOutlet, IconComponent, CommonModule, EdaDatePickerComponent, DropdownModule, MultiSelectModule],
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.css']
 })
@@ -89,6 +90,11 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   editingReportId: string | null = null;
   editTitle: string = '';
   sortingType: string = sessionStorage.getItem('homeSorting') || 'name';
+  readonly sortOptions = [
+    { label: $localize`:@@name:Nombre`, value: 'name' },
+    { label: $localize`:@@createdAt:Fecha (asc.)`, value: 'dateAsc' },
+    { label: $localize`:@@createdAtDesc:Fecha (desc.)`, value: 'dateDesc' },
+  ];
 
   isArray = Array.isArray;
 
