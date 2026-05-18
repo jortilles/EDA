@@ -429,6 +429,9 @@ export class ColumnDialogComponent {
         newCol.dateNav = this.dateNavEnabled;
         if (this.dateNavEnabled) {
             this.selectedParent = null;
+            // dateNav y downChild son mutuamente excluyentes: si la columna fecha pasa a ser
+            // navegable por fecha, su hijo debe perder el vínculo de padre
+            delete newCol.downChild;
         }
     }
 
