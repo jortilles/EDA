@@ -55,11 +55,10 @@
     <button (click)="setPage(currentPage - 1)" [disabled]="currentPage === 1" class="paginator-btn flex items-center justify-center w-12 h-12 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors disabled:opacity-40 disabled:pointer-events-none">
       <eda-icon name="chevron-left" size="sm"></eda-icon>
     </button>
-    <select [ngModel]="currentPage" (ngModelChange)="setPage(+$event)" class="h-12 mx-2 border border-gray-300 rounded-md px-2 text-sm font-semibold text-gray-700 bg-white">
-      @for (page of pageNumbers; track page) {
-        <option [value]="page">{{ page }}</option>
-      }
-    </select>
+    <p-dropdown class="paginator-dropdown mx-2"
+      [ngModel]="currentPage" (onChange)="setPage($event.value)"
+      [options]="pageNumbers" appendTo="body">
+    </p-dropdown>
     <span class="text-sm font-semibold px-1">/ {{ totalPages() }}</span>
     <button (click)="setPage(currentPage + 1)" [disabled]="currentPage === totalPages()" class="paginator-btn flex items-center justify-center w-12 h-12 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors disabled:opacity-40 disabled:pointer-events-none">
       <eda-icon name="chevron-right" size="sm"></eda-icon>
@@ -67,13 +66,10 @@
     <button (click)="setPage(totalPages())" [disabled]="currentPage === totalPages()" class="paginator-btn flex items-center justify-center w-12 h-12 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors disabled:opacity-40 disabled:pointer-events-none">
       <eda-icon name="chevron-double-right" size="sm"></eda-icon>
     </button>
-    <select [ngModel]="itemsPerPage" (ngModelChange)="itemsPerPage = +$event; setPage(1)" class="h-12 mx-2 ml-4 border border-gray-300 rounded-md px-2 text-sm text-gray-700 bg-white">
-      <option [value]="5">5</option>
-      <option [value]="10">10</option>
-      <option [value]="25">25</option>
-      <option [value]="50">50</option>
-      <option [value]="100">100</option>
-    </select>
+    <p-dropdown class="paginator-dropdown mx-2 ml-4"
+      [ngModel]="itemsPerPage" (onChange)="itemsPerPage = $event.value; setPage(1)"
+      [options]="pageSizeOptions" appendTo="body">
+    </p-dropdown>
   </div>
 </div>
 

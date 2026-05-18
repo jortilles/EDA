@@ -57,6 +57,35 @@
   color: #ffffff;
 }
 
+/* ─── PrimeNG dropdown / listbox item hover ─────────────────────────────── */
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled):hover,
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled).p-focus,
+.p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item:not(.p-highlight):not(.p-disabled):hover,
+.p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item:not(.p-highlight):not(.p-disabled).p-focus,
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item:not(.p-highlight):not(.p-disabled):hover,
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item:not(.p-highlight):not(.p-disabled).p-focus,
+.p-listbox .p-listbox-list .p-listbox-item:not(.p-highlight):not(.p-disabled):hover,
+.p-listbox .p-listbox-list .p-listbox-item:not(.p-highlight):not(.p-disabled).p-focus,
+.p-picklist .p-picklist-list .p-picklist-item:not(.p-highlight):not(.p-disabled):hover,
+.p-picklist .p-picklist-list .p-picklist-item:not(.p-highlight):not(.p-disabled).p-focus {
+  color: var(--corporate-primary) !important;
+  background: rgba(var(--corporate-primary-rgb), 0.08) !important;
+}
+
+/* ─── PrimeNG paginator hover ───────────────────────────────────────────── */
+.p-paginator .p-paginator-first:not(.p-disabled):not(.p-highlight):hover,
+.p-paginator .p-paginator-prev:not(.p-disabled):not(.p-highlight):hover,
+.p-paginator .p-paginator-next:not(.p-disabled):not(.p-highlight):hover,
+.p-paginator .p-paginator-last:not(.p-disabled):not(.p-highlight):hover,
+.p-paginator .p-paginator-pages .p-paginator-page:not(.p-highlight):hover {
+  background: rgba(var(--corporate-primary-rgb), 0.08) !important;
+  color: var(--corporate-primary) !important;
+}
+
+.p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+  color: var(--corporate-primary) !important;
+}
+
 /* ─── PrimeNG focus ring override (lara-light-blue uses hardcoded blue) ─── */
 .p-dropdown:not(.p-disabled).p-focus,
 .p-multiselect:not(.p-disabled).p-focus,
