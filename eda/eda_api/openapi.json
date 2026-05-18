@@ -1,0 +1,2682 @@
+{
+  "info": {
+    "version": "2.0.1",
+    "title": "Enterprise Data Analytics (EDA) Documentation",
+    "description": "API documentation for use",
+    "contact": {
+      "name": "Enterprise Data Analytics (EDA)",
+      "url": "https://eda.jortilles.com/",
+      "mail": "eda@jortilles.com"
+    },
+    "servers": [
+      {
+        "url": "http://edalitics.com/"
+      }
+    ]
+  },
+  "swagger": "2.0",
+  "paths": {
+    "/admin/user/login": {
+      "post": {
+        "description": "Post login with user and password within the request of the form.",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "App user login successful."
+          },
+          "400": {
+            "description": "App user not found or wrong parameters."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        },
+        "tags": [
+          "User Routes"
+        ]
+      }
+    },
+    "/admin/user/{idarray}": {
+      "get": {
+        "description": "Retrieve users by their IDs",
+        "parameters": [
+          {
+            "name": "id array",
+            "in": "path",
+            "required": true,
+            "type": "array"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved all the users stored in the database found by the api."
+          },
+          "401": {
+            "description": "Server error, you are unauthorized."
+          },
+          "500": {
+            "description": "Server error trying to retrieve the user."
+          }
+        },
+        "tags": [
+          "User Routes"
+        ]
+      }
+    },
+    "/admin/user/is-admin/{id}": {
+      "get": {
+        "description": "Return a boolean checking if the user found by the database is administrator.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns true and the user is marked as admin."
+          },
+          "500": {
+            "description": "User not found with this id or error waiting for other groups."
+          }
+        },
+        "tags": [
+          "User Routes"
+        ]
+      }
+    },
+    "/admin/user/is-datasource-creator/{id}": {
+      "get": {
+        "description": "Return a boolean checking if the user found by the database is a datasource creator.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns true and the user is marked as datasource creator"
+          },
+          "500": {
+            "description": "User not found with this id or error waiting for other groups"
+          }
+        },
+        "tags": [
+          "User Routes"
+        ]
+      }
+    },
+    "/admin/user/": {
+      "post": {
+        "description": "Creates the user with the request parameters, if this already exists then it's updated with that information.",
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "name",
+            "description": "User name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "formData",
+            "name": "email",
+            "description": "Email",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "email"
+            }
+          },
+          {
+            "in": "formData",
+            "name": "password",
+            "description": "Password",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "formData",
+            "name": "img",
+            "description": "Image Route",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "formData",
+            "name": "role",
+            "description": "Rol del usuario",
+            "type": "array"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Returns true, creation/updating process successful."
+          },
+          "400": {
+            "description": "An error occurred trying to update nor create."
+          }
+        },
+        "tags": [
+          "User Routes"
+        ]
+      }
+    },
+    "/admin/user/{id}": {
+      "get": {
+        "description": "Retrieves a user from the database found by it's id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns true, the process of returning the user has been successful."
+          },
+          "500": {
+            "description": "Can not find the user or role."
+          }
+        },
+        "tags": [
+          "User Routes"
+        ]
+      },
+      "delete": {
+        "description": "Deletes the user by the requested id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns true, meaning the successful deletion of the user"
+          },
+          "400": {
+            "description": "The user was not found in the deleting process"
+          },
+          "500": {
+            "description": "Can't delete this user"
+          }
+        },
+        "tags": [
+          "User Routes"
+        ]
+      }
+    },
+    "/admin/user/me/{id}": {
+      "put": {
+        "description": "Updates the user with the request parameters. Needs an existing id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "name",
+            "description": "User name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "formData",
+            "name": "email",
+            "description": "Email",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "email"
+            }
+          },
+          {
+            "in": "formData",
+            "name": "password",
+            "description": "Password",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "formData",
+            "name": "img",
+            "description": "Image Route",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "formData",
+            "name": "role",
+            "description": "Roles",
+            "type": "array"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns true and saves the user."
+          },
+          "500": {
+            "description": "Can not find the user/role."
+          }
+        },
+        "tags": [
+          "User Routes"
+        ]
+      }
+    },
+    "/admin/user/management/{id}": {
+      "put": {
+        "description": "At management page, update the user with the request parameters. Needs an existing id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "name",
+            "description": "User name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "formData",
+            "name": "email",
+            "description": "Email",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "email"
+            }
+          },
+          {
+            "in": "formData",
+            "name": "password",
+            "description": "Password",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "formData",
+            "name": "img",
+            "description": "Image Route",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "formData",
+            "name": "role",
+            "description": "Roles",
+            "type": "array"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns true and saves the user."
+          },
+          "500": {
+            "description": "Can not find the user/role."
+          }
+        },
+        "tags": [
+          "User Routes"
+        ]
+      }
+    },
+    "/admin/groups/": {
+      "get": {
+        "description": "Gets the list of all existing groups",
+        "responses": {
+          "200": {
+            "description": "Returns successfully the list of the groups."
+          },
+          "500": {
+            "description": "Server error trying to load the list of groups."
+          }
+        },
+        "tags": [
+          "Group Routes"
+        ]
+      },
+      "post": {
+        "description": "Create a new security group by request parameters",
+        "parameters": [
+          {
+            "name": "group",
+            "in": "body",
+            "required": true,
+            "type": "object"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Group created successfully"
+          },
+          "400": {
+            "description": "An error occurred trying to create the group"
+          }
+        },
+        "tags": [
+          "Group Routes"
+        ]
+      }
+    },
+    "/admin/groups/mine": {
+      "get": {
+        "description": "Gets all the groups where the logged user belongs",
+        "responses": {
+          "200": {
+            "description": "Returns the groups where the current user belongs"
+          },
+          "500": {
+            "description": "Error trying to load the groups"
+          }
+        },
+        "tags": [
+          "Group Routes"
+        ]
+      }
+    },
+    "/admin/groups/{id}": {
+      "get": {
+        "description": "Get a group by its database id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the group by the given id"
+          },
+          "400": {
+            "description": "Error trying to load the group, does the group exist?"
+          }
+        },
+        "tags": [
+          "Group Routes"
+        ]
+      },
+      "put": {
+        "description": "Modify an existing security group by request parameters",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "group",
+            "in": "body",
+            "required": true,
+            "type": "object"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Group saved successfully"
+          },
+          "400": {
+            "description": "The id given was not found in the groups table"
+          },
+          "500": {
+            "description": "Server error trying to find the group by the given id"
+          }
+        },
+        "tags": [
+          "Group Routes"
+        ]
+      },
+      "delete": {
+        "description": "Delete a security group by its current database id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Group has been successfully erased"
+          },
+          "400": {
+            "description": "Group hasn't been found"
+          },
+          "500": {
+            "description": "A server error occcurred trying to delete the group"
+          }
+        },
+        "tags": [
+          "Group Routes"
+        ]
+      }
+    },
+    "/admin/log-file": {
+      "get": {
+        "description": "Returns the current application access log file content. Requires authentication.",
+        "responses": {
+          "200": {
+            "description": "Log file content returned successfully."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "500": {
+            "description": "Server error reading the log file."
+          }
+        },
+        "tags": [
+          "Admin Log Routes"
+        ]
+      }
+    },
+    "/admin/log-error-file": {
+      "get": {
+        "description": "Returns the current application error log file content. Requires authentication.",
+        "responses": {
+          "200": {
+            "description": "Error log file content returned successfully."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "500": {
+            "description": "Server error reading the error log file."
+          }
+        },
+        "tags": [
+          "Admin Log Routes"
+        ]
+      }
+    },
+    "/dashboard/": {
+      "get": {
+        "description": "get all dashboards",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "description": "authorization token"
+          },
+          {
+            "in": "query",
+            "name": "tags",
+            "type": "string",
+            "required": false,
+            "description": "dashboard tags"
+          },
+          {
+            "in": "query",
+            "name": "external",
+            "type": "object",
+            "required": false,
+            "description": "dashboard external tags"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns all dashboards"
+          },
+          "400": {
+            "description": "returns error to load dashboards"
+          }
+        },
+        "tags": [
+          "Dashboard Routes"
+        ]
+      },
+      "post": {
+        "description": "create new dashboard",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "description": "authorization token"
+          },
+          {
+            "in": "body",
+            "name": "new dashboard",
+            "description": "introduce body for new dashboard",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "config": {
+                  "type": "object",
+                  "properties": {
+                    "ds": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "INTRODUCE VALID DATASOURCE _id"
+                        }
+                      }
+                    },
+                    "external": {
+                      "type": "object",
+                      "example": {}
+                    },
+                    "refreshTime": {
+                      "type": "number",
+                      "example": null
+                    },
+                    "styles": {
+                      "type": "object",
+                      "properties": {
+                        "backgroundColor": {
+                          "type": "string",
+                          "example": "#f1f0f0"
+                        },
+                        "customCss": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "filters": {
+                          "type": "object",
+                          "properties": {
+                            "fontColor": {
+                              "type": "string",
+                              "example": "#455a64"
+                            },
+                            "fontSize": {
+                              "type": "number",
+                              "example": 0
+                            },
+                            "fontFamily": {
+                              "type": "string",
+                              "example": "Questrial"
+                            }
+                          }
+                        },
+                        "panelColor": {
+                          "type": "string",
+                          "example": "#ffffff"
+                        },
+                        "panelContent": {
+                          "type": "object",
+                          "properties": {
+                            "fontColor": {
+                              "type": "string",
+                              "example": "#455a64"
+                            },
+                            "fontSize": {
+                              "type": "number",
+                              "example": 0
+                            },
+                            "fontFamily": {
+                              "type": "string",
+                              "example": "Questrial"
+                            }
+                          }
+                        },
+                        "panelTitle": {
+                          "type": "object",
+                          "properties": {
+                            "fontColor": {
+                              "type": "string",
+                              "example": "#455a64"
+                            },
+                            "fontSize": {
+                              "type": "number",
+                              "example": 0
+                            },
+                            "fontFamily": {
+                              "type": "string",
+                              "example": "Questrial"
+                            }
+                          }
+                        },
+                        "panelTitleAlign": {
+                          "type": "string",
+                          "example": "left"
+                        },
+                        "titleAlign": {
+                          "type": "string",
+                          "example": "center"
+                        },
+                        "title": {
+                          "type": "object",
+                          "properties": {
+                            "fontColor": {
+                              "type": "string",
+                              "example": "#455a64"
+                            },
+                            "fontSize": {
+                              "type": "number",
+                              "example": 0
+                            },
+                            "fontFamily": {
+                              "type": "string",
+                              "example": "Questrial"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "title": {
+                      "type": "string",
+                      "example": "new_dashboard"
+                    },
+                    "visible": {
+                      "type": "string",
+                      "example": "private"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "returns ok and creates dashboard"
+          },
+          "400": {
+            "description": "returns error at creating dashboard"
+          }
+        },
+        "tags": [
+          "Dashboard Routes"
+        ]
+      }
+    },
+    "/dashboard/{id}": {
+      "get": {
+        "description": "returns dashboard by parameter",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "description": "authorization token"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "dashboard id"
+          },
+          {
+            "in": "query",
+            "name": "cnproperties",
+            "type": "object",
+            "required": false,
+            "description": "Properties to be pushed to the database connection"
+          },
+          {
+            "in": "query",
+            "name": "hideWheel",
+            "type": "boolean",
+            "required": false,
+            "description": "booolean (true/false) to inform to hide the control wheel"
+          },
+          {
+            "in": "query",
+            "name": "panelMode",
+            "type": "boolean",
+            "required": false,
+            "description": "booolean (true/false) to inform show only panels"
+          },
+          {
+            "in": "query",
+            "name": "cnproperties",
+            "type": "object",
+            "required": false,
+            "description": "Properties to be pushed to the database connection"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns dashboard"
+          },
+          "500": {
+            "description": "returns error on load dashboard, being by permit or not existing"
+          }
+        },
+        "tags": [
+          "Dashboard Routes"
+        ]
+      }
+    },
+    "/dashboard/query": {
+      "post": {
+        "description": "execute the query of the panel",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "Authentication token",
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "body",
+            "required": true,
+            "type": "object",
+            "description": "Query configuration"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns ok"
+          },
+          "500": {
+            "description": "returns error at querying by permisos o by consult error"
+          }
+        },
+        "tags": [
+          "Dashboard Routes"
+        ]
+      }
+    },
+    "/dashboard/getQuey": {
+      "post": {
+        "description": "returns the panel query",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "Authentication token",
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "body",
+            "required": true,
+            "type": "object",
+            "description": "Query configuration"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns ok"
+          },
+          "500": {
+            "description": "returns error by permisos or query error"
+          }
+        },
+        "tags": [
+          "Dashboard Routes"
+        ]
+      }
+    },
+    "/dashboard/sql-query": {
+      "post": {
+        "description": "executes a query from SQL mode",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "Authentication token",
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "body",
+            "required": true,
+            "type": "object",
+            "description": "Query configuration"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns ok"
+          },
+          "500": {
+            "description": "returns error by permisos or query error"
+          }
+        },
+        "tags": [
+          "Dashboard Routes"
+        ]
+      }
+    },
+    "/dashboard/view-query": {
+      "post": {
+        "description": "creates the SQL query from panel",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "Authentication token",
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "body",
+            "required": true,
+            "type": "object",
+            "description": "Query configuration"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns ok"
+          },
+          "500": {
+            "description": "returns error  by permisos or query error"
+          }
+        },
+        "tags": [
+          "Dashboard Routes"
+        ]
+      }
+    },
+    "/dashboard/:id": {
+      "put": {
+        "description": "update / save dashboard",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "id",
+            "required": true,
+            "schema": null,
+            "type": "string",
+            "description": "ID del deshaboard a actualizar"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Dashboard no existente"
+          },
+          "500": {
+            "description": "Error debido a permisos o error de consulta"
+          }
+        },
+        "tags": [
+          "Dashboard Routes"
+        ]
+      },
+      "delete": {
+        "description": "erase dashboard",
+        "responses": {
+          "200": {
+            "description": "returns ok"
+          },
+          "400": {
+            "description": "dashboard non existenting"
+          },
+          "500": {
+            "description": "returns error  by permisos or query error"
+          }
+        },
+        "tags": [
+          "Dashboard Routes"
+        ]
+      }
+    },
+    "/datasource/": {
+      "get": {
+        "description": "Get all existing data sources in the current database",
+        "responses": {
+          "200": {
+            "description": "Returns all existing dashboards"
+          },
+          "404": {
+            "description": "Error loading datasources"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tags",
+            "type": "string",
+            "required": false,
+            "description": "datasource tags"
+          }
+        ],
+        "tags": [
+          "DataSource Routes"
+        ]
+      }
+    },
+    "/datasource/names": {
+      "get": {
+        "description": "Get all data sources names in the current database",
+        "parameters": [
+          {
+            "name": "token",
+            "description": "Authentication token",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns all dashboard names"
+          },
+          "500": {
+            "description": "Error loading datasources"
+          }
+        },
+        "tags": [
+          "DataSource Routes"
+        ]
+      }
+    },
+    "/datasource/namesForDashboard": {
+      "get": {
+        "description": "Get all the data sources names for each dashboard, filtered by permits and current users",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "Authentication token",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "external",
+            "in": "query",
+            "type": "object",
+            "required": false,
+            "description": "external value"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns all available dashboard names"
+          },
+          "500": {
+            "description": "Error loading data sources"
+          }
+        },
+        "tags": [
+          "DataSource Routes"
+        ]
+      }
+    },
+    "/datasource/namesForEdit": {
+      "get": {
+        "description": "Get all data sources names for dashboard, filtered by permits and users",
+        "parameters": [
+          {
+            "name": "token",
+            "description": "Authentication token",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns all dashboards names available"
+          },
+          "500": {
+            "description": "Error loading datasources"
+          }
+        },
+        "tags": [
+          "DataSource Routes"
+        ]
+      }
+    },
+    "/datasource/check-connection": {
+      "get": {
+        "description": "Checks the connection with the current database",
+        "parameters": [
+          {
+            "name": "token",
+            "description": "Authentication token",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful connection with the database"
+          },
+          "500": {
+            "description": "Can´t connect to the database"
+          }
+        },
+        "tags": [
+          "DataSource Routes"
+        ]
+      }
+    },
+    "/datasource/check-connection/{id}": {
+      "get": {
+        "description": "Checks the connection with the current database for one specific datasource",
+        "parameters": [
+          {
+            "name": "token",
+            "description": "Authentication token",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns okay, successful connection with the database and datasource"
+          },
+          "500": {
+            "description": "Can't connect with the current database"
+          }
+        },
+        "tags": [
+          "DataSource Routes"
+        ]
+      }
+    },
+    "/datasource/{id}": {
+      "get": {
+        "description": "Get datasource by id parameter",
+        "parameters": [
+          {
+            "name": "token",
+            "description": "Authentication token",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns ok"
+          },
+          "404": {
+            "description": "Can´t find datasource"
+          }
+        },
+        "tags": [
+          "DataSource Routes"
+        ]
+      },
+      "put": {
+        "description": "Put a new datasource or update an existing one.",
+        "parameters": [
+          {
+            "name": "token",
+            "description": "Authentication token",
+            "type": "string"
+          },
+          {
+            "name": "ds",
+            "description": "An Edalitics datasource. See (https://doc.edalitics.com/en/index.html#/modelo_de_datos?id=eda39s-data-model)",
+            "in": "body",
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Datasource successfully updated"
+          },
+          "500": {
+            "description": "Datasource not found, error trying to remove this datasource"
+          }
+        },
+        "tags": [
+          "DataSource Routes"
+        ]
+      },
+      "delete": {
+        "description": "Remove a datasource",
+        "parameters": [
+          {
+            "name": "token",
+            "description": "Authentication token",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Datasource updated"
+          },
+          "500": {
+            "description": "Datasource not found"
+          }
+        },
+        "tags": [
+          "DataSource Routes"
+        ]
+      }
+    },
+    "/datasource/add-data-source": {
+      "post": {
+        "description": "Add a new datasource of any type",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "Authentication token",
+            "type": "string"
+          },
+          {
+            "name": "datasource",
+            "in": "body",
+            "required": true,
+            "type": "object",
+            "description": "Create a new datasource",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "example": "mysql?, postgres?, vertica?, sqlserver?, oracle?, bigquery?, snowflake?, jsonwebservice?"
+                },
+                "host": {
+                  "type": "string"
+                },
+                "database": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "number"
+                },
+                "user": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "warehouse": {
+                  "type": "string",
+                  "example": null
+                },
+                "schema": {
+                  "type": "string",
+                  "example": null
+                },
+                "poolLimit": {
+                  "type": "number",
+                  "example": null
+                },
+                "sid": {
+                  "type": "number",
+                  "example": 1
+                },
+                "optimize": {
+                  "type": "number",
+                  "example": 0
+                },
+                "allowCache": {
+                  "type": "number",
+                  "example": 1
+                },
+                "ssl": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "filter": {
+                  "type": "string",
+                  "example": null
+                },
+                "external": {
+                  "type": "object",
+                  "example": {
+                    "": ""
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Creation of the new datasource successful"
+          },
+          "500": {
+            "description": "Error trying to create the new datasource"
+          }
+        },
+        "tags": [
+          "DataSource Routes"
+        ]
+      }
+    },
+    "/datasource/query": {
+      "post": {
+        "description": "Executes the query from the given panel",
+        "parameters": [
+          {
+            "name": "token",
+            "description": "Authentication token",
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "body",
+            "required": true,
+            "type": "object"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns ok, the query has been executed"
+          },
+          "500": {
+            "description": "Returns error at querying, check your permissions and query syntax"
+          }
+        },
+        "tags": [
+          "DataSource Routes"
+        ]
+      }
+    },
+    "/datasource/reload/{id}": {
+      "post": {
+        "description": "Refresh the datasource by it's id",
+        "parameters": [
+          {
+            "name": "token",
+            "description": "Authentication token",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns ok"
+          },
+          "500": {
+            "description": "Error trying to refresh the datasource"
+          }
+        },
+        "tags": [
+          "DataSource Routes"
+        ]
+      }
+    },
+    "/datasource/remove-cache": {
+      "post": {
+        "description": "Remove cache from model id",
+        "parameters": [
+          {
+            "name": "token",
+            "description": "Authentication token",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns ok"
+          }
+        },
+        "tags": [
+          "DataSource Routes"
+        ]
+      }
+    },
+    "/query/analized": {
+      "post": {
+        "description": "executes a query from SQL mode",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "Authentication token",
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "body",
+            "required": true,
+            "type": "object",
+            "description": "Query configuration"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns ok"
+          },
+          "500": {
+            "description": "returns error by permisos or query error"
+          }
+        },
+        "tags": [
+          "Dashboard Routes"
+        ]
+      }
+    },
+    "/excel-sheets/add-json-data-source": {
+      "post": {
+        "description": "Adds/updates the excel sheet object passed within the body/form, checking by the name field.",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "excelsheet",
+            "in": "body",
+            "required": true,
+            "type": "object"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Creation/Update of the excel sheet successfull"
+          },
+          "500": {
+            "description": "Error trying to create the new excel sheet"
+          }
+        },
+        "tags": [
+          "Excel Sheets Routes"
+        ]
+      }
+    },
+    "/excel-sheets/update-json-data-source/{id}": {
+      "put": {
+        "description": "Updates an existing Excel/JSON datasource collection by its ID. Requires admin role.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the Excel datasource to update"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "description": "Updated Excel sheet data and configuration"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Excel datasource updated successfully."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "403": {
+            "description": "Forbidden - admin role required."
+          },
+          "500": {
+            "description": "Server error updating Excel datasource."
+          }
+        },
+        "tags": [
+          "Excel Sheets Routes"
+        ]
+      }
+    },
+    "/excel-sheets/existent-json-data-source": {
+      "post": {
+        "description": "Checks whether an Excel/JSON datasource with the given name already exists in the system. Requires admin role.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the Excel datasource to check for existence"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns boolean indicating whether the datasource exists."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "403": {
+            "description": "Forbidden - admin role required."
+          },
+          "500": {
+            "description": "Server error checking Excel datasource existence."
+          }
+        },
+        "tags": [
+          "Excel Sheets Routes"
+        ]
+      }
+    },
+    "/assistant/response": {
+      "post": {
+        "description": "Sends a natural language query to the AI assistant and returns a response with data or chart suggestions.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "query": {
+                  "type": "string",
+                  "description": "The natural language question to send to the AI assistant"
+                },
+                "datasource": {
+                  "type": "string",
+                  "description": "The datasource ID to query against"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "AI response returned successfully."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "500": {
+            "description": "Server error processing the AI request."
+          }
+        },
+        "tags": [
+          "AI Assistant Routes"
+        ]
+      }
+    },
+    "/assistant/available": {
+      "get": {
+        "description": "Checks if the AI assistant is available and configured with a valid API key.",
+        "responses": {
+          "200": {
+            "description": "Returns availability status of the AI assistant."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          }
+        },
+        "tags": [
+          "AI Assistant Routes"
+        ]
+      }
+    },
+    "/assistant/prompt": {
+      "post": {
+        "description": "Sends a custom prompt to the AI assistant for advanced query generation.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "prompt": {
+                  "type": "string",
+                  "description": "Custom prompt text"
+                },
+                "datasource": {
+                  "type": "string",
+                  "description": "The datasource ID to use as context"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Prompt processed and response returned."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "500": {
+            "description": "Server error processing the prompt."
+          }
+        },
+        "tags": [
+          "AI Assistant Routes"
+        ]
+      }
+    },
+    "/assistant/suggestions": {
+      "post": {
+        "description": "Requests AI-generated chart type suggestions based on the current query and data context.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "query": {
+                  "type": "string",
+                  "description": "Current query context for chart suggestion"
+                },
+                "data": {
+                  "type": "object",
+                  "description": "Sample data to base suggestions on"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chart suggestions returned successfully."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "500": {
+            "description": "Server error generating suggestions."
+          }
+        },
+        "tags": [
+          "AI Assistant Routes"
+        ]
+      }
+    },
+    "/assistant/config": {
+      "get": {
+        "description": "Retrieves the current AI assistant configuration (model, API key status, availability).",
+        "responses": {
+          "200": {
+            "description": "AI configuration returned successfully."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          }
+        },
+        "tags": [
+          "AI Assistant Routes"
+        ]
+      },
+      "post": {
+        "description": "Saves the AI assistant configuration including API key, model selection and other settings.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "apiKey": {
+                  "type": "string",
+                  "description": "AI provider API key"
+                },
+                "model": {
+                  "type": "string",
+                  "description": "AI model identifier to use"
+                },
+                "available": {
+                  "type": "boolean",
+                  "description": "Whether the assistant should be enabled"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Configuration saved successfully."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "500": {
+            "description": "Server error saving configuration."
+          }
+        },
+        "tags": [
+          "AI Assistant Routes"
+        ]
+      }
+    },
+    "/mail/credentials": {
+      "get": {
+        "description": "Retrieves the current SMTP mail server credentials configured in the system. Requires admin role.",
+        "responses": {
+          "200": {
+            "description": "Mail credentials returned successfully."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "403": {
+            "description": "Forbidden - admin role required."
+          },
+          "500": {
+            "description": "Server error retrieving mail credentials."
+          }
+        },
+        "tags": [
+          "Mail Routes"
+        ]
+      }
+    },
+    "/mail/check": {
+      "post": {
+        "description": "Tests the SMTP connection with the provided credentials. Requires admin role.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "host": {
+                  "type": "string",
+                  "description": "SMTP server hostname"
+                },
+                "port": {
+                  "type": "integer",
+                  "description": "SMTP server port"
+                },
+                "user": {
+                  "type": "string",
+                  "description": "SMTP authentication user"
+                },
+                "password": {
+                  "type": "string",
+                  "description": "SMTP authentication password"
+                },
+                "secure": {
+                  "type": "boolean",
+                  "description": "Whether to use SSL/TLS"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "SMTP connection test successful."
+          },
+          "400": {
+            "description": "SMTP connection test failed."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "403": {
+            "description": "Forbidden - admin role required."
+          }
+        },
+        "tags": [
+          "Mail Routes"
+        ]
+      }
+    },
+    "/mail/save": {
+      "post": {
+        "description": "Saves the SMTP mail server credentials to the system configuration. Requires admin role.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "host": {
+                  "type": "string",
+                  "description": "SMTP server hostname"
+                },
+                "port": {
+                  "type": "integer",
+                  "description": "SMTP server port"
+                },
+                "user": {
+                  "type": "string",
+                  "description": "SMTP authentication user"
+                },
+                "password": {
+                  "type": "string",
+                  "description": "SMTP authentication password"
+                },
+                "secure": {
+                  "type": "boolean",
+                  "description": "Whether to use SSL/TLS"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mail credentials saved successfully."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "403": {
+            "description": "Forbidden - admin role required."
+          },
+          "500": {
+            "description": "Server error saving mail credentials."
+          }
+        },
+        "tags": [
+          "Mail Routes"
+        ]
+      }
+    },
+    "/mail/send-now": {
+      "post": {
+        "description": "Immediately sends a dashboard report via email. Requires admin role.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "to": {
+                  "type": "string",
+                  "description": "Recipient email address"
+                },
+                "subject": {
+                  "type": "string",
+                  "description": "Email subject"
+                },
+                "dashboardId": {
+                  "type": "string",
+                  "description": "Dashboard ID to include in the report"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email sent successfully."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "403": {
+            "description": "Forbidden - admin role required."
+          },
+          "500": {
+            "description": "Server error sending email."
+          }
+        },
+        "tags": [
+          "Mail Routes"
+        ]
+      }
+    },
+    "/global/upload": {
+      "put": {
+        "description": "Uploads and updates the profile image for the authenticated user.",
+        "parameters": [
+          {
+            "name": "file",
+            "in": "formData",
+            "required": true,
+            "type": "file",
+            "description": "Profile image file (jpg, png, etc.)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profile image uploaded and saved successfully."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "500": {
+            "description": "Server error uploading profile image."
+          }
+        },
+        "tags": [
+          "Upload Routes"
+        ]
+      }
+    },
+    "/global/upload/addFile": {
+      "post": {
+        "description": "Uploads a data file (CSV, Excel, GeoJSON, etc.) to be used as a datasource.",
+        "parameters": [
+          {
+            "name": "file",
+            "in": "formData",
+            "required": true,
+            "type": "file",
+            "description": "Data file to upload"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File uploaded successfully."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "500": {
+            "description": "Server error uploading file."
+          }
+        },
+        "tags": [
+          "Upload Routes"
+        ]
+      }
+    },
+    "/global/upload/bigqueryCredentials": {
+      "post": {
+        "description": "Uploads the Google BigQuery service account credentials JSON file. Requires admin role.",
+        "parameters": [
+          {
+            "name": "file",
+            "in": "formData",
+            "required": true,
+            "type": "file",
+            "description": "BigQuery service account credentials JSON file"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "BigQuery credentials uploaded successfully."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "403": {
+            "description": "Forbidden - admin role required."
+          },
+          "500": {
+            "description": "Server error uploading credentials."
+          }
+        },
+        "tags": [
+          "Upload Routes"
+        ]
+      }
+    },
+    "/global/upload/readGeoJsonFile/{id}": {
+      "get": {
+        "description": "Reads and returns the content of a GeoJSON file by its datasource ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Datasource ID associated with the GeoJSON file"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GeoJSON file content returned successfully."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "404": {
+            "description": "GeoJSON file not found for the given ID."
+          },
+          "500": {
+            "description": "Server error reading GeoJSON file."
+          }
+        },
+        "tags": [
+          "Upload Routes"
+        ]
+      }
+    },
+    "/arima/predict": {
+      "post": {
+        "description": "Runs an ARIMA time-series prediction model on the provided data and returns forecasted values.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "description": "Historical time-series data points"
+                },
+                "steps": {
+                  "type": "integer",
+                  "description": "Number of future steps to forecast"
+                },
+                "p": {
+                  "type": "integer",
+                  "description": "ARIMA autoregressive order"
+                },
+                "d": {
+                  "type": "integer",
+                  "description": "ARIMA differencing order"
+                },
+                "q": {
+                  "type": "integer",
+                  "description": "ARIMA moving average order"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ARIMA prediction completed, forecasted values returned."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "500": {
+            "description": "Server error running ARIMA prediction."
+          }
+        },
+        "tags": [
+          "Predictions Routes"
+        ]
+      }
+    },
+    "/arima/tensorflow/predict": {
+      "post": {
+        "description": "Runs a TensorFlow/LSTM neural network prediction model on the provided data and returns forecasted values.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "description": "Historical time-series data points"
+                },
+                "steps": {
+                  "type": "integer",
+                  "description": "Number of future steps to forecast"
+                },
+                "epochs": {
+                  "type": "integer",
+                  "description": "Number of training epochs"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "TensorFlow prediction completed, forecasted values returned."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "500": {
+            "description": "Server error running TensorFlow prediction."
+          }
+        },
+        "tags": [
+          "Predictions Routes"
+        ]
+      }
+    },
+    "/addTable/create": {
+      "post": {
+        "description": "Creates a new table in the datasource model with the specified columns and configuration. Requires admin role.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "datasourceId": {
+                  "type": "string",
+                  "description": "ID of the datasource where the table will be created"
+                },
+                "tableName": {
+                  "type": "string",
+                  "description": "Name for the new table"
+                },
+                "columns": {
+                  "type": "array",
+                  "description": "Column definitions for the new table",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Table created successfully in the datasource model."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "403": {
+            "description": "Forbidden - admin role required."
+          },
+          "500": {
+            "description": "Server error creating the table."
+          }
+        },
+        "tags": [
+          "Add Table Routes"
+        ]
+      }
+    },
+    "/addTable/insert": {
+      "post": {
+        "description": "Inserts data rows into an existing table of the datasource model. Requires admin role.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "datasourceId": {
+                  "type": "string",
+                  "description": "ID of the datasource containing the target table"
+                },
+                "tableName": {
+                  "type": "string",
+                  "description": "Name of the table to insert data into"
+                },
+                "rows": {
+                  "type": "array",
+                  "description": "Array of row objects to insert",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data inserted successfully into the table."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "403": {
+            "description": "Forbidden - admin role required."
+          },
+          "500": {
+            "description": "Server error inserting data."
+          }
+        },
+        "tags": [
+          "Add Table Routes"
+        ]
+      }
+    },
+    "/customHTML/{key}": {
+      "get": {
+        "description": "Retrieves a custom HTML panel content by its unique key identifier.",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Unique key identifying the custom HTML panel"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Custom HTML content returned successfully."
+          },
+          "404": {
+            "description": "No custom HTML found for the given key."
+          },
+          "500": {
+            "description": "Server error retrieving custom HTML."
+          }
+        },
+        "tags": [
+          "Custom HTML Routes"
+        ]
+      },
+      "put": {
+        "description": "Creates or updates a custom HTML panel content identified by the given key. Requires authentication.",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Unique key identifying the custom HTML panel"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "html": {
+                  "type": "string",
+                  "description": "HTML content to store"
+                },
+                "css": {
+                  "type": "string",
+                  "description": "Optional CSS styles for the panel"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Custom HTML panel created or updated successfully."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "500": {
+            "description": "Server error saving custom HTML."
+          }
+        },
+        "tags": [
+          "Custom HTML Routes"
+        ]
+      }
+    },
+    "/customActionCall/check": {
+      "post": {
+        "description": "Validates and tests a custom action URL endpoint to verify it is reachable and returns a valid response. Requires admin role.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "description": "The URL of the custom action endpoint to test"
+                },
+                "method": {
+                  "type": "string",
+                  "description": "HTTP method to use for the test (GET, POST, etc.)"
+                },
+                "headers": {
+                  "type": "object",
+                  "description": "Optional HTTP headers to include in the test request"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Custom action URL is reachable and returned a valid response."
+          },
+          "400": {
+            "description": "Custom action URL is not reachable or returned an error."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "403": {
+            "description": "Forbidden - admin role required."
+          },
+          "500": {
+            "description": "Server error testing the custom action URL."
+          }
+        },
+        "tags": [
+          "Custom Action Routes"
+        ]
+      }
+    },
+    "/ia": {
+      "post": {
+        "description": "MCP (Model Context Protocol) server endpoint. Handles MCP protocol requests including tool calls and resource access via Streamable HTTP transport.",
+        "parameters": [
+          {
+            "name": "x-user-token",
+            "in": "header",
+            "type": "string",
+            "description": "Optional JWT user token to associate the MCP request with an authenticated EDA user"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "method": {
+                  "type": "string",
+                  "description": "MCP protocol method name (e.g. tools/call, tools/list)"
+                },
+                "params": {
+                  "type": "object",
+                  "description": "MCP method parameters"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "MCP request processed successfully."
+          },
+          "500": {
+            "description": "Server error processing MCP request."
+          }
+        },
+        "tags": [
+          "MCP Routes"
+        ]
+      },
+      "get": {
+        "description": "Returns the MCP service status and version information.",
+        "responses": {
+          "200": {
+            "description": "MCP service info returned (service name, version, status, transport type)."
+          }
+        },
+        "tags": [
+          "MCP Routes"
+        ]
+      }
+    },
+    "/ia/chat": {
+      "post": {
+        "description": "AI chat assistant endpoint. Accepts a conversation history and uses an LLM with MCP tools to answer questions about EDA dashboards and data. Requires authentication.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "messages"
+              ],
+              "properties": {
+                "messages": {
+                  "type": "array",
+                  "description": "Conversation history in chronological order",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "role": {
+                        "type": "string",
+                        "enum": [
+                          "user",
+                          "assistant"
+                        ]
+                      },
+                      "content": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "AI response returned. May include optional dashboard/panel options array for exploration results."
+          },
+          "400": {
+            "description": "Missing or invalid messages array."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "500": {
+            "description": "Server error processing chat request."
+          },
+          "503": {
+            "description": "AI assistant is not available (API key not configured)."
+          }
+        },
+        "tags": [
+          "MCP Routes"
+        ]
+      }
+    },
+    "/ia/chat/config": {
+      "get": {
+        "description": "Returns the availability status of the AI chat assistant. Requires authentication.",
+        "responses": {
+          "200": {
+            "description": "Returns object with available boolean indicating if the AI chat is enabled."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          }
+        },
+        "tags": [
+          "MCP Routes"
+        ]
+      }
+    },
+    "/auth/typeLogin": {
+      "get": {
+        "description": "Returns the active login types configured in the system (e.g. local, SAML, Google, Microsoft). Used by the frontend to display the appropriate login buttons.",
+        "responses": {
+          "200": {
+            "description": "Active login type configuration returned successfully."
+          },
+          "500": {
+            "description": "Server error retrieving login type configuration."
+          }
+        },
+        "tags": [
+          "Authentication Routes"
+        ]
+      }
+    },
+    "/auth/google/login": {
+      "post": {
+        "description": "Authenticates a user via Google Single Sign-On (SSO). Validates the Google ID token and returns an EDA JWT session token.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string",
+                  "description": "Google OAuth2 ID token obtained from the Google Sign-In flow"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Google SSO authentication successful, EDA JWT token returned."
+          },
+          "400": {
+            "description": "Invalid Google token or user not authorized in EDA."
+          },
+          "500": {
+            "description": "Server error during Google SSO authentication."
+          }
+        },
+        "tags": [
+          "Authentication Routes"
+        ]
+      }
+    },
+    "/auth/microsoft/login": {
+      "post": {
+        "description": "Authenticates a user via Microsoft Azure AD Single Sign-On (SSO). Validates the Microsoft access token and returns an EDA JWT session token.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string",
+                  "description": "Microsoft Azure AD access token obtained from the MSAL authentication flow"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Microsoft SSO authentication successful, EDA JWT token returned."
+          },
+          "400": {
+            "description": "Invalid Microsoft token or user not authorized in EDA."
+          },
+          "500": {
+            "description": "Server error during Microsoft SSO authentication."
+          }
+        },
+        "tags": [
+          "Authentication Routes"
+        ]
+      }
+    },
+    "/auth/saml/login": {
+      "get": {
+        "description": "Initiates the SAML SSO login flow by redirecting the user to the configured Identity Provider (IdP) login page.",
+        "responses": {
+          "302": {
+            "description": "Redirect to the SAML Identity Provider login URL."
+          },
+          "500": {
+            "description": "Server error initiating SAML login."
+          }
+        },
+        "tags": [
+          "Authentication Routes"
+        ]
+      }
+    },
+    "/auth/saml/acs": {
+      "post": {
+        "description": "Assertion Consumer Service (ACS) endpoint. Receives and processes the SAML assertion from the Identity Provider after successful authentication.",
+        "parameters": [
+          {
+            "name": "SAMLResponse",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": "Base64-encoded SAML response from the Identity Provider"
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect to the EDA application with the session token upon successful SAML assertion."
+          },
+          "400": {
+            "description": "Invalid or expired SAML assertion."
+          },
+          "500": {
+            "description": "Server error processing SAML assertion."
+          }
+        },
+        "tags": [
+          "Authentication Routes"
+        ]
+      }
+    },
+    "/auth/saml/metadata": {
+      "get": {
+        "description": "Returns the SAML Service Provider (SP) metadata XML. Used by the Identity Provider to configure the trust relationship.",
+        "responses": {
+          "200": {
+            "description": "SAML SP metadata XML returned successfully."
+          },
+          "500": {
+            "description": "Server error generating SAML metadata."
+          }
+        },
+        "tags": [
+          "Authentication Routes"
+        ]
+      }
+    },
+    "/auth/saml/request-logout": {
+      "get": {
+        "description": "Initiates the SAML Single Logout (SLO) flow by sending a logout request to the Identity Provider. Requires authentication.",
+        "responses": {
+          "302": {
+            "description": "Redirect to the Identity Provider logout URL."
+          },
+          "401": {
+            "description": "Unauthorized - authentication required."
+          },
+          "500": {
+            "description": "Server error initiating SAML logout."
+          }
+        },
+        "tags": [
+          "Authentication Routes"
+        ]
+      }
+    },
+    "/auth/saml/logout": {
+      "get": {
+        "description": "Receives and processes the SAML logout response or request from the Identity Provider (GET binding).",
+        "responses": {
+          "302": {
+            "description": "Redirect to the EDA application login page after successful logout."
+          },
+          "500": {
+            "description": "Server error processing SAML logout."
+          }
+        },
+        "tags": [
+          "Authentication Routes"
+        ]
+      },
+      "post": {
+        "description": "Receives and processes the SAML logout response or request from the Identity Provider (POST binding).",
+        "parameters": [
+          {
+            "name": "SAMLResponse",
+            "in": "formData",
+            "type": "string",
+            "description": "Base64-encoded SAML logout response from the Identity Provider"
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect to the EDA application login page after successful logout."
+          },
+          "500": {
+            "description": "Server error processing SAML logout."
+          }
+        },
+        "tags": [
+          "Authentication Routes"
+        ]
+      }
+    },
+    "/url/check/": {
+      "post": {
+        "description": "Post an user to a third party authenticato",
+        "responses": {
+          "200": {
+            "description": "Return the user is authenticathed"
+          },
+          "400": {
+            "description": "User is not logged"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {},
+  "responses": {},
+  "parameters": {},
+  "securityDefinitions": {},
+  "tags": []
+}

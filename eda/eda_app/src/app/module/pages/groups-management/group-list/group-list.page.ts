@@ -32,6 +32,12 @@ export class GroupListPage implements OnInit {
   private groupService = inject(GroupService);
   private userService = inject(UserService);
 
+  readonly PROTECTED_GROUP_IDS = new Set([
+    '135792467811111111111110',
+    '135792467811111111111113',
+    '135792467811111111111115',
+  ]);
+
   groups: any[] = [];
 
   searchTerm: string = '';
