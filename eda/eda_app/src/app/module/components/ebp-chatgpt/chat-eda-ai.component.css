@@ -3,6 +3,14 @@
   30%           { transform: translateY(-5px); opacity: 1;   }
 }
 
+.copy-btn { color: #9ca3af; }
+.copy-btn:hover { color: #00BFB3; }
+
+.send-btn { background-color: #00BFB3; }
+.send-btn:hover:not(:disabled) { background-color: #00a89d; }
+
+.user-bubble { background-color: #00BFB3; }
+
 .dot-wave span {
   display: inline-block;
   width: 7px;

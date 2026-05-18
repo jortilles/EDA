@@ -32,7 +32,7 @@
 
               <div
                 [ngClass]="{
-                  'bg-blue-500 text-white': msg.sender === 'user',
+                  'user-bubble text-white': msg.sender === 'user',
                   'bg-gray-200 text-gray-900': msg.sender === 'bot'
                 }"
                 class="rounded-xl px-3 py-1.5 lg:px-4 lg:py-2 break-words"
@@ -45,7 +45,7 @@
               <button
                 (click)="copyMessage(msg)"
                 title="Copiar"
-                class="absolute -bottom-5 opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-gray-600 p-0.5"
+                class="copy-btn absolute -bottom-5 opacity-0 group-hover:opacity-100 transition-opacity p-0.5"
                 [class.right-0]="msg.sender === 'bot'"
                 [class.left-0]="msg.sender === 'user'">
                 <svg *ngIf="!msg.copied" xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -76,7 +76,7 @@
             #chatInput
             [(ngModel)]="userInput"
             name="chatInput"
-            class="flex-1 border rounded-full px-3 py-1.5 lg:px-4 lg:py-2 text-sm lg:text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="flex-1 border rounded-full px-3 py-1.5 lg:px-4 lg:py-2 text-sm lg:text-base focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
             i18n-placeholder="@@escribeMensaje"
             placeholder="Escribe tu mensaje..."
             autocomplete="off"
@@ -84,7 +84,7 @@
           <button
             type="submit"
             [disabled]="loading"
-            class="bg-blue-500 text-white px-3 py-1.5 lg:px-4 lg:py-2 text-sm lg:text-base rounded-full hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
+            class="send-btn text-white px-3 py-1.5 lg:px-4 lg:py-2 text-sm lg:text-base rounded-full transition disabled:opacity-50 disabled:cursor-not-allowed">
             <span i18n="@@enviar">Enviar</span>
           </button>
         </form>
