@@ -6678,6 +6678,14 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Análisis de datos con IA</source>
         <target>Analyse de données par IA</target>
       </trans-unit>
+      <trans-unit id="volver" datatype="html">
+        <source>Volver</source>
+        <target>Retour</target>
+      </trans-unit>
+      <trans-unit id="navegar" datatype="html">
+        <source>Navegar</source>
+        <target>Parcourir</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

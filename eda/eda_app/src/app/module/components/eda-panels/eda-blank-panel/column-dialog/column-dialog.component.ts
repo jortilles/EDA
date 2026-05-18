@@ -89,6 +89,7 @@ export class ColumnDialogComponent {
     public dropDownFields: SelectItem[] = [];
     public limitSelectionFields: number;
     public cumulativeSum: boolean;
+    public dateNavEnabled: boolean = false;
     public cumulativeSumTooltip: string = $localize`:@@cumulativeSumTooltip:Si activas ésta función se calculará la suma acumulativa 
                                             para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.`
     public title: string;
@@ -397,6 +398,11 @@ export class ColumnDialogComponent {
     public addCumulativeSum(): void {
         const newCol = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
         this.cumulativeSum = newCol?.cumulativeSum;
+        this.dateNavEnabled = !!newCol?.dateNav;
+        // Si la columna ya tiene dateNav activo, restringir las opciones de formato
+        if (this.dateNavEnabled) {
+            this.formatDates = this.chartUtils.formatDates.filter(f => ['year', 'month', 'day'].includes(f.value));
+        }
     }
 
     handleCumulativeSum() {
@@ -421,6 +427,24 @@ export class ColumnDialogComponent {
         return ['month', 'week', 'day'].includes(current.value);
     }
 
+    handleDateNavEnabled() {
+        const newCol = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
+        if (!newCol) return;
+        newCol.dateNav = this.dateNavEnabled;
+        if (this.dateNavEnabled) {
+            this.selectedParent = null;
+            // dateNav y downChild son mutuamente excluyentes: si la columna fecha pasa a ser
+            // navegable por fecha, su hijo debe perder el vínculo de padre
+            delete newCol.downChild;
+            // Restringir el selector de formato a solo año/mes/día y forzar 'día' como default
+            this.formatDates = this.chartUtils.formatDates.filter(f => ['year', 'month', 'day'].includes(f.value));
+            this.formatDate = this.formatDates.find(f => f.value === 'day');
+            this.addFormatDate();
+        } else {
+            // Restaurar todas las opciones de formato al desactivar dateNav
+            this.formatDates = this.chartUtils.formatDates;
+        }
+    }
 
     handleFilterChange(filter: FilterType) {
         if (filter) {
@@ -911,16 +935,36 @@ export class ColumnDialogComponent {
         return resultado;
     }
 
+    /** Devuelve las claves "table_id.column_name" de todos los descendientes de col siguiendo downChild. */
+    private getDescendantKeys(col: any, currentQuery: any[]): Set<string> {
+        const keys = new Set<string>();
+        let current = col;
+        while (current?.downChild) {
+            const key = `${current.downChild.table_id}.${current.downChild.column_name}`;
+            if (keys.has(key)) break; // seguridad ante ciclos ya existentes
+            keys.add(key);
+            current = currentQuery.find(c =>
+                c.table_id === current.downChild.table_id &&
+                c.column_name === current.downChild.column_name
+            );
+        }
+        return keys;
+    }
+
     private initParentOption(): void {
         const currentQuery: any[] = this.controller.params.currentQuery;
-        const navChildren: {[k: string]: any} = this.controller.params.navChildren || {};
-        // Include navChildren values as potential parents (for multi-level chains)
-        const allCandidates = [...currentQuery, ...Object.values(navChildren)];
 
-        this.childOptions = allCandidates
+        // Todos los descendientes de la columna actual no pueden ser su padre (evita ciclos)
+        const descendantKeys = this.getDescendantKeys(this.selectedColumn, currentQuery);
+
+        this.childOptions = currentQuery
             .filter(col => {
+                if (col.column_type === 'numeric') return false;
+                if (col.column_type === 'date' && col.dateNav) return false;
                 if (col.table_id === this.selectedColumn.table_id &&
                     col.column_name === this.selectedColumn.column_name) return false;
+                // Excluir descendientes para evitar referencias circulares
+                if (descendantKeys.has(`${col.table_id}.${col.column_name}`)) return false;
                 if (col.downChild &&
                     !(col.downChild.table_id === this.selectedColumn.table_id &&
                       col.downChild.column_name === this.selectedColumn.column_name)) return false;
@@ -928,35 +972,30 @@ export class ColumnDialogComponent {
             })
             .map(col => ({ label: col.display_name.default, value: col }));
 
-        const currentParent = allCandidates.find(col =>
+        this.selectedParent = currentQuery.find(col =>
             col.downChild &&
             col.downChild.table_id === this.selectedColumn.table_id &&
             col.downChild.column_name === this.selectedColumn.column_name
-        );
-        this.selectedParent = currentParent || null;
+        ) || null;
     }
 
     public onParentChange(parentCol: any): void {
         const currentQuery: any[] = this.controller.params.currentQuery;
-        const navChildren: {[k: string]: any} = this.controller.params.navChildren || {};
-        const allCols = [...currentQuery, ...Object.values(navChildren)];
 
-        // Remove any existing parent link pointing to selectedColumn (search both sources)
-        for (const col of allCols) {
+        // Remove any existing parent link pointing to selectedColumn, track former parent
+        let formerParentInQuery: any = null;
+        for (const col of currentQuery) {
             if (col.downChild &&
                 col.downChild.table_id === this.selectedColumn.table_id &&
                 col.downChild.column_name === this.selectedColumn.column_name) {
                 delete col.downChild;
+                formerParentInQuery = col;
                 break;
             }
         }
 
         if (parentCol) {
-            // Find parentCol in currentQuery first, then navChildren
-            const parentInQuery = this.findColumn(parentCol, currentQuery)
-                || allCols.find((c: any) =>
-                    c.table_id === parentCol.table_id && c.column_name === parentCol.column_name
-                );
+            const parentInQuery = this.findColumn(parentCol, currentQuery);
             if (parentInQuery) {
                 parentInQuery.downChild = {
                     table_id: this.selectedColumn.table_id,
@@ -964,7 +1003,31 @@ export class ColumnDialogComponent {
                     display_name: this.selectedColumn.display_name.default
                 };
             }
+        } else if (formerParentInQuery) {
+            // This column had a parent and now has none — behavior depends on chart type.
+            const chartSubType: string = this.controller.params.chartSubType || '';
+            const isCrossTable = chartSubType === 'crosstable';
+
+            if (isCrossTable) {
+                // In cross table: keep child in currentQuery but force both parent and child
+                // to itemX (Eje vertical) so the child doesn't land in itemY and cause OOM pivots.
+                formerParentInQuery._forceItemX = true;
+                const childInQuery = currentQuery.find(
+                    (c: any) => c.table_id === this.selectedColumn.table_id &&
+                                c.column_name === this.selectedColumn.column_name
+                );
+                if (childInQuery) childInQuery._forceItemX = true;
+            } else {
+                // Non-cross-table: remove child and its entire downChild chain.
+                const keysToRemove = new Set<string>();
+                keysToRemove.add(`${this.selectedColumn.table_id}.${this.selectedColumn.column_name}`);
+                this.getDescendantKeys(this.selectedColumn, currentQuery).forEach(k => keysToRemove.add(k));
+                this.controller.params.currentQuery = currentQuery.filter(
+                    (col: any) => !keysToRemove.has(`${col.table_id}.${col.column_name}`)
+                );
+            }
         }
+        // else: column was never a nav-child (no formerParentInQuery) — do nothing
     }
 
     verifyRange() {

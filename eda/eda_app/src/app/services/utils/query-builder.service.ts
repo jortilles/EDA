@@ -107,6 +107,7 @@ export class QueryBuilderService extends ApiService {
             col.tableCount = select[i].tableCount;
             col.minimumFractionDigits = select[i].minimumFractionDigits;
             col.cumulativeSum = select[i].cumulativeSum;
+            col.dateNav = select[i].dateNav || false;
             col.valueListSource = select[i].valueListSource;
             col.whatif_column = select[i].whatif_column || false;
             col.whatif = select[i].whatif;
@@ -114,6 +115,8 @@ export class QueryBuilderService extends ApiService {
             col.autorelation = select[i].autorelation;
             col.ranges = select[i].ranges || [];
             col.ia_visibility = select[i].ia_visibility;
+            col.ia_medatada_permissions = select[i].ia_medatada_permissions;
+            col.downChild = select[i].downChild;
             queryColumns.push(col);
             labels.push(select[i].column_name);
         }
