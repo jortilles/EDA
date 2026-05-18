@@ -29,6 +29,28 @@ import { FormsModule } from '@angular/forms'; // para [(ngModel)] si lo usas
         align-items: center;
         justify-content: center;
       }
+
+      .switch-tab-btn {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.375rem;
+        padding: 0.5rem 1.25rem;
+        min-width: 13vw;
+        background: #ffffff;
+        color: #374151;
+        border: 1px solid #d1d5db;
+        cursor: pointer;
+        font-size: 0.875rem;
+        transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+      }
+
+      .switch-tab-btn:hover {
+        background: #f3f4f6;
+        border-color: #9ca3af;
+        color: #111827;
+      }
     `
 })
 export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnChanges, AfterViewInit, OnDestroy {

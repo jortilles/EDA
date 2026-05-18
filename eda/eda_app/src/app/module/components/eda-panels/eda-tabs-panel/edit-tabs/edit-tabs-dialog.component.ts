@@ -19,6 +19,7 @@ interface DashboardOption {
     standalone: true,
     selector: 'app-edit-tabs-dialog',
     templateUrl: './edit-tabs-dialog.component.html',
+    styleUrls: ['./edit-tabs-dialog.component.css'],
     imports: [
         FormsModule,
         CommonModule,
