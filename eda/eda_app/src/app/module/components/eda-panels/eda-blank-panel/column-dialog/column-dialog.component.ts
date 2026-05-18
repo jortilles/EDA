@@ -924,8 +924,27 @@ export class ColumnDialogComponent {
         return resultado;
     }
 
+    /** Devuelve las claves "table_id.column_name" de todos los descendientes de col siguiendo downChild. */
+    private getDescendantKeys(col: any, currentQuery: any[]): Set<string> {
+        const keys = new Set<string>();
+        let current = col;
+        while (current?.downChild) {
+            const key = `${current.downChild.table_id}.${current.downChild.column_name}`;
+            if (keys.has(key)) break; // seguridad ante ciclos ya existentes
+            keys.add(key);
+            current = currentQuery.find(c =>
+                c.table_id === current.downChild.table_id &&
+                c.column_name === current.downChild.column_name
+            );
+        }
+        return keys;
+    }
+
     private initParentOption(): void {
         const currentQuery: any[] = this.controller.params.currentQuery;
+
+        // Todos los descendientes de la columna actual no pueden ser su padre (evita ciclos)
+        const descendantKeys = this.getDescendantKeys(this.selectedColumn, currentQuery);
 
         this.childOptions = currentQuery
             .filter(col => {
@@ -933,6 +952,8 @@ export class ColumnDialogComponent {
                 if (col.column_type === 'date' && col.dateNav) return false;
                 if (col.table_id === this.selectedColumn.table_id &&
                     col.column_name === this.selectedColumn.column_name) return false;
+                // Excluir descendientes para evitar referencias circulares
+                if (descendantKeys.has(`${col.table_id}.${col.column_name}`)) return false;
                 if (col.downChild &&
                     !(col.downChild.table_id === this.selectedColumn.table_id &&
                       col.downChild.column_name === this.selectedColumn.column_name)) return false;
