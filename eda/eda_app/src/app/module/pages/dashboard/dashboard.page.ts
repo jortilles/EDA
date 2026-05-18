@@ -1399,13 +1399,18 @@ public startCountdown(seconds: number) {
   }
 
   // Función para comprobar si la columna clicada es navegable
-  public checkNavigableColumn(event: any):boolean {
+  public checkNavigableColumn(event: any): boolean {
     const columnClicked = event?.data?.filterBy;
+    if (!columnClicked) return false;
+
+    // Child-nav: la columna es padre o hijo de un enlace downChild → no filtrar al hacer clic
     const navigationLinks: any[] = event?.data?.panel?.content?.navigationLinks || [];
     const linkedParentColumnNames = navigationLinks.map((link: any) => link.parentColumn);
     const linkedChildColumnNames = navigationLinks.map((link: any) => link.childColumn);
+    if ([...linkedParentColumnNames, ...linkedChildColumnNames].includes(columnClicked)) return true;
 
-    // si la tabla tiene enlaces de navegación, y clickamos la columna que lo tiene, no aplicamos filtros al hacer clic en ella, para evitar conflictos entre ambos tipos de acciones
-    return columnClicked && [linkedParentColumnNames, linkedChildColumnNames].flat().includes(columnClicked);
+    // Date-nav: la columna tiene dateNav=true → tampoco filtrar al hacer clic
+    const fields: any[] = event?.data?.panel?.content?.query?.query?.fields || [];
+    return fields.some((f: any) => f.column_name === columnClicked && f.dateNav === true);
   }
 }
