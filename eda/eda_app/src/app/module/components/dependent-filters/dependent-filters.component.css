@@ -20,10 +20,14 @@
 }
 
 .gridster-item {
-    cursor: pointer;
+    cursor: grab;
     border: 1px solid #CCCCCC;
     background-color: #fff;
     border-radius: 10px;
+}
+
+.gridster-item:active {
+    cursor: grabbing;
 }
 
 .gridster-item:hover {
