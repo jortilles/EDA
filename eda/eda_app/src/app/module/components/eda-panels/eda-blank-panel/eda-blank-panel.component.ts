@@ -2832,17 +2832,21 @@ public tableNodeExpand(event: any): void {
 
     /**
      * Collects state for all columns currently active as child substitutes (child nav).
-     * These columns show only "-" (back button) and are skipped in the main loop of
+     * These columns show "-" (back button) and are skipped in the main loop of
      * computeChildNavConfig to avoid overwriting their childFieldMap entry.
+     * If the active child has its own downChild, it also gets a "+" button so the
+     * chain can continue deeper (Country→City→AddressLine→PostalCode).
      */
     private buildActiveNavChildrenState(): {
         childFieldMap: {[k: string]: string},
         navColumnSubstitution: {[k: string]: string},
-        activeNavChildNames: Set<string>
+        activeNavChildNames: Set<string>,
+        activeChildParentFields: string[]
     } {
         const childFieldMap: {[k: string]: string} = {};
         const navColumnSubstitution: {[k: string]: string} = {};
         const activeNavChildNames = new Set<string>();
+        const activeChildParentFields: string[] = [];
 
         for (const entry of this.navState) {
             const activeCol = entry.navPath[entry.currentIndex];
@@ -2852,9 +2856,13 @@ public tableNodeExpand(event: any): void {
             if (rootColName && rootColName !== activeCol.column_name) {
                 navColumnSubstitution[rootColName] = activeCol.column_name; // swap root→child in query
             }
+            // If this active child has its own downChild, it can navigate deeper → "+" button
+            if (activeCol.downChild) {
+                activeChildParentFields.push(activeCol.column_name);
+            }
         }
 
-        return { childFieldMap, navColumnSubstitution, activeNavChildNames };
+        return { childFieldMap, navColumnSubstitution, activeNavChildNames, activeChildParentFields };
     }
 
     /**
@@ -2878,8 +2886,10 @@ public tableNodeExpand(event: any): void {
         const effectiveFields = QueryUtils.getEffectiveFields(this);
         const parentFields: string[] = [];
 
-        // Pre-fill childFieldMap and substitution map for active child-nav entries
-        const { childFieldMap, navColumnSubstitution, activeNavChildNames } = this.buildActiveNavChildrenState();
+        // Pre-fill childFieldMap and substitution map for active child-nav entries.
+        // activeChildParentFields contains active children that can navigate deeper (have downChild).
+        const { childFieldMap, navColumnSubstitution, activeNavChildNames, activeChildParentFields } = this.buildActiveNavChildrenState();
+        parentFields.push(...activeChildParentFields);
 
         for (const col of effectiveFields) {
             // Active nav-children already have their entry set above — skip them
