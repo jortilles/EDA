@@ -862,17 +862,23 @@ public tableNodeExpand(event: any): void {
             }).then( (borrado) => {
                 if(borrado.value){
                     try {
-                        this.changeChartType(type, subType, config)
+                        this.changeChartType(type, subType, config);
+                        if (this.currentQuery.some((col: any) => col.downChild)) {
+                            QueryUtils.runQuery(this, false);
+                        }
                     } catch (err) {
                         this.alertService.addError(err);
                         throw err;
                     }
                 }
             })
-            
-            this.closeEditarConsulta();            
+
+            this.closeEditarConsulta();
         } else {
             this.changeChartType(type, subType, config);
+            if (this.currentQuery.some((col: any) => col.downChild)) {
+                QueryUtils.runQuery(this, false);
+            }
         }
     }
 
@@ -2495,6 +2501,25 @@ public tableNodeExpand(event: any): void {
     //   1. DATE NAV   (col.dateNav === true)  → drills down year→month→day on the same column
     //   2. CHILD NAV  (col.downChild set)     → substitutes the column with a child column
     //   3. NOT NAVIGABLE                      → no "+" or "-" buttons shown
+
+    /**
+     * Removes all child-nav configuration and active state.
+     * Called when the chart type changes — child navigation only makes sense on tables.
+     */
+    private clearChildNavigation(): void {
+        // Remove nav filters from selectedFilters
+        const navFilterIds = new Set(
+            this.navState.flatMap((e: any) => e.navFilters.map((f: any) => f.filter_id))
+        );
+        this.selectedFilters = this.selectedFilters.filter((f: any) => !navFilterIds.has(f.filter_id));
+        // Clear active nav state
+        this.navState = [];
+        // Remove downChild links from all columns (clears the configured parent-child structure)
+        for (const col of this.currentQuery) {
+            delete col.downChild;
+        }
+        this.syncNavigationLinksToPanel();
+    }
 
     /** Entry point for nav events from the table: routes "in" (+) and "out" (-) clicks. */
     public handleNavEvent(event: any): void {
