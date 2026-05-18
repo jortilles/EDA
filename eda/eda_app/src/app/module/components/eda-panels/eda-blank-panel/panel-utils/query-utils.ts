@@ -301,9 +301,12 @@ export const QueryUtils = {
       }
 
       /**
-     * Too much rows check
+     * Too much rows check — use effective fields to avoid nav-children inflating the count
      */
-      const totalTableCount = ebp.currentQuery.reduce((a, b) => {
+      const _fieldsForCount = (ebp.currentQuery || []).some((col: any) => col.downChild)
+        ? QueryUtils.getEffectiveFields(ebp)
+        : ebp.currentQuery;
+      const totalTableCount = _fieldsForCount.reduce((a, b) => {
         return a + parseInt(b.tableCount);
       }, 0);
       const aggregations = ebp.currentQuery.filter(col => col.aggregation_type.filter(agg => (agg.value !== 'none' && agg.selected === true)).length > 0).length;

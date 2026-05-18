@@ -982,12 +982,14 @@ export class ColumnDialogComponent {
     public onParentChange(parentCol: any): void {
         const currentQuery: any[] = this.controller.params.currentQuery;
 
-        // Remove any existing parent link pointing to selectedColumn
+        // Remove any existing parent link pointing to selectedColumn, track former parent
+        let formerParentInQuery: any = null;
         for (const col of currentQuery) {
             if (col.downChild &&
                 col.downChild.table_id === this.selectedColumn.table_id &&
                 col.downChild.column_name === this.selectedColumn.column_name) {
                 delete col.downChild;
+                formerParentInQuery = col;
                 break;
             }
         }
@@ -1001,7 +1003,31 @@ export class ColumnDialogComponent {
                     display_name: this.selectedColumn.display_name.default
                 };
             }
+        } else if (formerParentInQuery) {
+            // This column had a parent and now has none — behavior depends on chart type.
+            const chartSubType: string = this.controller.params.chartSubType || '';
+            const isCrossTable = chartSubType === 'crosstable';
+
+            if (isCrossTable) {
+                // In cross table: keep child in currentQuery but force both parent and child
+                // to itemX (Eje vertical) so the child doesn't land in itemY and cause OOM pivots.
+                formerParentInQuery._forceItemX = true;
+                const childInQuery = currentQuery.find(
+                    (c: any) => c.table_id === this.selectedColumn.table_id &&
+                                c.column_name === this.selectedColumn.column_name
+                );
+                if (childInQuery) childInQuery._forceItemX = true;
+            } else {
+                // Non-cross-table: remove child and its entire downChild chain.
+                const keysToRemove = new Set<string>();
+                keysToRemove.add(`${this.selectedColumn.table_id}.${this.selectedColumn.column_name}`);
+                this.getDescendantKeys(this.selectedColumn, currentQuery).forEach(k => keysToRemove.add(k));
+                this.controller.params.currentQuery = currentQuery.filter(
+                    (col: any) => !keysToRemove.has(`${col.table_id}.${col.column_name}`)
+                );
+            }
         }
+        // else: column was never a nav-child (no formerParentInQuery) — do nothing
     }
 
     verifyRange() {

@@ -749,7 +749,7 @@ public tableNodeExpand(event: any): void {
                 currentFormatIndex: entry.currentFormatIndex,
                 navFilters: entry.navFilters
             }));
-            this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters, navigationLinks, navActiveNodes, savedDateNavState };
+            this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters, navigationLinks, navActiveNodes, savedDateNavState, fullCurrentQuery: this.currentQuery };
 
             /**This is to repaint on panel redimension */
             if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst','radar'].includes(chart)) {
@@ -1169,7 +1169,8 @@ public tableNodeExpand(event: any): void {
             panel: this.panel,
             table: this.findTable(column.table_id)?.display_name?.default,
             filters: this.selectedFilters,
-            connectionProperties: this.connectionProperties
+            connectionProperties: this.connectionProperties,
+            chartSubType: this.graficos?.edaChart || ''
         };
 
         if (!isFilter) {
@@ -1896,6 +1897,27 @@ public tableNodeExpand(event: any): void {
             return true;
         });
         itemX.push(...toMoveToVertical);
+
+        // Columns flagged with _forceItemX (former nav-children detached in cross table mode)
+        // must also go to itemX so they don't explode itemY into an OOM pivot.
+        const forceXNames = new Set(currenQuery.filter((c: any) => c._forceItemX).map((c: any) => c.column_name));
+        if (forceXNames.size > 0) {
+            const toForceVertical: any[] = [];
+            itemY = itemY.filter((item: any) => {
+                if (forceXNames.has(item.column_name)) { toForceVertical.push(item); return false; }
+                return true;
+            });
+            itemX.push(...toForceVertical);
+            // Clear flags so they don't persist across subsequent initAxes calls
+            for (const col of currenQuery) {
+                if (col._forceItemX) delete col._forceItemX;
+            }
+            // If itemY is now empty, promote the first numeric measure as a column axis
+            if (itemY.length === 0 && itemZ.length > 0) {
+                itemY.push(itemZ[0]);
+                itemZ.shift();
+            }
+        }
 
         return [{ itemX: itemX, itemY: itemY, itemZ: itemZ }]
 
