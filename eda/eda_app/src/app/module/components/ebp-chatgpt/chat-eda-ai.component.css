@@ -1,3 +1,9 @@
+.messages-area {
+  background: #f8fafb;
+  background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
 @keyframes dot-wave {
   0%, 60%, 100% { transform: translateY(0);   opacity: 0.4; }
   30%           { transform: translateY(-5px); opacity: 1;   }
