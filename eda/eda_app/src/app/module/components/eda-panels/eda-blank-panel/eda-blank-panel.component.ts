@@ -2677,13 +2677,13 @@ public tableNodeExpand(event: any): void {
 
     /**
      * Maps col.format to the three nav granularity levels.
-     * Any format that is not explicitly 'year' or 'month' (including 'day', 'No', null,
-     * 'week', 'timestamp', etc.) maps to 'day' — the finest granularity.
+     * For dateNav columns only 'year', 'month', 'day' are valid formats.
+     * Any other value (e.g. from child-nav date parents) falls back to 'day'.
      */
     private mapToNavFormat(format: string): 'year' | 'month' | 'day' {
         if (format === 'year') return 'year';
         if (format === 'month') return 'month';
-        return 'day'; // day, week, week_day, day_hour, day_hour_minute, timestamp, No, null…
+        return 'day';
     }
 
     /**
@@ -2757,19 +2757,12 @@ public tableNodeExpand(event: any): void {
             existing.currentFormatIndex++;
             this.updateColumnFormatInQuery(col, existing.formatChain[existing.currentFormatIndex]);
         } else {
-            // Start a new drill-in from the column's current format level
+            // Start a new drill-in from the column's current format level (year or month)
             const navFmt = this.mapToNavFormat(col.format);
-            let navValue = value;
-            let startIdx = fullChain.indexOf(navFmt);
-
-            // day-level: values are full dates (e.g. "2021-03-15") → extract year and restart
-            if (navFmt === 'day') {
-                navValue = String(value).split('-')[0];
-                startIdx = 0;
-            }
-
+            const startIdx = fullChain.indexOf(navFmt);
             const chain = fullChain.slice(startIdx);
-            if (chain.length < 2) return; // Already at finest granularity
+            if (chain.length < 2) return; // 'day' format has no deeper level — "+" never shown
+            const navValue = value;
 
             const filter = this.buildDateRangeFilter(col, navValue, chain[0]);
             this.dateNavState.push({

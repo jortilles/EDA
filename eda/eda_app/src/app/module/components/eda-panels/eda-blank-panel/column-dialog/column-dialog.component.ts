@@ -399,6 +399,10 @@ export class ColumnDialogComponent {
         const newCol = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
         this.cumulativeSum = newCol?.cumulativeSum;
         this.dateNavEnabled = !!newCol?.dateNav;
+        // Si la columna ya tiene dateNav activo, restringir las opciones de formato
+        if (this.dateNavEnabled) {
+            this.formatDates = this.chartUtils.formatDates.filter(f => ['year', 'month', 'day'].includes(f.value));
+        }
     }
 
     handleCumulativeSum() {
@@ -432,6 +436,13 @@ export class ColumnDialogComponent {
             // dateNav y downChild son mutuamente excluyentes: si la columna fecha pasa a ser
             // navegable por fecha, su hijo debe perder el vínculo de padre
             delete newCol.downChild;
+            // Restringir el selector de formato a solo año/mes/día y forzar 'día' como default
+            this.formatDates = this.chartUtils.formatDates.filter(f => ['year', 'month', 'day'].includes(f.value));
+            this.formatDate = this.formatDates.find(f => f.value === 'day');
+            this.addFormatDate();
+        } else {
+            // Restaurar todas las opciones de formato al desactivar dateNav
+            this.formatDates = this.chartUtils.formatDates;
         }
     }
 
