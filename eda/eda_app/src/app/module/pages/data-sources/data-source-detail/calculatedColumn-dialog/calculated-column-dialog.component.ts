@@ -13,7 +13,7 @@ import { AGG_COMPUTED } from '../aggregationConstants';
   standalone: true,
   selector: 'app-calculated-column-dialog',
   templateUrl: './calculated-column-dialog.component.html',
-  styleUrls: ['../../../../../../assets/sass/eda-styles/components/dialog-component.css'],
+  styleUrls: ['../../../../../../assets/sass/eda-styles/components/dialog-component.css', './calculated-column-dialog.component.css'],
   imports: [ReactiveFormsModule, EdaDialog2Component, FormsModule, CommonModule]
 })
 
