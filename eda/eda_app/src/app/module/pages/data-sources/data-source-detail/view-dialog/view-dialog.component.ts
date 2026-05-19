@@ -8,6 +8,7 @@ import { EdaDialog2Component } from '@eda/shared/components/shared-components.in
   standalone: true,
   selector: 'app-view-dialog',
   templateUrl: './view-dialog.component.html',
+  styleUrls: ['./view-dialog.component.css'],
     imports: [
       FormsModule, ReactiveFormsModule, EdaDialog2Component
     ]

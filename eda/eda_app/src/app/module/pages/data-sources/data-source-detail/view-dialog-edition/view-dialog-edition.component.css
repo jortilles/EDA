@@ -1,0 +1,8 @@
+.view-edition-btn {
+  background-color: var(--corporate-primary);
+  color: #ffffff;
+}
+
+.view-edition-btn:hover:not(:disabled) {
+  background-color: rgba(var(--corporate-primary-rgb), 0.85);
+}
