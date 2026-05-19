@@ -12,24 +12,32 @@
     <!-- Colors -->
     <div class="p-6 flex-1 overflow-y-auto">
       <div class="space-y-6">
-        <div class="space-y-4">
-          <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color del los gráficos:</h6>
-          <p-dropdown
-            [(ngModel)]="selectedPalette"
-            [options]="allPalettes"
-            optionLabel="name"
-            i18n-placeholder="@@selectPalette"
-            placeholder="-- Seleccione una paleta --"
-            (ngModelChange)="onPaletteSelected()"
-            [style]="{'width':'180px'}"
-            styleClass="mb-6"
-            appendTo="body">
-          </p-dropdown>
-          <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase tracking-wider">Colors</h3>
+        <div class="space-y-4 bg-slate-50 rounded-md p-4">
+          <span class="text-lg font-semibold" i18n="@@colorsChartH6">Colores</span>
+          <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
+          <div class="flex items-stretch gap-2 mb-4">
+            <p-dropdown
+              [(ngModel)]="selectedPalette"
+              [options]="allPalettes"
+              optionLabel="name"
+              i18n-placeholder="@@selectPalette"
+              placeholder="-- Seleccione una paleta --"
+              (ngModelChange)="onPaletteSelected()"
+              [style]="{'width':'180px'}"
+              appendTo="body">
+            </p-dropdown>
+            @if (selectedPalette) {
+              <div class="flex rounded overflow-hidden" style="width: 80px;">
+                @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
+                  <div class="flex-1" [style.background-color]="color"></div>
+                }
+              </div>
+            }
+          </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             @for (item of labels; track item; let idx = $index, e = $even) {
-            <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+            <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
               <span class="font-medium">{{ item }}</span>
               <div class="flex items-center gap-2">
                 <input [(ngModel)]="assignedColors[idx].color" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">

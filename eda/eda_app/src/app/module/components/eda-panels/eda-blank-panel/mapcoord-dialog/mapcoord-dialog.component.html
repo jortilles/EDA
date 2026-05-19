@@ -16,24 +16,33 @@
             <div class="space-y-6">
                 <!-- Colors -->
                 <div class="space-y-4">
-                    <h1 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase">Colors</h1>
+                    <span class="text-lg font-semibold" i18n="@@colorsChartH6">Colores</span>
+                    <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <p-dropdown
-                            [(ngModel)]="selectedPalette"
-                            [options]="allPalettes"
-                            optionLabel="name"
-                            i18n-placeholder="@@selectPalette"
-                            placeholder="-- Seleccione una paleta --"
-                            (ngModelChange)="onPaletteSelected()"
-                            [style]="{'width':'180px'}"
-                            styleClass="mb-6 md:col-span-2"
-                            appendTo="body">
-                        </p-dropdown>
-                    
+                        <div class="flex items-stretch gap-2 mb-4 md:col-span-2">
+                            <p-dropdown
+                                [(ngModel)]="selectedPalette"
+                                [options]="allPalettes"
+                                optionLabel="name"
+                                i18n-placeholder="@@selectPalette"
+                                placeholder="-- Seleccione una paleta --"
+                                (ngModelChange)="onPaletteSelected()"
+                                [style]="{'width':'180px'}"
+                                appendTo="body">
+                            </p-dropdown>
+                            @if (selectedPalette) {
+                                <div class="flex rounded overflow-hidden" style="width: 80px;">
+                                    @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
+                                        <div class="flex-1" [style.background-color]="color"></div>
+                                    }
+                                </div>
+                            }
+                        </div>
+
                         <!-- Bloque Color Inicial -->
                         <div class="flex flex-col gap-2">
                             <span class="font-semibold">Color Inicial</span>
-                            <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+                            <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
                                 <div class="flex items-center gap-2">
                                     <input class="text-md text-slate-500 font-mono">{{ initialColor }}
                                     <p-colorPicker [(ngModel)]="initialColor" (onChange)="handleInputColor()" format="hex"
@@ -45,7 +54,7 @@
                         <!-- Bloque Color Final -->
                         <div class="flex flex-col gap-2">
                             <span class="font-semibold">Color Final</span>
-                            <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+                            <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
                                 <div class="flex items-center gap-2">
                                     <input class="text-md text-slate-500 font-mono">{{ finalColor }}
                                     <p-colorPicker [(ngModel)]="finalColor" (onChange)="handleInputColor()" format="hex"
