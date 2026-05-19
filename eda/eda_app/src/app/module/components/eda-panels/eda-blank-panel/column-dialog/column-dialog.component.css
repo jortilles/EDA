@@ -51,3 +51,32 @@
     background: var(--corporate-primary) !important;
     filter: brightness(0.9);
 }
+/* ── Add filter button ─────────────────────────────────────── */
+.addFilter-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 1.5rem;
+    height: 3rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #ffffff;
+    background: var(--corporate-primary);
+    flex-shrink: 0;
+    transition: filter 0.15s, box-shadow 0.15s;
+}
+
+.addFilter-button:hover:not(:disabled) {
+    background: rgba(var(--corporate-primary-rgb), 0.75);
+    filter: brightness(0.9);
+}
+
+.addFilter-button:disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+    box-shadow: none;
+}

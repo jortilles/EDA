@@ -33,7 +33,7 @@
     align-items: center;
     justify-content: center;
     padding: 0 1.5rem;
-    height: 2.75rem;
+    height: 3rem;
     border: none;
     border-radius: 8px;
     font-size: 0.875rem;
@@ -46,8 +46,8 @@
 }
 
 .addFilter-button:hover:not(:disabled) {
+    background: rgba(var(--corporate-primary-rgb), 0.75);
     filter: brightness(0.9);
-    box-shadow: 0 4px 12px rgba(var(--corporate-primary-rgb), 0.3);
 }
 
 .addFilter-button:disabled {
