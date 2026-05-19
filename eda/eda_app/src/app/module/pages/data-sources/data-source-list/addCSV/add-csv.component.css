@@ -1,3 +1,43 @@
+:host ::ng-deep .csv-dropdown {
+  display: block;
+  width: 100%;
+}
+
+:host ::ng-deep .csv-dropdown.p-dropdown {
+  border-color: #d1d5db;
+  border-radius: 0.375rem;
+  width: 100%;
+  min-width: 0;
+}
+
+:host ::ng-deep .csv-dropdown.p-dropdown:not(.p-disabled):hover {
+  border-color: var(--corporate-primary);
+}
+
+:host ::ng-deep .csv-dropdown.p-dropdown:not(.p-disabled).p-focus {
+  border-color: var(--corporate-primary);
+  box-shadow: 0 0 0 2px rgba(var(--corporate-primary-rgb), 0.15);
+}
+
+:host ::ng-deep .csv-dropdown .p-dropdown-label {
+  padding: 0.4rem 0.6rem;
+  font-size: 0.875rem;
+}
+
+.csv-input:focus {
+  outline: none;
+  border-color: var(--corporate-primary);
+  box-shadow: 0 0 0 2px rgba(var(--corporate-primary-rgb), 0.2);
+}
+
+.csv-dragging {
+  border-color: var(--corporate-primary) !important;
+  background-color: rgba(var(--corporate-primary-rgb), 0.08) !important;
+}
+
+.csv-hover:hover {
+  border-color: var(--corporate-primary);
+}
 
 .box {
   /* border: 1px solid #808080; */
