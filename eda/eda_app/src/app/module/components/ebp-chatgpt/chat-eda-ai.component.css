@@ -1,3 +1,20 @@
+/* ---- PrimeNG dialog header ---- */
+:host ::ng-deep .p-dialog .p-dialog-header {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+:host ::ng-deep .p-dialog .p-dialog-content {
+  padding: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+:host ::ng-deep .p-dialog {
+  display: flex;
+  flex-direction: column;
+}
+
 /* ---- Messages background ---- */
 .chat-messages-bg {
   background: #f8fafb;
@@ -58,7 +75,7 @@
 
 /* ---- Bubbles ---- */
 .chat-bubble {
-  max-width: 82%;
+  max-width: 100%;
   border-radius: 1rem;
   padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
@@ -68,6 +85,8 @@
   background: linear-gradient(135deg, var(--corporate-primary), var(--corporate-primary-gradient));
   color: white;
   border-bottom-right-radius: 0.25rem;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 .chat-bubble--assistant {
   background: white;
