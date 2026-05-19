@@ -42,6 +42,9 @@ export class PromptUtil {
     - If the name column is in a different table than the metric, include that table in the query so the join can be resolved
 
     ══ DATABASE ══
+    IMPORTANT: The ONLY valid table names are: ${schema.map((t: any) => `"${t.table}"`).join(', ')}
+    You MUST use these exact names. Any other table name is invalid and must NOT be used.
+
     ${JSON.stringify(schema, null, 2)}
     `;
     }
