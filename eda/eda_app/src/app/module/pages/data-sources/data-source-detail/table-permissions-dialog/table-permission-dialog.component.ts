@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
     standalone: true,
     selector: 'app-table-permission-dialog',
     templateUrl: './table-permission-dialog.component.html',
+    styleUrls: ['./table-permission-dialog.component.css'],
     imports: [EdaDialog2Component, CommonModule, MultiSelectModule, FormsModule]
 })
 
