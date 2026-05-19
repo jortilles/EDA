@@ -11,7 +11,8 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { SliderModule } from 'primeng/slider';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { RadioButtonModule } from 'primeng/radiobutton';
-import { CommonModule } from '@angular/common'; 
+import { DropdownModule } from 'primeng/dropdown';
+import { CommonModule } from '@angular/common';
 import { DashboardPage } from "../../pages/dashboard/dashboard.page";
 
 @Component({
@@ -20,7 +21,7 @@ import { DashboardPage } from "../../pages/dashboard/dashboard.page";
   styleUrls: ['./dashboard-edit-style.dialog.css'],
   templateUrl: './dashboard-edit-style.dialog.html',
   imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule,
-    MultiSelectModule, FloatLabelModule, SliderModule, ColorPickerModule,RadioButtonModule,CommonModule, EdaDialog2Component]
+    MultiSelectModule, FloatLabelModule, SliderModule, ColorPickerModule, RadioButtonModule, DropdownModule, CommonModule, EdaDialog2Component]
 })
 export class DashboardEditStyleDialog {
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
