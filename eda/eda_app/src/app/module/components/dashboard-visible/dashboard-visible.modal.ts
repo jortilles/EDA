@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from "@angular/core";
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { AlertService, GroupService, IGroup } from "@eda/services/service.index";
 import { EdaDialog, EdaDialog2Component, EdaDialogAbstract, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
@@ -13,6 +13,8 @@ import { DashboardPage } from "../../pages/dashboard/dashboard.page";
   standalone: true,
   imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule,EdaDialog2Component],
   templateUrl: './dashboard-visible.modal.html',
+  styleUrls: ['./dashboard-visible.modal.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class DashboardVisibleModal {
   @Output() close: EventEmitter<any> = new EventEmitter<any>();

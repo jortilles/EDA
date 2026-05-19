@@ -10,16 +10,14 @@
     <!-- Botones de Selección -->
       <h6 i18n="@@selectDashboardPrivacity"> Selecciona la privacidad del informe </h6>
       <div class="col-12">
-        <p-selectButton [options]="visibleTypes" formControlName="visible"  (onChange)="handleSelectedBtn($event)" 
-          class="bg-gray-100 text-gray-700 rounded-md shadow-sm">
+        <p-selectButton [options]="visibleTypes" formControlName="visible" (onChange)="handleSelectedBtn($event)"
+          class="visibility-selector">
         </p-selectButton>
       </div>
 
       @if(showUrl){
-        <span (click)="copyURL()" class="cursor-pointer w-fit p-2 h-fit bg-gray-100 rounded-md border font-bold text-gray-700 
-        text-sm font-medium text-white bg-gradient-to-r from-[#00B0BA] to-teal-400 flex items-center"
-        i18n="@@copyPublicURL"> 
-          copiar URL pública
+        <span (click)="copyURL()" class="vis-copy-url-btn" i18n="@@copyPublicURL">
+          <i class="pi pi-copy"></i> copiar URL pública
         </span>
       }
 
