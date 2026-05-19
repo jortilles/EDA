@@ -366,6 +366,21 @@
   background: linear-gradient(to right, var(--corporate-primary), var(--corporate-primary-gradient));
 }
 
+/* ---- Action icon buttons in report/dashboard cards ---- */
+.btn-card-action:hover {
+  background-color: rgba(var(--corporate-primary-rgb), 0.08);
+  color: var(--corporate-primary);
+}
+
+/* ---- Advanced filter toggle icon ---- */
+.filter-toggle-icon { transition: color 0.15s; }
+.filter-toggle-icon:hover { color: var(--corporate-primary); }
+.filter-toggle-icon--active { color: var(--corporate-primary); }
+
+/* ---- Advanced filter clear button ---- */
+.filter-clear-btn { color: var(--corporate-primary); font-size: 0.75rem; font-weight: 500; }
+.filter-clear-btn:hover { opacity: 0.75; }
+
 /* ---- Dashboard report cards ---- */
 .report-card:hover { border-color: var(--folder-border-hover); }
 

@@ -19,9 +19,9 @@
             class="w-full rounded-md border border-input bg-background py-2 !pl-9 !pr-9 text-sm"
             i18n-placeholder="@@searcherInput" placeholder="Buscador">
           <eda-icon name="plus" size="sm" (click)="toggleAdvancedFilter($event)"
-            class="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 cursor-pointer transition-colors hover:text-teal-500"
+            class="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 cursor-pointer filter-toggle-icon"
             [class.text-muted-foreground]="!showAdvancedFilter()"
-            [class.text-teal-500]="showAdvancedFilter()" />
+            [class.filter-toggle-icon--active]="showAdvancedFilter()" />
 
           @if(showAdvancedFilter()) {
             <div class="advanced-filter-panel absolute top-full right-0 z-50 mt-2 w-full rounded-lg border bg-white shadow-lg"
@@ -30,7 +30,7 @@
               <div class="flex items-center justify-between px-4 py-3 border-b">
                 <span class="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
                   i18n="@@advancedFilterTitle">Filtro avanzado</span>
-                <button class="text-xs text-teal-500 hover:text-teal-700 font-medium"
+                <button class="filter-clear-btn"
                   (click)="clearAdvancedFilters()" i18n="@@clearFiltersBtn">Limpiar</button>
               </div>
               <div class="p-4 space-y-3">
@@ -332,7 +332,7 @@
       </div>
       <div class="flex items-center justify-end">
         @if(report.config.visible=='shared' || report.config.visible=='open' ){
-          <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="copyReport(report)"
+          <button class="btn-card-action rounded-md p-1 cursor-pointer" (click)="copyReport(report)"
             title="Copiar enlace público" i18n-title="@@copyPublicLinkTooltip">
             <eda-icon name="link" size="sm" class="mr-1"></eda-icon>
           </button>
@@ -340,23 +340,23 @@
         @if(!isObserver){
           @if(canEditReport(report)){
             @if (!isEditing || editingReportId !== report._id) {
-            <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="renameReport(report)"
+            <button class="btn-card-action rounded-md p-1 cursor-pointer" (click)="renameReport(report)"
               title="Editar nombre" i18n-title="@@renameReportTooltip">
               <eda-icon name="pencil" class="mr-1"></eda-icon>
             </button>
             }@else {
-            <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="handleEditing('done', report)"
+            <button class="btn-card-action rounded-md p-1 cursor-pointer" (click)="handleEditing('done', report)"
               title="Confirmar nombre" i18n-title="@@confirmRenameTooltip">
               <eda-icon name="check" class="mr-1"></eda-icon>
             </button>
             }
           }
 
-          <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="cloneReport(report)"
+          <button class="btn-card-action rounded-md p-1 cursor-pointer" (click)="cloneReport(report)"
             title="Duplicar informe" i18n-title="@@duplicateReportTooltip">
             <eda-icon name="document-duplicated"></eda-icon>
           </button>
-          <button class="rounded-md p-1 cursor-pointer hover:bg-muted" (click)="deleteReport(report)"
+          <button class="btn-card-action rounded-md p-1 cursor-pointer" (click)="deleteReport(report)"
             title="Eliminar informe" i18n-title="@@deleteReportTooltip">
             <eda-icon name="bin"></eda-icon>
           </button>
