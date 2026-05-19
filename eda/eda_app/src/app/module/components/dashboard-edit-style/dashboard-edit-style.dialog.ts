@@ -291,6 +291,12 @@ public removeBackgroundImage(): void {
   this.backgroundImage = null;
 }
 
+public openImageInNewTab(): void {
+  const win = window.open('', '_blank');
+  win.document.write(`<html><body style="margin:0;background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh"><img src="${this.backgroundImage}" style="max-width:100%;max-height:100vh"></body></html>`);
+  win.document.close();
+}
+
 public saveConfig(): void {
     // Aplicar paleta a todos los charts del dashboard
     this.applyPaletteToAllCharts();

@@ -27,7 +27,7 @@
               <input type="file" accept="image/*" class="hidden" (change)="onBackgroundImageSelected($event)">
             </label>
             @if (backgroundImage) {
-              <img [src]="backgroundImage" class="w-[7rem] h-[3rem] object-cover rounded border" />
+              <img [src]="backgroundImage" (click)="openImageInNewTab()" class="w-[7rem] h-[3rem] object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity" title="Ver imagen" />
               <button class="text-sm text-red-500 hover:underline" (click)="removeBackgroundImage()">Quitar</button>
             }
           </div>
