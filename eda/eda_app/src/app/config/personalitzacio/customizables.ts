@@ -1,40 +1,40 @@
 // Personalización de colores corporativos
 export const CORPORATE_COLORS = {
     // Colores base de marca — usados en toda la aplicación
-    primary:         '#E11D48',      // Color principal (botones, iconos, gradientes)
-    primaryGradient: '#FB7185',      // Extremo final de gradientes (header chat, FAB, burbujas)
-    primaryRgb:      '225, 29, 72',  // Valor RGB del primario para opacidades (box-shadow, rgba)
-    primaryHsl:      '347 91% 50%',  // Componentes HSL del primario para --ring (Tailwind focus ring)
+    primary:         '#00BFB3',      // Color principal (botones, iconos, gradientes)
+    primaryGradient: '#34D0C7',      // Extremo final de gradientes (header chat, FAB, burbujas)
+    primaryRgb:      '0, 191, 179',  // Valor RGB del primario para opacidades (box-shadow, rgba)
+    primaryHsl:      '175 100% 37%', // Componentes HSL del primario para --ring (Tailwind focus ring)
 
     // Colores específicos del chatbot
     chat: {
-        avatarBg:       '#ffe4e6',   // Fondo del avatar del robot (header y mensajes)
-        avatarBgAlt:    '#fecdd3',   // Fondo alternativo del avatar (gradiente empty state)
-        avatarBorder:   '#fda4af',   // Borde del avatar y cabecera de tabla
-        surfaceHover:   '#fff1f2',   // Fondo hover en sugerencias y filas de tabla
-        tableHeader:    '#be123c',   // Color del texto en cabeceras de tabla
-        linkColor:      '#e11d48',   // Color de enlaces en mensajes
-        linkHoverColor: '#9f1239',   // Color de enlaces al hacer hover
+        avatarBg:       '#CCFAF7',   // Fondo del avatar del robot (header y mensajes)
+        avatarBgAlt:    '#99F0EB',   // Fondo alternativo del avatar (gradiente empty state)
+        avatarBorder:   '#55D6CD',   // Borde del avatar y cabecera de tabla
+        surfaceHover:   '#E6FAF9',   // Fondo hover en sugerencias y filas de tabla
+        tableHeader:    '#007B74',   // Color del texto en cabeceras de tabla
+        linkColor:      '#00bfb3',   // Color de enlaces en mensajes
+        linkHoverColor: '#008F87',   // Color de enlaces al hacer hover
     },
 
     // Colores específicos de carpetas (home — vista de carpetas y filtros de tags)
     folder: {
-        iconBg:          '#ffe4e6',  // Fondo del icono de carpeta cerrada
-        iconBgHover:     '#fecdd3',  // Fondo del icono de carpeta hover o abierta
-        iconColor:       '#e11d48',  // Color del icono de carpeta cerrada
-        borderHover:     '#fb7185',  // Borde de la tarjeta carpeta al hacer hover o al estar abierta
-        iconColorHover:  '#be123c',  // Color del icono y texto al hacer hover o al estar abierta
-        cardBgOpen:      '#fff1f2',  // Fondo de la tarjeta cuando la carpeta está abierta
-        labelColorOpen:  '#9f1239',  // Color del nombre de la carpeta cuando está abierta
+        iconBg:          '#CCFAF7',  // Fondo del icono de carpeta cerrada
+        iconBgHover:     '#99F0EB',  // Fondo del icono de carpeta hover o abierta
+        iconColor:       '#00BFB3',  // Color del icono de carpeta cerrada
+        borderHover:     '#34D0C7',  // Borde de la tarjeta carpeta al hacer hover o al estar abierta
+        iconColorHover:  '#007B74',  // Color del icono y texto al hacer hover o al estar abierta
+        cardBgOpen:      '#E6FAF9',  // Fondo de la tarjeta cuando la carpeta está abierta
+        labelColorOpen:  '#005E58',  // Color del nombre de la carpeta cuando está abierta
     },
 
     // Colores de botones de acción en diálogos
     buttons: {
         // Confirmar: acción principal afirmativa
-        confirmBg:        '#00B0BA',  // Inicio gradiente (rose-600)
-        confirmBgEnd:     '#00c9b1',  // Fin gradiente (rose-400)
-        confirmHoverBg:   '#006c72',  // Hover inicio (rose-800, más oscuro)
-        confirmHoverBgEnd:'#05a592',  // Hover fin (rose-700, más oscuro)
+        confirmBg:        '#00B0BA',  // Inicio gradiente
+        confirmBgEnd:     '#00c9b1',  // Fin gradiente
+        confirmHoverBg:   '#006c72',  // Hover inicio
+        confirmHoverBgEnd:'#05a592',  // Hover fin
 
         // Auxiliar: acción secundaria (ejecutar consulta, abrir SQL, previsualizar…)
         auxBg:            '#1D4ED8',  // Inicio gradiente (blue-700)
@@ -43,12 +43,96 @@ export const CORPORATE_COLORS = {
         auxHoverBgEnd:    '#2563EB',  // Hover fin (blue-600)
 
         // Cancelar: acción de descarte
-        cancelBg:         '#df4040',  // Inicio gradiente (red-400, más claro)
-        cancelBgEnd:      '#ec2828',  // Fin gradiente (red-300, más claro)
-        cancelHoverBg:    'rgb(177, 39, 39)',  // Hover inicio (red-500, más oscuro)
-        cancelHoverBgEnd: '#bd3636',  // Hover fin (red-400, más oscuro)
+        cancelBg:         '#df4040',  // Inicio gradiente
+        cancelBgEnd:      '#ec2828',  // Fin gradiente
+        cancelHoverBg:    'rgb(177, 39, 39)',  // Hover inicio
+        cancelHoverBgEnd: '#bd3636',  // Hover fin
     },
 };
+
+// =============================================================================
+// PALETA ALTERNATIVA — Rosa (Rose)
+// =============================================================================
+// export const CORPORATE_COLORS = {
+//     primary:         '#E11D48',      // rose-600
+//     primaryGradient: '#FB7185',      // rose-400
+//     primaryRgb:      '225, 29, 72',
+//     primaryHsl:      '347 91% 50%',
+//     chat: {
+//         avatarBg:       '#ffe4e6',
+//         avatarBgAlt:    '#fecdd3',
+//         avatarBorder:   '#fda4af',
+//         surfaceHover:   '#fff1f2',
+//         tableHeader:    '#be123c',
+//         linkColor:      '#e11d48',
+//         linkHoverColor: '#9f1239',
+//     },
+//     folder: {
+//         iconBg:          '#ffe4e6',
+//         iconBgHover:     '#fecdd3',
+//         iconColor:       '#e11d48',
+//         borderHover:     '#fb7185',
+//         iconColorHover:  '#be123c',
+//         cardBgOpen:      '#fff1f2',
+//         labelColorOpen:  '#9f1239',
+//     },
+//     buttons: {
+//         confirmBg:        '#00B0BA',
+//         confirmBgEnd:     '#00c9b1',
+//         confirmHoverBg:   '#006c72',
+//         confirmHoverBgEnd:'#05a592',
+//         auxBg:            '#1D4ED8',
+//         auxBgEnd:         '#3B82F6',
+//         auxHoverBg:       '#1E40AF',
+//         auxHoverBgEnd:    '#2563EB',
+//         cancelBg:         '#df4040',
+//         cancelBgEnd:      '#ec2828',
+//         cancelHoverBg:    'rgb(177, 39, 39)',
+//         cancelHoverBgEnd: '#bd3636',
+//     },
+// };
+
+// =============================================================================
+// PALETA ALTERNATIVA — Violeta (Violet)
+// =============================================================================
+// export const CORPORATE_COLORS = {
+//     primary:         '#7C3AED',      // violet-600
+//     primaryGradient: '#A78BFA',      // violet-400
+//     primaryRgb:      '124, 58, 237',
+//     primaryHsl:      '263 84% 58%',
+//     chat: {
+//         avatarBg:       '#EDE9FE',   // violet-100
+//         avatarBgAlt:    '#DDD6FE',   // violet-200
+//         avatarBorder:   '#C4B5FD',   // violet-300
+//         surfaceHover:   '#F5F3FF',   // violet-50
+//         tableHeader:    '#6D28D9',   // violet-700
+//         linkColor:      '#7C3AED',
+//         linkHoverColor: '#5B21B6',   // violet-800
+//     },
+//     folder: {
+//         iconBg:          '#EDE9FE',
+//         iconBgHover:     '#DDD6FE',
+//         iconColor:       '#7C3AED',
+//         borderHover:     '#A78BFA',
+//         iconColorHover:  '#6D28D9',
+//         cardBgOpen:      '#F5F3FF',
+//         labelColorOpen:  '#4C1D95',  // violet-900
+//     },
+//     buttons: {
+//         confirmBg:        '#00B0BA',
+//         confirmBgEnd:     '#00c9b1',
+//         confirmHoverBg:   '#006c72',
+//         confirmHoverBgEnd:'#05a592',
+//         auxBg:            '#1D4ED8',
+//         auxBgEnd:         '#3B82F6',
+//         auxHoverBg:       '#1E40AF',
+//         auxHoverBgEnd:    '#2563EB',
+//         cancelBg:         '#df4040',
+//         cancelBgEnd:      '#ec2828',
+//         cancelHoverBg:    'rgb(177, 39, 39)',
+//         cancelHoverBgEnd: '#bd3636',
+//     },
+// };
 
 export const ChartsPalettes = [
     {
@@ -68,7 +152,7 @@ export const ChartsPalettes = [
             '#F9C98F',
             '#F6D278',
             '#ECE45A'
-        ], 
+        ],
         name: 'Gradiente'
     },
     {
