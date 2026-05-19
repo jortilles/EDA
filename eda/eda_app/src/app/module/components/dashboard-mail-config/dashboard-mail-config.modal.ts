@@ -20,6 +20,7 @@ import { DashboardPage } from "../../pages/dashboard/dashboard.page";
   standalone: true,
   imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule, FloatLabelModule,CalendarModule,InputSwitchModule,EdaDialog2Component],
   templateUrl: './dashboard-mail-config.modal.html',
+  styleUrls: ['./dashboard-mail-config.modal.css'],
 })
 
 export class DashboardMailConfigModal {
