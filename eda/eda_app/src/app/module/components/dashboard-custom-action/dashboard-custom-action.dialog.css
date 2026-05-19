@@ -1,0 +1,33 @@
+.custom-action-input:focus {
+  outline: none;
+  border-color: var(--corporate-primary);
+  box-shadow: 0 0 0 2px rgba(var(--corporate-primary-rgb), 0.15);
+}
+
+.custom-action-icon-btn:hover {
+  background-color: rgba(var(--corporate-primary-rgb), 0.08);
+  color: var(--corporate-primary);
+}
+
+.custom-action-add-btn {
+  background: white;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.custom-action-add-btn:hover {
+  background-color: rgba(var(--corporate-primary-rgb), 0.08);
+  color: var(--corporate-primary);
+  border-color: var(--corporate-primary);
+}
+
+.custom-action-add-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(var(--corporate-primary-rgb), 0.15);
+}

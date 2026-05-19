@@ -15,6 +15,7 @@ import { EdaDialog2Component } from "@eda/shared/components/shared-components.in
   selector: 'app-dashboard-custom-action',
   standalone: true,
   templateUrl: './dashboard-custom-action.dialog.html',
+  styleUrls: ['./dashboard-custom-action.dialog.css'],
 imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule, FloatLabelModule, IconComponent, EdaDialog2Component],
 })
 export class DashboardCustomActionDialog{
