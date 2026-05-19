@@ -10,7 +10,7 @@
     min-height: 8rem;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: rgba(var(--corporate-primary-rgb), 0.4) transparent;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
 }
 
 .pick-items-scroll::-webkit-scrollbar {
@@ -18,7 +18,7 @@
 }
 
 .pick-items-scroll::-webkit-scrollbar-thumb {
-    background-color: rgba(var(--corporate-primary-rgb), 0.4);
+    background-color: var(--scrollbar-thumb);
     border-radius: 9999px;
 }
 

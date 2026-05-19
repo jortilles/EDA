@@ -59,7 +59,7 @@ span {
     align-content: flex-start;
     gap: 1rem;
     scrollbar-width: thin;
-    scrollbar-color: #cbd5e1 transparent;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
 }
 
 .filter-card {
@@ -130,7 +130,7 @@ span {
 }
 
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container::-webkit-scrollbar-thumb {
-    background-color: #cbd5e1;
+    background-color: var(--scrollbar-thumb);
 }
 
 /* ── Multiselect chips (non-autocomplete mode) ──────────────── */

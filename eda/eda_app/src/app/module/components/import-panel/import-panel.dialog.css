@@ -1,7 +1,6 @@
 /* ── Dialog content scrollbar ───────────────────────────────── */
 ::ng-deep .p-dialog .p-dialog-content {
     scrollbar-width: thin;
-    scrollbar-color: rgba(var(--corporate-primary-rgb), 0.4) transparent;
 }
 
 ::ng-deep .p-dialog .p-dialog-content::-webkit-scrollbar {
@@ -9,7 +8,7 @@
 }
 
 ::ng-deep .p-dialog .p-dialog-content::-webkit-scrollbar-thumb {
-    background-color: rgba(var(--corporate-primary-rgb), 0.4);
+    background-color: var(--scrollbar-thumb);
     border-radius: 9999px;
 }
 

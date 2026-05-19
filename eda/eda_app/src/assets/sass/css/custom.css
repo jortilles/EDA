@@ -14,6 +14,10 @@
 :root {
   --DEFAULT_FONT_FAMILY: "Montserrat";
   /* THIS MUST BE SET ALSO IN  eda_app\src\app\config\personalitzacio\customizables.ts */
+
+  /* ── Scrollbar global ── */
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-thumb-hover: #94a3b8;
 }
 
 /* ─── PrimeNG highlight override (lara-light-blue uses hardcoded blue — we override here) ─── */
