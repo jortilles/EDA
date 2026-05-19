@@ -14,15 +14,17 @@
       <div class="space-y-6">
         <div class="space-y-4">
           <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color del los gráficos:</h6>
-          <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm mb-6"
-            [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
-            <option [ngValue]="null" disabled hidden i18n="@@selectPalette">
-              -- Seleccione una paleta --
-            </option>
-            @for (palette of allPalettes; track $index) {
-            <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
-            }
-          </select>
+          <p-dropdown
+            [(ngModel)]="selectedPalette"
+            [options]="allPalettes"
+            optionLabel="name"
+            i18n-placeholder="@@selectPalette"
+            placeholder="-- Seleccione una paleta --"
+            (ngModelChange)="onPaletteSelected()"
+            [style]="{'width':'180px'}"
+            styleClass="mb-6"
+            appendTo="body">
+          </p-dropdown>
           <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase tracking-wider">Colors</h3>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

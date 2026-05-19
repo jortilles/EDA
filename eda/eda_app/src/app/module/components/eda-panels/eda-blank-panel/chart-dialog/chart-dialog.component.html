@@ -348,15 +348,16 @@
                 <div>
                   <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
                     <div class="flex items-stretch gap-2 mb-6">
-                      <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
-                        [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
-                        <option [ngValue]="null" disabled hidden i18n="@@selectPalette">
-                          -- Seleccione una paleta --
-                        </option>
-                        @for (palette of allPalettes; track $index) {
-                          <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
-                        }
-                      </select>
+                      <p-dropdown
+                        [(ngModel)]="selectedPalette"
+                        [options]="allPalettes"
+                        optionLabel="name"
+                        i18n-placeholder="@@selectPalette"
+                        placeholder="-- Seleccione una paleta --"
+                        (ngModelChange)="onPaletteSelected()"
+                        [style]="{'width':'180px'}"
+                        appendTo="body">
+                      </p-dropdown>
                       @if (selectedPalette) {
                         <div class="flex rounded overflow-hidden" style="width: 80px;">
                           @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
@@ -416,15 +417,16 @@
                       @if (!showUniqueColors) {
                         <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
                         <div class="flex items-stretch gap-2 mb-6">
-                          <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
-                            [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
-                            <option [ngValue]="null" disabled hidden i18n="@@selectPalette">
-                              -- Seleccione una paleta --
-                            </option>
-                            @for (palette of allPalettes; track $index) {
-                              <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
-                            }
-                          </select>
+                          <p-dropdown
+                            [(ngModel)]="selectedPalette"
+                            [options]="allPalettes"
+                            optionLabel="name"
+                            i18n-placeholder="@@selectPalette"
+                            placeholder="-- Seleccione una paleta --"
+                            (ngModelChange)="onPaletteSelected()"
+                            [style]="{'width':'180px'}"
+                            appendTo="body">
+                          </p-dropdown>
                           @if (selectedPalette) {
                             <div class="flex rounded overflow-hidden" style="width: 80px;">
                               @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
@@ -451,15 +453,16 @@
 
                         <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
                         <div class="flex items-stretch gap-2 mb-6">
-                          <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
-                            [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
-                            <option [ngValue]="null" disabled hidden i18n="@@selectPalette">
-                              -- Seleccione una paleta --
-                            </option>
-                            @for (palette of allPalettes; track $index) {
-                              <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
-                            }
-                          </select>
+                          <p-dropdown
+                            [(ngModel)]="selectedPalette"
+                            [options]="allPalettes"
+                            optionLabel="name"
+                            i18n-placeholder="@@selectPalette"
+                            placeholder="-- Seleccione una paleta --"
+                            (ngModelChange)="onPaletteSelected()"
+                            [style]="{'width':'180px'}"
+                            appendTo="body">
+                          </p-dropdown>
                           @if (selectedPalette) {
                             <div class="flex rounded overflow-hidden" style="width: 80px;">
                               @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
