@@ -11,7 +11,7 @@
             <label i18n="@@newTag" for="floating_tag2" class="mb-1">Nueva etiqueta</label>
             <input id="floating_tag2" type="text" [(ngModel)]="newTag" class="w-full border px-2 py-2.5 rounded">
           </div>
-          <button class="flex items-center px-4 py-2.5 border rounded-md" (click)="setNewTag()" [disabled]="!newTag">
+          <button class="tag-confirm-btn flex items-center px-4 py-2.5 rounded-md" (click)="setNewTag()" [disabled]="!newTag">
             <span i18n="@@guardarBtn">Confirmar</span>
           </button>
         </div>

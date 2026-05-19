@@ -1,0 +1,16 @@
+.tag-confirm-btn {
+  background: var(--corporate-primary);
+  color: #ffffff;
+  border: none;
+  transition: opacity 0.15s;
+}
+
+.tag-confirm-btn:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+.tag-confirm-btn:disabled {
+  background: #d1d5db;
+  color: #6b7280;
+  cursor: not-allowed;
+}
