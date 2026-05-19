@@ -6,7 +6,6 @@
 
 /* Asegurar que el overlay tenga un fondo sólido */
 .absolute.left-full {
-  background-color: white !important;
   opacity: 1 !important;
   z-index: 50;
 }

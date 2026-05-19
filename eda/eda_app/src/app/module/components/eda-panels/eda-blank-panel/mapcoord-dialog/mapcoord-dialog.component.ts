@@ -7,12 +7,13 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { ColorPickerModule } from 'primeng/colorpicker';
+import { DropdownModule } from 'primeng/dropdown';
 
 @Component({
   standalone: true,
   selector: "app-mapcoordedit-dialog",
   templateUrl: "./mapcoord-dialog.component.html",
-  imports: [CommonModule, FormsModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent]
+  imports: [CommonModule, FormsModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent, DropdownModule]
 })
 export class MapCoordDialogComponent implements OnInit, AfterViewChecked {
   @Input() controller: any;

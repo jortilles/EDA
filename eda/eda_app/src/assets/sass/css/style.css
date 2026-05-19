@@ -73,6 +73,19 @@
   @tailwind utilities;
 }
 
+/* === Corporate toggle switch (outside layers — beats tailwind-utilities) === */
+input[type="checkbox"].peer:checked ~ .corp-toggle {
+  background-color: var(--corporate-primary) !important;
+}
+input[type="checkbox"].peer:focus ~ .corp-toggle {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(var(--corporate-primary-rgb), 0.25);
+}
+/* === Corporate accent color (radio / checkbox) === */
+.accent-corp {
+  accent-color: var(--corporate-primary);
+}
+
 /* ====== Custom Base Styles ====== */
 @layer base {
   :root {
@@ -1936,3 +1949,32 @@ pre {
 
 }
 
+
+
+/* ====== Tooltip global (fuera de todos los layers) ====== */
+.p-tooltip .p-tooltip-text {
+  background: #1e293b !important;
+  color: #ffffff !important;
+  border-radius: 0.375rem !important;
+  font-size: 0.8125rem !important;
+  padding: 0.375rem 0.625rem !important;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2), 0 2px 4px -2px rgba(0,0,0,0.1) !important;
+  max-width: 20rem;
+}
+.p-tooltip.p-tooltip-right .p-tooltip-arrow  { border-right-color:  #1e293b !important; }
+.p-tooltip.p-tooltip-left .p-tooltip-arrow   { border-left-color:   #1e293b !important; }
+.p-tooltip.p-tooltip-top .p-tooltip-arrow    { border-top-color:    #1e293b !important; }
+.p-tooltip.p-tooltip-bottom .p-tooltip-arrow { border-bottom-color: #1e293b !important; }
+
+
+/* ====== Custom info-tooltip popup (outside layers) ====== */
+body .eda-tooltip-popup {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2), 0 2px 4px -2px rgba(0,0,0,0.1);
+  max-width: 15rem;
+}
