@@ -10,38 +10,32 @@
       <div class="grid grid-cols-2 gap-4">
         <div class="space-y-1.5">
           <label for="mesura" class="text-base font-medium text-gray-700" i18n="@@measureLabel">Mesura</label>
-          <div class="relative">
-            <select
-              id="mesura"
-              [(ngModel)]="whatIf.column"
-              class="w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-base text-gray-900 focus:outline-none appearance-none">
-              <option [ngValue]="null" disabled selected>Seleccionar mesura</option>
-              <option *ngFor="let option of columnOptions" [ngValue]="option.value">{{ option.label }}</option>
-            </select>
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-              </svg>
-            </div>
-          </div>
+          <p-dropdown
+            inputId="mesura"
+            [(ngModel)]="whatIf.column"
+            [options]="columnOptions"
+            optionLabel="label"
+            optionValue="value"
+            i18n-placeholder="@@selectMeasure"
+            placeholder="Seleccionar mesura"
+            [style]="{'width':'100%'}"
+            appendTo="body">
+          </p-dropdown>
         </div>
 
         <div class="space-y-1.5">
           <label for="operacio" class="text-base font-medium text-gray-700" i18n="@@operationLabel">Operació</label>
-          <div class="relative">
-            <select
-              id="operacio"
-              [(ngModel)]="whatIf.operator"
-              class="w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-base text-gray-900 focus:outline-none appearance-none">
-              <option value="" disabled selected>Seleccionar operació</option>
-              <option *ngFor="let option of ifOptions" [value]="option.value">{{ option.label }}</option>
-            </select>
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-              </svg>
-            </div>
-          </div>
+          <p-dropdown
+            inputId="operacio"
+            [(ngModel)]="whatIf.operator"
+            [options]="ifOptions"
+            optionLabel="label"
+            optionValue="value"
+            i18n-placeholder="@@selectOperation"
+            placeholder="Seleccionar operació"
+            [style]="{'width':'100%'}"
+            appendTo="body">
+          </p-dropdown>
         </div>
       </div>
 
