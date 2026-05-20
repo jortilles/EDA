@@ -1,15 +1,15 @@
 import { Component, Input} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DialogModule } from 'primeng/dialog';
 import { EbpUtils } from '../panel-utils/ebp-utils';
 import { EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
+import { EdaDialog2Component } from '@eda/shared/components/eda-dialogs/eda-dialog2/eda-dialog2.component';
 
 @Component({
     standalone: true,
     selector: 'app-chart-type-selector-dialog',
     templateUrl: './chart-type-selector-dialog.component.html',
     styleUrls: ['./chart-type-selector-dialog.component.css'],
-    imports: [CommonModule, DialogModule],
+    imports: [CommonModule, EdaDialog2Component],
 })
 export class ChartTypeSelectorDialogComponent {
     @Input() controller: any;
@@ -25,7 +25,6 @@ export class ChartTypeSelectorDialogComponent {
     }
 
     select(ct: any) {
-        this.visible = false;
         this.controller.close(EdaDialogCloseEvent.UPDATE, ct);
     }
 
