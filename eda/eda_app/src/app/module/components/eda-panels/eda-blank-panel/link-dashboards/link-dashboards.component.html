@@ -1,141 +1,111 @@
 <eda-dialog2 [display]="display" i18n-header="@@dialogHeaderCustomActions" [header]="title" width="40vw" height="40vh"
   [overflow]="'auto'" (apply)="saveChartConfig()" (close)="closeChartConfig()">
-  <div content class="p-6">
-    <div style="margin: 1em;">
-      @if(activateProgressBar){
-        <p-progressBar mode="indeterminate" [style]="{'height': '0.3rem'}"></p-progressBar>
-      }
-    </div>
+  <div content class="p-6 flex flex-col gap-4">
+
+    @if(activateProgressBar){
+      <p-progressBar mode="indeterminate" [style]="{'height': '0.3rem'}"></p-progressBar>
+    }
 
     <!-- CASE chart + edaquery -->
-    @if (!controller.params.modeSQL && !['table', 'parallelSets'].includes(controller.params.charttype) ) {
-      <div class="grid grid-cols-2 p-6">
-        <div class="">
-          <label class="block font-medium text-gray-700 mb-1" i18n="@@csvField">
-            Campo
-          </label>
-          <div class="text-gray-600 mb-1">{{ column }}</div>
+    @if (!controller.params.modeSQL && !['table', 'parallelSets'].includes(controller.params.charttype)) {
+      <div class="grid grid-cols-2 gap-4">
+        <div class="space-y-1.5">
+          <label class="block text-base font-medium text-gray-700" i18n="@@csvField">Campo</label>
+          <span class="text-base text-gray-600">{{ column }}</span>
         </div>
-        
-        <div class="">
-          <label for="technical-name" class="block font-medium text-gray-700 mb-1" i18n="@@LinkDashboardSelectedDashboard">
-            Informe a vincular
-          </label>
-          <div class="text-gray-600 mb-1">
-            <p-dropdown [options]="dasboards" [(ngModel)]="selectedDashboard" [disabled]="noLink" [style]="{'width': '100%'}"></p-dropdown>
-          </div>
+        <div class="space-y-1.5">
+          <label class="block text-base font-medium text-gray-700" i18n="@@LinkDashboardSelectedDashboard">Informe a vincular</label>
+          <p-dropdown [options]="dasboards" [(ngModel)]="selectedDashboard" [disabled]="noLink" [style]="{'width': '100%'}"></p-dropdown>
         </div>
       </div>
     }
 
-
     <!-- CASE table + edaquery -->
-    @if (!controller.params.modeSQL && ['table', 'parallelSets'].includes(controller.params.charttype) ) {
-      <div class="grid grid-cols-2 gap-2">
-        <div class="">
-          <label class="block font-medium text-gray-700 mb-1" i18n="@@csvField">
-            Campo
-          </label>
-          <div class="text-gray-600 mb-1">
-            <p-dropdown 
-              [(ngModel)]="selectedColumn"
-              [options]="columns"
-              [disabled]="noLink"
-              (onChange)="initDashboards(selectedColumn)"
-              optionLabel="colname" 
-              i18n-placeholder="@@csvField"
-              placeholder="Field"
-              [style]="{'width': '100%'}"
-            ></p-dropdown>
-          </div>
+    @if (!controller.params.modeSQL && ['table', 'parallelSets'].includes(controller.params.charttype)) {
+      <div class="grid grid-cols-2 gap-4">
+        <div class="space-y-1.5">
+          <label class="block text-base font-medium text-gray-700" i18n="@@csvField">Campo</label>
+          <p-dropdown
+            [(ngModel)]="selectedColumn"
+            [options]="columns"
+            [disabled]="noLink"
+            (onChange)="initDashboards(selectedColumn)"
+            optionLabel="colname"
+            i18n-placeholder="@@csvField"
+            placeholder="Campo"
+            [style]="{'width': '100%'}">
+          </p-dropdown>
         </div>
-        
-        <div class="">
-          <label for="technical-name" class="block font-medium text-gray-700 mb-1" i18n="@@LinkDashboardSelectedDashboard">
-            Informe a vincular
-          </label>
-          <div class="text-gray-600 mb-1">
-            <p-dropdown
-              [options]="dasboards"
-              [(ngModel)]="selectedDashboard"
-              [disabled]="loading === true"
-              [style]="{'width': '100%'}"
-              i18n-placeholder="@@fieldDashboardDashboard"
-              placeholder="Dashboard"
-              [loading] = "loading===true"
-            ></p-dropdown>
-          </div>
+        <div class="space-y-1.5">
+          <label class="block text-base font-medium text-gray-700" i18n="@@LinkDashboardSelectedDashboard">Informe a vincular</label>
+          <p-dropdown
+            [options]="dasboards"
+            [(ngModel)]="selectedDashboard"
+            [disabled]="loading === true"
+            [style]="{'width': '100%'}"
+            i18n-placeholder="@@fieldDashboardDashboard"
+            placeholder="Informe"
+            [loading]="loading === true">
+          </p-dropdown>
         </div>
       </div>
     }
 
     <!-- CASE chart + sqlquery -->
     @if (controller.params.modeSQL) {
-      <div class="grid grid-cols-3 gap-3">
-        <div class="">
-          <label class="block font-medium text-gray-700 mb-1" i18n="@@csvField">
-            Campo
-          </label>
-          <div class="text-gray-600 mb-1">
-            <p-dropdown 
-              [(ngModel)]="selectedColumn"
-              [options]="columns"
-              [disabled]="noLink"
-              (onChange)="initDashboards(selectedColumn)"
-              optionLabel="colname" 
-              i18n-placeholder="@@columnDashboard"
-              placeholder="Column"
-              [style]="{'width': '100%'}"
-            ></p-dropdown>
-          </div>
+      <div class="grid grid-cols-3 gap-4">
+        <div class="space-y-1.5">
+          <label class="block text-base font-medium text-gray-700" i18n="@@csvField">Campo</label>
+          <p-dropdown
+            [(ngModel)]="selectedColumn"
+            [options]="columns"
+            [disabled]="noLink"
+            (onChange)="initDashboards(selectedColumn)"
+            optionLabel="colname"
+            i18n-placeholder="@@columnDashboard"
+            placeholder="Columna"
+            [style]="{'width': '100%'}">
+          </p-dropdown>
         </div>
-
-        <div class="">
-          <label class="block font-medium text-gray-700 mb-1" i18n="@@LinkDashboardDbFilter">
-            Campo del informe
-          </label>
-          <div class="text-gray-600 mb-1">
-            <p-dropdown
+        <div class="space-y-1.5">
+          <label class="block text-base font-medium text-gray-700" i18n="@@LinkDashboardDbFilter">Campo del informe</label>
+          <p-dropdown
             [(ngModel)]="selectedDashboard"
-              [options]="dasboards"
-              i18n-placeholder="@@fieldDashboardDashboard"
-              placeholder="Dashboard"
-              [disabled]="noLink"
-              (onChange)="filterFilters()"
-              [style]="{'width': '100%'}"
-            ></p-dropdown>
-          </div>
+            [options]="dasboards"
+            i18n-placeholder="@@fieldDashboardDashboard"
+            placeholder="Informe"
+            [disabled]="noLink"
+            (onChange)="filterFilters()"
+            [style]="{'width': '100%'}">
+          </p-dropdown>
         </div>
-        
-        <div class="">
-          <label for="technical-name" class="block font-medium text-gray-700 mb-1" i18n="@@LinkDashboardSelectedDashboard">
-            Informe a vincular
-          </label>
-          <div class="text-gray-600 mb-1">
-            <p-dropdown
-              [(ngModel)]="selectedFilter"
-              [options]="filters"
-              optionLabel="colname" 
-              i18n-placeholder="@@columnDashboard"
-              placeholder="Column"
-              [disabled]="noLink"
-              [style]="{'width': '100%'}"
-              (onChange)="handleTargetColumn()"
-            ></p-dropdown>
-          </div>
+        <div class="space-y-1.5">
+          <label class="block text-base font-medium text-gray-700" i18n="@@LinkDashboardSelectedDashboard">Informe a vincular</label>
+          <p-dropdown
+            [(ngModel)]="selectedFilter"
+            [options]="filters"
+            optionLabel="colname"
+            i18n-placeholder="@@columnDashboard"
+            placeholder="Columna"
+            [disabled]="noLink"
+            [style]="{'width': '100%'}"
+            (onChange)="handleTargetColumn()">
+          </p-dropdown>
         </div>
       </div>
     }
 
     @if (!noLink) {
-      <div class="grid space-y-4 mt-6">
-        <p-chip
-          label="{{unLinkString}} {{oldLinked}}"
-          removable="true"
-          (onRemove)="noLink = true;"
-          >
-        </p-chip>
+      <div class="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5 mt-2">
+        <i class="pi pi-link text-amber-500 text-base shrink-0"></i>
+        <span class="text-base text-amber-800 flex-1">{{ unLinkString }} {{ oldLinked }}</span>
+        <button
+          (click)="noLink = true"
+          class="p-1 rounded-md text-amber-500 hover:bg-amber-100 hover:text-amber-700 transition-colors focus:outline-none">
+          <i class="pi pi-times text-sm"></i>
+        </button>
       </div>
     }
+
   </div>
 </eda-dialog2>
