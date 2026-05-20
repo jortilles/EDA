@@ -406,23 +406,19 @@
 
                   <!-- Tipo -->
                   <td class="p-3">
-                    <select class="border rounded p-2 w-full" [(ngModel)]="row.type"
-                      [ngModelOptions]="{standalone: true}">
-                      @for(dt of dataTypes; track $index){
-                      <option [value]="dt.value || dt"> {{ dt.label || dt }} </option>
-                      }
-                    </select>
+                    <p-dropdown [(ngModel)]="row.type" [ngModelOptions]="{standalone: true}"
+                      [options]="dataTypes" optionLabel="label" optionValue="value"
+                      appendTo="body" [style]="{'width':'100%'}">
+                    </p-dropdown>
                   </td>
 
                   <!-- Formato si es timestamp -->
                   @if(row.type === 'timestamp'){
                   <td class="p-3">
-                    <select class="border rounded p-2 w-full" [(ngModel)]="row.format"
-                      [ngModelOptions]="{standalone: true}">
-                      @for(df of dataFormats; track $index){
-                      <option [value]="df.value || df"> {{ df.label || df }} </option>
-                      }
-                    </select>
+                    <p-dropdown [(ngModel)]="row.format" [ngModelOptions]="{standalone: true}"
+                      [options]="dataFormats" optionLabel="label" optionValue="value"
+                      appendTo="body" [style]="{'width':'100%'}">
+                    </p-dropdown>
                   </td>
                   }
 
@@ -430,12 +426,10 @@
                   @if(['integer', 'numeric'].includes(row.type)){
                   <td></td>
                   <td class="p-3">
-                    <select class="border rounded p-2 w-full" [(ngModel)]="row.separator"
-                      [ngModelOptions]="{standalone: true}">
-                      @for(sep of decSeparators; track $index){
-                      <option [value]="sep.value || sep"> {{ sep.label || sep }} </option>
-                      }
-                    </select>
+                    <p-dropdown [(ngModel)]="row.separator" [ngModelOptions]="{standalone: true}"
+                      [options]="decSeparators" optionLabel="label" optionValue="value"
+                      appendTo="body" [style]="{'width':'100%'}">
+                    </p-dropdown>
                   </td>
                   }
                 </tr>
