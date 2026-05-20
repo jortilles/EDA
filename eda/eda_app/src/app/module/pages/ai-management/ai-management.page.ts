@@ -5,12 +5,13 @@ import { lastValueFrom } from 'rxjs';
 import { AlertService, SpinnerService } from '@eda/services/service.index';
 import { AssistantService } from '@eda/services/api/assistant.service';
 import { IaFormStateService } from '@eda/services/shared/IaFormState.service';
+import { DropdownModule } from 'primeng/dropdown';
 
 @Component({
   selector: 'app-ai-management',
   standalone: true,
   templateUrl: 'ai-management.page.html',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, DropdownModule],
   styleUrls: ['./ai-management.page.css']
 })
 export class AiManagementPage implements OnInit {
@@ -26,6 +27,12 @@ export class AiManagementPage implements OnInit {
   availableEnabled = signal(false);
   showApiKey = signal(false);
   showAwsSecretKey = signal(false);
+
+  providerOptions = [
+    { label: 'OpenAI', value: 'openai' },
+    { label: 'Anthropic', value: 'anthropic' },
+    { label: 'Bedrock', value: 'bedrock' },
+  ];
 
   aiForm: FormGroup;
 
