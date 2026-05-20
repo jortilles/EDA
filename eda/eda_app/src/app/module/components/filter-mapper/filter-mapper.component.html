@@ -25,9 +25,9 @@
     <div class="grid grid-cols-2 gap-6 mb-6">
       <!-- Panel Izquierdo -->
       <div class="bg-white shadow-sm border border-gray-200 rounded-lg">
-        <div class="bg-white border-b border-gray-100 py-3 px-4 rounded-t-lg">
+        <div class="border-b border-gray-100 py-3 px-4 rounded-t-lg" style="background-color: rgba(var(--corporate-primary-rgb), 0.06)">
           <h2 class="text-base font-semibold text-gray-800 flex items-center gap-2">
-            <div class="w-2 h-2 bg-[#00bfb3] rounded-full"></div>
+            <div class="w-2 h-2 rounded-full" style="background-color: var(--corporate-primary)"></div>
             <span i18n="@@panelFilters">Filtros del panel</span>
           </h2>
         </div>
@@ -36,10 +36,9 @@
             *ngFor="let item of getAvailablePanelFilters()"
             [id]="'item-' + item.id"
             class="group relative p-3 rounded-lg border-2 cursor-pointer transition-all duration-200"
-            [ngClass]="{
-              'border-[#00bfb3] bg-blue-50 shadow-md': isItemSelected(item.id),
-              'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm': !isItemSelected(item.id)
-            }"
+            [style.border-color]="isItemSelected(item.id) ? 'var(--corporate-primary)' : ''"
+            [style.background-color]="isItemSelected(item.id) ? 'rgba(var(--corporate-primary-rgb), 0.08)' : ''"
+            [ngClass]="{'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm': !isItemSelected(item.id), 'shadow-md': isItemSelected(item.id)}"
             (click)="handleItemClick(item.id, 'panel')"
           >
             <div class="flex items-center justify-between">
@@ -50,7 +49,8 @@
               </div>
               @if(isItemSelected(item.id)){
                 <svg
-                  class="w-3 h-3 text-[#00bfb3] animate-pulse"
+                  class="w-3 h-3 animate-pulse"
+                  style="color: var(--corporate-primary)"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -75,9 +75,9 @@
 
       <!-- Panel Derecho -->
       <div class="bg-white shadow-sm border border-gray-200 rounded-lg">
-        <div class="bg-white border-b border-gray-100 py-3 px-4 rounded-t-lg">
+        <div class="border-b border-gray-100 py-3 px-4 rounded-t-lg bg-slate-50">
           <h2 class="text-base font-semibold text-gray-800 flex items-center gap-2">
-            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+            <div class="w-2 h-2 rounded-full bg-slate-400"></div>
             <span i18n="@@dashboardFiltersMin">Filtros del dashboard</span>
           </h2>
         </div>
@@ -86,10 +86,9 @@
             *ngFor="let item of getAvailableDashboardFilters()"
             [id]="'item-' + item.id"
             class="group relative p-3 rounded-lg border-2 cursor-pointer transition-all duration-200"
-            [ngClass]="{
-              'border-green-500 bg-green-50 shadow-md': isItemSelected(item.id),
-              'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm': !isItemSelected(item.id)
-            }"
+            [style.border-color]="isItemSelected(item.id) ? 'var(--corporate-primary)' : ''"
+            [style.background-color]="isItemSelected(item.id) ? 'rgba(var(--corporate-primary-rgb), 0.08)' : ''"
+            [ngClass]="{'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm': !isItemSelected(item.id), 'shadow-md': isItemSelected(item.id)}"
             (click)="handleItemClick(item.id, 'dashboard')"
           >
             <div class="flex items-center justify-between">
@@ -100,7 +99,8 @@
               </div>
               @if(isItemSelected(item.id)){
                 <svg
-                  class="w-3 h-3 text-green-500 animate-pulse"
+                  class="w-3 h-3 animate-pulse"
+                  style="color: var(--corporate-primary)"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -126,10 +126,10 @@
 
     <!-- Sección de Conexiones Activas -->
     @if(connections.length > 0){
-      <div class="bg-white shadow-sm border border-gray-200 rounded-lg">
-        <div class="bg-white border-b border-gray-100 py-3 px-4 rounded-t-lg">
+      <div class="bg-white shadow-sm rounded-lg" style="border: 1.5px solid rgba(var(--corporate-primary-rgb), 0.3)">
+        <div class="border-b py-3 px-4 rounded-t-lg" style="border-color: rgba(var(--corporate-primary-rgb), 0.2); background-color: rgba(var(--corporate-primary-rgb), 0.06)">
           <h2 class="text-base font-semibold text-gray-800 flex items-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4" style="color: var(--corporate-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
             </svg>
             Conexiones Activas ({{ connections.length }})
