@@ -86,6 +86,16 @@ input[type="checkbox"].peer:focus ~ .corp-toggle {
   accent-color: var(--corporate-primary);
 }
 
+/* === p-datatable sort icon corporate color === */
+.p-datatable .p-sortable-column.p-highlight,
+.p-datatable .p-sortable-column.p-highlight .p-sortable-column-icon {
+  color: var(--corporate-primary) !important;
+}
+.p-datatable .p-sortable-column:not(.p-highlight):hover .p-sortable-column-icon {
+  color: var(--corporate-primary) !important;
+  opacity: 0.6;
+}
+
 /* ====== Custom Base Styles ====== */
 @layer base {
   :root {
