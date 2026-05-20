@@ -86,6 +86,7 @@
 
 .filter-and-or-container .gridster-item.gridster-item-moving {
     transition: 0s;
+    cursor: grabbing;
 }
 
 .filter-and-or-container .gridster-item:hover {
