@@ -427,7 +427,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     if (this.allDashboards.length >= 20) {
       this.tags.push({ label: this.allTagsGroupedLabel, value: this.allTagsValue });
     }
-    this.filterByTags();
+    this.reapplyFilters();
   }
 
   public openReport(report: any, event: MouseEvent) {
@@ -552,10 +552,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     const tags = sessionStorage.getItem("activeTags") || "[]";
     // Si tiene la etiqueta Todos (carpetas o lista plana) o no tiene etiqueta mostraremos todos los informes
     if (tags.includes($localize`:@@AllTags:Todos`) || tags.includes(this.allTagsFlatValue) || tags === '[]') {
-      this.publicReports  = this.reportMap.public;
-      this.sharedReports  = this.reportMap.shared;
-      this.privateReports = this.reportMap.private;
-      this.roleReports    = this.reportMap.group;
+      this.publicReports  = [...this.reportMap.public];
+      this.sharedReports  = [...this.reportMap.shared];
+      this.privateReports = [...this.reportMap.private];
+      this.roleReports    = [...this.reportMap.group];
     // Asignación de reportes visibles
     } else {
       this.publicReports  = this.checkTagsIntoReports(this.reportMap.public, tags);
@@ -829,8 +829,9 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
             }
           }
 
-          // Ordenar informes
+          // Ordenar informes y reaplicar filtro activo
           this.handleSorting();
+          this.reapplyFilters();
 
           // Marcar como recién clonado
           clonedReport.isNewlyCloned = true;
