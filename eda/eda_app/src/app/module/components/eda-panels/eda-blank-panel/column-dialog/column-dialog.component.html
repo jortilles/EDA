@@ -89,8 +89,8 @@
 
         <!-- Navegable -->
         @if (selectedColumn.column_type === 'date') {
-          <div class="mt-8 ml-4">
-            <h6 i18n="@@dateNavLabel" class="mb-2">Navegación por fecha</h6>
+          <div class="section-card">
+            <h4 class="section-title" i18n="@@dateNavLabel">Navegación por fecha</h4>
             <p-inputSwitch
               id="dateNavEnabled"
               [(ngModel)]="dateNavEnabled"
@@ -139,7 +139,7 @@
       <!-- FormatDate -->
       @if (showFormatDateSection) {
         <div class="section-card self-start">
-          <h4 class="section-title" i18n="@@dateFormatH4">Format</h4>
+          <h4 class="section-title" i18n="@@dateFormatH4">Formato</h4>
 
           @if (selectedColumn.computed_column === 'computed') {
             <div class="p-message p-message-info rounded p-2 mb-3 text-sm">
@@ -324,16 +324,17 @@
 </eda-dialog2>
 
 @if(display.duplicateColumn){
-  <eda-dialog2 header="Duplicar columna" width="60vw" height="auto" (close)="onCancelDuplicateColumn()" (apply)="saveDuplicatedColumn()">
-    <div content class="p-2 space-y-6">
-      <div class="col-12">
-        <span>
-          <label i18n="@@duplicatedColumnNameLabel" for="duplicatedColumnName" class="text-lg mr-6">
-            Nombre columna duplicada
-          </label>
-          <input pInputText id="duplicatedColumnName" [(ngModel)]="duplicatedColumnName" type="text" />
-        </span>
-      </div>
+  <eda-dialog2 header="Duplicar columna" width="40vw" height="auto" (close)="onCancelDuplicateColumn()" (apply)="saveDuplicatedColumn()">
+    <div content class="p-4 space-y-2">
+      <label i18n="@@duplicatedColumnNameLabel" for="duplicatedColumnName" class="block text-base font-medium text-gray-700">
+        Nombre columna duplicada
+      </label>
+      <input
+        id="duplicatedColumnName"
+        type="text"
+        [(ngModel)]="duplicatedColumnName"
+        class="w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-base text-gray-900 focus:outline-none focus:border-[var(--corporate-primary)]"
+      />
     </div>
   </eda-dialog2>
 }
