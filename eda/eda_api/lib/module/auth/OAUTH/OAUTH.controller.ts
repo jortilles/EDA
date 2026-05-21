@@ -148,7 +148,7 @@ export class OAUTHController {
                 const groups = await Group.find({});
     
                 // Extraemos los ids de todos los grupos del usuario
-                const userRoleIds = userEda.role.map((id: any) => id.toString());
+                const userRoleIds = userEda.role.map((id: any) => (id._id || id).toString());
     
                 // Obtenemos todos los grupos con source = 'EDA'
                 const groupsSourceEDA = groups.filter((g: any) => g._doc.source === 'EDA');
@@ -159,7 +159,7 @@ export class OAUTHController {
                 );
 
                 console.log('matchedGroups: ', matchedGroups);
-                role_id = _.cloneDeep(matchedGroups);
+                role_id = matchedGroups.map((g: any) => g._id);
 
             }
             
@@ -269,7 +269,7 @@ export class OAUTHController {
             const sep = relayState.includes('?') ? '&' : '?';
             const redirectTo = `${relayState}${sep}token=${encodeURIComponent(token)}`;
 
-            //console.log('redirectTo: ', redirectTo);
+            // console.log('redirectTo: ', redirectTo);
 
             return res.redirect(302, redirectTo);
 
