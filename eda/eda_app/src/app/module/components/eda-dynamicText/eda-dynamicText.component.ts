@@ -86,9 +86,13 @@ export class EdadynamicTextComponent implements OnInit {
             result = result / 1.5;
         }
 
-        result = Math.max(result, 10)-5;
+        result = Math.max(result, 10) - 5;
 
-        return `${result.toFixed()}px`;
+        if (this.inject?.modifiedFontPoints) {
+            result += this.inject.modifiedFontPoints;
+        }
+
+        return `${Math.max(result, 1).toFixed()}px`;
     }
 
 

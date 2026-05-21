@@ -781,6 +781,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.value = this.props.data.values[0][0];
         chartConfig.header = this.props.query[0].display_name.default;
         chartConfig.color = cfg;
+        chartConfig.modifiedFontPoints = cfg?.modifiedFontPoints || 0;
         this.createEdadynamicTextComponent(chartConfig);
     }
 

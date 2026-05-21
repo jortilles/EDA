@@ -25,6 +25,7 @@ import { TableConfig } from './panel-charts/chart-configuration-models/table-con
 import { ChartConfig } from './panel-charts/chart-configuration-models/chart-config';
 import { ChartJsConfig } from './panel-charts/chart-configuration-models/chart-js-config';
 import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
+import { DynamicTextConfig } from './panel-charts/chart-configuration-models/dynamicText-config';
 import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
 // Eda Services
 import { EdaChartType, FilterType, OrdenationType} from '@eda/services/service.index';
@@ -1799,8 +1800,8 @@ public tableNodeExpand(event: any): void {
 }
 
     public onClosedynamicTextProperties(event, response): void {
-        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) { 
-            const config = new ChartConfig(response.color);
+        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+            const config = new ChartConfig(new DynamicTextConfig(response.color, response.modifiedFontPoints || 0));
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
             this.dashboardService._notSaved.next(true);
