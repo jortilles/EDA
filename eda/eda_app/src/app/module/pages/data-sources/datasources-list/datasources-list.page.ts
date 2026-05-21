@@ -8,12 +8,13 @@ import { lastValueFrom } from 'rxjs';
 import { DataSourceNamesService } from '@eda/services/shared/datasource-names.service';
 import * as _ from 'lodash';
 import { Router } from '@angular/router';
+import { DropdownModule } from 'primeng/dropdown';
 
 @Component({
   selector: 'app-datasources-list',
   templateUrl: './datasources-list.page.html',
   standalone: true,
-  imports: [SharedModule, CommonModule, FormsModule, IconComponent],
+  imports: [SharedModule, CommonModule, FormsModule, IconComponent, DropdownModule],
   styleUrls: ['./datasources-list.page.css']
 })
 export class DataSourceListPage implements OnInit {
@@ -74,6 +75,8 @@ export class DataSourceListPage implements OnInit {
   get pageNumbers(): number[] {
     return Array.from({ length: this.totalPages() }, (_, i) => i + 1);
   }
+
+  pageSizeOptions = [5, 10, 25, 50, 100];
 
   setPage(page: number) {
     this.currentPage = page;
