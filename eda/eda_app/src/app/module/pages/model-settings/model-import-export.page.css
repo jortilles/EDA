@@ -1,0 +1,14 @@
+.tab-active                   { background-color: var(--corporate-primary); color: white;  box-shadow: 0 2px 4px rgba(var(--corporate-primary-rgb), 0.3); }
+.tab-inactive                 { background-color: rgb(245, 245, 245); color: var(--text-default); box-shadow: none;  }
+.tab-inactive:hover           { background-color: var(--corporate-primary); color: white; box-shadow: 0 2px 4px rgba(var(--corporate-primary-rgb), 0.3); opacity: 0.25; }
+.btn-corporate-primary        { background-color: var(--corporate-primary) !important; color: white; }
+.btn-corporate-primary:hover  { background: linear-gradient(to right, var(--corporate-primary), var(--corporate-primary-gradient)) !important; transition: background 0.8s ease; }
+.btn-corporate-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--corporate-primary); }
+
+.dropzone-active              { border-color: var(--corporate-primary); background-color: var(--corporate-primary); }
+.dropzone-hover               { border-color: var(--corporate-primary); }
+
+.text-corporate-primary       { color: var(--corporate-primary); }
+
+app-model-import-export .p-dropdown,
+app-model-import-export .p-dropdown.ng-invalid { box-shadow: none !important; }

@@ -1,0 +1,5 @@
+.whatif-chip {
+    background: linear-gradient(135deg, var(--corporate-primary), var(--corporate-primary-gradient, var(--corporate-primary)));
+    color: white;
+    border: 1px solid var(--corporate-primary);
+}

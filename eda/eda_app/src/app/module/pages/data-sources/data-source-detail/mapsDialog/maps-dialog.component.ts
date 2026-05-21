@@ -5,11 +5,13 @@ import { SelectItem } from 'primeng/api';
 import { UploadFileComponent } from '../upload-file/upload-file.component';
 import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 import { CommonModule } from '@angular/common';
+import { DropdownModule } from 'primeng/dropdown';
 @Component({
   standalone: true,
   selector: 'app-map-dialog',
   templateUrl: './maps-dialog.component.html',
-  imports: [EdaDialog2Component, CommonModule, ReactiveFormsModule, FormsModule, UploadFileComponent]
+  styleUrls: ['./maps-dialog.component.css'],
+  imports: [EdaDialog2Component, CommonModule, ReactiveFormsModule, FormsModule, UploadFileComponent, DropdownModule]
 })
 
 export class MapDialogComponent implements OnInit {

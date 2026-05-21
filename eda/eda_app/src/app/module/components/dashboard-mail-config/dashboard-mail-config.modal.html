@@ -14,13 +14,13 @@
 
             <div class="flex flex-col">
                 <input id="quantity" type="number" [(ngModel)]="quantity" 
-                    class="w-full border border-gray-300 focus:ring-2 focus:ring-blue-500 px-3 py-2.5 rounded-lg outline-none">
+                    class="mail-input w-full border border-gray-300 px-3 py-2.5 rounded-lg">
             </div>
 
             <!-- Radio días -->
             <label class="flex items-center gap-3 cursor-pointer w-fit">
                 <input type="radio" name="groupname" value="days" [(ngModel)]="units"
-                    class="w-5 h-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded-full">
+                    class="mail-radio w-5 h-5 border-gray-300">
                 <span class="text-base text-gray-700">{{daysSTR}}</span>
             </label>
 
@@ -36,7 +36,7 @@
             <!-- Radio horas -->
             <label class="flex items-center gap-3 cursor-pointer w-fit">
                 <input type="radio" name="groupname" value="hours" [(ngModel)]="units"
-                    class="w-5 h-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded-full">
+                    class="mail-radio w-5 h-5 border-gray-300">
                 <span class="text-base text-gray-700">{{hoursSTR}}</span>
             </label>
 
@@ -69,7 +69,7 @@
         <div class="bg-white shadow-lg rounded-2xl p-6 flex flex-col">
             <h5 i18n="@@SendMailWhat" class="text-lg font-semibold text-gray-800 mb-3">Contenido del mail</h5>
             <textarea
-                class="flex-1 w-full border border-gray-300 px-3 py-2.5 rounded-lg shadow-sm resize-none focus:ring-2 focus:ring-blue-500 outline-none"
+                class="mail-textarea flex-1 w-full border border-gray-300 px-3 py-2.5 rounded-lg shadow-sm resize-none"
                 pInputTextarea autoResize="autoResize" [(ngModel)]="mailMessage">
       </textarea>
         </div>

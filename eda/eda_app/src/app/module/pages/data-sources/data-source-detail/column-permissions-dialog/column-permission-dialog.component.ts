@@ -9,6 +9,7 @@ import { MultiSelectModule } from "primeng/multiselect";
     standalone: true,
     selector: 'app-column-permission-dialog',
     templateUrl: './column-permission-dialog.component.html',
+    styleUrls: ['./column-permission-dialog.component.css'],
     imports: [EdaDialog2Component,FormsModule, PrimengModule, MultiSelectModule]
 })
 

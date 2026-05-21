@@ -16,22 +16,33 @@
             <div class="space-y-6">
                 <!-- Colors -->
                 <div class="space-y-4">
-                    <h1 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase">Colors</h1>
+                    <span class="text-lg font-semibold" i18n="@@colorsChartH6">Colores</span>
+                    <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm mb-6 md:col-span-2"
-                            [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
-                            <option [ngValue]="null" disabled hidden i18n="@@selectPalette">
-                                -- Seleccione una paleta --
-                            </option>
-                            @for (palette of allPalettes; track $index) {
-                            <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
+                        <div class="flex items-stretch gap-2 mb-4 md:col-span-2">
+                            <p-dropdown
+                                [(ngModel)]="selectedPalette"
+                                [options]="allPalettes"
+                                optionLabel="name"
+                                i18n-placeholder="@@selectPalette"
+                                placeholder="-- Seleccione una paleta --"
+                                (ngModelChange)="onPaletteSelected()"
+                                [style]="{'width':'180px'}"
+                                appendTo="body">
+                            </p-dropdown>
+                            @if (selectedPalette) {
+                                <div class="flex rounded overflow-hidden" style="width: 80px;">
+                                    @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
+                                        <div class="flex-1" [style.background-color]="color"></div>
+                                    }
+                                </div>
                             }
-                        </select>
-                    
+                        </div>
+
                         <!-- Bloque Color Inicial -->
                         <div class="flex flex-col gap-2">
                             <span class="font-semibold">Color Inicial</span>
-                            <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+                            <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
                                 <div class="flex items-center gap-2">
                                     <input class="text-md text-slate-500 font-mono">{{ initialColor }}
                                     <p-colorPicker [(ngModel)]="initialColor" (onChange)="handleInputColor()" format="hex"
@@ -43,7 +54,7 @@
                         <!-- Bloque Color Final -->
                         <div class="flex flex-col gap-2">
                             <span class="font-semibold">Color Final</span>
-                            <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+                            <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
                                 <div class="flex items-center gap-2">
                                     <input class="text-md text-slate-500 font-mono">{{ finalColor }}
                                     <p-colorPicker [(ngModel)]="finalColor" (onChange)="handleInputColor()" format="hex"
@@ -70,7 +81,7 @@
                                     <path d="M12 16v-4"></path>
                                     <path d="M12 8h.01"></path>
                                 </svg>
-                                <div class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                                <div class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
                                     <span i18n="@@mpa">Aplica escala logarítmica a los valores del mapa</span>
                                 </div>
                             </div>
@@ -79,7 +90,7 @@
                             <input type="checkbox" [(ngModel)]="logarithmicScale" class="sr-only peer"
                                 (ngModelChange)="renderMap()">
                             <div
-                                class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+                                class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all corp-toggle">
                             </div>
                         </label>
                     </div>
@@ -98,7 +109,7 @@
                                     <path d="M12 16v-4"></path>
                                     <path d="M12 8h.01"></path>
                                 </svg>
-                                <div class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                                <div class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
                                     <span i18n="@@activeMouseFunctionsTooltip">Permite arrastrar y hacer zoom con el ratón</span>
                                 </div>
                             </div>
@@ -107,7 +118,7 @@
                             <input type="checkbox" [(ngModel)]="draggable" (onChange)="nullMouseOptions()"
                                 class="sr-only peer">
                             <div
-                                class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+                                class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all corp-toggle">
                             </div>
                         </label>
                     </div>

@@ -14,7 +14,7 @@
           formControlName="viewName"
           placeholder="Introduzca el nombre de la vista"
           i18n-placeholder="@@viewName"
-          class="w-full border rounded-md p-2 focus:ring-1 focus:ring-emerald-500"
+          class="view-input w-full border rounded-md p-2"
         />
       </div>
 
@@ -26,7 +26,7 @@
           formControlName="description"
           placeholder="Enter a brief description"
           i18n-placeholder="@@viewDescription"
-          class="w-full border rounded-md p-2 focus:ring-1 focus:ring-emerald-500"
+          class="view-input w-full border rounded-md p-2"
         />
       </div>
 
@@ -38,7 +38,7 @@
           formControlName="technical_name"
           placeholder="Enter technical identifier"
           i18n-placeholder="@@viewTNameP"
-          class="w-full border rounded-md p-2 focus:ring-1 focus:ring-emerald-500"
+          class="view-input w-full border rounded-md p-2"
         />
       </div>
 
@@ -50,14 +50,14 @@
           rows="5"
           i18n-placeholder="@@enterSQLExpression"
           placeholder="'Enter your SQL query here'"
-          class="w-full border rounded-md p-2 font-mono text-sm focus:ring-1 focus:ring-emerald-500"
+          class="view-input w-full border rounded-md p-2 font-mono text-sm"
         ></textarea>
       </div>
 
       <div>
         <button
           type="button"
-          class="w-full sm:w-auto bg-gray-200 text-black rounded-md px-4 py-2"
+          class="view-btn w-full sm:w-auto bg-gray-200 text-black rounded-md px-4 py-2 transition-colors"
           [disabled]="isGenerating"
           (click)="checkView()"
         >

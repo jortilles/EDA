@@ -1,10 +1,10 @@
 <eda-dialog2 [display]="display" i18n-header="@@newDashboardtitle" header="CREA UN NUEVO INFORME" width="45vw" height="62vh" (close)="onClose()"
-  (apply)="createNewDashboard()">
+  (apply)="createNewDashboard()" [disableApply]="form.invalid">
   <div content>
     <form [formGroup]="form" class="form-horizontal form-material" (ngSubmit)="createNewDashboard()">
       <div class="grid">
         <div class="mt-6">
-          <input type="text" pInputText formControlName="name" class="w-full py-2.5 px-2 border rounded-md"
+          <input type="text" pInputText formControlName="name" class="input-corporate w-full py-2.5 px-2 border rounded-md"
             i18n-placeholder="@@labelDameNombre" placeholder="Dame un nombre *" required>
         </div>
 
@@ -16,13 +16,14 @@
         </div>
 
         <div class="mt-9">
-          <p-selectButton [options]="visibleTypes" formControlName="visible" (onChange)="handleSelectedBtn($event)"></p-selectButton>
+          <p-selectButton [options]="visibleTypes" class="visibility-selector" formControlName="visible" (onChange)="handleSelectedBtn($event)"></p-selectButton>
         </div>
 
         @if (showGroups) {
           <div class="mt-6">
             <p-multiSelect id="float-grups" formControlName="group" [options]="grups" [filter]="false" optionLabel="name"
-              i18n-defaultLabel="@@multiSelectDefaultLabel" defaultLabel="Selecciona un grupo *" appendTo="body">
+              i18n-defaultLabel="@@multiSelectDefaultLabel" defaultLabel="Selecciona un grupo *" appendTo="body"
+              [style]="{'width': '100%'}">
             </p-multiSelect>
           </div>
         }

@@ -2946,6 +2946,25 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target> Panells no filtrats </target>
   </trans-unit>
 
+  <trans-unit id="tooltipApplyToAll">
+    <source>Si está activado, el filtro se aplica a todos los paneles del informe.</source>
+    <target>Si està activat, el filtre s'aplica a tots els panells de l'informe.</target>
+  </trans-unit>
+
+  <trans-unit id="tooltipAutocomplete">
+    <source>Si está activado, los valores se buscan dinámicamente mediante autocompletado.</source>
+    <target>Si està activat, els valors es busquen dinàmicament mitjançant autocompletat.</target>
+  </trans-unit>
+
+  <trans-unit id="tooltipMandatory">
+    <source>Si está activado, el filtro debe tener un valor seleccionado para poder visualizar el informe.</source>
+    <target>Si està activat, el filtre ha de tenir un valor seleccionat per poder visualitzar l'informe.</target>
+  </trans-unit>
+
+  <trans-unit id="tooltipVisibility">
+    <source>Público: todos pueden usarlo. Deshabilitado: otros usuarios pueden ver el filtro pero no modificarlo. Oculto: no visible para otros pero se aplica igualmente.</source>
+    <target>Públic: tothom pot usar-lo. Deshabilitat: altres usuaris poden veure el filtre però no modificar-lo. Ocult: no visible per a altres però s'aplica igualment.</target>
+  </trans-unit>
 
   <trans-unit id="seconds_to_refresh">
     <source> Intervalo de recarga </source>
@@ -5780,6 +5799,56 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Només és possible fer servir filtres definits dins del dashboard actual.</target>
       </trans-unit>
 
+      <trans-unit id="uniqueRecords1">
+        <source>La opción <ph id="0"/>Registros únicos<ph id="1"/> aplica un <ph id="2"/>GROUP BY<ph id="3"/> sobre todos los atributos de la consulta. Úsala cuando quieras eliminar duplicados y agrupar los resultados por la combinación de todos los campos seleccionados.</source>
+        <target>L'opció <ph id="0"/>Registres únics<ph id="1"/> aplica un <ph id="2"/>GROUP BY<ph id="3"/> sobre tots els atributs de la consulta. Utilitza-la quan vulguis eliminar duplicats i agrupar els resultats per la combinació de tots els camps seleccionats.</target>
+      </trans-unit>
+
+      <trans-unit id="uniqueRecords3">
+        <source>Al activarla, las métricas numéricas se agrupan junto al resto de atributos, lo que puede alterar el resultado esperado si ya existen agregaciones definidas.</source>
+        <target>En activar-la, les mètriques numèriques s'agrupen juntament amb la resta d'atributs, la qual cosa pot alterar el resultat esperat si ja existeixen agregacions definides.</target>
+      </trans-unit>
+
+      <trans-unit id="dynamicFilters1">
+        <source>Al hacer clic en otros paneles del dashboard se crean <ph id="0"/>filtros dinámicos<ph id="1"/> que afectan al resto de paneles. Activar esta opción hace que este panel <ph id="2"/>ignore<ph id="3"/> esos filtros dinámicos y siempre muestre sus datos completos, independientemente de las selecciones del usuario en otros paneles.</source>
+        <target>En fer clic a altres panells del dashboard es creen <ph id="0"/>filtres dinàmics<ph id="1"/> que afecten la resta de panells. Activar aquesta opció fa que aquest panell <ph id="2"/>ignori<ph id="3"/> aquests filtres dinàmics i sempre mostri les seves dades completes, independentment de les seleccions de l'usuari en altres panells.</target>
+      </trans-unit>
+
+      <trans-unit id="dynamicFilters3">
+        <source>Los filtros de panel y globales definidos manualmente sí se siguen aplicando con normalidad.</source>
+        <target>Els filtres de panell i globals definits manualment sí que es continuen aplicant amb normalitat.</target>
+      </trans-unit>
+
+      <trans-unit id="dynamicFilters4">
+        <source>Esta opción no afecta a los filtros creados desde el selector de filtros del dashboard.</source>
+        <target>Aquesta opció no afecta els filtres creats des del selector de filtres del dashboard.</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipJoinType">
+        <source>Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN</source>
+        <target>Defineix com s'uneixen les taules: LEFT, INNER o RIGHT JOIN</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipScenarios">
+        <source>Crea atributos derivados aplicando operaciones matemáticas</source>
+        <target>Crea atributs derivats aplicant operacions matemàtiques</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipAdvancedFilters">
+        <source>Combina los filtros del panel con operadores AND u OR</source>
+        <target>Combina els filtres del panell amb operadors AND o OR</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipUniqueRecords">
+        <source>Aplica GROUP BY a todos los campos para eliminar duplicados</source>
+        <target>Aplica GROUP BY a tots els camps per eliminar duplicats</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipDynamicFilters">
+        <source>Actívalo para que este panel ignore los filtros dinámicos de otros paneles</source>
+        <target>Activa-ho perquè aquest panell ignori els filtres dinàmics d'altres panells</target>
+      </trans-unit>
+
       <trans-unit id="dashboardSidebarDependentFilters">
         <source>Filtros dependientes</source>
         <target>Filtres dependents</target>
@@ -6417,6 +6486,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="assistantTitle">
         <source>Pregunta en lenguaje natural: </source>
         <target>Pregunta en llenguatge natural: </target>
+      </trans-unit>
+      <trans-unit id="assistantSubtitle">
+        <source>Construye tu consulta en lenguaje natural</source>
+        <target>Construeix la teva consulta en llenguatge natural</target>
       </trans-unit>
       <trans-unit id="AIManagement" datatype="html">
         <source>Gestión del asistente</source>

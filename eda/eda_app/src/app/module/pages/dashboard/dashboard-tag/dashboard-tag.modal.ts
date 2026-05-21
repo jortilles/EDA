@@ -13,6 +13,7 @@ import { EdaDialog2Component } from "@eda/shared/components/shared-components.in
   selector: 'app-dashboard-tag-modal',
   standalone: true,
   templateUrl: './dashboard-tag.modal.html',
+  styleUrls: ['./dashboard-tag.modal.css'],
   imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule, FloatLabelModule, EdaDialog2Component]
 })
 

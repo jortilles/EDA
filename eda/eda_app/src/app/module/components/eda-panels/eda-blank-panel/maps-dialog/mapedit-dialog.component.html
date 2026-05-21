@@ -18,19 +18,30 @@
       <div class="space-y-6">
         <!-- Colors -->
         <div class="space-y-4">
-          <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase">Colores</h3>
-          
-          <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm mb-6"
-            [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
-            <option [ngValue]="null" disabled hidden i18n="@@selectPalette">
-              -- Seleccione una paleta --
-            </option>
-            @for (palette of allPalettes; track $index) {
-            <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
+          <span class="text-lg font-semibold" i18n="@@colorsChartH6">Colores</span>
+          <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
+
+          <div class="flex items-stretch gap-2 mb-4">
+            <p-dropdown
+              [(ngModel)]="selectedPalette"
+              [options]="allPalettes"
+              optionLabel="name"
+              i18n-placeholder="@@selectPalette"
+              placeholder="-- Seleccione una paleta --"
+              (ngModelChange)="onPaletteSelected()"
+              [style]="{'width':'180px'}"
+              appendTo="body">
+            </p-dropdown>
+            @if (selectedPalette) {
+              <div class="flex rounded overflow-hidden" style="width: 80px;">
+                @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
+                  <div class="flex-1" [style.background-color]="color"></div>
+                }
+              </div>
             }
-          </select>
+          </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+            <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
               <span class="font-medium" i18n="@@layerColor">Color de capa</span>
               <div class="flex items-center gap-2">
                 <input [(ngModel)]="assignedColors[0].color" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
@@ -44,7 +55,7 @@
         <div class="space-y-2">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <label for="logarithmic-switch" class="block text-sm font-medium" i18n="@@logarithmicScale">Escala logarítmica</label>
+              <label for="logarithmic-switch" class="block text-base font-medium" i18n="@@logarithmicScale">Escala logarítmica</label>
               <div class="relative group">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -53,14 +64,14 @@
                   <path d="M12 16v-4"></path>
                   <path d="M12 8h.01"></path>
                 </svg>
-                <div class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                <div class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
                   <span i18n="@@logarithmicScaleTooltip">Aplica escala logarítmica a los valores del mapa</span>
                 </div>
               </div>
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" [(ngModel)]="logarithmicScale" class="sr-only peer" (ngModelChange)="renderMap()">
-              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]"></div>
+              <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all corp-toggle"></div>
             </label>
           </div>
         </div>
@@ -69,7 +80,7 @@
         <div class="space-y-2">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <label for="mouse-functions-switch" class="block text-sm font-medium" i18n="@@activeMouseFunctions">Activar funciones del ratón</label>
+              <label for="mouse-functions-switch" class="block text-base font-medium" i18n="@@activeMouseFunctions">Activar funciones del ratón</label>
               <div class="relative group">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -78,14 +89,14 @@
                   <path d="M12 16v-4"></path>
                   <path d="M12 8h.01"></path>
                 </svg>
-                <div class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                <div class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
                   <span i18n="@@activeMouseFunctionsTooltip">Permite arrastrar y hacer zoom con el ratón</span>
                 </div>
               </div>
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" [(ngModel)]="draggable" (onChange)="nullMouseOptions()" class="sr-only peer">
-              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]"></div>
+              <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all corp-toggle"></div>
             </label>
           </div>
         </div>
@@ -94,7 +105,7 @@
         <div class="space-y-2">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <label class="block text-sm font-medium" i18n="@@enableBaseLayer">Activar capa base</label>
+              <label class="block text-base font-medium" i18n="@@enableBaseLayer">Activar capa base</label>
               <div class="relative group">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -103,7 +114,7 @@
                   <path d="M12 16v-4"></path>
                   <path d="M12 8h.01"></path>
                 </svg>
-                <div class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                <div class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
                   <span i18n="@@enableBaseLayerTooltip">Muestra u oculta la capa base del mapa</span>
                 </div>
               </div>
@@ -111,7 +122,7 @@
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" [(ngModel)]="baseLayer" (ngModelChange)="modifyBaseLayer()" class="sr-only peer">
               <div
-                class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+                class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all corp-toggle">
               </div>
             </label>
           </div>
@@ -119,7 +130,7 @@
 
         <!-- LegendPosition -->
         <div class="space-y-4">
-          <label class="block text-sm font-medium" i18n="@@legendPosition">Posición de la leyenda</label>
+          <label class="block text-base font-medium" i18n="@@legendPosition">Posición de la leyenda</label>
           <div class="grid grid-cols-2 gap-2">
             <div class="flex items-center space-x-2 border rounded-md p-2">
               <input 
@@ -128,9 +139,9 @@
                 name="legendPosition" 
                 (input)="changeLegend('topleft')" 
                 [checked]="this.legendPosition === 'topleft' "
-                class="h-4 w-4 text-[#00BFB3]"
+                class="h-4 w-4 accent-corp"
               />
-              <label for="topleft" class="text-sm" i18n="@@topleftPosition">Superior izquierda</label>
+              <label for="topleft" class="text-base" i18n="@@topleftPosition">Superior izquierda</label>
             </div>
             <div class="flex items-center space-x-2 border rounded-md p-2">
               <input 
@@ -139,9 +150,9 @@
                 name="legendPosition" 
                 (input)="changeLegend('topright')" 
                 [checked]="this.legendPosition === 'topright' "
-                class="h-4 w-4 text-[#00BFB3]"
+                class="h-4 w-4 accent-corp"
               />
-              <label for="topright" class="text-sm" i18n="@@toprightPosition">Superior derecha</label>
+              <label for="topright" class="text-base" i18n="@@toprightPosition">Superior derecha</label>
             </div>
             <div class="flex items-center space-x-2 border rounded-md p-2">
               <input 
@@ -150,9 +161,9 @@
                 name="legendPosition" 
                 (input)="changeLegend('bottomleft')" 
                 [checked]="this.legendPosition === 'bottomleft' "
-                class="h-4 w-4 text-[#00BFB3]"
+                class="h-4 w-4 accent-corp"
               />
-              <label for="bottomleft" class="text-sm" i18n="@@bottomleftPosition">Inferior izquierda</label>
+              <label for="bottomleft" class="text-base" i18n="@@bottomleftPosition">Inferior izquierda</label>
             </div>
             <div class="flex items-center space-x-2 border rounded-md p-2">
               <input 
@@ -161,9 +172,9 @@
                 name="legendPosition" 
                 (input)="changeLegend('bottomright')" 
                 [checked]="this.legendPosition === 'bottomright' "
-                class="h-4 w-4 text-[#00BFB3]"
+                class="h-4 w-4 accent-corp"
               />
-              <label for="bottomright" class="text-sm" i18n="@@bottomrightPosition">Inferior derecha</label>
+              <label for="bottomright" class="text-base" i18n="@@bottomrightPosition">Inferior derecha</label>
             </div>
           </div>
         </div>

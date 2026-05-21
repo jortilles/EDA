@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GroupService, UserService } from '@eda/services/service.index';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { SharedModule } from '@eda/shared/shared.module';
+import { DropdownModule } from 'primeng/dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { lastValueFrom } from 'rxjs';
 import Swal from 'sweetalert2';
@@ -24,7 +25,8 @@ type User = {
   selector: 'app-user-list',
   templateUrl: './user-list.page.html',
   standalone: true,
-  imports: [SharedModule, CommonModule, FormsModule, IconComponent, MultiSelectModule, EdaDialog2Component],
+  imports: [SharedModule, CommonModule, FormsModule, IconComponent, DropdownModule, MultiSelectModule, EdaDialog2Component],
+  styleUrls: ['./user-list.page.css']
 })
 export class UserListPage implements OnInit {
   private userService = inject(UserService);
@@ -44,6 +46,7 @@ export class UserListPage implements OnInit {
 
   currentPage: number = 1;
   itemsPerPage: number = 10;
+  readonly pageSizeOptions = [5, 10, 25, 50, 100];
 
   get filteredUsers() {
     return [...this.users]

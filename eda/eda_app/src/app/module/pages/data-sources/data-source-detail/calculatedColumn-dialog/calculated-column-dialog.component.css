@@ -1,0 +1,5 @@
+.calc-btn-inactive:hover {
+    background-color: rgba(var(--corporate-primary-rgb), 0.08);
+    color: var(--corporate-primary);
+    border-color: var(--corporate-primary);
+}

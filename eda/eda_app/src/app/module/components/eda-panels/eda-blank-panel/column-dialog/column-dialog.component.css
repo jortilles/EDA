@@ -6,5 +6,78 @@
     .selectStyles {
         height: 35px;
     }
+}
 
+/* Section cards */
+.section-card {
+    padding: 0.75rem 0;
+}
+
+/* Section titles */
+.section-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+    border-bottom: 1px solid #e5e7eb;
+    margin: 0 0 0.5rem 0;
+}
+
+::ng-deep .p-scrollpanel-content {
+    padding-bottom: 0 !important;
+}
+
+/* Filter tag rows */
+.filter-tag {
+    font-weight: 500;
+    color: #111827;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    transition: background-color 0.15s ease;
+}
+.filter-tag:last-child {
+    border-bottom: none;
+}
+.filter-tag:hover {
+    background-color: #e5e7eb;
+}
+
+/* Switch with corporate color */
+::ng-deep .p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
+    background: var(--corporate-primary) !important;
+}
+::ng-deep .p-inputswitch.p-inputswitch-checked:not(.p-disabled):hover .p-inputswitch-slider {
+    background: var(--corporate-primary) !important;
+    filter: brightness(0.9);
+}
+/* ── Add filter button ─────────────────────────────────────── */
+.addFilter-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 1.5rem;
+    height: 3rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #ffffff;
+    background: var(--corporate-primary);
+    flex-shrink: 0;
+    transition: filter 0.15s, box-shadow 0.15s;
+}
+
+.addFilter-button:hover:not(:disabled) {
+    background: rgba(var(--corporate-primary-rgb), 0.75);
+    filter: brightness(0.9);
+}
+
+.addFilter-button:disabled,
+.confirm-button:disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+    box-shadow: none;
 }

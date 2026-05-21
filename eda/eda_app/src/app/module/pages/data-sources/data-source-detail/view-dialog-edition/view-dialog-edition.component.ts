@@ -8,6 +8,7 @@ import * as _ from 'lodash';
   standalone: true,
   selector: 'app-view-dialog-edition',
   templateUrl: './view-dialog-edition.component.html',
+  styleUrls: ['./view-dialog-edition.component.css'],
   imports: [EdaDialog2Component, FormsModule, ReactiveFormsModule]
 })
 export class ViewDialogEditionComponent implements OnInit {

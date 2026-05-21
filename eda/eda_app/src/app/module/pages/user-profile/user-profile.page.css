@@ -1,0 +1,8 @@
+.btn-corporate-primary        { background-color: var(--corporate-primary) !important; color: white; }
+.btn-corporate-primary:hover  { background: linear-gradient(to right, var(--corporate-primary), var(--corporate-primary-gradient)) !important; }
+.btn-corporate-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--corporate-primary); }
+
+.input-corporate:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--corporate-primary); }
+
+.avatar-upload                { background-color: var(--corporate-primary); color: white; }
+.avatar-upload:hover          { opacity: 0.9; }

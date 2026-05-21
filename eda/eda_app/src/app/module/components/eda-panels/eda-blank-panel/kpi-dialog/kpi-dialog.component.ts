@@ -9,13 +9,14 @@ import * as _ from 'lodash';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ColorPickerModule } from 'primeng/colorpicker';
+import { DropdownModule } from 'primeng/dropdown';
 
 @Component({
     standalone: true,
     selector: 'app-kpi-dialog',
     templateUrl: './kpi-dialog.component.html',
     styleUrls: ['./kpi-dialog.component.css'],
-    imports: [FormsModule, CommonModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent, KpiMailConfigModal]
+    imports: [FormsModule, CommonModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent, KpiMailConfigModal, DropdownModule]
 })
 export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
     @Input() controller: any;
@@ -331,6 +332,12 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
             instance.color = this.kpiTextColor || instance.defaultColor;
             this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
         }
+    }
+
+    openPrefixImageInNewTab(): void {
+        const win = window.open('', '_blank');
+        win.document.write(`<html><body style="margin:0;background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh"><img src="${this.prefixImage}" style="max-width:100%;max-height:100vh"></body></html>`);
+        win.document.close();
     }
 
     onPrefixImageSelected(event: Event): void {

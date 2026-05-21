@@ -1,5 +1,4 @@
 import { AfterViewChecked, Component, ElementRef, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
-import { EdaDialog2Component } from "@eda/shared/components/shared-components.index";
 import { SharedModule } from "@eda/shared/shared.module";
 import { AssistantService } from '@eda/services/api/assistant.service';
 import { IaFormStateService } from '@eda/services/shared/IaFormState.service';
@@ -7,18 +6,19 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { marked } from 'marked';
+import { DialogModule } from 'primeng/dialog';
 
 @Component({
   selector: 'chat-eda-ai',
   standalone: true,
-  imports: [SharedModule, FormsModule, CommonModule, EdaDialog2Component],
+  imports: [SharedModule, FormsModule, CommonModule, DialogModule],
   templateUrl: './chat-eda-ai.component.html',
   styleUrl: './chat-eda-ai.component.css'
 })
 export class ChatEdaAIComponent implements AfterViewChecked {
 
   @Input() dataChatGpt: any;
-  @Input() display: boolean = false;
+  @Input() display: boolean = true;
   @Output() close: EventEmitter<void> = new EventEmitter<void>();
   @ViewChild('messageContainer') private messageContainer!: ElementRef;
   @ViewChild('chatInput') private chatInput!: ElementRef;
@@ -46,10 +46,15 @@ export class ChatEdaAIComponent implements AfterViewChecked {
   }
 
   onKeydown(event: KeyboardEvent) {
-    if (event.key === 'Enter' && event.ctrlKey) {
+    if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       this.sendMessage();
     }
+  }
+
+  clearMessages(): void {
+    this.messages = [];
+    this.dataContext = null;
   }
 
   autoResize(event: Event) {

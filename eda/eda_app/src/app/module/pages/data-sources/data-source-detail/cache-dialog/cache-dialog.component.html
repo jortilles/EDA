@@ -25,7 +25,7 @@
                  [(ngModel)]="quantity"
                  [disabled]="noCache"
                  min="1"
-                 class="w-20 px-3 py-2 border border-gray-300 rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:text-gray-500"
+                 class="cache-input w-20 px-3 py-2 border border-gray-300 rounded-md focus:border-transparent disabled:bg-gray-100 disabled:text-gray-500"
                />
    
                <div class="flex gap-4">
@@ -36,7 +36,7 @@
                      value="days"
                      [(ngModel)]="units"
                      [disabled]="noCache"
-                     class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 disabled:opacity-50"
+                     class="cache-radio h-4 w-4 border-gray-300 disabled:opacity-50"
                    />
                    <span class=" text-gray-700" i18n="@@days">Día/s</span>
                  </label>
@@ -47,7 +47,7 @@
                      value="hours"
                      [(ngModel)]="units"
                      [disabled]="noCache"
-                     class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 disabled:opacity-50"
+                     class="cache-radio h-4 w-4 border-gray-300 disabled:opacity-50"
                    />
                    <span class=" text-gray-700" i18n="@@hours">Hora/s</span>
                  </label>
@@ -66,7 +66,7 @@
                    type="time"
                    [(ngModel)]="hours"
                    [disabled]="noCache"
-                   class="w-32 px-3 py-2 border border-gray-300 rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:text-gray-500"
+                   class="cache-input w-32 px-3 py-2 border border-gray-300 rounded-md focus:border-transparent disabled:bg-gray-100 disabled:text-gray-500"
                  />
                </div>
              }
@@ -92,16 +92,16 @@
             <input
               type="checkbox"
               [(ngModel)]="noCache"
-              class="sr-only peer"
+              class="cache-toggle-input sr-only peer"
             />
-            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            <div class="cache-toggle-track w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
           </label>
         </div>
 
         <button
           (click)="deleteCache()"
           [disabled]="noCache"
-          class="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-md  font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          class="cache-delete-btn w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-md font-medium text-gray-700 bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
