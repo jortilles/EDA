@@ -41,7 +41,7 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
       this.color = this.assignedColors[0]['color'];
     } else {
       // Si no hay assignedColors, usar paleta por defecto
-      this.color = this.paleta[0];
+      this.color = this.paleta?.['paleta']?.[0] || '#0cb7bd';
     }
     
     this.value = this.inject.data.values[0][0];
