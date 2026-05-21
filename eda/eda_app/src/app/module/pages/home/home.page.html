@@ -99,7 +99,7 @@
             (click)="handleTagSelect(option)"> {{ option.label }} </div> } </div>
       </div> <!-- Ordenar informes -->
       <div class="w-full sm:w-auto flex-shrink-0">
-        <div class="text-sm text-muted-foreground" i18n="@@sortReports">ORDENAR INFORMES:</div>
+        <div class="text-base text-muted-foreground" i18n="@@sortReports">ORDENAR INFORMES:</div>
         <p-dropdown class="sort-dropdown"
           [(ngModel)]="sortingType" (onChange)="handleSorting()"
           [options]="sortOptions" optionLabel="label" optionValue="value"
