@@ -289,11 +289,11 @@
         @if (filter.forDisplay.length > 0) {
           <div class="section-card pt-3">
             <h5 class="section-title" i18n="@@filters">Filtros activos</h5>
-            <div class="w-full h-auto max-h-[23vh] overflow-auto rounded-md bg-gray-100 border border-gray-200">
+            <div class="w-full h-auto max-h-[23vh] overflow-auto rounded-md border border-gray-200">
               <p-scrollPanel styleClass="custombar1">
                 @for (filtre of filter.forDisplay; track filtre) {
                   <div class="filter-tag flex items-center justify-between px-3 py-2">
-                    <span class="text-base font-semibold">
+                    <span class="text-base">
                       @if (filtre.filter_elements.length === 0) {
                         * {{ selectedColumn.display_name.default }} is {{ filtre.filter_type }}
                       }

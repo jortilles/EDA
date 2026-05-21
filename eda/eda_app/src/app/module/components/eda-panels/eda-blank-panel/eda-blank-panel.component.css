@@ -311,7 +311,7 @@ eda-blank-panel :root {
   /*  overflow: visible; */
   overflow-wrap: break-word;
   margin-top: 0.5em;
-  background-color: rgba(var(--corporate-primary-rgb), 0.08);
+  background-color: rgba(var(--corporate-primary-rgb), 0.20);
 }
 
 .filter-list {

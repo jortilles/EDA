@@ -32,7 +32,7 @@
 .filter-tag {
     font-weight: 500;
     color: #111827;
-    background-color: #f3f4f6;
+    background-color: #ffffff;
     border-bottom: 1px solid #e5e7eb;
     transition: background-color 0.15s ease;
 }
@@ -74,7 +74,8 @@
     filter: brightness(0.9);
 }
 
-.addFilter-button:disabled {
+.addFilter-button:disabled,
+.confirm-button:disabled {
     background: #f3f4f6;
     color: #9ca3af;
     cursor: not-allowed;

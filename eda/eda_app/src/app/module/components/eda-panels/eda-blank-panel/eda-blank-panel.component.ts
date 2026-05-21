@@ -1968,15 +1968,15 @@ public tableNodeExpand(event: any): void {
     public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table, true);
 
     public removeColumn = (c: Column, list?: string) => {
-        // rootTableName => Para tener la tabla principal => condiciones para comprobar si podemos eliminar la columna
+        // La restricción de tabla raíz solo aplica en modo árbol (EDA2)
+        const isTreeMode = this.selectedQueryMode === 'EDA2';
+
         const rootTableName = this.rootTable?.table_name;
-        // Las joins son fiables al interactuar con la aplicación; la comparación de table_id es el método alternativo después de guardar y recargar cuando los joins pueden estar vacías.
         const isNotRootColumn = !!c?.joins?.length || (!!rootTableName && c?.table_id !== rootTableName);
         const rootColumnElements = this.currentQuery.filter(col => !col?.joins?.length && (!rootTableName || col?.table_id === rootTableName)).length;
         const currentQueryLength = this.currentQuery.length;
 
-        // Simplemente procedemos si no es la última columna de la tabla raíz.
-        if (isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
+        if (!isTreeMode || isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
             const columnHadFilter = this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name);
             const removed = PanelInteractionUtils.removeColumn(this, c, list);
             if (removed !== false) {

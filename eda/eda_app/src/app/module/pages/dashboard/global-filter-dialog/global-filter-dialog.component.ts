@@ -110,7 +110,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public showAlias: boolean = false;
 
     get dialogHeight(): string {
-        return this.globalFilter?.queryMode === 'EDA2' ? '80vh' : '55vh';
+        return this.globalFilter?.queryMode === 'EDA2' ? '80vh' : '70vh';
     }
 
     // Legacy
