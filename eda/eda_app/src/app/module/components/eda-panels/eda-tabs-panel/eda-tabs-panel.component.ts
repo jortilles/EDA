@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
+import { Component, OnInit, OnDestroy, AfterViewInit, Input, Output, EventEmitter, ViewChild, ElementRef } from "@angular/core";
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -26,7 +26,7 @@ interface DashboardTab {
     styleUrls: ['./eda-tabs-panel.component.css'],
     imports: [CommonModule, FormsModule, EdaContextMenuComponent, EditTabsDialogComponent]
 })
-export class EdaTabsPanelComponent implements OnInit {
+export class EdaTabsPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() id: string;
     @Input() panel: EdaTabsPanel;
     @Input() inject: InjectEdaPanel;
@@ -35,6 +35,9 @@ export class EdaTabsPanelComponent implements OnInit {
     @Input() panelText: any = {};
     @Input() panelTabAlign: any = {};
     @Output() remove: EventEmitter<any> = new EventEmitter();
+    @ViewChild('tabsContainer') tabsContainerRef: ElementRef;
+
+    private resizeObserver?: ResizeObserver;
 
     contextMenu: EdaContextMenu;
     editTabsController: EdaDialogController;
@@ -57,6 +60,17 @@ export class EdaTabsPanelComponent implements OnInit {
         this.initContextMenu();
         this.setEditMode();
         this.loadDashboards();
+    }
+
+    ngAfterViewInit(): void {
+        if (typeof ResizeObserver !== 'undefined') {
+            this.resizeObserver = new ResizeObserver(() => this.updateFontSize());
+            this.resizeObserver.observe(this.tabsContainerRef.nativeElement);
+        }
+    }
+
+    ngOnDestroy(): void {
+        this.resizeObserver?.disconnect();
     }
 
     private async loadDashboards(): Promise<void> {
@@ -106,6 +120,44 @@ export class EdaTabsPanelComponent implements OnInit {
         this.filteredDashboards = selectedIds
             .map(id => this.allDashboards.find(db => db.id === id))
             .filter(db => !!db);
+        setTimeout(() => this.updateFontSize(), 0);
+    }
+
+    private updateFontSize(): void {
+        const el = this.tabsContainerRef?.nativeElement;
+        if (!el || !this.filteredDashboards.length) return;
+
+        const w = el.clientWidth;
+        const h = el.clientHeight;
+        if (!w || !h) return;
+
+        const buttons = (el as HTMLElement).querySelectorAll<HTMLElement>('.tab-button');
+        const rowH = buttons.length > 0 ? buttons[0].clientHeight : h;
+        if (!rowH) return;
+
+        const isLandscape = w >= h;
+        let fontSize: number;
+        let paddingV: string;
+        let whiteSpace: string;
+
+        if (isLandscape) {
+            const canWrap = rowH >= 50;
+            const padV = canWrap ? (rowH < 70 ? 4 : 10) : 2;
+            paddingV = `${padV}px`;
+            whiteSpace = canWrap ? 'normal' : 'nowrap';
+            fontSize = canWrap
+                ? Math.max(9, Math.min(14, (rowH - padV * 2) / (1.4 * 2)))
+                : Math.max(9, Math.min(14, (rowH - padV * 2) / 1.4));
+        } else {
+            const padV = rowH < 60 ? 4 : 10;
+            paddingV = `${padV}px`;
+            whiteSpace = 'normal';
+            fontSize = Math.max(9, Math.min(14, (rowH - padV * 2) / (1.3 * 2.5)));
+        }
+
+        el.style.setProperty('--tab-font-size', `${Math.round(fontSize * 10) / 10}px`);
+        el.style.setProperty('--tab-padding-v', paddingV);
+        el.style.setProperty('--tab-white-space', whiteSpace);
     }
 
     public openDashboard(dashboard: DashboardTab): void {
