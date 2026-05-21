@@ -6,7 +6,7 @@
   [resizable]="false"
   [draggable]="true"
   appendTo="body"
-  [style]="{'width':'55vw', 'height':'90vh', 'max-height':'90vh'}"
+  [style]="{'width':'35vw', 'height':'90vh', 'max-height':'90vh'}"
   [contentStyle]="{'padding': '0', 'overflow': 'hidden', 'display': 'flex', 'flex-direction': 'column', 'flex': '1'}"
 >
 
@@ -59,10 +59,7 @@
           </div>
         </div>
       } @else if (messages.length === 0) {
-        <div class="flex flex-col items-center justify-center h-full gap-4 text-center select-none">
-          <div class="chat-empty-robot">
-            <img src="assets/images/logos/logo.png" alt="Edalitics" class="w-10 h-10 object-contain" style="filter: invert(51%) sepia(89%) saturate(400%) hue-rotate(145deg) brightness(95%);">
-          </div>
+        <div class="flex flex-col items-center h-full gap-4 text-center select-none">
           <p class="text-base text-gray-400 px-6" i18n="@@askPanelData">
             Pregunta sobre los datos de tu panel...
           </p>
