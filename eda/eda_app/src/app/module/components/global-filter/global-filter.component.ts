@@ -865,11 +865,52 @@ export class GlobalFilterComponent implements OnInit {
                                 // Añadimos los joins del filtro que viene por url
                                 formatedFilter.joins = pathList;
 
+                                if (formatedFilter.pathList && formatedFilter.pathList[panel.id] && formatedFilter.pathList[panel.id].table_id) {
+                                    formatedFilter.filter_table = formatedFilter.pathList[panel.id].table_id;
+                                }
+
                                 // Control de filtros
                                 if( _.findIndex(panelFilter, (inx) => inx.filter_column === formatedFilter.filter_column) >=0 ){
                                     panelFilter.splice(_.findIndex(panelFilter, (inx) => inx.filter_column === formatedFilter.filter_column), 1);
                                 }
                                 panelFilter.push(formatedFilter);
+
+                                // Inyectar filtro URL en sortedFilters cuando existen filtros avanzados
+                                const sortedFilters = panel.content?.query?.query?.sortedFilters;
+                                if (sortedFilters && sortedFilters.length > 0) {
+                                    const existingIndex = sortedFilters.findIndex((sf: any) => sf.filter_id === formatedFilter.filter_id);
+                                    if (existingIndex >= 0) {
+                                        sortedFilters[existingIndex].filter_elements = formatedFilter.filter_elements;
+                                        sortedFilters[existingIndex].filter_codes = formatedFilter.filter_codes;
+                                        sortedFilters[existingIndex].joins = formatedFilter.joins;
+                                        sortedFilters[existingIndex].filter_table = formatedFilter.filter_table;
+                                    } else {
+                                        const lastElement = sortedFilters[sortedFilters.length - 1];
+                                        sortedFilters.push({
+                                            cols: 3,
+                                            rows: 1,
+                                            y: lastElement.y + 1,
+                                            x: 0,
+                                            filter_table: formatedFilter.filter_table,
+                                            filter_column: formatedFilter.filter_column,
+                                            filter_type: formatedFilter.filter_type,
+                                            filter_column_type: formatedFilter.filter_column_type,
+                                            filter_elements: formatedFilter.filter_elements,
+                                            filter_codes: formatedFilter.filter_codes,
+                                            filter_id: formatedFilter.filter_id,
+                                            isGlobal: formatedFilter.isGlobal,
+                                            value: "and",
+                                            joins: formatedFilter.joins,
+                                            pathList: formatedFilter.pathList,
+                                            valueListSource: formatedFilter.valueListSource,
+                                            filterBeforeGrouping: formatedFilter.filterBeforeGrouping ?? true,
+                                            autorelation: formatedFilter.autorelation,
+                                            computed_column: formatedFilter.computed_column,
+                                            SQLexpression: formatedFilter.SQLexpression,
+                                            applyToAll: formatedFilter.applyToAll,
+                                        });
+                                    }
+                                }
                             });
 
                     }
