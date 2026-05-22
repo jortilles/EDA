@@ -207,6 +207,10 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
         this.map.removeLayer(this.baseLayerLayer);
       }
 
+      const actualCenter = this.map.getCenter();
+      this.inject.coordinates = [actualCenter.lat, actualCenter.lng];
+      this.inject.zoom = this.map.getZoom();
+
       this.map.on("moveend", (event) => {
         let c = this.map.getCenter();
         this.inject.coordinates = [c.lat, c.lng];
@@ -244,9 +248,11 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
   }
 
   private getCenter(data: Array<any>) {
-    let coordinates = this.inject.coordinates
-      ? this.inject.coordinates
-      : [this.serverMap.center[1], this.serverMap.center[0]];
+    let coordinates = this.mapUtilsService.getCoordinates()
+      ? this.mapUtilsService.getCoordinates()
+      : (this.inject.coordinates
+        ? this.inject.coordinates
+        : [this.serverMap.center[1], this.serverMap.center[0]]);
     if (coordinates[0] === null || coordinates[1] === null) {
       coordinates[0] = 41.97233;
       coordinates[1] = 2.8116391;
