@@ -1,7 +1,6 @@
 import OpenAI from 'openai';
 import { NormalizedTool } from '../ai-provider.interface';
 import { IMCPAIProvider, MCPHistoryMessage, MCPToolCallInfo, MCPTurnResult } from './mcp-ai-provider.interface';
-import { QWEN_FORMAT_INSTRUCTION, extractJsonObjects, parseNamedToolCalls } from '../../utils/qwen.utils';
 
 export class QwenMCPProvider implements IMCPAIProvider {
 
@@ -19,8 +18,6 @@ export class QwenMCPProvider implements IMCPAIProvider {
         tools: NormalizedTool[],
         maxTokens: number
     ): Promise<MCPTurnResult> {
-        const systemContent = systemPrompts.join('\n\n') + QWEN_FORMAT_INSTRUCTION;
-
         const openAITools: OpenAI.Chat.ChatCompletionTool[] = tools.map(t => ({
             type: 'function' as const,
             function: {
@@ -31,23 +28,25 @@ export class QwenMCPProvider implements IMCPAIProvider {
         }));
 
         const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
-            { role: 'system', content: systemContent },
-            ...this.toQwenHistory(history),
+            { role: 'system', content: systemPrompts.join('\n\n') },
+            ...this.toOpenAIHistory(history),
         ];
+
+        const hasToolResults = history.some(m => m.type === 'tool_result');
+        const toolChoice = hasToolResults ? 'auto' as const : 'required' as const;
 
         const response = await this.client.chat.completions.create({
             model: this.model,
             max_tokens: maxTokens,
             messages,
             tools: openAITools,
-            tool_choice: 'auto',
+            tool_choice: toolChoice,
         });
 
-        const message = response.choices[0]?.message;
+        const choice = response.choices[0];
 
-        // Protocol tool_calls (standard OpenAI format)
-        if (message?.tool_calls?.length) {
-            const toolCalls: MCPToolCallInfo[] = message.tool_calls.map(tc => ({
+        if (choice.finish_reason === 'tool_calls') {
+            const toolCalls: MCPToolCallInfo[] = (choice.message.tool_calls ?? []).map(tc => ({
                 id: tc.id,
                 name: tc.function.name,
                 arguments: (() => {
@@ -57,37 +56,22 @@ export class QwenMCPProvider implements IMCPAIProvider {
             return { done: false, toolCalls };
         }
 
-        const rawContent = message?.content ?? '';
-
-        // Fallback: {"name": ..., "arguments": ...} objects in content
-        const extracted = extractJsonObjects(rawContent);
-        const jsonCalls = extracted.filter((c: any) => typeof c.name === 'string' && c.arguments !== undefined);
-        if (jsonCalls.length > 0) {
-            const toolCalls: MCPToolCallInfo[] = jsonCalls.map((c: any, i: number) => ({
-                id: `qwen-${Date.now()}-${i}`,
-                name: c.name as string,
-                arguments: typeof c.arguments === 'string' ? JSON.parse(c.arguments) : c.arguments ?? {},
+        // Fallback: check tool_calls even if finish_reason is not 'tool_calls'
+        if (choice.message.tool_calls?.length) {
+            const toolCalls: MCPToolCallInfo[] = choice.message.tool_calls.map(tc => ({
+                id: tc.id,
+                name: tc.function.name,
+                arguments: (() => {
+                    try { return JSON.parse(tc.function.arguments ?? '{}'); } catch { return {}; }
+                })(),
             }));
             return { done: false, toolCalls };
         }
 
-        // Fallback: "toolName [...]" format
-        const namedCalls = parseNamedToolCalls(rawContent);
-        if (namedCalls.length > 0) {
-            const toolCalls: MCPToolCallInfo[] = namedCalls.map((c, i) => ({
-                id: `qwen-${Date.now()}-${i}`,
-                name: c.name,
-                arguments: c.arguments,
-            }));
-            return { done: false, toolCalls };
-        }
-
-        return { done: true, text: rawContent };
+        return { done: true, text: choice.message.content ?? '' };
     }
 
-    // Qwen doesn't use the tool_calls protocol, so assistant_tool_calls are rendered
-    // as JSON content and tool_results are injected as user messages.
-    private toQwenHistory(history: MCPHistoryMessage[]): OpenAI.Chat.ChatCompletionMessageParam[] {
+    private toOpenAIHistory(history: MCPHistoryMessage[]): OpenAI.Chat.ChatCompletionMessageParam[] {
         const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [];
         for (const msg of history) {
             if (msg.type === 'user') {
@@ -95,12 +79,24 @@ export class QwenMCPProvider implements IMCPAIProvider {
             } else if (msg.type === 'assistant') {
                 messages.push({ role: 'assistant', content: msg.content });
             } else if (msg.type === 'assistant_tool_calls') {
-                const content = msg.toolCalls
-                    .map(tc => JSON.stringify({ name: tc.name, arguments: tc.arguments }))
-                    .join('\n');
-                messages.push({ role: 'assistant', content });
+                messages.push({
+                    role: 'assistant',
+                    content: null,
+                    tool_calls: msg.toolCalls.map(tc => ({
+                        id: tc.id,
+                        type: 'function' as const,
+                        function: {
+                            name: tc.name,
+                            arguments: JSON.stringify(tc.arguments),
+                        },
+                    })),
+                });
             } else if (msg.type === 'tool_result') {
-                messages.push({ role: 'user', content: `Tool result:\n${msg.content}` });
+                messages.push({
+                    role: 'tool',
+                    tool_call_id: msg.toolCallId,
+                    content: msg.content,
+                });
             }
         }
         return messages;
