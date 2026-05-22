@@ -87,6 +87,15 @@ export class QwenProvider implements IAIProvider {
             // Second fallback: "toolName [...]" format
             const namedCalls = parseNamedToolCalls(rawContent);
             if (namedCalls.length > 0) return { toolCalls: namedCalls };
+
+            // Final fallback: model responded with plain text and no tool call format.
+            // Treat it as getAssistantResponse so the service can surface it to the user.
+            return {
+                toolCalls: [{
+                    name: 'getAssistantResponse',
+                    arguments: { message: rawContent.trim() }
+                }]
+            };
         }
 
         return { toolCalls: [] };
