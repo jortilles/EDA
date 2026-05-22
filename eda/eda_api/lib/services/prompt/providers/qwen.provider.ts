@@ -1,6 +1,25 @@
 import OpenAI from "openai";
 import { IAIProvider, NormalizedMessage, NormalizedTool, NormalizedResponse } from './ai-provider.interface';
 
+function extractJsonObjects(text: string): any[] {
+    const results: any[] = [];
+    let depth = 0;
+    let start = -1;
+    for (let i = 0; i < text.length; i++) {
+        if (text[i] === '{') {
+            if (depth === 0) start = i;
+            depth++;
+        } else if (text[i] === '}') {
+            depth--;
+            if (depth === 0 && start !== -1) {
+                try { results.push(JSON.parse(text.slice(start, i + 1))); } catch { }
+                start = -1;
+            }
+        }
+    }
+    return results;
+}
+
 export class QwenProvider implements IAIProvider {
 
     private client: OpenAI;
@@ -8,17 +27,19 @@ export class QwenProvider implements IAIProvider {
 
     constructor(config: Record<string, any>) {
         this.client = new OpenAI({
-            apiKey: config.API_KEY || 'ollama',
+            apiKey: config.API_KEY,
             baseURL: config.BASE_URL,
         });
         this.model = config.MODEL;
     }
 
     async complete(messages: NormalizedMessage[], tools: NormalizedTool[]): Promise<NormalizedResponse> {
+        const chatMessages = messages.map(m => ({ role: m.role as 'system' | 'user' | 'assistant', content: m.content }));
+
         if (tools.length === 0) {
             const response = await this.client.chat.completions.create({
                 model: this.model,
-                messages: messages as any,
+                messages: chatMessages,
             });
             const text = response.choices[0]?.message?.content ?? '';
             return { toolCalls: [], text };
@@ -29,29 +50,55 @@ export class QwenProvider implements IAIProvider {
             function: {
                 name: tool.name,
                 description: tool.description,
-                parameters: tool.parameters as any,
+                parameters: tool.parameters as Record<string, unknown>,
             },
         }));
 
         const response = await this.client.chat.completions.create({
             model: this.model,
-            messages: messages as any,
+            messages: chatMessages,
             tools: openAITools,
             tool_choice: "required",
         });
 
-        const choice = response.choices[0];
-        if (choice.finish_reason === 'tool_calls') {
-            const toolCalls = (choice.message.tool_calls ?? []).map(tc => ({
-                name: tc.function.name,
-                arguments: (() => {
-                    try { return JSON.parse(tc.function.arguments ?? '{}'); } catch { return {}; }
-                })(),
-            }));
-            return { toolCalls };
+        const message = response.choices[0]?.message;
+
+        console.log('Message.content:.:: ', message.content)
+
+        // Protocol tool_calls (standard OpenAI format)
+        const toolCalls = (message?.tool_calls ?? []).map(tc => ({
+            name: tc.function.name,
+            arguments: (() => {
+                try {
+                    return typeof tc.function.arguments === 'string'
+                        ? JSON.parse(tc.function.arguments)
+                        : tc.function.arguments ?? {};
+                } catch {
+                    return {};
+                }
+            })(),
+        }));
+
+        if (toolCalls.length > 0) return { toolCalls };
+
+        // Fallback: Qwen returns tool calls as JSON text in content instead of tool_calls field.
+        // The model may emit multiple separate JSON objects (not wrapped in an array), so we extract
+        // each one individually by tracking brace depth.
+        const rawContent = message?.content ?? '';
+        if (rawContent) {
+            const extracted = extractJsonObjects(rawContent);
+            const fallbackCalls = extracted
+                .filter((c: any) => typeof c.name === 'string' && c.arguments !== undefined)
+                .map((c: any) => ({
+                    name: c.name as string,
+                    arguments: typeof c.arguments === 'string'
+                        ? JSON.parse(c.arguments)
+                        : c.arguments ?? {},
+                }));
+            if (fallbackCalls.length > 0) return { toolCalls: fallbackCalls };
         }
 
-        return { toolCalls: [], text: choice.message.content ?? '' };
+        return { toolCalls: [] };
     }
 
 }
