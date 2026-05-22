@@ -393,7 +393,7 @@ eda-blank-panel :root {
   color: var(--header-bg-color);
   font-size: 13px;
 
-  cursor: pointer;
+  cursor: grab;
   z-index: 99999 !important;
   max-width: 27%;
 
@@ -407,6 +407,10 @@ eda-blank-panel :root {
   transform: scale(1.03);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   border-color: var(--corporate-primary);
+}
+
+.select-box:active {
+  cursor: grabbing !important;
 }
 
 
@@ -574,6 +578,11 @@ span.state-label {
 
 .close-thin:hover {
   transform: scale(1.2);
+}
+
+::ng-deep body:has(.cdk-drag-dragging),
+::ng-deep body:has(.cdk-drag-dragging) * {
+  cursor: grabbing !important;
 }
 
 ::ng-deep .cdk-drag-preview {
