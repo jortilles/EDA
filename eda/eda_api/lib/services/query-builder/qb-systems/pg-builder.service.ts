@@ -379,7 +379,7 @@ export class PgBuilderService extends QueryBuilderService {
     function cadenaRecursiva(item: any) {
       const { y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, valueListSource, sqlOptional, computed_column, SQLexpression } = item;
 
-      let filter_type_value = filter_type === 'not_in' ? 'not in' : filter_type === 'not_like' ? 'not like' : filter_type;
+      let filter_type_value = filter_type === 'not_in' ? 'not in' : filter_type === 'not_like' ? 'not ilike' : filter_type === 'like' ? 'ilike' : filter_type;
 
       let filter_elements_value = '';
       if (filter_elements.length === 0) {
