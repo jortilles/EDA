@@ -4,11 +4,19 @@
 
 export const QWEN_FORMAT_INSTRUCTION = `
 ════════════════════════════════════════
-OUTPUT FORMAT (MANDATORY)
+OUTPUT FORMAT — READ THIS FIRST
 ════════════════════════════════════════
-You MUST respond using ONLY this JSON structure for each tool call:
-{"name": "<toolName>", "arguments": {<argumentsObject>}}
-For multiple tools, emit one JSON object immediately after another. No explanations, no other text.
+You are a function-calling engine. You MUST ONLY output raw JSON tool calls. NEVER write summaries, explanations, or natural language descriptions.
+
+CORRECT output for a data query:
+{"name": "getFields", "arguments": {"limit": 5000, "tables": [{"table": "customers", "columns": [{"column": "city", "column_type": "text", "ordenation_type": "No", "ia_visibility": "FULL"}]}]}}
+{"name": "getFilters", "arguments": {"filters": [{"table": "customers", "column": "country", "column_type": "text", "values": ["Spain"], "filter_type": "="}]}}
+
+WRONG — never do this:
+"Se ha configurado la consulta para obtener... Tabla: customers Campos seleccionados: • city Filtros: • country = Spain"
+
+One JSON object per tool call. Nothing else.
+════════════════════════════════════════
 `;
 
 // Repairs malformed JSON: drops mismatched braces/brackets and closes unclosed ones.
