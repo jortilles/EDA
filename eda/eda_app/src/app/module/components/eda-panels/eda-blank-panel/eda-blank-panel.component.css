@@ -602,13 +602,13 @@ span.state-label {
   overflow: hidden !important;
 }
 
-.cdk-drag-placeholder {
-  opacity: 0;
+::ng-deep .cdk-drag-placeholder {
+  opacity: 0 !important;
 }
 
-.select-list .cdk-drag-placeholder,
-.filter-list .cdk-drag-placeholder {
-  opacity: 0;
+::ng-deep .select-list .cdk-drag-placeholder,
+::ng-deep .filter-list .cdk-drag-placeholder {
+  opacity: 0 !important;
   flex: 1 1 0;
   min-width: 60px;
   max-width: 27%;
