@@ -19,7 +19,7 @@ export class QwenProvider implements IAIProvider {
         const chatMessages = messages.map(m => ({
             role: m.role as 'system' | 'user' | 'assistant',
             content: m.role === 'system' && tools.length > 0
-                ? m.content + QWEN_FORMAT_INSTRUCTION
+                ? QWEN_FORMAT_INSTRUCTION + m.content
                 : m.content,
         }));
 
@@ -87,6 +87,21 @@ export class QwenProvider implements IAIProvider {
             // Second fallback: "toolName [...]" format
             const namedCalls = parseNamedToolCalls(rawContent);
             if (namedCalls.length > 0) return { toolCalls: namedCalls };
+
+            // Final fallback: model responded with plain text and no tool call format.
+            // Only treat as getAssistantResponse if it looks like genuine chat (greeting,
+            // schema description, off-topic). If it looks like a data query description
+            // the model generated instead of a tool call, return empty so the service
+            // surfaces a proper error rather than pretending the query succeeded.
+            const isDataQueryDescription = /Tabla:|Campos seleccionados:|Filtros aplicados:|Filtros:/i.test(rawContent);
+            if (!isDataQueryDescription) {
+                return {
+                    toolCalls: [{
+                        name: 'getAssistantResponse',
+                        arguments: { message: rawContent.trim() }
+                    }]
+                };
+            }
         }
 
         return { toolCalls: [] };

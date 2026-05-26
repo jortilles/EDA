@@ -3,21 +3,28 @@ import { NormalizedTool } from "./providers/ai-provider.interface";
 const getAssistantResponseTool: NormalizedTool = {
     name: "getAssistantResponse",
     description: `
-    Use this tool ONLY when the user message has NO relation to any table or entity, column or field or attribute in the schema.
-    Trigger cases:
-    - Greetings: "hola", "hello", "buenos días", "hey"
-    - Farewells: "adiós", "bye", "hasta luego"
-    - Thanks: "gracias", "thank you"
-    - Off-topic questions: jokes, weather, general knowledge, anything unrelated to data
-    - Unclear or ambiguous messages that cannot be mapped to any schema element
-    DO NOT use this tool if the user is asking about data, tables, or fields — use getFields instead.
+    Use this tool when:
+    1. The user message has NO relation to any table or entity, column or field or attribute in the schema:
+       - Greetings: "hola", "hello", "buenos días", "hey"
+       - Farewells: "adiós", "bye", "hasta luego"
+       - Thanks: "gracias", "thank you"
+       - Off-topic questions: jokes, weather, general knowledge, anything unrelated to data
+       - Unclear or ambiguous messages that cannot be mapped to any schema element
+    2. The user asks a META question about the schema or the available data itself:
+       - "¿Sobre qué trata esta información?" / "What is this data about?"
+       - "¿Qué datos tengo disponibles?" / "What data do I have?"
+       - "¿Qué tablas hay?" / "What tables are there?"
+       - "¿Qué puedo consultar?" / "What can I query?"
+       - "Explícame el esquema" / "Describe the available information"
+       For these cases, summarize in Spanish what the schema contains: tables, their purpose, and key columns.
+    DO NOT use this tool if the user is asking for specific data values — use getFields instead.
     `,
     parameters: {
         type: "object",
         properties: {
             message: {
                 type: "string",
-                description: "A short, friendly response in Spanish to the user's message. Be concise and helpful. If the message is off-topic, kindly remind the user that you are a data query assistant."
+                description: "A short, friendly response in Spanish. For meta questions about the schema, summarize what data is available based on the table names and descriptions. For off-topic messages, remind the user you are a data query assistant."
             }
         },
         required: ["message"],

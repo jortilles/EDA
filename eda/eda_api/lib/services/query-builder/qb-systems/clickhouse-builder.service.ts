@@ -280,7 +280,7 @@ export class ClickHouseBuilderService extends QueryBuilderService {
     function cadenaRecursiva(item: any) {
       const { y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, valueListSource, sqlOptional, computed_column, SQLexpression } = item;
 
-      let filter_type_value = filter_type === 'not_in' ? 'NOT IN' : filter_type === 'not_like' ? 'NOT ILIKE' : filter_type;
+      let filter_type_value = filter_type === 'not_in' ? 'NOT IN' : filter_type === 'not_like' ? 'NOT ILIKE' : filter_type === 'like' ? 'ILIKE' : filter_type;
 
       let filter_elements_value = '';
       if (filter_elements.length === 0) {
