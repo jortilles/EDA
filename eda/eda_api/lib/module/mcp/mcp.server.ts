@@ -24,9 +24,9 @@ export function createMcpServer(requestUser?: any) {
     (server as any).registerTool(
         'list_dashboards',
         {
-            description: 'Lista todos los dashboards accesibles en EDA para el usuario actual. Devuelve por cada dashboard: título, ID, autor (quién lo creó), fecha de creación, fecha de modificación, visibilidad (privado/grupo/público) y URL directa. Úsalo para: descubrir dashboards disponibles, saber quién ha creado dashboards, buscar dashboards de un usuario concreto (parámetro autor), o responder preguntas sobre fechas de creación/modificación.',
+            description: 'Lists all dashboards accessible in EDA for the current user. Returns for each dashboard: title, ID, author (who created it), creation date, modification date, visibility (private/group/public) and direct URL. Use it to: discover available dashboards, find out who created dashboards, search dashboards by a specific user (autor parameter), or answer questions about creation/modification dates.',
             inputSchema: {
-                autor: z.string().optional().describe('Filtra los dashboards por nombre de autor (búsqueda parcial, case-insensitive). Si se omite, devuelve todos los dashboards accesibles.'),
+                autor: z.string().optional().describe('Filter dashboards by author name (partial match, case-insensitive). If omitted, returns all accessible dashboards.'),
             },
         },
         async (args: any) => {
@@ -112,7 +112,7 @@ export function createMcpServer(requestUser?: any) {
     // ── list_datasources ────────────────────────────────────────────────────
     server.registerTool(
         'list_datasources',
-        { description: 'Lista los datasources (modelos de datos) accesibles en EDA para el usuario actual, filtrados por permisos y visibilidad. Devuelve por cada datasource: ID, nombre del modelo y descripción. Úsalo para: descubrir qué fuentes de datos existen, obtener el ID de un datasource antes de llamar a get_datasource, o responder preguntas sobre qué datos hay disponibles en el sistema.' },
+        { description: 'Lists the datasources (data models) accessible in EDA for the current user, filtered by permissions and visibility. Returns for each datasource: ID, model name and description. Use it to: discover what data sources exist, get the ID of a datasource before calling get_datasource, or answer questions about what data is available in the system.' },
         async () => {
             console.log('[MCP] tool: list_datasources - ejecutando');
             try {
@@ -167,8 +167,8 @@ export function createMcpServer(requestUser?: any) {
     (server as any).registerTool(
         'get_datasource',
         {
-            description: 'Obtiene el esquema completo de un datasource de EDA por su ID: nombre, descripción, tablas y columnas disponibles (con sus tipos). Usa list_datasources primero para obtener el ID. Úsalo para: conocer qué tablas y campos contiene un modelo de datos, entender la estructura antes de construir consultas, o responder preguntas sobre el contenido de un datasource.',
-            inputSchema: { id: z.string().describe('ID del datasource (obtenido de list_datasources)') },
+            description: 'Gets the full schema of an EDA datasource by its ID: name, description, available tables and columns (with their types). Use list_datasources first to get the ID. Use it to: find out what tables and fields a data model contains, understand the structure before building queries, or answer questions about the content of a datasource.',
+            inputSchema: { id: z.string().describe('Datasource ID (obtained from list_datasources)') },
         },
         async (args: any) => {
             console.log('[MCP] tool: get_datasource - args:', JSON.stringify(args));
@@ -210,8 +210,8 @@ export function createMcpServer(requestUser?: any) {
     (server as any).registerTool(
         'get_dashboard',
         {
-            description: 'Obtiene los metadatos completos de un dashboard de EDA por su ID: título, autor, fecha de creación, fecha de última modificación, visibilidad, datasource(s) utilizados (nombre e ID) y lista de panels con sus campos y tipo de visualización. Úsalo para: conocer quién creó un dashboard y cuándo, ver qué campos visualiza cada panel, u obtener el datasource asociado antes de llamar a get_datasource.',
-            inputSchema: { id: z.string().describe('ID del dashboard (obtenido de list_dashboards)') },
+            description: 'Gets the full metadata of an EDA dashboard by its ID: title, author, creation date, last modification date, visibility, datasource(s) used (name and ID) and list of panels with their fields and chart type. Use it to: find out who created a dashboard and when, see what fields each panel visualises, or get the associated datasource before calling get_datasource.',
+            inputSchema: { id: z.string().describe('Dashboard ID (obtained from list_dashboards)') },
         },
         async (args: any) => {
             console.log('[MCP] tool: get_dashboard - args:', JSON.stringify(args));
@@ -309,18 +309,18 @@ export function createMcpServer(requestUser?: any) {
     (server as any).registerTool(
         'get_data_from_dashboard',
         {
-            description: 'Busca en los dashboards de EDA paneles con datos relevantes a una pregunta. SIN dashboard_id: modo exploración — devuelve un catálogo estructurado de opciones (panel, datasource, filtros activos) para que el asistente presente al usuario cuál quiere consultar. CON dashboard_id: modo datos — ejecuta las queries de los paneles y devuelve el modelo de respuesta con datos reales + fuente.',
+            description: 'Searches EDA dashboards for panels with data relevant to a question. WITHOUT dashboard_id: exploration mode — returns a structured catalogue of options (panel, datasource, active filters) for the assistant to present to the user. WITH dashboard_id: data mode — runs the panel queries and returns the response model with real data + source.',
             inputSchema: {
-                question:           z.string().describe('Pregunta del usuario sobre los datos que quiere consultar'),
-                campos_requeridos:  z.array(z.string()).optional().describe('Palabras clave de los campos que deben aparecer en el panel (ej: ["country","credit"]). En modo exploración, solo se devuelven paneles donde TODOS los campos mencionados estén presentes (coincidencia parcial, case-insensitive). El asistente debe inferir estas palabras clave de la pregunta del usuario.'),
-                dashboard_id:       z.string().optional().describe('ID del dashboard a consultar (opcional). Si no se proporciona, se lista el catálogo de opciones disponibles.'),
-                panel_index:        z.number().optional().describe('Índice del panel dentro del dashboard (0-based). Si se omite, se ejecutan todos los panels del dashboard.'),
-                datasource_id:      z.string().optional().describe('ID del datasource para consulta directa (modo fallback). Úsalo SOLO cuando el usuario haya confirmado explícitamente consultar un modelo de datos directamente, al no haberse encontrado paneles en dashboards.'),
-                campos_consulta:    z.array(z.string()).optional().describe('Nombres técnicos de columnas a consultar en modo fallback (obtenidos de get_datasource). Si se omite, se usan los campos más relevantes del modelo según la pregunta.'),
-                ordenar_campo:      z.string().optional().describe('display_name del campo por el que ordenar los resultados. Rellénalo cuando la pregunta implique ranking ("mejores", "top", "más alto", "lowest", etc.). Infiere el campo de la pregunta (ej: "clientes con más ventas" → campo de ventas/importe).'),
-                ordenar_direccion:  z.enum(['Asc', 'Desc']).optional().describe('Dirección del orden: Desc = mayor primero (mejores, top, más alto), Asc = menor primero (peores, mínimo, lowest). Rellénalo junto con ordenar_campo.'),
-                limite_filas:       z.number().optional().describe('Número máximo de filas a devolver. Rellénalo cuando el usuario pida "top N", "los 5 mejores", "give me 10", etc.'),
-                sin_agregacion:     z.boolean().optional().describe('true si el usuario quiere filas de detalle sin agrupar (ej: "lista de todos los pedidos", "ver cada registro", "sin agrupar", "detalle completo"). Elimina todas las agregaciones del panel y devuelve filas individuales con límite de 500.'),
+                question:           z.string().describe('The user\'s question about the data they want to query'),
+                campos_requeridos:  z.array(z.string()).optional().describe('Keyword fields that must appear in the panel (e.g. ["country","credit"]). In exploration mode, only panels where at least 50% of the keywords are present are returned (partial match, case-insensitive). The assistant must infer these keywords from the user\'s question. Always include translations in Spanish, Catalan, and English.'),
+                dashboard_id:       z.string().optional().describe('Dashboard ID to query (optional). If not provided, the catalogue of available options is listed.'),
+                panel_index:        z.number().optional().describe('Panel index within the dashboard (0-based). If omitted, all panels in the dashboard are run.'),
+                datasource_id:      z.string().optional().describe('Datasource ID for direct query (fallback mode). Use ONLY when no panels were found in dashboards and a direct datasource query is needed.'),
+                campos_consulta:    z.array(z.string()).optional().describe('Technical column names to query in fallback mode (obtained from get_datasource). If omitted, the most relevant fields from the model are used based on the question.'),
+                ordenar_campo:      z.string().optional().describe('display_name of the field to sort results by. Fill in when the question implies ranking ("best", "top", "highest", "lowest", "mejores", "millors", etc.). Infer the field from the question (e.g. "customers with most sales" → sales/amount field).'),
+                ordenar_direccion:  z.enum(['Asc', 'Desc']).optional().describe('Sort direction: Desc = highest first (best, top, highest), Asc = lowest first (worst, minimum, lowest). Fill in together with ordenar_campo.'),
+                limite_filas:       z.number().optional().describe('Maximum number of rows to return. Fill in when the user asks for "top N", "the 5 best", "give me 10", etc.'),
+                sin_agregacion:     z.boolean().optional().describe('true if the user wants unaggregated detail rows (e.g. "list of all orders", "see each record", "without grouping", "full detail"). Removes all aggregations from the panel and returns individual rows with a limit of 500.'),
             },
         },
         async (args: any) => {
@@ -1068,14 +1068,14 @@ export function createMcpServer(requestUser?: any) {
                 }
 
                 const buildFallbackNota = () => fallbackSugerencias.length > 0
-                    ? `ACCIÓN OBLIGATORIA — Llama AHORA MISMO a get_data_from_dashboard con datasource_id="${fallbackSugerencias[0].datasource_id}" y campos_consulta=${JSON.stringify(fallbackSugerencias[0].campos_relevantes)}. NO preguntes al usuario, NO pidas confirmación, actúa directamente. Si la consulta devuelve datos, preséntaselos como respuesta normal sin mencionar que fue una búsqueda directa, sin comentar la calidad de los datos, sin preguntas adicionales. Si devuelve null o 0 filas, responde ÚNICAMENTE con una sola frase en el idioma del usuario diciendo que no hay datos disponibles. Nada más.`
+                    ? `MANDATORY ACTION — Call get_data_from_dashboard RIGHT NOW with datasource_id="${fallbackSugerencias[0].datasource_id}" and campos_consulta=${JSON.stringify(fallbackSugerencias[0].campos_relevantes)}. Do NOT ask the user, do NOT request confirmation, act directly. If the query returns data, present it as a normal response without mentioning it was a direct search, without commenting on data quality, without further questions. If it returns null or 0 rows, respond ONLY with a single sentence in the user's language saying no data is available. Nothing else.`
                     : '';
                 const notaSinResultados = opcionesArr.length > 0 ? '' : fallbackSugerencias.length > 0
                     ? buildFallbackNota()
                     : camposLower.length > 0
-                        ? `No se han encontrado paneles con los campos [${camposLower.join(', ')}]. OBLIGATORIO: llama de nuevo a este tool SIN campos_requeridos. Si el resultado sigue siendo 0 opciones, responde ÚNICAMENTE con una sola frase en el idioma del usuario diciendo que no hay datos disponibles. PROHIBIDO ABSOLUTO: no ofrezcas alternativas, no sugiereas verificar nada, no menciones dashboards ni bases de datos, no añadas ninguna frase adicional.`
-                        : `Responde ÚNICAMENTE con una sola frase en el idioma del usuario diciendo que no hay datos disponibles sobre su pregunta. PROHIBIDO ABSOLUTO: no ofrezcas alternativas, no sugiereas verificar nada, no menciones dashboards ni bases de datos, no añadas ninguna frase adicional.`;
-                const notaTruncada = truncada ? ` AVISO: se muestran las ${MAX_OPTIONS} opciones más relevantes de ${totalOpciones} encontradas. El resto fueron descartadas por menor relevancia.` : '';
+                        ? `No panels found with fields [${camposLower.join(', ')}]. MANDATORY: call this tool again WITHOUT campos_requeridos. If the result is still 0 options, respond ONLY with a single sentence in the user's language saying no data is available. ABSOLUTE PROHIBITION: do not offer alternatives, do not suggest verifying anything, do not mention dashboards or databases, do not add any additional sentence.`
+                        : `Respond ONLY with a single sentence in the user's language saying no data is available about their question. ABSOLUTE PROHIBITION: do not offer alternatives, do not suggest verifying anything, do not mention dashboards or databases, do not add any additional sentence.`;
+                const notaTruncada = truncada ? ` NOTE: showing the ${MAX_OPTIONS} most relevant options out of ${totalOpciones} found. The rest were discarded due to lower relevance.` : '';
 
                 const respuestaExploracion: any = {
                     pregunta: question,
@@ -1084,8 +1084,8 @@ export function createMcpServer(requestUser?: any) {
                     nota_al_asistente: opcionesArr.length === 0
                         ? notaSinResultados
                         : opcionesArr.length === 1
-                            ? 'Hay exactamente UNA opción. OBLIGATORIO: llama AHORA MISMO a get_data_from_dashboard en modo datos con el dashboard_id y panel_index de esta opción. NO preguntes al usuario, NO esperes confirmación.' + notaTruncada
-                            : `Hay ${opcionesArr.length} opciones en total. IMPORTANTE: muestra al usuario SOLO las opciones cuyo dashboard_nombre o panel_titulo estén relacionados con la pregunta "${question}". Si una opción claramente no tiene relación con la pregunta (ej: pregunta sobre agua pero la opción es de ventas), NO la incluyas en la lista. Preséntaselas numeradas en prosa fluida con el link del dashboard, destacando la diferencia clave entre ellas (con/sin filtros, distintos alcances). Si tras filtrar queda solo 1 opción relevante, ve directamente al PASO 3 sin preguntar. Espera la selección del usuario ANTES de ejecutar el modo datos cuando haya varias relevantes.` + notaTruncada,
+                            ? 'There is exactly ONE option. MANDATORY: call get_data_from_dashboard RIGHT NOW in data mode with the dashboard_id and panel_index of this option. Do NOT ask the user, do NOT wait for confirmation.' + notaTruncada
+                            : `There are ${opcionesArr.length} options in total. IMPORTANT: show the user ONLY the options whose dashboard_nombre or panel_titulo are related to the question "${question}". If an option clearly has no relation to the question (e.g. question about water but the option is about sales), do NOT include it. Present them numbered with the dashboard link, highlighting the key difference between them (with/without filters, different scopes). If after filtering only 1 relevant option remains, go directly to STEP 3 without asking. Wait for the user's selection BEFORE running data mode when there are several relevant options.` + notaTruncada,
                 };
 
                 return { content: [{ type: 'text', text: JSON.stringify(respuestaExploracion) }] };

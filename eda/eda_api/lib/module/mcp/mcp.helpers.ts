@@ -8,7 +8,6 @@ const jwt    = require('jsonwebtoken');
 const SEED   = require('../../../config/seed').SEED;
 
 const LOCALES = ['/es', '/ca', '/en', '/pl', '/fr'];
-const { MCP_EMAIL, MCP_PASSWORD} = getAnthropicConfig();
 
 // ============================================================
 // CONFIGURACIÓN
@@ -16,7 +15,6 @@ const { MCP_EMAIL, MCP_PASSWORD} = getAnthropicConfig();
 
 export function getAnthropicConfig() {
     const configPath = path.resolve(__dirname, '../../../config/ai.config.js');
-    console.log(configPath);
     delete require.cache[require.resolve(configPath)];
     return require(configPath);
 }
@@ -113,6 +111,7 @@ export function finalizeChatContext(ctx: ChatContext): void {
 // ============================================================
 // --- Auth interno (sin HTTP) ---
 export async function loginInternal(): Promise<string> {
+    const { MCP_EMAIL, MCP_PASSWORD } = getAnthropicConfig();
     if (!MCP_EMAIL || !MCP_PASSWORD) {
         throw new Error('MCP_EMAIL y MCP_PASSWORD no están configurados en el servidor.');
     }
