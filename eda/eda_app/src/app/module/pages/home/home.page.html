@@ -177,7 +177,6 @@
             <p class="text-xs text-gray-400 mt-1" i18n="@@chatEmptySubtitle">Consulta dashboards, datasources y datos</p>
           </div>
           <div class="flex flex-col gap-2 w-full">
-            <button class="chat-suggestion" (click)="useSuggestion(chatSuggestion1)" i18n="@@chatSuggestion1">¿Qué dashboards tengo?</button>
             <button class="chat-suggestion" (click)="useSuggestion(chatSuggestion2)" i18n="@@chatSuggestion2">¿Qué datasources hay?</button>
           </div>
         </div>
@@ -192,7 +191,19 @@
           @if (msg.role === 'user') {
             <div class="chat-bubble chat-bubble--user whitespace-pre-wrap">{{ msg.displayContent ?? msg.content }}</div>
           } @else {
-            <div class="chat-bubble chat-bubble--assistant chat-message-content" [innerHTML]="renderMarkdown(msg.content)"></div>
+            <div class="chat-assistant-col">
+              <div class="chat-bubble chat-bubble--assistant chat-message-content" [innerHTML]="renderMarkdown(msg.content)"></div>
+              @if (msg.chart) {
+                <div class="chat-chart-wrapper">
+                  <p class="chat-chart-title">{{ msg.chart.title }}</p>
+                  <canvas baseChart
+                    [data]="buildChartData(msg.chart)"
+                    [options]="buildChartOptions(msg.chart)"
+                    type="bar">
+                  </canvas>
+                </div>
+              }
+            </div>
           }
         </div>
         @if (msg.role === 'assistant' && msg.options && msg.options.length > 0) {
@@ -223,10 +234,15 @@
           <div class="chat-msg-avatar">
             <img src="assets/images/logos/logo.png" alt="Edalitics" class="w-3.5 h-3.5 object-contain" style="filter: brightness(0) invert(1);">
           </div>
-          <div class="chat-bubble chat-bubble--assistant px-4 py-3 flex items-center gap-1.5">
-            <span class="chat-dot" style="animation-delay:0ms"></span>
-            <span class="chat-dot" style="animation-delay:160ms"></span>
-            <span class="chat-dot" style="animation-delay:320ms"></span>
+          <div class="chat-bubble chat-bubble--assistant chat-loading-bubble">
+            @if (chatStatusMessage()) {
+              <span class="chat-status-indicator"></span>
+              <span class="chat-status-text">{{ chatStatusMessage() }}</span>
+            } @else {
+              <span class="chat-dot" style="animation-delay:0ms"></span>
+              <span class="chat-dot" style="animation-delay:160ms"></span>
+              <span class="chat-dot" style="animation-delay:320ms"></span>
+            }
           </div>
         </div>
       }

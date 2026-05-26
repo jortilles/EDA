@@ -13,6 +13,62 @@ import {
 } from './mcp.helpers';
 
 // ============================================================
+// HELPERS
+// ============================================================
+
+interface BarChartDataset {
+    label: string;
+    values: number[];
+}
+
+interface BarChartPayload {
+    type: 'bar';
+    title: string;
+    labels: string[];
+    datasets: BarChartDataset[];
+    labelKey: string;
+}
+
+function generateBarChart(columnas: string[], filas: any[][]): BarChartPayload | null {
+    if (columnas.length < 2 || filas.length < 2) return null;
+
+    const isNumericCol = (ci: number): boolean => {
+        const samples = filas.slice(0, Math.min(8, filas.length));
+        const numCount = samples.filter(r => {
+            const v = r[ci];
+            if (typeof v === 'number') return true;
+            if (typeof v === 'string' && v.trim() !== '') return !isNaN(parseFloat(v.replace(/[^0-9.-]/g, '')));
+            return false;
+        }).length;
+        return numCount >= Math.ceil(samples.length * 0.6);
+    };
+
+    const numericIndices = columnas.map((_, ci) => ci).filter(ci => isNumericCol(ci));
+    if (numericIndices.length === 0) return null;
+
+    const labelIdx = columnas.findIndex((_, ci) => !numericIndices.includes(ci));
+    if (labelIdx === -1) return null;
+
+    const labels = filas.map(r => String(r[labelIdx] ?? ''));
+    const datasets: BarChartDataset[] = numericIndices.map(ni => ({
+        label: columnas[ni],
+        values: filas.map(r => {
+            const raw = r[ni];
+            return typeof raw === 'number' ? raw : parseFloat(String(raw ?? '0').replace(/[^0-9.-]/g, '')) || 0;
+        }),
+    }));
+
+    const maxAbs = Math.max(...datasets.flatMap(d => d.values.map(Math.abs)));
+    if (maxAbs === 0) return null;
+
+    const title = datasets.length === 1
+        ? `${datasets[0].label} per ${columnas[labelIdx]}`
+        : columnas[labelIdx];
+
+    return { type: 'bar', title, labels, datasets, labelKey: columnas[labelIdx] };
+}
+
+// ============================================================
 // MCP SERVER
 // ============================================================
 
@@ -33,14 +89,16 @@ export function createMcpServer(requestUser?: any) {
     (server as any).registerTool(
         'list_dashboards',
         {
-            description: 'Lists all dashboards accessible in EDA for the current user. Returns for each dashboard: title, ID, author (who created it), creation date, modification date, visibility (private/group/public) and direct URL. Use it to: discover available dashboards, find out who created dashboards, search dashboards by a specific user (autor parameter), or answer questions about creation/modification dates.',
+            description: 'Lists all dashboards accessible in EDA for the current user. Returns for each dashboard: title and direct URL. Use it to: discover available dashboards, filter by author or datasource, or answer questions about what dashboards exist. When datasource is specified, returns the full individual list for that datasource regardless of count.',
             inputSchema: {
-                autor: z.string().optional().describe('Filter dashboards by author name (partial match, case-insensitive). If omitted, returns all accessible dashboards.'),
+                autor:      z.string().optional().describe('Filter dashboards by author name (partial match, case-insensitive).'),
+                datasource: z.string().optional().describe('Filter dashboards by datasource name (partial match, case-insensitive). When provided, always returns the full individual list for that datasource.'),
             },
         },
         async (args: any) => {
-            const autorFiltro: string | undefined = args?.autor?.toLowerCase();
-            console.log('[MCP] tool: list_dashboards - ejecutando | autor:', autorFiltro ?? '(todos)');
+            const autorFiltro:      string | undefined = args?.autor?.toLowerCase();
+            const datasourceFiltro: string | undefined = args?.datasource?.toLowerCase();
+            console.log('[MCP] tool: list_dashboards - ejecutando | autor:', autorFiltro ?? '(todos)', '| datasource:', datasourceFiltro ?? '(todos)');
             let user: any;
             try {
                 user = await resolveUser(requestUser);
@@ -73,6 +131,11 @@ export function createMcpServer(requestUser?: any) {
                         const dashAuthor = (d.config?.author ?? d.user?.name ?? '').toLowerCase();
                         if (!dashAuthor.includes(autorFiltro)) return false;
                     }
+                    if (datasourceFiltro) {
+                        const dsId2 = d.config?.ds?._id?.toString();
+                        const dsName = (dsId2 ? accessibleDsIds.get(dsId2) : undefined) ?? d.config?.ds?.name ?? '';
+                        if (!dsName.toLowerCase().includes(datasourceFiltro)) return false;
+                    }
                     return true;
                 });
 
@@ -84,30 +147,45 @@ export function createMcpServer(requestUser?: any) {
 
                 const baseUrl = getBaseUrl();
                 console.log('[MCP] list_dashboards — baseUrl:', baseUrl || '(vacío)');
-                const formatGroup = (label: string, items: any[] = []) => {
-                    const lines = [`\n## ${label} (${items.length})`];
-                    if (items.length === 0) lines.push('  (sin dashboards)');
-                    for (const d of items) {
-                        const link = baseUrl ? ` — ${baseUrl}/dashboard/${encodeURIComponent(d._id)}` : '';
-                        lines.push(`  - [${d._id}] ${d.config?.title ?? '(sin título)'}${link}`);
-                    }
-                    return lines;
-                };
 
-                const total = privados.length + grupo.length + comunes.length + publicos.length;
-                const filtroDesc = autorFiltro ? ` (filtrado por autor: "${autorFiltro}")` : '';
-                const lines = [
-                    `Total: ${total} dashboards${filtroDesc} (${privados.length} privados, ${grupo.length} de grupo, ${comunes.length} comunes, ${publicos.length} públicos)`,
-                    ...formatGroup('Privados', privados),
-                    ...formatGroup('De grupo', grupo),
-                    ...formatGroup('Comunes', comunes),
-                    ...formatGroup('Públicos', publicos),
+                const all = [...privados, ...grupo, ...comunes, ...publicos];
+                const total = all.length;
+                const filtroDesc = [
+                    autorFiltro ? `author: "${autorFiltro}"` : '',
+                    datasourceFiltro ? `datasource: "${datasourceFiltro}"` : '',
+                ].filter(Boolean).join(', ');
+                const lines: string[] = [
+                    `Total: ${total} dashboard${total !== 1 ? 's' : ''}${filtroDesc ? ` (filtered by ${filtroDesc})` : ''}`,
+                    '',
                 ];
-                if (hiddenByAccessCount > 0) {
-                    lines.push(`\n_(Nota: existen ${hiddenByAccessCount} dashboard(s) adicionales en el sistema a los que no tengo acceso.)_`);
+
+                if (total === 0) {
+                    lines.push('(no accessible dashboards matching the filter)');
+                } else if (datasourceFiltro || total < 50) {
+                    // Always list individually when datasource filter is active, or when total is small
+                    for (const d of all) {
+                        const link = baseUrl ? ` → ${baseUrl}/dashboard/${encodeURIComponent(d._id)}` : '';
+                        lines.push(`  - ${d.config?.title ?? '(no title)'}${link}`);
+                    }
+                } else {
+                    // Many dashboards — show grouped counts by datasource only
+                    const byDs = new Map<string, number>();
+                    for (const d of all) {
+                        const dsId = d.config?.ds?._id?.toString();
+                        const dsName = (dsId ? accessibleDsIds.get(dsId) : undefined) ?? d.config?.ds?.name ?? '(no datasource)';
+                        byDs.set(dsName, (byDs.get(dsName) ?? 0) + 1);
+                    }
+                    lines.push('Grouped by datasource (use the datasource parameter to list individual dashboards):');
+                    for (const [dsName, count] of [...byDs.entries()].sort((a, b) => b[1] - a[1])) {
+                        lines.push(`  - ${dsName}: ${count} dashboard${count !== 1 ? 's' : ''}`);
+                    }
                 }
 
-                return { content: [{ type: 'text', text: 'Dashboards en EDA:\n' + lines.join('\n') }] };
+                if (hiddenByAccessCount > 0) {
+                    lines.push(`\n_(Note: ${hiddenByAccessCount} additional dashboard(s) exist in the system that are not accessible.)_`);
+                }
+
+                return { content: [{ type: 'text', text: 'Dashboards in EDA:\n' + lines.join('\n') }] };
             } catch (err: any) {
                 console.error('[MCP] list_dashboards error:', err.message, err.stack);
                 return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
@@ -203,8 +281,36 @@ export function createMcpServer(requestUser?: any) {
                 if (!filtered) return { content: [{ type: 'text', text: `Datasource ${id} excluido por ia_visibility: NONE` }], isError: true };
                 const baseUrl = getBaseUrl();
                 console.log('[MCP] get_datasource — baseUrl:', baseUrl || '(vacío)', '| id:', id);
-                const urlStr = baseUrl ? `URL: ${baseUrl}/data-source/${encodeURIComponent(id)}\n\n` : '';
-                return { content: [{ type: 'text', text: `${urlStr}${JSON.stringify(filtered, null, 2)}` }] };
+
+                const dsLines: string[] = [];
+                dsLines.push(`# ${filtered.model_name ?? id}`);
+                if (filtered.model_description) dsLines.push(`**Description:** ${filtered.model_description}`);
+                dsLines.push(`**Visibility:** ${filtered.ia_visibility ?? 'FULL'}`);
+                if (baseUrl) dsLines.push(`**URL:** ${baseUrl}/data-source/${encodeURIComponent(id)}`);
+                dsLines.push('');
+                dsLines.push('## Tables');
+                for (const table of (filtered.tables ?? [])) {
+                    const tableName = table.table_name ?? table.name ?? '?';
+                    dsLines.push(`### ${tableName}`);
+                    if (table.ia_visibility && table.ia_visibility !== 'FULL') {
+                        dsLines.push(`*Visibility: ${table.ia_visibility}*`);
+                    }
+                    const cols: any[] = table.columns ?? [];
+                    if (cols.length === 0) {
+                        dsLines.push('*(no columns)*');
+                    } else {
+                        dsLines.push('| Column | Type |');
+                        dsLines.push('|--------|------|');
+                        for (const col of cols) {
+                            const colName = col.column_name ?? col.name ?? '?';
+                            const colType = col.column_type ?? col.type ?? '?';
+                            const colVis = col.ia_visibility && col.ia_visibility !== 'FULL' ? ` *(${col.ia_visibility})*` : '';
+                            dsLines.push(`| ${colName} | ${colType}${colVis} |`);
+                        }
+                    }
+                    dsLines.push('');
+                }
+                return { content: [{ type: 'text', text: dsLines.join('\n') }] };
             } catch (err: any) {
                 console.error('[MCP] get_datasource error:', err.message, err.stack);
                 return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
@@ -540,6 +646,7 @@ export function createMcpServer(requestUser?: any) {
                             );
 
                             if (rows.length > 0) {
+                                const barChart = generateBarChart(columnas, rows);
                                 resultados.push({
                                     panel_index: idx,
                                     panel_titulo: panel.title ?? '(sin título)',
@@ -549,6 +656,7 @@ export function createMcpServer(requestUser?: any) {
                                     tiene_filtros: activeFilters.length > 0,
                                     modelo_datos: accessibleDsIds.get(modelId) ?? modelId,
                                     datos: { columnas, filas: rows, total_filas: allRows.length, truncado: allRows.length > 10 },
+                                    ...(barChart ? { grafico_barras: barChart } : {}),
                                 });
                             } else {
                                 resultados.push({
@@ -734,6 +842,7 @@ export function createMcpServer(requestUser?: any) {
 
                     const baseUrlFb = getBaseUrl();
                     const dsUrl = baseUrlFb ? `${baseUrlFb}/data-source/${encodeURIComponent(datasource_id)}` : '';
+                    const barChartFb = rows.length > 0 ? generateBarChart(columnas, rows) : null;
 
                     const respuestaFallback = {
                         fuente: {
@@ -744,6 +853,7 @@ export function createMcpServer(requestUser?: any) {
                         },
                         pregunta: question,
                         datos: rows.length > 0 ? { columnas, filas: rows, total_filas: allFbRows.length, truncado: allFbRows.length > 10 } : null,
+                        ...(barChartFb ? { grafico_barras: barChartFb } : {}),
                         mensaje: rows.length === 0 ? 'Sin resultados' : undefined,
                     };
 

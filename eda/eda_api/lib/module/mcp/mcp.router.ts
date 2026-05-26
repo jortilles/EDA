@@ -163,12 +163,32 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
         return res.status(400).json({ ok: false, response: 'Se requiere el campo messages[].' });
     }
 
+    // SSE setup
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+    res.flushHeaders();
+
+    const sseWrite = (chunk: string) => {
+        if (!res.writableEnded) {
+            res.write(chunk);
+            (res as any).flush?.(); // needed when compression() middleware is active
+        }
+    };
+    const sendStatus = (code: string) => sseWrite(`event: status\ndata: ${JSON.stringify({ code })}\n\n`);
+    const sendResponse = (payload: any) => {
+        sseWrite(`event: response\ndata: ${JSON.stringify(payload)}\n\n`);
+        if (!res.writableEnded) res.end();
+    };
+
     console.log('[CHAT] POST /ia/chat — mensajes:', messages.length, '| user:', userId);
     console.log('[CHAT] Config — MODEL:', MODEL, '| MAX_TOKENS:', MAX_TOKENS, '| EDA_APP_URL:', EDA_APP_URL || '(no configurado)');
 
     const mcpClient = new Client({ name: 'eda-chat', version: '1.0.0' });
 
     try {
+        sendStatus('connecting');
         console.log('[CHAT] Conectando a MCP:', MCP_URL || '(no configurado)');
         const reqUser = (req as any).user;
         const userToken = reqUser ? jwt.sign({ user: reqUser }, SEED, { expiresIn: 14400 }) : '';
@@ -201,9 +221,11 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
         let iterations = 0;
         const MAX_ITERATIONS = 10;
         let lastExplorationOptions: any[] = [];
+        let lastChartData: any = null;
 
         while (iterations < MAX_ITERATIONS) {
             iterations++;
+            sendStatus(iterations === 1 ? 'analyzing' : 'processing');
             console.log('[CHAT] Iteración', iterations, '— llamando a IA...');
 
             const turnResult = await provider.turn(
@@ -216,12 +238,10 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
             console.log('[CHAT] done:', turnResult.done, '| toolCalls:', turnResult.toolCalls?.length ?? 0);
 
             if (turnResult.done) {
+                sendStatus('preparing');
                 const text = turnResult.text ?? '';
                 const responsePayload: any = { ok: true, response: text };
                 if (lastExplorationOptions.length > 1) {
-                    // Siempre mostrar TODAS las opciones en el orden exacto del tool.
-                    // El filtrado por números mencionados en texto era frágil (markdown bold lo rompía)
-                    // y causaba desajuste entre el texto de la IA y los botones del frontend.
                     console.log('[CHAT] done — mostrando todas las opciones:', lastExplorationOptions.length);
                     responsePayload.options = lastExplorationOptions.map((o: any) => ({
                         num: o.opcion_num,
@@ -236,13 +256,20 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
                     }));
                     lastExplorationOptions = [];
                 }
+                if (lastChartData) {
+                    console.log('[CHAT] done — incluyendo chart en payload:', lastChartData.title);
+                    responsePayload.chart = lastChartData;
+                    lastChartData = null;
+                }
                 MCPUtils.finalizeChatContext(ctx);
-                return res.status(200).json(responsePayload);
+                sendResponse(responsePayload);
+                return;
             }
 
             // Tool calls — ejecutar y añadir al historial normalizado
             const toolCalls = turnResult.toolCalls!;
             history.push({ type: 'assistant_tool_calls', toolCalls });
+            sendStatus('searching');
 
             const toolResults = await Promise.all(
                 toolCalls.map(async (tc) => {
@@ -269,6 +296,20 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
                                 } else {
                                     lastExplorationOptions = [];
                                 }
+                                // Extract chart data and strip it from the LLM context
+                                let chartFound: any = null;
+                                if (Array.isArray(parsed?.panels)) {
+                                    const panelWithChart = parsed.panels.find((p: any) => p.grafico_barras);
+                                    if (panelWithChart?.grafico_barras) {
+                                        chartFound = panelWithChart.grafico_barras;
+                                        parsed.panels.forEach((p: any) => { delete p.grafico_barras; });
+                                    }
+                                } else if (parsed?.grafico_barras) {
+                                    chartFound = parsed.grafico_barras;
+                                    delete parsed.grafico_barras;
+                                }
+                                if (chartFound) lastChartData = chartFound;
+                                resultText = JSON.stringify(parsed);
                             } catch (_) {}
                         }
                     } catch (toolErr: any) {
@@ -286,11 +327,11 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
         }
 
         MCPUtils.finalizeChatContext(ctx);
-        return res.status(200).json({ ok: true, response: 'The assistant reached the maximum number of steps without producing a final answer. Please rephrase your question or try again.' });
+        sendResponse({ ok: true, response: 'The assistant reached the maximum number of steps without producing a final answer. Please rephrase your question or try again.' });
 
     } catch (err: any) {
         console.error('[CHAT] Error:', err.message);
-        return res.status(500).json({ ok: false, response: `Error del asistente: ${err.message}` });
+        sendResponse({ ok: false, response: `Error del asistente: ${err.message}` });
     } finally {
         try { await mcpClient.close(); } catch (_) {}
     }
