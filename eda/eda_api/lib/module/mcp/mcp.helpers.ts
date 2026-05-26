@@ -82,7 +82,7 @@ export function extractTextContent(result: any): string {
 }
 
 export function calculateDynamicTimeout(params: any): number {
-    let timeout = 30_000;
+    let timeout = 60_000;
     if (params.filters && Object.keys(params.filters).length > 2) timeout += 10_000;
     if (params.time_range === 'all_time' || params.time_range === 'last_year') timeout += 5_000;
     if (params.limit && params.limit > 1000) timeout += 10_000;

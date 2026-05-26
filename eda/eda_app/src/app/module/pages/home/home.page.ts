@@ -11,6 +11,7 @@ import { GroupService } from '@eda/services/api/group.service';
 import { AlertService, DashboardService } from '@eda/services/service.index';
 import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
 import { IaChatService, ChatMessage, ChatOption, BarChart } from '@eda/services/api/ia-chat.service';
+import type { ChatEvent } from '@eda/services/api/ia-chat.service';
 import { NgChartsModule } from 'ng2-charts';
 import { ChartData, ChartOptions } from 'chart.js';
 import Swal from 'sweetalert2';
@@ -51,33 +52,28 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   chatHistory: ChatMessage[] = [];
 
   private readonly chartPalette = ['b3', '99', '80', '70', '60'];
-
-  private getCorporateColor(): string {
-    return getComputedStyle(document.documentElement).getPropertyValue('--corporate-primary').trim() || '#3b82f6';
-  }
+  private readonly chartExtraColors = ['#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+  private chartDataCache = new WeakMap<BarChart, ChartData<'bar'>>();
+  private chartOptsCache = new WeakMap<BarChart, ChartOptions<'bar'>>();
 
   buildChartData(chart: BarChart): ChartData<'bar'> {
-    const primary = this.getCorporateColor();
-    const extras = ['#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
-    return {
+    if (this.chartDataCache.has(chart)) return this.chartDataCache.get(chart)!;
+    const primary = CORPORATE_COLORS.primary;
+    const result: ChartData<'bar'> = {
       labels: chart.labels,
       datasets: chart.datasets.map((ds, i) => {
-        const base = i === 0 ? primary : (extras[i - 1] ?? extras[extras.length - 1]);
+        const base = i === 0 ? primary : (this.chartExtraColors[i - 1] ?? this.chartExtraColors[this.chartExtraColors.length - 1]);
         const alpha = this.chartPalette[i] ?? 'b3';
-        return {
-          label: ds.label,
-          data: ds.values,
-          backgroundColor: base + alpha,
-          borderColor: base,
-          borderWidth: 1,
-          borderRadius: 4,
-        };
+        return { label: ds.label, data: ds.values, backgroundColor: base + alpha, borderColor: base, borderWidth: 1, borderRadius: 4 };
       }),
     };
+    this.chartDataCache.set(chart, result);
+    return result;
   }
 
   buildChartOptions(chart: BarChart): ChartOptions<'bar'> {
-    return {
+    if (this.chartOptsCache.has(chart)) return this.chartOptsCache.get(chart)!;
+    const result: ChartOptions<'bar'> = {
       responsive: true,
       maintainAspectRatio: true,
       animation: { duration: 400 },
@@ -90,6 +86,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         y: { beginAtZero: true, ticks: { font: { size: 9 } } },
       },
     };
+    this.chartOptsCache.set(chart, result);
+    return result;
   }
 
   private readonly statusLabels: Record<string, string> = {
@@ -251,27 +249,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.chatStatusMessage.set('');
     this.shouldScrollChat = true;
 
-    this.iaChatService.sendMessage(this.chatHistory).subscribe({
-      next: (event) => {
-        if (event.type === 'status') {
-          this.chatStatusMessage.set(this.statusLabels[event.code] ?? '');
-          this.shouldScrollChat = true;
-        } else {
-          this.chatStatusMessage.set('');
-          this.chatHistory.push({ role: 'assistant', content: event.response, options: event.options ?? [], chart: event.chart });
-          this.chatLoading.set(false);
-          this.shouldScrollChat = true;
-          setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
-        }
-      },
-      error: () => {
-        this.chatStatusMessage.set('');
-        this.chatHistory.push({ role: 'assistant', content: $localize`:@@chatErrorConnecting:Error al conectar con el asistente.` });
-        this.chatLoading.set(false);
-        this.shouldScrollChat = true;
-        setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
-      },
-    });
+    this.iaChatService.sendMessage(this.chatHistory).subscribe(this.chatHandlers());
   }
 
   selectOption(option: ChatOption): void {
@@ -298,8 +276,12 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.chatLoading.set(true);
     this.chatStatusMessage.set('');
     this.shouldScrollChat = true;
-    this.iaChatService.sendMessage(this.chatHistory).subscribe({
-      next: (event) => {
+    this.iaChatService.sendMessage(this.chatHistory).subscribe(this.chatHandlers());
+  }
+
+  private chatHandlers() {
+    return {
+      next: (event: ChatEvent) => {
         if (event.type === 'status') {
           this.chatStatusMessage.set(this.statusLabels[event.code] ?? '');
           this.shouldScrollChat = true;
@@ -318,7 +300,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         this.shouldScrollChat = true;
         setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
       },
-    });
+    };
   }
 
   renderMarkdown(text: string): SafeHtml {

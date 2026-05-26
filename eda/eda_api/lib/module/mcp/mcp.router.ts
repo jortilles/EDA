@@ -296,14 +296,11 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
                                 } else {
                                     lastExplorationOptions = [];
                                 }
-                                // Extract chart data and strip it from the LLM context
-                                let chartFound: any = null;
+                                // Strip chart data from LLM context; send to frontend separately
+                                let chartFound: any;
                                 if (Array.isArray(parsed?.panels)) {
-                                    const panelWithChart = parsed.panels.find((p: any) => p.grafico_barras);
-                                    if (panelWithChart?.grafico_barras) {
-                                        chartFound = panelWithChart.grafico_barras;
-                                        parsed.panels.forEach((p: any) => { delete p.grafico_barras; });
-                                    }
+                                    chartFound = parsed.panels.find((p: any) => p.grafico_barras)?.grafico_barras;
+                                    if (chartFound) parsed.panels.forEach((p: any) => { delete p.grafico_barras; });
                                 } else if (parsed?.grafico_barras) {
                                     chartFound = parsed.grafico_barras;
                                     delete parsed.grafico_barras;

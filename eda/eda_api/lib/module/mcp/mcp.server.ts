@@ -32,8 +32,8 @@ interface BarChartPayload {
 function generateBarChart(columnas: string[], filas: any[][]): BarChartPayload | null {
     if (columnas.length < 2 || filas.length < 2) return null;
 
+    const samples = filas.slice(0, Math.min(8, filas.length));
     const isNumericCol = (ci: number): boolean => {
-        const samples = filas.slice(0, Math.min(8, filas.length));
         const numCount = samples.filter(r => {
             const v = r[ci];
             if (typeof v === 'number') return true;
