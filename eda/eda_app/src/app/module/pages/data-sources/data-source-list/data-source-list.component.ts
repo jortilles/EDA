@@ -110,8 +110,6 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
             text: $localize`:@@SureInfo:Estás a punto de borrar el modelo de datos y todos los dashboards asociados, el cambio es irreversible`,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
             confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`
         } as SweetAlertOptions
         Swal.fire(options).then(borrado => {

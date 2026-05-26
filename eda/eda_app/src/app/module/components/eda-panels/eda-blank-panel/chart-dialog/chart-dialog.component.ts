@@ -492,8 +492,6 @@ export class ChartDialogComponent {
                 text: $localize`:@@RemovePredictionText:Se quitará la predicción y se ejecutará la consulta del gráfico.`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
                 confirmButtonText: $localize`:@@RemovePredictionYes:Sí, quitar`,
                 cancelButtonText: $localize`:@@RemovePredictionNo:No, mantener`,
                 didOpen: () => {

@@ -866,8 +866,6 @@ public tableNodeExpand(event: any): void {
                 text: $localize`:@@SureDataQuality:¿Estás seguro de que deseas continuar con la visualización de DataQuality? Esta acción puede tomar un poco de tiempo.`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
                 confirmButtonText: $localize`:@@ContinueTablaQuality:Continuar`,
                 cancelButtonText: $localize`:@@cancelarBtn:Cancelar`,
             }).then( (borrado) => {

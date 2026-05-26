@@ -145,8 +145,6 @@ export class UserListPage implements OnInit {
       text: `${title} `,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
       confirmButtonText: $localize`:@@DeleteUser:Si, ¡Bórralo!`
     }).then(deleted => {
       if (deleted.value === true) {

@@ -2011,24 +2011,24 @@ body .swal2-confirm:focus {
   box-shadow: 0 0 0 3px rgba(var(--corporate-primary-rgb), 0.3) !important;
 }
 
-/* Cancel button: red */
+/* Cancel button: corporate cancel color */
 body .swal2-cancel {
-  background: #dc2626 !important;
+  background: linear-gradient(135deg, var(--btn-cancel-bg), var(--btn-cancel-bg-end)) !important;
   border: none !important;
   color: white !important;
   border-radius: 0.5rem !important;
   font-weight: 500 !important;
   padding: 0.5rem 1.5rem !important;
-  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
   transition: transform 0.15s, box-shadow 0.15s !important;
 }
 body .swal2-cancel:hover {
-  background: #b91c1c !important;
+  background: linear-gradient(135deg, var(--btn-cancel-hover-bg), var(--btn-cancel-hover-bg-end)) !important;
   transform: translateY(-1px) !important;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.22) !important;
 }
 body .swal2-cancel:focus {
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.3) !important;
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.15) !important;
 }
 
 /* Deny button: same as cancel */

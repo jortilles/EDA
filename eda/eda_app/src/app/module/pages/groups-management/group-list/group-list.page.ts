@@ -158,8 +158,6 @@ handleEditGroup(group: Group) {
         text: `${title} `,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
         confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`
     }).then(deleted => {
       if (deleted.value === true) { 
