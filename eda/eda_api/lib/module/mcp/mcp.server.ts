@@ -89,9 +89,7 @@ export function createMcpServer(requestUser?: any) {
                     if (items.length === 0) lines.push('  (sin dashboards)');
                     for (const d of items) {
                         const link = baseUrl ? ` — ${baseUrl}/dashboard/${encodeURIComponent(d._id)}` : '';
-                        const author = d.config?.author ?? d.user?.name ?? '(desconocido)';
-                        const meta: string[] = [`autor: ${author}`];
-                        lines.push(`  - [${d._id}] ${d.config?.title ?? '(sin título)'} (${meta.join(' | ')})${link}`);
+                        lines.push(`  - [${d._id}] ${d.config?.title ?? '(sin título)'}${link}`);
                     }
                     return lines;
                 };
