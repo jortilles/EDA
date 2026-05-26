@@ -294,13 +294,7 @@
           
                           <i class="drag-handle-icon ml-auto"></i>
           
-                            <!-- Preview cuando se está arrastrando -->
-                          <div *cdkDragPreview
-                            class="flex items-center gap-2 rounded-md px-3 py-2 bg-background border shadow-lg">
-                            <span class="mdi {{getAttributeTypeIcon(attr.column_type)}}"></span>
-                            {{attr.display_name.default}}
-                          </div>
-                        
+                          
                         </div>
                       }
                     </div>
@@ -346,16 +340,11 @@
                             <i class="fa fa-close z-50 pointer-events-auto"></i>
                           </button>
         
-                          <!-- Preview cuando se está arrastrando -->
-                          <div *cdkDragPreview class="flex items-center gap-2 rounded-md px-3 py-2 bg-background border shadow-lg mi-drag-preview">
-                            <span class="mdi {{getAttributeTypeIcon(attr.column_type)}}"></span>
-                            {{attr.display_name.default}}
-                          </div>
                         </div>
                       }
       
                       @if (currentQuery.length === 0) {
-                        <div class=" text-muted-foreground text-center py-2 font-bold">
+                        <div class="absolute inset-0 text-muted-foreground text-center py-2 font-bold pointer-events-none">
                           {{draggFields}}
                         </div>
                       }
@@ -389,16 +378,11 @@
                             <i class="fa fa-close"></i>
                           </button>
         
-                          <!-- Preview cuando se está arrastrando -->
-                          <div *cdkDragPreview class="flex items-center gap-2 rounded-md px-3 py-2 bg-background border shadow-lg">
-                            <span class="mdi {{getAttributeTypeIcon(attr.column_type)}}"></span>
-                            {{attr.display_name.default}}
-                          </div>
                         </div>
                       }
-      
+
                       @if (filtredColumns.length === 0) {
-                        <div class=" text-muted-foreground text-center py-2 font-bold">
+                        <div class="absolute inset-0 text-muted-foreground text-center py-2 font-bold pointer-events-none">
                           {{draggFilters}}
                         </div>
                       }
