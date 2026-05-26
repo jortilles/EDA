@@ -591,9 +591,15 @@ span.state-label {
   background: white;
   box-sizing: border-box;
   padding: 0.5rem 0.75rem;
+  overflow: hidden;
   opacity: 0.95;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18),
     0 3px 6px rgba(0, 0, 0, 0.12);
+}
+
+::ng-deep .cdk-drop-list-dragging,
+::ng-deep .cdk-drop-list-receiving {
+  overflow: hidden !important;
 }
 
 .cdk-drag-placeholder {
