@@ -586,19 +586,11 @@ span.state-label {
 }
 
 ::ng-deep .cdk-drag-preview {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
   border-radius: 6px;
   border: solid 1px #ccc;
   background: white;
-  color: var(--header-bg-color, #06616d);
-  font-size: 13px;
-  font-weight: bold;
   box-sizing: border-box;
+  padding: 0.5rem 0.75rem;
   opacity: 0.95;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18),
     0 3px 6px rgba(0, 0, 0, 0.12);

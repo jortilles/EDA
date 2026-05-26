@@ -294,14 +294,7 @@
           
                           <i class="drag-handle-icon ml-auto"></i>
           
-                            <div *cdkDragPreview class="flex items-center gap-2 rounded-md px-3 py-2">
-                            <span class="mdi {{getAttributeTypeIcon(attr.column_type)}}"></span>
-                            <span [ngClass]="{
-                              'font-bold': getAttributeTypeIcon(attr.column_type) === 'mdi-numeric',
-                              'italic': getAttributeTypeIcon(attr.column_type) === 'mdi-alphabetical'
-                            }">{{attr.display_name.default}}</span>
-                          </div>
-                        
+                          
                         </div>
                       }
                     </div>
