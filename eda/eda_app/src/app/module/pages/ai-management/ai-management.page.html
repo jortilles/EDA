@@ -51,6 +51,25 @@
               </div>
             </div>
 
+            <!-- QWEN BASE URL -->
+            @if (isQwen) {
+              <div class="space-y-2">
+                <label for="base_url" class="text-sm font-medium" i18n="@@aiBaseUrl">BASE URL</label>
+                <div class="relative">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="absolute left-3 top-3 h-4 w-4 text-gray-500">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                  </svg>
+                  <input id="base_url" type="text" formControlName="BASE_URL"
+                    placeholder="https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
+                    class="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 !pl-8 text-sm ring-offset-white placeholder:text-gray-500 input-corporate disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-400" />
+                </div>
+              </div>
+            }
+
             <!-- AWS BEDROCK FIELDS -->
             @if (isBedrock) {
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
