@@ -286,7 +286,7 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
         }
 
         MCPUtils.finalizeChatContext(ctx);
-        return res.status(200).json({ ok: true, response: '(Sin respuesta del asistente)' });
+        return res.status(200).json({ ok: true, response: 'The assistant reached the maximum number of steps without producing a final answer. Please rephrase your question or try again.' });
 
     } catch (err: any) {
         console.error('[CHAT] Error:', err.message);

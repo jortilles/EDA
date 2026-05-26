@@ -20,6 +20,15 @@ export function createMcpServer(requestUser?: any) {
     console.log('[MCP] createMcpServer - registrando tools...');
     const server = new McpServer({ name: 'eda-mcp', version: '1.0.0' });
 
+    // Request-scoped cache: avoids repeated HTTP calls for the same data within one session
+    let _accessibleDsCache: Map<string, string> | null = null;
+    const getCachedAccessibleDsIds = async (user: any): Promise<Map<string, string>> => {
+        if (!_accessibleDsCache) {
+            _accessibleDsCache = await getAccessibleDatasourceIds(user);
+        }
+        return _accessibleDsCache;
+    };
+
     // ── list_dashboards ─────────────────────────────────────────────────────
     (server as any).registerTool(
         'list_dashboards',
@@ -51,7 +60,7 @@ export function createMcpServer(requestUser?: any) {
                 const data: any = await response.json();
                 if (!data.ok) throw new Error('La API respondió con ok: false');
 
-                const accessibleDsIds = await getAccessibleDatasourceIds(user);
+                const accessibleDsIds = await getCachedAccessibleDsIds(user);
                 let hiddenByAccessCount = 0;
                 const filterItems = (items: any[]) => items.filter((d: any) => {
                     const dsId = d.config?.ds?._id?.toString();
@@ -110,7 +119,7 @@ export function createMcpServer(requestUser?: any) {
     console.log('[MCP] createMcpServer - list_dashboards registrado');
 
     // ── list_datasources ────────────────────────────────────────────────────
-    server.registerTool(
+    (server as any).registerTool(
         'list_datasources',
         { description: 'Lists the datasources (data models) accessible in EDA for the current user, filtered by permissions and visibility. Returns for each datasource: ID, model name and description. Use it to: discover what data sources exist, get the ID of a datasource before calling get_datasource, or answer questions about what data is available in the system.' },
         async () => {
@@ -237,7 +246,7 @@ export function createMcpServer(requestUser?: any) {
                     ds: db?.config?.ds?._id ?? null,
                 }));
 
-                const accessibleDsIds = await getAccessibleDatasourceIds(user);
+                const accessibleDsIds = await getCachedAccessibleDsIds(user);
                 const mainDsId = db?.config?.ds?._id?.toString();
                 if (mainDsId && !accessibleDsIds.has(mainDsId)) {
                     console.log(`[MCP] get_dashboard — bloqueado (datasource NONE): id=${id} | dsId=${mainDsId}`);
@@ -366,7 +375,7 @@ export function createMcpServer(requestUser?: any) {
                     const dashboardLink = baseUrl ? `${baseUrl}/dashboard/${encodeURIComponent(dashboard_id)}` : '';
                     console.log('[MCP] get_data_from_dashboard - dashboard:', db.config?.title, '| panels total:', allPanels.length, '| panel_index solicitado:', panel_index ?? 'todos');
 
-                    const accessibleDsIds = await getAccessibleDatasourceIds(user);
+                    const accessibleDsIds = await getCachedAccessibleDsIds(user);
                     const visiblePanels = allPanels.filter((p: any) => {
                         if ((p.type ?? 0) !== 0) {
                             console.log(`[MCP] MODO DATOS — panel decorativo (type=${p.type}) omitido: ${p.title}`);
@@ -589,7 +598,7 @@ export function createMcpServer(requestUser?: any) {
                     console.log('[MCP][FALLBACK] question:', question);
                     console.log('[MCP][FALLBACK] campos_consulta recibidos:', JSON.stringify(campos_consulta));
 
-                    const accessibleDsFb = await getAccessibleDatasourceIds(user);
+                    const accessibleDsFb = await getCachedAccessibleDsIds(user);
                     const hasAccess = accessibleDsFb.has(datasource_id);
                     console.log('[MCP][FALLBACK] datasources accesibles:', accessibleDsFb.size, '| tiene acceso a datasource_id:', hasAccess);
                     if (!hasAccess) {
@@ -751,7 +760,7 @@ export function createMcpServer(requestUser?: any) {
                 const allDashboards = [...privados, ...grupo, ...comunes, ...publicos];
                 console.log('[MCP] exploración — dashboards:', allDashboards.length);
 
-                const accessibleDsIds = await getAccessibleDatasourceIds(user);
+                const accessibleDsIds = await getCachedAccessibleDsIds(user);
                 console.log('[MCP] exploración — datasources accesibles:', accessibleDsIds.size);
 
                 const dsSchemaCache = new Map<string, any>();
@@ -784,9 +793,10 @@ export function createMcpServer(requestUser?: any) {
                     return cols;
                 };
 
-                const fullDashboards = await Promise.all(
-                    allDashboards.map((d: any) => Dashboard.findById(d._id).exec())
-                );
+                const allIds = allDashboards.map((d: any) => d._id);
+                const docs = await Dashboard.find({ _id: { $in: allIds } }).exec();
+                const docById = new Map(docs.map((doc: any) => [doc._id.toString(), doc]));
+                const fullDashboards = allDashboards.map((d: any) => docById.get(d._id.toString()) ?? null);
 
                 const opcionesMap = new Map<string, any>();
 
