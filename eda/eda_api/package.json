@@ -19,9 +19,9 @@
     "license": "ISC",
     "dependencies": {
         "@anthropic-ai/bedrock-sdk": "^0.29.0",
-        "@anthropic-ai/sdk": "^0.87.0",
+        "@anthropic-ai/sdk": "^0.99.0",
         "@clickhouse/client": "^1.8.0",
-        "@google-cloud/bigquery": "^5.5.0",
+        "@google-cloud/bigquery": "^8.3.1",
         "@modelcontextprotocol/sdk": "^1.29.0",
         "@node-saml/passport-saml": "^5.1.0",
         "@tensorflow/tfjs": "^4.22.0",
@@ -54,7 +54,7 @@
         "node-fetch": "^3.3.2",
         "node-object-hash": "^2.1.2",
         "node-schedule": "^2.0.0",
-        "nodemailer": "^7.0.10",
+        "nodemailer": "^8.0.9",
         "nodemon": "^3.1.11",
         "object-hash": "^3.0.0",
         "openai": "^4.104.0",
@@ -70,7 +70,7 @@
         "readable-stream": "^3.6.0",
         "sharp": "^0.34.5",
         "snowflake-promise": "^4.5.0",
-        "snowflake-sdk": "^1.6.18",
+        "snowflake-sdk": "^2.4.3",
         "swagger-jsdoc": "^6.2.8",
         "swagger-ui-express": "^5.0.0",
         "topojson-server": "^3.0.1",
@@ -100,5 +100,11 @@
         "@types/swagger-jsdoc": "^6.0.4",
         "@types/swagger-ui-express": "^4.1.6",
         "typescript": "^5.9.3"
+    },
+    "overrides": {
+        "geoip-lite": "^2.0.2",
+        "fast-xml-parser": "^5.7.0",
+        "uuid": "^11.1.1",
+        "snowflake-sdk": "^2.4.3"
     }
 }
