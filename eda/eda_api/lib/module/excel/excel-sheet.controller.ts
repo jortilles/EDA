@@ -74,6 +74,14 @@ export class ExcelSheetController {
                 return await this.MultiTableCollectionToDataSource(excelName, tables, optimize, cacheAllowed, sourceType, description, res, next);
             }
 
+            // Special case: when 'type' field has multiple distinct values, split into separate tables
+            const typeValues = Array.isArray(excelFields) && excelFields.length > 0 && 'type' in excelFields[0]
+                ? [...new Set(excelFields.map((f: any) => String(f.type)))]
+                : [];
+            if (typeValues.length > 1) {
+                return await ExcelSheetController.FromJSONToCollectionByType(excelName, excelFields, typeValues, optimize, cacheAllowed, sourceType, description, res, next);
+            }
+
             // Single-table format (backward compat)
             const excelModel = ExcelSheetModel(excelName)
             const excelDocs = await excelModel.findOne({});
@@ -190,10 +198,45 @@ export class ExcelSheetController {
                 };
             });
 
+            // Add bidirectional relation between post and comment tables if both are present
+            const postTableName = `${excelName}_post`;
+            const commentTableName = `${excelName}_comment`;
+            const postTable = dsTableObjects.find(t => t.table_name === postTableName);
+            const commentTable = dsTableObjects.find(t => t.table_name === commentTableName);
+            if (postTable && commentTable) {
+                postTable.relations = [{
+                    source_table: postTableName,
+                    source_column: ['id'],
+                    target_table: commentTableName,
+                    target_column: ['parent_id'],
+                    visible: true
+                }];
+                commentTable.relations = [{
+                    source_table: commentTableName,
+                    source_column: ['parent_id'],
+                    target_table: postTableName,
+                    target_column: ['id'],
+                    visible: true
+                }];
+            }
+
             if (!databaseUrl?.url) return res.status(400).json({ ok: false, message: 'La connexión a la base de datos no existe' });
             const parsedUrl = new URL(databaseUrl?.url);
             const database = parsedUrl.pathname.substring(1);
             const { host, port } = parsedUrl;
+
+            // Upsert: update existing datasource by name instead of creating a duplicate
+            const existingDS = await DataSource.findOne({ 'ds.metadata.model_name': excelName });
+            if (existingDS) {
+                await DataSource.findByIdAndUpdate(existingDS._id, {
+                    $set: {
+                        'ds.model.tables': dsTableObjects,
+                        'ds.metadata.optimized': optimized ?? false,
+                        'ds.metadata.cache_config.enabled': cacheAllowed ?? false,
+                    }
+                });
+                return res.status(200).json({ ok: true, data_source_id: existingDS._id });
+            }
 
             const datasource: IDataSource = new DataSource({
                 ds: {
@@ -243,6 +286,56 @@ export class ExcelSheetController {
             console.error('Error al crear datasource multi-tabla:', error);
             throw error;
         }
+    }
+
+    static async FromJSONToCollectionByType(
+        excelName: string, excelFields: any[], typeValues: string[],
+        optimize: boolean, cacheAllowed: boolean, sourceType: string, description: string,
+        res: Response, next: NextFunction
+    ) {
+        const tableGroups: Array<{ tableName: string, fields: any[] }> = typeValues.map(type => ({
+            tableName: type,
+            fields: excelFields.filter((f: any) => String(f.type) === type)
+        }));
+
+        const parsedUrl = new URL(databaseUrl?.url);
+        const config = {
+            type: "mongodb",
+            host: parsedUrl.host.substring(0, parsedUrl.host.indexOf(':')),
+            port: Number(parsedUrl.port),
+            database: parsedUrl.pathname.substring(1),
+            user: parsedUrl.username,
+            password: parsedUrl.password,
+            authSource: parsedUrl.search.split('=')[1]
+        };
+        const mongoConnection = new MongoDBConnection(config);
+        const client = await mongoConnection.getclient();
+        try {
+            const db = client.db(config.database);
+            for (const table of tableGroups) {
+                const collection = db.collection(`xls_${excelName}_${table.tableName}`);
+                const formatedFields = JSON.parse(JSON.stringify(table.fields));
+                for (const obj of formatedFields) {
+                    for (const key in obj) {
+                        const field: any = obj[key];
+                        if (isNaN(Number(field))) {
+                            const isDateValue = DateUtil.convertDate(field);
+                            if (isDateValue) obj[key] = isDateValue;
+                        } else {
+                            obj[key] = Number(field);
+                        }
+                    }
+                }
+                await collection.deleteMany({});
+                if (formatedFields.length > 0) await collection.insertMany(formatedFields);
+            }
+        } catch (err) {
+            console.error('FromJSONToCollectionByType error:', err);
+            throw err;
+        } finally {
+            await client.close();
+        }
+        return await ExcelSheetController.MultiTableCollectionToDataSource(excelName, tableGroups, optimize, cacheAllowed, sourceType, description, res, next);
     }
 
     static async UpdateCollectionFromJSON(req: Request, res: Response, next: NextFunction) {
