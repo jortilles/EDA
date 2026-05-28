@@ -713,7 +713,7 @@ span.state-label {
   align-items: center;
   border-radius: 0.375rem;
   padding: 0.5rem 1rem;
-  color: white;
+  color: var(--btn-cancel-text);
   background: linear-gradient(to right, var(--btn-cancel-bg), var(--btn-cancel-bg-end));
   border: none;
   cursor: pointer;
@@ -765,8 +765,8 @@ span.state-label {
   background: linear-gradient(to right, var(--btn-cancel-bg), var(--btn-cancel-bg-end));
   cursor: pointer;
   font-weight: 500;
-  color: white;
-  transition: all 0.2s ease-in-out;
+  color: var(--btn-cancel-text);
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .confirm-button {
@@ -797,11 +797,12 @@ span.state-label {
 .execute-button,
 .confirm-button,
 .addFilter-button {
-  transition: background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .cancel-button:hover:not(:disabled) {
   background: linear-gradient(to right, var(--btn-cancel-hover-bg), var(--btn-cancel-hover-bg-end));
+  color: var(--btn-cancel-text-hover);
 }
 
 .execute-button:hover:not(:disabled) {
@@ -811,6 +812,7 @@ span.state-label {
 
 .addFilter-button:hover:not(:disabled) {
   background: linear-gradient(to right, var(--btn-cancel-hover-bg), var(--btn-cancel-hover-bg-end));
+  color: var(--btn-cancel-text-hover);
 }
 
 .confirm-button:hover:not(:disabled) {

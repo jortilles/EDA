@@ -1,52 +1,63 @@
 // Personalización de colores corporativos
 export const CORPORATE_COLORS = {
     // Colores base de marca — usados en toda la aplicación
-    primary:         '#00BFB3',      // Color principal (botones, iconos, gradientes)
-    primaryGradient: '#34D0C7',      // Extremo final de gradientes (header chat, FAB, burbujas)
-    primaryRgb:      '0, 191, 179',  // Valor RGB del primario para opacidades (box-shadow, rgba)
-    primaryHsl:      '175 100% 37%', // Componentes HSL del primario para --ring (Tailwind focus ring)
+    primary:         '#BE0926',      // Color principal (botones, iconos, gradientes)
+    primaryGradient: '#E02941',      // Extremo final de gradientes (header chat, FAB, burbujas)
+    primaryRgb:      '190, 9, 38',   // Valor RGB del primario para opacidades (box-shadow, rgba)
+    primaryHsl:      '350 91% 39%',  // Componentes HSL del primario para --ring (Tailwind focus ring)
 
     // Colores específicos del chatbot
     chat: {
-        avatarBg:       '#CCFAF7',   // Fondo del avatar del robot (header y mensajes)
-        avatarBgAlt:    '#99F0EB',   // Fondo alternativo del avatar (gradiente empty state)
-        avatarBorder:   '#55D6CD',   // Borde del avatar y cabecera de tabla
-        surfaceHover:   '#E6FAF9',   // Fondo hover en sugerencias y filas de tabla
-        tableHeader:    '#007B74',   // Color del texto en cabeceras de tabla
-        linkColor:      '#00bfb3',   // Color de enlaces en mensajes
-        linkHoverColor: '#008F87',   // Color de enlaces al hacer hover
+        avatarBg:       '#FBDADE',   // Fondo del avatar del robot (header y mensajes)
+        avatarBgAlt:    '#F7A8B3',   // Fondo alternativo del avatar (gradiente empty state)
+        avatarBorder:   '#E05060',   // Borde del avatar y cabecera de tabla
+        surfaceHover:   '#FCEEF0',   // Fondo hover en sugerencias y filas de tabla
+        tableHeader:    '#880618',   // Color del texto en cabeceras de tabla
+        linkColor:      '#BE0926',   // Color de enlaces en mensajes
+        linkHoverColor: '#9C071B',   // Color de enlaces al hacer hover
     },
 
     // Colores específicos de carpetas (home — vista de carpetas y filtros de tags)
     folder: {
-        iconBg:          '#CCFAF7',  // Fondo del icono de carpeta cerrada
-        iconBgHover:     '#99F0EB',  // Fondo del icono de carpeta hover o abierta
-        iconColor:       '#00BFB3',  // Color del icono de carpeta cerrada
-        borderHover:     '#34D0C7',  // Borde de la tarjeta carpeta al hacer hover o al estar abierta
-        iconColorHover:  '#007B74',  // Color del icono y texto al hacer hover o al estar abierta
-        cardBgOpen:      '#E6FAF9',  // Fondo de la tarjeta cuando la carpeta está abierta
-        labelColorOpen:  '#005E58',  // Color del nombre de la carpeta cuando está abierta
+        iconBg:          '#FBDADE',  // Fondo del icono de carpeta cerrada
+        iconBgHover:     '#F7A8B3',  // Fondo del icono de carpeta hover o abierta
+        iconColor:       '#BE0926',  // Color del icono de carpeta cerrada
+        borderHover:     '#E02941',  // Borde de la tarjeta carpeta al hacer hover o al estar abierta
+        iconColorHover:  '#880618',  // Color del icono y texto al hacer hover o al estar abierta
+        cardBgOpen:      '#FCEEF0',  // Fondo de la tarjeta cuando la carpeta está abierta
+        labelColorOpen:  '#6B0513',  // Color del nombre de la carpeta cuando está abierta
     },
 
     // Colores de botones de acción en diálogos
     buttons: {
         // Confirmar: acción principal afirmativa
-        confirmBg:        '#00B0BA',  // Inicio gradiente
-        confirmBgEnd:     '#00c9b1',  // Fin gradiente
-        confirmHoverBg:   '#006c72',  // Hover inicio
-        confirmHoverBgEnd:'#05a592',  // Hover fin
+        confirmBg:        '#BE0926',  // Inicio gradiente
+        confirmBgEnd:     '#BE0926',  // Fin gradiente
+        confirmHoverBg:   '#0B0F19',  // Hover inicio
+        confirmHoverBgEnd:'#0B0F19',  // Hover fin
 
         // Auxiliar: acción secundaria (ejecutar consulta, abrir SQL, previsualizar…)
-        auxBg:            '#1D4ED8',  // Inicio gradiente (blue-700)
-        auxBgEnd:         '#3B82F6',  // Fin gradiente (blue-500)
-        auxHoverBg:       '#1E40AF',  // Hover inicio (blue-800)
-        auxHoverBgEnd:    '#2563EB',  // Hover fin (blue-600)
+        auxBg:            '#4C82F7',  // Inicio gradiente (blue-700)
+        auxBgEnd:         '#4C82F7',  // Fin gradiente (blue-500)
+        auxHoverBg:       '#2768F5',  // Hover inicio (blue-800)
+        auxHoverBgEnd:    '#2768F5',  // Hover fin (blue-600)
 
         // Cancelar: acción de descarte
-        cancelBg:         '#df4040',  // Inicio gradiente
-        cancelBgEnd:      '#ec2828',  // Fin gradiente
-        cancelHoverBg:    'rgb(177, 39, 39)',  // Hover inicio
-        cancelHoverBgEnd: '#bd3636',  // Hover fin
+        cancelBg:         '#EFF2FC',  // Inicio gradiente
+        cancelBgEnd:      '#EFF2FC',  // Fin gradiente
+        cancelHoverBg:    '#BE0926',  // Hover inicio
+        cancelHoverBgEnd: '#BE0926',  // Hover fin
+        cancelText:       '#33354D',  // Color del texto
+        cancelTextHover:  '#FFFFFF',  // Color del texto al hacer hover
+
+        // Boton De Login
+        loginBg:         '#FCEFF1',  // Inicio gradiente
+        loginBgEnd:      '#FCEFF1',  // Fin gradiente
+        loginHoverBg:    '#f8dee2',  // Hover inicio
+        loginHoverBgEnd: '#f8dee2',  // Hover fin
+        loginText:       '#BE0926',  // Color del texto
+        loginTextHover:  '#BE0926',  // Color del texto al hacer hover
+        loginBorderColor: '#c2bdbe00', // Borde del color del boton
     },
 };
 

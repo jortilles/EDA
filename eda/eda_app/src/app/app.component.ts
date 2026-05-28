@@ -177,5 +177,14 @@ export class AppComponent implements OnInit {
         root.style.setProperty('--btn-cancel-bg-end',        CORPORATE_COLORS.buttons.cancelBgEnd);
         root.style.setProperty('--btn-cancel-hover-bg',      CORPORATE_COLORS.buttons.cancelHoverBg);
         root.style.setProperty('--btn-cancel-hover-bg-end',  CORPORATE_COLORS.buttons.cancelHoverBgEnd);
+        root.style.setProperty('--btn-cancel-text',          CORPORATE_COLORS.buttons.cancelText);
+        root.style.setProperty('--btn-cancel-text-hover',    CORPORATE_COLORS.buttons.cancelTextHover);
+        root.style.setProperty('--btn-login-bg',             CORPORATE_COLORS.buttons.loginBg);
+        root.style.setProperty('--btn-login-bg-end',         CORPORATE_COLORS.buttons.loginBgEnd);
+        root.style.setProperty('--btn-login-hover-bg',       CORPORATE_COLORS.buttons.loginHoverBg);
+        root.style.setProperty('--btn-login-hover-bg-end',   CORPORATE_COLORS.buttons.loginHoverBgEnd);
+        root.style.setProperty('--btn-login-text',           CORPORATE_COLORS.buttons.loginText);
+        root.style.setProperty('--btn-login-text-hover',     CORPORATE_COLORS.buttons.loginTextHover);
+        root.style.setProperty('--btn-login-border',         CORPORATE_COLORS.buttons.loginBorderColor);
     }
 }

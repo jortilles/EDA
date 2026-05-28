@@ -1008,7 +1008,7 @@ html body .waves-notransition {
   align-items: center;
   border-radius: 0.375rem;
   padding: 0.5rem 1rem;
-  color: white;
+  color: var(--btn-cancel-text);
   background: linear-gradient(to right, var(--btn-cancel-bg), var(--btn-cancel-bg-end));
   border: none;
   cursor: pointer;
@@ -1054,11 +1054,12 @@ html body .waves-notransition {
 .cancel-button,
 .execute-button,
 .confirm-button {
-  transition: background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .cancel-button:hover:not(:disabled) {
   background: linear-gradient(to right, var(--btn-cancel-hover-bg), var(--btn-cancel-hover-bg-end));
+  color: var(--btn-cancel-text-hover);
 }
 
 .execute-button:hover:not(:disabled) {
@@ -2001,7 +2002,7 @@ body .swal2-confirm {
   letter-spacing: 0.01em !important;
   padding: 0.5rem 1.5rem !important;
   box-shadow: 0 2px 8px rgba(var(--corporate-primary-rgb), 0.35) !important;
-  transition: transform 0.15s, box-shadow 0.15s !important;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out !important;
 }
 body .swal2-confirm:hover {
   transform: translateY(-1px) !important;
@@ -2015,15 +2016,16 @@ body .swal2-confirm:focus {
 body .swal2-cancel {
   background: linear-gradient(135deg, var(--btn-cancel-bg), var(--btn-cancel-bg-end)) !important;
   border: none !important;
-  color: white !important;
+  color: var(--btn-cancel-text) !important;
   border-radius: 0.5rem !important;
   font-weight: 500 !important;
   padding: 0.5rem 1.5rem !important;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
-  transition: transform 0.15s, box-shadow 0.15s !important;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out !important;
 }
 body .swal2-cancel:hover {
   background: linear-gradient(135deg, var(--btn-cancel-hover-bg), var(--btn-cancel-hover-bg-end)) !important;
+  color: var(--btn-cancel-text-hover) !important;
   transform: translateY(-1px) !important;
   box-shadow: 0 4px 12px rgba(0,0,0,0.22) !important;
 }
