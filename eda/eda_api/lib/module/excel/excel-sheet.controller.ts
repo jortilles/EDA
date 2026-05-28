@@ -198,26 +198,28 @@ export class ExcelSheetController {
                 };
             });
 
-            // Add bidirectional relation between post and comment tables if both are present
-            const postTableName = `${excelName}_post`;
-            const commentTableName = `${excelName}_comment`;
-            const postTable = dsTableObjects.find(t => t.table_name === postTableName);
-            const commentTable = dsTableObjects.find(t => t.table_name === commentTableName);
-            if (postTable && commentTable) {
-                postTable.relations = [{
-                    source_table: postTableName,
-                    source_column: ['id'],
-                    target_table: commentTableName,
-                    target_column: ['parent_id'],
-                    visible: true
-                }];
-                commentTable.relations = [{
-                    source_table: commentTableName,
-                    source_column: ['parent_id'],
-                    target_table: postTableName,
-                    target_column: ['id'],
-                    visible: true
-                }];
+            // Auto-detect relations by column presence (generic, name-independent)
+            const childTables = dsTableObjects.filter(t => t.columns.some(c => c.column_name === 'parent_id'));
+            const parentTables = dsTableObjects.filter(t =>
+                t.columns.some(c => c.column_name === 'id') &&
+                !t.columns.some(c => c.column_name === 'parent_id')
+            );
+            for (const childTable of childTables) {
+                for (const parentTable of parentTables) {
+                    // child.parent_id → parent.id
+                    childTable.relations.push({ source_table: childTable.table_name, source_column: ['parent_id'], target_table: parentTable.table_name, target_column: ['id'], visible: true });
+                    // parent.id ← child.parent_id
+                    parentTable.relations.push({ source_table: parentTable.table_name, source_column: ['id'], target_table: childTable.table_name, target_column: ['parent_id'], visible: true });
+                    // cross-author relations if both tables have author column
+                    const childHasAuthor = childTable.columns.some(c => c.column_name === 'author');
+                    const parentHasAuthor = parentTable.columns.some(c => c.column_name === 'author');
+                    if (childHasAuthor && parentHasAuthor) {
+                        childTable.relations.push({ source_table: childTable.table_name, source_column: ['author'], target_table: parentTable.table_name, target_column: ['author'], visible: true });
+                        parentTable.relations.push({ source_table: parentTable.table_name, source_column: ['author'], target_table: childTable.table_name, target_column: ['author'], visible: true });
+                    }
+                }
+                // self-referential: child.parent_id → child.id (nested replies)
+                childTable.relations.push({ source_table: childTable.table_name, source_column: ['parent_id'], target_table: childTable.table_name, target_column: ['id'], visible: true });
             }
 
             if (!databaseUrl?.url) return res.status(400).json({ ok: false, message: 'La connexión a la base de datos no existe' });
