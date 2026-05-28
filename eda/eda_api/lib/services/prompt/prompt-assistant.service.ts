@@ -167,6 +167,8 @@ export class PromptService {
         const config = getAiConfig();
         const provider = AIProviderFactory.create(config);
 
+        console.log('provider: ', provider);
+
         if (PromptUtil.isForbidden(text)) {
             return {
                 ok: false,

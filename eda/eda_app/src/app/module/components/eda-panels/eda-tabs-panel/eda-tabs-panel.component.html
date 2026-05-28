@@ -1,6 +1,6 @@
 <div class="flex flex-col h-full rounded-lg pl-2 pt-2 pr-2 bg-white">
-    <div class="flex h-full pb-2 items-stretch drag-handler">
-        <div class="flex flex-row flex-wrap min-w-0 gap-2 content-start flex-1 rounded-lg bg-gray-50 p-2" [ngStyle]="panelTabAlign" style="display: block;align-content: center;">
+    <div class="flex h-full pb-2 items-stretch drag-handler min-h-0">
+        <div #tabsContainer class="tabs-container flex-1 overflow-hidden p-1" [ngStyle]="panelTabAlign">
             <!-- Loading state -->
             @if(isLoading){
                 <div class="text-gray-500 text-sm" i18n="@@Cargando">
@@ -20,17 +20,17 @@
             <!-- Dashboard tabs -->
             @for(dashboard of filteredDashboards; track dashboard.id){
                 <button
-                    class="tab-button m-1 pr-6 pl-6 text-gray-700 bg-[#F1F0F0] border border-gray-200 hover:bg-[#00bfb3] hover:text-white focus:ring-2 focus:ring-sky-200 shadow-sm font-medium leading-5 rounded-lg text-sm px-4 py-2.5 focus:outline-none transition-colors duration-150"
+                    class="tab-button text-gray-700 focus:ring-2 focus:ring-sky-200 font-medium leading-5 rounded-lg text-sm px-4 py-2.5 focus:outline-none transition-colors duration-150"
                     (click)="openDashboard(dashboard)" [ngStyle]="panelText"
                     >
-                    <img src="assets/images/extra/internalIcon.png" alt="" class="inline-block w-4 h-4 mr-1 align-middle">
-                    {{ dashboard.title }}
+                    <i class="pi pi-external-link tab-icon text-sm flex-shrink-0"></i>
+                    <span class="tab-title">{{ dashboard.title }}</span>
                 </button>
             }
         </div>
 
         @if(display.editMode){
-            <i class="pi pi-ellipsis-v cursor-pointer ml-2 shrink-0 self-center"
+            <i class="pi pi-ellipsis-v cursor-pointer ml-2 text-base shrink-0 self-center"
                 (click)="contextMenu.showContextMenu($event)"></i>
         }
     </div>

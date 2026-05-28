@@ -8,7 +8,6 @@ const jwt    = require('jsonwebtoken');
 const SEED   = require('../../../config/seed').SEED;
 
 const LOCALES = ['/es', '/ca', '/en', '/pl', '/fr'];
-const { MCP_EMAIL, MCP_PASSWORD} = getAnthropicConfig();
 
 // ============================================================
 // CONFIGURACIÓN
@@ -16,7 +15,6 @@ const { MCP_EMAIL, MCP_PASSWORD} = getAnthropicConfig();
 
 export function getAnthropicConfig() {
     const configPath = path.resolve(__dirname, '../../../config/ai.config.js');
-    console.log(configPath);
     delete require.cache[require.resolve(configPath)];
     return require(configPath);
 }
@@ -84,7 +82,7 @@ export function extractTextContent(result: any): string {
 }
 
 export function calculateDynamicTimeout(params: any): number {
-    let timeout = 30_000;
+    let timeout = 60_000;
     if (params.filters && Object.keys(params.filters).length > 2) timeout += 10_000;
     if (params.time_range === 'all_time' || params.time_range === 'last_year') timeout += 5_000;
     if (params.limit && params.limit > 1000) timeout += 10_000;
@@ -113,6 +111,7 @@ export function finalizeChatContext(ctx: ChatContext): void {
 // ============================================================
 // --- Auth interno (sin HTTP) ---
 export async function loginInternal(): Promise<string> {
+    const { MCP_EMAIL, MCP_PASSWORD } = getAnthropicConfig();
     if (!MCP_EMAIL || !MCP_PASSWORD) {
         throw new Error('MCP_EMAIL y MCP_PASSWORD no están configurados en el servidor.');
     }

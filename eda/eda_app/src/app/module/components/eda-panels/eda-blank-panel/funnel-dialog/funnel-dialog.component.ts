@@ -8,12 +8,13 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { ColorPickerModule } from 'primeng/colorpicker';
+import { DropdownModule } from 'primeng/dropdown';
 
 @Component({
   standalone: true,
   selector: 'app-funnel-dialog',
   templateUrl: './funnel-dialog.component.html',
-  imports: [FormsModule, CommonModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent],
+  imports: [FormsModule, CommonModule, EdaDialog2Component, ColorPickerModule, PanelChartComponent, DropdownModule],
 })
 
 export class FunnelDialog implements OnInit, AfterViewChecked {

@@ -1,36 +1,52 @@
 <eda-dialog2 width="80vw" height="80vh" [header]="title" (apply)="saveChartConfig()" (close)="closeChartConfig()">
-  <div content class="grid">
+  <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-[70vh]">
 
-    <div class="col-12" style=" background-color: var(--panel-color); margin: 2em; width: 90%; height: 15vh;">
-      <panel-chart  #PanelChartComponent [props]="panelChartConfig">
-      </panel-chart>
+    <!-- Preview -->
+    <div class="p-6 flex-[2] flex items-center justify-center border-b md:border-b-0 md:border-r bg-slate-50 overflow-hidden min-w-0">
+      <div class="relative w-full h-full">
+        <panel-chart #PanelChartComponent [props]="panelChartConfig" class="h-full w-full block"></panel-chart>
+      </div>
     </div>
 
+    <!-- Settings -->
+    <div class="p-6  w-[15vw] shrink-0 h-full overflow-hidden">
+      <div class="space-y-4">
 
+        <!-- Tamaño -->
+        <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
+          <div class="px-4 py-1.5 border-b bg-white">
+            <h3 class="font-medium text-slate-800 flex items-center gap-2">
+              <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">1</span>
+              <span i18n="@@kpiSize">Modificar el tamaño del KPI</span>
+            </h3>
+          </div>
+          <div class="p-4 inline-flex w-full gap-4 items-center justify-between">
+            <span i18n="@@increaseKpiSize">Incrementar el tamaño del KPI</span>
+            <input type="number" [ngModel]="modifiedFontPoints" min="-99" max="99"
+              (ngModelChange)="modifySize($event)"
+              class="w-1/2 px-3 py-2 border rounded-md bg-white text-center" />
+          </div>
+        </div>
 
-    <div class="col-12">
-      <h4 i18n="@@DynamicTextColor" class="custom-border-b1 font-medium text-slate-500 uppercase">
-       Cambiar Color
-      </h4>
-
-      <div class="grid">
-
-        <div class="col-2 mt-6">
-          <h5 i18n="@@colorKpiH6">
-            Color
-          </h5>
-          
-          <div class="chart-color-selection w-1/5">
-            <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
-              <span class="font-medium">Text</span>
-              <div class="flex items-center gap-2">
-                <span class="text-md text-slate-500 font-mono">{{ color }}</span>
-                <p-colorPicker [(ngModel)]="color" (onChange)="handleInputColor()" format="hex" appendTo="body" />
-              </div>
+        <!-- Color -->
+        <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
+          <div class="px-4 py-1.5 border-b bg-white">
+            <h3 class="font-medium text-slate-800 flex items-center gap-2">
+              <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-600 text-xs">2</span>
+              <span i18n="@@DynamicTextColor">Cambiar color</span>
+            </h3>
+          </div>
+          <div class="p-4 flex items-center justify-between">
+            <span class="font-medium" i18n="@@colorKpiH6">Color del texto</span>
+            <div class="flex items-center gap-2">
+              <span class="text-base text-slate-500 font-mono">{{ color }}</span>
+              <p-colorPicker [(ngModel)]="color" (onChange)="handleInputColor()" format="hex" appendTo="body" />
             </div>
           </div>
         </div>
+
       </div>
     </div>
+
   </div>
 </eda-dialog2>

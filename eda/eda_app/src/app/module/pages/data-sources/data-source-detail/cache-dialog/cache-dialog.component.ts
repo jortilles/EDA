@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   selector: 'eda-cache-dialog',
   templateUrl: './cache-dialog.component.html',
+  styleUrls: ['./cache-dialog.component.css'],
   imports : [EdaDialog2Component, FormsModule]
 })
 

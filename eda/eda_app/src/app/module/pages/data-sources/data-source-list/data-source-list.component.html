@@ -78,7 +78,7 @@
         selectionMode="single" [(selection)]="selectedFile" (onNodeSelect)="nodeSelect($event)"
         (onNodeUnselect)="nodeUnselect($event)" (onNodeExpand)="nodeSelect($event)">
         <ng-template let-node pTemplate="selected">
-          <div class="font-bold text-[#00BFB3]">{{node.label}}</div>
+          <div class="font-bold text-corporate-primary">{{node.label}}</div>
         </ng-template>
         <ng-template let-node pTemplate="unselected">
           <div class="font-light">{{node.label}}</div>

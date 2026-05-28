@@ -65,8 +65,8 @@
             type="button"
             (click)="onTypeChange(type)"
             [ngClass]="selectedcolumnType === type.value
-              ? 'bg-[#00BFB3] text-white border-[#00BFB3]'
-              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'"
+              ? 'bg-[var(--corporate-primary)] text-white border-[var(--corporate-primary)]'
+              : 'bg-white text-gray-700 border-gray-300 calc-btn-inactive'"
             class="w-full px-4 py-2 font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
           >
             {{ type.label }}
@@ -88,8 +88,8 @@
             (click)="updateAgg(type.value)"
             class="px-4 py-2 font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
             [ngClass]="type.display
-              ? 'bg-[#00BFB3] text-white border-[#00BFB3]'
-              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'"
+              ? 'bg-[var(--corporate-primary)] text-white border-[var(--corporate-primary)]'
+              : 'bg-white text-gray-700 border-gray-300 calc-btn-inactive'"
           >
             {{ type.display_name }}
           </button>

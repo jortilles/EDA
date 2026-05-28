@@ -43,7 +43,7 @@
   align-content: flex-start;
   gap: 1rem;
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
 }
 
 
@@ -59,7 +59,7 @@
 
 .filter-tooltip-button:hover{
   transition: color 0.3s ease;
-    color: red;
+  color: var(--corporate-primary);
 }
 .filter-tooltip-text{
     padding: 2px 6px; 
@@ -76,8 +76,8 @@
 }
 
 .filter-tooltip-container:hover{
-  transition: color 0.2s ease;;
-  background-color: #e5e7eb;
+  transition: background-color 0.2s ease;
+  background-color: rgba(var(--corporate-primary-rgb), 0.08);
 }
 /* filtro individual */
 .filter-card {
@@ -148,7 +148,7 @@
   right: -1.2rem;      /* espacio desde el borde derecho */
   top: 50%;           /* centrar vertical */
   transform: translateY(-50%); /* centrar exacto */
-  color: #00BFB3;
+  color: var(--corporate-primary);
   z-index: 10;        /* por si hay otros elementos encima */
 }
 
@@ -161,5 +161,5 @@
 
 /* Scrollbar thmub, cuando pones mouse encima*/
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
+  background-color: var(--scrollbar-thumb);
 }

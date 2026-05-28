@@ -57,6 +57,7 @@ const ANGULAR_MODULES = [
   selector: 'app-dashboard-sidebar',
   standalone: true,
   imports: [ STANDALONE_COMPONENTS, ANGULAR_MODULES],
+  styleUrl: './dashboard-sidebar.component.css',
   templateUrl: './dashboard-sidebar.component.html',
   styles: `
     .overlay-backdrop {
@@ -644,8 +645,6 @@ export class DashboardSidebarComponent {
       text: `${text}`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
       confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
       cancelButtonText: $localize`:@@cancelarBtn:Cancelar`
     }).then(async (borrado) => {

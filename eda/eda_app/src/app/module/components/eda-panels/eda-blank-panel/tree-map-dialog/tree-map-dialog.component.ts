@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { ColorPickerModule } from 'primeng/colorpicker';
+import { DropdownModule } from 'primeng/dropdown';
 import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 
@@ -13,7 +14,7 @@ import { PanelChart } from '../panel-charts/panel-chart';
   standalone: true,
   selector: 'app-tree-map-dialog',
   templateUrl: './tree-map-dialog.component.html',
-  imports: [FormsModule, CommonModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule],
+  imports: [FormsModule, CommonModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule, DropdownModule],
 })
 export class TreeMapDialog implements OnInit, AfterViewChecked {
   @Input() controller: any;

@@ -1,13 +1,15 @@
 <eda-dialog2 [display]="display"
-  i18n-header="@@importPanelsTitle" header="Importar paneles" width="600px" height="auto"
+  i18n-header="@@importPanelsTitle" header="Importar paneles" width="40vw" height="80vh"
+  [overflow]="'auto'"
   [disableApply]="disableApply()"
   (apply)="onApply()"
-  (close)="onClose()">
+  (close)="onClose()"
+>
 
   <div content class="p-6">
     <div class="grid space-y-4">
       @if (!displayMapper) {
-        <div class="mt-6">
+        <div class="mt-2">
           <div class="flex-1 flex flex-col">
             <label for="dashboard" class="mb-1">Dashboard</label>
               <p-dropdown
@@ -36,7 +38,7 @@
           </div>
         </div>
 
-        <div class="mt-6">
+        <div class="mt-6 overflow-auto">
            <eda-pick-list [config]="pickListConfig" [availableItems]="dashboardPanels" (selectionChange)="onPanelsChange($event)"></eda-pick-list>
         </div>
       } @else {

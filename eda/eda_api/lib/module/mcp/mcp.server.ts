@@ -13,6 +13,62 @@ import {
 } from './mcp.helpers';
 
 // ============================================================
+// HELPERS
+// ============================================================
+
+interface BarChartDataset {
+    label: string;
+    values: number[];
+}
+
+interface BarChartPayload {
+    type: 'bar';
+    title: string;
+    labels: string[];
+    datasets: BarChartDataset[];
+    labelKey: string;
+}
+
+function generateBarChart(columnas: string[], filas: any[][]): BarChartPayload | null {
+    if (columnas.length < 2 || filas.length < 2) return null;
+
+    const samples = filas.slice(0, Math.min(8, filas.length));
+    const isNumericCol = (ci: number): boolean => {
+        const numCount = samples.filter(r => {
+            const v = r[ci];
+            if (typeof v === 'number') return true;
+            if (typeof v === 'string' && v.trim() !== '') return !isNaN(parseFloat(v.replace(/[^0-9.-]/g, '')));
+            return false;
+        }).length;
+        return numCount >= Math.ceil(samples.length * 0.6);
+    };
+
+    const numericIndices = columnas.map((_, ci) => ci).filter(ci => isNumericCol(ci));
+    if (numericIndices.length === 0) return null;
+
+    const labelIdx = columnas.findIndex((_, ci) => !numericIndices.includes(ci));
+    if (labelIdx === -1) return null;
+
+    const labels = filas.map(r => String(r[labelIdx] ?? ''));
+    const datasets: BarChartDataset[] = numericIndices.map(ni => ({
+        label: columnas[ni],
+        values: filas.map(r => {
+            const raw = r[ni];
+            return typeof raw === 'number' ? raw : parseFloat(String(raw ?? '0').replace(/[^0-9.-]/g, '')) || 0;
+        }),
+    }));
+
+    const maxAbs = Math.max(...datasets.flatMap(d => d.values.map(Math.abs)));
+    if (maxAbs === 0) return null;
+
+    const title = datasets.length === 1
+        ? `${datasets[0].label} per ${columnas[labelIdx]}`
+        : columnas[labelIdx];
+
+    return { type: 'bar', title, labels, datasets, labelKey: columnas[labelIdx] };
+}
+
+// ============================================================
 // MCP SERVER
 // ============================================================
 
@@ -20,18 +76,29 @@ export function createMcpServer(requestUser?: any) {
     console.log('[MCP] createMcpServer - registrando tools...');
     const server = new McpServer({ name: 'eda-mcp', version: '1.0.0' });
 
+    // Request-scoped cache: avoids repeated HTTP calls for the same data within one session
+    let _accessibleDsCache: Map<string, string> | null = null;
+    const getCachedAccessibleDsIds = async (user: any): Promise<Map<string, string>> => {
+        if (!_accessibleDsCache) {
+            _accessibleDsCache = await getAccessibleDatasourceIds(user);
+        }
+        return _accessibleDsCache;
+    };
+
     // ── list_dashboards ─────────────────────────────────────────────────────
     (server as any).registerTool(
         'list_dashboards',
         {
-            description: 'Lista todos los dashboards accesibles en EDA para el usuario actual. Devuelve por cada dashboard: título, ID, autor (quién lo creó), fecha de creación, fecha de modificación, visibilidad (privado/grupo/público) y URL directa. Úsalo para: descubrir dashboards disponibles, saber quién ha creado dashboards, buscar dashboards de un usuario concreto (parámetro autor), o responder preguntas sobre fechas de creación/modificación.',
+            description: 'Lists all dashboards accessible in EDA for the current user. Returns for each dashboard: title and direct URL. Use it to: discover available dashboards, filter by author or datasource, or answer questions about what dashboards exist. When datasource is specified, returns the full individual list for that datasource regardless of count.',
             inputSchema: {
-                autor: z.string().optional().describe('Filtra los dashboards por nombre de autor (búsqueda parcial, case-insensitive). Si se omite, devuelve todos los dashboards accesibles.'),
+                autor:      z.string().optional().describe('Filter dashboards by author name (partial match, case-insensitive).'),
+                datasource: z.string().optional().describe('Filter dashboards by datasource name (partial match, case-insensitive). When provided, always returns the full individual list for that datasource.'),
             },
         },
         async (args: any) => {
-            const autorFiltro: string | undefined = args?.autor?.toLowerCase();
-            console.log('[MCP] tool: list_dashboards - ejecutando | autor:', autorFiltro ?? '(todos)');
+            const autorFiltro:      string | undefined = args?.autor?.toLowerCase();
+            const datasourceFiltro: string | undefined = args?.datasource?.toLowerCase();
+            console.log('[MCP] tool: list_dashboards - ejecutando | autor:', autorFiltro ?? '(todos)', '| datasource:', datasourceFiltro ?? '(todos)');
             let user: any;
             try {
                 user = await resolveUser(requestUser);
@@ -51,7 +118,7 @@ export function createMcpServer(requestUser?: any) {
                 const data: any = await response.json();
                 if (!data.ok) throw new Error('La API respondió con ok: false');
 
-                const accessibleDsIds = await getAccessibleDatasourceIds(user);
+                const accessibleDsIds = await getCachedAccessibleDsIds(user);
                 let hiddenByAccessCount = 0;
                 const filterItems = (items: any[]) => items.filter((d: any) => {
                     const dsId = d.config?.ds?._id?.toString();
@@ -64,6 +131,11 @@ export function createMcpServer(requestUser?: any) {
                         const dashAuthor = (d.config?.author ?? d.user?.name ?? '').toLowerCase();
                         if (!dashAuthor.includes(autorFiltro)) return false;
                     }
+                    if (datasourceFiltro) {
+                        const dsId2 = d.config?.ds?._id?.toString();
+                        const dsName = (dsId2 ? accessibleDsIds.get(dsId2) : undefined) ?? d.config?.ds?.name ?? '';
+                        if (!dsName.toLowerCase().includes(datasourceFiltro)) return false;
+                    }
                     return true;
                 });
 
@@ -75,32 +147,45 @@ export function createMcpServer(requestUser?: any) {
 
                 const baseUrl = getBaseUrl();
                 console.log('[MCP] list_dashboards — baseUrl:', baseUrl || '(vacío)');
-                const formatGroup = (label: string, items: any[] = []) => {
-                    const lines = [`\n## ${label} (${items.length})`];
-                    if (items.length === 0) lines.push('  (sin dashboards)');
-                    for (const d of items) {
-                        const link = baseUrl ? ` — ${baseUrl}/dashboard/${encodeURIComponent(d._id)}` : '';
-                        const author = d.config?.author ?? d.user?.name ?? '(desconocido)';
-                        const meta: string[] = [`autor: ${author}`];
-                        lines.push(`  - [${d._id}] ${d.config?.title ?? '(sin título)'} (${meta.join(' | ')})${link}`);
-                    }
-                    return lines;
-                };
 
-                const total = privados.length + grupo.length + comunes.length + publicos.length;
-                const filtroDesc = autorFiltro ? ` (filtrado por autor: "${autorFiltro}")` : '';
-                const lines = [
-                    `Total: ${total} dashboards${filtroDesc} (${privados.length} privados, ${grupo.length} de grupo, ${comunes.length} comunes, ${publicos.length} públicos)`,
-                    ...formatGroup('Privados', privados),
-                    ...formatGroup('De grupo', grupo),
-                    ...formatGroup('Comunes', comunes),
-                    ...formatGroup('Públicos', publicos),
+                const all = [...privados, ...grupo, ...comunes, ...publicos];
+                const total = all.length;
+                const filtroDesc = [
+                    autorFiltro ? `author: "${autorFiltro}"` : '',
+                    datasourceFiltro ? `datasource: "${datasourceFiltro}"` : '',
+                ].filter(Boolean).join(', ');
+                const lines: string[] = [
+                    `Total: ${total} dashboard${total !== 1 ? 's' : ''}${filtroDesc ? ` (filtered by ${filtroDesc})` : ''}`,
+                    '',
                 ];
-                if (hiddenByAccessCount > 0) {
-                    lines.push(`\n_(Nota: existen ${hiddenByAccessCount} dashboard(s) adicionales en el sistema a los que no tengo acceso.)_`);
+
+                if (total === 0) {
+                    lines.push('(no accessible dashboards matching the filter)');
+                } else if (datasourceFiltro || total < 50) {
+                    // Always list individually when datasource filter is active, or when total is small
+                    for (const d of all) {
+                        const link = baseUrl ? ` → ${baseUrl}/dashboard/${encodeURIComponent(d._id)}` : '';
+                        lines.push(`  - ${d.config?.title ?? '(no title)'}${link}`);
+                    }
+                } else {
+                    // Many dashboards — show grouped counts by datasource only
+                    const byDs = new Map<string, number>();
+                    for (const d of all) {
+                        const dsId = d.config?.ds?._id?.toString();
+                        const dsName = (dsId ? accessibleDsIds.get(dsId) : undefined) ?? d.config?.ds?.name ?? '(no datasource)';
+                        byDs.set(dsName, (byDs.get(dsName) ?? 0) + 1);
+                    }
+                    lines.push('Grouped by datasource (use the datasource parameter to list individual dashboards):');
+                    for (const [dsName, count] of [...byDs.entries()].sort((a, b) => b[1] - a[1])) {
+                        lines.push(`  - ${dsName}: ${count} dashboard${count !== 1 ? 's' : ''}`);
+                    }
                 }
 
-                return { content: [{ type: 'text', text: 'Dashboards en EDA:\n' + lines.join('\n') }] };
+                if (hiddenByAccessCount > 0) {
+                    lines.push(`\n_(Note: ${hiddenByAccessCount} additional dashboard(s) exist in the system that are not accessible.)_`);
+                }
+
+                return { content: [{ type: 'text', text: 'Dashboards in EDA:\n' + lines.join('\n') }] };
             } catch (err: any) {
                 console.error('[MCP] list_dashboards error:', err.message, err.stack);
                 return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
@@ -110,9 +195,9 @@ export function createMcpServer(requestUser?: any) {
     console.log('[MCP] createMcpServer - list_dashboards registrado');
 
     // ── list_datasources ────────────────────────────────────────────────────
-    server.registerTool(
+    (server as any).registerTool(
         'list_datasources',
-        { description: 'Lista los datasources (modelos de datos) accesibles en EDA para el usuario actual, filtrados por permisos y visibilidad. Devuelve por cada datasource: ID, nombre del modelo y descripción. Úsalo para: descubrir qué fuentes de datos existen, obtener el ID de un datasource antes de llamar a get_datasource, o responder preguntas sobre qué datos hay disponibles en el sistema.' },
+        { description: 'Lists the datasources (data models) accessible in EDA for the current user, filtered by permissions and visibility. Returns for each datasource: ID, model name and description. Use it to: discover what data sources exist, get the ID of a datasource before calling get_datasource, or answer questions about what data is available in the system.' },
         async () => {
             console.log('[MCP] tool: list_datasources - ejecutando');
             try {
@@ -167,8 +252,8 @@ export function createMcpServer(requestUser?: any) {
     (server as any).registerTool(
         'get_datasource',
         {
-            description: 'Obtiene el esquema completo de un datasource de EDA por su ID: nombre, descripción, tablas y columnas disponibles (con sus tipos). Usa list_datasources primero para obtener el ID. Úsalo para: conocer qué tablas y campos contiene un modelo de datos, entender la estructura antes de construir consultas, o responder preguntas sobre el contenido de un datasource.',
-            inputSchema: { id: z.string().describe('ID del datasource (obtenido de list_datasources)') },
+            description: 'Gets the full schema of an EDA datasource by its ID: name, description, available tables and columns (with their types). Use list_datasources first to get the ID. Use it to: find out what tables and fields a data model contains, understand the structure before building queries, or answer questions about the content of a datasource.',
+            inputSchema: { id: z.string().describe('Datasource ID (obtained from list_datasources)') },
         },
         async (args: any) => {
             console.log('[MCP] tool: get_datasource - args:', JSON.stringify(args));
@@ -196,8 +281,36 @@ export function createMcpServer(requestUser?: any) {
                 if (!filtered) return { content: [{ type: 'text', text: `Datasource ${id} excluido por ia_visibility: NONE` }], isError: true };
                 const baseUrl = getBaseUrl();
                 console.log('[MCP] get_datasource — baseUrl:', baseUrl || '(vacío)', '| id:', id);
-                const urlStr = baseUrl ? `URL: ${baseUrl}/data-source/${encodeURIComponent(id)}\n\n` : '';
-                return { content: [{ type: 'text', text: `${urlStr}${JSON.stringify(filtered, null, 2)}` }] };
+
+                const dsLines: string[] = [];
+                dsLines.push(`# ${filtered.model_name ?? id}`);
+                if (filtered.model_description) dsLines.push(`**Description:** ${filtered.model_description}`);
+                dsLines.push(`**Visibility:** ${filtered.ia_visibility ?? 'FULL'}`);
+                if (baseUrl) dsLines.push(`**URL:** ${baseUrl}/data-source/${encodeURIComponent(id)}`);
+                dsLines.push('');
+                dsLines.push('## Tables');
+                for (const table of (filtered.tables ?? [])) {
+                    const tableName = table.table_name ?? table.name ?? '?';
+                    dsLines.push(`### ${tableName}`);
+                    if (table.ia_visibility && table.ia_visibility !== 'FULL') {
+                        dsLines.push(`*Visibility: ${table.ia_visibility}*`);
+                    }
+                    const cols: any[] = table.columns ?? [];
+                    if (cols.length === 0) {
+                        dsLines.push('*(no columns)*');
+                    } else {
+                        dsLines.push('| Column | Type |');
+                        dsLines.push('|--------|------|');
+                        for (const col of cols) {
+                            const colName = col.column_name ?? col.name ?? '?';
+                            const colType = col.column_type ?? col.type ?? '?';
+                            const colVis = col.ia_visibility && col.ia_visibility !== 'FULL' ? ` *(${col.ia_visibility})*` : '';
+                            dsLines.push(`| ${colName} | ${colType}${colVis} |`);
+                        }
+                    }
+                    dsLines.push('');
+                }
+                return { content: [{ type: 'text', text: dsLines.join('\n') }] };
             } catch (err: any) {
                 console.error('[MCP] get_datasource error:', err.message, err.stack);
                 return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
@@ -210,8 +323,8 @@ export function createMcpServer(requestUser?: any) {
     (server as any).registerTool(
         'get_dashboard',
         {
-            description: 'Obtiene los metadatos completos de un dashboard de EDA por su ID: título, autor, fecha de creación, fecha de última modificación, visibilidad, datasource(s) utilizados (nombre e ID) y lista de panels con sus campos y tipo de visualización. Úsalo para: conocer quién creó un dashboard y cuándo, ver qué campos visualiza cada panel, u obtener el datasource asociado antes de llamar a get_datasource.',
-            inputSchema: { id: z.string().describe('ID del dashboard (obtenido de list_dashboards)') },
+            description: 'Gets the full metadata of an EDA dashboard by its ID: title, author, creation date, last modification date, visibility, datasource(s) used (name and ID) and list of panels with their fields and chart type. Use it to: find out who created a dashboard and when, see what fields each panel visualises, or get the associated datasource before calling get_datasource.',
+            inputSchema: { id: z.string().describe('Dashboard ID (obtained from list_dashboards)') },
         },
         async (args: any) => {
             console.log('[MCP] tool: get_dashboard - args:', JSON.stringify(args));
@@ -237,7 +350,7 @@ export function createMcpServer(requestUser?: any) {
                     ds: db?.config?.ds?._id ?? null,
                 }));
 
-                const accessibleDsIds = await getAccessibleDatasourceIds(user);
+                const accessibleDsIds = await getCachedAccessibleDsIds(user);
                 const mainDsId = db?.config?.ds?._id?.toString();
                 if (mainDsId && !accessibleDsIds.has(mainDsId)) {
                     console.log(`[MCP] get_dashboard — bloqueado (datasource NONE): id=${id} | dsId=${mainDsId}`);
@@ -309,18 +422,18 @@ export function createMcpServer(requestUser?: any) {
     (server as any).registerTool(
         'get_data_from_dashboard',
         {
-            description: 'Busca en los dashboards de EDA paneles con datos relevantes a una pregunta. SIN dashboard_id: modo exploración — devuelve un catálogo estructurado de opciones (panel, datasource, filtros activos) para que el asistente presente al usuario cuál quiere consultar. CON dashboard_id: modo datos — ejecuta las queries de los paneles y devuelve el modelo de respuesta con datos reales + fuente.',
+            description: 'Searches EDA dashboards for panels with data relevant to a question. WITHOUT dashboard_id: exploration mode — returns a structured catalogue of options (panel, datasource, active filters) for the assistant to present to the user. WITH dashboard_id: data mode — runs the panel queries and returns the response model with real data + source.',
             inputSchema: {
-                question:           z.string().describe('Pregunta del usuario sobre los datos que quiere consultar'),
-                campos_requeridos:  z.array(z.string()).optional().describe('Palabras clave de los campos que deben aparecer en el panel (ej: ["country","credit"]). En modo exploración, solo se devuelven paneles donde TODOS los campos mencionados estén presentes (coincidencia parcial, case-insensitive). El asistente debe inferir estas palabras clave de la pregunta del usuario.'),
-                dashboard_id:       z.string().optional().describe('ID del dashboard a consultar (opcional). Si no se proporciona, se lista el catálogo de opciones disponibles.'),
-                panel_index:        z.number().optional().describe('Índice del panel dentro del dashboard (0-based). Si se omite, se ejecutan todos los panels del dashboard.'),
-                datasource_id:      z.string().optional().describe('ID del datasource para consulta directa (modo fallback). Úsalo SOLO cuando el usuario haya confirmado explícitamente consultar un modelo de datos directamente, al no haberse encontrado paneles en dashboards.'),
-                campos_consulta:    z.array(z.string()).optional().describe('Nombres técnicos de columnas a consultar en modo fallback (obtenidos de get_datasource). Si se omite, se usan los campos más relevantes del modelo según la pregunta.'),
-                ordenar_campo:      z.string().optional().describe('display_name del campo por el que ordenar los resultados. Rellénalo cuando la pregunta implique ranking ("mejores", "top", "más alto", "lowest", etc.). Infiere el campo de la pregunta (ej: "clientes con más ventas" → campo de ventas/importe).'),
-                ordenar_direccion:  z.enum(['Asc', 'Desc']).optional().describe('Dirección del orden: Desc = mayor primero (mejores, top, más alto), Asc = menor primero (peores, mínimo, lowest). Rellénalo junto con ordenar_campo.'),
-                limite_filas:       z.number().optional().describe('Número máximo de filas a devolver. Rellénalo cuando el usuario pida "top N", "los 5 mejores", "give me 10", etc.'),
-                sin_agregacion:     z.boolean().optional().describe('true si el usuario quiere filas de detalle sin agrupar (ej: "lista de todos los pedidos", "ver cada registro", "sin agrupar", "detalle completo"). Elimina todas las agregaciones del panel y devuelve filas individuales con límite de 500.'),
+                question:           z.string().describe('The user\'s question about the data they want to query'),
+                campos_requeridos:  z.array(z.string()).optional().describe('Keyword fields that must appear in the panel (e.g. ["country","credit"]). In exploration mode, only panels where at least 50% of the keywords are present are returned (partial match, case-insensitive). The assistant must infer these keywords from the user\'s question. Always include translations in Spanish, Catalan, and English.'),
+                dashboard_id:       z.string().optional().describe('Dashboard ID to query (optional). If not provided, the catalogue of available options is listed.'),
+                panel_index:        z.number().optional().describe('Panel index within the dashboard (0-based). If omitted, all panels in the dashboard are run.'),
+                datasource_id:      z.string().optional().describe('Datasource ID for direct query (fallback mode). Use ONLY when no panels were found in dashboards and a direct datasource query is needed.'),
+                campos_consulta:    z.array(z.string()).optional().describe('Technical column names to query in fallback mode (obtained from get_datasource). If omitted, the most relevant fields from the model are used based on the question.'),
+                ordenar_campo:      z.string().optional().describe('display_name of the field to sort results by. Fill in when the question implies ranking ("best", "top", "highest", "lowest", "mejores", "millors", etc.). Infer the field from the question (e.g. "customers with most sales" → sales/amount field).'),
+                ordenar_direccion:  z.enum(['Asc', 'Desc']).optional().describe('Sort direction: Desc = highest first (best, top, highest), Asc = lowest first (worst, minimum, lowest). Fill in together with ordenar_campo.'),
+                limite_filas:       z.number().optional().describe('Maximum number of rows to return. Fill in when the user asks for "top N", "the 5 best", "give me 10", etc.'),
+                sin_agregacion:     z.boolean().optional().describe('true if the user wants unaggregated detail rows (e.g. "list of all orders", "see each record", "without grouping", "full detail"). Removes all aggregations from the panel and returns individual rows with a limit of 500.'),
             },
         },
         async (args: any) => {
@@ -366,7 +479,7 @@ export function createMcpServer(requestUser?: any) {
                     const dashboardLink = baseUrl ? `${baseUrl}/dashboard/${encodeURIComponent(dashboard_id)}` : '';
                     console.log('[MCP] get_data_from_dashboard - dashboard:', db.config?.title, '| panels total:', allPanels.length, '| panel_index solicitado:', panel_index ?? 'todos');
 
-                    const accessibleDsIds = await getAccessibleDatasourceIds(user);
+                    const accessibleDsIds = await getCachedAccessibleDsIds(user);
                     const visiblePanels = allPanels.filter((p: any) => {
                         if ((p.type ?? 0) !== 0) {
                             console.log(`[MCP] MODO DATOS — panel decorativo (type=${p.type}) omitido: ${p.title}`);
@@ -533,6 +646,7 @@ export function createMcpServer(requestUser?: any) {
                             );
 
                             if (rows.length > 0) {
+                                const barChart = generateBarChart(columnas, rows);
                                 resultados.push({
                                     panel_index: idx,
                                     panel_titulo: panel.title ?? '(sin título)',
@@ -542,6 +656,7 @@ export function createMcpServer(requestUser?: any) {
                                     tiene_filtros: activeFilters.length > 0,
                                     modelo_datos: accessibleDsIds.get(modelId) ?? modelId,
                                     datos: { columnas, filas: rows, total_filas: allRows.length, truncado: allRows.length > 10 },
+                                    ...(barChart ? { grafico_barras: barChart } : {}),
                                 });
                             } else {
                                 resultados.push({
@@ -589,7 +704,7 @@ export function createMcpServer(requestUser?: any) {
                     console.log('[MCP][FALLBACK] question:', question);
                     console.log('[MCP][FALLBACK] campos_consulta recibidos:', JSON.stringify(campos_consulta));
 
-                    const accessibleDsFb = await getAccessibleDatasourceIds(user);
+                    const accessibleDsFb = await getCachedAccessibleDsIds(user);
                     const hasAccess = accessibleDsFb.has(datasource_id);
                     console.log('[MCP][FALLBACK] datasources accesibles:', accessibleDsFb.size, '| tiene acceso a datasource_id:', hasAccess);
                     if (!hasAccess) {
@@ -727,6 +842,7 @@ export function createMcpServer(requestUser?: any) {
 
                     const baseUrlFb = getBaseUrl();
                     const dsUrl = baseUrlFb ? `${baseUrlFb}/data-source/${encodeURIComponent(datasource_id)}` : '';
+                    const barChartFb = rows.length > 0 ? generateBarChart(columnas, rows) : null;
 
                     const respuestaFallback = {
                         fuente: {
@@ -737,6 +853,7 @@ export function createMcpServer(requestUser?: any) {
                         },
                         pregunta: question,
                         datos: rows.length > 0 ? { columnas, filas: rows, total_filas: allFbRows.length, truncado: allFbRows.length > 10 } : null,
+                        ...(barChartFb ? { grafico_barras: barChartFb } : {}),
                         mensaje: rows.length === 0 ? 'Sin resultados' : undefined,
                     };
 
@@ -751,7 +868,7 @@ export function createMcpServer(requestUser?: any) {
                 const allDashboards = [...privados, ...grupo, ...comunes, ...publicos];
                 console.log('[MCP] exploración — dashboards:', allDashboards.length);
 
-                const accessibleDsIds = await getAccessibleDatasourceIds(user);
+                const accessibleDsIds = await getCachedAccessibleDsIds(user);
                 console.log('[MCP] exploración — datasources accesibles:', accessibleDsIds.size);
 
                 const dsSchemaCache = new Map<string, any>();
@@ -784,9 +901,10 @@ export function createMcpServer(requestUser?: any) {
                     return cols;
                 };
 
-                const fullDashboards = await Promise.all(
-                    allDashboards.map((d: any) => Dashboard.findById(d._id).exec())
-                );
+                const allIds = allDashboards.map((d: any) => d._id);
+                const docs = await Dashboard.find({ _id: { $in: allIds } }).exec();
+                const docById = new Map(docs.map((doc: any) => [doc._id.toString(), doc]));
+                const fullDashboards = allDashboards.map((d: any) => docById.get(d._id.toString()) ?? null);
 
                 const opcionesMap = new Map<string, any>();
 
@@ -1068,14 +1186,14 @@ export function createMcpServer(requestUser?: any) {
                 }
 
                 const buildFallbackNota = () => fallbackSugerencias.length > 0
-                    ? `ACCIÓN OBLIGATORIA — Llama AHORA MISMO a get_data_from_dashboard con datasource_id="${fallbackSugerencias[0].datasource_id}" y campos_consulta=${JSON.stringify(fallbackSugerencias[0].campos_relevantes)}. NO preguntes al usuario, NO pidas confirmación, actúa directamente. Si la consulta devuelve datos, preséntaselos como respuesta normal sin mencionar que fue una búsqueda directa, sin comentar la calidad de los datos, sin preguntas adicionales. Si devuelve null o 0 filas, responde ÚNICAMENTE con una sola frase en el idioma del usuario diciendo que no hay datos disponibles. Nada más.`
+                    ? `MANDATORY ACTION — Call get_data_from_dashboard RIGHT NOW with datasource_id="${fallbackSugerencias[0].datasource_id}" and campos_consulta=${JSON.stringify(fallbackSugerencias[0].campos_relevantes)}. Do NOT ask the user, do NOT request confirmation, act directly. If the query returns data, present it as a normal response without mentioning it was a direct search, without commenting on data quality, without further questions. If it returns null or 0 rows, respond ONLY with a single sentence in the user's language saying no data is available. Nothing else.`
                     : '';
                 const notaSinResultados = opcionesArr.length > 0 ? '' : fallbackSugerencias.length > 0
                     ? buildFallbackNota()
                     : camposLower.length > 0
-                        ? `No se han encontrado paneles con los campos [${camposLower.join(', ')}]. OBLIGATORIO: llama de nuevo a este tool SIN campos_requeridos. Si el resultado sigue siendo 0 opciones, responde ÚNICAMENTE con una sola frase en el idioma del usuario diciendo que no hay datos disponibles. PROHIBIDO ABSOLUTO: no ofrezcas alternativas, no sugiereas verificar nada, no menciones dashboards ni bases de datos, no añadas ninguna frase adicional.`
-                        : `Responde ÚNICAMENTE con una sola frase en el idioma del usuario diciendo que no hay datos disponibles sobre su pregunta. PROHIBIDO ABSOLUTO: no ofrezcas alternativas, no sugiereas verificar nada, no menciones dashboards ni bases de datos, no añadas ninguna frase adicional.`;
-                const notaTruncada = truncada ? ` AVISO: se muestran las ${MAX_OPTIONS} opciones más relevantes de ${totalOpciones} encontradas. El resto fueron descartadas por menor relevancia.` : '';
+                        ? `No panels found with fields [${camposLower.join(', ')}]. MANDATORY: call this tool again WITHOUT campos_requeridos. If the result is still 0 options, respond ONLY with a single sentence in the user's language saying no data is available. ABSOLUTE PROHIBITION: do not offer alternatives, do not suggest verifying anything, do not mention dashboards or databases, do not add any additional sentence.`
+                        : `Respond ONLY with a single sentence in the user's language saying no data is available about their question. ABSOLUTE PROHIBITION: do not offer alternatives, do not suggest verifying anything, do not mention dashboards or databases, do not add any additional sentence.`;
+                const notaTruncada = truncada ? ` NOTE: showing the ${MAX_OPTIONS} most relevant options out of ${totalOpciones} found. The rest were discarded due to lower relevance.` : '';
 
                 const respuestaExploracion: any = {
                     pregunta: question,
@@ -1084,8 +1202,8 @@ export function createMcpServer(requestUser?: any) {
                     nota_al_asistente: opcionesArr.length === 0
                         ? notaSinResultados
                         : opcionesArr.length === 1
-                            ? 'Hay exactamente UNA opción. OBLIGATORIO: llama AHORA MISMO a get_data_from_dashboard en modo datos con el dashboard_id y panel_index de esta opción. NO preguntes al usuario, NO esperes confirmación.' + notaTruncada
-                            : `Hay ${opcionesArr.length} opciones en total. IMPORTANTE: muestra al usuario SOLO las opciones cuyo dashboard_nombre o panel_titulo estén relacionados con la pregunta "${question}". Si una opción claramente no tiene relación con la pregunta (ej: pregunta sobre agua pero la opción es de ventas), NO la incluyas en la lista. Preséntaselas numeradas en prosa fluida con el link del dashboard, destacando la diferencia clave entre ellas (con/sin filtros, distintos alcances). Si tras filtrar queda solo 1 opción relevante, ve directamente al PASO 3 sin preguntar. Espera la selección del usuario ANTES de ejecutar el modo datos cuando haya varias relevantes.` + notaTruncada,
+                            ? 'There is exactly ONE option. MANDATORY: call get_data_from_dashboard RIGHT NOW in data mode with the dashboard_id and panel_index of this option. Do NOT ask the user, do NOT wait for confirmation.' + notaTruncada
+                            : `There are ${opcionesArr.length} options in total. IMPORTANT: show the user ONLY the options whose dashboard_nombre or panel_titulo are related to the question "${question}". If an option clearly has no relation to the question (e.g. question about water but the option is about sales), do NOT include it. Present them numbered with the dashboard link, highlighting the key difference between them (with/without filters, different scopes). If after filtering only 1 relevant option remains, go directly to STEP 3 without asking. Wait for the user's selection BEFORE running data mode when there are several relevant options.` + notaTruncada,
                 };
 
                 return { content: [{ type: 'text', text: JSON.stringify(respuestaExploracion) }] };

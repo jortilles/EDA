@@ -17,12 +17,14 @@
       <!-- Tab buttons: siempre visibles -->
       <div class="px-6 pt-6 pb-4 grid grid-cols-2 gap-4">
         <button
-          [class]="'py-2 px-4 text-center rounded-md transition-all ' + (activeTab === 'aspecto' ? 'bg-[#00BFB3] text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-700')"
+          class="kpi-tab-btn"
+          [class.kpi-tab-btn--active]="activeTab === 'aspecto'"
           (click)="setActiveTab('aspecto')" i18n="@@kpiAspecto">
           Aspecto
         </button>
         <button
-          [class]="'py-2 px-4 text-center rounded-md transition-all ' + (activeTab === 'alerts' ? 'bg-[#00BFB3] text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-700')"
+          class="kpi-tab-btn"
+          [class.kpi-tab-btn--active]="activeTab === 'alerts'"
           (click)="setActiveTab('alerts')" i18n="@@kpiAlerts">
           Alertas
         </button>
@@ -106,15 +108,15 @@
                 <div class="space-y-2 md:col-span-2">
                   <label class="text-sm font-medium" i18n="@@kpiPrefixImage">Imagen prefijo</label>
                   <div class="flex items-center gap-3">
-                    <label class="flex items-center gap-1 px-3 py-2 rounded border text-sm bg-slate-50 hover:bg-slate-100 cursor-pointer">
+                    <label class="kpi-upload-btn">
                       <i class="pi pi-upload"></i>
                       <span i18n="@@uploadImage">Subir imagen</span>
                       <input type="file" accept="image/*" class="hidden" (change)="onPrefixImageSelected($event)" />
                     </label>
                     @if(prefixImage){
                       <img [src]="prefixImage" alt="preview"
-                        style="max-height:2rem; max-width:6rem; object-fit:contain;"
-                        class="border rounded bg-slate-50 p-1" />
+                        (click)="openPrefixImageInNewTab()"
+                        class="w-[7rem] h-[3rem] object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity" />
                       <span (click)="prefixImage=''; updatePrefixImage()"
                         class="cursor-pointer text-slate-400 hover:text-slate-700 select-none text-sm">✕</span>
                     }
@@ -134,13 +136,16 @@
                   </h3>
                 </div>
                 <div class="p-4 space-y-4">
-                  <select class="w-full sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
-                    <option [ngValue]="null" disabled hidden i18n="@@selectPalette">-- Seleccione una paleta --</option>
-                    @for (palette of allPalettes; track $index) {
-                      <option [ngValue]="{name: palette.name, paleta: palette.paleta}">{{ palette.name }}</option>
-                    }
-                  </select>
+                  <p-dropdown
+                    [(ngModel)]="selectedPalette"
+                    [options]="allPalettes"
+                    optionLabel="name"
+                    i18n-placeholder="@@selectPalette"
+                    placeholder="-- Seleccione una paleta --"
+                    (ngModelChange)="onPaletteSelected()"
+                    [style]="{'width':'180px'}"
+                    appendTo="body">
+                  </p-dropdown>
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     @for (item of series; track item.value) {
                       <div class="flex items-center bg-white justify-between border rounded-lg p-3">
@@ -238,7 +243,7 @@
                     <span class="ml-1 font-medium" [style.color]="color" i18n="@@textChangeColor">el texto cambiará a este color</span>
                   </div>
                   <button (click)="addAlert()"
-                    class="px-4 py-2 bg-[#00BFB3] text-white rounded-md flex items-center gap-2 hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="kpi-add-alert-btn"
                     [disabled]="!value" i18n="@@addAlert">
                     <span>Añadir alerta</span>
                   </button>
@@ -295,8 +300,8 @@
                         @if (canIRunAlerts) {
                         <button (click)="openConfigDialog(alert)"
                           class="h-8 w-8 p-0 inline-flex items-center justify-center rounded-md hover:bg-slate-100 transition-colors"
-                          [class.text-[#00BFB3]]="alert.mailing?.enabled"
-                          [class.text-slate-300]="!alert.mailing?.enabled"
+                          [class.kpi-mail-icon--active]="alert.mailing?.enabled"
+                          [class.kpi-mail-icon--inactive]="!alert.mailing?.enabled"
                           title="Configurar envío por email">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -320,7 +325,7 @@
                 </tbody>
               </table>
             </div>
-            <div class="bg-slate-50 px-4 py-3 text-sm text-slate-500 italic border-t" i18n="@@orderAlerts">
+            <div class="bg-slate-50 px-4 py-3 text-xs text-slate-500 italic border-t" i18n="@@orderAlerts">
               Las alertas se aplicarán en orden de creación. Haga clic en el botón X para eliminar una alerta.
             </div>
           </div>

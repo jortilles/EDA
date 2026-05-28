@@ -351,6 +351,7 @@ export class MapUtilsService extends ApiService {
   }
   public mapEditOpen(): void {
     this.auxCoordinates = this.coordinates;
+    this.auxZoom = this.zoom;
   }
   public mapEditClose(): void {
     this.auxCoordinates = null;

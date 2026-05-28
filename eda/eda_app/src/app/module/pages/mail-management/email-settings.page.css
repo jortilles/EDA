@@ -1,0 +1,20 @@
+.btn-corporate-primary        { background-color: var(--corporate-primary) !important; color: white; }
+.btn-corporate-primary:hover  { background: linear-gradient(to right, var(--corporate-primary), var(--corporate-primary-gradient)) !important; }
+.btn-corporate-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--corporate-primary); }
+
+.config-tab-active            { border-color: var(--corporate-primary) !important; color: var(--corporate-primary) !important; background-color: rgba(var(--corporate-primary-rgb), 0.1) !important; }
+.config-tab-inactive          { border-color: var(--gray-200) !important; color: var(--gray-500) !important; } 
+.config-tab-inactive:hover    { border-color: var(--corporate-primary) !important; color: var(--corporate-primary) !important; background-color: rgba(var(--corporate-primary-rgb), 0.1) !important; opacity: 0.25; }
+.input-corporate:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--corporate-primary);  background-color: rgba(var(--corporate-primary-rgb), 0.1) !important; }
+
+.section-active               { border-color: rgba(var(--corporate-primary-rgb), 0.4) !important; background-color: rgba(var(--corporate-primary-rgb), 0.05) !important; }
+
+.text-corporate-primary       { color: var(--corporate-primary); }
+
+.spinner-corporate            { border-color: var(--corporate-primary); border-top-color: transparent; }
+
+.badge-corporate              { color: var(--corporate-primary); background-color: rgba(var(--corporate-primary-rgb), 0.1); }
+
+.link-corporate:hover         { color: var(--corporate-primary) !important; border-color: var(--corporate-primary) !important; }
+
+.toggle-active                { background-color: var(--corporate-primary) !important; }

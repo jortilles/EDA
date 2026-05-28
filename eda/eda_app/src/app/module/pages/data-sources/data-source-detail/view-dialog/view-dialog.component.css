@@ -1,0 +1,10 @@
+.view-input:focus {
+  outline: none;
+  border-color: var(--corporate-primary);
+  box-shadow: 0 0 0 1px var(--corporate-primary);
+}
+
+.view-btn:hover:not(:disabled) {
+  background-color: rgba(var(--corporate-primary-rgb), 0.08);
+  color: var(--corporate-primary);
+}

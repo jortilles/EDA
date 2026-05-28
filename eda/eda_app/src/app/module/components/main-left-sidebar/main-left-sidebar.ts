@@ -22,6 +22,7 @@ interface NavItem {
   standalone: true,
   imports: [RouterLink, NgClass, IconComponent],
   templateUrl: './main-left-sidebar.html',
+  styleUrls: ['./main-left-sidebar.component.css'],
   encapsulation: ViewEncapsulation.None
 })
 export class MainLeftSidebarComponent {

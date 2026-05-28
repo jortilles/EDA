@@ -8,12 +8,13 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { ColorPickerModule } from 'primeng/colorpicker';
+import { DropdownModule } from 'primeng/dropdown';
 
 @Component({
   standalone: true,
   selector: 'app-scatter-plot-dialog',
   templateUrl: './scatter-plot-dialog.component.html',
-  imports: [FormsModule, CommonModule, PanelChartComponent, EdaDialog2Component, ColorPickerModule]
+  imports: [FormsModule, CommonModule, PanelChartComponent, EdaDialog2Component, ColorPickerModule, DropdownModule]
 })
 export class ScatterPlotDialog implements OnInit, AfterViewChecked {
 

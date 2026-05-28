@@ -1,0 +1,7 @@
+.perm-radio {
+  accent-color: var(--corporate-primary);
+}
+
+.perm-row:hover {
+  background-color: rgba(var(--corporate-primary-rgb), 0.08);
+}

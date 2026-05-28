@@ -8,12 +8,13 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { ColorPickerModule } from 'primeng/colorpicker';
+import { DropdownModule } from 'primeng/dropdown';
 
 @Component({
   standalone: true,
   selector: 'app-bubblechart-dialog',
   templateUrl: './bubblechart-dialog.component.html',
-  imports: [FormsModule, EdaDialog2Component, PanelChartComponent, CommonModule, ColorPickerModule],
+  imports: [FormsModule, EdaDialog2Component, PanelChartComponent, CommonModule, ColorPickerModule, DropdownModule],
 })
 export class BubblechartDialog implements OnInit, AfterViewChecked {
   @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;

@@ -8,12 +8,13 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { ColorPickerModule } from 'primeng/colorpicker';
+import { DropdownModule } from 'primeng/dropdown';
 
 @Component({
   standalone: true,
   selector: 'app-sankey-dialog',
   templateUrl: './sankey-dialog.component.html',
-  imports: [FormsModule, CommonModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule]
+  imports: [FormsModule, CommonModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule, DropdownModule]
 })
 export class SankeyDialog implements OnInit, AfterViewChecked {
 

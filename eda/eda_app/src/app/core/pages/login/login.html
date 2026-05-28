@@ -45,7 +45,7 @@
                     Dirección Email / Usuario
                 </label>
                 <input type="text" id="email" formControlName="email"
-                    class="w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4]">
+                    class="w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--corporate-primary)]">
             </div>
 
             <div class="space-y-1">
@@ -53,7 +53,7 @@
                     Contraseña
                 </label>
                 <input type="password" id="password" formControlName="password"
-                    class="w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4]">
+                    class="w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--corporate-primary)]">
             </div>
 
             <div class="flex items-center space-x-2">
@@ -63,8 +63,8 @@
             </div>
 
             <button type="submit"
-                class="w-full py-2 text-[#BE0926] border-[0.5px] border-[#dadce0] rounded-md bg-[#fff] hover:bg-[#FCEFF1] transition-colors">
-                <span i18n="@@signinBtn" class="font-medium">Entrar</span>
+                class="w-full py-2 text-white rounded-md bg-[var(--corporate-primary)] hover:bg-[rgba(var(--corporate-primary-rgb), 0.08)] transition-colors">
+                <span i18n="@@signinBtn">Entrar</span>
             </button>
 
             <!-- <a routerLink="/forgot-password"

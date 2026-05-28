@@ -2572,6 +2572,26 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target> Panele niefiltrowane </target>
   </trans-unit>
 
+  <trans-unit id="tooltipApplyToAll">
+    <source>Si está activado, el filtro se aplica a todos los paneles del informe.</source>
+    <target>Jeśli włączone, filtr jest stosowany do wszystkich paneli raportu.</target>
+  </trans-unit>
+
+  <trans-unit id="tooltipAutocomplete">
+    <source>Si está activado, los valores se buscan dinámicamente mediante autocompletado.</source>
+    <target>Jeśli włączone, wartości są wyszukiwane dynamicznie za pomocą autouzupełniania.</target>
+  </trans-unit>
+
+  <trans-unit id="tooltipMandatory">
+    <source>Si está activado, el filtro debe tener un valor seleccionado para poder visualizar el informe.</source>
+    <target>Jeśli włączone, filtr musi mieć wybraną wartość, aby wyświetlić raport.</target>
+  </trans-unit>
+
+  <trans-unit id="tooltipVisibility">
+    <source>Público: todos pueden usarlo. Deshabilitado: otros usuarios pueden ver el filtro pero no modificarlo. Oculto: no visible para otros pero se aplica igualmente.</source>
+    <target>Publiczny: wszyscy mogą go używać. Wyłączony: inni użytkownicy widzą filtr, ale nie mogą go modyfikować. Ukryty: niewidoczny dla innych, ale nadal stosowany.</target>
+  </trans-unit>
+
   <trans-unit id="seconds_to_refresh">
     <source> Intervalo de recarga </source>
     <target>Częstotliwość odświeżania </target>
@@ -5309,6 +5329,56 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Można używać wyłącznie filtrów zdefiniowanych w bieżącym panelu.</target>
       </trans-unit>
 
+      <trans-unit id="uniqueRecords1">
+        <source>La opción <ph id="0"/>Registros únicos<ph id="1"/> aplica un <ph id="2"/>GROUP BY<ph id="3"/> sobre todos los atributos de la consulta. Úsala cuando quieras eliminar duplicados y agrupar los resultados por la combinación de todos los campos seleccionados.</source>
+        <target>Opcja <ph id="0"/>Unikalne rekordy<ph id="1"/> stosuje <ph id="2"/>GROUP BY<ph id="3"/> do wszystkich atrybutów zapytania. Używaj jej, gdy chcesz wyeliminować duplikaty i pogrupować wyniki według kombinacji wszystkich wybranych pól.</target>
+      </trans-unit>
+
+      <trans-unit id="uniqueRecords3">
+        <source>Al activarla, las métricas numéricas se agrupan junto al resto de atributos, lo que puede alterar el resultado esperado si ya existen agregaciones definidas.</source>
+        <target>Po jej włączeniu metryki numeryczne są grupowane razem z pozostałymi atrybutami, co może zmienić oczekiwany wynik, jeśli zostały już zdefiniowane agregacje.</target>
+      </trans-unit>
+
+      <trans-unit id="dynamicFilters1">
+        <source>Al hacer clic en otros paneles del dashboard se crean <ph id="0"/>filtros dinámicos<ph id="1"/> que afectan al resto de paneles. Activar esta opción hace que este panel <ph id="2"/>ignore<ph id="3"/> esos filtros dinámicos y siempre muestre sus datos completos, independientemente de las selecciones del usuario en otros paneles.</source>
+        <target>Kliknięcie innych paneli dashboardu tworzy <ph id="0"/>filtry dynamiczne<ph id="1"/> wpływające na pozostałe panele. Włączenie tej opcji sprawia, że ten panel <ph id="2"/>ignoruje<ph id="3"/> te filtry dynamiczne i zawsze wyświetla pełne dane, niezależnie od wyborów użytkownika w innych panelach.</target>
+      </trans-unit>
+
+      <trans-unit id="dynamicFilters3">
+        <source>Los filtros de panel y globales definidos manualmente sí se siguen aplicando con normalidad.</source>
+        <target>Ręcznie zdefiniowane filtry panelu i globalne nadal działają normalnie.</target>
+      </trans-unit>
+
+      <trans-unit id="dynamicFilters4">
+        <source>Esta opción no afecta a los filtros creados desde el selector de filtros del dashboard.</source>
+        <target>Ta opcja nie dotyczy filtrów utworzonych za pomocą selektora filtrów dashboardu.</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipJoinType">
+        <source>Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN</source>
+        <target>Definiuje sposób łączenia tabel: LEFT, INNER lub RIGHT JOIN</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipScenarios">
+        <source>Crea atributos derivados aplicando operaciones matemáticas</source>
+        <target>Tworzy atrybuty pochodne z zastosowaniem operacji matematycznych</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipAdvancedFilters">
+        <source>Combina los filtros del panel con operadores AND u OR</source>
+        <target>Łączy filtry panelu za pomocą operatorów AND lub OR</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipUniqueRecords">
+        <source>Aplica GROUP BY a todos los campos para eliminar duplicados</source>
+        <target>Stosuje GROUP BY do wszystkich pól w celu wyeliminowania duplikatów</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipDynamicFilters">
+        <source>Actívalo para que este panel ignore los filtros dinámicos de otros paneles</source>
+        <target>Włącz, aby ten panel ignorował dynamiczne filtry z innych paneli</target>
+      </trans-unit>
+
         <trans-unit id="joins">
         <source>Tipo de intersección</source>
         <target>Typ skrzyżowania</target>
@@ -6055,6 +6125,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Pregunta en lenguaje natural:</source>
         <target>Zapytaj w języku naturalnym:</target>
       </trans-unit>
+      <trans-unit id="assistantSubtitle">
+        <source>Construye tu consulta en lenguaje natural</source>
+        <target>Zbuduj swoje zapytanie w języku naturalnym</target>
+      </trans-unit>
       <trans-unit id="AIManagement" datatype="html">
         <source>Gestión del asistente</source>
         <target>Zarządzanie asystentem</target>
@@ -6342,6 +6416,38 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="noParentText" datatype="html">
         <source>Sin padre</source>
         <target>Brak rodzica</target>
+      </trans-unit>
+      <trans-unit id="noDataAvailable" datatype="html">
+        <source>Sin datos disponibles</source>
+        <target>Brak dostępnych danych</target>
+      </trans-unit>
+      <trans-unit id="noDataChatMessage" datatype="html">
+        <source>Para utilizar este chat necesitas tener un panel con datos seleccionado.</source>
+        <target>Aby korzystać z tego czatu, musisz mieć wybrany panel z danymi.</target>
+      </trans-unit>
+      <trans-unit id="copyToClipboard" datatype="html">
+        <source>Copiar</source>
+        <target>Kopiuj</target>
+      </trans-unit>
+      <trans-unit id="ctrlEnterToSend" datatype="html">
+        <source>Ctrl+Enter para enviar</source>
+        <target>Ctrl+Enter aby wysłać</target>
+      </trans-unit>
+      <trans-unit id="askEdaliticsPrefix" datatype="html">
+        <source>Pregúntale a </source>
+        <target>Zapytaj </target>
+      </trans-unit>
+      <trans-unit id="askEdaliticsSubtitle" datatype="html">
+        <source>Análisis de datos con IA</source>
+        <target>Analiza danych z AI</target>
+      </trans-unit>
+      <trans-unit id="volver" datatype="html">
+        <source>Volver</source>
+        <target>Wróć</target>
+      </trans-unit>
+      <trans-unit id="navegar" datatype="html">
+        <source>Navegar</source>
+        <target>Poruszaj się</target>
       </trans-unit>
 </body>
 </file>

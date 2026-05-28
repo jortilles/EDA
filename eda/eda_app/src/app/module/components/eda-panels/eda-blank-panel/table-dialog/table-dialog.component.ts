@@ -133,7 +133,53 @@ export class TableDialogComponent{
   }
 
 
-  private rowTotals() {
+  get chartType(): string {
+    return this.controller?.params?.panelChart?.chartType || 'table';
+  }
+
+  get percentageMode(): 'none' | 'both' | 'only' {
+    if (this.onlyPercentages) return 'only';
+    if (this.resultAsPecentage) return 'both';
+    return 'none';
+  }
+
+  setPercentageMode(mode: 'none' | 'both' | 'only') {
+    const currentConfig = this.myPanelChartComponent.currentConfig;
+    if (mode === 'none') {
+      currentConfig.resultAsPecentage = false;
+      currentConfig.onlyPercentages = false;
+    } else if (mode === 'both') {
+      currentConfig.resultAsPecentage = true;
+      currentConfig.onlyPercentages = false;
+    } else {
+      currentConfig.resultAsPecentage = true;
+      currentConfig.onlyPercentages = true;
+      currentConfig.withColSubTotals = false;
+      this.col_subtotals = false;
+      currentConfig.withColTotals = false;
+      this.col_totals = false;
+    }
+    this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
+    this.resultAsPecentage = currentConfig.resultAsPecentage;
+    this.onlyPercentages = currentConfig.onlyPercentages;
+    this.setCols();
+    this.setItems();
+  }
+
+  get sortOptions() {
+    return [
+      { label: this.sortAlphabeticalLabel, value: 'alphabetical' },
+      { label: this.sortByValueLabel, value: 'value' },
+      { label: this.sortByValueAscLabel, value: 'valueAsc' },
+    ];
+  }
+
+  public togglePrediction() {
+    this.showPredictionCol = !this.showPredictionCol;
+    this.setPredictionCol();
+  }
+
+  public rowTotals() {
     const currentConfig = this.myPanelChartComponent.currentConfig;
     currentConfig.withTrend = false;
     currentConfig.withRowTotals = !currentConfig.withRowTotals;
@@ -142,7 +188,7 @@ export class TableDialogComponent{
     this.setItems();
   }
 
-  private rowTrend() {
+  public rowTrend() {
     const currentConfig = this.myPanelChartComponent.currentConfig;
     currentConfig.withRowTotals = false;
     currentConfig.withTrend = !currentConfig.withTrend;
@@ -151,7 +197,7 @@ export class TableDialogComponent{
     this.setItems();
   }
 
-  private colSubTotals() {
+  public colSubTotals() {
 
     const currentConfig = this.myPanelChartComponent.currentConfig;
 
@@ -162,7 +208,7 @@ export class TableDialogComponent{
     this.setItems();
   }
 
-  private colTotals() {
+  public colTotals() {
 
     const currentConfig = this.myPanelChartComponent.currentConfig;
 
@@ -175,7 +221,7 @@ export class TableDialogComponent{
     this.setItems();
   }
 
-  private noRepeat() {
+  public noRepeat() {
 
     const currentConfig = this.myPanelChartComponent.currentConfig;
     currentConfig.noRepetitions = !currentConfig.noRepetitions;
@@ -188,7 +234,7 @@ export class TableDialogComponent{
     this.setItems();
   }
 
-  private noNegativeNumbers() {
+  public noNegativeNumbers() {
 
     const currentConfig = this.myPanelChartComponent.currentConfig;
 
@@ -245,7 +291,7 @@ export class TableDialogComponent{
 
   }
 
-  private setStyle(col) {
+  public setStyle(col) {
     if (this.controller.params.panelChart.chartType === 'table') {
       const queryCol = this.queryNumericColumns.find(q => q.display_name === col.header || q.column_name === col.field);
       this.gradientMenuController = new EdaDialogController({
@@ -475,7 +521,7 @@ export class TableDialogComponent{
    * using the updated crossSortOrder, while also restoring the original column
    * definitions (oldcols) so generateCrossParams can resolve axis columns correctly.
    */
-  private setCrossSortOrder(value: string) {
+  public setCrossSortOrder(value: string) {
     this.crossSortOrder = value;
     const inject = this.myPanelChartComponent.componentRef.instance.inject;
     inject.crossSortOrder = value;

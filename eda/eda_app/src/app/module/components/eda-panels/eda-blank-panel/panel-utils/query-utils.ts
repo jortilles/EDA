@@ -35,59 +35,6 @@ export const QueryUtils = {
   },
 
 
-  /**
-   * Switch sql mode or eda mode and run query
-   * @param ebp edaBlankPanelComponent
-   * @param query query to run
-   *
-   */
-  switchAndRun_old: async (ebp: EdaBlankPanelComponent, query: Query) => {
-    try {
-      if (ebp.selectedQueryMode != 'SQL') {
-        const queryData = JSON.parse(JSON.stringify(query));
-        queryData.query.filters = query.query.filters.filter((f) =>
-          (f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0)
-          || ['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type)
-        );
-        const response = await ebp.dashboardService.executeQuery(queryData).toPromise();
-        return response;
-      } else {
-        const response = await ebp.dashboardService.executeSqlQuery(query).toPromise();
-        const numFields = response[0].length;
-        const types = new Array(numFields);
-        types.fill(null);
-        for (let row = 0; row < response[1].length; row++) {
-          response[1][row].forEach((field, i) => {
-            if (types[i] === null || types[i] === 'text') {
-              if (typeof field === 'number') {
-                types[i] = 'numeric';
-              } else if (typeof field === 'string') {
-                // Revisión de etiquetas html
-                if (/<[a-z][\s\S]*>/i.test(field)) {
-                  types[i] = 'html';
-                } else if (types[i] === null) {
-                  types[i] = 'text';
-                }
-              }
-            }
-          });
-          if (!types.includes(null)) {
-            const hasTextColumns = types.includes('text');
-            if (!hasTextColumns) break;
-          }
-        }
-
-        ebp.currentQuery = [];
-        types.forEach((type, i) => {
-          ebp.currentQuery.push(QueryUtils.createColumn(response[0][i], type, ebp.sqlOriginTable));
-        });
-        return response;
-      }
-    } catch (err) {
-      throw err;
-    }
-  },
-  
   analizedQuery: async (ebp: EdaBlankPanelComponent) => {
     const query = QueryUtils.initEdaQuery(ebp);
 
@@ -342,17 +289,24 @@ export const QueryUtils = {
 
           if(ebp.currentQuery.length>2 && (ebp.currentQuery.find( valor => valor.column_type === 'numeric') !== undefined) && ebp.panelChartConfig?.config) {
             const config = ebp.panelChartConfig.config.getConfig(); // Adquiera la configuración config
-            ebp.currentQuery = ebp.newCurrentQuery(ebp.currentQuery, ebp.initAxes(ebp.currentQuery)); // Reordeno el currentQuery
-            config['ordering'] = [{axes: ebp.initAxes(ebp.currentQuery)}]; // Agrego el nuevo axes a la config
+            // Excluir nav-children de la query para que no aparezcan en los ejes de la tabla cruzada
+            const _navChildKeys = new Set<string>();
+            ebp.currentQuery.forEach((col: any) => { if (col.downChild) _navChildKeys.add(`${col.downChild.table_id}.${col.downChild.column_name}`); });
+            const _queryForAxes = ebp.currentQuery.filter((col: any) => !_navChildKeys.has(`${col.table_id}.${col.column_name}`));
+            ebp.currentQuery = ebp.newCurrentQuery(ebp.currentQuery, ebp.initAxes(_queryForAxes)); // Reordeno el currentQuery
+            config['ordering'] = [{axes: ebp.initAxes(_queryForAxes)}]; // Agrego el nuevo axes a la config
             ebp.copyConfigCrossTable = JSON.parse(JSON.stringify(config));
-          } 
+          }
         }
       }
 
       /**
-     * Too much rows check
+     * Too much rows check — use effective fields to avoid nav-children inflating the count
      */
-      const totalTableCount = ebp.currentQuery.reduce((a, b) => {
+      const _fieldsForCount = (ebp.currentQuery || []).some((col: any) => col.downChild)
+        ? QueryUtils.getEffectiveFields(ebp)
+        : ebp.currentQuery;
+      const totalTableCount = _fieldsForCount.reduce((a, b) => {
         return a + parseInt(b.tableCount);
       }, 0);
       const aggregations = ebp.currentQuery.filter(col => col.aggregation_type.filter(agg => (agg.value !== 'none' && agg.selected === true)).length > 0).length;
@@ -433,8 +387,7 @@ export const QueryUtils = {
    */
   initEdaQuery: (ebp: EdaBlankPanelComponent): Query => {
     const config = ChartsConfigUtils.setConfig(ebp);
-    const hasNavChildren = Object.keys(ebp.navChildren || {}).length > 0
-      || (ebp.currentQuery || []).some((col: any) => col.downChild);
+    const hasNavChildren = (ebp.currentQuery || []).some((col: any) => col.downChild);
     const fields = hasNavChildren ? QueryUtils.getEffectiveFields(ebp) : ebp.currentQuery;
 
     const params = {

@@ -1,23 +1,75 @@
+// Personalización de colores corporativos
+export const CORPORATE_COLORS = {
+    // Colores base de marca — usados en toda la aplicación
+    primary:         '#00BFB3',      // Color principal (botones, iconos, gradientes)
+    primaryGradient: '#34D0C7',      // Extremo final de gradientes (header chat, FAB, burbujas)
+    primaryRgb:      '0, 191, 179',  // Valor RGB del primario para opacidades (box-shadow, rgba)
+    primaryHsl:      '175 100% 37%', // Componentes HSL del primario para --ring (Tailwind focus ring)
+
+    // Colores específicos del chatbot
+    chat: {
+        avatarBg:       '#CCFAF7',   // Fondo del avatar del robot (header y mensajes)
+        avatarBgAlt:    '#99F0EB',   // Fondo alternativo del avatar (gradiente empty state)
+        avatarBorder:   '#55D6CD',   // Borde del avatar y cabecera de tabla
+        surfaceHover:   '#E6FAF9',   // Fondo hover en sugerencias y filas de tabla
+        tableHeader:    '#007B74',   // Color del texto en cabeceras de tabla
+        linkColor:      '#00bfb3',   // Color de enlaces en mensajes
+        linkHoverColor: '#008F87',   // Color de enlaces al hacer hover
+    },
+
+    // Colores específicos de carpetas (home — vista de carpetas y filtros de tags)
+    folder: {
+        iconBg:          '#CCFAF7',  // Fondo del icono de carpeta cerrada
+        iconBgHover:     '#99F0EB',  // Fondo del icono de carpeta hover o abierta
+        iconColor:       '#00BFB3',  // Color del icono de carpeta cerrada
+        borderHover:     '#34D0C7',  // Borde de la tarjeta carpeta al hacer hover o al estar abierta
+        iconColorHover:  '#007B74',  // Color del icono y texto al hacer hover o al estar abierta
+        cardBgOpen:      '#E6FAF9',  // Fondo de la tarjeta cuando la carpeta está abierta
+        labelColorOpen:  '#005E58',  // Color del nombre de la carpeta cuando está abierta
+    },
+
+    // Colores de botones de acción en diálogos
+    buttons: {
+        // Confirmar: acción principal afirmativa
+        confirmBg:        '#00B0BA',  // Inicio gradiente
+        confirmBgEnd:     '#00c9b1',  // Fin gradiente
+        confirmHoverBg:   '#006c72',  // Hover inicio
+        confirmHoverBgEnd:'#05a592',  // Hover fin
+
+        // Auxiliar: acción secundaria (ejecutar consulta, abrir SQL, previsualizar…)
+        auxBg:            '#1D4ED8',  // Inicio gradiente (blue-700)
+        auxBgEnd:         '#3B82F6',  // Fin gradiente (blue-500)
+        auxHoverBg:       '#1E40AF',  // Hover inicio (blue-800)
+        auxHoverBgEnd:    '#2563EB',  // Hover fin (blue-600)
+
+        // Cancelar: acción de descarte
+        cancelBg:         '#df4040',  // Inicio gradiente
+        cancelBgEnd:      '#ec2828',  // Fin gradiente
+        cancelHoverBg:    'rgb(177, 39, 39)',  // Hover inicio
+        cancelHoverBgEnd: '#bd3636',  // Hover fin
+    },
+};
+
 export const ChartsPalettes = [
     {
         paleta: [
-  '#10B4BD',
-  '#3C88CA',
-  '#685CD9',
-  '#8B5DD2',
-  '#A36AC7',
-  '#BB78BD',
-  '#D285B3',
-  '#EA93A9',
-  '#F7A68E',
-  '#FCB37A',
-  '#FDB0BA',
-  '#FBBFA6',
-  '#F9C98F',
-  '#F6D278',
-  '#ECE45A'
-]
-        , name: 'Gradiente'
+            '#10B4BD',
+            '#3C88CA',
+            '#685CD9',
+            '#8B5DD2',
+            '#A36AC7',
+            '#BB78BD',
+            '#D285B3',
+            '#EA93A9',
+            '#F7A68E',
+            '#FCB37A',
+            '#FDB0BA',
+            '#FBBFA6',
+            '#F9C98F',
+            '#F6D278',
+            '#ECE45A'
+        ],
+        name: 'Gradiente'
     },
     {
         paleta: [

@@ -1,7 +1,7 @@
 <div class="container mx-auto my-10 py-10 px-4 bg-background rounded-lg">
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold tracking-tight" i18n="@@adminUsers">Gestión de Usuarios</h1>
-    <button (click)="handleCreateUser()" class="bg-[#00BFB3] hover:bg-[#00BFB3]/90 px-4 py-2 rounded font-semibold text-white flex items-center">
+    <button (click)="handleCreateUser()" class="btn-corporate-gradient px-4 py-2 rounded font-semibold text-white flex items-center">
       <eda-icon name="plus" class="mr-2"></eda-icon>
       <span i18n="@@addUser">Crear Usuario</span>
     </button>
@@ -27,7 +27,7 @@
           <td class="p-3 truncate">{{ user.email }}</td>
           <td class="p-3 truncate">{{ user.name }}</td>
           <td class="p-3 truncate">
-            <span [ngClass]="{'bg-[#00BFB3] text-white px-2 py-1 rounded': user.role === 'EDA_ADMIN'}">
+            <span [ngClass]="{'badge-primary': user.role === 'EDA_ADMIN'}">
               {{ user.role }}
             </span>
           </td>
@@ -46,31 +46,27 @@
   </div>
   <p class="mt-1 font-semibold text-right text-gray-500">{{ filteredUsers.length }} <span i18n="@@foundUsers">usuarios encontrados</span></p>
   <div class="flex justify-center items-center mt-4 bg-white px-4 py-2 rounded-md text-gray-500">
-    <button (click)="setPage(1)" [disabled]="currentPage === 1" class="flex items-center justify-center w-12 h-12 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:opacity-40 disabled:pointer-events-none">
+    <button (click)="setPage(1)" [disabled]="currentPage === 1" class="paginator-btn flex items-center justify-center w-12 h-12 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors disabled:opacity-40 disabled:pointer-events-none">
       <eda-icon name="chevron-double-left" size="sm"></eda-icon>
     </button>
-    <button (click)="setPage(currentPage - 1)" [disabled]="currentPage === 1" class="flex items-center justify-center w-12 h-12 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:opacity-40 disabled:pointer-events-none">
+    <button (click)="setPage(currentPage - 1)" [disabled]="currentPage === 1" class="paginator-btn flex items-center justify-center w-12 h-12 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors disabled:opacity-40 disabled:pointer-events-none">
       <eda-icon name="chevron-left" size="sm"></eda-icon>
     </button>
-    <select [ngModel]="currentPage" (ngModelChange)="setPage(+$event)" class="h-12 mx-2 border border-gray-300 rounded-md px-2 text-sm font-semibold text-gray-700 bg-white">
-      @for (page of pageNumbers; track page) {
-        <option [value]="page">{{ page }}</option>
-      }
-    </select>
+    <p-dropdown class="paginator-dropdown mx-2"
+      [ngModel]="currentPage" (onChange)="setPage($event.value)"
+      [options]="pageNumbers" appendTo="body">
+    </p-dropdown>
     <span class="text-sm font-semibold px-1">/ {{ totalPages() }}</span>
-    <button (click)="setPage(currentPage + 1)" [disabled]="currentPage === totalPages()" class="flex items-center justify-center w-12 h-12 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:opacity-40 disabled:pointer-events-none">
+    <button (click)="setPage(currentPage + 1)" [disabled]="currentPage === totalPages()" class="paginator-btn flex items-center justify-center w-12 h-12 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors disabled:opacity-40 disabled:pointer-events-none">
       <eda-icon name="chevron-right" size="sm"></eda-icon>
     </button>
-    <button (click)="setPage(totalPages())" [disabled]="currentPage === totalPages()" class="flex items-center justify-center w-12 h-12 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:opacity-40 disabled:pointer-events-none">
+    <button (click)="setPage(totalPages())" [disabled]="currentPage === totalPages()" class="paginator-btn flex items-center justify-center w-12 h-12 m-[0.143rem] rounded-full border-0 bg-transparent text-gray-500 transition-colors disabled:opacity-40 disabled:pointer-events-none">
       <eda-icon name="chevron-double-right" size="sm"></eda-icon>
     </button>
-    <select [ngModel]="itemsPerPage" (ngModelChange)="itemsPerPage = +$event; setPage(1)" class="h-12 mx-2 ml-4 border border-gray-300 rounded-md px-2 text-sm text-gray-700 bg-white">
-      <option [value]="5">5</option>
-      <option [value]="10">10</option>
-      <option [value]="25">25</option>
-      <option [value]="50">50</option>
-      <option [value]="100">100</option>
-    </select>
+    <p-dropdown class="paginator-dropdown mx-2 ml-4"
+      [ngModel]="itemsPerPage" (onChange)="itemsPerPage = $event.value; setPage(1)"
+      [options]="pageSizeOptions" appendTo="body">
+    </p-dropdown>
   </div>
 </div>
 

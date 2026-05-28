@@ -141,7 +141,6 @@ export class CalculatedColumnEditDialogComponent implements OnInit {
           title: $localize`:@@titleCalculatedColumnEditMessage:Campo calculado actualizado correctamente`,
           text: $localize`:@@textCalculatedColumnEditMessage:IMPORTANTE: Al modificar un campo calculado ya existente los paneles que lo utilizan no se actualizan automáticamente, es necesario entrar en la configuración de cada uno de ellos, pulsar en Ejecutar y guardar el informe`,
           icon: 'success',
-          confirmButtonColor: '#3085d6',
           confirmButtonText: `ok`,
         });
       },

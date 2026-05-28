@@ -437,7 +437,6 @@ export class DashboardController {
             dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
               dashboard.config.ds.type = ds.ds?.connection?.type ?? 'N/A';
          }else{
-            console.log('valor del ds: ', ds);
             dashboard.config.ds.name = ds?.ds?.metadata?.model_name ?? 'N/A';
             dashboard.config.ds.type = ds?.ds?.connection?.type ?? 'N/A';
           }

@@ -1,0 +1,22 @@
+.visibility-selector .p-button.p-highlight           { background: var(--corporate-primary) !important; border-color: var(--corporate-primary) !important; color: white !important; }
+.visibility-selector .p-button:not(.p-highlight):hover { background: var(--corporate-primary) !important; border-color: var(--corporate-primary) !important; color: white !important; opacity: 0.75; }
+.visibility-selector .p-button:focus                   { box-shadow: 0 0 0 2px var(--corporate-primary) !important; }
+
+.vis-copy-url-btn {
+  background-color: var(--corporate-primary);
+  color: #ffffff;
+  cursor: pointer;
+  width: fit-content;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  transition: opacity 0.15s;
+}
+
+.vis-copy-url-btn:hover {
+  opacity: 0.75;
+}

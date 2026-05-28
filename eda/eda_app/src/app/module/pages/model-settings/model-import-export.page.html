@@ -14,15 +14,15 @@
           <div class="grid w-full grid-cols-2 mb-6">
             <button (click)="setModelTab('export')"
               class="flex items-center justify-center px-3 py-2 font-semibold rounded-l-md transition-colors"
-              [class.bg-[#00BFB3]]="modelTab() === 'export'" [class.text-white]="modelTab() === 'export'"
-              [class.bg-gray-100]="modelTab() !== 'export'" [class.dark:bg-gray-800]="modelTab() !== 'export'">
+              [class.tab-active]="modelTab() === 'export'"
+              [class.tab-inactive]="modelTab() !== 'export'" [class.dark:bg-gray-800]="modelTab() !== 'export'">
               <eda-icon name="export" class="mr-2"></eda-icon>
               <span i18n="@@export"> Exportar</span>
             </button>
             <button (click)="setModelTab('import')"
               class="flex items-center justify-center px-3 py-2 font-semibold rounded-r-md transition-colors"
-              [class.bg-[#00BFB3]]="modelTab() === 'import'" [class.text-white]="modelTab() === 'import'"
-              [class.bg-gray-100]="modelTab() !== 'import'" [class.dark:bg-gray-800]="modelTab() !== 'import'">
+              [class.tab-active]="modelTab() === 'import'"
+              [class.tab-inactive]="modelTab() !== 'import'" [class.dark:bg-gray-800]="modelTab() !== 'import'">
               <eda-icon name="import" class="mr-2"></eda-icon>
               <span i18n="@@import"> Importar</span>
             </button>
@@ -34,13 +34,13 @@
               <h3 class="mb-4 text-sm font-medium" i18n="@@SelectModelToExport" >Selecciona un modelo para exportar</h3>
               <div class="flex gap-4 items-center">
                 <div class="relative flex-1">
-                  <p-dropdown [options]="dataSources" [autoDisplayFirst]="false" [style]="{'width':'100%'}" 
-                    i18n-placeholder="@@SelectModel"  placeholder="'Selecciona una fuente de datos'" 
+                  <p-dropdown [options]="dataSources" [autoDisplayFirst]="false" [style]="{'width':'100%'}"
+                    i18n-placeholder="@@SelectModel"  placeholder="'Selecciona una fuente de datos'"
                   [filter]="true" [ngModel]="selectedModel()" (ngModelChange)="setSelectedModel($event)">
                   </p-dropdown>
                 </div>
                 <button (click)="handleModelExport()"
-                  class="inline-flex items-center justify-center rounded-md font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-gray-800 dark:focus-visible:ring-[#00BFB3] bg-[#00BFB3] text-white hover:bg-[#00BFB3]/90 h-10 px-4 py-2"
+                  class="btn-corporate-primary inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2"
                   [disabled]="!selectedModel()">
                   <eda-icon name="export" class="mr-2"></eda-icon>
                   <span i18n="@@export"> Exportar</span>
@@ -57,15 +57,15 @@
               <div (dragenter)="handleDragIn($event, 'model')" (dragleave)="handleDragOut($event, 'model')"
                 (dragover)="handleDrag($event)" (drop)="handleDrop($event, 'model')"
                 class="relative mt-2 flex h-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors"
-                [class.border-[#00BFB3]]="isDraggingModel()" [class.bg-[#00BFB3]]="isDraggingModel()"
-                [class.border-gray-300]="!isDraggingModel()" [class.hover:border-[#00BFB3]]="!isDraggingModel()">
+                [class.dropzone-active]="isDraggingModel()"
+                [class.border-gray-300]="!isDraggingModel()" [class.dropzone-hover]="!isDraggingModel()">
                 <input type="file" accept=".json" (change)="handleFileSelect($event, 'model')"
                   class="absolute inset-0 z-50 h-full w-full cursor-pointer opacity-0" />
                 <div class="flex flex-col items-center justify-center text-sm">
                   @if (modelFileName()) {
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="mb-2 h-6 w-6 text-[#00BFB3]">
+                    class="mb-2 h-6 w-6 text-corporate-primary">
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
                   <p class="text-sm font-medium">{{ modelFileName() }}</p>
@@ -77,7 +77,7 @@
                     <polyline points="14 2 14 8 20 8"></polyline>
                   </svg>
                   <p class="mb-1 font-medium text-gray-600">
-                    <span class="text-[#00BFB3]" i18n="@@clickToUpload">Click para subir</span> 
+                    <span class="text-corporate-primary" i18n="@@clickToUpload">Click para subir</span>
                     <span i18n="@@dragDrop">o arrastra y suelta</span>
                   </p>
                   <p class="text-xs text-gray-500">JSON (max. 10MB)</p>
@@ -85,7 +85,7 @@
                 </div>
               </div>
               <button (click)="handleModelImport()"
-                class="mt-4 w-full inline-flex items-center justify-center rounded-md font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-gray-800 dark:focus-visible:ring-[#00BFB3] bg-[#00BFB3] text-white hover:bg-[#00BFB3]/90 h-10 px-4 py-2"
+                class="btn-corporate-primary mt-4 w-full inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2"
                 [disabled]="!modelFile()">
                 <eda-icon name="import" class="mr-2"></eda-icon>
                 <span i18n="@@import">Importar</span>
@@ -110,15 +110,15 @@
           <div class="grid w-full grid-cols-2 mb-6">
             <button (click)="setDashboardTab('export')"
               class="flex items-center justify-center px-3 py-2 font-semibold rounded-l-md transition-colors"
-              [class.bg-[#00BFB3]]="dashboardTab() === 'export'" [class.text-white]="dashboardTab() === 'export'"
-              [class.bg-gray-100]="dashboardTab() !== 'export'" [class.dark:bg-gray-800]="dashboardTab() !== 'export'">
+              [class.tab-active]="dashboardTab() === 'export'"
+              [class.tab-inactive]="dashboardTab() !== 'export'" [class.dark:bg-gray-800]="dashboardTab() !== 'export'">
               <eda-icon name="export" class="mr-2"></eda-icon>
                 <span i18n="@@export">Exportar</span>
             </button>
             <button (click)="setDashboardTab('import')"
-              class="flex items-center justify-center px-3 py-2 font-semibold rounded-r-md transition-colors"
-              [class.bg-[#00BFB3]]="dashboardTab() === 'import'" [class.text-white]="dashboardTab() === 'import'"
-              [class.bg-gray-100]="dashboardTab() !== 'import'" [class.dark:bg-gray-800]="dashboardTab() !== 'import'">
+              class="flex items-center justify-center px-3 py-2 font-semibold rounded-l-md transition-colors"
+              [class.tab-active]="dashboardTab() === 'import'"
+              [class.tab-inactive]="dashboardTab() !== 'import'" [class.dark:bg-gray-800]="dashboardTab() !== 'import'">
               <eda-icon name="import" class="mr-2"></eda-icon>
               <span i18n="@@import">Importar</span>
             </button>
@@ -131,12 +131,12 @@
               <div class="flex gap-4 items-center">
                 <div class="relative flex-1">
                   <p-dropdown [options]="dashboards" [autoDisplayFirst]="false" [style]="{'width':'100%'}"
-                    placeholder="'Selecciona un dashboard'" i18n-placeholder="@@SelectDashboard" [filter]="true" 
+                    placeholder="'Selecciona un dashboard'" i18n-placeholder="@@SelectDashboard" [filter]="true"
                     [ngModel]="selectedDashboard()" (ngModelChange)="setSelectedDashboard($event)">
                   </p-dropdown>
                 </div>
                 <button (click)="handleDashboardExport()"
-                  class="inline-flex items-center justify-center rounded-md font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-gray-800 dark:focus-visible:ring-[#00BFB3] bg-[#00BFB3] text-white hover:bg-[#00BFB3]/90 h-10 px-4 py-2"
+                  class="btn-corporate-primary inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2"
                   [disabled]="!selectedDashboard()">
                   <eda-icon name="export" class="mr-2"></eda-icon>
                   <span i18n="@@export"> Exportar</span>
@@ -153,16 +153,15 @@
               <div (dragenter)="handleDragIn($event, 'dashboard')" (dragleave)="handleDragOut($event, 'dashboard')"
                 (dragover)="handleDrag($event)" (drop)="handleDrop($event, 'dashboard')"
                 class="relative mt-2 flex h-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors"
-                [class.border-[#00BFB3]]="isDraggingDashboard()" [class.bg-[#00BFB3]]="isDraggingDashboard()"
-                [class.border-gray-300]="!isDraggingDashboard()"
-                [class.hover:border-[#00BFB3]]="!isDraggingDashboard()">
+                [class.dropzone-active]="isDraggingDashboard()"
+                [class.border-gray-300]="!isDraggingDashboard()" [class.dropzone-hover]="!isDraggingDashboard()">
                 <input type="file" accept=".json" (change)="handleFileSelect($event, 'dashboard')"
                   class="absolute inset-0 z-50 h-full w-full cursor-pointer opacity-0" />
                 <div class="flex flex-col items-center justify-center text-sm">
                   @if (dashboardFileName()) {
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="mb-2 h-6 w-6 text-[#00BFB3]">
+                    class="mb-2 h-6 w-6 text-corporate-primary">
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
                   <p class="text-sm font-medium">{{ dashboardFileName() }}</p>
@@ -174,15 +173,15 @@
                     <polyline points="14 2 14 8 20 8"></polyline>
                   </svg>
                   <p class="mb-1 font-medium text-gray-600">
-                    <span class="text-[#00BFB3]" i18n="@@clickToUpload">Click para subir</span>
-                    <span i18n="@@dragDrop">o arrastra y suelta</span>                  
+                    <span class="text-corporate-primary" i18n="@@clickToUpload">Click para subir</span>
+                    <span i18n="@@dragDrop">o arrastra y suelta</span>
                   </p>
                   <p class="text-xs text-gray-500">JSON (max. 10MB)</p>
                   }
                 </div>
               </div>
               <button (click)="handleDashboardImport()"
-                class="mt-4 w-full inline-flex items-center justify-center rounded-md font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-gray-800 dark:focus-visible:ring-[#00BFB3] bg-[#00BFB3] text-white hover:bg-[#00BFB3]/90 h-10 px-4 py-2"
+                class="btn-corporate-primary mt-4 w-full inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2"
                 [disabled]="!dashboardFile()">
                 <eda-icon name="import" class="mr-2"></eda-icon>
                 <span i18n="@@import">Importar</span>

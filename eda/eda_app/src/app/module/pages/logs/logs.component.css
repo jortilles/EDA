@@ -18,3 +18,7 @@
 .logs-text {
     font-weight: bold;
 }
+
+.btn-corporate-gradient       { background:  var(--corporate-primary); color: white; }
+.btn-corporate-gradient:hover { background: linear-gradient(to right, var(--corporate-primary), var(--corporate-primary-gradient));;
+ }

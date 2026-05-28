@@ -108,6 +108,10 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
         this.mapActualConfig
       );
 
+      const actualCenter = this.map.getCenter();
+      this.inject.coordinates = [actualCenter.lat, actualCenter.lng];
+      this.inject.zoom = this.map.getZoom();
+
       this.map.on("moveend", (event) => {
         let c = this.map.getCenter();
         this.inject.coordinates = [c.lat, c.lng];
