@@ -117,8 +117,8 @@ export class PromptComponent implements OnInit, AfterViewInit {
             })
         })
 
-        console.log('this.edaBlankPanel: ', this.edaBlankPanel)
-        console.log('schema: ', schema)
+        // console.log('this.edaBlankPanel: ', this.edaBlankPanel)
+        // console.log('schema: ', schema)
 
         this.schema = schema;
     }
