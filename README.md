@@ -24,7 +24,7 @@ If you want to try edalitics you always can check the [free.edalitics](https://f
 * Advanced SQL query mode for power users.
 * Tree mode to explore logical data models.
 * KPI definitions and automatic e-mail alerts.
-* Public dashboards shareable via  [url](https://demoeda.jortilles.com/es/#/public/61a0f5fdb9314109a45ff077).
+* Public dashboards shareable via  [url](https://demo.edalitics.com/es/#/dashboard/61a0f5fdb9314109a45ff077).
 * Row Level Security (RLS) for controlled data access.
 * Clean, modern, responsive UI.
 
@@ -40,7 +40,7 @@ Edalitics is built using modern and widely adopted technologies:
 
 # Installation & Local Development
 
-You can use Edalicits as a SAS service at https://www.edaitics.com. 
+You can use Edalicits as a SAS service at https://www.edalitics.com/. 
 
 Or you can deploy a local instance of edalitics in your environment.  To do this you should: 
 
