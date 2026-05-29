@@ -19,6 +19,29 @@ export class MapUtilsService extends ApiService {
   public layerGroup = L.layerGroup([]);
   private labelGroup = L.layerGroup([]);
   private isSmallestValue: boolean;
+  private tooltipEl: HTMLElement | null = null;
+
+  private getTooltipEl(): HTMLElement {
+    if (!this.tooltipEl || !document.body.contains(this.tooltipEl)) {
+      this.tooltipEl = document.createElement('div');
+      this.tooltipEl.style.cssText = [
+        'position:fixed',
+        'z-index:9999',
+        'background:#fff',
+        'border:1px solid #ccc',
+        'border-radius:4px',
+        'padding:6px 10px',
+        'font-size:13px',
+        'line-height:1.5',
+        'box-shadow:0 2px 8px rgba(0,0,0,0.2)',
+        'max-width:280px',
+        'word-break:break-word',
+        'display:none',
+      ].join(';');
+      document.body.appendChild(this.tooltipEl);
+    }
+    return this.tooltipEl;
+  }
 
   constructor(protected http: HttpClient, private _sanitizer: DomSanitizer) {
     super(http);
@@ -146,27 +169,33 @@ export class MapUtilsService extends ApiService {
           [lon, lat] as LatLngExpression,
           properties
         );
-        circle.bindPopup(this.makePopup(d, labels), {
-          className: "custom",
-          autoPan: false,
-        });
+        const popupContent = this.makePopup(d, labels);
+        const tooltip = this.getTooltipEl();
         let closeTimeout: any;
-        circle.on("mouseover", function () {
+        circle.on("mouseover", () => {
           clearTimeout(closeTimeout);
-          this.openPopup();
+          tooltip.innerHTML = popupContent;
+          tooltip.style.visibility = 'hidden';
+          tooltip.style.display = 'block';
+          const mapRect = map.getContainer().getBoundingClientRect();
+          const pt = map.latLngToContainerPoint([lon, lat] as LatLngExpression);
+          const tw = tooltip.offsetWidth;
+          const th = tooltip.offsetHeight;
+          const GAP = 12;
+          let x = mapRect.left + pt.x + GAP;
+          let y = mapRect.top  + pt.y - th / 2;
+          if (x + tw > window.innerWidth  - 5) x = mapRect.left + pt.x - tw - GAP;
+          if (x < 5)                           x = 5;
+          if (y < 5)                           y = 5;
+          if (y + th > window.innerHeight - 5) y = window.innerHeight - th - 5;
+          tooltip.style.left = x + 'px';
+          tooltip.style.top  = y + 'px';
+          tooltip.style.visibility = '';
+          tooltip.onmouseenter = () => clearTimeout(closeTimeout);
+          tooltip.onmouseleave = () => { closeTimeout = setTimeout(() => { tooltip.style.display = 'none'; }, 100); };
         });
-        circle.on("mouseout", function () {
-          const self = this;
-          closeTimeout = setTimeout(() => self.closePopup(), 300);
-        });
-        circle.on("popupopen", function (e) {
-          const container = e.popup.getElement();
-          if (container) {
-            container.addEventListener("mouseenter", () => clearTimeout(closeTimeout));
-            container.addEventListener("mouseleave", () => {
-              closeTimeout = setTimeout(() => e.popup.close(), 100);
-            });
-          }
+        circle.on("mouseout", () => {
+          closeTimeout = setTimeout(() => { tooltip.style.display = 'none'; }, 300);
         });
         circle.on("click", () => {
           this.linkDashboard(d[2], linkedDashboardProps);
