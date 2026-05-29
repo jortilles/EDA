@@ -40,7 +40,7 @@ Edalitics is built using modern and widely adopted technologies:
 
 # Installation & Local Development
 
-You can use Edalicits as a SAS service at https://www.edaitics.com. 
+You can use Edalicits as a SAS service at https://www.edalitics.com. 
 
 Or you can deploy a local instance of edalitics in your environment.  To do this you should: 
 
