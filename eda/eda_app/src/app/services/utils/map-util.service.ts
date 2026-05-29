@@ -150,11 +150,23 @@ export class MapUtilsService extends ApiService {
           className: "custom",
           autoPan: false,
         });
-        circle.on("mouseover", function (e) {
+        let closeTimeout: any;
+        circle.on("mouseover", function () {
+          clearTimeout(closeTimeout);
           this.openPopup();
         });
-        circle.on("mouseout", function (e) {
-          this.closePopup();
+        circle.on("mouseout", function () {
+          const self = this;
+          closeTimeout = setTimeout(() => self.closePopup(), 300);
+        });
+        circle.on("popupopen", function (e) {
+          const container = e.popup.getElement();
+          if (container) {
+            container.addEventListener("mouseenter", () => clearTimeout(closeTimeout));
+            container.addEventListener("mouseleave", () => {
+              closeTimeout = setTimeout(() => e.popup.close(), 100);
+            });
+          }
         });
         circle.on("click", () => {
           this.linkDashboard(d[2], linkedDashboardProps);
