@@ -78,7 +78,7 @@ export class AddCsvComponent implements OnInit {
     this.editFieldsHeaders = [$localize`:@@csvField:Campo`, $localize`:@@type:Tipo`, $localize`:@@dateFormatH4:Formato`, $localize`:@@csvSep:Separador Decimal`];
 
     this.dataFormats = [
-      { label: '', value: '' },
+      { label: 'Sin formato', value: '' },
       { label: '#,###.##', value: '.' },
       { label: '#.###,##', value: ',' },
       { label: 'DD-MM-YYYY', value: 'DD-MM-YYYY' },

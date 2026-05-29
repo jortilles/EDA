@@ -1,0 +1,36 @@
+.kpi-mail-input:focus,
+.kpi-mail-textarea:focus {
+  outline: none;
+  border-color: var(--corporate-primary);
+  box-shadow: 0 0 0 2px rgba(var(--corporate-primary-rgb), 0.15);
+}
+
+.kpi-mail-radio {
+  accent-color: var(--corporate-primary);
+}
+
+.kpi-mail-user-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background-color: var(--corporate-primary);
+  flex-shrink: 0;
+}
+
+:host ::ng-deep .p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
+  background: var(--corporate-primary);
+}
+
+:host ::ng-deep .p-multiselect:not(.p-disabled):hover {
+  border-color: var(--corporate-primary);
+}
+
+:host ::ng-deep .p-multiselect:not(.p-disabled).p-focus {
+  border-color: var(--corporate-primary);
+  box-shadow: 0 0 0 2px rgba(var(--corporate-primary-rgb), 0.15);
+}
+
+:host ::ng-deep .p-calendar .p-inputtext:focus {
+  border-color: var(--corporate-primary);
+  box-shadow: 0 0 0 2px rgba(var(--corporate-primary-rgb), 0.15);
+}

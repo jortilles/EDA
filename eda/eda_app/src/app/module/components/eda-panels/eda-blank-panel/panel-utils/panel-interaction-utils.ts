@@ -237,8 +237,15 @@ export const PanelInteractionUtils = {
       ebp.globalFilters = clonedFilters.filter(f => f.isGlobal === true);
       ebp.selectedFilters = clonedFilters.filter(f => f.isGlobal === false);
 
-      // Añadir los filtros de navegación a selectedFilters si no están ya incluidos
+      // Add active nav filters (regular and date nav) to selectedFilters
       for (const entry of (ebp.navState || [])) {
+          for (const navFilter of (entry.navFilters || [])) {
+              if (!ebp.selectedFilters.find((f: any) => f.filter_id === navFilter.filter_id)) {
+                  ebp.selectedFilters.push(navFilter);
+              }
+          }
+      }
+      for (const entry of (ebp.dateNavState || [])) {
           for (const navFilter of (entry.navFilters || [])) {
               if (!ebp.selectedFilters.find((f: any) => f.filter_id === navFilter.filter_id)) {
                   ebp.selectedFilters.push(navFilter);
@@ -313,6 +320,7 @@ export const PanelInteractionUtils = {
             
             if (column) {
                 column.format = contentColumn.hasOwnProperty("format")?contentColumn.format:null ; // Agregando el Formato
+                column.dateNav = contentColumn.dateNav || false;
                 column.whatif_column = contentColumn.whatif_column || false;
                 column.whatif = contentColumn.whatif || {};
                 column.joins = contentColumn.joins || [];
@@ -347,6 +355,7 @@ export const PanelInteractionUtils = {
                         duplicatedColumn.whatif_column = contentColumn.whatif_column || false;
                         duplicatedColumn.whatif = contentColumn.whatif || {};
                         duplicatedColumn.format = contentColumn.hasOwnProperty("format")?contentColumn.format:null ; // Agregando el Formato
+                        duplicatedColumn.dateNav = contentColumn.dateNav || false;
                         PanelInteractionUtils.handleAggregationType4DuplicatedColumns(ebp, duplicatedColumn);
                         // Moc la columna directament perque es una duplicada.... o no....
 
@@ -384,6 +393,72 @@ export const PanelInteractionUtils = {
         );
         return (aIdx === -1 ? Infinity : aIdx) - (bIdx === -1 ? Infinity : bIdx);
     });
+
+    // Backward compat: panels saved before dateNav was added to normalQuery have
+    // dateNav: undefined in their fields. If savedDateNavState has entries, restore
+    // dateNav = true on the matching currentQuery columns so that nav buttons and the
+    // column-dialog switch show correctly without requiring a manual re-save.
+    const savedDateNavState = panelContent.savedDateNavState || [];
+    for (const entry of savedDateNavState) {
+        const col = ebp.currentQuery.find((c: any) =>
+            `${c.table_id}.${c.column_name}` === entry.columnKey
+        );
+        if (col) col.dateNav = true;
+    }
+
+    // Restore nav-children and downChild links saved in fullCurrentQuery.
+    // handleCurrentQuery only processes query.query.fields (effective fields, no nav-children),
+    // so nav-children were never re-added to currentQuery on reload. fullCurrentQuery captures
+    // the full set including nav-children and their downChild references.
+    const fullCurrentQuery = panelContent.fullCurrentQuery;
+    if (fullCurrentQuery && Array.isArray(fullCurrentQuery)) {
+        for (const savedCol of fullCurrentQuery) {
+            const alreadyInQuery = ebp.currentQuery.find((c: any) =>
+                c.table_id === savedCol.table_id && c.column_name === savedCol.column_name
+            );
+            // Restore downChild link on columns already present in currentQuery
+            if (alreadyInQuery && savedCol.downChild) {
+                alreadyInQuery.downChild = savedCol.downChild;
+            }
+            // Add nav-children that are missing from currentQuery
+            if (!alreadyInQuery) {
+                let navChild = ebp.columns.find((c: any) =>
+                    c.table_id === savedCol.table_id && c.column_name === savedCol.column_name
+                );
+                if (!navChild) {
+                    // Try loading columns from the child's table if not already loaded
+                    const childTable = ebp.tables.find((t: any) => t.table_name === savedCol.table_id);
+                    if (childTable) {
+                        PanelInteractionUtils.loadColumns(ebp, childTable);
+                        navChild = ebp.columns.find((c: any) =>
+                            c.table_id === savedCol.table_id && c.column_name === savedCol.column_name
+                        );
+                    }
+                }
+                if (navChild) {
+                    navChild = _.cloneDeep(navChild);
+                    navChild.format = savedCol.hasOwnProperty('format') ? savedCol.format : null;
+                    navChild.dateNav = savedCol.dateNav || false;
+                    navChild.whatif_column = savedCol.whatif_column || false;
+                    navChild.whatif = savedCol.whatif || {};
+                    navChild.joins = savedCol.joins || [];
+                    navChild.ranges = savedCol.ranges || [];
+                    if (savedCol.downChild) navChild.downChild = savedCol.downChild;
+                    ebp.currentQuery.push(navChild);
+                }
+            }
+        }
+        // Restore order from fullCurrentQuery
+        ebp.currentQuery.sort((a: any, b: any) => {
+            const aIdx = fullCurrentQuery.findIndex((f: any) =>
+                f.table_id === a.table_id && f.column_name === a.column_name
+            );
+            const bIdx = fullCurrentQuery.findIndex((f: any) =>
+                f.table_id === b.table_id && f.column_name === b.column_name
+            );
+            return (aIdx === -1 ? Infinity : aIdx) - (bIdx === -1 ? Infinity : bIdx);
+        });
+    }
   },
 
   handleCurrentQuery2: (ebp: EdaBlankPanelComponent): void => {

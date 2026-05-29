@@ -9,6 +9,7 @@ import { lastValueFrom } from 'rxjs';
 import { IGroup } from '@eda/services/service.index';
 import * as _ from 'lodash';
 import Swal from 'sweetalert2';
+import { DropdownModule } from 'primeng/dropdown';
 import { PickListModule } from "primeng/picklist";
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 
@@ -25,11 +26,18 @@ type Group = {
   selector: 'app-group-list',
   templateUrl: './group-list.page.html',
   standalone: true,
-  imports: [SharedModule, CommonModule, FormsModule, IconComponent, PickListModule, EdaDialog2Component],
+  imports: [SharedModule, CommonModule, FormsModule, IconComponent, DropdownModule, PickListModule, EdaDialog2Component],
+  styleUrls: ['./group-list.page.css']
 })
 export class GroupListPage implements OnInit {
   private groupService = inject(GroupService);
   private userService = inject(UserService);
+
+  readonly PROTECTED_GROUP_IDS = new Set([
+    '135792467811111111111110',
+    '135792467811111111111113',
+    '135792467811111111111115',
+  ]);
 
   groups: any[] = [];
 
@@ -42,6 +50,7 @@ export class GroupListPage implements OnInit {
 
   currentPage: number = 1;
   itemsPerPage: number = 10;
+  readonly pageSizeOptions = [5, 10, 25, 50, 100];
 
   public addGroupTitle = $localize`:@@newGroup:Crear Nuevo Grupo`;
   public updateGroupTitle = $localize`:@@editGroup:Editar Grupo`;
@@ -149,8 +158,6 @@ handleEditGroup(group: Group) {
         text: `${title} `,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
         confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`
     }).then(deleted => {
       if (deleted.value === true) { 

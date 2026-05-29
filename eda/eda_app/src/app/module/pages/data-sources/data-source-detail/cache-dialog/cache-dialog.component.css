@@ -1,0 +1,28 @@
+.cache-input:focus {
+  outline: none;
+  border-color: var(--corporate-primary);
+  box-shadow: 0 0 0 2px rgba(var(--corporate-primary-rgb), 0.2);
+}
+
+.cache-radio {
+  accent-color: var(--corporate-primary);
+}
+
+.cache-toggle-input:focus ~ .cache-toggle-track {
+  box-shadow: 0 0 0 4px rgba(var(--corporate-primary-rgb), 0.2);
+}
+
+.cache-toggle-input:checked ~ .cache-toggle-track {
+  background-color: var(--corporate-primary);
+}
+
+.cache-delete-btn:not(:disabled):hover {
+  background-color: rgba(var(--corporate-primary-rgb), 0.08);
+  color: var(--corporate-primary);
+  border-color: var(--corporate-primary);
+}
+
+.cache-delete-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(var(--corporate-primary-rgb), 0.2);
+}

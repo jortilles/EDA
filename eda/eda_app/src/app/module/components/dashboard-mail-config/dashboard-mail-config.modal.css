@@ -1,0 +1,34 @@
+.mail-input:focus,
+.mail-textarea:focus {
+  outline: none;
+  border-color: var(--corporate-primary);
+  box-shadow: 0 0 0 2px rgba(var(--corporate-primary-rgb), 0.15);
+}
+
+.mail-radio {
+  accent-color: var(--corporate-primary);
+}
+
+:host ::ng-deep .p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
+  background: var(--corporate-primary);
+}
+
+:host ::ng-deep .p-inputswitch.p-inputswitch-checked:not(.p-disabled):hover .p-inputswitch-slider {
+  background: var(--corporate-primary);
+  opacity: 0.88;
+}
+
+:host ::ng-deep .p-multiselect:not(.p-disabled):hover {
+  border-color: var(--corporate-primary);
+}
+
+:host ::ng-deep .p-multiselect:not(.p-disabled).p-focus {
+  border-color: var(--corporate-primary);
+  box-shadow: 0 0 0 2px rgba(var(--corporate-primary-rgb), 0.15);
+}
+
+:host ::ng-deep .p-calendar .p-inputtext:focus {
+  outline: none;
+  border-color: var(--corporate-primary);
+  box-shadow: 0 0 0 2px rgba(var(--corporate-primary-rgb), 0.15);
+}

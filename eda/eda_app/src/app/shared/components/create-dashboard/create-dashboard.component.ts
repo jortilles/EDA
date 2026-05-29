@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, inject, OnInit, Output, ViewEncapsulation } from "@angular/core";
 import { FormBuilder, FormsModule, ReactiveFormsModule, UntypedFormGroup, Validators } from "@angular/forms";
 import { AlertService, DashboardService, GroupService, IGroup, SidebarService, StyleProviderService } from "@eda/services/service.index";
 import { SelectItem } from "primeng/api";
@@ -17,6 +17,8 @@ import { DataSourceNamesService } from "@eda/services/shared/datasource-names.se
     selector: 'app-create-dashboard',
     templateUrl: './create-dashboard.component.html',
     imports: [SharedModule, ReactiveFormsModule, FormsModule, DropdownModule, ButtonModule, SelectButtonModule, MultiSelectModule, EdaDialog2Component],
+    styleUrls: ['./create-dashboard.component.css'],
+    encapsulation: ViewEncapsulation.None
 })
 export class CreateDashboardComponent implements OnInit {
     private createDashboardService = inject(CreateDashboardService);
@@ -58,7 +60,7 @@ export class CreateDashboardComponent implements OnInit {
 
         this.visibleTypes = [
             { label: $localize`:@@publicPanel:Publico`, value: 'open', icon: 'fa fa-fw fa-globe' },
-            { label: $localize`:@@commonPanel:Común`, value: 'common', icon: 'fa fa-fw fa-globe' },
+            { label: $localize`:@@commonPanel:Común`, value: 'common', icon: 'fa fa-fw fa-building' },
             { label: $localize`:@@group:Grupo`, value: 'group', icon: 'fa fa-fw fa-users' },
             { label: $localize`:@@privatePanel:Privado`, value: 'private', icon: 'fa fa-fw fa-lock' },
         ];
@@ -94,12 +96,11 @@ export class CreateDashboardComponent implements OnInit {
 
         if (this.showGroups) {
             groupControl.setValidators(Validators.required);
-        }
-
-        if (!this.showGroups) {
+        } else {
             groupControl.setValidators(null);
             groupControl.setValue(null);
         }
+        groupControl.updateValueAndValidity();
 
     }
 

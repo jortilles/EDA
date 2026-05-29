@@ -36,7 +36,7 @@
             [attr.aria-checked]="!permission"
             (click)="permission = !permission"
             class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50" 
-            [ngClass]="{'bg-[#00BFB3]': permission, 'bg-input': !permission}"
+            [ngClass]="{'bg-[var(--corporate-primary)]': permission, 'bg-input': !permission}"
           >
             <span 
               class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform" 
@@ -58,13 +58,13 @@
         <div class="p-3 space-y-4">
           <!-- User Permissions Radio -->
           <div
-            class="flex items-center space-x-3 p-3 rounded-lg border bg-white border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer"
+            class="perm-row flex items-center space-x-3 p-3 rounded-lg border bg-white border-gray-200 transition-colors cursor-pointer"
             (click)="setPermissionType('users')">
             <input type="radio" id="user-permissions" name="permissionType" value="users"
               [checked]="type === 'users'"
-              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
+              class="perm-radio w-4 h-4 bg-gray-100 border-gray-300">
             <label for="user-permissions" class="flex items-center gap-2 cursor-pointer flex-1">
-              <svg class="h-4 w-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="h-4 w-4 text-[var(--corporate-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
               </svg>
@@ -77,13 +77,13 @@
 
           <!-- Group Permissions Radio -->
           <div
-            class="flex items-center space-x-3 p-3 rounded-lg border bg-white border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer"
+            class="perm-row flex items-center space-x-3 p-3 rounded-lg border bg-white border-gray-200 transition-colors cursor-pointer"
             (click)="setPermissionType('groups')">
             <input type="radio" id="group-permissions" name="permissionType" value="groups"
               [checked]="type === 'groups'"
-              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
+              class="perm-radio w-4 h-4 bg-gray-100 border-gray-300">
             <label for="group-permissions" class="flex items-center gap-2 cursor-pointer flex-1">
-              <svg class="h-4 w-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="h-4 w-4 text-[var(--corporate-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
                 </path>

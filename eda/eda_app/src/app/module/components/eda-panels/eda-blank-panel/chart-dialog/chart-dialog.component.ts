@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { ColorPickerModule } from 'primeng/colorpicker';
+import { DropdownModule } from 'primeng/dropdown';
 import { TabViewModule } from 'primeng/tabview';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { PredictionDialogComponent, PredictionConfig, QueryColumn } from '../prediction-dialog/prediction-dialog.component';
@@ -22,7 +23,7 @@ import Swal from 'sweetalert2';
     selector: 'app-chart-dialog',
     templateUrl: './chart-dialog.component.html',
     styleUrls: ['./chart-dialog.component.css'],
-    imports: [CommonModule, FormsModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule, PredictionDialogComponent, TabViewModule, InputNumberModule]
+    imports: [CommonModule, FormsModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule, PredictionDialogComponent, TabViewModule, InputNumberModule, DropdownModule]
 })
 
 export class ChartDialogComponent {
@@ -491,8 +492,6 @@ export class ChartDialogComponent {
                 text: $localize`:@@RemovePredictionText:Se quitará la predicción y se ejecutará la consulta del gráfico.`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
                 confirmButtonText: $localize`:@@RemovePredictionYes:Sí, quitar`,
                 cancelButtonText: $localize`:@@RemovePredictionNo:No, mantener`,
                 didOpen: () => {

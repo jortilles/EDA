@@ -67,7 +67,7 @@ interface DashboardDetailResponse {
   standalone: true,
   templateUrl: 'email-settings.page.html',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
-  styles: []
+  styleUrls: ['./email-settings.page.css']
 })
 export class EmailSettingsPage implements OnInit {
 

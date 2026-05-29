@@ -30,13 +30,13 @@
                         <td class="p-3"><input class="text-gray-200" [(ngModel)]="url.name"></td>
                         <td class="p-3"><input class="text-gray-200" [(ngModel)]="url.description"></td>
                         <td class="p-3 text-right">
-                          <button class="rounded-md p-2 cursor-pointer hover:bg-muted"  (click)="onRowEditSave({url: url.url, name: url.name, description: url.description} , index)">
+                          <button class="custom-action-icon-btn rounded-md p-2 cursor-pointer"  (click)="onRowEditSave({url: url.url, name: url.name, description: url.description} , index)">
                             <eda-icon name="check"></eda-icon>
                           </button>
-                          <button class="rounded-md p-2 cursor-pointer hover:bg-muted"  (click)="onRowEditCancel(url, index)">
+                          <button class="custom-action-icon-btn rounded-md p-2 cursor-pointer"  (click)="onRowEditCancel(url, index)">
                             <eda-icon name="restart"></eda-icon>
                           </button>
-                          <button class="rounded-md p-2 cursor-pointer hover:bg-muted"  (click)="onRowEditDelete(index)">
+                          <button class="custom-action-icon-btn rounded-md p-2 cursor-pointer"  (click)="onRowEditDelete(index)">
                             <eda-icon name="bin"></eda-icon>
                           </button>       
                         </td>               
@@ -45,7 +45,7 @@
                       <td class="p-3">{{ url.name }}</td>
                       <td class="p-3">{{ url.description }}</td>
                       <td class="p-3 text-right">
-                        <button class="rounded-md p-2 cursor-pointer hover:bg-muted"  (click)="onRowEditInit(url, index,urls)">
+                        <button class="custom-action-icon-btn rounded-md p-2 cursor-pointer"  (click)="onRowEditInit(url, index,urls)">
                           <eda-icon name="pencil"></eda-icon>
                         </button>
                       </td>
@@ -65,22 +65,22 @@
             <!-- Configuración lateral -->
             <div class="w-full">
               <label i18n="@@urlString" class="block mb-1">URL:</label>
-              <input type="text" [(ngModel)]="urlAdd" class="w-full border px-2 py-2.5 rounded">
+              <input type="text" [(ngModel)]="urlAdd" class="custom-action-input w-full border px-2 py-2.5 rounded">
             </div>
       
             <div class="w-full">
               <label i18n="@@urlName" class="block mb-1">Nombre:</label>
-              <input type="text" [(ngModel)]="nameAdd" class="w-full border px-2 py-2.5 rounded">
+              <input type="text" [(ngModel)]="nameAdd" class="custom-action-input w-full border px-2 py-2.5 rounded">
             </div>
       
             <div class="w-full">
               <label i18n="@@urlDescription" class="block mb-1">Descripción:</label>
-              <input type="text" [(ngModel)]="descriptionAdd" class="w-full border px-2 py-2.5 rounded">
+              <input type="text" [(ngModel)]="descriptionAdd" class="custom-action-input w-full border px-2 py-2.5 rounded">
             </div>
       
             <div>
               <button type="button" i18n="@@textLabelUrl"
-                class="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                class="custom-action-add-btn"
                 (click)="addUrlDashboard(urlAdd, nameAdd, descriptionAdd)">
                 Agregar url
               </button>

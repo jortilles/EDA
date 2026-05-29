@@ -647,8 +647,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             text: $localize`:@@deleteCalculatedColumn:Si, Eliminar el campo calculado!`,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
             confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
             cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
         }).then(async (borrado) => {
@@ -978,8 +976,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             text: $localize`:@@viewEditionDescription:La edición de la vista permite modificar únicamente la consulta (query), pero no debe cambiar los nombres de las columnas.`,
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
             confirmButtonText: $localize`:@@ContinueTablaQuality:Continuar`,
             cancelButtonText: $localize`:@@cancelarBtn:Cancelar`,
         }).then( (borrado) => {

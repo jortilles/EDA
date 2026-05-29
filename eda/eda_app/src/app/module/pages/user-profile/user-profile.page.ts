@@ -15,6 +15,7 @@ import Swal from 'sweetalert2';
     SharedModule,
   ],
   templateUrl: "./user-profile.page.html",
+  styleUrls: ["./user-profile.page.css"]
 })
 export class UserProfilePage {
   public selectedImage = $localize`:@@selectedImage:Imagen seleccionada`;

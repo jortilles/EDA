@@ -2905,6 +2905,26 @@
     <target> Panneaux non filtrés </target>
   </trans-unit>
 
+  <trans-unit id="tooltipApplyToAll">
+    <source>Si está activado, el filtro se aplica a todos los paneles del informe.</source>
+    <target>Si activé, le filtre s'applique à tous les panneaux du rapport.</target>
+  </trans-unit>
+
+  <trans-unit id="tooltipAutocomplete">
+    <source>Si está activado, los valores se buscan dinámicamente mediante autocompletado.</source>
+    <target>Si activé, les valeurs sont recherchées dynamiquement via la saisie automatique.</target>
+  </trans-unit>
+
+  <trans-unit id="tooltipMandatory">
+    <source>Si está activado, el filtro debe tener un valor seleccionado para poder visualizar el informe.</source>
+    <target>Si activé, le filtre doit avoir une valeur sélectionnée pour afficher le rapport.</target>
+  </trans-unit>
+
+  <trans-unit id="tooltipVisibility">
+    <source>Público: todos pueden usarlo. Deshabilitado: otros usuarios pueden ver el filtro pero no modificarlo. Oculto: no visible para otros pero se aplica igualmente.</source>
+    <target>Public: tout le monde peut l'utiliser. Désactivé: les autres utilisateurs peuvent voir le filtre mais pas le modifier. Masqué: non visible pour les autres mais appliqué quand même.</target>
+  </trans-unit>
+
   <trans-unit id="seconds_to_refresh">
     <source> Intervalo de recarga </source>
     <target> Intervalle de recharge </target>
@@ -5716,6 +5736,56 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <target>Il est uniquement possible d'utiliser les filtres définis dans le tableau de bord actuel.</target>
       </trans-unit>
 
+      <trans-unit id="uniqueRecords1">
+        <source>La opción <ph id="0"/>Registros únicos<ph id="1"/> aplica un <ph id="2"/>GROUP BY<ph id="3"/> sobre todos los atributos de la consulta. Úsala cuando quieras eliminar duplicados y agrupar los resultados por la combinación de todos los campos seleccionados.</source>
+        <target>L'option <ph id="0"/>Enregistrements uniques<ph id="1"/> applique un <ph id="2"/>GROUP BY<ph id="3"/> à tous les attributs de la requête. Utilisez-la lorsque vous souhaitez éliminer les doublons et regrouper les résultats selon la combinaison de tous les champs sélectionnés.</target>
+      </trans-unit>
+
+      <trans-unit id="uniqueRecords3">
+        <source>Al activarla, las métricas numéricas se agrupan junto al resto de atributos, lo que puede alterar el resultado esperado si ya existen agregaciones definidas.</source>
+        <target>Lorsqu'elle est activée, les métriques numériques sont regroupées avec le reste des attributs, ce qui peut modifier le résultat attendu si des agrégations sont déjà définies.</target>
+      </trans-unit>
+
+      <trans-unit id="dynamicFilters1">
+        <source>Al hacer clic en otros paneles del dashboard se crean <ph id="0"/>filtros dinámicos<ph id="1"/> que afectan al resto de paneles. Activar esta opción hace que este panel <ph id="2"/>ignore<ph id="3"/> esos filtros dinámicos y siempre muestre sus datos completos, independientemente de las selecciones del usuario en otros paneles.</source>
+        <target>Cliquer sur d'autres panneaux du tableau de bord crée des <ph id="0"/>filtres dynamiques<ph id="1"/> qui affectent les autres panneaux. Activer cette option fait que ce panneau <ph id="2"/>ignore<ph id="3"/> ces filtres dynamiques et affiche toujours ses données complètes, indépendamment des sélections de l'utilisateur sur les autres panneaux.</target>
+      </trans-unit>
+
+      <trans-unit id="dynamicFilters3">
+        <source>Los filtros de panel y globales definidos manualmente sí se siguen aplicando con normalidad.</source>
+        <target>Les filtres de panneau et globaux définis manuellement continuent de s'appliquer normalement.</target>
+      </trans-unit>
+
+      <trans-unit id="dynamicFilters4">
+        <source>Esta opción no afecta a los filtros creados desde el selector de filtros del dashboard.</source>
+        <target>Cette option n'affecte pas les filtres créés depuis le sélecteur de filtres du tableau de bord.</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipJoinType">
+        <source>Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN</source>
+        <target>Définit comment les tables sont jointes : LEFT, INNER ou RIGHT JOIN</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipScenarios">
+        <source>Crea atributos derivados aplicando operaciones matemáticas</source>
+        <target>Crée des attributs dérivés en appliquant des opérations mathématiques</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipAdvancedFilters">
+        <source>Combina los filtros del panel con operadores AND u OR</source>
+        <target>Combine les filtres du panneau avec des opérateurs AND ou OR</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipUniqueRecords">
+        <source>Aplica GROUP BY a todos los campos para eliminar duplicados</source>
+        <target>Applique un GROUP BY à tous les champs pour éliminer les doublons</target>
+      </trans-unit>
+
+      <trans-unit id="tooltipDynamicFilters">
+        <source>Actívalo para que este panel ignore los filtros dinámicos de otros paneles</source>
+        <target>Activez-le pour que ce panneau ignore les filtres dynamiques des autres panneaux</target>
+      </trans-unit>
+
       <trans-unit id="dashboardSidebarDependentFilters">
         <source>Filtros dependientes</source>
         <target>Filtres dépendants</target>
@@ -6386,6 +6456,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Pregunta en lenguaje natural: </source>
         <target>Posez votre question en langage naturel : </target>
       </trans-unit>
+      <trans-unit id="assistantSubtitle">
+        <source>Construye tu consulta en lenguaje natural</source>
+        <target>Construisez votre requête en langage naturel</target>
+      </trans-unit>
       <trans-unit id="AIManagement" datatype="html">
         <source>Gestión del asistente</source>
         <target>Gestion de l'assistant</target>
@@ -6653,6 +6727,38 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="noParentText" datatype="html">
         <source>Sin padre</source>
         <target>Sans parent</target>
+      </trans-unit>
+      <trans-unit id="noDataAvailable" datatype="html">
+        <source>Sin datos disponibles</source>
+        <target>Aucune donnée disponible</target>
+      </trans-unit>
+      <trans-unit id="noDataChatMessage" datatype="html">
+        <source>Para utilizar este chat necesitas tener un panel con datos seleccionado.</source>
+        <target>Pour utiliser ce chat, vous devez avoir un panneau avec des données sélectionné.</target>
+      </trans-unit>
+      <trans-unit id="copyToClipboard" datatype="html">
+        <source>Copiar</source>
+        <target>Copier</target>
+      </trans-unit>
+      <trans-unit id="ctrlEnterToSend" datatype="html">
+        <source>Ctrl+Enter para enviar</source>
+        <target>Ctrl+Entrée pour envoyer</target>
+      </trans-unit>
+      <trans-unit id="askEdaliticsPrefix" datatype="html">
+        <source>Pregúntale a </source>
+        <target>Demandez à </target>
+      </trans-unit>
+      <trans-unit id="askEdaliticsSubtitle" datatype="html">
+        <source>Análisis de datos con IA</source>
+        <target>Analyse de données par IA</target>
+      </trans-unit>
+      <trans-unit id="volver" datatype="html">
+        <source>Volver</source>
+        <target>Retour</target>
+      </trans-unit>
+      <trans-unit id="navegar" datatype="html">
+        <source>Navegar</source>
+        <target>Parcourir</target>
       </trans-unit>
     </body>
   </file>

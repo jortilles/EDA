@@ -12,8 +12,11 @@ import { ActiveDirectoryService } from '../../../services/active-directory/activ
 import { GroupActiveDirectoryModel } from 'services/active-directory/model/group-active-directory.model'
 import { groupCollapsed } from 'console'
 
-
-
+const PROTECTED_GROUP_IDS = new Set([
+  '135792467811111111111110', // EDA_ADMIN_ROLE
+  '135792467811111111111113', // EDA_RO
+  '135792467811111111111115', // EDA_DATASOURCE_CREATOR
+]);
 
 export class GroupController {
 
@@ -215,6 +218,10 @@ export class GroupController {
 
   static async deleteGroup(req: Request, res: Response, next: NextFunction) {
   try {
+    if (PROTECTED_GROUP_IDS.has(req.params.id)) {
+      return next(new HttpException(403, 'This group is protected and cannot be deleted'));
+    }
+
     // Quitar el grupo de los dashboards
     await Dashboard.updateOne({}, { $pull: { group: req.params.id } });
 

@@ -7,6 +7,7 @@ import { EdaChart } from '@eda/components/eda-chart/eda-chart';
 import { StyleProviderService } from '@eda/services/service.index';
 import { DynamicTextConfig } from '../panel-charts/chart-configuration-models/dynamicText-config';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { EdaDialog2Component } from '@eda/shared/components/shared-components.index';
 import { ColorPickerModule } from 'primeng/colorpicker';
 
@@ -15,7 +16,7 @@ import { ColorPickerModule } from 'primeng/colorpicker';
   selector: 'app-dynamicText-dialog',
   templateUrl: './dynamicText-dialog.component.html',
   styleUrls: ['./dynamicText-dialog.component.css'],
-  imports: [FormsModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule],
+  imports: [FormsModule, CommonModule, EdaDialog2Component, PanelChartComponent, ColorPickerModule],
 })
 
 export class dynamicTextDialogComponent implements OnInit {
@@ -29,6 +30,7 @@ export class dynamicTextDialogComponent implements OnInit {
   public operand: string;
   @Output() color;
   public originalColors: string;
+  public modifiedFontPoints: number = 0;
   @Output() messageEvent = new EventEmitter<any>();
   public disabled:boolean;
   public display:boolean=false;
@@ -42,8 +44,22 @@ export class dynamicTextDialogComponent implements OnInit {
     this.PanelChartComponent.props.config.getConfig["color"]=this.color
     this.onClose(EdaDialogCloseEvent.UPDATE,
       {
-        color : this.color,
+        color: this.color,
+        modifiedFontPoints: this.modifiedFontPoints,
       });
+  }
+
+  modifySize(newValue?: number) {
+    const min = -90;
+    const max = 300;
+    if (newValue !== undefined) {
+        this.modifiedFontPoints = Math.min(max, Math.max(min, newValue || 0));
+    } else {
+        this.modifiedFontPoints = Math.min(max, Math.max(min, this.modifiedFontPoints));
+    }
+    const instance = this.PanelChartComponent.componentRef.instance;
+    instance.inject.modifiedFontPoints = this.modifiedFontPoints;
+    this.PanelChartComponent.componentRef.changeDetectorRef.detectChanges();
   }
   
   ngOnInit(): void {
@@ -62,7 +78,8 @@ export class dynamicTextDialogComponent implements OnInit {
   // extractedColor si acabamos de modificar el color del texto manualmente, sino el de estilos
   this.color = !this.styleProviderService.loadingFromPalette ? extractedColor : this.styleProviderService.panelFontColor.source['_value'];
   this.originalColors = this.color;
-  
+  this.modifiedFontPoints = panelChart?.config?.getConfig()?.modifiedFontPoints || 0;
+
   this.display = true;
 }
 

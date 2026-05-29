@@ -1,6 +1,8 @@
 export class DynamicTextConfig {
   color: any;
-  constructor(color:any) {
-    this.color=color;
+  modifiedFontPoints: number;
+  constructor(color: any, modifiedFontPoints: number = 0) {
+    this.color = color;
+    this.modifiedFontPoints = modifiedFontPoints;
   }
 }

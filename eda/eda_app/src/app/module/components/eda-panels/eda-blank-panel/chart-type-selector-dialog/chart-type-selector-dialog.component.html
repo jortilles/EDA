@@ -1,23 +1,16 @@
-<p-dialog
+<eda-dialog2
   header="Cambiar tipo de gráfico"
-  [(visible)]="visible"
-  (onHide)="onHide()"
-  [modal]="true"
-  [closable]="true"
-  [resizable]="false"
-  [draggable]="false"
-  appendTo="body"
-  [style]="{'width':'400px'}"
->
-  <div class="chart-type-selector-grid">
+  [showApply]="false"
+  (close)="onHide()"
+  width="400px"
+  height="auto"
+  [overflow]="'auto'">
+  <div content class="chart-type-selector-grid">
     @for (ct of chartTypes; track ct.subValue) {
-      <div class="chart-type-selector-item"
-        (mouseenter)="$event.currentTarget['style'].backgroundColor='#e9ecef'"
-        (mouseleave)="$event.currentTarget['style'].backgroundColor=''"
-        (click)="select(ct)">
+      <div class="chart-type-selector-item" (click)="select(ct)">
         <span class="material-icons">{{ getOptionIcon(ct.subValue) }}</span>
         <span class="chart-type-selector-label">{{ ct.label }}</span>
       </div>
     }
   </div>
-</p-dialog>
+</eda-dialog2>

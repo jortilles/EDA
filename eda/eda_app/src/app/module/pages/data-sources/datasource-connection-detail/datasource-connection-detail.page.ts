@@ -18,6 +18,7 @@ import { DropdownModule } from 'primeng/dropdown';
   standalone: true,
   selector: 'app-datasource-connection-detail',
   templateUrl: './datasource-connection-detail.page.html',
+  styleUrls: ['./datasource-connection-detail.page.css'],
   imports: [SharedModule, CommonModule, FormsModule, ReactiveFormsModule, IconComponent, DropdownModule]
 })
 export class DataSourceConnectionDetailPage implements OnInit {

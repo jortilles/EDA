@@ -150,6 +150,7 @@ export class EdaFilterAndOrComponent implements OnInit {
         filter_type: f.filter_type,
         filter_column_type: f.filter_column_type,
         filter_elements: f.filter_elements,
+        filter_codes: f.filter_codes,
         filter_id: f.filter_id,
         isGlobal: f.isGlobal,
         value: 'and',

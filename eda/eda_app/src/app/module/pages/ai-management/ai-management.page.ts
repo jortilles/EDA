@@ -5,12 +5,14 @@ import { lastValueFrom } from 'rxjs';
 import { AlertService, SpinnerService } from '@eda/services/service.index';
 import { AssistantService } from '@eda/services/api/assistant.service';
 import { IaFormStateService } from '@eda/services/shared/IaFormState.service';
+import { DropdownModule } from 'primeng/dropdown';
 
 @Component({
   selector: 'app-ai-management',
   standalone: true,
   templateUrl: 'ai-management.page.html',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, DropdownModule],
+  styleUrls: ['./ai-management.page.css']
 })
 export class AiManagementPage implements OnInit {
 
@@ -26,16 +28,28 @@ export class AiManagementPage implements OnInit {
   showApiKey = signal(false);
   showAwsSecretKey = signal(false);
 
+  providerOptions = [
+    { label: 'OpenAI', value: 'openai' },
+    { label: 'Anthropic', value: 'anthropic' },
+    { label: 'Bedrock', value: 'bedrock' },
+    { label: 'Qwen', value: 'qwen' },
+  ];
+
   aiForm: FormGroup;
 
   get isBedrock(): boolean {
     return this.aiForm.get('PROVIDER')?.value === 'bedrock';
   }
 
+  get isQwen(): boolean {
+    return this.aiForm.get('PROVIDER')?.value === 'qwen';
+  }
+
   constructor() {
     this.aiForm = this.fb.group({
       PROVIDER: ['openai', Validators.required],
       API_KEY: ['', Validators.required],
+      BASE_URL: [''],
       AWS_ACCESS_KEY: [''],
       AWS_SECRET_KEY: [''],
       AWS_REGION: [''],
@@ -61,6 +75,7 @@ export class AiManagementPage implements OnInit {
       this.aiForm.patchValue({
         PROVIDER: cfg.PROVIDER ?? 'openai',
         API_KEY: this.API_KEY_PLACEHOLDER,
+        BASE_URL: cfg.BASE_URL ?? '',
         AWS_ACCESS_KEY: cfg.AWS_ACCESS_KEY ?? '',
         AWS_SECRET_KEY: cfg.AWS_SECRET_KEY ? this.AWS_SECRET_PLACEHOLDER : '',
         AWS_REGION: cfg.AWS_REGION ?? '',

@@ -37,7 +37,7 @@
                       <path d="M12 8h.01"></path>
                     </svg>
                     <div
-                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
                       <span i18n="@@chartTrendOption">Mostrar línea de tendencia en el gráfico</span>
                     </div>
                   </div>
@@ -46,7 +46,7 @@
               <label class="relative inline-flex items-center" [class.toggle-blocked]="addComparative" [attr.data-tooltip]="addComparative ? tooltipBlockedByComparative : null">
                 <input type="checkbox" [(ngModel)]="addTrend" class="sr-only peer" (ngModelChange)="checkTrend()" [disabled]="addComparative">
                 <div 
-                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
                 </div>
               </label>
             </div>
@@ -69,7 +69,7 @@
                       <path d="M12 8h.01"></path>
                     </svg>
                     <div
-                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
                       <span i18n="@@chartComparationOption">Habilita la comparación con períodos anteriores</span>
                     </div>
                   </div>
@@ -79,7 +79,7 @@
                 <input type="checkbox" [(ngModel)]="addComparative" class="sr-only peer"
                   (ngModelChange)="setComparative()" [disabled]="addTrend || showPredictionLines">
                 <div 
-                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
                 </div>
               </label>
             </div>
@@ -102,7 +102,7 @@
                       <path d="M12 8h.01"></path>
                     </svg>
                     <div
-                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
                       <span i18n="@@chartLegendOptionDescription">Muestra la leyenda del gráfico</span>
                     </div>
                   </div>
@@ -111,7 +111,7 @@
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" [(ngModel)]="chartLegend" class="sr-only peer" (ngModelChange)="setChartLegend()">
                 <div
-                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
                 </div>
               </label>
             </div>
@@ -133,7 +133,7 @@
                       <path d="M12 8h.01"></path>
                     </svg>
                     <div
-                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
                       <span i18n="@@chartGridLinesOptionDescription">Muestra u oculta las líneas guía del gráfico</span>
                     </div>
                   </div>
@@ -142,7 +142,7 @@
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" [(ngModel)]="showGridLines" class="sr-only peer" (ngModelChange)="setShowGridLines()">
                 <div
-                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
                 </div>
               </label>
             </div>
@@ -164,7 +164,7 @@
                       <path d="M12 8h.01"></path>
                     </svg>
                     <div
-                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
                       <span i18n="@@chartLabelOption">Muestra etiquetas con valores en el gráfico</span>
                     </div>
                   </div>
@@ -173,7 +173,7 @@
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" [(ngModel)]="showLabels" class="sr-only peer" (ngModelChange)="setShowLables()">
                 <div
-                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
                 </div>
               </label>
             </div>
@@ -194,7 +194,7 @@
                       <path d="M12 8h.01"></path>
                     </svg>
                     <div
-                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
                       <span i18n="@@chartLabelPercentOption">Muestra etiquetas en formato porcentaje</span>
                     </div>
                   </div>
@@ -203,7 +203,7 @@
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" [(ngModel)]="showLabelsPercent" class="sr-only peer" (ngModelChange)="setShowLablesPercent()">
                 <div
-                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
                 </div>
               </label>
             </div>
@@ -225,7 +225,7 @@
                       <path d="M12 8h.01"></path>
                     </svg>
                     <div
-                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
                       <span>{{ columnsTooltip }}</span>
                     </div>
                   </div>
@@ -254,7 +254,7 @@
                         <path d="M12 8h.01"></path>
                       </svg>
                       <div
-                        class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                        class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
                         <span i18n="@@chartUniqueColorsOption">Asigna un color único a cada barra o elemento</span>
                       </div>
                     </div>
@@ -263,7 +263,7 @@
                 <label class="relative inline-flex items-center cursor-pointer">
                   <input type="checkbox" [(ngModel)]="showUniqueColors" class="sr-only peer" (ngModelChange)="setShowUniqueColors()">
                   <div
-                    class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+                    class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
                   </div>
                 </label>
               </div>
@@ -286,7 +286,7 @@
                       <path d="M12 8h.01"></path>
                     </svg>
                     <div
-                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
                       <span i18n="@@chartLabelLineOptionDescription">Muestra líneas conectando los puntos</span>
                     </div>
                   </div>
@@ -296,7 +296,7 @@
                 <input type="checkbox" [(ngModel)]="showPointLines" class="sr-only peer"
                   (ngModelChange)="setShowLines()">
                 <div
-                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
                 </div>
               </label>
             </div>
@@ -316,7 +316,7 @@
                       <path d="M12 8h.01"></path>
                     </svg>
                     <div
-                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      class="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 w-60 eda-tooltip-popup opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
                       <span i18n="@@chartLabelLinePredictionOptionDescription">Muestra la predicción de la serie</span>
                     </div>
                   </div>
@@ -326,7 +326,7 @@
                 <input type="checkbox" [(ngModel)]="showPredictionLines" class="sr-only peer"
                   (ngModelChange)="setPredictionLines()" [disabled]="addComparative">
                 <div 
-                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--corporate-primary)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--corporate-primary)]">
                 </div>
               </label>
             </div>
@@ -348,15 +348,16 @@
                 <div>
                   <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
                     <div class="flex items-stretch gap-2 mb-6">
-                      <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
-                        [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
-                        <option [ngValue]="null" disabled hidden i18n="@@selectPalette">
-                          -- Seleccione una paleta --
-                        </option>
-                        @for (palette of allPalettes; track $index) {
-                          <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
-                        }
-                      </select>
+                      <p-dropdown
+                        [(ngModel)]="selectedPalette"
+                        [options]="allPalettes"
+                        optionLabel="name"
+                        i18n-placeholder="@@selectPalette"
+                        placeholder="-- Seleccione una paleta --"
+                        (ngModelChange)="onPaletteSelected()"
+                        [style]="{'width':'180px'}"
+                        appendTo="body">
+                      </p-dropdown>
                       @if (selectedPalette) {
                         <div class="flex rounded overflow-hidden" style="width: 80px;">
                           @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
@@ -416,15 +417,16 @@
                       @if (!showUniqueColors) {
                         <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
                         <div class="flex items-stretch gap-2 mb-6">
-                          <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
-                            [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
-                            <option [ngValue]="null" disabled hidden i18n="@@selectPalette">
-                              -- Seleccione una paleta --
-                            </option>
-                            @for (palette of allPalettes; track $index) {
-                              <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
-                            }
-                          </select>
+                          <p-dropdown
+                            [(ngModel)]="selectedPalette"
+                            [options]="allPalettes"
+                            optionLabel="name"
+                            i18n-placeholder="@@selectPalette"
+                            placeholder="-- Seleccione una paleta --"
+                            (ngModelChange)="onPaletteSelected()"
+                            [style]="{'width':'180px'}"
+                            appendTo="body">
+                          </p-dropdown>
                           @if (selectedPalette) {
                             <div class="flex rounded overflow-hidden" style="width: 80px;">
                               @for (color of selectedPalette.paleta.slice(0, 8); track $index) {
@@ -451,15 +453,16 @@
 
                         <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
                         <div class="flex items-stretch gap-2 mb-6">
-                          <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
-                            [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
-                            <option [ngValue]="null" disabled hidden i18n="@@selectPalette">
-                              -- Seleccione una paleta --
-                            </option>
-                            @for (palette of allPalettes; track $index) {
-                              <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
-                            }
-                          </select>
+                          <p-dropdown
+                            [(ngModel)]="selectedPalette"
+                            [options]="allPalettes"
+                            optionLabel="name"
+                            i18n-placeholder="@@selectPalette"
+                            placeholder="-- Seleccione una paleta --"
+                            (ngModelChange)="onPaletteSelected()"
+                            [style]="{'width':'180px'}"
+                            appendTo="body">
+                          </p-dropdown>
                           @if (selectedPalette) {
                             <div class="flex rounded overflow-hidden" style="width: 80px;">
                               @for (color of selectedPalette.paleta.slice(0, 8); track $index) {

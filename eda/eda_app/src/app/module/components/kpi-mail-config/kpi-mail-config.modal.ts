@@ -12,6 +12,7 @@ import { CommonModule } from "@angular/common";
   standalone: true,
   imports: [CommonModule, FormsModule, MultiSelectModule, CalendarModule, InputSwitchModule, EdaDialog2Component],
   templateUrl: './kpi-mail-config.modal.html',
+  styleUrls: ['./kpi-mail-config.modal.css'],
 })
 export class KpiMailConfigModal implements OnInit {
   @Input() alert: any;

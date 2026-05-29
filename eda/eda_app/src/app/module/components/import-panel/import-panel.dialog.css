@@ -1,0 +1,24 @@
+/* ── Dialog content scrollbar ───────────────────────────────── */
+::ng-deep .p-dialog .p-dialog-content {
+    scrollbar-width: thin;
+}
+
+::ng-deep .p-dialog .p-dialog-content::-webkit-scrollbar {
+    width: 5px;
+}
+
+::ng-deep .p-dialog .p-dialog-content::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb);
+    border-radius: 9999px;
+}
+
+/* ── Dropdown hover: corporate border ───────────────────────── */
+:host ::ng-deep .p-dropdown:not(.p-disabled):hover {
+    border-color: var(--corporate-primary);
+}
+
+:host ::ng-deep .p-dropdown:not(.p-disabled).p-focus {
+    border-color: var(--corporate-primary);
+    box-shadow: 0 0 0 2px rgba(var(--corporate-primary-rgb), 0.15);
+}
+

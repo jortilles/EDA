@@ -1,20 +1,172 @@
-<eda-dialog2  [header]="title" width="80vw" height="90vh" [overflow]="'auto'" (apply)="saveChartConfig()" (close)="closeChartConfig()">
-  <div content class="flex flex-col flex-1 overflow-hidden h-full">
-    <p-menubar [model]="items" styleClass="total-item">
-    </p-menubar>
+<eda-dialog2 [header]="title" width="90vw" height="90vh" [overflow]="'hidden'" (apply)="saveChartConfig()" (close)="closeChartConfig()">
+  <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-[80vh]">
 
-    <div class="relative w-full aspect-square">
+    <!-- Table Preview -->
+    <div class="flex-[3] overflow-auto bg-slate-50 border-r border-gray-200 p-4">
       <panel-chart
         #PanelChartComponent
         [props]="panelChartConfig"
-        (configUpdated)="setChartProperties()">
+        (configUpdated)="setChartProperties()"
+        class="block w-full h-full">
       </panel-chart>
     </div>
-  </div>
 
+    <!-- Settings -->
+    <div class="flex-[1] min-w-[260px] overflow-y-auto p-6 space-y-5">
+
+      <!-- TOTALES -->
+      <div class="space-y-3">
+        <span class="text-lg font-semibold" i18n="@@addTotals">Totales</span>
+
+        @if (chartType !== 'table') {
+          <!-- Totales de fila (solo crosstab) -->
+          <div class="flex items-center justify-between" [class.opacity-50]="trend">
+            <label class="text-base font-medium text-gray-700" i18n="@@addRowTotals">Totales de fila</label>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" [checked]="row_totals" [disabled]="trend" (change)="rowTotals()" class="sr-only peer">
+              <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all corp-toggle"></div>
+            </label>
+          </div>
+
+          <!-- Tendencia (solo crosstab) -->
+          <div class="flex items-center justify-between" [class.opacity-50]="row_totals">
+            <label class="text-base font-medium text-gray-700" i18n="@@addtrend">Tendencia</label>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" [checked]="trend" [disabled]="row_totals" (change)="rowTrend()" class="sr-only peer">
+              <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all corp-toggle"></div>
+            </label>
+          </div>
+        }
+
+        <!-- Totales de columna -->
+        <div class="flex items-center justify-between" [class.opacity-50]="onlyPercentages">
+          <label class="text-base font-medium text-gray-700" i18n="@@addColTotals">Totales de columna</label>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" [checked]="col_totals" [disabled]="onlyPercentages" (change)="colTotals()" class="sr-only peer">
+            <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all corp-toggle"></div>
+          </label>
+        </div>
+
+        <!-- Subtotales de columna -->
+        <div class="flex items-center justify-between" [class.opacity-50]="onlyPercentages">
+          <label class="text-base font-medium text-gray-700" i18n="@@addColSubtotals">Subtotales de columna</label>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" [checked]="col_subtotals" [disabled]="onlyPercentages" (change)="colSubTotals()" class="sr-only peer">
+            <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all corp-toggle"></div>
+          </label>
+        </div>
+      </div>
+
+      <div class="border-t border-gray-100"></div>
+
+      <!-- PORCENTAJES -->
+      <div class="space-y-3">
+        <span class="text-lg font-semibold" i18n="@@addPercentages">Porcentajes</span>
+        <div class="flex w-full rounded-lg border border-gray-200 overflow-hidden text-sm font-medium">
+          <button
+            (click)="setPercentageMode('none')"
+            class="flex-1 px-2 py-2 text-center transition-colors border-r border-gray-200"
+            [style.background-color]="percentageMode === 'none' ? 'var(--corporate-primary)' : ''"
+            [style.color]="percentageMode === 'none' ? 'white' : ''"
+            i18n="@@addOnlyValues">Solo valores</button>
+          <button
+            (click)="setPercentageMode('both')"
+            class="flex-1 px-2 py-2 text-center transition-colors border-r border-gray-200"
+            [style.background-color]="percentageMode === 'both' ? 'var(--corporate-primary)' : ''"
+            [style.color]="percentageMode === 'both' ? 'white' : ''"
+            i18n="@@addValuesPercentages">Valores y %</button>
+          <button
+            (click)="setPercentageMode('only')"
+            class="flex-1 px-2 py-2 text-center transition-colors"
+            [style.background-color]="percentageMode === 'only' ? 'var(--corporate-primary)' : ''"
+            [style.color]="percentageMode === 'only' ? 'white' : ''"
+            i18n="@@addOnlyPercentages">Solo %</button>
+        </div>
+      </div>
+
+      @if (cols.length > 0 && !onlyPercentages) {
+        <div class="border-t border-gray-100"></div>
+
+        <!-- CÓDIGO DE COLOR -->
+        <div class="space-y-2">
+          <span class="text-lg font-semibold" i18n="@@addStyles">Código de color</span>
+          <div class="flex flex-col gap-2">
+            @for (col of cols; track col.header) {
+              <button
+                (click)="setStyle(col)"
+                class="flex items-center justify-between w-full rounded-lg border border-gray-200 px-3 py-2.5 text-left bg-white hover:bg-slate-50 transition-colors">
+                <span class="text-base font-medium text-gray-700">{{ col.header }}</span>
+                <i class="pi pi-palette text-gray-400"></i>
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      @if (chartType === 'table') {
+        <div class="border-t border-gray-100"></div>
+
+        <!-- TABLA: repeticiones, negativos, predicción -->
+        <div class="space-y-3">
+          <span class="text-lg font-semibold" i18n="@@seeRepetitions">Opciones</span>
+
+          <div class="flex items-center justify-between">
+            <label class="text-base font-medium text-gray-700" i18n="@@hideRepetitions">Ocultar valores repetidos</label>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" [checked]="noRepetitions" (change)="noRepeat()" class="sr-only peer">
+              <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all corp-toggle"></div>
+            </label>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <label class="text-base font-medium text-gray-700" i18n="@@withNegativeNumbers">Números negativos</label>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" [checked]="negativeNumbers" (change)="noNegativeNumbers()" class="sr-only peer">
+              <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all corp-toggle"></div>
+            </label>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <label class="text-base font-medium text-gray-700" i18n="@@showLinesPrediction">Predicción</label>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" [checked]="showPredictionCol" (change)="togglePrediction()" class="sr-only peer">
+              <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all corp-toggle"></div>
+            </label>
+          </div>
+        </div>
+      }
+
+      @if (chartType !== 'table') {
+        <div class="border-t border-gray-100"></div>
+
+        <!-- CROSSTAB: ordenación -->
+        <div class="space-y-3">
+          <span class="text-lg font-semibold" i18n="@@addCrossSorting">Ordenación</span>
+          <div class="flex flex-col gap-2">
+            @for (opt of sortOptions; track opt.value) {
+              <label
+                class="flex items-center gap-3 px-3 py-2.5 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors"
+                [style.border-color]="crossSortOrder === opt.value ? 'var(--corporate-primary)' : ''">
+                <input
+                  type="radio"
+                  name="sortOrder"
+                  [value]="opt.value"
+                  [checked]="crossSortOrder === opt.value"
+                  (change)="setCrossSortOrder(opt.value)"
+                  class="h-4 w-4 accent-corp">
+                <span class="text-base">{{ opt.label }}</span>
+              </label>
+            }
+          </div>
+        </div>
+      }
+
+    </div>
+  </div>
 </eda-dialog2>
+
 @if(gradientMenuController){
-  <eda-table-gradient-dialog  [controller]="gradientMenuController"></eda-table-gradient-dialog>
+  <eda-table-gradient-dialog [controller]="gradientMenuController"></eda-table-gradient-dialog>
 }
 @if(showPredictionDialog){
   <app-prediction-dialog

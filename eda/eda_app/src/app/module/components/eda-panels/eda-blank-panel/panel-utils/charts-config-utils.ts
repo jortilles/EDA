@@ -65,8 +65,10 @@ export const ChartsConfigUtils = {
         config.edaChart.assignedColors = ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || null;  // ambién en edaChart
       }
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'dynamicText') {
+      const dtInstance = ebp.panelChart.componentRef.instance;
       config = {
-        color: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.color : ebp.panelChart.props.config.getConfig()['color']
+        color: dtInstance ? dtInstance.inject.color : ebp.panelChart.props.config.getConfig()['color'],
+        modifiedFontPoints: dtInstance ? (dtInstance.inject.modifiedFontPoints || 0) : (ebp.panelChart.props.config.getConfig()['modifiedFontPoints'] || 0)
       }
     } else if (ebp.panelChart.props.chartType === 'geoJsonMap') {
       config = {
