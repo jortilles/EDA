@@ -23,12 +23,66 @@ export class ExcelSheetController {
             const columnsConfig = req.body?.columnsConfig; // Configuración de columnas del usuario
             const sourceType = req.body?.source_type || 'excel';
             const description = req.body?.description || '';
+            const tables: Array<{ tableName: string, fields: any[] }> = req.body?.tables;
 
-
-            if (!excelName || !excelFields) {
+            if (!excelName || (!excelFields && !tables)) {
                 return res.status(400).json({ ok: false, message: 'Nombre o campos incorrectos en la solicitud' });
             }
 
+            // Multi-table format: { name, tables: [{ tableName, fields }] }
+            if (tables && Array.isArray(tables) && tables.length > 0) {
+                const parsedUrl = new URL(databaseUrl?.url);
+                const { host, port } = parsedUrl;
+                const config = {
+                    type: "mongodb",
+                    host: host.substring(0, host.indexOf(':')),
+                    port: Number(port),
+                    database: parsedUrl.pathname.substring(1),
+                    user: parsedUrl.username,
+                    password: parsedUrl.password,
+                    authSource: parsedUrl.search.split('=')[1]
+                };
+
+                const mongoConnection = new MongoDBConnection(config);
+                const client = await mongoConnection.getclient();
+                try {
+                    const db = client.db(config.database);
+                    for (const table of tables) {
+                        const collection = db.collection(`xls_${excelName}_${table.tableName}`);
+                        const formatedFields = JSON.parse(JSON.stringify(table.fields));
+                        for (const obj of formatedFields) {
+                            for (let key in obj) {
+                                const field: any = obj[key];
+                                if (isNaN(Number(field))) {
+                                    const isDateValue = DateUtil.convertDate(field);
+                                    if (isDateValue) obj[key] = isDateValue;
+                                } else {
+                                    obj[key] = Number(field);
+                                }
+                            }
+                        }
+                        await collection.deleteMany({});
+                        if (formatedFields.length > 0) await collection.insertMany(formatedFields);
+                    }
+                } catch (err) {
+                    console.error('MultiTable JSON to Collection Error: ', err);
+                    throw err;
+                } finally {
+                    await client.close();
+                }
+
+                return await this.MultiTableCollectionToDataSource(excelName, tables, optimize, cacheAllowed, sourceType, description, res, next);
+            }
+
+            // Special case: when 'type' field has multiple distinct values, split into separate tables
+            const typeValues = Array.isArray(excelFields) && excelFields.length > 0 && 'type' in excelFields[0]
+                ? [...new Set(excelFields.map((f: any) => String(f.type)))]
+                : [];
+            if (typeValues.length > 1) {
+                return await ExcelSheetController.FromJSONToCollectionByType(excelName, excelFields, typeValues, optimize, cacheAllowed, sourceType, description, res, next);
+            }
+
+            // Single-table format (backward compat)
             const excelModel = ExcelSheetModel(excelName)
             const excelDocs = await excelModel.findOne({});
 
@@ -92,6 +146,175 @@ export class ExcelSheetController {
             console.error('Error al crear o actualizar el ExcelSheet:', error);
             next(new HttpException(500, 'Error al crear o actualizar el ExcelSheet'));
         }
+    }
+
+    static async MultiTableCollectionToDataSource(excelName: string, tables: Array<{ tableName: string, fields: any[] }>, optimized: boolean, cacheAllowed: boolean, sourceType: string, description: string, res: Response, next: NextFunction) {
+        try {
+            const dsTableObjects = tables.map(table => {
+                const propertiesAndTypes: Record<string, string> = {};
+                table.fields.forEach(object => {
+                    Object.entries(object).forEach(([property, value]) => {
+                        if (!isNaN(Number(value))) {
+                            propertiesAndTypes[property] = 'numeric';
+                        } else {
+                            const isDateValue = DateUtil.convertDate(value);
+                            if (isDateValue) propertiesAndTypes[property] = 'date';
+                            else if (typeof value === 'string') propertiesAndTypes[property] = 'text';
+                        }
+                    });
+                });
+
+                const columnsEntry = Object.entries(propertiesAndTypes).map(([name, type]) => {
+                    const col: any = {
+                        column_name: name,
+                        column_type: type,
+                        display_name: { default: name, localized: [] },
+                        description: { default: name, localized: [] },
+                        minimumFractionDigits: 0,
+                        column_granted_roles: [],
+                        row_granted_roles: [],
+                        visible: true,
+                        ia_visibility: 'FULL',
+                        tableCount: 0,
+                        valueListSource: {},
+                    };
+                    if (type === 'numeric') col.aggregation_type = AggregationTypes.getValuesForNumbers();
+                    else if (type === 'text') col.aggregation_type = AggregationTypes.getValuesForText();
+                    else col.aggregation_type = AggregationTypes.getValuesForOthers();
+                    return col;
+                });
+
+                return {
+                    table_name: `${excelName}_${table.tableName}`,
+                    display_name: { default: table.tableName, localized: [] },
+                    description: { default: table.tableName, localized: [] },
+                    table_granted_roles: [],
+                    table_type: [],
+                    columns: columnsEntry,
+                    relations: [] as any[],
+                    visible: true,
+                    tableCount: 0,
+                    no_relations: []
+                };
+            });
+
+
+            if (!databaseUrl?.url) return res.status(400).json({ ok: false, message: 'La connexión a la base de datos no existe' });
+            const parsedUrl = new URL(databaseUrl?.url);
+            const database = parsedUrl.pathname.substring(1);
+            const { host, port } = parsedUrl;
+
+            // Upsert: update existing datasource by name instead of creating a duplicate
+            const existingDS = await DataSource.findOne({ 'ds.metadata.model_name': excelName });
+            if (existingDS) {
+                await DataSource.findByIdAndUpdate(existingDS._id, {
+                    $set: {
+                        'ds.model.tables': dsTableObjects,
+                        'ds.metadata.optimized': optimized ?? false,
+                        'ds.metadata.cache_config.enabled': cacheAllowed ?? false,
+                    }
+                });
+                return res.status(200).json({ ok: true, data_source_id: existingDS._id });
+            }
+
+            const datasource: IDataSource = new DataSource({
+                ds: {
+                    connection: {
+                        type: "mongodb",
+                        source_type: sourceType,
+                        host: host.substring(0, host.indexOf(':')),
+                        port: Number(port),
+                        database,
+                        schema: "public",
+                        searchPath: "public",
+                        user: parsedUrl.username,
+                        password: EnCrypterService.encrypt(parsedUrl.password),
+                        poolLimit: null,
+                        sid: null,
+                        warehouse: null,
+                        ssl: false
+                    },
+                    metadata: {
+                        model_name: excelName,
+                        model_description: description ?? '',
+                        model_id: "",
+                        model_granted_roles: [],
+                        optimized: optimized ?? false,
+                        ia_visibility: 'FULL',
+                        cache_config: {
+                            units: "",
+                            quantity: 1,
+                            hours: "",
+                            minutes: "",
+                            enabled: cacheAllowed ?? false,
+                        },
+                        filter: null,
+                        model_owner: "",
+                        tags: [],
+                        external: {}
+                    },
+                    model: {
+                        tables: dsTableObjects
+                    }
+                }
+            });
+
+            const saved = await datasource.save();
+            return res.status(201).json({ ok: true, data_source_id: saved._id });
+        } catch (error) {
+            console.error('Error al crear datasource multi-tabla:', error);
+            throw error;
+        }
+    }
+
+    static async FromJSONToCollectionByType(
+        excelName: string, excelFields: any[], typeValues: string[],
+        optimize: boolean, cacheAllowed: boolean, sourceType: string, description: string,
+        res: Response, next: NextFunction
+    ) {
+        const tableGroups: Array<{ tableName: string, fields: any[] }> = typeValues.map(type => ({
+            tableName: type,
+            fields: excelFields.filter((f: any) => String(f.type) === type)
+        }));
+
+        const parsedUrl = new URL(databaseUrl?.url);
+        const config = {
+            type: "mongodb",
+            host: parsedUrl.host.substring(0, parsedUrl.host.indexOf(':')),
+            port: Number(parsedUrl.port),
+            database: parsedUrl.pathname.substring(1),
+            user: parsedUrl.username,
+            password: parsedUrl.password,
+            authSource: parsedUrl.search.split('=')[1]
+        };
+        const mongoConnection = new MongoDBConnection(config);
+        const client = await mongoConnection.getclient();
+        try {
+            const db = client.db(config.database);
+            for (const table of tableGroups) {
+                const collection = db.collection(`xls_${excelName}_${table.tableName}`);
+                const formatedFields = JSON.parse(JSON.stringify(table.fields));
+                for (const obj of formatedFields) {
+                    for (const key in obj) {
+                        const field: any = obj[key];
+                        if (isNaN(Number(field))) {
+                            const isDateValue = DateUtil.convertDate(field);
+                            if (isDateValue) obj[key] = isDateValue;
+                        } else {
+                            obj[key] = Number(field);
+                        }
+                    }
+                }
+                await collection.deleteMany({});
+                if (formatedFields.length > 0) await collection.insertMany(formatedFields);
+            }
+        } catch (err) {
+            console.error('FromJSONToCollectionByType error:', err);
+            throw err;
+        } finally {
+            await client.close();
+        }
+        return await ExcelSheetController.MultiTableCollectionToDataSource(excelName, tableGroups, optimize, cacheAllowed, sourceType, description, res, next);
     }
 
     static async UpdateCollectionFromJSON(req: Request, res: Response, next: NextFunction) {
