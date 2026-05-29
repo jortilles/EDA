@@ -198,25 +198,6 @@ export class ExcelSheetController {
                 };
             });
 
-            // Auto-detect relations: any column named id_* or *_id (excluding 'id' itself) is treated as FK to other tables' 'id'
-            const getFkColumns = (table: any) =>
-                table.columns.filter((c: any) => {
-                    const name: string = c.column_name;
-                    return name !== 'id' && (name.endsWith('_id') || name.startsWith('id_'));
-                });
-            const tablesWithPK = dsTableObjects.filter(t => t.columns.some((c: any) => c.column_name === 'id'));
-            for (const table of dsTableObjects) {
-                for (const fkCol of getFkColumns(table)) {
-                    for (const targetTable of tablesWithPK) {
-                        // FK → PK
-                        table.relations.push({ source_table: table.table_name, source_column: [fkCol.column_name], target_table: targetTable.table_name, target_column: ['id'], visible: true });
-                        // PK → FK (bidirectional)
-                        if (targetTable.table_name !== table.table_name) {
-                            targetTable.relations.push({ source_table: targetTable.table_name, source_column: ['id'], target_table: table.table_name, target_column: [fkCol.column_name], visible: true });
-                        }
-                    }
-                }
-            }
 
             if (!databaseUrl?.url) return res.status(400).json({ ok: false, message: 'La connexión a la base de datos no existe' });
             const parsedUrl = new URL(databaseUrl?.url);
