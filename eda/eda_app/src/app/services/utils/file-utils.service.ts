@@ -53,11 +53,17 @@ function totalCellStyle(cell: any, isSubtotal = false) {
 
 export interface DashboardPanelExport {
     title: string;
-    type: 'table' | 'crosstable' | 'chart' | 'other';
+    type: 'table' | 'crosstable' | 'chart' | 'kpi' | 'other';
     tableData?: any;       // Instancia EdaTable (para table / crosstable)
     imageBase64?: string;  // dataURL PNG (para chart)
     imageWidth?:  number;  // ancho natural de la imagen (px, sin escala de captura)
     imageHeight?: number;  // alto natural de la imagen (px, sin escala de captura)
+    kpiData?: {            // Datos del panel KPI (value + sufijo + estilo)
+        value: any;
+        sufix?: string;
+        kpiColor?: string;
+        modifiedFontPoints?: number;
+    };
     // Posición en el grid de Gridster
     gridX: number;
     gridY: number;
@@ -262,6 +268,71 @@ export class FileUtiles {
                         }
                     }
 
+                } else if (panel.type === 'kpi' && panel.kpiData) {
+                    const kpi  = panel.kpiData;
+                    const text = this._formatKpiValue(kpi.value) + (kpi.sufix ? ' ' + kpi.sufix : '');
+
+                    if (panel.imageBase64) {
+                        // kpibar/kpiline/kpiarea: arriba texto (50%) | abajo imagen (50%)
+                        // totalRows proporcional a gridRows del panel (2 filas Excel por unidad de grid)
+                        const totalRows = panel.gridRows * 2;
+                        const halfRows  = Math.round(totalRows / 2);
+
+                        // Mitad superior: texto KPI (fuente reducida a la mitad)
+                        for (let r = panelRow; r < panelRow + halfRows; r++) {
+                            worksheet.getRow(r).height = 18;
+                        }
+                        const kpiCell = worksheet.getRow(panelRow).getCell(colStart);
+                        kpiCell.value = text;
+                        kpiCell.font  = {
+                            bold: true,
+                            size: Math.round((28 + (kpi.modifiedFontPoints || 0)) / 2),
+                            color: { argb: this._colorToArgb(kpi.kpiColor) },
+                        };
+                        kpiCell.alignment = { vertical: 'middle', horizontal: 'center' };
+                        try { worksheet.mergeCells(panelRow, colStart, panelRow + halfRows - 1, colEnd); } catch (_) {}
+
+                        // Mitad inferior: imagen del gráfico
+                        const imgStartRow = panelRow + halfRows;
+                        const imgRows     = totalRows - halfRows;
+                        for (let r = imgStartRow; r < imgStartRow + imgRows; r++) {
+                            worksheet.getRow(r).height = 18;
+                        }
+                        const base64 = panel.imageBase64.includes(',')
+                            ? panel.imageBase64.split(',')[1]
+                            : panel.imageBase64;
+                        if (this._isValidPngBase64(base64)) {
+                            try {
+                                const imageId = workbook.addImage({ base64, extension: 'png' as any });
+                                const imgCols = this._calcImageCols(
+                                    panel.imageWidth, panel.imageHeight, imgRows, colEnd - colStart + 1
+                                );
+                                worksheet.addImage(imageId, {
+                                    tl: { col: colStart - 1, row: imgStartRow - 1 },
+                                    br: { col: colStart - 1 + imgCols, row: imgStartRow - 1 + imgRows },
+                                    editAs: 'oneCell',
+                                } as any);
+                            } catch (imgErr) {
+                                console.warn('[ExportExcel] No se pudo insertar imagen KPI:', imgErr);
+                            }
+                        }
+                    } else {
+                        // KPI puro: texto ancho completo
+                        const KPI_ROWS = 6;
+                        for (let r = panelRow; r < panelRow + KPI_ROWS; r++) {
+                            worksheet.getRow(r).height = 24;
+                        }
+                        const kpiCell = worksheet.getRow(panelRow).getCell(colStart);
+                        kpiCell.value = text;
+                        kpiCell.font  = {
+                            bold: true,
+                            size: 28 + (kpi.modifiedFontPoints || 0),
+                            color: { argb: this._colorToArgb(kpi.kpiColor) },
+                        };
+                        kpiCell.alignment = { vertical: 'middle', horizontal: 'center' };
+                        try { worksheet.mergeCells(panelRow, colStart, panelRow + KPI_ROWS - 1, colEnd); } catch (_) {}
+                    }
+
                 } else if (panel.type === 'crosstable' && panel.tableData) {
                     this._writeCrossTable(worksheet, panel.tableData, panelRow, colStart);
 
@@ -463,6 +534,12 @@ export class FileUtiles {
             return TITLE_ROWS + FileUtiles.IMG_ROWS_DEFAULT;
         }
 
+        if (panel.type === 'kpi') {
+            // Con imagen: mitad texto + mitad gráfico → total = gridRows * 2 (2 filas Excel por unidad de grid)
+            // Sin imagen: texto ancho completo → 6 filas compactas
+            return TITLE_ROWS + (panel.imageBase64 ? panel.gridRows * 2 : 6);
+        }
+
         if ((panel.type === 'table' || panel.type === 'crosstable') && panel.tableData) {
             const t = panel.tableData;
             const headerRows  = (t.series?.length || 0) || 1;   // cabecera multi-nivel o 1 simple
@@ -519,6 +596,38 @@ export class FileUtiles {
         } catch {
             return false;
         }
+    }
+
+    /** Formatea un valor KPI con locale español (mismo que el pipe Angular 'es') */
+    private _formatKpiValue(value: any): string {
+        if (value === null || value === undefined) return '';
+        const n = typeof value === 'number' ? value : parseFloat(String(value));
+        if (isNaN(n)) return String(value);
+        return new Intl.NumberFormat('es', { maximumFractionDigits: 10 }).format(n);
+    }
+
+    /** Convierte un color CSS (#RRGGBB o #RGB) a ARGB para ExcelJS/docx */
+    private _colorToArgb(cssColor: string | undefined, defaultArgb = 'FF000000'): string {
+        if (!cssColor) return defaultArgb;
+        const hex = cssColor.replace('#', '');
+        if (hex.length === 3) {
+            const [r, g, b] = hex.split('');
+            return 'FF' + r + r + g + g + b + b;
+        }
+        if (hex.length === 6) return 'FF' + hex;
+        return defaultArgb;
+    }
+
+    /** Convierte un color CSS a formato RRGGBB para docx (sin alfa) */
+    private _colorToRgb(cssColor: string | undefined, defaultRgb = '000000'): string {
+        if (!cssColor) return defaultRgb;
+        const hex = cssColor.replace('#', '');
+        if (hex.length === 3) {
+            const [r, g, b] = hex.split('');
+            return r + r + g + g + b + b;
+        }
+        if (hex.length === 6) return hex;
+        return defaultRgb;
     }
 
     /** Convierte el valor crudo de celda al tipo correcto para ExcelJS */
@@ -637,7 +746,52 @@ export class FileUtiles {
             }));
         }
 
-        if (panel.type === 'chart' && panel.imageBase64) {
+        if (panel.type === 'kpi' && panel.kpiData) {
+            const kpi    = panel.kpiData;
+            const text   = this._formatKpiValue(kpi.value) + (kpi.sufix ? ' ' + kpi.sufix : '');
+            const fullSizePt = 36 + (kpi.modifiedFontPoints || 0);
+            // Con gráfico: fuente reducida a la mitad (menos altura disponible)
+            const sizePt     = panel.imageBase64 ? Math.round(fullSizePt / 2) : fullSizePt;
+            const kpiParagraph = new Paragraph({
+                children: [new TextRun({
+                    text,
+                    bold:  true,
+                    size:  sizePt * 2,   // docx usa semipuntos
+                    color: this._colorToRgb(kpi.kpiColor),
+                })],
+                alignment: AlignmentType.CENTER,
+                spacing:   { before: 120, after: 120 },
+            });
+
+            if (panel.imageBase64) {
+                // kpibar/kpiline/kpiarea: arriba texto | abajo imagen
+                // La imagen ocupa la mitad de la altura del panel (gridRows / 2 unidades)
+                // Usamos EXCEL_ROW_PX como referencia de altura por fila de grid
+                items.push(kpiParagraph);
+                const base64 = panel.imageBase64.includes(',') ? panel.imageBase64.split(',')[1] : panel.imageBase64;
+                if (this._isValidPngBase64(base64)) {
+                    const imgData    = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+                    const naturalW   = panel.imageWidth  || 600;
+                    const naturalH   = panel.imageHeight || 400;
+                    // Altura máxima = mitad del panel en px (gridRows/2 * px por fila de grid)
+                    const halfHeightPx = Math.round((panel.gridRows / 2) * FileUtiles.EXCEL_ROW_PX * 2);
+                    const scaleW = widthPx   / naturalW;
+                    const scaleH = halfHeightPx / naturalH;
+                    const scale  = Math.min(1, scaleW, scaleH);
+                    items.push(new Paragraph({
+                        children: [new ImageRun({
+                            type: 'png',
+                            data: imgData,
+                            transformation: { width: Math.round(naturalW * scale), height: Math.round(naturalH * scale) },
+                        })],
+                        spacing: { after: 100 },
+                    }));
+                }
+            } else {
+                // KPI puro: párrafo ancho completo
+                items.push(kpiParagraph);
+            }
+        } else if (panel.type === 'chart' && panel.imageBase64) {
             const base64 = panel.imageBase64.includes(',') ? panel.imageBase64.split(',')[1] : panel.imageBase64;
             if (this._isValidPngBase64(base64)) {
                 const imgData  = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
