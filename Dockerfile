@@ -1,5 +1,4 @@
-from node:25.1-bookworm
-
+from node:26.2-trixie-slim
 
 
 # instalar
