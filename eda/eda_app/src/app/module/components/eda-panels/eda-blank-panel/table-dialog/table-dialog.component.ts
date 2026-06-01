@@ -15,13 +15,15 @@ import { MenubarModule } from 'primeng/menubar';
 import { TableGradientDialogComponent } from './gradient-dialog/gradient-dialog.component';
 import { PredictionDialogComponent, PredictionConfig, QueryColumn } from '../prediction-dialog/prediction-dialog.component';
 import { QueryUtils } from '../panel-utils/query-utils';
+import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '@eda/configs/personalitzacio/customizables';
+import { ColorPickerModule } from 'primeng/colorpicker';
 
 @Component({
   standalone: true,
   selector: 'app-table-dialog',
   templateUrl: './table-dialog.component.html',
   styleUrls: ['../../../../../../assets/sass/eda-styles/components/table-dialog.component.css'],
-  imports: [CommonModule, FormsModule, EdaDialog2Component, MenubarModule, TableGradientDialogComponent, PanelChartComponent, PredictionDialogComponent]
+  imports: [CommonModule, FormsModule, EdaDialog2Component, MenubarModule, TableGradientDialogComponent, PanelChartComponent, PredictionDialogComponent, ColorPickerModule]
 })
 
 export class TableDialogComponent{
@@ -50,6 +52,10 @@ export class TableDialogComponent{
   public negativeNumbers : boolean = false;
   public ordering: Array<any> = [];
   public crossSortOrder: string = 'alphabetical';
+
+  public headerColor: string = '';
+  public bandingColor: string = '';
+  public colorEnabled: boolean = true;
 
   /**Strings */
   public addTotals: string = $localize`:@@addTotals:Totales`;
@@ -115,10 +121,16 @@ export class TableDialogComponent{
       this.ordering = config.ordering;
       this.negativeNumbers = config.negativeNumbers;
       this.crossSortOrder = config.crossSortOrder || 'alphabetical';
+      this.headerColor = config.headerColor || DEFAULT_TABLE_HEADER_COLOR;
+      this.bandingColor = config.bandingColor || DEFAULT_TABLE_BANDING_COLOR;
+      this.colorEnabled = config.colorEnabled !== false;
     } else {
       this.panelChartConfig.config = new ChartConfig(
         new TableConfig(false, false, 5, false, false, false, false, null, null, null, false, false, [])
       )
+      this.headerColor = DEFAULT_TABLE_HEADER_COLOR;
+      this.bandingColor = DEFAULT_TABLE_BANDING_COLOR;
+      this.colorEnabled = true;
     }
     // Leer el estado actual de predicción del panel
     const panelID = this.controller?.params?.panelId;
@@ -313,10 +325,9 @@ export class TableDialogComponent{
     }
   }
 
-  private setCols() {    
+  private setCols() {
 
     if (this.controller.params.panelChart.chartType === 'table') {
-      
       if (this.onlyPercentages) {
         this.cols = this.myPanelChartComponent.componentRef.instance.inject.cols.filter(col => col.type === "EdaColumnPercentage");
       }
@@ -435,6 +446,22 @@ export class TableDialogComponent{
     this.showPredictionCol = false;
   }
 
+  public toggleColorEnabled() {
+    this.colorEnabled = !this.colorEnabled;
+    this.applyBandingPreview();
+  }
+
+  public applyBandingPreview() {
+    const tableComponent = this.myPanelChartComponent?.componentRef?.instance;
+    if (tableComponent && typeof tableComponent.applyBandingColors === 'function') {
+      tableComponent.applyBandingColors(
+        this.colorEnabled ? (this.headerColor || '') : undefined,
+        this.colorEnabled ? (this.bandingColor || '') : undefined,
+        this.colorEnabled
+      );
+    }
+  }
+
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     this.myPanelChartComponent.componentRef.instance.inject.styles = this.styles;
     return this.controller.close(event, response);
@@ -449,7 +476,8 @@ export class TableDialogComponent{
 
     const properties = new TableConfig(this.onlyPercentages, this.resultAsPecentage, rows,
       this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles,
-      this.noRepetitions, this.negativeNumbers, this.ordering, this.crossSortOrder);
+      this.noRepetitions, this.negativeNumbers, this.ordering, this.crossSortOrder,
+      this.headerColor, this.bandingColor, this.colorEnabled);
 
     // Aplicar cambios de predicción al dashboard solo al confirmar
     const panelID = this.controller?.params?.panelId;

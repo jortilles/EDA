@@ -2045,6 +2045,34 @@
           <context context-type="linenumber">66</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="tableColors" datatype="html">
+        <source>Colores de tabla</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/table-dialog/table-dialog.component.html</context>
+          <context context-type="linenumber">110</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tableColorsEnabled" datatype="html">
+        <source>Colores activos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/table-dialog/table-dialog.component.html</context>
+          <context context-type="linenumber">113</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tableHeaderColor" datatype="html">
+        <source>Color cabecera</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/table-dialog/table-dialog.component.html</context>
+          <context context-type="linenumber">122</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tableBandingColor" datatype="html">
+        <source>Color filas alternas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/table-dialog/table-dialog.component.html</context>
+          <context context-type="linenumber">129</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="measureLabel" datatype="html">
         <source>Medida:</source>
         <context-group purpose="location">

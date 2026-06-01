@@ -2941,6 +2941,22 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <source>Propiedades de la tabla</source>
 <target>Table properties</target>
 </trans-unit>
+<trans-unit id="tableColors">
+<source>Colores de tabla</source>
+<target>Table colors</target>
+</trans-unit>
+<trans-unit id="tableColorsEnabled">
+<source>Colores activos</source>
+<target>Colors enabled</target>
+</trans-unit>
+<trans-unit id="tableHeaderColor">
+<source>Color cabecera</source>
+<target>Header color</target>
+</trans-unit>
+<trans-unit id="tableBandingColor">
+<source>Color filas alternas</source>
+<target>Alternating row color</target>
+</trans-unit>
 <trans-unit id="SubTotals">
 <source>SubTotales</source>
 <target>SubTotals</target>

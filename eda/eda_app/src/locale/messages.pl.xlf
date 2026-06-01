@@ -2853,6 +2853,22 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Propiedades de la tabla</source>
     <target>Właściości tabeli</target>
   </trans-unit>
+  <trans-unit id="tableColors">
+    <source>Colores de tabla</source>
+    <target>Kolory tabeli</target>
+  </trans-unit>
+  <trans-unit id="tableColorsEnabled">
+    <source>Colores activos</source>
+    <target>Kolory aktywne</target>
+  </trans-unit>
+  <trans-unit id="tableHeaderColor">
+    <source>Color cabecera</source>
+    <target>Kolor nagłówka</target>
+  </trans-unit>
+  <trans-unit id="tableBandingColor">
+    <source>Color filas alternas</source>
+    <target>Kolor naprzemiennych wierszy</target>
+  </trans-unit>
   <trans-unit id="SubTotals">
     <source>SubTotales</source>
     <target>Podsumy</target>

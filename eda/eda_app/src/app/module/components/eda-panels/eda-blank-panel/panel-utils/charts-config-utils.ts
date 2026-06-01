@@ -43,6 +43,9 @@ export const ChartsConfigUtils = {
         noRepetitions: ebp.panelChart.componentRef.instance.inject.noRepetitions,
         negativeNumbers: ebp.panelChart.componentRef.instance.inject.negativeNumbers,
         ordering: ebp.panelChart.componentRef.instance.inject.ordering,
+        headerColor: ebp.panelChart.componentRef.instance.inject.headerColor || '',
+        bandingColor: ebp.panelChart.componentRef.instance.inject.bandingColor || '',
+        colorEnabled: ebp.panelChart.componentRef.instance.inject.colorEnabled !== false,
       }
 
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType.includes('kpi')) {

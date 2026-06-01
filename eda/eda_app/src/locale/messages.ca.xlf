@@ -3237,6 +3237,22 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Propiedades de la tabla</source>
     <target>Propietats de la taula</target>
   </trans-unit>
+  <trans-unit id="tableColors">
+    <source>Colores de tabla</source>
+    <target>Colors de la taula</target>
+  </trans-unit>
+  <trans-unit id="tableColorsEnabled">
+    <source>Colores activos</source>
+    <target>Colors actius</target>
+  </trans-unit>
+  <trans-unit id="tableHeaderColor">
+    <source>Color cabecera</source>
+    <target>Color de la capçalera</target>
+  </trans-unit>
+  <trans-unit id="tableBandingColor">
+    <source>Color filas alternas</source>
+    <target>Color de files alternes</target>
+  </trans-unit>
 
   <trans-unit id="SubTotals">
     <source>SubTotales</source>

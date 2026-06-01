@@ -14,14 +14,14 @@
 }
 
 .sub-total-row {
-  background-color: #d4ba8996!important; 
+  background-color: var(--table-total-color) !important;
   color:var(--panel-font-color)!important;
   text-align: right;
   font-weight: bold !important;
 }
 
 .total-row {
-  background-color: #caa66477!important; 
+  background-color: var(--table-total-color) !important;
   color:var(--panel-font-color)!important;
   text-align: right;
   font-weight: bold !important;
@@ -29,14 +29,14 @@
   border-width: 0 0 1px 0;
 }
 .sub-total-row-header {
-  background-color: #d4ba8996!important; 
+  background-color: var(--table-total-color) !important;
   color:var(--panel-font-color)!important;
   text-align: left;
   font-weight: bold !important;
 }
 
 .total-row-header{
-  background-color: #caa66477!important; 
+  background-color: var(--table-total-color) !important;
   color:var(--panel-font-color)!important;
   text-align: left;
   font-weight: bold !important;
@@ -49,14 +49,20 @@ th{
   border: 1px solid #fff;
 }
 
-/* Mantener cabecera gris y row-banding independientemente del color del panel */
-.eda-table ::ng-deep .p-datatable .p-datatable-thead > tr > th {
-     background: rgba(228, 228, 228, 0.5) !important;
+.eda-table {
+    --table-header-color: rgba(228, 228, 228, 0.5);
+    --table-banding-color: rgba(228, 228, 228, 0.5);
+    --table-total-color: rgba(228, 228, 228, 0.5);
 }
 
-/* Row banding: filas pares con el mismo gris que el header — excluir celdas con color de gradiente/semáforo */
+/* Cabecera: color configurable via variable CSS */
+.eda-table ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+     background: var(--table-header-color) !important;
+}
+
+/* Row banding: filas pares con el color configurable — excluir celdas con color de gradiente/semáforo */
 .eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) > td:not([class*="table-gradient"]):not([class*="table-semaphore"]) {
-     background: rgba(228, 228, 228, 0.5) !important;
+     background: var(--table-banding-color) !important;
 }
 .eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
      background: transparent !important;

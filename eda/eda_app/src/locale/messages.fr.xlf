@@ -3192,6 +3192,22 @@
     <source>Propiedades de la tabla</source>
     <target>Propriétés du tableau</target>
   </trans-unit>
+  <trans-unit id="tableColors">
+    <source>Colores de tabla</source>
+    <target>Couleurs du tableau</target>
+  </trans-unit>
+  <trans-unit id="tableColorsEnabled">
+    <source>Colores activos</source>
+    <target>Couleurs actives</target>
+  </trans-unit>
+  <trans-unit id="tableHeaderColor">
+    <source>Color cabecera</source>
+    <target>Couleur de l'en-tête</target>
+  </trans-unit>
+  <trans-unit id="tableBandingColor">
+    <source>Color filas alternas</source>
+    <target>Couleur des lignes alternées</target>
+  </trans-unit>
 
   <trans-unit id="SubTotals">
     <source>SubTotales</source>

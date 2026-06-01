@@ -1,5 +1,5 @@
 <eda-dialog2 [header]="title" width="90vw" height="90vh" [overflow]="'hidden'" (apply)="saveChartConfig()" (close)="closeChartConfig()">
-  <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-[80vh]">
+  <div content class="flex flex-col md:flex-row flex-1 overflow-hidden h-[75vh]">
 
     <!-- Table Preview -->
     <div class="flex-[3] overflow-auto bg-slate-50 border-r border-gray-200 p-4">
@@ -102,6 +102,39 @@
           </div>
         </div>
       }
+
+      <div class="border-t border-gray-100"></div>
+
+      <!-- COLORES DE TABLA -->
+      <div class="space-y-3">
+        <span class="text-lg font-semibold" i18n="@@tableColors">Colores de tabla</span>
+
+        <div class="flex items-center justify-between">
+          <label class="text-base font-medium text-gray-700" i18n="@@tableColorsEnabled">Colores activos</label>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" [checked]="colorEnabled" (change)="toggleColorEnabled()" class="sr-only peer">
+            <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all corp-toggle"></div>
+          </label>
+        </div>
+
+        @if (colorEnabled) {
+          <div class="flex items-center justify-between border rounded-lg p-3 bg-white">
+            <span class="font-medium" i18n="@@tableHeaderColor">Color cabecera</span>
+            <div class="flex items-center gap-2">
+              <input class="text-base text-right text-slate-500 font-mono w-20" [(ngModel)]="headerColor">
+              <p-colorPicker [(ngModel)]="headerColor" format="hex" appendTo="body" (onChange)="applyBandingPreview()" />
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between border rounded-lg p-3 bg-white">
+            <span class="font-medium" i18n="@@tableBandingColor">Color filas alternas</span>
+            <div class="flex items-center gap-2">
+              <input class="text-base text-right text-slate-500 font-mono w-20" [(ngModel)]="bandingColor">
+              <p-colorPicker [(ngModel)]="bandingColor" format="hex" appendTo="body" (onChange)="applyBandingPreview()" />
+            </div>
+          </div>
+        }
+      </div>
 
       @if (chartType === 'table') {
         <div class="border-t border-gray-100"></div>

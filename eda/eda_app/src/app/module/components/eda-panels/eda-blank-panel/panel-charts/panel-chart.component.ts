@@ -524,6 +524,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject.ordering = config.ordering;
         this.componentRef.instance.inject.negativeNumbers = config.negativeNumbers;
         this.componentRef.instance.inject.crossSortOrder = config.crossSortOrder || 'alphabetical';
+        this.componentRef.instance.inject.headerColor = config.headerColor || '';
+        this.componentRef.instance.inject.bandingColor = config.bandingColor || '';
+        this.componentRef.instance.inject.colorEnabled = config.colorEnabled !== false;
+        this.componentRef.instance.applyBandingColors(config.headerColor, config.bandingColor, config.colorEnabled !== false);
         this.configUpdated.emit(this.currentConfig);;
     }
 
