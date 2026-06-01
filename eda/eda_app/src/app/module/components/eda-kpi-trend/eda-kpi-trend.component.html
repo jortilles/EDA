@@ -1,0 +1,43 @@
+<div class="kpi-trend-wrapper" [style.background-color]="inject.backgroundColor || null">
+
+  <!-- Legend row -->
+  <div class="kpi-trend-legend">
+    <span class="legend-dot" [style.background-color]="inject.currentYearColor"></span>
+    <span class="legend-text">{{ inject.kpiYear }}</span>
+    <span class="legend-dash" [style.border-top-color]="inject.previousYearColor"></span>
+    <span class="legend-text">{{ inject.spyYear }}</span>
+  </div>
+
+  <!-- Body: left KPI + right chart -->
+  <div class="kpi-trend-body">
+
+    <!-- Left: KPI values -->
+    <div class="kpi-trend-left">
+      <div class="kpi-trend-period-label">Year to Date</div>
+
+      <div class="kpi-trend-main-value" [ngStyle]="getValueStyle()">
+        {{ formatValue(inject.kpiValue) }}{{ inject.sufix }}
+      </div>
+
+      <div class="kpi-trend-spy-block">
+        <div class="kpi-trend-spy-row">
+          <span class="kpi-trend-spy-label">SPLY</span>
+          <span class="kpi-trend-spy-value">{{ formatValue(inject.spyValue) }}</span>
+        </div>
+        <div class="kpi-trend-vs-row" [class.kpi-trend-positive]="inject.vsPercent >= 0" [class.kpi-trend-negative]="inject.vsPercent < 0">
+          @if(inject.vsPercent !== null) {
+            <span>vs SPLY</span>
+            <span class="kpi-trend-arrow">{{ inject.vsPercent >= 0 ? '▲' : '▼' }}</span>
+            <span>{{ absVal(inject.vsPercent) | number:'1.1-1':'es' }}%</span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: embedded chart -->
+    <div class="kpi-trend-chart-area" *ngIf="inject.edaChart">
+      <eda-chart [inject]="inject.edaChart" class="kpi-trend-chart-inner"></eda-chart>
+    </div>
+
+  </div>
+</div>

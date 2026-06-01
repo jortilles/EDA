@@ -47,6 +47,8 @@ import { KnobConfig } from './chart-configuration-models/knob-config';
 import { MapConfig } from './chart-configuration-models/map-config';
 import { ChartJsConfig } from './chart-configuration-models/chart-js-config';
 import { Subscription } from 'rxjs';
+import { EdaKpiTrendComponent } from '@eda/components/eda-kpi-trend/eda-kpi-trend.component';
+import { KpiTrendConfig } from './chart-configuration-models/kpi-trend-config';
 
 @Component({
     standalone: true,
@@ -209,6 +211,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
         if (type === 'treetable') {
             this.renderTreetable();
+        }
+        if (type === 'kpitrend') {
+            this.renderEdaKpiTrend();
         }
     }
 
@@ -770,6 +775,223 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         })
         this.configUpdated.emit(this.currentConfig);
     }
+    /**
+     * Renders a KPITrendComponent
+    */
+    
+    private renderEdaKpiTrend() {
+        const query = this.props.query;
+        const data = this.props.data;
+        const cfg: any = this.props.config.getConfig();
+
+        const dateIndex = query.findIndex((c: any) => c.column_type === 'date');
+        const numericIndex = query.findIndex((c: any) => c.column_type === 'numeric');
+        if (dateIndex === -1 || numericIndex === -1) return;
+
+        const dateFormat: string = query[dateIndex]?.format || 'month';
+        const decimals: number = query[numericIndex]?.minimumFractionDigits || 0;
+
+        // --- Group data by year → period → accumulated value ---
+        const yearData = new Map<string, Map<number, number>>();
+        data.values.forEach((row: any[]) => {
+            const dateStr = String(row[dateIndex] ?? '').trim();
+            const value = Number(row[numericIndex]) || 0;
+            if (!dateStr) return;
+            const { year, period } = this._parseDateForTrend(dateStr, dateFormat);
+            if (!yearData.has(year)) yearData.set(year, new Map());
+            const pm = yearData.get(year);
+            pm.set(period, (pm.get(period) || 0) + value);
+        });
+
+        const years = Array.from(yearData.keys()).sort().reverse();
+        if (years.length < 1) return;
+
+        const currentYear = years[0];
+        const previousYear = years.length > 1 ? years[1] : null;
+        const currentData = yearData.get(currentYear);
+        const previousData = previousYear ? yearData.get(previousYear) : null;
+        const currentPeriods = Array.from(currentData.keys()).sort((a, b) => a - b);
+
+        // --- KPI / SPY values ---
+        const kpiValue = this._roundDecimals(
+            Array.from(currentData.values()).reduce((a, b) => a + b, 0), decimals);
+        let spyValue = 0;
+        if (previousData) {
+            currentPeriods.forEach(p => { spyValue += previousData.get(p) || 0; });
+        }
+        spyValue = this._roundDecimals(spyValue, decimals);
+        const vsPercent = spyValue !== 0
+            ? Math.round(((kpiValue - spyValue) / spyValue) * 1000) / 10
+            : null;
+
+        // --- Build chart labels and raw series arrays ---
+        const allPeriods = new Set<number>();
+        currentData.forEach((_, k) => allPeriods.add(k));
+        if (previousData) previousData.forEach((_, k) => allPeriods.add(k));
+        const sortedPeriods = Array.from(allPeriods).sort((a, b) => a - b);
+        const labels = sortedPeriods.map(p => this._periodLabel(p, dateFormat));
+        const currentSeries = sortedPeriods.map(p => currentData.get(p) ?? null);
+        const previousSeries = previousData
+            ? sortedPeriods.map(p => previousData.get(p) ?? null)
+            : [];
+
+        // --- Build raw datasets (before color assignment) ---
+        const rawDatasets: any[] = [{
+            label: currentYear,
+            data: currentSeries,
+            type: 'bar',
+            borderRadius: 2,
+            order: 2,
+            datalabels: { display: false }
+        }];
+        if (previousData) {
+            rawDatasets.push({
+                label: previousYear,
+                data: previousSeries,
+                type: 'line',
+                pointRadius: 2,
+                pointHoverRadius: 4,
+                borderDash: [4, 3],
+                fill: false,
+                tension: 0.3,
+                order: 1,
+                datalabels: { display: false }
+            });
+        }
+
+        // --- assignedColors – mismo patrón que renderEdaKpiChart ---
+        const existingColors = cfg['assignedColors'] || [];
+        let assignedColors: any[] = [];
+
+        if (existingColors.length > 0) {
+            assignedColors = existingColors;
+        } else {
+            const paletteColor = this.styleProviderService?.ActualChartPalette?.['paleta']?.[0] ||
+                                 this.styleProviderService?.DEFAULT_PALETTE_COLOR?.['paleta']?.[0];
+            assignedColors = rawDatasets.map((dataset, index) => ({
+                value: dataset.label || `Series ${index + 1}`,
+                color: this.paletaActual[index % this.paletaActual.length] || paletteColor
+            }));
+            cfg['assignedColors'] = assignedColors;
+        }
+
+        // --- Chart options via initChartOptions – mismo patrón que renderEdaKpiChart ---
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        const styles: StyleConfig = {
+            fontFamily: this.fontFamily,
+            fontSize: this.fontSize,
+            fontColor: this.fontColor
+        };
+        const dimensions = this.getDimensions();
+        dimensions.height = !dimensions.height ? 255 : dimensions.height;
+        dimensions.width = !dimensions.width ? 1300 : dimensions.width;
+
+        const ticksOptions = {
+            xTicksLimit: 3,
+            yTicksLimit: 0,
+            maxRotation: 1,
+            minRotation: 1,
+            labelOffset: 40,
+            padding: -2
+        };
+        const chartOptions = this.chartUtils.initChartOptions(
+            'bar', dataDescription.numericColumns[0]?.name,
+            dataDescription.otherColumns, false, false, dimensions, null,
+            { min: null, max: null }, styles, false, false, false, false,
+            cfg.numberOfColumns, 'barline', ticksOptions, false, cfg.showGridLines ?? true,
+            this.styleProviderService
+        );
+
+        // --- Build chartConfig.edaChart – mismo patrón que renderEdaKpiChart ---
+        const chartConfig: any = {};
+        chartConfig.showChart = true;
+        chartConfig.edaChart = {};
+        chartConfig.edaChart.edaChart = 'barline';
+        chartConfig.edaChart.chartType = 'bar';
+        chartConfig.edaChart.chartLabels = labels;
+        chartConfig.edaChart.chartDataset = rawDatasets;
+        chartConfig.edaChart.chartOptions = chartOptions.chartOptions;
+        chartConfig.edaChart.chartColors = [];
+        chartConfig.edaChart.chartLegend = false;
+
+        // --- Aplicar assignedColors a los datasets – mismo patrón que renderEdaKpiChart ---
+        for (let i = 0; i < rawDatasets.length; i++) {
+            const colorConfig = assignedColors[i];
+            if (colorConfig) {
+                chartConfig.edaChart.chartDataset[i] = {
+                    ...chartConfig.edaChart.chartDataset[i],
+                    backgroundColor: colorConfig.color,
+                    borderColor: colorConfig.color
+                };
+                chartConfig.edaChart.chartColors.push({
+                    backgroundColor: colorConfig.color,
+                    borderColor: colorConfig.color
+                });
+            }
+        }
+
+        // --- KPI/trend values ---
+        chartConfig.header = query[numericIndex]?.display_name?.default || '';
+        chartConfig.kpiValue = kpiValue;
+        chartConfig.kpiYear = currentYear;
+        chartConfig.spyValue = spyValue;
+        chartConfig.spyYear = previousYear || '';
+        chartConfig.vsPercent = vsPercent;
+        chartConfig.decimals = decimals;
+
+        // --- Style config – mismo patrón que renderEdaKpiChart ---
+        const propsConfig: any = this.props.config;
+        if (propsConfig) {
+            const trendCfg = <KpiTrendConfig>propsConfig.getConfig();
+            chartConfig.sufix = trendCfg?.sufix || '';
+            chartConfig.backgroundColor = trendCfg?.backgroundColor || '';
+            chartConfig.kpiColor = trendCfg?.kpiColor || '';
+        } else {
+            chartConfig.sufix = '';
+            chartConfig.backgroundColor = '';
+            chartConfig.kpiColor = '';
+        }
+        chartConfig.currentYearColor = assignedColors[0]?.color || this.paletaActual[0];
+        chartConfig.previousYearColor = assignedColors[1]?.color || this.paletaActual[1] || this.paletaActual[0];
+
+        this.createEdaKpiTrendComponent(chartConfig);
+    }
+
+    private _parseDateForTrend(dateStr: string, format: string): { year: string; period: number } {
+        const parts = dateStr.split('-');
+        if (format === 'year' || parts.length === 1) {
+            return { year: parts[0], period: 1 };
+        }
+        // month → YYYY-MM, week → YYYY-WXX or YYYY-XX, day → YYYY-MM-DD
+        const year = parts[0];
+        const rawPeriod = parts[1].replace(/^W/i, '');
+        return { year, period: parseInt(rawPeriod, 10) || 1 };
+    }
+
+    private _periodLabel(period: number, format: string): string {
+        if (format === 'month') {
+            const months = ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+            return months[(period - 1) % 12] || String(period);
+        }
+        return String(period);
+    }
+
+    private _roundDecimals(value: number, decimals: number): number {
+        if (!decimals) return Math.round(value);
+        return Number(value.toFixed(decimals));
+    }
+
+    /**
+     * creates a kpiTrendComponent
+     * @param inject
+     */
+    private createEdaKpiTrendComponent(inject: any) {
+        this.entry.clear();
+        this.componentRef = this.entry.createComponent(EdaKpiTrendComponent);
+        this.componentRef.instance.inject = inject;
+        this.currentConfig = inject;
+        this.configUpdated.emit(this.currentConfig);
+    }
 
 
     /**
@@ -1065,6 +1287,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 else if (['kpibar', 'kpiline', 'kpiarea'].includes(this.props.chartType)) {
                     this.updateKPIColors();
                 }
+                else if (this.props.chartType === 'kpitrend') {
+                    this.updateKpiTrendColors();
+                }
                 // Charts D3
                 else if (['treeMap', 'knob', 'sunburst', 'funnel', 'parallelSets', 'bubblechart', 'scatterPlot'].includes(this.props.chartType)) {
                     this.updateD3ChartColors(this.props.chartType);
@@ -1122,6 +1347,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.props.config.setConfig(new KpiConfig(assignedColors));
         // Re-renderizar KPI desde cero
         this.renderEdaKpiChart();
+    }
+
+    public updateKpiTrendColors() {
+        const config = this.props.config.getConfig();
+        const assignedColors = config['assignedColors'];
+
+        this.props.config.setConfig(new KpiTrendConfig({ assignedColors }));
+        this.renderEdaKpiTrend();
     }
 
     public updateMapColors() {

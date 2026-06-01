@@ -3413,6 +3413,11 @@
     <target>Un graphique pyramidal nécessite deux catégories et une valeur numérique</target>
   </trans-unit>
 
+  <trans-unit id="chartInfoKpiTrend">
+    <source>KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica</source>
+    <target>KPI Tendance nécessite une colonne de date au format mois et une colonne numérique</target>
+  </trans-unit>
+
   <trans-unit id="mailConfOk">
     <source>Credenciales  correctas </source>
     <target>Identifiants  corrects</target>
@@ -4012,7 +4017,12 @@
         <source>KPI + Gráfico de Áreas</source>
         <target>KPI + Graphique de la zone</target>
       </trans-unit>
-  
+
+      <trans-unit id="chartTypesKPITrend">
+        <source>KPI Tendencia</source>
+        <target>KPI Tendance</target>
+      </trans-unit>
+
   <trans-unit id="urlEditSaveError">
     <source>Formulario incompleto, rellene todos los campos</source>
     <target>Formulaire incomplet, veuillez remplir tous les champs</target>

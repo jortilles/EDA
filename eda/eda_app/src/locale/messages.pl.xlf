@@ -3126,6 +3126,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Wykres piramidowy wymaga dwóch kategorii i wartości liczbowej</target>
   </trans-unit>
 
+  <trans-unit id="chartInfoKpiTrend">
+    <source>KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica</source>
+    <target>KPI Trend wymaga kolumny daty w formacie miesięcznym i kolumny liczbowej</target>
+  </trans-unit>
+
   <trans-unit id="checkCredentials">
     <source> Comprobar credenciales</source>
     <target>Sprawdź dane uwierzytelniające</target>
@@ -3791,7 +3796,12 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>KPI + Wykres warstwowy</target>
       </trans-unit>
 
-  
+      <trans-unit id="chartTypesKPITrend">
+        <source>KPI Tendencia</source>
+        <target>KPI Trend</target>
+      </trans-unit>
+
+
 <trans-unit id="aplicarBtn">
   <source>Aplicar</source>
   <target>Stosować</target>

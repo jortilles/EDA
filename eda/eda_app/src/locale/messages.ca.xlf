@@ -3466,6 +3466,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Un gràfic de piràmide necessita dues categories i un valor numèric</target>
   </trans-unit>
 
+  <trans-unit id="chartInfoKpiTrend">
+    <source>KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica</source>
+    <target>KPI Tendència necessita una columna de data en format mes i una columna numèrica</target>
+  </trans-unit>
+
    <trans-unit id="mailConfOk">
     <source>Credenciales  correctas </source>
     <target> Credencials  correctes</target>
@@ -4075,7 +4080,12 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
         <source>KPI + Gráfico de Áreas</source>
         <target>KPI + Gràfic d'àrees</target>
       </trans-unit>
-  
+
+      <trans-unit id="chartTypesKPITrend">
+        <source>KPI Tendencia</source>
+        <target>KPI Tendència</target>
+      </trans-unit>
+
   <trans-unit id="urlEditSaveError">
     <source>Formulario incompleto, rellene todos los campos</source>
     <target>FORMULARI INCORRECTE, COMPLETAR ELS CAMPS</target>
