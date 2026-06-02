@@ -60,7 +60,7 @@
           <span style="font-size:9px;font-weight:600;color:#aaa;text-transform:uppercase;letter-spacing:0.04em;">
             {{ displayComparisonLabel }}
           </span>
-          <span style="font-size:12px;font-weight:600;color:#555;">{{ formatValue(displaySpyValue) }}</span>
+          <span style="font-size:12px;font-weight:600;" [style.color]="color">{{ formatValue(displaySpyValue) }}</span>
         </div>
       }
 

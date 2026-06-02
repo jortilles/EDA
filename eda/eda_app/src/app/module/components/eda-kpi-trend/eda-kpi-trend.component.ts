@@ -230,4 +230,14 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     absVal(v: number): number { return Math.abs(v); }
+
+    public updateChart(): void {
+        if (this.inject?.edaChart) {
+            this.edaChartInject = { ...this.inject.edaChart };
+            this.cdr.detectChanges();
+            if (this.edaTrendChart) {
+                this.edaTrendChart.updateChart();
+            }
+        }
+    }
 }
