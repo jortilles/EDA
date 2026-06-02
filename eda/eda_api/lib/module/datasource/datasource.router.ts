@@ -237,6 +237,8 @@ router.get('/:id', authGuard, roleGuard, DataSourceController.GetDataSourceById)
 */
 router.post('/add-data-source/', authGuard, roleGuard, DataSourceController.GenerateDataModel);
 
+router.post('/add-duckdb-data-source', authGuard, roleGuard, DataSourceController.AddDuckDBDataSource);
+
 
 
 /**

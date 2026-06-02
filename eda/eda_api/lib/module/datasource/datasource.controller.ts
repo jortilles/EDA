@@ -11,6 +11,9 @@ import { QueryOptions } from 'mongoose';
 import { upperCase } from 'lodash';
 import Group from '../../module/admin/groups/model/group.model';
 import _ from 'lodash';
+import * as path from 'path';
+import * as fs from 'fs';
+import { AggregationTypes } from '../global/model/aggregation-types';
 const cache_config = require('../../../config/cache.config');
 
 export class DataSourceController {
@@ -727,6 +730,106 @@ export class DataSourceController {
             return dataSources.filter(dataSource =>
                 dataSource.ds.metadata.tags && dataSource.ds.metadata.tags.some(tag => queryTagArray.includes(tag))
             );
+        }
+    }
+
+    static async AddDuckDBDataSource(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { name, description, optimize, allowCache, csvContent, columnsConfig } = req.body;
+
+            if (!name || !csvContent) {
+                return next(new HttpException(400, 'Name and CSV content are required'));
+            }
+
+            const normalizeName = (str: string) =>
+                str.split('_').join(' ').toLowerCase()
+                    .split(' ').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+
+            const safeName = name.replace(/[^a-zA-Z0-9_\-]/g, '_').toLowerCase();
+            const csvFileName = `${safeName}.csv`;
+
+            const duckdbFolder = path.join(process.cwd(), 'duckdb');
+            if (!fs.existsSync(duckdbFolder)) {
+                fs.mkdirSync(duckdbFolder, { recursive: true });
+            }
+
+            fs.writeFileSync(path.join(duckdbFolder, csvFileName), csvContent, 'utf8');
+
+            const columns = (columnsConfig || []).map((col: any) => {
+                let colType: string;
+                switch (col.type) {
+                    case 'integer':
+                    case 'numeric':
+                        colType = 'numeric'; break;
+                    case 'timestamp':
+                        colType = 'date'; break;
+                    default:
+                        colType = 'text';
+                }
+                return {
+                    column_name: col.field,
+                    column_type: colType,
+                    display_name: { default: normalizeName(col.field.replace(/_/g, ' ')), localized: [] },
+                    description: { default: normalizeName(col.field.replace(/_/g, ' ')), localized: [] },
+                    aggregation_type: colType === 'numeric'
+                        ? AggregationTypes.getValuesForNumbers()
+                        : colType === 'date'
+                        ? AggregationTypes.getValuesForOthers()
+                        : AggregationTypes.getValuesForText(),
+                    minimumFractionDigits: col.type === 'integer' ? 0 : col.type === 'numeric' ? 2 : null,
+                    computed_column: 'no',
+                    visible: true,
+                    ia_visibility: 'FULL',
+                    column_granted_roles: [],
+                    row_granted_roles: [],
+                    tableCount: 0
+                };
+            });
+
+            const tableDisplayName = normalizeName(safeName.replace(/_/g, ' '));
+            const tables = [{
+                table_name: safeName,
+                display_name: { default: tableDisplayName, localized: [] },
+                description: { default: tableDisplayName, localized: [] },
+                table_type: [],
+                table_granted_roles: [],
+                columns,
+                relations: [],
+                visible: true,
+                tableCount: 0
+            }];
+
+            const CC = allowCache ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
+
+            const datasource: IDataSource = new DataSource({
+                ds: {
+                    connection: {
+                        type: 'duckdb',
+                        host: null,
+                        port: null,
+                        database: duckdbFolder,
+                        schema: 'main',
+                        user: null,
+                        password: null
+                    },
+                    metadata: {
+                        model_name: name,
+                        model_description: description || '',
+                        model_id: '',
+                        model_granted_roles: [],
+                        optimized: !!optimize,
+                        cache_config: CC,
+                        model_owner: req.user._id,
+                        ia_visibility: 'FULL'
+                    },
+                    model: { tables }
+                }
+            });
+
+            const saved = await datasource.save();
+            return res.status(201).json({ ok: true, data_source_id: saved._id });
+        } catch (err) {
+            next(err);
         }
     }
 

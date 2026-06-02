@@ -27,6 +27,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
   @ViewChild('fileUploader', { static: false }) fileUploader: UploadFileComponent;
   @ViewChild('excelFile', { static: false }) excelFile: ElementRef<HTMLInputElement>;
   @ViewChild('file') fileInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('duckdbFile') duckdbFileInput!: ElementRef<HTMLInputElement>;
 
   public header: string = $localize`:@@DataModelHeader:Configurar nueva fuente de datos`;
   public header2 = true;
@@ -65,6 +66,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     { label: 'Mongo', value: 'mongo', port: 27017 },
     { label: 'Excel', value: 'excel', port: 27017 },
     { label: 'Csv', value: 'csv', port: 27017 },
+    { label: 'DuckDB (CSV)', value: 'duckdb' },
   ];
 
   public sidOptions: any[] = [
@@ -83,6 +85,10 @@ export class DataSourceConnectionDetailPage implements OnInit {
   _csvFileName = signal<string>('');
   isDraggingExcelFile = signal<boolean>(false);
   isDraggingCsvFile = signal<boolean>(false);
+  _duckdbFileName = signal<string>('');
+  _duckdbFile = signal<File | null>(null);
+  isDraggingDuckDbFile = signal<boolean>(false);
+  public duckdbRawContent: string = '';
 
   // variables añadidas ppor el script add-ccsv
   public csvRecords: any;
@@ -194,12 +200,14 @@ export class DataSourceConnectionDetailPage implements OnInit {
   async onSubmit() {
     const type = this.connectionForm.get('type')?.value;
 
-    if (this.connectionForm.invalid && type !== 'excel' && type !== 'bigquery' && type !== 'csv') {
+    if (this.connectionForm.invalid && type !== 'excel' && type !== 'bigquery' && type !== 'csv' && type !== 'duckdb') {
       this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`);
     } else if (type === 'excel') {
       this.saveExcelDataSource();
     } else if (type === 'csv') {
       this.saveCsvDataSource();
+    } else if (type === 'duckdb') {
+      this.saveDuckDbDataSource();
     } else if (type === 'bigquery') {
       this.saveBigQueryDataSource();
     } else {
@@ -461,32 +469,38 @@ export class DataSourceConnectionDetailPage implements OnInit {
     e.stopPropagation();
   }
 
-  handleDragIn(e: DragEvent, type: 'bigquery' | 'excel' | 'csv') {
+  handleDragIn(e: DragEvent, type: 'bigquery' | 'excel' | 'csv' | 'duckdb') {
     e.preventDefault();
     e.stopPropagation();
     if (type === 'bigquery') {
       this.isDraggingBigQueryFile.set(true);
+    } else if (type === 'duckdb') {
+      this.isDraggingDuckDbFile.set(true);
     } else {
       this.isDraggingExcelFile.set(true);
     }
   }
 
-  handleDragOut(e: DragEvent, type: 'bigquery' | 'excel' | 'csv') {
+  handleDragOut(e: DragEvent, type: 'bigquery' | 'excel' | 'csv' | 'duckdb') {
     e.preventDefault();
     e.stopPropagation();
     if (type === 'bigquery') {
       this.isDraggingBigQueryFile.set(false);
+    } else if (type === 'duckdb') {
+      this.isDraggingDuckDbFile.set(false);
     } else {
       this.isDraggingExcelFile.set(false);
     }
   }
 
-  handleDrop(e: DragEvent, type: 'bigquery' | 'excel' | 'csv') {
+  handleDrop(e: DragEvent, type: 'bigquery' | 'excel' | 'csv' | 'duckdb') {
     e.preventDefault();
     e.stopPropagation();
 
     if (type === 'bigquery') {
       this.isDraggingBigQueryFile.set(false);
+    } else if (type === 'duckdb') {
+      this.isDraggingDuckDbFile.set(false);
     } else {
       this.isDraggingExcelFile.set(false);
     }
@@ -499,7 +513,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     }
   }
 
-  handleFileSelect(e: Event, type: 'bigquery' | 'excel' | 'csv') {
+  handleFileSelect(e: Event, type: 'bigquery' | 'excel' | 'csv' | 'duckdb') {
     const input = e.target as HTMLInputElement;
     const files = input.files;
     if (files && files.length > 0) {
@@ -597,7 +611,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     }
   }
 
-  handleFiles(file: File, type: 'bigquery' | 'excel' | 'csv') {
+  handleFiles(file: File, type: 'bigquery' | 'excel' | 'csv' | 'duckdb') {
     if (type === 'bigquery') {
       this.bigQueryFileName.set(file.name);
       this.bigQueryFile.set(file);
@@ -607,6 +621,9 @@ export class DataSourceConnectionDetailPage implements OnInit {
     } else if (type === 'csv') {
       this._csvFileName.set(file.name);
       this._csvFile.set(file);
+    } else if (type === 'duckdb') {
+      this._duckdbFileName.set(file.name);
+      this._duckdbFile.set(file);
     }
   }
 
@@ -693,6 +710,95 @@ export class DataSourceConnectionDetailPage implements OnInit {
     this.csvColumns = [];
     this.file.nativeElement.value = "";
     this.file.nativeElement.click();
+  }
+
+  async onDuckDbFilesAdded() {
+    const input = this.duckdbFileInput?.nativeElement;
+    if (!input) return;
+    const files = input.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+    this._duckdbFileName.set(file.name);
+    this._duckdbFile.set(file);
+
+    this.duckdbRawContent = await file.text();
+    await this.parseDuckDbFile(file);
+  }
+
+  async retryCsvWithNewSeparatorForDuckDb() {
+    const input = this.duckdbFileInput?.nativeElement;
+    if (!input) return;
+    const files = input.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
+    this.duckdbRawContent = await file.text();
+    await this.parseDuckDbFile(file);
+  }
+
+  private async parseDuckDbFile(file: File) {
+    const separator = this.connectionForm.get('separator')?.value || ';';
+    try {
+      this.csvRecords = await lastValueFrom(this.ngxCsvParser.parse(file, { header: true, delimiter: separator }));
+      if (!this.csvRecords || this.csvRecords.length === 0) {
+        this.csvColumns = [];
+        this.cdr.detectChanges();
+        return;
+      }
+      this.csvHeaders = Object.keys(this.csvRecords[0]);
+      const types = this.getTypes(this.csvHeaders, this.csvRecords);
+      this.csvColumns = [];
+      this.csvHeaders.forEach((header: string, h: number) => {
+        const row: any = { field: header };
+        row[this.names[0]] = types[h];
+        row[this.names[1]] = '';
+        row[this.names[2]] = ',';
+        this.csvColumns.push(row);
+      });
+      this.cdr.detectChanges();
+    } catch (err) {
+      console.error('Error parsing DuckDB CSV:', err);
+      this.csvColumns = [];
+      this.csvFileData = [];
+      this.alertService.addError($localize`:@@errorParseDuckDb:Error al parsear el archivo CSV. Verifica el separador.`);
+    }
+  }
+
+  async saveDuckDbDataSource(): Promise<void> {
+    const value = this.connectionForm.value;
+    if (!value.name) {
+      this.alertService.addError($localize`:@@noNameProvided:Debe proporcionar un nombre para el datasource`);
+      return;
+    }
+    if (!this.duckdbRawContent) {
+      this.alertService.addError($localize`:@@noDuckDbFile:Debe cargar un archivo CSV primero`);
+      return;
+    }
+    if (!this.csvColumns || this.csvColumns.length === 0) {
+      this.alertService.addError($localize`:@@noDuckDbColumns:No se detectaron columnas. Verifique el separador.`);
+      return;
+    }
+
+    this.spinnerService.on();
+    try {
+      const payload = {
+        name: value.name,
+        description: value.description || '',
+        csvContent: this.duckdbRawContent,
+        columnsConfig: this.csvColumns,
+        optimize: value.optimize ? 1 : 0,
+        allowCache: value.allowCache ? 1 : 0
+      };
+
+      const res = await lastValueFrom(this.excelFormatterService.addDuckDBDataSource(payload));
+      this.spinnerService.off();
+      this.alertService.addSuccess($localize`:@@duckdbCreated:Fuente de datos DuckDB creada correctamente`);
+      this.router.navigate(['/data-source/', res.data_source_id]);
+    } catch (err) {
+      this.spinnerService.off();
+      this.alertService.addError(err);
+      throw err;
+    }
   }
 
 
