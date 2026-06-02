@@ -11,20 +11,24 @@ import { KnobConfig } from './knob-config';
 import { SunburstConfig } from './sunburst-config';
 import { BubblechartConfig } from './bubblechart.config';
 import { TreeTableConfig } from './treeTable-config';
+import { KpiTrendConfig } from './kpi-trend-config';
 
-
+type AnyChartConfig = ChartJsConfig | TableConfig | KpiConfig | DynamicTextConfig | MapConfig | SankeyConfig
+    | TreeMapConfig | TreeTableConfig | ScatterConfig | KnobConfig | FunnelConfig | BubblechartConfig
+    | SunburstConfig | KpiTrendConfig;
 
 export class ChartConfig {
-  private config: ChartJsConfig | TableConfig | KpiConfig | DynamicTextConfig| MapConfig | SankeyConfig | TreeMapConfig | TreeTableConfig | ScatterConfig | KnobConfig | FunnelConfig | BubblechartConfig |SunburstConfig
+  private config: AnyChartConfig;
 
-  constructor(config: ChartJsConfig | TableConfig | KpiConfig | DynamicTextConfig | MapConfig | SankeyConfig | TreeMapConfig | TreeTableConfig | ScatterConfig | KnobConfig | FunnelConfig | BubblechartConfig  | SunburstConfig) {
+  constructor(config: AnyChartConfig) {
      this.config = config;
   }
-  
-  getConfig(): ChartJsConfig | TableConfig | KpiConfig | DynamicTextConfig | MapConfig | SankeyConfig | TreeMapConfig | TreeTableConfig | ScatterConfig | KnobConfig | FunnelConfig | BubblechartConfig  | SunburstConfig{
+
+  getConfig(): AnyChartConfig {
     return this.config;
   }
-  setConfig(config: ChartJsConfig | TableConfig | KpiConfig | DynamicTextConfig | MapConfig | SankeyConfig | TreeMapConfig | TreeTableConfig | ScatterConfig | KnobConfig | FunnelConfig | BubblechartConfig | SunburstConfig):void{
+
+  setConfig(config: AnyChartConfig): void {
     this.config = config;
   }
 }

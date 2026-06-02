@@ -1,0 +1,30 @@
+.kpi-trend-positive {
+    color: #22a55b;
+}
+
+/* Dropdown compacto para la cabecera del panel */
+:host ::ng-deep .kpi-trend-dropdown.p-dropdown {
+    height: 22px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+:host ::ng-deep .kpi-trend-dropdown .p-dropdown-label {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 0 6px;
+    line-height: 20px;
+}
+
+.kpi-trend-negative {
+    color: #e53e3e;
+}
+
+.trend-dropdown {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23888'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 2px center;
+    padding-right: 12px !important;
+}
