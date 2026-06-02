@@ -78,6 +78,7 @@
         "vertica": "^0.5.5",
         "winston": "^3.3.3",
         "winston-csv-format": "^2.0.1",
+        "xml2js": "^0.6.2",
         "zod": "^3.25.76"
     },
     "compilerOptions": {
