@@ -630,11 +630,54 @@ export class GlobalFilterComponent implements OnInit {
                                 // Adding the joins of the filter that comes from the url
                                 formatedFilter.joins = pathList;
 
+                                // SDA CUSTOM - Fix: Also set filter_table from pathList for tree filters
+                                /* SDA CUSTOM */ if (formatedFilter.pathList && formatedFilter.pathList[panel.id] && formatedFilter.pathList[panel.id].table_id) {
+                                    /* SDA CUSTOM */ formatedFilter.filter_table = formatedFilter.pathList[panel.id].table_id;
+                                /* SDA CUSTOM */ }
+
                                 // Controlling the filters
                                 if( _.findIndex(panelFilter, (inx) => inx.filter_column === formatedFilter.filter_column) >=0 ){
                                     panelFilter.splice(_.findIndex(panelFilter, (inx) => inx.filter_column === formatedFilter.filter_column), 1);
                                 }
                                 panelFilter.push(formatedFilter);
+
+                                // SDA CUSTOM - Fix: Inject URL filter into sortedFilters when advanced filters exist
+                                /* SDA CUSTOM */ const sortedFilters = panel.content?.query?.query?.sortedFilters;
+                                /* SDA CUSTOM */ if (sortedFilters && sortedFilters.length > 0) {
+                                    /* SDA CUSTOM */     const existingIndex = sortedFilters.findIndex((sf: any) => sf.filter_id === formatedFilter.filter_id);
+                                    /* SDA CUSTOM */     if (existingIndex >= 0) {
+                                    /* SDA CUSTOM */         sortedFilters[existingIndex].filter_elements = formatedFilter.filter_elements;
+                                    /* SDA CUSTOM */         sortedFilters[existingIndex].filter_codes = formatedFilter.filter_codes;
+                                    /* SDA CUSTOM */         sortedFilters[existingIndex].joins = formatedFilter.joins;
+                                    /* SDA CUSTOM */         sortedFilters[existingIndex].filter_table = formatedFilter.filter_table;
+                                    /* SDA CUSTOM */     } else {
+                                    /* SDA CUSTOM */         const lastElement = sortedFilters[sortedFilters.length - 1];
+                                    /* SDA CUSTOM */         const newSortedFilter = {
+                                    /* SDA CUSTOM */             cols: 3,
+                                    /* SDA CUSTOM */             rows: 1,
+                                    /* SDA CUSTOM */             y: lastElement.y + 1,
+                                    /* SDA CUSTOM */             x: 0,
+                                    /* SDA CUSTOM */             filter_table: formatedFilter.filter_table,
+                                    /* SDA CUSTOM */             filter_column: formatedFilter.filter_column,
+                                    /* SDA CUSTOM */             filter_type: formatedFilter.filter_type,
+                                    /* SDA CUSTOM */             filter_column_type: formatedFilter.filter_column_type,
+                                    /* SDA CUSTOM */             filter_elements: formatedFilter.filter_elements,
+                                    /* SDA CUSTOM */             filter_codes: formatedFilter.filter_codes,
+                                    /* SDA CUSTOM */             filter_id: formatedFilter.filter_id,
+                                    /* SDA CUSTOM */             isGlobal: formatedFilter.isGlobal,
+                                    /* SDA CUSTOM */             value: "and",
+                                    /* SDA CUSTOM */             joins: formatedFilter.joins,
+                                    /* SDA CUSTOM */             pathList: formatedFilter.pathList,
+                                    /* SDA CUSTOM */             valueListSource: formatedFilter.valueListSource,
+                                    /* SDA CUSTOM */             filterBeforeGrouping: formatedFilter.filterBeforeGrouping ?? true,
+                                    /* SDA CUSTOM */             autorelation: formatedFilter.autorelation,
+                                    /* SDA CUSTOM */             computed_column: formatedFilter.computed_column,
+                                    /* SDA CUSTOM */             SQLexpression: formatedFilter.SQLexpression,
+                                    /* SDA CUSTOM */             applyToAll: formatedFilter.applyToAll,
+                                    /* SDA CUSTOM */         };
+                                    /* SDA CUSTOM */         sortedFilters.push(newSortedFilter);
+                                    /* SDA CUSTOM */     }
+                                /* SDA CUSTOM */ }
                             });
 
                     }
