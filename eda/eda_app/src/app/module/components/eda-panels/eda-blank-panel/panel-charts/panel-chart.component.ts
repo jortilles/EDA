@@ -9,7 +9,7 @@ import { TreeMap } from './../../../eda-treemap/eda-treeMap';
 import { EdaD3Component } from './../../../eda-d3/eda-d3.component';
 import { TableConfig } from './chart-configuration-models/table-config';
 import { Component, OnInit, Input, SimpleChanges, OnChanges, ViewChild, ViewContainerRef, ComponentFactoryResolver,
-    OnDestroy, Output, EventEmitter, Self, ElementRef,} from '@angular/core';
+    OnDestroy, Output, EventEmitter, Self, ElementRef, Inject, LOCALE_ID } from '@angular/core';
 import { EdadynamicTextComponent } from '../../../eda-dynamicText/eda-dynamicText.component';
 import { EdaTableComponent } from '../../../eda-table/eda-table.component';
 import { PanelChart } from './panel-chart';
@@ -40,8 +40,8 @@ import { SunburstConfig } from './chart-configuration-models/sunburst-config';
 import { SankeyConfig } from './chart-configuration-models/sankey-config';
 import { ScatterConfig } from './chart-configuration-models/scatter-config';
 import { BubblechartConfig } from './chart-configuration-models/bubblechart.config';
-import { FormsModule } from '@angular/forms'; 
-import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { CommonModule, getLocaleMonthNames, FormStyle, TranslationWidth } from '@angular/common';
 import { FunnelConfig } from './chart-configuration-models/funnel.config';
 import { KnobConfig } from './chart-configuration-models/knob-config';
 import { MapConfig } from './chart-configuration-models/map-config';
@@ -91,7 +91,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     constructor(
         private chartUtils: ChartUtilsService,
         @Self() private ownRef: ElementRef,
-        public styleProviderService: StyleProviderService) {
+        public styleProviderService: StyleProviderService,
+        @Inject(LOCALE_ID) private locale: string) {
         
         this.fontColor = this.styleProviderService.panelFontColor.source['value'];
         this.paletaActual = this.styleProviderService.ActualChartPalette !== undefined ?
@@ -790,63 +791,70 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         const dateFormat: string = query[dateIndex]?.format || 'month';
         const decimals: number = query[numericIndex]?.minimumFractionDigits || 0;
+        const header: string = query[numericIndex]?.display_name?.default || '';
 
-        // --- Group data by year → period → accumulated value ---
-        const yearData = new Map<string, Map<number, number>>();
-        data.values.forEach((row: any[]) => {
-            const dateStr = String(row[dateIndex] ?? '').trim();
-            const value = Number(row[numericIndex]) || 0;
-            if (!dateStr) return;
-            const { year, period } = this._parseDateForTrend(dateStr, dateFormat);
-            if (!yearData.has(year)) yearData.set(year, new Map());
-            const pm = yearData.get(year);
-            pm.set(period, (pm.get(period) || 0) + value);
-        });
+        // --- Parse all rows sorted chronologically ---
+        const rawRows: { dateStr: string; value: number }[] = data.values
+            .filter((row: any[]) => row[dateIndex] != null && row[dateIndex] !== '')
+            .map((row: any[]) => ({
+                dateStr: String(row[dateIndex]).trim(),
+                value: Number(row[numericIndex]) || 0
+            }))
+            .sort((a, b) => a.dateStr < b.dateStr ? -1 : a.dateStr > b.dateStr ? 1 : 0);
 
-        const years = Array.from(yearData.keys()).sort().reverse();
-        if (years.length < 1) return;
+        if (rawRows.length === 0) return;
 
-        const currentYear = years[0];
-        const previousYear = years.length > 1 ? years[1] : null;
-        const currentData = yearData.get(currentYear);
-        const previousData = previousYear ? yearData.get(previousYear) : null;
-        const currentPeriods = Array.from(currentData.keys()).sort((a, b) => a - b);
+        // --- Build period groups:
+        //   month format → groups = years, periods = months 1-12
+        //   week format  → groups = approx months (4-week buckets), periods = week ordinal (1-5)
+        //   year/day     → groups = years or months, periods = 1 or day number
+        const periodGroups = this._buildTrendPeriodGroups(rawRows, dateFormat);
+        if (periodGroups.length === 0) return;
 
-        // --- KPI / SPY values ---
-        const kpiValue = this._roundDecimals(
-            Array.from(currentData.values()).reduce((a, b) => a + b, 0), decimals);
-        let spyValue = 0;
-        if (previousData) {
-            currentPeriods.forEach(p => { spyValue += previousData.get(p) || 0; });
+        // Most recent group = current, second = default comparison
+        const currentGroup = periodGroups[0];
+        const defaultCompKey = periodGroups.length > 1 ? periodGroups[1].key : null;
+        const availableComparisons = periodGroups.slice(1).map(g => ({ key: g.key, label: g.label }));
+
+        // --- Compute initial chart data ---
+        const compGroup = defaultCompKey ? periodGroups.find(g => g.key === defaultCompKey) || null : null;
+        const { kpiValue, spyValue, vsPercent, labels, currentSeries, previousSeries } =
+            this._computeTrendDisplay(currentGroup, compGroup, dateFormat, decimals);
+
+        // --- assignedColors – mismo patrón que renderEdaKpiChart ---
+        const existingColors = cfg['assignedColors'] || [];
+        let assignedColors: any[] = [];
+        const hasTwoSeries = compGroup !== null;
+
+        if (existingColors.length > 0) {
+            assignedColors = existingColors;
+        } else {
+            const fallback = this.styleProviderService?.ActualChartPalette?.['paleta']?.[0] ||
+                             this.styleProviderService?.DEFAULT_PALETTE_COLOR?.['paleta']?.[0];
+            assignedColors = [
+                { value: header, color: this.paletaActual[0] || fallback },
+                { value: 'prev', color: this.paletaActual[1] || fallback }
+            ];
+            cfg['assignedColors'] = assignedColors;
         }
-        spyValue = this._roundDecimals(spyValue, decimals);
-        const vsPercent = spyValue !== 0
-            ? Math.round(((kpiValue - spyValue) / spyValue) * 1000) / 10
-            : null;
+        const color0 = assignedColors[0]?.color || this.paletaActual[0];
+        const color1 = assignedColors[1]?.color || this.paletaActual[1] || color0;
 
-        // --- Build chart labels and raw series arrays ---
-        const allPeriods = new Set<number>();
-        currentData.forEach((_, k) => allPeriods.add(k));
-        if (previousData) previousData.forEach((_, k) => allPeriods.add(k));
-        const sortedPeriods = Array.from(allPeriods).sort((a, b) => a - b);
-        const labels = sortedPeriods.map(p => this._periodLabel(p, dateFormat));
-        const currentSeries = sortedPeriods.map(p => currentData.get(p) ?? null);
-        const previousSeries = previousData
-            ? sortedPeriods.map(p => previousData.get(p) ?? null)
-            : [];
-
-        // --- Build raw datasets (before color assignment) ---
+        // --- Build datasets (label = column name for bars, comparison label for line) ---
+        const compLabel = this._comparisonLabel(dateFormat);
         const rawDatasets: any[] = [{
-            label: currentYear,
+            label: header,
             data: currentSeries,
             type: 'bar',
             borderRadius: 2,
             order: 2,
+            backgroundColor: color0,
+            borderColor: color0,
             datalabels: { display: false }
         }];
-        if (previousData) {
+        if (hasTwoSeries) {
             rawDatasets.push({
-                label: previousYear,
+                label: compLabel,
                 data: previousSeries,
                 type: 'line',
                 pointRadius: 2,
@@ -855,45 +863,20 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 fill: false,
                 tension: 0.3,
                 order: 1,
+                backgroundColor: color1,
+                borderColor: color1,
                 datalabels: { display: false }
             });
         }
 
-        // --- assignedColors – mismo patrón que renderEdaKpiChart ---
-        const existingColors = cfg['assignedColors'] || [];
-        let assignedColors: any[] = [];
-
-        if (existingColors.length > 0) {
-            assignedColors = existingColors;
-        } else {
-            const paletteColor = this.styleProviderService?.ActualChartPalette?.['paleta']?.[0] ||
-                                 this.styleProviderService?.DEFAULT_PALETTE_COLOR?.['paleta']?.[0];
-            assignedColors = rawDatasets.map((dataset, index) => ({
-                value: dataset.label || `Series ${index + 1}`,
-                color: this.paletaActual[index % this.paletaActual.length] || paletteColor
-            }));
-            cfg['assignedColors'] = assignedColors;
-        }
-
         // --- Chart options via initChartOptions – mismo patrón que renderEdaKpiChart ---
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
-        const styles: StyleConfig = {
-            fontFamily: this.fontFamily,
-            fontSize: this.fontSize,
-            fontColor: this.fontColor
-        };
+        const styles: StyleConfig = { fontFamily: this.fontFamily, fontSize: this.fontSize, fontColor: this.fontColor };
         const dimensions = this.getDimensions();
         dimensions.height = !dimensions.height ? 255 : dimensions.height;
         dimensions.width = !dimensions.width ? 1300 : dimensions.width;
 
-        const ticksOptions = {
-            xTicksLimit: 3,
-            yTicksLimit: 0,
-            maxRotation: 1,
-            minRotation: 1,
-            labelOffset: 40,
-            padding: -2
-        };
+        const ticksOptions = { xTicksLimit: 3, yTicksLimit: 0, maxRotation: 1, minRotation: 1, labelOffset: 40, padding: -2 };
         const chartOptions = this.chartUtils.initChartOptions(
             'bar', dataDescription.numericColumns[0]?.name,
             dataDescription.otherColumns, false, false, dimensions, null,
@@ -902,41 +885,28 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             this.styleProviderService
         );
 
-        // --- Build chartConfig.edaChart – mismo patrón que renderEdaKpiChart ---
+        // --- Build chartConfig – mismo patrón que renderEdaKpiChart ---
         const chartConfig: any = {};
         chartConfig.showChart = true;
-        chartConfig.edaChart = {};
-        chartConfig.edaChart.edaChart = 'barline';
-        chartConfig.edaChart.chartType = 'bar';
-        chartConfig.edaChart.chartLabels = labels;
-        chartConfig.edaChart.chartDataset = rawDatasets;
-        chartConfig.edaChart.chartOptions = chartOptions.chartOptions;
-        chartConfig.edaChart.chartColors = [];
-        chartConfig.edaChart.chartLegend = false;
+        chartConfig.edaChart = {
+            edaChart: 'barline',
+            chartType: 'bar',
+            chartLabels: labels,
+            chartDataset: rawDatasets,
+            chartOptions: chartOptions.chartOptions,
+            chartColors: rawDatasets.map(d => ({ backgroundColor: d.backgroundColor, borderColor: d.borderColor })),
+            chartLegend: false
+        };
 
-        // --- Aplicar assignedColors a los datasets – mismo patrón que renderEdaKpiChart ---
-        for (let i = 0; i < rawDatasets.length; i++) {
-            const colorConfig = assignedColors[i];
-            if (colorConfig) {
-                chartConfig.edaChart.chartDataset[i] = {
-                    ...chartConfig.edaChart.chartDataset[i],
-                    backgroundColor: colorConfig.color,
-                    borderColor: colorConfig.color
-                };
-                chartConfig.edaChart.chartColors.push({
-                    backgroundColor: colorConfig.color,
-                    borderColor: colorConfig.color
-                });
-            }
-        }
-
-        // --- KPI/trend values ---
-        chartConfig.header = query[numericIndex]?.display_name?.default || '';
+        // --- KPI values ---
+        chartConfig.header = header;
         chartConfig.kpiValue = kpiValue;
-        chartConfig.kpiYear = currentYear;
         chartConfig.spyValue = spyValue;
-        chartConfig.spyYear = previousYear || '';
         chartConfig.vsPercent = vsPercent;
+        chartConfig.currentPeriodLabel = currentGroup.label;
+        chartConfig.previousPeriodLabel = compGroup?.label || '';
+        chartConfig.periodTitle = this._periodTitle(dateFormat);
+        chartConfig.comparisonLabel = compLabel;
         chartConfig.decimals = decimals;
 
         // --- Style config – mismo patrón que renderEdaKpiChart ---
@@ -951,29 +921,181 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             chartConfig.backgroundColor = '';
             chartConfig.kpiColor = '';
         }
-        chartConfig.currentYearColor = assignedColors[0]?.color || this.paletaActual[0];
-        chartConfig.previousYearColor = assignedColors[1]?.color || this.paletaActual[1] || this.paletaActual[0];
+        chartConfig.currentYearColor = color0;
+        chartConfig.previousYearColor = color1;
+
+        // --- Para el dropdown en el componente ---
+        chartConfig.dateFormat = dateFormat;
+        chartConfig.currentKey = currentGroup.key;
+        chartConfig.selectedComparisonKey = defaultCompKey;
+        chartConfig.availableComparisons = availableComparisons;
+        chartConfig.periodGroups = periodGroups;
+        chartConfig.assignedColors = assignedColors;
 
         this.createEdaKpiTrendComponent(chartConfig);
     }
 
-    private _parseDateForTrend(dateStr: string, format: string): { year: string; period: number } {
-        const parts = dateStr.split('-');
-        if (format === 'year' || parts.length === 1) {
-            return { year: parts[0], period: 1 };
-        }
-        // month → YYYY-MM, week → YYYY-WXX or YYYY-XX, day → YYYY-MM-DD
-        const year = parts[0];
-        const rawPeriod = parts[1].replace(/^W/i, '');
-        return { year, period: parseInt(rawPeriod, 10) || 1 };
+    /**
+     * Agrupa los rows según el formato de fecha:
+     *  month → por año (periods = mes 1-12)
+     *  week  → por mes aproximado (periods = posición ordinal de semana 1-5)
+     *  year  → por año (periods = 1 dato por año)
+     *  day   → por mes (periods = día del mes)
+     * Resultado ordenado desc (más reciente primero)
+     */
+    private _buildTrendPeriodGroups(
+        rows: { dateStr: string; value: number }[],
+        format: string
+    ): { key: string; label: string; entries: { period: number; value: number }[] }[] {
+
+        // Map: groupKey → { label, weekNums: [], entries accumulated }
+        const groupAcc = new Map<string, { label: string; weekNums: number[]; values: Map<number, number> }>();
+
+        rows.forEach(row => {
+            const parts = row.dateStr.split('-');
+            const year = parts[0];
+            let groupKey: string;
+            let groupLabel: string;
+            let period: number;
+            let weekNum = 0;
+
+            if (format === 'month') {
+                // Group by year, period = month number
+                groupKey = year;
+                groupLabel = year;
+                period = parts.length > 1 ? (parseInt(parts[1].replace(/^W/i, ''), 10) || 1) : 1;
+
+            } else if (format === 'week') {
+                // Group by approximate calendar month, period = ordinal (assigned later)
+                weekNum = parts.length > 1 ? (parseInt(parts[1].replace(/^W/i, ''), 10) || 1) : 1;
+                const approxMonth = Math.min(12, Math.ceil(weekNum * 12 / 52.18));
+                groupKey = `${year}-${String(approxMonth).padStart(2, '0')}`;
+                const mNames = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+                groupLabel = `${mNames[approxMonth - 1]} '${year.slice(-2)}`;
+                period = 0; // will be assigned after sorting weeks within group
+
+            } else if (format === 'day') {
+                // Group by year-month, period = day of month
+                const monthPart = parts.length > 1 ? parts[1] : '01';
+                groupKey = `${year}-${monthPart}`;
+                const mNum = parseInt(monthPart, 10);
+                const mNames = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+                groupLabel = `${mNames[mNum - 1] || monthPart} '${year.slice(-2)}`;
+                period = parts.length > 2 ? (parseInt(parts[2], 10) || 1) : 1;
+
+            } else {
+                // year format or unknown: group = year, period = 1
+                groupKey = year;
+                groupLabel = year;
+                period = 1;
+            }
+
+            if (!groupAcc.has(groupKey)) {
+                groupAcc.set(groupKey, { label: groupLabel, weekNums: [], values: new Map() });
+            }
+            const acc = groupAcc.get(groupKey);
+
+            if (format === 'week') {
+                // Store week numbers for ordinal assignment later
+                acc.weekNums.push(weekNum);
+                acc.values.set(weekNum, (acc.values.get(weekNum) || 0) + row.value);
+            } else {
+                acc.values.set(period, (acc.values.get(period) || 0) + row.value);
+            }
+        });
+
+        // Convert to output format
+        const groups: { key: string; label: string; entries: { period: number; value: number }[] }[] = [];
+
+        groupAcc.forEach((acc, key) => {
+            let entries: { period: number; value: number }[];
+
+            if (format === 'week') {
+                // Assign ordinal position (1,2,3,4,5) based on sorted week numbers
+                const sortedWeeks = Array.from(acc.values.keys()).sort((a, b) => a - b);
+                entries = sortedWeeks.map((wk, idx) => ({ period: idx + 1, value: acc.values.get(wk) || 0 }));
+            } else {
+                entries = Array.from(acc.values.entries()).map(([p, v]) => ({ period: p, value: v }))
+                              .sort((a, b) => a.period - b.period);
+            }
+            groups.push({ key, label: acc.label, entries });
+        });
+
+        // Sort descending (most recent first)
+        return groups.sort((a, b) => a.key < b.key ? 1 : a.key > b.key ? -1 : 0);
     }
 
-    private _periodLabel(period: number, format: string): string {
-        if (format === 'month') {
-            const months = ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
-            return months[(period - 1) % 12] || String(period);
+    /** Calcula KPI, SPLY, vs% y arrays para el gráfico a partir de dos grupos */
+    private _computeTrendDisplay(
+        currentGroup: { key: string; label: string; entries: { period: number; value: number }[] },
+        compGroup: { key: string; label: string; entries: { period: number; value: number }[] } | null,
+        format: string,
+        decimals: number
+    ): { kpiValue: number; spyValue: number | null; vsPercent: number | null;
+         labels: string[]; currentSeries: (number | null)[]; previousSeries: (number | null)[] } {
+
+        const currentMap = new Map(currentGroup.entries.map(e => [e.period, e.value]));
+        const compMap = compGroup ? new Map(compGroup.entries.map(e => [e.period, e.value])) : null;
+
+        // All periods union
+        const allPeriods = new Set<number>(currentMap.keys());
+        if (compMap) compMap.forEach((_, k) => allPeriods.add(k));
+        const sortedPeriods = Array.from(allPeriods).sort((a, b) => a - b);
+
+        const labels = sortedPeriods.map(p => this._periodToChartLabel(p, format));
+        const currentSeries = sortedPeriods.map(p => currentMap.get(p) ?? null);
+        const previousSeries = compMap ? sortedPeriods.map(p => compMap.get(p) ?? null) : [];
+
+        // KPI = sum of current group
+        const kpiValue = this._roundDecimals(currentGroup.entries.reduce((s, e) => s + e.value, 0), decimals);
+
+        // SPLY = sum of comp group for same periods present in current
+        let spyValue: number | null = null;
+        if (compMap) {
+            const currentPeriods = Array.from(currentMap.keys());
+            spyValue = this._roundDecimals(
+                currentPeriods.reduce((s, p) => s + (compMap.get(p) || 0), 0), decimals);
         }
+
+        const vsPercent = (spyValue !== null && spyValue !== 0)
+            ? Math.round(((kpiValue - spyValue) / spyValue) * 1000) / 10
+            : null;
+
+        return { kpiValue, spyValue, vsPercent, labels, currentSeries, previousSeries };
+    }
+
+    /** Label del eje X del gráfico para un numero de periodo */
+    private _periodToChartLabel(period: number, format: string): string {
+        if (format === 'month') {
+            const months = getLocaleMonthNames(this.locale, FormStyle.Standalone, TranslationWidth.Abbreviated);
+            const raw = months[(period - 1) % 12];
+            if (!raw) return String(period);
+            return raw.charAt(0).toUpperCase() + raw.slice(1).replace(/\.$/, '');
+        }
+        if (format === 'week') return 'Sem ' + String(period);
         return String(period);
+    }
+
+    /** Título del periodo actual según el formato de fecha */
+    private _periodTitle(format: string): string {
+        switch (format) {
+            case 'year':  return $localize`:@@trendTitleYear:Año actual`;
+            case 'month': return $localize`:@@trendTitleMonth:Año actual`;
+            case 'week':  return $localize`:@@trendTitleWeek:Mes actual`;
+            case 'day':   return $localize`:@@trendTitleDay:Mes actual`;
+            default:      return $localize`:@@trendTitlePeriod:Período actual`;
+        }
+    }
+
+    /** Label de la comparación según el formato */
+    private _comparisonLabel(format: string): string {
+        switch (format) {
+            case 'year':  return $localize`:@@trendCompYear:Año anterior`;
+            case 'month': return $localize`:@@trendCompMonth:Año anterior`;
+            case 'week':  return $localize`:@@trendCompWeek:Mes anterior`;
+            case 'day':   return $localize`:@@trendCompDay:Mes anterior`;
+            default:      return $localize`:@@trendCompPeriod:Período anterior`;
+        }
     }
 
     private _roundDecimals(value: number, decimals: number): number {

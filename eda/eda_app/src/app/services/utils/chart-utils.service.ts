@@ -779,10 +779,12 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('treetable'), 1);
         }
 
-        // Kpi linea barra: 2 columnas - 1 campo de fecha + 1 numerico
-        const hasDateCol = query.some((c: any) => c.column_type === 'date');
+        // kpitrend: 2 columnas - 1 fecha (year/month/week/day) + 1 numerico
+        const dateColForTrend = query.find((c: any) => c.column_type === 'date');
+        const kpiTrendFormats = ['year', 'month', 'week', 'day'];
         if (dataDescription.totalColumns === 2 && dataDescription.numericColumns.length === 1
-            && dataDescription.otherColumns.length === 1 && hasDateCol) {
+            && dataDescription.otherColumns.length === 1
+            && dateColForTrend && kpiTrendFormats.includes(dateColForTrend.format)) {
             notAllowed.splice(notAllowed.indexOf('kpitrend'), 1);
         }
 

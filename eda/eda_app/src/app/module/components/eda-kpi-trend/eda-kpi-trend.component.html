@@ -1,43 +1,86 @@
-<div class="kpi-trend-wrapper" [style.background-color]="inject.backgroundColor || null">
+<div class="absolute inset-0 overflow-hidden" [style.background-color]="inject?.backgroundColor || null">
 
-  <!-- Legend row -->
-  <div class="kpi-trend-legend">
-    <span class="legend-dot" [style.background-color]="inject.currentYearColor"></span>
-    <span class="legend-text">{{ inject.kpiYear }}</span>
-    <span class="legend-dash" [style.border-top-color]="inject.previousYearColor"></span>
-    <span class="legend-text">{{ inject.spyYear }}</span>
-  </div>
+  <!-- Fila de leyenda: chip actual + dropdown comparación -->
+  <div class="absolute top-0 left-0 right-0 flex items-center"
+       style="height:28px; padding:0 8px; gap:6px; z-index:1;">
 
-  <!-- Body: left KPI + right chart -->
-  <div class="kpi-trend-body">
+    <!-- Chip periodo actual: dot + año/mes en caja bordeada -->
+    <div class="flex items-center" style="gap:4px; flex-shrink:0;">
+      <span style="width:8px;height:8px;border-radius:50%;display:inline-block;"
+            [style.background-color]="displayCurrentColor"></span>
+      <span style="font-size:11px;font-weight:600;color:#333;border-radius:4px;padding:1px 7px;border:1.5px solid;"
+            [style.border-color]="displayCurrentColor"
+            [style.background-color]="displayCurrentColor + '22'">
+        {{ displayCurrentLabel || '...' }}
+      </span>
+    </div>
 
-    <!-- Left: KPI values -->
-    <div class="kpi-trend-left">
-      <div class="kpi-trend-period-label">Year to Date</div>
-
-      <div class="kpi-trend-main-value" [ngStyle]="getValueStyle()">
-        {{ formatValue(inject.kpiValue) }}{{ inject.sufix }}
-      </div>
-
-      <div class="kpi-trend-spy-block">
-        <div class="kpi-trend-spy-row">
-          <span class="kpi-trend-spy-label">SPLY</span>
-          <span class="kpi-trend-spy-value">{{ formatValue(inject.spyValue) }}</span>
-        </div>
-        <div class="kpi-trend-vs-row" [class.kpi-trend-positive]="inject.vsPercent >= 0" [class.kpi-trend-negative]="inject.vsPercent < 0">
-          @if(inject.vsPercent !== null) {
-            <span>vs SPLY</span>
-            <span class="kpi-trend-arrow">{{ inject.vsPercent >= 0 ? '▲' : '▼' }}</span>
-            <span>{{ absVal(inject.vsPercent) | number:'1.1-1':'es' }}%</span>
+    <!-- Línea + dropdown comparación -->
+    @if(displayAvailableComparisons.length > 0) {
+      <div class="flex items-center" style="gap:4px; flex-shrink:0;">
+        <span style="width:14px;display:inline-block;border-top:2px dashed;"
+              [style.border-color]="displayPreviousColor"></span>
+        <select [(ngModel)]="selectedComparisonKey"
+                (ngModelChange)="onComparisonChange()"
+                style="font-size:11px;font-weight:600;color:#333;border-radius:4px;padding:1px 6px;border:1.5px solid;cursor:pointer;background:white;"
+                [style.border-color]="displayPreviousColor">
+          @for(opt of displayAvailableComparisons; track opt.key) {
+            <option [value]="opt.key">{{ opt.label }}</option>
           }
-        </div>
+        </select>
       </div>
+    } @else if(displayPreviousLabel) {
+      <div class="flex items-center" style="gap:4px; flex-shrink:0;">
+        <span style="width:14px;display:inline-block;border-top:2px dashed;"
+              [style.border-color]="displayPreviousColor"></span>
+        <span style="font-size:11px;color:#666;border-radius:4px;padding:1px 7px;border:1px solid #ccc;background:#f5f5f5;">
+          {{ displayPreviousLabel }}
+        </span>
+      </div>
+    }
+  </div>
+
+  <!-- Fila principal: flex row (izquierda = tamaño por contenido; derecha = el resto) -->
+  <div class="absolute" style="top:28px;bottom:0;left:0;right:0;display:flex;overflow:hidden;">
+
+    <!-- Columna KPI (izquierda, se adapta al contenido) -->
+    <div #kpiLeft style="flex-shrink:0;max-width:45%;padding:8px 8px 6px 8px;overflow:hidden;">
+
+      <div style="font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;white-space:nowrap;">
+        {{ displayPeriodTitle }}
+      </div>
+
+      <div class="font-bold" [ngStyle]="getValueStyle()"
+           style="line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:8px;">
+        {{ formatValue(displayKpiValue) }}{{ displaySufix }}
+      </div>
+
+      @if(displaySpyValue !== null && displaySpyValue !== undefined) {
+        <div style="display:flex;align-items:baseline;gap:4px;white-space:nowrap;margin-bottom:3px;">
+          <span style="font-size:9px;font-weight:600;color:#aaa;text-transform:uppercase;letter-spacing:0.04em;">
+            {{ displayComparisonLabel }}
+          </span>
+          <span style="font-size:12px;font-weight:600;color:#555;">{{ formatValue(displaySpyValue) }}</span>
+        </div>
+      }
+
+      @if(displayVsPercent !== null && displayVsPercent !== undefined) {
+        <div style="display:flex;align-items:center;gap:3px;font-size:11px;font-weight:600;"
+             [class.kpi-trend-positive]="displayVsPercent >= 0"
+             [class.kpi-trend-negative]="displayVsPercent < 0">
+          <span>{{ displayVsPercent >= 0 ? '▲' : '▼' }}</span>
+          <span>{{ absVal(displayVsPercent) | number:'1.1-1':'es' }}%</span>
+        </div>
+      }
     </div>
 
-    <!-- Right: embedded chart -->
-    <div class="kpi-trend-chart-area" *ngIf="inject.edaChart">
-      <eda-chart [inject]="inject.edaChart" class="kpi-trend-chart-inner"></eda-chart>
-    </div>
+    <!-- Columna gráfico (derecha, ocupa el resto) -->
+    @if(edaChartInject) {
+      <div style="flex:1;min-width:0;overflow:hidden;">
+        <eda-chart #edaTrendChart [inject]="edaChartInject" class="h-full w-full"></eda-chart>
+      </div>
+    }
 
   </div>
+
 </div>

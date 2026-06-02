@@ -3471,6 +3471,17 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>KPI Tendència necessita una columna de data en format mes i una columna numèrica</target>
   </trans-unit>
 
+  <trans-unit id="trendTitleYear"><source>Año actual</source><target>Any actual</target></trans-unit>
+  <trans-unit id="trendTitleMonth"><source>Mes actual</source><target>Mes actual</target></trans-unit>
+  <trans-unit id="trendTitleWeek"><source>Semana actual</source><target>Setmana actual</target></trans-unit>
+  <trans-unit id="trendTitleDay"><source>Hoy</source><target>Avui</target></trans-unit>
+  <trans-unit id="trendTitlePeriod"><source>Período actual</source><target>Període actual</target></trans-unit>
+  <trans-unit id="trendCompYear"><source>Año anterior</source><target>Any anterior</target></trans-unit>
+  <trans-unit id="trendCompMonth"><source>Mes anterior</source><target>Mes anterior</target></trans-unit>
+  <trans-unit id="trendCompWeek"><source>Semana anterior</source><target>Setmana anterior</target></trans-unit>
+  <trans-unit id="trendCompDay"><source>Día anterior</source><target>Dia anterior</target></trans-unit>
+  <trans-unit id="trendCompPeriod"><source>Período anterior</source><target>Període anterior</target></trans-unit>
+
    <trans-unit id="mailConfOk">
     <source>Credenciales  correctas </source>
     <target> Credencials  correctes</target>

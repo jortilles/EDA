@@ -3417,6 +3417,16 @@
     <source>KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica</source>
     <target>KPI Tendance nécessite une colonne de date au format mois et une colonne numérique</target>
   </trans-unit>
+  <trans-unit id="trendTitleYear"><source>Año actual</source><target>Année en cours</target></trans-unit>
+  <trans-unit id="trendTitleMonth"><source>Mes actual</source><target>Mois en cours</target></trans-unit>
+  <trans-unit id="trendTitleWeek"><source>Semana actual</source><target>Semaine en cours</target></trans-unit>
+  <trans-unit id="trendTitleDay"><source>Hoy</source><target>Aujourd'hui</target></trans-unit>
+  <trans-unit id="trendTitlePeriod"><source>Período actual</source><target>Période en cours</target></trans-unit>
+  <trans-unit id="trendCompYear"><source>Año anterior</source><target>Année précédente</target></trans-unit>
+  <trans-unit id="trendCompMonth"><source>Mes anterior</source><target>Mois précédent</target></trans-unit>
+  <trans-unit id="trendCompWeek"><source>Semana anterior</source><target>Semaine précédente</target></trans-unit>
+  <trans-unit id="trendCompDay"><source>Día anterior</source><target>Jour précédent</target></trans-unit>
+  <trans-unit id="trendCompPeriod"><source>Período anterior</source><target>Période précédente</target></trans-unit>
 
   <trans-unit id="mailConfOk">
     <source>Credenciales  correctas </source>
