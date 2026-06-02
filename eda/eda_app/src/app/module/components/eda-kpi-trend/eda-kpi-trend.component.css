@@ -2,6 +2,20 @@
     color: #22a55b;
 }
 
+/* Dropdown compacto para la cabecera del panel */
+:host ::ng-deep .kpi-trend-dropdown.p-dropdown {
+    height: 22px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+:host ::ng-deep .kpi-trend-dropdown .p-dropdown-label {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 0 6px;
+    line-height: 20px;
+}
+
 .kpi-trend-negative {
     color: #e53e3e;
 }

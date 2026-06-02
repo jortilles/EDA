@@ -2,6 +2,7 @@ import { Component, OnInit, OnChanges, SimpleChanges, Input, HostBinding,
          ChangeDetectorRef, AfterViewInit, ViewChild, ElementRef, Self, Inject, LOCALE_ID } from '@angular/core';
 import { CommonModule, getLocaleMonthNames, FormStyle, TranslationWidth } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DropdownModule } from 'primeng/dropdown';
 import { EdaKpiTrend, TrendPeriodGroup } from './eda-kpi-trend';
 import { EdaChartComponent } from '../eda-chart/eda-chart.component';
 import { StyleProviderService } from '@eda/services/service.index';
@@ -11,7 +12,7 @@ import { StyleProviderService } from '@eda/services/service.index';
     selector: 'eda-kpi-trend',
     templateUrl: './eda-kpi-trend.component.html',
     styleUrls: ['./eda-kpi-trend.component.css'],
-    imports: [CommonModule, FormsModule, EdaChartComponent]
+    imports: [CommonModule, FormsModule, DropdownModule, EdaChartComponent]
 })
 export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
     @Input() inject: EdaKpiTrend;

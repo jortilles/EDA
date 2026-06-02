@@ -20,14 +20,15 @@
       <div class="flex items-center" style="gap:4px; flex-shrink:0;">
         <span style="width:14px;display:inline-block;border-top:2px dashed;"
               [style.border-color]="displayPreviousColor"></span>
-        <select [(ngModel)]="selectedComparisonKey"
-                (ngModelChange)="onComparisonChange()"
-                style="font-size:11px;font-weight:600;color:#333;border-radius:4px;padding:1px 6px;border:1.5px solid;cursor:pointer;background:white;"
-                [style.border-color]="displayPreviousColor">
-          @for(opt of displayAvailableComparisons; track opt.key) {
-            <option [value]="opt.key">{{ opt.label }}</option>
-          }
-        </select>
+        <p-dropdown
+            [options]="displayAvailableComparisons"
+            [(ngModel)]="selectedComparisonKey"
+            optionLabel="label"
+            optionValue="key"
+            (onChange)="onComparisonChange()"
+            appendTo="body"
+            [style]="{'font-size':'11px','height':'22px','min-width':'80px'}">
+        </p-dropdown>
       </div>
     } @else if(displayPreviousLabel) {
       <div class="flex items-center" style="gap:4px; flex-shrink:0;">
