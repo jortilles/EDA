@@ -23,6 +23,7 @@ export class EdaPanel {
     public size : number ;
     public linkedDashboard : boolean = false;
     public linkedDashboardProps : LinkedDashboardProps;
+    /*SDA CUSTOM*/ public _isDuplicate?: boolean;
 
     constructor(init?: Partial<EdaPanel>) {
         Object.assign(this, init);

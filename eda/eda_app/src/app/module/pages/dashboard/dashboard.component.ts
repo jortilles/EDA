@@ -228,6 +228,42 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
+    /*SDA CUSTOM*/ public onNewPanelRootTableSet(rootTableName: string, panel: EdaPanel): void {
+    /*SDA CUSTOM*/     if (!rootTableName) return;
+    /*SDA CUSTOM*/     const newPanelComp = this.edaPanels.find(p => p.panel.id === panel.id);
+    /*SDA CUSTOM*/     if (!newPanelComp) return;
+    /*SDA CUSTOM*/
+    /*SDA CUSTOM*/     const globalFilters = this.gFilter?.globalFilters?.filter((f: any) => f.isGlobal && f.pathList) || [];
+    /*SDA CUSTOM*/
+    /*SDA CUSTOM*/     globalFilters.forEach((filter: any) => {
+    /*SDA CUSTOM*/         if (!filter.panelList?.length) return;
+    /*SDA CUSTOM*/
+    /*SDA CUSTOM*/         // Buscar el primer panel activo en este filtro que tenga la misma rootTable
+    /*SDA CUSTOM*/         const matchingPanelId = filter.panelList.find((pid: string) => {
+    /*SDA CUSTOM*/             const existing = this.edaPanels.find(p => p.panel.id === pid);
+    /*SDA CUSTOM*/             return existing?.rootTable?.table_name === rootTableName;
+    /*SDA CUSTOM*/         });
+    /*SDA CUSTOM*/
+    /*SDA CUSTOM*/         if (matchingPanelId && filter.pathList[matchingPanelId]) {
+    /*SDA CUSTOM*/             filter.pathList[panel.id] = { ...filter.pathList[matchingPanelId] };
+    /*SDA CUSTOM*/             filter.panelList.push(panel.id);
+    /*SDA CUSTOM*/             const formatted = this.globalFiltersService.formatFilter(filter);
+    /*SDA CUSTOM*/             newPanelComp.assertGlobalFilter(formatted);
+    /*SDA CUSTOM*/         }
+    /*SDA CUSTOM*/     });
+    /*SDA CUSTOM*/ }
+
+    /*SDA CUSTOM*/ public onNewPanelRootTableCleared(panel: EdaPanel): void {
+    /*SDA CUSTOM*/     const globalFilters = this.gFilter?.globalFilters?.filter((f: any) => f.isGlobal) || [];
+    /*SDA CUSTOM*/
+    /*SDA CUSTOM*/     globalFilters.forEach((filter: any) => {
+    /*SDA CUSTOM*/         filter.panelList = filter.panelList?.filter((pid: string) => pid !== panel.id) || [];
+    /*SDA CUSTOM*/         if (filter.pathList?.[panel.id]) {
+    /*SDA CUSTOM*/             delete filter.pathList[panel.id];
+    /*SDA CUSTOM*/         }
+    /*SDA CUSTOM*/     });
+    /*SDA CUSTOM*/ }
+
     public ngOnDestroy() {
         this.stopRefresh = true;
 /* SDA CUSTOM */         this.stopContinuousZoom();
@@ -1334,10 +1370,34 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    public onDuplicatePanel(panel): void {
-        this.panels.push(panel);
-        this.dashboardService._notSaved.next(true);
-    }
+    /*SDA CUSTOM*/public onDuplicatePanel(event: { panel: any, sourcePanelId: string }): void {
+        const { panel, sourcePanelId } = event;
+        /*SDA CUSTOM*/ if (this.gFilter?.globalFilters) {
+        /*SDA CUSTOM*/     this.gFilter.globalFilters
+        /*SDA CUSTOM*/         .filter((f: any) => f.isGlobal)
+        /*SDA CUSTOM*/         .forEach((filter: any) => {
+        /*SDA CUSTOM*/             if (filter.pathList && filter.pathList[sourcePanelId]) {
+        /*SDA CUSTOM*/                 filter.pathList[panel.id] = _.cloneDeep(filter.pathList[sourcePanelId]);
+        /*SDA CUSTOM*/             }
+        /*SDA CUSTOM*/             if (filter.panelList.includes(sourcePanelId) && !filter.panelList.includes(panel.id)) {
+        /*SDA CUSTOM*/                 filter.panelList.push(panel.id);
+        /*SDA CUSTOM*/             }
+        /*SDA CUSTOM*/         });
+        /*SDA CUSTOM*/ }
+                        this.panels.push(panel);
+                        this.dashboardService._notSaved.next(true);
+        /*SDA CUSTOM*/ const _dupSub = this.edaPanels.changes.subscribe(() => {
+        /*SDA CUSTOM*/     _dupSub.unsubscribe();
+        /*SDA CUSTOM*/     const newPanel = this.edaPanels.toArray().find(p => p.panel.id === panel.id);
+        /*SDA CUSTOM*/     if (newPanel && this.gFilter?.globalFilters) {
+        /*SDA CUSTOM*/         const applicable = this.gFilter.globalFilters.filter((f: any) => f.isGlobal && f.panelList.includes(panel.id));
+        /*SDA CUSTOM*/         applicable.forEach((filter: any) => {
+        /*SDA CUSTOM*/             newPanel.assertGlobalFilter(this.globalFiltersService.formatFilter(filter));
+        /*SDA CUSTOM*/         });
+        /*SDA CUSTOM*/         if (applicable.length > 0) newPanel._pendingGlobalFilterReload = true;
+        /*SDA CUSTOM*/     }
+        /*SDA CUSTOM*/ });
+    /*SDA CUSTOM*/}
 
     public onResetWidgets(): void {
             // Get the queries in the dashboard for delete it from cache

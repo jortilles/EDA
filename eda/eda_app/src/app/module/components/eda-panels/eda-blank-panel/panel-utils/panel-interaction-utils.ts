@@ -232,7 +232,10 @@ export const PanelInteractionUtils = {
      */
   handleFilters: (ebp: EdaBlankPanelComponent, content: any): void => {
     ebp.selectedFilters = _.cloneDeep(content.filters);
-    ebp.globalFilters = content.filters.filter(f => f.isGlobal === true);
+    /*SDA CUSTOM*/ const contentGlobalFilters = content.filters.filter((f: any) => f.isGlobal === true);
+    /*SDA CUSTOM*/ if (ebp.globalFilters.length === 0) {
+    /*SDA CUSTOM*/     ebp.globalFilters = contentGlobalFilters;
+    /*SDA CUSTOM*/ }
     ebp.selectedFilters.forEach(filter => { filter.removed = false; });
     ebp.selectedFilters = ebp.selectedFilters.filter(f => f.isGlobal === false);
   },
