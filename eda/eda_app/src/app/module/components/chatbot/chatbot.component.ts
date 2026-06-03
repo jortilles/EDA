@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { NgChartsModule } from 'ng2-charts';
 import { ChartData, ChartOptions } from 'chart.js';
+import { Subscription } from 'rxjs';
 import { IaChatService, ChatMessage, ChatOption, BarChart } from '@eda/services/api/ia-chat.service';
 import type { ChatEvent } from '@eda/services/api/ia-chat.service';
 import { CORPORATE_COLORS } from '@eda/configs/index';
@@ -31,10 +32,12 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   chatHistory: ChatMessage[] = [];
   streamingIndex = signal(-1);
   isAtBottom = signal(true);
+  copiedIndex = signal(-1);
 
   private tokenQueue: string[] = [];
   private typewriterInterval: any = null;
   private finalResponse: string | null = null;
+  private chatSubscription: Subscription | null = null;
 
   private readonly chartPalette = ['b3', '99', '80', '70', '60'];
   private readonly chartExtraColors = ['#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
@@ -125,11 +128,38 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   scrollToBottom(): void {
     const el = this.chatMessagesRef?.nativeElement;
     if (!el) return;
-    el.scrollTop = el.scrollHeight;
+    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
     this.isAtBottom.set(true);
   }
 
+  copyMessage(index: number, content: string): void {
+    navigator.clipboard.writeText(content).then(() => {
+      this.copiedIndex.set(index);
+      setTimeout(() => this.copiedIndex.set(-1), 2000);
+    });
+  }
+
+  stopGeneration(): void {
+    this.chatSubscription?.unsubscribe();
+    this.chatSubscription = null;
+    const idx = this.streamingIndex();
+    if (idx >= 0) {
+      while (this.tokenQueue.length > 0) {
+        this.chatHistory[idx].content += this.tokenQueue.shift()!;
+      }
+      if (this.finalResponse !== null) {
+        this.chatHistory[idx].content = this.finalResponse;
+      }
+    }
+    this.resetTypewriter();
+    this.chatLoading.set(false);
+    this.chatStatusMessage.set('');
+    setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+  }
+
   resetChat(): void {
+    this.chatSubscription?.unsubscribe();
+    this.chatSubscription = null;
     this.resetTypewriter();
     this.chatHistory = [];
     this.chatLoading.set(false);
@@ -179,7 +209,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     this.shouldScrollChat = true;
     this.resetTypewriter();
 
-    this.iaChatService.sendMessage(this.chatHistory).subscribe(this.chatHandlers());
+    this.chatSubscription = this.iaChatService.sendMessage(this.chatHistory).subscribe(this.chatHandlers());
   }
 
   selectOption(option: ChatOption): void {
@@ -206,7 +236,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     this.chatStatusMessage.set('');
     this.shouldScrollChat = true;
     this.resetTypewriter();
-    this.iaChatService.sendMessage(this.chatHistory).subscribe(this.chatHandlers());
+    this.chatSubscription = this.iaChatService.sendMessage(this.chatHistory).subscribe(this.chatHandlers());
   }
 
   private resetTypewriter(): void {
