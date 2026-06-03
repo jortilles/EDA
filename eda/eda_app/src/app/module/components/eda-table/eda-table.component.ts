@@ -108,15 +108,23 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
             const colType = col ? col.type : null;
 
             // No emitir evento para columnas numéricas ni HTML
-            if (typeof label !== 'number' && colType !== 'EdaColumnHtml') {
+            const isHtmlValue = typeof label === 'string' && label.trim().startsWith('<');
+            if (typeof label !== 'number' && colType !== 'EdaColumnHtml' && !isHtmlValue) {
                 this.onClick.emit({ label, filterBy });
             }}
     }
 
     getTooltip = (col: any) => {
-        if(col.description === undefined) return ``;
-        return `${col.description}` || ``
+        if (col.description == null) return '';
+        return col.description || '';
     };
+
+    isNumericValue(value: any): boolean {
+        if (value === null || value === undefined || value === '') return false;
+        if (typeof value === 'number') return true;
+        if (typeof value === 'string') return !value.trim().startsWith('<') && !isNaN(Number(value));
+        return false;
+    }
 
     getLinkTooltip(col) {
         return `${col.header} column linked to:\n${this.inject.linkedDashboardProps.dashboardName}`;
