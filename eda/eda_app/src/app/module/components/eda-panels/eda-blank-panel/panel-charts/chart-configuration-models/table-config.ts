@@ -14,6 +14,12 @@ export class TableConfig {
   negativeNumbers: boolean;
   /** Sort mode for cross/pivot tables: 'alphabetical' | 'value' (desc) | 'valueAsc' (asc). */
   crossSortOrder: string;
+  /** Hex color for table header background. Empty string = use corporate primary. */
+  headerColor: string;
+  /** Hex color for even-row banding background. Empty string = use tinted corporate primary. */
+  bandingColor: string;
+  /** When false, header and banding are transparent (white/no color). */
+  colorEnabled: boolean;
 
   constructor(
     onlyPercentages: Boolean,
@@ -30,7 +36,9 @@ export class TableConfig {
     negativeNumbers: boolean,
     ordering: any[],
     crossSortOrder: string = 'alphabetical',
-
+    headerColor: string = '',
+    bandingColor: string = '',
+    colorEnabled: boolean = true,
     ) {
       this.onlyPercentages = onlyPercentages;
       this.resultAsPecentage = resultAsPecentage;
@@ -46,6 +54,9 @@ export class TableConfig {
       this.ordering = ordering;
       this.negativeNumbers = negativeNumbers;
       this.crossSortOrder = crossSortOrder;
+      this.headerColor = headerColor;
+      this.bandingColor = bandingColor;
+      this.colorEnabled = colorEnabled;
   }
 
 }

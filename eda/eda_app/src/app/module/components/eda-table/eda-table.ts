@@ -95,6 +95,10 @@ export class EdaTable {
 
     public styles: [];
 
+    public headerColor: string = '';
+    public bandingColor: string = '';
+    public colorEnabled: boolean = true;
+
     public Totals:string = $localize`:@@addTotals:Totales`;
     public SubTotals:string = $localize`:@@SubTotals:SubTotales`;
     public Trend:string = $localize`:@@addtrend:Tendencia`;
@@ -738,7 +742,6 @@ export class EdaTable {
 
 
     colsPercentages() {
-
 
         if (this.percentageColumns.length !== 0) {
             this.removePercentages();

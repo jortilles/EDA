@@ -3237,6 +3237,22 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Propiedades de la tabla</source>
     <target>Propietats de la taula</target>
   </trans-unit>
+  <trans-unit id="tableColors">
+    <source>Colores de tabla</source>
+    <target>Colors de la taula</target>
+  </trans-unit>
+  <trans-unit id="tableColorsEnabled">
+    <source>Colores activos</source>
+    <target>Colors actius</target>
+  </trans-unit>
+  <trans-unit id="tableHeaderColor">
+    <source>Color cabecera</source>
+    <target>Color de la capçalera</target>
+  </trans-unit>
+  <trans-unit id="tableBandingColor">
+    <source>Color filas alternas</source>
+    <target>Color de files alternes</target>
+  </trans-unit>
 
   <trans-unit id="SubTotals">
     <source>SubTotales</source>
@@ -3465,6 +3481,22 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Un gráfico de piramide necesita de dos categorías y un valor numérico </source>
     <target>Un gràfic de piràmide necessita dues categories i un valor numèric</target>
   </trans-unit>
+
+  <trans-unit id="chartInfoKpiTrend">
+    <source>KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica</source>
+    <target>KPI Tendència necessita una columna de data en format mes i una columna numèrica</target>
+  </trans-unit>
+
+  <trans-unit id="trendTitleYear"><source>Año actual</source><target>Any actual</target></trans-unit>
+  <trans-unit id="trendTitleMonth"><source>Mes actual</source><target>Mes actual</target></trans-unit>
+  <trans-unit id="trendTitleWeek"><source>Semana actual</source><target>Setmana actual</target></trans-unit>
+  <trans-unit id="trendTitleDay"><source>Hoy</source><target>Avui</target></trans-unit>
+  <trans-unit id="trendTitlePeriod"><source>Período actual</source><target>Període actual</target></trans-unit>
+  <trans-unit id="trendCompYear"><source>Año anterior</source><target>Any anterior</target></trans-unit>
+  <trans-unit id="trendCompMonth"><source>Mes anterior</source><target>Mes anterior</target></trans-unit>
+  <trans-unit id="trendCompWeek"><source>Semana anterior</source><target>Setmana anterior</target></trans-unit>
+  <trans-unit id="trendCompDay"><source>Día anterior</source><target>Dia anterior</target></trans-unit>
+  <trans-unit id="trendCompPeriod"><source>Período anterior</source><target>Període anterior</target></trans-unit>
 
    <trans-unit id="mailConfOk">
     <source>Credenciales  correctas </source>
@@ -4075,7 +4107,12 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
         <source>KPI + Gráfico de Áreas</source>
         <target>KPI + Gràfic d'àrees</target>
       </trans-unit>
-  
+
+      <trans-unit id="chartTypesKPITrend">
+        <source>KPI Tendencia</source>
+        <target>KPI Tendència</target>
+      </trans-unit>
+
   <trans-unit id="urlEditSaveError">
     <source>Formulario incompleto, rellene todos los campos</source>
     <target>FORMULARI INCORRECTE, COMPLETAR ELS CAMPS</target>
