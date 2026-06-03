@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, AfterViewChecked, signal, ViewChild, ElementRef, NgZone } from '@angular/core';
+import { Component, inject, OnInit, AfterViewChecked, signal, ViewChild, ElementRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { NgChartsModule } from 'ng2-charts';
@@ -18,6 +18,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   private iaChatService = inject(IaChatService);
   private sanitizer = inject(DomSanitizer);
   private zone = inject(NgZone);
+  private cdr = inject(ChangeDetectorRef);
 
   private markdownCache = new Map<string, SafeHtml>();
   @ViewChild('chatMessages') private chatMessagesRef!: ElementRef;
@@ -28,6 +29,12 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   chatLoading = signal(false);
   chatStatusMessage = signal('');
   chatHistory: ChatMessage[] = [];
+  streamingIndex = signal(-1);
+  isAtBottom = signal(true);
+
+  private tokenQueue: string[] = [];
+  private typewriterInterval: any = null;
+  private finalResponse: string | null = null;
 
   private readonly chartPalette = ['b3', '99', '80', '70', '60'];
   private readonly chartExtraColors = ['#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
@@ -109,7 +116,21 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     return result;
   }
 
+  onMessagesScroll(): void {
+    const el = this.chatMessagesRef?.nativeElement;
+    if (!el) return;
+    this.isAtBottom.set(el.scrollTop + el.clientHeight >= el.scrollHeight - 80);
+  }
+
+  scrollToBottom(): void {
+    const el = this.chatMessagesRef?.nativeElement;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
+    this.isAtBottom.set(true);
+  }
+
   resetChat(): void {
+    this.resetTypewriter();
     this.chatHistory = [];
     this.chatLoading.set(false);
     this.chatStatusMessage.set('');
@@ -156,6 +177,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     this.chatLoading.set(true);
     this.chatStatusMessage.set('');
     this.shouldScrollChat = true;
+    this.resetTypewriter();
 
     this.iaChatService.sendMessage(this.chatHistory).subscribe(this.chatHandlers());
   }
@@ -183,24 +205,83 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     this.chatLoading.set(true);
     this.chatStatusMessage.set('');
     this.shouldScrollChat = true;
+    this.resetTypewriter();
     this.iaChatService.sendMessage(this.chatHistory).subscribe(this.chatHandlers());
   }
 
+  private resetTypewriter(): void {
+    if (this.typewriterInterval) {
+      clearInterval(this.typewriterInterval);
+      this.typewriterInterval = null;
+    }
+    this.tokenQueue = [];
+    this.finalResponse = null;
+    this.streamingIndex.set(-1);
+  }
+
+  private startTypewriter(botIndex: number): void {
+    if (this.typewriterInterval) return;
+    this.typewriterInterval = setInterval(() => {
+      if (this.tokenQueue.length > 0) {
+        this.chatHistory[botIndex].content += this.tokenQueue.shift()!;
+        if (this.isAtBottom()) this.shouldScrollChat = true;
+        this.cdr.detectChanges();
+      } else if (this.finalResponse !== null) {
+        clearInterval(this.typewriterInterval);
+        this.typewriterInterval = null;
+        this.chatHistory[botIndex].content = this.finalResponse;
+        this.finalResponse = null;
+        this.streamingIndex.set(-1);
+        this.chatLoading.set(false);
+        this.shouldScrollChat = true;
+        this.cdr.detectChanges();
+        setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+      }
+    }, 35);
+  }
+
   private chatHandlers() {
+    let botIndex = -1;
     return {
       next: (event: ChatEvent) => {
         if (event.type === 'status') {
           this.chatStatusMessage.set(this.statusLabels[event.code] ?? '');
           this.shouldScrollChat = true;
+        } else if (event.type === 'token') {
+          if (botIndex < 0) {
+            this.chatStatusMessage.set('');
+            this.chatHistory.push({ role: 'assistant', content: '', options: [], chart: undefined });
+            botIndex = this.chatHistory.length - 1;
+            this.streamingIndex.set(botIndex);
+            this.shouldScrollChat = true;
+          }
+          this.tokenQueue.push(event.text);
+          this.startTypewriter(botIndex);
         } else if (event.type === 'response') {
           this.chatStatusMessage.set('');
-          this.chatHistory.push({ role: 'assistant', content: event.response, options: event.options ?? [], chart: event.chart });
-          this.chatLoading.set(false);
-          this.shouldScrollChat = true;
-          setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+          if (botIndex < 0) {
+            this.chatHistory.push({ role: 'assistant', content: event.response, options: event.options ?? [], chart: event.chart });
+            this.chatLoading.set(false);
+            this.shouldScrollChat = true;
+            setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+          } else {
+            this.chatHistory[botIndex].options = event.options ?? [];
+            this.chatHistory[botIndex].chart = event.chart;
+            this.finalResponse = event.response;
+            if (!this.typewriterInterval) {
+              this.chatHistory[botIndex].content = event.response;
+              this.finalResponse = null;
+              this.streamingIndex.set(-1);
+              this.chatLoading.set(false);
+              this.shouldScrollChat = true;
+              this.cdr.detectChanges();
+              setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+            }
+          }
         }
       },
       error: () => {
+        this.resetTypewriter();
         this.chatStatusMessage.set('');
         this.chatHistory.push({ role: 'assistant', content: $localize`:@@chatErrorConnecting:Error al conectar con el asistente.` });
         this.chatLoading.set(false);
@@ -212,6 +293,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
 
   renderMarkdown(text: string): SafeHtml {
     if (this.markdownCache.has(text)) return this.markdownCache.get(text)!;
+    if (this.markdownCache.size > 60) this.markdownCache.clear();
 
     const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 

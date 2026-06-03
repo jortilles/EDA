@@ -36,6 +36,9 @@ export class ChatEdaAIComponent implements AfterViewChecked {
 
   private shouldScroll = false;
   private dataContext: string | null = null;
+  private tokenQueue: string[] = [];
+  private typewriterInterval: any = null;
+  private finalResponse: string | null = null;
 
   get providerName(): string {
     return this.iaFormStateService.formData().PROVIDER ?? 'IA';
@@ -97,27 +100,61 @@ export class ChatEdaAIComponent implements AfterViewChecked {
       { role: 'user' as const, content: input },
     ];
 
+    this.tokenQueue = [];
+    this.finalResponse = null;
+    if (this.typewriterInterval) {
+      clearInterval(this.typewriterInterval);
+      this.typewriterInterval = null;
+    }
+
     this.messages.push({ sender: 'bot', content: '' });
     const botIndex = this.messages.length - 1;
 
     this.iaChatService.sendMessage(chatMessages).subscribe({
       next: (event) => {
         if (event.type === 'token') {
-          this.messages[botIndex].content += event.text;
-          this.shouldScroll = true;
-          this.cdr.detectChanges();
+          this.tokenQueue.push(event.text);
+          this.startTypewriter(botIndex);
         } else if (event.type === 'response') {
-          this.messages[botIndex].content = event.response;
-          this.loading = false;
-          this.shouldScroll = true;
+          this.finalResponse = event.response;
+          if (!this.typewriterInterval) {
+            this.messages[botIndex].content = event.response;
+            this.finalResponse = null;
+            this.loading = false;
+            this.shouldScroll = true;
+            this.cdr.detectChanges();
+          }
         }
       },
       error: (err) => {
+        clearInterval(this.typewriterInterval);
+        this.typewriterInterval = null;
+        this.tokenQueue = [];
+        this.finalResponse = null;
         this.messages[botIndex].content = 'Error al conectar con la IA.';
         this.loading = false;
         console.error(err);
       }
     });
+  }
+
+  private startTypewriter(botIndex: number) {
+    if (this.typewriterInterval) return;
+    this.typewriterInterval = setInterval(() => {
+      if (this.tokenQueue.length > 0) {
+        this.messages[botIndex].content += this.tokenQueue.shift()!;
+        this.shouldScroll = true;
+        this.cdr.detectChanges();
+      } else if (this.finalResponse !== null) {
+        clearInterval(this.typewriterInterval);
+        this.typewriterInterval = null;
+        this.messages[botIndex].content = this.finalResponse;
+        this.finalResponse = null;
+        this.loading = false;
+        this.shouldScroll = true;
+        this.cdr.detectChanges();
+      }
+    }, 40);
   }
 
   private scrollToBottom(): void {
