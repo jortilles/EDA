@@ -164,6 +164,7 @@ router.get('/check-connection/:id', authGuard, roleGuard, DataSourceController.C
  *     tags:
  *       - DataSource Routes
  */
+router.get('/duckdb-folders', authGuard, roleGuard, DataSourceController.GetDuckDbFolders);
 router.get('/:id', authGuard, roleGuard, DataSourceController.GetDataSourceById);
 
 

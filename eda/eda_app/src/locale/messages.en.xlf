@@ -6501,6 +6501,50 @@ OR<ph id="5"/>
   <source>Navegar</source>
   <target>Navigate</target>
 </trans-unit>
+<trans-unit id="noDuckDbFile">
+  <source>Debe cargar un archivo CSV primero</source>
+  <target>You must load a CSV file first</target>
+</trans-unit>
+<trans-unit id="noFolderName">
+  <source>Debe proporcionar el nombre de la carpeta</source>
+  <target>You must provide a folder name</target>
+</trans-unit>
+<trans-unit id="duckdbCreated">
+  <source>Fuente de datos DuckDB creada correctamente</source>
+  <target>DuckDB data source created successfully</target>
+</trans-unit>
+<trans-unit id="errorParseDuckDb">
+  <source>Error al parsear el archivo CSV. Verifica el separador.</source>
+  <target>Error parsing the CSV file. Check the separator.</target>
+</trans-unit>
+<trans-unit id="duckdbFolderLabel">
+  <source>Carpeta padre</source>
+  <target>Parent folder</target>
+</trans-unit>
+<trans-unit id="duckdbFolderPlaceholder">
+  <source>nombre_carpeta_nueva</source>
+  <target>new_folder_name</target>
+</trans-unit>
+<trans-unit id="duckdbFolderHint">
+  <source>Los archivos CSV se guardarán en <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>duckdb/<x id="INTERPOLATION" equiv-text="{{ connectionForm.get(&apos;folderName&apos;)?.value || &apos;...&apos; }}"/>/<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/></source>
+  <target>CSV files will be stored in <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>duckdb/<x id="INTERPOLATION" equiv-text="{{ connectionForm.get(&apos;folderName&apos;)?.value || &apos;...&apos; }}"/>/<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/></target>
+</trans-unit>
+<trans-unit id="duckdbAddAnotherCsv">
+  <source>Añadir otro CSV</source>
+  <target>Add another CSV</target>
+</trans-unit>
+<trans-unit id="duckdbNewFolder">
+  <source>+ Nueva carpeta</source>
+  <target>+ New folder</target>
+</trans-unit>
+<trans-unit id="duckdbCsvListTitle">
+  <source>CSVs en la carpeta (<x id="INTERPOLATION" equiv-text="{{ duckdbCsvList.length }}"/>):</source>
+  <target>CSVs in the folder (<x id="INTERPOLATION" equiv-text="{{ duckdbCsvList.length }}"/>):</target>
+</trans-unit>
+<trans-unit id="duckdbCsvColumns">
+  <source>(<x id="INTERPOLATION" equiv-text="{{ csv.columnsConfig.length }}"/> columnas)</source>
+  <target>(<x id="INTERPOLATION" equiv-text="{{ csv.columnsConfig.length }}"/> columns)</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

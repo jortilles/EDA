@@ -89,6 +89,9 @@ export class DataSourceConnectionDetailPage implements OnInit {
   _duckdbFile = signal<File | null>(null);
   isDraggingDuckDbFile = signal<boolean>(false);
   public duckdbRawContent: string = '';
+  public duckdbCsvList: Array<{ fileName: string; rawContent: string; columnsConfig: any[] }> = [];
+  public duckdbFolderOptions: Array<{ label: string; value: string }> = [{ label: $localize`:@@duckdbNewFolder:+ Nueva carpeta`, value: '__new__' }];
+  public selectedDuckdbFolder: string = '__new__';
 
   // variables añadidas ppor el script add-ccsv
   public csvRecords: any;
@@ -155,6 +158,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
   ngOnInit(): void {
     this.styleProviderService.setDefaultBackgroundColor();
     this.initForm();
+    this.loadDuckDbFolders();
   }
 
   initForm(): void {
@@ -176,6 +180,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
       poolLimit: [],
       warehouse: [],
       separator: [";"],
+      folderName: [""],
     })
   }
 
@@ -422,6 +427,27 @@ export class DataSourceConnectionDetailPage implements OnInit {
     } catch (error) {
       console.log(error);
       return false;
+    }
+  }
+
+  async loadDuckDbFolders(): Promise<void> {
+    try {
+      const res = await lastValueFrom(this.dataSourceService.getDuckDbFolders());
+      const folders: string[] = res?.folders || [];
+      this.duckdbFolderOptions = [
+        { label: $localize`:@@duckdbNewFolder:+ Nueva carpeta`, value: '__new__' },
+        ...folders.map(f => ({ label: f, value: f }))
+      ];
+    } catch {
+      this.duckdbFolderOptions = [{ label: $localize`:@@duckdbNewFolder:+ Nueva carpeta`, value: '__new__' }];
+    }
+  }
+
+  onFolderOptionChange(event: any): void {
+    if (event.value !== '__new__') {
+      this.connectionForm.get('folderName')?.setValue(event.value);
+    } else {
+      this.connectionForm.get('folderName')?.setValue('');
     }
   }
 
@@ -764,18 +790,53 @@ export class DataSourceConnectionDetailPage implements OnInit {
     }
   }
 
+  addCsvToList(): void {
+    if (!this.duckdbRawContent || !this.csvColumns || this.csvColumns.length === 0) {
+      this.alertService.addError($localize`:@@noDuckDbFile:Debe cargar un archivo CSV primero`);
+      return;
+    }
+    this.duckdbCsvList.push({
+      fileName: this._duckdbFileName(),
+      rawContent: this.duckdbRawContent,
+      columnsConfig: [...this.csvColumns]
+    });
+    this.duckdbRawContent = '';
+    this._duckdbFileName.set('');
+    this._duckdbFile.set(null);
+    this.csvColumns = [];
+    this.csvHeaders = [];
+    if (this.duckdbFileInput?.nativeElement) {
+      this.duckdbFileInput.nativeElement.value = '';
+    }
+    this.cdr.detectChanges();
+  }
+
+  removeCsvFromList(index: number): void {
+    this.duckdbCsvList.splice(index, 1);
+  }
+
   async saveDuckDbDataSource(): Promise<void> {
     const value = this.connectionForm.value;
     if (!value.name) {
       this.alertService.addError($localize`:@@noNameProvided:Debe proporcionar un nombre para el datasource`);
       return;
     }
-    if (!this.duckdbRawContent) {
-      this.alertService.addError($localize`:@@noDuckDbFile:Debe cargar un archivo CSV primero`);
+    if (!value.folderName) {
+      this.alertService.addError($localize`:@@noFolderName:Debe proporcionar el nombre de la carpeta`);
       return;
     }
-    if (!this.csvColumns || this.csvColumns.length === 0) {
-      this.alertService.addError($localize`:@@noDuckDbColumns:No se detectaron columnas. Verifique el separador.`);
+
+    const allCsvs = [...this.duckdbCsvList];
+    if (this.duckdbRawContent && this.csvColumns && this.csvColumns.length > 0) {
+      allCsvs.push({
+        fileName: this._duckdbFileName(),
+        rawContent: this.duckdbRawContent,
+        columnsConfig: [...this.csvColumns]
+      });
+    }
+
+    if (allCsvs.length === 0) {
+      this.alertService.addError($localize`:@@noDuckDbFile:Debe cargar un archivo CSV primero`);
       return;
     }
 
@@ -784,8 +845,12 @@ export class DataSourceConnectionDetailPage implements OnInit {
       const payload = {
         name: value.name,
         description: value.description || '',
-        csvContent: this.duckdbRawContent,
-        columnsConfig: this.csvColumns,
+        folderName: value.folderName,
+        csvFiles: allCsvs.map(csv => ({
+          fileName: csv.fileName,
+          csvContent: csv.rawContent,
+          columnsConfig: csv.columnsConfig
+        })),
         optimize: value.optimize ? 1 : 0,
         allowCache: value.allowCache ? 1 : 0
       };

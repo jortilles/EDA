@@ -204,7 +204,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         { label: 'JsonWebService', value: 'jsonwebservice'},
         { label: 'Mongo', value: 'mongodb'},
         { label: 'Excel', value: 'excel'},
-        { label: 'Csv', value: 'csv'}
+        { label: 'Csv', value: 'csv'},
+        { label: 'DuckDB (CSV)', value: 'duckdb'}
     ];
 
     public SID_Types: SelectItem[] = [

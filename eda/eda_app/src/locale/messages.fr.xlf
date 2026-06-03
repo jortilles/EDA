@@ -6776,6 +6776,50 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Navegar</source>
         <target>Parcourir</target>
       </trans-unit>
+      <trans-unit id="noDuckDbFile">
+        <source>Debe cargar un archivo CSV primero</source>
+        <target>Vous devez charger un fichier CSV d&apos;abord</target>
+      </trans-unit>
+      <trans-unit id="noFolderName">
+        <source>Debe proporcionar el nombre de la carpeta</source>
+        <target>Vous devez fournir un nom de dossier</target>
+      </trans-unit>
+      <trans-unit id="duckdbCreated">
+        <source>Fuente de datos DuckDB creada correctamente</source>
+        <target>Source de données DuckDB créée avec succès</target>
+      </trans-unit>
+      <trans-unit id="errorParseDuckDb">
+        <source>Error al parsear el archivo CSV. Verifica el separador.</source>
+        <target>Erreur lors de l&apos;analyse du fichier CSV. Vérifiez le séparateur.</target>
+      </trans-unit>
+      <trans-unit id="duckdbFolderLabel">
+        <source>Carpeta padre</source>
+        <target>Dossier parent</target>
+      </trans-unit>
+      <trans-unit id="duckdbFolderPlaceholder">
+        <source>nombre_carpeta_nueva</source>
+        <target>nom_nouveau_dossier</target>
+      </trans-unit>
+      <trans-unit id="duckdbFolderHint">
+        <source>Los archivos CSV se guardarán en <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>duckdb/<x id="INTERPOLATION" equiv-text="{{ connectionForm.get(&apos;folderName&apos;)?.value || &apos;...&apos; }}"/>/<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/></source>
+        <target>Les fichiers CSV seront enregistrés dans <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>duckdb/<x id="INTERPOLATION" equiv-text="{{ connectionForm.get(&apos;folderName&apos;)?.value || &apos;...&apos; }}"/>/<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="duckdbAddAnotherCsv">
+        <source>Añadir otro CSV</source>
+        <target>Ajouter un autre CSV</target>
+      </trans-unit>
+      <trans-unit id="duckdbNewFolder">
+        <source>+ Nueva carpeta</source>
+        <target>+ Nouveau dossier</target>
+      </trans-unit>
+      <trans-unit id="duckdbCsvListTitle">
+        <source>CSVs en la carpeta (<x id="INTERPOLATION" equiv-text="{{ duckdbCsvList.length }}"/>):</source>
+        <target>CSV dans le dossier (<x id="INTERPOLATION" equiv-text="{{ duckdbCsvList.length }}"/>):</target>
+      </trans-unit>
+      <trans-unit id="duckdbCsvColumns">
+        <source>(<x id="INTERPOLATION" equiv-text="{{ csv.columnsConfig.length }}"/> columnas)</source>
+        <target>(<x id="INTERPOLATION" equiv-text="{{ csv.columnsConfig.length }}"/> colonnes)</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -120,7 +120,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         this._databaseModel.getValue()
             .forEach((table:any) => {
                 const currTable: TreeNode = {};
-                currTable.label = table.display_name.default;
+                currTable.label = table.display_name?.default ?? table.table_name;
                 currTable.data = 'tabla';
                 currTable.children = [];
                 currTable.collapsedIcon = 'fa fa-table';
@@ -130,9 +130,9 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 tables.push(currTable);
 
                 // Column nodes
-                table.columns.forEach((column: any) => {
+                (table.columns ?? []).forEach((column: any) => {
                     const currCol: TreeNode = {};
-                    currCol.label = column.display_name.default;
+                    currCol.label = column.display_name?.default ?? column.column_name;
                     currCol.data = 'columna';
                     currCol.children = [];
                     const typeIconMap: Record<string, string> = {
@@ -718,6 +718,10 @@ export class DataSourceService extends ApiService implements OnDestroy {
 
     addDataSource(connection): Observable<any> {
         return this.post(`${this.globalDSRoute}/add-data-source`, connection);
+    }
+
+    getDuckDbFolders(): Observable<any> {
+        return this.get(`${this.globalDSRoute}/duckdb-folders`);
     }
 
     executeQuery(body): Observable<any> {

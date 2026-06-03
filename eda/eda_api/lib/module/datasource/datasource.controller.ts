@@ -45,12 +45,14 @@ export class DataSourceController {
     static async GetDataSourceById(req: Request, res: Response, next: NextFunction) {
         try {
             const dataSource = await DataSource.findById({ _id: req.params.id });
-            // ocultem el password
-            dataSource.ds.connection.password = EnCrypterService.decode(dataSource.ds.connection.password);
+            // ocultem el password (solo si hay password que decodificar)
+            if (dataSource.ds.connection.password) {
+                dataSource.ds.connection.password = EnCrypterService.decode(dataSource.ds.connection.password);
+            }
             dataSource.ds.connection.password = '__-(··)-__';
             return res.status(200).json({ ok: true, dataSource });
         } catch (err) {
-            return (new HttpException(404, 'Datasouce not found'));
+            next(new HttpException(404, 'Datasource not found'));
         }
     }
 
@@ -366,6 +368,15 @@ export class DataSourceController {
                     const dataSource = await DataSource.findByIdAndDelete(req.params.id);
                     if (!dataSource) {
                         return next(new HttpException(500, 'Error removing dataSource'));
+                    }
+
+                    // Si es DuckDB, eliminar la carpeta con los CSV del disco
+                    if (dataSource.ds?.connection?.type === 'duckdb') {
+                        const folderPath: string = dataSource.ds.connection.database;
+                        const duckdbBase = path.join(process.cwd(), 'duckdb');
+                        if (folderPath && folderPath.startsWith(duckdbBase) && fs.existsSync(folderPath)) {
+                            fs.rmSync(folderPath, { recursive: true, force: true });
+                        }
                     }
 
                     return res.status(200).json({ ok: true, dataSource });
@@ -735,69 +746,77 @@ export class DataSourceController {
 
     static async AddDuckDBDataSource(req: Request, res: Response, next: NextFunction) {
         try {
-            const { name, description, optimize, allowCache, csvContent, columnsConfig } = req.body;
+            const { name, description, optimize, allowCache, folderName, csvFiles } = req.body;
+            // csvFiles: Array<{ fileName: string, csvContent: string, columnsConfig: any[] }>
 
-            if (!name || !csvContent) {
-                return next(new HttpException(400, 'Name and CSV content are required'));
+            if (!name || !folderName || !csvFiles || !Array.isArray(csvFiles) || csvFiles.length === 0) {
+                return next(new HttpException(400, 'Name, folderName and at least one CSV file are required'));
             }
 
             const normalizeName = (str: string) =>
                 str.split('_').join(' ').toLowerCase()
                     .split(' ').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
 
-            const safeName = name.replace(/[^a-zA-Z0-9_\-]/g, '_').toLowerCase();
-            const csvFileName = `${safeName}.csv`;
+            const safeFolderName = folderName.replace(/[^a-zA-Z0-9_\-]/g, '_').toLowerCase();
 
-            const duckdbFolder = path.join(process.cwd(), 'duckdb');
-            if (!fs.existsSync(duckdbFolder)) {
-                fs.mkdirSync(duckdbFolder, { recursive: true });
+            const duckdbBaseFolder = path.join(process.cwd(), 'duckdb');
+            const targetFolder = path.join(duckdbBaseFolder, safeFolderName);
+            if (!fs.existsSync(targetFolder)) {
+                fs.mkdirSync(targetFolder, { recursive: true });
             }
 
-            fs.writeFileSync(path.join(duckdbFolder, csvFileName), csvContent, 'utf8');
+            const tables = csvFiles.map((csvFile: any) => {
+                const safeName = (csvFile.fileName || 'file')
+                    .replace(/\.csv$/i, '')
+                    .replace(/[^a-zA-Z0-9_\-]/g, '_')
+                    .toLowerCase();
 
-            const columns = (columnsConfig || []).map((col: any) => {
-                let colType: string;
-                switch (col.type) {
-                    case 'integer':
-                    case 'numeric':
-                        colType = 'numeric'; break;
-                    case 'timestamp':
-                        colType = 'date'; break;
-                    default:
-                        colType = 'text';
-                }
+                fs.writeFileSync(path.join(targetFolder, `${safeName}.csv`), csvFile.csvContent, 'utf8');
+
+                const columns = (csvFile.columnsConfig || []).map((col: any) => {
+                    let colType: string;
+                    switch (col.type) {
+                        case 'integer':
+                        case 'numeric':
+                            colType = 'numeric'; break;
+                        case 'timestamp':
+                            colType = 'date'; break;
+                        default:
+                            colType = 'text';
+                    }
+                    return {
+                        column_name: col.field,
+                        column_type: colType,
+                        display_name: { default: normalizeName(col.field.replace(/_/g, ' ')), localized: [] },
+                        description: { default: normalizeName(col.field.replace(/_/g, ' ')), localized: [] },
+                        aggregation_type: colType === 'numeric'
+                            ? AggregationTypes.getValuesForNumbers()
+                            : colType === 'date'
+                            ? AggregationTypes.getValuesForOthers()
+                            : AggregationTypes.getValuesForText(),
+                        minimumFractionDigits: col.type === 'integer' ? 0 : col.type === 'numeric' ? 2 : null,
+                        computed_column: 'no',
+                        visible: true,
+                        ia_visibility: 'FULL',
+                        column_granted_roles: [],
+                        row_granted_roles: [],
+                        tableCount: 0
+                    };
+                });
+
+                const tableDisplayName = normalizeName(safeName.replace(/_/g, ' '));
                 return {
-                    column_name: col.field,
-                    column_type: colType,
-                    display_name: { default: normalizeName(col.field.replace(/_/g, ' ')), localized: [] },
-                    description: { default: normalizeName(col.field.replace(/_/g, ' ')), localized: [] },
-                    aggregation_type: colType === 'numeric'
-                        ? AggregationTypes.getValuesForNumbers()
-                        : colType === 'date'
-                        ? AggregationTypes.getValuesForOthers()
-                        : AggregationTypes.getValuesForText(),
-                    minimumFractionDigits: col.type === 'integer' ? 0 : col.type === 'numeric' ? 2 : null,
-                    computed_column: 'no',
+                    table_name: safeName,
+                    display_name: { default: tableDisplayName, localized: [] },
+                    description: { default: tableDisplayName, localized: [] },
+                    table_type: [],
+                    table_granted_roles: [],
+                    columns,
+                    relations: [],
                     visible: true,
-                    ia_visibility: 'FULL',
-                    column_granted_roles: [],
-                    row_granted_roles: [],
                     tableCount: 0
                 };
             });
-
-            const tableDisplayName = normalizeName(safeName.replace(/_/g, ' '));
-            const tables = [{
-                table_name: safeName,
-                display_name: { default: tableDisplayName, localized: [] },
-                description: { default: tableDisplayName, localized: [] },
-                table_type: [],
-                table_granted_roles: [],
-                columns,
-                relations: [],
-                visible: true,
-                tableCount: 0
-            }];
 
             const CC = allowCache ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
 
@@ -807,7 +826,7 @@ export class DataSourceController {
                         type: 'duckdb',
                         host: null,
                         port: null,
-                        database: duckdbFolder,
+                        database: targetFolder,
                         schema: 'main',
                         user: null,
                         password: null
@@ -828,6 +847,22 @@ export class DataSourceController {
 
             const saved = await datasource.save();
             return res.status(201).json({ ok: true, data_source_id: saved._id });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async GetDuckDbFolders(req: Request, res: Response, next: NextFunction) {
+        try {
+            const duckdbBaseFolder = path.join(process.cwd(), 'duckdb');
+            if (!fs.existsSync(duckdbBaseFolder)) {
+                return res.status(200).json({ ok: true, folders: [] });
+            }
+            const entries = fs.readdirSync(duckdbBaseFolder, { withFileTypes: true });
+            const folders = entries
+                .filter(e => e.isDirectory())
+                .map(e => e.name);
+            return res.status(200).json({ ok: true, folders });
         } catch (err) {
             next(err);
         }

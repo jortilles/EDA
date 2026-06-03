@@ -439,6 +439,30 @@
           </div>
           } @else if (connectionForm.get('type')?.value == 'duckdb') {
 
+          <!-- Carpeta padre -->
+          <div class="space-y-2 md:col-span-2">
+            <label class="block font-medium" i18n="@@duckdbFolderLabel">
+              Carpeta padre <span class="text-red-500">*</span>
+            </label>
+            <p-dropdown
+              [options]="duckdbFolderOptions"
+              [(ngModel)]="selectedDuckdbFolder"
+              [ngModelOptions]="{standalone: true}"
+              optionLabel="label"
+              optionValue="value"
+              [style]="{'width': '100%'}"
+              appendTo="body"
+              (onChange)="onFolderOptionChange($event)">
+            </p-dropdown>
+            @if(selectedDuckdbFolder === '__new__'){
+            <input type="text" formControlName="folderName"
+              placeholder="nombre_carpeta_nueva"
+              i18n-placeholder="@@duckdbFolderPlaceholder"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md mt-2" />
+            }
+            <p class="text-xs text-gray-500" i18n="@@duckdbFolderHint">Los archivos CSV se guardarán en <code>duckdb/{{ connectionForm.get('folderName')?.value || '...' }}/</code></p>
+          </div>
+
           <div>
             <div class="space-y-2">
               <label for="separator" class="block font-medium" i18n="@@placeholderInputSeparator">
@@ -531,7 +555,49 @@
                 }
               </tbody>
             </table>
+
+            <!-- Botón Siguiente: añade CSV actual a la lista -->
+            @if(csvColumns.length > 0){
+            <div class="mt-4 flex justify-end">
+              <button type="button" (click)="addCsvToList()"
+                class="px-4 py-2 border border-corporate-primary rounded-md text-sm font-medium text-corporate-primary hover:bg-gray-50 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+                <ng-container i18n="@@duckdbAddAnotherCsv">Añadir otro CSV</ng-container>
+              </button>
+            </div>
+            }
           </div>
+
+          <!-- Lista de CSVs ya añadidos -->
+          @if(duckdbCsvList.length > 0){
+          <div class="md:col-span-2 mt-2 space-y-2">
+            <h4 class="text-sm font-medium text-gray-700" i18n="@@duckdbCsvListTitle">CSVs en la carpeta ({{ duckdbCsvList.length }}):</h4>
+            @for(csv of duckdbCsvList; track $index){
+            <div class="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
+              <div class="flex items-center gap-2 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-corporate-primary" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+                <span>{{ csv.fileName }}</span>
+                <span class="text-xs text-gray-500" i18n="@@duckdbCsvColumns">({{ csv.columnsConfig.length }} columnas)</span>
+              </div>
+              <button type="button" (click)="removeCsvFromList($index)"
+                class="text-gray-400 hover:text-red-500 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            }
+          </div>
+          }
 
           }
         </div>
