@@ -372,10 +372,15 @@ export class DataSourceController {
 
                     // Si es DuckDB, eliminar la carpeta con los CSV del disco
                     if (dataSource.ds?.connection?.type === 'duckdb') {
-                        const folderPath: string = dataSource.ds.connection.database;
+                        const database: string = dataSource.ds.connection.database;
                         const duckdbBase = path.join(process.cwd(), 'duckdb');
-                        if (folderPath && folderPath.startsWith(duckdbBase) && fs.existsSync(folderPath)) {
-                            fs.rmSync(folderPath, { recursive: true, force: true });
+                        // Resolve folder: supports both legacy absolute paths and new relative names
+                        const folderName = (path.isAbsolute(database) || database?.includes('\\') || database?.includes('/'))
+                            ? path.basename(database)
+                            : database;
+                        const targetPath = path.join(duckdbBase, folderName);
+                        if (folderName && fs.existsSync(targetPath)) {
+                            fs.rmSync(targetPath, { recursive: true, force: true });
                         }
                     }
 
@@ -758,6 +763,9 @@ export class DataSourceController {
                     .split(' ').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
 
             const safeFolderName = folderName.replace(/[^a-zA-Z0-9_\-]/g, '_').toLowerCase();
+            if (!safeFolderName) {
+                return next(new HttpException(400, `Invalid folderName "${folderName}": must contain at least one alphanumeric character`));
+            }
 
             const duckdbBaseFolder = path.join(process.cwd(), 'duckdb');
             const targetFolder = path.join(duckdbBaseFolder, safeFolderName);
@@ -826,7 +834,7 @@ export class DataSourceController {
                         type: 'duckdb',
                         host: null,
                         port: null,
-                        database: targetFolder,
+                        database: safeFolderName,  // store only folder name, not absolute path
                         schema: 'main',
                         user: null,
                         password: null

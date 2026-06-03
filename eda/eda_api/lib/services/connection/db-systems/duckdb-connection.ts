@@ -14,10 +14,22 @@ export class DuckDBConnection extends AbstractConnection {
     private queryBuilder: DuckDBBuilderService;
 
     private getCsvFolder(): string {
-        if (this.config.database && this.config.database !== ':memory:') {
-            return this.config.database;
+        const database = this.config.database;
+        const duckdbBase = path.join(process.cwd(), 'duckdb');
+
+        // Legacy absolute paths (created on another machine): extract only the folder name
+        if (database && (path.isAbsolute(database) || database.includes('\\') || database.includes('/'))) {
+            const folderName = path.basename(database);
+            if (!folderName) throw new Error(`[DuckDB] Cannot resolve CSV folder from path: "${database}"`);
+            return path.join(duckdbBase, folderName);
         }
-        return path.join(process.cwd(), 'duckdb');
+
+        // Normal case: database is just the folder name (e.g. "ajuntamentderubi")
+        if (database && database !== ':memory:') {
+            return path.join(duckdbBase, database);
+        }
+
+        throw new Error(`[DuckDB] datasource has no valid folder configured (database="${database}"). Each DuckDB datasource must point to a subfolder inside duckdb/.`);
     }
 
     async getclient(): Promise<duckdb.Database> {
@@ -28,23 +40,37 @@ export class DuckDBConnection extends AbstractConnection {
         }
     }
 
-    private registerCsvFiles(conn: duckdb.Connection): Promise<void> {
+    private async registerCsvFiles(conn: duckdb.Connection): Promise<void> {
         const folder = this.getCsvFolder();
-        if (!fs.existsSync(folder)) return Promise.resolve();
+        console.log(`[DuckDB] registerCsvFiles → folder: "${folder}"`);
+
+        if (!fs.existsSync(folder)) {
+            console.error(`[DuckDB] folder does not exist: "${folder}"`);
+            return;
+        }
 
         const csvFiles = fs.readdirSync(folder).filter(f => f.toLowerCase().endsWith('.csv'));
-        const promises = csvFiles.map(file => {
+        console.log(`[DuckDB] CSV files found: [${csvFiles.join(', ')}]`);
+
+        // Sequential execution: DuckDB 1.4.x may have race conditions with parallel DDL on the same connection
+        for (const file of csvFiles) {
             const tableName = path.basename(file, path.extname(file));
             const filePath = path.join(folder, file).replace(/\\/g, '/');
-            return new Promise<void>((resolve, reject) => {
+            await new Promise<void>((resolve, reject) => {
                 conn.run(
                     `CREATE OR REPLACE VIEW "${tableName}" AS SELECT * FROM read_csv_auto('${filePath}')`,
-                    (err) => err ? reject(err) : resolve()
+                    (err) => {
+                        if (err) {
+                            console.error(`[DuckDB] Error creating view "${tableName}": ${err.message}`);
+                            reject(err);
+                        } else {
+                            console.log(`[DuckDB] View "${tableName}" ready`);
+                            resolve();
+                        }
+                    }
                 );
             });
-        });
-
-        return Promise.all(promises).then(() => undefined);
+        }
     }
 
     private runQuery(conn: duckdb.Connection, query: string): Promise<any[]> {
