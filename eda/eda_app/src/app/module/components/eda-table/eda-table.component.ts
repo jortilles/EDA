@@ -131,13 +131,6 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
         return `${col.header} column linked to:\n${this.inject.linkedDashboardProps.dashboardName}`;
     }
 
-    isNumericValue(value: any): boolean {
-        if (value === null || value === undefined || value === '') return false;
-        if (typeof value === 'number') return true;
-        if (typeof value === 'string') return !value.trim().startsWith('<') && !isNaN(Number(value));
-        return false;
-    }
-
     getSafeHtml(html: string): SafeHtml {
         if (!html) return '';
         return this.sanitizer.bypassSecurityTrustHtml(html);
