@@ -86,6 +86,7 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypes10:Mapa de coordenadas`, value: 'coordinatesMap', subValue: 'coordinatesMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes11:Mapa de Capas`, value: 'geoJsonMap', subValue: 'geoJsonMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypesRadar:Radar`, value: 'radar', subValue: 'radar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
+        { label: $localize`:@@chartTypesKPITrend:KPI Tendencia`, value: 'kpitrend', subValue: 'kpitrend', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
     ];
 
     public filterTypes: FilterType[] = [
@@ -652,7 +653,7 @@ export class ChartUtilsService {
                 'table', 'crosstable', 'kpi','dynamicText', 'geoJsonMap', 'coordinatesMap',
                 'doughnut', 'polarArea', 'line', 'kpiline', 'area', 'kpiarea', 'bar', 'kpibar', 'histogram',  'funnel', 'bubblechart',
                 'horizontalBar', 'barline', 'stackedbar', 'parallelSets', 'treeMap', 'scatterPlot', 'knob' ,
-                'pyramid', 'radar', 'stackedbar100', 'treetable', 'sunburst'
+                'pyramid', 'radar', 'stackedbar100', 'treetable', 'sunburst', 'kpitrend'
             ];
 
         //table (at least one column)
@@ -776,6 +777,15 @@ export class ChartUtilsService {
         // Pruebas con hacer dinámico el treeTable
         if(dataDescription.totalColumns > 2) {
             notAllowed.splice(notAllowed.indexOf('treetable'), 1);
+        }
+
+        // kpitrend: 2 columnas - 1 fecha (year/month/week/day) + 1 numerico
+        const dateColForTrend = query.find((c: any) => c.column_type === 'date');
+        const kpiTrendFormats = ['year', 'month', 'week', 'day'];
+        if (dataDescription.totalColumns === 2 && dataDescription.numericColumns.length === 1
+            && dataDescription.otherColumns.length === 1
+            && dateColForTrend && kpiTrendFormats.includes(dateColForTrend.format)) {
+            notAllowed.splice(notAllowed.indexOf('kpitrend'), 1);
         }
 
         return notAllowed;

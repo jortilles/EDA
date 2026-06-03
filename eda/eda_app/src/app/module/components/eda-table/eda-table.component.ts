@@ -1,9 +1,10 @@
-import { Component, ViewChild, Input, ElementRef, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, ViewChild, Input, ElementRef, OnInit, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { StyleProviderService, AlertService } from '@eda/services/service.index';
 import { Table } from 'primeng/table';
 // import { FilterUtils } from 'primeng/utils';
 import { EdaTable } from './eda-table';
+import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '@eda/configs/personalitzacio/customizables';
 import { registerLocaleData } from '@angular/common';
 
 import es from '@angular/common/locales/es';
@@ -45,7 +46,7 @@ import { DialogModule } from 'primeng/dialog';  // <--- importar módulo de Prim
         DialogModule,
     ]
 })
-export class EdaTableComponent implements OnInit {
+export class EdaTableComponent implements OnInit, AfterViewInit {
     @ViewChild('table', { static: false }) table: Table;
     @Input() inject: EdaTable;
     @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
@@ -69,14 +70,18 @@ export class EdaTableComponent implements OnInit {
         this.chartOptions = EdaColumnChartOptions;
     }
     ngOnInit(): void {
-
-
         if(this?.inject?.styles && !this.inject.pivot){
             this.applyStyles(this.inject.styles)
         }else if(this?.inject?.styles && this.inject.pivot){
             this.applyPivotSyles(this.inject.styles)
         }
+    }
 
+    ngAfterViewInit(): void {
+        // Template is rendered here — querySelector('.eda-table') works correctly.
+        // inject is still undefined at this point (set after createComponent returns),
+        // so we apply defaults. setTableProperties overrides with saved colors afterwards.
+        this.applyBandingColors(this.inject?.headerColor, this.inject?.bandingColor, this.inject?.colorEnabled);
     }
 
 
@@ -102,7 +107,8 @@ export class EdaTableComponent implements OnInit {
             const col = this.inject.cols.find(c => c.field === colname);
             const colType = col ? col.type : null;
 
-            // No emitir evento para columnas numéricas, HTML ni valores que sean HTML
+
+            // No emitir evento para columnas numéricas ni HTML
             const isHtmlValue = typeof label === 'string' && label.trim().startsWith('<');
             if (typeof label !== 'number' && colType !== 'EdaColumnHtml' && !isHtmlValue) {
                 this.onClick.emit({ label, filterBy });
@@ -113,6 +119,13 @@ export class EdaTableComponent implements OnInit {
         if (col.description == null) return '';
         return col.description || '';
     };
+
+    isNumericValue(value: any): boolean {
+        if (value === null || value === undefined || value === '') return false;
+        if (typeof value === 'number') return true;
+        if (typeof value === 'string') return !value.trim().startsWith('<') && !isNaN(Number(value));
+        return false;
+    }
 
     getLinkTooltip(col) {
         return `${col.header} column linked to:\n${this.inject.linkedDashboardProps.dashboardName}`;
@@ -214,6 +227,23 @@ export class EdaTableComponent implements OnInit {
         const full = clean.length === 3 ? clean.split('').map(c => c + c).join('') : clean;
         const n = parseInt(full, 16);
         return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
+    }
+
+    public applyBandingColors(headerColor?: string, bandingColor?: string, colorEnabled?: boolean) {
+        const el: HTMLElement = this.elementRef.nativeElement.querySelector('.eda-table')
+                               || this.elementRef.nativeElement;
+        if (colorEnabled === false) {
+            el.style.setProperty('--table-header-color', '#ffffff');
+            el.style.setProperty('--table-banding-color', '#ffffff');
+            el.style.setProperty('--table-total-color', '#ffffff');
+            return;
+        }
+        const hc = this.hexToRgba(headerColor || DEFAULT_TABLE_HEADER_COLOR, 0.4);
+        const bc = this.hexToRgba(bandingColor || DEFAULT_TABLE_BANDING_COLOR, 0.15);
+        const sc = this.hexToRgba(bandingColor || DEFAULT_TABLE_HEADER_COLOR, 0.30);
+        el.style.setProperty('--table-header-color', hc);
+        el.style.setProperty('--table-banding-color', bc);
+        el.style.setProperty('--table-total-color', sc);
     }
 
     public applyStyles(styles: Array<any>) {

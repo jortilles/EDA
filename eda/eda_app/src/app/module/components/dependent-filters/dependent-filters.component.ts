@@ -96,6 +96,10 @@ export class DependentFilters implements OnInit {
             this.initDashboard();
         }
 
+        const filterCount = this.dependentFilterGrid.length;
+        const dynamicRows = Math.max(10, filterCount);
+        const dynamicCols = Math.max(12, filterCount + 2);
+
         this.options = {
             gridType: GridType.Fit,
             compactType: CompactType.None,
@@ -109,7 +113,7 @@ export class DependentFilters implements OnInit {
 
             // Evita que los items cambien sus dimensiones en mobile:
             // Si quieres que en mobile conserven el ancho/alto definidos por fixedCol/Row:
-            fixedColWidth: 130,    
+            fixedColWidth: 130,
             fixedRowHeight: 50,
             keepFixedWidthInMobile: true, // conserva el ancho fijo al entrar en mobile
             keepFixedHeightInMobile: true,// conserva la altura fija al entrar en mobile
@@ -118,10 +122,10 @@ export class DependentFilters implements OnInit {
             disableWindowResize: false,   // false por defecto; si true evitaría recálculos automáticos
             mobileModeEnabled: true,       // por claridad (no todas las versiones tienen esta prop)
 
-            minCols: 12,
-            maxCols: 12,
-            minRows: 10, // Hacer este valor dinamico - Pendiente
-            maxRows: 10, // Hacer este valor dinamico - Pendiente
+            minCols: dynamicCols,
+            maxCols: dynamicCols,
+            minRows: dynamicRows,
+            maxRows: dynamicRows,
             margin: 1, // Margen entre los bloques
 
             itemChangeCallback: this.onItemChange.bind(this)

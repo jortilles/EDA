@@ -805,6 +805,36 @@ export class DashboardSidebarComponent {
         if (tableInstance) {
           panelDataList.push({ title, type: chartType as 'table' | 'crosstable', tableData: tableInstance, ...gridPos });
         }
+      } else if (['kpi', 'kpibar', 'kpiline', 'kpiarea'].includes(chartType)) {
+        const inject = panelComp.panelChart?.componentRef?.instance?.inject;
+        if (inject) {
+          const kpiData = {
+            value:              inject.value,
+            sufix:              inject.sufix              || '',
+            kpiColor:           inject.kpiColor           || '',
+            modifiedFontPoints: inject.modifiedFontPoints || 0,
+          };
+          if (chartType === 'kpi') {
+            // KPI puro: sólo texto
+            panelDataList.push({ title, type: 'kpi', kpiData, ...gridPos });
+          } else {
+            // KPI con gráfico: ocultamos el número para capturar sólo el chart
+            const kpiComp   = panelComp.panelChart?.componentRef?.instance;
+            const kpiNumEl  = kpiComp?.kpiContainer?.nativeElement as HTMLElement | undefined;
+            if (kpiNumEl) kpiNumEl.style.visibility = 'hidden';
+            const captured = await this._captureChartImage(panelComp.elRef?.nativeElement, title);
+            if (kpiNumEl) kpiNumEl.style.visibility = '';
+            panelDataList.push({
+              title,
+              type: 'kpi',
+              kpiData,
+              imageBase64:  captured.imageBase64,
+              imageWidth:   captured.imageWidth,
+              imageHeight:  captured.imageHeight,
+              ...gridPos,
+            });
+          }
+        }
       } else {
         const captured = await this._captureChartImage(panelComp.elRef?.nativeElement, title);
         panelDataList.push({ ...captured, title, ...gridPos });

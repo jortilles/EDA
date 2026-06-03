@@ -198,6 +198,10 @@ export const TemaUrl = 'assets/css/colors/sass/default-dark.css';
 export const DEFAULT_BACKGROUND_COLOR: string = '#f1f0f0';
 export const DEFAULT_PANEL_COLOR: string = '#ffffff';
 export const DEFAULT_FONT_COLOR: string = '#000000'
+
+/** Color de fondo de la cabecera de tabla (cabecera: opacidad alta, banding: opacidad baja) */
+export const DEFAULT_TABLE_HEADER_COLOR: string = '#249daa';
+export const DEFAULT_TABLE_BANDING_COLOR: string = '#31bece'; // Mismo color que el header pero con opacidad reducida para el banding de filas
 export const DEFAULT_FONT_FAMILY: string = 'Montserrat';  /* THIS MUST BE SET ALSO IN  \eda_app\src\assets\sass\css\custom.css */
 export const DEFAULT_FONT_SIZE: number = 0;
 export const DEFAULT_TITLE_ALIGN: string = 'flex-start';

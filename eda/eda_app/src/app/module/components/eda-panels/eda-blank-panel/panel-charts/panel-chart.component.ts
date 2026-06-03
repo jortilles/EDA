@@ -9,7 +9,7 @@ import { TreeMap } from './../../../eda-treemap/eda-treeMap';
 import { EdaD3Component } from './../../../eda-d3/eda-d3.component';
 import { TableConfig } from './chart-configuration-models/table-config';
 import { Component, OnInit, Input, SimpleChanges, OnChanges, ViewChild, ViewContainerRef, ComponentFactoryResolver,
-    OnDestroy, Output, EventEmitter, Self, ElementRef,} from '@angular/core';
+    OnDestroy, Output, EventEmitter, Self, ElementRef, Inject, LOCALE_ID } from '@angular/core';
 import { EdadynamicTextComponent } from '../../../eda-dynamicText/eda-dynamicText.component';
 import { EdaTableComponent } from '../../../eda-table/eda-table.component';
 import { PanelChart } from './panel-chart';
@@ -40,13 +40,15 @@ import { SunburstConfig } from './chart-configuration-models/sunburst-config';
 import { SankeyConfig } from './chart-configuration-models/sankey-config';
 import { ScatterConfig } from './chart-configuration-models/scatter-config';
 import { BubblechartConfig } from './chart-configuration-models/bubblechart.config';
-import { FormsModule } from '@angular/forms'; 
-import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { CommonModule, getLocaleMonthNames, FormStyle, TranslationWidth } from '@angular/common';
 import { FunnelConfig } from './chart-configuration-models/funnel.config';
 import { KnobConfig } from './chart-configuration-models/knob-config';
 import { MapConfig } from './chart-configuration-models/map-config';
 import { ChartJsConfig } from './chart-configuration-models/chart-js-config';
 import { Subscription } from 'rxjs';
+import { EdaKpiTrendComponent } from '@eda/components/eda-kpi-trend/eda-kpi-trend.component';
+import { KpiTrendConfig } from './chart-configuration-models/kpi-trend-config';
 
 @Component({
     standalone: true,
@@ -89,7 +91,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     constructor(
         private chartUtils: ChartUtilsService,
         @Self() private ownRef: ElementRef,
-        public styleProviderService: StyleProviderService) {
+        public styleProviderService: StyleProviderService,
+        @Inject(LOCALE_ID) private locale: string) {
         
         this.fontColor = this.styleProviderService.panelFontColor.source['value'];
         this.paletaActual = this.styleProviderService.ActualChartPalette !== undefined ?
@@ -209,6 +212,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
         if (type === 'treetable') {
             this.renderTreetable();
+        }
+        if (type === 'kpitrend') {
+            this.renderEdaKpiTrend();
         }
     }
 
@@ -524,6 +530,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject.ordering = config.ordering;
         this.componentRef.instance.inject.negativeNumbers = config.negativeNumbers;
         this.componentRef.instance.inject.crossSortOrder = config.crossSortOrder || 'alphabetical';
+        this.componentRef.instance.inject.headerColor = config.headerColor || '';
+        this.componentRef.instance.inject.bandingColor = config.bandingColor || '';
+        this.componentRef.instance.inject.colorEnabled = config.colorEnabled !== false;
+        this.componentRef.instance.applyBandingColors(config.headerColor, config.bandingColor, config.colorEnabled !== false);
         this.configUpdated.emit(this.currentConfig);;
     }
 
@@ -768,6 +778,344 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             });
             (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
         })
+        this.configUpdated.emit(this.currentConfig);
+    }
+    /**
+     * Renders a KPITrendComponent
+    */
+    
+    private renderEdaKpiTrend() {
+        const query = this.props.query;
+        const data = this.props.data;
+        const cfg: any = this.props.config.getConfig();
+
+        const dateIndex = query.findIndex((c: any) => c.column_type === 'date');
+        const numericIndex = query.findIndex((c: any) => c.column_type === 'numeric');
+        if (dateIndex === -1 || numericIndex === -1) return;
+
+        const dateFormat: string = query[dateIndex]?.format || 'month';
+        const decimals: number = query[numericIndex]?.minimumFractionDigits || 0;
+        const header: string = query[numericIndex]?.display_name?.default || '';
+
+        // --- Parse all rows sorted chronologically ---
+        const rawRows: { dateStr: string; value: number }[] = data.values
+            .filter((row: any[]) => row[dateIndex] != null && row[dateIndex] !== '')
+            .map((row: any[]) => ({
+                dateStr: String(row[dateIndex]).trim(),
+                value: Number(row[numericIndex]) || 0
+            }))
+            .sort((a, b) => a.dateStr < b.dateStr ? -1 : a.dateStr > b.dateStr ? 1 : 0);
+
+        if (rawRows.length === 0) return;
+
+        // --- Build period groups:
+        //   month format → groups = years, periods = months 1-12
+        //   week format  → groups = approx months (4-week buckets), periods = week ordinal (1-5)
+        //   year/day     → groups = years or months, periods = 1 or day number
+        const periodGroups = this._buildTrendPeriodGroups(rawRows, dateFormat);
+        if (periodGroups.length === 0) return;
+
+        // Most recent group = current, second = default comparison
+        const currentGroup = periodGroups[0];
+        const defaultCompKey = periodGroups.length > 1 ? periodGroups[1].key : null;
+        const availableComparisons = periodGroups.slice(1).map(g => ({ key: g.key, label: g.label }));
+
+        // --- Compute initial chart data ---
+        const compGroup = defaultCompKey ? periodGroups.find(g => g.key === defaultCompKey) || null : null;
+        const { kpiValue, spyValue, vsPercent, labels, currentSeries, previousSeries } =
+            this._computeTrendDisplay(currentGroup, compGroup, dateFormat, decimals);
+
+        // --- assignedColors – mismo patrón que renderEdaKpiChart ---
+        const existingColors = cfg['assignedColors'] || [];
+        let assignedColors: any[] = [];
+        const hasTwoSeries = compGroup !== null;
+
+        if (existingColors.length > 0) {
+            assignedColors = existingColors;
+        } else {
+            const fallback = this.styleProviderService?.ActualChartPalette?.['paleta']?.[0] ||
+                             this.styleProviderService?.DEFAULT_PALETTE_COLOR?.['paleta']?.[0];
+            assignedColors = [
+                { value: header, color: this.paletaActual[0] || fallback },
+                { value: 'prev', color: this.paletaActual[1] || fallback }
+            ];
+            cfg['assignedColors'] = assignedColors;
+        }
+        const color0 = assignedColors[0]?.color || this.paletaActual[0];
+        const color1 = assignedColors[1]?.color || this.paletaActual[1] || color0;
+
+        // --- Build datasets (label = column name for bars, comparison label for line) ---
+        const compLabel = this._comparisonLabel(dateFormat);
+        const rawDatasets: any[] = [{
+            label: header,
+            data: currentSeries,
+            type: 'bar',
+            borderRadius: 2,
+            order: 2,
+            backgroundColor: color0,
+            borderColor: color0,
+            datalabels: { display: false }
+        }];
+        if (hasTwoSeries) {
+            rawDatasets.push({
+                label: compLabel,
+                data: previousSeries,
+                type: 'line',
+                pointRadius: 2,
+                pointHoverRadius: 4,
+                borderDash: [4, 3],
+                fill: false,
+                tension: 0.3,
+                order: 1,
+                backgroundColor: color1,
+                borderColor: color1,
+                datalabels: { display: false }
+            });
+        }
+
+        // --- Chart options via initChartOptions – mismo patrón que renderEdaKpiChart ---
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        const styles: StyleConfig = { fontFamily: this.fontFamily, fontSize: this.fontSize, fontColor: this.fontColor };
+        const dimensions = this.getDimensions();
+        dimensions.height = !dimensions.height ? 255 : dimensions.height;
+        dimensions.width = !dimensions.width ? 1300 : dimensions.width;
+
+        const ticksOptions = { xTicksLimit: 3, yTicksLimit: 0, maxRotation: 1, minRotation: 1, labelOffset: 40, padding: -2 };
+        const chartOptions = this.chartUtils.initChartOptions(
+            'bar', dataDescription.numericColumns[0]?.name,
+            dataDescription.otherColumns, false, false, dimensions, null,
+            { min: null, max: null }, styles, false, false, false, false,
+            cfg.numberOfColumns, 'barline', ticksOptions, false, cfg.showGridLines ?? true,
+            this.styleProviderService
+        );
+
+        // --- Build chartConfig – mismo patrón que renderEdaKpiChart ---
+        const chartConfig: any = {};
+        chartConfig.showChart = true;
+        chartConfig.edaChart = {
+            edaChart: 'barline',
+            chartType: 'bar',
+            chartLabels: labels,
+            chartDataset: rawDatasets,
+            chartOptions: chartOptions.chartOptions,
+            chartColors: rawDatasets.map(d => ({ backgroundColor: d.backgroundColor, borderColor: d.borderColor })),
+            chartLegend: false
+        };
+
+        // --- KPI values ---
+        chartConfig.header = header;
+        chartConfig.kpiValue = kpiValue;
+        chartConfig.spyValue = spyValue;
+        chartConfig.vsPercent = vsPercent;
+        chartConfig.currentPeriodLabel = currentGroup.label;
+        chartConfig.previousPeriodLabel = compGroup?.label || '';
+        chartConfig.periodTitle = this._periodTitle(dateFormat);
+        chartConfig.comparisonLabel = compLabel;
+        chartConfig.decimals = decimals;
+
+        // --- Style config – mismo patrón que renderEdaKpiChart ---
+        const propsConfig: any = this.props.config;
+        if (propsConfig) {
+            const trendCfg = <KpiTrendConfig>propsConfig.getConfig();
+            chartConfig.sufix = trendCfg?.sufix || '';
+            chartConfig.backgroundColor = trendCfg?.backgroundColor || '';
+            chartConfig.kpiColor = trendCfg?.kpiColor || '';
+        } else {
+            chartConfig.sufix = '';
+            chartConfig.backgroundColor = '';
+            chartConfig.kpiColor = '';
+        }
+        chartConfig.currentYearColor = color0;
+        chartConfig.previousYearColor = color1;
+
+        // --- Para el dropdown en el componente ---
+        chartConfig.dateFormat = dateFormat;
+        chartConfig.currentKey = currentGroup.key;
+        chartConfig.selectedComparisonKey = defaultCompKey;
+        chartConfig.availableComparisons = availableComparisons;
+        chartConfig.periodGroups = periodGroups;
+        chartConfig.assignedColors = assignedColors;
+
+        this.createEdaKpiTrendComponent(chartConfig);
+    }
+
+    /**
+     * Agrupa los rows según el formato de fecha:
+     *  month → por año (periods = mes 1-12)
+     *  week  → por mes aproximado (periods = posición ordinal de semana 1-5)
+     *  year  → por año (periods = 1 dato por año)
+     *  day   → por mes (periods = día del mes)
+     * Resultado ordenado desc (más reciente primero)
+     */
+    private _buildTrendPeriodGroups(
+        rows: { dateStr: string; value: number }[],
+        format: string
+    ): { key: string; label: string; entries: { period: number; value: number }[] }[] {
+
+        // Map: groupKey → { label, weekNums: [], entries accumulated }
+        const groupAcc = new Map<string, { label: string; weekNums: number[]; values: Map<number, number> }>();
+
+        rows.forEach(row => {
+            const parts = row.dateStr.split('-');
+            const year = parts[0];
+            let groupKey: string;
+            let groupLabel: string;
+            let period: number;
+            let weekNum = 0;
+
+            if (format === 'month') {
+                // Group by year, period = month number
+                groupKey = year;
+                groupLabel = year;
+                period = parts.length > 1 ? (parseInt(parts[1].replace(/^W/i, ''), 10) || 1) : 1;
+
+            } else if (format === 'week') {
+                // Group by approximate calendar month, period = ordinal (assigned later)
+                weekNum = parts.length > 1 ? (parseInt(parts[1].replace(/^W/i, ''), 10) || 1) : 1;
+                const approxMonth = Math.min(12, Math.ceil(weekNum * 12 / 52.18));
+                groupKey = `${year}-${String(approxMonth).padStart(2, '0')}`;
+                const mNames = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+                groupLabel = `${mNames[approxMonth - 1]} '${year.slice(-2)}`;
+                period = 0; // will be assigned after sorting weeks within group
+
+            } else if (format === 'day') {
+                // Group by year-month, period = day of month
+                const monthPart = parts.length > 1 ? parts[1] : '01';
+                groupKey = `${year}-${monthPart}`;
+                const mNum = parseInt(monthPart, 10);
+                const mNames = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+                groupLabel = `${mNames[mNum - 1] || monthPart} '${year.slice(-2)}`;
+                period = parts.length > 2 ? (parseInt(parts[2], 10) || 1) : 1;
+
+            } else {
+                // year format or unknown: group = year, period = 1
+                groupKey = year;
+                groupLabel = year;
+                period = 1;
+            }
+
+            if (!groupAcc.has(groupKey)) {
+                groupAcc.set(groupKey, { label: groupLabel, weekNums: [], values: new Map() });
+            }
+            const acc = groupAcc.get(groupKey);
+
+            if (format === 'week') {
+                // Store week numbers for ordinal assignment later
+                acc.weekNums.push(weekNum);
+                acc.values.set(weekNum, (acc.values.get(weekNum) || 0) + row.value);
+            } else {
+                acc.values.set(period, (acc.values.get(period) || 0) + row.value);
+            }
+        });
+
+        // Convert to output format
+        const groups: { key: string; label: string; entries: { period: number; value: number }[] }[] = [];
+
+        groupAcc.forEach((acc, key) => {
+            let entries: { period: number; value: number }[];
+
+            if (format === 'week') {
+                // Assign ordinal position (1,2,3,4,5) based on sorted week numbers
+                const sortedWeeks = Array.from(acc.values.keys()).sort((a, b) => a - b);
+                entries = sortedWeeks.map((wk, idx) => ({ period: idx + 1, value: acc.values.get(wk) || 0 }));
+            } else {
+                entries = Array.from(acc.values.entries()).map(([p, v]) => ({ period: p, value: v }))
+                              .sort((a, b) => a.period - b.period);
+            }
+            groups.push({ key, label: acc.label, entries });
+        });
+
+        // Sort descending (most recent first)
+        return groups.sort((a, b) => a.key < b.key ? 1 : a.key > b.key ? -1 : 0);
+    }
+
+    /** Calcula KPI, SPLY, vs% y arrays para el gráfico a partir de dos grupos */
+    private _computeTrendDisplay(
+        currentGroup: { key: string; label: string; entries: { period: number; value: number }[] },
+        compGroup: { key: string; label: string; entries: { period: number; value: number }[] } | null,
+        format: string,
+        decimals: number
+    ): { kpiValue: number; spyValue: number | null; vsPercent: number | null;
+         labels: string[]; currentSeries: (number | null)[]; previousSeries: (number | null)[] } {
+
+        const currentMap = new Map(currentGroup.entries.map(e => [e.period, e.value]));
+        const compMap = compGroup ? new Map(compGroup.entries.map(e => [e.period, e.value])) : null;
+
+        // All periods union
+        const allPeriods = new Set<number>(currentMap.keys());
+        if (compMap) compMap.forEach((_, k) => allPeriods.add(k));
+        const sortedPeriods = Array.from(allPeriods).sort((a, b) => a - b);
+
+        const labels = sortedPeriods.map(p => this._periodToChartLabel(p, format));
+        const currentSeries = sortedPeriods.map(p => currentMap.get(p) ?? null);
+        const previousSeries = compMap ? sortedPeriods.map(p => compMap.get(p) ?? null) : [];
+
+        // KPI = sum of current group
+        const kpiValue = this._roundDecimals(currentGroup.entries.reduce((s, e) => s + e.value, 0), decimals);
+
+        // SPLY = sum of comp group for same periods present in current
+        let spyValue: number | null = null;
+        if (compMap) {
+            const currentPeriods = Array.from(currentMap.keys());
+            spyValue = this._roundDecimals(
+                currentPeriods.reduce((s, p) => s + (compMap.get(p) || 0), 0), decimals);
+        }
+
+        const vsPercent = (spyValue !== null && spyValue !== 0)
+            ? Math.round(((kpiValue - spyValue) / spyValue) * 1000) / 10
+            : null;
+
+        return { kpiValue, spyValue, vsPercent, labels, currentSeries, previousSeries };
+    }
+
+    /** Label del eje X del gráfico para un numero de periodo */
+    private _periodToChartLabel(period: number, format: string): string {
+        if (format === 'month') {
+            const months = getLocaleMonthNames(this.locale, FormStyle.Standalone, TranslationWidth.Abbreviated);
+            const raw = months[(period - 1) % 12];
+            if (!raw) return String(period);
+            return raw.charAt(0).toUpperCase() + raw.slice(1).replace(/\.$/, '');
+        }
+        if (format === 'week') return 'Sem ' + String(period);
+        return String(period);
+    }
+
+    /** Título del periodo actual según el formato de fecha */
+    private _periodTitle(format: string): string {
+        switch (format) {
+            case 'year':  return $localize`:@@trendTitleYear:Año actual`;
+            case 'month': return $localize`:@@trendTitleMonth:Año actual`;
+            case 'week':  return $localize`:@@trendTitleWeek:Mes actual`;
+            case 'day':   return $localize`:@@trendTitleDay:Mes actual`;
+            default:      return $localize`:@@trendTitlePeriod:Período actual`;
+        }
+    }
+
+    /** Label de la comparación según el formato */
+    private _comparisonLabel(format: string): string {
+        switch (format) {
+            case 'year':  return $localize`:@@trendCompYear:Año anterior`;
+            case 'month': return $localize`:@@trendCompMonth:Año anterior`;
+            case 'week':  return $localize`:@@trendCompWeek:Mes anterior`;
+            case 'day':   return $localize`:@@trendCompDay:Mes anterior`;
+            default:      return $localize`:@@trendCompPeriod:Período anterior`;
+        }
+    }
+
+    private _roundDecimals(value: number, decimals: number): number {
+        if (!decimals) return Math.round(value);
+        return Number(value.toFixed(decimals));
+    }
+
+    /**
+     * creates a kpiTrendComponent
+     * @param inject
+     */
+    private createEdaKpiTrendComponent(inject: any) {
+        this.entry.clear();
+        this.componentRef = this.entry.createComponent(EdaKpiTrendComponent);
+        this.componentRef.instance.inject = inject;
+        this.currentConfig = inject;
         this.configUpdated.emit(this.currentConfig);
     }
 
@@ -1065,6 +1413,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 else if (['kpibar', 'kpiline', 'kpiarea'].includes(this.props.chartType)) {
                     this.updateKPIColors();
                 }
+                else if (this.props.chartType === 'kpitrend') {
+                    this.updateKpiTrendColors();
+                }
                 // Charts D3
                 else if (['treeMap', 'knob', 'sunburst', 'funnel', 'parallelSets', 'bubblechart', 'scatterPlot'].includes(this.props.chartType)) {
                     this.updateD3ChartColors(this.props.chartType);
@@ -1122,6 +1473,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.props.config.setConfig(new KpiConfig(assignedColors));
         // Re-renderizar KPI desde cero
         this.renderEdaKpiChart();
+    }
+
+    public updateKpiTrendColors() {
+        const config = this.props.config.getConfig();
+        const assignedColors = config['assignedColors'];
+
+        this.props.config.setConfig(new KpiTrendConfig({ assignedColors }));
+        this.renderEdaKpiTrend();
     }
 
     public updateMapColors() {

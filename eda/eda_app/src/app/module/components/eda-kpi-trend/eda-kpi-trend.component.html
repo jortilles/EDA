@@ -1,0 +1,88 @@
+<div class="absolute inset-0 overflow-hidden" [style.background-color]="inject?.backgroundColor || null">
+
+  <!-- Fila de leyenda: chip actual + dropdown comparación -->
+  <div class="absolute top-0 left-0 right-0 flex items-center"
+       style="height:28px; padding:0 8px; gap:6px; z-index:1;">
+
+    <!-- Chip periodo actual: dot + año/mes en caja bordeada -->
+    <div class="flex items-center" style="gap:4px; flex-shrink:0;">
+      <span style="width:8px;height:8px;border-radius:50%;display:inline-block;"
+            [style.background-color]="displayCurrentColor"></span>
+      <span style="font-size:11px;font-weight:600;color:#333;border-radius:4px;padding:1px 7px;border:1.5px solid;"
+            [style.border-color]="displayCurrentColor"
+            [style.background-color]="displayCurrentColor + '22'">
+        {{ displayCurrentLabel || '...' }}
+      </span>
+    </div>
+
+    <!-- Línea + dropdown comparación -->
+    @if(displayAvailableComparisons.length > 0) {
+      <div class="flex items-center" style="gap:4px; flex-shrink:0;">
+        <span style="width:14px;display:inline-block;border-top:2px dashed;"
+              [style.border-color]="displayPreviousColor"></span>
+        <p-dropdown
+            [options]="displayAvailableComparisons"
+            [(ngModel)]="selectedComparisonKey"
+            optionLabel="label"
+            optionValue="key"
+            (onChange)="onComparisonChange()"
+            appendTo="body"
+            styleClass="kpi-trend-dropdown"
+            [style]="{'min-width':'80px'}">
+        </p-dropdown>
+      </div>
+    } @else if(displayPreviousLabel) {
+      <div class="flex items-center" style="gap:4px; flex-shrink:0;">
+        <span style="width:14px;display:inline-block;border-top:2px dashed;"
+              [style.border-color]="displayPreviousColor"></span>
+        <span style="font-size:11px;color:#666;border-radius:4px;padding:1px 7px;border:1px solid #ccc;background:#f5f5f5;">
+          {{ displayPreviousLabel }}
+        </span>
+      </div>
+    }
+  </div>
+
+  <!-- Fila principal: flex row (izquierda = tamaño por contenido; derecha = el resto) -->
+  <div class="absolute" style="top:28px;bottom:0;left:0;right:0;display:flex;overflow:hidden;">
+
+    <!-- Columna KPI (izquierda, se adapta al contenido) -->
+    <div #kpiLeft style="flex-shrink:0;max-width:45%;padding:8px 8px 6px 8px;overflow:hidden;">
+
+      <div style="font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;white-space:nowrap;">
+        {{ displayPeriodTitle }}
+      </div>
+
+      <div class="font-bold" [ngStyle]="getValueStyle()"
+           style="line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:8px;">
+        {{ formatValue(displayKpiValue) }}{{ displaySufix }}
+      </div>
+
+      @if(displaySpyValue !== null && displaySpyValue !== undefined) {
+        <div style="display:flex;align-items:baseline;gap:4px;white-space:nowrap;margin-bottom:3px;">
+          <span style="font-size:9px;font-weight:600;color:#aaa;text-transform:uppercase;letter-spacing:0.04em;">
+            {{ displayComparisonLabel }}
+          </span>
+          <span style="font-size:12px;font-weight:600;" [style.color]="color">{{ formatValue(displaySpyValue) }}</span>
+        </div>
+      }
+
+      @if(displayVsPercent !== null && displayVsPercent !== undefined) {
+        <div style="display:flex;align-items:center;gap:3px;font-size:11px;font-weight:600;"
+             [class.kpi-trend-positive]="displayVsPercent >= 0"
+             [class.kpi-trend-negative]="displayVsPercent < 0">
+          <span>{{ displayVsPercent >= 0 ? '▲' : '▼' }}</span>
+          <span>{{ absVal(displayVsPercent) | number:'1.1-1':'es' }}%</span>
+        </div>
+      }
+    </div>
+
+    <!-- Columna gráfico (derecha, ocupa el resto) -->
+    @if(edaChartInject) {
+      <div style="flex:1;min-width:0;overflow:hidden;">
+        <eda-chart #edaTrendChart [inject]="edaChartInject" class="h-full w-full"></eda-chart>
+      </div>
+    }
+
+  </div>
+
+</div>

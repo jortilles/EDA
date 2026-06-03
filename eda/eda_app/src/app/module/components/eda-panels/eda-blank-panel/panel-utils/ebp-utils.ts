@@ -94,8 +94,12 @@ export const EbpUtils = {
         str = $localize`:@@chartInfoFunnel:Un embudo necesita una categoría y un valor numérico`;
         description += `\n${str}`;
         break;
-      case 'pyramid': 
+      case 'pyramid':
         str = $localize`:@@chartInfoPyramid:Un gráfico de piramide necesita de dos categorías y un valor numérico`;
+        description += `\n${str}`;
+        break;
+      case 'kpitrend':
+        str = $localize`:@@chartInfoKpiTrend:KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica`;
         description += `\n${str}`;
         break;
       default:
@@ -197,8 +201,11 @@ export const EbpUtils = {
       case 'radar':
         description = 'radar';
         break;
-      case 'treetable': 
+      case 'treetable':
         description = 'account_tree';
+        break;
+      case 'kpitrend':
+        description = 'trending_up';
         break;
     }
 
