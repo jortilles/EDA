@@ -2,16 +2,10 @@ import { PgBuilderService } from './pg-builder.service';
 import { EdaQueryParams } from '../query-builder.service';
 import * as _ from 'lodash';
 
-/**
- * DuckDB query builder — extends PgBuilderService because DuckDB is highly
- * PostgreSQL-compatible.  The only override needed is analizedQuery, because
- * DuckDB's trunc() does NOT accept a precision argument (use round() instead).
- * Schema defaults to 'main' (DuckDB default) instead of PostgreSQL's 'public'.
- */
 export class DuckDBBuilderService extends PgBuilderService {
 
     public analizedQuery(params: EdaQueryParams) {
-        const { fields, columns, tables, origin, dest, joinTree, grouping, filters, havingFilters, joinType, valueListJoins, schema } = params;
+        const { fields, tables, origin, dest, joinTree, filters, joinType, valueListJoins, schema } = params;
 
         const fromTable = tables.filter(table => table.name === origin)
             .map(table => table.query ? this['cleanViewString'](table.query) : table.name)[0];
@@ -30,7 +24,7 @@ export class DuckDBBuilderService extends PgBuilderService {
             let joinString: any[];
             let alias: any;
             if (this.queryTODO.joined) {
-                const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
+                const responseJoins = this.setJoins(joinTree, joinType ?? 'inner', schema ?? 'main', valueListJoins ?? []);
                 joinString = responseJoins.joinString;
                 alias = responseJoins.aliasTables;
             } else {
@@ -157,5 +151,60 @@ export class DuckDBBuilderService extends PgBuilderService {
         }
 
         return querys;
+    }
+
+    // ── DuckDB-specific fixes ─────────────────────────────────────────────────
+
+    // read_csv_auto infers types independently per file, so join columns can end up
+    // as different types (e.g. INT64 vs VARCHAR). Wrapping both ON sides in
+    // CAST(... AS VARCHAR) makes every join type-safe without changing the schema.
+
+    public getJoins(joinTree: any[], dest: any[], tables: any[], joinType: string, valueListJoins: any[], schema: string): string[] {
+        return this.castJoinConditions(super.getJoins(joinTree, dest, tables, joinType, valueListJoins, schema));
+    }
+
+    public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[]): any {
+        const result = super.setJoins(joinTree, joinType, schema, valueListJoins);
+        result.joinString = this.castJoinConditions(result.joinString);
+        return result;
+    }
+
+    // PgBuilderService generates ROUND(agg(col)::numeric, n)::float.
+    // DuckDB requires the cast INSIDE the aggregation: ROUND(agg(col::numeric), n)::float.
+
+    public getSeparedColumns(origin: string, dest: string[]) {
+        const [columns, grouping] = super.getSeparedColumns(origin, dest) as [string[], string[]];
+        const fixed = columns.map(c =>
+            c.replace(
+                /\b(sum|avg|min|max)\(([^)]+)\)::numeric/g,
+                (_, agg, col) => `${agg}(${col}::numeric)`
+            )
+        );
+        return [fixed, grouping];
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private castJoinConditions(joins: string[]): string[] {
+        return joins.map(j => this.castOnCondition(j));
+    }
+
+    private castOnCondition(joinStr: string): string {
+        const onMatch = /\bon\b/i.exec(joinStr);
+        if (!onMatch) return joinStr;
+
+        const beforeOn = joinStr.substring(0, onMatch.index);
+        const afterOn  = joinStr.substring(onMatch.index + onMatch[0].length);
+
+        const andParts = afterOn.split(/\band\b/i);
+        const wrapped = andParts.map(part => {
+            const eqIdx = part.indexOf('=');
+            if (eqIdx === -1) return part;
+            const left  = part.substring(0, eqIdx).trim();
+            const right = part.substring(eqIdx + 1).trim();
+            return `CAST(${left} AS VARCHAR) = CAST(${right} AS VARCHAR)`;
+        });
+
+        return `${beforeOn}ON ${wrapped.join(' AND ')}`;
     }
 }
