@@ -41,6 +41,7 @@ export interface ChatMessage {
 
 export type ChatEvent =
   | { type: 'status'; code: string }
+  | { type: 'token'; text: string }
   | { type: 'response'; ok: boolean; response: string; options?: ChatOption[]; chart?: BarChart };
 
 @Injectable({
@@ -89,6 +90,8 @@ export class IaChatService extends ApiService {
                 const parsed = JSON.parse(raw);
                 if (currentEvent === 'status') {
                   observer.next({ type: 'status', code: parsed.code });
+                } else if (currentEvent === 'token') {
+                  observer.next({ type: 'token', text: parsed.text });
                 } else if (currentEvent === 'response') {
                   observer.next({ type: 'response', ok: parsed.ok, response: parsed.response, options: parsed.options, chart: parsed.chart });
                   observer.complete();

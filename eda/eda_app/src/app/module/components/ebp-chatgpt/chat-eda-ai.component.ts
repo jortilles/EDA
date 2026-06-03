@@ -1,6 +1,7 @@
-import { AfterViewChecked, Component, ElementRef, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
+import { AfterViewChecked, ChangeDetectorRef, Component, ElementRef, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
 import { SharedModule } from "@eda/shared/shared.module";
 import { AssistantService } from '@eda/services/api/assistant.service';
+import { IaChatService, ChatMessage } from '@eda/services/api/ia-chat.service';
 import { IaFormStateService } from '@eda/services/shared/IaFormState.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -24,6 +25,8 @@ export class ChatEdaAIComponent implements AfterViewChecked {
   @ViewChild('chatInput') private chatInput!: ElementRef;
 
   private assistantService = inject(AssistantService);
+  private iaChatService = inject(IaChatService);
+  private cdr = inject(ChangeDetectorRef);
   private iaFormStateService = inject(IaFormStateService);
   private sanitizer = inject(DomSanitizer);
 
@@ -86,16 +89,32 @@ export class ChatEdaAIComponent implements AfterViewChecked {
     this.shouldScroll = true;
     setTimeout(() => this.chatInput.nativeElement.focus());
 
-    this.assistantService.sendChat(input).subscribe({
-      next: (text) => {
-        this.messages.push({ sender: 'bot', content: text });
-        this.loading = false;
-        this.shouldScroll = true;
+    const chatMessages: ChatMessage[] = [
+      ...this.messages.slice(0, -1).map(m => ({
+        role: (m.sender === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
+        content: m.content,
+      })),
+      { role: 'user' as const, content: input },
+    ];
+
+    this.messages.push({ sender: 'bot', content: '' });
+    const botIndex = this.messages.length - 1;
+
+    this.iaChatService.sendMessage(chatMessages).subscribe({
+      next: (event) => {
+        if (event.type === 'token') {
+          this.messages[botIndex].content += event.text;
+          this.shouldScroll = true;
+          this.cdr.detectChanges();
+        } else if (event.type === 'response') {
+          this.messages[botIndex].content = event.response;
+          this.loading = false;
+          this.shouldScroll = true;
+        }
       },
       error: (err) => {
-        this.messages.push({ sender: 'bot', content: `Error al conectar con la IA.` });
+        this.messages[botIndex].content = 'Error al conectar con la IA.';
         this.loading = false;
-        this.shouldScroll = true;
         console.error(err);
       }
     });

@@ -192,7 +192,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
         if (event.type === 'status') {
           this.chatStatusMessage.set(this.statusLabels[event.code] ?? '');
           this.shouldScrollChat = true;
-        } else {
+        } else if (event.type === 'response') {
           this.chatStatusMessage.set('');
           this.chatHistory.push({ role: 'assistant', content: event.response, options: event.options ?? [], chart: event.chart });
           this.chatLoading.set(false);
