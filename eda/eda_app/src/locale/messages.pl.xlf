@@ -5462,8 +5462,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       </trans-unit>
 
       <trans-unit id="preparingDependentFilters">
-        <source>Preparando los filtros dependientes</source>
-        <target>Przygotowywanie filtrów zależnych</target>
+        <source> filtros globales para la configuracion de los filtros dependientes: </source>
+        <target> globalne filtry do konfiguracji filtrów zależnych: </target>
       </trans-unit>
 
       <trans-unit id="autocompleteFilter">

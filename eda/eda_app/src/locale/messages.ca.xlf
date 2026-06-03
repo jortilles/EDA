@@ -5897,8 +5897,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       </trans-unit>
 
       <trans-unit id="preparingDependentFilters">
-        <source>Preparando los filtros dependientes</source>
-        <target>Preparant els filtres dependents</target>
+        <source> filtros globales para la configuracion de los filtros dependientes: </source>
+        <target> filtres globals per a la configuració dels filtres dependents: </target>
       </trans-unit>
 
       <trans-unit id="autocompleteFilter">

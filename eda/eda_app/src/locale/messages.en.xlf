@@ -5695,10 +5695,10 @@ OR<ph id="5"/>
 <target>Dependent filters settings</target>
 </trans-unit>
 
-<trans-unit id="preparingDependentFilters">
-<source>Preparando los filtros dependientes</source>
-<target>Preparing the dependent filters</target>
-</trans-unit>
+      <trans-unit id="preparingDependentFilters">
+        <source> filtros globales para la configuracion de los filtros dependientes: </source>
+        <target> global filters for the configuration of dependent filters: </target>
+      </trans-unit>
 
 <trans-unit id="autocompleteFilter">
 <source>¿Filtro autocomplete?</source>

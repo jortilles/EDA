@@ -5833,8 +5833,8 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       </trans-unit>
 
       <trans-unit id="preparingDependentFilters">
-        <source>Preparando los filtros dependientes</source>
-        <target>Préparation des filtres dépendants</target>
+        <source> filtros globales para la configuracion de los filtros dependientes: </source>
+        <target> filtres globaux pour la configuration des filtres dépendants : </target>
       </trans-unit>
 
       <trans-unit id="autocompleteFilter">
