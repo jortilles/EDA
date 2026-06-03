@@ -77,8 +77,20 @@ export class DuckDBConnection extends AbstractConnection {
         return new Promise((resolve, reject) => {
             conn.all(query, (err, rows) => {
                 if (err) reject(err);
-                else resolve(rows);
+                else resolve(this.serializeRows(rows));
             });
+        });
+    }
+
+    // DuckDB returns COUNT/SUM aggregates as BigInt which JSON.stringify can't serialize.
+    private serializeRows(rows: any[]): any[] {
+        return rows.map(row => {
+            const out: any = {};
+            for (const key of Object.keys(row)) {
+                const val = row[key];
+                out[key] = typeof val === 'bigint' ? Number(val) : val;
+            }
+            return out;
         });
     }
 

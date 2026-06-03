@@ -155,6 +155,29 @@ export class DuckDBBuilderService extends PgBuilderService {
 
     // ── DuckDB-specific fixes ─────────────────────────────────────────────────
 
+    // pg-builder uses to_date()/to_timestamp() with PostgreSQL format codes.
+    // DuckDB supports these but the double-space in 'YYYY-MM-DD  HH24:MI:SS'
+    // causes parse errors. Use ISO casting instead.
+
+    public processFilter(filter: any, columnType: string): string {
+        if (columnType !== 'date') return super.processFilter(filter, columnType);
+        const values = (Array.isArray(filter) ? filter : [filter])
+            .map(v => (v === null || v === undefined) ? 'ihatenulos' : v);
+        if (values.some(v => v === '(x => None)')) return `'4092-01-01'::TIMESTAMP`;
+        return values
+            .map(v => v === 'ihatenulos' ? `'4092-01-01'::TIMESTAMP` : `'${v}'::TIMESTAMP`)
+            .join(',');
+    }
+
+    public processFilterEndRange(filter: any, columnType: string): string {
+        if (columnType !== 'date') return super.processFilterEndRange(filter, columnType);
+        const values = (Array.isArray(filter) ? filter : [filter])
+            .map(v => (v === null || v === undefined) ? 'ihatenulos' : v);
+        return values
+            .map(v => v === 'ihatenulos' ? `'4092-01-01 23:59:59'::TIMESTAMP` : `'${v} 23:59:59'::TIMESTAMP`)
+            .join(',');
+    }
+
     // read_csv_auto infers types independently per file, so join columns can end up
     // as different types (e.g. INT64 vs VARCHAR). Wrapping both ON sides in
     // CAST(... AS VARCHAR) makes every join type-safe without changing the schema.
