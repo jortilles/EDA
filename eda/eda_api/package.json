@@ -1,6 +1,6 @@
 {
-    "name": "api-eda",
-    "version": "3.0.2",
+    "name": "api-edalitics",
+    "version": "3.1.0",
     "description": "EDA api package",
     "main": "index.js",
     "scripts": {
