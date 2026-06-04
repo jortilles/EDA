@@ -31,6 +31,7 @@ import { ViewDialogEditionComponent } from './view-dialog-edition/view-dialog-ed
 import { ViewDialogComponent } from './view-dialog/view-dialog.component';
 import { AddTagComponent } from '../data-source-list/add-tag/add-tag.component';
 import { CalculatedColumnEditDialogComponent } from './calculated-column-edit-dialog/calculated-column-edit-dialog.component';
+import { AddDuckdbTableDialogComponent } from './add-duckdb-table-dialog/add-duckdb-table-dialog.component';
 import { AGG_COMPUTED } from './aggregationConstants';
 
 // Angular Modules
@@ -57,7 +58,8 @@ const STANDALONE_COMPONENTS = [
   ViewDialogEditionComponent,
   AddTagComponent,
   EdaTableComponent,
-  CalculatedColumnEditDialogComponent
+  CalculatedColumnEditDialogComponent,
+  AddDuckdbTableDialogComponent
 ];
 
 @Component({
@@ -106,6 +108,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
     public csvPanelController: EdaDialogController;
     public showCsvDialog: boolean = false;
+
+    public showAddDuckdbTableDialog: boolean = false;
 
     public cacheController : EdaDialogController;
     public showCacheDialog: boolean = false;
@@ -670,6 +674,34 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.update();
     }
 
+    deleteDuckdbTable(tableName: string) {
+        Swal.fire({
+            title: $localize`:@@Sure:¿Estás seguro?`,
+            text: $localize`:@@deleteDuckdbTable:Se eliminará la tabla y su archivo CSV del disco.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
+            cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
+        }).then((result) => {
+            if (result.value) {
+                const id = this.dataModelService.model_id;
+                this.spinnerService.on();
+                this.dataModelService.deleteDuckDbCsv(id, tableName).subscribe(
+                    () => {
+                        this.dataModelService.deleteView(tableName);
+                        this.typePanel = 'root';
+                        this.dataModelService.sendModel();
+                        this.spinnerService.off();
+                    },
+                    err => {
+                        this.alertService.addError(err);
+                        this.spinnerService.off();
+                    }
+                );
+            }
+        });
+    }
+
 
     deleteValuesList(columnPanel: EditColumnPanel){
         this.columnPanel.valueListSource = null;
@@ -794,6 +826,17 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         }
 
         this.showMapDialog = false;
+    }
+
+    openAddDuckdbTableDialog() {
+        this.showAddDuckdbTableDialog = true;
+    }
+
+    onCloseDuckdbTableDialog(newTable: any) {
+        this.showAddDuckdbTableDialog = false;
+        if (newTable) {
+            this.dataModelService.addTableToModel(newTable);
+        }
     }
 
     openCSVDialog() {

@@ -165,6 +165,8 @@ router.get('/check-connection/:id', authGuard, roleGuard, DataSourceController.C
  *       - DataSource Routes
  */
 router.get('/duckdb-folders', authGuard, roleGuard, DataSourceController.GetDuckDbFolders);
+router.delete('/duckdb-table/:id/:tableName', authGuard, roleGuard, DataSourceController.DeleteDuckDbCsv);
+router.post('/duckdb-add-table/:id', authGuard, roleGuard, DataSourceController.AddDuckDbTable);
 router.get('/:id', authGuard, roleGuard, DataSourceController.GetDataSourceById);
 
 

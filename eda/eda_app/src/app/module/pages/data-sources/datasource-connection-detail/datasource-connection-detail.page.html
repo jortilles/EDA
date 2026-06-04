@@ -439,10 +439,10 @@
           </div>
           } @else if (connectionForm.get('type')?.value == 'duckdb') {
 
-          <!-- Carpeta padre -->
+          <!-- Fuente de datos -->
           <div class="space-y-2 md:col-span-2">
             <label class="block font-medium" i18n="@@duckdbFolderLabel">
-              Carpeta padre <span class="text-red-500">*</span>
+              Fuente de datos <span class="text-red-500">*</span>
             </label>
             <p-dropdown
               [options]="duckdbFolderOptions"
@@ -460,7 +460,6 @@
               i18n-placeholder="@@duckdbFolderPlaceholder"
               class="w-full px-3 py-2 border border-gray-300 rounded-md mt-2" />
             }
-            <p class="text-xs text-gray-500" i18n="@@duckdbFolderHint">Los archivos CSV se guardarán en <code>duckdb/{{ connectionForm.get('folderName')?.value || '...' }}/</code></p>
           </div>
 
           <div>

@@ -645,6 +645,12 @@ export class DataSourceService extends ApiService implements OnDestroy {
         this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name));
     }
 
+    addTableToModel(table: any){
+        const tmp_model = [...this._databaseModel.getValue(), table];
+        this._databaseModel.next(tmp_model);
+        this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name));
+    }
+
 
 
 
@@ -722,6 +728,14 @@ export class DataSourceService extends ApiService implements OnDestroy {
 
     getDuckDbFolders(): Observable<any> {
         return this.get(`${this.globalDSRoute}/duckdb-folders`);
+    }
+
+    deleteDuckDbCsv(datasourceId: string, tableName: string): Observable<any> {
+        return this.delete(`${this.globalDSRoute}/duckdb-table/${datasourceId}/${tableName}`);
+    }
+
+    addDuckDbTable(datasourceId: string, body: { fileName: string; csvContent: string; columnsConfig: any[] }): Observable<any> {
+        return this.post(`${this.globalDSRoute}/duckdb-add-table/${datasourceId}`, body);
     }
 
     executeQuery(body): Observable<any> {

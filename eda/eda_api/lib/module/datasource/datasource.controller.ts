@@ -860,6 +860,114 @@ export class DataSourceController {
         }
     }
 
+    static async AddDuckDbTable(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            const { fileName, csvContent, columnsConfig } = req.body;
+
+            if (!fileName || !csvContent || !columnsConfig) {
+                return next(new HttpException(400, 'fileName, csvContent and columnsConfig are required'));
+            }
+
+            const dataSource = await DataSource.findById(id);
+            if (!dataSource) {
+                return next(new HttpException(404, 'DataSource not found'));
+            }
+
+            const folderName = dataSource.ds?.connection?.database;
+            if (!folderName) {
+                return next(new HttpException(400, 'Invalid DuckDB datasource'));
+            }
+
+            const normalizeName = (str: string) =>
+                str.split('_').join(' ').toLowerCase()
+                    .split(' ').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+
+            const safeName = (fileName || 'file')
+                .replace(/\.csv$/i, '')
+                .replace(/[^a-zA-Z0-9_\-]/g, '_')
+                .toLowerCase();
+
+            const targetFolder = path.join(process.cwd(), 'duckdb', folderName);
+            if (!fs.existsSync(targetFolder)) {
+                fs.mkdirSync(targetFolder, { recursive: true });
+            }
+            fs.writeFileSync(path.join(targetFolder, `${safeName}.csv`), csvContent, 'utf8');
+
+            const columns = (columnsConfig || []).map((col: any) => {
+                let colType: string;
+                switch (col.type) {
+                    case 'integer':
+                    case 'numeric':
+                        colType = 'numeric'; break;
+                    case 'timestamp':
+                        colType = 'date'; break;
+                    default:
+                        colType = 'text';
+                }
+                return {
+                    column_name: col.field,
+                    column_type: colType,
+                    display_name: { default: normalizeName(col.field.replace(/_/g, ' ')), localized: [] },
+                    description: { default: normalizeName(col.field.replace(/_/g, ' ')), localized: [] },
+                    aggregation_type: colType === 'numeric'
+                        ? AggregationTypes.getValuesForNumbers()
+                        : colType === 'date'
+                        ? AggregationTypes.getValuesForOthers()
+                        : AggregationTypes.getValuesForText(),
+                    minimumFractionDigits: col.type === 'integer' ? 0 : col.type === 'numeric' ? 2 : null,
+                    computed_column: 'no',
+                    visible: true,
+                    ia_visibility: 'FULL',
+                    column_granted_roles: [],
+                    row_granted_roles: [],
+                    tableCount: 0
+                };
+            });
+
+            const tableDisplayName = normalizeName(safeName.replace(/_/g, ' '));
+            const newTable = {
+                table_name: safeName,
+                display_name: { default: tableDisplayName, localized: [] },
+                description: { default: tableDisplayName, localized: [] },
+                table_type: [],
+                table_granted_roles: [],
+                columns,
+                relations: [],
+                visible: true,
+                tableCount: 0
+            };
+
+            const tables = [...(dataSource.ds.model.tables || []), newTable];
+            await DataSource.findByIdAndUpdate(id, { 'ds.model.tables': tables });
+
+            return res.status(201).json({ ok: true, table: newTable });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async DeleteDuckDbCsv(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id, tableName } = req.params;
+            const dataSource = await DataSource.findById(id);
+            if (!dataSource) {
+                return next(new HttpException(404, 'DataSource not found'));
+            }
+            const folderName = dataSource.ds?.connection?.database;
+            if (!folderName) {
+                return next(new HttpException(400, 'Invalid DuckDB datasource'));
+            }
+            const csvPath = path.join(process.cwd(), 'duckdb', folderName, `${tableName}.csv`);
+            if (fs.existsSync(csvPath)) {
+                fs.unlinkSync(csvPath);
+            }
+            return res.status(200).json({ ok: true });
+        } catch (err) {
+            next(err);
+        }
+    }
+
     static async GetDuckDbFolders(req: Request, res: Response, next: NextFunction) {
         try {
             const duckdbBaseFolder = path.join(process.cwd(), 'duckdb');
