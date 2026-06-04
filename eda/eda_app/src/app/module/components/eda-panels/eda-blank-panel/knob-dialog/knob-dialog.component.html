@@ -34,6 +34,24 @@
 
           <h1 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase">Colors</h1>
 
+          <!-- Toggle semáforo -->
+          <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+            <div class="space-y-0.5">
+              <p class="font-medium" i18n="@@knobSemaphoreLabel">Color semafórico</p>
+              <p class="text-xs text-slate-400" i18n="@@knobSemaphoreDesc">Rojo → amarillo → verde según el valor</p>
+            </div>
+            <button type="button" role="switch" [attr.aria-checked]="semaphoreColor"
+              (click)="semaphoreColor = !semaphoreColor"
+              class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              [ngClass]="semaphoreColor ? 'bg-corporate-primary' : 'bg-gray-200'">
+              <span class="pointer-events-none block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition-transform"
+                [ngClass]="semaphoreColor ? 'translate-x-5' : 'translate-x-0.5'">
+              </span>
+            </button>
+          </div>
+
+          <!-- Color manual (solo visible si no hay semáforo) -->
+          @if(!semaphoreColor){
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
               <span class="font-medium">{{ assignedColors[0]?.value }}</span>
@@ -43,6 +61,15 @@
               </div>
             </div>
           </div>
+          }
+
+          <!-- Preview de gradiente semáforo -->
+          @if(semaphoreColor){
+          <div class="flex items-center gap-3 px-1">
+            <div class="h-3 flex-1 rounded-full" style="background: linear-gradient(to right, hsl(0,85%,42%), hsl(60,85%,42%), hsl(120,85%,42%))"></div>
+            <span class="text-xs text-slate-400">min → max</span>
+          </div>
+          }
         </div>
       </div>
     </div>

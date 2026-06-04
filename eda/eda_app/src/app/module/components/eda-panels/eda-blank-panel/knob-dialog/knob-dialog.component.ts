@@ -25,6 +25,7 @@ export class KnobDialogComponent implements OnInit {
     public max: number;
     public label: string;
     public display: boolean = false;
+    public semaphoreColor: boolean = false;
     public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
 
     constructor(private styleProviderService: StyleProviderService) {}
@@ -55,6 +56,7 @@ export class KnobDialogComponent implements OnInit {
 
                 this.min = limits[0];
                 this.max = limits[1];
+                this.semaphoreColor = !!this.myPanelChartComponent.componentRef.instance.inject?.semaphoreColor;
 
                 // Cargar assignedColors
                 this.loadChartColors(this.label, currentColor);
@@ -100,7 +102,8 @@ export class KnobDialogComponent implements OnInit {
         // Guardar límites
         const properties = {
             limits: [this.min, this.max],
-            assignedColors: this.assignedColors
+            assignedColors: this.assignedColors,
+            semaphoreColor: this.semaphoreColor
         };
         
         this.styleProviderService.palKnob = false;
