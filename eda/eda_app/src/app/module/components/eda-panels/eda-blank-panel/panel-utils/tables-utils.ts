@@ -11,18 +11,18 @@ export const TableUtils = {
     * @param vMap   Map() to keep tracking visited nodes -> first call is just a new Map()
   */
   findRelationsRecursive: (tables: any, table: any, vMap: any) => {
+   if (!table) return vMap;
     vMap.set(table.table_name, table);
-
-    table.relations.filter(r => r.visible !== false)
-      .forEach(rel => {
-        const newTable = tables.find(t => t.table_name === rel.target_table);
-        if (!vMap.has(newTable.table_name)) {
-          TableUtils.findRelationsRecursive(tables, newTable, vMap);
-        }
-      });
-
+     if (table.relations) {
+      table.relations.filter(r => r.visible !== false)
+        .forEach(rel => {
+          const newTable = tables.find(t => t.table_name === rel.target_table);
+          if (newTable && !vMap.has(newTable.table_name)) {
+            TableUtils.findRelationsRecursive(tables, newTable, vMap);
+          }
+        });
+    }
     return vMap;
-
   },
 
   /**
