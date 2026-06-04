@@ -1,6 +1,6 @@
 <div class="flex w-full min-h-full">
     <app-main-left-sidebar class="flex-shrink-0"></app-main-left-sidebar>
-    <main class="flex-grow overflow-hidden bg-[#F5F5F5]" [ngStyle]="{'background-color': bgColor}">
+    <main class="flex-grow overflow-hidden" [ngStyle]="bgColor ? {'background-color': bgColor} : {'background-color': 'var(--home-background)'}">
         <router-outlet></router-outlet>
     </main>
 </div>
