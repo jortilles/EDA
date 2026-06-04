@@ -204,6 +204,7 @@ export class DashboardPage implements OnInit {
   ngOnDestroy() {
     // Poner estilos como predefinidios
     this.stylesProviderService.setStyles(this.stylesProviderService.generateDefaultStyles())
+    this.stylesProviderService.setDefaultBackgroundColor();
     this.stylesProviderService.loadingFromPalette = false;
     this.stopRefresh = true;
     this.dashboard.config.stopRefresh = true;

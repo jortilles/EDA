@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { AlertService, UserService, SpinnerService } from './services/service.index';
 import { Router, RouterModule } from '@angular/router';
-import { CORPORATE_COLORS } from './config/personalitzacio/customizables';
+import { CORPORATE_COLORS, DEFAULT_HOME_BACKGROUND_COLOR } from './config/personalitzacio/customizables';
 
 import { PrimeNGConfig } from 'primeng/api';
 
@@ -177,5 +177,7 @@ export class AppComponent implements OnInit {
         root.style.setProperty('--btn-cancel-bg-end',        CORPORATE_COLORS.buttons.cancelBgEnd);
         root.style.setProperty('--btn-cancel-hover-bg',      CORPORATE_COLORS.buttons.cancelHoverBg);
         root.style.setProperty('--btn-cancel-hover-bg-end',  CORPORATE_COLORS.buttons.cancelHoverBgEnd);
+        // Shell background
+        root.style.setProperty('--home-background', DEFAULT_HOME_BACKGROUND_COLOR);
     }
 }

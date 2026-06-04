@@ -184,6 +184,9 @@ export const Tema = 'default-dark';
 export const TemaUrl = 'assets/css/colors/sass/default-dark.css';
 
 
+/** Color de fondo de la shell de la aplicación (home y páginas de administración) */
+export const DEFAULT_HOME_BACKGROUND_COLOR: string = '#F5F5F5';
+
 export const DEFAULT_BACKGROUND_COLOR: string = '#f1f0f0';
 export const DEFAULT_PANEL_COLOR: string = '#ffffff';
 export const DEFAULT_FONT_COLOR: string = '#000000'
