@@ -64,6 +64,7 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypesKPIBAR:KPI + Gráfico de Barras`, value: 'kpibar', subValue: 'kpibar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesKPILINE:KPI + Gráfico de Lineas`, value: 'kpiline', subValue: 'kpiline', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesKPIAREA:KPI + Gráfico de Áreas`, value: 'kpiline', subValue: 'kpiarea', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesKPITrend:KPI Tendencia`, value: 'kpitrend', subValue: 'kpitrend', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesDynamicText:Texto Dinámico`, value: 'dynamicText', subValue: 'dynamicText', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes15:Velocímetro`, value: 'knob', subValue: 'knob', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes3:Gráfico de Pastel`, value: 'doughnut', subValue: 'doughnut', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
@@ -86,7 +87,6 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypes10:Mapa de coordenadas`, value: 'coordinatesMap', subValue: 'coordinatesMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes11:Mapa de Capas`, value: 'geoJsonMap', subValue: 'geoJsonMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypesRadar:Radar`, value: 'radar', subValue: 'radar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
-        { label: $localize`:@@chartTypesKPITrend:KPI Tendencia`, value: 'kpitrend', subValue: 'kpitrend', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
     ];
 
     public filterTypes: FilterType[] = [
