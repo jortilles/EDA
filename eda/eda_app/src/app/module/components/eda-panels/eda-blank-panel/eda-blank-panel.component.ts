@@ -414,6 +414,7 @@ export class EdaBlankPanelComponent implements OnInit {
             }
             this.loadChartsData(this.panel.content);
             this.dynamicFilters = this.panel.content.dynamicFilters ?? true;
+            this.resultSortingColumns = this.panel.content.resultSortingColumns ?? [];
             } catch(e){
                 console.error('Error loading panel conent: ');
                 throw e;
@@ -752,7 +753,7 @@ public tableNodeExpand(event: any): void {
                 currentFormatIndex: entry.currentFormatIndex,
                 navFilters: entry.navFilters
             }));
-            this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters, navigationLinks, navActiveNodes, savedDateNavState, fullCurrentQuery: this.currentQuery };
+            this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters, navigationLinks, navActiveNodes, savedDateNavState, fullCurrentQuery: this.currentQuery, resultSortingColumns: this.resultSortingColumns };
 
             /**This is to repaint on panel redimension */
             if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst','radar'].includes(chart)) {
