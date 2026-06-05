@@ -1150,10 +1150,17 @@ public tableNodeExpand(event: any): void {
 
 
     public dropToResultSorting(event: CdkDragDrop<any[]>) {
+
+        console.log('event ==> ', event);
+
         if (event.previousContainer === event.container) {
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
         } else {
             const draggedColumn = event.previousContainer.data[event.previousIndex];
+
+            // Si no tenemos ordenation_type, añadimos 
+            draggedColumn.ordenation_type ??= 'No';
+
             const alreadyAdded = this.resultSortingColumns
                 .some(col => col.column_name === draggedColumn.column_name);
             if (!alreadyAdded) {
