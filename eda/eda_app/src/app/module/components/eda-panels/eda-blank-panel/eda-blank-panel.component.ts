@@ -1179,17 +1179,22 @@ public tableNodeExpand(event: any): void {
     }
 
     public changeResultSortingValue(column: any) {
-        console.log('changeResultSortingValue', column);
 
-        if(column.ordenation_type==='Asc') {
-            column.ordenation_type = 'No'
-        } else if(column.ordenation_type==='No') {
-            column.ordenation_type = 'Desc'
-        } else if(column.ordenation_type==='Desc'){
-            column.ordenation_type = 'Asc'
+        if (column.ordenation_type === 'Asc') {
+            column.ordenation_type = 'No';
+        } else if (column.ordenation_type === 'No') {
+            column.ordenation_type = 'Desc';
+        } else if (column.ordenation_type === 'Desc') {
+            column.ordenation_type = 'Asc';
         }
 
-        console.log('resultSortingColumns: fINAL', this.resultSortingColumns);
+        const newValue = column.ordenation_type;
+        const syncOrdenation = (arr: any[]) => {
+            const match = arr.find(c => c.column_name === column.column_name && c.table_id === column.table_id);
+            if (match) match.ordenation_type = newValue;
+        };
+        syncOrdenation(this.currentQuery);
+        syncOrdenation(this.resultSortingColumns);
     }
 
     public removeResultSorting(column: any) {
@@ -2004,6 +2009,9 @@ public tableNodeExpand(event: any): void {
     };
 
     public moveItem = (column: any) => {
+
+        console.log('holaaaaaaaaaaaaaa')
+
         PanelInteractionUtils.moveItem(this, column);
 
         if (this.selectedQueryMode == 'EDA2' && this.currentQuery.length === 1) {
