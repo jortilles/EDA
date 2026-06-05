@@ -90,8 +90,9 @@ export class DataSourceConnectionDetailPage implements OnInit {
   isDraggingDuckDbFile = signal<boolean>(false);
   public duckdbRawContent: string = '';
   public duckdbCsvList: Array<{ fileName: string; rawContent: string; columnsConfig: any[] }> = [];
-  public duckdbFolderOptions: Array<{ label: string; value: string }> = [{ label: $localize`:@@duckdbNewFolder:+ Nueva carpeta`, value: '__new__' }];
+  public duckdbFolderOptions: Array<{ label: string; value: string }> = [];
   public selectedDuckdbFolder: string = '__new__';
+  duckdbFolderExists = signal<boolean>(false);
 
   // variables añadidas ppor el script add-ccsv
   public csvRecords: any;
@@ -434,13 +435,16 @@ export class DataSourceConnectionDetailPage implements OnInit {
     try {
       const res = await lastValueFrom(this.dataSourceService.getDuckDbFolders());
       const folders: string[] = res?.folders || [];
-      this.duckdbFolderOptions = [
-        { label: $localize`:@@duckdbNewFolder:+ Nueva carpeta`, value: '__new__' },
-        ...folders.map(f => ({ label: f, value: f }))
-      ];
-    } catch {
-      this.duckdbFolderOptions = [{ label: $localize`:@@duckdbNewFolder:+ Nueva carpeta`, value: '__new__' }];
+      this.duckdbFolderOptions = folders.map(f => ({ label: f, value: f }));
+    } catch (e) {
+      this.duckdbFolderOptions = [];
     }
+  }
+
+  onFolderNameInput(event: Event): void {
+    const typed = ((event.target as HTMLInputElement).value || '').trim().toLowerCase();
+    const exists = this.duckdbFolderOptions.some(f => f.value.toLowerCase() === typed);
+    this.duckdbFolderExists.set(exists);
   }
 
   onFolderOptionChange(event: any): void {
