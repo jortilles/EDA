@@ -30,4 +30,6 @@ export class EdaKpiTrend {
     assignedColors: any[];
     // Chart
     edaChart: any;
+    // Font size offset (from kpi-dialog)
+    modifiedFontPoints: number = 0;
 }

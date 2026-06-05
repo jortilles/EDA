@@ -920,10 +920,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             chartConfig.sufix = trendCfg?.sufix || '';
             chartConfig.backgroundColor = trendCfg?.backgroundColor || '';
             chartConfig.kpiColor = trendCfg?.kpiColor || '';
+            chartConfig.modifiedFontPoints = trendCfg?.modifiedFontPoints || 0;
         } else {
             chartConfig.sufix = '';
             chartConfig.backgroundColor = '';
             chartConfig.kpiColor = '';
+            chartConfig.modifiedFontPoints = 0;
         }
         chartConfig.currentYearColor = color0;
         chartConfig.previousYearColor = color1;

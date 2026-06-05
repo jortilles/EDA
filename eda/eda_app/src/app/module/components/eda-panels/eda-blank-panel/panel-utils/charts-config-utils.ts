@@ -107,6 +107,7 @@ export const ChartsConfigUtils = {
         backgroundColor: inst?.inject?.backgroundColor || '',
         kpiColor: inst?.inject?.kpiColor || '',
         assignedColors: ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || [],
+        modifiedFontPoints: inst?.inject?.modifiedFontPoints || 0,
       };
     } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
       config = {

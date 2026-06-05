@@ -42,6 +42,7 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
     // Estilo KPI
     color: string = '#67757c';
     family: string = 'inherit';
+    modifiedFontPoints: number = 0;
 
     constructor(
         private styleProviderService: StyleProviderService,
@@ -72,6 +73,7 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
         if (!this.inject) return;
 
         if (this.inject.kpiColor) this.color = this.inject.kpiColor;
+        this.modifiedFontPoints = this.inject.modifiedFontPoints ?? 0;
 
         this.displayKpiValue = this.inject.kpiValue ?? 0;
         this.displaySpyValue = this.inject.spyValue ?? null;
@@ -215,6 +217,7 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
             const charCount = Math.max(text.length, 1);
             let size = Math.min(panelH * 0.22, colW / charCount * 1.6);
             size = Math.max(12, Math.min(size, 34));
+            size = Math.max(8, size + (this.inject?.modifiedFontPoints ?? this.modifiedFontPoints));
             return size.toFixed(0) + 'px';
         } catch {
             return '22px';
