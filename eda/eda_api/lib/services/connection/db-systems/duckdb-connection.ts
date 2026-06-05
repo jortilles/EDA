@@ -1,4 +1,4 @@
-import * as duckdb from 'duckdb';
+import { DuckDBInstance } from '@duckdb/node-api';
 import * as path from 'path';
 import * as fs from 'fs';
 import { DuckDBBuilderService } from '../../query-builder/qb-systems/duckdb-builder.service';
@@ -32,15 +32,11 @@ export class DuckDBConnection extends AbstractConnection {
         throw new Error(`[DuckDB] datasource has no valid folder configured (database="${database}"). Each DuckDB datasource must point to a subfolder inside duckdb/.`);
     }
 
-    async getclient(): Promise<duckdb.Database> {
-        try {
-            return new duckdb.Database(':memory:');
-        } catch (err) {
-            throw err;
-        }
+    async getclient(): Promise<DuckDBInstance> {
+        return await DuckDBInstance.create(':memory:');
     }
 
-    private async registerCsvFiles(conn: duckdb.Connection): Promise<void> {
+    private async registerCsvFiles(conn: any): Promise<void> {
         const folder = this.getCsvFolder();
         console.log(`[DuckDB] registerCsvFiles → folder: "${folder}"`);
 
@@ -52,37 +48,26 @@ export class DuckDBConnection extends AbstractConnection {
         const csvFiles = fs.readdirSync(folder).filter(f => f.toLowerCase().endsWith('.csv'));
         console.log(`[DuckDB] CSV files found: [${csvFiles.join(', ')}]`);
 
-        // Sequential execution: DuckDB 1.4.x may have race conditions with parallel DDL on the same connection
         for (const file of csvFiles) {
             const tableName = path.basename(file, path.extname(file));
             const filePath = path.join(folder, file).replace(/\\/g, '/');
-            await new Promise<void>((resolve, reject) => {
-                conn.run(
-                    `CREATE OR REPLACE VIEW "${tableName}" AS SELECT * FROM read_csv_auto('${filePath}')`,
-                    (err) => {
-                        if (err) {
-                            console.error(`[DuckDB] Error creating view "${tableName}": ${err.message}`);
-                            reject(err);
-                        } else {
-                            console.log(`[DuckDB] View "${tableName}" ready`);
-                            resolve();
-                        }
-                    }
-                );
-            });
+            try {
+                await conn.run(`CREATE OR REPLACE VIEW "${tableName}" AS SELECT * FROM read_csv_auto('${filePath}')`);
+                console.log(`[DuckDB] View "${tableName}" ready`);
+            } catch (err: any) {
+                console.error(`[DuckDB] Error creating view "${tableName}": ${err.message}`);
+                throw err;
+            }
         }
     }
 
-    private runQuery(conn: duckdb.Connection, query: string): Promise<any[]> {
-        return new Promise((resolve, reject) => {
-            conn.all(query, (err, rows) => {
-                if (err) reject(err);
-                else resolve(this.serializeRows(rows));
-            });
-        });
+    private async runQuery(conn: any, query: string): Promise<any[]> {
+        const reader = await conn.runAndReadAll(query);
+        const rows: any[] = reader.getRowObjects();
+        return this.serializeRows(rows);
     }
 
-    // DuckDB returns COUNT/SUM aggregates as BigInt which JSON.stringify can't serialize.
+    // DuckDB may return BigInt for COUNT/SUM aggregates which JSON.stringify can't handle.
     private serializeRows(rows: any[]): any[] {
         return rows.map(row => {
             const out: any = {};
@@ -95,31 +80,31 @@ export class DuckDBConnection extends AbstractConnection {
     }
 
     async tryConnection(): Promise<any> {
-        let db: duckdb.Database;
+        let instance: DuckDBInstance;
         try {
-            db = await this.getclient();
-            const conn = db.connect();
+            instance = await this.getclient();
+            const conn = await instance.connect();
             await this.registerCsvFiles(conn);
             this.itsConnected();
         } catch (err) {
             throw err;
         } finally {
-            if (db) db.close();
+            if (instance) instance.closeSync();
         }
     }
 
     async execQuery(query: string): Promise<any> {
-        let db: duckdb.Database;
+        let instance: DuckDBInstance;
         try {
-            db = await this.getclient();
-            const conn = db.connect();
+            instance = await this.getclient();
+            const conn = await instance.connect();
             await this.registerCsvFiles(conn);
             return await this.runQuery(conn, query);
         } catch (err) {
             console.log(err);
             throw err;
         } finally {
-            if (db) db.close();
+            if (instance) instance.closeSync();
         }
     }
 
@@ -128,10 +113,10 @@ export class DuckDBConnection extends AbstractConnection {
     }
 
     async generateDataModel(optimize: number, filter: string): Promise<any> {
-        let db: duckdb.Database;
+        let instance: DuckDBInstance;
         try {
-            db = await this.getclient();
-            const conn = db.connect();
+            instance = await this.getclient();
+            const conn = await instance.connect();
             await this.registerCsvFiles(conn);
 
             const filters = filter ? filter.split(',').map(f => f.trim()) : [];
@@ -184,7 +169,7 @@ export class DuckDBConnection extends AbstractConnection {
         } catch (err) {
             throw err;
         } finally {
-            if (db) db.close();
+            if (instance) instance.closeSync();
         }
     }
 
