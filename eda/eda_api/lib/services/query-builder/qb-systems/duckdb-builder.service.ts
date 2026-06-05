@@ -126,14 +126,14 @@ export class DuckDBBuilderService extends PgBuilderService {
                     `SELECT SUM(CASE WHEN "main"."${col.column_name}" IS NULL THEN 1 ELSE 0 END) AS "count_nulls" FROM ${mainQuery}`
                 );
                 querys[diplayName].push(
-                    `SELECT TO_CHAR(MAX("main"."${col.column_name}"), 'YYYY-MM-DD') AS "max" FROM ${mainQuery}`
+                    `SELECT strftime(MAX("main"."${col.column_name}"), '%Y-%m-%d') AS "max" FROM ${mainQuery}`
                 );
                 querys[diplayName].push(
-                    `SELECT TO_CHAR(MIN("main"."${col.column_name}"), 'YYYY-MM-DD') AS "min" FROM ${mainQuery}`
+                    `SELECT strftime(MIN("main"."${col.column_name}"), '%Y-%m-%d') AS "min" FROM ${mainQuery}`
                 );
                 const queryMonth = `
             WITH monthly_counts AS (
-                SELECT TO_CHAR("main"."${col.column_name}", 'YYYY-MM') AS vmonth, COUNT(*) AS total
+                SELECT strftime("main"."${col.column_name}", '%Y-%m') AS vmonth, COUNT(*) AS total
                 FROM ${mainQuery}
                 GROUP BY 1
             )
@@ -197,13 +197,23 @@ export class DuckDBBuilderService extends PgBuilderService {
 
     public getSeparedColumns(origin: string, dest: string[]) {
         const [columns, grouping] = super.getSeparedColumns(origin, dest) as [string[], string[]];
-        const fixed = columns.map(c =>
-            c.replace(
-                /\b(sum|avg|min|max)\(([^)]+)\)::numeric/g,
-                (_, agg, col) => `${agg}(${col}::numeric)`
-            )
-        );
-        return [fixed, grouping];
+        const fixedColumns = columns
+            .map(c => c.replace(/\b(sum|avg|min|max)\(([^)]+)\)::numeric/g, (_, agg, col) => `${agg}(${col}::numeric)`))
+            .map(c => this.replaceToCharWithStrftime(c));
+        const fixedGrouping = grouping.map(g => this.replaceToCharWithStrftime(g));
+        return [fixedColumns, fixedGrouping];
+    }
+
+    private replaceToCharWithStrftime(sql: string): string {
+        return sql
+            .replace(/to_char\(\s*(.+?)\s*,\s*'YYYY-"Q"Q'\s*\)/g,  `(strftime($1, '%Y-Q') || datepart('quarter', $1))`)
+            .replace(/to_char\(\s*(.+?)\s*,\s*'YYYY-MM-DD HH:MI:SS'\s*\)/g, `strftime($1, '%Y-%m-%d %H:%M:%S')`)
+            .replace(/to_char\(\s*(.+?)\s*,\s*'YYYY-MM-DD HH:MI'\s*\)/g,    `strftime($1, '%Y-%m-%d %H:%M')`)
+            .replace(/to_char\(\s*(.+?)\s*,\s*'YYYY-MM-DD HH'\s*\)/g,       `strftime($1, '%Y-%m-%d %H')`)
+            .replace(/to_char\(\s*(.+?)\s*,\s*'YYYY-MM-DD'\s*\)/g,          `strftime($1, '%Y-%m-%d')`)
+            .replace(/to_char\(\s*(.+?)\s*,\s*'IYYY-IW'\s*\)/g,             `strftime($1, '%G-%V')`)
+            .replace(/to_char\(\s*(.+?)\s*,\s*'YYYY-MM'\s*\)/g,             `strftime($1, '%Y-%m')`)
+            .replace(/to_char\(\s*(.+?)\s*,\s*'YYYY'\s*\)/g,                `strftime($1, '%Y')`);
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
