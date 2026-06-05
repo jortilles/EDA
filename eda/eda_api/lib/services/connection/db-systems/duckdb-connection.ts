@@ -64,19 +64,11 @@ export class DuckDBConnection extends AbstractConnection {
     private async runQuery(conn: any, query: string): Promise<any[]> {
         const reader = await conn.runAndReadAll(query);
         const rows: any[] = reader.getRowObjects();
-        return this.serializeRows(rows);
-    }
-
-    // DuckDB may return BigInt for COUNT/SUM aggregates which JSON.stringify can't handle.
-    private serializeRows(rows: any[]): any[] {
-        return rows.map(row => {
-            const out: any = {};
-            for (const key of Object.keys(row)) {
-                const val = row[key];
-                out[key] = typeof val === 'bigint' ? Number(val) : val;
-            }
-            return out;
-        });
+        // @duckdb/node-api returns BIGINT columns as JS BigInt which JSON.stringify rejects.
+        // Parse through a replacer so the conversion is fully contained within this layer.
+        return JSON.parse(
+            JSON.stringify(rows, (_key, val) => typeof val === 'bigint' ? Number(val) : val)
+        );
     }
 
     async tryConnection(): Promise<any> {
