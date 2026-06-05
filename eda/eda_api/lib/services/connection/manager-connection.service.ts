@@ -10,6 +10,7 @@ import { SQLserverConnection } from './db-systems/slqserver-connection';
 import { JSONWebServiceConnection } from './db-systems/json-webservice-connection';
 import { MongoDBConnection } from './db-systems/mongodb-connection';
 import { ClickHouseConnection } from './db-systems/clickhouse-connection';
+import { DuckDBConnection } from './db-systems/duckdb-connection';
 import DataSource from '../../module/datasource/model/datasource.model';
 
 export const
@@ -23,7 +24,8 @@ export const
     SNOWFLAKE_CONNECTION = 'snowflake',
     WEB_SERVICE = 'jsonwebservice',
     MONGODB_CONNECTION = 'mongodb',
-    CLICKHOUSE_CONNECTION = 'clickhouse'
+    CLICKHOUSE_CONNECTION = 'clickhouse',
+    DUCKDB_CONNECTION = 'duckdb'
 
 
 
@@ -67,6 +69,8 @@ export class ManagerConnectionService {
                 return new MongoDBConnection(config);
             case CLICKHOUSE_CONNECTION:
                 return new ClickHouseConnection(config);
+            case DUCKDB_CONNECTION:
+                return new DuckDBConnection(config);
             default:
                 return null;
         }
@@ -96,6 +100,8 @@ export class ManagerConnectionService {
                 return new MongoDBConnection(config);
             case CLICKHOUSE_CONNECTION:
                 return new ClickHouseConnection(config);
+            case DUCKDB_CONNECTION:
+                return new DuckDBConnection(config);
             default:
                 return null;
         }

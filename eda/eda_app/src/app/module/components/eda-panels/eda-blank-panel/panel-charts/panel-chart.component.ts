@@ -547,6 +547,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.dataDescription = this.chartUtils.describeData4Knob(this.props.query, this.chartUtils.transformData4Knob(this.props.data, dataTypes));
         chartConfig.assignedColors = this.props.config['config']['assignedColors'] ? this.props.config['config']['assignedColors'] : null;
         chartConfig.limits = this.props.config['config']['limits'] ? this.props.config['config']['limits'] : null;
+        chartConfig.semaphoreColor = !!this.props.config['config']['semaphoreColor'];
         this.createEdaKnobComponent(chartConfig)
     }
 

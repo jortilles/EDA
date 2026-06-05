@@ -79,7 +79,7 @@
           </div>
 
 
-          @if (!['bigquery', 'excel','csv', 'jsonwebservice'].includes(connectionForm.get('type')?.value)) {
+          @if (!['bigquery', 'excel', 'csv', 'duckdb', 'jsonwebservice'].includes(connectionForm.get('type')?.value)) {
           <!-- Server Field -->
           <div class="space-y-2">
             @if (connectionForm.get('type')?.value !== 'snowflake') {
@@ -437,6 +437,161 @@
               </tbody>
             </table>
           </div>
+          } @else if (connectionForm.get('type')?.value == 'duckdb') {
+
+          <!-- Fuente de datos -->
+          <div class="space-y-2 md:col-span-2">
+            <label class="block font-medium" i18n="@@duckdbFolderLabel">
+              Fuente de datos <span class="text-red-500">*</span>
+            </label>
+            <input type="text" formControlName="folderName"
+              placeholder="nombre_fuente_datos"
+              i18n-placeholder="@@duckdbFolderPlaceholder"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md"
+              [class.border-red-500]="duckdbFolderExists()"
+              (input)="onFolderNameInput($event)" />
+
+            @if(duckdbFolderExists()){
+            <p class="text-sm text-red-600" i18n="@@duckdbFolderExistsError">Este nombre ya existe. Escribe un nombre diferente.</p>
+            }
+          </div>
+
+          <div>
+            <div class="space-y-2">
+              <label for="separator" class="block font-medium" i18n="@@placeholderInputSeparator">
+                Separador <span class="text-red-500">*</span>
+              </label>
+              <input id="separator" type="text" formControlName="separator" placeholder="Separador del modelo"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md"
+                [class.border-red-500]="connectionForm.get('separator')?.invalid && connectionForm.get('separator')?.touched"
+                (keyup)="retryCsvWithNewSeparatorForDuckDb()" />
+              @if(connectionForm.get('separator')?.invalid && connectionForm.get('separator')?.touched){
+              <p class="text-red-500 text-sm" i18n="@@separatorRequired"> El separador es obligatorio </p>
+              }
+            </div>
+
+            <!-- Drag & Drop DuckDB -->
+            <div (dragenter)="handleDragIn($event, 'duckdb')" (dragleave)="handleDragOut($event, 'duckdb')"
+              (dragover)="handleDrag($event)" (drop)="handleDrop($event, 'duckdb')"
+              class="relative mt-2 flex h-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors"
+              [class.dropzone-active]="isDraggingDuckDbFile() && connectionForm.get('separator')?.value"
+              [class.border-gray-300]="!isDraggingDuckDbFile() || !connectionForm.get('separator')?.value"
+              [class.dropzone-idle]="connectionForm.get('separator')?.value && !isDraggingDuckDbFile()">
+              <input type="file" #duckdbFile (change)="handleFileSelect($event, 'duckdb'); onDuckDbFilesAdded()"
+                class="absolute inset-0 z-50 h-full w-full cursor-pointer opacity-0"
+                accept=".csv" />
+
+              <div class="flex flex-col items-center justify-center text-sm">
+                <div *ngIf="_duckdbFileName(); else noDuckDbFile">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="mb-2 h-6 w-6 text-corporate-primary">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <p class="text-sm font-medium">{{ _duckdbFileName() }}</p>
+                </div>
+                <ng-template #noDuckDbFile>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="mb-2 h-6 w-6 text-gray-400">
+                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                  </svg>
+                  <p class="mb-1 font-medium text-gray-600">
+                    <span class="text-corporate-primary">Click para subir</span> o arrastra y suelta
+                  </p>
+                  <p class="text-xs text-gray-500">CSV (max. 10MB)</p>
+                </ng-template>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Tabla de columnas DuckDB -->
+          <div class="pt-6 overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-100">
+                <tr>
+                  @for(header of editFieldsHeaders; track $index){
+                  <th class="p-3"> {{ header }} </th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for(row of csvColumns; track $index){
+                <tr>
+                  <td class="p-3">{{ row.field }}</td>
+                  <td class="p-3">
+                    <p-dropdown [(ngModel)]="row.type" [ngModelOptions]="{standalone: true}"
+                      [options]="dataTypes" optionLabel="label" optionValue="value"
+                      appendTo="body" [style]="{'width':'100%'}">
+                    </p-dropdown>
+                  </td>
+                  @if(row.type === 'timestamp'){
+                  <td class="p-3">
+                    <p-dropdown [(ngModel)]="row.format" [ngModelOptions]="{standalone: true}"
+                      [options]="dataFormats" optionLabel="label" optionValue="value"
+                      appendTo="body" [style]="{'width':'100%'}">
+                    </p-dropdown>
+                  </td>
+                  }
+                  @if(['integer', 'numeric'].includes(row.type)){
+                  <td></td>
+                  <td class="p-3">
+                    <p-dropdown [(ngModel)]="row.separator" [ngModelOptions]="{standalone: true}"
+                      [options]="decSeparators" optionLabel="label" optionValue="value"
+                      appendTo="body" [style]="{'width':'100%'}">
+                    </p-dropdown>
+                  </td>
+                  }
+                </tr>
+                }
+              </tbody>
+            </table>
+
+            <!-- Botón Siguiente: añade CSV actual a la lista -->
+            @if(csvColumns.length > 0){
+            <div class="mt-4 flex justify-end">
+              <button type="button" (click)="addCsvToList()"
+                class="px-4 py-2 border border-corporate-primary rounded-md text-sm font-medium text-corporate-primary hover:bg-gray-50 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+                <ng-container i18n="@@duckdbAddAnotherCsv">Añadir otro CSV</ng-container>
+              </button>
+            </div>
+            }
+          </div>
+
+          <!-- Lista de CSVs ya añadidos -->
+          @if(duckdbCsvList.length > 0){
+          <div class="md:col-span-2 mt-2 space-y-2">
+            <h4 class="text-sm font-medium text-gray-700" i18n="@@duckdbCsvListTitle">CSVs en la carpeta ({{ duckdbCsvList.length }}):</h4>
+            @for(csv of duckdbCsvList; track $index){
+            <div class="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
+              <div class="flex items-center gap-2 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-corporate-primary" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+                <span>{{ csv.fileName }}</span>
+                <span class="text-xs text-gray-500" i18n="@@duckdbCsvColumns">({{ csv.columnsConfig.length }} columnas)</span>
+              </div>
+              <button type="button" (click)="removeCsvFromList($index)"
+                class="text-gray-400 hover:text-red-500 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            }
+          </div>
+          }
+
           }
         </div>
       </div>
@@ -587,7 +742,7 @@
 
       <!-- Footer -->
       <div class="flex justify-between border-t p-6 bg-gray-50 rounded-b-lg">
-        @if (!['bigquery', 'excel','csv',].includes(connectionForm.get('type')?.value)) {
+        @if (!['bigquery', 'excel', 'csv', 'duckdb'].includes(connectionForm.get('type')?.value)) {
         <button type="button"
           class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
           i18n="@@testConnection" (click)="testConnection()">
@@ -595,7 +750,8 @@
         </button>
         }
         <button type="submit"
-          class="px-4 py-2 rounded-md shadow-sm text-sm font-medium flex items-center btn-corporate-primary"
+          class="px-4 py-2 rounded-md shadow-sm text-sm font-medium flex items-center btn-corporate-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          [disabled]="connectionForm.get('type')?.value === 'duckdb' && duckdbFolderExists()"
           i18n="@@guardarBtn">
           <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24"
             stroke="currentColor" stroke-width="2">

@@ -48,6 +48,10 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
     this.limits = this.getLimits();
     this.comprareValue = this.inject.data.values[0][1] ? this.inject.data.values[0][1] : this.limits[1];
     this.class = this.value > 999999 ? 'p-knob-text-small' : this.value < 1000 ? 'p-knob-text-large' : 'p-knob-text';
+
+    if (this.inject.semaphoreColor) {
+      this.color = this.computeSemaphoreColor(this.value, this.limits[0], this.limits[1]);
+    }
   }
 
   ngOnDestroy(): void {
@@ -129,6 +133,12 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
     
     if (limits[1] < this.value) limits[1] = this.value;
     return limits;
+  }
+
+  private computeSemaphoreColor(value: number, min: number, max: number): string {
+    const ratio = Math.max(0, Math.min(1, (value - min) / (max - min || 1)));
+    const hue = Math.round(ratio * 120); // 0° = rojo, 60° = amarillo, 120° = verde
+    return `hsl(${hue}, 85%, 42%)`;
   }
 
   getStyle() {

@@ -11,6 +11,9 @@ import { QueryOptions } from 'mongoose';
 import { upperCase } from 'lodash';
 import Group from '../../module/admin/groups/model/group.model';
 import _ from 'lodash';
+import * as path from 'path';
+import * as fs from 'fs';
+import { AggregationTypes } from '../global/model/aggregation-types';
 const cache_config = require('../../../config/cache.config');
 
 export class DataSourceController {
@@ -42,12 +45,14 @@ export class DataSourceController {
     static async GetDataSourceById(req: Request, res: Response, next: NextFunction) {
         try {
             const dataSource = await DataSource.findById({ _id: req.params.id });
-            // ocultem el password
-            dataSource.ds.connection.password = EnCrypterService.decode(dataSource.ds.connection.password);
+            // ocultem el password (solo si hay password que decodificar)
+            if (dataSource.ds.connection.password) {
+                dataSource.ds.connection.password = EnCrypterService.decode(dataSource.ds.connection.password);
+            }
             dataSource.ds.connection.password = '__-(··)-__';
             return res.status(200).json({ ok: true, dataSource });
         } catch (err) {
-            return (new HttpException(404, 'Datasouce not found'));
+            next(new HttpException(404, 'Datasource not found'));
         }
     }
 
@@ -363,6 +368,20 @@ export class DataSourceController {
                     const dataSource = await DataSource.findByIdAndDelete(req.params.id);
                     if (!dataSource) {
                         return next(new HttpException(500, 'Error removing dataSource'));
+                    }
+
+                    // Si es DuckDB, eliminar la carpeta con los CSV del disco
+                    if (dataSource.ds?.connection?.type === 'duckdb') {
+                        const database: string = dataSource.ds.connection.database;
+                        const duckdbBase = path.join(process.cwd(), 'duckdb');
+                        // Resolve folder: supports both legacy absolute paths and new relative names
+                        const folderName = (path.isAbsolute(database) || database?.includes('\\') || database?.includes('/'))
+                            ? path.basename(database)
+                            : database;
+                        const targetPath = path.join(duckdbBase, folderName);
+                        if (folderName && fs.existsSync(targetPath)) {
+                            fs.rmSync(targetPath, { recursive: true, force: true });
+                        }
                     }
 
                     return res.status(200).json({ ok: true, dataSource });
@@ -727,6 +746,241 @@ export class DataSourceController {
             return dataSources.filter(dataSource =>
                 dataSource.ds.metadata.tags && dataSource.ds.metadata.tags.some(tag => queryTagArray.includes(tag))
             );
+        }
+    }
+
+    static async AddDuckDBDataSource(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { name, description, optimize, allowCache, folderName, csvFiles } = req.body;
+            // csvFiles: Array<{ fileName: string, csvContent: string, columnsConfig: any[] }>
+
+            if (!name || !folderName || !csvFiles || !Array.isArray(csvFiles) || csvFiles.length === 0) {
+                return next(new HttpException(400, 'Name, folderName and at least one CSV file are required'));
+            }
+
+            const normalizeName = (str: string) =>
+                str.split('_').join(' ').toLowerCase()
+                    .split(' ').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+
+            const safeFolderName = folderName.replace(/[^a-zA-Z0-9_\-]/g, '_').toLowerCase();
+            if (!safeFolderName) {
+                return next(new HttpException(400, `Invalid folderName "${folderName}": must contain at least one alphanumeric character`));
+            }
+
+            const duckdbBaseFolder = path.join(process.cwd(), 'duckdb');
+            const targetFolder = path.join(duckdbBaseFolder, safeFolderName);
+            if (!fs.existsSync(targetFolder)) {
+                fs.mkdirSync(targetFolder, { recursive: true });
+            }
+
+            const tables = csvFiles.map((csvFile: any) => {
+                const safeName = (csvFile.fileName || 'file')
+                    .replace(/\.csv$/i, '')
+                    .replace(/[^a-zA-Z0-9_\-]/g, '_')
+                    .toLowerCase();
+
+                fs.writeFileSync(path.join(targetFolder, `${safeName}.csv`), csvFile.csvContent, 'utf8');
+
+                const columns = (csvFile.columnsConfig || []).map((col: any) => {
+                    let colType: string;
+                    switch (col.type) {
+                        case 'integer':
+                        case 'numeric':
+                            colType = 'numeric'; break;
+                        case 'timestamp':
+                            colType = 'date'; break;
+                        default:
+                            colType = 'text';
+                    }
+                    return {
+                        column_name: col.field,
+                        column_type: colType,
+                        display_name: { default: normalizeName(col.field.replace(/_/g, ' ')), localized: [] },
+                        description: { default: normalizeName(col.field.replace(/_/g, ' ')), localized: [] },
+                        aggregation_type: colType === 'numeric'
+                            ? AggregationTypes.getValuesForNumbers()
+                            : colType === 'date'
+                            ? AggregationTypes.getValuesForOthers()
+                            : AggregationTypes.getValuesForText(),
+                        minimumFractionDigits: col.type === 'integer' ? 0 : col.type === 'numeric' ? 2 : null,
+                        computed_column: 'no',
+                        visible: true,
+                        ia_visibility: 'FULL',
+                        column_granted_roles: [],
+                        row_granted_roles: [],
+                        tableCount: 0
+                    };
+                });
+
+                const tableDisplayName = normalizeName(safeName.replace(/_/g, ' '));
+                return {
+                    table_name: safeName,
+                    display_name: { default: tableDisplayName, localized: [] },
+                    description: { default: tableDisplayName, localized: [] },
+                    table_type: [],
+                    table_granted_roles: [],
+                    columns,
+                    relations: [],
+                    visible: true,
+                    tableCount: 0
+                };
+            });
+
+            const CC = allowCache ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
+
+            const datasource: IDataSource = new DataSource({
+                ds: {
+                    connection: {
+                        type: 'duckdb',
+                        host: null,
+                        port: null,
+                        database: safeFolderName,  // store only folder name, not absolute path
+                        schema: 'main',
+                        user: null,
+                        password: null
+                    },
+                    metadata: {
+                        model_name: name,
+                        model_description: description || '',
+                        model_id: '',
+                        model_granted_roles: [],
+                        optimized: !!optimize,
+                        cache_config: CC,
+                        model_owner: req.user._id,
+                        ia_visibility: 'FULL'
+                    },
+                    model: { tables }
+                }
+            });
+
+            const saved = await datasource.save();
+            return res.status(201).json({ ok: true, data_source_id: saved._id });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async AddDuckDbTable(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            const { fileName, csvContent, columnsConfig } = req.body;
+
+            if (!fileName || !csvContent || !columnsConfig) {
+                return next(new HttpException(400, 'fileName, csvContent and columnsConfig are required'));
+            }
+
+            const dataSource = await DataSource.findById(id);
+            if (!dataSource) {
+                return next(new HttpException(404, 'DataSource not found'));
+            }
+
+            const folderName = dataSource.ds?.connection?.database;
+            if (!folderName) {
+                return next(new HttpException(400, 'Invalid DuckDB datasource'));
+            }
+
+            const normalizeName = (str: string) =>
+                str.split('_').join(' ').toLowerCase()
+                    .split(' ').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+
+            const safeName = (fileName || 'file')
+                .replace(/\.csv$/i, '')
+                .replace(/[^a-zA-Z0-9_\-]/g, '_')
+                .toLowerCase();
+
+            const targetFolder = path.join(process.cwd(), 'duckdb', folderName);
+            if (!fs.existsSync(targetFolder)) {
+                fs.mkdirSync(targetFolder, { recursive: true });
+            }
+            fs.writeFileSync(path.join(targetFolder, `${safeName}.csv`), csvContent, 'utf8');
+
+            const columns = (columnsConfig || []).map((col: any) => {
+                let colType: string;
+                switch (col.type) {
+                    case 'integer':
+                    case 'numeric':
+                        colType = 'numeric'; break;
+                    case 'timestamp':
+                        colType = 'date'; break;
+                    default:
+                        colType = 'text';
+                }
+                return {
+                    column_name: col.field,
+                    column_type: colType,
+                    display_name: { default: normalizeName(col.field.replace(/_/g, ' ')), localized: [] },
+                    description: { default: normalizeName(col.field.replace(/_/g, ' ')), localized: [] },
+                    aggregation_type: colType === 'numeric'
+                        ? AggregationTypes.getValuesForNumbers()
+                        : colType === 'date'
+                        ? AggregationTypes.getValuesForOthers()
+                        : AggregationTypes.getValuesForText(),
+                    minimumFractionDigits: col.type === 'integer' ? 0 : col.type === 'numeric' ? 2 : null,
+                    computed_column: 'no',
+                    visible: true,
+                    ia_visibility: 'FULL',
+                    column_granted_roles: [],
+                    row_granted_roles: [],
+                    tableCount: 0
+                };
+            });
+
+            const tableDisplayName = normalizeName(safeName.replace(/_/g, ' '));
+            const newTable = {
+                table_name: safeName,
+                display_name: { default: tableDisplayName, localized: [] },
+                description: { default: tableDisplayName, localized: [] },
+                table_type: [],
+                table_granted_roles: [],
+                columns,
+                relations: [],
+                visible: true,
+                tableCount: 0
+            };
+
+            const tables = [...(dataSource.ds.model.tables || []), newTable];
+            await DataSource.findByIdAndUpdate(id, { 'ds.model.tables': tables });
+
+            return res.status(201).json({ ok: true, table: newTable });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async DeleteDuckDbCsv(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id, tableName } = req.params;
+            const dataSource = await DataSource.findById(id);
+            if (!dataSource) {
+                return next(new HttpException(404, 'DataSource not found'));
+            }
+            const folderName = dataSource.ds?.connection?.database;
+            if (!folderName) {
+                return next(new HttpException(400, 'Invalid DuckDB datasource'));
+            }
+            const csvPath = path.join(process.cwd(), 'duckdb', folderName, `${tableName}.csv`);
+            if (fs.existsSync(csvPath)) {
+                fs.unlinkSync(csvPath);
+            }
+            return res.status(200).json({ ok: true });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async GetDuckDbFolders(req: Request, res: Response, next: NextFunction) {
+        try {
+            const duckdbBaseFolder = path.join(process.cwd(), 'duckdb');
+            if (!fs.existsSync(duckdbBaseFolder)) {
+                return res.status(200).json({ ok: true, folders: [] });
+            }
+            const entries = fs.readdirSync(duckdbBaseFolder, { withFileTypes: true });
+            const folders = entries
+                .filter(e => e.isDirectory())
+                .map(e => e.name);
+            return res.status(200).json({ ok: true, folders });
+        } catch (err) {
+            next(err);
         }
     }
 

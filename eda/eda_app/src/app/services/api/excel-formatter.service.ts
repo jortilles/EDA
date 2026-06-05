@@ -100,4 +100,8 @@ export class ExcelFormatterService extends ApiService {
         return this.put(`${this.globalExcelRoute}/update-json-data-source/${id}`, jsonData);
     }
 
+    addDuckDBDataSource(data: any): Observable<any> {
+        return this.post('/datasource/add-duckdb-data-source', data);
+    }
+
 }
