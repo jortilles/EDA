@@ -79,7 +79,7 @@ export class TableRelationsDialogComponent{
     }
 
     saveRelation() {
-        if (this.form.invalid) {
+        if (this.selectedSourceCols.length === 0) {
             return this.alertService.addError($localize`:@@fillRequiredFields:Recuerde llenar los campos obligatorios`);
         } else {
             const rel: Relation = {
@@ -89,7 +89,7 @@ export class TableRelationsDialogComponent{
                 target_column: this.selectedTargetCols.map(c => c.column_name),
                 display_name: { "default": this.display_name, "localized": []},
                 visible: true
-            };          
+            };
             this.onClose(EdaDialogCloseEvent.NEW, rel);
         }
     }
@@ -110,7 +110,18 @@ export class TableRelationsDialogComponent{
         this.selectedSourceCols.push(this.form.value.sourceCol);
         this.selectedTargetCols.push(this.form.value.targetCol);
         this.display_name = this.form.value.display_name;
-        this.resetForm();
+
+        this.form.controls.sourceCol.reset();
+        this.form.controls.targetCol.reset();
+        this.form.controls.display_name.reset();
+        this.targetCols = [];
+    }
+
+    get isConfirmDisabled(): boolean {
+        if (this.selectedSourceCols.length === 0) return true;
+        const { sourceCol, targetCol } = this.form.value;
+        const targetTablePending = !this.form.controls.targetTable.disabled && !!this.form.controls.targetTable.value;
+        return !!(sourceCol || targetCol || targetTablePending);
     }
 
     deleteRelation(index) {
