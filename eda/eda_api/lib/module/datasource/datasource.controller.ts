@@ -14,6 +14,8 @@ import _ from 'lodash';
 import * as path from 'path';
 import * as fs from 'fs';
 import { AggregationTypes } from '../global/model/aggregation-types';
+import { OdooApiService } from '../../services/odoo/odoo-api.service';
+import { DuckDBConnection } from '../../services/connection/db-systems/duckdb-connection';
 const cache_config = require('../../../config/cache.config');
 
 export class DataSourceController {
@@ -370,8 +372,8 @@ export class DataSourceController {
                         return next(new HttpException(500, 'Error removing dataSource'));
                     }
 
-                    // Si es DuckDB, eliminar la carpeta con los CSV del disco
-                    if (dataSource.ds?.connection?.type === 'duckdb') {
+                    // Si es DuckDB u Odoo, eliminar la carpeta con los CSV del disco
+                    if (['duckdb', 'odoo'].includes(dataSource.ds?.connection?.type)) {
                         const database: string = dataSource.ds.connection.database;
                         const duckdbBase = path.join(process.cwd(), 'duckdb');
                         // Resolve folder: supports both legacy absolute paths and new relative names
@@ -966,6 +968,99 @@ export class DataSourceController {
         } catch (err) {
             next(err);
         }
+    }
+
+    static async AddOdooDataSource(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { name, description, url, db, username, password, optimize, allowCache } = req.body;
+
+            if (!name || !url || !db || !username || !password) {
+                return next(new HttpException(400, 'Se requieren: name, url, db, username, password'));
+            }
+
+            const folderPath = path.join(process.cwd(), 'duckdb', db);
+
+            await OdooApiService.downloadToFolder(
+                { url, db, username, password },
+                folderPath
+            );
+
+            // Generate DuckDB model from the downloaded CSV files
+            const duckConfig: any = { type: 'duckdb', database: db, schema: 'main' };
+            const conn = new DuckDBConnection(duckConfig);
+            const tables = await conn.generateDataModel(optimize ? 1 : 0, '');
+
+            // Inject Odoo relations that the auto-detection algorithm cannot infer
+            // (column names differ between FK and PK: factura_id ≠ id)
+            DataSourceController.addOdooRelations(tables);
+
+            const CC = allowCache ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
+
+            const datasource: IDataSource = new DataSource({
+                ds: {
+                    connection: {
+                        type: 'odoo',
+                        host: url,
+                        port: null,
+                        database: db,
+                        schema: 'main',
+                        user: username,
+                        password: EnCrypterService.encrypt(password)
+                    },
+                    metadata: {
+                        model_name: name,
+                        model_description: description || '',
+                        model_id: '',
+                        model_granted_roles: [],
+                        optimized: !!optimize,
+                        cache_config: CC,
+                        model_owner: req.user._id,
+                        ia_visibility: 'FULL'
+                    },
+                    model: { tables }
+                }
+            });
+
+            const saved = await datasource.save();
+            return res.status(201).json({ ok: true, data_source_id: saved._id });
+
+        } catch (err: any) {
+            console.error('[Odoo] AddOdooDataSource error:', err.message);
+            return next(new HttpException(500, `Error creando datasource Odoo: ${err.message}`));
+        }
+    }
+
+    private static addOdooRelations(tables: any[]): void {
+        const byName = new Map<string, any>(tables.map(t => [t.table_name, t]));
+
+        const link = (
+            srcTable: string, srcCol: string,
+            tgtTable: string, tgtCol: string
+        ) => {
+            const src = byName.get(srcTable);
+            const tgt = byName.get(tgtTable);
+            if (!src || !tgt) return;
+
+            src.relations.push({
+                source_table: srcTable,
+                source_column: [srcCol],
+                target_table: tgtTable,
+                target_column: [tgtCol],
+                visible: true
+            });
+            tgt.relations.push({
+                source_table: tgtTable,
+                source_column: [tgtCol],
+                target_table: srcTable,
+                target_column: [srcCol],
+                visible: true
+            });
+        };
+
+        link('facturas_lineas', 'factura_id',  'facturas',   'id');
+        link('facturas',        'cliente_id',   'clientes',   'id');
+        link('facturas',        'vendedor_id',  'vendedores', 'id');
+        link('facturas_lineas', 'producto_id',  'productos',  'id');
     }
 
     static async GetDuckDbFolders(req: Request, res: Response, next: NextFunction) {

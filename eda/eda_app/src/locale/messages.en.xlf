@@ -6565,6 +6565,18 @@ OR<ph id="5"/>
   <source>(<x id="INTERPOLATION" equiv-text="{{ csv.columnsConfig.length }}"/> columnas)</source>
   <target>(<x id="INTERPOLATION" equiv-text="{{ csv.columnsConfig.length }}"/> columns)</target>
 </trans-unit>
+<trans-unit id="odooUrlLabel">
+  <source>URL de Odoo <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+  <target>Odoo URL <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+</trans-unit>
+<trans-unit id="odooInfoMessage">
+  <source>Al confirmar se descargarán las facturas, líneas, clientes, productos y vendedores de Odoo y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos segundos dependiendo del volumen de datos.</source>
+  <target>On confirm, invoices, lines, customers, products and salespeople will be downloaded from Odoo and created as tables in a DuckDB datasource. The download may take a few seconds depending on data volume.</target>
+</trans-unit>
+<trans-unit id="odooCreated">
+  <source>Fuente de datos Odoo creada correctamente</source>
+  <target>Odoo data source created successfully</target>
+</trans-unit>
 </body>
 </file>
 </xliff>
