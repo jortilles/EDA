@@ -624,6 +624,21 @@
                               {{ dynamicFilters ? 'Sí' : 'No' }}
                             </button>
                           </div>
+
+                          <!-- Ordenamiento de resultados -->
+                          <div class="flex items-center justify-between rounded-lg px-3 py-2">
+                            <span i18n="@@resultSortingText" class="text-base font-medium text-gray-700" pTooltip="Actívalo para que este panel ignore los filtros dinámicos de otros paneles" tooltipPosition="top">Ordenamiento de resultados</span>
+                            <button
+                              type="button"
+                              (click)="resultSorting()"
+                              [ngClass]="{
+                                'btn-panel-active': applyResultSorting,
+                                'btn-panel-hover bg-white text-gray-600': !applyResultSorting
+                              }"
+                              class="px-3 py-1 text-base border rounded-md transition-all min-w-[3rem] text-center">
+                              {{ applyResultSorting ? 'Sí' : 'No' }}
+                            </button>
+                          </div>
                         </div>
 
                         <!-- Indicaciones -->

@@ -6521,6 +6521,10 @@ OR<ph id="5"/>
   <source>Navegar</source>
   <target>Navigate</target>
 </trans-unit>
+<trans-unit id="resultSortingText" datatype="html">
+  <source>Ordenamiento de resultados</source>
+  <target>Result sorting</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

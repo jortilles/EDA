@@ -6828,6 +6828,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Navegar</source>
         <target>Navegar</target>
       </trans-unit>
+      <trans-unit id="resultSortingText" datatype="html">
+        <source>Ordenamiento de resultados</source>
+        <target>Ordenació de resultats</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

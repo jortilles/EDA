@@ -6796,6 +6796,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Navegar</source>
         <target>Parcourir</target>
       </trans-unit>
+      <trans-unit id="resultSortingText" datatype="html">
+        <source>Ordenamiento de resultados</source>
+        <target>Tri des résultats</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
