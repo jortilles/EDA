@@ -67,6 +67,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     { label: 'Excel', value: 'excel', port: 27017 },
     { label: 'Csv', value: 'csv', port: 27017 },
     { label: 'DuckDB (CSV)', value: 'duckdb' },
+    { label: 'Odoo', value: 'odoo', port: null },
   ];
 
   public sidOptions: any[] = [
@@ -205,7 +206,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
   async onSubmit() {
     const type = this.connectionForm.get('type')?.value;
 
-    if (this.connectionForm.invalid && type !== 'excel' && type !== 'bigquery' && type !== 'csv' && type !== 'duckdb') {
+    if (this.connectionForm.invalid && type !== 'excel' && type !== 'bigquery' && type !== 'csv' && type !== 'duckdb' && type !== 'odoo') {
       this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`);
     } else if (type === 'excel') {
       this.saveExcelDataSource();
@@ -215,6 +216,8 @@ export class DataSourceConnectionDetailPage implements OnInit {
       this.saveDuckDbDataSource();
     } else if (type === 'bigquery') {
       this.saveBigQueryDataSource();
+    } else if (type === 'odoo') {
+      this.saveOdooDataSource();
     } else {
       this.saveDataSource();
     }
@@ -813,6 +816,42 @@ export class DataSourceConnectionDetailPage implements OnInit {
 
   removeCsvFromList(index: number): void {
     this.duckdbCsvList.splice(index, 1);
+  }
+
+  public async saveOdooDataSource(): Promise<void> {
+    const value = this.connectionForm.value;
+
+    if (!value.name) {
+      this.alertService.addError($localize`:@@noNameProvided:Debe proporcionar un nombre para el datasource`);
+      return;
+    }
+    if (!value.host || !value.database || !value.user || !value.password) {
+      this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`);
+      return;
+    }
+
+    this.spinnerService.on();
+    try {
+      const payload = {
+        name: value.name,
+        description: value.description || '',
+        url: value.host,
+        db: value.database,
+        username: value.user,
+        password: value.password,
+        optimize: value.optimize ? 1 : 0,
+        allowCache: value.allowCache ? 1 : 0
+      };
+
+      const res = await lastValueFrom(this.dataSourceService.addOdooDataSource(payload));
+      this.spinnerService.off();
+      this.alertService.addSuccess($localize`:@@odooCreated:Fuente de datos Odoo creada correctamente`);
+      this.router.navigate(['/data-source/', res.data_source_id]);
+    } catch (err) {
+      this.spinnerService.off();
+      this.alertService.addError(err);
+      throw err;
+    }
   }
 
   async saveDuckDbDataSource(): Promise<void> {

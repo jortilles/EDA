@@ -6820,6 +6820,18 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>(<x id="INTERPOLATION" equiv-text="{{ csv.columnsConfig.length }}"/> columnas)</source>
         <target>(<x id="INTERPOLATION" equiv-text="{{ csv.columnsConfig.length }}"/> colonnes)</target>
       </trans-unit>
+      <trans-unit id="odooUrlLabel">
+        <source>URL de Odoo <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>URL Odoo <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="odooInfoMessage">
+        <source>Al confirmar se descargarán las facturas, líneas, clientes, productos y vendedores de Odoo y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos segundos dependiendo del volumen de datos.</source>
+        <target>En confirmant, les factures, lignes, clients, produits et vendeurs seront téléchargés depuis Odoo et créés comme tables dans un datasource DuckDB. Le téléchargement peut prendre quelques secondes selon le volume de données.</target>
+      </trans-unit>
+      <trans-unit id="odooCreated">
+        <source>Fuente de datos Odoo creada correctamente</source>
+        <target>Source de données Odoo créée avec succès</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -15,6 +15,7 @@ import ArimaRouter from './module/predictions/predictions.router';
 import AuthRouter from './module/auth/auth.router';
 import CustomHTMLRouter from './module/customHTML/customHTML.router';
 import McpRouter from './module/mcp/mcp.router';
+import OdooRouter from './module/odoo/odoo.router';
 
 const router = express.Router();
 
@@ -47,6 +48,8 @@ router.use('/auth', AuthRouter);
 router.use('/customHTML', CustomHTMLRouter);
 
 router.use('/ia', McpRouter);
+
+router.use('/odoo', OdooRouter);
 
 /* ruta per documentació*/
 router.use("/api-docs", DocuRouter);

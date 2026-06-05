@@ -13,7 +13,7 @@ export class DuckDBConnection extends AbstractConnection {
 
     private queryBuilder: DuckDBBuilderService;
 
-    private getCsvFolder(): string {
+    protected getCsvFolder(): string {
         const database = this.config.database;
         const duckdbBase = path.join(process.cwd(), 'duckdb');
 

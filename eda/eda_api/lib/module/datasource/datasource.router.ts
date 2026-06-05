@@ -242,6 +242,8 @@ router.post('/add-data-source/', authGuard, roleGuard, DataSourceController.Gene
 
 router.post('/add-duckdb-data-source', authGuard, roleGuard, DataSourceController.AddDuckDBDataSource);
 
+router.post('/add-odoo-data-source', authGuard, roleGuard, DataSourceController.AddOdooDataSource);
+
 
 
 /**
