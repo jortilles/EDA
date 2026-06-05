@@ -561,7 +561,47 @@
                     }
                     
                     @else if(display_v.advancedSetting === 1){
-                      <div class="flex gap-4 border rounded-lg bg-gray-50 p-4 min-h-[30vh] overflow-y-auto">
+                      <div class="flex flex-wrap gap-4 border rounded-lg bg-gray-50 p-4 min-h-[30vh] overflow-y-auto">
+
+                        <!-- Ordenamiento de resultados -->
+                        <div class="w-full">
+                          <div class="pb-1">
+                            <h3 class="text-lg mb-2 mt-2 font-bold" i18n="@@resultSortingText">Ordenar los resultados por:</h3>
+                            <div 
+                              class="flex gap-1 rounded-lg border p-2 min-h-[25px] filter-list text-base"
+                              cdkDropList 
+                              #filterList="cdkDropList" 
+                              cdkDropListOrientation="horizontal"
+                              [cdkDropListData]="filtredColumns" 
+                              [cdkDropListConnectedTo]="[columnsList, selectList]"
+                              (cdkDropListDropped)="drop($event)"
+                            >
+                              @for (attr of filtredColumns; track attr.display_name.default) {
+                                <div
+                                  class="flex justify-start items-center gap-2 rounded-md px-3 py-2 font-bold bg-muted/50 cursor-move bg-white p-2 select-box text-center"
+                                  (click)="openColumnDialog(attr, true)" 
+                                  (contextmenu)="removeColumn(attr, 'filter'); $event.preventDefault()"
+                                  [cdkDragData]="columns" 
+                                  cdkDrag
+                                >
+                                  <i class="drag-handle-icon"></i>
+                                  <span class="mdi {{getAttributeTypeIcon(attr.column_type)}}"></span>
+                                  {{attr.display_name.default}}
+                                  <button class="ml-auto rounded-full hover:bg-muted-foreground/20" (click)="removeColumn(attr, 'filter')">
+                                    <i class="fa fa-close"></i>
+                                  </button>
+                
+                                </div>
+                              }
+
+                              @if (filtredColumns.length === 0) {
+                                <div class="absolute inset-0 text-muted-foreground text-center py-2 font-bold pointer-events-none">
+                                  {{draggFilters}}
+                                </div>
+                              }
+                            </div>
+                          </div>
+                        </div>
 
                         <!-- Opciones -->
                         <div class="flex flex-col gap-3 w-[35%] shrink-0">
@@ -624,21 +664,7 @@
                               {{ dynamicFilters ? 'Sí' : 'No' }}
                             </button>
                           </div>
-
-                          <!-- Ordenamiento de resultados -->
-                          <div class="flex items-center justify-between rounded-lg px-3 py-2">
-                            <span i18n="@@resultSortingText" class="text-base font-medium text-gray-700" pTooltip="Actívalo para que este panel ignore los filtros dinámicos de otros paneles" tooltipPosition="top">Ordenamiento de resultados</span>
-                            <button
-                              type="button"
-                              (click)="resultSorting()"
-                              [ngClass]="{
-                                'btn-panel-active': applyResultSorting,
-                                'btn-panel-hover bg-white text-gray-600': !applyResultSorting
-                              }"
-                              class="px-3 py-1 text-base border rounded-md transition-all min-w-[3rem] text-center">
-                              {{ applyResultSorting ? 'Sí' : 'No' }}
-                            </button>
-                          </div>
+                          
                         </div>
 
                         <!-- Indicaciones -->

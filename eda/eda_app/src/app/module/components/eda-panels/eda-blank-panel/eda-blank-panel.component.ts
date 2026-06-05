@@ -239,7 +239,6 @@ export class EdaBlankPanelComponent implements OnInit {
     public queryLimit: number = 5000; // por defecto se limita a 5.000
     public groupByEnabled: boolean = true;
     public dynamicFilters: boolean = true;
-    public applyResultSorting: boolean = false;
 
     public queryModes: any[] = [
         { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
@@ -2400,11 +2399,6 @@ public tableNodeExpand(event: any): void {
 
     dynamicFiltersInteraction(): void {
         this.dynamicFilters = !this.dynamicFilters;
-    }
-    
-    resultSorting() {
-        this.applyResultSorting = !this.applyResultSorting;
-        console.log('hola resultSorting');
     }
 
     newCurrentQueryUpdate(event: any) {

@@ -6797,8 +6797,8 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <target>Parcourir</target>
       </trans-unit>
       <trans-unit id="resultSortingText" datatype="html">
-        <source>Ordenamiento de resultados</source>
-        <target>Tri des résultats</target>
+        <source>Ordenar los resultados por:</source>
+        <target>Trier les résultats par:</target>
       </trans-unit>
     </body>
   </file>

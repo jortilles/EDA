@@ -6522,8 +6522,8 @@ OR<ph id="5"/>
   <target>Navigate</target>
 </trans-unit>
 <trans-unit id="resultSortingText" datatype="html">
-  <source>Ordenamiento de resultados</source>
-  <target>Result sorting</target>
+  <source>Ordenar los resultados por:</source>
+  <target>Sort results by:</target>
 </trans-unit>
 </body>
 </file>

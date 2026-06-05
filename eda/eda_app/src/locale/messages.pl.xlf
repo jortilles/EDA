@@ -6462,8 +6462,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>Poruszaj się</target>
       </trans-unit>
       <trans-unit id="resultSortingText" datatype="html">
-        <source>Ordenamiento de resultados</source>
-        <target>Sortowanie wyników</target>
+        <source>Ordenar los resultados por:</source>
+        <target>Sortuj wyniki według:</target>
       </trans-unit>
 </body>
 </file>
