@@ -3142,6 +3142,21 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Wykres piramidowy wymaga dwóch kategorii i wartości liczbowej</target>
   </trans-unit>
 
+  <trans-unit id="chartInfoKpiTrend">
+    <source>KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica</source>
+    <target>KPI Trend wymaga kolumny daty w formacie miesięcznym i kolumny liczbowej</target>
+  </trans-unit>
+  <trans-unit id="trendTitleYear"><source>Año actual</source><target>Bieżący rok</target></trans-unit>
+  <trans-unit id="trendTitleMonth"><source>Mes actual</source><target>Bieżący miesiąc</target></trans-unit>
+  <trans-unit id="trendTitleWeek"><source>Semana actual</source><target>Bieżący tydzień</target></trans-unit>
+  <trans-unit id="trendTitleDay"><source>Hoy</source><target>Dzisiaj</target></trans-unit>
+  <trans-unit id="trendTitlePeriod"><source>Período actual</source><target>Bieżący okres</target></trans-unit>
+  <trans-unit id="trendCompYear"><source>Año anterior</source><target>Poprzedni rok</target></trans-unit>
+  <trans-unit id="trendCompMonth"><source>Mes anterior</source><target>Poprzedni miesiąc</target></trans-unit>
+  <trans-unit id="trendCompWeek"><source>Semana anterior</source><target>Poprzedni tydzień</target></trans-unit>
+  <trans-unit id="trendCompDay"><source>Día anterior</source><target>Poprzedni dzień</target></trans-unit>
+  <trans-unit id="trendCompPeriod"><source>Período anterior</source><target>Poprzedni okres</target></trans-unit>
+
   <trans-unit id="checkCredentials">
     <source> Comprobar credenciales</source>
     <target>Sprawdź dane uwierzytelniające</target>
@@ -3807,7 +3822,12 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <target>KPI + Wykres warstwowy</target>
       </trans-unit>
 
-  
+      <trans-unit id="chartTypesKPITrend">
+        <source>KPI Tendencia</source>
+        <target>KPI Trend</target>
+      </trans-unit>
+
+
 <trans-unit id="aplicarBtn">
   <source>Aplicar</source>
   <target>Stosować</target>
@@ -5442,8 +5462,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       </trans-unit>
 
       <trans-unit id="preparingDependentFilters">
-        <source>Preparando los filtros dependientes</source>
-        <target>Przygotowywanie filtrów zależnych</target>
+        <source> filtros globales para la configuracion de los filtros dependientes: </source>
+        <target> globalne filtry do konfiguracji filtrów zależnych: </target>
       </trans-unit>
 
       <trans-unit id="autocompleteFilter">

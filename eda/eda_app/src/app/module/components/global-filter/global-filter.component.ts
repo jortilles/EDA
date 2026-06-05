@@ -1039,6 +1039,11 @@ export class GlobalFilterComponent implements OnInit {
         this.setGlobalFilterItems(filter);
     }
 
+    public removeAllFilterItems(filter: any): void {
+        filter.selectedItems = [];
+        this.setGlobalFilterItems(filter);
+    }
+
     public setDropdownOpen(value: boolean): void {
         this.isDropdownOpen = value;
     }

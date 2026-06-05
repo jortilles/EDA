@@ -8,6 +8,7 @@ import { DynamicTextConfig } from '../panel-charts/chart-configuration-models/dy
 import { MapConfig } from '../panel-charts/chart-configuration-models/map-config';
 import { SankeyConfig } from '../panel-charts/chart-configuration-models/sankey-config';
 import { FunnelConfig } from '../panel-charts/chart-configuration-models/funnel.config';
+import { KpiTrendConfig } from '../panel-charts/chart-configuration-models/kpi-trend-config';
 
 import { TableConfig } from '../panel-charts/chart-configuration-models/table-config';
 import { ScatterConfig } from '../panel-charts/chart-configuration-models/scatter-config';
@@ -99,6 +100,15 @@ export const ChartsConfigUtils = {
           assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : null,
           draggable: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.draggable : null,
       }
+    } else if (ebp.panelChart.props.chartType === 'kpitrend') {
+      const inst = ebp.panelChart.componentRef?.instance;
+      config = {
+        sufix: inst?.inject?.sufix || '',
+        backgroundColor: inst?.inject?.backgroundColor || '',
+        kpiColor: inst?.inject?.kpiColor || '',
+        assignedColors: ebp.panelChart.props.config?.getConfig()?.['assignedColors'] || [],
+        modifiedFontPoints: inst?.inject?.modifiedFontPoints || 0,
+      };
     } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
       config = {
         assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : [],
@@ -166,10 +176,12 @@ export const ChartsConfigUtils = {
             });
         } else if (type === 'dynamicText') {
             return new DynamicTextConfig(null);
+        } else if (type === 'kpitrend') {
+            return new KpiTrendConfig();
         }
     },
 
-  recoverConfig: (type: string, config: TableConfig | KpiConfig | DynamicTextConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig | TreeTableConfig | KnobConfig | FunnelConfig | BubblechartConfig |SunburstConfig) => {
+  recoverConfig: (type: string, config: TableConfig | KpiConfig | DynamicTextConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig | TreeTableConfig | KnobConfig | FunnelConfig | BubblechartConfig | SunburstConfig | KpiTrendConfig) => {
 
     return new ChartConfig(config);
 

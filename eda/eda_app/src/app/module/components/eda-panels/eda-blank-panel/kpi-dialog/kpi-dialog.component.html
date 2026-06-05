@@ -15,19 +15,21 @@
     <div class="flex-1 flex flex-col h-[77vh] overflow-auto">
 
       <!-- Tab buttons: siempre visibles -->
-      <div class="px-6 pt-6 pb-4 grid grid-cols-2 gap-4">
+      <div class="px-6 pt-6 pb-4 grid gap-4" [class.grid-cols-2]="!isKpiTrend" [class.grid-cols-1]="isKpiTrend">
         <button
           class="kpi-tab-btn"
           [class.kpi-tab-btn--active]="activeTab === 'aspecto'"
           (click)="setActiveTab('aspecto')" i18n="@@kpiAspecto">
           Aspecto
         </button>
+        @if (!isKpiTrend) {
         <button
           class="kpi-tab-btn"
           [class.kpi-tab-btn--active]="activeTab === 'alerts'"
           (click)="setActiveTab('alerts')" i18n="@@kpiAlerts">
           Alertas
         </button>
+        }
       </div>
 
       <!-- Tab content scrollable -->
@@ -166,7 +168,7 @@
       }
 
       <!-- TAB: Alertas -->
-      @if (activeTab === 'alerts') {
+      @if (activeTab === 'alerts' && !isKpiTrend) {
         <div class="space-y-6">
           <div class="grid gap-6">
 

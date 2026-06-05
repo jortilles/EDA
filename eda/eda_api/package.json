@@ -1,6 +1,6 @@
 {
-    "name": "api-eda",
-    "version": "3.0.2",
+    "name": "api-edalitics",
+    "version": "3.1.0",
     "description": "EDA api package",
     "main": "index.js",
     "scripts": {
@@ -79,6 +79,7 @@
         "vertica": "^0.5.5",
         "winston": "^3.3.3",
         "winston-csv-format": "^2.0.1",
+        "xml2js": "^0.6.2",
         "zod": "^3.25.76"
     },
     "compilerOptions": {

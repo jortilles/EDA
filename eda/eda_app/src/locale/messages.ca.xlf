@@ -3482,6 +3482,22 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Un gràfic de piràmide necessita dues categories i un valor numèric</target>
   </trans-unit>
 
+  <trans-unit id="chartInfoKpiTrend">
+    <source>KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica</source>
+    <target>KPI Tendència necessita una columna de data en format mes i una columna numèrica</target>
+  </trans-unit>
+
+  <trans-unit id="trendTitleYear"><source>Año actual</source><target>Any actual</target></trans-unit>
+  <trans-unit id="trendTitleMonth"><source>Mes actual</source><target>Mes actual</target></trans-unit>
+  <trans-unit id="trendTitleWeek"><source>Semana actual</source><target>Setmana actual</target></trans-unit>
+  <trans-unit id="trendTitleDay"><source>Hoy</source><target>Avui</target></trans-unit>
+  <trans-unit id="trendTitlePeriod"><source>Período actual</source><target>Període actual</target></trans-unit>
+  <trans-unit id="trendCompYear"><source>Año anterior</source><target>Any anterior</target></trans-unit>
+  <trans-unit id="trendCompMonth"><source>Mes anterior</source><target>Mes anterior</target></trans-unit>
+  <trans-unit id="trendCompWeek"><source>Semana anterior</source><target>Setmana anterior</target></trans-unit>
+  <trans-unit id="trendCompDay"><source>Día anterior</source><target>Dia anterior</target></trans-unit>
+  <trans-unit id="trendCompPeriod"><source>Período anterior</source><target>Període anterior</target></trans-unit>
+
    <trans-unit id="mailConfOk">
     <source>Credenciales  correctas </source>
     <target> Credencials  correctes</target>
@@ -4091,7 +4107,12 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
         <source>KPI + Gráfico de Áreas</source>
         <target>KPI + Gràfic d'àrees</target>
       </trans-unit>
-  
+
+      <trans-unit id="chartTypesKPITrend">
+        <source>KPI Tendencia</source>
+        <target>KPI Tendència</target>
+      </trans-unit>
+
   <trans-unit id="urlEditSaveError">
     <source>Formulario incompleto, rellene todos los campos</source>
     <target>FORMULARI INCORRECTE, COMPLETAR ELS CAMPS</target>
@@ -5876,8 +5897,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       </trans-unit>
 
       <trans-unit id="preparingDependentFilters">
-        <source>Preparando los filtros dependientes</source>
-        <target>Preparant els filtres dependents</target>
+        <source> filtros globales para la configuracion de los filtros dependientes: </source>
+        <target> filtres globals per a la configuració dels filtres dependents: </target>
       </trans-unit>
 
       <trans-unit id="autocompleteFilter">

@@ -3429,6 +3429,21 @@
     <target>Un graphique pyramidal nécessite deux catégories et une valeur numérique</target>
   </trans-unit>
 
+  <trans-unit id="chartInfoKpiTrend">
+    <source>KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica</source>
+    <target>KPI Tendance nécessite une colonne de date au format mois et une colonne numérique</target>
+  </trans-unit>
+  <trans-unit id="trendTitleYear"><source>Año actual</source><target>Année en cours</target></trans-unit>
+  <trans-unit id="trendTitleMonth"><source>Mes actual</source><target>Mois en cours</target></trans-unit>
+  <trans-unit id="trendTitleWeek"><source>Semana actual</source><target>Semaine en cours</target></trans-unit>
+  <trans-unit id="trendTitleDay"><source>Hoy</source><target>Aujourd'hui</target></trans-unit>
+  <trans-unit id="trendTitlePeriod"><source>Período actual</source><target>Période en cours</target></trans-unit>
+  <trans-unit id="trendCompYear"><source>Año anterior</source><target>Année précédente</target></trans-unit>
+  <trans-unit id="trendCompMonth"><source>Mes anterior</source><target>Mois précédent</target></trans-unit>
+  <trans-unit id="trendCompWeek"><source>Semana anterior</source><target>Semaine précédente</target></trans-unit>
+  <trans-unit id="trendCompDay"><source>Día anterior</source><target>Jour précédent</target></trans-unit>
+  <trans-unit id="trendCompPeriod"><source>Período anterior</source><target>Période précédente</target></trans-unit>
+
   <trans-unit id="mailConfOk">
     <source>Credenciales  correctas </source>
     <target>Identifiants  corrects</target>
@@ -4028,7 +4043,12 @@
         <source>KPI + Gráfico de Áreas</source>
         <target>KPI + Graphique de la zone</target>
       </trans-unit>
-  
+
+      <trans-unit id="chartTypesKPITrend">
+        <source>KPI Tendencia</source>
+        <target>KPI Tendance</target>
+      </trans-unit>
+
   <trans-unit id="urlEditSaveError">
     <source>Formulario incompleto, rellene todos los campos</source>
     <target>Formulaire incomplet, veuillez remplir tous les champs</target>
@@ -5813,8 +5833,8 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       </trans-unit>
 
       <trans-unit id="preparingDependentFilters">
-        <source>Preparando los filtros dependientes</source>
-        <target>Préparation des filtres dépendants</target>
+        <source> filtros globales para la configuracion de los filtros dependientes: </source>
+        <target> filtres globaux pour la configuration des filtres dépendants : </target>
       </trans-unit>
 
       <trans-unit id="autocompleteFilter">

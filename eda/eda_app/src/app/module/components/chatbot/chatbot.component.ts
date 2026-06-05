@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, AfterViewChecked, signal, ViewChild, ElementRef, NgZone } from '@angular/core';
+import { Component, inject, OnInit, AfterViewChecked, signal, ViewChild, ElementRef, NgZone, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { NgChartsModule } from 'ng2-charts';
@@ -114,6 +114,11 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     this.chatLoading.set(false);
     this.chatStatusMessage.set('');
     setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    if (this.chatOpen()) this.toggleChat();
   }
 
   toggleChat(): void {

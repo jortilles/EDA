@@ -3185,6 +3185,21 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <target>A pyramid chart needs two categories and one numeric value</target>
 </trans-unit>
 
+<trans-unit id="chartInfoKpiTrend">
+<source>KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica</source>
+<target>KPI Trend needs a date column in month format and a numeric column</target>
+</trans-unit>
+<trans-unit id="trendTitleYear"><source>Año actual</source><target>Current Year</target></trans-unit>
+<trans-unit id="trendTitleMonth"><source>Mes actual</source><target>Current Month</target></trans-unit>
+<trans-unit id="trendTitleWeek"><source>Semana actual</source><target>Current Week</target></trans-unit>
+<trans-unit id="trendTitleDay"><source>Hoy</source><target>Today</target></trans-unit>
+<trans-unit id="trendTitlePeriod"><source>Período actual</source><target>Current Period</target></trans-unit>
+<trans-unit id="trendCompYear"><source>Año anterior</source><target>Previous Year</target></trans-unit>
+<trans-unit id="trendCompMonth"><source>Mes anterior</source><target>Previous Month</target></trans-unit>
+<trans-unit id="trendCompWeek"><source>Semana anterior</source><target>Previous Week</target></trans-unit>
+<trans-unit id="trendCompDay"><source>Día anterior</source><target>Previous Day</target></trans-unit>
+<trans-unit id="trendCompPeriod"><source>Período anterior</source><target>Previous Period</target></trans-unit>
+
 <trans-unit id="mailConfOk">
 <source>Credenciales correctas </source>
 <target> Credencials are oK</target>
@@ -3795,6 +3810,11 @@ terms<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 <trans-unit id="chartTypesKPIAREA">
 <source>KPI + Gráfico de Áreas</source>
 <target>KPI + Area graph</target>
+</trans-unit>
+
+<trans-unit id="chartTypesKPITrend">
+<source>KPI Tendencia</source>
+<target>KPI Trend</target>
 </trans-unit>
 
 <trans-unit id="urlEditSaveError">
@@ -5675,10 +5695,10 @@ OR<ph id="5"/>
 <target>Dependent filters settings</target>
 </trans-unit>
 
-<trans-unit id="preparingDependentFilters">
-<source>Preparando los filtros dependientes</source>
-<target>Preparing the dependent filters</target>
-</trans-unit>
+      <trans-unit id="preparingDependentFilters">
+        <source> filtros globales para la configuracion de los filtros dependientes: </source>
+        <target> global filters for the configuration of dependent filters: </target>
+      </trans-unit>
 
 <trans-unit id="autocompleteFilter">
 <source>¿Filtro autocomplete?</source>
