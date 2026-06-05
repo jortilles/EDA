@@ -574,12 +574,12 @@
                               id="result-sorting-list"
                               cdkDropListOrientation="horizontal"
                               [cdkDropListData]="resultSortingColumns"
-                              [cdkDropListConnectedTo]="[columnsList, selectList]"
+                              [cdkDropListConnectedTo]="[]"
                               (cdkDropListDropped)="dropToResultSorting($event)"
                             >
                               @for (attr of resultSortingColumns; track attr.display_name.default) {
                                 <div
-                                  class="flex justify-start items-center gap-2 rounded-md px-3 py-2 font-bold bg-muted/50 cursor-move bg-white p-2 select-box text-center"
+                                  class="flex justify-start items-center gap-1 rounded-md px-1.5 py-0.5 font-bold bg-muted/50 cursor-move bg-white select-box text-center text-xs w-fit"
                                   (click)="changeResultSortingValue(attr)"
                                   (contextmenu)="removeResultSorting(attr); $event.preventDefault()"
                                   [cdkDragData]="columns"
