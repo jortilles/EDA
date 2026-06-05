@@ -360,7 +360,7 @@
                       #filterList="cdkDropList" 
                       cdkDropListOrientation="horizontal"
                       [cdkDropListData]="filtredColumns" 
-                      [cdkDropListConnectedTo]="[columnsList, selectList]"
+                      [cdkDropListConnectedTo]="[columnsList, selectList, 'result-sorting-list']"
                       (cdkDropListDropped)="drop($event)"
                     >
                       @for (attr of filtredColumns; track attr.display_name.default) {
