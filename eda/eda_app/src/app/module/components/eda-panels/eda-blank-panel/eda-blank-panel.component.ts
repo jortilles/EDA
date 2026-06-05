@@ -233,6 +233,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public columns: any[] = [];
     public aggregationsTypes: any[] = [];
     public filtredColumns: Column[] = [];
+    public resultSortingColumns: any[] = [];
     public ordenationTypes: OrdenationType[];
     public currentQuery: any[] = [];
     public currentSQLQuery: string = '';
