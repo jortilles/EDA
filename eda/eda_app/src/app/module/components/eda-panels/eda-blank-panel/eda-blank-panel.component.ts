@@ -1179,6 +1179,16 @@ public tableNodeExpand(event: any): void {
 
     public changeResultSortingValue(column: any) {
         console.log('changeResultSortingValue', column);
+
+        if(column.ordenation_type==='Asc') {
+            column.ordenation_type = 'No'
+        } else if(column.ordenation_type==='No') {
+            column.ordenation_type = 'Desc'
+        } else if(column.ordenation_type==='Desc'){
+            column.ordenation_type = 'Asc'
+        }
+
+        console.log('resultSortingColumns: fINAL', this.resultSortingColumns);
     }
 
     public removeResultSorting(column: any) {
