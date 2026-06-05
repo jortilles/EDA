@@ -2009,10 +2009,17 @@ public tableNodeExpand(event: any): void {
     };
 
     public moveItem = (column: any) => {
-
-        console.log('holaaaaaaaaaaaaaa')
-
         PanelInteractionUtils.moveItem(this, column);
+
+        const sortingMatch = this.resultSortingColumns.find(
+            c => c.column_name === column.column_name && c.table_id === column.table_id
+        );
+        if (sortingMatch?.ordenation_type) {
+            const queryMatch = this.currentQuery.find(
+                c => c.column_name === column.column_name && c.table_id === column.table_id
+            );
+            if (queryMatch) queryMatch.ordenation_type = sortingMatch.ordenation_type;
+        }
 
         if (this.selectedQueryMode == 'EDA2' && this.currentQuery.length === 1) {
             PanelInteractionUtils.loadTableNodes(this);
