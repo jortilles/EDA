@@ -6465,6 +6465,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Ordenar los resultados por:</source>
         <target>Sortuj wyniki według:</target>
       </trans-unit>
+      <trans-unit id="draggResultSorting" datatype="html">
+        <source>Arrastre aquí los atributos sobre los que quiere ordenar</source>
+        <target>Przeciągnij tutaj atrybuty, według których chcesz sortować</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

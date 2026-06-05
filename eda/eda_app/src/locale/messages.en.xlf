@@ -6525,6 +6525,10 @@ OR<ph id="5"/>
   <source>Ordenar los resultados por:</source>
   <target>Sort results by:</target>
 </trans-unit>
+<trans-unit id="draggResultSorting" datatype="html">
+  <source>Arrastre aquí los atributos sobre los que quiere ordenar</source>
+  <target>Drag here the attributes you want to sort by</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

@@ -271,7 +271,7 @@
                 <div class="flex w-full overflow-y-auto h-[58vh] text-base">
                   <div class="w-full">
                     <div class="space-y-1 p-2" cdkDropList #columnsList="cdkDropList" [cdkDropListData]="columns"
-                      [cdkDropListConnectedTo]="[selectList, filterList]" (cdkDropListDropped)="drop($event)"
+                      [cdkDropListConnectedTo]="[selectList, filterList, 'result-sorting-list']" (cdkDropListDropped)="drop($event)"
                       [cdkDropListEnterPredicate]="isAllowed">
                       @for (attr of columns; track attr.name) {
                         <div
@@ -322,7 +322,7 @@
                       #selectList="cdkDropList" 
                       cdkDropListOrientation="horizontal"
                       [cdkDropListData]="currentQuery" 
-                      [cdkDropListConnectedTo]="[columnsList, filterList]"
+                      [cdkDropListConnectedTo]="[columnsList, filterList, 'result-sorting-list']"
                       (cdkDropListDropped)="drop($event, 'select-list')"
                     >
                       @for (attr of currentQuery; track attr) {
@@ -567,27 +567,28 @@
                         <div class="w-full">
                           <div class="pb-1">
                             <h3 class="text-lg mb-2 mt-2 font-bold" i18n="@@resultSortingText">Ordenar los resultados por:</h3>
-                            <div 
+                            <div
                               class="flex gap-1 rounded-lg border p-2 min-h-[25px] filter-list text-base"
-                              cdkDropList 
-                              #filterList="cdkDropList" 
+                              cdkDropList
+                              #resultSortingList="cdkDropList"
+                              id="result-sorting-list"
                               cdkDropListOrientation="horizontal"
-                              [cdkDropListData]="resultSortingColumns" 
+                              [cdkDropListData]="resultSortingColumns"
                               [cdkDropListConnectedTo]="[columnsList, selectList]"
-                              (cdkDropListDropped)="drop($event)"
+                              (cdkDropListDropped)="dropToResultSorting($event)"
                             >
                               @for (attr of resultSortingColumns; track attr.display_name.default) {
                                 <div
                                   class="flex justify-start items-center gap-2 rounded-md px-3 py-2 font-bold bg-muted/50 cursor-move bg-white p-2 select-box text-center"
-                                  (click)="openColumnDialog(attr, true)" 
-                                  (contextmenu)="removeColumn(attr, 'filter'); $event.preventDefault()"
-                                  [cdkDragData]="columns" 
+                                  (click)="changeResultSortingValue(attr)"
+                                  (contextmenu)="removeResultSorting(attr); $event.preventDefault()"
+                                  [cdkDragData]="columns"
                                   cdkDrag
                                 >
                                   <i class="drag-handle-icon"></i>
                                   <span class="mdi {{getAttributeTypeIcon(attr.column_type)}}"></span>
                                   {{attr.display_name.default}}
-                                  <button class="ml-auto rounded-full hover:bg-muted-foreground/20" (click)="removeColumn(attr, 'filter')">
+                                  <button class="ml-auto rounded-full hover:bg-muted-foreground/20" (click)="removeResultSorting(attr); $event.stopPropagation()">
                                     <i class="fa fa-close"></i>
                                   </button>
                 
@@ -596,7 +597,7 @@
 
                               @if (resultSortingColumns.length === 0) {
                                 <div class="absolute inset-0 text-muted-foreground text-center py-2 font-bold pointer-events-none">
-                                  {{draggFilters}}
+                                  {{draggResultSorting}}
                                 </div>
                               }
                             </div>

@@ -6800,6 +6800,10 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Ordenar los resultados por:</source>
         <target>Trier les résultats par:</target>
       </trans-unit>
+      <trans-unit id="draggResultSorting" datatype="html">
+        <source>Arrastre aquí los atributos sobre los que quiere ordenar</source>
+        <target>Faites glisser ici les attributs selon lesquels vous souhaitez trier</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
