@@ -673,18 +673,16 @@ export class DashboardSidebarComponent {
 
     const element = document.getElementById('myDashboard');
 
-    // El objeto incrustado es para mejorar la calidad del PDF
-    domtoimage.toJpeg(element, {
+    domtoimage.toPng(element, {
       bgcolor: 'white',
-      quality: 1,
       height: element.scrollHeight * 2,
       width: element.scrollWidth * 2,
       style: {
         transform: 'scale(2)',
         transformOrigin: 'top left'
       }
-    }).then((dataUrl) => {
-      let img = new Image();
+    }).then((dataUrl: string) => {
+      const img = new Image();
       img.src = dataUrl;
 
       img.onload = () => {
@@ -695,34 +693,30 @@ export class DashboardSidebarComponent {
         const imgWidth = img.width;
         const imgHeight = img.height;
         const ratio = pageWidth / imgWidth;
-        const scaledWidth = pageWidth;
+
+        const sliceCanvas = document.createElement('canvas');
+        const ctx = sliceCanvas.getContext('2d')!;
+        sliceCanvas.width = imgWidth;
+        sliceCanvas.height = Math.round(pageHeight / ratio);
+
         let position = 0;
-
-        // Se crea un canvas para cortar la imagen en partes iguales para cada página
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d')!;
-        canvas.width = imgWidth;
-        canvas.height = pageHeight / ratio;
-
         while (position < imgHeight) {
-          ctx.fillStyle = '#FFFFFF'; // Se establece todo el fondo de blanco
-          ctx.fillRect(0, 0, canvas.width, canvas.height);  // Se pinta todo el fondo
-
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
           ctx.drawImage(img, 0, -position, imgWidth, imgHeight);
 
-          const pageData = canvas.toDataURL('image/jpeg', 1.0);
-          pdf.addImage(pageData, 'JPEG', 0, 0, scaledWidth, pageHeight);
+          pdf.addImage(sliceCanvas.toDataURL('image/png'), 'PNG', 0, 0, pageWidth, pageHeight);
 
-          position += canvas.height;
-
-          if (position < imgHeight) {
-            pdf.addPage();
-          }
+          position += sliceCanvas.height;
+          if (position < imgHeight) pdf.addPage();
         }
-        this.spinner.off();
 
+        this.spinner.off();
         pdf.save(`${this.dashboard.title}.pdf`);
       };
+    }).catch((error: any) => {
+      console.error('Error exportando como PDF:', error);
+      this.spinner.off();
     });
   }
 
@@ -740,16 +734,16 @@ export class DashboardSidebarComponent {
 
     const title = this.dashboard.title;
 
-    domtoimage.toJpeg(node, { bgcolor: 'white' })
-      .then((dataUrl) => {
+    domtoimage.toPng(node, { bgcolor: 'white' })
+      .then((dataUrl: string) => {
         const link = document.createElement('a');
-        link.download = `${title}.jpeg`;
+        link.download = `${title}.png`;
         link.href = dataUrl;
         link.click();
         this.spinner.off();
       })
-      .catch((error) => {
-        console.error('Error exportando como JPEG:', error);
+      .catch((error: any) => {
+        console.error('Error exportando como imagen:', error);
         this.spinner.off();
       });
   }
