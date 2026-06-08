@@ -12,6 +12,7 @@ import { MongoDBConnection } from './db-systems/mongodb-connection';
 import { ClickHouseConnection } from './db-systems/clickhouse-connection';
 import { DuckDBConnection } from './db-systems/duckdb-connection';
 import { OdooConnection } from './db-systems/odoo-connection';
+import { HoldedConnection } from './db-systems/holded-connection';
 import DataSource from '../../module/datasource/model/datasource.model';
 
 export const
@@ -27,7 +28,8 @@ export const
     MONGODB_CONNECTION = 'mongodb',
     CLICKHOUSE_CONNECTION = 'clickhouse',
     DUCKDB_CONNECTION = 'duckdb',
-    ODOO_CONNECTION = 'odoo'
+    ODOO_CONNECTION = 'odoo',
+    HOLDED_CONNECTION = 'holded'
 
 
 
@@ -75,6 +77,8 @@ export class ManagerConnectionService {
                 return new DuckDBConnection(config);
             case ODOO_CONNECTION:
                 return new OdooConnection(config);
+            case HOLDED_CONNECTION:
+                return new HoldedConnection(config);
             default:
                 return null;
         }
@@ -108,6 +112,8 @@ export class ManagerConnectionService {
                 return new DuckDBConnection(config);
             case ODOO_CONNECTION:
                 return new OdooConnection(config);
+            case HOLDED_CONNECTION:
+                return new HoldedConnection(config);
             default:
                 return null;
         }

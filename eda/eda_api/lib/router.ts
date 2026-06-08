@@ -16,6 +16,7 @@ import AuthRouter from './module/auth/auth.router';
 import CustomHTMLRouter from './module/customHTML/customHTML.router';
 import McpRouter from './module/mcp/mcp.router';
 import OdooRouter from './module/odoo/odoo.router';
+import HoldedRouter from './module/holded/holded.router';
 
 const router = express.Router();
 
@@ -50,6 +51,8 @@ router.use('/customHTML', CustomHTMLRouter);
 router.use('/ia', McpRouter);
 
 router.use('/odoo', OdooRouter);
+
+router.use('/holded', HoldedRouter);
 
 /* ruta per documentació*/
 router.use("/api-docs", DocuRouter);

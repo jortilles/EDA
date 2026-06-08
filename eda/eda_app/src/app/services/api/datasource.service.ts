@@ -734,6 +734,10 @@ export class DataSourceService extends ApiService implements OnDestroy {
         return this.post(`${this.globalDSRoute}/add-odoo-data-source`, connection);
     }
 
+    addHoldedDataSource(connection: any): Observable<any> {
+        return this.post(`${this.globalDSRoute}/add-holded-data-source`, connection);
+    }
+
     deleteDuckDbCsv(datasourceId: string, tableName: string): Observable<any> {
         return this.delete(`${this.globalDSRoute}/duckdb-table/${datasourceId}/${tableName}`);
     }

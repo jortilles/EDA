@@ -68,6 +68,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     { label: 'Csv', value: 'csv', port: 27017 },
     { label: 'DuckDB (CSV)', value: 'duckdb' },
     { label: 'Odoo', value: 'odoo', port: null },
+    { label: 'Holded', value: 'holded', port: null },
   ];
 
   public sidOptions: any[] = [
@@ -207,7 +208,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
   async onSubmit() {
     const type = this.connectionForm.get('type')?.value;
 
-    if (this.connectionForm.invalid && type !== 'excel' && type !== 'bigquery' && type !== 'csv' && type !== 'duckdb' && type !== 'odoo') {
+    if (this.connectionForm.invalid && type !== 'excel' && type !== 'bigquery' && type !== 'csv' && type !== 'duckdb' && type !== 'odoo' && type !== 'holded') {
       this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`);
     } else if (type === 'excel') {
       this.saveExcelDataSource();
@@ -219,6 +220,8 @@ export class DataSourceConnectionDetailPage implements OnInit {
       this.saveBigQueryDataSource();
     } else if (type === 'odoo') {
       this.saveOdooDataSource();
+    } else if (type === 'holded') {
+      this.saveHoldedDataSource();
     } else {
       this.saveDataSource();
     }
@@ -850,6 +853,40 @@ export class DataSourceConnectionDetailPage implements OnInit {
       const res = await lastValueFrom(this.dataSourceService.addOdooDataSource(payload));
       this.spinnerService.off();
       this.alertService.addSuccess($localize`:@@odooCreated:Fuente de datos Odoo creada correctamente`);
+      this.router.navigate(['/data-source/', res.data_source_id]);
+    } catch (err) {
+      this.spinnerService.off();
+      this.alertService.addError(err);
+      throw err;
+    }
+  }
+
+  public async saveHoldedDataSource(): Promise<void> {
+    const value = this.connectionForm.value;
+
+    if (!value.name) {
+      this.alertService.addError($localize`:@@noNameProvided:Debe proporcionar un nombre para el datasource`);
+      return;
+    }
+    if (!value.database || !value.password) {
+      this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`);
+      return;
+    }
+
+    this.spinnerService.on();
+    try {
+      const payload = {
+        name: value.name,
+        description: value.description || '',
+        folderName: value.database,
+        apiKey: value.password,
+        optimize: value.optimize ? 1 : 0,
+        allowCache: value.allowCache ? 1 : 0
+      };
+
+      const res = await lastValueFrom(this.dataSourceService.addHoldedDataSource(payload));
+      this.spinnerService.off();
+      this.alertService.addSuccess($localize`:@@holdedCreated:Fuente de datos Holded creada correctamente`);
       this.router.navigate(['/data-source/', res.data_source_id]);
     } catch (err) {
       this.spinnerService.off();
