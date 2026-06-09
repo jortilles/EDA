@@ -6577,6 +6577,66 @@ OR<ph id="5"/>
   <source>Fuente de datos Odoo creada correctamente</source>
   <target>Odoo data source created successfully</target>
 </trans-unit>
+<trans-unit id="ga4PropertyIdLabel">
+  <source>ID de Propiedad GA4</source>
+  <target>GA4 Property ID</target>
+</trans-unit>
+<trans-unit id="ga4PropertyIdHint">
+  <source>Puedes encontrarlo en Google Analytics → Administrar → Información de la propiedad</source>
+  <target>You can find it in Google Analytics → Admin → Property Settings</target>
+</trans-unit>
+<trans-unit id="ga4FolderNameLabel">
+  <source>Nombre de carpeta</source>
+  <target>Folder name</target>
+</trans-unit>
+<trans-unit id="ga4FolderNameHint">
+  <source>Se creará la carpeta duckdb/&lt;nombre&gt;/ con los CSV de métricas</source>
+  <target>The folder duckdb/&lt;name&gt;/ will be created with the metrics CSV files</target>
+</trans-unit>
+<trans-unit id="ga4FolderPlaceholder">
+  <source>ga4_miempresa</source>
+  <target>ga4_mycompany</target>
+</trans-unit>
+<trans-unit id="ga4AuthLabel">
+  <source>Autorización de Google Analytics</source>
+  <target>Google Analytics Authorization</target>
+</trans-unit>
+<trans-unit id="ga4AuthButton">
+  <source>Autorizar con Google Analytics</source>
+  <target>Authorize with Google Analytics</target>
+</trans-unit>
+<trans-unit id="ga4AuthWaiting">
+  <source>Esperando autorización en la ventana emergente...</source>
+  <target>Waiting for authorization in the popup window...</target>
+</trans-unit>
+<trans-unit id="ga4AuthSuccess">
+  <source>Cuenta de Google Analytics autorizada correctamente</source>
+  <target>Google Analytics account authorized successfully</target>
+</trans-unit>
+<trans-unit id="ga4AuthRevoke">
+  <source>Cambiar cuenta</source>
+  <target>Change account</target>
+</trans-unit>
+<trans-unit id="ga4AuthError">
+  <source>Error durante la autorización. Inténtalo de nuevo.</source>
+  <target>Authorization error. Please try again.</target>
+</trans-unit>
+<trans-unit id="ga4InfoMessage">
+  <source>Al confirmar se descargarán los datos de los últimos 365 días de Google Analytics 4: sesiones por canal, páginas vistas, eventos, dispositivos y datos geográficos. La descarga puede tardar según el volumen de datos de la propiedad.</source>
+  <target>On confirm, the last 365 days of Google Analytics 4 data will be downloaded: sessions by channel, page views, events, devices and geographic data. Download time depends on the property's data volume.</target>
+</trans-unit>
+<trans-unit id="ga4Created">
+  <source>Fuente de datos Google Analytics 4 creada correctamente</source>
+  <target>Google Analytics 4 data source created successfully</target>
+</trans-unit>
+<trans-unit id="ga4PropertyIdRequired">
+  <source>Debe indicar el ID de propiedad de Google Analytics 4</source>
+  <target>Google Analytics 4 Property ID is required</target>
+</trans-unit>
+<trans-unit id="ga4AuthRequired">
+  <source>Debes autorizar el acceso a Google Analytics primero</source>
+  <target>You must authorize Google Analytics access first</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

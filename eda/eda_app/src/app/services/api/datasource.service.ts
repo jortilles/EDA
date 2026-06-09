@@ -734,6 +734,18 @@ export class DataSourceService extends ApiService implements OnDestroy {
         return this.post(`${this.globalDSRoute}/add-odoo-data-source`, connection);
     }
 
+    addGoogleAnalyticsDataSource(connection: any): Observable<any> {
+        return this.post(`${this.globalDSRoute}/add-google-analytics-data-source`, connection);
+    }
+
+    getGA4AuthUrl(): Observable<any> {
+        return this.get(`/google-analytics/auth-url`);
+    }
+
+    pollGA4Token(state: string): Observable<any> {
+        return this.get(`/google-analytics/poll-token?state=${state}`);
+    }
+
     deleteDuckDbCsv(datasourceId: string, tableName: string): Observable<any> {
         return this.delete(`${this.globalDSRoute}/duckdb-table/${datasourceId}/${tableName}`);
     }

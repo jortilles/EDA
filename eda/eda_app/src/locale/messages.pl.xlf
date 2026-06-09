@@ -6517,6 +6517,66 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Fuente de datos Odoo creada correctamente</source>
         <target>Źródło danych Odoo zostało pomyślnie utworzone</target>
       </trans-unit>
+      <trans-unit id="ga4PropertyIdLabel">
+        <source>ID de Propiedad GA4</source>
+        <target>ID właściwości GA4</target>
+      </trans-unit>
+      <trans-unit id="ga4PropertyIdHint">
+        <source>Puedes encontrarlo en Google Analytics → Administrar → Información de la propiedad</source>
+        <target>Znajdziesz go w Google Analytics → Administrowanie → Informacje o właściwości</target>
+      </trans-unit>
+      <trans-unit id="ga4FolderNameLabel">
+        <source>Nombre de carpeta</source>
+        <target>Nazwa folderu</target>
+      </trans-unit>
+      <trans-unit id="ga4FolderNameHint">
+        <source>Se creará la carpeta duckdb/&lt;nombre&gt;/ con los CSV de métricas</source>
+        <target>Zostanie utworzony folder duckdb/&lt;nazwa&gt;/ z plikami CSV metryk</target>
+      </trans-unit>
+      <trans-unit id="ga4FolderPlaceholder">
+        <source>ga4_miempresa</source>
+        <target>ga4_mojafirma</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthLabel">
+        <source>Autorización de Google Analytics</source>
+        <target>Autoryzacja Google Analytics</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthButton">
+        <source>Autorizar con Google Analytics</source>
+        <target>Autoryzuj z Google Analytics</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthWaiting">
+        <source>Esperando autorización en la ventana emergente...</source>
+        <target>Oczekiwanie na autoryzację w oknie podręcznym...</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthSuccess">
+        <source>Cuenta de Google Analytics autorizada correctamente</source>
+        <target>Konto Google Analytics zostało pomyślnie autoryzowane</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthRevoke">
+        <source>Cambiar cuenta</source>
+        <target>Zmień konto</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthError">
+        <source>Error durante la autorización. Inténtalo de nuevo.</source>
+        <target>Błąd podczas autoryzacji. Spróbuj ponownie.</target>
+      </trans-unit>
+      <trans-unit id="ga4InfoMessage">
+        <source>Al confirmar se descargarán los datos de los últimos 365 días de Google Analytics 4: sesiones por canal, páginas vistas, eventos, dispositivos y datos geográficos. La descarga puede tardar según el volumen de datos de la propiedad.</source>
+        <target>Po potwierdzeniu zostaną pobrane dane z ostatnich 365 dni z Google Analytics 4: sesje według kanału, wyświetlenia stron, zdarzenia, urządzenia i dane geograficzne. Czas pobierania zależy od wolumenu danych właściwości.</target>
+      </trans-unit>
+      <trans-unit id="ga4Created">
+        <source>Fuente de datos Google Analytics 4 creada correctamente</source>
+        <target>Źródło danych Google Analytics 4 zostało pomyślnie utworzone</target>
+      </trans-unit>
+      <trans-unit id="ga4PropertyIdRequired">
+        <source>Debe indicar el ID de propiedad de Google Analytics 4</source>
+        <target>Wymagane jest podanie ID właściwości Google Analytics 4</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthRequired">
+        <source>Debes autorizar el acceso a Google Analytics primero</source>
+        <target>Najpierw musisz autoryzować dostęp do Google Analytics</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>
