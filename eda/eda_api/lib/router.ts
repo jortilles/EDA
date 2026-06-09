@@ -15,8 +15,7 @@ import ArimaRouter from './module/predictions/predictions.router';
 import AuthRouter from './module/auth/auth.router';
 import CustomHTMLRouter from './module/customHTML/customHTML.router';
 import McpRouter from './module/mcp/mcp.router';
-import OdooRouter from './module/odoo/odoo.router';
-import GoogleAnalyticsRouter from './module/google-analytics/google-analytics.router';
+import { PluginRegistry } from './plugins';
 
 const router = express.Router();
 
@@ -50,9 +49,11 @@ router.use('/customHTML', CustomHTMLRouter);
 
 router.use('/ia', McpRouter);
 
-router.use('/odoo', OdooRouter);
-
-router.use('/google-analytics', GoogleAnalyticsRouter);
+for (const plugin of PluginRegistry.getAll()) {
+    if (plugin.router && plugin.routerPath) {
+        router.use(plugin.routerPath, plugin.router);
+    }
+}
 
 /* ruta per documentació*/
 router.use("/api-docs", DocuRouter);

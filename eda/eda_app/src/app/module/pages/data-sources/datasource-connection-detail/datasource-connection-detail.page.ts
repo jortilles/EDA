@@ -4,13 +4,14 @@ import { Router } from '@angular/router';
 import { DataSourceService, SpinnerService, AlertService, StyleProviderService, ExcelFormatterService, UploadFileService } from '@eda/services/service.index';
 import { SharedModule, SelectItem } from 'primeng/api';
 import Swal from 'sweetalert2';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgComponentOutlet } from '@angular/common';
 import { UploadFileComponent } from '../../data-sources/data-source-detail/upload-file/upload-file.component';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { lastValueFrom } from 'rxjs';
 import { NgxCsvParser } from 'ngx-csv-parser';
 import { ChangeDetectorRef } from '@angular/core';
-
+import { DATASOURCE_PLUGINS } from '../datasource-plugins/datasource-plugin-registry';
+import { PluginFormService } from '../datasource-plugins/plugin-form.service';
 
 import { DropdownModule } from 'primeng/dropdown';
 
@@ -19,7 +20,7 @@ import { DropdownModule } from 'primeng/dropdown';
   selector: 'app-datasource-connection-detail',
   templateUrl: './datasource-connection-detail.page.html',
   styleUrls: ['./datasource-connection-detail.page.css'],
-  imports: [SharedModule, CommonModule, FormsModule, ReactiveFormsModule, IconComponent, DropdownModule]
+  imports: [SharedModule, CommonModule, FormsModule, ReactiveFormsModule, IconComponent, DropdownModule, NgComponentOutlet]
 })
 export class DataSourceConnectionDetailPage implements OnInit {
   private uploadFileService = inject(UploadFileService);
@@ -90,16 +91,22 @@ export class DataSourceConnectionDetailPage implements OnInit {
   _duckdbFileName = signal<string>('');
   _duckdbFile = signal<File | null>(null);
   isDraggingDuckDbFile = signal<boolean>(false);
-  public ga4PropertyId: string = '';
-  public ga4FolderName: string = '';
-  public ga4CredentialsJson: string = '';
-  public ga4AuthState: 'idle' | 'waiting' | 'authorized' | 'error' = 'idle';
-  private ga4PollInterval: any = null;
   public duckdbRawContent: string = '';
   public duckdbCsvList: Array<{ fileName: string; rawContent: string; columnsConfig: any[] }> = [];
   public duckdbFolderOptions: Array<{ label: string; value: string }> = [];
   public selectedDuckdbFolder: string = '__new__';
   duckdbFolderExists = signal<boolean>(false);
+
+  readonly datasourcePlugins = DATASOURCE_PLUGINS;
+
+  get activePlugin() {
+      const type = this.connectionForm?.get('type')?.value;
+      return DATASOURCE_PLUGINS.find(p => p.type === type) ?? null;
+  }
+
+  get pluginFormInputs() {
+      return { connectionForm: this.connectionForm };
+  }
 
   // variables añadidas ppor el script add-ccsv
   public csvRecords: any;
@@ -124,7 +131,8 @@ export class DataSourceConnectionDetailPage implements OnInit {
     private excelFormatterService: ExcelFormatterService,
     private ngxCsvParser: NgxCsvParser,
     private fb: FormBuilder,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private pluginFormService: PluginFormService,
   ) {
 
 
@@ -213,7 +221,9 @@ export class DataSourceConnectionDetailPage implements OnInit {
   async onSubmit() {
     const type = this.connectionForm.get('type')?.value;
 
-    if (this.connectionForm.invalid && type !== 'excel' && type !== 'bigquery' && type !== 'csv' && type !== 'duckdb' && type !== 'odoo' && type !== 'googleanalytics') {
+    if (this.activePlugin) {
+      this.pluginFormService.triggerSave();
+    } else if (this.connectionForm.invalid && !['excel', 'bigquery', 'csv', 'duckdb'].includes(type)) {
       this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`);
     } else if (type === 'excel') {
       this.saveExcelDataSource();
@@ -223,10 +233,6 @@ export class DataSourceConnectionDetailPage implements OnInit {
       this.saveDuckDbDataSource();
     } else if (type === 'bigquery') {
       this.saveBigQueryDataSource();
-    } else if (type === 'odoo') {
-      this.saveOdooDataSource();
-    } else if (type === 'googleanalytics') {
-      this.saveGoogleAnalyticsDataSource();
     } else {
       this.saveDataSource();
     }
@@ -828,126 +834,6 @@ export class DataSourceConnectionDetailPage implements OnInit {
 
   removeCsvFromList(index: number): void {
     this.duckdbCsvList.splice(index, 1);
-  }
-
-  public async saveOdooDataSource(): Promise<void> {
-    const value = this.connectionForm.value;
-
-    if (!value.name) {
-      this.alertService.addError($localize`:@@noNameProvided:Debe proporcionar un nombre para el datasource`);
-      return;
-    }
-    if (!value.host || !value.database || !value.user || !value.password) {
-      this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`);
-      return;
-    }
-
-    this.spinnerService.on();
-    try {
-      const payload = {
-        name: value.name,
-        description: value.description || '',
-        url: value.host,
-        db: value.database,
-        username: value.user,
-        password: value.password,
-        optimize: value.optimize ? 1 : 0,
-        allowCache: value.allowCache ? 1 : 0
-      };
-
-      const res = await lastValueFrom(this.dataSourceService.addOdooDataSource(payload));
-      this.spinnerService.off();
-      this.alertService.addSuccess($localize`:@@odooCreated:Fuente de datos Odoo creada correctamente`);
-      this.router.navigate(['/data-source/', res.data_source_id]);
-    } catch (err) {
-      this.spinnerService.off();
-      this.alertService.addError(err);
-      throw err;
-    }
-  }
-
-  async authorizeGA4(): Promise<void> {
-    try {
-      const res = await lastValueFrom(this.dataSourceService.getGA4AuthUrl());
-      const { authUrl, state } = res;
-
-      const popup = window.open(authUrl, 'ga4-auth', 'width=520,height=640,resizable=yes');
-
-      this.ga4AuthState = 'waiting';
-      this.ga4PollInterval = setInterval(async () => {
-        try {
-          const poll = await lastValueFrom(this.dataSourceService.pollGA4Token(state));
-          if (poll?.ready && poll.credentialsJson) {
-            clearInterval(this.ga4PollInterval);
-            this.ga4PollInterval = null;
-            this.ga4CredentialsJson = poll.credentialsJson;
-            this.ga4AuthState = 'authorized';
-            if (popup && !popup.closed) popup.close();
-            this.cdr.detectChanges();
-          } else if (popup?.closed) {
-            // User closed the popup without completing auth
-            clearInterval(this.ga4PollInterval);
-            this.ga4PollInterval = null;
-            if (this.ga4AuthState === 'waiting') {
-              this.ga4AuthState = 'idle';
-              this.cdr.detectChanges();
-            }
-          }
-        } catch {
-          clearInterval(this.ga4PollInterval);
-          this.ga4PollInterval = null;
-          this.ga4AuthState = 'error';
-          this.cdr.detectChanges();
-        }
-      }, 1500);
-
-    } catch (err) {
-      this.ga4AuthState = 'error';
-      this.alertService.addError(err);
-    }
-  }
-
-  public async saveGoogleAnalyticsDataSource(): Promise<void> {
-    const value = this.connectionForm.value;
-
-    if (!value.name) {
-      this.alertService.addError($localize`:@@noNameProvided:Debe proporcionar un nombre para el datasource`);
-      return;
-    }
-    if (!this.ga4PropertyId) {
-      this.alertService.addError($localize`:@@ga4PropertyIdRequired:Debe indicar el ID de propiedad de Google Analytics 4`);
-      return;
-    }
-    if (!this.ga4CredentialsJson) {
-      this.alertService.addError($localize`:@@ga4AuthRequired:Debes autorizar el acceso a Google Analytics primero`);
-      return;
-    }
-    if (!this.ga4FolderName) {
-      this.alertService.addError($localize`:@@noFolderName:Debe proporcionar el nombre de la carpeta`);
-      return;
-    }
-
-    this.spinnerService.on();
-    try {
-      const payload = {
-        name: value.name,
-        description: value.description || '',
-        propertyId: this.ga4PropertyId,
-        credentialsJson: this.ga4CredentialsJson,
-        folderName: this.ga4FolderName,
-        optimize: value.optimize ? 1 : 0,
-        allowCache: value.allowCache ? 1 : 0
-      };
-
-      const res = await lastValueFrom(this.dataSourceService.addGoogleAnalyticsDataSource(payload));
-      this.spinnerService.off();
-      this.alertService.addSuccess($localize`:@@ga4Created:Fuente de datos Google Analytics 4 creada correctamente`);
-      this.router.navigate(['/data-source/', res.data_source_id]);
-    } catch (err) {
-      this.spinnerService.off();
-      this.alertService.addError(err);
-      throw err;
-    }
   }
 
   async saveDuckDbDataSource(): Promise<void> {
