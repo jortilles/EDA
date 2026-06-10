@@ -36,21 +36,21 @@
             #gridster1>
             <!-- Normal Size -->
             <ng-container *ngIf="!toLitle && !toMedium" >
-<!-- SDA CUSTOM --> <ngx-gridster-item *ngFor="let panel of panels"  [options]="itemOptions" [dragAndDrop]="!panel.locked" [resizable]="!panel.locked && panel.resizable" [(w)]="panel.w" [(h)]="panel.h" [(x)]="panel.x" [(y)]="panel.y" (change)="itemChange($event, panel)" [class.panel-locked]="panel.locked">
+<!-- SDA CUSTOM --> <ngx-gridster-item *ngFor="let panel of panels"  [options]="itemOptions" [dragAndDrop]="!panel.locked" [resizable]="!panel.locked && panel.resizable" [(w)]="panel.w" [(h)]="panel.h" [(x)]="panel.x" [(y)]="panel.y" (change)="itemChange($event, panel)" [class.panel-locked]="panel.locked" [class.panel-filter-highlight]="hoveredFilterPanelIds.includes(panel.id)" [class.panel-filter-dimmed]="isFilterHoverActive && !hoveredFilterPanelIds.includes(panel.id)">
                     <ng-container *ngTemplateOutlet="panelTemplate; context: {$implicit: panel}"></ng-container>
                 </ngx-gridster-item>
             </ng-container>
 
             <!-- Mid  Size -->
             <ng-container *ngIf="toMedium">
-<!-- SDA CUSTOM --> <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="!panel.locked && panel.dragAndDrop" [resizable]="!panel.locked && panel.resizable" [(w)]="panel.tamanyMig.w" [(h)]="panel.tamanyMig.h" [(x)]="panel.tamanyMig.x" [(y)]="panel.tamanyMig.y" (change)="itemChange($event, panel)" [class.panel-locked]="panel.locked">
+<!-- SDA CUSTOM --> <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="!panel.locked && panel.dragAndDrop" [resizable]="!panel.locked && panel.resizable" [(w)]="panel.tamanyMig.w" [(h)]="panel.tamanyMig.h" [(x)]="panel.tamanyMig.x" [(y)]="panel.tamanyMig.y" (change)="itemChange($event, panel)" [class.panel-locked]="panel.locked" [class.panel-filter-highlight]="hoveredFilterPanelIds.includes(panel.id)" [class.panel-filter-dimmed]="isFilterHoverActive && !hoveredFilterPanelIds.includes(panel.id)">
                     <ng-container *ngTemplateOutlet="panelTemplate; context: {$implicit: panel}"></ng-container>
                 </ngx-gridster-item>
             </ng-container>
 
             <!-- Mobile Size -->
             <ng-container *ngIf="toLitle">
-<!-- SDA CUSTOM --> <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="!panel.locked && panel.dragAndDrop" [resizable]="!panel.locked && panel.resizable" [(w)]="panel.tamanyMobil.w" [(h)]="panel.tamanyMobil.h" [(x)]="panel.tamanyMobil.x" [(y)]="panel.tamanyMobil.y" (change)="itemChange($event, panel)" [class.panel-locked]="panel.locked">
+<!-- SDA CUSTOM --> <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="!panel.locked && panel.dragAndDrop" [resizable]="!panel.locked && panel.resizable" [(w)]="panel.tamanyMobil.w" [(h)]="panel.tamanyMobil.h" [(x)]="panel.tamanyMobil.x" [(y)]="panel.tamanyMobil.y" (change)="itemChange($event, panel)" [class.panel-locked]="panel.locked" [class.panel-filter-highlight]="hoveredFilterPanelIds.includes(panel.id)" [class.panel-filter-dimmed]="isFilterHoverActive && !hoveredFilterPanelIds.includes(panel.id)">
                     <ng-container *ngTemplateOutlet="panelTemplate; context: {$implicit: panel}"></ng-container>
                 </ngx-gridster-item>
             </ng-container>

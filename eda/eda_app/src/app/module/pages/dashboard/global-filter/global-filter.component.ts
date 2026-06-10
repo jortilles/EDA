@@ -698,6 +698,37 @@ export class GlobalFilterComponent implements OnInit {
 /*SDA CUSTOM*/     this.setGlobalFilterItems(filter);
 /*SDA CUSTOM*/ }
 
+/* SDA CUSTOM */ public filterHoverTooltipHtml: string =
+/* SDA CUSTOM */     `<span class="tooltip-green">${$localize`:@@filterHoverGreen:Verde`}</span>: ${$localize`:@@filterHoverAffected:Paneles afectados por este filtro`}<br>` +
+/* SDA CUSTOM */     `<span class="tooltip-red">${$localize`:@@filterHoverRed:Rojo`}</span>: ${$localize`:@@filterHoverNotAffected:Paneles no afectados por este filtro`}`;
+
+/* SDA CUSTOM */ // Wait 2s before activating the filter hover effect
+/* SDA CUSTOM */ private filterHoverTimeout: any;
+/* SDA CUSTOM */ public filterHoverActiveId: string | null = null;
+/* SDA CUSTOM */
+/* SDA CUSTOM */ public onFilterHover(filter: any): void {
+/* SDA CUSTOM */     if (this.filterHoverTimeout) {
+/* SDA CUSTOM */         clearTimeout(this.filterHoverTimeout);
+/* SDA CUSTOM */     }
+/* SDA CUSTOM */     this.filterHoverActiveId = null;
+/* SDA CUSTOM */     this.filterHoverTimeout = setTimeout(() => {
+/* SDA CUSTOM */         this.dashboard.hoveredFilterPanelIds = filter.panelList || [];
+/* SDA CUSTOM */         this.dashboard.isFilterHoverActive = true;
+/* SDA CUSTOM */         this.filterHoverActiveId = filter.id;
+/* SDA CUSTOM */     }, 2000);
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ // Clears panel highlight immediately when mouse leaves
+/* SDA CUSTOM */ public onFilterLeave(): void {
+/* SDA CUSTOM */     if (this.filterHoverTimeout) {
+/* SDA CUSTOM */         clearTimeout(this.filterHoverTimeout);
+/* SDA CUSTOM */         this.filterHoverTimeout = null;
+/* SDA CUSTOM */     }
+/* SDA CUSTOM */     this.dashboard.hoveredFilterPanelIds = [];
+/* SDA CUSTOM */     this.dashboard.isFilterHoverActive = false;
+/* SDA CUSTOM */     this.filterHoverActiveId = null;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
     public disableGlobalFilter(filter: any): boolean {
         let disabled = false;
 

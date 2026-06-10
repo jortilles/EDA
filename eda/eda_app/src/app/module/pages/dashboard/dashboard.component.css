@@ -374,6 +374,80 @@ app-dashboard {
 /* SDA CUSTOM */     transform-origin: top left;
 /* SDA CUSTOM */ }
 /* SDA CUSTOM */
+/* SDA CUSTOM */ ::ng-deep .panel-filter-dimmed::after {
+/* SDA CUSTOM */     content: '';
+/* SDA CUSTOM */     position: absolute;
+/* SDA CUSTOM */     inset: 0;
+/* SDA CUSTOM */     background-color: rgba(189, 25, 19, 0.15);
+/* SDA CUSTOM */     pointer-events: none;
+/* SDA CUSTOM */     z-index: 1;
+/* SDA CUSTOM */     border-radius: 4px;
+/* SDA CUSTOM */     transition: background-color 0.8s ease;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ ::ng-deep .panel-filter-highlight {
+/* SDA CUSTOM */     box-shadow: 0 0 20px rgba(76, 175, 80, 0.6) !important;
+/* SDA CUSTOM */     transition: box-shadow 0.8s ease;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ ::ng-deep .panel-filter-highlight::after {
+/* SDA CUSTOM */     content: '';
+/* SDA CUSTOM */     position: absolute;
+/* SDA CUSTOM */     inset: 0;
+/* SDA CUSTOM */     background-color: rgba(76, 175, 80, 0.2);
+/* SDA CUSTOM */     pointer-events: none;
+/* SDA CUSTOM */     z-index: 1;
+/* SDA CUSTOM */     border-radius: 4px;
+/* SDA CUSTOM */     transition: background-color 0.8s ease;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ .filter-set {
+/* SDA CUSTOM */     position: relative;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ /* Tooltip that appears above the filter when highlighting is active */
+/* SDA CUSTOM */ .filter-hover-tooltip {
+/* SDA CUSTOM */     position: absolute;
+/* SDA CUSTOM */     bottom: 100%;
+/* SDA CUSTOM */     left: 0;
+/* SDA CUSTOM */     margin-bottom: 6px;
+/* SDA CUSTOM */     font-size: 11px;
+/* SDA CUSTOM */     background-color: #fff;
+/* SDA CUSTOM */     color: #333;
+/* SDA CUSTOM */     padding: 5px 10px;
+/* SDA CUSTOM */     border-radius: 4px;
+/* SDA CUSTOM */     line-height: 1.5;
+/* SDA CUSTOM */     z-index: 1000;
+/* SDA CUSTOM */     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+/* SDA CUSTOM */     border: 1px solid #e0e0e0;
+/* SDA CUSTOM */     opacity: 1;
+/* SDA CUSTOM */     animation: filterTooltipFadeIn 0.8s ease;
+/* SDA CUSTOM */     pointer-events: none;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ ::ng-deep .tooltip-green {
+/* SDA CUSTOM */     color: #4CAF50;
+/* SDA CUSTOM */     font-weight: 600;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ ::ng-deep .tooltip-red {
+/* SDA CUSTOM */     color: #bd1913;
+/* SDA CUSTOM */     font-weight: 600;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ @keyframes filterTooltipFadeIn {
+/* SDA CUSTOM */     from { opacity: 0; transform: translateY(4px); }
+/* SDA CUSTOM */     to   { opacity: 1; transform: translateY(0); }
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ .filter-hover-active {
+/* SDA CUSTOM */     box-shadow: 0 0 12px rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+/* SDA CUSTOM */     border-radius: 4px;
+/* SDA CUSTOM */     background-color: rgba(0, 0, 0, 0.02);
+/* SDA CUSTOM */     transition: box-shadow 0.8s ease, background-color 0.8s ease;
+/* SDA CUSTOM */     padding: 2px 4px;
+/* SDA CUSTOM */     margin: -2px -4px;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
 /* SDA CUSTOM */ ::ng-deep .dashboard-grid ngx-gridster-item:not(.panel-locked) {
 /* SDA CUSTOM */     cursor: grab;
 /* SDA CUSTOM */ }

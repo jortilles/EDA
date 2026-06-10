@@ -912,6 +912,22 @@
     <source>Download JSON</source>
     <target>Descarregar JSON</target>
   </trans-unit>
+  <trans-unit id="filterHoverGreen">
+    <source>Verde</source>
+    <target>Verd</target>
+  </trans-unit>
+  <trans-unit id="filterHoverRed">
+    <source>Rojo</source>
+    <target>Vermell</target>
+  </trans-unit>
+  <trans-unit id="filterHoverAffected">
+    <source>Paneles afectados por este filtro</source>
+    <target>Panells afectats per aquest filtre</target>
+  </trans-unit>
+  <trans-unit id="filterHoverNotAffected">
+    <source>Paneles no afectados por este filtro</source>
+    <target>Panells no afectats per aquest filtre</target>
+  </trans-unit>
 </body>
   </file>
 </xliff>
