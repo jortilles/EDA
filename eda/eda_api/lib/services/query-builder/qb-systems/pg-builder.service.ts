@@ -238,16 +238,22 @@ export class PgBuilderService extends QueryBuilderService {
     myQuery += this.getHavingFilters(havingFilters );
 
     // OrderBy
-    const orderColumns = this.queryTODO.fields.map(col => {
-      let out;
+    const sortingCols: any[] = this.queryTODO.resultSortingColumns ?? [];
+    const sortingKeys = new Set(sortingCols.map(c => `${c.table_id}.${c.column_name}`));
 
-      if (col.ordenation_type !== 'No' && col.ordenation_type !== undefined) {
-        out = `"${col.display_name}" ${col.ordenation_type}`
-      } else {
-        out = false;
-      }
-      return out;
-    }).filter(e => e !== false);
+    const fromSorting = sortingCols
+      .filter((col: any) => col.ordenation_type !== 'No' && col.ordenation_type !== undefined)
+      .map((col: any) => {
+        const name = typeof col.display_name === 'object' ? col.display_name.default : col.display_name;
+        return `"${name}" ${col.ordenation_type}`;
+      });
+
+    const fromFields = this.queryTODO.fields
+      .filter((col: any) => !sortingKeys.has(`${col.table_id}.${col.column_name}`)
+        && col.ordenation_type !== 'No' && col.ordenation_type !== undefined)
+      .map((col: any) => `"${col.display_name}" ${col.ordenation_type}`);
+
+    const orderColumns = [...fromSorting, ...fromFields];
 
     const order_columns_string = orderColumns.join(',');
     if (order_columns_string.length > 0) {

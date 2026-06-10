@@ -405,6 +405,7 @@ export const QueryUtils = {
       prediction: ebp.panel?.content?.query?.query?.prediction ? ebp.panel.content.query.query.prediction:'None',
       predictionConfig: ebp.panel?.content?.query?.query?.predictionConfig || undefined,
       sortedFilters: ebp.sortedFilters,
+      resultSortingColumns: ebp.resultSortingColumns
     };
     return ebp.queryBuilder.normalQuery(fields, params, ebp.selectedQueryMode);
   },
