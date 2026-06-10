@@ -1169,11 +1169,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.referenceValue = refValue;
         chartConfig.vsPercent = vsPercent;
         chartConfig.decimals = decimals;
-        chartConfig.sufix = cfg.sufix || '';
         chartConfig.backgroundColor = cfg.backgroundColor || '';
         chartConfig.kpiColor = cfg.kpiColor || '';
         chartConfig.positiveColor = cfg.positiveColor || '';
         chartConfig.negativeColor = cfg.negativeColor || '';
+        chartConfig.prefixImage = cfg.prefixImage || '';
+        chartConfig.modifiedFontPoints = cfg.modifiedFontPoints || 0;
 
         this.createEdaKpiDeviationComponent(chartConfig);
     }

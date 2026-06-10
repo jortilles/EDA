@@ -41,7 +41,6 @@
           <div class="grid gap-6">
 
             <!-- Tamaño -->
-            @if (!isKpiDeviation) {
             <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
               <div class="px-4 py-1.5 border-b bg-white">
                 <h3 class="font-medium text-slate-800 flex items-center gap-2">
@@ -56,7 +55,6 @@
                   class="w-1/2 px-3 py-2 border rounded-md bg-white text-center" />
               </div>
             </div>
-            }
 
             <!-- Colores del KPI -->
             <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
@@ -109,7 +107,6 @@
                 </div>
 
                 <!-- Imagen prefijo -->
-                @if (!isKpiDeviation) {
                 <div class="space-y-2 md:col-span-2">
                   <label class="text-sm font-medium" i18n="@@kpiPrefixImage">Imagen prefijo</label>
                   <div class="flex items-center gap-3">
@@ -127,7 +124,6 @@
                     }
                   </div>
                 </div>
-                }
 
               </div>
             </div>

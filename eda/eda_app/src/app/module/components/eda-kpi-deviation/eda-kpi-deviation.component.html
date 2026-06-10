@@ -8,10 +8,15 @@
     {{ displayHeader }}
   </div>
 
-  <!-- Valor principal -->
-  <div class="font-bold" [ngStyle]="getValueStyle()"
-       style="line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:5px;">
-    {{ formatValue(displayValue) }}{{ displaySufix }}
+  <!-- Valor principal (con imagen prefijo si existe) -->
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;min-width:0;" [ngStyle]="getContainerStyle()">
+    @if(inject?.prefixImage) {
+      <img [src]="inject.prefixImage" style="height:1em;width:auto;object-fit:contain;flex-shrink:0;" />
+    }
+    <div class="font-bold" [ngStyle]="getValueStyle()"
+         style="line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+      {{ formatValue(displayValue) }}
+    </div>
   </div>
 
   <!-- Delta porcentual -->

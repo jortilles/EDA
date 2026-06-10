@@ -22,7 +22,6 @@ export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewIni
     displayValue: number = 0;
     displayVsPercent: number | null = null;
     displayHeader: string = '';
-    displaySufix: string = '';
     positiveColor: string = '#22a55b';
     negativeColor: string = '#e53e3e';
 
@@ -65,11 +64,9 @@ export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewIni
         this.displayValue = this.inject.value ?? 0;
         this.displayVsPercent = this.inject.vsPercent ?? null;
         this.displayHeader = this.inject.header || '';
-        this.displaySufix = this.inject.sufix || '';
         this.positiveColor = this.inject.positiveColor || '#22a55b';
         this.negativeColor = this.inject.negativeColor || '#e53e3e';
 
-        // El color del valor sigue la dirección del porcentaje por defecto
         this.color = this.inject.kpiColor
             || ((this.displayVsPercent ?? 0) >= 0 ? this.positiveColor : this.negativeColor);
 
@@ -112,12 +109,14 @@ export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewIni
         return (this.displayVsPercent ?? 0) >= 0;
     }
 
+    getContainerStyle(): any {
+        return { 'font-size': this._computeValueFontSize() };
+    }
+
     getValueStyle(): any {
-        return {
-            color: this.color,
-            'font-family': this.family,
-            'font-size': this._computeValueFontSize()
-        };
+        const c = this.inject?.kpiColor
+            || ((this.displayVsPercent ?? 0) >= 0 ? this.positiveColor : this.negativeColor);
+        return { color: c, 'font-family': this.family };
     }
 
     private _computeValueFontSize(): string {
@@ -125,10 +124,11 @@ export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewIni
             const host = this.hostRef.nativeElement as HTMLElement;
             const panelH = host.offsetHeight || 120;
             const panelW = host.offsetWidth || 200;
-            const text = this.formatValue(this.displayValue) + this.displaySufix;
+            const text = this.formatValue(this.displayValue);
             const charCount = Math.max(text.length, 1);
             let size = Math.min(panelH * 0.3, panelW / charCount * 1.5);
             size = Math.max(14, Math.min(size, 52));
+            size = Math.max(8, size + (this.inject?.modifiedFontPoints || 0));
             return size.toFixed(0) + 'px';
         } catch {
             return '28px';
@@ -145,6 +145,7 @@ export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewIni
     }
 
     public updateChart(): void {
+        this._syncFromInject();
         this.cdr.detectChanges();
     }
 }

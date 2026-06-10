@@ -53,11 +53,12 @@ export const ChartsConfigUtils = {
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'kpideviation') {
       const inst = ebp.panelChart.componentRef?.instance;
       config = {
-        sufix: inst?.inject?.sufix || '',
         backgroundColor: inst?.inject?.backgroundColor || '',
         kpiColor: inst?.inject?.kpiColor || '',
         positiveColor: inst?.inject?.positiveColor || '',
         negativeColor: inst?.inject?.negativeColor || '',
+        prefixImage: inst?.inject?.prefixImage || '',
+        modifiedFontPoints: inst?.inject?.modifiedFontPoints || 0,
       };
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType.includes('kpi')) {
       const kpiChart = ebp.panelChart.componentRef.instance.inject?.edaChart;

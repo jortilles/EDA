@@ -159,7 +159,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
 
         this.onClose(EdaDialogCloseEvent.UPDATE, {
             alerts: this.alerts,
-            sufix: this.panelChartComponent.componentRef.instance.inject.sufix,
+            sufix: this.panelChartComponent.componentRef.instance.inject.sufix || '',
             edaChart: this.edaChart,
             chartType: this.panelChartConfig.chartType,
             chartSubType: this.panelChartConfig.edaChart,
@@ -333,10 +333,12 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         const instance = this.panelChartComponent?.componentRef?.instance;
         if (instance) {
             instance.inject.kpiColor = this.kpiTextColor;
-            if (!this.isKpiDeviation) {
+            if (this.isKpiDeviation) {
+                instance.updateChart?.();
+            } else {
                 instance.color = this.kpiTextColor || instance.defaultColor;
+                this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
             }
-            this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
         }
     }
 
@@ -362,7 +364,11 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         const instance = this.panelChartComponent?.componentRef?.instance;
         if (instance) {
             instance.inject.prefixImage = this.prefixImage;
-            this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
+            if (this.isKpiDeviation) {
+                instance.updateChart?.();
+            } else {
+                this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
+            }
         }
     }
 

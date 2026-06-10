@@ -736,8 +736,9 @@ public tableNodeExpand(event: any): void {
             // Nav filters are runtime-only — strip before saving so they don't pollute
             // the saved filters. They are restored via navActiveNodes.navFilters on reload.
             query.query.filters = (query.query.filters || []).filter((f: any) => !f.isNavFilter);
-            const chart = this.chartForm?.value.chart?.value ? this.chartForm?.value.chart?.value : this.chartForm?.value.chart;
-            const edaChart = this.panelChart?.props.edaChart;
+            const formChart = this.chartForm?.value.chart?.value ? this.chartForm?.value.chart?.value : this.chartForm?.value.chart;
+            const chart = formChart || this.graficos?.chartType;
+            const edaChart = this.panelChart?.props.edaChart || this.graficos?.edaChart;
             const navigationLinks: any[] = this.buildNavigationLinks(query);
             const navActiveNodes = (this.navState || []).map((entry: any) => ({
                 parentKey: entry.rootKey,
@@ -1744,16 +1745,18 @@ public tableNodeExpand(event: any): void {
         if (response.chartType === 'kpideviation') {
             this.panel.content.query.output.config = {
                 ...this.panel.content.query.output.config,
-                sufix: response.sufix,
                 backgroundColor: response.backgroundColor || '',
                 kpiColor: response.kpiColor || '',
+                prefixImage: response.prefixImage || '',
+                modifiedFontPoints: response.modifiedFontPoints || 0,
             };
             const config = new ChartConfig(new KpiDeviationConfig({
-                sufix: response.sufix,
                 backgroundColor: response.backgroundColor || '',
                 kpiColor: response.kpiColor || '',
+                prefixImage: response.prefixImage || '',
+                modifiedFontPoints: response.modifiedFontPoints || 0,
             }));
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, 'kpideviation', null, config);
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, 'kpideviation', 'kpideviation', config);
             this.dashboardService._notSaved.next(true);
             this.kpiController = undefined;
             return;
