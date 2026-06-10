@@ -3146,6 +3146,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica</source>
     <target>KPI Trend wymaga kolumny daty w formacie miesięcznym i kolumny liczbowej</target>
   </trans-unit>
+  <trans-unit id="chartInfoKpiDeviation">
+    <source>KPI Desviación necesita dos columnas numéricas: valor actual y valor de referencia</source>
+    <target>KPI Odchylenie wymaga dwóch kolumn numerycznych: wartości bieżącej i wartości referencyjnej</target>
+  </trans-unit>
   <trans-unit id="trendTitleYear"><source>Año actual</source><target>Bieżący rok</target></trans-unit>
   <trans-unit id="trendTitleMonth"><source>Mes actual</source><target>Bieżący miesiąc</target></trans-unit>
   <trans-unit id="trendTitleWeek"><source>Semana actual</source><target>Bieżący tydzień</target></trans-unit>
@@ -3825,6 +3829,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="chartTypesKPITrend">
         <source>KPI Tendencia</source>
         <target>KPI Trend</target>
+      </trans-unit>
+      <trans-unit id="chartTypesKPIDeviation">
+        <source>KPI Desviación</source>
+        <target>KPI Odchylenie</target>
       </trans-unit>
 
 

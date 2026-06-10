@@ -3433,6 +3433,10 @@
     <source>KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica</source>
     <target>KPI Tendance nécessite une colonne de date au format mois et une colonne numérique</target>
   </trans-unit>
+  <trans-unit id="chartInfoKpiDeviation">
+    <source>KPI Desviación necesita dos columnas numéricas: valor actual y valor de referencia</source>
+    <target>KPI Déviation nécessite deux colonnes numériques : valeur actuelle et valeur de référence</target>
+  </trans-unit>
   <trans-unit id="trendTitleYear"><source>Año actual</source><target>Année en cours</target></trans-unit>
   <trans-unit id="trendTitleMonth"><source>Mes actual</source><target>Mois en cours</target></trans-unit>
   <trans-unit id="trendTitleWeek"><source>Semana actual</source><target>Semaine en cours</target></trans-unit>
@@ -4047,6 +4051,10 @@
       <trans-unit id="chartTypesKPITrend">
         <source>KPI Tendencia</source>
         <target>KPI Tendance</target>
+      </trans-unit>
+      <trans-unit id="chartTypesKPIDeviation">
+        <source>KPI Desviación</source>
+        <target>KPI Déviation</target>
       </trans-unit>
 
   <trans-unit id="urlEditSaveError">
