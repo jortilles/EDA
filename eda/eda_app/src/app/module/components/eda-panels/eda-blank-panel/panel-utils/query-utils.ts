@@ -169,12 +169,17 @@ export const QueryUtils = {
 
     if(ebp.sortedFilters === undefined) ebp.sortedFilters = []; // if it is an old report, we define the report as empty
 
-    for(let i=0; i<ebp.sortedFilters.length; i++){
-      if(ebp.sortedFilters[i].isGlobal) {
-        ebp.sortedFilters[i].filter_elements = ebp.globalFilters.find((globalFilter: any) => globalFilter.filter_id === ebp.sortedFilters[i].filter_id).filter_elements;
-        ebp.sortedFilters[i].filter_codes = ebp.globalFilters.find((globalFilter: any) => globalFilter.filter_id === ebp.sortedFilters[i].filter_id).filter_codes;
-      }
-    }
+    /* SDA CUSTOM*/ for(let i = ebp.sortedFilters.length - 1; i >= 0; i--){
+    /* SDA CUSTOM*/   if(ebp.sortedFilters[i].isGlobal) {
+    /* SDA CUSTOM*/     const matchingGlobalFilter = ebp.globalFilters.find((globalFilter: any) => globalFilter.filter_id === ebp.sortedFilters[i].filter_id);
+    /* SDA CUSTOM*/     if (matchingGlobalFilter) {
+    /* SDA CUSTOM*/       ebp.sortedFilters[i].filter_elements = matchingGlobalFilter.filter_elements;
+    /* SDA CUSTOM*/       ebp.sortedFilters[i].filter_codes = matchingGlobalFilter.filter_codes;
+    /* SDA CUSTOM*/     } else {
+    /* SDA CUSTOM*/       ebp.sortedFilters.splice(i, 1);
+    /* SDA CUSTOM*/     }
+    /* SDA CUSTOM*/   }
+    /* SDA CUSTOM*/ }
 
     /** Manages duplicate columns. If I have two columns with the same name, I add the suffix _1, _2, _3, etc. */
     let dup = [];

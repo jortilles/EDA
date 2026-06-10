@@ -25,7 +25,7 @@
                         <div class="col-3" >
                             <input class = "d-flex justify-content-center" type="text" pInputText id="aliasName"
                             [style]="{'vertical-align' : 'bottom', width: '100%' }"
-                            [(ngModel)]="aliasValue"  
+                            [(ngModel)]="aliasValue"
                             placeholder="Alias del filtro (opcional)"
                             i18n-placeholder="@@aliasValuePh">
                         </div>
@@ -84,16 +84,15 @@
                                         [ngClass]="{'ui-button-selected': panel.active, 'ui-button-unselected':!panel.active, 'ui-button-unvaliable':!panel.avaliable}">
                                     </button>
                                 </td>
-                                <td style="width: 60%;">
-                                    <p-treeSelect *ngIf="globalFilter.pathList[panel.id]" 
-                                        [(ngModel)]="globalFilter.pathList[panel.id].selectedTableNodes"
-                                        [options]="panel.content.globalFilterPaths"
-                                        (onNodeExpand)="onNodeExpand(panel, $event)"
-                                        (onNodeSelect)="onNodeSelect(panel, $event)" appendTo="body"
-                                        [disabled]="!panel.active || !panel.avaliable">
+                                 <td style="width: 60%;">
+             <!-- SDA CUSTOM - Show SQL message directly in the cell instead of inside a disabled dropdown -->
+             <ng-container *ngIf="globalFilter.pathList[panel.id] && panel.content?.query?.query?.queryMode === 'SQL'">
+                 <span i18n="@@sqlModeFilterPathText" style="font-family: var(--DEFAULT_FONT_FAMILY); font-weight: bolder; font-size: 0.9rem; color: #495057;" [style.opacity]="!panel.active || !panel.avaliable ? 0.4 : 1">En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta</span>
+             </ng-container>
+             <!-- SDA CUSTOM --><p-treeSelect *ngIf="globalFilter.pathList[panel.id] && panel.content?.query?.query?.queryMode !== 'SQL'" [(ngModel)]="globalFilter.pathList[panel.id].selectedTableNodes" [options]="panel.content.globalFilterPaths" (onNodeExpand)="onNodeExpand(panel, $event)" (onNodeSelect)="onNodeSelect(panel, $event)" appendTo="body" [disabled]="!panel.active || !panel.avaliable">
 
                                         <ng-template pTemplate="value">
-                                            <span class="d-flex align-items-center" [innerHTML]="getDisplayPathStr(globalFilter.pathList[panel.id].selectedTableNodes)"></span>
+                         <!-- SDA CUSTOM -->    <span class="d-flex align-items-center" [innerHTML]="getDisplayPathStr(globalFilter.pathList[panel.id].selectedTableNodes)"></span>
                                         </ng-template>
 
                                         <ng-template let-node pTemplate="child">

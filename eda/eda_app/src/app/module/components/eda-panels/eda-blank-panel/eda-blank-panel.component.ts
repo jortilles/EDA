@@ -1044,8 +1044,10 @@ export class EdaBlankPanelComponent implements OnInit {
         const globalFilter = _.cloneDeep(_filter);
 
         if (_filter.pathList && _filter.pathList[this.panel.id]) {
-            globalFilter.joins = _filter.pathList[this.panel.id].path
-            globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
+            /*SDA CUSTOM*/ globalFilter.joins = _filter.pathList[this.panel.id].path;
+            /*SDA CUSTOM*/ if (_filter.pathList[this.panel.id].table_id) {
+            /*SDA CUSTOM*/     globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
+            /*SDA CUSTOM*/ }
         }
         const filterInx = this.globalFilters.findIndex((gf: any) => gf.filter_id === globalFilter.filter_id)
 
@@ -1063,8 +1065,10 @@ export class EdaBlankPanelComponent implements OnInit {
         const globalFilter = _.cloneDeep(_filter);
 
         if (_filter.pathList && _filter.pathList[this.panel.id]) {
-            globalFilter.joins = _filter.pathList[this.panel.id].path
-            globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
+            /*SDA CUSTOM*/ globalFilter.joins = _filter.pathList[this.panel.id].path;
+            /*SDA CUSTOM*/ if (_filter.pathList[this.panel.id].table_id) {
+            /*SDA CUSTOM*/     globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
+            /*SDA CUSTOM*/ }
         }
         const filterInx = this.globalFilters.findIndex((gf: any) => gf.filter_id === globalFilter.filter_id)
 
@@ -1106,14 +1110,10 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public rebootGlobalFilter(_filter: any){
 
-        if(this.sortedFilters.length !==0) {
-            this.alertService.addWarning($localize`:@@globalFilterSettingsReboot:La configuración de filtros del panel involucrado se ha reiniciado`);
-        }
-
-        if(this.sortedFilters.some((sortedFilter: any) => _filter.id === sortedFilter.filter_id)){
-            this.sortedFilters = [];
-            this.savePanel(); // Panel setting saved
-        }
+        /* SDA CUSTOM  */ const filterIndex = this.sortedFilters.findIndex((sortedFilter: any) => _filter.id === sortedFilter.filter_id);
+        /* SDA CUSTOM  */ if (filterIndex !== -1) {
+        /* SDA CUSTOM  */     this.sortedFilters.splice(filterIndex, 1);
+        /* SDA CUSTOM  */ }
 
     }
 

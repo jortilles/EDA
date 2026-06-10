@@ -599,7 +599,6 @@
         <source>Un gráfico de áreas necesita una o más categorías y una serie numérica. Además, si hay más de una serie, los datos numéricos deben agregarse.</source>
         <target>Un gràfic d'àrees necessita una o més categories i una sèrie numèrica. A més, si hi ha més d'una sèrie les dades numèriques han d'agregar-se.</target>
       </trans-unit>
-
       <trans-unit id="chartInfo8">
         <source>Un gráfico polar necesita una categoría y una serie numérica.</source>
         <target>Un gràfic polar necessita una categoria i una sèrie numèrica.</target>
@@ -1604,7 +1603,11 @@
         <source>elementos seleccionados</source>
         <target>elements seleccionats</target>
       </trans-unit>
-
+      <trans-unit id="sqlModeFilterPathText">
+        <source>En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta</source>
+        <target>En mode SQL, si necessiteu modificar la ruta, heu de fer-ho a la consulta.</target>
+      </trans-unit>
+      
       <!-- SECTION: SELECTOR DE FECHAS (DATEPICKER) -->
       <trans-unit id="dates1">
         <source>AÑO</source>

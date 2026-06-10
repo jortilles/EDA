@@ -1603,6 +1603,10 @@
         <source>elementos seleccionados</source>
         <target>selected items</target>
       </trans-unit>
+      <trans-unit id="sqlModeFilterPathText">
+        <source>En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta</source>
+        <target>In SQL mode, if you need to modify the path, you must do it in the query.</target>
+      </trans-unit>
 
       <!-- SECTION: SELECTOR DE FECHAS (DATEPICKER) -->
       <trans-unit id="dates1">

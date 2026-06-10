@@ -131,14 +131,21 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         this.allPanels = this.globalFilterService.filterPanels(this.modelTables, this.panels);
         this.allPanels = this.allPanels.sort(this.sortByTittle);
 
+        /*SDA CUSTOM*/ // Override filterPanels BFS result for SQL panels: set avaliable=true and active=true
+        /*SDA CUSTOM*/ // so they appear in the dialog exactly like tree panels (highlighted, treeSelect enabled).
+        /*SDA CUSTOM*/ // Panels without a valid path get deactivated later in findPanelPathTables.
+        /*SDA CUSTOM*/ for (const panel of this.allPanels) {
+        /*SDA CUSTOM*/     if (panel.content?.query?.query?.queryMode === 'SQL') {
+        /*SDA CUSTOM*/         panel.avaliable = true;
+        /*SDA CUSTOM*/         panel.active = true;
+        /*SDA CUSTOM*/     }
+        /*SDA CUSTOM*/     if (panel.content && panel.content.globalFilterPaths === undefined) {
+        /*SDA CUSTOM*/         panel.content.globalFilterPaths = [];
+        /*SDA CUSTOM*/     }
+        /*SDA CUSTOM*/ }
+
         if (this.globalFilter.isnew) {
             for (const panel of this.allPanels) {
-
-                // Desactivando el panel en caso de que sea de modo SQL.
-                if(panel.content.query.query.queryMode === 'SQL') {
-                    panel.active = false;
-                }
-
                 this.globalFilter.pathList[panel.id] = {
                     selectedTableNodes: {},
                     path: []
@@ -161,15 +168,16 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public initTablesForFilter() {
-                
+
         const queryTables = []; // si aparece
         const excludedTables = this.modelTables.filter((t: any) => t.visible === false).map((t: any) => t.table_name); // Si aparece
 
-       // filteredPanels list is empty because all panels are disabled. 
+       // filteredPanels list is empty because all panels are disabled.
         if(this.filteredPanels.length===0){
             for (const panel of this.allPanels) {
+                /*SDA CUSTOM*/ if (panel.content?.query?.query?.queryMode === 'SQL') continue; // SQL panels handled separately below
                 const panelQuery = panel.content.query.query;
-    
+
                 for (const field of panelQuery.fields) {
                     const table_id = field.table_id.split('.')[0];
                     if (!queryTables.includes(table_id)) queryTables.push(table_id);
@@ -177,8 +185,9 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             }
         } else {
             for (const panel of this.filteredPanels) {
+                /*SDA CUSTOM*/ if (panel.content?.query?.query?.queryMode === 'SQL') continue; // SQL panels handled separately below
                 const panelQuery = panel.content.query.query;
-    
+
                 for (const field of panelQuery.fields) {
                     const table_id = field.table_id.split('.')[0];
                     if (!queryTables.includes(table_id)) queryTables.push(table_id);
@@ -193,6 +202,21 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             }
         });
 
+        /*SDA CUSTOM*/ // Add tables reachable from each SQL panel's origin table (BFS from that origin).
+        /*SDA CUSTOM*/ // We run a separate relatedTables call per SQL panel so SQL origins never contaminate
+        /*SDA CUSTOM*/ // the tree-panel BFS (which returns an empty Map if any table is unreachable).
+        /*SDA CUSTOM*/ for (const panel of this.allPanels) {
+        /*SDA CUSTOM*/     if (panel.content?.query?.query?.queryMode !== 'SQL') continue;
+        /*SDA CUSTOM*/     const sqlOrigin: string = panel.content.query.query.fields?.[0]?.table_id?.split('.')[0];
+        /*SDA CUSTOM*/     if (!sqlOrigin || excludedTables.includes(sqlOrigin)) continue;
+        /*SDA CUSTOM*/     const sqlRelatedMap = this.globalFilterService.relatedTables([sqlOrigin], this.modelTables);
+        /*SDA CUSTOM*/     sqlRelatedMap.forEach((value: any, key: string) => {
+        /*SDA CUSTOM*/         if (!excludedTables.includes(key) && !this.tables.some((t: any) => t.table_name === key)) {
+        /*SDA CUSTOM*/             this.tables.push(value);
+        /*SDA CUSTOM*/         }
+        /*SDA CUSTOM*/     });
+        /*SDA CUSTOM*/ }
+
         // this.tables = this.tables.slice();
         this.tables.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
     }
@@ -200,9 +224,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public onAddPanelForFilter(panel: any) {
 
         if (panel.avaliable) {
-            if(panel.content.query.query.queryMode != 'SQL') { // los paneles SQL no se pueden activar
-                panel.active = !panel.active;
-            }
+            panel.active = !panel.active; /*SDA CUSTOM*/ // SQL panels are now activatable
             this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable && p.active);
 
             if (panel.active) {
@@ -238,14 +260,14 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public onChangeSelectedColumn(): void {
-        
+
         this.globalFilter.selectedItems = [];
         if (this.globalFilter.selectedColumn.column_type == 'date') {
             this.loadDatesFromFilter();
         } else {
             this.loadColumnValues();
         }
-        
+
         this.findPanelPathTables();
     }
 
@@ -274,6 +296,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             const query = this.queryBuilderService.normalQuery([this.globalFilter.selectedColumn], params);
             const response = await this.dashboardService.executeQuery(query).toPromise();
 
+            /*SDA CUSTOM*/ if (!this.globalFilter) return;
+
             // only if the value is a ValueListSource
             if(this.globalFilter.selectedColumn.valueListSource !== undefined) {
                 // Generate all the label and id values for the valueListSource filters.
@@ -287,12 +311,12 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 }
 
             } else {
-                
+
                 if (Array.isArray(response) && response.length > 1) {
                     const data = response[1];
                     this.columnValues = data.filter(item => !!item[0] || item[0] === '').map(item => ({ label: item[0], value: item[0] }));
                 }
-                
+
             }
 
         } catch (err) {
@@ -302,7 +326,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     onSelectedItemsChange(event: any) {
-        
+
         if(this.globalFilter.selectedColumn.valueListSource !== undefined) {
             this.globalFilter.selectedIdValues = event.map((e: any) => {
                 const value = this.totalValues.find(tv => e === tv[0]);
@@ -355,6 +379,12 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     public findPanelPathTables() {
         for (const panel of this.filteredPanels) {
+            /*SDA CUSTOM*/ if (panel.content?.query?.query?.queryMode === 'SQL') {
+            /*SDA CUSTOM*/     if (!this.globalFilter.panelList.includes(panel.id)) {
+            /*SDA CUSTOM*/         this.globalFilter.panelList.push(panel.id);
+            /*SDA CUSTOM*/     }
+            /*SDA CUSTOM*/     continue;
+            /*SDA CUSTOM*/ }
             panel.content.globalFilterPaths = this.globalFilterService.loadTablePaths(this.modelTables, panel);
 
             /*SDA CUSTOM*/ if (this.isPathStaleForPanel(panel)) {
@@ -571,6 +601,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
         if (!this.globalFilter.isdeleted) {
             for (const key in this.globalFilter.pathList) {
+                /*SDA CUSTOM*/ const panel = this.filteredPanels.find((p: any) => p.id === key);
+                /*SDA CUSTOM*/ if (panel?.content?.query?.query?.queryMode === 'SQL') continue;
                 if (availablePanels.includes(key) && _.isEmpty(this.globalFilter.pathList[key].selectedTableNodes)) {
                     valid = false;
                 }

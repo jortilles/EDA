@@ -969,7 +969,67 @@ export abstract class QueryBuilderService {
         //Get sql formated filters ad types
         const formatedFilters: any[] = [];
         filters.forEach(filter => {
-            formatedFilters.push({ string: this.filterToString(filter ), type: filter.filter_type });
+
+            /*SDA CUSTOM*/
+            /*SDA CUSTOM*/ // Global filter applied to a SQL panel: match filter_column directly against
+            /*SDA CUSTOM*/ // the SQL marks (e.g. filter_column="type" matches ${c.type}).
+            /*SDA CUSTOM*/ // We do NOT use filter.joins (the BFS path) for column matching because:
+            /*SDA CUSTOM*/ //   - BFS may find a "wrong" shortest path (e.g. via assigned_user_id instead
+            /*SDA CUSTOM*/ //     of via registrations) whose join columns don't include the filter column.
+            /*SDA CUSTOM*/ //   - filter_column already contains the exact column name the user selected.
+            /*SDA CUSTOM*/ // For valueListSource: use filter_codes (stored IDs) instead of filter_elements (labels).
+            /*SDA CUSTOM*/ if (filter.isGlobal === true && filter.filter_type !== 'between') {
+            /*SDA CUSTOM*/     const filterCol: string = filter.filter_column;
+            /*SDA CUSTOM*/     const markHit = filterMarks.some((mark: string) => {
+            /*SDA CUSTOM*/         const subs = mark.slice(mark.indexOf('{') + 1, mark.indexOf('}'));
+            /*SDA CUSTOM*/         const markCol = subs.slice(subs.indexOf('.') + 1);
+            /*SDA CUSTOM*/         return markCol.toUpperCase() === filterCol.toUpperCase();
+            /*SDA CUSTOM*/     });
+            /*SDA CUSTOM*/     if (markHit) {
+            /*SDA CUSTOM*/         const colType: string = filter.filter_column_type;
+            /*SDA CUSTOM*/         const rawValues: any[] = (filter.valueListSource && filter.filter_codes?.[0]?.value1?.length > 0)
+            /*SDA CUSTOM*/             ? filter.filter_codes[0].value1
+            /*SDA CUSTOM*/             : (filter.filter_elements?.[0]?.value1 || []);
+            /*SDA CUSTOM*/         let valuesStr: string | null;
+            /*SDA CUSTOM*/         if (colType === 'numeric') {
+            /*SDA CUSTOM*/             // Filter out 'emptyString' and other non-numeric sentinels before Number() conversion.
+            /*SDA CUSTOM*/             // Number('emptyString') = NaN which produces invalid SQL "in (NaN)".
+            /*SDA CUSTOM*/             const validNums: number[] = rawValues
+            /*SDA CUSTOM*/                 .filter((v: any) => v !== 'emptyString' && v !== null && v !== undefined && v !== '')
+            /*SDA CUSTOM*/                 .map((v: any) => Number(v))
+            /*SDA CUSTOM*/                 .filter((n: number) => !isNaN(n));
+            /*SDA CUSTOM*/             valuesStr = validNums.length > 0 ? validNums.join(', ') : null;
+            /*SDA CUSTOM*/         } else {
+            /*SDA CUSTOM*/             const mappedVals = rawValues.map((v: any) => `'${String(v).replace(/'/g, "''")}'`);
+            /*SDA CUSTOM*/             valuesStr = mappedVals.length > 0 ? mappedVals.join(', ') : null;
+            /*SDA CUSTOM*/         }
+            /*SDA CUSTOM*/         if (valuesStr !== null) {
+            /*SDA CUSTOM*/             // Build "tableName.filterCol in (values)" so that sqlQuery's indexOf('.')
+            /*SDA CUSTOM*/             // always finds the table/column separator, not a decimal dot inside the values.
+            /*SDA CUSTOM*/             // filter_table may be a child_id ("table.col.col") — take only the first segment.
+            /*SDA CUSTOM*/             const tablePrefix: string = ((filter.filter_table as string) || filterCol).split('.')[0];
+            /*SDA CUSTOM*/             formatedFilters.push({ string: `${tablePrefix}.${filterCol} in (${valuesStr})`, type: filter.filter_type });
+            /*SDA CUSTOM*/         } else {
+            /*SDA CUSTOM*/             // Only non-numeric sentinels selected (e.g. 'emptyString' = NULL).
+            /*SDA CUSTOM*/             // Substitute the matching mark directly with IS NULL in the query string.
+            /*SDA CUSTOM*/             // sqlQuery will try to replace the mark but won't find it → no-op.
+            /*SDA CUSTOM*/             // We do NOT call filterToString: it also can't handle 'emptyString' for SQL panels.
+            /*SDA CUSTOM*/             for (const mark of filterMarks) {
+            /*SDA CUSTOM*/                 const subs = mark.slice(mark.indexOf('{') + 1, mark.indexOf('}'));
+            /*SDA CUSTOM*/                 const markCol = subs.slice(subs.indexOf('.') + 1);
+            /*SDA CUSTOM*/                 if (markCol.toUpperCase() === filterCol.toUpperCase()) {
+            /*SDA CUSTOM*/                     query = query.replace(mark, `${subs} IS NULL`);
+            /*SDA CUSTOM*/                 }
+            /*SDA CUSTOM*/             }
+            /*SDA CUSTOM*/         }
+            /*SDA CUSTOM*/     } else {
+            /*SDA CUSTOM*/         formatedFilters.push({ string: this.filterToString(filter), type: filter.filter_type });
+            /*SDA CUSTOM*/     }
+            /*SDA CUSTOM*/
+            /*SDA CUSTOM*/ } else {
+                formatedFilters.push({ string: this.filterToString(filter ), type: filter.filter_type });
+            /*SDA CUSTOM*/ }
+
         });
 
         return this.sqlQuery(query, formatedFilters, filterMarks);

@@ -260,6 +260,56 @@ export class GlobalFiltersService {
         return pathsTables;
     }
 
+    // SDA CUSTOM — Builds the tree root node for a SQL panel using the given table name directly,
+    // SDA CUSTOM   instead of relying on rootTable from the panel query (which SQL panels don't have).
+    /*SDA CUSTOM*/ public loadTablePathsFromName(tables: any[], tableName: string): any[] {
+    /*SDA CUSTOM*/     const pathsTables: any[] = [];
+    /*SDA CUSTOM*/     const table = tables.find((source: any) => source.table_name === tableName);
+    /*SDA CUSTOM*/     if (table) {
+    /*SDA CUSTOM*/         const node: any = { label: table.display_name?.default || tableName, table_id: tableName };
+    /*SDA CUSTOM*/         if (table.relations && table.relations.length > 0) {
+    /*SDA CUSTOM*/             node.expandedIcon = 'pi pi-folder-open';
+    /*SDA CUSTOM*/             node.collapsedIcon = 'pi pi-folder';
+    /*SDA CUSTOM*/             node.children = [{}];
+    /*SDA CUSTOM*/         }
+    /*SDA CUSTOM*/         pathsTables.push(node);
+    /*SDA CUSTOM*/     }
+    /*SDA CUSTOM*/     return pathsTables;
+    /*SDA CUSTOM*/ }
+
+    // SDA CUSTOM — BFS over model table relations to find the shortest join path from startTable to targetTable.
+    // SDA CUSTOM   Returns a node object compatible with pathList entries, or null if no path is found.
+    /*SDA CUSTOM*/ public findShortestPath(startTable: string, targetTable: string, modelTables: any[]): any | null {
+    /*SDA CUSTOM*/     if (!startTable || !targetTable || startTable === targetTable) return null;
+    /*SDA CUSTOM*/     const queue: Array<{ tableName: string; joins: any[][] }> = [{ tableName: startTable, joins: [] }];
+    /*SDA CUSTOM*/     const visited = new Set<string>([startTable]);
+    /*SDA CUSTOM*/     while (queue.length > 0) {
+    /*SDA CUSTOM*/         const { tableName, joins } = queue.shift();
+    /*SDA CUSTOM*/         const table = modelTables.find((t: any) => t.table_name === tableName);
+    /*SDA CUSTOM*/         if (!table) continue;
+    /*SDA CUSTOM*/         const relations = (table.relations || []).filter(
+    /*SDA CUSTOM*/             (rel: any) => !rel.bridge && !rel.autorelation && rel.visible !== false
+    /*SDA CUSTOM*/         );
+    /*SDA CUSTOM*/         for (const rel of relations) {
+    /*SDA CUSTOM*/             const nextTable: string = rel.target_table;
+    /*SDA CUSTOM*/             const sourceJoin = `${rel.source_table || tableName}.${rel.source_column[0]}`;
+    /*SDA CUSTOM*/             const joinChildId = `${rel.target_table}.${rel.target_column[0]}`;
+    /*SDA CUSTOM*/             const child_id = `${joinChildId}.${rel.source_column[0]}`;
+    /*SDA CUSTOM*/             const newJoins = [...joins, [sourceJoin, joinChildId]];
+    /*SDA CUSTOM*/             const childLabel = rel.display_name?.default || `${rel.source_column[0]} - ${rel.target_table}`;
+    /*SDA CUSTOM*/             if (nextTable === targetTable) {
+    /*SDA CUSTOM*/                 return { child_id, type: 'child', label: childLabel, autorelation: false, joins: newJoins };
+    /*SDA CUSTOM*/             }
+    /*SDA CUSTOM*/             if (!visited.has(nextTable)) {
+    /*SDA CUSTOM*/                 visited.add(nextTable);
+    /*SDA CUSTOM*/                 queue.push({ tableName: nextTable, joins: newJoins });
+    /*SDA CUSTOM*/             }
+    /*SDA CUSTOM*/         }
+    /*SDA CUSTOM*/     }
+    /*SDA CUSTOM*/     return null;
+    /*SDA CUSTOM*/ }
+
+
     /**
      * Expands a node in a tree structure, adding its child nodes based on table relations.
      * Prevents duplicate paths and handles autorelations.
