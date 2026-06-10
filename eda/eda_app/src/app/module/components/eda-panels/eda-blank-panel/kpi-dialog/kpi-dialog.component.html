@@ -15,14 +15,14 @@
     <div class="flex-1 flex flex-col h-[77vh] overflow-auto">
 
       <!-- Tab buttons: siempre visibles -->
-      <div class="px-6 pt-6 pb-4 grid gap-4" [class.grid-cols-2]="!isKpiTrend" [class.grid-cols-1]="isKpiTrend">
+      <div class="px-6 pt-6 pb-4 grid gap-4" [class.grid-cols-2]="!isKpiTrend && !isKpiDeviation" [class.grid-cols-1]="isKpiTrend || isKpiDeviation">
         <button
           class="kpi-tab-btn"
           [class.kpi-tab-btn--active]="activeTab === 'aspecto'"
           (click)="setActiveTab('aspecto')" i18n="@@kpiAspecto">
           Aspecto
         </button>
-        @if (!isKpiTrend) {
+        @if (!isKpiTrend && !isKpiDeviation) {
         <button
           class="kpi-tab-btn"
           [class.kpi-tab-btn--active]="activeTab === 'alerts'"
@@ -41,6 +41,7 @@
           <div class="grid gap-6">
 
             <!-- Tamaño -->
+            @if (!isKpiDeviation) {
             <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
               <div class="px-4 py-1.5 border-b bg-white">
                 <h3 class="font-medium text-slate-800 flex items-center gap-2">
@@ -55,6 +56,7 @@
                   class="w-1/2 px-3 py-2 border rounded-md bg-white text-center" />
               </div>
             </div>
+            }
 
             <!-- Colores del KPI -->
             <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
@@ -107,6 +109,7 @@
                 </div>
 
                 <!-- Imagen prefijo -->
+                @if (!isKpiDeviation) {
                 <div class="space-y-2 md:col-span-2">
                   <label class="text-sm font-medium" i18n="@@kpiPrefixImage">Imagen prefijo</label>
                   <div class="flex items-center gap-3">
@@ -124,12 +127,13 @@
                     }
                   </div>
                 </div>
+                }
 
               </div>
             </div>
 
             <!-- Colores de series (solo KPI+chart) -->
-            @if(edaChart !== 'kpi'){
+            @if(edaChart !== 'kpi' && !isKpiDeviation){
               <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
                 <div class="px-4 py-1.5 border-b bg-white">
                   <h3 class="font-medium text-slate-800 flex items-center gap-2">

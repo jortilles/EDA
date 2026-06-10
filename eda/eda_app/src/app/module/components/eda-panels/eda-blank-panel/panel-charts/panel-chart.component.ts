@@ -49,6 +49,8 @@ import { ChartJsConfig } from './chart-configuration-models/chart-js-config';
 import { Subscription } from 'rxjs';
 import { EdaKpiTrendComponent } from '@eda/components/eda-kpi-trend/eda-kpi-trend.component';
 import { KpiTrendConfig } from './chart-configuration-models/kpi-trend-config';
+import { EdaKpiDeviationComponent } from '@eda/components/eda-kpi-deviation/eda-kpi-deviation.component';
+import { KpiDeviationConfig } from './chart-configuration-models/kpi-deviation-config';
 
 @Component({
     standalone: true,
@@ -215,6 +217,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
         if (type === 'kpitrend') {
             this.renderEdaKpiTrend();
+        }
+        if (type === 'kpideviation') {
+            this.renderEdaKpiDeviation();
         }
     }
 
@@ -1117,6 +1122,65 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     private createEdaKpiTrendComponent(inject: any) {
         this.entry.clear();
         this.componentRef = this.entry.createComponent(EdaKpiTrendComponent);
+        this.componentRef.instance.inject = inject;
+        this.currentConfig = inject;
+        this.configUpdated.emit(this.currentConfig);
+    }
+
+    /**
+     * Renders a KpiDeviationComponent
+     * Needs 2 numeric columns: [0] = valor actual, [1] = valor de referencia
+     */
+    private renderEdaKpiDeviation(): void {
+        const query = this.props.query;
+        const data = this.props.data;
+
+        const numericIndices: number[] = query
+            .map((c: any, i: number) => c.column_type === 'numeric' ? i : -1)
+            .filter((i: number) => i !== -1);
+
+        if (numericIndices.length === 0) return;
+
+        const valueIdx = numericIndices[0];
+        const refIdx = numericIndices.length > 1 ? numericIndices[1] : -1;
+        const decimals: number = query[valueIdx]?.minimumFractionDigits || 0;
+        const header: string = query[valueIdx]?.display_name?.default || '';
+
+        const value = this._roundDecimals(
+            data.values.reduce((s: number, row: any[]) => s + (Number(row[valueIdx]) || 0), 0),
+            decimals
+        );
+        const refValue = refIdx !== -1
+            ? this._roundDecimals(
+                data.values.reduce((s: number, row: any[]) => s + (Number(row[refIdx]) || 0), 0),
+                decimals
+              )
+            : null;
+
+        const vsPercent = (refValue !== null && refValue !== 0)
+            ? Math.round(((value - refValue) / refValue) * 1000) / 10
+            : null;
+
+        const cfg: any = this.props.config?.getConfig() || {};
+
+        const chartConfig: any = {};
+        chartConfig.header = header;
+        chartConfig.value = value;
+        chartConfig.referenceValue = refValue;
+        chartConfig.vsPercent = vsPercent;
+        chartConfig.decimals = decimals;
+        chartConfig.sufix = cfg.sufix || '';
+        chartConfig.backgroundColor = cfg.backgroundColor || '';
+        chartConfig.kpiColor = cfg.kpiColor || '';
+        chartConfig.positiveColor = cfg.positiveColor || '';
+        chartConfig.negativeColor = cfg.negativeColor || '';
+
+        this.createEdaKpiDeviationComponent(chartConfig);
+    }
+
+    private createEdaKpiDeviationComponent(inject: any): void {
+        this.entry.clear();
+        this.componentRef = this.entry.createComponent(EdaKpiDeviationComponent);
         this.componentRef.instance.inject = inject;
         this.currentConfig = inject;
         this.configUpdated.emit(this.currentConfig);

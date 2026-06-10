@@ -25,6 +25,7 @@ import { TableConfig } from './panel-charts/chart-configuration-models/table-con
 import { ChartConfig } from './panel-charts/chart-configuration-models/chart-config';
 import { ChartJsConfig } from './panel-charts/chart-configuration-models/chart-js-config';
 import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
+import { KpiDeviationConfig } from './panel-charts/chart-configuration-models/kpi-deviation-config';
 import { DynamicTextConfig } from './panel-charts/chart-configuration-models/dynamicText-config';
 import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
 // Eda Services
@@ -1739,6 +1740,25 @@ public tableNodeExpand(event: any): void {
 
     public onCloseKpiProperties(event, response): void {
     if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+
+        if (response.chartType === 'kpideviation') {
+            this.panel.content.query.output.config = {
+                ...this.panel.content.query.output.config,
+                sufix: response.sufix,
+                backgroundColor: response.backgroundColor || '',
+                kpiColor: response.kpiColor || '',
+            };
+            const config = new ChartConfig(new KpiDeviationConfig({
+                sufix: response.sufix,
+                backgroundColor: response.backgroundColor || '',
+                kpiColor: response.kpiColor || '',
+            }));
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, 'kpideviation', null, config);
+            this.dashboardService._notSaved.next(true);
+            this.kpiController = undefined;
+            return;
+        }
+
         // Usar spread operator para mantener el config existente
         this.panel.content.query.output.config = {
             ...this.panel.content.query.output.config,
@@ -1770,7 +1790,7 @@ public tableNodeExpand(event: any): void {
                 response.edaChart.showPredictionLines,
             );
         }
-        
+
         const config = new ChartConfig(
             new KpiConfig({
                 sufix: response.sufix,
@@ -1783,13 +1803,13 @@ public tableNodeExpand(event: any): void {
                 prefixImage: response.prefixImage || '',
             })
         );
-        
+
         this.renderChart(
-            this.currentQuery, 
-            this.chartLabels, 
-            this.chartData, 
-            response.chartType, 
-            response.chartSubType, 
+            this.currentQuery,
+            this.chartLabels,
+            this.chartData,
+            response.chartType,
+            response.chartSubType,
             config
         );
         this.dashboardService._notSaved.next(true);

@@ -59,6 +59,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     public display: boolean = false;
     public activeTab: "aspecto" | "alerts" = "aspecto";
     public isKpiTrend: boolean = false;
+    public isKpiDeviation: boolean = false;
     public selectedPalette: { name: string; paleta: any } | null = null;
     public allPalettes: any = this.stylesProviderService.ChartsPalettes;
     public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
@@ -132,6 +133,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.kpiTextColor = config.kpiColor || '';
         this.prefixImage = config.prefixImage || '';
         this.isKpiTrend = this.panelChartConfig.chartType === 'kpitrend';
+        this.isKpiDeviation = this.panelChartConfig.chartType === 'kpideviation';
         this.activeTab = 'aspecto';
 
         if (this.panelBaseResultSize > 0) {
@@ -331,7 +333,9 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         const instance = this.panelChartComponent?.componentRef?.instance;
         if (instance) {
             instance.inject.kpiColor = this.kpiTextColor;
-            instance.color = this.kpiTextColor || instance.defaultColor;
+            if (!this.isKpiDeviation) {
+                instance.color = this.kpiTextColor || instance.defaultColor;
+            }
             this.panelChartComponent.componentRef.changeDetectorRef.detectChanges();
         }
     }
