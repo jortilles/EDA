@@ -1274,6 +1274,13 @@ public tableNodeExpand(event: any): void {
                         } 
                     }
 
+                    for (const sortCol of this.resultSortingColumns) {
+                        const match = this.currentQuery.find(c =>
+                            c.column_name === sortCol.column_name && c.table_id === sortCol.table_id
+                        );
+                        if (match) sortCol.ordenation_type = match.ordenation_type;
+                    }
+
                     if (event === EdaDialogCloseEvent.NONE) {
                         this.configController = undefined;
                     }
