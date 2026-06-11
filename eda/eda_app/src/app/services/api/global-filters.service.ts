@@ -349,7 +349,7 @@ export class GlobalFiltersService {
             applyToAll: globalFilter.applyToAll,
             autorelation: globalFilter.autorelation,
             valueListSource: globalFilter.selectedColumn.valueListSource,
-            filterBeforeGrouping: true, // Para todos los filtros globales es Where
+            filterBeforeGrouping: true, // For all global filters it is Where
             computed_column: globalFilter.selectedColumn?.computed_column,
             SQLexpression: globalFilter.selectedColumn?.SQLexpression,
         }
@@ -424,19 +424,19 @@ export class GlobalFiltersService {
         if (isDate && items[0] && !items[1]) {
             const input = items[0];
 
-            // Año completo (e.g., "2025")
+            // Full year (e.g., "2025")
             if (/^\d{4}$/.test(input)) {
                 const year = input;
                 items = [`${year}-01-01`, `${year}-12-31`];
 
-            // Año y mes (e.g., "2025-08")
+            // Year and month (e.g., "2025-08")
             } else if (/^\d{4}-\d{2}$/.test(input)) {
                 const [year, month] = input.split('-').map(Number);
                 const lastDay = new Date(year, month, 0).getDate();
                 const paddedDay = String(lastDay).padStart(2, '0');
                 items = [`${input}-01`, `${input}-${paddedDay}`];
 
-            // Fecha completa o desconocido (lo dejamos igual)
+            // Full date or unknown (keep as is)
             } else {
                 items = [input, input];
             }

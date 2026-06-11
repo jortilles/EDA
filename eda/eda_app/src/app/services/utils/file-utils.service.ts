@@ -9,13 +9,13 @@ import {
     TableRow, TextRun, VerticalMergeType, WidthType,
 } from 'docx';
 
-// Colores corporativos para el export de dashboard
-const HEADER_BG   = 'FF2E75B6';   // azul cabecera
-const HEADER_FG   = 'FFFFFFFF';   // texto blanco
-const TOTAL_BG    = 'FFD6E4F0';   // azul claro totales
-const SUBTOTAL_BG = 'FFE8F2FA';   // azul muy claro subtotales
-const TITLE_BG    = 'FFDCE6F1';   // fondo título de panel
-const TITLE_FG    = 'FF1F3864';   // azul oscuro texto título
+// Corporate colors for dashboard export
+const HEADER_BG   = 'FF2E75B6';   // header blue
+const HEADER_FG   = 'FFFFFFFF';   // white text
+const TOTAL_BG    = 'FFD6E4F0';   // light blue totals
+const SUBTOTAL_BG = 'FFE8F2FA';   // very light blue subtotals
+const TITLE_BG    = 'FFDCE6F1';   // panel title background
+const TITLE_FG    = 'FF1F3864';   // dark blue title text
 
 function headerCellStyle(cell: any) {
     cell.font   = { bold: true, color: { argb: HEADER_FG }, size: 10 };
@@ -118,7 +118,7 @@ export class FileUtiles {
         const displayHeaders = headerDisplay.length ? headerDisplay : headers;
         worksheet.addRow(displayHeaders);
 
-        // Llenar filas con los datos
+        // Fill rows with data
         _.forEach(cols, (col) => {
             const row: any[] = [];
             _.forEach(headers, (h) => {
@@ -152,9 +152,9 @@ export class FileUtiles {
     private static readonly IMG_ROWS_DEFAULT = 20;  // filas Excel que ocupa una imagen
     private static readonly ROW_GAP          = 1;   // filas de separación entre bandas
     /**
-     * Calibración de píxeles por celda Excel (empírica, usada para aspect ratio).
-     * - Fila a 18pt: ~24px de alto.
-     * - Columna a 12 chars: ~64px de ancho.
+     * Excel cell pixel calibration (empirical, used for aspect ratio).
+     * - Row at 18pt: ~24px height.
+     * - Column at 12 chars: ~64px width.
      */
     private static readonly EXCEL_ROW_PX = 24;
     private static readonly EXCEL_COL_PX = 64;
@@ -645,13 +645,13 @@ export class FileUtiles {
     /** Ancho de contenido objetivo en px (página A4 con márgenes de 1.25cm) */
     private static readonly WORD_CONTENT_PX = 750;
 
-    /** Colores para el documento Word (RRGGBB sin alfa) */
-    private static readonly W_HEADER_BG = 'FFFFFF';   // cabecera: fondo blanco
-    private static readonly W_HEADER_FG = '2E75B6';   // cabecera: texto azul
-    private static readonly W_TITLE_BG  = 'FFFFFF';   // título panel: fondo blanco
-    private static readonly W_TITLE_FG  = '2E75B6';   // título panel: texto azul
-    private static readonly W_TOTAL_BG  = 'D6E4F0';   // fila totales: azul muy claro
-    private static readonly W_DATA_FG   = '000000';   // datos: texto negro
+    /** Colors for the Word document (RRGGBB without alpha) */
+    private static readonly W_HEADER_BG = 'FFFFFF';   // header: white background
+    private static readonly W_HEADER_FG = '2E75B6';   // header: blue text
+    private static readonly W_TITLE_BG  = 'FFFFFF';   // panel title: white background
+    private static readonly W_TITLE_FG  = '2E75B6';   // panel title: blue text
+    private static readonly W_TOTAL_BG  = 'D6E4F0';   // totals row: very light blue
+    private static readonly W_DATA_FG   = '000000';   // data: black text
 
     private static readonly W_NO_BORDER = {
         top:    { style: BorderStyle.NONE, size: 0, color: 'auto' },
@@ -996,7 +996,7 @@ export class FileUtiles {
         const displayHeaders = headerDisplay.length ? headerDisplay : headers;
         worksheet.addRow(displayHeaders);
 
-        // Llenar filas con los datos
+        // Fill rows with data
         _.forEach(cols, (col) => {
             const row: any[] = [];
             _.forEach(headers, (h) => {
