@@ -42,11 +42,16 @@
     }
   </div>
 
-  <!-- Fila principal: flex row (izquierda = tamaño por contenido; derecha = el resto) -->
-  <div class="absolute" style="top:28px;bottom:0;left:0;right:0;display:flex;overflow:hidden;">
+  <!-- Fila principal: row en landscape, column en portrait -->
+  <div class="absolute"
+       style="top:28px;bottom:0;left:0;right:0;display:flex;overflow:hidden;"
+       [style.flex-direction]="isPortrait ? 'column' : 'row'">
 
-    <!-- Columna KPI (izquierda, se adapta al contenido) -->
-    <div #kpiLeft style="flex-shrink:0;max-width:45%;padding:8px 8px 6px 8px;overflow:hidden;">
+    <!-- Bloque KPI -->
+    <div #kpiLeft
+         style="flex-shrink:0;padding:8px 8px 6px 8px;overflow:hidden;display:flex;flex-direction:column;justify-content:center;"
+         [style.max-width]="isPortrait ? '100%' : '45%'"
+         [style.max-height]="isPortrait ? '30%' : 'none'">
 
       <div style="font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;white-space:nowrap;">
         {{ displayPeriodTitle }}
@@ -76,9 +81,9 @@
       }
     </div>
 
-    <!-- Columna gráfico (derecha, ocupa el resto) -->
+    <!-- Gráfico: ocupa el resto (ancho en landscape, alto en portrait) -->
     @if(edaChartInject) {
-      <div style="flex:1;min-width:0;overflow:hidden;">
+      <div style="flex:1;min-width:0;min-height:0;overflow:hidden;">
         <eda-chart #edaTrendChart [inject]="edaChartInject" class="h-full w-full"></eda-chart>
       </div>
     }
