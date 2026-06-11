@@ -229,24 +229,29 @@ export class PgBuilderService extends QueryBuilderService {
       myQuery += this.getFilters(filters);
     }
 
-    // GroupBy
-    if (grouping.length > 0 && ((groupByEnabled))) {
-      myQuery += '\ngroup by ' + grouping.join(', ');
-    }
-
-    //HAVING 
-    myQuery += this.getHavingFilters(havingFilters );
-
-    // OrderBy
+    // Compute resultSortingColumns before GROUP BY
     const sortingCols: any[] = this.queryTODO.resultSortingColumns ?? [];
     const sortingKeys = new Set(sortingCols.map(c => `${c.table_id}.${c.column_name}`));
 
+    // GroupBy — extend with any resultSortingColumns not already grouped
+    const effectiveGrouping = [...grouping];
+    for (const col of sortingCols) {
+      const tc = `"${col.table_id}"."${col.column_name}"`;
+      if (!effectiveGrouping.includes(tc)) {
+        effectiveGrouping.push(tc);
+      }
+    }
+    if (effectiveGrouping.length > 0 && groupByEnabled) {
+      myQuery += '\ngroup by ' + effectiveGrouping.join(', ');
+    }
+
+    //HAVING
+    myQuery += this.getHavingFilters(havingFilters);
+
+    // OrderBy
     const fromSorting = sortingCols
       .filter((col: any) => col.ordenation_type !== 'No' && col.ordenation_type !== undefined)
-      .map((col: any) => {
-        const name = typeof col.display_name === 'object' ? col.display_name.default : col.display_name;
-        return `"${name}" ${col.ordenation_type}`;
-      });
+      .map((col: any) => `"${col.table_id}"."${col.column_name}" ${col.ordenation_type}`);
 
     const fromFields = this.queryTODO.fields
       .filter((col: any) => !sortingKeys.has(`${col.table_id}.${col.column_name}`)
