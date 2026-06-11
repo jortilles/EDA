@@ -145,15 +145,6 @@
         </div>
       }
 
-        <!-- <p-card *ngIf="formReady && !globalFilter.isdeleted" [header]="header4" id="anywhereClick">
-          <p-dropdown id="applyToOneFilterDropdown" i18n-title="@@filterVisibleScope"
-            title="Definir la visibilidad del filtro. Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuarios no pueden ver el filtro, pero se les aplica"
-            [options]="publicRoHidden" [(ngModel)]="globalFilter.visible"
-            [style]="{'width': '100%'}" selected="publicRoHiddenOption" autoWidth="false">
-          </p-dropdown>
-        </p-card> -->
-        <!-- </div> -->
-
       <!-- Panel Selection -->
       @if (formReady && !globalFilter.isdeleted) {
         @if (globalFilter.queryMode == 'EDA') {
