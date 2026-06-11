@@ -10,7 +10,7 @@ export class EdaColumnFunction extends EdaColumn {
         this.type = 'EdaColumnFunction';
         this.sortable = false;
         this.width = '40px';
-        this.field = '#'; // Si no dóna error amb el filtre global de taula 
+        this.field = '#'; // If it doesn't produce an error with the table's global filter.
        
     }
 }

@@ -24,7 +24,7 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
     @HostBinding('style.width') readonly hostWidth = '100%';
     @HostBinding('style.height') readonly hostHeight = '100%';
 
-    // ── Propiedades locales: el template NUNCA accede a inject.X directamente ──
+    // ── Local properties: the template NEVER accesses inject.X directly ──
     displayKpiValue: number = 0;
     displaySpyValue: number | null = null;
     displayVsPercent: number | null = null;
@@ -39,7 +39,7 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
     edaChartInject: any = null;
     selectedComparisonKey: string = '';
 
-    // Estilo KPI
+    // KPI Style
     color: string = '#67757c';
     family: string = 'inherit';
     modifiedFontPoints: number = 0;
@@ -68,7 +68,7 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
         this.cdr.detectChanges();
     }
 
-    /** Sincroniza todas las propiedades locales desde inject */
+    /** Synchronizes all local properties from inject */
     private _syncFromInject(): void {
         if (!this.inject) return;
 
@@ -93,7 +93,7 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
             || '';
     }
 
-    /** Llamado cuando el usuario cambia el dropdown */
+    /** Called when the user changes the dropdown */
     onComparisonChange(): void {
         const groups: TrendPeriodGroup[] = this.inject?.periodGroups;
         if (!groups) return;

@@ -78,7 +78,7 @@ export class TableEditRelationsDialogComponent extends EdaDialogAbstract {
         this.form.get("sourceCol").setValue(this.sourceCols.find(option => option.column_name === this.relation.source_column[0]));
         this.getColumnsByTable();
         
-        //Carga de condiciones
+        // Load conditions
         for (let i = 0; i < this.relation.source_column.length; i++){
             this.selectedSourceCols.push(this.relation.source_column[i]);
             this.selectedTargetCols.push(this.relation.target_column[i]);

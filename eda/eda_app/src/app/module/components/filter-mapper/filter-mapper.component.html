@@ -21,9 +21,9 @@
       </div>
     </div>
 
-    <!-- Paneles principales -->
+    <!-- Main panels -->
     <div class="grid grid-cols-2 gap-6 mb-6">
-      <!-- Panel Izquierdo -->
+      <!-- Left Panel -->
       <div class="bg-white shadow-sm border border-gray-200 rounded-lg">
         <div class="border-b border-gray-100 py-3 px-4 rounded-t-lg" style="background-color: rgba(var(--corporate-primary-rgb), 0.06)">
           <h2 class="text-base font-semibold text-gray-800 flex items-center gap-2">
@@ -73,7 +73,7 @@
         </div>
       </div>
 
-      <!-- Panel Derecho -->
+      <!-- Right Panel -->
       <div class="bg-white shadow-sm border border-gray-200 rounded-lg">
         <div class="border-b border-gray-100 py-3 px-4 rounded-t-lg bg-slate-50">
           <h2 class="text-base font-semibold text-gray-800 flex items-center gap-2">
@@ -124,7 +124,7 @@
       </div>
     </div>
 
-    <!-- Sección de Conexiones Activas -->
+    <!-- Active Connections Section -->
     @if(connections.length > 0){
       <div class="bg-white shadow-sm rounded-lg" style="border: 1.5px solid rgba(var(--corporate-primary-rgb), 0.3)">
         <div class="border-b py-3 px-4 rounded-t-lg" style="border-color: rgba(var(--corporate-primary-rgb), 0.2); background-color: rgba(var(--corporate-primary-rgb), 0.06)">
@@ -190,7 +190,7 @@
       </div>
     }
     
-    <!-- Estado vacío -->
+    <!-- Empty state -->
     @if(connections.length === 0){
       <div class="text-center py-8">
         <svg class="w-10 h-10 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">

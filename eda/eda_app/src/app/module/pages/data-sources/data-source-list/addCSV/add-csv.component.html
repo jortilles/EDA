@@ -37,15 +37,16 @@
           class="absolute inset-0 z-50 h-full w-full cursor-pointer opacity-0"
           accept=".csv" />
         <div class="flex flex-col items-center justify-center text-sm pointer-events-none">
-          <div *ngIf="_csvFileName(); else noFile">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="mx-auto mb-2 h-6 w-6 text-[var(--corporate-primary)]">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-            <p class="text-sm font-medium text-center text-gray-700">{{ _csvFileName() }}</p>
-          </div>
-          <ng-template #noFile>
+          @if (_csvFileName()) {
+            <div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="mx-auto mb-2 h-6 w-6 text-[var(--corporate-primary)]">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <p class="text-sm font-medium text-center text-gray-700">{{ _csvFileName() }}</p>
+            </div>
+          } @else {
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
               class="mx-auto mb-2 h-6 w-6 text-gray-400">
@@ -57,7 +58,7 @@
               <span i18n="@@dragDrop"> o arrastra y suelta</span>
             </p>
             <p class="text-xs text-gray-500">CSV (max. 10MB)</p>
-          </ng-template>
+          }
         </div>
       </div>
 

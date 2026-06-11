@@ -5,7 +5,7 @@ export interface Column {
     description: {default: string, localizad: any[]};
     old_column_type: string;
     column_type: string;
-    computed_column: string; // las posibilidades son no, computed,
+    computed_column: string; // The possible values are: none, computed
     whatif_column: boolean;
     whatif: {operator: string, value: number}
     SQLexpression : string;

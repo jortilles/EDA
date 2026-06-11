@@ -158,17 +158,17 @@ export class ColumnUtilsService {
             filterValue.value2 = event.value2 !== '' ? event.value2 : null;
         }
 
-        // Comprovem que tenim el filtre seleccionat
+        // Check that we have the selected filter
         if (!_.isNil(validators.selected)) {
             if (!!validators.between) {
-                // Validacio si es fa un filtre entre dos valors
+                // Validation if a filter is applied between two values
                 if (!_.isNil(filterValue.value1) && !_.isNil(filterValue.value2)) {
                     button = false;
                 } else {
                     button = true;
                 }
             } else if (!validators.between) {
-                // Validacio amb filtre d'un sol valor
+                // Validation with a single-value filter
                 if (!validators.value) {
                     button = false;
                 } else {
@@ -179,7 +179,7 @@ export class ColumnUtilsService {
         return button;
     }
 
-    // Funcio que haura de retornar l'ordenació
+    // Function that should return the sorting
     public handleOrdenation() {
 
     }

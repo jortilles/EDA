@@ -47,7 +47,7 @@ export const PanelInteractionUtils = {
       
       if (rootTable) {
 
-        // Tablas visibles para el usuario. Visibles una vez aplicada la seguridad
+        // Visible tables for the user. Visible once security is applied
         const visibleTables = ebp.dataSource.model.tables.filter( t => t.visible == true);
         const visibleTableNames = visibleTables.map( t=> t.table_name );
         ebp.tableNodes = [];
@@ -110,7 +110,7 @@ export const PanelInteractionUtils = {
   expandTableNode: (ebp: EdaBlankPanelComponent, expandNode: any) => {
 
     const dataSource = ebp.dataSource.model.tables;
-    // Tablas visibles para el usuario. Visibles una vez aplicada la seguridad
+    // Visible tables for the user. Visible once security is applied
     // const visibleTables = dataSource.model.tables.filter(t => t.visible == true).map(t=>t.table_name); revisar cambio
     const visibleTables = dataSource.filter(t => t.visible == true).map(t=>t.table_name);
     /** @rootNode have table_id @childNode have child_id ("table_name.column_name")  */
@@ -136,8 +136,8 @@ export const PanelInteractionUtils = {
       table.relations = table.relations.filter(f=>f.bridge==false );
 
       for (const relation of table.relations) {
-        if( visibleTables.includes( relation.target_table )){ // Tablas visibles para el usuario. Visibles una vez aplicada la seguridad 
-        
+        if( visibleTables.includes( relation.target_table )){ // Visible tables for the user. Visible once security is applied 
+          
           // Init child_id
           const child_id = `${relation.target_table}.${relation.target_column[0]}.${relation.source_column[0]}`;
 
@@ -219,7 +219,7 @@ export const PanelInteractionUtils = {
   handleFilters: (ebp: EdaBlankPanelComponent, content: any): void => {
       const clonedFilters = _.cloneDeep(content.filters || []);
 
-      // Marcar todos como no removidos
+      // Mark all as not removed
       clonedFilters.forEach((filter: any) => {
         filter.removed = false;
 
@@ -233,7 +233,7 @@ export const PanelInteractionUtils = {
         }
       });
 
-      // Separar filtros globales y locales
+      // Separate global and local filters
       ebp.globalFilters = clonedFilters.filter(f => f.isGlobal === true);
       ebp.selectedFilters = clonedFilters.filter(f => f.isGlobal === false);
 
@@ -256,7 +256,7 @@ export const PanelInteractionUtils = {
 
   handleFilterColumns: (ebp: EdaBlankPanelComponent, filterList: Array<any>, query: Array<any>): void => {
     try {
-        // Realizar el assertTable antes de recorrer filterList
+        // Perform assertTable before iterating filterList
         filterList.forEach(filter => {
             const table = ebp.tables.find(table => table.table_name === filter.filter_table);
             if (!table) {
@@ -275,14 +275,14 @@ export const PanelInteractionUtils = {
             }
         });
 
-        // Luego, procesar filterList
+        // Then, process filterList
         filterList.forEach(filter => {
             const table = ebp.tables.find(table => table.table_name === filter.filter_table);
             if (table) {
                 const column = table.columns?.find(column => column.column_name === filter.filter_column);
                 const columnInQuery = query.some(col => ((col.column_name === filter.filter_column) && (col.table_id === filter.filter_table)));
                 if (!filter.isGlobal && !columnInQuery && column) {
-                    column.table_id ? column.table_id=column.table_id : column.table_id = filter.filter_table;  /** Si no tengo la tabla se la pongo */
+                    column.table_id ? column.table_id=column.table_id : column.table_id = filter.filter_table;  /** If I don't have the table, assign it */
                     if (!ebp.filtredColumns.some((col: any) => col === column)) {
                         ebp.filtredColumns.push(column);
                     }
@@ -300,7 +300,7 @@ export const PanelInteractionUtils = {
   },
 
   handleCurrentQuery: (ebp: EdaBlankPanelComponent): void => {
-    ebp.currentQuery = []; // Reiniciamos currentQuery para cargarlo con las columnas del panelContent, que es la fuente de verdad.
+    ebp.currentQuery = []; // Reset currentQuery to load it with the columns from panelContent, which is the source of truth.
     const panelContent = ebp.panel.content;
     const currentQuery = panelContent.query.query.fields;
     const queryTables = [...new Set(currentQuery.map((field: any) => field.table_id))];
@@ -719,11 +719,11 @@ export const PanelInteractionUtils = {
   moveItem: (ebp: EdaBlankPanelComponent, c: Column) => {
     ebp.disableBtnSave();
 
-    // Busca index en l'array de columnes
+    // Find index in the columns array
     // const match = _.findIndex(ebp.columns, { column_name: c.column_name, table_id: c.table_id,  });
     const match = ebp.columns.find((x: Column) => c.table_id === x.table_id && c.column_name === x.column_name);
     const matchCurrentQuery = ebp.currentQuery.find((x: Column) => c.table_id === x.table_id && c.column_name === x.column_name);
-    if (match) match.isdeleted = true; // Marco la columna com a borrada
+    if (match) match.isdeleted = true; // Mark the column as deleted
 
 
     if (!ebp.rootTable) {
@@ -734,20 +734,20 @@ export const PanelInteractionUtils = {
       c.joins = (c.joins||[]).length == 0 ? ebp.nodeJoins[ebp.nodeJoins.length-1] : c.joins;
     }
 
-    // Col·loca la nova columna a l'array Select
+    // Put the new column into the Select array
     if (!matchCurrentQuery) ebp.currentQuery.push(_.cloneDeep(c));
 
-    // Busca les relacions de la nova columna afegida a la consulta
+    // Search relations for the newly added query column
     PanelInteractionUtils.searchRelations(ebp, c);
-    // Comprovacio d'agregacions de la nova columna afegida a la consulta
+    // Check aggregations for the newly added query column
     PanelInteractionUtils.handleAggregationType(ebp, c);
-    // Comprovacio ordenacio  de la nova columna afegida a la consulta
+    // Check ordering for the newly added query column
     PanelInteractionUtils.handleOrdTypes(ebp, c);
-    // resetea el valor del filtro del buscador
+    // reset the search filter value
     ebp.tableInput = '';
     ebp.columnInput = '';
 
-    // Torna a carregar les columnes de la taula
+    // Reload the table columns
     const selectedTable = ebp.getUserSelectedTable();
     PanelInteractionUtils.loadColumns(ebp, selectedTable);
   },
@@ -811,11 +811,6 @@ export const PanelInteractionUtils = {
     }
   },
 
-
-
-
-
-
   /**
     * Removes given column from content
     * @param c column to remove
@@ -823,7 +818,7 @@ export const PanelInteractionUtils = {
     */
   removeColumn: (ebp: EdaBlankPanelComponent, c: Column, list?: string) => {
     ebp.disableBtnSave();
-    // Busca de l'array index, la columna a borrar i ho fa
+    // Search index in array, remove the column and do it
     if (list === 'select') {
       if (ebp.selectedQueryMode == 'EDA2') {
 
@@ -858,11 +853,11 @@ export const PanelInteractionUtils = {
       const match = _.findIndex(ebp.filtredColumns, { column_name: c.column_name, table_id: c.table_id });
       ebp.filtredColumns.splice(match, 1);
     }
-    // Carregar de nou l'array Columns amb la columna borrada
+    // Reload Columns array with the deleted column
     PanelInteractionUtils.loadColumns(ebp, _.find(ebp.tables, (t) => t.table_name === c.table_id));
 
 
-    // Buscar relacións per tornar a mostrar totes les taules
+    // Search relations to show all tables again
     if (ebp.currentQuery.length === 0 && ebp.filtredColumns.length === 0) {
       ebp.rootTable = undefined;
       ebp.tablesToShow = ebp.dataSource.model.tables.filter( t => t.visible == true);

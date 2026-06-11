@@ -9,7 +9,7 @@ import { InputSwitchModule } from 'primeng/inputswitch';
 
 import { AlertService, ChartUtilsService, ColumnUtilsService, DashboardService, FilterType, QueryBuilderService, } from '@eda/services/service.index';
 import * as _ from 'lodash';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';  // <-- necesario para ngModel
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';  // <-- required for ngModel
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { DropdownModule } from 'primeng/dropdown';
@@ -73,7 +73,7 @@ export class FilterDialogComponent {
         range : null
     };
     public filterBeforeAfter = {
-        filterBeforeGrouping: true, // valor por defecto true ==> WHERE / valor false ==> HAVING
+        filterBeforeGrouping: true, // default value true ==> WHERE / false value ==> HAVING
         elements: [
             {label: 'Aplicar el filtro sobre todos los registros.', value: true}, // WHERE
             {label: 'Aplicar el filtro sobre los resultados.', value: false}, // HAVING
@@ -143,16 +143,16 @@ export class FilterDialogComponent {
 
         this.carregarFilters();
 
-        /* Reset Filter Form */
+        /* Reset filter form */
         this.resetDisplay();
-        this.filterSelected = undefined; // filtre seleccionat cap
-        this.filterValue = {}; // filtre ningun
+        this.filterSelected = undefined; // no selected filter
+        this.filterValue = {}; // no filter
         this.filter.range = null;
         this.filterBeforeAfter.filterBeforeGrouping = true;
         this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
         this.aggregationType = {display_name: 'Suma', value: 'sum', selected: true};
 
-        // Control de agregar solo el filtro en la sección Where
+        // Control adding only the filter in the Where section
         const addToSortedFilters = { add: true, filter: filter };
         if(filter['filterBeforeGrouping']) this.updateSortedFiltersFilterDialog.emit(addToSortedFilters);        
     }
@@ -188,20 +188,20 @@ export class FilterDialogComponent {
         for (let agg of this.aggregationsTypes) {
             if(agg.value === 'sum') {
                 agg.selected = true;
-                this.aggregationType = agg; // Obtenemos la agregación por default
+                this.aggregationType = agg; // Get the default aggregation
             } else {
                 agg.selected = false;
             }
         }
 
-        // La agregacion none, esta descartada
+        // The none aggregation is discarded
         this.aggregationsTypes.pop();
 
     }
     
     addAggregation(type: any) {
 
-        // Seleccionando la agregación
+        // Select the aggregation
         this.aggregationsTypes.find((ag:any) => ag.value === type.value).selected = true;
 
         for (let ag of this.aggregationsTypes) {
@@ -210,10 +210,10 @@ export class FilterDialogComponent {
             }
         }
 
-        // Recarguem les agregacions d'aquella columna + la seleccionada
+        // Reload the aggregations for that column and the selected one
         this.selectedColumn.aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
 
-        // Obteniendo la agregación seleccionada
+        // Get the selected aggregation
         this.aggregationType = _.cloneDeep(type);
 
     }
@@ -302,10 +302,10 @@ export class FilterDialogComponent {
     }
 
     resetDisplay() {
-        this.display.filterButton = true; // btn add filter
-        this.display.between = false; // inputs between
-        this.display.filterValue = false; // input de valor
-        this.display.calendar = false; // input calendar
+        this.display.filterButton = true; // add filter button
+        this.display.between = false; // between inputs
+        this.display.filterValue = false; // value input
+        this.display.calendar = false; // calendar input
         this.display.switchButton = true;
         this.filter.switch = false; // options switch
     }

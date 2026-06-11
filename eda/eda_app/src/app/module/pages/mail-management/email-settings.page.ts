@@ -125,7 +125,7 @@ export class EmailSettingsPage implements OnInit {
   }
 
   // =====================================================
-  //   CARGA DE CONFIGURACIÓN DE CORREO
+  //   EMAIL CONFIGURATION LOADING
   // =====================================================
   private async loadEmailSettings() {
     const mailSettings = await lastValueFrom(this.mailService.getConfiguration());
@@ -155,7 +155,7 @@ export class EmailSettingsPage implements OnInit {
   }
 
   // =====================================================
-  //   CARGA DE DASHBOARDS (OPTIMIZADA CON RXJS)
+  //   DASHBOARD LOADING (OPTIMIZED WITH RXJS)
   // =====================================================
   private async loadDashboardsData() {
     const list = await lastValueFrom(this.dashboardService.getDashboards()) as DashboardsListResponse;

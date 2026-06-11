@@ -1,52 +1,52 @@
-// Personalización de colores corporativos
+// Corporate color customization
 export const CORPORATE_COLORS = {
-    // Colores base de marca — usados en toda la aplicación
-    primary:         '#00BFB3',      // Color principal (botones, iconos, gradientes)
-    primaryGradient: '#34D0C7',      // Extremo final de gradientes (header chat, FAB, burbujas)
-    primaryRgb:      '0, 191, 179',  // Valor RGB del primario para opacidades (box-shadow, rgba)
-    primaryHsl:      '175 100% 37%', // Componentes HSL del primario para --ring (Tailwind focus ring)
+    // Base brand colors — used throughout the application
+    primary:         '#00BFB3',      // Primary color (buttons, icons, gradients)
+    primaryGradient: '#34D0C7',      // Gradient end color (chat header, FAB, bubbles)
+    primaryRgb:      '0, 191, 179',  // RGB value of the primary for opacity uses (box-shadow, rgba)
+    primaryHsl:      '175 100% 37%', // HSL components of the primary for --ring (Tailwind focus ring)
 
-    // Colores específicos del chatbot
+    // Chatbot-specific colors
     chat: {
-        avatarBg:       '#CCFAF7',   // Fondo del avatar del robot (header y mensajes)
-        avatarBgAlt:    '#99F0EB',   // Fondo alternativo del avatar (gradiente empty state)
-        avatarBorder:   '#55D6CD',   // Borde del avatar y cabecera de tabla
-        surfaceHover:   '#E6FAF9',   // Fondo hover en sugerencias y filas de tabla
-        tableHeader:    '#007B74',   // Color del texto en cabeceras de tabla
-        linkColor:      '#00bfb3',   // Color de enlaces en mensajes
-        linkHoverColor: '#008F87',   // Color de enlaces al hacer hover
+        avatarBg:       '#CCFAF7',   // Robot avatar background (header and messages)
+        avatarBgAlt:    '#99F0EB',   // Alternative avatar background (empty state gradient)
+        avatarBorder:   '#55D6CD',   // Avatar border and table header
+        surfaceHover:   '#E6FAF9',   // Hover background for suggestions and table rows
+        tableHeader:    '#007B74',   // Text color in table headers
+        linkColor:      '#00bfb3',   // Link color in messages
+        linkHoverColor: '#008F87',   // Link color on hover
     },
 
-    // Colores específicos de carpetas (home — vista de carpetas y filtros de tags)
+    // Folder-specific colors (home — folder view and tag filters)
     folder: {
-        iconBg:          '#CCFAF7',  // Fondo del icono de carpeta cerrada
-        iconBgHover:     '#99F0EB',  // Fondo del icono de carpeta hover o abierta
-        iconColor:       '#00BFB3',  // Color del icono de carpeta cerrada
-        borderHover:     '#34D0C7',  // Borde de la tarjeta carpeta al hacer hover o al estar abierta
-        iconColorHover:  '#007B74',  // Color del icono y texto al hacer hover o al estar abierta
-        cardBgOpen:      '#E6FAF9',  // Fondo de la tarjeta cuando la carpeta está abierta
-        labelColorOpen:  '#005E58',  // Color del nombre de la carpeta cuando está abierta
+        iconBg:          '#CCFAF7',  // Closed folder icon background
+        iconBgHover:     '#99F0EB',  // Hover or open folder icon background
+        iconColor:       '#00BFB3',  // Closed folder icon color
+        borderHover:     '#34D0C7',  // Folder card border on hover or when open
+        iconColorHover:  '#007B74',  // Icon and text color on hover or when open
+        cardBgOpen:      '#E6FAF9',  // Card background when the folder is open
+        labelColorOpen:  '#005E58',  // Folder name color when open
     },
 
-    // Colores de botones de acción en diálogos
+    // Action button colors in dialogs
     buttons: {
-        // Confirmar: acción principal afirmativa
-        confirmBg:        '#00B0BA',  // Inicio gradiente
-        confirmBgEnd:     '#00c9b1',  // Fin gradiente
-        confirmHoverBg:   '#006c72',  // Hover inicio
-        confirmHoverBgEnd:'#05a592',  // Hover fin
+        // Confirm: primary affirmative action
+        confirmBg:        '#00B0BA',  // Gradient start
+        confirmBgEnd:     '#00c9b1',  // Gradient end
+        confirmHoverBg:   '#006c72',  // Hover start
+        confirmHoverBgEnd:'#05a592',  // Hover end
 
-        // Auxiliar: acción secundaria (ejecutar consulta, abrir SQL, previsualizar…)
-        auxBg:            '#1D4ED8',  // Inicio gradiente (blue-700)
-        auxBgEnd:         '#3B82F6',  // Fin gradiente (blue-500)
-        auxHoverBg:       '#1E40AF',  // Hover inicio (blue-800)
-        auxHoverBgEnd:    '#2563EB',  // Hover fin (blue-600)
+        // Auxiliary: secondary action (run query, open SQL, preview…)
+        auxBg:            '#1D4ED8',  // Gradient start (blue-700)
+        auxBgEnd:         '#3B82F6',  // Gradient end (blue-500)
+        auxHoverBg:       '#1E40AF',  // Hover start (blue-800)
+        auxHoverBgEnd:    '#2563EB',  // Hover end (blue-600)
 
-        // Cancelar: acción de descarte
-        cancelBg:         '#df4040',  // Inicio gradiente
-        cancelBgEnd:      '#ec2828',  // Fin gradiente
-        cancelHoverBg:    'rgb(177, 39, 39)',  // Hover inicio
-        cancelHoverBgEnd: '#bd3636',  // Hover fin
+        // Cancel: discard action
+        cancelBg:         '#df4040',  // Gradient start
+        cancelBgEnd:      '#ec2828',  // Gradient end
+        cancelHoverBg:    'rgb(177, 39, 39)',  // Hover start
+        cancelHoverBgEnd: '#bd3636',  // Hover end
     },
 };
 
@@ -73,31 +73,31 @@ export const ChartsPalettes = [
     },
     {
         paleta: [
-  '#6ECBD3', // cian suave
-  '#C59BEF', // lavanda
-  '#DCEB8E', // verde pastel claro
-  '#F2B98E', // melocotón suave
-  '#E4C7F5', // lila claro
-  '#79BDEB', // azul cielo
-  '#E89BCB', // rosa suave
-  '#A8E6C1', // verde menta
-  '#879CEB', // azul lavanda
-  '#F2CF8C', // amarillo suave
-  '#7EDBD1', // turquesa claro
-  '#F29C9C', // coral pastel
-  '#C6E88E', // verde lima suave
-  '#9C8EEB', // violeta suave
-  '#8FD8F2', // azul hielo
-  '#F2A8D8', // rosa empolvado
-  '#C3B6F2', // malva claro
-  '#B8EED1', // verde agua
-  '#F4C7A1', // albaricoque
-  '#8FE3D0', // menta azulada
-  '#D9F0A3', // pistacho claro
-  '#F5B8E4', // rosa claro
-  '#A8E1F2', // celeste pastel
-  '#F4DA8E', // amarillo mantequilla
-  '#B19CF2'  // violeta claro final
+  '#6ECBD3', // soft cyan
+  '#C59BEF', // lavender
+  '#DCEB8E', // light pastel green
+  '#F2B98E', // soft peach
+  '#E4C7F5', // light lilac
+  '#79BDEB', // sky blue
+  '#E89BCB', // soft pink
+  '#A8E6C1', // mint green
+  '#879CEB', // lavender blue
+  '#F2CF8C', // soft yellow
+  '#7EDBD1', // light turquoise
+  '#F29C9C', // pastel coral
+  '#C6E88E', // soft lime green
+  '#9C8EEB', // soft violet
+  '#8FD8F2', // ice blue
+  '#F2A8D8', // dusty rose
+  '#C3B6F2', // light mauve
+  '#B8EED1', // aqua green
+  '#F4C7A1', // apricot
+  '#8FE3D0', // bluish mint
+  '#D9F0A3', // light pistachio
+  '#F5B8E4', // light pink
+  '#A8E1F2', // pastel sky blue
+  '#F4DA8E', // butter yellow
+  '#B19CF2'  // final light violet
         ]
         , name: 'Contraste'
     }, {
@@ -184,21 +184,21 @@ export const Tema = 'default-dark';
 export const TemaUrl = 'assets/css/colors/sass/default-dark.css';
 
 
-/** Color de fondo de la shell de la aplicación (home y páginas de administración) */
+/** Application shell background color (home and admin pages) */
 export const DEFAULT_HOME_BACKGROUND_COLOR: string = '#F5F5F5';
 
 export const DEFAULT_BACKGROUND_COLOR: string = '#f1f0f0';
 export const DEFAULT_PANEL_COLOR: string = '#ffffff';
 export const DEFAULT_FONT_COLOR: string = '#000000'
 
-/** Color de fondo de la cabecera de tabla (cabecera: opacidad alta, banding: opacidad baja) */
+/** Table header background color (header: high opacity, banding: low opacity) */
 export const DEFAULT_TABLE_HEADER_COLOR: string = '#249daa';
-export const DEFAULT_TABLE_BANDING_COLOR: string = '#31bece'; // Mismo color que el header pero con opacidad reducida para el banding de filas
+export const DEFAULT_TABLE_BANDING_COLOR: string = '#31bece'; // Same color as the header but with reduced opacity for row banding
 export const DEFAULT_FONT_FAMILY: string = 'Montserrat';  /* THIS MUST BE SET ALSO IN  \eda_app\src\assets\sass\css\custom.css */
 export const DEFAULT_FONT_SIZE: number = 0;
 export const DEFAULT_TITLE_ALIGN: string = 'flex-start';
 export const DEFAULT_PANEL_TITLE_ALIGN: string = 'flex-start';
-export const EMPTY_VALUE: string = ''; // $localize`:@@EmptyValueMessage:Sin Informar` ;// Agregado valores vacios en diferentes idiomas
+export const EMPTY_VALUE: string = ''; // $localize`:@@EmptyValueMessage:Sin Informar` ;// Added empty values in different languages
 export const NULL_VALUE: string = '';// null Agregado de null_value en diferentes idiomas  if you want to leave the null you can put this value: LEAVE_THE_NULL . THIS LEAVE_THE_NULL will leave the null value as null
 export const DEFAULT_PALETTE_COLOR: any = ChartsPalettes.find(palette => palette.name === "Gradiente");
-export const FATHER_ID: number = 0; // Valor id de Padre para el componente Treetable
+export const FATHER_ID: number = 0; // Parent ID value for the Treetable component

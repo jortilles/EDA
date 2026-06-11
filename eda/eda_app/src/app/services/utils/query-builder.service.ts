@@ -72,7 +72,7 @@ export class QueryBuilderService extends ApiService {
                 queryLimit : null,
                 groupByEnabled: true,
                 prediction: 'None',
-                joinType: 'left', //puede que necesite el joinType
+                joinType: 'left', // May need joinType
                 rootTable: null,
                 sortedFilters: [],
             },

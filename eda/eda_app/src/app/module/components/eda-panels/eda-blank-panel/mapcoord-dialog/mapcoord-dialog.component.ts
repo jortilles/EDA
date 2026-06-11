@@ -42,7 +42,7 @@ export class MapCoordDialogComponent implements OnInit, AfterViewChecked {
   public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
   private colorsLoaded: boolean = false;
 
-  // Getters para compatibilidad con el template
+  // Getters for template compatibility
   get initialColor(): string {
     return this.assignedColors[0]?.color || '#000000';
   }
@@ -112,8 +112,8 @@ export class MapCoordDialogComponent implements OnInit, AfterViewChecked {
     
     this.onClose(EdaDialogCloseEvent.UPDATE, {
       assignedColors: [...this.assignedColors],
-      initialColor: colors[0], // Para compatibilidad
-      finalColor: colors[1],   // Para compatibilidad
+      initialColor: colors[0], // For compatibility
+      finalColor: colors[1],   // For compatibility
       logarithmicScale: this.logarithmicScale,
       draggable: this.draggable,
       zoom: this.myPanelChartComponent.componentRef.instance.inject.zoom,
@@ -122,7 +122,7 @@ export class MapCoordDialogComponent implements OnInit, AfterViewChecked {
   }
 
   closeChartConfig() {
-    // Restaurar colores originales
+    // Restore original colors
     this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
     const leafletMap = this.myPanelChartComponent.componentRef.instance;
     if (leafletMap?.reDrawCircles) {
@@ -160,13 +160,13 @@ export class MapCoordDialogComponent implements OnInit, AfterViewChecked {
     if (!this.selectedPalette) return;
     const palette = this.selectedPalette.paleta;
     
-    // Aplicar primer y último color de la paleta
+    // Apply first and last palette colors
     this.assignedColors = [
       {value: 'start', color: palette[palette.length - 1]},
       {value: 'end', color: palette[0]}
     ];
 
-    // Actualizar colores del mapa
+    // Update map colors
     this.handleInputColor();
   }
 }

@@ -15,16 +15,16 @@ import { EdaColumnChartOptions } from './eda-columns/eda-column-chart-options';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
-import { PaginatorModule } from 'primeng/paginator';     // si usas paginator
-import { ButtonModule } from 'primeng/button';          // si tienes botones en la tabla
-import { InputTextModule } from 'primeng/inputtext';    // si usas filtros con input
+import { PaginatorModule } from 'primeng/paginator';     // if using paginator
+import { ButtonModule } from 'primeng/button';          // if you have buttons in the table
+import { InputTextModule } from 'primeng/inputtext';    // if using input filters
 
 // tests
 import { TooltipModule } from 'primeng/tooltip'; 
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ChartModule } from 'primeng/chart';
 import { EdaContextMenuComponent } from '@eda/shared/components/shared-components.index';
-import { DialogModule } from 'primeng/dialog';  // <--- importar módulo de PrimeNG
+import { DialogModule } from 'primeng/dialog';  // <--- import PrimeNG module
 
 
 @Component({
@@ -66,7 +66,7 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
         private alertService: AlertService
     ) {
         registerLocaleData(es);
-        /** Definim les caracteristiques del gràfic dintre de la taula.......................... */
+        /** Define the chart properties inside the table */
         this.chartOptions = EdaColumnChartOptions;
     }
     ngOnInit(): void {
@@ -103,11 +103,11 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
         } else {
             let filterBy = colname;
             let label = item;
-            // Buscar el tipo de columna para verificar si es html
+            // Find the column type to check if it is HTML
             const col = this.inject.cols.find(c => c.field === colname);
             const colType = col ? col.type : null;
 
-            // No emitir evento para columnas numéricas ni HTML
+            // Do not emit event for numeric or HTML columns
             const isHtmlValue = typeof label === 'string' && label.trim().startsWith('<');
             if (typeof label !== 'number' && colType !== 'EdaColumnHtml' && !isHtmlValue) {
                 this.onClick.emit({ label, filterBy });
@@ -138,7 +138,7 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
     handleHtmlClick(event: MouseEvent) {
         event.stopPropagation();
         const target = event.target as HTMLElement;
-        // Con pointer-events:none en <a>, los clics siempre aterrizan en el <div>, por lo que se busca <a> en los elementos secundarios.
+        // With pointer-events:none on <a>, clicks always land on the <div>, so we look for <a> in child elements.
         const anchor = target.querySelector('a') as HTMLAnchorElement;
         if (anchor) {
             const href = anchor.getAttribute('href');
@@ -161,7 +161,7 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
 
                 const cellValue = parseFloat(rowData[col.field]);
 
-                // Si es semaforo devolveremos uno de los 3 colores
+                // If it is a semaphore, return one of the 3 colors
                 if (styleEntry.type === 'semaphore') {
                     if (cellValue > styleEntry.value1) return `table-semaphore-${field}-0`;
                     else if (cellValue >= styleEntry.value2) return `table-semaphore-${field}-1`;
@@ -170,7 +170,7 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
 
                 if (isNaN(cellValue)) return null;
 
-                // Si es gradiente devolveremos uno de los 5 rangos que generamos
+                // If it is a gradient, return one of the 5 ranges we generate
                 let cellClass = null;
                 if (cellValue < parseFloat(styleEntry.ranges[0])) cellClass = `table-gradient-${field}-${0}`
                 else if (cellValue < parseFloat(styleEntry.ranges[1])) cellClass = `table-gradient-${field}-${1}`;
@@ -178,7 +178,7 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
                 else if (cellValue < parseFloat(styleEntry.ranges[3])) cellClass = `table-gradient-${field}-${3}`;
                 else  cellClass = `table-gradient-${field}-${4}`;
 
-                // Devolvemos la clase de estilo que queremos aplicar a la columna
+                // Return the style class to apply to the column
                 return cellClass;
             }
             return null;
@@ -240,25 +240,25 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
 
     public applyStyles(styles: Array<any>) {
         try {
-        // Limpieza de estilos huérfanos: solo conservar los que tienen columna activa
+        // Orphan style cleanup: keep only those with an active column
         const activeCols = this.inject?.cols || [];
         const validStyles = styles.filter((style: any) =>
             activeCols.some((col: any) => col.field === style.col || col.header === style.col)
         );
         const orphans = styles.filter((s: any) => !validStyles.includes(s));
         if (orphans.length > 0) {
-            // Actualizar inject.styles para que la limpieza persista
+            // Update inject.styles so the cleanup persists
             if (this.inject) this.inject.styles = validStyles as any;
         }
         styles = validStyles;
 
-        // Verificamos que tipo de limites numericos estamos trantado
+        // Check what type of numeric limits we are handling
         const gradientStyles = styles.filter(s => !s.type || s.type === 'gradient');
         const semaphoreStyles = styles.filter(s => s.type === 'semaphore');
         const limits = {};
 
         //Initialize 
-        // Si los estilos que entran son gradientes...
+        // If the incoming styles are gradients...
         if (gradientStyles.length > 0) {
             const fields = gradientStyles.map(style => style.col);
 
@@ -308,7 +308,7 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
 
         }
 
-        // Si los estilos que entran son SEMAFORICOS<...
+        // If the incoming styles are SEMAPHORE-based...
         if (semaphoreStyles.length > 0) {
             semaphoreStyles.forEach(style => {
                 const field = style.col;
@@ -329,7 +329,7 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
             });
         }
 
-        // Devlolvemos los limites para luego saber que color aplicar
+        // Return the limits to determine which color to apply
         this.styles = limits;
 
         } catch (e) {
@@ -342,7 +342,7 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
         const gradientStyles = styles.filter(s => !s.type || s.type === 'gradient');
         const semaphoreStyles = styles.filter(s => s.type === 'semaphore');
         let tmpStyles = {};
-        // Si los estilos que entran son gradientes...
+        // If the incoming styles are gradients...
         if (gradientStyles.length > 0) {
             const fields = gradientStyles.map(style => style.col);
             const limits = {};
@@ -413,7 +413,7 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
             });
         }
 
-        // Aplicamos estilos si es semaforico
+        // Apply styles if it is semaphore-based
         if (semaphoreStyles.length > 0) {
             semaphoreStyles.forEach(style => {
                 const name = this.getNiceName(style.col);
@@ -591,26 +591,26 @@ export class EdaTableComponent implements OnInit, AfterViewInit {
         const match = input.trim().match(regex);
 
         if (match) {
-          // Determina qué número extraer en base al formato del string
+          // Determine which number to extract based on the string format
           if (input.includes('<') || input.includes('>')) {
-            return parseInt(match[1], 10); // Extrae el primer número
+            return parseInt(match[1], 10); // Extract the first number
           } else {
-            return match[2] ? parseInt(match[2], 10) : null; // Extrae el segundo número si está presente
+            return match[2] ? parseInt(match[2], 10) : null; // Extract the second number if present
           }
         }
-        return null; // Si no hay coincidencia
+        return null; // No match found
     }
 
     public getColor(valor: number) { 
 
-        // modificar el true por una variable que se modifica en la edición de valores negativos. 
+        // replace true with a variable that is toggled when editing negative values
 
         if(valor<0 && this.inject.negativeNumbers) {
             return '#FF0000' 
         }
     }
 
-    // Funciones para la navegación
+    // Navigation functions
     handleNavIn(field: string, value: any, event: MouseEvent): void {
         this.inject.onNavIn.emit({ field, value });
     }

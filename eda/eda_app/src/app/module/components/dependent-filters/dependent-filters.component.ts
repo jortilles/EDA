@@ -35,18 +35,18 @@ export class DependentFilters implements OnInit {
     @Output() close: EventEmitter<any> = new EventEmitter<any>();
 
     options: GridsterConfig;
-    dependentFilterGrid: GridsterItem[]; // Ordenamiento de los filtros dependientes
+    dependentFilterGrid: GridsterItem[]; // Ordering of dependent filters
     itemToPush: GridsterItemComponent;
 
     public display: boolean = false;
-    private dependentFilterGridPrev: any = []; // Variable que almacena una copia del dependentFilterGrid
+    private dependentFilterGridPrev: any = []; // Variable that stores a copy of dependentFilterGrid
 
     constructor() {}
 
     ngOnInit(): void {
         this.display = true;
 
-        // Si existe una configuración previa de los filtros dependientes debería prevalecer
+        // If there is a previous configuration of dependent filters it should prevail
         if(this.dashboard.globalFilter.orderDependentFilters.length !== 0) {
 
             const saved = _.cloneDeep(this.dashboard.globalFilter.orderDependentFilters);
@@ -54,10 +54,10 @@ export class DependentFilters implements OnInit {
             const currentIds = new Set(currentFilters.map((gf: any) => gf.id));
             const savedIds = new Set(saved.map((item: any) => item.filter_id));
 
-            // 1. Eliminar items del grid que ya no existen en globalFilters
+            // 1. Remove grid items that no longer exist in globalFilters
             let reconciled = saved.filter((item: any) => currentIds.has(item.filter_id));
 
-            // 1.5. Agregar description a los items que les falten
+            // 1.5. Add description to items that lack it
             for (const item of reconciled) {
                 if (!item.description_column || !item.description_table) {
                     const gf = currentFilters.find((f: any) => f.id === item.filter_id) as any;
@@ -68,11 +68,11 @@ export class DependentFilters implements OnInit {
                 }
             }
 
-            // 2. Normalizar valores, para que sean consecutivos 0..n-1 tras la eliminación
+            // 2. Normalize values so they are consecutive 0..n-1 after removal
             reconciled.sort((a: any, b: any) => a.y - b.y);
             reconciled.forEach((item: any, index: number) => { item.y = index; });
 
-            // 3. Agregar nuevos filtros que no están en el grid guardado
+            // 3. Add new filters that are not in the saved grid
             let k = reconciled.length;
             for (const gf of currentFilters) {
                 if (!savedIds.has((gf as any).id)) {
@@ -92,7 +92,7 @@ export class DependentFilters implements OnInit {
             this.dependentFilterGridPrev = _.cloneDeep(this.dependentFilterGrid);
 
         } else {
-            // inicializando el initDashboard
+            // initializing the dashboard
             this.initDashboard();
         }
 
@@ -111,22 +111,22 @@ export class DependentFilters implements OnInit {
             // ---- Mobile control ----
             mobileBreakpoint: 150,
 
-            // Evita que los items cambien sus dimensiones en mobile:
-            // Si quieres que en mobile conserven el ancho/alto definidos por fixedCol/Row:
+            // Prevent items from changing size on mobile:
+            // If you want them to keep width/height defined by fixedCol/Row:
             fixedColWidth: 130,
             fixedRowHeight: 50,
-            keepFixedWidthInMobile: true, // conserva el ancho fijo al entrar en mobile
-            keepFixedHeightInMobile: true,// conserva la altura fija al entrar en mobile
+            keepFixedWidthInMobile: true, // keep fixed width when entering mobile
+            keepFixedHeightInMobile: true,// keep fixed height when entering mobile
 
-            // Opciones útiles extra
-            disableWindowResize: false,   // false por defecto; si true evitaría recálculos automáticos
-            mobileModeEnabled: true,       // por claridad (no todas las versiones tienen esta prop)
+            // Extra useful options
+            disableWindowResize: false,   // false by default; if true would avoid automatic recalculations
+            mobileModeEnabled: true,       // explicit (not all versions have this prop)
 
             minCols: dynamicCols,
             maxCols: dynamicCols,
             minRows: dynamicRows,
             maxRows: dynamicRows,
-            margin: 1, // Margen entre los bloques
+            margin: 1, // Margin between blocks
 
             itemChangeCallback: this.onItemChange.bind(this)
         };
@@ -155,7 +155,7 @@ export class DependentFilters implements OnInit {
             k++;
         });
         
-        // COPIA DEL DASHBOARD, PARA TENER UN DASHBOARD PREVIO
+        // COPY OF THE DASHBOARD TO HAVE A PREVIOUS DASHBOARD
         this.dependentFilterGridPrev = _.cloneDeep(this.dependentFilterGrid);
     }
 
@@ -167,7 +167,7 @@ export class DependentFilters implements OnInit {
         let controlDashPrevY = [...Array(x).keys()];
 
         if(item.y >= this.dependentFilterGrid.length){
-            // VERIFICAMOS QUE LOS BLOQUES NO SE ESCAPEN FUERA DE LA LONGITUD DE LA VARIABLE DASHBOARD
+            // WE VERIFY THAT BLOCKS DO NOT ESCAPE OUTSIDE THE LENGTH OF THE DASHBOARD VARIABLE
             for(let i=0; i<this.dependentFilterGrid.length; i++) {
                 if(this.dependentFilterGrid[i].y >= this.dependentFilterGrid.length) {
                 } else {
@@ -178,45 +178,45 @@ export class DependentFilters implements OnInit {
             item.x = this.dependentFilterGridPrev.find((gf: any) => gf.filter_column === item.filter_column).x;
             item.y = arregloY[0];
 
-            // Gridster que actualice la posición
+            // Make Gridster update the position
             if (this.options.api?.optionsChanged) {
                 this.options.api.optionsChanged();
             }            
     
         } else {
-            // CONTROL PARA LOS BLOQUES AL INTERIOR DE LA LOGINTUD DE LA VARIABLE DASHBOARD
+            // CONTROL FOR BLOCKS INSIDE THE LENGTH OF THE DASHBOARD VARIABLE
             controlDashY = [...Array(x).keys()];
             controlDashPrevY = [...Array(x).keys()];
 
-            // verificando que siempre tengamos un filtro en todos los puntos verticales: { y=0, y=1, y=2, ..., y=n-1, y=n };
+            // ensuring we always have a filter at every vertical point: { y=0, y=1, y=2, ..., y=n-1, y=n };
             this.dependentFilterGrid.forEach((gf: any) => { controlDashY = controlDashY.filter(index => index !== gf.y); })
             this.dependentFilterGridPrev.forEach((gf: any) => { controlDashPrevY = controlDashPrevY.filter(index => index !== gf.y); })
 
-            // VERIFICACION PARA EL INTERCAMBIO O TRANSLAPE DE LOS ELEMENTOS EN EL GRID VAYAN POR EL ELSE
+            // CHECK FOR SWAPPING OR OVERLAPPING ELEMENTS IN THE GRID -> go to else
             if(controlDashY.length === 0 && controlDashPrevY.length === 0) {
 
                 //////////////////////////////////
-                // INICIO MOVIMIENTO HORIZONTAL //
+                // START HORIZONTAL MOVEMENT    //
                 //////////////////////////////////
 
                 const index = this.dependentFilterGrid.findIndex(gf => gf.filter_column === item.filter_column);
                 const preItem = this.dependentFilterGrid.find((gf: any) => gf.y === (item.y-1));
 
                 if(item.y === 0) {
-                    // CONTROL DE MOVIMIENTO HORIZONTAL PARA EL ELEMENTO (x=0; y=0)
+                    // HORIZONTAL MOVEMENT CONTROL FOR THE ELEMENT (x=0; y=0)
                     item.x = 0;
                     item.y = 0;
                     if (this.options.api?.optionsChanged) this.options.api.optionsChanged();   
                 } else {
 
                     if(item.x > this.dependentFilterGridPrev[index].x) {
-                        // CONTROL DE MOVIMIENTO HORIZONTAL =>  DERECHA
+                        // HORIZONTAL MOVEMENT CONTROL =>  RIGHT
                         if(item.x > preItem.x + 1) {
                             item.x = preItem.x + 1;
                             if (this.options.api?.optionsChanged) this.options.api.optionsChanged();   
                         }
                     } else {
-                        // CONTROL DE MOVIMIENTO HORIZONTAL =>  IZQUIERDA
+                        // HORIZONTAL MOVEMENT CONTROL =>  LEFT
                         for(let j=item.y+1; j<this.dependentFilterGridPrev.length; j++) {
                             if(this.dependentFilterGridPrev.find((gl: any) => gl.y===item.y).x <= this.dependentFilterGridPrev.find((gl: any) => gl.y===j).x ) {
                                 this.dependentFilterGrid.find((gl: any) => gl.y===j).x = this.dependentFilterGrid.find((gl: any) => gl.y===j).x - (this.dependentFilterGridPrev.find((gl: any) => gl.y===(item.y)).x - item.x);
@@ -231,15 +231,15 @@ export class DependentFilters implements OnInit {
                 }
 
                 ///////////////////////////////
-                // FIN MOVIMIENTO HORIZONTAL //
+                // END HORIZONTAL MOVEMENT   //
                 ///////////////////////////////
                 
             } else {
                 ////////////////////////////////////////////////////////
-                // INICIO INTERCAMBIO DE VALORES CON CONTROL VERTICAL //
+                // START SWAPPING VALUES WITH VERTICAL CONTROL        //
                 ////////////////////////////////////////////////////////
 
-                // Bloque de inicio de movimiento y de final de movimiento (Variables temporales)
+                // Start and end blocks of movement (temporary variables)
                 const iniBlo = _.cloneDeep(this.dependentFilterGridPrev).find((gf: any) => item.filter_id === gf.filter_id);
                 const finBlo = _.cloneDeep(this.dependentFilterGridPrev).find((gf: any) => item.y === gf.y);
 
@@ -253,22 +253,22 @@ export class DependentFilters implements OnInit {
                 if (this.options.api?.optionsChanged) this.options.api.optionsChanged();   
                 
                 /////////////////////////////////////////////////////
-                // FIN INTERCAMBIO DE VALORES CON CONTROL VERTICAL //
+                // END SWAPPING VALUES WITH VERTICAL CONTROL       //
                 /////////////////////////////////////////////////////
                 
             }
         }
 
-        // EL DASHBOARD PREVIO ADQUIERE EL VALOR ACTUAL:
+        // THE PREVIOUS DASHBOARD ACQUIRES THE CURRENT VALUE:
         this.dependentFilterGridPrev = _.cloneDeep(this.dependentFilterGrid);
     }
 
-    // FUNCION RECURSIVA QUE CONSTRUYE EL ORDERITEM
+    // RECURSIVE FUNCTION THAT BUILDS THE ORDERITEM
     buildOrderChildren(globalFilters, ordenamiento) {
-        // Map rápido por filter_column => nodo en ordenamiento
+        // Fast map by filter_column => node in ordering
         const byColumn = new Map(ordenamiento.map(n => [n.filter_id, n]));
 
-        // Agrupar nodos por x (columna) y ordenar cada grupo por y asc
+        // Group nodes by x (column) and sort each group by ascending y
         const colsMap = new Map();
         for (const node of ordenamiento) {
             if (!colsMap.has(node.x)) colsMap.set(node.x, []);
@@ -278,13 +278,13 @@ export class DependentFilters implements OnInit {
             arr.sort((a, b) => a.y - b.y);
         }
 
-        // lista de x's ordenados asc
+        // list of x's sorted asc
         const xs = Array.from(colsMap.keys()).sort((a, b) => a - b);
 
-        // Para acelerar, map x -> array de nodos (ya ordenados por y)
+        // To speed up, map x -> array of nodes (already sorted by y)
         const nodesByX = new Map(xs.map(x => [x, colsMap.get(x) || []]));
 
-        // Construcción recursiva con memo (memoKey = filter_column)
+        // Recursive construction with memo (memoKey = filter_column)
         const memo = new Map();
 
         function buildChildrenFor(node) {
@@ -293,7 +293,7 @@ export class DependentFilters implements OnInit {
             if (memo.has(key)) return memo.get(key);
 
             const currentX = node.x;
-            // encontrar siguiente columna existente
+            // find next existing column
             const ix = xs.indexOf(currentX);
             if (ix === -1 || ix === xs.length - 1) {
                 memo.set(key, []);
@@ -302,27 +302,27 @@ export class DependentFilters implements OnInit {
             const nextX = xs[ix + 1];
             const candidates = nodesByX.get(nextX) || [];
 
-            // Si no hay candidatos -> sin hijos
+            // If there are no candidates -> no children
             if (candidates.length === 0) {
                 memo.set(key, []);
                 return [];
             }
 
-            // Filtrar los candidatos que CAEN sobre este padre según la regla:
-            // un candidato se asigna a este padre si, al buscar entre todos los padres
-            // de la columna currentX el que tenga mayor y <= candidato.y, ese padre es este node.
-            // Para hacer eso de forma eficiente, necesitamos la lista de padres (col currentX) ordenada por y.
+            // Filter candidates that FALL under this parent according to the rule:
+            // a candidate is assigned to this parent if, when searching among all parents
+            // of column currentX the one with greatest y <= candidate.y, that parent is this node.
+            // To do this efficiently, we need the list of parents (col currentX) ordered by y.
             const parents = nodesByX.get(currentX) || [];
             if (parents.length === 0) {
                 memo.set(key, []);
                 return [];
             }
 
-            // Para cada candidato, encontrar su padre "designado" en la columna currentX
-            // (padre con mayor y <= candidate.y). Si no existe, el primer padre (fallback).
+            // For each candidate, find its "designated" parent in column currentX
+            // (parent with greatest y <= candidate.y). If none exists, use first parent (fallback).
             const assigned = [];
             for (const cand of candidates) {
-                // binary search opcional para padres (parents ordenados por y)
+                // optional binary search for parents (parents ordered by y)
                 let lo = 0, hi = parents.length - 1, foundIndex = -1;
                 while (lo <= hi) {
                     const mid = Math.floor((lo + hi) / 2);
@@ -336,13 +336,13 @@ export class DependentFilters implements OnInit {
                 const parentIndex = (foundIndex === -1) ? 0 : foundIndex;
                 const designatedParent = parents[parentIndex];
 
-                // si el padre designado es el nodo actual, cand es hijo del node
+                // if the designated parent is the current node, cand is a child of node
                 if (designatedParent.filter_id === node.filter_id) {
                     assigned.push(cand);
                 }
             }
 
-            // Orden de children: por y asc (mantener consistencia)
+            // Order of children: by ascending y (to keep consistency)
             assigned.sort((a, b) => a.y - b.y);
 
             const children = assigned.map(cn => ({
@@ -355,13 +355,13 @@ export class DependentFilters implements OnInit {
             return children;
         }
 
-        // Helper para obtener la clave del globalFilter (los globalFilters usan gf.id)
+        // Helper to get the key of the globalFilter (globalFilters use gf.id)
         function getFilterKey(gf) {
             if (!gf) return undefined;
             return gf.id ?? undefined;
         }
 
-        // Construir resultado manteniendo el orden de globalFilters
+        // Build result keeping the order of globalFilters
         const result = globalFilters.map(gf => {
             const key = getFilterKey(gf);
             const node = key ? byColumn.get(key) : undefined;
@@ -385,7 +385,7 @@ export class DependentFilters implements OnInit {
 
 
     //////////////////////////////////////////////////////////////////////
-    //////////////////// INICIO DEL CONTROL DEL DIALOG ///////////////////
+    //////////////////// START OF DIALOG CONTROL /////////////////////////
     //////////////////////////////////////////////////////////////////////
 
     public disableApply(): boolean { return false; }
@@ -393,7 +393,7 @@ export class DependentFilters implements OnInit {
     public onApply() {
         this.display = false;
 
-        // Generando el ordenamiento children (tipo arbol) por cada filtro global (por cada item).
+        // Generating the children ordering (tree type) for each global filter (for each item).
         const globalFilters = this.buildOrderChildren(this.dashboard.globalFilter.globalFilters, this.dependentFilterGrid)
         const orderDependentFilters = this.dependentFilterGrid;
 
@@ -411,11 +411,7 @@ export class DependentFilters implements OnInit {
     }
 
     //////////////////////////////////////////////////////////////////////
-    ///////////////////// FIN DEL CONTROL DEL DIALOG /////////////////////
+    ///////////////////// END OF DIALOG CONTROL //////////////////////////
     //////////////////////////////////////////////////////////////////////
 
 }
-
-
-
-

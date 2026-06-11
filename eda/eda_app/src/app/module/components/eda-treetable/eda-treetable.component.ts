@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Necesario para las directivas
+import { CommonModule } from '@angular/common'; // Required for directives
 import * as _ from 'lodash';
 
 // Modules for the Treetable
@@ -22,7 +22,7 @@ import { FATHER_ID } from './../../../config/personalitzacio/customizables'
 })
 export class EdaTreeTable implements OnInit {
 
-  @Input() inject: any; // El inject contiene dos arreglos => (labels y values)
+  @Input() inject: any; // inject contains two arrays => (labels and values)
   @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
   files!: TreeNode[];
@@ -47,7 +47,7 @@ export class EdaTreeTable implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    // Control de errores de la entrada de datos
+    // Input data error handling control
     this.showField = this.inject.config.config.showOriginField || false;
     if (!this.inject || !Array.isArray(this.inject.query) || !Array.isArray(this.inject.data?.values)) {
       console.error('Inject structure incorrecta. Esperado inject.query[] y inject.data.values[]');
@@ -67,10 +67,10 @@ export class EdaTreeTable implements OnInit {
     }
   }
 
-  // Rescatamos la query y conseguimos las columas visibles
-  // Solo se mostrarán los campos posteriores a los IDs
+  // Extract the query and get the visible columns
+  // Only fields after the IDs will be displayed
   prepareColumns() {
-    // rescato columnas después de los IDs
+    // I extract columns after the IDs
     this.leafs = this.inject.query.slice(2).map(c => ({
       field: c?.name ?? c?.display_name?.default ?? '',
       header: c?.display_name?.default ?? c?.name ?? ''
@@ -78,51 +78,54 @@ export class EdaTreeTable implements OnInit {
 
   }
 
-  // Construcción jerarquia EXPL ==>
+  // EXPL hierarchy construction ==>
   /*
-    **NODE MAP** 
-    Primero creamos un mapa que recorre todas las filas que llegan de
-    la query, aquí guardamos el IDitem, sus valores y sus hijos vacios []
-    
-    **ROOTS**
-    Segundo creamos el treenode que devolveremos, tiene la misma estructura que 
-    FiltrosDependientes, roots --> data con childrens, dentro de childrens --> data con childrens...
-     Hay dos casos: cuando el primer ID se comparte con el padre, o cuando no
+  // NODE MAP
+  // First we create a map that iterates over all rows coming from the query.
+  // Here we store the item ID, its values, and its empty children []
+
+  // ROOTS
+  // Second we create the treeNode that we will return. It has the same structure as
+  // FiltrosDependientes: roots -> data with children, inside children -> data with children...
+
+  // There are two cases:
+  // 1) when the first ID is shared with the parent
+  // 2) when it is not
   */
   buildTree(): TreeNode[] {
-    const values: any[][] = this.inject.data.values; // Todas las filas [IDPadre, IDItem, valorN, ...]
-    const nodesMap: Record<string, TreeNode> = {}; // Mapa de nodos por su ID.
+    const values: any[][] = this.inject.data.values; // All rows [ParentID, ItemID, valueN, ...]
+    const nodesMap: Record<string, TreeNode> = {}; // Node map by ID.
 
-    // Recorremos todos los valores y guardamos todos los nodos a mostrar sin ids
+    // Iterate over all values and store all nodes to display without IDs
     values.forEach(row => {
       const dataObj: Record<string, any> = {};
-      // Guardamos en dataobj los campos que queremos mostrar en la tabla
+      // Store in dataObj the fields to display in the table
       this.inject.query.slice(2).forEach((queryField, idx) => {
         const field = queryField?.name ?? queryField?.display_name?.default ?? '';
-        dataObj[field] = row[idx + 2]; // +2 porque los IDs esstan SIEMPRE al inicio
+        dataObj[field] = row[idx + 2]; // +2 because IDs are ALWAYS at the beginning
       });
 
-      const key = String(row[1]); //IDItem
+      const key = String(row[1]); // ItemID
       nodesMap[key] = { key, data: dataObj, children: [] };
     });
 
-    // Root es la estructura de la tabla:
+    // Root is the table structure:
     const root: TreeNode[] = [];
     let  rootFound:boolean = false;
-    // Moldear y enlazar listado de nodes para tener el treenode
+    // Shape and link the node list to build the treeNode
     Object.values(nodesMap).forEach(node => {
       const id = node.key;
-      
-      // Buscamos en queryvalue la fila de este nodo y obtenemos el IDPadre
+
+      // Find the row for this node in queryvalue and get the ParentID
       const parentKey = values.find(r => String(r[1]) === id)?.[0];
       const parentString = parentKey.toString();
 
-      if (parentKey === FATHER_ID && !rootFound) { // su padre es 0 o no tiene ==> root
+      if (parentKey === FATHER_ID && !rootFound) { // its parent is 0 or none ==> root
         root.push(node);
         rootFound = true;
-      } else if (parentString && nodesMap[parentString]) {// tiene padre y esta en lista ==> child
+      } else if (parentString && nodesMap[parentString]) { // has a parent and is in the list ==> child
         nodesMap[parentKey].children.push(node);
-      } else { /* tiene padre y no esta en lista ==> huerfano */}
+      } else { /* has a parent but is not in the list ==> orphan */}
     });
     return root;
   }

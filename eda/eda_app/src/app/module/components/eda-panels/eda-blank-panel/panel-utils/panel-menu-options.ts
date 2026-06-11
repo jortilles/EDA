@@ -146,7 +146,7 @@ export const PanelOptions = {
             panelComponent.contextMenu.hideContextMenu();
 
             panelComponent.treeTableController = new EdaDialogController({
-              // si el treeTableController es diferente de undefined se mostrara el dialog
+              // if treeTableController is defined the dialog will be shown
               params: {
                 panelID: _.get(panelComponent.panel, 'id'),
                 panelChart: panelComponent.panelChartConfig
@@ -248,9 +248,9 @@ export const PanelOptions = {
   },
   exportExcel: (panelComponent: EdaBlankPanelComponent) => {
     return new EdaContextMenuItem({
-      // Revisar como implementar con traducción para que solo se traduzca "Exportar a" y no las opciones de formato
+      // Review how to implement translation so only 'Export to' is translated and not the format options
       label: $localize`:@@panelOptionsExportTo:Exportar a ` + `<span class="export-option"><u>Excel</u></span> / <span class="export-option"><u>CSV</u></span>`,
-      escape: false, // Necesario para que se renderice el HTML en la etiqueta del menú
+      escape: false, // Necessary for HTML to render in the menu label
       icon: 'mdi mdi-file',
       command: (event: any) => {
         const text = event?.originalEvent?.target?.textContent?.trim()?.toLowerCase();
@@ -315,7 +315,7 @@ export const PanelOptions = {
       label: $localize`:@@askEdaliticsText:Pregúntale a Edalitics`,
       icon: 'fas fa-brain',
       command: () => {
-        // Entregamos la data al componente de ChatGpt
+        // Deliver the data to the ChatGpt component
         panelComponent.dataChatGpt = _.cloneDeep(panelComponent.panelChartConfig.data);
         panelComponent.isVisibleEbpChatGpt = true;
         panelComponent.contextMenu.hideContextMenu();
@@ -389,7 +389,7 @@ export const PanelOptions = {
       !["crosstable", "kpi", "dynamicText"].includes(type) &&
       !type.includes("kpi");
 
-    // Declaramos cada opción en orden visual deseado
+    // Declare each option in the desired visual order
     const MENU_DEFINITION = [
       {
         show: !isRoOrAnonimus && isEditable,
@@ -433,7 +433,7 @@ export const PanelOptions = {
       },
     ];
 
-    // Filtramos y ejecutamos solo las opciones visibles
+    // Filter and return only the visible options
     return MENU_DEFINITION.filter(def => def.show).map(def => def.item());
   }
 }

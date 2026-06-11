@@ -5,8 +5,8 @@ import { Dialog } from 'primeng/dialog';
 
 import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
-import { ButtonModule } from 'primeng/button'; // si usas botones dentro del diálogo
-import { FormsModule } from '@angular/forms'; // para [(ngModel)] si lo usas
+import { ButtonModule } from 'primeng/button'; // if you use buttons inside the dialog
+import { FormsModule } from '@angular/forms'; // for [(ngModel)] if you use it
 
 
 @Component({
@@ -71,7 +71,7 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnChanges
     public ifShowSwitchRedirecction: boolean;
     public ifShowCheckExpression: boolean;
 
-    // Traducido automáticamente para PrimeNG
+    // Automatically translated for PrimeNG
     get translatedBreakpoints(): Record<string, string> {
         const result: Record<string, string> = {};
         for (const key in this.breakpoints) {
@@ -111,7 +111,7 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnChanges
         if (this.contentWrapper?.nativeElement) {
             this.resizeObserver = new ResizeObserver(() => {
                 setTimeout(() => {
-                    // Algo peta al eliminar un filtro
+                    // Something breaks when deleting a filter
                     // this.dialogRef.center();
                     this.cd.detectChanges();
                 }, 1000);

@@ -23,7 +23,7 @@ export class TreeMapDialog implements OnInit, AfterViewChecked {
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
 
-  /** Fuente de verdad de los colores por label */
+  /** Source of truth for colors by label */
   public assignedColors: { value: string; color: string }[] = [];
   private originalAssignedColors: { value: string; color: string }[] = [];
 
@@ -46,14 +46,14 @@ export class TreeMapDialog implements OnInit, AfterViewChecked {
   ngAfterViewChecked(): void {
     if (!this.assignedColors.length && this.myPanelChartComponent?.componentRef) {
       setTimeout(() => {
-        // Recuperar labels del chart
+        // Retrieve labels from the chart
         this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
 
-        // Recuperar assignedColors del chart si existen
+        // Retrieve assignedColors from the chart if they exist
         const chartAssignedColors: { value: string; color: string }[] =
           this.myPanelChartComponent.props.config.getConfig()['assignedColors'] || [];
 
-        // Mapear labels a assignedColors existentes
+        // Map labels to existing assignedColors
         this.assignedColors = this.labels.map((label, i) => {
           const match = chartAssignedColors.find(c => c.value === label);
           return {
@@ -62,22 +62,22 @@ export class TreeMapDialog implements OnInit, AfterViewChecked {
           };
         });
 
-        // Guardar copia para cancelación
+        // Store copy for cancellation
         this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
       }, 0);
     }
   }
 
-  /** Cierra el diálogo */
+  /** Closes the dialog */
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     this.controller.close(event, response);
   }
 
-  /** Guardar configuración de colores */
+  /** Save color configuration */
   saveChartConfig(): void {
     const colorsForConfig = this.assignedColors.map(c => c.color);
 
-    // Actualizar TreeMapConfig y assignedColors en el config
+    // Update TreeMapConfig and assignedColors in the config
     this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
 
@@ -86,11 +86,11 @@ export class TreeMapDialog implements OnInit, AfterViewChecked {
     this.onClose(EdaDialogCloseEvent.UPDATE, { colors: colorsForConfig });
   }
 
-  /** Cancelar cambios y restaurar estado inicial */
+  /** Cancel changes and restore initial state */
   closeChartConfig(): void {
     this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
 
-    // Actualizar TreeMapConfig y assignedColors en el config
+    // Update TreeMapConfig and assignedColors in the config
     const colorsForConfig = this.assignedColors.map(c => c.color);
     this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
@@ -99,36 +99,36 @@ export class TreeMapDialog implements OnInit, AfterViewChecked {
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
-  /** Cuando el usuario edita un color individual */
+  /** When the user edits an individual color */
   handleInputColor(): void {
     const colorsForConfig = this.assignedColors.map(c => c.color);
 
-    // Actualizar TreeMapConfig y sincronizar assignedColors
+    // Update TreeMapConfig and synchronize assignedColors
     this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
 
     this.myPanelChartComponent.changeChartType();
   }
 
-  /** Aplicar paleta completa al chart */
+  /** Apply full palette to the chart */
   onPaletteSelected(): void {
     if (!this.selectedPalette) return;
 
     const length = this.labels.length;
 
-    // Mapear paleta al número de labels
+    // Map palette to the number of labels
     const newColors: string[] = [];
     for (let i = 0; i < length; i++) {
       newColors.push(this.selectedPalette.paleta[i % this.selectedPalette.paleta.length]);
     }
 
-    // Actualizar assignedColors
+    // Update assignedColors
     this.assignedColors = this.labels.map((label, i) => ({
       value: label,
       color: newColors[i]
     }));
 
-    // Actualizar TreeMapConfig y assignedColors en el config
+    // Update TreeMapConfig and assignedColors in the config
     const colorsForConfig = this.assignedColors.map(c => c.color);
     this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
