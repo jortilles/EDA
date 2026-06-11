@@ -34,7 +34,7 @@
 
           <h1 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase">Colors</h1>
 
-          <!-- Toggle semáforo -->
+          <!-- Semaphore toggle -->
           <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
             <div class="space-y-0.5">
               <p class="font-medium" i18n="@@knobSemaphoreLabel">Color semafórico</p>
@@ -50,7 +50,7 @@
             </button>
           </div>
 
-          <!-- Color manual (solo visible si no hay semáforo) -->
+          <!-- Manual color (only visible when semaphore is disabled) -->
           @if(!semaphoreColor){
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
@@ -63,7 +63,7 @@
           </div>
           }
 
-          <!-- Preview de gradiente semáforo -->
+          <!-- Semaphore gradient preview -->
           @if(semaphoreColor){
           <div class="flex items-center gap-3 px-1">
             <div class="h-3 flex-1 rounded-full" style="background: linear-gradient(to right, hsl(0,85%,42%), hsl(60,85%,42%), hsl(120,85%,42%))"></div>

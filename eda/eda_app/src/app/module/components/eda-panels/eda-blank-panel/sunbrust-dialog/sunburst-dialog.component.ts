@@ -25,7 +25,7 @@ export class SunburstDialogComponent implements OnInit, AfterViewChecked {
 
   public panelChartConfig: PanelChart = new PanelChart();
 
-  /** Fuente única de verdad */
+  /** Single source of truth */
   public assignedColors: { value: string; color: string }[] = [];
   private originalAssignedColors: { value: string; color: string }[] = [];
 
@@ -51,14 +51,14 @@ export class SunburstDialogComponent implements OnInit, AfterViewChecked {
     if (!this.assignedColors.length && this.myPanelChartComponent?.componentRef) {
       setTimeout(() => {
 
-        // Obtener labels del componente renderizado
+        // Get labels from rendered component
         this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
 
-        // Obtener colores asignados existentes o array vacío
+        // Get existing assigned colors or empty array
         const chartAssignedColors =
           this.myPanelChartComponent.props.config.getConfig()['assignedColors'] || [];
 
-        // Siempre crear assignedColors, aunque no existan previamente
+        // Always build assignedColors, even if none existed before
         this.assignedColors = this.labels.map(label => {
           const match = chartAssignedColors.find(c => c.value === label);
           return {
@@ -67,19 +67,19 @@ export class SunburstDialogComponent implements OnInit, AfterViewChecked {
           };
         });
 
-        // Snapshot para cancelar cambios
+        // Snapshot for canceling changes
         this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
 
       }, 0);
     }
   }
 
-  /* Cierra el diálogo */
+  /* Closes the dialog */
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     this.controller.close(event, response);
   }
 
-  /** GUARDAR */
+  /** SAVE */
   saveChartConfig(): void {
     const colorsForConfig = this.assignedColors.map(c => c.color);
 
@@ -95,7 +95,7 @@ export class SunburstDialogComponent implements OnInit, AfterViewChecked {
     this.onClose(EdaDialogCloseEvent.UPDATE, { colors: colorsForConfig });
   }
 
-  /** CANCELAR */
+  /** CANCEL */
   closeChartConfig(): void {
     this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
 
@@ -126,7 +126,7 @@ export class SunburstDialogComponent implements OnInit, AfterViewChecked {
     this.myPanelChartComponent.changeChartType();
   }
 
-  /** PALETA */
+  /** PALETTE */
   onPaletteSelected(): void {
     if (!this.selectedPalette) return;
 

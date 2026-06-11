@@ -114,148 +114,148 @@ export class DashboardEditStyleDialog {
       this.dashBoardStyles = {} as DashboardStyles;
   }
 
-	ngOnInit(): void {
-		this.dashBoardStyles = this.dashboard.dashboard.config.styles;
-		this.assignValues(this.dashBoardStyles);
-		this.setSampleTitleStyle();
-		this.setSampleFIltersStyle();
-		this.setSampleGlobalStyle();
-		this.setPanelTitleStyle();
-		this.setPanelContentStyle();
-  	}
+    ngOnInit(): void {
+        this.dashBoardStyles = this.dashboard.dashboard.config.styles;
+        this.assignValues(this.dashBoardStyles);
+        this.setSampleTitleStyle();
+        this.setSampleFIltersStyle();
+        this.setSampleGlobalStyle();
+        this.setPanelTitleStyle();
+        this.setPanelContentStyle();
+      }
 
   assignValues(styles: DashboardStyles): void {
-	  /** Global colors */
-	this.backgroundColor = styles.backgroundColor;  
-	this.panelColor = styles.panelColor;
+      /** Global colors */
+    this.backgroundColor = styles.backgroundColor;  
+    this.panelColor = styles.panelColor;
 
-	  
-	/**Title */
-	this.selectedTitleFont = styles.filters.fontFamily;
-	this.titleFontColor = styles.title.fontColor;
-	this.titleFontSize = styles.title.fontSize;
-	this.alignDasboardTitle = styles.titleAlign;
+      
+    /**Title */
+    this.selectedTitleFont = styles.filters.fontFamily;
+    this.titleFontColor = styles.title.fontColor;
+    this.titleFontSize = styles.title.fontSize;
+    this.alignDasboardTitle = styles.titleAlign;
 
-	/**Filters */
-	this.selectedFiltersFont = styles.filters.fontFamily
-	this.filtersFontColor = styles.filters.fontColor;
-	this.filtersFontSize = styles.filters.fontSize;
+    /**Filters */
+    this.selectedFiltersFont = styles.filters.fontFamily
+    this.filtersFontColor = styles.filters.fontColor;
+    this.filtersFontSize = styles.filters.fontSize;
 
-	/**Panel title */
-	this.selectedPanelTitleFont = styles.panelTitle.fontFamily;
-	this.panelTitleFontColor = styles.panelTitle.fontColor;
-	this.panelTitleFontSize = styles.panelTitle.fontSize;
-	this.alignPanelTitle = styles.panelTitleAlign;
+    /**Panel title */
+    this.selectedPanelTitleFont = styles.panelTitle.fontFamily;
+    this.panelTitleFontColor = styles.panelTitle.fontColor;
+    this.panelTitleFontSize = styles.panelTitle.fontSize;
+    this.alignPanelTitle = styles.panelTitleAlign;
 
-	/**Panel content */
-	this.selectedPanelFont = styles.panelContent.fontFamily;
-	this.panelFontColor = styles.panelContent.fontColor;
-	this.panelFontSize = styles.panelContent.fontSize;
+    /**Panel content */
+    this.selectedPanelFont = styles.panelContent.fontFamily;
+    this.panelFontColor = styles.panelContent.fontColor;
+    this.panelFontSize = styles.panelContent.fontSize;
 
-	this.css = styles.customCss;
-	this.backgroundImage = styles.backgroundImage || null;
+    this.css = styles.customCss;
+    this.backgroundImage = styles.backgroundImage || null;
 
-	}
+    }
 
-	public setSampleGlobalStyle() {
-		this.sampleGlobalStyle = {
-			'background-color': this.backgroundColor,
-		}
-	}
+    public setSampleGlobalStyle() {
+        this.sampleGlobalStyle = {
+            'background-color': this.backgroundColor,
+        }
+    }
 
   public setSampleTitleStyle() {
-		this.sampleTitleStyle = {
-			'font-family': this.selectedTitleFont,
-			'color': this.titleFontColor,
-			'text-align': this.alignDasboardTitle === 'flex-start' ? 'left' : this.alignDasboardTitle === 'center' ? 'center' : 'right',
-			'font-size': `${this.titleFontSize / 10 + 1.8}rem`,
-			'margin-bottom': 'auto',
-			'font-weight': '600',
-			'white-space': 'nowrap',
-			'padding': '0.1em',
-	    }
-	}
+        this.sampleTitleStyle = {
+            'font-family': this.selectedTitleFont,
+            'color': this.titleFontColor,
+            'text-align': this.alignDasboardTitle === 'flex-start' ? 'left' : this.alignDasboardTitle === 'center' ? 'center' : 'right',
+            'font-size': `${this.titleFontSize / 10 + 1.8}rem`,
+            'margin-bottom': 'auto',
+            'font-weight': '600',
+            'white-space': 'nowrap',
+            'padding': '0.1em',
+        }
+    }
 
-	public setSampleFIltersStyle() {
-		this.sampleFiltersStyle = {
-			'font-family': this.selectedFiltersFont,
-			'color': this.filtersFontColor,
-			'font-size': `${this.filtersFontSize / 10 + 1.1}rem`,
-		}
-	}
+    public setSampleFIltersStyle() {
+        this.sampleFiltersStyle = {
+            'font-family': this.selectedFiltersFont,
+            'color': this.filtersFontColor,
+            'font-size': `${this.filtersFontSize / 10 + 1.1}rem`,
+        }
+    }
 
-	public setPanelTitleStyle() {
-		this.samplePanelTitleStyle = {
-			'font-family': this.selectedPanelTitleFont,
-			'color': this.panelTitleFontColor,
-			'text-align': this.alignPanelTitle === 'flex-start' ? 'left' : this.alignPanelTitle === 'center' ? 'center' : 'right',
-			'font-size': `${this.panelTitleFontSize / 10 + 1.2}rem`,
-			'box-shadow': '0 2px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%)',
-			'background-color': this.panelColor,
-		}
-	}
+    public setPanelTitleStyle() {
+        this.samplePanelTitleStyle = {
+            'font-family': this.selectedPanelTitleFont,
+            'color': this.panelTitleFontColor,
+            'text-align': this.alignPanelTitle === 'flex-start' ? 'left' : this.alignPanelTitle === 'center' ? 'center' : 'right',
+            'font-size': `${this.panelTitleFontSize / 10 + 1.2}rem`,
+            'box-shadow': '0 2px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%)',
+            'background-color': this.panelColor,
+        }
+    }
 
-	public setPanelContentStyle() {
-		this.samplePanelContentStyle = {
-			'font-family': this.selectedPanelFont,
-			'color': this.panelFontColor,
-			'font-size': `${this.panelFontSize / 10 + 1}rem`,
-			'box-shadow': '0 2px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%)',
-			'background-color': this.panelColor,
-		};
-	}
+    public setPanelContentStyle() {
+        this.samplePanelContentStyle = {
+            'font-family': this.selectedPanelFont,
+            'color': this.panelFontColor,
+            'font-size': `${this.panelFontSize / 10 + 1}rem`,
+            'box-shadow': '0 2px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%)',
+            'background-color': this.panelColor,
+        };
+    }
 
-	private applyPaletteToAllCharts(): void {
+    private applyPaletteToAllCharts(): void {
     if (!this.selectedPalette || !this.dashboard?.dashboard?.config?.panel) {
         return;
     }
 
     const newPalette = this.selectedPalette.paleta;
 
-    // Iterar sobre todos los paneles
+    // Iterate over all panels
     this.dashboard.dashboard.config.panel.forEach(panel => {
         const config = panel.content?.query?.output?.config;
         if (!config) {
             return;
         }
 
-        // Si NO tiene assignedColors, necesitamos crearlos
+        // If it does NOT have assignedColors, we need to create them
         if (!config.assignedColors || !Array.isArray(config.assignedColors) || config.assignedColors.length === 0) {
             
-            // Determinar cuántos colores necesita según el tipo de chart
+            // Determine how many colors are needed according to chart type
             const chartType = panel.content?.chart;
-            let numColors = 1; // Por defecto 1 color
+            let numColors = 1; // Default 1 color
             
-            // Para charts que necesitan múltiples colores, intentar inferir de los datos
+            // For charts that need multiple colors, try to infer from the data
             if (['bar', 'line', 'doughnut', 'treeMap', 'sunburst', 'funnel'].includes(chartType)) {
-                // Intentar contar desde los datos disponibles
+                // Try to count from available data
                 const labels = panel.content?.query?.output?.labels || [];
                 const data = panel.content?.query?.output?.data?.values || [];
                 
                 if (data.length > 0 && Array.isArray(data[0])) {
-                    numColors = data.length; // Número de series
+                    numColors = data.length; // Number of series
                 } else if (labels.length > 1) {
                     numColors = labels.length;
                 }
             }
             
-            // Crear assignedColors con valores genéricos
+            // Create assignedColors with generic values
             config.assignedColors = Array.from({ length: Math.max(numColors, 1) }, (_, i) => ({
                 value: `Series ${i + 1}`,
                 color: newPalette[i % newPalette.length]
             }));
             
-            return; // Ya están asignados los nuevos colores
+            return; // New colors have been assigned already
         }
 
-        // Si YA tiene assignedColors, actualizarlos
+        // If it DOES have assignedColors, update them
 
         config.assignedColors = config.assignedColors.map((item, index) => ({
             value: item.value,
             color: newPalette[index % newPalette.length]
         }));
 
-        // Si tiene uniqueBarColors activos, también aplicar la paleta
+        // If it has uniqueBarColors active, also apply the palette
         if (config.showUniqueColors && Array.isArray(config.uniqueBarColors) && config.uniqueBarColors.length > 0) {
             config.uniqueBarColors = config.uniqueBarColors.map((item, index) => ({
                 value: item.value,
@@ -263,11 +263,11 @@ export class DashboardEditStyleDialog {
             }));
         }
 
-		const edaPanel = this.dashboard.edaPanels['_results'].find(p => p.panel.id === panel.id);
+        const edaPanel = this.dashboard.edaPanels['_results'].find(p => p.panel.id === panel.id);
         if (edaPanel?.panelChart?.props?.config) {
             const internalConfig = edaPanel.panelChart.props.config.getConfig();
             if (internalConfig) {
-                // Actualizar assignedColors por referencia
+                // Update assignedColors by reference
                 internalConfig['assignedColors'] = config.assignedColors;
                 if (config.showUniqueColors) {
                     internalConfig['uniqueBarColors'] = config.uniqueBarColors;
@@ -298,7 +298,7 @@ public openImageInNewTab(): void {
 }
 
 public saveConfig(): void {
-    // Aplicar paleta a todos los charts del dashboard
+    // Apply palette to all dashboard charts
     this.applyPaletteToAllCharts();
     
     const response: DashboardStyles = {
@@ -336,28 +336,28 @@ public saveConfig(): void {
     this.apply.emit(response);
 }
 
-	public resetStyles() {
-		this.assignValues(this.stylesProviderService.generateDefaultStyles());
-		this.setSampleFIltersStyle();
-		this.setSampleGlobalStyle();
-		this.setPanelTitleStyle();
-		this.setPanelContentStyle();
-		this.setSampleTitleStyle();
-	}
+    public resetStyles() {
+        this.assignValues(this.stylesProviderService.generateDefaultStyles());
+        this.setSampleFIltersStyle();
+        this.setSampleGlobalStyle();
+        this.setPanelTitleStyle();
+        this.setPanelContentStyle();
+        this.setSampleTitleStyle();
+    }
 
 public comparePalettes = (p1: any, p2: any) => p1 && p2 && p1?.name === p2?.name;
 
-	public onApply() {
-		this.display = false;
-		this.saveConfig();
-	}
+    public onApply() {
+        this.display = false;
+        this.saveConfig();
+    }
 
-	public disableApply(): boolean {
-		return false;
-	}
+    public disableApply(): boolean {
+        return false;
+    }
 
-	public onClose(): void {
-		this.display = false;
-		this.close.emit();
-	}
+    public onClose(): void {
+        this.display = false;
+        this.close.emit();
+    }
 }

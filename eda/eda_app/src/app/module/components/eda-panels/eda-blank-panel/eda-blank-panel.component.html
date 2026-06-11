@@ -1,7 +1,7 @@
 <div class="flex flex-col h-full rounded-lg pb-6 pr-6 pl-6 shadow-sm bg-white" [ngStyle]="panelContent">
   <!-- Header -->
   <div class="flex items-center justify-between mb-2 w-full drag-handler min-h-12">
-    <!-- Contenedor con alineación dinámica para el título -->
+    <!-- Container with dynamic alignment for the title -->
     <div class="flex-1 flex flex-col pt-3 pb-1 min-w-0">
       <h2 class="text-base md:text-lg font-base" [ngStyle]="panelText">{{ panel.title || title }}</h2>
       @if (panel.description) {
@@ -26,7 +26,7 @@
       </div>
     }
 
-    <!-- Ícono a la derecha -->
+    <!-- Icon on the right -->
     <i 
       [ngClass]="{'edit-blink': lodash.isEmpty(panel.content)}"
       class="pi pi-ellipsis-v cursor-pointer ml-2  w-[28px] h-[28px] flex items-center justify-center text-center rounded-full content-center"
@@ -216,14 +216,14 @@
                           (onNodeSelect)="tableNodeSelect($event)"
                         >
 
-                          <!-- ESTE TEMPLATE CONTEMPLA AL PADRE -->
+                          <!-- THIS TEMPLATE CONSIDERS THE PARENT -->
                           <ng-template let-node let-options="options" pTemplate="default">
                             <div [ngClass]="checkNodeSelected(node) ? 'font-bold' : ''">
                               {{node.label}}
                             </div>
                           </ng-template>
 
-                          <!-- ESTE TEMPLATE TRATA A LOS HIJOS -->
+                          <!-- THIS TEMPLATE HANDLES CHILDREN -->
                           <ng-template let-node let-options="options" pTemplate="child">
                             <div [ngClass]="checkNodeSelected(node) ? 'font-bold' : ''">
                               {{node.label}}
@@ -241,7 +241,7 @@
                 </div>
               </div>
 
-              <!-- ATRIBUTOS -->
+              <!-- ATTRIBUTES -->
               <!-- Attributes Section -->
               <div class="w-1/6 border-r">
 
@@ -400,7 +400,7 @@
                     >
                   </div>
 
-                  <!-- Asistente con Inteligencia Artificial => Cuando el currentQuery es cero -->
+                  <!-- AI assistant => When currentQuery is zero -->
                   @if(currentQuery.length === 0 && promptAvailable()) {
                     <div class=" ml-3 p-2">
                       <Prompt
@@ -430,7 +430,7 @@
                           </h3>
                           <i class="pi pi-info-circle cursor-pointer text-gray-400 mb-2 text-sm" [pTooltip]="ptooltipViewQuery" (click)="getQuery($event)"></i>
                         </div>
-                        <!-- Contenedor de query -->
+                        <!-- Query container -->
                         @if(display_v.showQueryContainer) {
                           <div class="fixed inset-0 z-40" (click)="display_v.showQueryContainer = false"></div>
                           <div id="query-container" class="absolute top-full left-0 mt-2 w-[42vw] bg-white z-50 shadow-xl rounded-xl border border-gray-200 flex flex-col overflow-hidden">
@@ -535,7 +535,7 @@
                           }
                         </div>
 
-                        <!-- Top right: Filtros del informe -->
+                        <!-- Top right: Report filters -->
                         <div class="summary-section">
                           <h3 class="summary-section-title text-base font-semibold" i18n="@@resumenFiltrosInformeH6">Resumen de filtros del informe</h3>
                           @for (filter of globalFilters; track filter) {
@@ -546,7 +546,7 @@
                           }
                         </div>
 
-                        <!-- Bottom left: Filtros del panel -->
+                        <!-- Bottom left: Panel filters -->
                         <div class="summary-section border-t border-r border-gray-200">
                           <h3 class="summary-section-title text-base font-semibold" i18n="@@resumenFiltrosPanelH6">Resumen de filtros del panel</h3>
                           @for (filter of selectedFilters; track filter) {
@@ -563,11 +563,11 @@
                     @else if(display_v.advancedSetting === 1){
                       <div class="flex gap-4 border rounded-lg bg-gray-50 p-4 min-h-[30vh] overflow-y-auto">
 
-                        <!-- Opciones -->
+                        <!-- Options -->
                         <div class="flex flex-col gap-3 w-[35%] shrink-0">
                           <h3 class="text-base font-semibold text-black-400 uppercase tracking-wide" i18n="@@AdvanceOptions">Opciones avanzadas</h3>
 
-                          <!-- Tipo de intersección -->
+                          <!-- Intersection type -->
                           <div class="flex items-center justify-between rounded-lg px-3 py-2 ">
                             <span i18n="@@joinTypeH4" class="text-base font-medium text-gray-700" pTooltip="Define cómo se unen las tablas: LEFT, INNER o RIGHT JOIN" i18n-pTooltip="@@tooltipJoinType" tooltipPosition="top">Tipo de intersección</span>
                             <div class="flex gap-1">
@@ -579,7 +579,7 @@
                             </div>
                           </div>
 
-                          <!-- Escenarios What If -->
+                          <!-- What-If Scenarios -->
                           <div class="flex items-center justify-between rounded-lg px-3 py-2 ">
                             <span i18n="@@scenarios" class="text-base font-medium text-gray-700" pTooltip="Crea atributos derivados aplicando operaciones matemáticas" i18n-pTooltip="@@tooltipScenarios" tooltipPosition="top">Escenarios</span>
                             <button class="px-3 py-1 text-base border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="onWhatIfDialog()">
@@ -587,7 +587,7 @@
                             </button>
                           </div>
 
-                          <!-- Filtros avanzados AND/OR -->
+                          <!-- AND/OR Advanced filters -->
                           <div class="flex items-center justify-between rounded-lg px-3 py-2 ">
                             <span i18n="@@filtrosAvanzados" class="text-base font-medium text-gray-700" pTooltip="Combina los filtros del panel con operadores AND u OR" i18n-pTooltip="@@tooltipAdvancedFilters" tooltipPosition="top">Filtros avanzados (AND/OR)</span>
                             <button class="px-3 py-1 text-base border rounded-md bg-white text-gray-600 btn-panel-hover transition-all" (click)="filterAndOrDialog()">
@@ -595,7 +595,7 @@
                             </button>
                           </div>
 
-                          <!-- Registros únicos -->
+                          <!-- Unique records -->
                           <div class="flex items-center justify-between rounded-lg px-3 py-2 ">
                             <span i18n="@@uniqueRecordsGrouping" class="text-base font-medium text-gray-700" pTooltip="Aplica GROUP BY a todos los campos para eliminar duplicados" i18n-pTooltip="@@tooltipUniqueRecords" tooltipPosition="top">Registros únicos (agrupación)</span>
                             <button
@@ -610,7 +610,7 @@
                             </button>
                           </div>
 
-                          <!-- Filtros dinámicos -->
+                          <!-- Dynamic filters -->
                           <div class="flex items-center justify-between rounded-lg px-3 py-2">
                             <span i18n="@@dynamicFiltersText" class="text-base font-medium text-gray-700" pTooltip="Actívalo para que este panel ignore los filtros dinámicos de otros paneles" tooltipPosition="top">Filtros dinámicos</span>
                             <button
@@ -626,13 +626,13 @@
                           </div>
                         </div>
 
-                        <!-- Indicaciones -->
+                        <!-- Instructions -->
                         <div class="flex flex-col gap-3 flex-1 min-w-0">
                           <h3 class="text-base font-semibold text-black-400 uppercase tracking-wide" i18n="@@indicaciones">Indicaciones</h3>
 
                           <div class="rounded-lg  divide-y divide-gray-100 overflow-hidden">
 
-                            <!-- Tipo de intersección -->
+                            <!-- Intersection type -->
                             <details class="group" name="sqlIndicationOpenSection">
                               <summary class="flex justify-between items-center cursor-pointer px-4 py-3 hover:bg-gray-50 transition-colors">
                                 <div class="flex items-center gap-2">
@@ -677,7 +677,7 @@
                               </div>
                             </details>
 
-                            <!-- Filtros avanzados -->
+                            <!-- Advanced Filters -->
                             <details class="group" name="sqlIndicationOpenSection">
                               <summary class="flex justify-between items-center cursor-pointer px-4 py-3 hover:bg-gray-50 transition-colors">
                                 <div class="flex items-center gap-2">
@@ -699,7 +699,7 @@
                               </div>
                             </details>
 
-                            <!-- Registros únicos -->
+                            <!-- Unique records -->
                             <details class="group" name="sqlIndicationOpenSection">
                               <summary class="flex justify-between items-center cursor-pointer px-4 py-3 hover:bg-gray-50 transition-colors">
                                 <div class="flex items-center gap-2">
@@ -721,7 +721,7 @@
                               </div>
                             </details>
 
-                            <!-- Filtros dinámicos -->
+                            <!-- Dynamic filters -->
                             <details class="group" name="sqlIndicationOpenSection">
                               <summary class="flex justify-between items-center cursor-pointer px-4 py-3 hover:bg-gray-50 transition-colors">
                                 <div class="flex items-center gap-2">
@@ -762,10 +762,6 @@
                               (chartSelected)="onChartSuggestionSelected($event)"
                             >
                             </Prompt>
-
-                          <!-- <div class=" ml-3 p-2">
-                            <h3 class="text-base font-semibold" i18n="@@FaltaAgregarElValor">Área de muestra:</h3>
-                          </div> -->
 
                       </div>
                     }
@@ -831,8 +827,7 @@
                         </svg>
                       </summary>
                       <div class="text-base text-gray-600 pl-2 pb-4 pt-2">
-                        <!-- <p>Crea consultas SQL para analizar datos de ventas por línea de producto.</p>
-                                  <p class="mt-2">Tablas disponibles: Customers, Orders, Products, Employees, Offices.</p> -->
+
                         <p class="mb-2" i18n="@@indicaciones1"> Puedes realizar consultas SQL sobre el esquema definido
                           en tu modelo.
                           Para ello introduce la consulta en el cuadro de texto y selecciona la tabla

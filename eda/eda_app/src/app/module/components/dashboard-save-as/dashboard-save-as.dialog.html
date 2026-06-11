@@ -7,7 +7,7 @@
   <div content class="p-6">
     <form [formGroup]="form" class="mt-8 space-y-4" (ngSubmit)="true"> 
       <div class="grid space-y-4">
-        <!-- Input Nombre -->
+        <!-- Input Names -->
         <div class="col-12">
           <span class="relative block">
             <input 
@@ -28,7 +28,7 @@
           </span>
         </div>
     
-        <!-- Botones de Selección -->
+        <!-- Selection buttons -->
         <div class="col-12">
           <p-selectButton 
             [options]="visibleTypes" 
@@ -39,7 +39,7 @@
         </div>
     
         @if (showGroups) {
-        <!-- Multiselect de Grupos -->
+        <!-- Groups multiselect -->
         <div class="col-12">
           <p-multiSelect
             formControlName="group" 

@@ -39,21 +39,21 @@ export class EdaChartComponent implements OnInit, AfterViewInit {
                 const dataLabel = chart.data.labels[point.index];
                 const datasetLabel = dataset.label || dataLabel;
 
-                // Trackeamos si el chart es stackedbar 100 por que tiene los labels diferentes a todos
-                // En este caso el label es el filtro y el filtro el label por su naturaleza
+                // We check if the chart is 'stackedbar100' because it has labels different from the others
+                // In this case the label is the filter and the filter is the label by its nature
                 const isStackedBar100 = this.inject['edaChart'] === 'stackedbar100';
 
-                // Dependiendo de si es stackedbar100 asignamos un valor u otro 
+                // Depending on whether it is stackedbar100 we assign one value or the other 
                 const [filterBy, label] = isStackedBar100 ? [dataLabel, datasetLabel]: [datasetLabel, dataLabel];
 
                 const value = chart.data.datasets[point.datasetIndex].data[point.index];
-                // Si vinculo los dashboards no filtro.
+                // If dashboards are linked, do not filter.
                 if (this.inject.linkedDashboardProps) {
                     const props = this.inject.linkedDashboardProps;
                     const url = window.location.href.slice( 0, window.location.href.indexOf('/dashboard')) +`/dashboard/${props.dashboardID}?${props.table}.${props.col}=${label}`
                     window.open(url, "_blank");
                 }else{
-                    //lanzo el filtro
+                    // trigger the filter
                     this.zone.run(() => {
                         this.onClick.emit({ inx: point.index, label, value, filterBy });
                     });
