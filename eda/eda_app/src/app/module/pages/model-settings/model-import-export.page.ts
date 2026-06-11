@@ -24,7 +24,7 @@ export class ModelImportExportPage implements OnInit {
   private dataSourceService = inject(DataSourceService);
   private alertService = inject(AlertService);
 
-  // Signals para el estado
+  // State signals
   modelTab = signal<'export' | 'import'>('export');
   dashboardTab = signal<'export' | 'import'>('export');
   selectedModel = signal<string>('');
@@ -60,7 +60,7 @@ export class ModelImportExportPage implements OnInit {
       .sort((a, b) => a.label.localeCompare(b.label, 'es', { sensitivity: 'base' }));
   }
 
-  // Métodos para cambiar tabs
+  // Methods to switch tabs
   setModelTab(tab: 'export' | 'import') {
     this.modelTab.set(tab);
   }
@@ -69,7 +69,7 @@ export class ModelImportExportPage implements OnInit {
     this.dashboardTab.set(tab);
   }
 
-  // Métodos para seleccionar modelos/dashboards
+  // Methods to select models/dashboards
   setSelectedModel(value: string) {
     this.selectedModel.set(value);
   }
@@ -78,7 +78,7 @@ export class ModelImportExportPage implements OnInit {
     this.selectedDashboard.set(value);
   }
 
-  // Métodos para manejar eventos de drag & drop
+  // Methods to handle drag & drop events
   handleDrag(e: DragEvent) {
     e.preventDefault();
     e.stopPropagation();
@@ -139,7 +139,7 @@ export class ModelImportExportPage implements OnInit {
     }
   }
 
-  // Métodos para manejar exportación/importación
+  // Methods to handle export/import
 handleModelExport() {
   const selected = this.selectedModel();
   if (!selected) {
@@ -209,7 +209,7 @@ handleModelImport() {
     return;
   }
 
-  // Antiguo onModelFilesAdded() modificado, separar logica?
+  // Old onModelFilesAdded() modified, separate logic?
   const fileReader = new FileReader();
   fileReader.onload = () => {
     try {
@@ -220,7 +220,7 @@ handleModelImport() {
       let isInconsistentDM = true;
       
 
-      // Recorremos dashboards para comprobar integridad
+      // Iterate dashboards to check integrity
       this.dashboards.forEach(({ value }) => {
         this.dashboardService.getDashboard(value._id).subscribe({
           next: ({ dashboard }) => {
@@ -250,7 +250,7 @@ handleModelImport() {
         });
       });
 
-      // Actualizamos el modelo en el servidor --> Antiguo importModel()
+      // Update the model on the server --> Old importModel()
       this.dataSourceService.updateModelInServer(modelId, json).subscribe({
         next: () => this.alertService.addSuccess($localize`:@@modelImportedSuccessfully:Modelo importado correctamente`),
         error: () => this.alertService.addError($localize`:@@errorImportModel:Ha ocurrido un error al importar el modelo`)
@@ -280,16 +280,16 @@ handleDashboardImport() {
     try {
       const importedDashboard = JSON.parse(reader.result as string);
 
-      // Guardamos el dashboard importado en memoria
+      // Save the imported dashboard in memory
       this.dashboardFile.set(importedDashboard);
 
-      // Intentar actualizar
+      // Try to update
       this.dashboardService.updateDashboard(importedDashboard._id, importedDashboard).subscribe(
         () => {
           this.alertService.addSuccess($localize`:@@dashboardUpdatedSuccessfully:Dashboard actualizado correctamente`)
         },
         () => {
-          // Si falla, intentar crear
+          // If it fails, try to create
           this.dashboardService.addNewDashboard(importedDashboard).subscribe(
             () => {
               this.alertService.addSuccess($localize`:@@dashboardCreatedSuccessfully:Dashboard creado correctamente`)
@@ -315,9 +315,9 @@ handleDashboardImport() {
   this.dashboardFileName.set('');
 }
 
-  // Método para mostrar notificaciones
+  // Method to show notifications
   showToast(title: string, message: string, type: 'success' | 'error') {
-    // Implementación simple de toast
+    // Simple toast implementation
     const toast = document.createElement('div');
     const bgColor = type === 'success' ? 'bg-[#00BFB3]' : 'bg-red-500';
     toast.className = `fixed bottom-4 right-4 ${bgColor} text-white p-4 rounded-md shadow-lg z-50 flex flex-col`;

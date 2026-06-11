@@ -18,7 +18,7 @@
         <form [formGroup]="unifiedForm">
           <div class="grid gap-6">
 
-            <!-- Selector de tipo -->
+            <!-- Type selector -->
             <div class="flex gap-2">
               <button type="button" (click)="unifiedForm.patchValue({configType: 'SMPT'})"
                 class="flex items-center gap-2 px-4 py-2 rounded-md border text-sm font-medium transition-colors"
@@ -44,7 +44,7 @@
               </button>
             </div>
 
-            <!-- Usuario (campo compartido) -->
+            <!-- User (shared field) -->
             <div class="space-y-2">
               <label i18n="@@inputUsuario" for="user" class="text-sm font-medium">USUARIO</label>
               <div class="relative">
@@ -60,7 +60,7 @@
             </div>
 
             @if(configType === 'SMPT') {
-              <!-- Sección SMTP -->
+              <!-- SMTP section -->
               <div class="rounded-lg border p-4 space-y-4"
                 [ngClass]="configType === 'SMPT' ? 'section-active' : 'border-gray-200 bg-gray-50 opacity-60'">
                 <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">SMTP</p>
@@ -90,7 +90,7 @@
             </div>
             }
             @else{
-              <!-- Sección Gmail OAuth2 -->
+              <!-- Gmail OAuth2 section -->
               <div class="rounded-lg border p-4 space-y-4"
                 [ngClass]="configType === 'GMAIL' ? 'section-active' : 'border-gray-200 bg-gray-50 opacity-60'">
                 <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Gmail OAuth2</p>
@@ -131,7 +131,7 @@
               </button>
             </div>
 
-            <!-- Acciones -->
+            <!-- Actions -->
             <div class="flex justify-between">
               <button (click)="handleCheckCredentials()" [disabled]="isChecking()"
                 class="input-corporate inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 border border-gray-200 bg-white hover:bg-gray-100 h-10 px-4 py-2">

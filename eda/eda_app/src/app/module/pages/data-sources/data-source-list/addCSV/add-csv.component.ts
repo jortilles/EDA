@@ -210,7 +210,7 @@ export class AddCsvComponent implements OnInit {
     if (!file) return;
     this.parseCsv(file);
   }
-  // Métodos para manejar eventos de drag & drop
+  // Drag & drop event handling methods
   handleDrag(e: DragEvent) {
     e.preventDefault();
     e.stopPropagation();
@@ -266,11 +266,11 @@ export class AddCsvComponent implements OnInit {
 
       if (!this.delimiter) return;
 
-      // Extraer cabeceras; si alguna está vacía, le ponemos nombre genérico
+      // Extract headers; if any are empty, assign a generic name
       const headers = lines[0].split(this.delimiter).map((h, i) => h.trim() || `column_${i + 1}`);
 
-      // Parsear todas las filas de datos como objetos {header: value}
-      // para que csvRecords quede actualizado con el nuevo delimitador
+      // Parse all data rows as objects {header: value}
+      // so that csvRecords is updated with the new delimiter
       const records = lines.slice(1).map(line => {
         const values = line.split(this.delimiter);
         const record: any = {};

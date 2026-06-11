@@ -1,7 +1,7 @@
 <!-- Overlay Panel (Popover) -->
 <p-overlayPanel #popover (onHide)="hidePopover()">
   <div class="w-64">
-    <!-- Menú gris -->
+    <!-- Gray menu -->
     <div class="bg-gray-100">
       <div class="px-3 pt-3">
         <div class="flex items-center gap-1 min-w-0 h-8">
@@ -40,7 +40,7 @@
       <hr class="my-2" />
     </div>
 
-    <!-- Menú blanco -->
+    <!-- White menu -->
     <div class="bg-white px-3 pb-3 pt-2 overflow-y-auto max-h-[80vh] overscroll-contain">
       <div class="flex flex-col gap-2 text-lg">
         @for (item of itemsVisibles(); track item.label) {

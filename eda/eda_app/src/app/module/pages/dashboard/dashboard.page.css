@@ -5,32 +5,32 @@
 }
 
 .gridster-item {
-  display: flex; /* Permite que el contenido crezca */
-  flex-direction: column; /* Mantiene los elementos alineados verticalmente */
-  height: 100%; /* Ocupa toda la altura del gridster-item */
-  width: 100%; /* (Opcional) Para asegurarse que ocupe todo el ancho */
+  display: flex; /* Allows content to grow */
+  flex-direction: column; /* Keeps elements aligned vertically */
+  height: 100%; /* Takes up the full height of the gridster-item */
+  width: 100%; /* (Optional) Ensures it takes up the full width */
 
-  border-radius: 0.5rem; /* Redondeo elegante */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10); /* Sombra perimetral sin borde para evitar línea entre paneles contiguos */
+  border-radius: 0.5rem; /* Elegant rounding */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10); /* Perimeter shadow without border to avoid a line between adjacent panels */
   background-color: #fff;
-  transition: box-shadow 0.3s ease-in-out; /* Suavidad en el cambio de sombra */
+  transition: box-shadow 0.3s ease-in-out; /* Smooth shadow transition */
 }
 
 .gridster-content {
-  flex-grow: 1; /* Permite que este div ocupe todo el espacio disponible */
-  overflow: auto; /* (Opcional) Agrega scroll si el contenido es muy grande */
+  flex-grow: 1; /* Allows this div to take up all available space */
+  overflow: auto; /* (Optional) Adds scroll if the content is too large */
 }
 
 
 @media (max-width: 640px) {
-  /* Gridster colapsa su propia altura; la wrapper div controla el scroll */
+  /* Gridster collapses its own height; the wrapper div controls the scroll */
   gridster {
     height: auto !important;
     display: block !important;
   }
 
-  /* Cambiamos absolute → relative para que los paneles fluyan como bloques apilados.
-     La altura se controla aquí directamente: cambia 300px para ajustar el tamaño. */
+  /* Change absolute → relative so panels flow as stacked blocks.
+     Height is controlled here directly: change 300px to adjust the size. */
   gridster-item {
     position: relative !important;
     top: auto !important;
@@ -41,19 +41,19 @@
     margin-bottom: 8px !important;
   }
 
-  /* Las tablas cogen toda su altura para evitar overflow */
+  /* Tables take their full height to avoid overflow */
   .gridster-item.mobile-table-panel {
     height: auto !important;
   }
 
-  /* Con height:auto en el padre, el hijo absolute colapsa a 0.
-     Lo ponemos relative para que fluya con el contenido. */
+  /* With height:auto on the parent, the absolute child collapses to 0.
+     Set it to relative so it flows with the content. */
   .gridster-item.mobile-table-panel .gridster-item-content {
     position: relative !important;
     height: auto !important;
   }
 
-  /* El contenedor interno ocupa el 100% del gridster-item */
+  /* The inner container takes up 100% of the gridster-item */
   gridster-item .gridster-item-content {
     position: absolute !important;
     top: 0 !important;

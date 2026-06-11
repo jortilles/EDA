@@ -26,7 +26,7 @@
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="p-6 space-y-6">
 
-        <!-- Info del datasource (bloqueada) -->
+        <!-- Data source info (locked) -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="space-y-2">
             <label class="block font-medium" i18n="@@name">Nombre</label>
@@ -41,7 +41,7 @@
           </div>
         </div>
 
-        <!-- Separador (solo CSV) -->
+        <!-- Delimiter (CSV only) -->
         @if(connectionType === 'csv'){
         <div class="space-y-2">
           <label for="separator" class="block font-medium" i18n="@@placeholderInputSeparator">
@@ -129,7 +129,7 @@
               </div>
             </div>
   
-            <!-- Tabla de CSV -->
+            <!-- CSV Table -->
             <div class="overflow-x-auto w-1/2 pt-2">
               <table class="w-full">
                 <!-- header -->
@@ -144,10 +144,10 @@
                 <tbody>
                   @for(row of csvColumns; track $index){
                   <tr>
-                    <!-- Campo -->
+                    <!-- Fild -->
                     <td class="p-3">{{ row.field }}</td>
   
-                    <!-- Tipo -->
+                    <!-- Type -->
                     <td class="p-3">
                       <select class="border rounded p-2 w-full" [(ngModel)]="row.type"
                         [ngModelOptions]="{standalone: true}">
@@ -157,7 +157,7 @@
                       </select>
                     </td>
   
-                    <!-- Formato si es timestamp -->
+                    <!-- Format if it is a timestamp -->
                     @if(row.type === 'timestamp'){
                     <td class="p-3">
                       <select class="border rounded p-2 w-full" [(ngModel)]="row.format"
@@ -169,7 +169,7 @@
                     </td>
                     }
   
-                    <!-- Separador decimal para integer o numeric -->
+                    <!-- Decimal separator for integer or numeric -->
                     @if(['integer', 'numeric'].includes(row.type)){
                     <td></td>
                     <td class="p-3">

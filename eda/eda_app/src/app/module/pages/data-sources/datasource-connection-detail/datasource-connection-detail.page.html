@@ -415,10 +415,10 @@
               <tbody>
                 @for(row of csvColumns; track $index){
                 <tr>
-                  <!-- Campo -->
+                  <!-- Field -->
                   <td class="p-3">{{ row.field }}</td>
 
-                  <!-- Tipo -->
+                  <!-- Type -->
                   <td class="p-3">
                     <p-dropdown [(ngModel)]="row.type" [ngModelOptions]="{standalone: true}"
                       [options]="dataTypes" optionLabel="label" optionValue="value"
@@ -426,7 +426,7 @@
                     </p-dropdown>
                   </td>
 
-                  <!-- Formato si es timestamp -->
+                  <!-- Format if it is a timestamp -->
                   @if(row.type === 'timestamp'){
                   <td class="p-3">
                     <p-dropdown [(ngModel)]="row.format" [ngModelOptions]="{standalone: true}"
@@ -436,7 +436,7 @@
                   </td>
                   }
 
-                  <!-- Separador decimal para integer o numeric -->
+                  <!-- Decimal separator for integer or numeric -->
                   @if(['integer', 'numeric'].includes(row.type)){
                   <td></td>
                   <td class="p-3">
@@ -453,7 +453,7 @@
           </div>
           } @else if (connectionForm.get('type')?.value == 'duckdb') {
 
-          <!-- Fuente de datos -->
+          <!-- Data source -->
           <div class="space-y-2 md:col-span-2">
             <label class="block font-medium" i18n="@@duckdbFolderLabel">
               Fuente de datos <span class="text-red-500">*</span>
@@ -522,7 +522,7 @@
 
           </div>
 
-          <!-- Tabla de columnas DuckDB -->
+          <!-- DuckDB columns table -->
           <div class="pt-6 overflow-x-auto">
             <table class="w-full">
               <thead class="bg-gray-100">
@@ -564,7 +564,7 @@
               </tbody>
             </table>
 
-            <!-- Botón Siguiente: añade CSV actual a la lista -->
+            <!-- Next button: adds current CSV to the list -->
             @if(csvColumns.length > 0){
             <div class="mt-4 flex justify-end">
               <button type="button" (click)="addCsvToList()"
@@ -579,7 +579,7 @@
             }
           </div>
 
-          <!-- Lista de CSVs ya añadidos -->
+          <!-- List of already added CSVs -->
           @if(duckdbCsvList.length > 0){
           <div class="md:col-span-2 mt-2 space-y-2">
             <h4 class="text-sm font-medium text-gray-700" i18n="@@duckdbCsvListTitle">CSVs en la carpeta ({{ duckdbCsvList.length }}):</h4>
