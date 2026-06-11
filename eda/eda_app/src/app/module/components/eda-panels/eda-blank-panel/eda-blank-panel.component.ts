@@ -1,5 +1,5 @@
 // Angular
-import { Component, Input, Output, EventEmitter, ViewChild, OnInit, inject, computed, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, OnInit, inject, computed, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, ElementRef, HostListener } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { DragDropModule, CdkDrag, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
@@ -52,6 +52,7 @@ import { DashboardPage } from 'app/module/pages/dashboard/dashboard.page';
 import { EdadynamicTextComponent } from '@eda/components/component.index';
 import { EdaTitlePanelComponent } from '@eda/components/component.index';
 import { PanelMenuModule } from 'primeng/panelmenu';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ChartTypeSelectorDialogComponent } from './chart-type-selector-dialog/chart-type-selector-dialog.component';
 import { PromptComponent } from '@eda/components/prompt/prompt.component';
 import { FilterAndOrDialogComponent } from './filter-and-or-dialog/filter-and-or-dialog.component';
@@ -105,7 +106,7 @@ const DIALOGS_COMPONENTS = [
     TableGradientDialogComponent, AlertDialogComponent, KpiEditDialogComponent
 ];
 const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass, CumSumAlertDialogComponent];
-const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule];
+const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule, OverlayPanelModule];
 const STANDALONE_COMPONENTS = [
     EdaDialog2Component, WhatIfDialogComponent, ChatEdaAIComponent, FilterMapperComponent, EdadynamicTextComponent, EdaTitlePanelComponent,
     PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
@@ -255,6 +256,60 @@ export class EdaBlankPanelComponent implements OnInit {
 
     /** Chart Variables */
     public chartTypes: EdaChartType[]; // All posible chartTypes
+
+    private static readonly CHART_GROUPS = [
+        { label: 'Tablas',          icon: 'table_chart',  subValues: ['table', 'crosstable', 'treetable', 'tableanalized'] },
+        { label: 'KPI',             icon: 'speed',        subValues: ['kpi', 'kpibar', 'kpiline', 'kpiarea', 'kpitrend', 'kpideviation'] },
+        { label: 'Barras y Líneas', icon: 'bar_chart',    subValues: ['bar', 'histogram', 'stackedbar', 'stackedbar100', 'horizontalBar', 'pyramid', 'line', 'area', 'barline', 'radar'] },
+        { label: 'Circulares',      icon: 'donut_large',  subValues: ['doughnut', 'polarArea', 'sunburst'] },
+        { label: 'Avanzados',       icon: 'scatter_plot', subValues: ['parallelSets', 'treeMap', 'scatterPlot', 'funnel', 'bubblechart', 'coordinatesMap', 'geoJsonMap', 'knob', 'dynamicText'] },
+    ];
+
+    get groupedChartTypes() {
+        if (!this.chartTypes) return [];
+        return EdaBlankPanelComponent.CHART_GROUPS
+            .map(g => ({ label: g.label, icon: g.icon, items: this.chartTypes.filter(ct => g.subValues.includes(ct.subValue)) }))
+            .filter(g => g.items.length > 0);
+    }
+
+    showChartSelector = false;
+    hoveredGroup: string | null = null;
+    lockedGroup: string | null = null;
+
+    @HostListener('document:click')
+    onDocumentClick(): void {
+        if (this.showChartSelector) this.showChartSelector = false;
+    }
+
+    toggleChartSelector(event: MouseEvent): void {
+        event.stopPropagation();
+        if (!this.showChartSelector) {
+            const currentSubValue = this.chartForm.value.chart?.subValue;
+            if (currentSubValue) {
+                const group = this.groupedChartTypes.find(g => g.items.some((ct: any) => ct.subValue === currentSubValue));
+                this.lockedGroup = group?.label || null;
+            }
+        }
+        this.showChartSelector = !this.showChartSelector;
+    }
+
+    isGroupVisible(label: string): boolean {
+        if (this.hoveredGroup) return this.hoveredGroup === label;
+        return this.lockedGroup === label;
+    }
+
+    lockGroup(label: string, event: MouseEvent): void {
+        event.stopPropagation();
+        this.lockedGroup = this.lockedGroup === label ? null : label;
+    }
+
+    selectChartFromPanel(ct: EdaChartType): void {
+        this.chartForm.patchValue({ chart: ct });
+        this.showChartSelector = false;
+        this.hoveredGroup = null;
+        this.lockedGroup = null;
+        this.changeChartTypeCheck(ct.value, ct.subValue, this.getChartStyles(ct.value));
+    }
     public chartData: any[] = [];  // Data for Charts
     public chartLabels: string[] = []; // Labels for Charts
     public graficos: any = {}; // Inject for Charts

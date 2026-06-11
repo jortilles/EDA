@@ -831,3 +831,121 @@ span.state-label {
 }
 .attr-item:hover { background-color: rgba(var(--corporate-primary-rgb), 0.25); }
 .attr-item:active { cursor: grabbing !important; }
+
+/* ── Chart accordion selector ── */
+.chart-acc-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 14px;
+  color: #495057;
+  transition: border-color 0.15s;
+  min-height: 42px;
+}
+.chart-acc-trigger:hover,
+.chart-acc-trigger:focus { border-color: var(--corporate-primary); outline: none; }
+.chart-acc-trigger-icon { font-size: 20px; flex-shrink: 0; }
+.chart-acc-trigger-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chart-acc-trigger-placeholder { flex: 1; color: #9ca3af; }
+.chart-acc-trigger-chevron { font-size: 18px; color: #9ca3af; flex-shrink: 0; transition: transform 0.2s; }
+.chart-acc-trigger-chevron.open { transform: rotate(180deg); }
+
+/* Panel flotante */
+.chart-acc-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  z-index: 9999;
+  max-height: 52.5vh;
+  overflow-y: auto;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Grupo */
+.chart-acc-group { display: flex; flex-direction: column; }
+
+/* Header — mismo estilo que los items, fondo gris muy sutil */
+.chart-acc-group-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 14px;
+  background: #f8f9fa;
+  border: none;
+  border-left: 3px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, border-color 0.15s;
+}
+.chart-acc-group-header.hovered,
+.chart-acc-group-header:hover {
+  background: rgba(var(--corporate-primary-rgb), 0.06);
+  border-left-color: rgba(var(--corporate-primary-rgb), 0.4);
+}
+.chart-acc-group-header.locked {
+  background: rgba(var(--corporate-primary-rgb), 0.08);
+  border-left-color: var(--corporate-primary);
+}
+.chart-acc-group-icon {
+  font-size: 18px;
+  color: #9ca3af;
+  transition: color 0.15s;
+}
+.chart-acc-group-header.locked .chart-acc-group-icon,
+.chart-acc-group-header.hovered .chart-acc-group-icon { color: var(--corporate-primary); }
+.chart-acc-group-label {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  transition: color 0.15s;
+}
+.chart-acc-group-header.locked .chart-acc-group-label,
+.chart-acc-group-header.hovered .chart-acc-group-label { color: var(--corporate-primary); }
+.chart-acc-chevron {
+  font-size: 16px;
+  color: #9ca3af;
+  transition: transform 0.22s ease, color 0.15s;
+}
+.chart-acc-chevron.open { transform: rotate(180deg); color: var(--corporate-primary); }
+
+/* Items colapsables con animación CSS */
+.chart-acc-items {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.28s ease;
+}
+.chart-acc-items.visible { max-height: 600px; }
+
+.chart-acc-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #495057;
+  border-radius: 6px;
+  transition: background-color 0.12s;
+  margin-top: 1px;
+}
+.chart-acc-item:hover { background-color: rgba(var(--corporate-primary-rgb), 0.07); }
+.chart-acc-item--disabled { cursor: default; opacity: 0.55; }
+.chart-acc-item--disabled:hover { background-color: transparent; }

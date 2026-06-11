@@ -1022,60 +1022,65 @@
 
           <div class="col-start-5">
             <div class="w-96 space-y-2" [ngClass]="{'w-3/6': graphicType==='crosstable'}">
-              <form [formGroup]="chartForm">
-                <p-dropdown 
-                  id="chartSelector" 
-                  formControlName="chart" 
-                  optionLabel="label" 
-                  [style]="{'width':'16.5vw'}"
-                  [options]="chartTypes" 
-                  [autoDisplayFirst]="false" 
-                  [scrollHeight]="'52.5vh'"
-                  [panelStyle]="{'max-width':'16.5vw'}"
-                  (onChange)="changeChartTypeCheck(chartForm.value.chart.value, chartForm.value.chart.subValue, getChartStyles(chartForm.value.chart.value))"
-                >
-    
-                  <ng-template pTemplate="selectedItem">
-                    @if (chartForm.value.chart) {
-                      <div class="flex items-center">
-                        @if (!!chartForm.value.chart.ngIf) {
-                          <i class="{{chartForm.value.chart.icon}} text-[#eeac57] items-center"></i>
-                        }
-                        <span class="material-icons">
-                          {{getOptionIcon(chartForm.value.chart.subValue)}}
-                        </span>
-                        <span class="items-center ml-2">
-                          {{chartForm.value.chart.label}}
-                        </span>
+
+              <!-- Trigger button + acordeón -->
+              <div style="position:relative;width:16.5vw;">
+
+                <button type="button" class="chart-acc-trigger" (click)="toggleChartSelector($event)">
+                  @if (chartForm.value.chart) {
+                    <span class="material-icons chart-acc-trigger-icon">{{getOptionIcon(chartForm.value.chart.subValue)}}</span>
+                    <span class="chart-acc-trigger-label">{{chartForm.value.chart.label}}</span>
+                  } @else {
+                    <span class="chart-acc-trigger-placeholder">Seleccionar tipo de gráfico</span>
+                  }
+                  <span class="material-icons chart-acc-trigger-chevron" [class.open]="showChartSelector">expand_more</span>
+                </button>
+
+                @if (showChartSelector) {
+                  <div class="chart-acc-panel" (click)="$event.stopPropagation()">
+                    @for (group of groupedChartTypes; track group.label) {
+                      <div class="chart-acc-group"
+                           (mouseenter)="hoveredGroup = group.label"
+                           (mouseleave)="hoveredGroup = null">
+
+                        <!-- Header chip corporativo -->
+                        <button type="button" class="chart-acc-group-header"
+                                [class.locked]="lockedGroup === group.label"
+                                [class.hovered]="hoveredGroup === group.label"
+                                (click)="lockGroup(group.label, $event)">
+                          <span class="material-icons chart-acc-group-icon">{{group.icon}}</span>
+                          <span class="chart-acc-group-label">{{group.label}}</span>
+                          <span class="material-icons chart-acc-chevron" [class.open]="isGroupVisible(group.label)">expand_more</span>
+                        </button>
+
+                        <!-- Items con animación CSS (siempre en DOM) -->
+                        <div class="chart-acc-items" [class.visible]="isGroupVisible(group.label)">
+                          @for (ct of group.items; track ct.subValue) {
+                            <div class="chart-acc-item"
+                                 [class.chart-acc-item--disabled]="ct.ngIf || ct.tooManyData"
+                                 [attr.title]="ct.tooManyData ? getTooManyDataDescription() : ct.ngIf ? getOptionDescription(ct.subValue) : ''"
+                                 (click)="!ct.ngIf && !ct.tooManyData && selectChartFromPanel(ct)">
+                              <span class="material-icons" [ngClass]="{'orange-alert': ct.ngIf, 'grey-alert': ct.tooManyData}">
+                                {{getOptionIcon(ct.subValue)}}
+                              </span>
+                              <span [ngClass]="{'texto-rallado-alert': ct.ngIf || ct.tooManyData}">{{ct.label}}</span>
+                              @if (ct.tooManyData) {
+                                <span i18n="@@tooManyValues" class="edaTooManyData">- Demasiados valores</span>
+                              }
+                              @if (ct.ngIf) {
+                                <span i18n="@@notAvaliable" class="edaTooManyData">- No Disponible</span>
+                              }
+                            </div>
+                          }
+                        </div>
+
                       </div>
                     }
-                  </ng-template>
-    
-                  <ng-template let-chart pTemplate="item">
-                    <div class="flex items-center relative h-6" [attr.title]="chart.tooManyData ? getTooManyDataDescription() : (chart.ngIf) ? getOptionDescription(chart.subValue) : ''">
-                      <span class="material-icons" [ngClass]="{'orange-alert': chart.ngIf, 'grey-alert': chart.tooManyData}">
-                        {{getOptionIcon(chart.subValue)}}
-                      </span>
-    
-                      <span class="ml-2" [ngClass]="{'texto-rallado-alert': chart.ngIf  || chart.tooManyData}">
-                        {{chart.label}}
-                      </span>
-    
-                      @if (chart.tooManyData) {
-                        <span i18n="@@tooManyValues" class="edaTooManyData">
-                          - Demasiados valores
-                        </span>
-                      }
-    
-                      @if (chart.ngIf) {
-                        <span i18n="@@notAvaliable" class="edaTooManyData">
-                          - No Disponible
-                        </span>
-                      }
-                    </div>
-                  </ng-template>
-                </p-dropdown>
-              </form>
+                  </div>
+                }
+
+              </div>
+
             </div>
           </div>
         </div>
