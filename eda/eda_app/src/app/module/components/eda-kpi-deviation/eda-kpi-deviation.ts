@@ -10,4 +10,5 @@ export class EdaKpiDeviation {
     negativeColor: string = '#e53e3e';
     prefixImage: string = '';
     modifiedFontPoints: number = 0;
+    alertLimits: any[] = [];
 }

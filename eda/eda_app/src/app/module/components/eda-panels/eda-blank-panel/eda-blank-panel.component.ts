@@ -1749,12 +1749,14 @@ public tableNodeExpand(event: any): void {
                 kpiColor: response.kpiColor || '',
                 prefixImage: response.prefixImage || '',
                 modifiedFontPoints: response.modifiedFontPoints || 0,
+                alertLimits: response.alerts || [],
             };
             const config = new ChartConfig(new KpiDeviationConfig({
                 backgroundColor: response.backgroundColor || '',
                 kpiColor: response.kpiColor || '',
                 prefixImage: response.prefixImage || '',
                 modifiedFontPoints: response.modifiedFontPoints || 0,
+                alertLimits: response.alerts || [],
             }));
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, 'kpideviation', 'kpideviation', config);
             this.dashboardService._notSaved.next(true);

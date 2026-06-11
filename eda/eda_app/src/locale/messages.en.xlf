@@ -4893,6 +4893,21 @@ Once configured you can invoke it whenever you want from the button.</target>
 <target>Numeric value that triggers the alert</target>
 </trans-unit>
 
+<trans-unit id="thresholdValuePercent">
+<source>Valor umbral (%)</source>
+<target>Threshold value (%)</target>
+</trans-unit>
+
+<trans-unit id="deviationPercTrigAlert">
+<source>% de desviación que activará la alerta (ej: -10 = cuando la desviación sea inferior al -10%)</source>
+<target>% deviation that will trigger the alert (e.g. -10 = when the deviation is below -10%)</target>
+</trans-unit>
+
+<trans-unit id="whenKpiDeviationIs">
+<source>Cuando el % es</source>
+<target>When the % is</target>
+</trans-unit>
+
 <trans-unit id="textChangeColor">
 <source>el texto cambiará a este color</source>
 <target>the text will change to this color</target>

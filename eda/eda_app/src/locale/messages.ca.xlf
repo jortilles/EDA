@@ -5326,6 +5326,21 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Valor numèric que activarà l'alerta</target>
 </trans-unit>
 
+<trans-unit id="thresholdValuePercent">
+  <source>Valor umbral (%)</source>
+  <target>Valor llindar (%)</target>
+</trans-unit>
+
+<trans-unit id="deviationPercTrigAlert">
+  <source>% de desviación que activará la alerta (ej: -10 = cuando la desviación sea inferior al -10%)</source>
+  <target>% de desviació que activarà l'alerta (ex: -10 = quan la desviació sigui inferior al -10%)</target>
+</trans-unit>
+
+<trans-unit id="whenKpiDeviationIs">
+  <source>Cuando el % es</source>
+  <target>Quan el % és</target>
+</trans-unit>
+
 <trans-unit id="textChangeColor">
   <source>el texto cambiará a este color</source>
   <target>el text canviarà a aquest color</target>

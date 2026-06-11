@@ -114,9 +114,23 @@ export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewIni
     }
 
     getValueStyle(): any {
-        const c = this.inject?.kpiColor
+        const c = this._alertColor()
+            || this.inject?.kpiColor
             || ((this.displayVsPercent ?? 0) >= 0 ? this.positiveColor : this.negativeColor);
         return { color: c, 'font-family': this.family };
+    }
+
+    private _alertColor(): string | null {
+        const limits: any[] = this.inject?.alertLimits;
+        if (!limits?.length || this.displayVsPercent === null) return null;
+        const pct = this.displayVsPercent;
+        for (const a of limits) {
+            const thr = Number(a.value);
+            if (a.operand === '<' && pct < thr) return a.color;
+            if (a.operand === '=' && pct === thr) return a.color;
+            if (a.operand === '>' && pct > thr) return a.color;
+        }
+        return null;
     }
 
     private _computeValueFontSize(): string {

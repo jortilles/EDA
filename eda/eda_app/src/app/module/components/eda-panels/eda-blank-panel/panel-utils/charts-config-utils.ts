@@ -59,6 +59,7 @@ export const ChartsConfigUtils = {
         negativeColor: inst?.inject?.negativeColor || '',
         prefixImage: inst?.inject?.prefixImage || '',
         modifiedFontPoints: inst?.inject?.modifiedFontPoints || 0,
+        alertLimits: inst?.inject?.alertLimits || [],
       };
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType.includes('kpi')) {
       const kpiChart = ebp.panelChart.componentRef.instance.inject?.edaChart;

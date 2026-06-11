@@ -15,14 +15,14 @@
     <div class="flex-1 flex flex-col h-[77vh] overflow-auto">
 
       <!-- Tab buttons: siempre visibles -->
-      <div class="px-6 pt-6 pb-4 grid gap-4" [class.grid-cols-2]="!isKpiTrend && !isKpiDeviation" [class.grid-cols-1]="isKpiTrend || isKpiDeviation">
+      <div class="px-6 pt-6 pb-4 grid gap-4" [class.grid-cols-2]="!isKpiTrend" [class.grid-cols-1]="isKpiTrend">
         <button
           class="kpi-tab-btn"
           [class.kpi-tab-btn--active]="activeTab === 'aspecto'"
           (click)="setActiveTab('aspecto')" i18n="@@kpiAspecto">
           Aspecto
         </button>
-        @if (!isKpiTrend && !isKpiDeviation) {
+        @if (!isKpiTrend) {
         <button
           class="kpi-tab-btn"
           [class.kpi-tab-btn--active]="activeTab === 'alerts'"
@@ -210,10 +210,23 @@
                   </div>
 
                   <div class="space-y-3">
-                    <label for="value" class="text-sm font-medium" i18n="@@thresholdValue">Valor umbral</label>
-                    <input id="value" type="text" i18n-placeholder="@@forExample" placeholder="Ej: 50.5"
+                    <label for="value" class="text-sm font-medium">
+                      @if (isKpiDeviation) {
+                        <span i18n="@@thresholdValuePercent">Valor umbral (%)</span>
+                      } @else {
+                        <span i18n="@@thresholdValue">Valor umbral</span>
+                      }
+                    </label>
+                    <input id="value" type="text"
+                      [placeholder]="isKpiDeviation ? 'Ej: -10' : 'Ej: 50.5'"
                       [(ngModel)]="value" class="w-full px-3 py-2 border rounded-md bg-white" />
-                    <p class="text-xs text-slate-500 italic" i18n="@@numValTrigAlert">Valor numérico que activará la alerta</p>
+                    <p class="text-xs text-slate-500 italic">
+                      @if (isKpiDeviation) {
+                        <span i18n="@@deviationPercTrigAlert">% de desviación que activará la alerta (ej: -10 = cuando la desviación sea inferior al -10%)</span>
+                      } @else {
+                        <span i18n="@@numValTrigAlert">Valor numérico que activará la alerta</span>
+                      }
+                    </p>
                   </div>
 
                   <div class="space-y-3">
@@ -240,8 +253,13 @@
                 <div class="mt-4 flex items-center justify-between">
                   <div class="text-sm text-slate-600">
                     <span class="font-medium" i18n="@@alertsPreview">Vista previa: </span>
-                    <span i18n="@@valueKPI">Cuando el valor KPI es</span><span class="font-mono">{{operand}}</span> que
-                    <span class="font-mono">{{value || "X"}}</span>,
+                    @if (isKpiDeviation) {
+                      <span i18n="@@whenKpiDeviationIs">Cuando el % es</span>
+                    } @else {
+                      <span i18n="@@valueKPI">Cuando el valor KPI es</span>
+                    }
+                    <span class="font-mono">{{operand}}</span> que
+                    <span class="font-mono">{{value || "X"}}{{ isKpiDeviation ? '%' : '' }}</span>,
                     <span class="ml-1 font-medium" [style.color]="color" i18n="@@textChangeColor">el texto cambiará a este color</span>
                   </div>
                   <button (click)="addAlert()"

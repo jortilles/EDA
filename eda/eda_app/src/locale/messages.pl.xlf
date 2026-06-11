@@ -4756,6 +4756,21 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <target>Wartość liczbowa, która spowoduje wyświetlenie alertu</target>
 </trans-unit>
 
+<trans-unit id="thresholdValuePercent">
+  <source>Valor umbral (%)</source>
+  <target>Wartość progowa (%)</target>
+</trans-unit>
+
+<trans-unit id="deviationPercTrigAlert">
+  <source>% de desviación que activará la alerta (ej: -10 = cuando la desviación sea inferior al -10%)</source>
+  <target>% odchylenia, które spowoduje wyświetlenie alertu (np. -10 = gdy odchylenie jest poniżej -10%)</target>
+</trans-unit>
+
+<trans-unit id="whenKpiDeviationIs">
+  <source>Cuando el % es</source>
+  <target>Gdy % wynosi</target>
+</trans-unit>
+
 <trans-unit id="textChangeColor">
   <source>el texto cambiará a este color</source>
   <target>tekst zmieni się na ten kolor</target>

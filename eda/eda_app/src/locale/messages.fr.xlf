@@ -5260,6 +5260,21 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
   <target>Valeur numérique qui déclenchera l'alerte</target>
 </trans-unit>
 
+<trans-unit id="thresholdValuePercent">
+  <source>Valor umbral (%)</source>
+  <target>Valeur seuil (%)</target>
+</trans-unit>
+
+<trans-unit id="deviationPercTrigAlert">
+  <source>% de desviación que activará la alerta (ej: -10 = cuando la desviación sea inferior al -10%)</source>
+  <target>% d'écart qui déclenchera l'alerte (ex: -10 = lorsque l'écart est inférieur à -10%)</target>
+</trans-unit>
+
+<trans-unit id="whenKpiDeviationIs">
+  <source>Cuando el % es</source>
+  <target>Quand le % est</target>
+</trans-unit>
+
 <trans-unit id="textChangeColor">
   <source>el texto cambiará a este color</source>
   <target>le texte changera de couleur</target>

@@ -1175,6 +1175,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.negativeColor = cfg.negativeColor || '';
         chartConfig.prefixImage = cfg.prefixImage || '';
         chartConfig.modifiedFontPoints = cfg.modifiedFontPoints || 0;
+        chartConfig.alertLimits = cfg.alertLimits || [];
 
         this.createEdaKpiDeviationComponent(chartConfig);
     }
