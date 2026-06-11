@@ -10,19 +10,21 @@ import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { lastValueFrom } from 'rxjs';
 import { NgxCsvParser } from 'ngx-csv-parser';
 import { ChangeDetectorRef } from '@angular/core';
-
-
 import { DropdownModule } from 'primeng/dropdown';
+import { HoldedFormComponent } from '../datasource-plugins/holded/holded-form.component';
+import { PluginFormService } from '../datasource-plugins/plugin-form.service';
 
 @Component({
   standalone: true,
   selector: 'app-datasource-connection-detail',
   templateUrl: './datasource-connection-detail.page.html',
   styleUrls: ['./datasource-connection-detail.page.css'],
-  imports: [SharedModule, CommonModule, FormsModule, ReactiveFormsModule, IconComponent, DropdownModule]
+  imports: [SharedModule, CommonModule, FormsModule, ReactiveFormsModule, IconComponent, DropdownModule, HoldedFormComponent],
+  providers: [PluginFormService]
 })
 export class DataSourceConnectionDetailPage implements OnInit {
-  private uploadFileService = inject(UploadFileService);
+  private uploadFileService  = inject(UploadFileService);
+  private pluginFormService  = inject(PluginFormService);
 
   @ViewChild('fileUploader', { static: false }) fileUploader: UploadFileComponent;
   @ViewChild('excelFile', { static: false }) excelFile: ElementRef<HTMLInputElement>;
@@ -221,7 +223,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     } else if (type === 'odoo') {
       this.saveOdooDataSource();
     } else if (type === 'holded') {
-      this.saveHoldedDataSource();
+      this.pluginFormService.triggerSave();
     } else {
       this.saveDataSource();
     }

@@ -92,19 +92,19 @@ export class HoldedApiService {
     static async downloadToFolder(params: HoldedDownloadParams, folderPath: string): Promise<HoldedDownloadResult> {
         const { apiKey, dateFrom, dateTo } = params;
 
-        console.log(`[Holded] Iniciando descarga → ${folderPath}`);
+        console.log(`[Holded] Starting download → ${folderPath}`);
 
         // 1. Contacts
         const contacts = await HoldedApiService.fetchAllPages<any>(apiKey, '/contacts/v1/contacts');
-        console.log(`[Holded] Contactos: ${contacts.length}`);
+        console.log(`[Holded] contacts: ${contacts.length}`);
 
         // 2. Products
         const products = await HoldedApiService.fetchAllPages<any>(apiKey, '/products/v1/products');
-        console.log(`[Holded] Productos: ${products.length}`);
+        console.log(`[Holded] products: ${products.length}`);
 
         // 3. Invoice list
         const invoices = await HoldedApiService.fetchAllPages<any>(apiKey, '/invoicing/v1/documents/invoice');
-        console.log(`[Holded] Facturas: ${invoices.length}`);
+        console.log(`[Holded] invoices: ${invoices.length}`);
 
         // 4. Invoice line items — requires individual detail fetch per invoice
         const allLines: any[] = [];
@@ -115,13 +115,13 @@ export class HoldedApiService {
                 // Holded returns line items as `products` or `items`
                 const items: any[] = detail.products || detail.items || [];
                 items.forEach((item: any, idx: number) => {
-                    allLines.push({ ...item, factura_id: inv.id, _lineIdx: idx });
+                    allLines.push({ ...item, invoice_id: inv.id, _lineIdx: idx });
                 });
             } catch {
                 // skip failed detail fetch silently
             }
         }
-        console.log(`[Holded] Líneas de factura: ${allLines.length}`);
+        console.log(`[Holded] invoice lines: ${allLines.length}`);
 
         // 5. Accounting — daily ledger (best effort)
         let ledgerEntries: any[] = [];
@@ -136,22 +136,22 @@ export class HoldedApiService {
                 const data = await res.json() as any;
                 ledgerEntries = Array.isArray(data) ? data : [];
             } else {
-                console.warn(`[Holded] No se pudo obtener el libro diario (HTTP ${res.status})`);
+                console.warn(`[Holded] Could not fetch daily ledger (HTTP ${res.status})`);
             }
         } catch (e: any) {
             console.warn('[Holded] Error descargando asientos contables:', e.message);
         }
-        console.log(`[Holded] Asientos contables: ${ledgerEntries.length}`);
+        console.log(`[Holded] ledger entries: ${ledgerEntries.length}`);
 
         // Ensure folder exists
         if (!fs.existsSync(folderPath)) {
             fs.mkdirSync(folderPath, { recursive: true });
         }
 
-        // facturas.csv
-        HoldedApiService.writeCsv(path.join(folderPath, 'facturas.csv'),
-            ['id', 'numero', 'fecha', 'fecha_vencimiento', 'contacto_id', 'contacto', 'codigo_contacto',
-             'divisa', 'tipo_cambio', 'subtotal', 'descuento', 'impuestos', 'total', 'estado', 'pagado', 'pendiente'],
+        // invoices.csv
+        HoldedApiService.writeCsv(path.join(folderPath, 'invoices.csv'),
+            ['id', 'number', 'date', 'due_date', 'contact_id', 'contact', 'contact_code',
+             'currency', 'exchange_rate', 'subtotal', 'discount', 'taxes', 'total', 'status', 'paid', 'pending'],
             invoices.map((inv: any) => [
                 inv.id, inv.docNumber || '',
                 HoldedApiService.formatDate(inv.date),
@@ -163,13 +163,13 @@ export class HoldedApiService {
             ])
         );
 
-        // facturas_lineas.csv
-        HoldedApiService.writeCsv(path.join(folderPath, 'facturas_lineas.csv'),
-            ['id', 'factura_id', 'producto_id', 'nombre', 'sku', 'unidades',
-             'precio_unitario', 'descuento', 'subtotal', 'total', 'impuesto_pct', 'tipo'],
+        // invoice_lines.csv
+        HoldedApiService.writeCsv(path.join(folderPath, 'invoice_lines.csv'),
+            ['id', 'invoice_id', 'product_id', 'name', 'sku', 'quantity',
+             'unit_price', 'discount', 'subtotal', 'total', 'tax_pct', 'type'],
             allLines.map((line: any, idx: number) => [
-                `${line.factura_id}_${idx}`,
-                line.factura_id, line.productId || '',
+                `${line.invoice_id}_${idx}`,
+                line.invoice_id, line.productId || '',
                 line.name || '', line.sku || '',
                 line.units ?? line.qty ?? 1,
                 line.price ?? 0, line.discount ?? 0,
@@ -178,9 +178,9 @@ export class HoldedApiService {
             ])
         );
 
-        // contactos.csv
-        HoldedApiService.writeCsv(path.join(folderPath, 'contactos.csv'),
-            ['id', 'codigo', 'nombre', 'nombre_comercial', 'email', 'telefono', 'movil', 'tipo', 'nif', 'pais'],
+        // contacts.csv
+        HoldedApiService.writeCsv(path.join(folderPath, 'contacts.csv'),
+            ['id', 'code', 'name', 'trade_name', 'email', 'phone', 'mobile', 'type', 'vat', 'country'],
             contacts.map((c: any) => [
                 c.id, c.code || '', c.name || '', c.tradeName || '',
                 c.email || '', c.phone || '', c.mobile || '',
@@ -189,9 +189,9 @@ export class HoldedApiService {
             ])
         );
 
-        // productos.csv
-        HoldedApiService.writeCsv(path.join(folderPath, 'productos.csv'),
-            ['id', 'nombre', 'descripcion', 'precio', 'coste', 'impuesto_pct', 'tipo', 'sku', 'categoria_id', 'categoria'],
+        // products.csv
+        HoldedApiService.writeCsv(path.join(folderPath, 'products.csv'),
+            ['id', 'name', 'description', 'price', 'cost', 'tax_pct', 'type', 'sku', 'category_id', 'category'],
             products.map((p: any) => [
                 p.id, p.name || '', p.desc || p.description || '',
                 p.price ?? 0, p.cost ?? 0, p.tax ?? 0,
@@ -200,9 +200,9 @@ export class HoldedApiService {
             ])
         );
 
-        // asientos.csv
-        HoldedApiService.writeCsv(path.join(folderPath, 'asientos.csv'),
-            ['fecha', 'cuenta', 'nombre_cuenta', 'descripcion', 'debe', 'haber', 'documento_id'],
+        // ledger.csv
+        HoldedApiService.writeCsv(path.join(folderPath, 'ledger.csv'),
+            ['date', 'account', 'account_name', 'description', 'debit', 'credit', 'document_id'],
             ledgerEntries.map((e: any) => [
                 HoldedApiService.formatDate(e.date) || e.date || '',
                 e.account || '', e.accountName || e.account_name || '',
@@ -213,7 +213,7 @@ export class HoldedApiService {
             ])
         );
 
-        console.log(`[Holded] 5 archivos CSV escritos en ${folderPath}`);
+        console.log(`[Holded] 5 CSV files written to ${folderPath}`);
 
         return {
             invoices: invoices.length,

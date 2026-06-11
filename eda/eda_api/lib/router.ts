@@ -16,7 +16,7 @@ import AuthRouter from './module/auth/auth.router';
 import CustomHTMLRouter from './module/customHTML/customHTML.router';
 import McpRouter from './module/mcp/mcp.router';
 import OdooRouter from './module/odoo/odoo.router';
-import HoldedRouter from './module/holded/holded.router';
+import { PluginRegistry } from './plugins/index';
 
 const router = express.Router();
 
@@ -42,7 +42,7 @@ router.use('/tp', ThirdPartyRouter);
 
 router.use('/assistant', AiRouter);
 
-router.use('/arima', ArimaRouter);  
+router.use('/arima', ArimaRouter);
 
 router.use('/auth', AuthRouter);
 
@@ -52,7 +52,12 @@ router.use('/ia', McpRouter);
 
 router.use('/odoo', OdooRouter);
 
-router.use('/holded', HoldedRouter);
+// Plugin-based routers (registered via PluginRegistry)
+for (const plugin of PluginRegistry.getAll()) {
+    if (plugin.router && plugin.routerPath) {
+        router.use(plugin.routerPath, plugin.router);
+    }
+}
 
 /* ruta per documentació*/
 router.use("/api-docs", DocuRouter);

@@ -15,7 +15,11 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { AggregationTypes } from '../global/model/aggregation-types';
 import { OdooApiService } from '../../services/odoo/odoo-api.service';
+import { GA4ApiService } from '../../services/google-analytics/ga4-api.service';
+import { applyGA4Labels, extractGA4LocaleFromRequest } from '../../services/google-analytics/ga4-labels';
+import { applyOdooLabels, resolveOdooLocale } from '../../services/odoo/odoo-labels';
 import { HoldedApiService } from '../../services/holded/holded-api.service';
+import { applyHoldedLabels, resolveHoldedLocale } from '../../services/holded/holded-labels';
 import { DuckDBConnection } from '../../services/connection/db-systems/duckdb-connection';
 const cache_config = require('../../../config/cache.config');
 
@@ -991,9 +995,9 @@ export class DataSourceController {
             const conn = new DuckDBConnection(duckConfig);
             const tables = await conn.generateDataModel(optimize ? 1 : 0, '');
 
-            // Inject Odoo relations that the auto-detection algorithm cannot infer
-            // (column names differ between FK and PK: factura_id ≠ id)
             DataSourceController.addOdooRelations(tables);
+            const odooLocale = resolveOdooLocale(req.body?.locale || req.headers?.['accept-language']);
+            applyOdooLabels(tables, odooLocale);
 
             const CC = allowCache ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
 
@@ -1058,10 +1062,10 @@ export class DataSourceController {
             });
         };
 
-        link('facturas_lineas', 'factura_id',  'facturas',   'id');
-        link('facturas',        'cliente_id',   'clientes',   'id');
-        link('facturas',        'vendedor_id',  'vendedores', 'id');
-        link('facturas_lineas', 'producto_id',  'productos',  'id');
+        link('invoice_lines', 'invoice_id',     'invoices', 'id');
+        link('invoices',      'partner_id',     'partners', 'id');
+        link('invoices',      'salesperson_id', 'users',    'id');
+        link('invoice_lines', 'product_id',     'products', 'id');
     }
 
     static async AddHoldedDataSource(req: Request, res: Response, next: NextFunction) {
@@ -1081,6 +1085,8 @@ export class DataSourceController {
             const tables = await conn.generateDataModel(optimize ? 1 : 0, '');
 
             DataSourceController.addHoldedRelations(tables);
+            const holdedLocale = resolveHoldedLocale(req.body?.locale || req.headers?.['accept-language']);
+            applyHoldedLabels(tables, holdedLocale);
 
             const CC = allowCache ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
 
@@ -1145,10 +1151,10 @@ export class DataSourceController {
             });
         };
 
-        link('facturas_lineas', 'factura_id',   'facturas',   'id');
-        link('facturas',        'contacto_id',   'contactos',  'id');
-        link('facturas_lineas', 'producto_id',   'productos',  'id');
-        link('asientos',        'documento_id',  'facturas',   'id');
+        link('invoice_lines', 'invoice_id', 'invoices', 'id');
+        link('invoices',      'contact_id', 'contacts', 'id');
+        link('invoice_lines', 'product_id', 'products', 'id');
+        link('ledger',        'document_id', 'invoices', 'id');
     }
 
     static async GetDuckDbFolders(req: Request, res: Response, next: NextFunction) {
