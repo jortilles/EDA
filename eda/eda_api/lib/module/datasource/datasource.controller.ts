@@ -338,10 +338,10 @@ export class DataSourceController {
                 });
 
 
-                const iDataSource = new DataSource(ds);
+                ds.markModified('ds');
 
                 try {
-                    const dataSource = await iDataSource.save();
+                    const dataSource = await ds.save();
                     return res.status(200).json({ ok: true, message: 'Modelo actualizado correctamente' });
                 } catch (error) {
                     console.log(error);
