@@ -3486,6 +3486,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica</source>
     <target>KPI Tendència necessita una columna de data en format mes i una columna numèrica</target>
   </trans-unit>
+  <trans-unit id="chartInfoKpiDeviation">
+    <source>KPI Desviación necesita dos columnas numéricas: valor actual y valor de referencia</source>
+    <target>KPI Desviació necessita dues columnes numèriques: valor actual i valor de referència</target>
+  </trans-unit>
 
   <trans-unit id="trendTitleYear"><source>Año actual</source><target>Any actual</target></trans-unit>
   <trans-unit id="trendTitleMonth"><source>Mes actual</source><target>Mes actual</target></trans-unit>
@@ -4111,6 +4115,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
       <trans-unit id="chartTypesKPITrend">
         <source>KPI Tendencia</source>
         <target>KPI Tendència</target>
+      </trans-unit>
+      <trans-unit id="chartTypesKPIDeviation">
+        <source>KPI Desviación</source>
+        <target>KPI Desviació</target>
       </trans-unit>
 
   <trans-unit id="urlEditSaveError">
@@ -5316,6 +5324,21 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <trans-unit id="numValTrigAlert">
   <source>Valor numérico que activará la alerta</source>
   <target>Valor numèric que activarà l'alerta</target>
+</trans-unit>
+
+<trans-unit id="thresholdValuePercent">
+  <source>Valor umbral (%)</source>
+  <target>Valor llindar (%)</target>
+</trans-unit>
+
+<trans-unit id="deviationPercTrigAlert">
+  <source>% de desviación que activará la alerta (ej: -10 = cuando la desviación sea inferior al -10%)</source>
+  <target>% de desviació que activarà l'alerta (ex: -10 = quan la desviació sigui inferior al -10%)</target>
+</trans-unit>
+
+<trans-unit id="whenKpiDeviationIs">
+  <source>Cuando el % es</source>
+  <target>Quan el % és</target>
 </trans-unit>
 
 <trans-unit id="textChangeColor">

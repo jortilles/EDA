@@ -25,6 +25,7 @@ import { TableConfig } from './panel-charts/chart-configuration-models/table-con
 import { ChartConfig } from './panel-charts/chart-configuration-models/chart-config';
 import { ChartJsConfig } from './panel-charts/chart-configuration-models/chart-js-config';
 import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
+import { KpiDeviationConfig } from './panel-charts/chart-configuration-models/kpi-deviation-config';
 import { DynamicTextConfig } from './panel-charts/chart-configuration-models/dynamicText-config';
 import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
 // Eda Services
@@ -734,8 +735,9 @@ public tableNodeExpand(event: any): void {
             // Nav filters are runtime-only — strip before saving so they don't pollute
             // the saved filters. They are restored via navActiveNodes.navFilters on reload.
             query.query.filters = (query.query.filters || []).filter((f: any) => !f.isNavFilter);
-            const chart = this.chartForm?.value.chart?.value ? this.chartForm?.value.chart?.value : this.chartForm?.value.chart;
-            const edaChart = this.panelChart?.props.edaChart;
+            const formChart = this.chartForm?.value.chart?.value ? this.chartForm?.value.chart?.value : this.chartForm?.value.chart;
+            const chart = formChart || this.graficos?.chartType;
+            const edaChart = this.panelChart?.props.edaChart || this.graficos?.edaChart;
             const navigationLinks: any[] = this.buildNavigationLinks(query);
             const navActiveNodes = (this.navState || []).map((entry: any) => ({
                 parentKey: entry.rootKey,
@@ -1738,6 +1740,30 @@ public tableNodeExpand(event: any): void {
 
     public onCloseKpiProperties(event, response): void {
     if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+
+        if (response.chartType === 'kpideviation') {
+            this.panel.content.query.output.config = {
+                ...this.panel.content.query.output.config,
+                backgroundColor: response.backgroundColor || '',
+                kpiColor: response.kpiColor || '',
+                prefixImage: response.prefixImage || '',
+                modifiedFontPoints: response.modifiedFontPoints || 0,
+                alertLimits: response.alerts || [],
+            };
+            const config = new ChartConfig(new KpiDeviationConfig({
+                backgroundColor: response.backgroundColor || '',
+                kpiColor: response.kpiColor || '',
+                prefixImage: response.prefixImage || '',
+                modifiedFontPoints: response.modifiedFontPoints || 0,
+                alertLimits: response.alerts || [],
+            }));
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, 'kpideviation', 'kpideviation', config);
+            this.dashboardService._notSaved.next(true);
+            this.kpiController = undefined;
+            return;
+        }
+
+        // Usar spread operator para mantener el config existente
         // Use the spread operator to preserve the existing config.
         this.panel.content.query.output.config = {
             ...this.panel.content.query.output.config,
@@ -1769,7 +1795,7 @@ public tableNodeExpand(event: any): void {
                 response.edaChart.showPredictionLines,
             );
         }
-        
+
         const config = new ChartConfig(
             new KpiConfig({
                 sufix: response.sufix,
@@ -1782,13 +1808,13 @@ public tableNodeExpand(event: any): void {
                 prefixImage: response.prefixImage || '',
             })
         );
-        
+
         this.renderChart(
-            this.currentQuery, 
-            this.chartLabels, 
-            this.chartData, 
-            response.chartType, 
-            response.chartSubType, 
+            this.currentQuery,
+            this.chartLabels,
+            this.chartData,
+            response.chartType,
+            response.chartSubType,
             config
         );
         this.dashboardService._notSaved.next(true);

@@ -1312,6 +1312,27 @@
           <context context-type="linenumber">98</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="thresholdValuePercent" datatype="html">
+        <source>Valor umbral (%)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">215</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="deviationPercTrigAlert" datatype="html">
+        <source>% de desviación que activará la alerta (ej: -10 = cuando la desviación sea inferior al -10%)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">225</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="whenKpiDeviationIs" datatype="html">
+        <source>Cuando el % es</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
+          <context context-type="linenumber">257</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="MailSending" datatype="html">
         <source> Envío de alertas por mail </source>
         <context-group purpose="location">
@@ -1697,6 +1718,20 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/panel-utils/ebp-utils.ts</context>
           <context context-type="linenumber">93</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="chartInfoKpiTrend" datatype="html">
+        <source>KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/panel-utils/ebp-utils.ts</context>
+          <context context-type="linenumber">101</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="chartInfoKpiDeviation" datatype="html">
+        <source>KPI Desviación necesita dos columnas numéricas: valor actual y valor de referencia</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/panel-utils/ebp-utils.ts</context>
+          <context context-type="linenumber">106</context>
         </context-group>
       </trans-unit>
       <trans-unit id="removeColumnGlobalFilter" datatype="html">
@@ -5082,6 +5117,20 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/services/utils/chart-utils.service.ts</context>
           <context context-type="linenumber">78</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="chartTypesKPITrend" datatype="html">
+        <source>KPI Tendencia</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/services/utils/chart-utils.service.ts</context>
+          <context context-type="linenumber">67</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="chartTypesKPIDeviation" datatype="html">
+        <source>KPI Desviación</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/services/utils/chart-utils.service.ts</context>
+          <context context-type="linenumber">68</context>
         </context-group>
       </trans-unit>
       <trans-unit id="filters1" datatype="html">

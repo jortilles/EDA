@@ -9,6 +9,7 @@ import { MapConfig } from '../panel-charts/chart-configuration-models/map-config
 import { SankeyConfig } from '../panel-charts/chart-configuration-models/sankey-config';
 import { FunnelConfig } from '../panel-charts/chart-configuration-models/funnel.config';
 import { KpiTrendConfig } from '../panel-charts/chart-configuration-models/kpi-trend-config';
+import { KpiDeviationConfig } from '../panel-charts/chart-configuration-models/kpi-deviation-config';
 
 import { TableConfig } from '../panel-charts/chart-configuration-models/table-config';
 import { ScatterConfig } from '../panel-charts/chart-configuration-models/scatter-config';
@@ -49,6 +50,17 @@ export const ChartsConfigUtils = {
         colorEnabled: ebp.panelChart.componentRef.instance.inject.colorEnabled !== false,
       }
 
+    } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'kpideviation') {
+      const inst = ebp.panelChart.componentRef?.instance;
+      config = {
+        backgroundColor: inst?.inject?.backgroundColor || '',
+        kpiColor: inst?.inject?.kpiColor || '',
+        positiveColor: inst?.inject?.positiveColor || '',
+        negativeColor: inst?.inject?.negativeColor || '',
+        prefixImage: inst?.inject?.prefixImage || '',
+        modifiedFontPoints: inst?.inject?.modifiedFontPoints || 0,
+        alertLimits: inst?.inject?.alertLimits || [],
+      };
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType.includes('kpi')) {
       const kpiChart = ebp.panelChart.componentRef.instance.inject?.edaChart;
 
@@ -178,6 +190,8 @@ export const ChartsConfigUtils = {
             return new DynamicTextConfig(null);
         } else if (type === 'kpitrend') {
             return new KpiTrendConfig();
+        } else if (type === 'kpideviation') {
+            return new KpiDeviationConfig();
         }
     },
 

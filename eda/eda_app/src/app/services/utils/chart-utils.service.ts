@@ -65,6 +65,7 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypesKPILINE:KPI + Gráfico de Lineas`, value: 'kpiline', subValue: 'kpiline', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesKPIAREA:KPI + Gráfico de Áreas`, value: 'kpiline', subValue: 'kpiarea', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesKPITrend:KPI Tendencia`, value: 'kpitrend', subValue: 'kpitrend', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesKPIDeviation:KPI Desviación`, value: 'kpideviation', subValue: 'kpideviation', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesDynamicText:Texto Dinámico`, value: 'dynamicText', subValue: 'dynamicText', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes15:Velocímetro`, value: 'knob', subValue: 'knob', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes3:Gráfico de Pastel`, value: 'doughnut', subValue: 'doughnut', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
@@ -653,7 +654,7 @@ export class ChartUtilsService {
                 'table', 'crosstable', 'kpi','dynamicText', 'geoJsonMap', 'coordinatesMap',
                 'doughnut', 'polarArea', 'line', 'kpiline', 'area', 'kpiarea', 'bar', 'kpibar', 'histogram',  'funnel', 'bubblechart',
                 'horizontalBar', 'barline', 'stackedbar', 'parallelSets', 'treeMap', 'scatterPlot', 'knob' ,
-                'pyramid', 'radar', 'stackedbar100', 'treetable', 'sunburst', 'kpitrend'
+                'pyramid', 'radar', 'stackedbar100', 'treetable', 'sunburst', 'kpitrend', 'kpideviation'
             ];
 
         //table (at least one column)
@@ -786,6 +787,11 @@ export class ChartUtilsService {
             && dataDescription.otherColumns.length === 1
             && dateColForTrend && kpiTrendFormats.includes(dateColForTrend.format)) {
             notAllowed.splice(notAllowed.indexOf('kpitrend'), 1);
+        }
+
+        // kpideviation: exactamente 2 columnas numéricas, sin otras columnas
+        if (dataDescription.numericColumns.length === 2 && dataDescription.otherColumns.length === 0) {
+            notAllowed.splice(notAllowed.indexOf('kpideviation'), 1);
         }
 
         return notAllowed;
