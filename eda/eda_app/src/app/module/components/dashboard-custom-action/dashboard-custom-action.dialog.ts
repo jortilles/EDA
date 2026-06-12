@@ -39,9 +39,9 @@ export class DashboardCustomActionDialog{
   }
   
   onRowEditInit(url: any, index: number, urls: any) {
-    this.clonedUrls[url.id] = { ...url }; // variable de clonacion temporal
+    this.clonedUrls[url.id] = { ...url }; // temporary clone variable
 
-    //Entrar en edición
+    // Enter edit mode
     this.editingRow = index;
     this.editing = true;
   }
@@ -66,7 +66,7 @@ export class DashboardCustomActionDialog{
   }
 
   onRowEditDelete(index: any) {
-    // comparar los ids del arreglo urls y del objeto de objetos clonedUrls
+    // compare the ids from the urls array and the clonedUrls object
     for (let clave in this.clonedUrls){
       if(this.clonedUrls[clave].id === this.urls[index].id) delete this.clonedUrls[clave];
     }
@@ -77,12 +77,12 @@ export class DashboardCustomActionDialog{
   
   addUrlDashboard(url: string, name: string, description: string) {
 
-    // Confirmar si se debe verificar la URL de manera estandarizada - consultar con Juanjo
+    // Confirm whether the URL should be validated in a standardized way - consult with Juanjo
     if(url === undefined || name===undefined || description===undefined){
       this.alertService.addError($localize`:@@addUrlDashboardUndefined:Faltan rellenar algunos campos`);
     }
     else {
-      // Hallando el mayor valor de todos los id del arreglo urls para agregar un nuevo elemento con un id de mayor valor.
+      // Find the highest id value in the urls array to add a new element with a higher id.
       let mayor = 0;
       for (var i = 0; i < this.urls.length; i++) {
         if(this.urls[i].id>mayor) mayor = this.urls[i].id
@@ -97,11 +97,11 @@ export class DashboardCustomActionDialog{
         });
 
         this.alertService.addSuccess($localize`:@@urlAddedSuccessfully:URL agregado correctamente`);
-        //not saved alert message
+        // not saved alert message
         this.dashboardService._notSaved.next(true);
 
 
-        // Reiniciando los valores de los campos de agregar URL
+        // Reset the add URL field values
         this.urlAdd=''
         this.nameAdd=''
         this.descriptionAdd=''
@@ -143,6 +143,3 @@ export class DashboardCustomActionDialog{
     this.close.emit();
   }
 }
-
-
-

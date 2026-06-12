@@ -23,7 +23,7 @@ export class BubblechartDialog implements OnInit, AfterViewChecked {
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
 
-  /** Fuente de verdad para colores por label */
+  /** Source of truth for colors by label */
   public assignedColors: { value: string | number; color: string }[] = [];
   private originalAssignedColors: { value: string | number; color: string }[] = [];
 
@@ -41,13 +41,13 @@ export class BubblechartDialog implements OnInit, AfterViewChecked {
   ngAfterViewChecked(): void {
     if (!this.assignedColors.length && this.myPanelChartComponent?.componentRef) {
       setTimeout(() => {
-        // Recuperar labels y colores del chart
+        // Retrieve labels and colors from the chart
         this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
 
         const chartAssignedColors: { value: string | number; color: string }[] =
           this.myPanelChartComponent.props.config.getConfig()['assignedColors'] || [];
 
-        // Inicializar assignedColors desde chart o con negro por defecto
+        // Initialize assignedColors from the chart or with black by default
         this.assignedColors = this.labels.map(label => {
           const match = chartAssignedColors.find(c => c.value === label);
           return {
@@ -56,18 +56,18 @@ export class BubblechartDialog implements OnInit, AfterViewChecked {
           };
         });
 
-        // Guardar copia para cancelación
+        // Save a copy for cancellation
         this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
       }, 0);
     }
   }
 
-  /** Cierra el diálogo */
+  /** Closes the dialog */
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     this.controller.close(event, response);
   }
 
-  /** Guardar configuración de colores */
+  /** Saves the color configuration */
   saveChartConfig(): void {
     const colorsForConfig = this.assignedColors.map(c => c.color);
 
@@ -78,7 +78,7 @@ export class BubblechartDialog implements OnInit, AfterViewChecked {
     this.onClose(EdaDialogCloseEvent.UPDATE, { colors: colorsForConfig });
   }
 
-  /** Cancelar cambios y restaurar estado inicial */
+  /** Cancels changes and restores the initial state */
   closeChartConfig(): void {
     this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
 
@@ -90,7 +90,7 @@ export class BubblechartDialog implements OnInit, AfterViewChecked {
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
-  /** Cuando el usuario edita un color individual */
+  /** Called when the user edits an individual color */
   handleInputColor(): void {
     const colorsForConfig = this.assignedColors.map(c => c.color);
     this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(colorsForConfig));
@@ -98,24 +98,24 @@ export class BubblechartDialog implements OnInit, AfterViewChecked {
     this.myPanelChartComponent.changeChartType();
   }
 
-  /** Aplicar paleta completa al chart */
+  /** Applies the full palette to the chart */
   onPaletteSelected(): void {
     if (!this.selectedPalette) return;
     const length = this.labels.length;
 
-    // Mapear paleta al número de labels
+    // Map the palette to the number of labels
     const newColors: string[] = [];
     for (let i = 0; i < length; i++) {
       newColors.push(this.selectedPalette.paleta[i % this.selectedPalette.paleta.length]);
     }
 
-    // Actualizar assignedColors
+    // Update assignedColors
     this.assignedColors = this.labels.map((label, i) => ({
       value: label,
       color: newColors[i],
     }));
 
-    // Sincronizar config y TreeMapConfig
+    // Synchronize config and TreeMapConfig
     const colorsForConfig = this.assignedColors.map(c => c.color);
     this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(colorsForConfig));
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];

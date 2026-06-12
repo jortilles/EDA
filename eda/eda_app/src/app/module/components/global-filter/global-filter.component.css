@@ -1,8 +1,8 @@
 .filter-label::after {
-  content: "\00a0"; /* 1 espacio */
+  content: "\00a0"; /* 1 space */
 }
 
-/* nombre de filtro largo -> truncar con ... */
+/* long filter name -> truncate with ... */
 .filter-label,
 .filter-row > span {
   display: inline-block;
@@ -14,7 +14,7 @@
   text-overflow: ellipsis;
 }
 
-/* Input de date picker */
+/* Date picker input */
 ::ng-deep eda-date-picker input {
   height: 40px;
   width: 100%;
@@ -25,10 +25,10 @@
 }
 
 /*****************/
-/* FILTROS Y CONTENEDORES */
+/* FILTERS AND CONTAINERS */
 /*****************/
 
-/* contiene todos los filtros*/
+/* contains all filters */
 .filters-container {
   display: ruby;
   max-width: 70vw;
@@ -72,18 +72,18 @@
   transition: background-color 0.2s ease;
   background-color: rgba(var(--corporate-primary-rgb), 0.08);
 }
-/* filtro individual */
+/* individual filter */
 .filter-card {
   flex: 0 0 auto;
 }
 
-/* filtro sin autocomplete (multiselect) */
+/* filter without autocomplete (multiselect) */
 :host ::ng-deep .p-multiselect {
   max-width: 10vw;
   min-width: 10vw;
 }
 
-/* flecha tooltip de filtro */
+/* filter tooltip arrow */
 ::ng-deep .p-overlaypanel:before {
   border: solid transparent !important;
   border-bottom-color: #ffffff !important;
@@ -95,7 +95,7 @@
 /* AUTOCOMPLETE  */
 /*****************/
 
-/* Contenedor principal del autocomplete */
+/* Main autocomplete container */
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container {
   display: flex;
   flex-direction: row-reverse; 
@@ -111,7 +111,7 @@
   border-radius: 10px;
 }
 
-/* chips - los tokens  */
+/* chips - the tokens */
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container .p-autocomplete-token {
   border-radius: 9999px;
   font-size: 0.875rem;
@@ -121,7 +121,7 @@
   align-items: center;
 }
 
-/* Zona Input  */
+/* Input area */
 .modern-autocomplete ::ng-deep .p-autocomplete-input-token {
   order: 999; 
   flex: none;
@@ -135,14 +135,14 @@
   background-color: #fff;
 }
 
-/* Loader de autocomplete */
+/* Autocomplete loader */
 .modern-autocomplete ::ng-deep .p-autocomplete-loader {
-  position: absolute; /* para poder moverlo libremente */
-  right: -1.2rem;      /* espacio desde el borde derecho */
-  top: 50%;           /* centrar vertical */
-  transform: translateY(-50%); /* centrar exacto */
+  position: absolute; /* to allow free positioning */
+  right: -1.2rem;      /* spacing from the right edge */
+  top: 50%;           /* center vertically */
+  transform: translateY(-50%); /* exact centering */
   color: var(--corporate-primary);
-  z-index: 10;        /* por si hay otros elementos encima */
+  z-index: 10;        /* in case other elements overlap */
 }
 
 /* INPUT PARA ESCRIBIR */
@@ -152,7 +152,7 @@
   box-shadow: none !important;
 }
 
-/* Scrollbar thmub, cuando pones mouse encima*/
+/* Scrollbar thumb, on mouse hover */
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container::-webkit-scrollbar-thumb {
   background-color: var(--scrollbar-thumb);
 }

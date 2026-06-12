@@ -15,7 +15,7 @@ import { PrimengModule } from 'app/core/primeng.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
-//standalone pruebas
+//Standalone Tests
 import { TableEditRelationsDialogComponent } from './table-edit-relations-dialog/table-edit-relations-dialog.component';
 import { ColumnValueListDialogComponent } from './column-value-list-dialog/column-value-list-dialog.component';
 import { TableRelationsDialogComponent } from './table-relations-dialog/table-relations-dialog.component';
@@ -122,7 +122,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public items: MenuItem[];
     public user: any;
     
-    // Variables de control de estado
+    // State control variables
     public tablesHidden: boolean = false;
     public relationsHidden : boolean = false;
     public columnsHidden: boolean = false;
@@ -211,6 +211,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         { label: 'Csv', value: 'csv'},
         { label: 'DuckDB (CSV)', value: 'duckdb'},
         { label: 'Odoo', value: 'odoo'},
+        { label: 'Google Analytics 4', value: 'googleanalytics'}
         { label: 'Holded', value: 'holded'}
     ];
 
@@ -257,7 +258,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                             const table = this.dataModelService.getTable(this.columnPanel);
 
                             if (row.user) {
-                                // Eliminar permiso de usuario
+                                // Delete user permission
                                 const usersTmp = row._id;
                                 const mdgTmp = this.modelPanel.metadata.model_granted_roles.find(
                                     r => r.table === table.table_name &&
@@ -266,7 +267,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                                 );
                                 tmpPermissions = this.modelPanel.metadata.model_granted_roles.filter(a => a !== mdgTmp);
                             } else if (row.group) {
-                                // Eliminar permiso de grupo
+                                // Delete group permission
                                 const groupTmp = row._id;
                                 const mdgTmp = this.modelPanel.metadata.model_granted_roles.find(
                                     r => r.table === table.table_name &&
@@ -429,12 +430,12 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
 
     carregarPanels() {
-        // Modelo
+        // Model
         this.dataModelService.currentModelPanel.subscribe(
             modelPanel => {
                 this.modelPanel = modelPanel;
                 this.permissions = this.modelPanel.metadata ? this.modelPanel.metadata.model_granted_roles : [];
-                 // Permisos del model
+                 // Model permissions
                 this.permissionModel.value = [];
                 this.permissions.forEach(permission => {
                     if (  permission.table === "fullModel" && permission.column === "fullModel" ) {
@@ -454,7 +455,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             }
         );
 
-        // tabla
+        // Table
         this.dataModelService.currentTablePanel.subscribe(
             tablePanel => {
                 this.tablePanel = tablePanel;
@@ -462,7 +463,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 this.relationsTable.value = []
                 this.permissions = this.modelPanel.metadata ? this.modelPanel.metadata.model_granted_roles : [];
                 this.permissionTable.value = [];
-                // permisos de la taula.
+                // Table permissions
                 this.permissions.forEach(permission => {
                     if (this.tablePanel.technical_name === permission.table&&permission.column === "fullTable") {
                         this.permissionTable.value.push(
@@ -496,7 +497,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             }
         );
 
-        //Columna
+        // Column
         this.dataModelService.currentColumnPanel.subscribe(
             columnPanel => {
 
@@ -510,7 +511,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
                     const table = this.dataModelService.getTable(this.columnPanel);
                     if (this.columnPanel.technical_name === permission.column && table.table_name === permission.table && permission.column != "fullTable" ) {
-                        // Formatear el valor para mostrarlo correctamente
+                        // Format the value to display it correctly
                         let displayValue = '';
                         if (permission.value && Array.isArray(permission.value)) {
                             if (permission.value[0] === '(~ => All)') {
@@ -552,7 +553,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 this.modelPanel = modelPanel;
                 this.selectedTipoBD = this.tiposBD.filter(type => type?.value === modelPanel.connection?.type)[0];
 
-                // selección del SID
+                // SID selection
                 this.selectedSID = this.SID_Types.find(type => type?.value === this.modelPanel.connection?.sid); 
             }, err => this.alertService.addError(err)
         );
@@ -1026,7 +1027,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             cancelButtonText: $localize`:@@cancelarBtn:Cancelar`,
         }).then( (borrado) => {
             if(borrado.value){
-                // Encontrando la vista a editar:
+                // Finding the view to edit:
                 let myViewInEdition;
                 let allViews = this.dataModelService.allViews();
                 myViewInEdition = allViews.find(e => e.table_name === this.tablePanel.technical_name && e.query === this.tablePanel.query && e.table_type === 'view')
@@ -1045,7 +1046,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             return
         }
 
-        // Aca se haran los cambios
+        // Changes will be made here
         this.viewDialogEdition = false;
         this.tablePanel.query = event.query;
         this.tablePanel.columns = event.columns;

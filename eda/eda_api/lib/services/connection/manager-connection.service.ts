@@ -11,8 +11,7 @@ import { JSONWebServiceConnection } from './db-systems/json-webservice-connectio
 import { MongoDBConnection } from './db-systems/mongodb-connection';
 import { ClickHouseConnection } from './db-systems/clickhouse-connection';
 import { DuckDBConnection } from './db-systems/duckdb-connection';
-import { OdooConnection } from './db-systems/odoo-connection';
-import { HoldedConnection } from './db-systems/holded-connection';
+import { PluginRegistry } from '../../plugins';
 import DataSource from '../../module/datasource/model/datasource.model';
 
 export const
@@ -27,9 +26,7 @@ export const
     WEB_SERVICE = 'jsonwebservice',
     MONGODB_CONNECTION = 'mongodb',
     CLICKHOUSE_CONNECTION = 'clickhouse',
-    DUCKDB_CONNECTION = 'duckdb',
-    ODOO_CONNECTION = 'odoo',
-    HOLDED_CONNECTION = 'holded'
+    DUCKDB_CONNECTION = 'duckdb'
 
 
 
@@ -75,12 +72,8 @@ export class ManagerConnectionService {
                 return new ClickHouseConnection(config);
             case DUCKDB_CONNECTION:
                 return new DuckDBConnection(config);
-            case ODOO_CONNECTION:
-                return new OdooConnection(config);
-            case HOLDED_CONNECTION:
-                return new HoldedConnection(config);
             default:
-                return null;
+                return PluginRegistry.getConnection(config.type, config);
         }
     }
 
@@ -110,12 +103,8 @@ export class ManagerConnectionService {
                 return new ClickHouseConnection(config);
             case DUCKDB_CONNECTION:
                 return new DuckDBConnection(config);
-            case ODOO_CONNECTION:
-                return new OdooConnection(config);
-            case HOLDED_CONNECTION:
-                return new HoldedConnection(config);
             default:
-                return null;
+                return PluginRegistry.getConnection(config.type, config);
         }
     }
 

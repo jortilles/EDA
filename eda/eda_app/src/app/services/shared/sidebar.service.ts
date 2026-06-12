@@ -23,7 +23,7 @@ export class SidebarService extends ApiService {
     }
 
     getDataSourceNames(): void {
-       /* this.get(this.globalDSRoute + '/names') Comentado por Juanjo para poder poner el datasource publico*/
+       /* this.get(this.globalDSRoute + '/names') Commented by Juanjo to allow the public datasource */
         this.get(this.globalDSRoute + '/namesForEdit')
             .subscribe((names: any) => {
                 this._datasources.next(names.ds);

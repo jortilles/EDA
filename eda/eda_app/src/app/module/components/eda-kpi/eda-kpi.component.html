@@ -20,8 +20,10 @@
          style="max-width: 100%; overflow: hidden;">
         <span [ngStyle]="getStyle()" (click)="setSufix()"
               style="display: block; text-align: center; overflow-wrap: break-word; word-break: break-word;">
-            <img *ngIf="inject.prefixImage" [src]="inject.prefixImage" alt=""
-                 style="height: 1em; width: auto; vertical-align: middle; object-fit: contain; display: inline;" />
+            @if (inject.prefixImage) {
+              <img [src]="inject.prefixImage" alt=""
+                   style="height: 1em; width: auto; vertical-align: middle; object-fit: contain; display: inline;" />
+            }
             {{inject.value | number:'1.0-10':'es' }} {{inject.sufix}}
         </span>
 

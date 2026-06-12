@@ -59,13 +59,13 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    // Creación del SVG alineada con scatter
+    // SVG creation aligned with scatter
     const container = this.svgContainer.nativeElement as HTMLElement;
 
-    // Crear SVG
+    // Create SVG
     this.svg = d3.select(container).append('svg');
 
-    // ResizeObserver sin atributos innecesarios
+    // ResizeObserver without unnecessary attributes
     this.resizeObserver = new ResizeObserver(entries => {
       let id = `#${this.id}`;
       this.svg = d3.select(id);
@@ -75,7 +75,7 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit, OnDestroy {
     });
     this.resizeObserver.observe(container);
 
-    // Dibujar inicialmente
+    // Initial draw
     if (this.svg) this.svg.remove();
     let id = `#${this.id}`;
     this.svg = d3.select(id);
@@ -91,29 +91,29 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit, OnDestroy {
       this.resizeObserver.disconnect();
   }
 
- // ✅ MÉTODO draw() MEJORADO PARA eda-funnel.component.ts
-// Reemplazar desde la línea 94
+  // Improved draw() method for eda-funnel.component.ts
+  // Replace from line 94
 
 draw() {
-  // Borrado inicial de otros charts 
+  // Initial cleanup of other charts
   this.svg.selectAll('*').remove();
 
-  /**Vars */
+  /** Variables */
   const width = this.svgContainer.nativeElement.clientWidth - 20;
   const height = this.svgContainer.nativeElement.clientHeight - 20;
   let values = this.data.values;
   
-  // ✅ CORREGIDO: Usar SIEMPRE los colores de assignedColors
-  // NO aplicar paleta automática si ya hay colores asignados
+  // Fixed: always use colors from assignedColors
+  // Do not apply an automatic palette when colors are already assigned
   let gradient1: string;
   let gradient2: string;
 
   if (this.assignedColors && this.assignedColors.length >= 2) {
-    // ✅ Usar los colores que ya están en assignedColors
+    // Use the colors already in assignedColors
     gradient1 = this.assignedColors[0].color;
     gradient2 = this.assignedColors[1].color;
   } else {
-    // ⚠️ Solo como fallback si no hay assignedColors (no debería pasar)
+    // Fallback only when assignedColors is missing (should not happen)
     const paleta = this.styleProviderService.ActualChartPalette?.['paleta'] || 
                    this.styleProviderService.DEFAULT_PALETTE_COLOR?.['paleta'] || 
                    ['#4CAF50', '#2196F3'];
@@ -149,7 +149,7 @@ draw() {
     return result;
   })();
 
-  /**Functions */
+  /** Functions */
   const curve = d3.curveCatmullRom.alpha(0.999999999);
 
   const y = d3.scaleLinear()
@@ -163,15 +163,15 @@ draw() {
 
   const area = d3.area()
     .curve(curve)
-    .x((d: [number, number]) => x(d['step']))//step
+    .x((d: [number, number]) => x(d['step'])) // step
     .y0(y(0))
-    .y1((d: [number, number]) => y(d['value'])) //value
+    .y1((d: [number, number]) => y(d['value'])) // value
 
   const areaMirror = d3.area()
     .curve(curve)
-    .x((d: [number, number]) => x(d['step'])) //step
+    .x((d: [number, number]) => x(d['step'])) // step
     .y0(y(0))
-    .y1((d: [number, number]) => y(-d['value'])) //value
+    .y1((d: [number, number]) => y(-d['value'])) // value
 
 
   const svg = this.svg;
@@ -236,7 +236,7 @@ draw() {
         const url = window.location.href.slice(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
         window.open(url, "_blank");
       }else{
-        //Passem aquestes dades
+        // Pass this data
         const label = data.label;
         const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
         this.onClick.emit({label, filterBy });

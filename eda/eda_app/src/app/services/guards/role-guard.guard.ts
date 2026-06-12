@@ -10,13 +10,13 @@ export class RoleGuard implements CanActivate {
     const requireAdmin = route.data['admin'] || false;
     const requireDatasource = route.data['datasource'] || false;
 
-    // si la ruta requiere admin y el usuario no es admin → redirige
+    // if the route requires admin and the user is not admin → redirect
     if (requireAdmin && !this.user.isAdmin) {
       this.router.navigate(['/home']);
       return false;
     }
 
-    // si la ruta requiere datasource/admin y el usuario no es datasource/admin → redirige
+    // if the route requires datasource/admin and the user is not datasource/admin → redirect
     if (requireDatasource && !this.user.isDataSourceCreator && !this.user.isAdmin) {
       this.router.navigate(['/home']);
       return false;

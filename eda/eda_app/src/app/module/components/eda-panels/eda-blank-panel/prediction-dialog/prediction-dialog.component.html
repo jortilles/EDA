@@ -2,7 +2,7 @@
     [disableApply]="!isValid" (apply)="onConfirm()" (close)="onCancel()">
     <div content class="flex flex-col gap-4 p-4">
 
-        <!-- Método de predicción -->
+        <!-- Prediction method -->
         <div class="space-y-1.5">
             <label class="text-base font-medium text-gray-700" i18n="@@predictionMethodLabel">
                 Método de predicción
@@ -20,7 +20,7 @@
         </div>
 
         @if (selectedMethod !== 'None' && selectedMethod) {
-            <!-- Pasos a predecir -->
+            <!-- Steps to predict -->
             <div class="space-y-1.5">
                 <label class="text-base font-medium text-gray-700" i18n="@@predictionStepsLabel">
                     Pasos a predecir
@@ -30,7 +30,7 @@
                 <span class="text-sm text-gray-400" i18n="@@predictionStepsDesc">Número de periodos futuros a predecir</span>
             </div>
 
-            <!-- Columna a predecir -->
+            <!-- Column to predict -->
             <div class="space-y-1.5">
                 <label class="text-base font-medium text-gray-700" i18n="@@tfTargetColumnLabel">
                     Columna a predecir
@@ -55,7 +55,7 @@
                 }
             </div>
 
-            <!-- Configuración avanzada toggle -->
+            <!-- Advanced settings toggle -->
             <div class="flex items-center justify-between border-t border-gray-200 pt-3">
                 <div class="space-y-0.5">
                     <label class="text-base font-medium text-gray-700" i18n="@@advancedSettings">Configuración avanzada</label>

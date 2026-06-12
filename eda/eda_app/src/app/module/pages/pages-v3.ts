@@ -23,7 +23,7 @@ export class PagesV3Component implements OnInit {
     private bgSub?: Subscription;
 
     constructor(router: Router) {
-        // Desactivando la reutilización del enlace, para recargar la página a pesar de que solo hay un cambio el parametro de la url
+        // Disabling route reuse so the page reloads even when only a URL parameter changes
         router.routeReuseStrategy.shouldReuseRoute = () => false;
     }
 

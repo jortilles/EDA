@@ -1,10 +1,10 @@
 <div class="absolute inset-0 overflow-hidden" [style.background-color]="inject?.backgroundColor || null">
 
-  <!-- Fila de leyenda: chip actual + dropdown comparación -->
+  <!-- Legend row: current chip + comparison dropdown -->
   <div class="absolute top-0 left-0 right-0 flex items-center"
        style="height:28px; padding:0 8px; gap:6px; z-index:1;">
 
-    <!-- Chip periodo actual: dot + año/mes en caja bordeada -->
+    <!-- Current period chip: dot + year/month in a bordered box -->
     <div class="flex items-center" style="gap:4px; flex-shrink:0;">
       <span style="width:8px;height:8px;border-radius:50%;display:inline-block;"
             [style.background-color]="displayCurrentColor"></span>
@@ -15,7 +15,7 @@
       </span>
     </div>
 
-    <!-- Línea + dropdown comparación -->
+    <!-- Line + comparison dropdown -->
     @if(displayAvailableComparisons.length > 0) {
       <div class="flex items-center" style="gap:4px; flex-shrink:0;">
         <span style="width:14px;display:inline-block;border-top:2px dashed;"
@@ -42,10 +42,10 @@
     }
   </div>
 
-  <!-- Fila principal: flex row (izquierda = tamaño por contenido; derecha = el resto) -->
+  <!-- Main row: flex row (left = content-sized; right = remaining space) -->
   <div class="absolute" style="top:28px;bottom:0;left:0;right:0;display:flex;overflow:hidden;">
 
-    <!-- Columna KPI (izquierda, se adapta al contenido) -->
+    <!-- KPI column (left, adjusts to content) -->
     <div #kpiLeft style="flex-shrink:0;max-width:45%;padding:8px 8px 6px 8px;overflow:hidden;">
 
       <div style="font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;white-space:nowrap;">
@@ -76,7 +76,7 @@
       }
     </div>
 
-    <!-- Columna gráfico (derecha, ocupa el resto) -->
+    <!-- Chart column (right, takes the remaining space) -->
     @if(edaChartInject) {
       <div style="flex:1;min-width:0;overflow:hidden;">
         <eda-chart #edaTrendChart [inject]="edaChartInject" class="h-full w-full"></eda-chart>

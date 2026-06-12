@@ -2,7 +2,7 @@
     color: #22a55b;
 }
 
-/* Dropdown compacto para la cabecera del panel */
+/* Compact dropdown for the panel header */
 :host ::ng-deep .kpi-trend-dropdown.p-dropdown {
     height: 22px;
     font-size: 11px;

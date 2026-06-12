@@ -23,6 +23,7 @@
         "@clickhouse/client": "^1.8.0",
         "@duckdb/node-api": "^1.5.3-r.3",
         "@google-cloud/bigquery": "^8.3.1",
+        "google-auth-library": "^9.0.0",
         "@modelcontextprotocol/sdk": "^1.29.0",
         "@node-saml/passport-saml": "^5.1.0",
         "@tensorflow/tfjs": "^4.22.0",

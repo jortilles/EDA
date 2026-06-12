@@ -9,13 +9,13 @@ import {
     TableRow, TextRun, VerticalMergeType, WidthType,
 } from 'docx';
 
-// Colores corporativos para el export de dashboard
-const HEADER_BG   = 'FF2E75B6';   // azul cabecera
-const HEADER_FG   = 'FFFFFFFF';   // texto blanco
-const TOTAL_BG    = 'FFD6E4F0';   // azul claro totales
-const SUBTOTAL_BG = 'FFE8F2FA';   // azul muy claro subtotales
-const TITLE_BG    = 'FFDCE6F1';   // fondo título de panel
-const TITLE_FG    = 'FF1F3864';   // azul oscuro texto título
+// Corporate colors for dashboard export
+const HEADER_BG   = 'FF2E75B6';   // header blue
+const HEADER_FG   = 'FFFFFFFF';   // white text
+const TOTAL_BG    = 'FFD6E4F0';   // light blue totals
+const SUBTOTAL_BG = 'FFE8F2FA';   // very light blue subtotals
+const TITLE_BG    = 'FFDCE6F1';   // panel title background
+const TITLE_FG    = 'FF1F3864';   // dark blue title text
 
 function headerCellStyle(cell: any) {
     cell.font   = { bold: true, color: { argb: HEADER_FG }, size: 10 };
@@ -54,17 +54,17 @@ function totalCellStyle(cell: any, isSubtotal = false) {
 export interface DashboardPanelExport {
     title: string;
     type: 'table' | 'crosstable' | 'chart' | 'kpi' | 'other';
-    tableData?: any;       // Instancia EdaTable (para table / crosstable)
-    imageBase64?: string;  // dataURL PNG (para chart)
-    imageWidth?:  number;  // ancho natural de la imagen (px, sin escala de captura)
-    imageHeight?: number;  // alto natural de la imagen (px, sin escala de captura)
-    kpiData?: {            // Datos del panel KPI (value + sufijo + estilo)
+    tableData?: any;       // EdaTable instance (for table / crosstable)
+    imageBase64?: string;  // PNG dataURL (for chart)
+    imageWidth?:  number;  // Natural image width (px, no capture scaling)
+    imageHeight?: number;  // Natural image height (px, no capture scaling)
+    kpiData?: {            // KPI panel data (value + suffix + style)
         value: any;
         sufix?: string;
         kpiColor?: string;
         modifiedFontPoints?: number;
     };
-    // Posición en el grid de Gridster
+    // Gridster grid position
     gridX: number;
     gridY: number;
     gridCols: number;
@@ -84,7 +84,7 @@ export class FileUtiles {
         return url;
     }
 
-    // Generador de IDs
+    // ID generator
     generateUUID() {
         let d = new Date().getTime();
         if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
@@ -97,14 +97,14 @@ export class FileUtiles {
         });
     }
 
-    // Exportar a Excel (sin fs, compatible navegador)
+    // Export to Excel (without fs, browser compatible)
     async exportToExcel(headerDisplay: string[], cols: any[], fileName: string) {
         const workbook = new ExcelJS.Workbook();
 
-        // Crear worksheet
+        // Create worksheet
         const worksheet = workbook.addWorksheet('Sheet1');
 
-        // Generar headers dinámicos desde cols
+        // Generate dynamic headers from cols
         const headers: string[] = [];
         _.forEach(cols, (c) => {
             _.forEach(Object.keys(c), (o) => {
@@ -114,11 +114,11 @@ export class FileUtiles {
             });
         });
 
-        // Sobrescribir headers con los que deseas mostrar
+        // Override headers with those to display
         const displayHeaders = headerDisplay.length ? headerDisplay : headers;
         worksheet.addRow(displayHeaders);
 
-        // Llenar filas con los datos
+        // Fill rows with data
         _.forEach(cols, (col) => {
             const row: any[] = [];
             _.forEach(headers, (h) => {
@@ -131,7 +131,7 @@ export class FileUtiles {
             worksheet.addRow(row);
         });
 
-        // Generar XLSX como Blob y descargar
+        // Generate XLSX as Blob and download
         const buffer = await workbook.xlsx.writeBuffer();
         const blob = new Blob([buffer], {
             type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -139,35 +139,35 @@ export class FileUtiles {
         saveAs(blob, `${fileName}.xlsx`);
     }
 
-    // ─── Export Dashboard completo a Excel ────────────────────────────────────
+    // ─── Export full Dashboard to Excel ────────────────────────────────────
 
     /**
-     * Escala de conversión: unidades de grid Gridster → columnas de Excel.
-     * El grid usa 40 columnas. Con escala 2 → 80 columnas Excel totales.
-     * Cada columna Excel tendrá ancho de ~12 caracteres (~90px).
+     * Conversion scale: Gridster grid units → Excel columns.
+     * The grid uses 40 columns. With scale 2 → 80 total Excel columns.
+     * Each Excel column will have a width of ~12 characters (~90px).
      */
     private static readonly GRID_TOTAL_COLS  = 40;
-    private static readonly EXCEL_SCALE      = 0.5;   // Excel cols por unidad de grid
-    private static readonly EXCEL_COL_WIDTH  = 10;  // ancho por defecto de cada columna Excel
-    private static readonly IMG_ROWS_DEFAULT = 20;  // filas Excel que ocupa una imagen
-    private static readonly ROW_GAP          = 1;   // filas de separación entre bandas
+    private static readonly EXCEL_SCALE      = 0.5;   // Excel cols per grid unit
+    private static readonly EXCEL_COL_WIDTH  = 10;  // default width of each Excel column
+    private static readonly IMG_ROWS_DEFAULT = 20;  // Excel rows occupied by an image
+    private static readonly ROW_GAP          = 1;   // gap rows between bands
     /**
-     * Calibración de píxeles por celda Excel (empírica, usada para aspect ratio).
-     * - Fila a 18pt: ~24px de alto.
-     * - Columna a 12 chars: ~64px de ancho.
+     * Excel cell pixel calibration (empirical, used for aspect ratio).
+     * - Row at 18pt: ~24px height.
+     * - Column at 12 chars: ~64px width.
      */
     private static readonly EXCEL_ROW_PX = 24;
     private static readonly EXCEL_COL_PX = 64;
 
     /**
-     * Genera un .xlsx con todos los paneles del dashboard respetando su
-     * posición 2D (x/y del grid de Gridster):
-     * - Paneles en la misma fila de grid → misma banda horizontal en Excel.
-     * - Tablas y tablas cruzadas: datos + estructura + estilos.
-     * - Gráficos y KPIs: imagen PNG capturada del DOM.
+     * Generates a .xlsx with all dashboard panels respecting their
+     * 2D position (x/y from the Gridster grid):
+     * - Panels on the same grid row → same horizontal band in Excel.
+     * - Tables and cross-tables: data + structure + styles.
+     * - Charts and KPIs: PNG image captured from the DOM.
      *
-     * @param panels        Array con datos de cada panel + coordenadas de grid
-     * @param dashboardTitle Nombre del archivo descargado
+     * @param panels        Array with each panel's data + grid coordinates
+     * @param dashboardTitle Downloaded file name
      */
     async exportDashboardToExcel(panels: DashboardPanelExport[], dashboardTitle: string): Promise<void> {
         const workbook  = new ExcelJS.Workbook();
@@ -175,13 +175,13 @@ export class FileUtiles {
             pageSetup: { fitToPage: true, fitToWidth: 1, orientation: 'landscape' }
         });
 
-        // Fijar ancho de las 80 columnas Excel (40 grid × escala 2)
+        // Set width of the 80 Excel columns (40 grid × scale 2)
         const totalExcelCols = FileUtiles.GRID_TOTAL_COLS * FileUtiles.EXCEL_SCALE;
         for (let c = 1; c <= totalExcelCols; c++) {
             worksheet.getColumn(c).width = FileUtiles.EXCEL_COL_WIDTH;
         }
 
-        // ── Título del dashboard ──────────────────────────────────────────────
+        // ── Dashboard title ──────────────────────────────────────────────
         const dashTitleRow = worksheet.getRow(1);
         dashTitleRow.height = 28;
         const dashTitleCell = dashTitleRow.getCell(1);
@@ -192,7 +192,7 @@ export class FileUtiles {
         try { worksheet.mergeCells(1, 1, 1, Math.max(1, totalExcelCols)); } catch (_) {}
         dashTitleRow.commit();
 
-        // ── Agrupar paneles por su fila de grid (gridY) ──────────────────────
+        // ── Group panels by their grid row (gridY) ──────────────────────
         const rowGroups = new Map<number, DashboardPanelExport[]>();
         for (const panel of panels) {
             const key = panel.gridY;
@@ -200,21 +200,21 @@ export class FileUtiles {
             rowGroups.get(key).push(panel);
         }
 
-        // Ordenar grupos por y ascendente
+        // Sort groups by y ascending
         const sortedYs = Array.from(rowGroups.keys()).sort((a, b) => a - b);
 
-        let currentExcelRow = 3; // Empieza en fila 3 (título + fila en blanco)
+        let currentExcelRow = 3; // Starts at row 3 (title + blank row)
 
         for (const groupY of sortedYs) {
             const group = rowGroups.get(groupY)!.sort((a, b) => a.gridX - b.gridX);
 
-            // ── Primera pasada: calcular altura (filas Excel) de cada panel ──
+            // ── First pass: calculate height (Excel rows) of each panel ──
             const heights = group.map(p => this._estimatePanelHeight(p));
             const bandHeight = Math.max(...heights);
 
             const bandStartRow = currentExcelRow;
 
-            // ── Segunda pasada: renderizar cada panel ────────────────────────
+            // ── Second pass: render each panel ────────────────────────
             for (let i = 0; i < group.length; i++) {
                 const panel    = group[i];
                 const colStart = panel.gridX * FileUtiles.EXCEL_SCALE + 1;   // 1-indexed
@@ -222,7 +222,7 @@ export class FileUtiles {
 
                 let panelRow = bandStartRow;
 
-                // Título del panel
+                // Panel title
                 if (panel.title) {
                     const tRow  = worksheet.getRow(panelRow);
                     tRow.height = 20;
@@ -247,8 +247,8 @@ export class FileUtiles {
                             const imageId = workbook.addImage({ base64, extension: 'png' as any });
                             const imgRows = FileUtiles.IMG_ROWS_DEFAULT;
 
-                            // Calcular imgCols desde el aspect ratio de la imagen real
-                            // para evitar deformación horizontal
+                            // Calculate imgCols from the actual image aspect ratio
+                            // to avoid horizontal distortion
                             const imgCols = this._calcImageCols(
                                 panel.imageWidth, panel.imageHeight,
                                 imgRows, colEnd - colStart
@@ -273,12 +273,12 @@ export class FileUtiles {
                     const text = this._formatKpiValue(kpi.value) + (kpi.sufix ? ' ' + kpi.sufix : '');
 
                     if (panel.imageBase64) {
-                        // kpibar/kpiline/kpiarea: arriba texto (50%) | abajo imagen (50%)
-                        // totalRows proporcional a gridRows del panel (2 filas Excel por unidad de grid)
+                        // kpibar/kpiline/kpiarea: top text (50%) | bottom image (50%)
+                        // totalRows proportional to panel gridRows (2 Excel rows per grid unit)
                         const totalRows = panel.gridRows * 2;
                         const halfRows  = Math.round(totalRows / 2);
 
-                        // Mitad superior: texto KPI (fuente reducida a la mitad)
+                        // Top half: KPI text (font reduced to half size)
                         for (let r = panelRow; r < panelRow + halfRows; r++) {
                             worksheet.getRow(r).height = 18;
                         }
@@ -292,7 +292,7 @@ export class FileUtiles {
                         kpiCell.alignment = { vertical: 'middle', horizontal: 'center' };
                         try { worksheet.mergeCells(panelRow, colStart, panelRow + halfRows - 1, colEnd); } catch (_) {}
 
-                        // Mitad inferior: imagen del gráfico
+                        // Bottom half: chart image
                         const imgStartRow = panelRow + halfRows;
                         const imgRows     = totalRows - halfRows;
                         for (let r = imgStartRow; r < imgStartRow + imgRows; r++) {
@@ -317,7 +317,7 @@ export class FileUtiles {
                             }
                         }
                     } else {
-                        // KPI puro: texto ancho completo
+                        // Pure KPI: full-width text
                         const KPI_ROWS = 6;
                         for (let r = panelRow; r < panelRow + KPI_ROWS; r++) {
                             worksheet.getRow(r).height = 24;
@@ -341,7 +341,7 @@ export class FileUtiles {
                 }
             }
 
-            // Avanzar la fila global por la altura máxima de la banda + separación
+            // Advance the global row by the maximum band height + gap
             currentExcelRow = bandStartRow + bandHeight + FileUtiles.ROW_GAP;
         }
 
@@ -352,10 +352,10 @@ export class FileUtiles {
         saveAs(blob, `${dashboardTitle}.xlsx`);
     }
 
-    // ─── Tabla plana ──────────────────────────────────────────────────────────
+    // ─── Flat table ──────────────────────────────────────────────────────────
     /**
-     * @param colOffset  Columna Excel (1-indexed) donde empieza la tabla.
-     *                   Permite colocar varias tablas lado a lado.
+     * @param colOffset  Excel column (1-indexed) where the table starts.
+     *                   Allows placing multiple tables side by side.
      */
     private _writePlainTable(ws: any, table: any, startRow: number, colOffset = 1): number {
         let row = startRow;
@@ -363,7 +363,7 @@ export class FileUtiles {
         const cols = (table.cols || []) as any[];
         if (cols.length === 0) return row;
 
-        // Cabecera
+        // Header
         const hRow = ws.getRow(row);
         hRow.height = 18;
         cols.forEach((col: any, i: number) => {
@@ -374,7 +374,7 @@ export class FileUtiles {
         hRow.commit();
         row++;
 
-        // Filas de datos
+        // Data rows
         const values: any[] = table._value || [];
         values.forEach((dataRow: any) => {
             const eRow = ws.getRow(row);
@@ -388,7 +388,7 @@ export class FileUtiles {
             row++;
         });
 
-        // Subtotales (por página)
+        // Subtotals (per page)
         const partials: any[] = table.partialTotalsRow || [];
         if (partials.length > 0) {
             const sRow = ws.getRow(row);
@@ -402,7 +402,7 @@ export class FileUtiles {
             row++;
         }
 
-        // Totales de columna
+        // Column totals
         const totals: any[] = table.totalsRow || [];
         if (totals.length > 0) {
             const tRow = ws.getRow(row);
@@ -419,9 +419,9 @@ export class FileUtiles {
         return row;
     }
 
-    // ─── Tabla cruzada (pivot) ────────────────────────────────────────────────
+    // ─── Cross table (pivot) ────────────────────────────────────────────────
     /**
-     * @param colOffset  Columna Excel (1-indexed) donde empieza la tabla cruzada.
+     * @param colOffset  Excel column (1-indexed) where the cross table starts.
      */
     private _writeCrossTable(ws: any, table: any, startRow: number, colOffset = 1): number {
         let row = startRow;
@@ -431,7 +431,7 @@ export class FileUtiles {
 
         if (cols.length === 0) return row;
 
-        // ── Cabeceras multi-nivel desde series ────────────────────────────────
+        // ── Multi-level headers from series ────────────────────────────────
         if (series.length > 0) {
             series.forEach((serie: any, seriesIdx: number) => {
                 const hRow = ws.getRow(row + seriesIdx);
@@ -454,7 +454,7 @@ export class FileUtiles {
                         try {
                             ws.mergeCells(r1, c1, r2, c2);
                             headerCellStyle(ws.getCell(r1, c1));
-                        } catch (_) { /* ya mergeado */ }
+                        } catch (_) { /* already merged */ }
                     }
 
                     colPos += cs;
@@ -466,7 +466,7 @@ export class FileUtiles {
             row += series.length;
 
         } else {
-            // Sin series: cabecera plana
+            // No series: flat header
             const hRow = ws.getRow(row);
             hRow.height = 18;
             cols.forEach((col: any, i: number) => {
@@ -478,7 +478,7 @@ export class FileUtiles {
             row++;
         }
 
-        // ── Filas de datos ────────────────────────────────────────────────────
+        // ── Data rows ────────────────────────────────────────────────────
         const values: any[] = table._value || [];
         values.forEach((dataRow: any) => {
             const eRow = ws.getRow(row);
@@ -492,7 +492,7 @@ export class FileUtiles {
             row++;
         });
 
-        // ── Subtotales ────────────────────────────────────────────────────────
+        // ── Subtotals ────────────────────────────────────────────────────────
         const partials: any[] = table.partialTotalsRow || [];
         if (partials.length > 0) {
             const sRow = ws.getRow(row);
@@ -506,7 +506,7 @@ export class FileUtiles {
             row++;
         }
 
-        // ── Totales ───────────────────────────────────────────────────────────
+        // ── Totals ───────────────────────────────────────────────────────────
         const totals: any[] = table.totalsRow || [];
         if (totals.length > 0) {
             const tRow = ws.getRow(row);
@@ -524,8 +524,8 @@ export class FileUtiles {
     }
 
     /**
-     * Estima cuántas filas Excel ocupa un panel (para calcular la altura de banda).
-     * Se añade 1 para el título y FileUtiles.ROW_GAP ya se aplica fuera.
+     * Estimates how many Excel rows a panel occupies (to calculate band height).
+     * 1 is added for the title; FileUtiles.ROW_GAP is applied outside.
      */
     private _estimatePanelHeight(panel: DashboardPanelExport): number {
         const TITLE_ROWS = panel.title ? 1 : 0;
@@ -535,14 +535,14 @@ export class FileUtiles {
         }
 
         if (panel.type === 'kpi') {
-            // Con imagen: mitad texto + mitad gráfico → total = gridRows * 2 (2 filas Excel por unidad de grid)
-            // Sin imagen: texto ancho completo → 6 filas compactas
+            // With image: half text + half chart → total = gridRows * 2 (2 Excel rows per grid unit)
+            // Without image: full-width text → 6 compact rows
             return TITLE_ROWS + (panel.imageBase64 ? panel.gridRows * 2 : 6);
         }
 
         if ((panel.type === 'table' || panel.type === 'crosstable') && panel.tableData) {
             const t = panel.tableData;
-            const headerRows  = (t.series?.length || 0) || 1;   // cabecera multi-nivel o 1 simple
+            const headerRows  = (t.series?.length || 0) || 1;   // multi-level header or 1 simple
             const dataRows    = (t._value?.length  || 0);
             const totalRows   = (t.totalsRow?.length    > 0) ? 1 : 0;
             const subtotalRows= (t.partialTotalsRow?.length > 0) ? 1 : 0;
@@ -553,13 +553,13 @@ export class FileUtiles {
     }
 
     /**
-     * Calcula cuántas columnas Excel debe ocupar una imagen para mantener
-     * su aspect ratio original, sin exceder el ancho disponible del panel.
+     * Calculates how many Excel columns an image should occupy to maintain
+     * its original aspect ratio without exceeding the panel's available width.
      *
-     * @param imgW       Ancho natural de la imagen (px CSS, sin escala de captura)
-     * @param imgH       Alto natural de la imagen (px CSS)
-     * @param excelRows  Filas Excel asignadas a la imagen
-     * @param maxCols    Columnas Excel disponibles (ancho del panel en el grid)
+     * @param imgW       Natural image width (CSS px, without capture scaling)
+     * @param imgH       Natural image height (CSS px)
+     * @param excelRows  Excel rows assigned to the image
+     * @param maxCols    Available Excel columns (panel width in the grid)
      */
     private _calcImageCols(
         imgW: number | undefined,
@@ -568,21 +568,21 @@ export class FileUtiles {
         maxCols: number
     ): number {
         if (!imgW || !imgH || imgH === 0) {
-            // Sin información de tamaño: usar fallback proporcional al panel
+            // No size information: use fallback proportional to panel
             return Math.min(maxCols, 20);
         }
-        // Altura total de las filas Excel en píxeles (calibrada)
+        // Total height of Excel rows in pixels (calibrated)
         const heightPx    = excelRows * FileUtiles.EXCEL_ROW_PX;
         const aspectRatio = imgW / imgH;
         const widthPx     = heightPx * aspectRatio;
         const cols        = Math.round(widthPx / FileUtiles.EXCEL_COL_PX);
-        // Al menos 4 columnas, como máximo el ancho disponible del panel
+        // At least 4 columns, at most the panel's available width
         return Math.max(4, Math.min(cols, maxCols));
     }
 
     /**
-     * Verifica que un string base64 corresponda a un PNG válido
-     * comprobando la firma de cabecera (magic bytes: 89 50 4E 47 0D 0A 1A 0A)
+     * Verifies that a base64 string corresponds to a valid PNG
+     * by checking the header signature (magic bytes: 89 50 4E 47 0D 0A 1A 0A)
      */
     private _isValidPngBase64(base64: string): boolean {
         if (!base64 || base64.length < 16) return false;
@@ -598,7 +598,7 @@ export class FileUtiles {
         }
     }
 
-    /** Formatea un valor KPI con locale español (mismo que el pipe Angular 'es') */
+    /** Formats a KPI value with Spanish locale (same as Angular 'es' pipe) */
     private _formatKpiValue(value: any): string {
         if (value === null || value === undefined) return '';
         const n = typeof value === 'number' ? value : parseFloat(String(value));
@@ -606,7 +606,7 @@ export class FileUtiles {
         return new Intl.NumberFormat('es', { maximumFractionDigits: 10 }).format(n);
     }
 
-    /** Convierte un color CSS (#RRGGBB o #RGB) a ARGB para ExcelJS/docx */
+    /** Converts a CSS color (#RRGGBB or #RGB) to ARGB for ExcelJS/docx */
     private _colorToArgb(cssColor: string | undefined, defaultArgb = 'FF000000'): string {
         if (!cssColor) return defaultArgb;
         const hex = cssColor.replace('#', '');
@@ -618,7 +618,7 @@ export class FileUtiles {
         return defaultArgb;
     }
 
-    /** Convierte un color CSS a formato RRGGBB para docx (sin alfa) */
+    /** Converts a CSS color to RRGGBB format for docx (without alpha) */
     private _colorToRgb(cssColor: string | undefined, defaultRgb = '000000'): string {
         if (!cssColor) return defaultRgb;
         const hex = cssColor.replace('#', '');
@@ -630,7 +630,7 @@ export class FileUtiles {
         return defaultRgb;
     }
 
-    /** Convierte el valor crudo de celda al tipo correcto para ExcelJS */
+    /** Converts raw cell value to the correct type for ExcelJS */
     private _parseCell(raw: any, colType: string): any {
         if (raw === null || raw === undefined || raw === '') return null;
         if (colType === 'EdaColumnNumber') {
@@ -640,18 +640,18 @@ export class FileUtiles {
         return raw;
     }
 
-    // ─── Export Dashboard a Word ──────────────────────────────────────────────
+    // ─── Export Dashboard to Word ──────────────────────────────────────────────
 
-    /** Ancho de contenido objetivo en px (página A4 con márgenes de 1.25cm) */
+    /** Target content width in px (A4 page with 1.25cm margins) */
     private static readonly WORD_CONTENT_PX = 750;
 
-    /** Colores para el documento Word (RRGGBB sin alfa) */
-    private static readonly W_HEADER_BG = 'FFFFFF';   // cabecera: fondo blanco
-    private static readonly W_HEADER_FG = '2E75B6';   // cabecera: texto azul
-    private static readonly W_TITLE_BG  = 'FFFFFF';   // título panel: fondo blanco
-    private static readonly W_TITLE_FG  = '2E75B6';   // título panel: texto azul
-    private static readonly W_TOTAL_BG  = 'D6E4F0';   // fila totales: azul muy claro
-    private static readonly W_DATA_FG   = '000000';   // datos: texto negro
+    /** Colors for the Word document (RRGGBB without alpha) */
+    private static readonly W_HEADER_BG = 'FFFFFF';   // header: white background
+    private static readonly W_HEADER_FG = '2E75B6';   // header: blue text
+    private static readonly W_TITLE_BG  = 'FFFFFF';   // panel title: white background
+    private static readonly W_TITLE_FG  = '2E75B6';   // panel title: blue text
+    private static readonly W_TOTAL_BG  = 'D6E4F0';   // totals row: very light blue
+    private static readonly W_DATA_FG   = '000000';   // data: black text
 
     private static readonly W_NO_BORDER = {
         top:    { style: BorderStyle.NONE, size: 0, color: 'auto' },
@@ -663,18 +663,18 @@ export class FileUtiles {
     };
 
     /**
-     * Genera un .docx con todos los paneles del dashboard respetando su
-     * posición 2D (x/y del grid de Gridster).
-     * - Tablas: tabla Word con cabeceras estilizadas y totales.
-     * - Tablas cruzadas: cabeceras multi-nivel con merge de celdas.
-     * - Gráficos: imagen PNG embebida a escala correcta.
-     * - Paneles en la misma fila → lado a lado en una tabla de layout sin bordes.
+     * Generates a .docx with all dashboard panels respecting their
+     * 2D position (x/y from the Gridster grid).
+     * - Tables: Word table with styled headers and totals.
+     * - Cross-tables: multi-level headers with cell merge.
+     * - Charts: PNG image embedded at correct scale.
+     * - Panels on the same row → side by side in a borderless layout table.
      */
     async exportDashboardToWord(panels: DashboardPanelExport[], dashboardTitle: string): Promise<void> {
         const CW = FileUtiles.WORD_CONTENT_PX;
         const sectionChildren: any[] = [];
 
-        // ── Título del dashboard ──────────────────────────────────────────────
+        // ── Dashboard title ──────────────────────────────────────────────
         sectionChildren.push(
             new Paragraph({
                 children: [new TextRun({ text: dashboardTitle, bold: true, size: 36, color: FileUtiles.W_TITLE_FG })],
@@ -684,7 +684,7 @@ export class FileUtiles {
             new Paragraph({ text: '', spacing: { after: 80 } }),
         );
 
-        // ── Agrupar paneles por fila de grid ──────────────────────────────────
+        // ── Group panels by grid row ──────────────────────────────────────────
         const rowGroups = new Map<number, DashboardPanelExport[]>();
         for (const panel of panels) {
             if (!rowGroups.has(panel.gridY)) rowGroups.set(panel.gridY, []);
@@ -699,7 +699,7 @@ export class FileUtiles {
                 const panelWidthPx = Math.round(group[0].gridCols / FileUtiles.GRID_TOTAL_COLS * CW);
                 sectionChildren.push(...this._buildWordPanel(group[0], panelWidthPx));
             } else {
-                // Paneles lado a lado dentro de una tabla de layout sin bordes
+                // Panels side by side inside a borderless layout table
                 const cells = group.map(panel => {
                     const pct      = Math.round(panel.gridCols / FileUtiles.GRID_TOTAL_COLS * 100);
                     const widthPx  = Math.round(panel.gridCols / FileUtiles.GRID_TOTAL_COLS * CW);
@@ -734,11 +734,11 @@ export class FileUtiles {
         saveAs(blob, `${dashboardTitle}.docx`);
     }
 
-    /** Construye los elementos Word de un panel individual (título + contenido). */
+    /** Builds the Word elements of an individual panel (title + content). */
     private _buildWordPanel(panel: DashboardPanelExport, widthPx: number): any[] {
         const items: any[] = [];
 
-        // Título del panel (fondo blanco, texto azul)
+        // Panel title (white background, blue text)
         if (panel.title) {
             items.push(new Paragraph({
                 children: [new TextRun({ text: panel.title, bold: true, size: 22, color: FileUtiles.W_TITLE_FG })],
@@ -750,7 +750,7 @@ export class FileUtiles {
             const kpi    = panel.kpiData;
             const text   = this._formatKpiValue(kpi.value) + (kpi.sufix ? ' ' + kpi.sufix : '');
             const fullSizePt = 36 + (kpi.modifiedFontPoints || 0);
-            // Con gráfico: fuente reducida a la mitad (menos altura disponible)
+            // With chart: font reduced to half size (less available height)
             const sizePt     = panel.imageBase64 ? Math.round(fullSizePt / 2) : fullSizePt;
             const kpiParagraph = new Paragraph({
                 children: [new TextRun({
@@ -764,16 +764,16 @@ export class FileUtiles {
             });
 
             if (panel.imageBase64) {
-                // kpibar/kpiline/kpiarea: arriba texto | abajo imagen
-                // La imagen ocupa la mitad de la altura del panel (gridRows / 2 unidades)
-                // Usamos EXCEL_ROW_PX como referencia de altura por fila de grid
+                // kpibar/kpiline/kpiarea: top text | bottom image
+                // The image occupies half the panel height (gridRows / 2 units)
+                // Using EXCEL_ROW_PX as height reference per grid row
                 items.push(kpiParagraph);
                 const base64 = panel.imageBase64.includes(',') ? panel.imageBase64.split(',')[1] : panel.imageBase64;
                 if (this._isValidPngBase64(base64)) {
                     const imgData    = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
                     const naturalW   = panel.imageWidth  || 600;
                     const naturalH   = panel.imageHeight || 400;
-                    // Altura máxima = mitad del panel en px (gridRows/2 * px por fila de grid)
+                    // Max height = half the panel in px (gridRows/2 * px per grid row)
                     const halfHeightPx = Math.round((panel.gridRows / 2) * FileUtiles.EXCEL_ROW_PX * 2);
                     const scaleW = widthPx   / naturalW;
                     const scaleH = halfHeightPx / naturalH;
@@ -788,7 +788,7 @@ export class FileUtiles {
                     }));
                 }
             } else {
-                // KPI puro: párrafo ancho completo
+                // Pure KPI: full-width paragraph
                 items.push(kpiParagraph);
             }
         } else if (panel.type === 'chart' && panel.imageBase64) {
@@ -816,7 +816,7 @@ export class FileUtiles {
         return items;
     }
 
-    /** Tabla plana → Word Table con cabecera azul, filas alternas y totales. */
+    /** Flat table → Word Table with blue header, alternate rows and totals. */
     private _buildWordPlainTable(table: any): any {
         const cols: any[] = table.cols || [];
         if (cols.length === 0) return new Paragraph({ text: '' });
@@ -824,7 +824,7 @@ export class FileUtiles {
         const colPct = Math.round(100 / cols.length);
         const rows:   any[] = [];
 
-        // Cabecera: fondo blanco, texto azul
+        // Header: white background, blue text
         rows.push(new TableRow({
             tableHeader: true,
             children: cols.map(col => new TableCell({
@@ -836,7 +836,7 @@ export class FileUtiles {
             })),
         }));
 
-        // Datos: fondo blanco, texto negro, sin banding
+        // Data: white background, black text, no banding
         (table._value || []).forEach((dataRow: any) => {
             rows.push(new TableRow({
                 children: cols.map(col => {
@@ -852,7 +852,7 @@ export class FileUtiles {
             }));
         });
 
-        // Totales: azul muy claro
+        // Totals: very light blue
         const totals: any[] = table.totalsRow || [];
         if (totals.length > 0) {
             rows.push(new TableRow({
@@ -870,7 +870,7 @@ export class FileUtiles {
         return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows });
     }
 
-    /** Tabla cruzada → Word Table con cabeceras multi-nivel mergeadas. */
+    /** Cross table → Word Table with multi-level merged headers. */
     private _buildWordCrossTable(table: any): any {
         const series: any[] = table.series || [];
         const cols:   any[] = table.cols   || [];
@@ -880,7 +880,7 @@ export class FileUtiles {
         const rows:   any[] = [];
 
         if (series.length > 0) {
-            // Rastrear cuántas filas más sigue el rowspan de cada columna
+            // Track how many more rows the rowspan of each column continues
             const rsTracker = new Array(cols.length).fill(0);
 
             series.forEach((serie: any) => {
@@ -890,7 +890,7 @@ export class FileUtiles {
 
                 while (c < cols.length) {
                     if (rsTracker[c] > 0) {
-                        // Celda vacía de continuación vertical
+                        // Empty vertical continuation cell
                         cells.push(new TableCell({
                             verticalMerge: VerticalMergeType.CONTINUE,
                             width:    { size: colPct, type: WidthType.PERCENTAGE },
@@ -913,7 +913,7 @@ export class FileUtiles {
                             })],
                         }));
 
-                        // Marcar columnas cubiertas por rowspan
+                        // Mark columns covered by rowspan
                         if (rs > 1) {
                             for (let k = c; k < c + cs; k++) rsTracker[k] = rs - 1;
                         }
@@ -926,7 +926,7 @@ export class FileUtiles {
             });
 
         } else {
-            // Cabecera plana: fondo blanco, texto azul
+            // Flat header: white background, blue text
             rows.push(new TableRow({
                 tableHeader: true,
                 children: cols.map((col: any) => new TableCell({
@@ -939,7 +939,7 @@ export class FileUtiles {
             }));
         }
 
-        // Datos: fondo blanco, texto negro, sin banding
+        // Data: white background, black text, no banding
         (table._value || []).forEach((dataRow: any) => {
             rows.push(new TableRow({
                 children: cols.map((col: any) => {
@@ -955,7 +955,7 @@ export class FileUtiles {
             }));
         });
 
-        // Totales: azul muy claro
+        // Totals: very light blue
         const totals: any[] = table.totalsRow || [];
         if (totals.length > 0) {
             rows.push(new TableRow({
@@ -973,16 +973,16 @@ export class FileUtiles {
         return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows });
     }
 
-    // ─── Export CSV individual (sin cambios) ──────────────────────────────────
+    // ─── Export individual CSV (no changes) ──────────────────────────────────
 
-    // Exportar a CSV (sin fs, compatible navegador)
+    // Export to CSV (without fs, browser compatible)
     async exportToCsv(headerDisplay: string[], cols: any[], fileName: string) {
         const workbook = new ExcelJS.Workbook();
 
-        // Crear worksheet
+        // Create worksheet
         const worksheet = workbook.addWorksheet('Sheet1');
 
-        // Generar headers dinámicos desde cols
+        // Generate dynamic headers from cols
         const headers: string[] = [];
         _.forEach(cols, (c) => {
             _.forEach(Object.keys(c), (o) => {
@@ -992,11 +992,11 @@ export class FileUtiles {
             });
         });
 
-        // Sobrescribir headers con los que deseas mostrar
+        // Override headers with those to display
         const displayHeaders = headerDisplay.length ? headerDisplay : headers;
         worksheet.addRow(displayHeaders);
 
-        // Llenar filas con los datos
+        // Fill rows with data
         _.forEach(cols, (col) => {
             const row: any[] = [];
             _.forEach(headers, (h) => {

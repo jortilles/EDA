@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class PluginFormService {
-    private saveSubject = new Subject<void>();
+    private readonly saveSubject = new Subject<void>();
     readonly onSave$ = this.saveSubject.asObservable();
 
     triggerSave(): void {

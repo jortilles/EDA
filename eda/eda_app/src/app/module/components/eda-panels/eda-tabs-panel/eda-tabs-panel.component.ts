@@ -164,7 +164,7 @@ export class EdaTabsPanelComponent implements OnInit, AfterViewInit, OnDestroy {
         const urlTree = this.router.createUrlTree(['/dashboard', dashboard.id]);
         let relativeUrl = this.router.serializeUrl(urlTree);
 
-        // Si hay filtros globales con valores seleccionados, los añadimos como query params
+        // If there are global filters with selected values, we add them as query parameters.
         const activeFilters = (this.globalFilters || []).filter(f => f.selectedItems && f.selectedItems.length > 0);
 
         if (activeFilters.length > 0) {

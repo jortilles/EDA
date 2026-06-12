@@ -247,7 +247,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
         
         let cfg: any = this.props.config.getConfig();
-        // COMPARATIVAS
+        // COMPARISONS
         if (!!cfg.addComparative
             && (['line', 'bar'].includes(cfg.chartType))
             && this.props.query.length === 2
@@ -298,7 +298,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (cfg.showPredictionLines === true && chartData[1]?.length > 0){
             this._hideConnectingDot(chartData);
         }
-        // TENDECNIAS
+        // TRENDS
         if (cfg.addTrend && cfg.chartType === 'line' && chartData[1]?.length > 0) {
             const trends = [];
             const predictionSerie = cfg.showPredictionLines === true;
@@ -318,57 +318,57 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.chartDataset = chartData[1];
         chartConfig.chartOptions = config.chartOptions;
         
-        // Leer assignedColors del config (si existen)
+        // Read assignedColors from config (if any)
         let assignedColors = this.props.config.getConfig()['assignedColors'] || [];
 
-        // Obtener los labels actuales del chart (después de aplicar filtros)
+        // Get current chart labels (after filters)
         const currentLabels = this.getLabelsForChartType(chartConfig);
         
-        // Si NO hay assignedColors, generarlos desde la paleta
+        // If there are no assignedColors, generate them from the palette
         if (assignedColors.length === 0) {
             assignedColors = this.chartUtils.resolveAssignedColors(currentLabels, [], this.paletaActual);
             this.props.config.getConfig()['assignedColors'] = assignedColors;
         } else {
-            // Mapear assignedColors a los labels actuales
-            // Crear un Map para búsqueda rápida por valor
+            // Map assignedColors to current labels
+            // Create a Map for quick lookup by value
             const colorMap = new Map<string, any>(assignedColors.map(ac => [ac.value, ac]));
 
-            // Mapear colores basándose en los labels ACTUALES
+            // Map colors based on the CURRENT labels
             const mappedAssignedColors = currentLabels.map((label, index) => {
-                // Buscar el color asignado para este label
+                // Look up assigned color for this label
                 const assignedColor = colorMap.get(label);
 
                 if (assignedColor) {
-                    // Si existe un color asignado para este label, usarlo, añadimos opacity su tica
+                    // If an assigned color exists for this label, use it, include opacity if present
                     const entry: any = { value: label, color: assignedColor.color };
                     if (assignedColor.opacity !== undefined) entry.opacity = assignedColor.opacity;
                     return entry;
                 } else {
-                    // Si es un label nuevo (no estaba en assignedColors), usar color de la paleta
+                    // If it's a new label (not in assignedColors), use a palette color
                     const fallbackColor = this.paletaActual[index % this.paletaActual.length];
                     return { value: label, color: fallbackColor };
                 }
             });
             
-            // Actualizar assignedColors con los colores mapeados
+            // Update assignedColors with mapped colors
             assignedColors = mappedAssignedColors;
         }
 
-        // Asignar al chartConfig
+        // Assign to chartConfig
         chartConfig.assignedColors = assignedColors;
 
-        // Generar chartColors en formato Chart.js desde assignedColors MAPEADOS
+        // Generate chartColors in Chart.js format from MAPPED assignedColors
         chartConfig.chartColors = this.chartUtils.generateChartColorsFromAssignedColors(
             assignedColors,
             this.props.chartType
         );
 
-        // --- Determinar modo de color y aplicar ---
+        // --- Determine color mode and apply ---
         const isBar = this.props.chartType === 'bar' || this.props.chartType === 'horizontalBar';
         const coloredBarsConfig = cfg['coloredBarsConfig'];
         const hasThresholds = coloredBarsConfig?.thresholdHigh != null || coloredBarsConfig?.thresholdLow != null;
         if (isBar && coloredBarsConfig?.active && hasThresholds) {
-            // Modo 1: Colores por intervalo
+            // Mode 1: Interval-based colors
             const { thresholdHigh, thresholdLow, colorAbove, colorBetween, colorBelow } = coloredBarsConfig;
             const bothThresholds = thresholdHigh != null && thresholdLow != null;
             const baseColor = chartConfig.chartColors[0]?.backgroundColor as string || '#cccccc';
@@ -382,7 +382,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             chartConfig.chartColors = [{ backgroundColor: colors, borderColor: colors }];
 
         } else if (isBar && cfg['showUniqueColors']) {
-            // Modo 2: Colores únicos por barra (un color por label/categoría)
+            // Mode 2: Unique colors per bar (one color per label/category)
             const uniqueBarColors: { value: string; color: string }[] = cfg['uniqueBarColors'] || [];
             const colors = (chartData[1][0].data as number[]).map((_, idx) =>
                 uniqueBarColors[idx]?.color || this.paletaActual[idx % this.paletaActual.length]
@@ -392,7 +392,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             chartConfig.chartColors = [{ backgroundColor: colors, borderColor: colors }];
 
         } else {
-            // Modo 3: Colores asignados por serie (comportamiento por defecto)
+            // Mode 3: Assigned colors per series (default behavior)
             const isAreaOrRadar = ['area', 'kpiarea', 'radar'].includes(this.props.edaChart);
             chartData[1].forEach((dataset, i) => {
                 try {
@@ -427,19 +427,19 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         switch (type) {
             case 'doughnut':
             case 'polarArea':
-                // Los colores van por categoría (labels del eje X)
+                // Colors go by category (X-axis labels)
                 return chartConfig.chartLabels || [];
                 
             case 'bar':
                 if (edaChart === 'histogram') {
-                    // Histogram solo tiene un dataset/color
+                    // Histogram has only one dataset/color
                     return chartConfig.chartDataset && chartConfig.chartDataset[0] 
                         ? [chartConfig.chartDataset[0].label || 'Histogram'] 
                         : ['Histogram'];
                 }
             default:
                 // Bar, Line, Radar, Stacked, etc.
-                // Los colores van por serie (datasets)
+                // Colors go by series (datasets)
                 return chartConfig.chartDataset?.map(d => d.label || '') || [];
         }
     }
@@ -507,7 +507,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             this.componentRef.instance.inject.parentFields = this.props.childNavConfig.parentFields;
             this.componentRef.instance.inject.childFieldMap = this.props.childNavConfig.childFieldMap;
             this.componentRef.instance.inject.navColumnSubstitution = this.props.childNavConfig.navColumnSubstitution || {};
-            // Emisores de eventos de navigation feature
+            // Navigation feature event emitters
             this.componentRef.instance.inject.onNavIn.subscribe((event: any) =>
                 this.onNavEvent.emit({ ...event, navType: 'in' })
             );
@@ -537,8 +537,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.configUpdated.emit(this.currentConfig);;
     }
 
-    /**renderKnob */
-
+    /** Render knob */
     private renderKnob() {
         let chartConfig: EdaKnob = new EdaKnob();
         const dataTypes = this.props.query.map(column => column.column_type);
@@ -661,7 +660,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.showPointLines, cfg.showPredictionLines, cfg.numberOfColumns, chartSubType, ticksOptions, false, cfg.showGridLines ?? true, this.styleProviderService
     );
 
-    // Inicializar chartConfig
+    // Initialize chartConfig
     chartConfig.edaChart = {}
     chartConfig.showChart = true;
     chartConfig.edaChart.edaChart = chartSubType;
@@ -669,18 +668,18 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     chartConfig.edaChart.chartLabels = chartData[0];
     chartConfig.edaChart.chartDataset = chartData[1];
     chartConfig.edaChart.chartOptions = chartOptions.chartOptions;
-    chartConfig.edaChart.chartColors = []; // Inicializar chartColors
+    chartConfig.edaChart.chartColors = []; // Initialize chartColors
     chartConfig.edaChart.chartLegend = false;
 
-    // Cargar assignedColors o usar colores por defecto
+    // Load assignedColors or use default colors
     const existingColors = cfg['assignedColors'] || [];
     let assignedColors = [];
 
     if (existingColors.length > 0) {
-        // Usar colores guardados
+        // Use saved colors
         assignedColors = existingColors;
     } else {
-        // Crear colores por defecto desde el dataset
+        // Create default colors from dataset
         const paletteColor = this.styleProviderService?.ActualChartPalette?.['paleta']?.[0] || 
                             this.styleProviderService?.DEFAULT_PALETTE_COLOR?.['paleta']?.[0];
         
@@ -689,11 +688,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             color: this.paletaActual[index % this.paletaActual.length] || paletteColor
         }));
 
-        // Guardar assignedColors por defecto
+        // Save default assignedColors
         cfg['assignedColors'] = assignedColors;
     }
 
-    // Aplicar colores al dataset
+    // Apply colors to the dataset
     for (let i = 0; i < chartData[1].length; i++) {
         const colorConfig = assignedColors[i];
         if (colorConfig) {
@@ -750,7 +749,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     this.createEdaKpiChartComponent(chartConfig);
 }
     /**
-     * cuenta los decimales de los números.
+     * count the decimal places in the numbers.
      */
     private countDecimals (value) {
         if(Math.floor(value) === value) return 0;
@@ -826,7 +825,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const { kpiValue, spyValue, vsPercent, labels, currentSeries, previousSeries } =
             this._computeTrendDisplay(currentGroup, compGroup, dateFormat, decimals);
 
-        // --- assignedColors – mismo patrón que renderEdaKpiChart ---
+        // --- assignedColors – same pattern as renderEdaKpiChart ---
         const existingColors = cfg['assignedColors'] || [];
         let assignedColors: any[] = [];
         const hasTwoSeries = compGroup !== null;
@@ -874,7 +873,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             });
         }
 
-        // --- Chart options via initChartOptions – mismo patrón que renderEdaKpiChart ---
+        // --- Chart options via initChartOptions – same pattern as renderEdaKpiChart ---
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
         const styles: StyleConfig = { fontFamily: this.fontFamily, fontSize: this.fontSize, fontColor: this.fontColor };
         const dimensions = this.getDimensions();
@@ -890,7 +889,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             this.styleProviderService
         );
 
-        // --- Build chartConfig – mismo patrón que renderEdaKpiChart ---
+        // --- Build chartConfig – same pattern as renderEdaKpiChart ---
         const chartConfig: any = {};
         chartConfig.showChart = true;
         chartConfig.edaChart = {
@@ -914,7 +913,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.comparisonLabel = compLabel;
         chartConfig.decimals = decimals;
 
-        // --- Style config – mismo patrón que renderEdaKpiChart ---
+        // --- Style config – same pattern as renderEdaKpiChart ---
         const propsConfig: any = this.props.config;
         if (propsConfig) {
             const trendCfg = <KpiTrendConfig>propsConfig.getConfig();
@@ -931,7 +930,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.currentYearColor = color0;
         chartConfig.previousYearColor = color1;
 
-        // --- Para el dropdown en el componente ---
+        // --- For the dropdown in the component ---
         chartConfig.dateFormat = dateFormat;
         chartConfig.currentKey = currentGroup.key;
         chartConfig.selectedComparisonKey = defaultCompKey;
@@ -943,12 +942,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Agrupa los rows según el formato de fecha:
-     *  month → por año (periods = mes 1-12)
-     *  week  → por mes aproximado (periods = posición ordinal de semana 1-5)
-     *  year  → por año (periods = 1 dato por año)
-     *  day   → por mes (periods = día del mes)
-     * Resultado ordenado desc (más reciente primero)
+     * Groups rows according to date format:
+     *  month → by year (periods = month 1-12)
+     *  week  → by approx month (periods = ordinal week 1-5)
+     *  year  → by year (period = 1)
+     *  day   → by month (period = day of month)
+     * Result ordered descending (most recent first)
      */
     private _buildTrendPeriodGroups(
         rows: { dateStr: string; value: number }[],
@@ -1032,7 +1031,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         return groups.sort((a, b) => a.key < b.key ? 1 : a.key > b.key ? -1 : 0);
     }
 
-    /** Calcula KPI, SPLY, vs% y arrays para el gráfico a partir de dos grupos */
+    /** Calculates KPI, SPLY, vs% and arrays for the chart from two groups */
     private _computeTrendDisplay(
         currentGroup: { key: string; label: string; entries: { period: number; value: number }[] },
         compGroup: { key: string; label: string; entries: { period: number; value: number }[] } | null,
@@ -1071,7 +1070,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         return { kpiValue, spyValue, vsPercent, labels, currentSeries, previousSeries };
     }
 
-    /** Label del eje X del gráfico para un numero de periodo */
+    /** X-axis label for a given period number */
     private _periodToChartLabel(period: number, format: string): string {
         if (format === 'month') {
             const months = getLocaleMonthNames(this.locale, FormStyle.Standalone, TranslationWidth.Abbreviated);
@@ -1083,7 +1082,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         return String(period);
     }
 
-    /** Título del periodo actual según el formato de fecha */
+    /** Current period title according to date format */
     private _periodTitle(format: string): string {
         switch (format) {
             case 'year':  return $localize`:@@trendTitleYear:Año actual`;
@@ -1094,7 +1093,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
     }
 
-    /** Label de la comparación según el formato */
+    /** Comparison label according to date format */
     private _comparisonLabel(format: string): string {
         switch (format) {
             case 'year':  return $localize`:@@trendCompYear:Año anterior`;
@@ -1159,7 +1158,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.query = this.props.query;
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
-        // Obtener config
+        // Get config
         const config = this.props.config.getConfig() || {};
 
         // Coordinates
@@ -1180,27 +1179,27 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         // Legend Position
         inject.legendPosition = config['legendPosition'] || 'bottomleft';
 
-        // Cargar assignedColors según el tipo de mapa
+        // Load assignedColors according to map type
         let assignedColors = config['assignedColors'];
 
-        // Crear defaults colors según el tipo de mapa
+        // Create default colors according to map type
         if (!assignedColors || !Array.isArray(assignedColors) || assignedColors.length === 0) {
             if (type === 'geoJsonMap') {
-                // geoJsonMap: un solo color
+                // geoJsonMap: single color
                 assignedColors = [
                     {value: 'start', color: this.paletaActual[0]}
                 ];
             } else {
-                // coordinatesMap: gradiente de dos colores
+                // coordinatesMap: gradient of two colors
                 assignedColors = [
                     {value: 'start', color: this.paletaActual[this.paletaActual.length - 1]},
                     {value: 'end', color: this.paletaActual[0]}
                 ];
             }
-            // Guardar los colores por defecto
+            // Save the default colors
             config['assignedColors'] = assignedColors;
         } else {
-            // Verificar que tenga el número correcto de colores según el tipo
+            // Verify it has the correct number of colors according to type
             if (type === 'geoJsonMap' && assignedColors.length !== 1) {
                 assignedColors = [assignedColors[0] || {value: 'start', color: this.paletaActual[0]}];
                 config['assignedColors'] = assignedColors;
@@ -1232,7 +1231,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.entry.clear();
         this.componentRef = this.entry.createComponent(EdaGeoJsonMapComponent);
         this.componentRef.instance.inject = inject;
-        // Revisar filtro en click 
+        // Review click filter 
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
     }
 
@@ -1386,7 +1385,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     private createTreetable(inject: any) {
         this.entry.clear();
         this.componentRef = this.entry.createComponent(EdaTreeTable);
-        this.componentRef.instance.inject = inject; // inject como input al componente Treetable
+        this.componentRef.instance.inject = inject; // inject as input to the Treetable component
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
     }
 
@@ -1464,7 +1463,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             this.componentRef = null;
         }
 
-        // recrear
+        // recreate
         this.renderEdaChart(this.props.edaChart);
     });
 }
@@ -1474,7 +1473,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const assignedColors = config['assignedColors'];
 
         this.props.config.setConfig(new KpiConfig(assignedColors));
-        // Re-renderizar KPI desde cero
+        // Re-render KPI from scratch
         this.renderEdaKpiChart();
     }
 
@@ -1487,11 +1486,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     public updateMapColors() {
-        // Setup variables de  datos
+        // Setup data variables
         const config = this.props.config.getConfig();
         const assignedColors = config['assignedColors'];
         if (assignedColors && Array.isArray(assignedColors) && assignedColors.length > 0) {
-            // Recuperamos los colores que pertoquen depende del mapa
+            // Recover the colors depending on the map type
             if (this.props.chartType === 'geoJsonMap') {
                 config['color'] = assignedColors[0].color;
             } else if (this.props.chartType === 'coordinatesMap') {
@@ -1499,7 +1498,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 config['finalColor'] = assignedColors[1]?.color;
             }
 
-            // Preservar todos los valores existentes — must carry assignedColors forward so
+            // Preserve all existing values — must carry assignedColors forward so
             // the subsequent renderMap call finds them in the config.
             const newMapConfig = new MapConfig(
                 config['coordinates'],
@@ -1512,7 +1511,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             (newMapConfig as any)['assignedColors'] = assignedColors;
             this.props.config.setConfig(newMapConfig);
         }
-        // Re-renderizar el mapa
+        // Re-render the map
         this.renderMap(this.props.chartType);
     }
 
@@ -1524,7 +1523,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             return;
         }
 
-        // Extraer solo los colores del array assignedColors
+        // Extract only the colors from the assignedColors array
         const colors = assignedColors.map(item => item.color);
 
         switch (chartType) {
@@ -1548,7 +1547,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 this.props.config.setConfig(new FunnelConfig(assignedColors));
                 this.renderFunnel();
                 break;
-            // case 'knob': // Knob deshabilitado por ahora porque no funciona
+            // case 'knob': // Knob disabled for now because it does not work
             //     this.props.config.setConfig(new KnobConfig(
             //         assignedColors[0]?.color,config['limits']));
             //     this.renderKnob();
@@ -1615,8 +1614,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default }));
                 }
             }
-            // Columnas extra añadidas por el backend (ej. predicción) que no están en el query original.
-            // Solo se procesan si hay más datos que campos en el query (hasPredictionData).
+            // Extra columns added by the backend (e.g. prediction) that are not in the original query.
+            // Only process them if there are more labels than fields in the query (hasPredictionData).
             if (labels.length > this.props.query.length) {
                 for (let i = this.props.query.length; i < labels.length; i++) {
                     const label = labels[i];
@@ -1635,11 +1634,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
 
     /**
-     * Resuelve y persiste los colores asignados para un chart
-     * @param categories - Array de categorías/labels actuales del chart
-     * @param props - Props del chart (debe tener config y assignedColors)
-     * @param paletaActual - Paleta de colores a usar como fallback
-     * @returns Array de assignedColors correctamente mapeados
+     * Resolves and persists assigned colors for a chart
+     * @param categories - Array of current chart categories/labels
+     * @param props - Chart props (must have config and assignedColors)
+     * @param paletaActual - Fallback color palette
+     * @returns Array of correctly mapped assignedColors
      */
 
     private _prepareTablePredictionData(labels: string[], values: any[][], queryLen: number): { tableLabels: string[], tableValues: any[][] } {
@@ -1730,7 +1729,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     private resolveAndPersistColors(categories: string[], props: any, paletaActual: string[]): { value: string; color: string }[] {
     
-    // Validar inputs
+    // Validate inputs
     if (!categories || categories.length === 0) {
         categories = ['default'];
     }
@@ -1746,16 +1745,16 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     
     let assignedColors: { value: string; color: string }[];
     
-    // Si ya existen colores guardados Y las categorías coinciden, 
-    // NO regenerar (evita el loop de regeneración)
+    // If there are already saved colors AND categories match, 
+    // do not regenerate (avoids regeneration loop)
     if (savedAssignedColors.length > 0) {
-        // Verificar si las categorías son las mismas
+        // Check if categories are the same
         const savedValues = savedAssignedColors.map(ac => ac.value).sort();
         const currentValues = categories.slice().sort();
         const sameCategoriesCount = savedValues.length === currentValues.length;
         
-        // Si tienen el mismo número de categorías, asumir que son los mismos datos
-        // y simplemente mapear los colores existentes
+        // If they have the same number of categories, assume they are the same data
+        // and simply map existing colors
         if (sameCategoriesCount) {
             assignedColors = categories.map((category, index) => {
                 const found = savedAssignedColors.find(ac => ac.value === category);
@@ -1765,7 +1764,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 };
             });
         } else {
-            // Las categorías cambiaron (filtro aplicado), mapear lo que se pueda
+            // Categories changed (filter applied), map what you can
             assignedColors = categories.map((category, index) => {
                 const found = savedAssignedColors.find(ac => ac.value === category);
                 return found || {
@@ -1776,7 +1775,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
     } 
     
-    // Validación final
+    // Final validation
     if (!assignedColors || assignedColors.length === 0) {
         assignedColors = categories.map((cat, idx) => ({
             value: cat,
@@ -1785,8 +1784,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
     
     
-    // SOLO persistir si realmente cambió algo
-    // Comparar con lo guardado para evitar escrituras innecesarias --> esto viene dado por el doble render
+    // ONLY persist if something actually changed
+    // Compare with saved data to avoid unnecessary writes --> this comes from double render
     const needsUpdate = JSON.stringify(savedAssignedColors) !== JSON.stringify(assignedColors);
     
     if (needsUpdate) {
@@ -1800,7 +1799,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 }
 
     private resolveAndPersistGradientColors(props: any, paletaActual: string[]): { value: string; color: string }[] {
-        // Leer de múltiples fuentes
+        // Read from multiple sources
         const savedAssignedColors = props.config.getConfig()['assignedColors'] || props.assignedColors || [];
         let assignedColors: { value: string; color: string }[];
         
@@ -1819,7 +1818,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             ];
         }
         
-        // Persistir en ambos lugares
+        // Persist in both places
         props.assignedColors = assignedColors;
         const currentConfig = props.config.getConfig();
         currentConfig['assignedColors'] = assignedColors;

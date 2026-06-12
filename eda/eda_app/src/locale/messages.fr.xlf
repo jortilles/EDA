@@ -6852,6 +6852,66 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Fuente de datos Odoo creada correctamente</source>
         <target>Source de données Odoo créée avec succès</target>
       </trans-unit>
+      <trans-unit id="ga4PropertyIdLabel">
+        <source>ID de Propiedad GA4</source>
+        <target>ID de propriété GA4</target>
+      </trans-unit>
+      <trans-unit id="ga4PropertyIdHint">
+        <source>Puedes encontrarlo en Google Analytics → Administrar → Información de la propiedad</source>
+        <target>Vous pouvez le trouver dans Google Analytics → Administrer → Informations sur la propriété</target>
+      </trans-unit>
+      <trans-unit id="ga4FolderNameLabel">
+        <source>Nombre de carpeta</source>
+        <target>Nom du dossier</target>
+      </trans-unit>
+      <trans-unit id="ga4FolderNameHint">
+        <source>Se creará la carpeta duckdb/&lt;nombre&gt;/ con los CSV de métricas</source>
+        <target>Le dossier duckdb/&lt;nom&gt;/ sera créé avec les fichiers CSV de métriques</target>
+      </trans-unit>
+      <trans-unit id="ga4FolderPlaceholder">
+        <source>ga4_miempresa</source>
+        <target>ga4_monsociete</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthLabel">
+        <source>Autorización de Google Analytics</source>
+        <target>Autorisation Google Analytics</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthButton">
+        <source>Autorizar con Google Analytics</source>
+        <target>Autoriser avec Google Analytics</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthWaiting">
+        <source>Esperando autorización en la ventana emergente...</source>
+        <target>En attente d'autorisation dans la fenêtre contextuelle...</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthSuccess">
+        <source>Cuenta de Google Analytics autorizada correctamente</source>
+        <target>Compte Google Analytics autorisé avec succès</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthRevoke">
+        <source>Cambiar cuenta</source>
+        <target>Changer de compte</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthError">
+        <source>Error durante la autorización. Inténtalo de nuevo.</source>
+        <target>Erreur lors de l'autorisation. Veuillez réessayer.</target>
+      </trans-unit>
+      <trans-unit id="ga4InfoMessage">
+        <source>Al confirmar se descargarán los datos de los últimos 365 días de Google Analytics 4: sesiones por canal, páginas vistas, eventos, dispositivos y datos geográficos. La descarga puede tardar según el volumen de datos de la propiedad.</source>
+        <target>En confirmant, les données des 365 derniers jours de Google Analytics 4 seront téléchargées : sessions par canal, pages vues, événements, appareils et données géographiques. Le téléchargement peut prendre du temps selon le volume de données de la propriété.</target>
+      </trans-unit>
+      <trans-unit id="ga4Created">
+        <source>Fuente de datos Google Analytics 4 creada correctamente</source>
+        <target>Source de données Google Analytics 4 créée avec succès</target>
+      </trans-unit>
+      <trans-unit id="ga4PropertyIdRequired">
+        <source>Debe indicar el ID de propiedad de Google Analytics 4</source>
+        <target>L'ID de propriété Google Analytics 4 est requis</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthRequired">
+        <source>Debes autorizar el acceso a Google Analytics primero</source>
+        <target>Vous devez d'abord autoriser l'accès à Google Analytics</target>
+      </trans-unit>
       <trans-unit id="holdedFolderLabel">
         <source>Nombre de carpeta <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
         <target>Nom du dossier <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
