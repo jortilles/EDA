@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   standalone: true,
-  selector: 'eda-sunburst' /* tag que jo li dono  */,
+  selector: 'eda-sunburst' /* tag assigned to this component */,
   templateUrl: './eda-sunburst.component.html' /** sdf */,
   styleUrls: ['./eda-sunburst.component.css'],
   imports: [FormsModule, CommonModule]
@@ -47,7 +47,7 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     const container = this.svgContainer.nativeElement as HTMLElement;
 
-    // Crear SVG
+    // Create SVG
     this.svg = d3.select(container).append('svg');
 
     this.resizeObserver = new ResizeObserver(entries => {
@@ -59,7 +59,7 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
     });
     this.resizeObserver.observe(container);
 
-    // Dibujar inicialmente
+    // Initial draw
     if (this.svg) this.svg.remove();
     let id = `#${this.id}`;
     this.svg = d3.select(id);
@@ -76,14 +76,14 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
   }
 
   draw() {
-    // Limpiar SVG antes de redibujar (evita acumulación)
+    // Clear SVG before redrawing (prevents accumulation)
     this.svg.selectAll('*').remove();
     
     const svg = this.svg;
     const width = this.svgContainer.nativeElement.clientWidth - 40;
     let radius = width / 2;
     
-    /** copio els objectes del d3  */
+    /** copy d3 objects */
     let partition = data =>
       d3.partition().size([2 * Math.PI, radius * radius])(
         d3
@@ -92,7 +92,7 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
           .sort((a, b) => b.value - a.value)
       );
       
-    //Funcion de ordenación de colores de D3
+    // D3 color sorting function
     const valuesSunburst = this.assignedColors.map((item) => item.value);
     const colorsSunburst = this.assignedColors.map(item => item.color);
     const color = d3.scaleOrdinal(this.firstColLabels, colorsSunburst);
@@ -113,7 +113,7 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
       .innerRadius((d: any) => Math.sqrt(d.y0))
       .outerRadius(radius)
 
-    /** comença la mandanga.... */
+    /** main processing starts */
     let data = this.buildHierarchy(this.data);
     const root = partition(data)
     // Make this into a view, so that the currently hovered sequence is available to the breadcrumb
@@ -160,10 +160,10 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
         let original = d;
         let opacity = 1;
         
-        // Subimos al primer nivel para asignar color base
+        // Go up to the first level to assign the base color
         while (d.depth > 1) d = d.parent;
         const rgbColor = d3.rgb(colorsSunburst[valuesSunburst.findIndex(item => d.data.name.includes(item))] || color(d.data.name)); 
-        // Cálculo de opacidad
+        // Opacity calculation
         if (original.depth > 1) {
           const siblings = original.parent.children;
           const index = siblings.indexOf(original);
@@ -172,9 +172,9 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
           const minOpacity = 0.25;
           const maxOpacity = 1;
       
-          // Distribuye linealmente entre min y max, primero más opaco
+          // Linearly distribute between min and max, most opaque first
           if (total > 1) { opacity = maxOpacity - (index * (maxOpacity - minOpacity) / (total - 1)); }
-          else { opacity = maxOpacity; } // Solo un hijo
+          else { opacity = maxOpacity; } // Single child
         }
       
         return `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, ${opacity})`;
@@ -250,7 +250,7 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
           .attr("pointer-events", "none")
 
           .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
-        // per posar-ho a dalt de tot
+        // bring it to the top
         label.raise();
         
       })
@@ -264,7 +264,7 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
         window.open(url, "_blank");
       } else {
         const label = data.data.name;
-        // buscar en todas las filas hasta encontrar coincidencia
+        // search all rows until a match is found
         let idx = -1;
         for (const row of this.inject.data.values) {
           const tmpIdx = row.indexOf(label);
@@ -306,7 +306,7 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
   }
 
   generateDomain (data) {
-    // map executa la funció sobre cada element del array. Es a dir sobre cada fila.
+    // map executes the function on each element of the array, i.e. on each row.
 
 
     let foo = data.map(elem => elem.filter(value => typeof value !== 'number'))
@@ -329,7 +329,7 @@ export class EdaSunburstComponent implements AfterViewInit, OnDestroy {
     return ancestors;
   }
 
-  /** copio les funcions del d3 */
+  /** copy d3 functions */
   private buildHierarchy (data) {
     // Helper function that transforms the given data into a hierarchical format.
     const root = { name: 'root', children: [] }

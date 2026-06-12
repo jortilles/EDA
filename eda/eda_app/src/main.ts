@@ -15,23 +15,23 @@ import { MsalModule, MSAL_INSTANCE, MsalService } from '@azure/msal-angular';
 import { PublicClientApplication, IPublicClientApplication } from '@azure/msal-browser';
 import { MICROSOFT_ID, MICROSOFT_AUTHORITY, MICROSOFT_REDIRECT_URI } from '@eda/configs/config';
 
-// Configuración API
+// API configuration
 import { URL_SERVICES } from '../src/app/config/config';
 
-// Registrar locales
+// Register locales
 registerLocaleData(localeEs);
 registerLocaleData(localeCa);
 registerLocaleData(localePl);
 registerLocaleData(localeEn);
 
-// Detectar IE
+// Detect IE
 const isIE =
   window.navigator.userAgent.indexOf('MSIE ') > -1 ||
   window.navigator.userAgent.indexOf('Trident/') > -1;
 
 const API = URL_SERVICES;
 
-// Factory para MSAL
+// Factory for MSAL
 export function MSALInstanceFactory(): IPublicClientApplication {
   if (!window.crypto?.subtle || !window.isSecureContext) {
     console.warn('MSAL no puede inicializarse: Web Crypto API no disponible o contexto no seguro.');
@@ -51,10 +51,10 @@ export function MSALInstanceFactory(): IPublicClientApplication {
   });
 }
 
-// Función de bootstrap condicional
+// Conditional bootstrap function
 async function bootstrap() {
   try {
-    // Obtenemos el tipo de login desde el backend
+    // Get the login type from the backend
     let loginMethods: string[] = [];
     
     try {
@@ -65,14 +65,14 @@ async function bootstrap() {
       }
     } catch (fetchError) {
       console.warn('No se pudo conectar a la API. Usando configuración por defecto.', fetchError);
-      // Valor por defecto si la API no responde
+      // Default value if the API does not respond
       loginMethods = [];
     }
 
-    // Providers base
+    // Base providers
     const providers: Provider = [...(appConfig.providers || [])];
 
-    // Solo agregamos MSAL si Microsoft está habilitado
+    // Only add MSAL if Microsoft is enabled
     if (loginMethods.includes('microsoft')) {
       providers.push(
         importProvidersFrom(MsalModule),
@@ -80,14 +80,14 @@ async function bootstrap() {
         MsalService
       );
     } else {
-      // Opcional: agregar un provider dummy para evitar NullInjectorError
+      // Optional: add a dummy provider to avoid NullInjectorError
       providers.push({
         provide: MsalService,
         useValue: null
       });
     }
 
-    // Bootstrap principal
+    // Main bootstrap
     await bootstrapApplication(AppComponent, {
       ...appConfig,
       providers
@@ -98,5 +98,5 @@ async function bootstrap() {
   }
 }
 
-// Ejecutar bootstrap
+// Run bootstrap
 bootstrap();

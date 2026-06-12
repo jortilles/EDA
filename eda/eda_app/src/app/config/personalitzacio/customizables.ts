@@ -1,4 +1,4 @@
-// Personalización de colores corporativos
+// Corporate color customization
 export const CORPORATE_COLORS = {
     // Colores base de marca — usados en toda la aplicación
     primary:         '#BE0926',      // Color principal (botones, iconos, gradientes)
@@ -6,7 +6,8 @@ export const CORPORATE_COLORS = {
     primaryRgb:      '190, 9, 38',   // Valor RGB del primario para opacidades (box-shadow, rgba)
     primaryHsl:      '350 91% 39%',  // Componentes HSL del primario para --ring (Tailwind focus ring)
 
-    // Colores específicos del chatbot
+
+    // Chatbot-specific colors
     chat: {
         avatarBg:       '#FBDADE',   // Fondo del avatar del robot (header y mensajes)
         avatarBgAlt:    '#F7A8B3',   // Fondo alternativo del avatar (gradiente empty state)
@@ -15,9 +16,10 @@ export const CORPORATE_COLORS = {
         tableHeader:    '#880618',   // Color del texto en cabeceras de tabla
         linkColor:      '#BE0926',   // Color de enlaces en mensajes
         linkHoverColor: '#9C071B',   // Color de enlaces al hacer hover
+
     },
 
-    // Colores específicos de carpetas (home — vista de carpetas y filtros de tags)
+    // Folder-specific colors (home — folder view and tag filters)
     folder: {
         iconBg:          '#FBDADE',  // Fondo del icono de carpeta cerrada
         iconBgHover:     '#F7A8B3',  // Fondo del icono de carpeta hover o abierta
@@ -26,9 +28,10 @@ export const CORPORATE_COLORS = {
         iconColorHover:  '#880618',  // Color del icono y texto al hacer hover o al estar abierta
         cardBgOpen:      '#FCEEF0',  // Fondo de la tarjeta cuando la carpeta está abierta
         labelColorOpen:  '#6B0513',  // Color del nombre de la carpeta cuando está abierta
+
     },
 
-    // Colores de botones de acción en diálogos
+    // Action button colors in dialogs
     buttons: {
         // Confirmar: acción principal afirmativa
         confirmBg:        '#BE0926',  // Inicio gradiente
@@ -58,6 +61,7 @@ export const CORPORATE_COLORS = {
         loginText:       '#BE0926',  // Color del texto
         loginTextHover:  '#BE0926',  // Color del texto al hacer hover
         loginBorderColor: '#c2bdbe00', // Borde del color del boton
+
     },
 };
 
@@ -84,31 +88,31 @@ export const ChartsPalettes = [
     },
     {
         paleta: [
-  '#6ECBD3', // cian suave
-  '#C59BEF', // lavanda
-  '#DCEB8E', // verde pastel claro
-  '#F2B98E', // melocotón suave
-  '#E4C7F5', // lila claro
-  '#79BDEB', // azul cielo
-  '#E89BCB', // rosa suave
-  '#A8E6C1', // verde menta
-  '#879CEB', // azul lavanda
-  '#F2CF8C', // amarillo suave
-  '#7EDBD1', // turquesa claro
-  '#F29C9C', // coral pastel
-  '#C6E88E', // verde lima suave
-  '#9C8EEB', // violeta suave
-  '#8FD8F2', // azul hielo
-  '#F2A8D8', // rosa empolvado
-  '#C3B6F2', // malva claro
-  '#B8EED1', // verde agua
-  '#F4C7A1', // albaricoque
-  '#8FE3D0', // menta azulada
-  '#D9F0A3', // pistacho claro
-  '#F5B8E4', // rosa claro
-  '#A8E1F2', // celeste pastel
-  '#F4DA8E', // amarillo mantequilla
-  '#B19CF2'  // violeta claro final
+  '#6ECBD3', // soft cyan
+  '#C59BEF', // lavender
+  '#DCEB8E', // light pastel green
+  '#F2B98E', // soft peach
+  '#E4C7F5', // light lilac
+  '#79BDEB', // sky blue
+  '#E89BCB', // soft pink
+  '#A8E6C1', // mint green
+  '#879CEB', // lavender blue
+  '#F2CF8C', // soft yellow
+  '#7EDBD1', // light turquoise
+  '#F29C9C', // pastel coral
+  '#C6E88E', // soft lime green
+  '#9C8EEB', // soft violet
+  '#8FD8F2', // ice blue
+  '#F2A8D8', // dusty rose
+  '#C3B6F2', // light mauve
+  '#B8EED1', // aqua green
+  '#F4C7A1', // apricot
+  '#8FE3D0', // bluish mint
+  '#D9F0A3', // light pistachio
+  '#F5B8E4', // light pink
+  '#A8E1F2', // pastel sky blue
+  '#F4DA8E', // butter yellow
+  '#B19CF2'  // final light violet
         ]
         , name: 'Contraste'
     }, {
@@ -195,18 +199,21 @@ export const Tema = 'default-dark';
 export const TemaUrl = 'assets/css/colors/sass/default-dark.css';
 
 
+/** Application shell background color (home and admin pages) */
+export const DEFAULT_HOME_BACKGROUND_COLOR: string = '#F5F5F5';
+
 export const DEFAULT_BACKGROUND_COLOR: string = '#f1f0f0';
 export const DEFAULT_PANEL_COLOR: string = '#ffffff';
 export const DEFAULT_FONT_COLOR: string = '#000000'
 
-/** Color de fondo de la cabecera de tabla (cabecera: opacidad alta, banding: opacidad baja) */
+/** Table header background color (header: high opacity, banding: low opacity) */
 export const DEFAULT_TABLE_HEADER_COLOR: string = '#249daa';
-export const DEFAULT_TABLE_BANDING_COLOR: string = '#31bece'; // Mismo color que el header pero con opacidad reducida para el banding de filas
+export const DEFAULT_TABLE_BANDING_COLOR: string = '#31bece'; // Same color as the header but with reduced opacity for row banding
 export const DEFAULT_FONT_FAMILY: string = 'Montserrat';  /* THIS MUST BE SET ALSO IN  \eda_app\src\assets\sass\css\custom.css */
 export const DEFAULT_FONT_SIZE: number = 0;
 export const DEFAULT_TITLE_ALIGN: string = 'flex-start';
 export const DEFAULT_PANEL_TITLE_ALIGN: string = 'flex-start';
-export const EMPTY_VALUE: string = ''; // $localize`:@@EmptyValueMessage:Sin Informar` ;// Agregado valores vacios en diferentes idiomas
+export const EMPTY_VALUE: string = ''; // $localize`:@@EmptyValueMessage:Sin Informar` ;// Added empty values in different languages
 export const NULL_VALUE: string = '';// null Agregado de null_value en diferentes idiomas  if you want to leave the null you can put this value: LEAVE_THE_NULL . THIS LEAVE_THE_NULL will leave the null value as null
 export const DEFAULT_PALETTE_COLOR: any = ChartsPalettes.find(palette => palette.name === "Gradiente");
-export const FATHER_ID: number = 0; // Valor id de Padre para el componente Treetable
+export const FATHER_ID: number = 0; // Parent ID value for the Treetable component

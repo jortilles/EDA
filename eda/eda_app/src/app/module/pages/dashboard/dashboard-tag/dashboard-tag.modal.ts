@@ -29,25 +29,25 @@ export class DashboardTagModal implements OnInit {
   constructor(private alertService: AlertService) { }
 
   ngOnInit(): void {
-    // Recogemos todos los tags guardados en local 
+    // We retrieve all tags stored locally
     const tags = JSON.parse(localStorage.getItem('tags')) || [];
     this.selectedTags = this.dashboard.selectedTags;
     this.tags = _.uniqBy(tags, 'value');
 
-    // Si this tags no es una array porque son tags legacy, tenemos que convertirlo en array
+    // If this.tags is not an array because they are legacy tags, we need to convert it into an array
     if(!Array.isArray(this.tags)){
       this.tags = [this.tags];
     }
     
-    // Añadimos los tags que estan presentes en este documento, por si no estan guardados en local
+    // We add the tags present in this document in case they are not stored locally
     if(!Array.isArray(this.selectedTags)){
       this.selectedTags = [this.selectedTags];
     } 
   
-    // Añadir valores de tag que vengan importados
+    // Add tag values that come from imports
     this.tags.push(...this.selectedTags.filter(  (tag): tag is string => typeof tag === "string").map(tag => ({label: tag,value: tag})));
 
-    // Eliminar duplicados por 'label' por si sí estan guardados en local y no repetirlos
+    // Remove duplicates by 'label' in case they are already stored locally and avoid repeating them
     this.tags = Array.from(new Map(this.tags.map(item => [item.label, item])).values());
   }
 
@@ -72,7 +72,7 @@ export class DashboardTagModal implements OnInit {
 
   public onApply() {
     this.display = false;
-    // Normalizar selectedTags: convertir objetos a strings
+    // Normalize selectedTags: convert objects to strings
     const normalizedTags = this.selectedTags.map(tag =>
       typeof tag === 'string' ? tag : tag.value || tag.label
     );

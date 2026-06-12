@@ -56,11 +56,11 @@ export class EdaD3Component implements AfterViewInit, OnInit {
   ngAfterViewInit() {
     const container = this.svgContainer.nativeElement as HTMLElement;
 
-    // Crear SVG
+    // Create SVG
     if (!this.svg)
       this.svg = d3.select(container).append('svg');
 
-    // ResizeObserver para redimensionar el chart
+    // ResizeObserver to resize the chart
     this.resizeObserver = new ResizeObserver(entries => {
       const { width: w, height: h } = entries[0].contentRect;
       if (w > 0 && h > 0) {
@@ -72,7 +72,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
     });
     this.resizeObserver.observe(container);
 
-    // Primer draw
+    // First draw
     const w = container.clientWidth;
     const h = container.clientHeight;
     if (w > 0 && h > 0) {
@@ -85,17 +85,17 @@ export class EdaD3Component implements AfterViewInit, OnInit {
   }
 
   ngOnDestroy(): void {
-    // Borrar contenedor
+    // Remove container
     if (this.div)
       this.div.remove();
-    // Borrar resize observer
+    // Disconnect resize observer
     if (this.resizeObserver)
       this.resizeObserver.disconnect();
   }
 
 
   draw() {
-    // Borrado inicial de otros charts 
+    // Initial removal of other charts 
     this.svg.selectAll('*').remove();
     const width = this.svgContainer.nativeElement.clientWidth - 20, height = this.svgContainer.nativeElement.clientHeight - 20;
     let values = this.data.values;
@@ -112,11 +112,11 @@ export class EdaD3Component implements AfterViewInit, OnInit {
     //Remove metric key and assign value
     const metricKey = keys.splice(this.metricIndex, 1)[0];
 
-    //Valores de assignedColors separados
+    // Values of assignedColors separated
     const valuesTree = this.assignedColors?.length > 0 ? this.assignedColors.map((item) => item.value) : this.firstColLabels;
     const colorsTree = this.assignedColors?.length > 0 ? this.assignedColors.map(item => item.color) : this.colors;
 
-    //Funcion de ordenación de colores de D3
+    // Color ordering function for D3
     const color = d3.scaleOrdinal(this.firstColLabels, colorsTree);
 
     let { _nodes, _links } = this.graph(keys, data, metricKey);
@@ -175,7 +175,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
           window.open(url, "_blank");
 
         } else {
-          //Passem aquestes dades
+          // Emit these data
           const label = data.source.name;
           const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
           this.onClick.emit({ label, filterBy });
@@ -184,12 +184,12 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .on('mouseover', this.showLinks)
       .on('mouseout', this.hideLinks)
       .attr("stroke", d => {
-        //Devolvemos SOLO EL COLOR de assignedColors que comparte la data y colors de assignedColors
+        // Return ONLY THE COLOR from assignedColors that matches the data, otherwise use color scale
         return colorsTree[valuesTree.findIndex((item) => d.names.includes(item))] || color(d.names[0]);
       })
 
       .attr("stroke-width", d => d.width)
-      // REVISAR ESTO
+      // REVIEW THIS
       //.style("mix-blend-mode", "multiply")
       .on('mouseover', (d, data) => {
 

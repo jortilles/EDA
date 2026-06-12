@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, SimpleChanges, Input, HostBinding,
+import { Component, OnInit, OnChanges, OnDestroy, SimpleChanges, Input, HostBinding,
          ChangeDetectorRef, AfterViewInit, ViewChild, ElementRef, Self, Inject, LOCALE_ID } from '@angular/core';
 import { CommonModule, getLocaleMonthNames, FormStyle, TranslationWidth } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -14,7 +14,7 @@ import { StyleProviderService } from '@eda/services/service.index';
     styleUrls: ['./eda-kpi-trend.component.css'],
     imports: [CommonModule, FormsModule, DropdownModule, EdaChartComponent]
 })
-export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
+export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
     @Input() inject: EdaKpiTrend;
     @ViewChild('edaTrendChart') edaTrendChart: EdaChartComponent;
     @ViewChild('kpiLeft') kpiLeftRef: ElementRef;
@@ -24,7 +24,7 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
     @HostBinding('style.width') readonly hostWidth = '100%';
     @HostBinding('style.height') readonly hostHeight = '100%';
 
-    // ── Propiedades locales: el template NUNCA accede a inject.X directamente ──
+    // ── Local properties: the template NEVER accesses inject.X directly ──
     displayKpiValue: number = 0;
     displaySpyValue: number | null = null;
     displayVsPercent: number | null = null;
@@ -39,9 +39,14 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
     edaChartInject: any = null;
     selectedComparisonKey: string = '';
 
-    // Estilo KPI
+    // Layout
+    isPortrait: boolean = false;
+    private _resizeObs: ResizeObserver | null = null;
+
+    // KPI Style
     color: string = '#67757c';
     family: string = 'inherit';
+    modifiedFontPoints: number = 0;
 
     constructor(
         private styleProviderService: StyleProviderService,
@@ -64,14 +69,28 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     ngAfterViewInit(): void {
+        const host = this.hostRef.nativeElement as HTMLElement;
+        this._resizeObs = new ResizeObserver(() => {
+            const portrait = host.offsetHeight > host.offsetWidth ;
+            if (portrait !== this.isPortrait) {
+                this.isPortrait = portrait;
+                this.cdr.detectChanges();
+            }
+        });
+        this._resizeObs.observe(host);
         this.cdr.detectChanges();
     }
 
-    /** Sincroniza todas las propiedades locales desde inject */
+    ngOnDestroy(): void {
+        this._resizeObs?.disconnect();
+    }
+
+    /** Synchronizes all local properties from inject */
     private _syncFromInject(): void {
         if (!this.inject) return;
 
         if (this.inject.kpiColor) this.color = this.inject.kpiColor;
+        this.modifiedFontPoints = this.inject.modifiedFontPoints ?? 0;
 
         this.displayKpiValue = this.inject.kpiValue ?? 0;
         this.displaySpyValue = this.inject.spyValue ?? null;
@@ -91,7 +110,7 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
             || '';
     }
 
-    /** Llamado cuando el usuario cambia el dropdown */
+    /** Called when the user changes the dropdown */
     onComparisonChange(): void {
         const groups: TrendPeriodGroup[] = this.inject?.periodGroups;
         if (!groups) return;
@@ -209,12 +228,15 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
         try {
             const host = this.hostRef.nativeElement as HTMLElement;
             const panelH = host.offsetHeight || 120;
+            const panelW = host.offsetWidth || 200;
             const colEl = this.kpiLeftRef?.nativeElement as HTMLElement | undefined;
-            const colW = (colEl?.offsetWidth || host.offsetWidth * 0.4) - 16;
+            const colW = (colEl?.offsetWidth || (this.isPortrait ? panelW : panelW * 0.4)) - 16;
+            const kpiAreaH = this.isPortrait ? panelH * 0.3 : panelH;
             const text = this.formatValue(this.displayKpiValue) + this.displaySufix;
             const charCount = Math.max(text.length, 1);
-            let size = Math.min(panelH * 0.22, colW / charCount * 1.6);
+            let size = Math.min(kpiAreaH * 0.22, colW / charCount * 1.6);
             size = Math.max(12, Math.min(size, 34));
+            size = Math.max(8, size + (this.inject?.modifiedFontPoints ?? this.modifiedFontPoints));
             return size.toFixed(0) + 'px';
         } catch {
             return '22px';

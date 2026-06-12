@@ -48,14 +48,14 @@ export class FunnelDialog implements OnInit, AfterViewChecked {
   }
 
   ngAfterViewChecked(): void {
-    // Solo actualizar si los colores aún son los valores por defecto
+    // Update only if the colors are still the default values
     if (this.assignedColors[0].color === '#000000' && this.assignedColors[1].color === '#000000' && this.myPanelChartComponent?.componentRef) {
 
       setTimeout(() => {
-        /* Obtener colores existentes del chart */
+        /* Get existing chart colors */
         const chartAssignedColors = this.myPanelChartComponent.props.config.getConfig()['assignedColors'] || [];
 
-        /* Actualizar con los colores reales del chart */
+        /* Update with the actual chart colors */
         if (chartAssignedColors.length >= 2) {
           this.assignedColors = [
             { value: 'Inicio', color: chartAssignedColors[0]?.color },
@@ -72,19 +72,19 @@ export class FunnelDialog implements OnInit, AfterViewChecked {
     this.controller.close(event, response);
   }
 
-  /* GUARDAR */
+  /* SAVE */
   saveChartConfig(): void {
-    // Guardar assignedColors en el config
+    // Save assignedColors in the config
     const config = this.myPanelChartComponent.props.config.getConfig();
     config['assignedColors'] = [...this.assignedColors];
     this.myPanelChartComponent.changeChartType();
 
-    // Enviar tanto colors como assignedColors en el response
+    // Send both colors and assignedColors in the response
     this.onClose(EdaDialogCloseEvent.UPDATE, { assignedColors: [...this.assignedColors] });
   }
 
 
-  /* CANCELAR */
+  /* CANCEL */
   closeChartConfig(): void {
     this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
 
@@ -104,18 +104,18 @@ export class FunnelDialog implements OnInit, AfterViewChecked {
     this.myPanelChartComponent.changeChartType();
   }
 
-  /* PALETA */
+  /* PALETTE */
   onPaletteSelected(): void {
     if (!this.selectedPalette) return;
     const palette = this.selectedPalette.paleta;
 
-    /* Aplicar primer y último color de la paleta */
+    /* Apply the first and last color from the palette */
     this.assignedColors = [
       { value: 'start', color: palette[0] },
       { value: 'end', color: palette[palette.length - 1] }
     ];
 
-    // Actualizar color del chart
+    // Update the chart color
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [...this.assignedColors];
     this.myPanelChartComponent.changeChartType();
   }

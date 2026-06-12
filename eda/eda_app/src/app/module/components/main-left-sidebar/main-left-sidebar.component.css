@@ -4,13 +4,13 @@
 .sidebar-submenu-link       { color: #6b7280; }
 .sidebar-submenu-link:hover { color: var(--corporate-primary) !important; }
 
-/* Asegurar que el overlay tenga un fondo sólido */
+/* Ensure the overlay has a solid background */
 .absolute.left-full {
   opacity: 1 !important;
   z-index: 50;
 }
 
-/* Evitar que el overlay se vuelva transparente al pasar el mouse */
+/* Prevent the overlay from becoming transparent on hover */
 .absolute.left-full:hover {
   opacity: 1 !important;
 }

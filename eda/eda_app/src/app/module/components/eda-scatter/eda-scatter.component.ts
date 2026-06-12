@@ -63,10 +63,10 @@ export class EdaScatter implements AfterViewInit {
     // SVG CONTAINER
     const container = this.svgContainer.nativeElement as HTMLElement;
 
-    // Crear SVG
+    // Create SVG
     this.svg = d3.select(container).append('svg');
 
-    // Crear ResizeObserver para redimensionar el chart
+    // Create ResizeObserver to resize the chart
     this.resizeObserver = new ResizeObserver(entries => {
       let id = `#${this.id}`;
       this.svg = d3.select(id);
@@ -87,7 +87,7 @@ export class EdaScatter implements AfterViewInit {
 
 
   draw() {
-    // Borrado inicial de otros charts 
+    // Initial cleanup of other charts
     this.svg.selectAll('*').remove();
     
     const svg = this.svg;
@@ -95,11 +95,11 @@ export class EdaScatter implements AfterViewInit {
     const height = this.svgContainer.nativeElement.clientHeight - 20;
     const margin = ({ top: 50, right: 50, bottom: 35, left: 100 });
 
-    //Valores de assignedColors separados
+    // Separate assignedColors values
     const valuesScatter = this.assignedColors.map((item) => item.value);
     const colorsScatter = this.assignedColors[0].color ? this.assignedColors.map(item => item.color) : this.colors;
     
-    //Funcion de ordenación de colores de D3
+    // D3 color sorting function
     const color = d3.scaleOrdinal(this.firstColLabels,  colorsScatter);
 
     const x_range: Array<any> = d3.extent(this.data, (d: any) => d.x);
@@ -183,7 +183,7 @@ export class EdaScatter implements AfterViewInit {
       .attr("r", d => d.radius + 1)
       .attr("fill", d => { 
         while (d.depth > 1) d = d.parent;
-        //Devolvemos SOLO EL COLOR de assignedColors que comparte la data y colors de assignedColors
+        // Return ONLY the COLOR from assignedColors that matches the data and assignedColors colors
         return valuesScatter.findIndex((item) => d.label.includes(item)) !== -1 ? colorsScatter[valuesScatter.findIndex((item) => d.label.includes(item))] : color(d.label);
       })
       .on('click', (e, data) => {
@@ -248,7 +248,7 @@ export class EdaScatter implements AfterViewInit {
           const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
           window.open(url, "_blank");
         }else {
-          //Passem aquestes dades
+          // Pass this data
           const label = data.label;
           const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
           this.onClick.emit({label, filterBy});

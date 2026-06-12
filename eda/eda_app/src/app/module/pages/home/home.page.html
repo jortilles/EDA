@@ -1,9 +1,9 @@
 <div class="flex flex-row h-screen overflow-hidden">
 
-<!-- Contenido principal -->
+<!-- Main content -->
 <div class="flex-1 min-w-0 flex flex-col overflow-hidden">
 
-  <!-- Header + Filtros (no scrollean) -->
+  <!-- Header + Filters (no scroll) -->
   <div class="shrink-0 max-w-[2000px] w-full mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4 space-y-4">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -34,14 +34,14 @@
                   (click)="clearAdvancedFilters()" i18n="@@clearFiltersBtn">Limpiar</button>
               </div>
               <div class="p-4 space-y-3">
-                <!-- Autor -->
+                <!-- Author -->
                 <div class="space-y-1">
                   <label class="text-xs font-medium text-muted-foreground" i18n="@@authorFilterLabel">Propietario</label>
                   <input type="text" [(ngModel)]="advancedFilters.author" (ngModelChange)="applyAdvancedFilters()"
                     class="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
                     i18n-placeholder="@@authorFilterPlaceholder" placeholder="Autor...">
                 </div>
-                <!-- Tipo Datasource -->
+                <!-- Datasource type -->
                 <div class="space-y-1">
                   <label class="text-xs font-medium text-muted-foreground" i18n="@@datasourceFilterLabel">Datasource</label>
                   <input type="text" [(ngModel)]="advancedFilters.datasource" (ngModelChange)="applyAdvancedFilters()"
@@ -49,12 +49,12 @@
                     i18n-placeholder="@@datasourceFilterPlaceholder" placeholder="postgres, mysql...">
                 </div>
                 
-                <!-- Creado en -->
+                <!-- Created at -->
                 <div class="space-y-1">
                   <label class="text-xs font-medium text-muted-foreground" i18n="@@createdFilterLabel">Creado en</label>
                   <eda-date-picker class="block w-full" [inject]="createdPickerConfig"  (onDatesChanges)="onCreatedDatesChange($event)" />
                 </div>
-                <!-- Modificado en -->
+                <!-- Modified at -->
                 <div class="space-y-1">
                   <label class="text-xs font-medium text-muted-foreground" i18n="@@modifiedFilterLabel">Modificado en</label>
                   <eda-date-picker class="block w-full" [inject]="modifiedPickerConfig"  (onDatesChanges)="onModifiedDatesChange($event)" />
@@ -89,15 +89,15 @@
     </div>
 
     <!-- Filters -->
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" style="overflow-wrap:anywhere"> <!-- Filtros -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" style="overflow-wrap:anywhere"> <!-- Filters -->
       <div class="flex-1 min-w-0">
         <div class="text-sm text-muted-foreground"> <span i18n="@@filterReports">FILTRAR INFORMES:</span> </div>
-        <!-- Contenedor de tags -->
-        <div class="flex flex-wrap items-center gap-2 overflow-hidden"> <span i18n="@@tagsDescriptionDashboard"
-            class="flex items-center px-4 py-2 text-sm text-gray-700">Etiquetas:</span> @for (option of filteredTags(); track
+        <!-- Tags container -->
+        <div class="flex flex-wrap items-center gap-2 overflow-hidden"> <span
+            class="flex items-center px-4 py-2 text-sm text-gray-700">Tags:</span> @for (option of filteredTags(); track
           option.value) { <div [ngClass]="isTagSelected(option.value) ? 'tag-selected' : 'tag'"
             (click)="handleTagSelect(option)"> {{ option.label }} </div> } </div>
-      </div> <!-- Ordenar informes -->
+      </div> <!-- Sort reports -->
       <div class="w-full sm:w-auto flex-shrink-0">
         <div class="text-base text-muted-foreground" i18n="@@sortReports">ORDENAR INFORMES:</div>
         <p-dropdown class="sort-dropdown"
@@ -108,9 +108,9 @@
       </div>
     </div>
 
-  </div><!-- cierre header+filtros -->
+  </div><!-- end header+filters -->
 
-  <!-- Dashboards (scrollean) -->
+  <!-- Dashboards (scrollable) -->
   <div class="flex-1 overflow-y-auto">
     <div class="max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -128,13 +128,13 @@
           *ngTemplateOutlet="reportsTemplate; context: { reports: privateReports, title: privateTitle, colKey: 'private' }"></ng-container>
       </div>
     </div>
-  </div><!-- cierre dashboards -->
+  </div><!-- end dashboards -->
 
-</div><!-- cierre contenido principal -->
+</div><!-- end main content -->
 
   <app-chatbot></app-chatbot>
 
-</div><!-- cierre flex-row wrapper -->
+</div><!-- end flex-row wrapper -->
 
 
 <!-- Template: single dashboard card -->
@@ -250,15 +250,15 @@
 
     @if (expandedFolder(); as exp) {
       @if (exp.colKey !== colKey) {
-        <!-- Otras columnas: vacías cuando hay carpeta expandida -->
+        <!-- Other columns: empty when a folder is expanded -->
         <div class="mt-4 rounded-lg bg-muted p-4 text-center text-muted-foreground">
           <span i18n="@@withoutContentYet">Sin contenido</span>
         </div>
       } @else {
-        <!-- Carpeta activa (mismo formato que cerrada, icono abierto + chevron abajo) -->
+        <!-- Active folder (same format as closed, open icon + chevron down) -->
         <div class="folder-card-open rounded-lg border text-card-foreground shadow-sm cursor-pointer transition-colors flex items-center gap-3 px-4 min-h-[calc(5.75rem)]"
           (click)="clickFolder(exp.tag, colKey)">
-          <!-- Icon square (abierto) -->
+          <!-- Icon square (open) -->
           <div class="folder-icon-wrap-open shrink-0 flex items-center justify-center w-12 h-12 rounded-lg">
             <svg xmlns="http://www.w3.org/2000/svg" class="folder-icon-open w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"/>
@@ -269,12 +269,12 @@
             <p class="folder-label-open text-l font-semibold truncate">{{ exp.tag }}</p>
             <p class="text-sm text-muted-foreground">{{ getReportsByTag(reports, exp.tag).length }} <span i18n="@@folderReportCount">informes</span></p>
           </div>
-          <!-- Chevron abajo -->
+          <!-- Chevron down -->
           <svg xmlns="http://www.w3.org/2000/svg" class="folder-chevron-open w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
           </svg>
         </div>
-        <!-- Informes de la carpeta activa -->
+        <!-- Reports in the active folder -->
         @for (report of getReportsByTag(reports, exp.tag); track report._id) {
           <ng-container *ngTemplateOutlet="reportCard; context: { $implicit: report }"></ng-container>
         }
@@ -285,7 +285,7 @@
         }
       }
     } @else if (viewMode() === 'folders') {
-      <!-- Folder cards (cerradas) -->
+      <!-- Folder cards (closed) -->
       @for (tag of getTagsInReports(reports); track tag) {
         <div class="folder-card rounded-lg border bg-card text-card-foreground shadow-sm cursor-pointer transition-colors flex items-center gap-3 px-4 min-h-[calc(5.75rem)]"
           (click)="clickFolder(tag, colKey)">

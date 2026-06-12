@@ -2,7 +2,7 @@
 import { Component, Input, Output, EventEmitter, ViewChild, OnInit, inject, computed, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, ElementRef } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { DragDropModule, CdkDrag, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { DragDropModule, CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem, copyArrayItem } from '@angular/cdk/drag-drop';
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 import * as _ from 'lodash';
@@ -25,6 +25,7 @@ import { TableConfig } from './panel-charts/chart-configuration-models/table-con
 import { ChartConfig } from './panel-charts/chart-configuration-models/chart-config';
 import { ChartJsConfig } from './panel-charts/chart-configuration-models/chart-js-config';
 import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
+import { KpiDeviationConfig } from './panel-charts/chart-configuration-models/kpi-deviation-config';
 import { DynamicTextConfig } from './panel-charts/chart-configuration-models/dynamicText-config';
 import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
 // Eda Services
@@ -70,7 +71,7 @@ import { CumSumAlertDialogComponent } from '@eda/components/component.index';
 import { AlertDialogComponent } from '@eda/components/component.index';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 
-//pruebas
+// Tests
 import { MapEditDialogComponent } from '@eda/components/component.index';
 import { MapCoordDialogComponent } from '@eda/components/component.index';
 import { ChartDialogComponent } from '@eda/components/component.index';
@@ -123,7 +124,7 @@ const STANDALONE_COMPONENTS = [
     styleUrls: ['./eda-blank-panel.component.css'],
 })
 export class EdaBlankPanelComponent implements OnInit {
-    /** Referencia al elemento raíz del panel (usada para captura de imagen en export a Excel) */
+    /** Reference to the dashboard root element (used for image capture during Excel export) */
     public elRef = inject(ElementRef);
 
     @ViewChild('edaChart', { static: false }) edaChart: EdaChartComponent;
@@ -145,7 +146,7 @@ export class EdaBlankPanelComponent implements OnInit {
     @Output() action: EventEmitter<IPanelAction> = new EventEmitter<IPanelAction>();
     @Output() panelConfigChanged: EventEmitter<any> = new EventEmitter<IPanelAction>();
 
-    /** propietats que s'injecten al dialog amb les propietats específiques de cada gràfic. */
+    /** Properties injected into the dialog with chart-specific properties. */
     public configController: EdaDialogController;
     public filterController: EdaDialogController;
     public chartController: EdaDialogController;
@@ -168,7 +169,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
 
-    // public screenWidth: number = window.innerWidth;  Se usa para mostrar el ancho de pantalla para debug.
+    // public screenWidth: number = window.innerWidth;  Used to display the screen width for debugging purposes.
 
     public dataSource: any;
     public isImported: boolean = false;
@@ -188,7 +189,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public display_v = {
         page_dialog: false, // page dialog
         saved_panel: false, // saved panel
-        btnSave: false, // button guardar
+        btnSave: false, // save button
         aggreg_dialog: false, // aggregation dialog
         whatIf_dialog: false,
         calendar: false, // calendars inputs
@@ -222,6 +223,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public limitRowsInfo: string = $localize`:@@limitRowsInfo:Establece un Top n para la consulta`;
     public draggFields: string = $localize`:@@dragFields:Arrastre aquí los atributos que quiera ver en su panel`;
     public draggFilters: string = $localize`:@@draggFilters:Arrastre aquí los atributos sobre los que quiera filtrar`;
+    public draggResultSorting: string = $localize`:@@draggFilters:Arrastre aquí los atributos sobre los que quiere ordenar`;
     public ptooltipSQLmode: string = $localize`:@@sqlTooltip:Al cambiar de modo perderás la configuración de la consulta actual`;
     public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`
     public aggregationText: string = $localize`:@@aggregationText:Agregación`;
@@ -234,10 +236,11 @@ export class EdaBlankPanelComponent implements OnInit {
     public columns: any[] = [];
     public aggregationsTypes: any[] = [];
     public filtredColumns: Column[] = [];
+    public resultSortingColumns: any[] = [];
     public ordenationTypes: OrdenationType[];
     public currentQuery: any[] = [];
     public currentSQLQuery: string = '';
-    public queryLimit: number = 5000; // por defecto se limita a 5.000
+    public queryLimit: number = 5000; // 5.000 by default
     public groupByEnabled: boolean = true;
     public dynamicFilters: boolean = true;
 
@@ -284,7 +287,9 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public queryFromServer: string = '';
 
-    public promptMessages: ChatMessage[] = []; // Historial de mensajes.
+    
+    // Message history.
+    public promptMessages: ChatMessage[] = []; 
 
     // join types 
     joinTypeOptions: any[] = [
@@ -299,7 +304,7 @@ export class EdaBlankPanelComponent implements OnInit {
     /**panel chart component configuration */
     public panelChartConfig: PanelChart = new PanelChart();
 
-    /* estado de navegacion en run time no se guarda*/
+    /* Navigation state is not saved at runtime. */
     public navState: Array<{
         rootKey: string;
         navPath: any[];
@@ -307,7 +312,7 @@ export class EdaBlankPanelComponent implements OnInit {
         navFilters: any[];
     }> = [];
 
-    /* estado de navegacion por fechas (en run time año→mes→día) */
+    /* Date-based navigation state (runtime year → month → day) */
     public dateNavState: Array<{
         columnKey: string;
         initialFormat: string;
@@ -319,7 +324,7 @@ export class EdaBlankPanelComponent implements OnInit {
     
     public connectionProperties: any;
 
-    // Dialog para el ChatGpt
+    // ChatGPT dialog
     public isVisibleEbpChatGpt = false;
     public dataChatGpt: any;
     public chartTypeSelectorController: EdaDialogController;
@@ -327,7 +332,7 @@ export class EdaBlankPanelComponent implements OnInit {
     // for the drag-drop component
     public axes:any[]=[]; 
     public newAxesChanged: boolean = false;
-    public graphicType: string; // extraemos el tipo de gráfico al inicio y al ejecutar
+    public graphicType: string; // We extract the chart type at initialization and at runtime execution.
     public copyConfigCrossTable: any = {};
     public dragAndDropAvailable: boolean = false;
 
@@ -376,7 +381,6 @@ export class EdaBlankPanelComponent implements OnInit {
         }
     }
 
-    // ngOnInit
     async ngOnInit() {
         this.index = 0;
         this.readonly = this.panel.readonly;
@@ -389,7 +393,7 @@ export class EdaBlankPanelComponent implements OnInit {
             try {
                 const contentQuery = this.panel.content.query;
 
-                // Compatibilitzar dashboard antics sense queryMode informat
+                // Ensure compatibility with legacy dashboards where queryMode is not provided.
                 const modeSQL = contentQuery.query.modeSQL;
                 let queryMode = contentQuery.query.queryMode;
 
@@ -412,6 +416,7 @@ export class EdaBlankPanelComponent implements OnInit {
             }
             this.loadChartsData(this.panel.content);
             this.dynamicFilters = this.panel.content.dynamicFilters ?? true;
+            this.resultSortingColumns = this.panel.content.resultSortingColumns ?? [];
             } catch(e){
                 console.error('Error loading panel conent: ');
                 throw e;
@@ -473,14 +478,14 @@ public tableNodeExpand(event: any): void {
   PanelInteractionUtils.expandTableNode(this, targetNode);
 
   setTimeout(() => {
-    // Si la expansión no produjo hijos, eliminamos las propiedades de carpeta expandible
+    // If the expansion did not produce children, we remove the expandable folder properties.
     if (targetNode.children?.length === 0) {
       delete targetNode.children;
       delete targetNode.expandedIcon;
       delete targetNode.collapsedIcon;
     }
     this.loadingNodes = false;
-    // Re-aplicar el filtro tras la expansión para incluir los nuevos hijos cargados.
+    // Reapply the filter after expansion to include the newly loaded children.
     if (this.tableInput) {
       this.displayedTableNodes = this.filterTreeNodes(this.tableNodes, this.tableInput.toLowerCase());
     }
@@ -491,7 +496,7 @@ public tableNodeExpand(event: any): void {
 
 
     public checkNodeSelected(node: any) {
-        // Si es el padre siempre tendra un valor seleccionado
+        // If it is the parent, it will always have a selected value.
         if(node?.parent === undefined)
             return true
 
@@ -639,7 +644,7 @@ public tableNodeExpand(event: any): void {
                 
                         return a;
                 
-                })); // canviem els null y els '' per valor customitzable
+                })); // We replace nulls and empty strings with a customizable value.
             
             this.buildGlobalconfiguration(panelContent);
         } catch (err) {
@@ -660,7 +665,7 @@ public tableNodeExpand(event: any): void {
         const isEdaMode = queryMode && queryMode !== 'SQL';
         const isModeSqlDisabled = modeSQL === false;
 
-        // Sólo procesar si no estamos en modo SQL ni readonly! 
+        // Only process if we are not in SQL mode or read-only mode!
         if (isEdaMode || isModeSqlDisabled) {
             if (queryMode === 'EDA2') {
             this.rootTable = this.tables.find(t => t.table_name === this.rootTable);
@@ -679,14 +684,14 @@ public tableNodeExpand(event: any): void {
                 this.userSelectedTable = undefined;
                 this.columns = [];
             } else {
-                this.rootTable = null; // no root table in EDA mode
+                this.rootTable = null; // No root table in EDA mode.
                 PanelInteractionUtils.handleCurrentQuery(this);
                 if (NavigationUtils.panelHasNavigation(panelContent)) { this.restoreNavigationLinks(panelContent); }
                 this.columns = this.columns.filter(c => !c.isdeleted);
             }
         }
 
-        // Configuración global del panel
+        // Global panel configuration
         this.queryLimit = queryLimit;
         this.joinType = panelContent.query.query.joinType || 'inner';
         this.groupByEnabled = groupByEnabled ?? true;
@@ -695,20 +700,20 @@ public tableNodeExpand(event: any): void {
 
         PanelInteractionUtils.verifyData(this);
 
-        // Configurar tipo de gráfico
+        // Configure chart type
         const chartOption = this.chartUtils.chartTypes.find(c => c.subValue === edaChart);
         this.chartForm.patchValue({ chart: chartOption });
 
         const recoveredConfig = ChartsConfigUtils.recoverConfig(chart, panelContent.query.output.config);
         this.changeChartType(chart, edaChart, recoveredConfig);
 
-        // Mostrar panel y configurar tipo gráfico
+        // Show panel and configure chart type
         this.display_v.saved_panel = true;
         this.display_v.minispinner = false;
 
         this.graphicType = chartOption?.value;
 
-        // Verificar si el gráfico es una tabla cruzada
+        // Check if the chart is a pivot table.
         const crossTableChart = this.chartTypes.find(g => g.subValue === 'crosstable');
         this.dragAndDropAvailable = !crossTableChart?.ngIf;
     }
@@ -733,8 +738,9 @@ public tableNodeExpand(event: any): void {
             // Nav filters are runtime-only — strip before saving so they don't pollute
             // the saved filters. They are restored via navActiveNodes.navFilters on reload.
             query.query.filters = (query.query.filters || []).filter((f: any) => !f.isNavFilter);
-            const chart = this.chartForm?.value.chart?.value ? this.chartForm?.value.chart?.value : this.chartForm?.value.chart;
-            const edaChart = this.panelChart?.props.edaChart;
+            const formChart = this.chartForm?.value.chart?.value ? this.chartForm?.value.chart?.value : this.chartForm?.value.chart;
+            const chart = formChart || this.graficos?.chartType;
+            const edaChart = this.panelChart?.props.edaChart || this.graficos?.edaChart;
             const navigationLinks: any[] = this.buildNavigationLinks(query);
             const navActiveNodes = (this.navState || []).map((entry: any) => ({
                 parentKey: entry.rootKey,
@@ -748,7 +754,7 @@ public tableNodeExpand(event: any): void {
                 currentFormatIndex: entry.currentFormatIndex,
                 navFilters: entry.navFilters
             }));
-            this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters, navigationLinks, navActiveNodes, savedDateNavState, fullCurrentQuery: this.currentQuery };
+            this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters, navigationLinks, navActiveNodes, savedDateNavState, fullCurrentQuery: this.currentQuery, resultSortingColumns: this.resultSortingColumns };
 
             /**This is to repaint on panel redimension */
             if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst','radar'].includes(chart)) {
@@ -763,7 +769,7 @@ public tableNodeExpand(event: any): void {
         //not saved alert message
         this.dashboardService._notSaved.next(true);
 
-        // Reiniciar el chat del prompt
+        // Reset the prompt chat.
         this.promptMessages = [];
 
     }
@@ -851,7 +857,7 @@ public tableNodeExpand(event: any): void {
     
 
     public changeChartTypeCheck(type: string, subType: string, config?: ChartConfig) {
-        // La navegación hijo tiene sentido en tablas y tablas cruzadas — solo limpiar al cambiar a otro tipo de gráfico
+        // Child navigation makes sense in tables and pivot tables — only clear it when switching to another chart type.
         const isTableType = type === 'table' || subType === 'crosstable' || subType === 'table';
         const hadChildNav = !isTableType && this.currentQuery.some((col: any) => col.downChild);
         if (hadChildNav) {
@@ -892,13 +898,13 @@ public tableNodeExpand(event: any): void {
      * @param content panel content
      */
     public async changeChartType(type: string, subType: string, config?: ChartConfig) {
-        // Actualizamos el tipo de variable para el componente drag-drop
+        // We update the variable type for the drag-and-drop component.
         this.graphicType = type;
         this.graficos = {};
         this.display_v.chart = type;
         this.graficos.chartType = type;
         this.graficos.edaChart = subType;
-        // Revision para paneles con modificacion de tipo de chart y posterior duplicado
+        // Review for dashboards with chart type changes followed by duplication.
         if (this.panel.content) {
             this.panel.content.chart = type;
             this.panel.content.edaChart = subType;
@@ -908,11 +914,11 @@ public tableNodeExpand(event: any): void {
         this.graficos.numberOfColumns = config && config.getConfig() ? config.getConfig()['numberOfColumns'] : null;
         this.graficos.assignedColors = config && config.getConfig() ? config.getConfig()['assignedColors'] : null;
 
-        // Queremos mantener la prediccion entre cambios de tipo de gráfico 
-        // Si el chart es línea/área y hay predicción activa en la query, forzar showPredictionLines
+        // We want to preserve the prediction across chart type changes.
+        // If the chart is line/area and there is an active prediction in the query, force showPredictionLines.
         if (['line', 'area'].includes(type)) {
             const prediction = this.panel?.content?.query?.query?.prediction;
-            // Si existe prediccion la forzamos
+            // If a prediction exists, we enforce it.
             if (prediction && prediction !== 'None') {
                 if (config && config.getConfig()) {
                     config.getConfig()['showPredictionLines'] = true;
@@ -926,7 +932,7 @@ public tableNodeExpand(event: any): void {
         if (!_.isEqual(this.display_v.chart, 'no_data') && allow && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
 
-            // Preservar assignedColors, coloredBarsConfig, showUniqueColors y uniqueBarColors antes del merge
+            // Preserve assignedColors, coloredBarsConfig, showUniqueColors, and uniqueBarColors before merging.
             const savedAssignedColors = config && config.getConfig() ? config.getConfig()['assignedColors'] : null;
             const savedColoredBarsConfig = config && config.getConfig() ? config.getConfig()['coloredBarsConfig'] : null;
             const savedShowUniqueColors = config && config.getConfig() ? config.getConfig()['showUniqueColors'] : null;
@@ -934,21 +940,21 @@ public tableNodeExpand(event: any): void {
 
             _.merge(_config, config||{});
 
-            // Restaurar assignedColors después del merge
+            // Restore assignedColors after merging.
             if (savedAssignedColors) {
                 _config.getConfig()['assignedColors'] = savedAssignedColors;
             }
-            // Restaurar coloredBarsConfig después del merge
+            // Restore coloredBarsConfig after merging.
             if (savedColoredBarsConfig) {
                 _config.getConfig()['coloredBarsConfig'] = savedColoredBarsConfig;
             }
-            // Restaurar showUniqueColors y uniqueBarColors después del merge
+            // Restore showUniqueColors and uniqueBarColors after merging.
             if (savedShowUniqueColors != null) {
                 _config.getConfig()['showUniqueColors'] = savedShowUniqueColors;
                 _config.getConfig()['uniqueBarColors'] = savedUniqueBarColors ?? [];
             }
 
-            // Asegurar que showPredictionLines se propaga al _config (mantener la línea de predicción al cambiar entre tipos de gráficos)
+            // Ensure that showPredictionLines is propagated to _config (keep the prediction line when switching between chart types).
             if (['line', 'area'].includes(type) && this.graficos.showPredictionLines) {
                 _config.getConfig()['showPredictionLines'] = true;
             }
@@ -977,9 +983,10 @@ public tableNodeExpand(event: any): void {
             }
 
         }
-        // Controlar si se ejecuta una tabla cruzada
-        // Se verifica si la longitud de la variable axes
-        // Referencia a config
+
+        // Check whether a pivot table should be executed
+        // This is determined by the length of the axes variable
+        // Reference to config
         if(subType === 'crosstable'){
             const configCrossTable = this.panelChartConfig.config.getConfig()
             // Excluir nav-children para que no aparezcan en los ejes del editor drag-drop
@@ -1040,9 +1047,9 @@ public tableNodeExpand(event: any): void {
         return selectedTable;
     }
 
-     // Filtra el buscador de entidades según el modo de query activo.
-     // Modo EDA (estándar): filtra la lista plana tablesToShow.
-     // Modo EDA2 (árbol) con query activa: filtra displayedTableNodes de forma recursiva
+    // Filter the entity searcher based on the active query mode.
+    // EDA mode (standard): filters the flat tablesToShow list.
+    // EDA2 mode (tree) with active query: recursively filters displayedTableNodes.
     public onTableInputKey(event: any) {
         if (this.selectedQueryMode === 'EDA2' && this.currentQuery.length > 0) {
             const term = event.target.value?.toLowerCase();
@@ -1059,7 +1066,7 @@ public tableNodeExpand(event: any): void {
         }
     }
 
-    // Filtra recursivamente un array de nodos del árbol por término de búsqueda.
+    // Recursively filter a tree node array by search term.
     private filterTreeNodes(nodes: any[], term: string): any[] {
         const result: any[] = [];
         for (const node of nodes) {
@@ -1081,11 +1088,11 @@ public tableNodeExpand(event: any): void {
     }
 
     /**
-     * Busca el nodo original en tableNodes (árbol completo) que corresponde
-     * al nodo target recibido del evento de expansión.
-     * Necesario porque al filtrar se crean objetos clonados con children reducidos;
-     * la expansión debe operar sobre el nodo real para que tableNodes quede actualizado.
-     * Identifica el nodo por table_id (nodos raíz) o child_id (nodos hijo).
+     * Finds the original node in tableNodes (full tree) that corresponds to
+     * the target node received from the expansion event.
+     * This is necessary because filtering creates cloned objects with reduced children;
+     * expansion must operate on the real node so that tableNodes is properly updated.
+     * The node is identified by table_id (root nodes) or child_id (child nodes).
      */
     private findOriginalNode(target: any, nodes: any[] = this.tableNodes): any {
         for (const node of nodes) {
@@ -1118,11 +1125,11 @@ public tableNodeExpand(event: any): void {
      */
     public drop(event: any, list?: any) {
         if (event.previousContainer === event.container) {
-            //Reordeno
+            //Reordering
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
         } else {
             transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
-            //obor dialeg o filre
+            //Open dialog or filter
             const column = <Column><unknown>event.container.data[event.currentIndex];
             const className = list || event.container.element.nativeElement.className.toString() || '';
 
@@ -1131,7 +1138,7 @@ public tableNodeExpand(event: any): void {
                 this.openColumnDialog(column);
             } else {
                 this.openColumnDialog(column, true);
-                // Trec la agregació si puc.
+                // Remove aggregation if possible.
                 try{
                     const c:Column = <Column><unknown>event.container.data[event.currentIndex];
                     c.aggregation_type.forEach( e=> e.selected = false);
@@ -1144,6 +1151,58 @@ public tableNodeExpand(event: any): void {
     }
 
 
+
+    public dropToResultSorting(event: CdkDragDrop<any[]>) {
+
+        console.log('event ==> ', event);
+
+        if (event.previousContainer === event.container) {
+            moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+        } else {
+            const draggedColumn = event.previousContainer.data[event.previousIndex];
+
+            // Si no tenemos ordenation_type, añadimos 
+            draggedColumn.ordenation_type ??= 'No';
+
+            const alreadyAdded = this.resultSortingColumns
+                .some(col => col.column_name === draggedColumn.column_name);
+            if (!alreadyAdded) {
+                copyArrayItem(
+                    event.previousContainer.data,
+                    event.container.data,
+                    event.previousIndex,
+                    event.currentIndex
+                );
+            }
+        }
+
+        console.log('resultSortingColumns: ', this.resultSortingColumns);
+
+    }
+
+    public changeResultSortingValue(column: any) {
+
+        if (column.ordenation_type === 'Asc') {
+            column.ordenation_type = 'No';
+        } else if (column.ordenation_type === 'No') {
+            column.ordenation_type = 'Desc';
+        } else if (column.ordenation_type === 'Desc') {
+            column.ordenation_type = 'Asc';
+        }
+
+        const newValue = column.ordenation_type;
+        const syncOrdenation = (arr: any[]) => {
+            const match = arr.find(c => c.column_name === column.column_name && c.table_id === column.table_id);
+            if (match) match.ordenation_type = newValue;
+        };
+        syncOrdenation(this.currentQuery);
+        syncOrdenation(this.resultSortingColumns);
+    }
+
+    public removeResultSorting(column: any) {
+        this.resultSortingColumns = this.resultSortingColumns
+            .filter(col => col.column_name !== column.column_name);
+    }
 
     /* Condicions Drag&Drop */
     public isAllowed = (drag?: CdkDrag, drop?) => false;
@@ -1215,6 +1274,13 @@ public tableNodeExpand(event: any): void {
                                 field.old_column_type = 'numeric';
                             }
                         } 
+                    }
+
+                    for (const sortCol of this.resultSortingColumns) {
+                        const match = this.currentQuery.find(c =>
+                            c.column_name === sortCol.column_name && c.table_id === sortCol.table_id
+                        );
+                        if (match) sortCol.ordenation_type = match.ordenation_type;
                     }
 
                     if (event === EdaDialogCloseEvent.NONE) {
@@ -1331,7 +1397,7 @@ public tableNodeExpand(event: any): void {
 
     }
     
-    /* Funcions generals de la pagina */
+    /* General page functions */
     public disableBtnSave = () => this.display_v.btnSave = true;
 
     public ableBtnSave = () => this.display_v.btnSave = false;
@@ -1371,7 +1437,7 @@ public tableNodeExpand(event: any): void {
             this.panelDeepCopy.query.query.filters = this.mergeFilters(this.panelDeepCopy.query.query.filters, this.globalFilters);
 
             this.filtredColumns = [];
-            //Reassing sqlQuery -if exists
+
             this.currentSQLQuery = this.panelDeepCopy.query.query.SQLexpression;
 
             const queryMode = this.panelDeepCopy.query.query.queryMode;
@@ -1393,7 +1459,7 @@ public tableNodeExpand(event: any): void {
         this.display_v.chart = '';
         this.display_v.page_dialog = false;
 
-        // Reiniciar el chat del prompt
+        // Reset the prompt chat.
         this.promptMessages = [];
 
     }
@@ -1409,7 +1475,7 @@ public tableNodeExpand(event: any): void {
                 this.graficos = {};
                 this.graficos = _.cloneDeep(properties);
             if(properties.edaChart !== 'histogram'){
-                //assignedColors se le modifica el color dependiendo de su label
+                // assignedColors is updated by changing the color based on its label.
                 this.graficos.assignedColors.forEach((e) => {
                 if (this.graficos.chartLabels.includes(e.value)) {
                         let indexColor = this.graficos.chartLabels.findIndex(element => element === e.value)
@@ -1418,7 +1484,7 @@ public tableNodeExpand(event: any): void {
                         if (candidateColor?.length > 1) {
                             e.color = candidateColor;
                         }
-                        // Para area/radar/line, preservar el color hex original de assignedColors
+                        // For area/radar/line charts, preserve the original hex color from assignedColors.
                 }
             });
             }else{
@@ -1496,8 +1562,8 @@ public tableNodeExpand(event: any): void {
         
     public onCloseMapCoordProperties(event, response: { 
         assignedColors: any[],
-        initialColor?: string,  // Para compatibilidad legacy
-        finalColor?: string,    // Para compatibilidad legacy
+        initialColor?: string,  // For legacy compatibility.
+        finalColor?: string,    // For legacy compatibility.
         logarithmicScale: boolean, 
         draggable: boolean, 
         zoom: number, 
@@ -1524,11 +1590,11 @@ public tableNodeExpand(event: any): void {
     public onCloseSankeyProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
 
-            //Recorremos todos los assignedColors que tenemos
+            // We iterate over all assignedColors we have.
             this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
-                //Valores label que tenemos en el chart
+                // Label values present in the chart.
                 let chartValues = this.panelChart.componentRef.instance.data.values.map(item => item.find(value => typeof value === 'string'));
-                // Si algunos de los labels del chart coinciden con alguno de assignedColors, se remplazara
+                // If any chart labels match those in assignedColors, they will be replaced.
                 if (chartValues.includes(e.value)) {
                     let indexColor = chartValues.findIndex(element => element === e.value)
                     e.color = response.colors[indexColor]
@@ -1545,11 +1611,11 @@ public tableNodeExpand(event: any): void {
 
     public onCloseTreeMapProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            //Recorremos todos los assignedColors que tenemos
+            //  We iterate over all assignedColors we have.
             this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
-                //Valores label que tenemos en el chart
+                // Label values in the chart.
                 let chartValues = this.panelChart.componentRef.instance.data.children.map(item => item.name);
-                // Si algunos de los labels del chart coinciden con alguno de assignedColors, se remplazara
+                // If any chart labels match those in assignedColors, they will be replaced.
                 if (chartValues.includes(e.value)) {
                     let indexColor = chartValues.findIndex(element => element === e.value)
                     e.color = response.colors[indexColor]
@@ -1571,17 +1637,16 @@ public tableNodeExpand(event: any): void {
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
         }
 
-        // Al final de todo
         this.treeTableController = undefined;
 
     }
 
     public onCloseFunnelProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            // NO sobrescribir todo el config, solo actualizar lo necesario
+            // Do not overwrite the entire config; only update what is necessary.
             this.panel.content.query.output.config = {
-                ...this.panel.content.query.output.config, // Mantener el config existente
-                assignedColors: response.assignedColors // Añadir assignedColors
+                ...this.panel.content.query.output.config, // Keep the existing config.
+                assignedColors: response.assignedColors // Add assignedColors
             };
             
             const config = new ChartConfig(this.panel.content.query.output.config);
@@ -1593,11 +1658,11 @@ public tableNodeExpand(event: any): void {
 
     public onCloseBubblechartProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            //Recorremos todos los assignedColors que tenemos
+            // We iterate over all assignedColors we have.
             this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
-                //Valores label que tenemos en el chart
+                // Label values in the chart.
                 let chartValues = this.panelChart.componentRef.instance.data.children.map(item => item.name);
-                // Si algunos de los labels del chart coinciden con alguno de assignedColors, se remplazara
+                // If any chart labels match those in assignedColors, they will be replaced.
                 if (chartValues.includes(e.value)) {
                     let indexColor = chartValues.findIndex(element => element === e.value)
                     e.color = response.colors[indexColor]
@@ -1614,11 +1679,11 @@ public tableNodeExpand(event: any): void {
 
     public onCloseScatterProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            //Recorremos todos los assignedColors que tenemos
+            // We iterate over all assignedColors we have.
             this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
-                //Valores label que tenemos en el chart
+                // Label values in the chart.
                 let chartValues = this.panelChart.componentRef.instance.data.map(item => item.label);
-                // Si algunos de los labels del chart coinciden con alguno de assignedColors, se remplazara
+                // If any chart labels match those in assignedColors, they will be replaced.
                 if (chartValues.includes(e.value)) {
                     let indexColor = chartValues.findIndex(element => element === e.value)
                     e.color = response.colors[indexColor]
@@ -1640,10 +1705,10 @@ public tableNodeExpand(event: any): void {
         const dataDescription = chartInstance?.inject?.dataDescription;
         const otherColumns = dataDescription?.otherColumns;
     
-        // Validación principal para continuar
+        // Main validation to proceed.
         if (otherColumns && Array.isArray(otherColumns) && otherColumns.length > 1) {
             if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-                // Extraemos los valores string del data
+                // We extract string values from the data.
                 let chartValues: string[] = Array.from(
                     new Set(
                         chartInstance.data.map((item: any[]) => {
@@ -1654,14 +1719,14 @@ public tableNodeExpand(event: any): void {
                 );  
     
                 chartInstance.assignedColors.forEach((assignedColor: any) => {    
-                    // Verificamos si algún valor del chart coincide con el valor del color asignado
+                    // We check whether any chart value matches the assigned color value.
                     const indexColor = chartValues.findIndex(value => value === assignedColor.value);
                     if (indexColor >= 0 && response.colors && response.colors[indexColor]) {
                         assignedColor.color = response.colors[indexColor];
                     }
                 });
     
-                // Asignamos los nuevos colores al config
+                // We assign the new colors to the config.
                 this.panel.content.query.output.config = {
                     colors: response.colors,
                     assignedColors: chartInstance.assignedColors
@@ -1678,17 +1743,17 @@ public tableNodeExpand(event: any): void {
                     config
                 );
     
-                // Indicamos que hay cambios no guardados
+                // We indicate that there are unsaved changes.
                 this.dashboardService._notSaved.next(true);
             }
         
         } else {
                 if(!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-                    //Recorremos todos los assignedColors que tenemos
-                    //Valores label que tenemos en el chart
+                    // We iterate over all assignedColors we have.
+                    // Values of labels in the chart.
                     let chartValues = this.panelChart.componentRef.instance.data.map(item => item.find(value => typeof value === 'string'));
                     this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
-                        // Si algunos de los labels del chart coinciden con alguno de assignedColors, se remplazara
+                        // If any chart labels match those in assignedColors, they will be replaced.
                         if (chartValues.some(value => value.includes(e.value))) {
                             let indexColor = chartValues.findIndex(element => element === e.value)
                             e.color = response.colors[indexColor]
@@ -1701,7 +1766,7 @@ public tableNodeExpand(event: any): void {
                     this.dashboardService._notSaved.next(true);
                 }  
             } 
-            // Fa que desapareixi el dialeg
+            // Close the dialog.
             this.sunburstController = undefined;
     }
     public onCloseKnobProperties(event, response): void {
@@ -1737,7 +1802,31 @@ public tableNodeExpand(event: any): void {
 
     public onCloseKpiProperties(event, response): void {
     if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+
+        if (response.chartType === 'kpideviation') {
+            this.panel.content.query.output.config = {
+                ...this.panel.content.query.output.config,
+                backgroundColor: response.backgroundColor || '',
+                kpiColor: response.kpiColor || '',
+                prefixImage: response.prefixImage || '',
+                modifiedFontPoints: response.modifiedFontPoints || 0,
+                alertLimits: response.alerts || [],
+            };
+            const config = new ChartConfig(new KpiDeviationConfig({
+                backgroundColor: response.backgroundColor || '',
+                kpiColor: response.kpiColor || '',
+                prefixImage: response.prefixImage || '',
+                modifiedFontPoints: response.modifiedFontPoints || 0,
+                alertLimits: response.alerts || [],
+            }));
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, 'kpideviation', 'kpideviation', config);
+            this.dashboardService._notSaved.next(true);
+            this.kpiController = undefined;
+            return;
+        }
+
         // Usar spread operator para mantener el config existente
+        // Use the spread operator to preserve the existing config.
         this.panel.content.query.output.config = {
             ...this.panel.content.query.output.config,
             assignedColors: response.assignedColors,
@@ -1763,12 +1852,12 @@ public tableNodeExpand(event: any): void {
                 response.edaChart.showLabels,
                 response.edaChart.showLabelsPercent,
                 response.edaChart.numberOfColumns,
-                response.assignedColors,  //  Pasar assignedColors desde response, no desde edaChart
+                response.assignedColors,  //  Pass assignedColors from the response, not from edaChart.
                 response.edaChart.showPointLines,
                 response.edaChart.showPredictionLines,
             );
         }
-        
+
         const config = new ChartConfig(
             new KpiConfig({
                 sufix: response.sufix,
@@ -1781,13 +1870,13 @@ public tableNodeExpand(event: any): void {
                 prefixImage: response.prefixImage || '',
             })
         );
-        
+
         this.renderChart(
-            this.currentQuery, 
-            this.chartLabels, 
-            this.chartData, 
-            response.chartType, 
-            response.chartSubType, 
+            this.currentQuery,
+            this.chartLabels,
+            this.chartData,
+            response.chartType,
+            response.chartSubType,
             config
         );
         this.dashboardService._notSaved.next(true);
@@ -1842,13 +1931,13 @@ public tableNodeExpand(event: any): void {
     public runQueryFromDashboard = (globalFilters: boolean) => QueryUtils.runQuery(this, globalFilters);
 
     /**
-    * Función que inicializa el axes en su forma básica --> Tabla cruzada básica.
+    * Function that initializes axes in their basic form → basic pivot table.
     */
     public initAxes(currenQuery) {
 
         let currenQueryCopy = [...currenQuery];
 
-        // itemX = "Eje vertical" (filas), itemY = "Eje horizontal" (columnas), itemZ = medidas numéricas
+        // itemX = "Vertical axis" (rows), itemY = "Horizontal axis" (columns), itemZ = numeric measures.
         let vx = currenQuery.find( (v:any) => v.column_type==='text' || v.column_type==='date')
         let objx = {}
         let itemX = []
@@ -1887,8 +1976,8 @@ public tableNodeExpand(event: any): void {
             itemZ.shift();
         }
 
-        // Columnas con downChild (familias padre-hijo) siempre deben estar en el eje vertical (itemX).
-        // Las que hayan quedado en itemY (horizontal) se mueven a itemX.
+        // Columns with downChild (parent-child families) must always be on the vertical axis (itemX).
+        // Any that remain in itemY (horizontal) are moved to itemX.
         const navParentNames = new Set(currenQuery.filter((c: any) => c.downChild).map((c: any) => c.column_name));
         const toMoveToVertical: any[] = [];
         itemY = itemY.filter((item: any) => {
@@ -1897,8 +1986,8 @@ public tableNodeExpand(event: any): void {
         });
         itemX.push(...toMoveToVertical);
 
-        // Columns flagged with _forceItemX (former nav-children detached in cross table mode)
-        // must also go to itemX so they don't explode itemY into an OOM pivot.
+        // Columns flagged with _forceItemX (previously nav-children detached in pivot mode)
+        // must also be moved to itemX to prevent itemY from expanding excessively and causing a potential OOM in the pivot table.
         const forceXNames = new Set(currenQuery.filter((c: any) => c._forceItemX).map((c: any) => c.column_name));
         if (forceXNames.size > 0) {
             const toForceVertical: any[] = [];
@@ -1954,6 +2043,16 @@ public tableNodeExpand(event: any): void {
     public moveItem = (column: any) => {
         PanelInteractionUtils.moveItem(this, column);
 
+        const sortingMatch = this.resultSortingColumns.find(
+            c => c.column_name === column.column_name && c.table_id === column.table_id
+        );
+        if (sortingMatch?.ordenation_type) {
+            const queryMatch = this.currentQuery.find(
+                c => c.column_name === column.column_name && c.table_id === column.table_id
+            );
+            if (queryMatch) queryMatch.ordenation_type = sortingMatch.ordenation_type;
+        }
+
         if (this.selectedQueryMode == 'EDA2' && this.currentQuery.length === 1) {
             PanelInteractionUtils.loadTableNodes(this);
             this.displayedTableNodes = this.tableNodes;
@@ -1965,7 +2064,7 @@ public tableNodeExpand(event: any): void {
     public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table, true);
 
     public removeColumn = (c: Column, list?: string) => {
-        // La restricción de tabla raíz solo aplica en modo árbol (EDA2)
+        // The root table restriction only applies in tree mode (EDA2).
         const isTreeMode = this.selectedQueryMode === 'EDA2';
 
         const rootTableName = this.rootTable?.table_name;
@@ -1977,7 +2076,7 @@ public tableNodeExpand(event: any): void {
             const columnHadFilter = this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name);
             const removed = PanelInteractionUtils.removeColumn(this, c, list);
             if (removed !== false) {
-                // Verificamos si al eliminar un campo tenía un filtro en selectedFilters (se comprueba antes de que removeColumn los borre).
+                // We check whether a field being removed had a filter in selectedFilters (this is verified before removeColumn deletes it).
                 if (columnHadFilter) {
                     if (this.sortedFilters.length !== 0) {
                         this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
@@ -1997,7 +2096,7 @@ public tableNodeExpand(event: any): void {
             }
         }
         else {
-            // Detenemos la propagación del evento para no abrir el panel de atributos.
+            // We stop event propagation to prevent the attributes panel from opening.
             event.stopPropagation();
             this.alertService.addError($localize`:@@cannotRemoveLastColumn:No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.`);
         }
@@ -2018,7 +2117,7 @@ public tableNodeExpand(event: any): void {
         } else return null;
     }
 
-    /** duplica un patell del dashboard i el posiciona un punt per sota del origina./ */
+    /** It duplicates a dashboard panel and positions it one step below the original.*/
     public duplicatePanel(): void {
         let duplicatedPanel =   _.cloneDeep(this.panel, true); 
         duplicatedPanel.id = this.fileUtiles.generateUUID();
@@ -2167,9 +2266,9 @@ public tableNodeExpand(event: any): void {
             const whereMessage: string = $localize`:@@whereMessage: Filtro sobre todos los registros`;
             const havingMessage: string = $localize`:@@havingMessage: Filtro sobre los resultados`;
 
-            // Nomenclatura:  WHERE => Filtro sobre todos los registros | HAVING => Filtro sobre los resultados
+            // Naming convention: WHERE => Filter on all records | HAVING => Filter on results
             const filterBeforeGroupingText = filter.filterBeforeGrouping ? whereMessage : havingMessage
-            // Agregación
+            // Aggregation
             const aggregation = filter.aggregation_type;
             let valueStr = '';
 
@@ -2194,7 +2293,7 @@ public tableNodeExpand(event: any): void {
             let aggregationLabel = '';
             if(aggTypes.filter(agg => agg.value === aggregation).length !== 0) aggregationLabel = aggTypes.filter(agg => agg.value === aggregation)[0].label;
 
-            // Agregado de internacionalización del between
+            // Added internationalization for the “between” operator.
             let filterType = filter.filter_type
             if(filterType === 'between') filterType = this.textBetween;
 
@@ -2249,7 +2348,7 @@ public tableNodeExpand(event: any): void {
     }
 
     /**
-    * Funcion que reordena el arreglo currentQuery segun el nuevo valor de ordenamiento de la variable axes devuelta por el componete drag-drop
+    * Function that reorders the currentQuery array according to the new sort order of the axes variable returned by the drag-and-drop component.
     */
     public newCurrentQuery(currenQuery, axes) {
 
@@ -2300,10 +2399,10 @@ public tableNodeExpand(event: any): void {
 
     }
 
-    // Funcion que recibe la variable axes moficicada por el componente drag-drop
+    // Function that receives the axes variable modified by the drag-and-drop component.
     public newAxesOrdering(newAxes) {
-        // itemX = eje vertical. Si el usuario arrastró un padre con hijos a itemY (horizontal)
-        // o itemZ (numérico), lo devolvemos a itemX para mantener la restricción.
+        // itemX = vertical axis. If the user drags a parent with children into itemY (horizontal)
+        // or itemZ (numeric), we move it back to itemX to enforce the restriction.
         if (newAxes[0]) {
             const navParentNames = new Set(
                 this.currentQuery.filter((col: any) => col.downChild).map((col: any) => col.column_name)
@@ -2321,12 +2420,12 @@ public tableNodeExpand(event: any): void {
         }
 
         this.axes = newAxes;
-        this.newAxesChanged = true; // Indica que se utilizara la tabla cruzada generica
-        const config = this.panelChartConfig.config.getConfig(); // Adquiera la configuración config
-        this.currentQuery = this.newCurrentQuery(this.currentQuery, newAxes); // Reordeno el currentQuery
-        config['ordering'] = [{axes: newAxes}]; // Agrego el nuevo axes a la config
+        this.newAxesChanged = true; // Indicates that the generic pivot table will be used.
+        const config = this.panelChartConfig.config.getConfig(); // Acquire the config configuration.
+        this.currentQuery = this.newCurrentQuery(this.currentQuery, newAxes); // Reorder currentQuery.
+        config['ordering'] = [{axes: newAxes}]; // Add the new axes to the config.
         this.copyConfigCrossTable = JSON.parse(JSON.stringify(config));
-        QueryUtils.runManualQuery(this) // Ejecutando con la nueva configuracion de currentQuery
+        QueryUtils.runManualQuery(this) // Executing with the new currentQuery configuration.
     }
 
 
@@ -2341,17 +2440,17 @@ public tableNodeExpand(event: any): void {
         return icons[type as keyof typeof icons] || '';
     }
 
-    // Nuevo método para controlar qué sección está abierta
+    // New method to control which section is open.
     toggleSection(section: string): void {
         this.sqlIndicationOpenSection = this.sqlIndicationOpenSection === section ? '' : section
     }
 
-    // Método para verificar si una sección está abierta
+    // Method to check if a section is open.
     isSectionOpen(section: string): boolean {
         return this.sqlIndicationOpenSection === section
     }
 
-    // Método que compara la tabla original con la actual (solo crosstable)
+    // Method that compares the original table with the current one (cross table only).
     isCrosstableModified(): boolean {
         if (this.panelChart?.props?.chartType == 'crosstable' && this.indextab === 1) {
             if(this.dragDrop?.newAxesOrdering.length !== 0)
@@ -2360,12 +2459,12 @@ public tableNodeExpand(event: any): void {
         return false;
     }
 
-    // Método que ejecuta el aplicar de la crosstable
+    // Method that executes the apply action for the crosstable.
     makeNewCrosstable() {
         this.dragDrop.temporalExecution();
     }
 
-    // Método que verifica si es o no aceptable la crosstable
+    // Method that checks whether the crosstable is valid or not.
     isCrosstableValid():boolean {
         return this.dragDrop?.validated;
     }
@@ -2397,7 +2496,7 @@ public tableNodeExpand(event: any): void {
 
     dynamicFiltersInteraction(): void {
         this.dynamicFilters = !this.dynamicFilters;
-    } 
+    }
 
     newCurrentQueryUpdate(event: any) {
         this.currentQuery = event;
@@ -2523,7 +2622,7 @@ public tableNodeExpand(event: any): void {
     }
 
     // ─── NAVIGATION FEATURE ────────────────────────────────────────────────────
-    // La logica se encuentra en NavigationUtils - estos son thin wrappers que pasan `this`.
+    // The logic is in NavigationUtils—these are thin wrappers that pass this.
     public buildNavigationLinks(query: any): any[] {
         return NavigationUtils.buildNavigationLinks(this, query);
     }

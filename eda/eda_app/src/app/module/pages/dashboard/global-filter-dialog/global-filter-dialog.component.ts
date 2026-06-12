@@ -97,7 +97,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     private itemJustSelected = false;
     public filterTimeout: any;
 
-    //valors del dropdown de filtrat de visiblitat
+    // Visibility filter dropdown values
     public publicRoHidden = [
         { label: $localize`:@@public:público`, value: `public` },
         { label: $localize`:@@readOnly:deshabilitado`, value: `readOnly` },
@@ -175,7 +175,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.globalFilter.selectedTable = _.cloneDeep(this.tables.find((table) => table.table_name == tableName));
 
             const columnName = this.globalFilter.selectedColumn.column_name;
-            // Recupero el display name que le haya podido poner.
+            // I retrieve the display name that may have been set
             const display_name_alias = this.globalFilter.selectedColumn.display_name.default;
 
             this.globalFilter.selectedColumn = _.cloneDeep(this.globalFilter.selectedTable.columns.find((col: any) => col.column_name == columnName));
@@ -185,7 +185,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.findPanelPathTables();
             this.aliasValue = display_name_alias;
         }
-        // Recogemos valor del switch
+        // We retrieve the switch value
         this.globalFilter.isAutocompleted = this.isAutocompleted;
         this.globalFilter.isMandatory = this.isMandatory;
     }
@@ -230,7 +230,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         if (this.globalFilter.isnew) {
             for (const panel of this.allPanels) {
 
-                // Desactivando el panel en caso de que sea de modo SQL.
+                // Disabling the panel if it is in SQL mode.
                 if(panel.content.query.query.queryMode === 'SQL') {
                     panel.active = false;
                 }
@@ -291,17 +291,17 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public initTablesForFilter() {
-        // tablas excluidas
+        // Excluded tables
         const excludedTables = this.modelTables
             .filter((t: any) => t.visible === false)
             .map((t: any) => t.table_name);
 
-        // decidir paneles según si hay filtros
+        // Decide panels based on whether filters exist
         const panels = this.filteredPanels.length
             ? this.filteredPanels.filter((p: any) => !p.active_readonly)
             : this.allPanels;
 
-        // tablas usadas en queries (usamos Set para evitar includes repetidos)
+        // Tables used in queries (we use a Set to avoid duplicate includes)
         const queryTables = new Set<string>();
         for (const panel of panels) {
             const fields = panel.content.query.query.fields ?? [];
@@ -310,7 +310,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             }
         }
 
-        // aplicar relaciones y excluir las no visibles
+        // Apply relationships and exclude non-visible ones
         const relatedMap = this.globalFilterService.relatedTables([...queryTables], this.modelTables);
         relatedMap.forEach((value: any, key: string) => {
             if (!excludedTables.includes(key)) {
@@ -318,7 +318,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             }
         });
 
-        // ordenar por display_name
+        // Sort by display_name
         this.tables.sort((a, b) =>
             a.display_name.default.localeCompare(b.display_name.default)
         );
@@ -327,7 +327,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public onAddPanelForFilter(panel: any) {
 
         if (panel.avaliable) {
-            if(panel.content.query.query.queryMode != 'SQL') { // los paneles SQL no se pueden activar
+            if(panel.content.query.query.queryMode != 'SQL') { // SQL panels cannot be activated
                 panel.active = !panel.active;
             }
             this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable && p.active);
@@ -559,7 +559,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
 
     onAddValue(event: KeyboardEvent, filter: any) {
-        // Si acaba de ocurrir una selección, no hacemos nada
+        // If a selection has just occurred, we do nothing
         if (this.itemJustSelected) {
             this.itemJustSelected = false; // reset
             return;
@@ -629,35 +629,35 @@ public async loadFilterAutoComplete(event: any, filtro: any) {
             }]
         };
 
-        // Construir la query
+        // Build the query
         const query = this.queryBuilderService.normalQuery([targetColumn], queryParams);
 
-        // Ejecutar la query
+        // Execute the query
         const res = await this.dashboardService.executeQuery(query).toPromise();
 
-        // Asegurarse que res[1] sea un array válido
+        // Ensure that res[1] is a valid array
         const rawData = Array.isArray(res[1]) ? res[1] : [];
 
-        // Mapear solo elementos válidos
+        // Map only valid elements
         const data = rawData
             .filter(item => item && item[0] !== undefined && item[0] !== null && item[0] !== '')
             .map(item => ({ label: item[0], value: item[0] }));
 
-        // Inicializar globalFilterList si no existe
+        // Initialize globalFilterList if it does not exist
         this.globalFilterList = this.globalFilterList || [];
 
-        // Buscar el filtro por id
+        // Find the filter by id
         let gfItem = this.globalFilterList.find((gf: any) => gf.id == filtro.id);
 
-        // Si no existe, crearlo
+        // If it does not exist, create it
         if (!gfItem) {
             gfItem = { id: filtro.id, data: [] };
         }
 
-        // Asignar solo elementos válidos
+        // Assign only valid elements
         gfItem.data = data.length ? data : [];
 
-        // Asignar al autocomplete de forma segura
+        // Safely assign to the autocomplete
         this.autoCompleteValues = gfItem.data.filter(item => item?.label) || [];
 
         }, delay);
@@ -714,7 +714,7 @@ public async loadFilterAutoComplete(event: any, filtro: any) {
     }
 
     onItemSelected(filtro: any) {
-        // Si seleccionamos manualmente con el enter no queremos el primero 
+        // If we select manually with Enter, we don’t want the first one
         this.itemJustSelected = true;
         filtro.selectedItems = filtro.selectedItems.map((item: any) => {
             if (item && typeof item === 'object' && 'value' in item) {
@@ -722,7 +722,7 @@ public async loadFilterAutoComplete(event: any, filtro: any) {
             }
             return item;
         });
-        // Actualizar Global filter
+        // Update global filter
     }
 
     private findTable(tableName: string) {
@@ -784,14 +784,14 @@ public async loadFilterAutoComplete(event: any, filtro: any) {
     public onDelete() {
 
         this.styleProviderService.loadedPanels = this.allPanels.length;
-        // Nombre del filtro seleccionado
+        // Selected filter name
         const filterNameID = this.globalFilter.id;
         
-        // Indice en el que se encuentra el filtro de la lista
+        // Index of the filter in the list
         const index = this.globalFilterList.findIndex(f => f.id === filterNameID);
         
         if (this.validateGlobalFilter()) {
-            // Quitamos los valores de la lista si el filtro es valido
+            // We remove values from the list if the filter is valid
             this.globalFilter.selectedItems = [];
             this.globalFilter.isdeleted = true;
 
@@ -800,19 +800,19 @@ public async loadFilterAutoComplete(event: any, filtro: any) {
                 this.globalFilter.applyToAll = this.applyToAll;
             }
 
-            // Enviando el valor true de eliminación de un Filtro ANTES de que close destruya el componente
+            // Sending the true value for filter deletion BEFORE close destroys the component
             this.deleteFilterEvent.emit(true);
 
-            // Aplicamos filtros de lista
+            // Apply list filters
             this.globalFilterChange.emit(this.globalFilter);
             this.display = false;
             this.close.emit(true);
 
-            // Intervalo para borrar el filtro visualmente
+            // Interval for visually removing the filter
             const interval = setInterval(() => {
                 if (this.styleProviderService.loadedPanels === 0) {
                     this.globalFilterList.splice(index, 1);
-                    clearInterval(interval); // detener el intervalo
+                    clearInterval(interval); // Stop the interval
                 }
             }, 100);
         }

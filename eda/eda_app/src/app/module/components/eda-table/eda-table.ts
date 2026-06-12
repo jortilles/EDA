@@ -15,28 +15,28 @@ import { ToastModule } from 'primeng/toast';
 import { values } from 'd3';
 
 interface PivotTableSerieParams {
-    mainCol: any, // Columna dinámica principal
-    mainColLabel: string, // Nombre de la columna principal
-    mainColValues: Array<string>, // valores de la columna principal
-    aggregatedColLabels: Array<string>, // Valores numéricos ----------> Eje Z
-    pivotColsLabels: Array<string>, // Nombres de las columnas del pivot ----------> Eje Y
-    pivotCols: Array<Column>, // Columnas dinámicas del pivot
-    oldRows: Array<any>, // Valores de la tabla básica
-    newCols: Array<any> // Arreglo del grupo de columnas de la seccion principal
+    mainCol: any, // Main dynamic column
+    mainColLabel: string, // Name of the main column
+    mainColValues: Array<string>, // Values of the main column
+    aggregatedColLabels: Array<string>, // Numeric values ----------> Z axis
+    pivotColsLabels: Array<string>, // Names of the pivot columns ----------> Y axis
+    pivotCols: Array<Column>, // Dynamic pivot columns
+    oldRows: Array<any>, // Values of the base table
+    newCols: Array<any> // Array of column groups for the main section
 
 }
 
 interface CrossTableSerieParams {
-    mainColsLabels: Array<string>, // NUEVO ----------> Eje X
-    mainCols: Array<Column>, // NUEVO 
-    
-    pivotColsLabels: Array<string>, // Nombres de las columnas del pivot ----------> Eje Y
-    pivotCols: Array<Column>, // Columnas dinámicas del pivot
+    mainColsLabels: Array<string>, // NEW ----------> X axis
+    mainCols: Array<Column>, // NEW
 
-    aggregatedColLabels: Array<string>, // Valores numéricos ----------> Eje Z
+    pivotColsLabels: Array<string>, // Names of the pivot columns ----------> Y axis
+    pivotCols: Array<Column>, // Dynamic pivot columns
 
-    oldRows: Array<any>, // Valores de la tabla básica
-    newCols: Array<any> // Arreglo del grupo de columnas de la seccion principal
+    aggregatedColLabels: Array<string>, // Numeric values ----------> Z axis
+
+    oldRows: Array<any>, // Values of the base table
+    newCols: Array<any> // Array of column groups for the main section
 }
 
 
@@ -137,11 +137,11 @@ export class EdaTable {
         }
         this.clear();
         this._value = values;
-        /* Inicialitzar filtres */
+        /* Initialize filters */
         if (!_.isEmpty(this.value)) {
             _.forEach(this.cols, c => {
                 if (!_.isNil(c.filter)) {
-                    /* Obtenim tots els valors sense repetits d'aquella columna per inicialitzar el filtre */
+                    /* Get all unique values for that column to initialize the filter */
                     c.filter.init(_.orderBy(_.uniq(_.map(this.value, c.field))));
                 }
             });
@@ -330,7 +330,7 @@ export class EdaTable {
             const valuesKeys = Array.from(new Set(keys));    
             
             //get names for new columns from series array
-            let pretyNames; // Valores Numéricos de Columna. 
+            let pretyNames; // Column numeric values
             if (this.series[0].labels.length > 2) {
 
                 if(this.ordering[0]!==undefined){
@@ -347,13 +347,13 @@ export class EdaTable {
                 pretyNames = [this.series[0].labels[this.series[0].labels.length - 1].title];
             }
 
-            //add total header  --> se agrego la descripción de la columna
+            //add total header  --> column description added
             if (!colNames.includes(valuesKeys[0])) {
                 this.series[0].labels.push({ title: this.Totals, rowspan: (this.series.length-1), colspan: valuesKeys.length, isTotal: true, description: this.Totals });
             }
 
 
-            //add cols and headers --> se agrego las descripciones de las columnas
+            //add cols and headers --> column descriptions added
             valuesKeys.forEach((valueKey, i) => {
                 if (!colNames.includes(valueKey)) {
                     const col = new EdaColumnNumber({ header: valueKey, field: valueKey });
@@ -376,7 +376,7 @@ export class EdaTable {
                     valuesKeys.forEach(valueKey => {
                       let keyArray = key.split('~');
                         if (keyArray.includes(valueKey)) {
-                            let decimalplaces = new EdaColumnNumber({}).decimals;  /** esto se hace  para ajustar el número de dicimales porque 3.1+2.5 puede dar 5.600004 */ 
+                            let decimalplaces = new EdaColumnNumber({}).decimals;  /** done to adjust decimal places because 3.1+2.5 may give 5.600004 */
                             try{
                                 if(  row[key].toString().split(".")[1].length > 0){
                                     decimalplaces =  row[key].toString().split(".")[1].length;
@@ -503,7 +503,7 @@ export class EdaTable {
             } else if (col.type === "EdaColumnPercentage") {
                 const numericField = col.field.slice(0, -1);
                 if (this.pivot) {
-                    // SDA style: suma de todas las columnas numéricas de la tabla dinámica en esta página.
+                    // SDA style: sum of all numeric columns in the pivot table on this page.
                     const value = Number(partialRow[numericField]);
                     const total = Object.keys(partialRow)
                         .filter(key => !key.endsWith('%') && key.includes('~'))
@@ -560,7 +560,7 @@ export class EdaTable {
                         let decimalplaces = 0;
                         try{
                             let c =  <EdaColumnNumber>currentCol;
-                            decimalplaces =  c.decimals;  /** esta mierda se hace  para ajustar el número de dicimales porque 3.1+2.5 puede dar 5.600004 */
+                            decimalplaces =  c.decimals;  /** done to adjust decimal places because 3.1+2.5 may give 5.600004 */
                         }catch(e){
                             console.log('error getting decimal places');
                             console.log(e);
@@ -618,7 +618,7 @@ export class EdaTable {
         });
     }
 
-    // Funcion que rellena de ceros en los totales
+    // Function that fills the totals row with zeros
     buildTotalRow() {
         let row = {};
         const keys = Object.keys(this._value[0]);
@@ -655,19 +655,19 @@ export class EdaTable {
         return row;
     }
 
-    //usamos la extracción de valores para el noRepetitions
+    // Extract values used for noRepetitions
     extractDataValues(val) {
-        //separamos valores de claves
+        // Separate values from keys
         let values = [];
         for (let i=0; i<val.length;i++) {
             values.push(Object.values(val[i]));
         }
         return values;
     }
-    //usamos la extracción de labels para el noRepetitions
+    // Extract labels used for noRepetitions
     extractLabels(val) {
-        let labels = [];      
-        labels.push(Object.keys(val[0])); //insertamos el primer objeto con el cabecero para iterar y extraer los datos
+        let labels = [];
+        labels.push(Object.keys(val[0])); // Insert the first object with the header to iterate and extract data
         labels.forEach(e => {
             e.forEach(function(key,val) {
                 labels.push(key);
@@ -679,20 +679,20 @@ export class EdaTable {
     
     noRepeatedRows() {
 
-        //esta primera iteración con this.noRepetitions en false se hace para devolver las palabras repetidas al diálogo.
-        //Es una secuencia similar a la de quitar los valores, pero opuesta.
+        // This first iteration with this.noRepetitions set to false restores repeated words to the dialog.
+        // It is a sequence similar to removing values, but the opposite.
         if (!this.noRepetitions && this.noRepetitions !== undefined && !this.resultAsPecentage && !this.onlyPercentages) {
-            // si no he tocado nada, dejo el valor origintal
+            // if nothing has been changed, keep the original value
            this.value = _.cloneDeep(this.origValues);
         }  else if (!this.noRepetitions && ( this.resultAsPecentage || this.onlyPercentages)) {
-            // si  quiero repetidos pero tengo porcentajes....
-           //separamos valores de claves
+            // if repetitions are wanted but percentages are present...
+           // Separate values from keys
            let values = this.extractDataValues(this.value);
-           //tomamos claves que serán el cabecero
+           // Get keys that will be the header
            let labels = this.extractLabels(this.value)
-           labels.shift(); //borramos el primer objeto.
+           labels.shift(); // Remove the first object.
            let output = [];
-           // ESTO SE HACE PARA EVITAR REPETIDOS EN LA TABLA. SI UN CAMPO TIENE UNA COLUMNA QUE SE REPITE
+           // THIS IS DONE TO AVOID REPEATED VALUES IN THE TABLE. IF A FIELD HAS A COLUMN THAT REPEATS
 
            for (let i = 0; i < values.length; i += 1) {
                const obj = [];
@@ -709,13 +709,13 @@ export class EdaTable {
            this.value = output;
 
         }else {
-            //separamos valores de claves
+            // Separate values from keys
             let values = this.extractDataValues(this.value);
-            //tomamos claves que serán el cabecero
+            // Get keys that will be the header
             let labels = this.extractLabels(this.value)
-            labels.shift(); //borramos el primer objeto.
+            labels.shift(); // Remove the first object.
             let output = [];
-            // ESTO SE HACE PARA EVITAR REPETIDOS EN LA TABLA. SI UN CAMPO TIENE UNA COLUMNA QUE SE REPITE 
+            // THIS IS DONE TO AVOID REPEATED VALUES IN THE TABLE. IF A FIELD HAS A COLUMN THAT REPEATS
             let first  = _.cloneDeep(values[0]);
             for (let i = 0; i < values.length; i += 1) {
                 const obj = [];
@@ -726,11 +726,11 @@ export class EdaTable {
                 }else{
                     for (let e = 0; e < values[i].length; e += 1) {
                         if (values[i][e] === first[e]    &&  isNaN(values[i][e]) ) {
-                            obj[labels[e]] = "";   // AQUI SE SUSTITUYEN LOS REPETIDOS POR UNA CADENA EN BLANCO
+                            obj[labels[e]] = "";   // REPEATED VALUES ARE REPLACED BY AN EMPTY STRING HERE
                         } else {
                             obj[labels[e]] = values[i][e];
                         }
-                        first[e]  =  values[i][e]; //AQUI SE SUTITUYE EL PRIMER VALOR
+                        first[e]  =  values[i][e]; // THE FIRST VALUE IS REPLACED HERE
                         }
                 }
                 output.push(obj);   
@@ -962,12 +962,12 @@ export class EdaTable {
         const colsToMerge = [];
         let newLabels;
 
-        // INICIA EL REORDENAMIENTO
+        // START REORDERING
         if(this.ordering!=undefined && this.ordering.length!==0) {
             axes = this.ordering[0].axes
 
-            // Filtrar axes: excluir items cuya columna efectiva no existe en this.cols (p.ej. nav-children
-            // que fueron excluidos de los campos efectivos de la query).
+            // Filter axes: exclude items whose effective column does not exist in this.cols (e.g. nav-children
+            // that were excluded from the effective fields of the query).
             const navSub = this.navColumnSubstitution || {};
             const effectiveXNames = new Set<string>();
             const filteredItemX = axes[0].itemX.filter((x: any) => {
@@ -1000,9 +1000,9 @@ export class EdaTable {
             newLabels.textDescriptions = colsInfo.textDescriptions;
             newLabels.axes = filteredAxes;
 
-            this._value = this.mergeCrossRows(rowsToMerge, filteredAxes); // Nueva función que genera las filas de la tabla cruzada
-            this.cols = this.mergeCrossColumns(colsToMerge, filteredAxes); // Nueva función que genera las columnas de la tabla cruzada
-            this.buildCrossHeaders(newLabels, colsInfo); // Nueva función para la creación de los encabezados
+            this._value = this.mergeCrossRows(rowsToMerge, filteredAxes); // Generates the rows of the cross table
+            this.cols = this.mergeCrossColumns(colsToMerge, filteredAxes); // Generates the columns of the cross table
+            this.buildCrossHeaders(newLabels, colsInfo); // Builds the cross table headers
 
             return
         }
@@ -1032,11 +1032,8 @@ export class EdaTable {
     buildPivotSerie(serieIndex: number) {
 
         const params = this.generatePivotParams();
-        // console.log(`params ---> serieIndex ${serieIndex} <---`, params);
         const mapTree = this.buildMainMap(params.mainColValues, params.newCols);
-        // console.log(`mapTree ---> serieIndex ${serieIndex} <---`, mapTree);
         const populatedMap = this.populateMap(mapTree, params.oldRows, params.mainColLabel, params.aggregatedColLabels[serieIndex], params.pivotColsLabels);
-        // console.log(`populatedMap ---> serieIndex ${serieIndex} <---`, populatedMap);
 
         let newRows = this.buildNewRows(populatedMap, params.mainColLabel, params.aggregatedColLabels[serieIndex]);
         let newColNames = this.getNewColumnsNames(newRows[0]).slice(1); //For left column we want user's name, not technical
@@ -1057,11 +1054,8 @@ export class EdaTable {
     buildCrossSerie(serieIndex: number, axes: any[]) {
 
         const params = this.generateCrossParams(axes);
-        // console.log(`params ===> serieIndex ${serieIndex} <===`, params)
         const mapTree = this.buildMapCrossRecursive(params.newCols);
-        // console.log(`mapTree ===> serieIndex ${serieIndex} <===`, mapTree);
         const populatedMap = this.populateCrossMap(mapTree, params.oldRows, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.pivotColsLabels);
-        // console.log(`populatedMap ===> serieIndex ${serieIndex} <===`, populatedMap);
 
         let newRows = this.buildNewCrossRows(populatedMap, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.newCols);
         let newColNames = this.getNewColumnsNames(newRows[0]).slice(params.mainColsLabels.length); //For left column we want user's name, not technical
@@ -1098,7 +1092,7 @@ export class EdaTable {
             rows.push(newRow);
         }
 
-        let newRows= [] // Arreglo que contendra la lista con almenos un valor
+        let newRows= [] // Array that will contain the list with at least one value
 
         rows.forEach(row => {
             let contador = 0;
@@ -1113,7 +1107,7 @@ export class EdaTable {
             }
         })
 
-        // VERIFICAR SI SE RELLENAN CON CEROS LOS VALORES QUE LLEGAN VACIOS
+        // CHECK WHETHER EMPTY VALUES ARE FILLED WITH ZEROS
         // newRows.forEach(row => {
         //     let contador = 0;
         //     for(const propiedad in row){
@@ -1192,7 +1186,7 @@ export class EdaTable {
         keys.forEach(key => {
             let valuesMap = new Map();
             values.forEach(value => {
-                valuesMap.set(value, 0); // para la tabla cruzada se utiliza --> ''
+                valuesMap.set(value, 0); // for the cross table use --> ''
             });
             out.set(key, valuesMap);
         });
@@ -1258,9 +1252,9 @@ export class EdaTable {
      */
     populateMap(map: Map<string, any>, rows: any, mainColLabel: string, aggregatedColLabel: string, pivotColsLabels: any) {
         rows.forEach(row => {
-            const value = row[aggregatedColLabel]; // Capturas los valores numéricos de oldRows
-            const pivotSteps = pivotColsLabels.length - 1; // Número de pasos en seccion pivot
-            const leftColTarget = map.get(row[mainColLabel]); // Captura cada mapa de la columna principal
+            const value = row[aggregatedColLabel]; // Capture numeric values from oldRows
+            const pivotSteps = pivotColsLabels.length - 1; // Number of steps in the pivot section
+            const leftColTarget = map.get(row[mainColLabel]); // Capture each map of the main column
             let lastMapKey = leftColTarget;
             let i;
             for (i = 0; i < pivotSteps; i++) {
@@ -1286,10 +1280,10 @@ export class EdaTable {
         clonePivotColsLabels = cloneMainColsLabels;
 
         rows.forEach(row => {
-            const value = row[aggregatedColLabel]; // Capturas los valores numéricos de oldRows
+            const value = row[aggregatedColLabel]; // Capture numeric values from oldRows
 
-            const pivotSteps = clonePivotColsLabels.length - 1; // Número de pasos en seccion pivot
-            const leftColTarget = map.get(row[firstMainColsLabels]); // Captura cada mapa de la columna principal
+            const pivotSteps = clonePivotColsLabels.length - 1; // Number of steps in the pivot section
+            const leftColTarget = map.get(row[firstMainColsLabels]); // Capture each map of the main column
             let lastMapKey = leftColTarget;
             let i;
 
@@ -1341,7 +1335,7 @@ export class EdaTable {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     buildNewCrossRows(map: Map<string, any>, mainColsLabels: any, serieLabel: string, newCols: any) {
-        const arraysMain = []; // Arreglo de los nombres de las columnas principales
+        const arraysMain = []; // Array of main column names
         const rows = []
         const rowsTest = []
 
@@ -1359,7 +1353,7 @@ export class EdaTable {
             rows.push(row);
         })
 
-        // Uso de una función recursiva para acceder a una posición usando una lista de claves
+        // Use a recursive function to access a position using a list of keys
         combinations.forEach(keys => {
             let row = {};
             let mapItem = this.recursiveAccessCrossTable(map, keys)
@@ -1381,18 +1375,18 @@ export class EdaTable {
     }
 
     recursiveAccessCrossTable(map: Map<string, any>, keys: any){
-        // Si no hay más claves, retornamos el mapa actual
+        // If there are no more keys, return the current map
         if(keys.length===0) {
             return map;
         }
 
-        // Tomar la primera clave y eliminarla de la lista
+        // Take the first key and remove it from the list
         const [firstKey, ...remainingKeys] = keys;
 
-        // Obtener el siguiente mapa o valor usando la clave actual
+        // Get the next map or value using the current key
         const nextMap = map.get(firstKey);
 
-        // Si el siguiente mapa es un `Map`, continuar recursivamente
+        // If the next map is a `Map`, continue recursively
         if (nextMap instanceof Map) {
             return this.recursiveAccessCrossTable(nextMap, remainingKeys);
         }
@@ -1561,7 +1555,7 @@ export class EdaTable {
         return params
     }
 
-    // Función para la tabla cruzada generica.
+    // Function for the generic cross table.
     buildCrossHeaders(labels: any, colsInfo: any) {
         let series = [];
         const numRows = labels.seriesLabels.length + 1 //1 for metrics labels

@@ -509,8 +509,6 @@ export abstract class QueryBuilderService {
 
     public buildGraph() {
         const graph = [];
-        //No fa falta treure les relacions ocultes per que les poso al array no_relations en guardar-ho
-        //Totes les relacions ja son bones. Ho deixo per que el bucle ja es fa...
         this.tables.forEach(t => {
             const relations = [];
             t.relations

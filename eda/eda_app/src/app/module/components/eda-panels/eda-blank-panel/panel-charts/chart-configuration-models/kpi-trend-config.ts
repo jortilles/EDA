@@ -3,6 +3,7 @@ export class KpiTrendConfig {
     backgroundColor: string = '';
     kpiColor: string = '';
     assignedColors: any[] = [];
+    modifiedFontPoints: number = 0;
 
     constructor(init?: Partial<KpiTrendConfig>) {
         Object.assign(this, init);

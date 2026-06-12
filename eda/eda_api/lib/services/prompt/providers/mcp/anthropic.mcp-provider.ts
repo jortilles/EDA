@@ -30,13 +30,14 @@ export class AnthropicMCPProvider implements IMCPAIProvider {
             input_schema: t.parameters as Anthropic.Tool['input_schema'],
         }));
 
-        const response = await this.client.messages.create({
+        const stream = await this.client.messages.stream({
             model: this.model,
             max_tokens: maxTokens,
             system,
             messages: this.toAnthropicHistory(history),
             tools: anthropicTools,
         });
+        const response = await stream.finalMessage();
 
         if (response.stop_reason === 'tool_use') {
             const toolCalls: MCPToolCallInfo[] = response.content

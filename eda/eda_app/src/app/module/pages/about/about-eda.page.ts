@@ -11,7 +11,7 @@ import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browse
 })
 export class AboutEdaPage {
   private _sanitizer = inject(DomSanitizer);
-  // Estado para las tabs
+  // Tab state
   activeTab: 'datamodel' | 'report' = 'datamodel';
 
   public readonly datamodel: string = "https://www.youtube.com/embed/Px709s0ftiI";

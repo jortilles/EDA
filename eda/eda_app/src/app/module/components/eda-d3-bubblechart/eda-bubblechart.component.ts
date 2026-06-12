@@ -68,13 +68,13 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit() {
-    // SVG CONTAINER
+    // SVG container
     const container = this.svgContainer.nativeElement as HTMLElement;
 
-    // Crear SVG
+    // Create SVG
     this.svg = d3.select(container).append('svg');
       
-    // Crear ResizeObserver para redimensionar el chart
+    // Create ResizeObserver to resize the chart
     this.resizeObserver = new ResizeObserver(entries => {
       let id = `#${this.id}`;
       this.svg = d3.select(id);
@@ -120,18 +120,18 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   }
 
   draw() {
-    // Borrado inicial de otros charts 
+    // Initial removal of other charts
     this.svg.selectAll('*').remove();
 
-    // dibujamos márgenes y color
+    // set margins and color
     const width = this.svgContainer.nativeElement.clientWidth - 10, height = this.svgContainer.nativeElement.clientHeight - 10;
     
-    //Funcion de ordenación de colores de D3
+    // Color ordering function for D3
     const valuesBubble = this.assignedColors.map((item) => item.value);
     const colorsBubble = this.assignedColors[0].color ? this.assignedColors.map(item => item.color) : this.colors;
     const color = d3.scaleOrdinal(this.firstColLabels,  colorsBubble);
 
-    //llamamos a la libreria de los circulos
+    // call the circle pack layout
     const treemap = data => d3.pack()
       .size([width, height])
       .padding(1)
@@ -140,14 +140,14 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
         .sort((a, b) => b.value - a.value))
 
 
-    //asignamos un valor que es la libreria con los datos 
+    // assign a value which is the pack layout result with the data
     const root = treemap(this.data);
-    //llamamos al panel
+    // get svg panel
     const svg = this.svg;
 
-    // Definimos las condiciones y su correspondiente tamaño mininmo y maximo de los circulos y su texto en funcion de la altura del area SVG
+    // Define thresholds and corresponding min/max sizes for circles and their text depending on SVG height
 
-    // TO-DO!!!!  --------------> REVISAR METODO!!!!! -------> TO-DO!!!! 
+    // TO-DO: REVIEW METHOD
     var min;
     var max;
     var minText;
@@ -163,39 +163,39 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
     else { min = 20, max = 128, minText = 8, maxText = 21 }
 
 
-    // Tamaño y escala del dato/circulo
+    // Size scale for data/circle
     const size = d3.scaleLinear()
-      //Los algoritmos que estan colocados en el .domain sirven para devolver el valor numerico minimo y maximo de cada circulo
+      // The algorithms in .domain return the numeric min and max for each circle
       .domain([Math.min.apply(Math, this.data.children.map(function (i) { return i.value })), Math.max.apply(Math, this.data.children.map(function (i) { return i.value }))])
-      .range([min, max])  // El circulo medirá en px entre el valor de la variable min y la variable max
+      .range([min, max])  // The circle will measure in px between min and max
 
-    // Tamaño y escala del texto de los paises
+    // Text size scale for labels
     const textSize = d3.scaleLinear()
-      //Los algoritmos que estan colocados en el .domain sirven para devolver el valor numerico minimo y maximo de cada circulo
+      // The algorithms in .domain return the numeric min and max for each circle
       .domain([Math.min.apply(Math, this.data.children.map(function (i) { return i.value })), Math.max.apply(Math, this.data.children.map(function (i) { return i.value }))])
-      .range([minText, maxText])  // El texto medirá en px entre el valor de la variable minText y la variable maxText
+      .range([minText, maxText])  // The text will measure in px between minText and maxText
 
-    //Crea una variable que hace que la constante svg seleccione todas las etiquetas "g"
+    // Create a selection that lets svg select all "g" tags
     var leaf = svg.selectAll("g")
-      //recoge todos los datos
+      // bind all data
       .data(root.leaves())
 
-    /*Crea y coloca los "bloques" que contienen los circulos y su texto */
+    /* Create and place the "blocks" that contain circles and their text */
     var elemEnter = leaf.enter()
       .append("g")
 
-    //Crea dentro del "bloque g" el circulo
+    // Create the circle inside the "g" block
     var node = elemEnter.append("circle")
-      .attr("id", d => (d.leafUid = this.randomID())) //Crea y assigna una id al azar a cada circulo
+      .attr("id", d => (d.leafUid = this.randomID())) // Create and assign a random id to each circle
       .attr("fill", d => {
         while (d.depth > 1) d = d.parent;
-        //Devolvemos SOLO EL COLOR de assignedColors que comparte la data y colors de assignedColors
+        // Return ONLY THE COLOR from assignedColors that matches the data; otherwise use the color scale
         return  colorsBubble[valuesBubble.findIndex((item) => d.data.name.includes(item))] || color(d.data.name);
       })
       .attr("class", "node")
       .attr("r", function (d) {
         return size(d.value)
-      })//La funcion size recoge el valor numerico asignado del circulo y posteriormente le asigna su diametro
+      })// The size function picks the numeric value and assigns the diameter
       .style("cursor", "pointer")
       .style("fill-opacity", 1)
       .attr("stroke", "black")
@@ -212,7 +212,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
             `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`;
           window.open(url, "_blank");
         } else {
-          //Passem aquestes dades
+          // Emit these data
           const label = data.data.name;
           const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
           this.onClick.emit({label, filterBy });
@@ -221,18 +221,18 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
               .on('mouseover', (d, data) => { 
                 
 
-                //Se aumenta el tamaño del contorno de la burbuja
+                // Increase the bubble border width
                 d3.select(d.currentTarget)
                     .transition()
                     .duration(200)
                     .style("stroke-width", 3);
                 
-                // Se crea una etiqueta que contenga los datos de cada burbuja
+                // Create a label that contains the data for each bubble
                 const tooltipData = this.getToolTipData(data);
                 let text = `${tooltipData.firstRow} <br/> ${tooltipData.secondRow}`;
                 text = this.inject.linkedDashboard ? text + `<br/> <h6>  ${tooltipData.thirdRow} </h6>` : text;
 
-                //Se crea la etiqueta tooltipData con div
+                // Create the tooltip div
                 this.div = d3.select("app-root").append('div')
                   .attr('class', 'd3tooltip')
                   .style('opacity', 0);
@@ -248,36 +248,36 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
               })
       .on('mouseout', (d) => {
 
-        //Se reduce el contorno de la burbuja a su tamaño original
+        // Reduce the bubble border back to original size
         node
           .transition()
           .duration(200)
 
           .style("stroke-width", 1);
 
-        //Se borra la etiqueta tooltipData
+        // Remove the tooltip div
         this.div.remove()
       })
       .on("mousemove", (d, data) => {
-        //Actualiza la posicion de la etiqueta tooltipData
+        // Update tooltip position
         const linked = this.inject.linkedDashboard ? 0 : 10;
         const tooltipData = this.getToolTipData(data);
 
         this.div.style("top", (d.pageY - 70 + linked) + "px")
           .style("left", (d.pageX - tooltipData.width / 2) + "px");
-      }).call(d3.drag() // Llama a una funcion especifica cuando el nodo es arrastrado
+      }).call(d3.drag() // Calls a specific function when the node is dragged
         .on("start", dragstarted)
         .on("drag", dragged)
         .on("end", dragended))
 
-    //crea y coloca dentro del "bloque g" un "bloque" de texto
+    // create and place a text block inside the "g" block
     elemEnter.append("text")
       .attr("font-size", function (d) {
-        return textSize(d.value) //La funcion textSize recoge el valor numerico asignado del circulo y posteriormente le asigna el tamaño del texto
+        return textSize(d.value) // The textSize function maps the numeric value to text size
       })
-      //Se crea y coloca la etiqueta tspan dentro del bloque de texto, eso hace que el texto este dividido en letras y cada tspan es una letra o espacio
+      // tspan elements are created inside the text block, which allows splitting text; each tspan holds a part
       .selectAll("tspan")
-      //Antes de crear y colocar el texto se debe analizar que diametro tiene el circulo al que se va colocar y cuantas letras contiene dicho texto para posteriormente recortarlo
+      // Before creating and placing text we must analyze the circle diameter and the text length to truncate accordingly
       .data(d => {
         if (d.r >= 100 && d.r <= 150 && d.data.name.trim().length >= 17) {
           return d.data.name.substr(0, 10) + '...';
@@ -300,32 +300,32 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
         }
       })
 
-      .join("tspan") //Aqui se junta todos los tspan dentro del "bloque texto" para evitar que las letras esten desperdigadas por todo el area SVG     
+      .join("tspan") // Join all tspans inside the text block to avoid letters being scattered across the SVG     
       .style("font-family", this.styleProviderService.panelFontFamily.source['_value'])
       .style("pointer-events", "none")
       .attr("fill", this.styleProviderService.panelFontColor.source['_value'])      
       .attr("fill-opacity", (d, i, nodes) => i === nodes.length - 1 ? 0.9 : null)
-      .text(d => d)//Cargamos el texto dentro del "bloque" tspan
+      .text(d => d)// Load the text into each tspan
 
 
 
-    // Caracteristicas de las fisicas aplicadas en los nodos:
+    // Physics properties applied to nodes:
     const simulation = d3.forceSimulation()
       .force("x", d3.forceX().x(width / 2))
       .force("y", d3.forceY().y(height / 2))
-      .force("center", d3.forceCenter().x(width / 2).y(height / 2)) // Atraccion de los nodos hacia el centro del area SVG
-      .force("charge", d3.forceManyBody().strength(.1)) // Los nodos tiene atraccion entre ellos cuando el valor es > 0
-      //En el .radius dentro de function es OBLIGATORIO que la variable desde donde se extrae los datos del circulo en este caso este definido como (d: any) ya que sino llamara a una variable de la libreria d3js y dara error
+      .force("center", d3.forceCenter().x(width / 2).y(height / 2)) // Attraction of nodes toward the center of the SVG area
+      .force("charge", d3.forceManyBody().strength(.1)) // Nodes attract each other when value > 0
+      // In the .radius inside the function it is MANDATORY that the variable from which the circle data is extracted (d: any) is defined, otherwise it will reference a d3 variable and throw an error
       .force("collide", d3.forceCollide().strength(.2).radius(function (d: any) {
 
         return (size(d.value) + 3)
-      }).iterations(1)) // Fuerza que evita la superposicion de los nodos 
+      }).iterations(1)) // Force that prevents node overlap 
 
-    //TO-DO --------------------> LA SUPERPOSICIÓN DE LAS BOLAS PEQUEÑAS SOBRE LAS GRANDES EN ARRASTRE
+    // TO-DO: Overlapping of small circles over large ones during drag
 
 
-    // Aplica estas fuerzas a los nodos y se actualiza sus posiciones. 
-    // Una vez el algoritmo ".force" esta contento con sus posiciones (el valor 'alfa' es suficientemente bajo), las simulaciones se detienen.
+    // Apply these forces to the nodes and update their positions.
+    // Once the ".force" algorithm is satisfied (alpha is low), simulations stop.
     simulation
       .nodes(root.leaves())
       .on("tick", function () {
@@ -334,14 +334,14 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
           .attr("cy", d => d.y)
 
 
-        //Aquí definimos el texto en el centro de la bola
-        elemEnter.select("tspan") // Se selecciona las etiquetas tspan que estan dentro del "bloque" texto
+        // Here we define the text in the center of the bubble
+        elemEnter.select("tspan") // Select tspan elements inside the text block
           .attr("x", d => d.x)
-          .style("text-anchor", "middle")//Centra el texto dentro del circulo
+          .style("text-anchor", "middle")// Center the text inside the circle
           .attr("y", d => d.y)
       });
 
-    // ¿Qué sucede cuando se arrastra un círculo?
+    // What happens when a circle is dragged?
     function dragstarted(event, d) {
       if (!event.active) simulation.alphaTarget(.03).restart();
       d.fx = d.x;
@@ -381,6 +381,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
       newData.push(newRow);
 
     });
+
 
 
 

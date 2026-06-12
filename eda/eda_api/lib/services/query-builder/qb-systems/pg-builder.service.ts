@@ -229,25 +229,53 @@ export class PgBuilderService extends QueryBuilderService {
       myQuery += this.getFilters(filters);
     }
 
-    // GroupBy
-    if (grouping.length > 0 && ((groupByEnabled))) {
-      myQuery += '\ngroup by ' + grouping.join(', ');
+    // Compute resultSortingColumns before GROUP BY
+    const sortingCols: any[] = this.queryTODO.resultSortingColumns ?? [];
+    const sortingKeys = new Set(sortingCols.map(c => `${c.table_id}.${c.column_name}`));
+
+    // GroupBy — extend with any resultSortingColumns not already grouped
+    const effectiveGrouping = [...grouping];
+    for (const col of sortingCols) {
+      const tc = `"${col.table_id}"."${col.column_name}"`;
+      if (!effectiveGrouping.includes(tc)) {
+        effectiveGrouping.push(tc);
+      }
+    }
+    if (effectiveGrouping.length > 0 && groupByEnabled) {
+      myQuery += '\ngroup by ' + effectiveGrouping.join(', ');
     }
 
     //HAVING 
     myQuery += this.getHavingFilters(havingFilters );
 
-    // OrderBy
-    const orderColumns = this.queryTODO.fields.map(col => {
-      let out;
+    console.log('this.queryTODO: ', this.queryTODO);
 
-      if (col.ordenation_type !== 'No' && col.ordenation_type !== undefined) {
-        out = `"${col.display_name}" ${col.ordenation_type}`
-      } else {
-        out = false;
-      }
-      return out;
-    }).filter(e => e !== false);
+    // OrderBy
+    let orderColumns: string[];
+
+    if (sortingCols.length > 0) {
+      orderColumns = sortingCols
+        .filter(col => col.ordenation_type !== 'No' && col.ordenation_type !== undefined)
+        .map(col => {
+          const matchingField = this.queryTODO.fields.find(
+            (f: any) => f.table_id === col.table_id && f.column_name === col.column_name
+          );
+          if (matchingField) {
+            return `"${matchingField.display_name}" ${col.ordenation_type}`;
+          } else {
+            return `"${col.table_id}"."${col.column_name}" ${col.ordenation_type}`;
+          }
+        });
+    } else {
+      orderColumns = this.queryTODO.fields
+        .map((col: any) => {
+          if (col.ordenation_type !== 'No' && col.ordenation_type !== undefined) {
+            return `"${col.display_name}" ${col.ordenation_type}`;
+          }
+          return false;
+        })
+        .filter((e: any) => e !== false) as string[];
+    }
 
     const order_columns_string = orderColumns.join(',');
     if (order_columns_string.length > 0) {

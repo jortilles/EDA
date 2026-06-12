@@ -239,8 +239,8 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
 
             if (turnResult.done) {
                 sendStatus('preparing');
-                const text = turnResult.text ?? '';
-                const responsePayload: any = { ok: true, response: text };
+                const fullText = turnResult.text ?? '';
+                const responsePayload: any = { ok: true, response: fullText };
                 if (lastExplorationOptions.length > 1) {
                     console.log('[CHAT] done — mostrando todas las opciones:', lastExplorationOptions.length);
                     responsePayload.options = lastExplorationOptions.map((o: any) => ({
@@ -260,6 +260,12 @@ McpRouter.post('/chat', authGuard, async (req: Request, res: Response) => {
                     console.log('[CHAT] done — incluyendo chart en payload:', lastChartData.title);
                     responsePayload.chart = lastChartData;
                     lastChartData = null;
+                }
+                const words = fullText.split(' ');
+                for (let i = 0; i < words.length; i++) {
+                    const chunk = (i === 0 ? '' : ' ') + words[i];
+                    sseWrite(`event: token\ndata: ${JSON.stringify({ text: chunk })}\n\n`);
+                    await new Promise(r => setTimeout(r, 18));
                 }
                 MCPUtils.finalizeChatContext(ctx);
                 sendResponse(responsePayload);

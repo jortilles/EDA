@@ -23,7 +23,7 @@ export class SankeyDialog implements OnInit, AfterViewChecked {
 
   public panelChartConfig: PanelChart = new PanelChart();
 
-  /* fuente única de verdad */
+  /* single source of truth */
   public assignedColors: { value: string; color: string }[] = [];
   private originalAssignedColors: { value: string; color: string }[] = [];
 
@@ -51,7 +51,7 @@ export class SankeyDialog implements OnInit, AfterViewChecked {
 
         this.values = this.myPanelChartComponent.componentRef.instance.data.values;
 
-        // labels únicos reales
+        // real unique labels
         this.labels = [...new Set<string>(this.values.map(v => v[0] as string))];
 
         const chartAssignedColors =
@@ -65,7 +65,7 @@ export class SankeyDialog implements OnInit, AfterViewChecked {
           };
         });
 
-        // preview cancelación
+        // preview cancel
         this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
 
       }, 0);
@@ -76,13 +76,13 @@ export class SankeyDialog implements OnInit, AfterViewChecked {
     this.controller.close(event, response);
   }
 
-  /** GUARDAR */
+  /** SAVE */
   saveChartConfig(): void {
     this.syncChart();
     this.onClose(EdaDialogCloseEvent.UPDATE, {colors: this.assignedColors.map(c => c.color)});
   }
 
-  /** CANCELAR */
+  /** CANCEL */
   closeChartConfig(): void {
     this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
     this.syncChart();
@@ -94,7 +94,7 @@ export class SankeyDialog implements OnInit, AfterViewChecked {
     this.syncChart();
   }
 
-  /** PALETA */
+  /** PALETTE */
   onPaletteSelected(): void {
     if (!this.selectedPalette) return;
 
@@ -114,12 +114,12 @@ export class SankeyDialog implements OnInit, AfterViewChecked {
     this.syncChart();
   }
 
-  /*sincroniza todo */
+  /* syncs everything */
   private syncChart(): void {
     const labelColorMap: Record<string, string> = {};
     this.assignedColors.forEach(c => {labelColorMap[c.value] = c.color;});
 
-    // Sankey necesita colores según data.values
+    // Sankey needs colors according to data.values
     const colorsForChart = this.values.map(v => labelColorMap[v[0] as string]);
 
     this.myPanelChartComponent.props.config.setConfig(new SankeyConfig([...new Set(colorsForChart)]));

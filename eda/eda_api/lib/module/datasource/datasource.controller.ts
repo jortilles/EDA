@@ -11,6 +11,16 @@ import { QueryOptions } from 'mongoose';
 import { upperCase } from 'lodash';
 import Group from '../../module/admin/groups/model/group.model';
 import _ from 'lodash';
+import * as path from 'path';
+import * as fs from 'fs';
+import { AggregationTypes } from '../global/model/aggregation-types';
+import { OdooApiService } from '../../services/odoo/odoo-api.service';
+import { GA4ApiService } from '../../services/google-analytics/ga4-api.service';
+import { applyGA4Labels, extractGA4LocaleFromRequest } from '../../services/google-analytics/ga4-labels';
+import { applyOdooLabels, resolveOdooLocale } from '../../services/odoo/odoo-labels';
+import { HoldedApiService } from '../../services/holded/holded-api.service';
+import { applyHoldedLabels, resolveHoldedLocale } from '../../services/holded/holded-labels';
+import { DuckDBConnection } from '../../services/connection/db-systems/duckdb-connection';
 const cache_config = require('../../../config/cache.config');
 
 export class DataSourceController {
@@ -42,12 +52,14 @@ export class DataSourceController {
     static async GetDataSourceById(req: Request, res: Response, next: NextFunction) {
         try {
             const dataSource = await DataSource.findById({ _id: req.params.id });
-            // ocultem el password
-            dataSource.ds.connection.password = EnCrypterService.decode(dataSource.ds.connection.password);
+            // ocultem el password (solo si hay password que decodificar)
+            if (dataSource.ds.connection.password) {
+                dataSource.ds.connection.password = EnCrypterService.decode(dataSource.ds.connection.password);
+            }
             dataSource.ds.connection.password = '__-(··)-__';
             return res.status(200).json({ ok: true, dataSource });
         } catch (err) {
-            return (new HttpException(404, 'Datasouce not found'));
+            next(new HttpException(404, 'Datasource not found'));
         }
     }
 
@@ -363,6 +375,20 @@ export class DataSourceController {
                     const dataSource = await DataSource.findByIdAndDelete(req.params.id);
                     if (!dataSource) {
                         return next(new HttpException(500, 'Error removing dataSource'));
+                    }
+
+                    // Si es DuckDB u Odoo, eliminar la carpeta con los CSV del disco
+                    if (['duckdb', 'odoo', 'googleanalytics', 'holded' ].includes(dataSource.ds?.connection?.type)) {
+                        const database: string = dataSource.ds.connection.database;
+                        const duckdbBase = path.join(process.cwd(), 'duckdb');
+                        // Resolve folder: supports both legacy absolute paths and new relative names
+                        const folderName = (path.isAbsolute(database) || database?.includes('\\') || database?.includes('/'))
+                            ? path.basename(database)
+                            : database;
+                        const targetPath = path.join(duckdbBase, folderName);
+                        if (folderName && fs.existsSync(targetPath)) {
+                            fs.rmSync(targetPath, { recursive: true, force: true });
+                        }
                     }
 
                     return res.status(200).json({ ok: true, dataSource });
@@ -728,6 +754,516 @@ export class DataSourceController {
                 dataSource.ds.metadata.tags && dataSource.ds.metadata.tags.some(tag => queryTagArray.includes(tag))
             );
         }
+    }
+
+    static async AddDuckDBDataSource(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { name, description, optimize, allowCache, folderName, csvFiles } = req.body;
+            // csvFiles: Array<{ fileName: string, csvContent: string, columnsConfig: any[] }>
+
+            if (!name || !folderName || !csvFiles || !Array.isArray(csvFiles) || csvFiles.length === 0) {
+                return next(new HttpException(400, 'Name, folderName and at least one CSV file are required'));
+            }
+
+            const normalizeName = (str: string) =>
+                str.split('_').join(' ').toLowerCase()
+                    .split(' ').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+
+            const safeFolderName = folderName.replace(/[^a-zA-Z0-9_\-]/g, '_').toLowerCase();
+            if (!safeFolderName) {
+                return next(new HttpException(400, `Invalid folderName "${folderName}": must contain at least one alphanumeric character`));
+            }
+
+            const duckdbBaseFolder = path.join(process.cwd(), 'duckdb');
+            const targetFolder = path.join(duckdbBaseFolder, safeFolderName);
+            if (!fs.existsSync(targetFolder)) {
+                fs.mkdirSync(targetFolder, { recursive: true });
+            }
+
+            const tables = csvFiles.map((csvFile: any) => {
+                const safeName = (csvFile.fileName || 'file')
+                    .replace(/\.csv$/i, '')
+                    .replace(/[^a-zA-Z0-9_\-]/g, '_')
+                    .toLowerCase();
+
+                fs.writeFileSync(path.join(targetFolder, `${safeName}.csv`), csvFile.csvContent, 'utf8');
+
+                const columns = (csvFile.columnsConfig || []).map((col: any) => {
+                    let colType: string;
+                    switch (col.type) {
+                        case 'integer':
+                        case 'numeric':
+                            colType = 'numeric'; break;
+                        case 'timestamp':
+                            colType = 'date'; break;
+                        default:
+                            colType = 'text';
+                    }
+                    return {
+                        column_name: col.field,
+                        column_type: colType,
+                        display_name: { default: normalizeName(col.field.replace(/_/g, ' ')), localized: [] },
+                        description: { default: normalizeName(col.field.replace(/_/g, ' ')), localized: [] },
+                        aggregation_type: colType === 'numeric'
+                            ? AggregationTypes.getValuesForNumbers()
+                            : colType === 'date'
+                            ? AggregationTypes.getValuesForOthers()
+                            : AggregationTypes.getValuesForText(),
+                        minimumFractionDigits: col.type === 'integer' ? 0 : col.type === 'numeric' ? 2 : null,
+                        computed_column: 'no',
+                        visible: true,
+                        ia_visibility: 'FULL',
+                        column_granted_roles: [],
+                        row_granted_roles: [],
+                        tableCount: 0
+                    };
+                });
+
+                const tableDisplayName = normalizeName(safeName.replace(/_/g, ' '));
+                return {
+                    table_name: safeName,
+                    display_name: { default: tableDisplayName, localized: [] },
+                    description: { default: tableDisplayName, localized: [] },
+                    table_type: [],
+                    table_granted_roles: [],
+                    columns,
+                    relations: [],
+                    visible: true,
+                    tableCount: 0
+                };
+            });
+
+            const CC = allowCache ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
+
+            const datasource: IDataSource = new DataSource({
+                ds: {
+                    connection: {
+                        type: 'duckdb',
+                        host: null,
+                        port: null,
+                        database: safeFolderName,  // store only folder name, not absolute path
+                        schema: 'main',
+                        user: null,
+                        password: null
+                    },
+                    metadata: {
+                        model_name: name,
+                        model_description: description || '',
+                        model_id: '',
+                        model_granted_roles: [],
+                        optimized: !!optimize,
+                        cache_config: CC,
+                        model_owner: req.user._id,
+                        ia_visibility: 'FULL'
+                    },
+                    model: { tables }
+                }
+            });
+
+            const saved = await datasource.save();
+            return res.status(201).json({ ok: true, data_source_id: saved._id });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async AddDuckDbTable(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            const { fileName, csvContent, columnsConfig } = req.body;
+
+            if (!fileName || !csvContent || !columnsConfig) {
+                return next(new HttpException(400, 'fileName, csvContent and columnsConfig are required'));
+            }
+
+            const dataSource = await DataSource.findById(id);
+            if (!dataSource) {
+                return next(new HttpException(404, 'DataSource not found'));
+            }
+
+            const folderName = dataSource.ds?.connection?.database;
+            if (!folderName) {
+                return next(new HttpException(400, 'Invalid DuckDB datasource'));
+            }
+
+            const normalizeName = (str: string) =>
+                str.split('_').join(' ').toLowerCase()
+                    .split(' ').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+
+            const safeName = (fileName || 'file')
+                .replace(/\.csv$/i, '')
+                .replace(/[^a-zA-Z0-9_\-]/g, '_')
+                .toLowerCase();
+
+            const targetFolder = path.join(process.cwd(), 'duckdb', folderName);
+            if (!fs.existsSync(targetFolder)) {
+                fs.mkdirSync(targetFolder, { recursive: true });
+            }
+            fs.writeFileSync(path.join(targetFolder, `${safeName}.csv`), csvContent, 'utf8');
+
+            const columns = (columnsConfig || []).map((col: any) => {
+                let colType: string;
+                switch (col.type) {
+                    case 'integer':
+                    case 'numeric':
+                        colType = 'numeric'; break;
+                    case 'timestamp':
+                        colType = 'date'; break;
+                    default:
+                        colType = 'text';
+                }
+                return {
+                    column_name: col.field,
+                    column_type: colType,
+                    display_name: { default: normalizeName(col.field.replace(/_/g, ' ')), localized: [] },
+                    description: { default: normalizeName(col.field.replace(/_/g, ' ')), localized: [] },
+                    aggregation_type: colType === 'numeric'
+                        ? AggregationTypes.getValuesForNumbers()
+                        : colType === 'date'
+                        ? AggregationTypes.getValuesForOthers()
+                        : AggregationTypes.getValuesForText(),
+                    minimumFractionDigits: col.type === 'integer' ? 0 : col.type === 'numeric' ? 2 : null,
+                    computed_column: 'no',
+                    visible: true,
+                    ia_visibility: 'FULL',
+                    column_granted_roles: [],
+                    row_granted_roles: [],
+                    tableCount: 0
+                };
+            });
+
+            const tableDisplayName = normalizeName(safeName.replace(/_/g, ' '));
+            const newTable = {
+                table_name: safeName,
+                display_name: { default: tableDisplayName, localized: [] },
+                description: { default: tableDisplayName, localized: [] },
+                table_type: [],
+                table_granted_roles: [],
+                columns,
+                relations: [],
+                visible: true,
+                tableCount: 0
+            };
+
+            const tables = [...(dataSource.ds.model.tables || []), newTable];
+            await DataSource.findByIdAndUpdate(id, { 'ds.model.tables': tables });
+
+            return res.status(201).json({ ok: true, table: newTable });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async DeleteDuckDbCsv(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id, tableName } = req.params;
+            const dataSource = await DataSource.findById(id);
+            if (!dataSource) {
+                return next(new HttpException(404, 'DataSource not found'));
+            }
+            const folderName = dataSource.ds?.connection?.database;
+            if (!folderName) {
+                return next(new HttpException(400, 'Invalid DuckDB datasource'));
+            }
+            const csvPath = path.join(process.cwd(), 'duckdb', folderName, `${tableName}.csv`);
+            if (fs.existsSync(csvPath)) {
+                fs.unlinkSync(csvPath);
+            }
+            return res.status(200).json({ ok: true });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async AddOdooDataSource(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { name, description, url, db, username, password, optimize, allowCache } = req.body;
+
+            if (!name || !url || !db || !username || !password) {
+                return next(new HttpException(400, 'Se requieren: name, url, db, username, password'));
+            }
+
+            const folderPath = path.join(process.cwd(), 'duckdb', db);
+
+            await OdooApiService.downloadToFolder(
+                { url, db, username, password },
+                folderPath
+            );
+
+            // Generate DuckDB model from the downloaded CSV files
+            const duckConfig: any = { type: 'duckdb', database: db, schema: 'main' };
+            const conn = new DuckDBConnection(duckConfig);
+            const tables = await conn.generateDataModel(optimize ? 1 : 0, '');
+
+            DataSourceController.addOdooRelations(tables);
+            const odooLocale = resolveOdooLocale(req.body?.locale || req.headers?.['accept-language']);
+            applyOdooLabels(tables, odooLocale);
+
+            const CC = allowCache ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
+
+            const datasource: IDataSource = new DataSource({
+                ds: {
+                    connection: {
+                        type: 'odoo',
+                        host: url,
+                        port: null,
+                        database: db,
+                        schema: 'main',
+                        user: username,
+                        password: EnCrypterService.encrypt(password)
+                    },
+                    metadata: {
+                        model_name: name,
+                        model_description: description || '',
+                        model_id: '',
+                        model_granted_roles: [],
+                        optimized: !!optimize,
+                        cache_config: CC,
+                        model_owner: req.user._id,
+                        ia_visibility: 'FULL'
+                    },
+                    model: { tables }
+                }
+            });
+
+            const saved = await datasource.save();
+            return res.status(201).json({ ok: true, data_source_id: saved._id });
+
+        } catch (err: any) {
+            console.error('[Odoo] AddOdooDataSource error:', err.message);
+            return next(new HttpException(500, `Error creando datasource Odoo: ${err.message}`));
+        }
+    }
+
+    private static addOdooRelations(tables: any[]): void {
+        const byName = new Map<string, any>(tables.map(t => [t.table_name, t]));
+
+        const link = (
+            srcTable: string, srcCol: string,
+            tgtTable: string, tgtCol: string
+        ) => {
+            const src = byName.get(srcTable);
+            const tgt = byName.get(tgtTable);
+            if (!src || !tgt) return;
+
+            src.relations.push({
+                source_table: srcTable,
+                source_column: [srcCol],
+                target_table: tgtTable,
+                target_column: [tgtCol],
+                visible: true
+            });
+            tgt.relations.push({
+                source_table: tgtTable,
+                source_column: [tgtCol],
+                target_table: srcTable,
+                target_column: [srcCol],
+                visible: true
+            });
+        };
+
+        link('invoice_lines', 'invoice_id',     'invoices', 'id');
+        link('invoices',      'partner_id',     'partners', 'id');
+        link('invoices',      'salesperson_id', 'users',    'id');
+        link('invoice_lines', 'product_id',     'products', 'id');
+    }
+
+    static async AddHoldedDataSource(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { name, description, folderName, apiKey, optimize, allowCache } = req.body;
+
+            if (!name || !folderName || !apiKey) {
+                return next(new HttpException(400, 'Se requieren: name, folderName, apiKey'));
+            }
+
+            const folderPath = path.join(process.cwd(), 'duckdb', folderName);
+
+            await HoldedApiService.downloadToFolder({ apiKey }, folderPath);
+
+            const duckConfig: any = { type: 'duckdb', database: folderName, schema: 'main' };
+            const conn = new DuckDBConnection(duckConfig);
+            const tables = await conn.generateDataModel(optimize ? 1 : 0, '');
+
+            DataSourceController.addHoldedRelations(tables);
+            const holdedLocale = resolveHoldedLocale(req.body?.locale || req.headers?.['accept-language']);
+            applyHoldedLabels(tables, holdedLocale);
+
+            const CC = allowCache ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
+
+            const datasource: IDataSource = new DataSource({
+                ds: {
+                    connection: {
+                        type: 'holded',
+                        host: '',
+                        port: null,
+                        database: folderName,
+                        schema: 'main',
+                        user: '',
+                        password: EnCrypterService.encrypt(apiKey)
+                    },
+                    metadata: {
+                        model_name: name,
+                        model_description: description || '',
+                        model_id: '',
+                        model_granted_roles: [],
+                        optimized: !!optimize,
+                        cache_config: CC,
+                        model_owner: req.user._id,
+                        ia_visibility: 'FULL'
+                    },
+                    model: { tables }
+                }
+            });
+
+            const saved = await datasource.save();
+            return res.status(201).json({ ok: true, data_source_id: saved._id });
+
+        } catch (err: any) {
+            console.error('[Holded] AddHoldedDataSource error:', err.message);
+            return next(new HttpException(500, `Error creando datasource Holded: ${err.message}`));
+        }
+    }
+
+    private static addHoldedRelations(tables: any[]): void {
+        const byName = new Map<string, any>(tables.map(t => [t.table_name, t]));
+
+        const link = (
+            srcTable: string, srcCol: string,
+            tgtTable: string, tgtCol: string
+        ) => {
+            const src = byName.get(srcTable);
+            const tgt = byName.get(tgtTable);
+            if (!src || !tgt) return;
+
+            src.relations.push({
+                source_table: srcTable,
+                source_column: [srcCol],
+                target_table: tgtTable,
+                target_column: [tgtCol],
+                visible: true
+            });
+            tgt.relations.push({
+                source_table: tgtTable,
+                source_column: [tgtCol],
+                target_table: srcTable,
+                target_column: [srcCol],
+                visible: true
+            });
+        };
+
+        link('invoice_lines', 'invoice_id', 'invoices', 'id');
+        link('invoices',      'contact_id', 'contacts', 'id');
+        link('invoice_lines', 'product_id', 'products', 'id');
+        link('ledger',        'document_id', 'invoices', 'id');
+    }
+
+    static async GetDuckDbFolders(req: Request, res: Response, next: NextFunction) {
+        try {
+            const duckdbBaseFolder = path.join(process.cwd(), 'duckdb');
+            if (!fs.existsSync(duckdbBaseFolder)) {
+                return res.status(200).json({ ok: true, folders: [] });
+            }
+            const entries = fs.readdirSync(duckdbBaseFolder, { withFileTypes: true });
+            const folders = entries
+                .filter(e => e.isDirectory())
+                .map(e => e.name);
+            return res.status(200).json({ ok: true, folders });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async AddGoogleAnalyticsDataSource(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { name, description, propertyId, credentialsJson, folderName, optimize, allowCache } = req.body;
+
+            if (!name || !propertyId || !credentialsJson || !folderName) {
+                return next(new HttpException(400, 'Se requieren: name, propertyId, credentialsJson, folderName'));
+            }
+
+            const safeFolderName = folderName.replace(/[^a-zA-Z0-9_\-]/g, '_').toLowerCase();
+            const folderPath = path.join(process.cwd(), 'duckdb', safeFolderName);
+
+            await GA4ApiService.downloadToFolder(
+                { propertyId, credentialsJson },
+                folderPath
+            );
+
+            const duckConfig: any = { type: 'duckdb', database: safeFolderName, schema: 'main' };
+            const conn = new DuckDBConnection(duckConfig);
+            const tables = await conn.generateDataModel(optimize ? 1 : 0, '');
+
+            DataSourceController.addGA4Relations(tables);
+            const ga4Locale = extractGA4LocaleFromRequest(req);
+            applyGA4Labels(tables, ga4Locale);
+
+            const CC = allowCache ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
+
+            const datasource: IDataSource = new DataSource({
+                ds: {
+                    connection: {
+                        type: 'googleanalytics',
+                        host: propertyId,
+                        port: null,
+                        database: safeFolderName,
+                        schema: 'main',
+                        user: null,
+                        password: EnCrypterService.encrypt(credentialsJson)
+                    },
+                    metadata: {
+                        model_name: name,
+                        model_description: description || '',
+                        model_id: '',
+                        model_granted_roles: [],
+                        optimized: !!optimize,
+                        cache_config: CC,
+                        model_owner: req.user._id,
+                        ia_visibility: 'FULL'
+                    },
+                    model: { tables }
+                }
+            });
+
+            const saved = await datasource.save();
+            return res.status(201).json({ ok: true, data_source_id: saved._id });
+
+        } catch (err: any) {
+            console.error('[GA4] AddGoogleAnalyticsDataSource error:', err.message);
+            return next(new HttpException(500, `Error creando datasource Google Analytics: ${err.message}`));
+        }
+    }
+
+    private static addGA4Relations(tables: any[]): void {
+        const byName = new Map<string, any>(tables.map(t => [t.table_name, t]));
+
+        const link = (
+            srcTable: string, srcCol: string,
+            tgtTable: string, tgtCol: string
+        ) => {
+            const src = byName.get(srcTable);
+            const tgt = byName.get(tgtTable);
+            if (!src || !tgt) return;
+
+            src.relations.push({
+                source_table: srcTable,
+                source_column: [srcCol],
+                target_table: tgtTable,
+                target_column: [tgtCol],
+                visible: true
+            });
+            tgt.relations.push({
+                source_table: tgtTable,
+                source_column: [tgtCol],
+                target_table: srcTable,
+                target_column: [srcCol],
+                visible: true
+            });
+        };
+
+        link('sesiones',     'fecha', 'paginas',      'fecha');
+        link('sesiones',     'fecha', 'eventos',      'fecha');
+        link('sesiones',     'fecha', 'dispositivos', 'fecha');
+        link('sesiones',     'fecha', 'geografico',   'fecha');
     }
 
     static returnExternalFilter(req: Request) {

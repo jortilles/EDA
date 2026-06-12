@@ -19,7 +19,7 @@ export class MailService extends ApiService{
     return this.get(`${this.globalDSRoute}/credentials`);
   }
 
-  sendNow(): Observable<any> {//borrar
+  sendNow(): Observable<any> {//Delete
     return this.post(`${this.globalDSRoute}/send-now`, {});
   }
 

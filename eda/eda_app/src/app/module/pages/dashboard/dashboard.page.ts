@@ -19,7 +19,7 @@ import { CommonModule } from '@angular/common';
 import { AssistantService } from '@eda/services/api/assistant.service';
 import { EdaTitlePanelComponent, EdaTabsPanelComponent } from '@eda/components/component.index';
 
-// Imports del sidebar
+// Sidebar imports
 import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.service';
 import { DependentFilters } from '@eda/components/dependent-filters/dependent-filters.component';
 import { FilterDialogComponent } from '@eda/components/component.index';
@@ -202,8 +202,9 @@ export class DashboardPage implements OnInit {
       }
 
   ngOnDestroy() {
-    // Poner estilos como predefinidios
+    // Reset styles to defaults
     this.stylesProviderService.setStyles(this.stylesProviderService.generateDefaultStyles())
+    this.stylesProviderService.setDefaultBackgroundColor();
     this.stylesProviderService.loadingFromPalette = false;
     this.stopRefresh = true;
     this.dashboard.config.stopRefresh = true;
@@ -220,29 +221,29 @@ export class DashboardPage implements OnInit {
   
     private initializeGridsterOptions(): void {
     this.gridsterOptions = {
-      gridType: GridType.VerticalFixed, // Configuración general del Gridster : permite scroll vertical y los items generados son de tamaño fijo.
-      compactType: CompactType.None, // Controla la configuración de compactar en el gridster
-      displayGrid: DisplayGrid.OnDragAndResize, // Permite configurar la rejilla del gridster
-      pushItems: true, // Hace que los elementos se reorganicen automáticamente
-      avoidOverlapped: true, // Asegura que no haya solapamientos
+      gridType: GridType.VerticalFixed, // General Gridster configuration: enables vertical scrolling and generated items have fixed size.
+      compactType: CompactType.None, // Controls the compaction setting in gridster
+      displayGrid: DisplayGrid.OnDragAndResize, // Configures the gridster grid display
+      pushItems: true, // Makes elements automatically rearrange
+      avoidOverlapped: true, // Ensures there are no overlaps
       swap: true,
       draggable: {
         enabled: true,
         ignoreContent: true,
-        dragHandleClass: 'drag-handler' // Clase que hace que los elementos sean draggable
+        dragHandleClass: 'drag-handler' // Class that makes elements draggable
       },
       resizable: {
         enabled: true,
       },
       minCols: 40,
       maxCols: 40,
-      minRows: 30, // Se puede optimizar para diferentes pantallas, aún así, con 30 funciona bien
+      minRows: 30, // Can be optimized for different screens; 30 works well
       maxRows: 300,
-      margin: 2, // Reduce el margen entre celdas
-      fixedRowHeight: undefined, // Reduce el tamaño de la altura de las filas
-      fixedColWidth: undefined, // Ajusta también el ancho de las columnas
-      disableScrollHorizontal: true, // Desactiva scroll horizontal si es necesario
-      disableScrollVertical: true, // Desactiva scroll vertical si es necesario
+      margin: 2, // Reduces the margin between cells
+      fixedRowHeight: undefined, // Reduces the row height size
+      fixedColWidth: undefined, // Also adjusts the column width
+      disableScrollHorizontal: true, // Disables horizontal scroll if needed
+      disableScrollVertical: true, // Disables vertical scroll if needed
       itemChangeCallback: (item: GridsterItem) => this.onItemChange(item),
       itemResizeCallback: (item: GridsterItem) => this.onItemChange(item)
     };
@@ -258,15 +259,15 @@ export class DashboardPage implements OnInit {
     const cols = this.gridsterOptions.minCols!;
     const width = container.clientWidth;
     const mobileBreakpoint = this.gridsterOptions.mobileBreakpoint || 640;
-    //Si la visión es en movil. Gridsted pone los elementos apilados.
+    // If viewing on mobile, Gridster stacks the elements.
     //https://github.com/tiberiuzuld/angular-gridster2/blob/master/src/assets/gridTypes.md
     if (width < mobileBreakpoint) {
-      // En modo móvil: altura fija por celda para que los paneles tengan un tamaño razonable
+      // Mobile mode: fixed height per cell so panels have a reasonable size
       this.gridsterOptions.fixedRowHeight = 100;
     } else {
       let cellSize = Math.floor(width / cols);
       if(cellSize < 30){
-        // si estoy muy ajustado le doy un poco de altura.
+        // if the cell is very tight, give it a bit more height.
         cellSize = 30;
       }
       this.gridsterOptions.fixedRowHeight = cellSize;
@@ -286,9 +287,9 @@ export class DashboardPage implements OnInit {
       this.dashboard = dashboard;
       this.title = dashboard.config.title;
       this.applyToAllfilter = dashboard.config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
-      this.globalFilter?.initOrderDependentFilters(dashboard.config.orderDependentFilters || []); // Filtros dependientes
-      //this.globalFilter?.initGlobalFilters(dashboard.config.filters || []);// Filtres del dashboard
-      this.globalFilter?.initGlobalFilters( this.checkFiltersVisibility( dashboard.config.filters , data.datasource.model.tables ) ||[]);// Filtres del dashboard
+      this.globalFilter?.initOrderDependentFilters(dashboard.config.orderDependentFilters || []); // Dependent filters
+      //this.globalFilter?.initGlobalFilters(dashboard.config.filters || []);// Dashboard filters
+      this.globalFilter?.initGlobalFilters( this.checkFiltersVisibility( dashboard.config.filters , data.datasource.model.tables ) ||[]);// Dashboard filters
       this.initPanels(dashboard);
       this.sortPanelsForMobile();
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
@@ -388,14 +389,14 @@ export class DashboardPage implements OnInit {
     }
     
 
-  // Método que asigna los estilos
+  // Method that assigns styles
   public assignStyles() {
-    // Panel del título del informe    
+    // Report title panel
     this.reportPanel = {
       height: 5 + (this.dashboard.config.styles.title.fontSize*0.25) + 'vh',
     };
     
-    // Texto del título del informe
+    // Report title text
     this.reportTitle = {
       color: this.dashboard.config.styles.title.fontColor,
       'font-size': (20 + this.dashboard.config.styles.title.fontSize * 3) + 'px',
@@ -406,7 +407,7 @@ export class DashboardPage implements OnInit {
                       : 'flex-start'  
     };
 
-    // Panel del título del chart
+    // Chart title panel
     const bgImage = this.dashboard.config.styles.backgroundImage;
     this.backgroundColor = {
       background: this.dashboard.config.styles.backgroundColor,
@@ -418,12 +419,12 @@ export class DashboardPage implements OnInit {
       } : {})
     };
 
-    // Si hay imagen de fondo, los paneles se muestran con 80% de opacidad
+    // If there is a background image, panels are shown at 80% opacity
     const panelBg = bgImage
       ? this.hexColorToRgba(this.dashboard.config.styles.panelColor, 0.5)
       : this.dashboard.config.styles.panelColor;
 
-    // Texto del título del chart
+    // Chart title text
     this.panelTitle = {
       color: this.dashboard.config.styles.panelTitle.fontColor,
       'font-size': (20 + this.dashboard.config.styles.panelTitle.fontSize * 3) + 'px',
@@ -440,7 +441,7 @@ export class DashboardPage implements OnInit {
 
     this.gridsterItemStyle = bgImage ? { 'background-color': panelBg } : {};
 
-    // Texto de los tabs (como panelTitle pero con display:block y text-align)
+    // Tab text (like panelTitle but with display:block and text-align)
     this.panelTabText = {
       background: panelBg,
       color: this.dashboard.config.styles.panelTitle.fontColor,
@@ -532,12 +533,12 @@ export class DashboardPage implements OnInit {
   public canIedit(): boolean {
     let result: boolean = false;
     result = this.userService.isAdmin;
-    // si no es admin...
+    // if not admin...
     if (!result) {
         if (this.dashboard.onlyIcanEdit) {
             result = this.userService.user._id === this.dashboard.user
         } else {
-            // Usuari anonim no pot editar
+            // Anonymous user cannot edit
             result = this.userService.user._id !== '135792467811111111111112';
         }
 
@@ -563,15 +564,15 @@ export class DashboardPage implements OnInit {
     //not saved alert message
     this.dashboardService._notSaved.next(true);
 
-    // Simula el click en el btn
+    // Simulate a click on the btn
     const interval = setInterval(() => {
       if (this.globalFilter.loading === false) {
-          clearInterval(interval); // detener el polling
+          clearInterval(interval); // stop the polling
           let btn = document.getElementById('dashFilterBtn');
           if (btn) btn.click();
           else this.reloadPanels();
       }
-    }, 100); // revisa cada 100ms
+    }, 100); // checks every 100ms
   }
   
   public async reloadPanels(): Promise<void> {
@@ -581,7 +582,7 @@ export class DashboardPage implements OnInit {
 
         await panel.runQueryFromDashboard(true);
 
-        // Actualizo el panelChart si existe
+        // Update panelChart if it exists
         if (panel.panelChart) {
           try {
             panel.panelChart?.updateComponent();
@@ -592,7 +593,7 @@ export class DashboardPage implements OnInit {
       }
     });
 
-    // Espero a que terminen todos en paralelo
+    // Wait for all to finish in parallel
     await Promise.all(tasks);
   }
 
@@ -607,7 +608,7 @@ export class DashboardPage implements OnInit {
         (!event?.data.panel.content.query.query.queryMode || event?.data.panel.content.query.query.queryMode === 'EDA');
     }
 
-    // Cancelamos evento si la columna es navegable
+    // Cancel event if the column is navigable
     if(this.checkNavigableColumn(event)) return;
 
     if (modeEDA && event.code === "ADDFILTER" && this.validateDashboard('GLOBALFILTER') && filtersEnabled && !isImportedPanel) {
@@ -644,41 +645,41 @@ export class DashboardPage implements OnInit {
     }
   }
 
-  // FUNCIONES DE FILTROS DINAMICOS 
-  // FUNCIONES DE FILTROS DINAMICOS 
+  // DYNAMIC FILTER FUNCTIONS
+  // DYNAMIC FILTER FUNCTIONS
 
-   //Maneja el caso cuando ya existe un filtro
+   // Handles the case when a filter already exists
   private async handleExistingFilter(existingFilter: any, data: any, table: any, column: any): Promise<void> {
     const filterName = existingFilter.column?.label || existingFilter.selectedColumn?.display_name?.default ||"default";
     
-    if (existingFilter.selectedItems.length === 0) { // Filtro existente vacio
+    if (existingFilter.selectedItems.length === 0) { // Existing filter is empty
       this.handleEmptyFilter(existingFilter, data);
-    } else if (existingFilter.selectedItems.length === 1) { // Filtro existente 1 valor
+    } else if (existingFilter.selectedItems.length === 1) { // Existing filter has 1 value
       await this.handleSingleValueFilter(existingFilter, filterName, data, table, column);
-    } else { // Filtro existente con valores
+    } else { // Existing filter has multiple values
       this.handleMultipleValuesFilter(existingFilter, filterName, data);
     }
   }
 
-   // CASO: Filtro vacío → Añadir el valor
+   // CASE: Empty filter → Add the value
   private handleEmptyFilter(existingFilter: any, data: any): void {
     existingFilter.selectedItems = [data.label];
     this.globalFilter.applyGlobalFilter(existingFilter);
     this.reloadOnGlobalFilter();
   }
 
-   // CASO: Filtro con 1 solo valor
+   // CASE: Filter with only 1 value
   private async handleSingleValueFilter(existingFilter: any, filterName: string, data: any, table: any, column: any ): Promise<void> {
     const backupFilter = this.lastMultipleFilters.find(f => f.filterName === filterName);
 
-    if (backupFilter) { // Tenemos valor previo del filtro
+    if (backupFilter) { // We have a previous filter value
       this.restoreFilterFromBackup(existingFilter, filterName, backupFilter);
-    } else { // No tenemos valor previo
+    } else { // No previous value
       await this.removeOrClearFilter(existingFilter, data, table, column);
     }
   }
 
-   // Restaura el filtro desde el backup guardado
+   // Restores the filter from the saved backup
   private restoreFilterFromBackup(existingFilter: any, filterName: string, backupFilter: any): void {
     existingFilter.selectedItems = [...backupFilter.filter.selectedItems];
     this.lastMultipleFilters = this.lastMultipleFilters.filter(f => f.filterName !== filterName);
@@ -686,7 +687,7 @@ export class DashboardPage implements OnInit {
     this.reloadOnGlobalFilter();
   }
 
-   // Elimina o vacía el filtro según sea fromChart o no
+   // Removes or clears the filter depending on whether it is fromChart or not
   private async removeOrClearFilter(existingFilter: any, data: any, table: any, column: any): Promise<void> {
     if (existingFilter.fromChart) {
       await this.deleteFilterCompletely(existingFilter, data, table, column);
@@ -695,40 +696,40 @@ export class DashboardPage implements OnInit {
     }
   }
 
-   // Elimina completamente un filtro fromChart
+   // Completely removes a fromChart filter
   private async deleteFilterCompletely(existingFilter: any, data: any, table: any, column: any): Promise<void> {
     const filterTable = existingFilter.selectedTable?.table_name || existingFilter.table?.value;
     const filterColumn = existingFilter.selectedColumn?.column_name || existingFilter.column?.value?.column_name;
 
-    // Limpiar filtro de todos los paneles
+    // Clear filter from all panels
     this.cleanFilterFromAllPanels(filterTable, filterColumn);
 
-    // Limpiar del panel actual
+    // Clear from the current panel
     this.cleanFilterFromPanel(data.panel, filterTable, filterColumn);
 
-    // Eliminar del globalFilter
+    // Remove from globalFilter
     this.globalFilter.removeGlobalFilter(existingFilter, true);
     this.reloadOnGlobalFilter();
   }
 
-   // Limpia el filtro de todos los paneles del dashboard
+   // Clears the filter from all dashboard panels
   private cleanFilterFromAllPanels(filterTable: string, filterColumn: string): void {
     this.edaPanels['_results'].forEach(p => {
-      // Limpiar de panel.content
+      // Clear from panel.content
       if (p.panel?.content?.query?.query?.filters) {
         p.panel.content.query.query.filters = p.panel.content.query.query.filters.filter(
           f => !(f.filter_table === filterTable && f.filter_column === filterColumn)
         );
       }
 
-      // Limpiar de inject.content
+      // Clear from inject.content
       if (p.inject?.content?.query?.query?.filters) {
         p.inject.content.query.query.filters = p.inject.content.query.query.filters.filter(
           f => !(f.filter_table === filterTable && f.filter_column === filterColumn)
         );
       }
 
-      // Limpiar de globalFilters del panel
+      // Clear from panel globalFilters
       if (p.globalFilters && Array.isArray(p.globalFilters)) {
         p.globalFilters = p.globalFilters.filter(
           f => !(
@@ -738,7 +739,7 @@ export class DashboardPage implements OnInit {
         );
       }
 
-      // Limpiar de panelChart.inject si existe
+      // Clear from panelChart.inject if it exists
       if (p.panelChart?.inject?.content?.query?.query?.filters) {
         p.panelChart.inject.content.query.query.filters = p.panelChart.inject.content.query.query.filters.filter(
           f => !(f.filter_table === filterTable && f.filter_column === filterColumn)
@@ -747,7 +748,7 @@ export class DashboardPage implements OnInit {
     });
   }
 
-   // Limpia el filtro de un panel específico
+   // Clears the filter from a specific panel
   private cleanFilterFromPanel(panel: any, filterTable: string, filterColumn: string): void {
     if (panel?.content?.query?.query?.filters) {
       panel.content.query.query.filters = panel.content.query.query.filters.filter(
@@ -756,16 +757,16 @@ export class DashboardPage implements OnInit {
     }
   }
 
-   // Vacía los valores de un filtro sin eliminarlo (para filtros NO fromChart)
+   // Clears filter values without removing it (for non-fromChart filters)
   private clearFilterValues(existingFilter: any): void {
     existingFilter.selectedItems = [];
     this.globalFilter.applyGlobalFilter(existingFilter);
     this.reloadOnGlobalFilter();
   }
 
-   // CASO: Filtro con múltiples valores → Guardar backup y filtrar por uno solo
+   // CASE: Filter with multiple values → Save backup and filter by a single one
   private handleMultipleValuesFilter(existingFilter: any, filterName: string, data: any): void {
-    // Guardar backup si no existe
+    // Save backup if it doesn't exist
     if (!this.lastMultipleFilters.find(f => f.filterName === filterName)) {
       this.lastMultipleFilters.push({
         filterName: filterName,
@@ -773,13 +774,13 @@ export class DashboardPage implements OnInit {
       });
     }
 
-    // Filtrar solo por el valor clickeado
+    // Filter only by the clicked value
     existingFilter.selectedItems = [data.label];
     this.globalFilter.applyGlobalFilter(existingFilter);
     this.reloadOnGlobalFilter();
   }
 
-   // Crea un nuevo filtro cuando no existe
+   // Creates a new filter when none exists
   private async handleNewFilter(table: any, column: any, data: any, config: any): Promise<void> {
     this.chartFilter = this.createChartFilter(table, column, data.label, config);
     data.panel.content.query.query?.filters.push(
@@ -796,22 +797,22 @@ export class DashboardPage implements OnInit {
 
   
 /**
- * Comprueba la configuración de seguridad de los filtros y pone la columna a invisible si el filtro no es visible para el usuario por motivos de filtro de seguridad
- * @param filters - recibe el array de filtros del informe
- * @param tables - recibe el array de tablas del modelo.
- * @returns  - el array de filtros del informe informando cual es oculto por la seguridad
+ * Checks the security configuration of filters and hides the column if the filter is not visible to the user due to security filter reasons
+ * @param filters - receives the report's filter array
+ * @param tables - receives the model's table array
+ * @returns - the report's filter array indicating which ones are hidden by security
  */
   private checkFiltersVisibility(filters, tables) {
     if (filters && filters.length > 0) {
       filters.forEach((f) => {
-        // Revisar si el filtro esta cread en modo EDA2 (modo arbol)
+        // Check if the filter was created in EDA2 mode (tree mode)
         if (f.selectedColumn && f.selectedTable) {
           f.selectedColumn.visible = (
             (tables.filter((t) => t.table_name == f.selectedTable.table_name)[0]?.visible == true) &&
             (tables.filter((t) => t.table_name == f.selectedTable.table_name)[0]?.columns.filter((c) => c.column_name == f.selectedColumn.column_name)[0]?.visible == true)
           )
         }
-        // si selectedColumn no esta definido, el filtro se crea en modo EDA
+        // if selectedColumn is not defined, the filter is created in EDA mode
         else {
           f.column.value.visible = (
             (tables.filter((t) => t.table_name == f.table.value)[0]?.visible == true) &&
@@ -874,18 +875,18 @@ export class DashboardPage implements OnInit {
       return filter;
     }
     
-      //FALSE ==> recogemos los paneles que no tengan habilitado el click 
-        // Modificar propiedades isGlobal? applyToAll? panelList? 
+      //FALSE ==> collect panels that do not have click enabled
+        // Modify properties isGlobal? applyToAll? panelList?
 
   }
 
   deleteDynamicFilter(chartToRemove: any, table: any, filterName: any) {
-    // Borramos el filtro existente
+    // Delete the existing filter
     let filterToAddIndx = this.lastFilters.findIndex(element => element.filterName === chartToRemove.column.label &&
       element.filter.table.label === chartToRemove.table.label)
-    // Borramos del global filter el filtro a borrar fromChart
+    // Remove the fromChart filter from the global filter
     this.globalFilter.removeGlobalFilterOnClick(chartToRemove, true);
-    // Recuperamos el filtro correspondiente y lo eliminamos de los filtros guardados
+    // Retrieve the corresponding filter and remove it from the saved filters
     if (filterToAddIndx !== -1 ) { 
       this.globalFilter.onGlobalFilterAuto(this.lastFilters[filterToAddIndx].filter, table.table_name)
       this.lastFilters.splice(filterToAddIndx, 1);
@@ -893,13 +894,13 @@ export class DashboardPage implements OnInit {
   }
 
   recoverDynamicFilter(chartToRemove?: any, existingFilter?: any, filterName?: string) {
-    // Restaurar selectedItems desde el filtro guardado
+    // Restore selectedItems from the saved filter
     chartToRemove.selectedItems = [...existingFilter.filter.selectedItems];
 
-    // Eliminar ese filtro del array
+    // Remove that filter from the array
     this.lastMultipleFilters = this.lastMultipleFilters.filter(f => f.filterName !== filterName);
 
-    // Aplicar filtro global
+    // Apply global filter
     this.globalFilter.applyGlobalFilter(chartToRemove);
   }
 
@@ -911,7 +912,7 @@ export class DashboardPage implements OnInit {
       !== undefined;
 
     if(anyChartToRemove && filterInPanel) {
-      // aunque coincida, si este no esta aplicado en el propio panel como filtro, crearemos uno de nuevo
+      // even if it matches, if it is not applied as a filter in the panel itself, we will create a new one
       return false;
     }   
     return true;
@@ -936,7 +937,7 @@ export class DashboardPage implements OnInit {
           const panelFilters = element.content.query.query.filters;
   
           element.globalFilterMap.forEach(filterLinkId => {
-            // Buscar el filtro del dashboard al que apunta targetId
+            // Find the dashboard filter that targetId points to
             const dashboardFilterToApply = dashboard.config.filters.find(filter => filter.id === filterLinkId.targetId);
             const sourceFilter = panelFilters.find(f => f.filter_id === filterLinkId.sourceId);
             const valueToApply = dashboardFilterToApply.selectedItems;
@@ -984,7 +985,7 @@ export class DashboardPage implements OnInit {
 
         this.dashboardService._notSaved.next(true);
 
-        // Simula el click en el btn
+        // Simulate a click on the btn
         setTimeout(() => {
           let btn = document.getElementById('dashFilterBtn');
           if (btn) btn.click();
@@ -1006,7 +1007,7 @@ export class DashboardPage implements OnInit {
     };
   }
 
-  /** Selecciona el modo en el que se permitirá hacer consultas. Teniendo en cuenta que no se pueden mezclar consultas de tipo EDA y Arbol en un mismo informe. */
+  /** Selects the mode in which queries will be allowed. EDA and Tree type queries cannot be mixed in the same report. */
   private setPanelsQueryMode(): void {
     const treeQueryMode = this.panels.some((p) => p.content?.query?.query?.queryMode === 'EDA2');
     const standardQueryMode = this.panels.some((p) => p.content?.query?.query?.queryMode === 'EDA');
@@ -1156,7 +1157,7 @@ public startCountdown(seconds: number) {
 
   let counter = seconds;
 
-  // Evita intervalos duplicados
+  // Avoid duplicate intervals
   clearInterval(this.countdownInterval);
   this.countdownInterval = setInterval(() => {
     if (this.dashboard.config.stopRefresh) {
@@ -1166,7 +1167,7 @@ public startCountdown(seconds: number) {
     counter--; 
     if (counter < 0) {
       this.onResetWidgets();
-      counter = seconds; // Cambio de recursividad a contador
+      counter = seconds; // Changed from recursion to counter
     }
   }, 1000);
 }
@@ -1196,21 +1197,21 @@ public startCountdown(seconds: number) {
 
   triggerTimer() {
 
-    // Si hay tiempo config lo paramos
+    // If there is a configured time, stop it
     this.dashboard.config.stopRefresh = true;
     clearInterval(this.countdownInterval);
 
     //Give time to stop counter if any
     setTimeout(() => {
         const refreshTime = this.dashboard.config.refreshTime;
-        // si no hay tiempo de refresh, no lanzamos el contador
+        // if there is no refresh time, do not start the counter
         if (!refreshTime) {
             this.dashboard.config.stopRefresh = true;
             return;
         }
-        // si el tiempo de refresh es menor a 5 segundos, lo ponemos a 5 segundos         if (refreshTime < 5) this.dashboard.config.refreshTime = 5;
+        // if the refresh time is less than 5 seconds, set it to 5 seconds         if (refreshTime < 5) this.dashboard.config.refreshTime = 5;
         this.dashboard.config.stopRefresh = false;
-        // lanzamos el contador
+        // start the counter
         this.startCountdown(this.dashboard.config.refreshTime);
     }, 2000);
   }
@@ -1237,17 +1238,17 @@ public startCountdown(seconds: number) {
     const filterBy = event.data?.filterBy;
     if (['doughnut', 'polarArea', 'bar', 'line', 'radar'].includes(chartType)) {
       if (edaChart === 'stackedbar100') {
-        // Para stackedbar100, un label es un valor, no una columna de la tabla, no puede ser filterby.
-        // La ultima columna de texto es el valor que buscamos
+        // For stackedbar100, a label is a value, not a table column, and cannot be filterby.
+        // The last text column is the value we are looking for
         const textColumns = queries.filter(q => q.column_type === 'text');
-        // si hay dos columnas de texto, la segunda es el valor, si no, la primera(y unica) es el valor
+        // if there are two text columns, the second is the value; otherwise, the first (and only) is the value
         return textColumns.length > 1 ? textColumns[1] : textColumns[0];
       }
       const queryFiltered = queries.find(q => q.display_name?.default === filterBy);
       if (queryFiltered?.column_type === 'numeric') {
         return queries.find(q => q.column_type === 'text');
       }
-      else if (event.data.query.length > 2) // Si la query tiene más de dos valores en barras, necesitamos redefinir el filterBy
+      else if (event.data.query.length > 2) // If the query has more than two values in bars, we need to redefine filterBy
         return event.data.query.find((query: any) => query?.display_name?.default === event.data.query[0].display_name.default);
       else
         return event.data.query.find((query: any) => query?.display_name?.default === event.data.filterBy);
@@ -1256,33 +1257,33 @@ public startCountdown(seconds: number) {
       return event.data.query.find((query: any) => query?.column_name === event.data.filterBy);
     }
     else {
-      //Si el evento es de un chart de la libreria D3Chart o Leaflet
+      // If the event is from a D3Chart or Leaflet library chart
         return event.data.query.find((query: any) => query?.column_name?.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);    
 //        return event.data.query.find((query: any) => query?.display_name?.default.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);    
     }
   }
   
   //----------------------------------------//
-  //--Revisar si es necesario o se puede eliminar--//
-  // Obtiene el item que se encuentra en la parte más inferior del gridster -- Revisar si es necesario
+  //-- Check if this is needed or can be removed --//
+  // Gets the item at the bottommost position of the gridster -- Check if this is needed
   getBottomMostItem(): GridsterItem | undefined {
       let bottomMostItem: GridsterItem | undefined;
-      let maxBottom = -1; // Inicializamos con un valor bajo
+      let maxBottom = -1; // Initialize with a low value
 
       for (let item of this.panels) {
-          // Calculamos la posición final en Y (bottom) del ítem
+          // Calculate the final Y position (bottom) of the item
           const bottom = item.y + item.rows;
-  
-          // Si el ítem actual es más bajo, lo actualizamos
+
+          // If the current item is lower, update it
           if (bottom > maxBottom) {
           maxBottom = bottom;
           bottomMostItem = item;
           }
       }
-      return bottomMostItem; // El item de la posición mas inferior de todo el gridster
+      return bottomMostItem; // The item at the lowest position in the entire gridster
   }
 
-  // Función que cambia el valor de la altura del gridster cada vez que hay un cambio en el elemento
+  // Function that updates the gridster height value each time an element changes
   onItemChange(item: GridsterItem): void {
     if (this.panels) {
       const rowHeight = this.gridsterOptions.fixedRowHeight || 150;
@@ -1320,7 +1321,7 @@ public startCountdown(seconds: number) {
   }
 
 
-// Función para detectar el filtro clicado
+// Function to detect the clicked filter
   private getChartClicked(f: any, tableName: string, columnName: string, label?: any): boolean {
     const norm = (val: any) => val?.toString()?.normalize("NFD")?.replace(/[\u0300-\u036f]/g, "")?.toLowerCase()?.trim();
 
@@ -1335,12 +1336,12 @@ public startCountdown(seconds: number) {
     const tableMatch = newTable === targetTable || oldTable === targetTable;
     const columnMatch = newColumn === targetColumn || oldColumn === targetColumn;
 
-    // Si no se proporciona label, solo verificar tabla y columna
+    // If no label is provided, only verify table and column
     if (!label) {
       return tableMatch && columnMatch;
     }
 
-    // Si se proporciona label, también verificar que coincida
+    // If a label is provided, also verify that it matches
     const targetLabel = norm(label);
     let labelMatch = false;
 
@@ -1355,8 +1356,8 @@ public startCountdown(seconds: number) {
     return tableMatch && columnMatch && labelMatch;
   }
 
-  // Funciones auxiliares para mobile
-  private readonly MOBILE_MARGIN = 8; // debe coincidir con margin-bottom del CSS
+  // Auxiliary functions for mobile
+  private readonly MOBILE_MARGIN = 8; // must match the margin-bottom in the CSS
   private mobileResizeObserver: ResizeObserver | null = null;
 
   private updateMobileHeight(): void {
@@ -1398,18 +1399,18 @@ public startCountdown(seconds: number) {
     }
   }
 
-  // Función para comprobar si la columna clicada es navegable
+  // Function to check if the clicked column is navigable
   public checkNavigableColumn(event: any): boolean {
     const columnClicked = event?.data?.filterBy;
     if (!columnClicked) return false;
 
-    // Child-nav: la columna es padre o hijo de un enlace downChild → no filtrar al hacer clic
+    // Child-nav: the column is a parent or child of a downChild link → do not filter on click
     const navigationLinks: any[] = event?.data?.panel?.content?.navigationLinks || [];
     const linkedParentColumnNames = navigationLinks.map((link: any) => link.parentColumn);
     const linkedChildColumnNames = navigationLinks.map((link: any) => link.childColumn);
     if ([...linkedParentColumnNames, ...linkedChildColumnNames].includes(columnClicked)) return true;
 
-    // Date-nav: la columna tiene dateNav=true → tampoco filtrar al hacer clic
+    // Date-nav: the column has dateNav=true → also do not filter on click
     const fields: any[] = event?.data?.panel?.content?.query?.query?.fields || [];
     return fields.some((f: any) => f.column_name === columnClicked && f.dateNav === true);
   }

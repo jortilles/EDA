@@ -23,7 +23,7 @@ export class EdaListComponent implements OnInit {
     setTimeout(() => {
       console.log(this.templates);
       console.log(this.rows)
-      // Mapeamos los templates usando su key
+      // Map templates using their key
       this.columns.forEach(column => {
         const template = this.templates.find(tmpl => (tmpl as any)._declarationTContainer?.localNames.includes(column.key));
         if (template) {

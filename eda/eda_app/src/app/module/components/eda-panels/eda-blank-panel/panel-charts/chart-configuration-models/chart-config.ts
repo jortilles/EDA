@@ -12,10 +12,11 @@ import { SunburstConfig } from './sunburst-config';
 import { BubblechartConfig } from './bubblechart.config';
 import { TreeTableConfig } from './treeTable-config';
 import { KpiTrendConfig } from './kpi-trend-config';
+import { KpiDeviationConfig } from './kpi-deviation-config';
 
 type AnyChartConfig = ChartJsConfig | TableConfig | KpiConfig | DynamicTextConfig | MapConfig | SankeyConfig
     | TreeMapConfig | TreeTableConfig | ScatterConfig | KnobConfig | FunnelConfig | BubblechartConfig
-    | SunburstConfig | KpiTrendConfig;
+    | SunburstConfig | KpiTrendConfig | KpiDeviationConfig;
 
 export class ChartConfig {
   private config: AnyChartConfig;

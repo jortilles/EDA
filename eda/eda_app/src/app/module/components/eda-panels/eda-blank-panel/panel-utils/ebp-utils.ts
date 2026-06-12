@@ -102,6 +102,10 @@ export const EbpUtils = {
         str = $localize`:@@chartInfoKpiTrend:KPI Tendencia necesita una columna de fecha en formato mes y una columna numérica`;
         description += `\n${str}`;
         break;
+      case 'kpideviation':
+        str = $localize`:@@chartInfoKpiDeviation:KPI Desviación necesita dos columnas numéricas: valor actual y valor de referencia`;
+        description += `\n${str}`;
+        break;
       default:
         description = $localize`:@@chartInfo1:Los datos seleccionados no permiten utilizar este gráfico.`;
         break;
@@ -206,6 +210,9 @@ export const EbpUtils = {
         break;
       case 'kpitrend':
         description = 'trending_up';
+        break;
+      case 'kpideviation':
+        description = 'linear_scale';
         break;
     }
 

@@ -37,7 +37,7 @@ export abstract class EdaDialog2 {
     @Input() disableNextStep: boolean = false;
     @Input() showCheckExpression: boolean = false;
 
-    // Mapa estándar de siglas a píxeles
+    // Standard acronym-to-pixel map
     protected sizeMap: Record<string, string> = {
         lg: '1024px',
         md: '768px',

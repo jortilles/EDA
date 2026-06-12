@@ -135,14 +135,14 @@
     display: flex;
 }
 
-/* Botón izquierdo (OR): sin borde derecho */
+/* Left button (OR): no right border */
 .small-button .p-selectbutton .p-button:first-child {
     border-top-right-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
     border-right: none !important;
 }
 
-/* Botón derecho (AND): sin borde izquierdo */
+/* Right button (AND): no left border */
 .small-button .p-selectbutton .p-button:last-child {
     border-top-left-radius: 0 !important;
     border-bottom-left-radius: 0 !important;

@@ -117,9 +117,9 @@ export class MapUtilsService extends ApiService {
     linkedDashboardProps: LinkedDashboardProps,
     mapActualConfig: any[],
   ): void => {
-    //Puede tener categoría o no  por lo que el set de datos es longitud, latitutd, [Categoria] , valor.
-    // por eso se pone el numericValue como un valor relativo.
-    //Cogemos el primer valor numérico encontrado posterior a latlng como radio
+    // It may or may not have a category, so the dataset is longitude, latitude, [category], value.
+    // Therefore, numericValue is used as a relative value.
+    // We take the first numeric value found after lat/lng as the radius.
     let numericValue: number;
     let smallestValue: number = Infinity;
     mapActualConfig["groups"] = mapActualConfig["groups"].reverse().map(function (v) {return v / 10;});
@@ -127,7 +127,7 @@ export class MapUtilsService extends ApiService {
     this.layerGroup.clearLayers();
     this.labelGroup.clearLayers();
 
-    //Encontrar campo numerico y menor valor
+    // Find numeric field and minimum value
     for (const d of data) {
       let n = 0;
       d.forEach((label: any) => {
@@ -141,11 +141,11 @@ export class MapUtilsService extends ApiService {
 
 
     for (const d of data) {
-      //Caso de Valor menor
+      // Lower value case
       if (d[numericValue] === smallestValue) this.isSmallestValue = true;
       else this.isSmallestValue = false;
 
-      //Configuración del circulo
+      // Circle configuration
       const maxValue = Math.max(...data.map((x) => x[numericValue]), 0);
       const radius =
         typeof d[numericValue] === "number"
@@ -247,7 +247,7 @@ export class MapUtilsService extends ApiService {
     }
     return `` + div;
   };
-  // Esta función es para evitar los petes del los nulos de  row[labelIndex].toUpperCase().replace(/\s/g, '')
+  // This function is to prevent crashes caused by null values row[labelIndex].toUpperCase().replace(/\s/g, '')
   private labelProcessingHelper(val: any) {
     let res = "";
     try {
@@ -298,7 +298,7 @@ export class MapUtilsService extends ApiService {
   };
 
   public getColor = (radius: number, length: number, colorLimits: string[]) => {
-    //Generamos la array de colores dependiendo del número de datos y el init & final color. 
+    // Generate the color array based on the number of data points and the initial & final color.
     if (this.isSmallestValue) return colorLimits[0];
     let colorArray: string[];
     colorArray = this.generateColorArray(length, colorLimits);
@@ -306,15 +306,15 @@ export class MapUtilsService extends ApiService {
   };
 
   public getLogColor = (radius: number, colorLimits: string[], logScale: number[]) => {
-    //Generamos la array logaritmica de colores dependiendo del número de datos y el init & final color.
+    // Generate a logarithmic color array based on the number of data points and the initial & final color.
     const color: string = this.generateColorLogArray(colorLimits, radius, logScale);
     return color;
   };
 
   private generateColorLogArray(colors: string[], value: any, logScale: number[]) {    
-    //Creación de array gradiente
+    // Gradient array creation.
     const colorGradient: string[] = this.getArrayGradient(colors, logScale.length); 
-    //Asignación de colores por valores
+    // Color assignment by values
     const index = this.getLogRange(value, logScale);
     return colorGradient[index];
   }
@@ -340,24 +340,24 @@ export class MapUtilsService extends ApiService {
   }
 
   private generateColorArray(length: number, colors: string[]) {
-    //Transformamos a RGB para tener valores numéricos sobre los que dividir entre número de data.
-    //Tras dividir, el codigo rgb correspondiente se transforma a HEX y se retorna (se podría trabajar con rgb)
+    // We convert to RGB to obtain numeric values that can be divided by the number of data points.
+    // After dividing, the corresponding RGB code is converted to HEX and returned (RGB could also be used directly).
     let gradient = [];
 
     for (let i = 0; i < length - 1; i++) {
       const factor = i / length;
-      //Construcción codigo rgb con start color, final color y un múltiple
+      // RGB code construction using start color, end color, and a multiplier
       const r = this.interpolate(this.hexToRgb(colors[1]).r,this.hexToRgb(colors[0]).r,factor);
       const g = this.interpolate(this.hexToRgb(colors[1]).g,this.hexToRgb(colors[0]).g,factor);
       const b = this.interpolate(this.hexToRgb(colors[1]).b,this.hexToRgb(colors[0]).b,factor);
       //RGB to HEX
       gradient.push(this.rgbToHex(r, g, b));
     }
-    //Valor devuelto en codigo HEX
+    // Returned value in HEX format
     return gradient;
   }
 
-  //Funciones de conversión
+  // Conversion functions
   private hexToRgb(hex: string) {
     const bigint = parseInt(hex.slice(1), 16);
     return {
@@ -371,7 +371,7 @@ export class MapUtilsService extends ApiService {
     return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
   }
 
-  //Funcion para coger valor intermedio
+  // Function to get intermediate value
   private interpolate(start: number, end: number, factor: number) {
     return Math.round(start + (end - start) * factor);
   }

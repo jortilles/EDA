@@ -5,16 +5,16 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
-// Componentes
+// Components
 import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 
-// Interfaz de sugerencia de gráficos con el asistente IA
+// Chart suggestion interface for the AI assistant
 interface ChartSuggestion {
     type: string;
     subType: string;
     label: string;
 }
-// Interfaz de mensajes del chat con IA
+// AI chat message interface
 interface ChatMessage {
     id?: string | number;
     role: 'user' | 'assistant' | 'system' | 'error';
@@ -41,7 +41,7 @@ export class PromptComponent implements OnInit, AfterViewInit {
     @Output() principalTable: EventEmitter<any> = new EventEmitter();
     @Output() chartSelected = new EventEmitter<{ type: string, subType: string }>();
 
-    // Variable almacenada temporalmente en el EDA-BLANK-PANEL
+    // Variable temporarily stored in EDA-BLANK-PANEL
     @Input() messages: ChatMessage[];
     @Output() messagesChange = new EventEmitter<ChatMessage[]>();
 
@@ -51,18 +51,18 @@ export class PromptComponent implements OnInit, AfterViewInit {
     sending = false;
     suggestions: string[] = [];
     loadingSuggestions = false;
-    schema: any[] = [] ; // Esquema de todas las tablas y sus columnas
+    schema: any[] = [] ; // Schema of all tables and their columns
     firstTime: boolean = true;
     private shouldAutoScroll: boolean = true;
     loading: boolean = false;
     isCopied: boolean = false;
 
-    // Estado de resolución de filtros: se activa cuando el backend responde con awaiting_resolution o awaiting_selection
+    // Filter resolution state: activated when the backend responds with awaiting_resolution or awaiting_selection
     private resolutionState: { options: string[], unresolvedFilter: any, pendingResult: any } | null = null;
 
     constructor(private assistantService: AssistantService, private sanitizer: DomSanitizer) {}
 
-    // Iniciamos el scroll a la misma altura donde termino el ultimo mensaje de respuesta del asistente
+    // Initialize scroll to the position of the last assistant response message
     ngAfterViewInit(): void {
         const el = this.messagesContainer?.nativeElement;
         if (el) el.scrollTop = el.scrollHeight;
@@ -125,10 +125,10 @@ export class PromptComponent implements OnInit, AfterViewInit {
 
     sendMessage(): void {
 
-        const data = this.edaBlankPanel.tables; // tablas
+        const data = this.edaBlankPanel.tables; // tables
         const text = this.inputText?.trim();
 
-        // Filtra un texto vacio.
+        // Filter empty text.
         if (!text) return;
 
         const userMsg: ChatMessage = { role: 'user', content: text, timestamp: Date.now() };
@@ -138,14 +138,14 @@ export class PromptComponent implements OnInit, AfterViewInit {
         this.loading = true;
         this.isCopied = false;
 
-        // Autoscroll cuando enviamos los mensajes
+        // Autoscroll when sending messages
         this.shouldAutoScroll = true;
         this.scrollToBottom()
 
-        this.inputText = ''; // Una vez almacenado el texto ingresado se reinicia el input
+        this.inputText = ''; // Once the entered text is stored, the input is reset
         this.sending = true;
         
-        // Llamada al servicio que envía el prompt al Backend / OpenAI
+        // Call to the service that sends the prompt to the Backend / OpenAI
         const histoty = this.messages;
         const schema = this.schema;
         const firstTime = this.firstTime;
@@ -155,7 +155,7 @@ export class PromptComponent implements OnInit, AfterViewInit {
             dataSource_name: this.edaBlankPanel.dataSource.name,
         }
 
-        // Si hay un estado de resolución activo, el usuario está eligiendo valores del filtro        
+        // If there is an active resolution state, the user is choosing filter values
         if (this.resolutionState) {
             const selectedValues = this.parseSelection(text, this.resolutionState.options);
             parameters.filterResolution = {
@@ -177,7 +177,7 @@ export class PromptComponent implements OnInit, AfterViewInit {
 
         this.assistantService.sendPrompt(text, histoty, data, schema, parameters).subscribe({
             next: (resp) => {
-                // Esperamos que `resp` contenga la respuesta ya procesada como texto. Adapta según tu backend.
+                // We expect `resp` to contain the already processed response as text. Adapt according to your backend.
                 const currentQuery = resp.response.currentQuery;
                 const principalTable = resp.response.principalTable;
                 const selectedFilters = resp.response.selectedFilters;
@@ -191,7 +191,7 @@ export class PromptComponent implements OnInit, AfterViewInit {
                 console.log('--> selectedFilters: ', selectedFilters);
                 console.log('--> filteredColumns: ', filteredColumns);
 
-                // Capturamos el estado de resolución si el backend está esperando una elección del usuario
+                // Capture the resolution state if the backend is waiting for a user selection
                 const responseType = resp.response.type;
                 if (responseType === 'awaiting_resolution' || responseType === 'awaiting_selection') {
                     this.resolutionState = {
@@ -200,7 +200,7 @@ export class PromptComponent implements OnInit, AfterViewInit {
                         pendingResult: resp.response.pendingResult
                     };
                 } else {
-                    // Respuesta normal o query_ready: emitimos los datos al panel
+                    // Normal response or query_ready: emit data to the panel
                     this.resolutionState = null;
                     if (currentQuery && currentQuery.length !== 0) {
                         this.newCurrentQuery.emit(currentQuery);
@@ -222,11 +222,11 @@ export class PromptComponent implements OnInit, AfterViewInit {
                 this.sending = false;
                 this.loading = false;
 
-                // Autoscroll cuando recibimos los mensajes
+                // Autoscroll when receiving messages
                 this.shouldAutoScroll = true;
                 this.scrollToBottom()
 
-                // Cambiamos a false despues de la primera consulta
+                // Set to false after the first query
                 this.firstTime = false;
             },
             error: (err) => {
@@ -239,7 +239,7 @@ export class PromptComponent implements OnInit, AfterViewInit {
         });
     }
 
-    // Envia con Enter y (shift + Enter para un salto de linea sin enviar).
+    // Send with Enter (Shift+Enter for a line break without sending).
     onKeydown(event: KeyboardEvent) {
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();
@@ -260,7 +260,7 @@ export class PromptComponent implements OnInit, AfterViewInit {
         });
     }
     
-    // Distancia de edición entre dos strings
+    // Edit distance between two strings
     private levenshtein(a: string, b: string): number {
         const m = a.length, n = b.length;
         const dp: number[][] = Array.from({ length: m + 1 }, (_, i) =>
@@ -276,19 +276,19 @@ export class PromptComponent implements OnInit, AfterViewInit {
         return dp[m][n];
     }
 
-    // Intenta encontrar la mejor opción para un término dado: exacto → contiene → fuzzy
+    // Tries to find the best match for a given term: exact → contains → fuzzy
     private findBestMatch(term: string, options: string[]): string | null {
         const lower = term.toLowerCase();
 
-        // 1. Exacto case-insensitive
+        // 1. Exact case-insensitive
         const exact = options.find(opt => opt.toLowerCase() === lower);
         if (exact) return exact;
 
-        // 2. La opción contiene el término ("train" → "Trains")
+        // 2. Option contains the term ("train" → "Trains")
         const contains = options.find(opt => opt.toLowerCase().includes(lower));
         if (contains) return contains;
 
-        // 3. Fuzzy: Levenshtein con umbral del 40% de la longitud del término (mín 2)
+        // 3. Fuzzy: Levenshtein with 40% threshold of term length (min 2)
         const threshold = Math.max(2, Math.floor(lower.length * 0.4));
         let bestMatch: string | null = null;
         let bestDist = Infinity;
@@ -302,11 +302,11 @@ export class PromptComponent implements OnInit, AfterViewInit {
         return bestMatch;
     }
 
-    // Convierte la respuesta del usuario ("2", "quiero el 3", "trainds") en valores reales del array de opciones
+    // Converts the user response ("2", "I want 3", "trainds") into real values from the options array
     private parseSelection(input: string, options: string[]): string[] {
         const trimmed = input.trim();
 
-        // 1. Extraer números del texto ("quiero el 3 y 5" → [options[2], options[4]])
+        // 1. Extract numbers from text ("I want 3 and 5" → [options[2], options[4]])
         const numbers = trimmed.match(/\d+/g);
         if (numbers) {
             const mapped = numbers
@@ -316,16 +316,16 @@ export class PromptComponent implements OnInit, AfterViewInit {
             if (mapped.length > 0) return mapped;
         }
 
-        // 2. Separar por comas y buscar cada parte contra las opciones
+        // 2. Split by comma and match each part against the options
         const parts = trimmed.split(',').map(v => v.trim()).filter(v => v.length > 0);
         const results: string[] = [];
 
         for (const part of parts) {
-            // Intentar la frase completa primero ("classic cars" → "Classic Cars")
+            // Try the full phrase first ("classic cars" → "Classic Cars")
             const wholeMatch = this.findBestMatch(part, options);
             if (wholeMatch) { results.push(wholeMatch); continue; }
 
-            // Si no matchea la frase entera, probar palabra a palabra filtrando stopwords cortas
+            // If the whole phrase doesn't match, try word by word filtering short stopwords
             const words = part.split(/\s+/).filter(w => w.length >= 3);
             for (const word of words) {
                 const wordMatch = this.findBestMatch(word, options);
@@ -333,11 +333,11 @@ export class PromptComponent implements OnInit, AfterViewInit {
             }
         }
 
-        // Deduplicar en caso de que varias palabras resuelvan al mismo valor
+        // Deduplicate in case multiple words resolve to the same value
         return [...new Set(results.length > 0 ? results : [trimmed])];
     }
 
-    // Función que maneja las sugerencias de gráficos posibles para la consulta
+    // Function that handles the possible chart suggestions for the query
     selectChart(msg: ChatMessage, chart: ChartSuggestion): void {
         msg.suggestedCharts = [];
         this.chartSelected.emit({ type: chart.type, subType: chart.subType });

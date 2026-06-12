@@ -1,4 +1,4 @@
-<eda-dialog2 width="65vw" height="65vh" (apply)="saveRelation()" (close)="closeDialog()" [header]="title" >
+<eda-dialog2 width="65vw" height="65vh" (apply)="saveRelation()" (close)="closeDialog()" [header]="title" [disableApply]="isConfirmDisabled">
   <div content class="py-6">
     <form [formGroup]="form">
       <div class="grid grid-cols-4 gap-4">
@@ -17,15 +17,14 @@
           id="eda_add_relation_targetCol" [style]="{'width': '100%'}" [emptyMessage]="emptyMessageTags">
         </p-dropdown>
 
-        <span class="p-float-label h-[3.2rem] w-full">
-          <input
-            id="eda_add_relation_relationName"
-            formControlName="display_name"
-            class="w-full h-full rounded-md border border-gray-300 px-3 py-2"
-            pInputText
-          />
-          <label i18n="@@placeholderRelationName">Nombre relación</label>
-        </span>
+        <input
+          id="eda_add_relation_relationName"
+          formControlName="display_name"
+          class="w-full h-[3rem] rounded-md border border-gray-300 px-3"
+          i18n-placeholder="@@placeholderRelationName"
+          placeholder="Nombre relación"
+          pInputText
+        />
 
       </div>
 

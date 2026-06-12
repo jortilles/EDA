@@ -12,7 +12,7 @@ export const QueryUtils = {
 
   /**
    * Creates fake columns for SQL Queries
-   * @return builded column
+   * @return built column
    */
 
   createColumn: (columnName: string, columnType: string, sqlOriginTable: any): any => {
@@ -116,7 +116,7 @@ export const QueryUtils = {
           const field = row[i];
           if (typeof field === 'number') return 'numeric';
           if (typeof field === 'string') {
-            // Revisión de etiquetas html
+            // Check for HTML tags in strings
             if (/<[a-z][\s\S]*>/i.test(field)) return 'html';
             foundString = true;
           }
@@ -150,7 +150,7 @@ export const QueryUtils = {
  */
   runQuery: async (ebp: EdaBlankPanelComponent, globalFilters: boolean) => {
 
-    // Actualización de los eleentos globalFilters
+    // Update globalFilters elements
 
     if(ebp.sortedFilters === undefined) ebp.sortedFilters = []; // if it is an old report, we define the report as empty
 
@@ -161,7 +161,7 @@ export const QueryUtils = {
       }
     }
 
-    /** gestiona las columnas duplicadas. Si tengo dos columnas con el mismo nombre le añado el sufijo _1, _2, _3.... etc */
+    /** Handle duplicate columns. If two columns have the same name add suffix _1, _2, _3.... etc */
     let dup = [];
     let cont = 0;
     ebp.currentQuery.forEach(a=> {
@@ -207,17 +207,17 @@ export const QueryUtils = {
 
         return a;
 
-      })); // canviem els null y els '' per valor customitzable
+      })); // replace nulls and '' with customizable values
        
       // ebp.chartData = response[1];       // Chart data
       ebp.ableBtnSave();                 // Button save
-      /* Labels i Data - Arrays */
+      /* Labels and Data - Arrays */
       if (!globalFilters) {
 
         PanelInteractionUtils.verifyData(ebp);
 
-        // Este if y else permiten mantener el gráfico que ya estaba configurado a pesar de que sean otros datos
-        // en caso de que query no cumpla con el grádico correspondiente, se proyectara una tabla con los datos.
+        // This if/else preserves the previously configured chart even if the data changes.
+        // If the query no longer fits the configured chart, a table will be used to display the data.
         if(ebp.chartForm.value.chart===null || ebp.chartForm.value.chart.subValue==='tableanalized'){
           ebp.changeChartType('table', 'table', null);
           ebp.chartForm.patchValue({chart: ebp.chartUtils.chartTypes.find(o => o.value === 'table')});
@@ -249,7 +249,7 @@ export const QueryUtils = {
       ebp.spinnerService.off();
     }
 
-    // Controla que se pueda visualizar el componente dragAndDrop
+    // Ensure the dragAndDrop component can be displayed
     ebp.dragAndDropAvailable = !ebp.chartTypes.filter( grafico => grafico.subValue === 'crosstable')[0].ngIf;
 
 
@@ -282,26 +282,26 @@ export const QueryUtils = {
       })
     } else {
 
-      // Aparatado que inicia el initAxes en caso el ordering este vacio en la config
+      // Section that initializes initAxes if ordering is empty in the config
       if(ebp.chartForm.controls.chart.value!==null && ebp.chartForm.controls.chart.value?.subValue  == 'crosstable') {
-        // Verifica un nuevo cambio en los Axes desde que se inicia la edición de la tabla cruzada
+        // Verify new changes in Axes since the start of crosstable editing
         if(!ebp.newAxesChanged && (!ebp.chartTypes.filter( grafico => grafico.subValue==='crosstable' )[0].ngIf || !ebp.chartTypes.filter( grafico => grafico.subValue==='table' )[0].ngIf)) {
 
           if(ebp.currentQuery.length>2 && (ebp.currentQuery.find( valor => valor.column_type === 'numeric') !== undefined) && ebp.panelChartConfig?.config) {
-            const config = ebp.panelChartConfig.config.getConfig(); // Adquiera la configuración config
-            // Excluir nav-children de la query para que no aparezcan en los ejes de la tabla cruzada
+            const config = ebp.panelChartConfig.config.getConfig(); // Retrieve the config
+            // Exclude nav-children from the query so they don't appear in crosstable axes
             const _navChildKeys = new Set<string>();
             ebp.currentQuery.forEach((col: any) => { if (col.downChild) _navChildKeys.add(`${col.downChild.table_id}.${col.downChild.column_name}`); });
             const _queryForAxes = ebp.currentQuery.filter((col: any) => !_navChildKeys.has(`${col.table_id}.${col.column_name}`));
-            ebp.currentQuery = ebp.newCurrentQuery(ebp.currentQuery, ebp.initAxes(_queryForAxes)); // Reordeno el currentQuery
-            config['ordering'] = [{axes: ebp.initAxes(_queryForAxes)}]; // Agrego el nuevo axes a la config
+            ebp.currentQuery = ebp.newCurrentQuery(ebp.currentQuery, ebp.initAxes(_queryForAxes)); // Reorder the currentQuery
+            config['ordering'] = [{axes: ebp.initAxes(_queryForAxes)}]; // Add the new axes to the config
             ebp.copyConfigCrossTable = JSON.parse(JSON.stringify(config));
           }
         }
       }
 
       /**
-     * Too much rows check — use effective fields to avoid nav-children inflating the count
+     * Too many rows check — use effective fields to avoid nav-children inflating the count
      */
       const _fieldsForCount = (ebp.currentQuery || []).some((col: any) => col.downChild)
         ? QueryUtils.getEffectiveFields(ebp)
@@ -311,8 +311,8 @@ export const QueryUtils = {
       }, 0);
       const aggregations = ebp.currentQuery.filter(col => col.aggregation_type.filter(agg => (agg.value !== 'none' && agg.selected === true)).length > 0).length;
       /**
-       * If the table row count is greather than the MAX_TABLE_ROWS_FOR_ALERT
-       * And there is no aggretation
+       * If the table row count is greater than the MAX_TABLE_ROWS_FOR_ALERT
+       * And there is no aggregation
        * And there is no limit OR the limit is over the MAX_TABLE_ROWS_FOR_ALERT
        */
       if ( (totalTableCount > MAX_TABLE_ROWS_FOR_ALERT)  && (ebp.selectedFilters.length + aggregations <= 0 )
@@ -336,8 +336,8 @@ export const QueryUtils = {
 
     ebp.newAxesChanged = false;
 
-    // Al aplicar Ejecutar el treetable de reinicia 
-    // TODO REVISAR LA VARIABLE DE 
+    // When Execute is applied the treetable is reset
+    // TODO: REVIEW THE VARIABLE
     if(ebp.panelChartConfig.edaChart==='treetable') {
       ebp.panelChartConfig.config.getConfig()['editedTreeTable'] = false;
     }
@@ -346,11 +346,12 @@ export const QueryUtils = {
 
 
   /**
-   * Devuelve los campos efectivos para la ejecución de la consulta, excluyendo los hijos navegables
-   * y aplicando las sustituciones de navegación activas. Si no tiene nada de navegable devolvera el currentQuery SIN MODIFICACIONES.
+   * Returns effective fields for query execution, excluding navigable children
+   * and applying active navigation substitutions. If there are no navigable
+   * children it will return currentQuery UNMODIFIED.
    */
   getEffectiveFields: (ebp: EdaBlankPanelComponent): any[] => {
-    // Solo mostraremos los campos padre en la consulta, los hijos navegables se muestran solo como sustituciones de navegación cuando corresponda. Para ello, primero identificamos qué columnas son hijos navegables...
+    // We will only show parent fields in the query; navigable children are shown only as navigation substitutions when applicable. To do that, first identify which columns are navigable children...
     const navigableChildKeys = new Set<string>();
     for (const col of ebp.currentQuery) {
       if (col.downChild) {
@@ -368,10 +369,10 @@ export const QueryUtils = {
     for (const col of ebp.currentQuery) {
       const colKey = `${col.table_id}.${col.column_name}`;
 
-      // skip hijos navegables 
+      // skip navigable children 
       if (navigableChildKeys.has(colKey)) continue;
 
-      // sustituir el campo padre con su destino de navegación activa cuando la navegación está activa
+      // substitute the parent field with its active navigation target when navigation is active
       if (navSubstitutions.has(colKey)) {
         effectiveFields.push(navSubstitutions.get(colKey));
       } else {
@@ -405,13 +406,14 @@ export const QueryUtils = {
       prediction: ebp.panel?.content?.query?.query?.prediction ? ebp.panel.content.query.query.prediction:'None',
       predictionConfig: ebp.panel?.content?.query?.query?.predictionConfig || undefined,
       sortedFilters: ebp.sortedFilters,
+      resultSortingColumns: ebp.resultSortingColumns
     };
     return ebp.queryBuilder.normalQuery(fields, params, ebp.selectedQueryMode);
   },
 
 
   /**
-   * Builds a query object
+   * Builds a query object for SQL mode
    */
   initSqlQuery: (ebp: EdaBlankPanelComponent): Query => {
     const config = ChartsConfigUtils.setConfig(ebp);

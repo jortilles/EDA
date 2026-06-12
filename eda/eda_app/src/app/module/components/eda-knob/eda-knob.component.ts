@@ -35,12 +35,12 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.paleta = this.styleProviderService.ActualChartPalette;
 
-    // Obtener color desde assignedColors
+    // Get the color from assignedColors
     this.assignedColors = this.inject.assignedColors;
     if (this.assignedColors && this.assignedColors.length > 0) {
       this.color = this.assignedColors[0]['color'];
     } else {
-      // Si no hay assignedColors, usar paleta por defecto
+      // If there are no assignedColors, use the default palette
       this.color = this.paleta?.['paleta']?.[0] || '#0cb7bd';
     }
     
@@ -48,6 +48,10 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
     this.limits = this.getLimits();
     this.comprareValue = this.inject.data.values[0][1] ? this.inject.data.values[0][1] : this.limits[1];
     this.class = this.value > 999999 ? 'p-knob-text-small' : this.value < 1000 ? 'p-knob-text-large' : 'p-knob-text';
+
+    if (this.inject.semaphoreColor) {
+      this.color = this.computeSemaphoreColor(this.value, this.limits[0], this.limits[1]);
+    }
   }
 
   ngOnDestroy(): void {
@@ -57,10 +61,10 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Subimos dos niveles para encontrar el contenedor
+    // Move up two levels to find the container
     const realParent = this.parentDiv.nativeElement.parentElement.parentElement as HTMLElement;
 
-    // Crear ResizeObserver para redimensionar el chart
+    // Create a ResizeObserver to resize the chart
     this.resizeObserver = new ResizeObserver(entries => {
       const { width: w, height: h } = entries[0].contentRect;
       if (w > 0 && h > 0) {
@@ -90,14 +94,14 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
     const color = this.styleProviderService.panelFontColor.source['_value'];
     const fontFamily = this.styleProviderService.panelFontFamily.source['_value'];
 
-    // Texto central del knob
+    // Knob center text
     const centerText = parent?.querySelector('.p-knob-text');
     if (centerText) {
       centerText.style.setProperty('color', color, 'important');
       centerText.style.setProperty('font-family', fontFamily, 'important');
     }
 
-    // Todos los textos dentro de SVGs (min y max)
+    // All text elements inside SVGs (min and max)
     const svgTexts = parent?.querySelectorAll('svg text');
     svgTexts?.forEach(el => {
       el.setAttribute('fill', color);
@@ -129,6 +133,12 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
     
     if (limits[1] < this.value) limits[1] = this.value;
     return limits;
+  }
+
+  private computeSemaphoreColor(value: number, min: number, max: number): string {
+    const ratio = Math.max(0, Math.min(1, (value - min) / (max - min || 1)));
+    const hue = Math.round(ratio * 120); // 0 deg = red, 60 deg = yellow, 120 deg = green
+    return `hsl(${hue}, 85%, 42%)`;
   }
 
   getStyle() {

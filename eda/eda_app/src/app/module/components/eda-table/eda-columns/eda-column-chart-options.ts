@@ -1,6 +1,6 @@
 
 /**
- * CONFIGURACIÓ DELS GRÀCIS QUE HI HAN INLINE A LA TAULA CREUADA
+ * "Configuration of the charts that are displayed inline in the cross table."
  * 
  */
 export const  EdaColumnChartOptions =  {
@@ -25,7 +25,7 @@ export const  EdaColumnChartOptions =  {
             legend: {
                 display: false
             },
-            /** configuraicó del datalabel. */
+            /** Data label configuration */
            datalabels:  { display: false }
            
        },

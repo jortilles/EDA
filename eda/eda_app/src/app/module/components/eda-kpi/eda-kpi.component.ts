@@ -77,7 +77,7 @@ export class EdaKpiComponent implements OnInit, AfterViewInit {
 
     public initDimensions() {
         if (this.kpiContainer) {
-            // Subimos 3 niveles desde el contenedor original
+            // Move up three levels from the original container
             const realContainer = this.kpiContainer.nativeElement
                 ?.parentElement
                 ?.parentElement
@@ -159,19 +159,19 @@ export class EdaKpiComponent implements OnInit, AfterViewInit {
 
         textLongitude = this.inject.value.toString().length
 
-        // Comprobaciones
+        // Checks
         let textWidth = textLongitude * resultSize;
-        // Redimensiono en funcion del ancho
+        // Resize based on width
         if ( ( textWidth > this.containerWidth )  && ( sufix.length < 4 ) ) resultSize = (this.containerWidth / textLongitude) * 1.4;
-        // Redimensiono en función del alto
+        // Resize based on height
         if (resultSize > this.containerHeight   && ratio < 0.4  ) resultSize = this.containerHeight;
-        // Última comprobación
+        // Final check
         if (textLongitude * resultSize > this.containerWidth * 1.2   && ratio < 0.4  )  resultSize = resultSize / 1.5;
-        // Si tengo un sufijo y es muy grande compruebo que no me pase
+        // If there is a suffix and it is very large, check that it does not overflow
         if (sufix.length > 4 && this.containerHeight < (resultSize * 4) && this.containerWidth < textWidth) {
             resultSize = resultSize / 1.8;
         }
-        // Si tengo ung gráfico lo hago más pequeño
+        // If there is a chart, make it smaller
         if (this.inject.showChart) {
             resultSize = resultSize / 1.8;
         }

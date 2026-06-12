@@ -1,10 +1,9 @@
-
-  .description-text1 {
+.description-text1 {
     padding: 0.5rem;
     margin: 0;
     background-color: #dbdfe480;
-    border-top-left-radius: 4px; /* Borde redondeado en la esquina superior izquierda */
-    border-top-right-radius: 4px; /* Borde redondeado en la esquina superior derecha */
+    border-top-left-radius: 4px; /* Rounded border on the top-left corner */
+    border-top-right-radius: 4px; /* Rounded border on the top-right corner */
     margin-right: 2px;
   }
 
@@ -21,9 +20,9 @@
     border: solid 0px #ffffff;
     min-height: 72px;
     flex: 1;
-    background: #dbdfe480 !important;    /* cambiar de color */
-    border-bottom-left-radius: 4px; /* Borde redondeado en la esquina inferior izquierda */
-    border-bottom-right-radius: 4px; /* Borde redondeado en la esquina inferior derecha */
+    background: #dbdfe480 !important;    /* change color */
+    border-bottom-left-radius: 4px; /* Rounded border on the bottom-left corner */
+    border-bottom-right-radius: 4px; /* Rounded border on the bottom-right corner */
     overflow: hidden;
     display: block;
     margin-right: 2px;
@@ -50,8 +49,8 @@
     padding: 0.5rem;
     margin: 0;
     background-color: #dbdfe480;
-    border-top-left-radius: 4px; /* Borde redondeado en la esquina superior izquierda */
-    border-top-right-radius: 4px; /* Borde redondeado en la esquina superior derecha */
+    border-top-left-radius: 4px; /* Rounded border on the top-left corner */
+    border-top-right-radius: 4px; /* Rounded border on the top-right corner */
   }
 
   .container-2 {
@@ -77,11 +76,11 @@
   .list-2 {
     border: solid 0px #ffffff;
     min-height: 72px;
-    background: #dbdfe480 !important;    /* cambiar de color */
+    background: #dbdfe480 !important;    /* change color */
     display: flex;
     flex-direction: row;
-    border-bottom-left-radius: 4px; /* Borde redondeado en la esquina inferior izquierda */
-    border-bottom-right-radius: 4px; /* Borde redondeado en la esquina inferior derecha */    
+    border-bottom-left-radius: 4px; /* Rounded border on the bottom-left corner */
+    border-bottom-right-radius: 4px; /* Rounded border on the bottom-right corner */    
     overflow: hidden;
   }
   
@@ -106,8 +105,8 @@
     padding: 0.5rem;
     margin: 0;
     background-color: #6f9c672e;
-    border-top-left-radius: 4px; /* Borde redondeado en la esquina superior izquierda */
-    border-top-right-radius: 4px; /* Borde redondeado en la esquina superior derecha */
+    border-top-left-radius: 4px; /* Rounded border on the top-left corner */
+    border-top-right-radius: 4px; /* Rounded border on the top-right corner */
   }
 
   .container-3 {
@@ -134,11 +133,11 @@
     border: solid 0px #ffffff;
     min-height: 72px;
     flex: 1;
-    background: #6f9c672e; /* cambiar de color */
+    background: #6f9c672e; /* change color */
     display: flex;
     flex-direction: row;
-    border-bottom-left-radius: 4px; /* Borde redondeado en la esquina inferior izquierda */
-    border-bottom-right-radius: 4px; /* Borde redondeado en la esquina inferior derecha */   
+    border-bottom-left-radius: 4px; /* Rounded border on the bottom-left corner */
+    border-bottom-right-radius: 4px; /* Rounded border on the bottom-right corner */   
     overflow: hidden;
     margin-top: 0px;
   }

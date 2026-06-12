@@ -26,12 +26,12 @@ export class EdaContextMenuComponent implements AfterViewInit {
     onOutsideClick(event: MouseEvent, dialog: any) {
         const dialogEl = dialog?.container || dialog?.containerViewChild?.nativeElement;
 
-        // Si no se clicka en el diálogo, salir
+        // Exit if the dialog is not clicked
         if (!dialogEl) {
             return;
         }
 
-        // Ignorar mientras no esté permitido
+        // Ignore while not allowed
         if (!this.allowOutsideClose) {
             this.allowOutsideClose = true;
             return;

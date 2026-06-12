@@ -15,11 +15,16 @@ export const KNOB_VALUE_ACCESSOR: any = {
         <svg viewBox="0 0 100 100" [style.width]="size + 'px'" [style.height]="size + 'px'" (click)="onClick($event)" (mousedown)="onMouseDown($event)" (mouseup)="onMouseUp($event)"
             (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
             <path [attr.d]="rangePath()" [attr.stroke-width]="strokeWidth" [attr.stroke]="rangeColor" class="p-knob-range"></path>
-            <path [attr.d]="valuePath()" [attr.stroke-width]="strokeWidth" [attr.stroke]="valueColor" class="p-knob-value"></path>
+            <ng-container *ngIf="gradientMode">
+                <path *ngFor="let seg of visibleSegments"
+                      [attr.d]="seg.path" [attr.stroke-width]="strokeWidth"
+                      [attr.stroke]="seg.color" fill="none" class="p-knob-value"></path>
+            </ng-container>
+            <path *ngIf="!gradientMode" [attr.d]="valuePath()" [attr.stroke-width]="strokeWidth" [attr.stroke]="valueColor" class="p-knob-value"></path>
             <text *ngIf="showValue" [attr.x]="50" [attr.y]="57" text-anchor="middle"  [class]="textClass" [attr.name]="name">{{valueToDisplay()}}</text>
             <text *ngIf="mustShow()" [attr.x]="50" [attr.y]="65" text-anchor="middle"  class="p-knob-infotext">{{compareValueToDisplay()}}</text>
             <text [attr.x]="20" [attr.y]="100"  text-anchor="middle"  class="p-knob-infotext">{{min.toLocaleString('de-DE', {maximumFractionDigits: 6 })}}</text>
-            <text [attr.x]="80" [attr.y]="100"  text-anchor="middle" class="p-knob-infotext">{{max.toLocaleString('de-DE', {maximumFractionDigits: 6 })}}</text>  
+            <text [attr.x]="80" [attr.y]="100"  text-anchor="middle" class="p-knob-infotext">{{max.toLocaleString('de-DE', {maximumFractionDigits: 6 })}}</text>
         </svg>
         </div>
     `,
@@ -65,49 +70,75 @@ export class Knob {
 
     @Input() readonly: boolean = false;
 
-    @Input() textClass : string ;
+    @Input() textClass : string;
+
+    @Input() gradientMode: boolean = false;
+
+    private static readonly SEG_COLORS = [
+        '#cc2200', '#e03c00', '#f55a00', '#ff8000',
+        '#ffaa00', '#ffcc00', '#aacc00', '#55bb00',
+    ];
+
+    get visibleSegments(): { path: string; color: string }[] {
+        const colors = Knob.SEG_COLORS;
+        const N = colors.length;
+        const result: { path: string; color: string }[] = [];
+
+        for (let i = 0; i < N; i++) {
+            const segStartVal = this.min + (i / N) * (this.max - this.min);
+            const segEndVal   = this.min + ((i + 1) / N) * (this.max - this.min);
+
+            if (this._value <= segStartVal) break;
+
+            const clampedEnd = Math.min(this._value, segEndVal);
+            const startRad = this.mapRange(segStartVal, this.min, this.max, this.minRadians, this.maxRadians);
+            const endRad   = this.mapRange(clampedEnd,  this.min, this.max, this.minRadians, this.maxRadians);
+
+            const x1 = this.midX + Math.cos(startRad) * this.radius;
+            const y1 = this.midY - Math.sin(startRad) * this.radius;
+            const x2 = this.midX + Math.cos(endRad)   * this.radius;
+            const y2 = this.midY - Math.sin(endRad)   * this.radius;
+            const large = Math.abs(startRad - endRad) > Math.PI ? 1 : 0;
+
+            result.push({
+                path:  `M ${x1.toFixed(2)} ${y1.toFixed(2)} A ${this.radius} ${this.radius} 0 ${large} 1 ${x2.toFixed(2)} ${y2.toFixed(2)}`,
+                color: colors[i]
+            });
+        }
+
+        return result;
+    }
 
     @Output() onChange: EventEmitter<any> = new EventEmitter();
 
     radius: number = 40;
-
     midX: number = 50;
-
     midY: number = 50;
-
     minRadians: number = 4 * Math.PI / 3;
-
     maxRadians: number = -Math.PI / 3;
-    
     value: number = null;
 
     windowMouseMoveListener: any;
-
     windowMouseUpListener: any;
-
     windowTouchMoveListener: any;
-
     windowTouchEndListener: any;
 
     onModelChange: Function = () => {};
-
     onModelTouched: Function = () => {};
 
-    constructor(private cd: ChangeDetectorRef, private el: ElementRef) { }
+    constructor(private cd: ChangeDetectorRef, private el: ElementRef) {}
 
     mapRange(x, inMin, inMax, outMin, outMax) {
         return (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
     }
 
     onClick(event) {
-        if (!this.disabled && !this.readonly) {
-            this.updateValue(event.offsetX, event.offsetY);
-        }
+        if (!this.disabled && !this.readonly) this.updateValue(event.offsetX, event.offsetY);
     }
 
     updateValue(offsetX, offsetY) {
         let dx = offsetX - this.size / 2;
-        let dy =  this.size / 2 - offsetY;
+        let dy = this.size / 2 - offsetY;
         let angle = Math.atan2(dy, dx);
         let start = -Math.PI / 2 - Math.PI / 6;
         this.updateModel(angle, start);
@@ -121,19 +152,17 @@ export class Knob {
             mappedValue = this.mapRange(angle + 2 * Math.PI, this.minRadians, this.maxRadians, this.min, this.max);
         else
             return;
-
-        let newValue = Math.round((mappedValue - this.min) / this.step) * this.step + this.min;
-        this.value = newValue;
+        this.value = Math.round((mappedValue - this.min) / this.step) * this.step + this.min;
         this.onModelChange(this.value);
         this.onChange.emit(this.value);
     }
 
     onMouseDown(event) {
         if (!this.disabled && !this.readonly) {
-            this.windowMouseMoveListener = this.onMouseMove.bind(this)
-            this.windowMouseUpListener = this.onMouseUp.bind(this)
+            this.windowMouseMoveListener = this.onMouseMove.bind(this);
+            this.windowMouseUpListener   = this.onMouseUp.bind(this);
             window.addEventListener('mousemove', this.windowMouseMoveListener);
-            window.addEventListener('mouseup', this.windowMouseUpListener);
+            window.addEventListener('mouseup',   this.windowMouseUpListener);
             event.preventDefault();
         }
     }
@@ -141,9 +170,8 @@ export class Knob {
     onMouseUp(event) {
         if (!this.disabled && !this.readonly) {
             window.removeEventListener('mousemove', this.windowMouseMoveListener);
-            window.removeEventListener('mouseup', this.windowMouseUpListener);
-            this.windowMouseUpListener = null;
-            this.windowMouseMoveListener = null;
+            window.removeEventListener('mouseup',   this.windowMouseUpListener);
+            this.windowMouseUpListener = this.windowMouseMoveListener = null;
             event.preventDefault();
         }
     }
@@ -151,9 +179,9 @@ export class Knob {
     onTouchStart(event) {
         if (!this.disabled && !this.readonly) {
             this.windowTouchMoveListener = this.onTouchMove.bind(this);
-            this.windowTouchEndListener = this.onTouchEnd.bind(this);
+            this.windowTouchEndListener  = this.onTouchEnd.bind(this);
             window.addEventListener('touchmove', this.windowTouchMoveListener);
-            window.addEventListener('touchend', this.windowTouchEndListener);
+            window.addEventListener('touchend',  this.windowTouchEndListener);
             event.preventDefault();
         }
     }
@@ -161,9 +189,8 @@ export class Knob {
     onTouchEnd(event) {
         if (!this.disabled && !this.readonly) {
             window.removeEventListener('touchmove', this.windowTouchMoveListener);
-            window.removeEventListener('touchend', this.windowTouchEndListener);
-            this.windowTouchMoveListener = null;
-            this.windowTouchEndListener = null;
+            window.removeEventListener('touchend',  this.windowTouchEndListener);
+            this.windowTouchMoveListener = this.windowTouchEndListener = null;
             event.preventDefault();
         }
     }
@@ -176,32 +203,17 @@ export class Knob {
     }
 
     onTouchMove(event) {
-        if (!this.disabled && !this.readonly && event.touches.length == 1) {
-            const rect = this.el.nativeElement.children[0].getBoundingClientRect();
+        if (!this.disabled && !this.readonly && event.touches.length === 1) {
+            const rect  = this.el.nativeElement.children[0].getBoundingClientRect();
             const touch = event.targetTouches.item(0);
-            const offsetX = touch.clientX - rect.left;
-            const offsetY = touch.clientY - rect.top;
-            this.updateValue(offsetX, offsetY);
+            this.updateValue(touch.clientX - rect.left, touch.clientY - rect.top);
         }
     }
 
-    writeValue(value: any) : void {
-        this.value = value;
-        this.cd.markForCheck();
-    }
-
-    registerOnChange(fn: Function): void {
-        this.onModelChange = fn;
-    }
-
-    registerOnTouched(fn: Function): void {
-        this.onModelTouched = fn;
-    }
-
-    setDisabledState(val: boolean): void {
-        this.disabled = val;
-        this.cd.markForCheck();
-    }
+    writeValue(value: any): void { this.value = value; this.cd.markForCheck(); }
+    registerOnChange(fn: Function): void { this.onModelChange = fn; }
+    registerOnTouched(fn: Function): void { this.onModelTouched = fn; }
+    setDisabledState(val: boolean): void { this.disabled = val; this.cd.markForCheck(); }
 
     containerClass() {
         return {
@@ -220,67 +232,26 @@ export class Knob {
     }
 
     zeroRadians() {
-        if (this.min > 0 && this.max > 0)
-            return this.mapRange(this.min, this.min, this.max, this.minRadians, this.maxRadians);
-        else
-            return this.mapRange(0, this.min, this.max, this.minRadians, this.maxRadians);
+        return this.min > 0 && this.max > 0
+            ? this.mapRange(this.min, this.min, this.max, this.minRadians, this.maxRadians)
+            : this.mapRange(0, this.min, this.max, this.minRadians, this.maxRadians);
     }
 
-    valueRadians() {
-        return this.mapRange(this._value, this.min, this.max, this.minRadians, this.maxRadians);
-    }
+    valueRadians() { return this.mapRange(this._value, this.min, this.max, this.minRadians, this.maxRadians); }
+    minX() { return this.midX + Math.cos(this.minRadians) * this.radius; }
+    minY() { return this.midY - Math.sin(this.minRadians) * this.radius; }
+    maxX() { return this.midX + Math.cos(this.maxRadians) * this.radius; }
+    maxY() { return this.midY - Math.sin(this.maxRadians) * this.radius; }
+    zeroX() { return this.midX + Math.cos(this.zeroRadians()) * this.radius; }
+    zeroY() { return this.midY - Math.sin(this.zeroRadians()) * this.radius; }
+    valueX() { return this.midX + Math.cos(this.valueRadians()) * this.radius; }
+    valueY() { return this.midY - Math.sin(this.valueRadians()) * this.radius; }
+    largeArc() { return Math.abs(this.zeroRadians() - this.valueRadians()) < Math.PI ? 0 : 1; }
+    sweep() { return this.valueRadians() > this.zeroRadians() ? 0 : 1; }
 
-    minX() {
-        return this.midX + Math.cos(this.minRadians) * this.radius;
-    }
+    valueToDisplay() { return this.valueTemplate.replace('{value}', this._value.toLocaleString('de-DE')); }
+    compareValueToDisplay() { return this.valueTemplate.replace('{value}', 'Vs ' + this.comprareValue.toLocaleString('de-DE')); }
+    mustShow() { return this._value > this.comprareValue; }
 
-    minY() {
-        return this.midY - Math.sin(this.minRadians) * this.radius;
-    }
-
-    maxX() {
-        return this.midX + Math.cos(this.maxRadians) * this.radius;
-    }
-
-    maxY() {
-        return this.midY - Math.sin(this.maxRadians) * this.radius;
-    }
-
-    zeroX() {
-        return this.midX + Math.cos(this.zeroRadians()) * this.radius;
-    }
-
-    zeroY() {
-        return this.midY - Math.sin(this.zeroRadians()) * this.radius;
-    }
-
-    valueX() {
-        return this.midX + Math.cos(this.valueRadians()) * this.radius;
-    }
-
-    valueY() {
-        return this.midY - Math.sin(this.valueRadians()) * this.radius;
-    }
-
-    largeArc() {
-        return Math.abs(this.zeroRadians() - this.valueRadians()) < Math.PI ? 0 : 1;
-    }
-
-    sweep() {
-        return this.valueRadians() > this.zeroRadians() ? 0 : 1;
-    }
-
-    valueToDisplay() {
-        return this.valueTemplate.replace("{value}",  this._value.toLocaleString('de-DE') );
-    }
-    compareValueToDisplay() {
-         return this.valueTemplate.replace("{value}", 'Vs ' +  this.comprareValue.toLocaleString('de-DE') );
-     }
-    mustShow(){
-        return  this._value > this.comprareValue;
-     }
-
-    get _value(): number {
-        return this.value != null ? this.value : this.min;
-    }
+    get _value(): number { return this.value != null ? this.value : this.min; }
 }
