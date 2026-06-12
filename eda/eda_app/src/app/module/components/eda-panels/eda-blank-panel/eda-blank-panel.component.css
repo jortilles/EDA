@@ -616,6 +616,11 @@ span.state-label {
 
 #result-sorting-list .select-box {
   z-index: 1 !important;
+  cursor: pointer !important;
+}
+
+#result-sorting-list .select-box:active {
+  cursor: pointer !important;
 }
 
 .select-list.cdk-drop-list-dragging .select-box:not(.cdk-drag-placeholder),
