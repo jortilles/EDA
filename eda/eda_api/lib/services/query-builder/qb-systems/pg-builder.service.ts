@@ -245,20 +245,37 @@ export class PgBuilderService extends QueryBuilderService {
       myQuery += '\ngroup by ' + effectiveGrouping.join(', ');
     }
 
-    //HAVING
-    myQuery += this.getHavingFilters(havingFilters);
+    //HAVING 
+    myQuery += this.getHavingFilters(havingFilters );
+
+    console.log('this.queryTODO: ', this.queryTODO);
 
     // OrderBy
-    const fromSorting = sortingCols
-      .filter((col: any) => col.ordenation_type !== 'No' && col.ordenation_type !== undefined)
-      .map((col: any) => `"${col.table_id}"."${col.column_name}" ${col.ordenation_type}`);
+    let orderColumns: string[];
 
-    const fromFields = this.queryTODO.fields
-      .filter((col: any) => !sortingKeys.has(`${col.table_id}.${col.column_name}`)
-        && col.ordenation_type !== 'No' && col.ordenation_type !== undefined)
-      .map((col: any) => `"${col.display_name}" ${col.ordenation_type}`);
-
-    const orderColumns = [...fromSorting, ...fromFields];
+    if (sortingCols.length > 0) {
+      orderColumns = sortingCols
+        .filter(col => col.ordenation_type !== 'No' && col.ordenation_type !== undefined)
+        .map(col => {
+          const matchingField = this.queryTODO.fields.find(
+            (f: any) => f.table_id === col.table_id && f.column_name === col.column_name
+          );
+          if (matchingField) {
+            return `"${matchingField.display_name}" ${col.ordenation_type}`;
+          } else {
+            return `"${col.table_id}"."${col.column_name}" ${col.ordenation_type}`;
+          }
+        });
+    } else {
+      orderColumns = this.queryTODO.fields
+        .map((col: any) => {
+          if (col.ordenation_type !== 'No' && col.ordenation_type !== undefined) {
+            return `"${col.display_name}" ${col.ordenation_type}`;
+          }
+          return false;
+        })
+        .filter((e: any) => e !== false) as string[];
+    }
 
     const order_columns_string = orderColumns.join(',');
     if (order_columns_string.length > 0) {
