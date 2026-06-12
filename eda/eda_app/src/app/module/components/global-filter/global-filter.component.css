@@ -31,7 +31,7 @@
 /* contains all filters */
 .filters-container {
   display: ruby;
-  /* max-width: 95vw; */
+  max-width: 95vw;
   flex-wrap: wrap;
   align-content: flex-start;
   gap: 1rem;
