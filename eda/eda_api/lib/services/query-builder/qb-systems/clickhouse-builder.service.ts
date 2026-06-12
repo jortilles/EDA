@@ -197,12 +197,32 @@ export class ClickHouseBuilderService extends QueryBuilderService {
     myQuery += this.getHavingFilters(havingFilters);
 
     // ORDER BY
-    const orderColumns = this.queryTODO.fields.map(col => {
-      if (col.ordenation_type !== 'No' && col.ordenation_type !== undefined) {
-        return `\`${col.display_name}\` ${col.ordenation_type}`;
-      }
-      return false;
-    }).filter(e => e !== false);
+    const sortingCols: any[] = this.queryTODO.resultSortingColumns ?? [];
+    let orderColumns: string[];
+
+    if (sortingCols.length > 0) {
+      orderColumns = sortingCols
+        .filter(col => col.ordenation_type !== 'No' && col.ordenation_type !== undefined)
+        .map(col => {
+          const matchingField = this.queryTODO.fields.find(
+            (f: any) => f.table_id === col.table_id && f.column_name === col.column_name
+          );
+          if (matchingField) {
+            return `\`${matchingField.display_name}\` ${col.ordenation_type}`;
+          } else {
+            return `\`${col.table_id}\`.\`${col.column_name}\` ${col.ordenation_type}`;
+          }
+        });
+    } else {
+      orderColumns = this.queryTODO.fields
+        .map((col: any) => {
+          if (col.ordenation_type !== 'No' && col.ordenation_type !== undefined) {
+            return `\`${col.display_name}\` ${col.ordenation_type}`;
+          }
+          return false;
+        })
+        .filter((e: any) => e !== false) as string[];
+    }
 
     if (orderColumns.length > 0) {
       myQuery += `\nORDER BY ${orderColumns.join(',')}`;
