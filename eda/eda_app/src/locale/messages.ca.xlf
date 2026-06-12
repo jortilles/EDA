@@ -6851,6 +6851,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Navegar</source>
         <target>Navegar</target>
       </trans-unit>
+      <trans-unit id="resultSortingText" datatype="html">
+        <source>Ordenar los resultados por:</source>
+        <target>Ordenar els resultats per:</target>
+      </trans-unit>
+      <trans-unit id="draggResultSorting" datatype="html">
+        <source>Arrastre aquí los atributos sobre los que quiere ordenar</source>
+        <target>Arrossegueu aquí els atributs pels quals voleu ordenar</target>
+      </trans-unit>
       <trans-unit id="noDuckDbFile">
         <source>Debe cargar un archivo CSV primero</source>
         <target>Cal carregar un arxiu CSV primer</target>

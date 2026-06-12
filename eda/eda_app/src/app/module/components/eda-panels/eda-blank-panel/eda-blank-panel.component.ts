@@ -2,7 +2,7 @@
 import { Component, Input, Output, EventEmitter, ViewChild, OnInit, inject, computed, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, ElementRef } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { DragDropModule, CdkDrag, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { DragDropModule, CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem, copyArrayItem } from '@angular/cdk/drag-drop';
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 import * as _ from 'lodash';
@@ -222,6 +222,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public limitRowsInfo: string = $localize`:@@limitRowsInfo:Establece un Top n para la consulta`;
     public draggFields: string = $localize`:@@dragFields:Arrastre aquí los atributos que quiera ver en su panel`;
     public draggFilters: string = $localize`:@@draggFilters:Arrastre aquí los atributos sobre los que quiera filtrar`;
+    public draggResultSorting: string = $localize`:@@draggFilters:Arrastre aquí los atributos sobre los que quiere ordenar`;
     public ptooltipSQLmode: string = $localize`:@@sqlTooltip:Al cambiar de modo perderás la configuración de la consulta actual`;
     public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`
     public aggregationText: string = $localize`:@@aggregationText:Agregación`;
@@ -234,6 +235,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public columns: any[] = [];
     public aggregationsTypes: any[] = [];
     public filtredColumns: Column[] = [];
+    public resultSortingColumns: any[] = [];
     public ordenationTypes: OrdenationType[];
     public currentQuery: any[] = [];
     public currentSQLQuery: string = '';
@@ -412,6 +414,7 @@ export class EdaBlankPanelComponent implements OnInit {
             }
             this.loadChartsData(this.panel.content);
             this.dynamicFilters = this.panel.content.dynamicFilters ?? true;
+            this.resultSortingColumns = this.panel.content.resultSortingColumns ?? [];
             } catch(e){
                 console.error('Error loading panel conent: ');
                 throw e;
@@ -751,7 +754,7 @@ public tableNodeExpand(event: any): void {
                 currentFormatIndex: entry.currentFormatIndex,
                 navFilters: entry.navFilters
             }));
-            this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters, navigationLinks, navActiveNodes, savedDateNavState, fullCurrentQuery: this.currentQuery };
+            this.panel.content = { query, chart, edaChart, dynamicFilters: this.dynamicFilters, navigationLinks, navActiveNodes, savedDateNavState, fullCurrentQuery: this.currentQuery, resultSortingColumns: this.resultSortingColumns };
 
             /**This is to repaint on panel redimension */
             if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst','radar'].includes(chart)) {
@@ -1149,6 +1152,58 @@ public tableNodeExpand(event: any): void {
 
 
 
+    public dropToResultSorting(event: CdkDragDrop<any[]>) {
+
+        console.log('event ==> ', event);
+
+        if (event.previousContainer === event.container) {
+            moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+        } else {
+            const draggedColumn = event.previousContainer.data[event.previousIndex];
+
+            // Si no tenemos ordenation_type, añadimos 
+            draggedColumn.ordenation_type ??= 'No';
+
+            const alreadyAdded = this.resultSortingColumns
+                .some(col => col.column_name === draggedColumn.column_name);
+            if (!alreadyAdded) {
+                copyArrayItem(
+                    event.previousContainer.data,
+                    event.container.data,
+                    event.previousIndex,
+                    event.currentIndex
+                );
+            }
+        }
+
+        console.log('resultSortingColumns: ', this.resultSortingColumns);
+
+    }
+
+    public changeResultSortingValue(column: any) {
+
+        if (column.ordenation_type === 'Asc') {
+            column.ordenation_type = 'No';
+        } else if (column.ordenation_type === 'No') {
+            column.ordenation_type = 'Desc';
+        } else if (column.ordenation_type === 'Desc') {
+            column.ordenation_type = 'Asc';
+        }
+
+        const newValue = column.ordenation_type;
+        const syncOrdenation = (arr: any[]) => {
+            const match = arr.find(c => c.column_name === column.column_name && c.table_id === column.table_id);
+            if (match) match.ordenation_type = newValue;
+        };
+        syncOrdenation(this.currentQuery);
+        syncOrdenation(this.resultSortingColumns);
+    }
+
+    public removeResultSorting(column: any) {
+        this.resultSortingColumns = this.resultSortingColumns
+            .filter(col => col.column_name !== column.column_name);
+    }
+
     /* Condicions Drag&Drop */
     public isAllowed = (drag?: CdkDrag, drop?) => false;
 
@@ -1219,6 +1274,13 @@ public tableNodeExpand(event: any): void {
                                 field.old_column_type = 'numeric';
                             }
                         } 
+                    }
+
+                    for (const sortCol of this.resultSortingColumns) {
+                        const match = this.currentQuery.find(c =>
+                            c.column_name === sortCol.column_name && c.table_id === sortCol.table_id
+                        );
+                        if (match) sortCol.ordenation_type = match.ordenation_type;
                     }
 
                     if (event === EdaDialogCloseEvent.NONE) {
@@ -1981,6 +2043,16 @@ public tableNodeExpand(event: any): void {
     public moveItem = (column: any) => {
         PanelInteractionUtils.moveItem(this, column);
 
+        const sortingMatch = this.resultSortingColumns.find(
+            c => c.column_name === column.column_name && c.table_id === column.table_id
+        );
+        if (sortingMatch?.ordenation_type) {
+            const queryMatch = this.currentQuery.find(
+                c => c.column_name === column.column_name && c.table_id === column.table_id
+            );
+            if (queryMatch) queryMatch.ordenation_type = sortingMatch.ordenation_type;
+        }
+
         if (this.selectedQueryMode == 'EDA2' && this.currentQuery.length === 1) {
             PanelInteractionUtils.loadTableNodes(this);
             this.displayedTableNodes = this.tableNodes;
@@ -2424,7 +2496,7 @@ public tableNodeExpand(event: any): void {
 
     dynamicFiltersInteraction(): void {
         this.dynamicFilters = !this.dynamicFilters;
-    } 
+    }
 
     newCurrentQueryUpdate(event: any) {
         this.currentQuery = event;

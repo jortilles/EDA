@@ -73,17 +73,32 @@ export class SQLserviceBuilderService extends QueryBuilderService {
     myQuery += this.getHavingFilters(havingFilters, 'having');
 
     // OrderBy
-    const orderColumns = this.queryTODO.fields.map(col => {
-      let out;
+    const sortingCols: any[] = this.queryTODO.resultSortingColumns ?? [];
+    let orderColumns: string[];
 
-      if (col.ordenation_type !== 'No' && col.ordenation_type !== undefined) {
-        out = `"${col.display_name}" ${col.ordenation_type}`
-      } else {
-        out = false;
-      }
-
-      return out;
-    }).filter(e => e !== false);
+    if (sortingCols.length > 0) {
+      orderColumns = sortingCols
+        .filter(col => col.ordenation_type !== 'No' && col.ordenation_type !== undefined)
+        .map(col => {
+          const matchingField = this.queryTODO.fields.find(
+            (f: any) => f.table_id === col.table_id && f.column_name === col.column_name
+          );
+          if (matchingField) {
+            return `"${matchingField.display_name}" ${col.ordenation_type}`;
+          } else {
+            return `"${col.table_id}"."${col.column_name}" ${col.ordenation_type}`;
+          }
+        });
+    } else {
+      orderColumns = this.queryTODO.fields
+        .map((col: any) => {
+          if (col.ordenation_type !== 'No' && col.ordenation_type !== undefined) {
+            return `"${col.display_name}" ${col.ordenation_type}`;
+          }
+          return false;
+        })
+        .filter((e: any) => e !== false) as string[];
+    }
 
     const order_columns_string = orderColumns.join(',');
     if (order_columns_string.length > 0) {

@@ -6544,6 +6544,14 @@ OR<ph id="5"/>
   <source>Navegar</source>
   <target>Navigate</target>
 </trans-unit>
+<trans-unit id="resultSortingText" datatype="html">
+  <source>Ordenar los resultados por:</source>
+  <target>Sort results by:</target>
+</trans-unit>
+<trans-unit id="draggResultSorting" datatype="html">
+  <source>Arrastre aquí los atributos sobre los que quiere ordenar</source>
+  <target>Drag here the attributes you want to sort by</target>
+</trans-unit>
 <trans-unit id="noDuckDbFile">
   <source>Debe cargar un archivo CSV primero</source>
   <target>You must load a CSV file first</target>

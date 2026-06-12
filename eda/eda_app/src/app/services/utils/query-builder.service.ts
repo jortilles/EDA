@@ -19,6 +19,7 @@ export interface QueryParams {
     connectionProperties?: any;
     rootTable?: string;
     sortedFilters?: any[];
+    resultSortingColumns?: any[];
 }
 
 @Injectable()
@@ -154,6 +155,7 @@ export class QueryBuilderService extends ApiService {
                 forSelector: params.forSelector,
                 rootTable: params.rootTable,
                 sortedFilters: params.sortedFilters,
+                resultSortingColumns: params.resultSortingColumns
             },
             output: {
                 labels,

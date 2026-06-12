@@ -849,6 +849,9 @@ export const PanelInteractionUtils = {
       ebp.currentQuery[match].aggregation_type.forEach(ag => ag.selected = false);
       ebp.currentQuery[match].format = '';
       ebp.currentQuery.splice(match, 1);
+      // ebp.resultSortingColumns = ebp.resultSortingColumns.filter(
+      //   col => !(col.column_name === c.column_name && col.table_id === c.table_id)
+      // );
     } else if (list === 'filter') {
       const match = _.findIndex(ebp.filtredColumns, { column_name: c.column_name, table_id: c.table_id });
       ebp.filtredColumns.splice(match, 1);
