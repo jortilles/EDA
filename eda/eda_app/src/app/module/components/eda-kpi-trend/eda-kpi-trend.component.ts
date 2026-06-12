@@ -43,10 +43,6 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
     isPortrait: boolean = false;
     private _resizeObs: ResizeObserver | null = null;
 
-    // Layout
-    isPortrait: boolean = false;
-    private _resizeObs: ResizeObserver | null = null;
-
     // KPI Style
     color: string = '#67757c';
     family: string = 'inherit';
@@ -83,10 +79,6 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit, O
         });
         this._resizeObs.observe(host);
         this.cdr.detectChanges();
-    }
-
-    ngOnDestroy(): void {
-        this._resizeObs?.disconnect();
     }
 
     ngOnDestroy(): void {
