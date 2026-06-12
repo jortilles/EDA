@@ -256,6 +256,9 @@ export class DataSourceController {
         try {
             // Validation request
             const body = req.body;
+            console.log('[UpdateDataSource] body keys:', Object.keys(body || {}));
+            console.log('[UpdateDataSource] body.ds?.connection?.type:', body?.ds?.connection?.type);
+
             const psswd = body.ds.connection.password;
             let ds: IDataSource;
             let id = req.body._id;
@@ -266,18 +269,21 @@ export class DataSourceController {
                 id = id.$oid;
                 body._id = id;
             }
+            console.log('[UpdateDataSource] resolved id:', id);
 
             try {
                 const dataSource: IDataSource = await DataSource.findById(id);
+                console.log('[UpdateDataSource] dataSource found:', !!dataSource);
+
                 if (!dataSource) {
-                    console.log('Importing new datasource');
+                    console.log('[UpdateDataSource] → new datasource, inserting');
                     let cadena = JSON.stringify(body);
                     cadena = cadena.split('$oid').join('id');
                     ds = new DataSource(JSON.parse(cadena.toString()));
                     ds.ds.metadata.model_owner = req.user?._id;
 
                 } else {
-                    console.log('Importing existing datasource');
+                    console.log('[UpdateDataSource] → existing datasource, updating');
                     const originalOwner = dataSource.ds.metadata.model_owner;
                     body.ds.connection.password = psswd === '__-(··)-__' ? dataSource.ds.connection.password : EnCrypterService.encrypt(body.ds.connection.password);
                     let cadena = JSON.stringify(body.ds);
@@ -285,6 +291,12 @@ export class DataSourceController {
                     dataSource.ds = JSON.parse(cadena.toString());
                     ds = dataSource;
                     ds.ds.metadata.model_owner = originalOwner;
+
+                    console.log('[UpdateDataSource] tables in body:', ds.ds?.model?.tables?.map((t: any) => ({
+                        table_name: t.table_name,
+                        columns: t.columns?.length,
+                        has_relations: Array.isArray(t.relations)
+                    })));
 
                     if (String(req.user._id) !== String(originalOwner)) {
                         const groups = await Group.find({ users: { $in: req.user._id } }).exec();
@@ -303,14 +315,18 @@ export class DataSourceController {
                     }
                 }
 
+                console.log('[UpdateDataSource] processing relations, tables count:', ds.ds?.model?.tables?.length);
 
                 //aparto las relaciones ocultas para optimizar el modelo.
                 ds.ds.model.tables.forEach(t => {
-                    t.no_relations = t ? t.relations.filter(r => r.visible == false) : [];
+                    t.no_relations = t?.relations ? t.relations.filter((r: any) => r.visible == false) : [];
                 });
                 ds.ds.model.tables.forEach(t => {
-                    t.relations = t ? t.relations.filter(r => r.visible !== false) : [];
+                    t.relations = t?.relations ? t.relations.filter((r: any) => r.visible !== false) : [];
                 });
+
+                console.log('[UpdateDataSource] relations processed OK');
+
                 /** Comprobacionde la reciprocidad de las relaciones */
                 ds.ds.model.tables.forEach(tabla => {
                     tabla.relations.forEach(relacion => {
@@ -337,21 +353,24 @@ export class DataSourceController {
                     })
                 });
 
+                console.log('[UpdateDataSource] reciprocity check done, calling markModified + save');
 
                 ds.markModified('ds');
 
                 try {
                     const dataSource = await ds.save();
+                    console.log('[UpdateDataSource] save OK, _id:', dataSource._id);
                     return res.status(200).json({ ok: true, message: 'Modelo actualizado correctamente' });
                 } catch (error) {
-                    console.log(error);
+                    console.log('[UpdateDataSource] save ERROR:', error);
                     next(new HttpException(500, 'Error updating dataSource'));
                 }
             } catch (err) {
-                console.log(err);
+                console.log('[UpdateDataSource] inner catch ERROR:', err);
                 return next(new HttpException(500, 'Datasouce not found'));
             }
         } catch (err) {
+            console.log('[UpdateDataSource] outer catch ERROR:', err);
             next(err);
         }
     }
