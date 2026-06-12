@@ -19,6 +19,9 @@ module.exports = {
 
   UPDATING_SCHEDULE: '1 * * * *',               /* Schedule to check updates for cached queries */
   CLEANNING_SCHEDULE: '1 5 * * *',              /* Schedule to check removes for cached queries */
+  HOLDED_SYNC_SCHEDULE: '0 * * * *',            /* Schedule to trigger Holded sync (hourly check) */
+  GA4_SYNC_SCHEDULE: '0 * * * *',               /* Schedule to trigger Google Analytics sync (hourly check) */
+  ODOO_SYNC_SCHEDULE: '0 * * * *',              /* Schedule to trigger Odoo sync (hourly check) */
   MAX_MILIS_STORED: MINUTES * MS_PER_MINUTE,    /* Max miliseconds a cached query can be stored */
   DEFAULT_CACHE_CONFIG: {                       /* Default cache config when model is created   */
     units: 'days',
