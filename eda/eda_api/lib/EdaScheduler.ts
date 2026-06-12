@@ -20,13 +20,6 @@ export const initJobs = ()=> {
       }
   }
 
-  /**Plugin datasource syncs — each registered plugin with a syncService and scheduleExpression */
-  for (const plugin of PluginRegistry.getAll()) {
-      if (plugin.syncService && plugin.scheduleExpression) {
-          schedule.scheduleJob(plugin.scheduleExpression, () => plugin.syncService.syncAll());
-      }
-  }
-
   /**Check mail sending */
   const mailSender = schedule.scheduleJob(mail_config.MAILING_SCHEDULE, () => MailingService.mailingService() );
 

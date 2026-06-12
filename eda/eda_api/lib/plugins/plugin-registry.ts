@@ -21,7 +21,4 @@ export class PluginRegistry {
         const plugin = this.plugins.get(type);
         return plugin ? new plugin.connectionClass(config) : null;
     }
-    
-	static getByType(type: string): IEDAPlugin | undefined {
-        return this.plugins.find(p => p.type === type);
 }

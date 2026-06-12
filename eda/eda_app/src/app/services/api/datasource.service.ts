@@ -744,6 +744,8 @@ export class DataSourceService extends ApiService implements OnDestroy {
 
     pollGA4Token(state: string): Observable<any> {
         return this.get(`/google-analytics/poll-token?state=${state}`);
+    }
+
     addHoldedDataSource(connection: any): Observable<any> {
         return this.post(`${this.globalDSRoute}/add-holded-data-source`, connection);
     }

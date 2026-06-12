@@ -1194,6 +1194,8 @@ export class DataSourceController {
             const tables = await conn.generateDataModel(optimize ? 1 : 0, '');
 
             DataSourceController.addGA4Relations(tables);
+            const ga4Locale = extractGA4LocaleFromRequest(req);
+            applyGA4Labels(tables, ga4Locale);
 
             const CC = allowCache ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
 

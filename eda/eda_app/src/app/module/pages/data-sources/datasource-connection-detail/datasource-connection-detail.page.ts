@@ -15,14 +15,13 @@ import { PluginFormService } from '../datasource-plugins/plugin-form.service';
 
 import { DropdownModule } from 'primeng/dropdown';
 import { HoldedFormComponent } from '../datasource-plugins/holded/holded-form.component';
-import { PluginFormService } from '../datasource-plugins/plugin-form.service';
 
 @Component({
   standalone: true,
   selector: 'app-datasource-connection-detail',
   templateUrl: './datasource-connection-detail.page.html',
   styleUrls: ['./datasource-connection-detail.page.css'],
-  imports: [SharedModule, CommonModule, FormsModule, ReactiveFormsModule, IconComponent, DropdownModule, NgComponentOutlet]
+  imports: [SharedModule, CommonModule, FormsModule, ReactiveFormsModule, IconComponent, DropdownModule, NgComponentOutlet, HoldedFormComponent]
 })
 export class DataSourceConnectionDetailPage implements OnInit {
   private uploadFileService  = inject(UploadFileService);
@@ -67,7 +66,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     { label: 'SnowFlake', value: 'snowflake', port: null },
     { label: 'ClickHouse', value: 'clickhouse', port: 8123 },
     { label: 'jsonWebService', value: 'jsonwebservice' },
-    { label: 'Mongo', value: 'mongo', port: 27017 },
+
     { label: 'Excel', value: 'excel', port: 27017 },
     { label: 'Csv', value: 'csv', port: 27017 },
     { label: 'DuckDB (CSV)', value: 'duckdb' },
@@ -136,7 +135,6 @@ export class DataSourceConnectionDetailPage implements OnInit {
     private ngxCsvParser: NgxCsvParser,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
-    private pluginFormService: PluginFormService,
   ) {
 
 

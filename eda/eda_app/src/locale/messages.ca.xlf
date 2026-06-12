@@ -6943,7 +6943,7 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="ga4AuthRequired">
         <source>Debes autorizar el acceso a Google Analytics primero</source>
         <target>Cal autoritzar l'accés a Google Analytics primer</target>
-      </tras-unit>
+      </trans-unit>
       <trans-unit id="holdedFolderLabel">
         <source>Nombre de carpeta <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
         <target>Nom de la carpeta <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>

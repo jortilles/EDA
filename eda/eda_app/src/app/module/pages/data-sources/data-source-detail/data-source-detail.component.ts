@@ -206,12 +206,12 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         { label: 'BigQuery', value: 'bigquery' },
         { label: 'SnowFlake', value: 'snowflake'},
         { label: 'JsonWebService', value: 'jsonwebservice'},
-        { label: 'Mongo', value: 'mongodb'},
+
         { label: 'Excel', value: 'excel'},
         { label: 'Csv', value: 'csv'},
         { label: 'DuckDB (CSV)', value: 'duckdb'},
         { label: 'Odoo', value: 'odoo'},
-        { label: 'Google Analytics 4', value: 'googleanalytics'}
+        { label: 'Google Analytics 4', value: 'googleanalytics'},
         { label: 'Holded', value: 'holded'}
     ];
 

@@ -55,13 +55,6 @@ for (const plugin of PluginRegistry.getAll()) {
     }
 }
 
-// Plugin-based routers (registered via PluginRegistry)
-for (const plugin of PluginRegistry.getAll()) {
-    if (plugin.router && plugin.routerPath) {
-        router.use(plugin.routerPath, plugin.router);
-    }
-}
-
 /* ruta per documentació*/
 router.use("/api-docs", DocuRouter);
 

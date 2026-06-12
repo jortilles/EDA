@@ -1,4 +1,5 @@
 import {Component, Input} from '@angular/core';
+import { NgFor } from '@angular/common';
 import {SelectItem} from 'primeng/api';
 import {EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract} from '@eda/shared/components/shared-components.index';
 import {Relation} from '@eda/models/data-source-model/data-source-models';
@@ -12,7 +13,7 @@ import { DropdownModule } from 'primeng/dropdown';
     selector: 'app-table-edit-relations-dialog',
     templateUrl: './table-edit-relations-dialog.component.html',
     styleUrls: ['./table-edit-relations-dialog.component.css'],
-    imports: [ReactiveFormsModule, EdaDialog2Component, DropdownModule]
+    imports: [ReactiveFormsModule, EdaDialog2Component, DropdownModule, NgFor]
 })
 
 export class TableEditRelationsDialogComponent extends EdaDialogAbstract {
