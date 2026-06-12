@@ -57,7 +57,7 @@ export class DragDropComponent implements OnChanges {
     this.newAxes.emit(this.newAxesOrdering);
   }
 
-  // Pasar items de un contenido a otro
+  // Move items from one container to another
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);

@@ -5833,8 +5833,8 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       </trans-unit>
 
       <trans-unit id="preparingDependentFilters">
-        <source>Preparando los filtros dependientes</source>
-        <target>Préparation des filtres dépendants</target>
+        <source> filtros globales para la configuracion de los filtros dependientes: </source>
+        <target> filtres globaux pour la configuration des filtres dépendants : </target>
       </trans-unit>
 
       <trans-unit id="autocompleteFilter">
@@ -6795,6 +6795,138 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
       <trans-unit id="navegar" datatype="html">
         <source>Navegar</source>
         <target>Parcourir</target>
+      </trans-unit>
+      <trans-unit id="noDuckDbFile">
+        <source>Debe cargar un archivo CSV primero</source>
+        <target>Vous devez charger un fichier CSV d&apos;abord</target>
+      </trans-unit>
+      <trans-unit id="noFolderName">
+        <source>Debe proporcionar el nombre de la carpeta</source>
+        <target>Vous devez fournir un nom de dossier</target>
+      </trans-unit>
+      <trans-unit id="duckdbCreated">
+        <source>Fuente de datos DuckDB creada correctamente</source>
+        <target>Source de données DuckDB créée avec succès</target>
+      </trans-unit>
+      <trans-unit id="errorParseDuckDb">
+        <source>Error al parsear el archivo CSV. Verifica el separador.</source>
+        <target>Erreur lors de l&apos;analyse du fichier CSV. Vérifiez le séparateur.</target>
+      </trans-unit>
+      <trans-unit id="duckdbFolderLabel">
+        <source>Carpeta padre</source>
+        <target>Dossier parent</target>
+      </trans-unit>
+      <trans-unit id="duckdbFolderPlaceholder">
+        <source>nombre_carpeta_nueva</source>
+        <target>nom_nouveau_dossier</target>
+      </trans-unit>
+      <trans-unit id="duckdbFolderHint">
+        <source>Los archivos CSV se guardarán en <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>duckdb/<x id="INTERPOLATION" equiv-text="{{ connectionForm.get(&apos;folderName&apos;)?.value || &apos;...&apos; }}"/>/<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/></source>
+        <target>Les fichiers CSV seront enregistrés dans <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>duckdb/<x id="INTERPOLATION" equiv-text="{{ connectionForm.get(&apos;folderName&apos;)?.value || &apos;...&apos; }}"/>/<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="duckdbAddAnotherCsv">
+        <source>Añadir otro CSV</source>
+        <target>Ajouter un autre CSV</target>
+      </trans-unit>
+      <trans-unit id="duckdbNewFolder">
+        <source>+ Nueva carpeta</source>
+        <target>+ Nouveau dossier</target>
+      </trans-unit>
+      <trans-unit id="duckdbCsvListTitle">
+        <source>CSVs en la carpeta (<x id="INTERPOLATION" equiv-text="{{ duckdbCsvList.length }}"/>):</source>
+        <target>CSV dans le dossier (<x id="INTERPOLATION" equiv-text="{{ duckdbCsvList.length }}"/>):</target>
+      </trans-unit>
+      <trans-unit id="duckdbCsvColumns">
+        <source>(<x id="INTERPOLATION" equiv-text="{{ csv.columnsConfig.length }}"/> columnas)</source>
+        <target>(<x id="INTERPOLATION" equiv-text="{{ csv.columnsConfig.length }}"/> colonnes)</target>
+      </trans-unit>
+      <trans-unit id="odooUrlLabel">
+        <source>URL de Odoo <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>URL Odoo <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="odooInfoMessage">
+        <source>Al confirmar se descargarán las facturas, líneas, clientes, productos y vendedores de Odoo y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos segundos dependiendo del volumen de datos.</source>
+        <target>En confirmant, les factures, lignes, clients, produits et vendeurs seront téléchargés depuis Odoo et créés comme tables dans un datasource DuckDB. Le téléchargement peut prendre quelques secondes selon le volume de données.</target>
+      </trans-unit>
+      <trans-unit id="odooCreated">
+        <source>Fuente de datos Odoo creada correctamente</source>
+        <target>Source de données Odoo créée avec succès</target>
+      </trans-unit>
+      <trans-unit id="ga4PropertyIdLabel">
+        <source>ID de Propiedad GA4</source>
+        <target>ID de propriété GA4</target>
+      </trans-unit>
+      <trans-unit id="ga4PropertyIdHint">
+        <source>Puedes encontrarlo en Google Analytics → Administrar → Información de la propiedad</source>
+        <target>Vous pouvez le trouver dans Google Analytics → Administrer → Informations sur la propriété</target>
+      </trans-unit>
+      <trans-unit id="ga4FolderNameLabel">
+        <source>Nombre de carpeta</source>
+        <target>Nom du dossier</target>
+      </trans-unit>
+      <trans-unit id="ga4FolderNameHint">
+        <source>Se creará la carpeta duckdb/&lt;nombre&gt;/ con los CSV de métricas</source>
+        <target>Le dossier duckdb/&lt;nom&gt;/ sera créé avec les fichiers CSV de métriques</target>
+      </trans-unit>
+      <trans-unit id="ga4FolderPlaceholder">
+        <source>ga4_miempresa</source>
+        <target>ga4_monsociete</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthLabel">
+        <source>Autorización de Google Analytics</source>
+        <target>Autorisation Google Analytics</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthButton">
+        <source>Autorizar con Google Analytics</source>
+        <target>Autoriser avec Google Analytics</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthWaiting">
+        <source>Esperando autorización en la ventana emergente...</source>
+        <target>En attente d'autorisation dans la fenêtre contextuelle...</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthSuccess">
+        <source>Cuenta de Google Analytics autorizada correctamente</source>
+        <target>Compte Google Analytics autorisé avec succès</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthRevoke">
+        <source>Cambiar cuenta</source>
+        <target>Changer de compte</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthError">
+        <source>Error durante la autorización. Inténtalo de nuevo.</source>
+        <target>Erreur lors de l'autorisation. Veuillez réessayer.</target>
+      </trans-unit>
+      <trans-unit id="ga4InfoMessage">
+        <source>Al confirmar se descargarán los datos de los últimos 365 días de Google Analytics 4: sesiones por canal, páginas vistas, eventos, dispositivos y datos geográficos. La descarga puede tardar según el volumen de datos de la propiedad.</source>
+        <target>En confirmant, les données des 365 derniers jours de Google Analytics 4 seront téléchargées : sessions par canal, pages vues, événements, appareils et données géographiques. Le téléchargement peut prendre du temps selon le volume de données de la propriété.</target>
+      </trans-unit>
+      <trans-unit id="ga4Created">
+        <source>Fuente de datos Google Analytics 4 creada correctamente</source>
+        <target>Source de données Google Analytics 4 créée avec succès</target>
+      </trans-unit>
+      <trans-unit id="ga4PropertyIdRequired">
+        <source>Debe indicar el ID de propiedad de Google Analytics 4</source>
+        <target>L'ID de propriété Google Analytics 4 est requis</target>
+      </trans-unit>
+      <trans-unit id="ga4AuthRequired">
+        <source>Debes autorizar el acceso a Google Analytics primero</source>
+        <target>Vous devez d'abord autoriser l'accès à Google Analytics</target>
+      </trans-unit>
+      <trans-unit id="holdedFolderLabel">
+        <source>Nombre de carpeta <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Nom du dossier <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="holdedApiKeyLabel">
+        <source>API Key de Holded <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></source>
+        <target>Clé API Holded <x id="START_TAG_SPAN" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" equiv-text="&lt;/span&gt;"/></target>
+      </trans-unit>
+      <trans-unit id="holdedInfoMessage">
+        <source>Al confirmar se descargarán las facturas, líneas, contactos, productos y asientos contables de Holded y se crearán como tablas en un datasource DuckDB. La descarga puede tardar unos minutos dependiendo del volumen de datos.</source>
+        <target>En confirmant, les factures, lignes, contacts, produits et écritures comptables seront téléchargés depuis Holded et créés comme tables dans un datasource DuckDB. Le téléchargement peut prendre quelques minutes selon le volume de données.</target>
+      </trans-unit>
+      <trans-unit id="holdedCreated">
+        <source>Fuente de datos Holded creada correctamente</source>
+        <target>Source de données Holded créée avec succès</target>
       </trans-unit>
     </body>
   </file>

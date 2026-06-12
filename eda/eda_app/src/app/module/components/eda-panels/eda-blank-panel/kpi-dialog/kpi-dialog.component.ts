@@ -27,7 +27,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
 
     public panelChartConfig: PanelChart = new PanelChart();
     
-    // Usar assignedColors en lugar de series
+    // Use assignedColors instead of series
     public assignedColors: Array<{value: string, color: string}> = [];
     private originalAssignedColors: Array<{value: string, color: string}> = [];
 
@@ -58,12 +58,13 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     public chartContent: any;
     public display: boolean = false;
     public activeTab: "aspecto" | "alerts" = "aspecto";
+    public isKpiTrend: boolean = false;
     public selectedPalette: { name: string; paleta: any } | null = null;
     public allPalettes: any = this.stylesProviderService.ChartsPalettes;
     public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
     private colorsLoaded: boolean = false;
 
-    // Getter para compatibilidad con template (mantener series para no romper el HTML)
+    // Getter for template compatibility (keep series to avoid breaking the HTML)
     get series() {
         return this.assignedColors;
     }
@@ -130,6 +131,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         this.kpiBackgroundColor = config.backgroundColor || '';
         this.kpiTextColor = config.kpiColor || '';
         this.prefixImage = config.prefixImage || '';
+        this.isKpiTrend = this.panelChartConfig.chartType === 'kpitrend';
         this.activeTab = 'aspecto';
 
         if (this.panelBaseResultSize > 0) {
@@ -148,7 +150,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     }
 
     saveChartConfig() {
-        // Guardar assignedColors en el chart
+        // Save assignedColors in the chart
         if (this.chartContent && this.assignedColors.length > 0) {
             this.applyColorsToChart();
         }
@@ -184,7 +186,7 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
         const existingColors = this.panelChartConfig.config.getConfig()['assignedColors'] || [];
         const dataset = this.chartContent.chartDataset;
 
-        // Crear assignedColors desde el dataset
+        // Create assignedColors from the dataset
         this.assignedColors = dataset.map((ds, index) => {
             const existingColor = existingColors.find(c => c.value === ds.label);
             const backgroundColor = this.rgb2hex(ds.backgroundColor) || ds.backgroundColor;
@@ -262,13 +264,13 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
     }
 
     handleInputColor(item) {
-        // Actualizar el color en assignedColors
+        // Update the color in assignedColors
         const colorConfig = this.assignedColors.find(c => c.value === item.value);
         if (colorConfig) {
             colorConfig.color = item.color;
         }
 
-        // Aplicar al chart
+        // Apply to the chart
         this.applyColorsToChart();
     }
 
@@ -307,13 +309,13 @@ export class KpiEditDialogComponent implements OnInit, AfterViewInit, AfterViewC
 
         const interpolatedColors = this.ChartUtilsService.generateRGBColorGradientScaleD3(numColors, paletteColors);
 
-        // Actualizar assignedColors con los nuevos colores
+        // Update assignedColors with the new colors
         this.assignedColors = dataset.map((d, i) => ({
             value: d.label,
             color: interpolatedColors[i % interpolatedColors.length].color
         }));
 
-        // Aplicar colores
+        // Apply colors
         this.applyColorsToChart();
     }
 

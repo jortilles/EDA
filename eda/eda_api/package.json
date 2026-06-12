@@ -1,6 +1,6 @@
 {
-    "name": "api-eda",
-    "version": "3.0.2",
+    "name": "api-edalitics",
+    "version": "3.1.0",
     "description": "EDA api package",
     "main": "index.js",
     "scripts": {
@@ -21,7 +21,9 @@
         "@anthropic-ai/bedrock-sdk": "^0.29.0",
         "@anthropic-ai/sdk": "^0.99.0",
         "@clickhouse/client": "^1.8.0",
+        "@duckdb/node-api": "^1.5.3-r.3",
         "@google-cloud/bigquery": "^8.3.1",
+        "google-auth-library": "^9.0.0",
         "@modelcontextprotocol/sdk": "^1.29.0",
         "@node-saml/passport-saml": "^5.1.0",
         "@tensorflow/tfjs": "^4.22.0",

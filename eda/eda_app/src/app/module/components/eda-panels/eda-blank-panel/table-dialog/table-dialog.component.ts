@@ -36,7 +36,7 @@ export class TableDialogComponent{
   public items: MenuItem[];
 
   public gradientMenuController: EdaDialogController;
-  // TODO REVISAR EL CONTROLADOR CUANDO SE INICIA
+  // TODO REVIEW THE CONTROLLER WHEN IT STARTS
 
   public row_totals;
   public col_totals;
@@ -132,7 +132,7 @@ export class TableDialogComponent{
       this.bandingColor = DEFAULT_TABLE_BANDING_COLOR;
       this.colorEnabled = true;
     }
-    // Leer el estado actual de predicción del panel
+    // Read the current prediction state of the panel
     const panelID = this.controller?.params?.panelId;
     const dashboardPanel = this.dashboard?.edaPanels?.toArray().find((cmp: any) => cmp.panel.id === panelID);
     const existingPrediction = dashboardPanel?.panel?.content?.query?.query?.prediction;
@@ -288,7 +288,7 @@ export class TableDialogComponent{
     currentConfig.resultAsPecentage = !currentConfig.onlyPercentages;
     currentConfig.onlyPercentages = !currentConfig.onlyPercentages;
 
-    //no totals
+    // no totals
     currentConfig.withColSubTotals = false;
     this.col_subtotals = currentConfig.withColSubTotals;
 
@@ -335,7 +335,7 @@ export class TableDialogComponent{
         this.cols = this.myPanelChartComponent.componentRef.instance.inject.cols.filter(col => col.type === "EdaColumnNumber" || col.type === "EdaColumnPercentage");
       }
     } else {
-      // El codigo de color solo aplica a un nivel de crosstab
+      // The color code only applies to one crosstab level
       this.cols = [];
 
       let series = this.myPanelChartComponent.componentRef.instance.inject.series;
@@ -362,7 +362,7 @@ export class TableDialogComponent{
 
       if (this.onlyPercentages) this.cols = [];
     }
-    this.setItems(); // Aqui se busca la modificación de colores
+    this.setItems(); // This is where color modification is requested
   }
 
   get queryNumericColumns(): QueryColumn[] {
@@ -385,7 +385,7 @@ export class TableDialogComponent{
       this.showPredictionDialog = true;
     } else {
       this.pendingPrediction = null;
-      // Si había predicción activa, recargar la preview sin predicción
+      // If there was an active prediction, reload the preview without prediction
       if (this.originalPrediction && this.originalPrediction !== 'None') {
         this.runPreviewQuery(null);
       }
@@ -408,7 +408,7 @@ export class TableDialogComponent{
 
     this.spinnerService.on();
     try {
-      // Setear temporalmente la predicción para construir la query
+      // Temporarily set the prediction to build the query
       const origPred = dashboardPanel.panel.content.query.query.prediction;
       const origPredConfig = dashboardPanel.panel.content.query.query.predictionConfig;
 
@@ -422,16 +422,16 @@ export class TableDialogComponent{
 
       const query = QueryUtils.switchAndBuildQuery(dashboardPanel);
 
-      // Revertir inmediatamente (sincrónico, antes del await)
+      // Revert immediately (synchronously, before the await)
       dashboardPanel.panel.content.query.query.prediction = origPred;
       dashboardPanel.panel.content.query.query.predictionConfig = origPredConfig;
 
-      // Ejecutar la query directamente sin pasar por runQueryFromDashboard
+      // Execute the query directly without going through runQueryFromDashboard
       const response = await dashboardPanel.dashboardService.executeQuery(query).toPromise();
       const chartLabels = dashboardPanel.chartUtils.uniqueLabels(response[0]);
       const chartData = response[1];
 
-      // Actualizar solo la preview del dialog
+      // Update only the dialog preview
       this.panelChartConfig = new PanelChart({
         ...this.panelChartConfig,
         data: { labels: chartLabels, values: chartData },
@@ -479,7 +479,7 @@ export class TableDialogComponent{
       this.noRepetitions, this.negativeNumbers, this.ordering, this.crossSortOrder,
       this.headerColor, this.bandingColor, this.colorEnabled);
 
-    // Aplicar cambios de predicción al dashboard solo al confirmar
+    // Apply prediction changes to the dashboard only on confirm
     const panelID = this.controller?.params?.panelId;
     const dashboardPanel = this.dashboard?.edaPanels?.toArray().find((cmp: any) => cmp.panel.id === panelID);
     const hadPrediction = !!(this.originalPrediction && this.originalPrediction !== 'None');
@@ -717,4 +717,3 @@ export class TableDialogComponent{
   }
 
 }
-

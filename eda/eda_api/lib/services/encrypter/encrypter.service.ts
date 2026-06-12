@@ -8,7 +8,7 @@ export class EnCrypterService {
         this.newValues = [];
 
         for (let i = 0; i < value.length; i++) {
-            this.newValues.push(String.fromCharCode(value.charCodeAt(i) + SEED.charCodeAt(i)));
+            this.newValues.push(String.fromCharCode(value.charCodeAt(i) + SEED.charCodeAt(i % SEED.length)));
         }
 
         return Buffer.from(this.newValues.join('')).toString('base64');
@@ -19,7 +19,7 @@ export class EnCrypterService {
         const dec = Buffer.from(value, 'base64').toString();
 
         for (let i = 0;  i < dec.length; i++) {
-            this.newValues.push(String.fromCharCode(dec.charCodeAt(i) - SEED.charCodeAt(i)));
+            this.newValues.push(String.fromCharCode(dec.charCodeAt(i) - SEED.charCodeAt(i % SEED.length)));
         }
 
         return this.newValues.join('');

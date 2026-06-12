@@ -1,8 +1,9 @@
-import { Component, inject, OnInit, AfterViewChecked, signal, ViewChild, ElementRef, NgZone } from '@angular/core';
+import { Component, inject, OnInit, AfterViewChecked, signal, ViewChild, ElementRef, NgZone, HostListener, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { NgChartsModule } from 'ng2-charts';
 import { ChartData, ChartOptions } from 'chart.js';
+import { Subscription } from 'rxjs';
 import { IaChatService, ChatMessage, ChatOption, BarChart } from '@eda/services/api/ia-chat.service';
 import type { ChatEvent } from '@eda/services/api/ia-chat.service';
 import { CORPORATE_COLORS } from '@eda/configs/index';
@@ -18,6 +19,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   private iaChatService = inject(IaChatService);
   private sanitizer = inject(DomSanitizer);
   private zone = inject(NgZone);
+  private cdr = inject(ChangeDetectorRef);
 
   private markdownCache = new Map<string, SafeHtml>();
   @ViewChild('chatMessages') private chatMessagesRef!: ElementRef;
@@ -28,6 +30,14 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   chatLoading = signal(false);
   chatStatusMessage = signal('');
   chatHistory: ChatMessage[] = [];
+  streamingIndex = signal(-1);
+  isAtBottom = signal(true);
+  copiedIndex = signal(-1);
+
+  private tokenQueue: string[] = [];
+  private typewriterInterval: any = null;
+  private finalResponse: string | null = null;
+  private chatSubscription: Subscription | null = null;
 
   private readonly chartPalette = ['b3', '99', '80', '70', '60'];
   private readonly chartExtraColors = ['#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
@@ -109,11 +119,57 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     return result;
   }
 
+  onMessagesScroll(): void {
+    const el = this.chatMessagesRef?.nativeElement;
+    if (!el) return;
+    this.isAtBottom.set(el.scrollTop + el.clientHeight >= el.scrollHeight - 80);
+  }
+
+  scrollToBottom(): void {
+    const el = this.chatMessagesRef?.nativeElement;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+    this.isAtBottom.set(true);
+  }
+
+  copyMessage(index: number, content: string): void {
+    navigator.clipboard.writeText(content).then(() => {
+      this.copiedIndex.set(index);
+      setTimeout(() => this.copiedIndex.set(-1), 2000);
+    });
+  }
+
+  stopGeneration(): void {
+    this.chatSubscription?.unsubscribe();
+    this.chatSubscription = null;
+    const idx = this.streamingIndex();
+    if (idx >= 0) {
+      while (this.tokenQueue.length > 0) {
+        this.chatHistory[idx].content += this.tokenQueue.shift()!;
+      }
+      if (this.finalResponse !== null) {
+        this.chatHistory[idx].content = this.finalResponse;
+      }
+    }
+    this.resetTypewriter();
+    this.chatLoading.set(false);
+    this.chatStatusMessage.set('');
+    setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+  }
+
   resetChat(): void {
+    this.chatSubscription?.unsubscribe();
+    this.chatSubscription = null;
+    this.resetTypewriter();
     this.chatHistory = [];
     this.chatLoading.set(false);
     this.chatStatusMessage.set('');
     setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    if (this.chatOpen()) this.toggleChat();
   }
 
   toggleChat(): void {
@@ -156,8 +212,9 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     this.chatLoading.set(true);
     this.chatStatusMessage.set('');
     this.shouldScrollChat = true;
+    this.resetTypewriter();
 
-    this.iaChatService.sendMessage(this.chatHistory).subscribe(this.chatHandlers());
+    this.chatSubscription = this.iaChatService.sendMessage(this.chatHistory).subscribe(this.chatHandlers());
   }
 
   selectOption(option: ChatOption): void {
@@ -183,24 +240,83 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     this.chatLoading.set(true);
     this.chatStatusMessage.set('');
     this.shouldScrollChat = true;
-    this.iaChatService.sendMessage(this.chatHistory).subscribe(this.chatHandlers());
+    this.resetTypewriter();
+    this.chatSubscription = this.iaChatService.sendMessage(this.chatHistory).subscribe(this.chatHandlers());
+  }
+
+  private resetTypewriter(): void {
+    if (this.typewriterInterval) {
+      clearInterval(this.typewriterInterval);
+      this.typewriterInterval = null;
+    }
+    this.tokenQueue = [];
+    this.finalResponse = null;
+    this.streamingIndex.set(-1);
+  }
+
+  private startTypewriter(botIndex: number): void {
+    if (this.typewriterInterval) return;
+    this.typewriterInterval = setInterval(() => {
+      if (this.tokenQueue.length > 0) {
+        this.chatHistory[botIndex].content += this.tokenQueue.shift()!;
+        if (this.isAtBottom()) this.shouldScrollChat = true;
+        this.cdr.detectChanges();
+      } else if (this.finalResponse !== null) {
+        clearInterval(this.typewriterInterval);
+        this.typewriterInterval = null;
+        this.chatHistory[botIndex].content = this.finalResponse;
+        this.finalResponse = null;
+        this.streamingIndex.set(-1);
+        this.chatLoading.set(false);
+        this.shouldScrollChat = true;
+        this.cdr.detectChanges();
+        setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+      }
+    }, 35);
   }
 
   private chatHandlers() {
+    let botIndex = -1;
     return {
       next: (event: ChatEvent) => {
         if (event.type === 'status') {
           this.chatStatusMessage.set(this.statusLabels[event.code] ?? '');
           this.shouldScrollChat = true;
-        } else {
+        } else if (event.type === 'token') {
+          if (botIndex < 0) {
+            this.chatStatusMessage.set('');
+            this.chatHistory.push({ role: 'assistant', content: '', options: [], chart: undefined });
+            botIndex = this.chatHistory.length - 1;
+            this.streamingIndex.set(botIndex);
+            this.shouldScrollChat = true;
+          }
+          this.tokenQueue.push(event.text);
+          this.startTypewriter(botIndex);
+        } else if (event.type === 'response') {
           this.chatStatusMessage.set('');
-          this.chatHistory.push({ role: 'assistant', content: event.response, options: event.options ?? [], chart: event.chart });
-          this.chatLoading.set(false);
-          this.shouldScrollChat = true;
-          setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+          if (botIndex < 0) {
+            this.chatHistory.push({ role: 'assistant', content: event.response, options: event.options ?? [], chart: event.chart });
+            this.chatLoading.set(false);
+            this.shouldScrollChat = true;
+            setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+          } else {
+            this.chatHistory[botIndex].options = event.options ?? [];
+            this.chatHistory[botIndex].chart = event.chart;
+            this.finalResponse = event.response;
+            if (!this.typewriterInterval) {
+              this.chatHistory[botIndex].content = event.response;
+              this.finalResponse = null;
+              this.streamingIndex.set(-1);
+              this.chatLoading.set(false);
+              this.shouldScrollChat = true;
+              this.cdr.detectChanges();
+              setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+            }
+          }
         }
       },
       error: () => {
+        this.resetTypewriter();
         this.chatStatusMessage.set('');
         this.chatHistory.push({ role: 'assistant', content: $localize`:@@chatErrorConnecting:Error al conectar con el asistente.` });
         this.chatLoading.set(false);
@@ -212,6 +328,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
 
   renderMarkdown(text: string): SafeHtml {
     if (this.markdownCache.has(text)) return this.markdownCache.get(text)!;
+    if (this.markdownCache.size > 60) this.markdownCache.clear();
 
     const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 

@@ -1,7 +1,7 @@
 import { EdaColumn } from './eda-column';
 
 export class EdaColumnNumber extends EdaColumn {
-    decimals: number = 2; //numero de decimales con los que se inicializa la columna
+    decimals: number = 2; // Number of decimal places used to initialize the column.
     prefix: string = '';
     sufix: string = '';
 

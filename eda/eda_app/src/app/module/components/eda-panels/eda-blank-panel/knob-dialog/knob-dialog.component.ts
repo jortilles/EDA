@@ -25,6 +25,7 @@ export class KnobDialogComponent implements OnInit {
     public max: number;
     public label: string;
     public display: boolean = false;
+    public semaphoreColor: boolean = false;
     public title: string = $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`;
 
     constructor(private styleProviderService: StyleProviderService) {}
@@ -35,13 +36,13 @@ export class KnobDialogComponent implements OnInit {
     }
 
     ngAfterViewChecked(): void {
-        // Solo actualizar si los colores aún son los valores por defecto
+        // Update only if the colors are still the default values
         if (this.assignedColors[0].color === '#000000' && this.myPanelChartComponent?.componentRef) {
 
             setTimeout(() => {
                 const chartAssignedColors = this.myPanelChartComponent.props.config.getConfig()['assignedColors'] || [];
 
-                /* Actualizar con los colores reales del chart */
+                /* Update with the actual chart colors */
                 if (chartAssignedColors.length >= 1) {
                     this.assignedColors = [
                         { value: 'Color', color: chartAssignedColors[0]?.color }
@@ -55,8 +56,9 @@ export class KnobDialogComponent implements OnInit {
 
                 this.min = limits[0];
                 this.max = limits[1];
+                this.semaphoreColor = !!this.myPanelChartComponent.componentRef.instance.inject?.semaphoreColor;
 
-                // Cargar assignedColors
+                // Load assignedColors
                 this.loadChartColors(this.label, currentColor);
             }, 100);
         }
@@ -65,16 +67,16 @@ export class KnobDialogComponent implements OnInit {
     loadChartColors(label: string, currentColor: string) {
         const existingColors = this.panelChartConfig.config.getConfig()['assignedColors'] || [];
         
-        // Crear assignedColors con el formato estándar
+        // Create assignedColors with the standard format
         this.assignedColors = [{
             value: label,
             color: existingColors[0]?.color || currentColor
         }];
         
-        // Guardar copia para cancelar
+        // Save a copy for cancellation
         this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
         
-        // Aplicar color al componente
+        // Apply color to the component
         this.applyColorToChart();
     }
 
@@ -91,16 +93,17 @@ export class KnobDialogComponent implements OnInit {
     }
 
     saveChartConfig() {
-        // Aplicar colores finales
+        // Apply final colors
         this.applyColorToChart();
         
-        // Guardar assignedColors en config
+        // Save assignedColors in config
         this.panelChartConfig.config.getConfig()['assignedColors'] = [...this.assignedColors];
         
-        // Guardar límites
+        // Save limits
         const properties = {
             limits: [this.min, this.max],
-            assignedColors: this.assignedColors
+            assignedColors: this.assignedColors,
+            semaphoreColor: this.semaphoreColor
         };
         
         this.styleProviderService.palKnob = false;

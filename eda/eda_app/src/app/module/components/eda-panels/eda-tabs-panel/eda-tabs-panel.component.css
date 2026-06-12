@@ -53,7 +53,7 @@
     box-shadow: none;
 }
 
-/* Oculta el icono en paneles muy pequeños donde no hay espacio */
+/* Hide the icon on very small panels where there is no space */
 @container tabs (max-height: 46px) {
     .tab-button {
         padding-left: 6px;

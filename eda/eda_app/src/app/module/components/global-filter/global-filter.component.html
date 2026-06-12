@@ -3,7 +3,7 @@
   [style.overflow]="globalFilters.length === 0 ? 'hidden' : null"
   [style.margin]="globalFilters.length === 0 ? '0' : null">
 
-  <!-- Botón Filtrar -->
+  <!-- Filter button -->
   @if (globalFilters.length > 0 && (isAdmin || isDashboardCreator || filterButtonVisibility.public)) {
   <button class="flex items-center gap-2 px-2 py-2 bg-gray-200 text-gray-700 rounded-md border hover:bg-gray-300"
     [style]="styleButton" (click)="validateFilter()">
@@ -14,13 +14,13 @@
 
   <div class="flex flex-wrap items-start gap-2 xl:gap-4 ">
 
-    <!-- Contenedor general con scroll -->
+    <!-- Main container with scroll -->
     <div class="filters-container items-center flex flex-wrap gap-4 p-3 rounded-lg bg-transparent">
 
       @for (filter of globalFilters; track filter.filter_id) {
         @if (isAdmin || isDashboardCreator || (['public', 'readOnly'].includes(filter.visible) && (filter.selectedColumn?.visible || filter.column?.value?.visible))) {
 
-          <!-- Si NO tiene autocomplete → estilo antiguo -->
+          <!-- If it does NOT have autocomplete → legacy style -->
           @if(!filter.isAutocompleted || filter.isAutocompleted === false) {
             <div class="filter-card flex flex gap-2 rounded-lg p-3">
               <div class="filter-label flex items-center">
@@ -60,7 +60,14 @@
                   <ng-template pTemplate>
                     <div (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)"
                          class="max-h-[30vh] overflow-auto min-w-[20vw] max-w-[30vw]">
-                        <span>{{ resumen }}</span>
+                        <div class="flex items-center justify-between mb-1 pl-1 pr-4 py-2">
+                            <span>{{ resumen }}</span>
+                            @if(filter.visible !== "readOnly" || isAdmin) {
+                              <button type="button" class="pi pi-trash filter-tooltip-button ml-2"
+                                  (click)="removeAllFilterItems(filter)">
+                              </button>
+                            }
+                        </div>
                           @for (item of filter.selectedItems; track item) {
                             <div class="filter-tooltip-container bg-[white]  px-4 py-2 rounded flex items-center mr-1">
                                 <span class="customMultiselect filters-size filter-tooltip-text">
@@ -79,7 +86,7 @@
             }
             </div>
           }@else{
-            <!-- Si tiene autocomplete -> estilo moderno -->
+            <!-- If it has autocomplete → modern style -->
             <div
               class="filter-card flex flex-col gap-2 rounded-lg p-3">
               <div class="filter-row flex items-center">
@@ -103,7 +110,12 @@
                   <ng-template pTemplate>
                        <div class="max-h-[30vh] overflow-auto min-w-[20vw] max-w-[30vw]"
                             (mouseenter)="showFilterTooltip($event, op, filter)" (mouseleave)="hideFilterTooltip(op)">
-                           <span>{{ resumen }}</span>
+                           <div class="flex items-center justify-between mb-1 pl-1 pr-4 py-2">
+                               <span>{{ resumen }}</span>
+                               <button type="button" class="pi pi-trash filter-tooltip-button ml-2"
+                                   (click)="removeAllFilterItems(filter)">
+                               </button>
+                           </div>
                               @for (item of filter.selectedItems; track item) {
                                 <div class="filter-tooltip-container bg-[white]  px-4 py-2 rounded flex items-center mr-1">
                                     <span class="customMultiselect filters-size filter-tooltip-text">

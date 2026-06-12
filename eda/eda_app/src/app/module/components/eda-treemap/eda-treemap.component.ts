@@ -47,15 +47,15 @@ export class EdaTreeMap implements AfterViewInit {
     this.firstColLabels = [...new Set(this.firstColLabels)];
     this.data = this.formatData(this.inject.data);
     this.assignedColors = this.inject.assignedColors;
-    // Revisar esto si es necesario
-    //this.assignedColors.forEach((element, index) => {if(element.value === undefined) element.value = this.firstColLabels[index]}); // linea para cuando value es numerico
+    // Check this if necessary
+    //this.assignedColors.forEach((element, index) => {if(element.value === undefined) element.value = this.firstColLabels[index]}); // Line for when the value is numeric.
   }
 
   ngOnDestroy(): void {
-    // Borrar contenedor
+    // Delete container
     if (this.div)
       this.div.remove();
-    // Borrar resize observer
+    // Delete resize observer
     if (this.resizeObserver)
       this.resizeObserver.disconnect();
   }
@@ -64,11 +64,11 @@ export class EdaTreeMap implements AfterViewInit {
   ngAfterViewInit() {
   const container = this.svgContainer.nativeElement as HTMLElement;
 
-  // Crear SVG
+  // Create SVG
     if (!this.svg)
      this.svg = d3.select(container).append('svg'); 
 
-  // ResizeObserver para redimensionar el chart
+  // ResizeObserver to resize the chart
   this.resizeObserver = new ResizeObserver(entries => {
     const { width: w, height: h } = entries[0].contentRect;
     if (w > 0 && h > 0) {
@@ -80,7 +80,7 @@ export class EdaTreeMap implements AfterViewInit {
   });
   this.resizeObserver.observe(container);
 
-  // Primer draw
+  // First draw
   const w = container.clientWidth;
   const h = container.clientHeight;
   if (w > 0 && h > 0) {
@@ -134,15 +134,15 @@ export class EdaTreeMap implements AfterViewInit {
   }
 
   draw() {
-    // Borrado inicial de otros charts 
+    // Initial deletion of other charts
     this.svg.selectAll('*').remove();
     const container = this.svgContainer.nativeElement as HTMLElement;
     const width = container.clientWidth - 20,
     height = container.clientHeight - 20;
-    //Valores de assignedColors separados
+    // AssignedColors values separated
     const valuesTree = this.assignedColors.map((item) => item.value);
     const colorsTree = this.assignedColors[0]?.color ? this.assignedColors.map(item => item.color) : this.colors;
-    //Funcion de ordenación de colores de D3
+    // D3 color sorting function
     const color = d3.scaleOrdinal(this.firstColLabels,  colorsTree);
     
     const treemap = (data) =>
@@ -177,9 +177,9 @@ export class EdaTreeMap implements AfterViewInit {
       .append("rect")
       .attr("id", (d) => (d.leafUid = this.randomID()))
       .attr("fill", (d) => {
-        //AQUI SE PONE EL COLOR DEL TREEMAP
+        // Here the treemap color is set
         while (d.depth > 1) d = d.parent;
-        //Devolvemos SOLO EL COLOR de assignedColors que comparte la data y colors de assignedColors
+        // We return ONLY the assignedColors color that matches the data and assignedColors colors
         if(typeof d.data.name === 'number')
           d.data.name = d.data.name.toString(); 
          return  valuesTree.findIndex((item) => d.data.name.includes(item)) === -1 ? color(d.data.name) : colorsTree[valuesTree.findIndex((item) => d.data.name.includes(item))];
@@ -257,7 +257,7 @@ export class EdaTreeMap implements AfterViewInit {
       })
       .join("tspan")
       .style("font-size", (12 + this.styleProviderService.panelFontSize.source['_value'] * 2)+'px')
-      //REVISAR COLOR
+      // Check color
       .style("pointer-events", "none")
       .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
       .style("font-family", this.styleProviderService.panelFontFamily.source['_value'])
@@ -284,7 +284,7 @@ export class EdaTreeMap implements AfterViewInit {
       let newRow = [];
       let numericValue = row.splice(this.metricIndex, 1)[0];
       newRow = [...row];
-      //Replace nulls by   Null strings
+      //Replace nulls by Null strings
       for (let e = 0; e < newRow.length; e++) {
         if (newRow[e] === null) {
           newRow[e] = "Null";

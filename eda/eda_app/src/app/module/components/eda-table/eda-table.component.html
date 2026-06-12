@@ -187,11 +187,15 @@
                                 </ng-container>
                                 <!-- ngSwitch NUMBER -->
                                 <ng-container *ngSwitchCase="'EdaColumnNumber'">
-                                    <span [ngStyle]="{'color': getColor(lodash.get(rowData, col.field))}">
-                                        {{ lodash.get(rowData, col.field) | number:'1.0-10':'es' }}
-                                    </span>
+                                    @if(isNumericValue(lodash.get(rowData, col.field))) {
+                                        <span [ngStyle]="{'color': getColor(lodash.get(rowData, col.field))}">
+                                            {{ lodash.get(rowData, col.field) | number:'1.0-10':'es' }}
+                                        </span>
+                                    } @else {
+                                        <div [innerHTML]="getSafeHtml(lodash.get(rowData, col.field))" (click)="handleHtmlClick($event)"></div>
+                                    }
                                 </ng-container>
-                                <!-- ngSwitch NUMBER -->
+                                <!-- ngSwitch DATE -->
                                 <ng-container *ngSwitchCase="'EdaColumnDate'">
                                     @if(inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field){
                                         <div class="flex items-center w-full" [pTooltip]="getLinkTooltip(col)">
@@ -236,7 +240,7 @@
                                     <i class="fa fa-trash btn pl-1" (click)="col.click(rowData)"></i>
                                 </ng-container>
                                 <ng-container *ngSwitchCase="'EdaColumnEditable'">
-                                    <td><i class="fa fa-pencil btn pl-1" (click)="col.click(rowData)"></i></td>
+                                    <i class="fa fa-pencil btn pl-1" (click)="col.click(rowData)"></i>
                                 </ng-container>
                                 <ng-container *ngSwitchCase="'EdaColumnChart'">
 

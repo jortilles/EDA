@@ -23,7 +23,7 @@ export class ScatterPlotDialog implements OnInit, AfterViewChecked {
 
   public panelChartConfig: PanelChart = new PanelChart();
 
-  /** Fuente única de verdad */
+  /** Single source of truth */
   public assignedColors: { value: string; color: string }[] = [];
   private originalAssignedColors: { value: string; color: string }[] = [];
 
@@ -62,7 +62,7 @@ export class ScatterPlotDialog implements OnInit, AfterViewChecked {
           };
         });
 
-        // snapshot para cancelar
+        // snapshot for cancel
         this.originalAssignedColors = this.assignedColors.map(c => ({ ...c }));
 
       }, 0);
@@ -73,7 +73,7 @@ export class ScatterPlotDialog implements OnInit, AfterViewChecked {
     this.controller.close(event, response);
   }
 
-  /** GUARDAR */
+  /** SAVE */
   saveChartConfig(): void {
     const colorsForConfig = this.assignedColors.map(c => c.color);
 
@@ -89,7 +89,7 @@ export class ScatterPlotDialog implements OnInit, AfterViewChecked {
     this.onClose(EdaDialogCloseEvent.UPDATE, { colors: colorsForConfig });
   }
 
-  /** CANCELAR */
+  /** CANCEL */
   closeChartConfig(): void {
     this.assignedColors = this.originalAssignedColors.map(c => ({ ...c }));
 
@@ -120,7 +120,7 @@ export class ScatterPlotDialog implements OnInit, AfterViewChecked {
     this.myPanelChartComponent.changeChartType();
   }
 
-  /** PALETA */
+  /** PALETTE */
   onPaletteSelected(): void {
     if (!this.selectedPalette) return;
 

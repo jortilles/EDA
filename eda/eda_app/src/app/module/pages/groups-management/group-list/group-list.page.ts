@@ -79,13 +79,13 @@ export class GroupListPage implements OnInit {
   }
 
 
-  // Carga de todos los grupos
+  // Load all groups
   async loadGroups() {
     this.groups = await lastValueFrom(this.groupService.getGroups());
     this.groups.sort((a, b) => a.name.localeCompare(b.name));
     }
   
-  // Carga de todos los usuarios
+  // Load all users
   async loadUserList() {
     const users = await lastValueFrom(this.userService.getUsers());
 
@@ -97,7 +97,7 @@ export class GroupListPage implements OnInit {
 
     this.users = users;
 
-    // Eliminamos usuarios vacios
+    // Remove empty users
     this.users = this.users.filter(u => u.name && u.name.trim() !== '');
   }
 
@@ -119,21 +119,21 @@ export class GroupListPage implements OnInit {
     this.currentPage = page;
   }
 
-  // Edición de usuarios
+  // Edit users
 handleEditGroup(group: Group) {
   this.selectedGroup = { ...group };
 
-  // Clonamos la lista completa de usuarios disponibles
+  // Clone the full list of available users
   this.availableUsers = [...this.users];
 
-  // Convertimos los IDs de selectedGroup a objetos user
+  // Convert selectedGroup IDs to user objects
   const selectedUsers = this.users.filter(user =>
     group.users.includes(user._id)
   ).map(user => ({ ...user }));
 
   this.selectedGroup.users = selectedUsers;
 
-  // Eliminamos los usuarios seleccionados de availableUsers
+  // Remove selected users from availableUsers
   this.availableUsers = this.availableUsers.filter(user =>
     !this.selectedGroup.users.some(u => u._id === user._id)
   );
@@ -151,7 +151,7 @@ handleEditGroup(group: Group) {
   }
 
   handleDeleteGroup(groupId: string) {
-    // Confirmación del borrado de grupo
+    // Confirm group deletion
     let title = $localize`:@@DeleteGroupText:Eliminarás todos los elementos relacionados con este grupo. `
     Swal.fire({
         title: $localize`:@@Sure:¿Estás seguro?`,
@@ -176,17 +176,17 @@ handleEditGroup(group: Group) {
   onApplyGroupDetail() {
     this.showGroupDetail = false;
 
-    // Por defecto es EDA_USER_ROLE
+    // Default role is EDA_USER_ROLE
     this.selectedGroup.role = 'EDA_USER_ROLE';
 
-    // Reconversión para guardar solo sus IDs
-    if (this.selectedGroup.isnew) { //Estamos creando grupo  
+    // Re-convert to save only user IDs
+    if (this.selectedGroup.isnew) { // Creating a new group
       let group: IGroup = {
         name: this.selectedGroup.name,
         role: { label: this.selectedGroup.name, value: this.selectedGroup.role },
         users: this.selectedGroup.users,
-        source: "EDA", // Esto sirve para distinguir de los grupos creados por EDA de los que vienen por SSO (OAUTH, SAML, GOOGLE, MICROSOFT, ETC)
-      }      
+        source: "EDA", // Used to distinguish groups created by EDA from those coming via SSO (OAUTH, SAML, GOOGLE, MICROSOFT, etc.)
+      }
 
       this.groupService.insertGroup(group).subscribe(
         res => {
@@ -197,7 +197,7 @@ handleEditGroup(group: Group) {
         }
       );   
     }
-    else { //Estamos modificando grupo  
+    else { // Modifying an existing group
       this.selectedGroup.users = this.selectedGroup.users.map(user => user._id );
       let groupToModify = this.groups.find(group => group._id === this.selectedGroup._id);
       groupToModify.name = this.selectedGroup.name; 

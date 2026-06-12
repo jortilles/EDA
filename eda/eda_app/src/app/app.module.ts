@@ -12,6 +12,6 @@ import { PrimengModule } from './core/primeng.module';
   declarations: [],
   imports: [CommonModule, PrimengModule, CoreModule, CorePagesModule, SharedModule, ServicesModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  bootstrap: [] // No necesitas bootstrap aquí si usas bootstrapApplication
+  bootstrap: [] // No bootstrap needed here when using bootstrapApplication
 })
 export class AppModule {}

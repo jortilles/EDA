@@ -14,9 +14,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DestroyRef } from '@angular/core';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import '@angular/localize/init';
-import { DropdownModule } from 'primeng/dropdown';       // Si usas <p-dropdown>
-import { InputSwitchModule } from 'primeng/inputswitch'; // Si usas <p-inputSwitch>
-import { ScrollPanelModule } from 'primeng/scrollpanel'; // Si usas <p-scrollPanel>
+import { DropdownModule } from 'primeng/dropdown';       // if use <p-dropdown>
+import { InputSwitchModule } from 'primeng/inputswitch'; // if use <p-inputSwitch>
+import { ScrollPanelModule } from 'primeng/scrollpanel'; // if use <p-scrollPanel>
 import { GlobalFilterDialogComponent } from "../component.index";
 import { EdaDatePickerComponent } from "@eda/shared/components/shared-components.index";
 
@@ -74,7 +74,7 @@ export class GlobalFilterComponent implements OnInit {
     public resumen: string = $localize`:@@filterSummary:Resumen de filtros`;
     public selectedItemsLabel: string = $localize`:@@globalFilterSelectedItemsLabel:elementos seleccionados`;
     private tooltipHideTimeout: any;
-    // flag para ver ultimo panel
+    // Flag to view last panel
     private lastPanel: any;
     private isDropdownOpen: boolean = false;
 
@@ -96,7 +96,7 @@ export class GlobalFilterComponent implements OnInit {
         // this.isDashboardCreator = this.dashboard.isDashboardCreator;
         // this.hideFilters = this.dashboard.display_v.panelMode;
         this.updateStyleButton();
-        // Suscripción si los estilos cambian dinámicamente y unsubscribe cuando se haga destroy
+        // Subscribe to dynamic style changes and unsubscribe on destroy
         this.styleProviderService.filtersFontColor.pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => this.updateStyleButton());
         this.styleProviderService.filtersFontFamily.pipe(takeUntilDestroyed(this.destroyRef))
@@ -123,11 +123,11 @@ export class GlobalFilterComponent implements OnInit {
         this.setFiltersVisibility();
         this.setFilterButtonVisibilty();
         await this.fillFiltersData();
-        // Datos de los filtros ya cargados
+        // Filter data already loaded
         this.placeholderText ='';
 
 
-        // Inicialización de los filtros dependientes, solo si estan configurados:
+        // Initialize dependent filters, only if configured:
         if(this.orderDependentFilters.length !== 0) {
             const initDependentFilter = this.orderDependentFilters.find((f: any) => f.x===0 && f.y===0);
             const initDependentGlobalFilter = this.globalFilters.find((gf: any) => gf.id === initDependentFilter.filter_id)
@@ -165,7 +165,7 @@ export class GlobalFilterComponent implements OnInit {
         }
     }
 
-    // métode per descobrir o amagar el botó de filtrar al dashboard
+    // method to show or hide the filter button on the dashboard
     private setFilterButtonVisibilty(): void {
         let myFilters = _.cloneDeep(this.globalFilters);
         if (!this.isDashboardCreator || !this.isAdmin) {
@@ -191,7 +191,7 @@ export class GlobalFilterComponent implements OnInit {
             if (this.getFilterType(filter) === 'date') {
                 this.loadDatesFromFilter(filter)
             } else {
-                tasks.push(this.loadGlobalFiltersData(filter)); // Promise para asegurarnos de que todos los datos se han cargado
+                tasks.push(this.loadGlobalFiltersData(filter)); // Promise to ensure all data has been loaded
             }
         }
         await Promise.all(tasks);
@@ -219,10 +219,10 @@ export class GlobalFilterComponent implements OnInit {
 
     public setGlobalFilterItems(filter: any) {
 
-        // Aplicando los filtros dependientes si existe un ordenamiento configurado
+        // Apply dependent filters if a sort order is configured
         if(this.orderDependentFilters.length !==0) this.applyingDependentFilter(filter, this.globalFilters);
 
-        // Verificando si tenemos filtros para mapear, que fueron importados en el nuevo dashboard
+        // Check if we have filters to map that were imported from another dashboard
         this.dashboard.edaPanels.forEach((ebp: EdaBlankPanelComponent) => {
 
             const filterMap = ebp.panel.globalFilterMap || [];
@@ -238,22 +238,22 @@ export class GlobalFilterComponent implements OnInit {
                         ebp.assertGlobalFilter(formatedFilter);
                     }
 
-                } else if (filterMap.length) {  // Sección donde mapeamos filtros importados
+                } else if (filterMap.length) {  // Section where imported filters are mapped
 
                     const map = filterMap.find((f) => f.targetId == filter.id);
                     const panelFilter = ebp.globalFilters.find(gf => gf.filter_id === map?.sourceId);
                     const items = this.globalFilterService.formatFilter(filter);
 
-                    // Si el filtro importado es de panel => selectedFilter
+                    // If the imported filter belongs to a panel => selectedFilter
                     if(!panelFilter) {
                         const selectedFilter = ebp.selectedFilters.find(gf => gf.filter_id === map?.sourceId);
                         if(selectedFilter?.filter_elements) {
-                            selectedFilter.filter_elements = items.filter_elements; // Copiando los items seleccionados
+                            selectedFilter.filter_elements = items.filter_elements; // Copying the selected items
                         }
 
                     } else {
                         if (panelFilter?.filter_elements) {
-                            panelFilter.filter_elements = items.filter_elements; // Copiando los items seleccionados
+                            panelFilter.filter_elements = items.filter_elements; // Copying the selected items
                             ebp.assertGlobalFilter(panelFilter);
                         }
                     }
@@ -285,7 +285,7 @@ export class GlobalFilterComponent implements OnInit {
                         joins:[],
                 })
 
-                // Se agregan Filtros de PADRES
+                // Parent filters are added
                 for(let r=0; r<globalFilters.length; r++) {
                     if(globalFilters[r].id !==filter.id && globalFilters[r].id !==filterItem.id) {  
                         this.filterCollectionRecursive(globalFilters[r].children, filterItem.id, globalFilters[r], filterCollection)
@@ -307,13 +307,13 @@ export class GlobalFilterComponent implements OnInit {
                     filters: filterCollection
                 };
 
-                // LANZA LA QUERY
+                // EXECUTE THE QUERY
                 
                 this.loading = true;
                 const query = this.queryBuilderService.normalQuery([filterItem.selectedColumn], queryParams);
                 const res = await this.dashboardService.executeQuery(query).toPromise();
 
-                // Haciendo el filtro de los nuevos valores:
+                // Filtering the new values:
                 const filterName = res[0][0];
                 const filterData = res[1].map((item: any) => {
                     return ({
@@ -324,9 +324,9 @@ export class GlobalFilterComponent implements OnInit {
 
                 filterItem.data = filterData;
 
-                // Creación de un Set con todos los valores válidos
+                // Create a Set with all valid values
                 const validValues = new Set(filterData.map((fd: any) => fd.value));
-                // Filtrar los elementos seleccionados que existen en validValues
+                // Filter selected items that exist in validValues
                 filterItem.selectedItems = filterItem.selectedItems.filter(item => validValues.has(item));
 
                 this.loading = false;
@@ -343,7 +343,7 @@ export class GlobalFilterComponent implements OnInit {
                 }
             }
         } else {
-            // El filtro no tiene children
+            // The filter has no children
         }
     }
 
@@ -364,7 +364,7 @@ export class GlobalFilterComponent implements OnInit {
                     joins: [],
                 };
 
-                // comparar sólo las propiedades relevantes
+                // compare only relevant properties
                 const newKey = {
                     filter_column: newFilter.filter_column,
                     filter_column_type: newFilter.filter_column_type,
@@ -391,7 +391,7 @@ export class GlobalFilterComponent implements OnInit {
                 if (!exists) {
                     filterCollection.push(newFilter);
                 }
-                return true; // encontramos (o ya existía) => detener búsqueda
+                return true; // found (or already existed) => stop search
             }
 
             if (child.children && child.children.length > 0) {
@@ -512,7 +512,7 @@ export class GlobalFilterComponent implements OnInit {
             if (this.globalFilter.isnew) {
 
 
-                // Agregamos un item mas al ordenamiento de filtros dependientes:
+                // Add one more item to the dependent filter order:
                 if(this.orderDependentFilters.length !== 0) {
                     this.orderDependentFilters.push({
                         cols: 3,
@@ -584,13 +584,13 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     public deleteFilterEvent(event: any) {
-        // Se reinicia el ordenamiento de los filtros dependientes
+        // The dependent filter order is reset
         if(event) {
 
             if(this.orderDependentFilters.length !==0) {
-                // Eliminando el ordenamiento
+                // Removing the sort order
                 this.orderDependentFilters = [];
-                // Eliminando las relaciones entre los filtros globales 
+                // Removing relationships between global filters
                 this.globalFilters.forEach((gf: any) => {
                     gf.children = [];
                 });
@@ -820,7 +820,7 @@ export class GlobalFilterComponent implements OnInit {
             }
             
             const data = res[1].filter(item => !!item[0] || item[0] == '').map(item => ({ label: item[0], value: item[0] }));
-            // En la línea 774, ANTES de asignar:
+            // Before assigning:
             const foundFilter = this.globalFilters.find((gf: any) => gf.id == globalFilter.id);
 
             if (foundFilter) {
@@ -862,20 +862,20 @@ export class GlobalFilterComponent implements OnInit {
                                     });
                                 }
 
-                                // Añadimos los joins del filtro que viene por url
+                                // Add the joins from the URL filter
                                 formatedFilter.joins = pathList;
 
                                 if (formatedFilter.pathList && formatedFilter.pathList[panel.id] && formatedFilter.pathList[panel.id].table_id) {
                                     formatedFilter.filter_table = formatedFilter.pathList[panel.id].table_id;
                                 }
 
-                                // Control de filtros
+                                // Filter control
                                 if( _.findIndex(panelFilter, (inx) => inx.filter_column === formatedFilter.filter_column) >=0 ){
                                     panelFilter.splice(_.findIndex(panelFilter, (inx) => inx.filter_column === formatedFilter.filter_column), 1);
                                 }
                                 panelFilter.push(formatedFilter);
 
-                                // Inyectar filtro URL en sortedFilters cuando existen filtros avanzados
+                                // Inject URL filter into sortedFilters when advanced filters exist
                                 const sortedFilters = panel.content?.query?.query?.sortedFilters;
                                 if (sortedFilters && sortedFilters.length > 0) {
                                     const existingIndex = sortedFilters.findIndex((sf: any) => sf.filter_id === formatedFilter.filter_id);
@@ -931,19 +931,19 @@ export class GlobalFilterComponent implements OnInit {
         return disabled;
     }
 
-    // Funcion para cargar todos los valores via endpoint
+    // Function to load all values via endpoint
    public async loadFilterAutoComplete(event: any, filtro: any) {
-       // Mínimo de caracteres antes de filtrar
+       // Minimum characters before filtering
        const minLength = 2;
        if (event.query.length < minLength) {
            this.autoCompleteValues = [];
            return;
         }
 
-        // Reset para el control del doble evento keyenter
+        // Reset to control the double keyenter event
         this.itemJustSelected = false;
 
-        // milisegundos para no cargar multiples veces mientras se escribe
+        // Milliseconds delay to avoid multiple loads while typing
         const delay = 300;
         clearTimeout(this.filterTimeout);
 
@@ -998,7 +998,7 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     onItemSelected(filtro: any) {
-        // Si seleccionamos manualmente con el enter no queremos el primero 
+        // If we manually select with enter we don't want the first item
         this.itemJustSelected = true;
         filtro.selectedItems = filtro.selectedItems.map((item: any) => {
             if (item && typeof item === 'object' && 'value' in item) {
@@ -1006,13 +1006,13 @@ export class GlobalFilterComponent implements OnInit {
             }
             return item;
         });
-        // Actualizar Global filter
+        // Update Global filter
         this.setGlobalFilterItems(filtro)
     }
 
 
     onAddValue(event: KeyboardEvent, filter: any) {
-        // Si acaba de ocurrir una selección, no hacemos nada
+        // If a selection just occurred, do nothing
         if (this.itemJustSelected) {
             this.itemJustSelected = false; // reset
             return;
@@ -1039,13 +1039,18 @@ export class GlobalFilterComponent implements OnInit {
         this.setGlobalFilterItems(filter);
     }
 
+    public removeAllFilterItems(filter: any): void {
+        filter.selectedItems = [];
+        this.setGlobalFilterItems(filter);
+    }
+
     public setDropdownOpen(value: boolean): void {
         this.isDropdownOpen = value;
     }
 
     // Method to show the filter tooltip
     public showFilterTooltip(event: MouseEvent, op: any, filter?: any): void {
-    // si el dropdown esta abierto no se muestra el tooltip
+    // if the dropdown is open the tooltip is not shown
         if (this.isDropdownOpen) return;
     // If the filter doesn't have selected values, the tooltip won't be shown
         if (filter && (!filter.selectedItems || filter.selectedItems.length === 0)) return;

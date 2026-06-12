@@ -119,7 +119,7 @@ export class LinkDashboardsComponent {
     try {
       if (!this.noLink) {
         const dashboard_name = this.dasboards.filter(d => d['value'] === this.selectedDashboard)[0].label;
-        //Get index -> only non numeric
+        // Get index -> only non-numeric
         const colIndex = this.controller.params.query
           .map((col: any, i: number) => { return { i: i, name: col.column_name } })
           .filter(col => col.name === this.sourceColumn)[0].i;
@@ -134,7 +134,7 @@ export class LinkDashboardsComponent {
       }
     } catch (error) {
       console.error('Error en saveChartConfig:', error);
-      // Si ocurre cualquier error, hacemos lo mismo que el else
+      // If any error occurs, do the same as the else branch
       this.onClose(EdaDialogCloseEvent.NONE, null);
     }
   }
@@ -168,19 +168,19 @@ export class LinkDashboardsComponent {
     const tempFilters: any[] = [];
 
     try {
-      // Obtener lista general de dashboards
+      // Get the general dashboard list
       this.loading = true;
       const dashboardInfo = await this.dashboardService.getDashboards().toPromise();
       const dashboards = []
         .concat(dashboardInfo.dashboards, dashboardInfo.group, dashboardInfo.publics, dashboardInfo.shared)
         .filter(d => d._id !== this.controller.params.dashboard_id);
 
-      // Llamadas en paralelo para cargar los dashboards mas rapido
+      // Parallel calls to load dashboards faster
       const results = await Promise.allSettled(
         dashboards.map(d => this.dashboardService.getDashboard(d._id).toPromise())
       );
 
-      // Procesar resultados
+      // Process results
       for (let i = 0; i < results.length; i++) {
         const res = results[i];
         const d = dashboards[i];

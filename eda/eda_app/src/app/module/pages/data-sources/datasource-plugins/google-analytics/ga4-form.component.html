@@ -1,0 +1,91 @@
+<div class="p-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <!-- GA4: Property ID -->
+    <div class="space-y-2">
+      <label class="block font-medium" i18n="@@ga4PropertyIdLabel">
+        ID de Propiedad GA4 <span class="text-red-500">*</span>
+      </label>
+      <input type="text" [(ngModel)]="ga4PropertyId" [ngModelOptions]="{standalone: true}"
+        placeholder="123456789"
+        class="w-full px-3 py-2 border border-gray-300 rounded-md" />
+      <p class="text-gray-500 text-xs" i18n="@@ga4PropertyIdHint">
+        Puedes encontrarlo en Google Analytics → Administrar → Información de la propiedad
+      </p>
+    </div>
+
+    <!-- GA4: Folder name -->
+    <div class="space-y-2">
+      <label class="block font-medium" i18n="@@ga4FolderNameLabel">
+        Nombre de carpeta <span class="text-red-500">*</span>
+      </label>
+      <input type="text" [(ngModel)]="ga4FolderName" [ngModelOptions]="{standalone: true}"
+        placeholder="ga4_miempresa"
+        i18n-placeholder="@@ga4FolderPlaceholder"
+        class="w-full px-3 py-2 border border-gray-300 rounded-md" />
+      <p class="text-gray-500 text-xs" i18n="@@ga4FolderNameHint">
+        Se creará la carpeta duckdb/&lt;nombre&gt;/ con los CSV de métricas
+      </p>
+    </div>
+
+    <!-- GA4: Authorize button -->
+    <div class="space-y-3 md:col-span-2">
+      <label class="block font-medium" i18n="@@ga4AuthLabel">
+        Autorización de Google Analytics <span class="text-red-500">*</span>
+      </label>
+
+      @if (ga4AuthState === 'idle' || ga4AuthState === 'error') {
+      <button type="button"
+        class="flex items-center gap-3 px-5 py-2.5 border border-gray-300 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow font-medium text-gray-700"
+        (click)="authorizeGA4()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="h-5 w-5">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.29-8.16 2.29-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+          <path fill="none" d="M0 0h48v48H0z"/>
+        </svg>
+        <span i18n="@@ga4AuthButton">Autorizar con Google Analytics</span>
+      </button>
+      @if (ga4AuthState === 'error') {
+      <p class="text-red-600 text-sm" i18n="@@ga4AuthError">
+        Error durante la autorización. Inténtalo de nuevo.
+      </p>
+      }
+      }
+
+      @if (ga4AuthState === 'waiting') {
+      <div class="flex items-center gap-3 text-gray-600">
+        <svg class="animate-spin h-5 w-5 text-corporate-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+        </svg>
+        <span i18n="@@ga4AuthWaiting">Esperando autorización en la ventana emergente...</span>
+      </div>
+      }
+
+      @if (ga4AuthState === 'authorized') {
+      <div class="flex items-center gap-2 text-green-700 bg-green-50 border border-green-200 rounded-md px-4 py-2.5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+        </svg>
+        <span i18n="@@ga4AuthSuccess">Cuenta de Google Analytics autorizada correctamente</span>
+        <button type="button" class="ml-auto text-sm text-green-600 underline"
+          (click)="ga4AuthState = 'idle'; ga4CredentialsJson = ''"
+          i18n="@@ga4AuthRevoke">
+          Cambiar cuenta
+        </button>
+      </div>
+      }
+    </div>
+
+    <!-- GA4: info -->
+    <div class="md:col-span-2 p-3 bg-blue-50 rounded-md border border-blue-200 text-sm text-blue-700"
+         i18n="@@ga4InfoMessage">
+      Al confirmar se descargarán los datos de los últimos 365 días de Google Analytics 4:
+      sesiones por canal, páginas vistas, eventos, dispositivos y datos geográficos.
+      La descarga puede tardar según el volumen de datos de la propiedad.
+    </div>
+
+  </div>
+</div>

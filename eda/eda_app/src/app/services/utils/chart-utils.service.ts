@@ -1,6 +1,6 @@
 /**
  *
- * chart-utils.services.ts: Totes les utilitats dels gràfics.
+ * chart-utils.services.ts: All chart utilities.
  *
  */
 
@@ -64,6 +64,7 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypesKPIBAR:KPI + Gráfico de Barras`, value: 'kpibar', subValue: 'kpibar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesKPILINE:KPI + Gráfico de Lineas`, value: 'kpiline', subValue: 'kpiline', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesKPIAREA:KPI + Gráfico de Áreas`, value: 'kpiline', subValue: 'kpiarea', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesKPITrend:KPI Tendencia`, value: 'kpitrend', subValue: 'kpitrend', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesDynamicText:Texto Dinámico`, value: 'dynamicText', subValue: 'dynamicText', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes15:Velocímetro`, value: 'knob', subValue: 'knob', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes3:Gráfico de Pastel`, value: 'doughnut', subValue: 'doughnut', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
@@ -86,7 +87,6 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypes10:Mapa de coordenadas`, value: 'coordinatesMap', subValue: 'coordinatesMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes11:Mapa de Capas`, value: 'geoJsonMap', subValue: 'geoJsonMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypesRadar:Radar`, value: 'radar', subValue: 'radar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
-        { label: $localize`:@@chartTypesKPITrend:KPI Tendencia`, value: 'kpitrend', subValue: 'kpitrend', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
     ];
 
     public filterTypes: FilterType[] = [
@@ -129,7 +129,7 @@ export class ChartUtilsService {
 
     public MyPaletteColors: string[] = DEFAULT_PALETTE_COLOR;
     /*
-        Funció especifica per transformar les dades per el velocímetre (knob)
+        Specific function to transform data for the speedometer (knob)
     */
     public transformData4Knob(data: any, dataTypes: string[]): any {
         let values = [];
@@ -153,8 +153,8 @@ export class ChartUtilsService {
 
 
     /*
-        Aquesta funció manipula les dades per donar-los la forma que esperen els grafics ng-chart
-        numberOfColumns es el numero de columnes que farem servidr en el histograma
+        This function transforms data into the format expected by ng-chart charts.
+        numberOfColumns is the number of columns used in the histogram.
     */
     public transformDataQuery(type: string, subType: string,  values: any[], dataTypes: string[], dataDescription: any, isBarline: boolean, numberOfColumns: number) {
 
@@ -169,7 +169,7 @@ export class ChartUtilsService {
         dataTypes.forEach( (e,indice)=>{            
             if(e=='text'){
                 values.forEach( (v) => {
-                    v[indice] = (v[indice] == '' || v[indice] == ' ' || v[indice] === null ) ? '-' :  v[indice] ; //canviem les cadenes buides i els null de text per un '-';                   
+                    v[indice] = (v[indice] == '' || v[indice] == ' ' || v[indice] === null ) ? '-' :  v[indice] ; //replace empty strings and null text values with '-';                
                 })}
         })
         
@@ -189,7 +189,7 @@ export class ChartUtilsService {
             const _labels = values.map(v => v[label_idx]);
             const _values = values.map(v => v[number_idx]).filter(elem => elem != null);
 
-            // Faig push a l'array output, que sera retornat per l'inicialització del PieChart
+            // Push to the output array, which will be returned for the PieChart initialization
             const _output = [[], []];
             _output[0] =  _output[0] = values.map(v => v[label_idx]);
             _output[1] = [{ data: values.map(v => v[number_idx]) }];
@@ -206,7 +206,7 @@ export class ChartUtilsService {
             const _output = [[], []];
             _output[0] = l;
 
-            //necesitamos dos series de datos y uno numérico para hacer una pirámide
+            //we need two data series and one numeric to build a pyramid
             if (dataDescription.otherColumns.length === 2 && dataDescription.numericColumns.length === 1) {
                 let series = [];
                 s.forEach((s) => {
@@ -224,7 +224,7 @@ export class ChartUtilsService {
                 //If >1 numeric series
             }
 
-            //para el gráfico de pirámide, cogemos los valores del primer segmento y los multiplicamos por -1.
+            //For the pyramid chart, take the values from the first segment and multiply them by -1.
             let u = _.cloneDeep(_output[1])
             let inverData = []
             for (let i=0;i<u.length;i++) {
@@ -270,18 +270,18 @@ export class ChartUtilsService {
                     });
                 });
 
-                // calibrar los valores al 100%
+                // calibrate values to 100%
                 let totales = [];
-                for (var k = 0; k < l.length; k++) totales[k] = 0; // inicializando totales
+                for (var k = 0; k < l.length; k++) totales[k] = 0; // initializing totals
                 
-                // recolectando todas las sumas
+                // collecting all sums
                 _output[1].forEach((e:any) => {
                     e.data.forEach((v:any,j:number) => {
                         totales[j]=totales[j]+v;
                     })
                 })
 
-                // Agregando los valores de porcentaje
+                // Adding percentage values
                 const _outputTemporal = _output[1];
 
                 _outputTemporal.forEach((e:any, k:number) => {
@@ -309,7 +309,7 @@ export class ChartUtilsService {
                 }
 
                 let label_idx = idx.label;
-                let serie_idx = idx.label; // El unico valor de texto
+                let serie_idx = idx.label; // The only text value
 
                 s.forEach((s) => {
                     _output[1].push({ data: [], label: s , value: [],  mode: 'textOneNumericN' });
@@ -331,19 +331,19 @@ export class ChartUtilsService {
                     })
                 })
 
-                // calibrar los valores al 100%
-                // Calculando las sumas de cada campo
+                // calibrate values to 100%
+                // Calculating the sum of each field
                 _output[1].forEach((e) => {
                     e.data.forEach((v,j) => {
                         totalGenerico[j] = totalGenerico[j] + v
                     })
                 })
                 
-                // ejecutando el porcentaje 100%
+                // applying 100% percentage
                 _output[1].forEach((e) => {
                     for (var i = 0; i < l.length; i++) {
-                        e.value[i] = (e.data[i]); // Valor numérico
-                        e.data[i] = ((e.data[i] * 100)/totalGenerico[i]); // Valor numérico en porcetaje
+                        e.value[i] = (e.data[i]); // Numeric value
+                        e.data[i] = ((e.data[i] * 100)/totalGenerico[i]); // Numeric value as percentage
                     }
                 })
             }
@@ -426,7 +426,7 @@ export class ChartUtilsService {
             let new_data=[];
             let num_cols=0;
             let salto=0;
-            //Si hay nulos van a parte
+            //Nulls are handled separately
             const grupo_null =  values.map(v => v[number_idx]).filter(element => {
                 return element === null;
             });;
@@ -450,7 +450,7 @@ export class ChartUtilsService {
                 num_cols=50;
             }
 
-            //No me llega el numero de columnas fijo el numero de columnas
+            //Column count not received, setting default column count
             if(!isNaN(numberOfColumns) &&  numberOfColumns !== null ){
                 num_cols=numberOfColumns;
             }
@@ -470,7 +470,7 @@ export class ChartUtilsService {
                     num_cols=numberOfColumns;
                 }
                 new_data = this.generateNewDataRangeForHistogram(allNumbers,distinctNumbers,num_cols,min,max , salto);
-                /** array de un único elemento. Cuando tenga mas ya veré lo que hago */
+                /** single-element array. Will handle more when needed */
                 grupos =   this.generateGruposRangeForHistogram( num_cols,min,max , salto, this.esEntero(distinctNumbers) , dataDescription.query[0].minimumFractionDigits);
             }
             if(grupo_null.length > 0 ){
@@ -517,7 +517,7 @@ export class ChartUtilsService {
                 }else{
                     grupos.push( mi_min.toFixed(minimumFractionDigits)+" - "+max.toFixed( minimumFractionDigits ));
                 }
-                // Salgo del bucle
+                // Exit the loop
                 i = i+num_cols;
             }
 
@@ -560,7 +560,7 @@ export class ChartUtilsService {
            new_data.push( grupo.length);
            mi_min = mi_salto;
            if( mi_min >= max){
-            // Salgo
+            // Exit
             i = num_cols;
            }
 
@@ -598,7 +598,7 @@ export class ChartUtilsService {
     }
 
 
-/** Ajuda per saber si un númeor es enter o no.  */
+/** Helper to check if a number is an integer or not.  */
     private esEntero(numeros:number[]):boolean{
         let res = true;
         numeros.forEach(
@@ -677,7 +677,7 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('kpiline'), 1);
             notAllowed.splice(notAllowed.indexOf('kpiarea',), 1);
         }
-        // barchart i horizontalbar  poden ser grafics normals o poden ser histograms....
+        // barchart and horizontalbar can be regular charts or histograms....
         if (dataDescription.numericColumns.length >= 1 && dataDescription.totalColumns > 1 && dataDescription.otherColumns.length < 2
             || dataDescription.numericColumns.length === 1 && dataDescription.totalColumns > 1 && dataDescription.totalColumns < 4  /* && aggregation */) {
                 notAllowed.splice(notAllowed.indexOf('bar'), 1);
@@ -690,7 +690,7 @@ export class ChartUtilsService {
         if(dataDescription.otherColumns.length===1 && dataDescription.numericColumns.length>=1 && dataDescription.totalColumns>=2 ){
             notAllowed.splice(notAllowed.indexOf('radar'), 1);
         }
-        // això es per els histogrames.....
+        // this is for histograms.....
         if (dataDescription.numericColumns.length == 1 && dataDescription.totalColumns == 1 ) {
             notAllowed.splice(notAllowed.indexOf('histogram'), 1);
         }
@@ -753,8 +753,8 @@ export class ChartUtilsService {
         if ((dataDescription.numericColumns.length <= 2 && dataDescription.numericColumns.length > 0
             && dataDescription.otherColumns.length === 0)
             ||
-            // si sento un dataset cojo los dos primeros
-            // del estilo:
+            // if there is a single dataset take the first two
+            // like:
             //  var1 - 10
             //  var 2 - 100
             (dataDescription.numericColumns.length === 1 && dataDescription.otherColumns.length === 1)
@@ -774,12 +774,12 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('sunburst'), 1);
         }
 
-        // Pruebas con hacer dinámico el treeTable
+        // Testing dynamic treetable
         if(dataDescription.totalColumns > 2) {
             notAllowed.splice(notAllowed.indexOf('treetable'), 1);
         }
 
-        // kpitrend: 2 columnas - 1 fecha (year/month/week/day) + 1 numerico
+        // kpitrend: 2 columns - 1 date (year/month/week/day) + 1 numeric
         const dateColForTrend = query.find((c: any) => c.column_type === 'date');
         const kpiTrendFormats = ['year', 'month', 'week', 'day'];
         if (dataDescription.totalColumns === 2 && dataDescription.numericColumns.length === 1
@@ -855,10 +855,10 @@ export class ChartUtilsService {
 
 
 /**
- * Genera chartColors en formato Chart.js desde assignedColors
- * @param assignedColors - Array de {value, color}
- * @param chartType - Tipo de chart
- * @returns chartColors en formato esperado por Chart.js
+ * Generates chartColors in Chart.js format from assignedColors
+ * @param assignedColors - Array of {value, color}
+ * @param chartType - Chart type
+ * @returns chartColors in the format expected by Chart.js
  */
     public generateChartColorsFromAssignedColors(assignedColors: AssignedColor[], chartType: string): any[] {
         
@@ -872,14 +872,14 @@ export class ChartUtilsService {
         switch (type) {
             case 'doughnut':
             case 'polarArea':
-                // Formato: [{backgroundColor: [...], borderColor: [...]}]
+                // Format: [{backgroundColor: [...], borderColor: [...]}]
                 return [{
                     backgroundColor: assignedColors.map(c => c.color),
                     borderColor: assignedColors.map(c => c.color)
                 }];
                 
             case 'histogram':
-                // Histogram usa solo el primer color
+                // Histogram uses only the first color
                 return [{
                     backgroundColor: assignedColors[0].color,
                     borderColor: assignedColors[0].color
@@ -896,7 +896,7 @@ export class ChartUtilsService {
         }
     }   
 
-    // Funciones de transformaciones de codigos de colores
+    // Color code transformation functions
     private toHex(c: number): string {
         const hex = Math.max(0, Math.min(255, Math.round(c))).toString(16);
         return hex.length === 1 ? '0' + hex : hex;
@@ -1025,12 +1025,12 @@ export class ChartUtilsService {
 
 
 
-        // Metode original del pau que arodonia al seguent ordre de magnitud.
-        // Pero si el maxim es 10.000  estableix 20.000
-        // Ho intento ajustar una mica.
+        // Original method that rounds to the next order of magnitude.
+        // But if the max is 10,000 it sets 20,000
+        // Trying to adjust it a bit.
         //max = Math.ceil(max / max_om) * max_om;
 
-        // si estic a valors petit poso el max a 5 o a 10
+        // for small values set max to 5 or 10
         if(max_om == 1){
            if(max <1){
                 max = 1;
@@ -1042,14 +1042,14 @@ export class ChartUtilsService {
                max = 10;
            }
         }else{
-            // Ara ho arrodoneix a un mumero mes proper al maxim.al centenar per sobre de  la resta
+            // Now rounds to a number closer to the max, to the nearest hundred above the remainder
             if(  ( (max % max_om) /max_om) < 0.5 ){
 
-                // Si tinc motl marge fins a la seguent unitat de magnitut ho arrodoneixo mes paropor
+                // If there is a lot of margin to the next order of magnitude, round more precisely
                 max = max - ( max % max_om) +
             ( 2* (  Math.ceil(  ( max % max_om) / max_resto )  *  max_resto) );
             }else{
-                // Si no ho arodoneixo a la propera unitat de magnitu
+                // Otherwise round to the next order of magnitude
                 max = Math.ceil(max / max_om) * max_om;
             }
         }
@@ -1184,7 +1184,7 @@ export class ChartUtilsService {
 
 
 
-    /** inicialitza les opcions dels gràfics. Aqui es on posem tots els detalls del gràfic. */
+    /** Initializes chart options. This is where all chart details are configured. */
     public initChartOptions(
         type: string,
         numericColumn: string,
@@ -1213,7 +1213,7 @@ export class ChartUtilsService {
         const linked = linkedDashboard ? `${labelColum[0].name} ${t} ${linkedDashboard.dashboardName}` : '';
         let options = { chartOptions: {} };
 
-        // si la pantalla es petita faig la lletra mes petita
+        // if the screen is small make the font smaller
         let variador = 0;
         if (window.innerWidth < 1500) {
             variador = -2;
@@ -1259,7 +1259,7 @@ export class ChartUtilsService {
         const maxTicksLimitY =  ticksOptions.hasOwnProperty("yTicksLimit") && ticksOptions.yTicksLimit !== null ? ticksOptions.yTicksLimit : (size.height < 100 ? 1  : size.height < 150 ? 2 : size.height < 200 ? 3 :  size.height < 250 ? 4 :  size.height < 300 ? 5 :  size.height < 350 ? 6: 6);
 
         
-        /** Defineixo les propietats en funció del tipus de gràfic. */
+        /** Define properties based on chart type. */
         let dataLabelsObjt={}
         switch (type) {
             case 'doughnut':
@@ -1284,7 +1284,7 @@ export class ChartUtilsService {
                                     if( chartWidth < 200){
                                         return  percentage > 8 ;
                                     }else{
-                                        return  percentage > 3; /** Mostro la etiqueta si es mes que el 10 % del total  */
+                                        return  percentage > 3; /** Show the label if it is more than 10% of the total  */
                                     }
                               },
                                 font: {
@@ -1314,7 +1314,7 @@ export class ChartUtilsService {
                 }else{
                         dataLabelsObjt =   { display: false }
                 }
-                // Configs reutilizables
+                // Reusable configs
                 const gridColorConfig = {
                     color: colorStyle
                 };
@@ -1342,7 +1342,7 @@ export class ChartUtilsService {
                 weight: 'normal'
                 };
 
-                // Escalas específicas por polarArea
+                // Specific scales for polarArea
                 let scaleOptions;
                 if (type === 'polarArea') {
                     scaleOptions =  {
@@ -1357,7 +1357,7 @@ export class ChartUtilsService {
                 }
 
 
-                // Configuración final del gráfico
+                // Final chart configuration
                 options.chartOptions = {
                 animation: {
                     duration: 2000,
@@ -1392,7 +1392,7 @@ export class ChartUtilsService {
             break;
             case 'bar':
                 if (!['horizontalBar', 'pyramid', 'stackedbar100'].includes(chartSubType)) {
-                    if (showLabels || showLabelsPercent ){ /** si mostro els datalabels els configuro */
+                    if (showLabels || showLabelsPercent ){ /** if showing data labels, configure them */
                         dataLabelsObjt =  {
                             anchor: size.height>150?'end':'center',
                             align:  size.height>150?'top':'center',
@@ -1443,7 +1443,7 @@ export class ChartUtilsService {
                         maintainAspectRatio: false,
                         devicePixelRatio: 2,
                         onHover: (event,chartElement ) => {
-                            //Canviem el cursor de normal a tipus link
+                            //Change cursor from normal to pointer type
                             chartElement.length == 1 ? 
                             event.native.target.style.cursor = "pointer" :
                             event.native.target.style.cursor = "default";
@@ -1708,7 +1708,7 @@ export class ChartUtilsService {
                     // horizontalBar Since chart.js 3 there is no more horizontal bar. Its just  barchart with horizonal axis
                     // buscar en chart.js las opciones
                     if (showLabels || showLabelsPercent ){
-                        /** si haig de mostrar les etiquetes ho configuro */
+                        /** if labels need to be shown, configure them */
                         dataLabelsObjt =  {
                             anchor: function(context) {
                                 return context.dataset.data.some(el => el < 0) ? 'center' : 'end';
@@ -1730,9 +1730,9 @@ export class ChartUtilsService {
                                 const percentage = Math.abs(elem / total * 100);
 
                                 if(chartWidth < 200){
-                                    return  percentage > 30 ; /** Mostro la etiqueta si es mes que el 30 % del total  */
+                                    return  percentage > 30 ; /** Show the label if it is more than the threshold % of the total  */
                                 }else{
-                                    return  percentage > 10 ; /** Mostro la etiqueta si es mes que el 30 % del total  */
+                                    return  percentage > 10 ; /** Show the label if it is more than the threshold % of the total  */
                                 }
                           },
                             color: 'white',
@@ -1772,7 +1772,7 @@ export class ChartUtilsService {
                         devicePixelRatio: 2,
                         legend: edaBarLineLegend,
                         onHover: (event,chartElement ) => {
-                            //Canviem el cursor de normal a tipus link
+                            //Change cursor from normal to pointer type
                             chartElement.length == 1 ? 
                             event.native.target.style.cursor = "pointer" :
                             event.native.target.style.cursor = "default";
@@ -1854,7 +1854,7 @@ export class ChartUtilsService {
                     };
 
                     if (chartSubType=='pyramid') {
-                        //modificamos los valores del tooltip para que sea positivo.
+                        //modify tooltip values to show them as positive.
                         (<any>options.chartOptions).plugins.tooltip = {
                             callbacks :{
                                 label :  (context) =>{
@@ -1868,7 +1868,7 @@ export class ChartUtilsService {
                             },
                         };
 
-                        //modificamos los valores del eje x para que sean positivos a la vista
+                        //modify x-axis values to display as positive
                         (<any>options.chartOptions).scales.y.stacked = true;
                         (<any>options.chartOptions).scales.x.ticks.callback = (value, index, ticks) => {
 
@@ -1891,11 +1891,11 @@ export class ChartUtilsService {
                             const realData = context.dataset.data;
 
                             if (( (chartWidth/10)  / realData.length  ) < 0.6 ){
-                                return context.dataIndex%5==0  // devuelvo uno de cada 5
+                                return context.dataIndex%5==0  // return every 5th
                             }else if (( (chartWidth/10)  / realData.length  ) < 1.5 ){
-                                return context.dataIndex%2==0 // devuelvo uno de cada 2
+                                return context.dataIndex%2==0 // return every 2nd
                             }else{
-                                return true; // devuelvo todas
+                                return true; // return all
                             }
                       },
                         color: colorStyle,
@@ -1980,11 +1980,11 @@ export class ChartUtilsService {
                             const realData = context.dataset.data;
 
                             if (( (chartWidth/10)  / realData.length  ) < 0.6 ){
-                                return context.dataIndex%5==0  // devuelvo uno de cada 5
+                                return context.dataIndex%5==0  // return every 5th
                             }else if (( (chartWidth/10)  / realData.length  ) < 1.5 ){
-                                return context.dataIndex%2==0 // devuelvo uno de cada 2
+                                return context.dataIndex%2==0 // return every 2nd
                             }else{
-                                return true; // devuelvo todas
+                                return true; // return all
                             }
                         },
 
@@ -2029,7 +2029,7 @@ export class ChartUtilsService {
                     pointRadius: pointRadius,
                     pointHoverRadius: pointHoverRadius,
                     pointBackgroundColor : (ctx) => ctx.dataset.borderColor,
-                    pointBorderColor :  (ctx) => ctx.dataset.borderColor, // revisar
+                    pointBorderColor :  (ctx) => ctx.dataset.borderColor, // review
                     spanGaps: true,
                     responsive: true,
                     maintainAspectRatio: false,
@@ -2149,7 +2149,7 @@ export class ChartUtilsService {
         return options;
     }
 
-    // APARTADO PARA LOS D3
+    // SECTION FOR D3
     hex2rgbD3(hex, opacity = 100): string {
         hex = hex.replace('#', '');
         const r = parseInt(hex.substring(0, 2), 16);
@@ -2168,10 +2168,10 @@ export class ChartUtilsService {
     }
 
     /**
-     * Reduce saturación de un color HEX
-     * @param {string} hex - Color en formato #RRGGBB
-     * @param {number} factor - Valor entre 0 y 1 (ej. 0.5 = mitad de saturación)
-     * @returns {string} Nuevo color hex
+     * Reduces saturation of a HEX color
+     * @param {string} hex - Color in #RRGGBB format
+     * @param {number} factor - Value between 0 and 1 (e.g. 0.5 = half saturation)
+     * @returns {string} New hex color
      */
     private  suavizaColor(hex, factor) {
     hex = hex.replace(/^#/, "");
@@ -2184,7 +2184,7 @@ export class ChartUtilsService {
     let h, s, l = (max + min) / 2;
 
     if (max === min) {
-        h = s = 0; // gris
+        h = s = 0; // gray
     } else {
         let d = max - min;
         s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
@@ -2196,7 +2196,7 @@ export class ChartUtilsService {
         h /= 6;
     }
 
-    // Reducir saturación
+    // Reduce saturation
     s *= factor;
 
     let q = l < 0.5 ? l * (1 + s) : l + s - l * s;
@@ -2262,7 +2262,7 @@ export class ChartUtilsService {
         return result;
     }
 
-    // Metodo de prueba usado en treemap
+    // Test method used in treemap
     public resolveAssignedColors(categories: Array<string>, previous: AssignedColor[] = [], palette): AssignedColor[] {
         const resolved: AssignedColor[] = [...previous];
 
@@ -2280,12 +2280,12 @@ export class ChartUtilsService {
     }
 
 
-    // METODOS PARA HACER LA GENERACIÓN DE COLORES DEL TREEMAP CON PALETA, REVISAR SI SE PUEDE UNIFICAR EN UN SERVICE 
+    // METHODS FOR GENERATING TREEMAP COLORS WITH PALETTE, CHECK IF CAN BE UNIFIED IN A SERVICE
     public generateRGBColorGradientScaleD3(
         numberOfColors: number,
         baseColors: string[]
       ): Array<{ color: string }> {
-        // Charts de un único color
+        // Single-color charts
         if (numberOfColors === 1) {
             const color = baseColors[0].toUpperCase();
             return [{ color: color }];
@@ -2293,7 +2293,7 @@ export class ChartUtilsService {
         const colorList: Array<{ color: string }> = [];
         const numSegments = baseColors.length - 1;
         const baseRgbColors = baseColors.map(hex => this.hex2rgbNumericD3(hex));
-        //Generamos lista en rgb y pasamos a hex
+        //Generate list in rgb and convert to hex
         for (let i = 0; i < numberOfColors; i++) {
             const globalFactor = i / (numberOfColors - 1);
             let segmentIndex = Math.floor(globalFactor * numSegments);
@@ -2331,20 +2331,20 @@ export class ChartUtilsService {
 
 
 
-      // Funcion para unificar todo tipo de inputs y que el output sea en HEX
+      // Function to unify all input types and output in HEX
     public rgbOrRgbaToHex(color: string): string {
         if(!color) return color;
-        // Si ya es hex, devolvemos tal cual
+        // If already hex, return as-is
         if (color.startsWith('#')) return color;
 
-        // Extraemos valores de RGB o RGBA
+        // Extract RGB or RGBA values
         const match = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
 
         const r = parseInt(match[1], 10);
         const g = parseInt(match[2], 10);
         const b = parseInt(match[3], 10);
 
-        // Convertimos a hex
+        // Convert to hex
         return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
     }
     

@@ -62,7 +62,7 @@ export class ColumnDialogComponent {
     public loading: boolean = true;
     
     public display = {
-        calendar: false, // calendars inputs
+        calendar: false, // calendar inputs
         between: false, // between inputs
         filterValue: false,
         filterButton: true,
@@ -110,7 +110,7 @@ export class ColumnDialogComponent {
     public rangeDescriptionNumberError: string = $localize`:@@rangeDescriptionNumberError:El correcto orden de los límites del rango van de menor a mayor`;
     public rangeDescriptionCharacterError: string = $localize`:@@rangeDescriptionCharacterError:El último caracter del rango debe ser un número`;
     public filterBeforeAfter = {
-        filterBeforeGrouping: true, // valor por defecto true ==> WHERE / valor false ==> HAVING
+        filterBeforeGrouping: true, // default value true ==> WHERE / false value ==> HAVING
         elements: [
             { label: $localize`:@@whereMessageLabel:Aplicar el filtro sobre todos los registros`, value: true },
             { label: $localize`:@@havingMessageLabel:Aplicar el filtro sobre los resultados`, value: false },
@@ -172,7 +172,7 @@ export class ColumnDialogComponent {
             this.availableRange = true;
         }
         
-        // Buscando el valor inicial de agregacion de la columna seleccionada
+        // Find the initial aggregation value of the selected column
         for(let agg of this.selectedColumn.aggregation_type) {
             if(agg.selected){
                 this.aggregationSelected = _.cloneDeep(agg);
@@ -182,14 +182,14 @@ export class ColumnDialogComponent {
 
 
 
-    // Metodos de cambio de modo edición
-    // Input cambia a editable 
+    // Edit mode change methods
+    // Input switches to editable mode
     public startEditTitle(): void {
         this.editableTitle = this.selectedColumn.display_name.default;
         this.editingTitle = true;
     }
 
-    // Guardamos cambios hechos
+    // Save changes
     public saveTitle(): void {
         if (this.editableTitle?.trim()) {
             this.updateDisplayName(this.editableTitle.trim());
@@ -197,12 +197,12 @@ export class ColumnDialogComponent {
         this.editingTitle = false;
     }
 
-    // Cancelamos cambios hechos 
+    // Cancel changes
     public cancelEditTitle(): void {
         this.editingTitle = false;
     }
 
-    // Actualizamos nombre en column dialog y current query
+    // Update the name in the column dialog and current query
     public updateDisplayName(name: string): void {
         const col = $localize`:@@atributoLabel:Atributo`, from = $localize`:@@table:de la entidad`;
         const foundInQuery = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
@@ -262,13 +262,13 @@ export class ColumnDialogComponent {
         this.filter.selecteds.push(filter);        
         this.carregarFilters();
 
-        /* Reset Filter Form */
+        /* Reset filter form */
         this.resetDisplay();
-        this.filterSelected = undefined; // filtre seleccionat cap
-        this.filterValue = {}; // filtre ningun
+        this.filterSelected = undefined; // no selected filter
+        this.filterValue = {}; // no filter
         this.filter.range = null;
 
-        // Control de agregar solo el filtro en la sección Where
+        // Control adding only the filter in the Where section
         const addToSortedFilters = { add: true, filter: filter };
         if(filter['filterBeforeGrouping']) this.updateSortedFiltersColumnDialog.emit(addToSortedFilters);        
         this.filterBeforeAfter.filterBeforeGrouping = true;
@@ -299,10 +299,10 @@ export class ColumnDialogComponent {
             }
         }
 
-        // Recarguem les agregacions d'aquella columna + la seleccionada
+        // Reload the aggregations for that column and the selected one
         this.selectedColumn.aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
 
-        // Introduim l'agregació a la Select
+        // Add the aggregation to Select
         const addAggr = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
 
         if (addAggr) {
@@ -332,10 +332,10 @@ export class ColumnDialogComponent {
             if (allowed.length > 0) this.filter.types = allowed;
         }
         
-        // Seteo de aggregationSelected dependiendo de la selección realizada por el usuario
+        // Set aggregationSelected based on the user's selection
         this.aggregationSelected = _.cloneDeep(type);
 
-        // En caso no tengamos agregación el selected Where/Having se establece en Where
+        // If there is no aggregation, the selected Where/Having is set to Where
         if(this.aggregationSelected.value==='none') {
             this.whereHavingSwitch({
                 label: 'WHERE',
@@ -399,7 +399,7 @@ export class ColumnDialogComponent {
         const newCol = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
         this.cumulativeSum = newCol?.cumulativeSum;
         this.dateNavEnabled = !!newCol?.dateNav;
-        // Si la columna ya tiene dateNav activo, restringir las opciones de formato
+        // If the column already has dateNav enabled, restrict the format options
         if (this.dateNavEnabled) {
             this.formatDates = this.chartUtils.formatDates.filter(f => ['year', 'month', 'day'].includes(f.value));
         }
@@ -433,15 +433,15 @@ export class ColumnDialogComponent {
         newCol.dateNav = this.dateNavEnabled;
         if (this.dateNavEnabled) {
             this.selectedParent = null;
-            // dateNav y downChild son mutuamente excluyentes: si la columna fecha pasa a ser
-            // navegable por fecha, su hijo debe perder el vínculo de padre
+            // dateNav and downChild are mutually exclusive: if the date column becomes
+            // navigable by date, its child must lose the parent link
             delete newCol.downChild;
-            // Restringir el selector de formato a solo año/mes/día y forzar 'día' como default
+            // Restrict the format selector to only year/month/day and force 'day' as the default
             this.formatDates = this.chartUtils.formatDates.filter(f => ['year', 'month', 'day'].includes(f.value));
             this.formatDate = this.formatDates.find(f => f.value === 'day');
             this.addFormatDate();
         } else {
-            // Restaurar todas las opciones de formato al desactivar dateNav
+            // Restore all format options when dateNav is disabled
             this.formatDates = this.chartUtils.formatDates;
         }
     }
@@ -484,7 +484,7 @@ export class ColumnDialogComponent {
 
     }
 
-    /**Gestiona las agregaciones de la columna seleccionada */
+    /** Manages the aggregations of the selected column */
     public handleAggregationType(): void {
         const column = this.selectedColumn;
         const matchingQuery = this.controller.params.currentQuery.find((c: any) =>
@@ -500,7 +500,7 @@ export class ColumnDialogComponent {
                 ? matchingQuery.aggregation_type.find((agg: any) => agg.selected === true)
                 : undefined;
 
-            // Si ja s'ha carregat el panell i tenim dades a this.select
+            // If the panel has already loaded and there is data in this.select
             if (selectedAggregation) {
                 tmpAggTypes.push(...column.aggregation_type);
 
@@ -555,7 +555,7 @@ export class ColumnDialogComponent {
                 this.addFormatDate();
                 foundColumn.format = foundFormat;
             } else {
-                // Si encara no hem carregat les dades a this.select
+                // If the data has not been loaded into this.select yet
                 const queryFromServer = this.controller.params.panel.content.query.query.fields;
                 const dateFormat = this.findColumn(column, queryFromServer)?.format;
                 tmpDateFormat = dateFormat || 'No';
@@ -715,15 +715,15 @@ export class ColumnDialogComponent {
     }
 
     resetDisplay() {
-        this.display.filterButton = true; // btn add filter
-        this.display.between = false; // inputs between
-        this.display.filterValue = false; // input de valor
-        this.display.calendar = false; // input calendar
+        this.display.filterButton = true; // add filter button
+        this.display.between = false; // between inputs
+        this.display.filterValue = false; // value input
+        this.display.calendar = false; // calendar input
         this.display.switchButton = true;
         this.filter.switch = false; // options switch
     }
 
-    /** Query per dropdown  */
+    /** Query for dropdown */
     async loadDropDrownData() {
 
     this.filterValue.value1 = null;
@@ -844,7 +844,7 @@ export class ColumnDialogComponent {
         this.onClose(EdaDialogCloseEvent.NEW, { duplicated: true, column: newColumn});
     }
 
-    /* Close functions */
+    /* Close methods */
     closeDialog() {
         this.displayWindow = false;
         this.filter.switch = false;
@@ -877,7 +877,7 @@ export class ColumnDialogComponent {
                 .map(item => parseFloat(item.replace(",", ".")));
 
             for (let i = 0; i < ranges.length-1; i++) {
-                // Verificar si el número actual es menor o igual al anterior
+                // Check whether the current number is less than or equal to the previous one
                 if (ranges[i] >= ranges[i + 1]) {
                     this.ranges=[];
                     this.alertService.addError('El correcto orden de los límites del rango van de menor a mayor');
@@ -887,15 +887,15 @@ export class ColumnDialogComponent {
 
             this.ranges = ranges
             this.showRange = true;
-            this.selectedRange = this.generarStringRango(this.ranges); // extraemos el rango seleccionado
+            this.selectedRange = this.generarStringRango(this.ranges); // extract the selected range
             this.rangeString = '';
             this.allowedAggregations = false;
 
-            // Selección de Rango, genera que la agregación sea 'none'
+            // Range selection sets the aggregation to 'none'
             const selectionAggregationRange = { value: 'none', display_name: 'No', selected: 'true' };
             this.addAggregation(selectionAggregationRange);
 
-            // Encuentra la columna de turno y agrega el rango
+            // Find the current column and add the range
             const addAggr = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
             addAggr.column_type = 'text';
             addAggr.ranges = this.ranges;
@@ -921,27 +921,27 @@ export class ColumnDialogComponent {
     generarStringRango(rango: number[]): string {
         let resultado = "";
 
-        // Agregamos la primera condición
+        // Add the first condition
         resultado += `< ${rango[0]}<br>`;
 
-        // Creamos las condiciones intermedias
+        // Create the intermediate conditions
         for (let i = 0; i < rango.length - 1; i++) {
             resultado += `${rango[i]} - ${rango[i + 1] - 1}<br>`;
         }
 
-        // Agregamos la última condición
+        // Add the last condition
         resultado += `>= ${rango[rango.length - 1]}`;
 
         return resultado;
     }
 
-    /** Devuelve las claves "table_id.column_name" de todos los descendientes de col siguiendo downChild. */
+    /** Returns the "table_id.column_name" keys for all descendants of col following downChild. */
     private getDescendantKeys(col: any, currentQuery: any[]): Set<string> {
         const keys = new Set<string>();
         let current = col;
         while (current?.downChild) {
             const key = `${current.downChild.table_id}.${current.downChild.column_name}`;
-            if (keys.has(key)) break; // seguridad ante ciclos ya existentes
+            if (keys.has(key)) break; // safety check for existing cycles
             keys.add(key);
             current = currentQuery.find(c =>
                 c.table_id === current.downChild.table_id &&
@@ -954,7 +954,7 @@ export class ColumnDialogComponent {
     private initParentOption(): void {
         const currentQuery: any[] = this.controller.params.currentQuery;
 
-        // Todos los descendientes de la columna actual no pueden ser su padre (evita ciclos)
+        // All descendants of the current column cannot be its parent (prevents cycles)
         const descendantKeys = this.getDescendantKeys(this.selectedColumn, currentQuery);
 
         this.childOptions = currentQuery
@@ -963,7 +963,7 @@ export class ColumnDialogComponent {
                 if (col.column_type === 'date' && col.dateNav) return false;
                 if (col.table_id === this.selectedColumn.table_id &&
                     col.column_name === this.selectedColumn.column_name) return false;
-                // Excluir descendientes para evitar referencias circulares
+                // Exclude descendants to avoid circular references
                 if (descendantKeys.has(`${col.table_id}.${col.column_name}`)) return false;
                 if (col.downChild &&
                     !(col.downChild.table_id === this.selectedColumn.table_id &&
@@ -1004,13 +1004,13 @@ export class ColumnDialogComponent {
                 };
             }
         } else if (formerParentInQuery) {
-            // This column had a parent and now has none — behavior depends on chart type.
+            // This column had a parent and now has none - behavior depends on chart type.
             const chartSubType: string = this.controller.params.chartSubType || '';
             const isCrossTable = chartSubType === 'crosstable';
 
             if (isCrossTable) {
                 // In cross table: keep child in currentQuery but force both parent and child
-                // to itemX (Eje vertical) so the child doesn't land in itemY and cause OOM pivots.
+                // to itemX (vertical axis) so the child doesn't land in itemY and cause OOM pivots.
                 formerParentInQuery._forceItemX = true;
                 const childInQuery = currentQuery.find(
                     (c: any) => c.table_id === this.selectedColumn.table_id &&
@@ -1027,7 +1027,7 @@ export class ColumnDialogComponent {
                 );
             }
         }
-        // else: column was never a nav-child (no formerParentInQuery) — do nothing
+        // else: column was never a nav-child (no formerParentInQuery) - do nothing
     }
 
     verifyRange() {
@@ -1047,9 +1047,9 @@ export class ColumnDialogComponent {
         const inputElement = event.target as HTMLInputElement;
         const validCharacters = /[1234567890.,:-]*/g;
         inputElement.value = inputElement.value.match(validCharacters)?.join('') || '';
-        // Si el input inicia con (. , :) no se habilitara el botón del rango ni se agregará el signo en el input. Se debe empezar con un número o con un signo (-) y un número para los negativos.
+        // If the input starts with (. , :), the range button is not enabled and the sign is not added to the input. It must start with a number or with a sign (-) followed by a number for negatives.
         if(inputElement.value=== '.' || inputElement.value===',' || inputElement.value===':') inputElement.value = '';
-        this.rangeString = inputElement.value; // Se actualiza ngModel
+        this.rangeString = inputElement.value; // ngModel is updated
     }
 
 }

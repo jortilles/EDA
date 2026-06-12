@@ -7,7 +7,7 @@
   <div content class="p-6">
     <form [formGroup]="form" class="form-horizontal form-material" (ngSubmit)="true">
     <div class="grid space-y-8">
-    <!-- Botones de Selección -->
+    <!-- Selection buttons -->
       <h6 i18n="@@selectDashboardPrivacity"> Selecciona la privacidad del informe </h6>
       <div class="col-12">
         <p-selectButton [options]="visibleTypes" formControlName="visible" (onChange)="handleSelectedBtn($event)"
@@ -22,7 +22,7 @@
       }
 
       @if (showGroups) {
-      <!-- Multiselect de Grupos -->
+      <!-- Groups multiselect -->
       <div class="col-12">
         <p-multiSelect formControlName="group" [options]="grups" [filter]="true" optionLabel="name" i18n-defaultLabel="@@multiSelectDefaultLabel" defaultLabel="Selecciona un grupo *"
           class="w-full bg-gray-100 rounded-md border text-gray-700" appendTo="body" >

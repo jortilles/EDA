@@ -55,12 +55,12 @@ th{
     --table-total-color: rgba(228, 228, 228, 0.5);
 }
 
-/* Cabecera: color configurable via variable CSS */
+/* Header: color configurable via CSS variable */
 .eda-table ::ng-deep .p-datatable .p-datatable-thead > tr > th {
      background: var(--table-header-color) !important;
 }
 
-/* Row banding: filas pares con el color configurable — excluir celdas con color de gradiente/semáforo */
+/* Row banding: even rows with configurable color — exclude cells with gradient/semaphore color */
 .eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) > td:not([class*="table-gradient"]):not([class*="table-semaphore"]) {
      background: var(--table-banding-color) !important;
 }
@@ -68,19 +68,19 @@ th{
      background: transparent !important;
 }
 
-/* Filas impares: transparentes para que se vea el color de fondo del panel — excluir celdas con color */
+/* Odd rows: transparent so the panel background color shows through — exclude colored cells */
 .eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(odd),
 .eda-table ::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(odd) > td:not([class*="table-gradient"]):not([class*="table-semaphore"]) {
      background: transparent !important;
 }
 
-/* Eliminar scroll horizontal en todos los casos (con y sin autoLayout) */
+/* Remove horizontal scroll in all cases (with and without autoLayout) */
 .eda-table:not(.eda-table--pivot) ::ng-deep .p-datatable .p-datatable-wrapper,
 .p-datatable-auto-layout>.p-datatable-wrapper {
   overflow-x: hidden;
 }
 
-/* Permitir que el texto en las celdas haga wrap en lugar de desbordar */
+/* Allow text in cells to wrap instead of overflow */
 .eda-table:not(.eda-table--pivot) ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
   word-break: break-word;
   white-space: normal;
@@ -91,13 +91,13 @@ th{
 }
 
 ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
-    font-weight: bold;          /* Negrita */
-    border-radius: 30px;         /* Bordes redondeados */
-    transition: all 0.2s ease;  /* Transición suave al cambiar de página */
+    font-weight: bold;          /* Bold */
+    border-radius: 30px;         /* Rounded corners */
+    transition: all 0.2s ease;  /* Smooth transition on page change */
     
 }
 
-/* Opcional: hover de páginas no seleccionadas */
+/* Optional: hover for unselected pages */
 ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page:not(.p-highlight):hover {
     cursor: pointer;
 }
@@ -124,31 +124,31 @@ th{
     background: transparent !important;
 }
 
-/* Aplica estilo al contenedor del footer */
+/* Apply style to the footer container */
 .eda-table ::ng-deep .p-datatable-footer {
     background-color: inherit;
 }
-/* Aplica estilo al contenedor del paginator */
+/* Apply style to the paginator container */
 .eda-table ::ng-deep .p-paginator{
     background-color: inherit; 
     color: inherit;
 }
 
-/* Aplica estilo al contenedor del paginator dropdown */
+/* Apply style to the paginator dropdown container */
 .eda-table ::ng-deep .p-paginator .p-dropdown{
     background-color: inherit; 
     color: inherit;
 }
-/* Aplica estilo al contenedor del paginator dropdown TEXTO */
+/* Apply style to the paginator dropdown TEXT container */
 .eda-table ::ng-deep .p-paginator .p-dropdown-label{
     color: inherit;
 }
-/* Aplica estilo al contenedor del paginator dropdown FLECHA */
+/* Apply style to the paginator dropdown ARROW container */
 .eda-table ::ng-deep .p-paginator .p-dropdown-trigger{
     color: inherit;
 }
 
-/* estilos del + / - de columnas navegables */
+/* styles for the + / - toggle of navigable columns */
 .nav-btn {
   font-size: 1.5rem;
   line-height: calc(1.75 / 1.125);

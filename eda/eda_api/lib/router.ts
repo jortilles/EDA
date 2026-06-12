@@ -15,6 +15,7 @@ import ArimaRouter from './module/predictions/predictions.router';
 import AuthRouter from './module/auth/auth.router';
 import CustomHTMLRouter from './module/customHTML/customHTML.router';
 import McpRouter from './module/mcp/mcp.router';
+import { PluginRegistry } from './plugins';
 
 const router = express.Router();
 
@@ -40,13 +41,19 @@ router.use('/tp', ThirdPartyRouter);
 
 router.use('/assistant', AiRouter);
 
-router.use('/arima', ArimaRouter);  
+router.use('/arima', ArimaRouter);
 
 router.use('/auth', AuthRouter);
 
 router.use('/customHTML', CustomHTMLRouter);
 
 router.use('/ia', McpRouter);
+
+for (const plugin of PluginRegistry.getAll()) {
+    if (plugin.router && plugin.routerPath) {
+        router.use(plugin.routerPath, plugin.router);
+    }
+}
 
 /* ruta per documentació*/
 router.use("/api-docs", DocuRouter);

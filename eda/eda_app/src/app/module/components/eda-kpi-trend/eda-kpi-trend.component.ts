@@ -24,7 +24,7 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
     @HostBinding('style.width') readonly hostWidth = '100%';
     @HostBinding('style.height') readonly hostHeight = '100%';
 
-    // ── Propiedades locales: el template NUNCA accede a inject.X directamente ──
+    // ── Local properties: the template NEVER accesses inject.X directly ──
     displayKpiValue: number = 0;
     displaySpyValue: number | null = null;
     displayVsPercent: number | null = null;
@@ -39,9 +39,10 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
     edaChartInject: any = null;
     selectedComparisonKey: string = '';
 
-    // Estilo KPI
+    // KPI Style
     color: string = '#67757c';
     family: string = 'inherit';
+    modifiedFontPoints: number = 0;
 
     constructor(
         private styleProviderService: StyleProviderService,
@@ -67,11 +68,12 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
         this.cdr.detectChanges();
     }
 
-    /** Sincroniza todas las propiedades locales desde inject */
+    /** Synchronizes all local properties from inject */
     private _syncFromInject(): void {
         if (!this.inject) return;
 
         if (this.inject.kpiColor) this.color = this.inject.kpiColor;
+        this.modifiedFontPoints = this.inject.modifiedFontPoints ?? 0;
 
         this.displayKpiValue = this.inject.kpiValue ?? 0;
         this.displaySpyValue = this.inject.spyValue ?? null;
@@ -91,7 +93,7 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
             || '';
     }
 
-    /** Llamado cuando el usuario cambia el dropdown */
+    /** Called when the user changes the dropdown */
     onComparisonChange(): void {
         const groups: TrendPeriodGroup[] = this.inject?.periodGroups;
         if (!groups) return;
@@ -215,6 +217,7 @@ export class EdaKpiTrendComponent implements OnInit, OnChanges, AfterViewInit {
             const charCount = Math.max(text.length, 1);
             let size = Math.min(panelH * 0.22, colW / charCount * 1.6);
             size = Math.max(12, Math.min(size, 34));
+            size = Math.max(8, size + (this.inject?.modifiedFontPoints ?? this.modifiedFontPoints));
             return size.toFixed(0) + 'px';
         } catch {
             return '22px';

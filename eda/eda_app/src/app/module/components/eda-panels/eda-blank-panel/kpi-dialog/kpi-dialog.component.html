@@ -14,31 +14,33 @@
     <!-- Settings -->
     <div class="flex-1 flex flex-col h-[77vh] overflow-auto">
 
-      <!-- Tab buttons: siempre visibles -->
-      <div class="px-6 pt-6 pb-4 grid grid-cols-2 gap-4">
+      <!-- Tab buttons: always visible -->
+      <div class="px-6 pt-6 pb-4 grid gap-4" [class.grid-cols-2]="!isKpiTrend" [class.grid-cols-1]="isKpiTrend">
         <button
           class="kpi-tab-btn"
           [class.kpi-tab-btn--active]="activeTab === 'aspecto'"
           (click)="setActiveTab('aspecto')" i18n="@@kpiAspecto">
           Aspecto
         </button>
+        @if (!isKpiTrend) {
         <button
           class="kpi-tab-btn"
           [class.kpi-tab-btn--active]="activeTab === 'alerts'"
           (click)="setActiveTab('alerts')" i18n="@@kpiAlerts">
           Alertas
         </button>
+        }
       </div>
 
       <!-- Tab content scrollable -->
       <div class="flex-1 overflow-y-auto px-6 pb-6">
 
-      <!-- TAB: Aspecto -->
+      <!-- TAB: Appearance -->
       @if (activeTab === 'aspecto') {
         <div class="space-y-6">
           <div class="grid gap-6">
 
-            <!-- Tamaño -->
+            <!-- Size -->
             <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
               <div class="px-4 py-1.5 border-b bg-white">
                 <h3 class="font-medium text-slate-800 flex items-center gap-2">
@@ -54,7 +56,7 @@
               </div>
             </div>
 
-            <!-- Colores del KPI -->
+            <!-- KPI colors -->
             <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
               <div class="px-4 py-1.5 border-b bg-white">
                 <h3 class="font-medium text-slate-800 flex items-center gap-2">
@@ -64,7 +66,7 @@
               </div>
               <div class="p-4 grid gap-4 md:grid-cols-2">
 
-                <!-- Color de fondo -->
+                <!-- Background color -->
                 <div class="space-y-2">
                   <label class="text-sm font-medium" i18n="@@kpiBgColor">Color de fondo</label>
                   <div class="flex items-center gap-3">
@@ -84,7 +86,7 @@
                   </div>
                 </div>
 
-                <!-- Color del texto -->
+                <!-- Text color -->
                 <div class="space-y-2">
                   <label class="text-sm font-medium" i18n="@@kpiTextColor">Color del texto</label>
                   <div class="flex items-center gap-3">
@@ -104,7 +106,7 @@
                   </div>
                 </div>
 
-                <!-- Imagen prefijo -->
+                <!-- Prefix image -->
                 <div class="space-y-2 md:col-span-2">
                   <label class="text-sm font-medium" i18n="@@kpiPrefixImage">Imagen prefijo</label>
                   <div class="flex items-center gap-3">
@@ -126,7 +128,7 @@
               </div>
             </div>
 
-            <!-- Colores de series (solo KPI+chart) -->
+            <!-- Series colors (KPI+chart only) -->
             @if(edaChart !== 'kpi'){
               <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
                 <div class="px-4 py-1.5 border-b bg-white">
@@ -165,12 +167,12 @@
         </div>
       }
 
-      <!-- TAB: Alertas -->
-      @if (activeTab === 'alerts') {
+      <!-- TAB: Alerts -->
+      @if (activeTab === 'alerts' && !isKpiTrend) {
         <div class="space-y-6">
           <div class="grid gap-6">
 
-            <!-- Configurar nueva alerta -->
+            <!-- Configure new alert -->
             <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border overflow-hidden">
               <div class="px-4 py-1.5 border-b bg-white">
                 <h3 class="font-medium text-slate-800 flex items-center gap-2">

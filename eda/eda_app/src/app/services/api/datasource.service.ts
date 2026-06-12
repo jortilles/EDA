@@ -120,7 +120,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         this._databaseModel.getValue()
             .forEach((table:any) => {
                 const currTable: TreeNode = {};
-                currTable.label = table.display_name.default;
+                currTable.label = table.display_name?.default ?? table.table_name;
                 currTable.data = 'tabla';
                 currTable.children = [];
                 currTable.collapsedIcon = 'fa fa-table';
@@ -130,9 +130,9 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 tables.push(currTable);
 
                 // Column nodes
-                table.columns.forEach((column: any) => {
+                (table.columns ?? []).forEach((column: any) => {
                     const currCol: TreeNode = {};
-                    currCol.label = column.display_name.default;
+                    currCol.label = column.display_name?.default ?? column.column_name;
                     currCol.data = 'columna';
                     currCol.children = [];
                     const typeIconMap: Record<string, string> = {
@@ -280,7 +280,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
 
     deleteRelation(rel: Relation) {
 
-        // Relacions visibles/invisibles ??? ---------------------- WARNING !!!!!!!!!!!!!!! 
+        // Visible/invisible relations ??? ---------------------- WARNING !!!!!!!!!!!!!!! 
 
         // Update TablePanel
         const tmp_panel = this._tablePanel.getValue();
@@ -402,7 +402,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         tmpMetadata.cache_config = config;
         this._modelMetadata.next(tmpMetadata);
     }
-    //Añadir los tags al modelMetadata 
+    // Add tags to modelMetadata
     addTags(tags:any){
         let tmpMetadata = this._modelMetadata.getValue();
         if(tmpMetadata.tags){
@@ -412,7 +412,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         if(!tmpMetadata.tags) tmpMetadata.tags = [];
         this._modelMetadata.next(tmpMetadata);
     }
-    //Obtener todos los tags de todos los dataSources, sin distinción
+    // Get all tags from all DataSources
     getTags(): void {
          this.get(this.globalDSRoute)
              .subscribe((data: any) => {
@@ -448,7 +448,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
             const tableIndex = this._databaseModel.getValue().findIndex((table: { table_name: any; }) => table.table_name === panel.technical_name);
             const tmp_model = this._databaseModel.getValue();
 
-            // Cascada retroactiva para modificar ia_visibility del dataSource
+            // Retroactive cascade to update ia_visibility of the dataSource
             if(ia_visibility === 'FULL')  this._modelPanel.getValue().metadata.ia_visibility = 'FULL';
 
             tmp_model[tableIndex].display_name.default = panel.name;
@@ -470,7 +470,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
             const columnindex = this._databaseModel.getValue()[tableIndex].columns.findIndex((col: { column_name: any; }) => col.column_name === panel.technical_name);
             const tmp_model = this._databaseModel.getValue();
 
-            // Cascada retroactiva para modificar ia_visibility del dataSource y de la tabla
+            // Retroactive cascade to update ia_visibility of the dataSource and table
             if(ia_visibility === 'FULL' || ia_visibility === 'DECLARATION'){
                 tmp_model[tableIndex].ia_visibility = 'FULL';
 
@@ -645,6 +645,12 @@ export class DataSourceService extends ApiService implements OnDestroy {
         this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name));
     }
 
+    addTableToModel(table: any){
+        const tmp_model = [...this._databaseModel.getValue(), table];
+        this._databaseModel.next(tmp_model);
+        this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name));
+    }
+
 
 
 
@@ -718,6 +724,38 @@ export class DataSourceService extends ApiService implements OnDestroy {
 
     addDataSource(connection): Observable<any> {
         return this.post(`${this.globalDSRoute}/add-data-source`, connection);
+    }
+
+    getDuckDbFolders(): Observable<any> {
+        return this.get(`${this.globalDSRoute}/duckdb-folders`);
+    }
+
+    addOdooDataSource(connection: any): Observable<any> {
+        return this.post(`${this.globalDSRoute}/add-odoo-data-source`, connection);
+    }
+
+    addGoogleAnalyticsDataSource(connection: any): Observable<any> {
+        return this.post(`${this.globalDSRoute}/add-google-analytics-data-source`, connection);
+    }
+
+    getGA4AuthUrl(): Observable<any> {
+        return this.get(`/google-analytics/auth-url`);
+    }
+
+    pollGA4Token(state: string): Observable<any> {
+        return this.get(`/google-analytics/poll-token?state=${state}`);
+    }
+
+    addHoldedDataSource(connection: any): Observable<any> {
+        return this.post(`${this.globalDSRoute}/add-holded-data-source`, connection);
+    }
+
+    deleteDuckDbCsv(datasourceId: string, tableName: string): Observable<any> {
+        return this.delete(`${this.globalDSRoute}/duckdb-table/${datasourceId}/${tableName}`);
+    }
+
+    addDuckDbTable(datasourceId: string, body: { fileName: string; csvContent: string; columnsConfig: any[] }): Observable<any> {
+        return this.post(`${this.globalDSRoute}/duckdb-add-table/${datasourceId}`, body);
     }
 
     executeQuery(body): Observable<any> {
