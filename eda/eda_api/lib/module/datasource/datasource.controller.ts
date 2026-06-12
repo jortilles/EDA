@@ -295,8 +295,53 @@ export class DataSourceController {
                     console.log('[UpdateDataSource] tables in body:', ds.ds?.model?.tables?.map((t: any) => ({
                         table_name: t.table_name,
                         columns: t.columns?.length,
-                        has_relations: Array.isArray(t.relations)
+                        has_relations: Array.isArray(t.relations),
+                        first_col_keys: t.columns?.[0] ? Object.keys(t.columns[0]) : []
                     })));
+
+                    // Normalize columns sent in external format { field, type, format, separator }
+                    // to the EDA model format { column_name, column_type, display_name, ... }
+                    if (ds.ds?.connection?.type === 'duckdb') {
+                        const normName = (s: string) => s.replace(/_/g, ' ').split(' ')
+                            .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+
+                        (ds.ds.model?.tables || []).forEach((table: any) => {
+                            if (!Array.isArray(table.columns)) return;
+                            table.columns = table.columns.map((col: any) => {
+                                // Already in EDA format — leave untouched
+                                if (col.column_name !== undefined) return col;
+
+                                const rawType: string = col.type || 'text';
+                                let colType: string;
+                                switch (rawType) {
+                                    case 'integer':
+                                    case 'numeric':   colType = 'numeric'; break;
+                                    case 'timestamp': colType = 'date';    break;
+                                    default:          colType = 'text';
+                                }
+                                const displayName = normName((col.field || '').replace(/_/g, ' '));
+                                return {
+                                    column_name: col.field,
+                                    column_type: colType,
+                                    display_name:  { default: displayName, localized: [] },
+                                    description:   { default: displayName, localized: [] },
+                                    aggregation_type: colType === 'numeric'
+                                        ? AggregationTypes.getValuesForNumbers()
+                                        : colType === 'date'
+                                        ? AggregationTypes.getValuesForOthers()
+                                        : AggregationTypes.getValuesForText(),
+                                    minimumFractionDigits: rawType === 'integer' ? 0 : rawType === 'numeric' ? 2 : null,
+                                    computed_column: 'no',
+                                    visible: true,
+                                    ia_visibility: 'FULL',
+                                    column_granted_roles: [],
+                                    row_granted_roles: [],
+                                    tableCount: 0
+                                };
+                            });
+                        });
+                        console.log('[UpdateDataSource] DuckDB columns normalized');
+                    }
 
                     if (String(req.user._id) !== String(originalOwner)) {
                         const groups = await Group.find({ users: { $in: req.user._id } }).exec();
@@ -1303,6 +1348,36 @@ export class DataSourceController {
         }, {});
         return filter;
     }
+
+    static async GetDuckDbCsv(req: any, res: any) {
+    try {
+        const { id, tableName } = req.params;
+        const dataSource = await DataSource.findById(id);
+        if (!dataSource) return res.status(404).json({ status: 404, message: 'Datasource not found' });
+        
+        const connection = dataSource.ds?.connection;
+        if (connection?.type !== 'duckdb') {
+            return res.status(400).json({ status: 400, message: 'Not a DuckDB datasource' });
+        }
+
+        const database = connection.database;
+        const duckdbBase = path.join(process.cwd(), 'duckdb');
+        const folderName = path.isAbsolute(database) || database.includes('\\') || database.includes('/')
+            ? path.basename(database)
+            : database;
+        
+        const csvPath = path.join(duckdbBase, folderName, `${tableName}.csv`);
+        
+        if (!fs.existsSync(csvPath)) {
+            return res.status(404).json({ status: 404, message: `Table ${tableName} not found` });
+        }
+
+        const csvContent = fs.readFileSync(csvPath, 'utf8');
+        res.status(200).json({ csvContent });
+    } catch (err) {
+        res.status(500).json({ status: 500, message: err.message });
+    }
+}
 
 }
 

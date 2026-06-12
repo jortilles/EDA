@@ -225,6 +225,10 @@ router.post('/duckdb-add-table/:id', authGuard, roleGuard, DataSourceController.
  */
 router.delete('/duckdb-table/:id/:tableName', authGuard, roleGuard, DataSourceController.DeleteDuckDbCsv);
 
+router.get('/duckdb-csv/:id/:tableName', authGuard, roleGuard, DataSourceController.GetDuckDbCsv);
+
+
+
 /**
  * @openapi
  * /datasource/{id}:
