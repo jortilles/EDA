@@ -1137,24 +1137,22 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const numericIndices: number[] = query
             .map((c: any, i: number) => c.column_type === 'numeric' ? i : -1)
             .filter((i: number) => i !== -1);
+        const otherIndices: number[] = query
+            .map((c: any, i: number) => c.column_type !== 'numeric' ? i : -1)
+            .filter((i: number) => i !== -1);
 
-        if (numericIndices.length === 0) return;
+        if (numericIndices.length === 0 || data.values.length < 2) return;
 
-        const valueIdx = numericIndices[0];
-        const refIdx = numericIndices.length > 1 ? numericIndices[1] : -1;
-        const decimals: number = query[valueIdx]?.minimumFractionDigits || 0;
-        const header: string = query[valueIdx]?.display_name?.default || '';
+        // Always: row[0] = value, row[1] = reference, first numeric column
+        const numIdx = numericIndices[0];
+        const catIdx = otherIndices.length > 0 ? otherIndices[0] : -1;
+        const decimals: number = query[numIdx]?.minimumFractionDigits || 0;
+        const header: string = catIdx !== -1
+            ? String(data.values[0][catIdx])
+            : (query[numIdx]?.display_name?.default || '');
 
-        const value = this._roundDecimals(
-            data.values.reduce((s: number, row: any[]) => s + (Number(row[valueIdx]) || 0), 0),
-            decimals
-        );
-        const refValue = refIdx !== -1
-            ? this._roundDecimals(
-                data.values.reduce((s: number, row: any[]) => s + (Number(row[refIdx]) || 0), 0),
-                decimals
-              )
-            : null;
+        const value = this._roundDecimals(Number(data.values[0][numIdx]) || 0, decimals);
+        const refValue = this._roundDecimals(Number(data.values[1][numIdx]) || 0, decimals);
 
         const vsPercent = (refValue !== null && refValue !== 0)
             ? Math.round(((value - refValue) / refValue) * 1000) / 10
