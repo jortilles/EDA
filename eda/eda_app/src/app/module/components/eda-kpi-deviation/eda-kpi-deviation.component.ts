@@ -25,7 +25,7 @@ export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewIni
     positiveColor: string = '#22a55b';
     negativeColor: string = '#e53e3e';
 
-    // Barra de desviación
+    // Deviation bar
     barFillLeft: number = 50;
     barFillWidth: number = 0;
     markerLeft: number = 50;
@@ -75,24 +75,26 @@ export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewIni
 
     private _computeBar(): void {
         if (this.displayVsPercent === null) {
-            this.barFillLeft = 50;
+            this.barFillLeft = 0;
             this.barFillWidth = 0;
-            this.markerLeft = 50;
+            this.markerLeft = 0;
             this.barScale = 100;
             return;
         }
-        // Escala dinámica: sube en saltos de 100 (mínimo 100)
+        // Dynamic scale: increases in steps of 100 (minimum 100)
         this.barScale = Math.max(100, Math.ceil(Math.abs(this.displayVsPercent) / 100) * 100);
+        const ratio = Math.min(Math.abs(this.displayVsPercent) / this.barScale, 1);
 
-        const normalized = this.displayVsPercent / this.barScale; // -1 a 1
-        this.markerLeft = 50 + normalized * 50;
-
-        if (normalized >= 0) {
-            this.barFillLeft = 50;
-            this.barFillWidth = normalized * 50;
+        if (this.displayVsPercent >= 0) {
+            // 0 on the left, +barScale on the right
+            this.barFillLeft = 0;
+            this.barFillWidth = ratio * 100;
+            this.markerLeft = ratio * 100;
         } else {
-            this.barFillLeft = 50 + normalized * 50;
-            this.barFillWidth = Math.abs(normalized) * 50;
+            // -barScale on the left, 0 on the right
+            this.barFillLeft = (1 - ratio) * 100;
+            this.barFillWidth = ratio * 100;
+            this.markerLeft = (1 - ratio) * 100;
         }
     }
 
@@ -100,7 +102,7 @@ export class EdaKpiDeviationComponent implements OnInit, OnChanges, AfterViewIni
         return (this.displayVsPercent ?? 0) >= 0 ? this.positiveColor : this.negativeColor;
     }
 
-    /** Color del track (fondo de la barra): tono suave del mismo color del fill */
+    /** Track color (bar background): soft tint of the fill color */
     get trackColor(): string {
         return this.fillColor + '28';
     }
