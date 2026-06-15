@@ -248,7 +248,7 @@ export class PgBuilderService extends QueryBuilderService {
     //HAVING 
     myQuery += this.getHavingFilters(havingFilters );
 
-    console.log('this.queryTODO: ', this.queryTODO);
+    //console.log('this.queryTODO: ', this.queryTODO);
 
     // OrderBy
     let orderColumns: string[];
