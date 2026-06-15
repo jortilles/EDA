@@ -789,8 +789,9 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('kpitrend'), 1);
         }
 
-        // kpideviation: exactamente 2 columnas numéricas, sin otras columnas
-        if (dataDescription.numericColumns.length === 2 && dataDescription.otherColumns.length === 0) {
+        // kpideviation: 2 numeric cols (no others), or 1 categorical + 1 numeric (like knob)
+        if ((dataDescription.numericColumns.length === 2 && dataDescription.otherColumns.length === 0)
+            || (dataDescription.numericColumns.length === 1 && dataDescription.otherColumns.length === 1)) {
             notAllowed.splice(notAllowed.indexOf('kpideviation'), 1);
         }
 
@@ -806,7 +807,7 @@ export class ChartUtilsService {
      */
     public getTooManyDataForCharts(dataSize: number): any[] {
         let notAllowed =
-            ['table', 'crosstable', 'kpi', 'dynamicText', 'knob', 'doughnut', 'polarArea', 'line', 'kpiline', 'bar', 'kpibar','histogram',
+            ['table', 'crosstable', 'kpi', 'dynamicText', 'knob', 'kpideviation', 'doughnut', 'polarArea', 'line', 'kpiline', 'bar', 'kpibar','histogram',
                 'horizontalBar', 'barline', 'area', 'kpiarea', 'geoJsonMap', 'coordinateMap', 'radar'];
 
         //table (at least one column)
@@ -824,10 +825,10 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('kpi'), 1);
             notAllowed.splice(notAllowed.indexOf('dynamicText'), 1);
         }
-        // Knomb (only one or two  numeric column)
-        // only 2 values
+        // Knob / kpideviation: only 2 rows allowed
         if (dataSize <= 2) {
             notAllowed.splice(notAllowed.indexOf('knob'), 1);
+            notAllowed.splice(notAllowed.indexOf('kpideviation'), 1);
         }
         // Pie && Polar (Only one numeric column and one char/date column)
         if (dataSize < 100) {

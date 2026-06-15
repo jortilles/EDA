@@ -6983,6 +6983,22 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Fuente de datos Holded creada correctamente</source>
         <target>Source de données Holded créée avec succès</target>
       </trans-unit>
+      <trans-unit id="multipleSelectionText">
+        <source>Selección múltiple</source>
+        <target>Sélection multiple</target>
+      </trans-unit>
+      <trans-unit id="uniqueSelectionText">
+        <source>Selección única</source>
+        <target>Sélection unique</target>
+      </trans-unit>
+      <trans-unit id="uniqueSelectionDescription">
+        <source>Active esta opción para permitir la selección múltiple.</source>
+        <target>Activez cette option pour autoriser la sélection multiple.</target>
+      </trans-unit>      
+      <trans-unit id="multipleSelectionDescription">
+        <source>Desactive esta opción para permitir la selección única.</source>
+        <target>Désactivez cette option pour autoriser une sélection unique.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -11,7 +11,8 @@
             </h3>
           </div>
     
-          <div class="grid grid-cols-4 items-center">
+          <div class="grid grid-cols-5 items-center">
+
             <div class="space-x-2 flex items-center h-max">
               <label i18n="@@aplyToAllPanelsH5" [pTooltip]="tooltipApplyToAll" tooltipPosition="top">¿Aplica a todos los paneles?</label>
               <button type="button" role="switch" [attr.aria-checked]="applyToAll" (click)="applyToAllCheck()"
@@ -47,6 +48,24 @@
               </button>
             </div>
 
+            <div class="space-x-2 flex items-center h-max">
+              <div class="min-w-[9rem]">
+                @if(multipleSelection) {
+                  <label i18n="@@multipleSelectionText" [pTooltip]="multipleSelectionDescription" tooltipPosition="top">Selección múltiple</label>
+                } @else {
+                  <label i18n="@@uniqueSelectionText" [pTooltip]="uniqueSelectionDescription" tooltipPosition="top">Selección única</label>
+                }
+              </div>
+              <button type="button" role="switch" [attr.aria-checked]="isMandatory"
+                (click)="multipleSelectionCheck()"
+                class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50"
+                [ngClass]="{'bg-[var(--corporate-primary)]': multipleSelection, 'bg-input': !multipleSelection}">
+                <span
+                  class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform"
+                  [ngClass]="{'translate-x-5': multipleSelection, 'translate-x-0': !multipleSelection}"></span>
+              </button>
+            </div>
+
             <div>
               <div class="flex flex-row space-x-1.5 items-center">
                 <label class="flex-none" [pTooltip]="tooltipVisibility" tooltipPosition="top">{{header4}}:</label>
@@ -59,6 +78,7 @@
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -119,12 +139,22 @@
 
               @if (globalFilter.selectedColumn?.column_type !== 'date') {
                 @if(globalFilter.isAutocompleted === false){
+                  @if(multipleSelection === false) {
+                  <p-multiSelect id="selectFilterValue" class='eda-filter-multiselect' [options]="columnValues"
+                    [(ngModel)]="globalFilter.selectedItems" [virtualScroll]="true" [itemSize]="30"
+                    [style]="{ width: '100%', height:'100%', alignItems:'center'}" [panelStyle]="{minWidth:'15em'}"
+                    [maxSelectedLabels]="1" i18n-defaultLabel="@@defaultValueLabel" defaultLabel="Valor por defecto" [loading]="loading"
+                    display="chip" appendTo="body"
+                    (onChange)="onSingleSelectChange()">
+                  </p-multiSelect>
+                  } @else {
                   <p-multiSelect id="selectFilterValue" class='eda-filter-multiselect' [options]="columnValues"
                     [(ngModel)]="globalFilter.selectedItems" [virtualScroll]="true" [itemSize]="30"
                     [style]="{ width: '100%', height:'100%', alignItems:'center'}" [panelStyle]="{minWidth:'15em'}"
                     [maxSelectedLabels]="1" i18n-defaultLabel="@@defaultValueLabel" defaultLabel="Valor por defecto" [loading]="loading"
                     display="chip" appendTo="body">
                   </p-multiSelect>
+                  }
                 }@else{
                   <p-autoComplete [(ngModel)]="globalFilter.selectedItems" (keydown.enter)="onAddValue($event, globalFilter)"
                     [suggestions]="autoCompleteValues" (completeMethod)="loadFilterAutoComplete($event, globalFilter)" placeholder="abc..."

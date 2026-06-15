@@ -1064,7 +1064,7 @@ export class DashboardPage implements OnInit {
     const emptyQuery = this.edaPanels.some((panel) => panel.currentQuery.length === 0);
     if (emptyQuery) {
       this.alertService.addError($localize`:@@SaveWarningTittle:Solo puedes guardar cuando todos los paneles están configurados`);
-      return;
+      throw new Error('empty_query');
     }
 
     this.triggerTimer();
@@ -1075,7 +1075,7 @@ export class DashboardPage implements OnInit {
         ds: { _id: this.dataSource._id },
         filters: this.cleanFiltersData(),
         applyToAllfilter: this.applyToAllfilter,
-        visible: this.dashboard.config.visible,
+        visible: this.dashboard.config.visible ?? 'private',
         tag: this.selectedTags,
         refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
         clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,

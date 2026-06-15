@@ -547,6 +547,7 @@ export class GlobalFilterComponent implements OnInit {
                     filter.visible = this.globalFilter.visible;
                     filter.isAutocompleted = this.globalFilter.isAutocompleted !== undefined ? this.globalFilter.isAutocompleted : false;
                     filter.applyToAll = this.globalFilter.applyToAll;
+                    filter.multipleSelection = this.globalFilter.multipleSelection ?? true;
 
                     if (filter.pathList) {
                         for (const key in filter.pathList) {
@@ -1041,6 +1042,17 @@ export class GlobalFilterComponent implements OnInit {
 
     public removeAllFilterItems(filter: any): void {
         filter.selectedItems = [];
+        this.setGlobalFilterItems(filter);
+    }
+
+    public onSingleSelectChange(filter: any): void {
+        if (filter.selectedItems?.length > 1) {
+            filter.selectedItems = [filter.selectedItems[filter.selectedItems.length - 1]];
+        }
+        this.setGlobalFilterItems(filter);
+    }
+
+    public onFilterChange(filter: any): void {
         this.setGlobalFilterItems(filter);
     }
 

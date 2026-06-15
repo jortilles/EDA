@@ -486,7 +486,9 @@ export class DashboardSidebarComponent {
     // Update the author
     this.dashboard.dashboard.config.author = JSON.parse(localStorage.getItem('user')).name;
     // Save dashboard
-    await this.dashboard.saveDashboard();
+    try {
+      await this.dashboard.saveDashboard();
+    } catch { }
     this.hidePopover();
   }
 
@@ -586,15 +588,23 @@ export class DashboardSidebarComponent {
     this.isVisibleModalVisible = false;
   }
 
-  public saveVisibleModal(privacity: any) {
+  public async saveVisibleModal(privacity: any) {
     this.isVisibleModalVisible = false;
+    const previousVisible = this.dashboard.dashboard.config.visible;
+    const previousGroup = [...(this.dashboard.dashboard.group || [])];
+
     this.dashboard.dashboard.config.visible = privacity.visible;
     if (privacity.visible === 'group')
       this.dashboard.dashboard.group = privacity.group.map(grup => grup._id);
     else
       this.dashboard.dashboard.group = []
 
-    this.dashboard.saveDashboard();
+    try {
+      await this.dashboard.saveDashboard();
+    } catch {
+      this.dashboard.dashboard.config.visible = previousVisible;
+      this.dashboard.dashboard.group = previousGroup;
+    }
   }
 
   public closeMailConfig() {

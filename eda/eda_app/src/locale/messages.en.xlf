@@ -6708,6 +6708,22 @@ OR<ph id="5"/>
   <source>Fuente de datos Holded creada correctamente</source>
   <target>Holded data source created successfully</target>
 </trans-unit>
+<trans-unit id="multipleSelectionText">
+  <source>Selección múltiple</source>
+  <target>Multiple choice</target>
+</trans-unit>
+<trans-unit id="uniqueSelectionText">
+  <source>Selección única</source>
+  <target>Single choice</target>
+</trans-unit>
+<trans-unit id="uniqueSelectionDescription">
+  <source>Active esta opción para permitir la selección múltiple.</source>
+  <target>Enable this option to allow multiple selection.</target>
+</trans-unit>
+<trans-unit id="multipleSelectionDescription">
+  <source>Desactive esta opción para permitir la selección única.</source>
+  <target>Disable this option to allow single selection.</target>
+</trans-unit>
 </body>
 </file>
 </xliff>
