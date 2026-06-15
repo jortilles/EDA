@@ -50,9 +50,39 @@
                 [placeholder]="placeholderText"
                 panelStyleClass="multiselect-auto-width"
                 (onChange)="onSingleSelectChange(filter)"
+                (mouseenter)="showFilterTooltip($event, opSingle, filter)"
+                (mouseleave)="hideFilterTooltip(opSingle)"
+                (onClick)="hideFilterTooltip(opSingle)"
                 (onPanelShow)="setDropdownOpen(true)"
                 (onPanelHide)="setDropdownOpen(false)">
               </p-multiSelect>
+              <p-overlayPanel #opSingle appendTo="body">
+                <ng-template pTemplate>
+                  <div (mouseenter)="showFilterTooltip($event, opSingle, filter)" (mouseleave)="hideFilterTooltip(opSingle)"
+                       class="max-h-[30vh] overflow-auto min-w-[20vw] max-w-[30vw]">
+                    <div class="flex items-center justify-between mb-1 pl-1 pr-4 py-2">
+                      <span>{{ resumen }}</span>
+                      @if(filter.visible !== "readOnly" || isAdmin) {
+                        <button type="button" class="pi pi-trash filter-tooltip-button ml-2"
+                            (click)="removeAllFilterItems(filter)">
+                        </button>
+                      }
+                    </div>
+                    @for (item of filter.selectedItems; track item) {
+                      <div class="filter-tooltip-container bg-[white] px-4 py-2 rounded flex items-center mr-1">
+                        <span class="customMultiselect filters-size filter-tooltip-text">
+                          {{ item }}
+                          @if(filter.visible !== "readOnly" || isAdmin) {
+                            <button type="button" class="pi pi-times-circle filter-tooltip-button"
+                                (click)="removeFilterItem(filter, item)">
+                            </button>
+                          }
+                        </span>
+                      </div>
+                    }
+                  </div>
+                </ng-template>
+              </p-overlayPanel>
               } @else {
               <p-multiSelect
                 [style]="styleButton"
