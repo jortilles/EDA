@@ -35,21 +35,39 @@
               <eda-date-picker [autoClear]="true" [inject]="datePickerConfigs[filter.id]"
                 (onRemove)="removeGlobalFilter(filter, true)" (onDatesChanges)="processPickerEvent($event, filter)">
               </eda-date-picker>
-              } @else {
-              <p-multiSelect 
-                [style]="styleButton" 
-                [options]="filter.data" 
+              } @else if (filter.multipleSelection === false) {
+              <p-multiSelect
+                [style]="styleButton"
+                [options]="filter.data"
                 [(ngModel)]="filter.selectedItems"
-                [virtualScroll]="true" 
+                [virtualScroll]="true"
                 [selectedItemsLabel]="'{0} ' + selectedItemsLabel"
-                [defaultLabel]="getFilterLabel(filter)" 
+                [defaultLabel]="getFilterLabel(filter)"
                 [disabled]="disableGlobalFilter(filter)"
-                [virtualScrollItemSize]="30" 
-                [loading]="loading" 
-                i18n-placeholder="@@Cargando" 
+                [virtualScrollItemSize]="30"
+                [loading]="loading"
+                i18n-placeholder="@@Cargando"
                 [placeholder]="placeholderText"
-                panelStyleClass="multiselect-auto-width" 
-                (onChange)="setGlobalFilterItems(filter)"
+                panelStyleClass="multiselect-auto-width"
+                (onChange)="onSingleSelectChange(filter)"
+                (onPanelShow)="setDropdownOpen(true)"
+                (onPanelHide)="setDropdownOpen(false)">
+              </p-multiSelect>
+              } @else {
+              <p-multiSelect
+                [style]="styleButton"
+                [options]="filter.data"
+                [(ngModel)]="filter.selectedItems"
+                [virtualScroll]="true"
+                [selectedItemsLabel]="'{0} ' + selectedItemsLabel"
+                [defaultLabel]="getFilterLabel(filter)"
+                [disabled]="disableGlobalFilter(filter)"
+                [virtualScrollItemSize]="30"
+                [loading]="loading"
+                i18n-placeholder="@@Cargando"
+                [placeholder]="placeholderText"
+                panelStyleClass="multiselect-auto-width"
+                (onChange)="onFilterChange(filter)"
                 (mouseenter)="showFilterTooltip($event, op, filter)"
                 (mouseleave)="hideFilterTooltip(op)"
                 (onClick)="hideFilterTooltip(op)"

@@ -1045,6 +1045,17 @@ export class GlobalFilterComponent implements OnInit {
         this.setGlobalFilterItems(filter);
     }
 
+    public onSingleSelectChange(filter: any): void {
+        if (filter.selectedItems?.length > 1) {
+            filter.selectedItems = [filter.selectedItems[filter.selectedItems.length - 1]];
+        }
+        this.setGlobalFilterItems(filter);
+    }
+
+    public onFilterChange(filter: any): void {
+        this.setGlobalFilterItems(filter);
+    }
+
     public setDropdownOpen(value: boolean): void {
         this.isDropdownOpen = value;
     }
