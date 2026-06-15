@@ -785,6 +785,13 @@ public async loadFilterAutoComplete(event: any, filtro: any) {
     public multipleSelectionCheck() {
         this.multipleSelection = !this.multipleSelection;
         this.globalFilter.multipleSelection = this.multipleSelection;
+        this.globalFilter.selectedItems = [];
+    }
+
+    public onSingleSelectChange(): void {
+        if (this.globalFilter.selectedItems?.length > 1) {
+            this.globalFilter.selectedItems = [this.globalFilter.selectedItems[this.globalFilter.selectedItems.length - 1]];
+        }
     }
 
     public toggleShowAlias() {
