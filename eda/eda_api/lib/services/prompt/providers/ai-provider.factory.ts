@@ -3,6 +3,7 @@ import { OpenAIProvider } from './openai.provider';
 import { AnthropicProvider } from './anthropic.provider';
 import { BedrockProvider } from './bedrock.provider';
 import { QwenProvider } from './qwen.provider';
+import { CopilotProvider } from './copilot.provider';
 
 export class AIProviderFactory {
 
@@ -13,8 +14,9 @@ export class AIProviderFactory {
         if (PROVIDER === 'anthropic') return new AnthropicProvider(config);
         if (PROVIDER === 'bedrock') return new BedrockProvider(config);
         if (PROVIDER === 'qwen') return new QwenProvider(config);
+        if (PROVIDER === 'copilot') return new CopilotProvider(config);
 
-        throw new Error(`Proveedor IA "${PROVIDER}" no esta soportado. Opciones validas: openai, anthropic, bedrock, qwen`);
+        throw new Error(`Proveedor IA "${PROVIDER}" no esta soportado. Opciones validas: openai, anthropic, bedrock, qwen, copilot`);
     }
 
 }

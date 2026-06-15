@@ -3,6 +3,7 @@ import { AnthropicMCPProvider } from './anthropic.mcp-provider';
 import { OpenAIMCPProvider } from './openai.mcp-provider';
 import { BedrockMCPProvider } from './bedrock.mcp-provider';
 import { QwenMCPProvider } from './qwen.mcp-provider';
+import { CopilotMCPProvider } from './copilot.mcp-provider';
 
 export class MCPAIProviderFactory {
 
@@ -13,8 +14,9 @@ export class MCPAIProviderFactory {
         if (PROVIDER === 'anthropic') return new AnthropicMCPProvider(config);
         if (PROVIDER === 'bedrock') return new BedrockMCPProvider(config);
         if (PROVIDER === 'qwen') return new QwenMCPProvider(config);
+        if (PROVIDER === 'copilot') return new CopilotMCPProvider(config);
 
-        throw new Error(`Proveedor IA "${PROVIDER}" no soportado para MCP. Opciones válidas: openai, anthropic, bedrock, qwen`);
+        throw new Error(`Proveedor IA "${PROVIDER}" no soportado para MCP. Opciones válidas: openai, anthropic, bedrock, qwen, copilot`);
     }
 
 }
