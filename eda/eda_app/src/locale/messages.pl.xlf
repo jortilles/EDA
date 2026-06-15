@@ -6624,6 +6624,22 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Fuente de datos Holded creada correctamente</source>
         <target>Źródło danych Holded zostało pomyślnie utworzone</target>
       </trans-unit>
+      <trans-unit id="multipleSelectionText">
+        <source>Selección múltiple</source>
+        <target>Wielokrotny wybór</target>
+      </trans-unit>
+      <trans-unit id="uniqueSelectionText">
+        <source>Selección única</source>
+        <target>Jednokrotny wybór</target>
+      </trans-unit>
+      <trans-unit id="uniqueSelectionDescription">
+        <source>Active esta opción para permitir la selección múltiple.</source>
+        <target>Włącz tę opcję, aby umożliwić wybór wielu wartości.</target>
+      </trans-unit>      
+      <trans-unit id="multipleSelectionDescription">
+        <source>Desactive esta opción para permitir la selección única.</source>
+        <target>Wyłącz tę opcję, aby umożliwić wybór tylko jednej wartości.</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

@@ -547,6 +547,7 @@ export class GlobalFilterComponent implements OnInit {
                     filter.visible = this.globalFilter.visible;
                     filter.isAutocompleted = this.globalFilter.isAutocompleted !== undefined ? this.globalFilter.isAutocompleted : false;
                     filter.applyToAll = this.globalFilter.applyToAll;
+                    filter.multipleSelection = this.globalFilter.multipleSelection ?? true;
 
                     if (filter.pathList) {
                         for (const key in filter.pathList) {

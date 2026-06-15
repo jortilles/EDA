@@ -6991,6 +6991,22 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Fuente de datos Holded creada correctamente</source>
         <target>Font de dades Holded creada correctament</target>
       </trans-unit>
+      <trans-unit id="multipleSelectionText">
+        <source>Selección múltiple</source>
+        <target>Selecció múltiple</target>
+      </trans-unit>
+      <trans-unit id="uniqueSelectionText">
+        <source>Selección única</source>
+        <target>Selecció única</target>
+      </trans-unit>
+      <trans-unit id="uniqueSelectionDescription">
+        <source>Active esta opción para permitir la selección múltiple.</source>
+        <target>Activeu aquesta opció per permetre la selecció múltiple.</target>
+      </trans-unit>      
+      <trans-unit id="multipleSelectionDescription">
+        <source>Desactive esta opción para permitir la selección única.</source>
+        <target>Desactiveu aquesta opció per permetre la selecció única.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
