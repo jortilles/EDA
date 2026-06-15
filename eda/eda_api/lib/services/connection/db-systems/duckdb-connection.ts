@@ -52,7 +52,7 @@ export class DuckDBConnection extends AbstractConnection {
             const tableName = path.basename(file, path.extname(file));
             const filePath = path.join(folder, file).replace(/\\/g, '/');
             try {
-                await conn.run(`CREATE OR REPLACE VIEW "${tableName}" AS SELECT * FROM read_csv_auto('${filePath}')`);
+                await conn.run(`CREATE OR REPLACE VIEW "main"."${tableName}" AS SELECT * FROM read_csv_auto('${filePath}')`);
                 console.log(`[DuckDB] View "${tableName}" ready`);
             } catch (err: any) {
                 console.error(`[DuckDB] Error creating view "${tableName}": ${err.message}`);
