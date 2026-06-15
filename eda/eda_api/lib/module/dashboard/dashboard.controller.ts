@@ -280,8 +280,8 @@ export class DashboardController {
       for (const dashboard of dashboards) {
         // Normalize legacy visibility values
         DashboardController.normalizeVisibility(dashboard);
-        const ds = dss.find( e=> e._id.toString() == dashboard.config.ds._id.toString() ); 
         if (dashboard.config.visible === 'common') {
+          const ds = dss.find( e=> e._id.toString() == dashboard.config.ds?._id?.toString() );
           if( ds ){
               // Obtain the name of the data source
               dashboard.config.ds.name = ds.ds?.metadata?.model_name ?? 'N/A';
@@ -292,12 +292,7 @@ export class DashboardController {
           }else{
             console.log('Unable to show the dashboard because i cant find the dataource' + dashboard )
           }
-
-
-
         }
-
-        
       }
 
       let tags: Array<any> = req.qs.tags;
@@ -754,16 +749,16 @@ export class DashboardController {
           const dashboardToUpdate = await dashboard.save();
           return res.status(200).json({ ok: true, dashboard })
         } catch (err) {
-          return (new HttpException(500, 'Error updating dashboard'))
+          return next(new HttpException(500, 'Error updating dashboard'))
         }
       } catch (error) {
         console.log(error);
-        return (new HttpException(500, 'Error searching the dashboard'))
+        return next(new HttpException(500, 'Error searching the dashboard'))
       }
 
     } catch (error) {
       console.log(error);
-      return (new HttpException(500, 'Error updating dashboard'))
+      return next(new HttpException(500, 'Error updating dashboard'))
     }
   }
 
@@ -2343,7 +2338,9 @@ static  convertColumnToForbiddenColumn(columns: any[], sample: any): any[] {
    * @param dashboard Dashboard to normalize
    */
   private static normalizeVisibility(dashboard: any): void {
-    if (dashboard.config.visible === 'public') {
+    if (!dashboard.config.visible) {
+      dashboard.config.visible = 'private';
+    } else if (dashboard.config.visible === 'public') {
       dashboard.config.visible = 'common';
     } else if (dashboard.config.visible === 'shared') {
       dashboard.config.visible = 'open';
