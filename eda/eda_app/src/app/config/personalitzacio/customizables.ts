@@ -205,6 +205,6 @@ export const FATHER_ID: number = 0; // Parent ID value for the Treetable compone
 
 export const UI_BEHAVIOR = {
   panel: {
-    showLockInHeader: true, // true → lock button visible in panel header | false → lock in context menu
+    showLockInHeader: false, // true → lock button visible in panel header | false → lock in context menu
   }
 };
