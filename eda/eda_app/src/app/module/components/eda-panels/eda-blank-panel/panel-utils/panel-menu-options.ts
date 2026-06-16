@@ -3,6 +3,7 @@ import { PanelInteractionUtils } from './panel-interaction-utils';
 import * as _ from 'lodash';
 
 import { EdaContextMenuItem, EdaDialogController, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
+import { UI_BEHAVIOR } from '@eda/configs/personalitzacio/customizables';
 
 export const PanelOptions = {
   editQuery: (panelComponent: EdaBlankPanelComponent) => {
@@ -354,27 +355,20 @@ export const PanelOptions = {
     });
   },
   toggleLock: (panelComponent: EdaBlankPanelComponent) => {
-    const isLocked = () => (panelComponent.panel as any).dragEnabled === false;
-    const item = new EdaContextMenuItem({
-      label: isLocked() ? $localize`:@@panelOptionsUnlock:Desbloquear panel` : $localize`:@@panelOptionsLock:Bloquear panel`,
-      icon: isLocked() ? 'pi pi-lock' : 'pi pi-lock-open',
+    return new EdaContextMenuItem({
+      label: panelComponent.isPanelLocked()
+        ? $localize`:@@panelOptionsUnlock:Desbloquear panel`
+        : $localize`:@@panelOptionsLock:Bloquear panel`,
+      icon: panelComponent.isPanelLocked() ? 'pi pi-lock' : 'pi pi-lock-open',
       command: () => {
-        if (isLocked()) {
-          (panelComponent.panel as any).dragEnabled = true;
-          (panelComponent.panel as any).resizeEnabled = true;
-          item.label = $localize`:@@panelOptionsLock:Bloquear panel`;
-          item.icon = 'pi pi-lock-open';
-        } else {
-          (panelComponent.panel as any).dragEnabled = false;
-          (panelComponent.panel as any).resizeEnabled = false;
-          item.label = $localize`:@@panelOptionsUnlock:Desbloquear panel`;
-          item.icon = 'pi pi-lock';
-        }
-        panelComponent.dashboard.gridsterOptions.api?.optionsChanged();
-        panelComponent.dashboardService._notSaved.next(true);
+        panelComponent.togglePanelLock();
+        // Defer reassignment by one tick: the click must finish bubbling before we
+        // replace the DOM, otherwise onOutsideClick sees a detached target and closes the menu
+        setTimeout(() => {
+          panelComponent.contextMenu.contextMenuItems = PanelOptions.generateMenu(panelComponent);
+        }, 0);
       }
     });
-    return item;
   },
 
   generateMenu: (ebp: EdaBlankPanelComponent) => {
@@ -421,7 +415,7 @@ export const PanelOptions = {
         item: () => PanelOptions.duplicatePanel(ebp),
       },
       {
-        show: !isRoOrAnonimus,
+        show: !isRoOrAnonimus && !UI_BEHAVIOR.panel.showLockInHeader,
         item: () => PanelOptions.toggleLock(ebp),
       },
       {

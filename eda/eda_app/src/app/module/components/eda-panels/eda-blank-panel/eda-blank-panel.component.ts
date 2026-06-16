@@ -15,7 +15,7 @@ import { ConfirmationService, SharedModule } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
-import { NULL_VALUE, EMPTY_VALUE} from '../../../../config/personalitzacio/customizables';
+import { NULL_VALUE, EMPTY_VALUE, UI_BEHAVIOR } from '../../../../config/personalitzacio/customizables';
 import { aggTypes } from 'app/config/aggretation-types';
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 
@@ -530,6 +530,21 @@ public tableNodeExpand(event: any): void {
         const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
         return (userName !== 'edaanonim' && !this.inject.isObserver);
+    }
+
+    readonly showLockInHeader = UI_BEHAVIOR.panel.showLockInHeader;
+
+    isPanelLocked(): boolean {
+        return (this.panel as any).dragEnabled === false;
+    }
+
+    togglePanelLock(): void {
+        const panel = this.panel as any;
+        const locked = this.isPanelLocked();
+        panel.dragEnabled = locked;
+        panel.resizeEnabled = locked;
+        this.dashboard.gridsterOptions.api?.optionsChanged();
+        this.dashboardService._notSaved.next(true);
     }
 
     public showWhatIfSection(): boolean {

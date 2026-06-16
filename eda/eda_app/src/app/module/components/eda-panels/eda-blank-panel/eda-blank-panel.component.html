@@ -26,8 +26,18 @@
       </div>
     }
 
+    <!-- Lock button (visible in header when showLockInHeader is true) -->
+    @if (showLockInHeader && isEditable()) {
+      <i
+        [class]="isPanelLocked() ? 'pi pi-lock text-red-500' : 'pi pi-lock-open text-green-500'"
+        class="cursor-pointer ml-2 w-[28px] h-[28px] flex items-center justify-center text-center rounded-full content-center"
+        (click)="togglePanelLock()"
+        (mousedown)="$event.stopPropagation()"
+      ></i>
+    }
+
     <!-- Icon on the right -->
-    <i 
+    <i
       [ngClass]="{'edit-blink': lodash.isEmpty(panel.content)}"
       class="pi pi-ellipsis-v cursor-pointer ml-2  w-[28px] h-[28px] flex items-center justify-center text-center rounded-full content-center"
       (click)="contextMenu.showContextMenu($event)"
