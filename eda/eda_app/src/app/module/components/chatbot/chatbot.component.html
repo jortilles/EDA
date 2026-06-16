@@ -1,3 +1,8 @@
+<!-- Mobile backdrop (overlay semitransparente al abrir el chat) -->
+@if (chatAvailable() && chatOpen()) {
+  <div class="chat-mobile-backdrop" (click)="toggleChat()"></div>
+}
+
 <!-- Panel lateral chat IA (siempre en DOM, slide con CSS) -->
 <div class="chat-panel" [class.chat-panel--open]="chatAvailable() && chatOpen()">
   <div class="w-[27.5vw] h-full flex flex-col border-l bg-white">

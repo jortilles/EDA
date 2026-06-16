@@ -500,6 +500,7 @@ body .ui-tree {
   cursor: pointer;
   transition: all 0.3s ease;
   align-content: center;
+  white-space: nowrap;
 }
 
 .tag:hover {
@@ -509,17 +510,15 @@ body .ui-tree {
 
 /* Tag seleccionado (igual que hover) */
 .tag-selected {
-    padding: 0.5rem 1rem; /* px-4 py-2 equivalente */
-  font-size: 0.875rem;  /* text-sm */
-  color: #374151;       /* gray-700 */
-  background-color: #f3f4f6; /* gray-100 */
-  border-radius: 0.375rem; /* rounded-md */
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: white;
+  border-radius: 0.375rem;
   cursor: pointer;
   transition: all 0.3s ease;
   background: linear-gradient(to right, var(--corporate-primary), var(--corporate-primary-gradient));
-  color: white;
-    align-content: center;
-
+  align-content: center;
+  white-space: nowrap;
 }
 
 
