@@ -1,5 +1,5 @@
 @if(!panelMode){
-  <div class="flex w-[4vw] h-full flex-col items-center border-r bg-background p-2">
+  <div class="flex min-w-[3.5rem] w-[4vw] h-full flex-col items-center border-r bg-background p-2">
     <div class="flex flex-col items-center gap-2">
       <img id="sidebar-btn-toggle" [src]="logoSidebar" (click)="menuCommand({ path: '/home'}, $event)" alt="logo icono" class="dark-logo mb-2 mt-2 w-14 h-17 cursor-pointer" />
       @if(!isAnonim){

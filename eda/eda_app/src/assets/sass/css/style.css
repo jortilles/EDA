@@ -500,6 +500,7 @@ body .ui-tree {
   cursor: pointer;
   transition: all 0.3s ease;
   align-content: center;
+  white-space: nowrap;
 }
 
 .tag:hover {
@@ -517,9 +518,8 @@ body .ui-tree {
   cursor: pointer;
   transition: all 0.3s ease;
   background: linear-gradient(to right, var(--corporate-primary), var(--corporate-primary-gradient));
-  color: white;
-    align-content: center;
-
+  align-content: center;
+  white-space: nowrap;
 }
 
 
