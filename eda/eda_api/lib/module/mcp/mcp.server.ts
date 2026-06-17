@@ -697,8 +697,10 @@ export function createMcpServer(requestUser?: any) {
 
                 // ── MODO FALLBACK: datasource_id sin dashboard_id ──────────────────────
                 if (datasource_id) {
-                    console.log('[MCP][FALLBACK] ═══════════════════════════════════════');
-                    console.log('[MCP][FALLBACK] INICIO MODO FALLBACK');
+                    console.log('');
+                    console.log('[MCP] ════════════════════════════════════════════════');
+                    console.log('[MCP] ▶▶▶ EJECUTANDO CONSULTA DIRECTA A BASE DE DATOS');
+                    console.log('[MCP] ════════════════════════════════════════════════');
                     console.log('[MCP][FALLBACK] datasource_id:', datasource_id);
                     console.log('[MCP][FALLBACK] question:', question);
                     console.log('[MCP][FALLBACK] campos_consulta recibidos:', JSON.stringify(campos_consulta));
@@ -1006,8 +1008,8 @@ export function createMcpServer(requestUser?: any) {
                                 console.log(`[META]   kw="${kw}" → field:${inField} colDesc:${inColDesc} panelTitle:${inPanelTitle} panelDesc:${inPanelDesc} dashboard:${inDashboard} ✔:${matched}`);
                             }
                             const matchRatio = matchCount / camposLower.length;
-                            if (matchRatio < 0.5) {
-                                console.log(`[META]   → SALTADO por pre-filtro (${(matchRatio*100).toFixed(0)}% < 50%) | dashboard=${db.config?.title}, idx=${idx}`);
+                            if (matchRatio < 0.25) {
+                                console.log(`[META]   → SALTADO por pre-filtro (${(matchRatio*100).toFixed(0)}% < 25%) | dashboard=${db.config?.title}, idx=${idx}`);
                                 continue;
                             }
                             console.log(`[META]   → PASA pre-filtro (${(matchRatio*100).toFixed(0)}%) | dashboard=${db.config?.title}, idx=${idx}`);
@@ -1193,6 +1195,10 @@ export function createMcpServer(requestUser?: any) {
                 let notaAsistente: string;
                 if (opcionesArr.length === 0) {
                     if (fallbackSugerencias.length > 0) {
+                        console.log('');
+                        console.log('[MCP] ▶▶▶ FALLBACK ACTIVADO — sin paneles relevantes, IA consultará DB directamente');
+                        console.log(`[MCP] ▶▶▶ datasource: "${fallbackSugerencias[0].datasource_nombre}" | cols: [${fallbackSugerencias[0].campos_relevantes.join(', ')}]`);
+                        console.log('');
                         notaAsistente = buildFallbackNota();
                     } else if (camposLower.length > 0) {
                         notaAsistente = `No panels found with fields [${camposLower.join(', ')}]. MANDATORY: call this tool again WITHOUT campos_requeridos. If still 0 options, respond ONLY with a single sentence in the user's language saying no data is available. ABSOLUTE PROHIBITION: do not offer alternatives or mention databases.`;
@@ -1202,11 +1208,13 @@ export function createMcpServer(requestUser?: any) {
                 } else if (opcionesArr.length === 1) {
                     notaAsistente = `There is exactly ONE option. MANDATORY: call get_data_from_dashboard RIGHT NOW in data mode with the dashboard_id and panel_index of this option. Do NOT ask the user, do NOT wait for confirmation.${notaTruncada}`;
                     if (fallbackSugerencias.length > 0) {
+                        console.log(`[MCP] ▶▶▶ FALLBACK disponible como plan B — datasource: "${fallbackSugerencias[0].datasource_nombre}"`);
                         notaAsistente += ` If the panel returns no data or an error, immediately run: ${buildFallbackNota()}`;
                     }
                 } else {
                     notaAsistente = `There are ${opcionesArr.length} options. Show ONLY those whose dashboard_nombre or panel_titulo are related to "${question}". Present them numbered with the dashboard link and key differences (filters, scope). If after filtering only 1 relevant option remains, go directly to data mode without asking. Wait for user selection when several options are relevant.${notaTruncada}`;
                     if (fallbackSugerencias.length > 0) {
+                        console.log(`[MCP] ▶▶▶ FALLBACK disponible como plan B — datasource: "${fallbackSugerencias[0].datasource_nombre}"`);
                         notaAsistente += ` If none of the options are relevant or all return no data, immediately run: ${buildFallbackNota()}`;
                     }
                 }
