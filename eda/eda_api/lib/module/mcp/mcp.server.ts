@@ -909,6 +909,9 @@ export function createMcpServer(requestUser?: any) {
 
                 const opcionesMap = new Map<string, any>();
 
+                // Defined here so it's available in both the pre-filter loop and the scoring section below.
+                const normQ = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+
                 for (let di = 0; di < allDashboards.length; di++) {
                     const d = allDashboards[di];
                     const db: any = fullDashboards[di];
@@ -958,7 +961,8 @@ export function createMcpServer(requestUser?: any) {
                             continue;
                         }
 
-                        const fieldNames = visibleFields.map((f: any) => f.display_name ?? f.field_name).filter(Boolean);
+                        const fieldNames     = visibleFields.map((f: any) => f.display_name ?? f.field_name).filter(Boolean);
+                        const fieldNamesTech = visibleFields.map((f: any) => f.field_name ?? '').filter(Boolean);
 
                         const camposDescripciones: string[] = [];
                         const tablasDescripciones: string[] = [];
@@ -991,18 +995,20 @@ export function createMcpServer(requestUser?: any) {
                         const panelDescStr: string = typeof rawPanelDesc === 'string' ? rawPanelDesc : (rawPanelDesc?.default ?? '');
                         console.log(`[META]   panelDescStr="${panelDescStr.substring(0, 100)}"`);
                         if (camposLower.length > 0) {
-                            const fieldNamesLower = fieldNames.map((n: string) => n.toLowerCase());
-                            const allDescText = [...camposDescripciones, ...tablasDescripciones].join(' ').toLowerCase();
-                            const panelTitleLower = (panel.title ?? '').toLowerCase();
-                            const panelDescLower = panelDescStr.toLowerCase();
-                            const dashboardNameLower = (db.config?.title ?? '').toLowerCase();
+                            // All display + technical field names, accent-normalised
+                            const allFieldNorms = [...fieldNames, ...fieldNamesTech].map(normQ);
+                            const allDescNorm   = normQ([...camposDescripciones, ...tablasDescripciones].join(' '));
+                            const titleNorm     = normQ(panel.title ?? '');
+                            const descNorm      = normQ(panelDescStr);
+                            const dashNorm      = normQ(db.config?.title ?? '');
                             let matchCount = 0;
                             for (const kw of camposLower) {
-                                const inField      = fieldNamesLower.some((fn: string) => fn.includes(kw));
-                                const inColDesc    = allDescText.includes(kw);
-                                const inPanelTitle = panelTitleLower.includes(kw);
-                                const inPanelDesc  = panelDescLower.includes(kw);
-                                const inDashboard  = dashboardNameLower.includes(kw);
+                                const kwN          = normQ(kw);
+                                const inField      = allFieldNorms.some((fn: string) => fn.includes(kwN));
+                                const inColDesc    = allDescNorm.includes(kwN);
+                                const inPanelTitle = titleNorm.includes(kwN);
+                                const inPanelDesc  = descNorm.includes(kwN);
+                                const inDashboard  = dashNorm.includes(kwN);
                                 const matched = inField || inColDesc || inPanelTitle || inPanelDesc || inDashboard;
                                 if (matched) matchCount++;
                                 console.log(`[META]   kw="${kw}" → field:${inField} colDesc:${inColDesc} panelTitle:${inPanelTitle} panelDesc:${inPanelDesc} dashboard:${inDashboard} ✔:${matched}`);
@@ -1045,6 +1051,7 @@ export function createMcpServer(requestUser?: any) {
                                 panel_descripcion:     panelDescStr,
                                 datasource_nombre:     accessibleDsIds.get(query.model_id) ?? null,
                                 campos:                fieldNames,
+                                campos_tecnicos:       fieldNamesTech,
                                 campos_descripciones:  camposDescripciones,
                                 tablas_descripciones:  tablasDescripciones,
                                 tiene_filtros:         activeFilters.length > 0,
@@ -1060,7 +1067,6 @@ export function createMcpServer(requestUser?: any) {
                 const MAX_OPTIONS = 5;
 
                 const questionWords = (question ?? '').toLowerCase().split(/\s+/).filter((w: string) => w.length >= 3);
-                const normQ = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
                 const fuzzyContains = (haystack: string, needle: string): boolean => {
                     const nh = normQ(haystack); const nn = normQ(needle);
                     return nh.includes(nn) || nn.includes(nh);
@@ -1082,21 +1088,23 @@ export function createMcpServer(requestUser?: any) {
                         const noFilterBonus = (textScore > 0 && !o.tiene_filtros) ? 0.1 : 0;
                         return textScore + noFilterBonus;
                     }
-                    const fieldNamesLower: string[] = (o.campos as string[]).map((n: string) => n.toLowerCase());
-                    const titleScore      = kwMatch(o.panel_titulo ?? '');
-                    const datasourceScore = kwMatch(o.datasource_nombre ?? '');
-                    const dashboardScore  = kwMatch(o.dashboard_nombre ?? '');
+                    // All field names (display + technical), normalised — used for field-level matching
+                    const allFieldNorms: string[] = [
+                        ...(o.campos         as string[]),
+                        ...(o.campos_tecnicos as string[] ?? []),
+                    ].map(normQ);
+                    const titleScore       = kwMatch(o.panel_titulo ?? '');
+                    const datasourceScore  = kwMatch(o.datasource_nombre ?? '');
+                    const dashboardScore   = kwMatch(o.dashboard_nombre ?? '');
                     const descriptionScore = kwMatch(o.panel_descripcion ?? '');
-                    const fieldDescScore  = kwMatch((o.campos_descripciones ?? []).join(' '));
-                    const tableDescScore  = kwMatch((o.tablas_descripciones ?? []).join(' '));
-                    const exactFieldScore = camposLower.filter(kw =>
-                        fieldNamesLower.some(fn => fn === kw)
+                    const fieldDescScore   = kwMatch((o.campos_descripciones ?? []).join(' '));
+                    const tableDescScore   = kwMatch((o.tablas_descripciones ?? []).join(' '));
+                    // Fraction of keywords that fuzzy-match any field name (display or technical).
+                    // Replaces the old exactFieldScore (strict equality, always 0) and fieldPrecision (wrong direction).
+                    const fieldMatchScore = camposLower.filter(kw =>
+                        allFieldNorms.some(fn => fn.includes(normQ(kw)) || normQ(kw).includes(fn))
                     ).length / camposLower.length;
-                    const coveredFields = fieldNamesLower.filter(fn =>
-                        camposLower.some(kw => fn.includes(kw))
-                    ).length;
-                    const fieldPrecision = fieldNamesLower.length > 0 ? coveredFields / fieldNamesLower.length : 0;
-                    const textTotal = descriptionScore * 4 + titleScore * 3 + fieldDescScore * 2.5 + tableDescScore * 2 + datasourceScore * 2 + dashboardScore * 1.5 + exactFieldScore * 2 + fieldPrecision;
+                    const textTotal = descriptionScore * 4 + titleScore * 3 + fieldDescScore * 2.5 + tableDescScore * 2 + datasourceScore * 2 + dashboardScore * 1.5 + fieldMatchScore * 3;
                     const noFilterBonus = (textTotal > 0 && !o.tiene_filtros) ? 0.2 : 0;
                     return textTotal + noFilterBonus;
                 };
