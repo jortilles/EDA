@@ -633,8 +633,7 @@ export function createMcpServer(requestUser?: any) {
                                 throw new Error('El usuario no tiene permiso para ver los datos de este panel.');
                             }
                             const allRows: any[][] = Array.isArray(responseRows) ? responseRows.filter((r: any) => Array.isArray(r) && r.length > 0) : [];
-                            const rows = allRows;
-                            console.log(`[MCP] panel ${idx} — rows: ${allRows.length} (mostrando ${rows.length}) | labels: ${(responseLabels ?? []).join(', ')}`);
+                            console.log(`[MCP] panel ${idx} — rows: ${allRows.length} | labels: ${(responseLabels ?? []).join(', ')}`);
 
                             const displayNameMap = new Map<string, string>();
                             (innerQuery.fields ?? []).forEach((f: any) => {
@@ -645,8 +644,8 @@ export function createMcpServer(requestUser?: any) {
                                 (lbl: string) => displayNameMap.get(lbl) ?? lbl
                             );
 
-                            if (rows.length > 0) {
-                                const barChart = generateBarChart(columnas, rows);
+                            if (allRows.length > 0) {
+                                const barChart = generateBarChart(columnas, allRows);
                                 resultados.push({
                                     panel_index: idx,
                                     panel_titulo: panel.title ?? '(sin título)',
@@ -655,7 +654,7 @@ export function createMcpServer(requestUser?: any) {
                                     filtros_activos: filterSummary,
                                     tiene_filtros: activeFilters.length > 0,
                                     modelo_datos: accessibleDsIds.get(modelId) ?? modelId,
-                                    datos: { columnas, filas: rows, total_filas: allRows.length, truncado: allRows.length > 10 },
+                                    datos: { columnas, filas: allRows, total_filas: allRows.length, truncado: allRows.length > 10 },
                                     ...(barChart ? { grafico_barras: barChart } : {}),
                                 });
                             } else {
@@ -1109,15 +1108,18 @@ export function createMcpServer(requestUser?: any) {
                     console.log(`[MCP] exploración — score=${s.toFixed(3)} | dashboard="${o.dashboard_nombre}" | panel="${o.panel_titulo}" | campos=[${(o.campos ?? []).join(', ')}] | datasource="${o.datasource_nombre}"`);
                 });
 
+                // Minimum score for a dashboard panel to be considered relevant.
+                // Below this threshold, options are discarded and the direct-datasource fallback is tried instead.
+                const MIN_RELEVANCE = 0.5;
                 const maxScore = scored.length > 0 ? scored[0].s : 0;
                 let opcionesArr = maxScore > 0
                     ? scored.filter(x => x.s > 0).map(x => x.o)
                     : scored.map(x => x.o);
 
-                const sinResultadosRelevantes = maxScore === 0 && (camposLower.length > 0 || questionWords.length >= 2);
-                console.log('[MCP] exploración — maxScore:', maxScore, '| sinResultadosRelevantes:', sinResultadosRelevantes);
+                const sinResultadosRelevantes = maxScore < MIN_RELEVANCE && (camposLower.length > 0 || questionWords.length >= 2);
+                console.log('[MCP] exploración — maxScore:', maxScore.toFixed(3), '| MIN_RELEVANCE:', MIN_RELEVANCE, '| sinResultadosRelevantes:', sinResultadosRelevantes);
                 if (sinResultadosRelevantes) {
-                    console.log('[MCP] exploración — sin resultados relevantes (maxScore=0), activando fallback hacia datasource | opciones descartadas:', scored.length);
+                    console.log('[MCP] exploración — relevancia insuficiente, descartando opciones y activando fallback | descartadas:', scored.length);
                     opcionesArr = [];
                 }
 
@@ -1127,34 +1129,31 @@ export function createMcpServer(requestUser?: any) {
                     const { campos_descripciones: _cd, tablas_descripciones: _td, ...rest } = o;
                     return { ...rest, opcion_num: i + 1 };
                 });
-                console.log('[MCP] MODO EXPLORACIÓN finalizado | opciones únicas:', totalOpciones, truncada ? `(top ${MAX_OPTIONS} por relevancia)` : '');
+                console.log('[MCP] MODO EXPLORACIÓN finalizado | opciones:', totalOpciones, truncada ? `(top ${MAX_OPTIONS})` : '');
+
+                // Always search for fallback datasources — not only when opcionesArr is empty.
+                // This lets the AI fall back to a direct SQL query even when low-relevance panels exist.
+                const fallbackTerms = camposLower.length > 0
+                    ? camposLower
+                    : questionWords.filter((w: string) => w.length >= 4);
 
                 let fallbackSugerencias: any[] = [];
-                if (opcionesArr.length === 0) {
-                    const fallbackTerms = camposLower.length > 0
-                        ? camposLower
-                        : questionWords.filter((w: string) => w.length >= 4);
-                    console.log('[MCP] fallback — iniciando búsqueda | términos:', fallbackTerms, '| datasources a revisar:', accessibleDsIds.size);
-                    const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-                    const stem = (s: string) => {
-                        if (s.length > 6 && s.endsWith('es')) return s.slice(0, -2);
-                        if (s.length > 5 && s.endsWith('s'))  return s.slice(0, -1);
-                        return s;
-                    };
+                if (fallbackTerms.length > 0) {
+                    console.log('[MCP] fallback — buscando datasources | términos:', fallbackTerms, '| total ds:', accessibleDsIds.size);
+                    const norm      = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+                    const stem      = (s: string) =>
+                        s.length > 6 && s.endsWith('es') ? s.slice(0, -2) :
+                        s.length > 5 && s.endsWith('s')  ? s.slice(0, -1) : s;
                     const flexMatch = (a: string, b: string): boolean => {
                         const na = norm(a); const nb = norm(b);
                         if (na.includes(nb) || nb.includes(na)) return true;
-                        const sa = stem(na); const sb = stem(nb);
-                        return sa.includes(sb) || sb.includes(sa);
+                        return stem(na).includes(stem(nb)) || stem(nb).includes(stem(na));
                     };
-                    const normTerms = fallbackTerms.map(norm);
-                    console.log('[MCP] fallback — términos normalizados:', normTerms);
+
                     for (const [dsId, dsName] of accessibleDsIds) {
                         const schema = await getDsSchema(dsId);
-                        if (!schema?.tables) {
-                            console.log('[MCP] fallback — ds sin schema saltado:', dsName);
-                            continue;
-                        }
+                        if (!schema?.tables) continue;
+
                         const allDsCols: string[] = ([] as string[]).concat(
                             ...(schema.tables as any[]).map((t: any) =>
                                 (t.columns ?? []).map((c: any) => c.column_name ?? c.name ?? '') as string[]
@@ -1162,48 +1161,61 @@ export function createMcpServer(requestUser?: any) {
                         ).filter(Boolean);
                         const allTableNames: string[] = (schema.tables as any[])
                             .map((t: any) => t.table_name ?? t.name ?? '').filter(Boolean);
-                        const dsNameMatch    = fallbackTerms.some((kw: string) => flexMatch(dsName, kw));
-                        const matchingCols   = fallbackTerms.length > 0 ? allDsCols.filter(cn => fallbackTerms.some((kw: string) => flexMatch(cn, kw))) : [];
-                        const matchingTables = fallbackTerms.length > 0 ? allTableNames.filter(tn => fallbackTerms.some((kw: string) => flexMatch(tn, kw))) : [];
-                        const tableMatch     = matchingTables.length > 0;
-                        const coveredTermCount = fallbackTerms.filter((kw: string) =>
+
+                        const dsNameMatch  = fallbackTerms.some((kw: string) => flexMatch(dsName, kw));
+                        const matchingCols = allDsCols.filter(cn => fallbackTerms.some((kw: string) => flexMatch(cn, kw)));
+                        const matchingTabs = allTableNames.filter(tn => fallbackTerms.some((kw: string) => flexMatch(tn, kw)));
+                        const coveredTerms = fallbackTerms.filter((kw: string) =>
                             allDsCols.some(cn => flexMatch(cn, kw)) ||
                             allTableNames.some(tn => flexMatch(tn, kw)) ||
                             flexMatch(dsName, kw)
                         ).length;
-                        const requiredMatches = Math.max(1, Math.ceil(fallbackTerms.length / 2));
-                        console.log(`[MCP] fallback — ds "${dsName}" | dsNameMatch:${dsNameMatch} | tablas: [${allTableNames.join(', ')}] | cols match: [${matchingCols.join(', ')}] | table match: [${matchingTables.join(', ')}] | covered: ${coveredTermCount}/${fallbackTerms.length} (req: ${requiredMatches})`);
-                        if ((matchingCols.length > 0 || tableMatch || dsNameMatch) && coveredTermCount >= requiredMatches) {
+                        // 25% threshold — more permissive than before to catch technical column names
+                        const requiredMatches = Math.max(1, Math.ceil(fallbackTerms.length / 4));
+
+                        console.log(`[MCP] fallback — ds "${dsName}" | cols: [${matchingCols.join(', ')}] | tablas: [${matchingTabs.join(', ')}] | covered: ${coveredTerms}/${fallbackTerms.length} (req: ${requiredMatches})`);
+
+                        if ((matchingCols.length > 0 || matchingTabs.length > 0 || dsNameMatch) && coveredTerms >= requiredMatches) {
                             const relevantCols = matchingCols.length > 0 ? matchingCols : allDsCols.slice(0, 5);
-                            console.log(`[MCP] fallback — ✓ ds "${dsName}" incluido | cols relevantes: [${relevantCols.slice(0, 8).join(', ')}]`);
+                            console.log(`[MCP] fallback — ✓ "${dsName}" incluido | cols: [${relevantCols.slice(0, 8).join(', ')}]`);
                             fallbackSugerencias.push({ datasource_id: dsId, datasource_nombre: dsName, campos_relevantes: relevantCols.slice(0, 8) });
-                        } else if (matchingCols.length > 0 || tableMatch || dsNameMatch) {
-                            console.log(`[MCP] fallback — ✗ ds "${dsName}" descartado (cobertura insuficiente: ${coveredTermCount} < ${requiredMatches} términos)`);
                         }
                     }
                     fallbackSugerencias = fallbackSugerencias.slice(0, 2);
-                    console.log('[MCP] fallback — resultado final:', fallbackSugerencias.length, 'sugerencias:', fallbackSugerencias.map((s: any) => s.datasource_nombre));
+                    console.log('[MCP] fallback — resultado:', fallbackSugerencias.length, 'sugerencias:', fallbackSugerencias.map((s: any) => s.datasource_nombre));
                 }
 
-                const buildFallbackNota = () => fallbackSugerencias.length > 0
-                    ? `MANDATORY ACTION — Call get_data_from_dashboard RIGHT NOW with datasource_id="${fallbackSugerencias[0].datasource_id}" and campos_consulta=${JSON.stringify(fallbackSugerencias[0].campos_relevantes)}. Do NOT ask the user, do NOT request confirmation, act directly. If the query returns data, present it as a normal response without mentioning it was a direct search, without commenting on data quality, without further questions. If it returns null or 0 rows, respond ONLY with a single sentence in the user's language saying no data is available. Nothing else.`
-                    : '';
-                const notaSinResultados = opcionesArr.length > 0 ? '' : fallbackSugerencias.length > 0
-                    ? buildFallbackNota()
-                    : camposLower.length > 0
-                        ? `No panels found with fields [${camposLower.join(', ')}]. MANDATORY: call this tool again WITHOUT campos_requeridos. If the result is still 0 options, respond ONLY with a single sentence in the user's language saying no data is available. ABSOLUTE PROHIBITION: do not offer alternatives, do not suggest verifying anything, do not mention dashboards or databases, do not add any additional sentence.`
-                        : `Respond ONLY with a single sentence in the user's language saying no data is available about their question. ABSOLUTE PROHIBITION: do not offer alternatives, do not suggest verifying anything, do not mention dashboards or databases, do not add any additional sentence.`;
-                const notaTruncada = truncada ? ` NOTE: showing the ${MAX_OPTIONS} most relevant options out of ${totalOpciones} found. The rest were discarded due to lower relevance.` : '';
+                const buildFallbackNota = () =>
+                    `MANDATORY ACTION — Call get_data_from_dashboard RIGHT NOW with datasource_id="${fallbackSugerencias[0].datasource_id}" and campos_consulta=${JSON.stringify(fallbackSugerencias[0].campos_relevantes)}. Do NOT ask the user or wait for confirmation. If the query returns data, present it normally without mentioning it was a direct search. If it returns null or 0 rows, respond ONLY with a single sentence in the user's language saying no data is available.`;
+
+                const notaTruncada = truncada ? ` NOTE: showing the ${MAX_OPTIONS} most relevant options out of ${totalOpciones} found.` : '';
+
+                let notaAsistente: string;
+                if (opcionesArr.length === 0) {
+                    if (fallbackSugerencias.length > 0) {
+                        notaAsistente = buildFallbackNota();
+                    } else if (camposLower.length > 0) {
+                        notaAsistente = `No panels found with fields [${camposLower.join(', ')}]. MANDATORY: call this tool again WITHOUT campos_requeridos. If still 0 options, respond ONLY with a single sentence in the user's language saying no data is available. ABSOLUTE PROHIBITION: do not offer alternatives or mention databases.`;
+                    } else {
+                        notaAsistente = `Respond ONLY with a single sentence in the user's language saying no data is available. ABSOLUTE PROHIBITION: do not offer alternatives or mention databases.`;
+                    }
+                } else if (opcionesArr.length === 1) {
+                    notaAsistente = `There is exactly ONE option. MANDATORY: call get_data_from_dashboard RIGHT NOW in data mode with the dashboard_id and panel_index of this option. Do NOT ask the user, do NOT wait for confirmation.${notaTruncada}`;
+                    if (fallbackSugerencias.length > 0) {
+                        notaAsistente += ` If the panel returns no data or an error, immediately run: ${buildFallbackNota()}`;
+                    }
+                } else {
+                    notaAsistente = `There are ${opcionesArr.length} options. Show ONLY those whose dashboard_nombre or panel_titulo are related to "${question}". Present them numbered with the dashboard link and key differences (filters, scope). If after filtering only 1 relevant option remains, go directly to data mode without asking. Wait for user selection when several options are relevant.${notaTruncada}`;
+                    if (fallbackSugerencias.length > 0) {
+                        notaAsistente += ` If none of the options are relevant or all return no data, immediately run: ${buildFallbackNota()}`;
+                    }
+                }
 
                 const respuestaExploracion: any = {
                     pregunta: question,
                     opciones_unicas: opcionesArr,
                     ...(fallbackSugerencias.length > 0 ? { fallback_sugerencias: fallbackSugerencias } : {}),
-                    nota_al_asistente: opcionesArr.length === 0
-                        ? notaSinResultados
-                        : opcionesArr.length === 1
-                            ? 'There is exactly ONE option. MANDATORY: call get_data_from_dashboard RIGHT NOW in data mode with the dashboard_id and panel_index of this option. Do NOT ask the user, do NOT wait for confirmation.' + notaTruncada
-                            : `There are ${opcionesArr.length} options in total. IMPORTANT: show the user ONLY the options whose dashboard_nombre or panel_titulo are related to the question "${question}". If an option clearly has no relation to the question (e.g. question about water but the option is about sales), do NOT include it. Present them numbered with the dashboard link, highlighting the key difference between them (with/without filters, different scopes). If after filtering only 1 relevant option remains, go directly to STEP 3 without asking. Wait for the user's selection BEFORE running data mode when there are several relevant options.` + notaTruncada,
+                    nota_al_asistente: notaAsistente,
                 };
 
                 return { content: [{ type: 'text', text: JSON.stringify(respuestaExploracion) }] };
