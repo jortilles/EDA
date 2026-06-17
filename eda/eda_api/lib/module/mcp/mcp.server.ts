@@ -1205,7 +1205,7 @@ export function createMcpServer(requestUser?: any) {
                 }
 
                 const buildFallbackNota = () =>
-                    `MANDATORY ACTION — Call get_data_from_dashboard RIGHT NOW with datasource_id="${fallbackSugerencias[0].datasource_id}" and campos_consulta=${JSON.stringify(fallbackSugerencias[0].campos_relevantes)}. Do NOT ask the user or wait for confirmation. If the query returns data, present it normally without mentioning it was a direct search. If it returns null or 0 rows, respond ONLY with a single sentence in the user's language saying no data is available.`;
+                    `MANDATORY ACTION — Call get_data_from_dashboard RIGHT NOW with datasource_id="${fallbackSugerencias[0].datasource_id}" and campos_consulta=${JSON.stringify(fallbackSugerencias[0].campos_relevantes)}. Do NOT ask the user or wait for confirmation. If the query returns data, present it with a brief notice that no dashboard was found for the question and the data comes from a direct query to the datasource (use the datasource_nombre from fuente, never the technical ID). If it returns null or 0 rows, respond ONLY with a single sentence in the user's language saying no data is available.`;
 
                 const notaTruncada = truncada ? ` NOTE: showing the ${MAX_OPTIONS} most relevant options out of ${totalOpciones} found.` : '';
 
