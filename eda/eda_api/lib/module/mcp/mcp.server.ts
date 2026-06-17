@@ -865,12 +865,15 @@ export function createMcpServer(requestUser?: any) {
 
                 // ── MODO EXPLORACIÓN: sin dashboard_id ─────────────────────────────────
                 console.log('[MCP] get_data_from_dashboard - MODO EXPLORACIÓN');
-                const { privados, grupo, comunes, publicos } = await getAllDashboards(user._id.toString());
-                const allDashboards = [...privados, ...grupo, ...comunes, ...publicos];
-                console.log('[MCP] exploración — dashboards:', allDashboards.length);
 
-                const accessibleDsIds = await getCachedAccessibleDsIds(user);
-                console.log('[MCP] exploración — datasources accesibles:', accessibleDsIds.size);
+                // Phase 1 — two independent calls in parallel
+                const t0 = Date.now();
+                const [{ privados, grupo, comunes, publicos }, accessibleDsIds] = await Promise.all([
+                    getAllDashboards(user._id.toString()),
+                    getCachedAccessibleDsIds(user),
+                ]);
+                const allDashboards = [...privados, ...grupo, ...comunes, ...publicos];
+                console.log('[MCP] exploración — dashboards:', allDashboards.length, '| datasources accesibles:', accessibleDsIds.size, `| fase1: ${Date.now() - t0}ms`);
 
                 const dsSchemaCache = new Map<string, any>();
                 const getDsSchema = async (modelId: string): Promise<any> => {
@@ -887,9 +890,9 @@ export function createMcpServer(requestUser?: any) {
                 };
 
                 const visibleColsCache = new Map<string, Set<string> | null>();
-                const getVisibleCols = async (modelId: string): Promise<Set<string> | null> => {
+                const getVisibleCols = (modelId: string): Set<string> | null => {
                     if (visibleColsCache.has(modelId)) return visibleColsCache.get(modelId)!;
-                    const schema = await getDsSchema(modelId);
+                    const schema = dsSchemaCache.get(modelId);
                     if (!schema?.tables) { visibleColsCache.set(modelId, null); return null; }
                     const cols = new Set<string>(
                         ([] as string[]).concat(
@@ -902,10 +905,16 @@ export function createMcpServer(requestUser?: any) {
                     return cols;
                 };
 
+                // Phase 2 — bulk dashboard load + all schema pre-loads in parallel
+                const t1 = Date.now();
                 const allIds = allDashboards.map((d: any) => d._id);
-                const docs = await Dashboard.find({ _id: { $in: allIds } }).exec();
+                const [docs] = await Promise.all([
+                    Dashboard.find({ _id: { $in: allIds } }).exec(),
+                    Promise.all([...accessibleDsIds.keys()].map(dsId => getDsSchema(dsId))),
+                ]);
                 const docById = new Map(docs.map((doc: any) => [doc._id.toString(), doc]));
                 const fullDashboards = allDashboards.map((d: any) => docById.get(d._id.toString()) ?? null);
+                console.log(`[MCP] exploración — fase2 (dashboards+schemas): ${Date.now() - t1}ms`);
 
                 const opcionesMap = new Map<string, any>();
 
@@ -947,8 +956,8 @@ export function createMcpServer(requestUser?: any) {
                             continue;
                         }
 
-                        const dsSchema = await getDsSchema(query.model_id);
-                        const visibleCols = await getVisibleCols(query.model_id);
+                        const dsSchema    = await getDsSchema(query.model_id);
+                        const visibleCols = getVisibleCols(query.model_id);
 
                         const visibleFields = visibleCols
                             ? fields.filter((f: any) => {
