@@ -178,20 +178,6 @@ export class DuckDBBuilderService extends PgBuilderService {
             .join(',');
     }
 
-    // read_csv_auto infers types independently per file, so join columns can end up
-    // as different types (e.g. INT64 vs VARCHAR). Wrapping both ON sides in
-    // CAST(... AS VARCHAR) makes every join type-safe without changing the schema.
-
-    public getJoins(joinTree: any[], dest: any[], tables: any[], joinType: string, valueListJoins: any[], schema: string): string[] {
-        return this.castJoinConditions(super.getJoins(joinTree, dest, tables, joinType, valueListJoins, schema));
-    }
-
-    public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[]): any {
-        const result = super.setJoins(joinTree, joinType, schema, valueListJoins);
-        result.joinString = this.castJoinConditions(result.joinString);
-        return result;
-    }
-
     // PgBuilderService generates ROUND(agg(col)::numeric, n)::float.
     // DuckDB requires the cast INSIDE the aggregation: ROUND(agg(col::numeric), n)::float.
 
@@ -216,28 +202,4 @@ export class DuckDBBuilderService extends PgBuilderService {
             .replace(/to_char\(\s*(.+?)\s*,\s*'YYYY'\s*\)/g,                `strftime($1, '%Y')`);
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
-
-    private castJoinConditions(joins: string[]): string[] {
-        return joins.map(j => this.castOnCondition(j));
-    }
-
-    private castOnCondition(joinStr: string): string {
-        const onMatch = /\bon\b/i.exec(joinStr);
-        if (!onMatch) return joinStr;
-
-        const beforeOn = joinStr.substring(0, onMatch.index);
-        const afterOn  = joinStr.substring(onMatch.index + onMatch[0].length);
-
-        const andParts = afterOn.split(/\band\b/i);
-        const wrapped = andParts.map(part => {
-            const eqIdx = part.indexOf('=');
-            if (eqIdx === -1) return part;
-            const left  = part.substring(0, eqIdx).trim();
-            const right = part.substring(eqIdx + 1).trim();
-            return `CAST(${left} AS VARCHAR) = CAST(${right} AS VARCHAR)`;
-        });
-
-        return `${beforeOn}ON ${wrapped.join(' AND ')}`;
-    }
 }

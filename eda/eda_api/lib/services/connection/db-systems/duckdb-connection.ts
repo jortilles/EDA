@@ -91,7 +91,9 @@ export class DuckDBConnection extends AbstractConnection {
             instance = await this.getclient();
             const conn = await instance.connect();
             await this.registerCsvFiles(conn);
-            return await this.runQuery(conn, query);
+            const result = await this.runQuery(conn, query);
+            console.log(`[DuckDB] rows returned: ${result.length}`);
+            return result;
         } catch (err) {
             console.log(err);
             throw err;
