@@ -512,7 +512,7 @@ body .ui-tree {
 .tag-selected {
     padding: 0.5rem 1rem; /* px-4 py-2 equivalente */
   font-size: 0.875rem;  /* text-sm */
-  color: #374151;       /* gray-700 */
+  color: white;       /* gray-700 */
   background-color: #BE0926; /* gray-100 */
   border-radius: 0.375rem; /* rounded-md */
   cursor: pointer;
