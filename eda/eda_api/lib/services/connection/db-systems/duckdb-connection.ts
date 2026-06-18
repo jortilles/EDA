@@ -53,7 +53,9 @@ export class DuckDBConnection extends AbstractConnection {
             const filePath = path.join(folder, file).replace(/\\/g, '/');
             try {
                 await conn.run(`CREATE OR REPLACE VIEW "main"."${tableName}" AS SELECT * FROM read_csv_auto('${filePath}')`);
-                console.log(`[DuckDB] View "${tableName}" ready`);
+                const descReader = await conn.runAndReadAll(`DESCRIBE "main"."${tableName}"`);
+                const cols = descReader.getRowObjects().map((r: any) => `${r.column_name}:${r.column_type}`).join(', ');
+                console.log(`[DuckDB] View "${tableName}" ready — cols: ${cols}`);
             } catch (err: any) {
                 console.error(`[DuckDB] Error creating view "${tableName}": ${err.message}`);
                 throw err;
@@ -93,6 +95,21 @@ export class DuckDBConnection extends AbstractConnection {
             await this.registerCsvFiles(conn);
             const result = await this.runQuery(conn, query);
             console.log(`[DuckDB] rows returned: ${result.length}`);
+            if (result.length === 0 && /\bjoin\b/i.test(query)) {
+                // Diagnostic: count each table involved in join individually
+                const tableMatches: string[] = [];
+                const tableRe = /"main"\."(\w+)"/g;
+                let m: RegExpExecArray | null;
+                while ((m = tableRe.exec(query)) !== null) tableMatches.push(m[1]);
+                const uniqueTables = tableMatches.filter((v, i, a) => a.indexOf(v) === i);
+                for (const t of uniqueTables) {
+                    try {
+                        const cr = await conn.runAndReadAll(`SELECT COUNT(*) as n FROM "main"."${t}"`);
+                        const n = cr.getRowObjects()[0]?.n;
+                        console.log(`[DuckDB] COUNT "main"."${t}": ${typeof n === 'bigint' ? Number(n) : n}`);
+                    } catch (e) { /* ignore */ }
+                }
+            }
             return result;
         } catch (err) {
             console.log(err);
