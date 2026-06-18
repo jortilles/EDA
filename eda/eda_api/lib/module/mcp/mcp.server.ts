@@ -1184,20 +1184,33 @@ export function createMcpServer(requestUser?: any) {
                         const dsNameMatch  = fallbackTerms.some((kw: string) => flexMatch(dsName, kw));
                         const matchingCols = allDsCols.filter(cn => fallbackTerms.some((kw: string) => flexMatch(cn, kw)));
                         const matchingTabs = allTableNames.filter(tn => fallbackTerms.some((kw: string) => flexMatch(tn, kw)));
+
+                        // Description words — datasources have an explicit description field meant for AI matching
+                        const dsDescRaw: string = norm(schema.model_description ?? '');
+                        const dsDescWords: string[] = dsDescRaw.split(/\s+/).filter(Boolean);
+                        const dsDescMatch = fallbackTerms.some((kw: string) => dsDescWords.some(w => flexMatch(w, kw)));
+
                         const coveredTerms = fallbackTerms.filter((kw: string) =>
                             allDsCols.some(cn => flexMatch(cn, kw)) ||
                             allTableNames.some(tn => flexMatch(tn, kw)) ||
-                            flexMatch(dsName, kw)
+                            flexMatch(dsName, kw) ||
+                            dsDescWords.some(w => flexMatch(w, kw))
                         ).length;
-                        // 25% threshold — more permissive than before to catch technical column names
-                        const requiredMatches = Math.max(1, Math.ceil(fallbackTerms.length / 4));
 
-                        console.log(`[MCP] fallback — ds "${dsName}" | cols: [${matchingCols.join(', ')}] | tablas: [${matchingTabs.join(', ')}] | covered: ${coveredTerms}/${fallbackTerms.length} (req: ${requiredMatches})`);
+                        // Datasource criterion differs from dashboards: name and description are "intent signals"
+                        // — if either matches, lower the threshold by 1 so a ds like "Asistentes" (desc: "asistentes datolada")
+                        // is not discarded just because multilingual keyword variants inflate the term list.
+                        const baseRequired = Math.max(1, Math.ceil(fallbackTerms.length / 4));
+                        const requiredMatches = (dsNameMatch || dsDescMatch) ? Math.max(1, baseRequired - 1) : baseRequired;
 
-                        if ((matchingCols.length > 0 || matchingTabs.length > 0 || dsNameMatch) && coveredTerms >= requiredMatches) {
+                        console.log(`[MCP] fallback — ds "${dsName}" | dsNameMatch:${dsNameMatch} | dsDescMatch:${dsDescMatch} | tablas: [${allTableNames.join(', ')}] | cols match: [${matchingCols.join(', ')}] | table match: [${matchingTabs.join(', ')}] | covered: ${coveredTerms}/${fallbackTerms.length} (req: ${requiredMatches})`);
+
+                        if ((matchingCols.length > 0 || matchingTabs.length > 0 || dsNameMatch || dsDescMatch) && coveredTerms >= requiredMatches) {
                             const relevantCols = matchingCols.length > 0 ? matchingCols : allDsCols.slice(0, 5);
-                            console.log(`[MCP] fallback — ✓ "${dsName}" incluido | cols: [${relevantCols.slice(0, 8).join(', ')}]`);
+                            console.log(`[MCP] fallback — ✓ ds "${dsName}" incluido | cols relevantes: [${relevantCols.slice(0, 8).join(', ')}]`);
                             fallbackSugerencias.push({ datasource_id: dsId, datasource_nombre: dsName, campos_relevantes: relevantCols.slice(0, 8) });
+                        } else {
+                            console.log(`[MCP] fallback — ✗ ds "${dsName}" descartado (cobertura insuficiente: ${coveredTerms} < ${requiredMatches} términos)`);
                         }
                     }
                     fallbackSugerencias = fallbackSugerencias.slice(0, 2);
