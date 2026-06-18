@@ -96,7 +96,6 @@ export class DuckDBConnection extends AbstractConnection {
             const result = await this.runQuery(conn, query);
             console.log(`[DuckDB] rows returned: ${result.length}`);
             if (result.length === 0 && /\bjoin\b/i.test(query)) {
-                // Diagnostic: count each table involved in join individually
                 const tableMatches: string[] = [];
                 const tableRe = /"main"\."(\w+)"/g;
                 let m: RegExpExecArray | null;
@@ -109,6 +108,13 @@ export class DuckDBConnection extends AbstractConnection {
                         console.log(`[DuckDB] COUNT "main"."${t}": ${typeof n === 'bigint' ? Number(n) : n}`);
                     } catch (e) { /* ignore */ }
                 }
+                // Show sample values from join columns to diagnose mismatch
+                try {
+                    const sp = await conn.runAndReadAll(`SELECT "id" FROM "main"."posts" LIMIT 3`);
+                    console.log(`[DuckDB] posts.id samples: ${JSON.stringify(sp.getRowObjects().map((r: any) => r.id))}`);
+                    const sc = await conn.runAndReadAll(`SELECT "id_publicacion" FROM "main"."comments" LIMIT 3`);
+                    console.log(`[DuckDB] comments.id_publicacion samples: ${JSON.stringify(sc.getRowObjects().map((r: any) => r.id_publicacion))}`);
+                } catch (e) { /* ignore */ }
             }
             return result;
         } catch (err) {
