@@ -231,16 +231,25 @@ export class PgBuilderService extends QueryBuilderService {
 
     // Compute resultSortingColumns before GROUP BY
     const sortingCols: any[] = this.queryTODO.resultSortingColumns ?? [];
-    const sortingKeys = new Set(sortingCols.map(c => `${c.table_id}.${c.column_name}`));
 
-    // GroupBy — extend with any resultSortingColumns not already grouped
-    const effectiveGrouping = [...grouping];
+    // GroupBy — sorting columns first, then regular grouping (no duplicates)
+    const effectiveGrouping: string[] = [];
+    const addedToGrouping = new Set<string>();
+
     for (const col of sortingCols) {
       const tc = `"${col.table_id}"."${col.column_name}"`;
-      if (!effectiveGrouping.includes(tc)) {
+      if (!addedToGrouping.has(tc)) {
         effectiveGrouping.push(tc);
+        addedToGrouping.add(tc);
       }
     }
+    for (const g of grouping) {
+      if (!addedToGrouping.has(g)) {
+        effectiveGrouping.push(g);
+        addedToGrouping.add(g);
+      }
+    }
+
     if (effectiveGrouping.length > 0 && groupByEnabled) {
       myQuery += '\ngroup by ' + effectiveGrouping.join(', ');
     }
@@ -248,9 +257,7 @@ export class PgBuilderService extends QueryBuilderService {
     //HAVING 
     myQuery += this.getHavingFilters(havingFilters );
 
-    //console.log('this.queryTODO: ', this.queryTODO);
-
-    // OrderBy
+    // OrderBy  
     let orderColumns: string[];
 
     if (sortingCols.length > 0) {
