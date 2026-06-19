@@ -188,16 +188,35 @@ export class ClickHouseBuilderService extends QueryBuilderService {
       myQuery += this.getFilters(filters);
     }
 
-    // GROUP BY
-    if (grouping.length > 0 && groupByEnabled) {
-      myQuery += '\nGROUP BY ' + grouping.join(', ');
+    // Compute resultSortingColumns before GROUP BY
+    const sortingCols: any[] = this.queryTODO.resultSortingColumns ?? [];
+
+    // GROUP BY — sorting columns first, then regular grouping (no duplicates)
+    const effectiveGrouping: string[] = [];
+    const addedToGrouping = new Set<string>();
+
+    for (const col of sortingCols) {
+      const tc = `\`${col.table_id}\`.\`${col.column_name}\``;
+      if (!addedToGrouping.has(tc)) {
+        effectiveGrouping.push(tc);
+        addedToGrouping.add(tc);
+      }
+    }
+    for (const g of grouping) {
+      if (!addedToGrouping.has(g)) {
+        effectiveGrouping.push(g);
+        addedToGrouping.add(g);
+      }
+    }
+
+    if (effectiveGrouping.length > 0 && groupByEnabled) {
+      myQuery += '\nGROUP BY ' + effectiveGrouping.join(', ');
     }
 
     // HAVING
     myQuery += this.getHavingFilters(havingFilters);
 
     // ORDER BY
-    const sortingCols: any[] = this.queryTODO.resultSortingColumns ?? [];
     let orderColumns: string[];
 
     if (sortingCols.length > 0) {
