@@ -22,7 +22,7 @@
 
           <!-- If it does NOT have autocomplete → legacy style -->
           @if(!filter.isAutocompleted || filter.isAutocompleted === false) {
-            <div class="filter-card flex flex gap-2 rounded-lg p-3">
+            <div class="filter-card flex flex gap-2 rounded-lg p-3" [style]="getPanelWidthVar(filter)">
               <div class="filter-label flex items-center">
                 <span [ngClass]="{'italic': !filter.applyToAll}" class="text-sm text-gray-500"
                   [style.color]="styleButton.color" [style.font-size]="styleButton.fontSize"
