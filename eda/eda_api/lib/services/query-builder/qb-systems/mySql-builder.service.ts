@@ -262,16 +262,35 @@ export class MySqlBuilderService extends QueryBuilderService {
     }
 
 
-    // GroupBy
-    if (grouping.length > 0 && ((groupByEnabled))) {
-      myQuery += '\ngroup by ' + grouping.join(', ');
+    // Compute resultSortingColumns before GROUP BY
+    const sortingCols: any[] = this.queryTODO.resultSortingColumns ?? [];
+
+    // GroupBy — sorting columns first, then regular grouping (no duplicates)
+    const effectiveGrouping: string[] = [];
+    const addedToGrouping = new Set<string>();
+
+    for (const col of sortingCols) {
+      const tc = `\`${col.table_id}\`.\`${col.column_name}\``;
+      if (!addedToGrouping.has(tc)) {
+        effectiveGrouping.push(tc);
+        addedToGrouping.add(tc);
+      }
+    }
+    for (const g of grouping) {
+      if (!addedToGrouping.has(g)) {
+        effectiveGrouping.push(g);
+        addedToGrouping.add(g);
+      }
     }
 
-    //HAVING 
+    if (effectiveGrouping.length > 0 && ((groupByEnabled))) {
+      myQuery += '\ngroup by ' + effectiveGrouping.join(', ');
+    }
+
+    //HAVING
     myQuery += this.getHavingFilters(havingFilters);
 
     // OrderBy
-    const sortingCols: any[] = this.queryTODO.resultSortingColumns ?? [];
     let orderColumns: string[];
 
     if (sortingCols.length > 0) {
