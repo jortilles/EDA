@@ -60,10 +60,7 @@
 
 /* Panel del multiselect */
 .multiselect-auto-width {
-  width: max-content !important;
-  min-width: max-content !important;
-  max-width: none !important;
-  height: auto;
+  min-width: var(--ms-panel-width, calc(10vw + 120px)) !important;
 }
 }
 

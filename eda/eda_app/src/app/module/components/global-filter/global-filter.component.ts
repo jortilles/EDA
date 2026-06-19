@@ -920,6 +920,14 @@ export class GlobalFilterComponent implements OnInit {
         }
     }
 
+    public getPanelWidthVar(filter: any): any {
+        if (!filter.data || filter.data.length === 0) return {};
+        const longest = filter.data.reduce((max: number, item: any) =>
+            Math.max(max, (item.label?.length ?? 0)), 0);
+        const px = Math.min(Math.max(longest * 6 + 80, 150), 500);
+        return { '--ms-panel-width': px + 'px' };
+    }
+
     public disableGlobalFilter(filter: any): boolean {
         let disabled = false;
 
