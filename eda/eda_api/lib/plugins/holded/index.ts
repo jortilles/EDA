@@ -6,6 +6,7 @@ import { HoldedSyncService } from '../../services/holded/holded-sync.service';
 const cache_config = require('../../../config/cache.config');
 
 export const HoldedPlugin: IEDAPlugin = {
+    kind: 'datasource',
     type: 'holded',
     connectionClass: HoldedConnection,
     router: HoldedRouter,

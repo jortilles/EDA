@@ -6,6 +6,7 @@ import { OdooSyncService } from '../../services/odoo/odoo-sync.service';
 const cache_config = require('../../../config/cache.config');
 
 export const OdooPlugin: IEDAPlugin = {
+    kind: 'datasource',
     type: 'odoo',
     connectionClass: OdooConnection,
     router: OdooRouter,

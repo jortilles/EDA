@@ -6,6 +6,7 @@ import { GA4SyncService } from '../../services/google-analytics/ga4-sync.service
 const cache_config = require('../../../config/cache.config');
 
 export const GoogleAnalyticsPlugin: IEDAPlugin = {
+    kind: 'datasource',
     type: 'googleanalytics',
     connectionClass: GoogleAnalyticsConnection,
     router: GoogleAnalyticsRouter,
