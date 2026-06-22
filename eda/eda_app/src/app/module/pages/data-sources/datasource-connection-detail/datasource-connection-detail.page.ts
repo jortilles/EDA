@@ -73,6 +73,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     { label: 'Odoo', value: 'odoo', port: null },
     { label: 'Google Analytics 4', value: 'googleanalytics', port: null },
     { label: 'Holded', value: 'holded', port: null },
+    { label: 'Shopify', value: 'shopify', port: null },
   ];
 
   public sidOptions: any[] = [

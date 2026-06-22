@@ -750,6 +750,19 @@ export class DataSourceService extends ApiService implements OnDestroy {
         return this.post(`${this.globalDSRoute}/add-holded-data-source`, connection);
     }
 
+    addShopifyDataSource(connection: any): Observable<any> {
+        return this.post(`${this.globalDSRoute}/add-shopify-data-source`, connection);
+    }
+
+    getShopifyAuthUrl(shop: string, clientId: string, clientSecret: string): Observable<any> {
+        const params = new URLSearchParams({ shop, clientId, clientSecret });
+        return this.get(`/shopify/auth-url?${params}`);
+    }
+
+    pollShopifyToken(state: string): Observable<any> {
+        return this.get(`/shopify/poll-token?state=${state}`);
+    }
+
     deleteDuckDbCsv(datasourceId: string, tableName: string): Observable<any> {
         return this.delete(`${this.globalDSRoute}/duckdb-table/${datasourceId}/${tableName}`);
     }

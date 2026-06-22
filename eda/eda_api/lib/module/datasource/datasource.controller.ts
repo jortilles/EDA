@@ -20,6 +20,8 @@ import { applyGA4Labels, extractGA4LocaleFromRequest } from '../../services/goog
 import { applyOdooLabels, resolveOdooLocale } from '../../services/odoo/odoo-labels';
 import { HoldedApiService } from '../../services/holded/holded-api.service';
 import { applyHoldedLabels, resolveHoldedLocale } from '../../services/holded/holded-labels';
+import { ShopifyApiService } from '../../services/shopify/shopify-api.service';
+import { applyShopifyLabels, resolveShopifyLocale } from '../../services/shopify/shopify-labels';
 import { DuckDBConnection } from '../../services/connection/db-systems/duckdb-connection';
 const cache_config = require('../../../config/cache.config');
 
@@ -1155,6 +1157,95 @@ export class DataSourceController {
         link('invoices',      'contact_id', 'contacts', 'id');
         link('invoice_lines', 'product_id', 'products', 'id');
         link('ledger',        'document_id', 'invoices', 'id');
+    }
+
+    static async AddShopifyDataSource(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { name, description, shop, accessToken, folderName, optimize, allowCache } = req.body;
+
+            if (!name || !shop || !accessToken || !folderName) {
+                return next(new HttpException(400, 'Se requieren: name, shop, accessToken, folderName'));
+            }
+
+            const folderPath = path.join(process.cwd(), 'duckdb', folderName);
+
+            await ShopifyApiService.downloadToFolder({ shop, accessToken }, folderPath);
+
+            const duckConfig: any = { type: 'duckdb', database: folderName, schema: 'main' };
+            const conn = new DuckDBConnection(duckConfig);
+            const tables = await conn.generateDataModel(optimize ? 1 : 0, '');
+
+            DataSourceController.addShopifyRelations(tables);
+            const shopifyLocale = resolveShopifyLocale(req.body?.locale || req.headers?.['accept-language']);
+            applyShopifyLabels(tables, shopifyLocale);
+
+            const CC = allowCache ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
+
+            const datasource: IDataSource = new DataSource({
+                ds: {
+                    connection: {
+                        type: 'shopify',
+                        host: shop,
+                        port: null,
+                        database: folderName,
+                        schema: 'main',
+                        user: '',
+                        password: EnCrypterService.encrypt(accessToken)
+                    },
+                    metadata: {
+                        model_name: name,
+                        model_description: description || '',
+                        model_id: '',
+                        model_granted_roles: [],
+                        optimized: !!optimize,
+                        cache_config: CC,
+                        model_owner: req.user._id,
+                        ia_visibility: 'FULL'
+                    },
+                    model: { tables }
+                }
+            });
+
+            const saved = await datasource.save();
+            return res.status(201).json({ ok: true, data_source_id: saved._id });
+
+        } catch (err: any) {
+            console.error('[Shopify] AddShopifyDataSource error:', err.message);
+            return next(new HttpException(500, `Error creando datasource Shopify: ${err.message}`));
+        }
+    }
+
+    private static addShopifyRelations(tables: any[]): void {
+        const byName = new Map<string, any>(tables.map(t => [t.table_name, t]));
+
+        const link = (
+            srcTable: string, srcCol: string,
+            tgtTable: string, tgtCol: string
+        ) => {
+            const src = byName.get(srcTable);
+            const tgt = byName.get(tgtTable);
+            if (!src || !tgt) return;
+
+            src.relations.push({
+                source_table: srcTable,
+                source_column: [srcCol],
+                target_table: tgtTable,
+                target_column: [tgtCol],
+                visible: true
+            });
+            tgt.relations.push({
+                source_table: tgtTable,
+                source_column: [tgtCol],
+                target_table: srcTable,
+                target_column: [srcCol],
+                visible: true
+            });
+        };
+
+        link('order_lines', 'order_id',    'orders',    'id');
+        link('orders',      'customer_id', 'customers', 'id');
+        link('order_lines', 'product_id',  'products',  'id');
+        link('variants',    'product_id',  'products',  'id');
     }
 
     static async GetDuckDbFolders(req: Request, res: Response, next: NextFunction) {

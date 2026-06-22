@@ -329,6 +329,8 @@ router.post('/add-google-analytics-data-source', authGuard, roleGuard, DataSourc
 
 router.post('/add-holded-data-source', authGuard, roleGuard, DataSourceController.AddHoldedDataSource);
 
+router.post('/add-shopify-data-source', authGuard, roleGuard, DataSourceController.AddShopifyDataSource);
+
 
 
 /**
