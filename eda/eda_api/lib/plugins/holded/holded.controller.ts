@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { HttpException } from '../global/model/index';
-import { HoldedApiService } from '../../services/holded/holded-api.service';
+import { HttpException } from '../../module/global/model/index';
+import { HoldedApiService } from './holded-api.service';
 import * as path from 'path';
 
 export class HoldedController {

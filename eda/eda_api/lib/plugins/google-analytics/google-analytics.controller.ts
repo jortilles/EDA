@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { HttpException } from '../global/model/index';
-import { GA4ApiService } from '../../services/google-analytics/ga4-api.service';
+import { HttpException } from '../../module/global/model/index';
+import { GA4ApiService } from './ga4-api.service';
 import * as path from 'path';
 import * as crypto from 'crypto';
 

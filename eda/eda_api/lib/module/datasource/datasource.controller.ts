@@ -14,12 +14,7 @@ import _ from 'lodash';
 import * as path from 'path';
 import * as fs from 'fs';
 import { AggregationTypes } from '../global/model/aggregation-types';
-import { OdooApiService } from '../../services/odoo/odoo-api.service';
-import { GA4ApiService } from '../../services/google-analytics/ga4-api.service';
-import { applyGA4Labels, extractGA4LocaleFromRequest } from '../../services/google-analytics/ga4-labels';
-import { applyOdooLabels, resolveOdooLocale } from '../../services/odoo/odoo-labels';
-import { HoldedApiService } from '../../services/holded/holded-api.service';
-import { applyHoldedLabels, resolveHoldedLocale } from '../../services/holded/holded-labels';
+import { PluginRegistry } from '../../plugins/plugin-registry';
 import { DuckDBConnection } from '../../services/connection/db-systems/duckdb-connection';
 const cache_config = require('../../../config/cache.config');
 
@@ -985,10 +980,8 @@ export class DataSourceController {
 
             const folderPath = path.join(process.cwd(), 'duckdb', db);
 
-            await OdooApiService.downloadToFolder(
-                { url, db, username, password },
-                folderPath
-            );
+            const odooPlugin = PluginRegistry.getDatasource('odoo');
+            await odooPlugin.downloadData({ url, db, username, password }, folderPath);
 
             // Generate DuckDB model from the downloaded CSV files
             const duckConfig: any = { type: 'duckdb', database: db, schema: 'main' };
@@ -996,8 +989,8 @@ export class DataSourceController {
             const tables = await conn.generateDataModel(optimize ? 1 : 0, '');
 
             DataSourceController.addOdooRelations(tables);
-            const odooLocale = resolveOdooLocale(req.body?.locale || req.headers?.['accept-language']);
-            applyOdooLabels(tables, odooLocale);
+            const odooLocale = odooPlugin.resolveLocale(req.body?.locale || req.headers?.['accept-language']);
+            odooPlugin.applyLabels(tables, odooLocale);
 
             const CC = allowCache ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
 
@@ -1062,10 +1055,20 @@ export class DataSourceController {
             });
         };
 
-        link('invoice_lines', 'invoice_id',     'invoices', 'id');
-        link('invoices',      'partner_id',     'partners', 'id');
-        link('invoices',      'salesperson_id', 'users',    'id');
-        link('invoice_lines', 'product_id',     'products', 'id');
+        link('invoices', 'product_id',     'products', 'id');
+        link('invoices', 'partner_id',     'partners', 'id');
+        link('invoices', 'salesperson_id', 'users',    'id');
+        link('orders',   'product_id',     'products', 'id');
+        link('orders',   'partner_id',     'partners', 'id');
+        link('orders',   'salesperson_id', 'users',    'id');
+
+        // Remove spurious auto-detected cross-references between invoices and orders
+        tables.forEach((t: any) => {
+            t.relations = t.relations.filter((r: any) =>
+                !(r.source_table === 'invoices' && r.target_table === 'orders') &&
+                !(r.source_table === 'orders'   && r.target_table === 'invoices')
+            );
+        });
     }
 
     static async AddHoldedDataSource(req: Request, res: Response, next: NextFunction) {
@@ -1078,15 +1081,16 @@ export class DataSourceController {
 
             const folderPath = path.join(process.cwd(), 'duckdb', folderName);
 
-            await HoldedApiService.downloadToFolder({ apiKey }, folderPath);
+            const holdedPlugin = PluginRegistry.getDatasource('holded');
+            await holdedPlugin.downloadData({ apiKey }, folderPath);
 
             const duckConfig: any = { type: 'duckdb', database: folderName, schema: 'main' };
             const conn = new DuckDBConnection(duckConfig);
             const tables = await conn.generateDataModel(optimize ? 1 : 0, '');
 
             DataSourceController.addHoldedRelations(tables);
-            const holdedLocale = resolveHoldedLocale(req.body?.locale || req.headers?.['accept-language']);
-            applyHoldedLabels(tables, holdedLocale);
+            const holdedLocale = holdedPlugin.resolveLocale(req.body?.locale || req.headers?.['accept-language']);
+            holdedPlugin.applyLabels(tables, holdedLocale);
 
             const CC = allowCache ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
 
@@ -1184,18 +1188,16 @@ export class DataSourceController {
             const safeFolderName = folderName.replace(/[^a-zA-Z0-9_\-]/g, '_').toLowerCase();
             const folderPath = path.join(process.cwd(), 'duckdb', safeFolderName);
 
-            await GA4ApiService.downloadToFolder(
-                { propertyId, credentialsJson },
-                folderPath
-            );
+            const ga4Plugin = PluginRegistry.getDatasource('googleanalytics');
+            await ga4Plugin.downloadData({ propertyId, credentialsJson }, folderPath);
 
             const duckConfig: any = { type: 'duckdb', database: safeFolderName, schema: 'main' };
             const conn = new DuckDBConnection(duckConfig);
             const tables = await conn.generateDataModel(optimize ? 1 : 0, '');
 
             DataSourceController.addGA4Relations(tables);
-            const ga4Locale = extractGA4LocaleFromRequest(req);
-            applyGA4Labels(tables, ga4Locale);
+            const ga4Locale = ga4Plugin.resolveLocale(req.body?.locale || req.headers?.['accept-language']);
+            ga4Plugin.applyLabels(tables, ga4Locale);
 
             const CC = allowCache ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
 
