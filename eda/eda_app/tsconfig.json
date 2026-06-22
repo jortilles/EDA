@@ -2,14 +2,13 @@
     "compileOnSave": false,
     "compilerOptions": {
       "allowSyntheticDefaultImports": true,
-      "baseUrl": "./src",
       "paths": {
-        "@eda/components/*": ["app/module/components/*"],
-        "@eda/services/*": ["app/services/*"],
-        "@eda/models/*": ["app/shared/models/*"],
-        "@eda/pipes/*": ["app/shared/pipes/*"],
-        "@eda/shared/*": ["app/shared/*"],
-        "@eda/configs/*": ["app/config/*"]
+        "@eda/components/*": ["./src/app/module/components/*"],
+        "@eda/services/*": ["./src/app/services/*"],
+        "@eda/models/*": ["./src/app/shared/models/*"],
+        "@eda/pipes/*": ["./src/app/shared/pipes/*"],
+        "@eda/shared/*": ["./src/app/shared/*"],
+        "@eda/configs/*": ["./src/app/config/*"]
       },
       "outDir": "./dist/out-tsc",
       "sourceMap": true,
@@ -18,8 +17,8 @@
       "experimentalDecorators": true,
       "emitDecoratorMetadata": true,
       "importHelpers": true,
-      "module": "es2022", // 🔄 Cambiado a "esnext" para soporte completo en Angular 17
-      "target": "es2022", // ✅ Es válido, pero "esnext" podría ser una opción si planeas usar lo más reciente
+      "module": "es2022", // Changed to "esnext" for full Angular 17 support
+      "target": "es2022", // Valid; "esnext" is an option if you want the latest features
       "typeRoots": ["node_modules/@types"],
       "types": ["node"],
       "lib": ["es2022", "dom"],
@@ -31,10 +30,10 @@
       "strictTemplates": true,
       "strictInjectionParameters": true,
       "strictDomEventTypes": false, // Disable DOM Types
-      "enableI18nLegacyMessageIdFormat": false, // ✅ Angular moderno no necesita IDs legados para i18n
-      "i18nInLocale": "es-ES", // ✅ Cambia esto si quieres otro idioma predeterminado
-      "i18nOutFile": "src/locale/messages.xlf", // ✅ Si deseas extraer mensajes, especifica el archivo de salida
-      "i18nOutFormat": "xlf" // ✅ Especifica el formato de exportación de i18n (por defecto es "xlf")
+      "enableI18nLegacyMessageIdFormat": false, // Modern Angular does not need legacy i18n message IDs
+      "i18nInLocale": "es-ES", // Change this to use a different default locale
+      "i18nOutFile": "src/locale/messages.xlf", // Output file for extracted i18n messages
+      "i18nOutFormat": "xlf" // Export format for i18n messages (default is "xlf")
     }
 }
   
