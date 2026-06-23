@@ -10,18 +10,17 @@ import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { lastValueFrom } from 'rxjs';
 import { NgxCsvParser } from 'ngx-csv-parser';
 import { ChangeDetectorRef } from '@angular/core';
-import { DATASOURCE_PLUGINS } from '../datasource-plugins/datasource-plugin-registry';
-import { PluginFormService } from '../datasource-plugins/plugin-form.service';
+import { DATASOURCE_PLUGINS } from '../../../../plugins/datasource-plugins/datasource-plugin-registry';
+import { PluginFormService } from '../../../../plugins/datasource-plugins/plugin-form.service';
 
 import { DropdownModule } from 'primeng/dropdown';
-import { HoldedFormComponent } from '../datasource-plugins/holded/holded-form.component';
 
 @Component({
   standalone: true,
   selector: 'app-datasource-connection-detail',
   templateUrl: './datasource-connection-detail.page.html',
   styleUrls: ['./datasource-connection-detail.page.css'],
-  imports: [SharedModule, CommonModule, FormsModule, ReactiveFormsModule, IconComponent, DropdownModule, NgComponentOutlet, HoldedFormComponent]
+  imports: [SharedModule, CommonModule, FormsModule, ReactiveFormsModule, IconComponent, DropdownModule, NgComponentOutlet]
 })
 export class DataSourceConnectionDetailPage implements OnInit {
   private uploadFileService  = inject(UploadFileService);
@@ -108,7 +107,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
   }
 
   get pluginFormInputs() {
-      return { connectionForm: this.connectionForm };
+      return { connectionForm: this.connectionForm, apiBasePath: this.activePlugin?.apiBasePath ?? '' };
   }
 
   // Variables added by the add-csv script

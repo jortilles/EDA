@@ -22,6 +22,8 @@ export interface IDatasourcePlugin extends IBasePlugin {
     applyLabels?: (tables: any[], locale: string) => void;
     /** Resolve a raw locale string (e.g. "es-ES", "en") to the plugin's supported locale */
     resolveLocale?: (raw?: string) => string;
+    /** Add domain-specific relations between generated data model tables */
+    addRelations?: (tables: any[]) => void;
 }
 
 /** Plugin that adds a feature module (new routes, pages, actions...) without a database connection */

@@ -323,12 +323,6 @@ router.post('/add-data-source/', authGuard, roleGuard, DataSourceController.Gene
 
 router.post('/add-duckdb-data-source', authGuard, roleGuard, DataSourceController.AddDuckDBDataSource);
 
-router.post('/add-odoo-data-source', authGuard, roleGuard, DataSourceController.AddOdooDataSource);
-
-router.post('/add-google-analytics-data-source', authGuard, roleGuard, DataSourceController.AddGoogleAnalyticsDataSource);
-
-router.post('/add-holded-data-source', authGuard, roleGuard, DataSourceController.AddHoldedDataSource);
-
 
 
 /**
