@@ -254,6 +254,17 @@ export class EdaTabsPanelComponent implements OnInit, AfterViewInit, OnDestroy {
         return item;
     }
 
+    public openContextMenu(event: MouseEvent): void {
+        const lockIdx = this.contextMenu.contextMenuItems.findIndex(i =>
+            i.label === $localize`:@@panelOptionsLock:Bloquear panel` ||
+            i.label === $localize`:@@panelOptionsUnlock:Desbloquear panel`
+        );
+        if (lockIdx !== -1) {
+            this.contextMenu.contextMenuItems[lockIdx] = this._buildToggleLockItem();
+        }
+        this.contextMenu.showContextMenu(event);
+    }
+
     public removePanel(): void {
         this.remove.emit(this.panel.id);
     }

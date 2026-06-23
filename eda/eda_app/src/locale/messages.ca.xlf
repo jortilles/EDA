@@ -7007,6 +7007,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Desactive esta opción para permitir la selección única.</source>
         <target>Desactiveu aquesta opció per permetre la selecció única.</target>
       </trans-unit>
+      <trans-unit id="enablePanelLockButton">
+        <source>Bloquear los paneles</source>
+        <target>Bloquejar els panells</target>
+      </trans-unit>
+      <trans-unit id="disablePanelLockButton">
+        <source>Desbloquear los paneles</source>
+        <target>Desbloquejar els panells</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
