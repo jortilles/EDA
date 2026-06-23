@@ -107,8 +107,13 @@ export class DashboardEditStyleDialog {
   public samplePanelContentStyle: {};
   public panelBG: string;
 
-    
-    
+  globalFilterButtonPosition: any[] = [
+    { icon: 'pi pi-arrow-left', label: 'Left', positionType: 'left' },
+    { icon: 'pi pi-arrow-right', label: 'Right', positionType: 'right' }
+  ];  
+  
+  public positionType = this.globalFilterButtonPosition[0].positionType; // default: left
+
   constructor(private formBuilder: UntypedFormBuilder, private alertService: AlertService
     , private stylesProviderService: StyleProviderService) {
       this.dashBoardStyles = {} as DashboardStyles;
@@ -359,5 +364,10 @@ public comparePalettes = (p1: any, p2: any) => p1 && p2 && p1?.name === p2?.name
     public onClose(): void {
         this.display = false;
         this.close.emit();
+    }
+
+    onGlobalFilterButtonPositionChange(type?: any) {
+        console.log('type: ', type);
+        this.positionType = type.positionType;
     }
 }

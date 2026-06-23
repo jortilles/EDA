@@ -1,3 +1,7 @@
+.btn-panel-active { background-color: var(--corporate-primary) !important; color: white !important; border-color: var(--corporate-primary) !important; }
+.btn-panel-active:hover { background-color: white !important; color: #6b7280 !important; border-color: #d1d5db !important; }
+.btn-panel-hover:hover { background-color: var(--corporate-primary) !important; color: white !important; }
+
 :host ::ng-deep .edit-style-dropdown.p-dropdown {
   border-color: #d1d5db;
   border-radius: 0.375rem;
