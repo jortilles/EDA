@@ -213,7 +213,7 @@ export class OdooApiService {
 
         // invoices.csv — one row per invoice line (counterpart accounting lines excluded)
         OdooApiService.writeCsv(path.join(folderPath, 'invoices.csv'),
-            ['line_id', 'invoice_id', 'number', 'invoice_date', 'due_date',
+            ['line_id', 'invoice_id', 'invoice_number', 'invoice_date', 'due_date',
              'partner_id', 'partner', 'salesperson_id', 'salesperson',
              'type', 'status', 'tax_base', 'taxes', 'total',
              'currency', 'journal', 'company', 'reference',
@@ -360,7 +360,7 @@ export class OdooApiService {
 
         // orders.csv — one row per order line
         OdooApiService.writeCsv(path.join(folderPath, 'orders.csv'),
-            ['line_id', 'order_id', 'number', 'order_date',
+            ['line_id', 'order_id', 'order_number', 'order_date',
              'partner_id', 'partner', 'salesperson_id', 'salesperson',
              'order_state', 'tax_base', 'taxes', 'total', 'currency', 'company',
              'product_id', 'product', 'description',

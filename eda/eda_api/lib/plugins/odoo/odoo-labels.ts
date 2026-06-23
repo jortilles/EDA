@@ -40,7 +40,8 @@ const COLUMN_LABELS: Record<string, Record<OdooLocale, string>> = {
 
     // invoices / orders (shared)
     line_id:          { en: 'Line ID',             es: 'ID Línea' },
-    number:           { en: 'Number',              es: 'Número' },
+    invoice_number:   { en: 'Invoice Number',      es: 'Número de Factura' },
+    order_number:     { en: 'Order Number',        es: 'Número de Pedido' },
     partner_id:       { en: 'Partner ID',          es: 'ID Cliente' },
     partner:          { en: 'Partner',             es: 'Cliente' },
     salesperson_id:   { en: 'Salesperson ID',      es: 'ID Vendedor' },
@@ -104,7 +105,8 @@ const COLUMN_DESCRIPTIONS: Record<string, Record<OdooLocale, string>> = {
     id:               { en: 'Odoo internal record identifier',           es: 'Identificador interno de registro en Odoo' },
     name:             { en: 'Display name',                              es: 'Nombre de visualización' },
     line_id:          { en: 'Unique identifier of the document line',     es: 'Identificador único de la línea del documento' },
-    number:           { en: 'Invoice or order number',                   es: 'Número de factura o pedido' },
+    invoice_number:   { en: 'Invoice number',                            es: 'Número de factura' },
+    order_number:     { en: 'Order number',                              es: 'Número de pedido' },
     partner_id:       { en: 'Partner foreign key → partners.id',         es: 'Clave foránea de cliente → partners.id' },
     partner:          { en: 'Partner display name',                      es: 'Nombre del cliente' },
     salesperson_id:   { en: 'Salesperson foreign key → users.id',        es: 'Clave foránea de vendedor → users.id' },
@@ -221,6 +223,14 @@ export function applyOdooLabels(tables: any[], locale: OdooLocale): void {
                     .filter(l => l !== locale && COLUMN_DESCRIPTIONS[cKey]?.[l])
                     .map(l => ({ locale: l, value: COLUMN_DESCRIPTIONS[cKey][l] }))
             };
+
+            if (cKey === 'id' || cKey.endsWith('_id')) {
+                col.visible = false;
+            }
+
+            if (col.column_type === 'numeric') {
+                col.minimumFractionDigits = 2;
+            }
         }
     }
 }
