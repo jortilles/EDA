@@ -277,7 +277,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
         id: 'enableFilters',
         label: this.clickFiltersEnabled ? $localize`:@@enableFilters: Click en filtros habilitado`
           : $localize`:@@disableFilters:Click en filtros deshabilitado`,
-        icon: this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock",
+        icon: this.clickFiltersEnabled ? "pi pi-bolt" : "pi pi-ban",
         command: () => {
           this.toggleClickFilters();
         }
@@ -998,7 +998,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
     this.clickFiltersEnabled = !this.clickFiltersEnabled;
     this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;    // Update label and icon based on state
     clickItem.label = this.clickFiltersEnabled ? $localize`:@@enableFilters:Click en filtros habilitado` : $localize`:@@disableFilters:Click en filtros deshabilitado`;
-    clickItem.icon = this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock";
+    clickItem.icon = this.clickFiltersEnabled ? "pi pi-bolt" : "pi pi-ban";
 
   }
 
