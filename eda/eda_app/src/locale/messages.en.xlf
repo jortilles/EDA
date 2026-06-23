@@ -6700,6 +6700,14 @@ OR<ph id="5"/>
   <source>Desactive esta opción para permitir la selección única.</source>
   <target>Disable this option to allow single selection.</target>
 </trans-unit>
+<trans-unit id="enablePanelLockButton">
+  <source>Bloquear los paneles</source>
+  <target>Lock the panels</target>
+</trans-unit>
+<trans-unit id="disablePanelLockButton">
+  <source>Desbloquear los paneles</source>
+  <target>Unlock the panels</target>
+</trans-unit>
 </body>
 </file>
 </xliff>
