@@ -1090,4 +1090,8 @@ export class GlobalFilterComponent implements OnInit {
             this.tooltipHideTimeout = null;
         }, 150);
     }
+
+    get filterButtonPosition(): string {
+        return this.dashboard?.dashboard?.config?.styles?.filterButtonPosition || 'left';
+    }
 }

@@ -1,4 +1,5 @@
 <div class="flex items-start gap-2 mb-1 2xl:mb-2 ml-0 2xl:ml-1"
+  [class.flex-row-reverse]="filterButtonPosition === 'right'"
   [style.height]="globalFilters.length === 0 ? '1' : null"
   [style.overflow]="globalFilters.length === 0 ? 'hidden' : null"
   [style.margin]="globalFilters.length === 0 ? '0' : null">

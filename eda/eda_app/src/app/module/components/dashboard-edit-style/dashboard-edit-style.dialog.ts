@@ -159,7 +159,7 @@ export class DashboardEditStyleDialog {
 
     this.css = styles.customCss;
     this.backgroundImage = styles.backgroundImage || null;
-
+    this.positionType = styles.filterButtonPosition || 'left';
     }
 
     public setSampleGlobalStyle() {
@@ -334,7 +334,8 @@ public saveConfig(): void {
             fontSize: this.panelFontSize,
             fontColor: this.panelFontColor
         },
-        palette: this.selectedPalette
+        palette: this.selectedPalette,
+        filterButtonPosition: this.positionType
     }
     
     this.stylesProviderService.setStyles(response);
@@ -367,7 +368,6 @@ public comparePalettes = (p1: any, p2: any) => p1 && p2 && p1?.name === p2?.name
     }
 
     onGlobalFilterButtonPositionChange(type?: any) {
-        console.log('type: ', type);
         this.positionType = type.positionType;
     }
 }
