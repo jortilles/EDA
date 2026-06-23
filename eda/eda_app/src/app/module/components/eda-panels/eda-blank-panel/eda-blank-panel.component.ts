@@ -425,6 +425,7 @@ export class EdaBlankPanelComponent implements OnInit {
             header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
             contextMenuItems: PanelOptions.generateMenu(this)
         });
+
         this.extraStyles =
             ['knob', 'radar'].includes(this.panel.content?.chart) ? { minHeight: '55vh', minWidth: '55vw', display: 'inline-block', alignItems: 'center' } :
             ['kpi'].includes(this.panel.content?.chart) ? {height: '100%', width: '100%', alignContent: 'center'} : 
@@ -435,6 +436,11 @@ export class EdaBlankPanelComponent implements OnInit {
 
     }
     
+    public openContextMenu(event: MouseEvent): void {
+        this.contextMenu.contextMenuItems = PanelOptions.generateMenu(this);
+        this.contextMenu.showContextMenu(event);
+    }
+
     /**
      * When selecting a node from the tree, it loads the columns to display.
      * @param event selected node. Can be rootNode (table_id) or childNode (child_id).

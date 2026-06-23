@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, Output, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, EventEmitter, inject, Input, Output, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { OverlayModule } from "primeng/overlay";
 import { OverlayPanel, OverlayPanelModule } from "primeng/overlaypanel";
@@ -81,7 +81,7 @@ const ANGULAR_MODULES = [
     }
   `
 })
-export class DashboardSidebarComponent {
+export class DashboardSidebarComponent implements AfterViewInit {
   private sidebarService = inject(DashboardSidebarService)
   private dashboardService = inject(DashboardService);
   private fileUtils = inject(FileUtiles);
@@ -107,6 +107,7 @@ export class DashboardSidebarComponent {
   inputVisible: boolean = false;
   refreshTime: number = null;
   clickFiltersEnabled: boolean = true;
+  clickPanelLockButton: boolean = true;
   onlyIcanEdit: boolean = true; // Only I can edit, but I can save as
   isReadOnly: boolean = false; // this is a read-only dashboard
   isEditable: boolean = false; // can edit the dashboard
@@ -127,6 +128,7 @@ export class DashboardSidebarComponent {
     this.refreshTime = this.dashboard.dashboard.config.refreshTime || null;
     this.clickFiltersEnabled = this.dashboard.dashboard.config.clickFiltersEnabled ?? true;
     this.onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ?? true;
+    this.clickPanelLockButton = this.dashboard.dashboard.config.panelLockEnabled ?? true;
     this.isReadOnly = this.isReadOnlyCheck();
     this.isEditable = this.isEditableCheck();
     this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
@@ -148,6 +150,10 @@ export class DashboardSidebarComponent {
         console.warn(`Method '${method}' is not exposed on DashboardSidebarComponent`);
       }
     });
+  }
+
+  ngAfterViewInit(): void {
+    this.dashboard.gridsterOptions.api?.optionsChanged();
   }
 
   initSidebar() {
@@ -274,6 +280,15 @@ export class DashboardSidebarComponent {
         icon: this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock",
         command: () => {
           this.toggleClickFilters();
+        }
+      },
+      {
+        id: 'enablePanelLock',
+        label: this.clickPanelLockButton ? $localize`:@@enablePanelLockButton: Bloquear los paneles`
+          : $localize`:@@disablePanelLockButton:Desbloquear los paneles`,
+        icon: this.clickPanelLockButton ? "pi pi-lock-open" : "pi pi-lock",
+        command: () => {
+          this.panelLockButton();
         }
       },
       {
@@ -483,6 +498,7 @@ export class DashboardSidebarComponent {
     this.dashboard.dashboard.config.refreshTime = this.refreshTime || null;
     this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
     this.dashboard.dashboard.config.onlyIcanEdit = this.onlyIcanEdit;
+    this.dashboard.dashboard.config.panelLockEnabled = this.clickPanelLockButton;
     // Update the author
     this.dashboard.dashboard.config.author = JSON.parse(localStorage.getItem('user')).name;
     // Save dashboard
@@ -984,6 +1000,27 @@ export class DashboardSidebarComponent {
     clickItem.label = this.clickFiltersEnabled ? $localize`:@@enableFilters:Click en filtros habilitado` : $localize`:@@disableFilters:Click en filtros deshabilitado`;
     clickItem.icon = this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock";
 
+  }
+
+  panelLockButton() {
+    const lockItem = this.sidebarItems.find(item => item.id === 'enablePanelLock');
+
+    this.clickPanelLockButton = !this.clickPanelLockButton;
+    const locked = !this.clickPanelLockButton;
+
+    for (const panel of this.dashboard.panels) {
+      (panel as any).dragEnabled = !locked;
+      (panel as any).resizeEnabled = !locked;
+    }
+
+    this.dashboard.gridsterOptions.api?.optionsChanged();
+    this.dashboard.dashboard.config.panelLockEnabled = this.clickPanelLockButton;
+    this.dashboardService._notSaved.next(true);
+
+    lockItem.label = this.clickPanelLockButton
+      ? $localize`:@@enablePanelLockButton: Bloquear los paneles`
+      : $localize`:@@disablePanelLockButton:Desbloquear los paneles`;
+    lockItem.icon = this.clickPanelLockButton ? "pi pi-lock-open" : "pi pi-lock";
   }
   
   toggleEdit() {

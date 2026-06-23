@@ -1079,6 +1079,7 @@ export class DashboardPage implements OnInit {
         tag: this.selectedTags,
         refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
         clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
+        panelLockEnabled: this.dashboard.config.panelLockEnabled,
         createdAt: this.dashboard.config.createdAt || new Date().toISOString(),
         modifiedAt: new Date().toISOString(),
         sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig,
