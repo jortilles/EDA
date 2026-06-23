@@ -12,7 +12,7 @@
 /* label shown above the filter input */
 .filter-label-top {
   display: block;
-  font-size: 0.7rem;
+  font-size: 0.75rem;  /* font-size filter tittle */
   font-weight: 500; /* font-weight filter tittle */
   color: #9ca3af;
   white-space: nowrap;
