@@ -71,9 +71,9 @@
 /* individual filter - uniform width */
 .filter-card {
   flex: 0 0 auto;
-  min-width: 160px;
-  width: 10vw;
-  max-width: 220px;
+  min-width: 115px;
+  width: 7.9vw;
+  max-width: 165px;
   box-sizing: border-box;
 }
 
