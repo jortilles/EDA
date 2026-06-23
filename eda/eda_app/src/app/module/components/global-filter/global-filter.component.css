@@ -1,3 +1,14 @@
+/* Filter button: less top margin on smaller screens, more on large */
+.filter-btn-responsive {
+  margin-top: 16px;
+}
+
+@media (min-width: 1536px) {
+  .filter-btn-responsive {
+    margin-top: 20px;
+  }
+}
+
 /* label shown above the filter input */
 .filter-label-top {
   display: block;

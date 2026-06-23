@@ -5,8 +5,8 @@
 
   <!-- Filter button -->
   @if (globalFilters.length > 0 && (isAdmin || isDashboardCreator || filterButtonVisibility.public)) {
-  <button class="flex-shrink-0 flex items-center gap-2 px-2 py-2 bg-gray-200 text-gray-700 rounded-md border hover:bg-gray-300"
-    [style]="styleButton" [style.margin-top]="'20px'" (click)="validateFilter()">
+  <button class="flex-shrink-0 flex items-center gap-2 px-2 py-2 bg-gray-200 text-gray-700 rounded-md border hover:bg-gray-300 filter-btn-responsive"
+    [style]="styleButton" (click)="validateFilter()">
     <i class="pi pi-filter"></i>
     <span i18n="@@filtrarH4">Filtrar</span>
   </button>
