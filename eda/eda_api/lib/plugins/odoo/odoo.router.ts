@@ -51,6 +51,7 @@ const router = express.Router();
  *     tags:
  *       - Odoo Routes
  */
+router.post('/add-data-source', authGuard, roleGuard, OdooController.addDataSource);
 router.post('/download', authGuard, roleGuard, OdooController.download);
 
 export default router;
