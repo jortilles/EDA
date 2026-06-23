@@ -20,14 +20,20 @@
   text-overflow: ellipsis;
 }
 
-/* Date picker input */
+/* Date picker - wrapper and input both constrained to same height as multiselect */
+::ng-deep eda-date-picker {
+  display: block;
+  height: 32px;
+}
+
 ::ng-deep eda-date-picker input {
-  height: 40px;
+  height: 32px;
   width: 100%;
-  padding: 0.5rem 1rem;
+  padding: 0.25rem 0.75rem;
   border-radius: 0.5rem;
   border: 1px solid #d1d5db;
   box-sizing: border-box;
+  font-size: 0.9rem;
 }
 
 /*****************/
@@ -83,7 +89,7 @@
 .filter-card {
   flex: 0 0 auto;
   min-width: 115px;
-  width: 7.9vw;
+  width: 10.7vw;
   max-width: 165px;
   box-sizing: border-box;
 }
@@ -93,6 +99,7 @@
   width: 100%;
   min-width: 100%;
   max-width: 100%;
+  height: 32px;
 }
 
 /* filter tooltip arrow */
@@ -117,7 +124,7 @@
   border: 1px solid #d1d5db;
   overflow-x: auto;
   scrollbar-width: thin;
-  height: auto;
+  height: 32px;
   width: 100%;
   box-shadow: none;
   border-radius: 10px;
