@@ -79,29 +79,15 @@ export class DuckDBConnection extends AbstractConnection {
         );
     }
 
-    // Format a DuckDBDecimalValue as a number (scale=0) or a Spanish-locale string
-    // ("1.234,50") so that trailing decimal zeros are preserved.
-    // Strings like "1.234,50" are not parseable by JS Number(), so isNumericValue()
-    // in the frontend returns false and the value is rendered as-is, without the
-    // Angular number pipe stripping the trailing zero.
-    private formatDecimal(val: { value: bigint; scale: number }): number | string {
+    private formatDecimal(val: { value: bigint; scale: number }): number {
         if (val.scale === 0) return Number(val.value);
         const isNeg = val.value < 0n;
         const abs = isNeg ? -val.value : val.value;
         const scaleFactor = 10n ** BigInt(val.scale);
-        const intPart = abs / scaleFactor;
-        const fracPart = (abs % scaleFactor).toString().padStart(val.scale, '0');
-        const intFormatted = this.formatWithThousands(intPart);
-        return isNeg ? `-${intFormatted},${fracPart}` : `${intFormatted},${fracPart}`;
-    }
-
-    private formatWithThousands(n: bigint): string {
-        const str = n.toString();
-        const parts: string[] = [];
-        for (let i = str.length; i > 0; i -= 3) {
-            parts.unshift(str.slice(Math.max(0, i - 3), i));
-        }
-        return parts.join('.');
+        const intPart = Number(abs / scaleFactor);
+        const fracPart = Number(abs % scaleFactor) / Math.pow(10, val.scale);
+        const result = intPart + fracPart;
+        return isNeg ? -result : result;
     }
 
     async tryConnection(): Promise<any> {
