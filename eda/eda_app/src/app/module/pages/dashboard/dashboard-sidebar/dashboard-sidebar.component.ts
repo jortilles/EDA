@@ -408,7 +408,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
       // Temporarily save the dependent filter structure
       this.dashboard.globalFilter.globalFilters = dependentFilterObject.globalFilters;
       this.dashboard.globalFilter.orderDependentFilters = dependentFilterObject.orderDependentFilters;
-      this.dashboardService._notSaved.next(true); // Mark dashboard as unsaved
+      this.dashboardService.setNotSaved(true); // Mark dashboard as unsaved
       // Update filter values when a new configuration is applied
       this.dashboard.globalFilter.initGlobalFilters(this.dashboard.globalFilter.globalFilters);
     } 
@@ -490,7 +490,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
     this.hidePopover();
 
     this.dashboard.loadDashboard();
-    this.dashboardService._notSaved.next(false);
+    this.dashboardService.setNotSaved(false);
   }
 
   private async saveDashboard() {
@@ -555,7 +555,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
       this.dashboard.edaPanels.forEach(panel => panel.savePanel());
 
       await lastValueFrom(this.dashboardService.updateDashboard(res.dashboard._id, body));
-      this.dashboardService._notSaved.next(false);
+      this.dashboardService.setNotSaved(false);
       this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
       this.router.navigate(['/dashboard/', res.dashboard._id]).then(() => {
         window.location.reload();
@@ -583,6 +583,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
   public saveStyles(newStyles: any) {
       this.isEditStyleDialogVisible = false;
       this.dashboard.dashboard.config.styles = newStyles;
+      this.dashboardService.setNotSaved(true);
       this.ChartUtilsService.MyPaletteColors = newStyles.palette?.paleta || this.ChartUtilsService.MyPaletteColors;
       this.dashboard.assignStyles();
       
@@ -963,7 +964,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
   public saveDashboardTitle() {
     if (this.editableTitle?.trim()) {
       this.dashboard.title = this.editableTitle.trim();
-      this.dashboardService._notSaved.next(true);
+      this.dashboardService.setNotSaved(true);
     }
     this.editingTitle = false;
   }
@@ -1015,7 +1016,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
     this.dashboard.gridsterOptions.api?.optionsChanged();
     this.dashboard.dashboard.config.panelLockEnabled = this.clickPanelLockButton;
-    this.dashboardService._notSaved.next(true);
+    this.dashboardService.setNotSaved(true);
 
     lockItem.label = this.clickPanelLockButton
       ? $localize`:@@enablePanelLockButton: Bloquear los paneles`
@@ -1049,6 +1050,6 @@ export class DashboardSidebarComponent implements AfterViewInit {
   // FILTER SORT
   onDrop(event: CdkDragDrop<any[]>) {
     moveItemInArray(this.dashboard.globalFilter.globalFilters, event.previousIndex, event.currentIndex);
-    this.dashboardService._notSaved.next(true);
+    this.dashboardService.setNotSaved(true);
   }
 }

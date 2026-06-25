@@ -694,7 +694,7 @@ export class GlobalFilterComponent implements OnInit {
         this.removeMapFilter(filter);
 
         if (reload) {
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
     }
 

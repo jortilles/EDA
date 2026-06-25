@@ -47,7 +47,7 @@ export class EdaTitlePanelComponent implements OnInit {
     public setTitle(): void {
         this.titleClick = !this.titleClick;
 
-        this.dashboardService._notSaved.next(true);
+        this.dashboardService.setNotSaved(true);
         if (this.titleClick) {
 
         }
@@ -76,7 +76,7 @@ export class EdaTitlePanelComponent implements OnInit {
                                 if(!_.isEqual(event, EdaDialogCloseEvent.NONE)){
                                     this.panel.title = response.title;
                                     this.setPanelSize()
-                                    this.dashboardService._notSaved.next(true);
+                                    this.dashboardService.setNotSaved(true);
                                 }
                                 this.editTittleController = null;
                                 // this.setPanelSize()

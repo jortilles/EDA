@@ -371,7 +371,7 @@ export const PanelOptions = {
           item.icon = 'pi pi-lock';
         }
         panelComponent.dashboard.gridsterOptions.api?.optionsChanged();
-        panelComponent.dashboardService._notSaved.next(true);
+        panelComponent.dashboardService.setNotSaved(true);
       }
     });
     return item;

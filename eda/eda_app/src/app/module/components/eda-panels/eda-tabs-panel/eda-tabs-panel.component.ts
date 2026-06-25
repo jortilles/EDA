@@ -211,7 +211,7 @@ export class EdaTabsPanelComponent implements OnInit, AfterViewInit, OnDestroy {
                                     this.panel.selectedDashboardIds = response.selectedDashboardIds;
                                     this.panel.openInNewTab = response.isOpeningNewTab;
                                     this.filterDashboards();
-                                    this.dashboardService._notSaved.next(true);
+                                    this.dashboardService.setNotSaved(true);
                                 }
                                 this.editTabsController = null;
                             }

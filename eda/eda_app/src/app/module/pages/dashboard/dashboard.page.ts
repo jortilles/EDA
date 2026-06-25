@@ -562,7 +562,7 @@ export class DashboardPage implements OnInit {
 
   public reloadOnGlobalFilter(): void {
     //not saved alert message
-    this.dashboardService._notSaved.next(true);
+    this.dashboardService.setNotSaved(true);
 
     // Simulate a click on the btn
     const interval = setInterval(() => {
@@ -955,7 +955,7 @@ export class DashboardPage implements OnInit {
 
   public onDuplicatePanel(panel: any) {
     this.panels.push(panel);
-    this.dashboardService._notSaved.next(true);
+    this.dashboardService.setNotSaved(true);
     this.stylesProviderService.loadedPanels++;
   }
 
@@ -983,7 +983,7 @@ export class DashboardPage implements OnInit {
         await this.globalFilter.onGlobalFilter(true, globalFilter);
       
 
-        this.dashboardService._notSaved.next(true);
+        this.dashboardService.setNotSaved(true);
 
         // Simulate a click on the btn
         setTimeout(() => {
@@ -1102,7 +1102,7 @@ export class DashboardPage implements OnInit {
     try {
       await lastValueFrom(this.dashboardService.updateDashboard(this.dashboardId, body));
       this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
-      this.dashboardService._notSaved.next(false);
+      this.dashboardService.setNotSaved(false);
     } catch (err) {
       this.alertService.addError(err);
       throw err;
@@ -1190,7 +1190,7 @@ public startCountdown(seconds: number) {
     this.dashboardService.cleanCache(body).subscribe(
         res => {
             this.loadDashboard();
-            this.dashboardService._notSaved.next(false);
+            this.dashboardService.setNotSaved(false);
         },
         err => console.log(err)
     )
