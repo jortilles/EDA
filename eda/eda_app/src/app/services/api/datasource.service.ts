@@ -130,7 +130,12 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 tables.push(currTable);
 
                 // Column nodes
-                (table.columns ?? []).forEach((column: any) => {
+                const sortedColumns = (table.columns ?? []).slice().sort((a: any, b: any) => {
+                    const la = (a.display_name?.default ?? a.column_name ?? '').toLowerCase();
+                    const lb = (b.display_name?.default ?? b.column_name ?? '').toLowerCase();
+                    return la < lb ? -1 : la > lb ? 1 : 0;
+                });
+                sortedColumns.forEach((column: any) => {
                     const currCol: TreeNode = {};
                     currCol.label = column.display_name?.default ?? column.column_name;
                     currCol.data = 'columna';
