@@ -14,6 +14,8 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { DropdownModule } from 'primeng/dropdown';
 import { CommonModule } from '@angular/common';
 import { DashboardPage } from "../../pages/dashboard/dashboard.page";
+import { GLOBAL_FILTER_BUTTON_POSITION } from '@eda/configs/personalitzacio/customizables';
+
 
 @Component({
   selector: 'app-dashboard-edit-style',
@@ -112,7 +114,7 @@ export class DashboardEditStyleDialog {
     { icon: 'pi pi-arrow-right', label: 'Right', positionType: 'right' }
   ];  
   
-  public positionType = this.globalFilterButtonPosition[0].positionType; // default: left
+  public positionType: string = GLOBAL_FILTER_BUTTON_POSITION;
 
   constructor(private formBuilder: UntypedFormBuilder, private alertService: AlertService
     , private stylesProviderService: StyleProviderService) {
@@ -159,7 +161,7 @@ export class DashboardEditStyleDialog {
 
     this.css = styles.customCss;
     this.backgroundImage = styles.backgroundImage || null;
-    this.positionType = styles.filterButtonPosition || 'left';
+    this.positionType = styles.filterButtonPosition ?? GLOBAL_FILTER_BUTTON_POSITION;
     }
 
     public setSampleGlobalStyle() {
