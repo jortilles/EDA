@@ -6975,6 +6975,14 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Desactive esta opción para permitir la selección única.</source>
         <target>Désactivez cette option pour autoriser une sélection unique.</target>
       </trans-unit>
+      <trans-unit id="enablePanelLockButton">
+        <source>Bloquear los paneles</source>
+        <target>Verrouiller les panneaux</target>
+      </trans-unit>
+      <trans-unit id="disablePanelLockButton">
+        <source>Desbloquear los paneles</source>
+        <target>Déverrouiller les panneaux</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

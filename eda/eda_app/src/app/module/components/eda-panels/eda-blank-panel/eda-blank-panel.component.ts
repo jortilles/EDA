@@ -425,6 +425,7 @@ export class EdaBlankPanelComponent implements OnInit {
             header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
             contextMenuItems: PanelOptions.generateMenu(this)
         });
+
         this.extraStyles =
             ['knob', 'radar'].includes(this.panel.content?.chart) ? { minHeight: '55vh', minWidth: '55vw', display: 'inline-block', alignItems: 'center' } :
             ['kpi'].includes(this.panel.content?.chart) ? {height: '100%', width: '100%', alignContent: 'center'} : 
@@ -435,6 +436,11 @@ export class EdaBlankPanelComponent implements OnInit {
 
     }
     
+    public openContextMenu(event: MouseEvent): void {
+        this.contextMenu.contextMenuItems = PanelOptions.generateMenu(this);
+        this.contextMenu.showContextMenu(event);
+    }
+
     /**
      * When selecting a node from the tree, it loads the columns to display.
      * @param event selected node. Can be rootNode (table_id) or childNode (child_id).
@@ -767,7 +773,7 @@ public tableNodeExpand(event: any): void {
 
 
         //not saved alert message
-        this.dashboardService._notSaved.next(true);
+        this.dashboardService.setNotSaved(true);
 
         // Reset the prompt chat.
         this.promptMessages = [];
@@ -1509,7 +1515,7 @@ public tableNodeExpand(event: any): void {
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
             }
             //not saved alert message
-        this.dashboardService._notSaved.next(true);
+        this.dashboardService.setNotSaved(true);
     }
     this.chartController = undefined;
 }
@@ -1525,7 +1531,7 @@ public tableNodeExpand(event: any): void {
 
             }
             //not saved alert message
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
         this.tableController = undefined;
     }
@@ -1555,7 +1561,7 @@ public tableNodeExpand(event: any): void {
 
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart( this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
         this.mapController = undefined;
     }
@@ -1582,7 +1588,7 @@ public tableNodeExpand(event: any): void {
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, 
                 this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
         this.mapCoordController = undefined;
     }
@@ -1603,7 +1609,7 @@ public tableNodeExpand(event: any): void {
             this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
 
         }
         this.sankeyController = undefined;
@@ -1624,7 +1630,7 @@ public tableNodeExpand(event: any): void {
             this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
         this.treeMapController = undefined;
     }
@@ -1651,7 +1657,7 @@ public tableNodeExpand(event: any): void {
             
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
         this.funnelController = undefined;
     }
@@ -1672,7 +1678,7 @@ public tableNodeExpand(event: any): void {
             this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
         this.bubblechartController = undefined;
     }
@@ -1694,7 +1700,7 @@ public tableNodeExpand(event: any): void {
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
 
         }
         this.scatterPlotController = undefined;
@@ -1744,7 +1750,7 @@ public tableNodeExpand(event: any): void {
                 );
     
                 // We indicate that there are unsaved changes.
-                this.dashboardService._notSaved.next(true);
+                this.dashboardService.setNotSaved(true);
             }
         
         } else {
@@ -1763,7 +1769,7 @@ public tableNodeExpand(event: any): void {
                     const config = new ChartConfig(this.panel.content.query.output.config);
                     this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
-                    this.dashboardService._notSaved.next(true);
+                    this.dashboardService.setNotSaved(true);
                 }  
             } 
             // Close the dialog.
@@ -1776,7 +1782,7 @@ public tableNodeExpand(event: any): void {
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
 
         }
         this.knobController = undefined;
@@ -1794,7 +1800,7 @@ public tableNodeExpand(event: any): void {
             );
 
 
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
 
         this.linkDashboardController = undefined;
@@ -1820,7 +1826,7 @@ public tableNodeExpand(event: any): void {
                 alertLimits: response.alerts || [],
             }));
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, 'kpideviation', 'kpideviation', config);
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
             this.kpiController = undefined;
             return;
         }
@@ -1879,7 +1885,7 @@ public tableNodeExpand(event: any): void {
             response.chartSubType,
             config
         );
-        this.dashboardService._notSaved.next(true);
+        this.dashboardService.setNotSaved(true);
     }
     this.kpiController = undefined;
 }
@@ -1889,7 +1895,7 @@ public tableNodeExpand(event: any): void {
             const config = new ChartConfig(new DynamicTextConfig(response.color, response.modifiedFontPoints || 0));
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
         this.dynamicTextController = undefined;
     }
