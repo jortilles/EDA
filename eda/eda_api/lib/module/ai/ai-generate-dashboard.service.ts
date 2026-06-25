@@ -97,7 +97,7 @@ function buildFields(aiPanel: any, simplifiedTables: any[], datasource_id: strin
             aggregation_type: f.agg || 'none',
             column_granted_roles: [],
             row_granted_roles: [],
-            ordenation_type: 'No',
+            ordenation_type: f.sort || 'No',
             order: fieldIndex,
         };
     });
@@ -126,10 +126,10 @@ function buildPanel(
                     queryMode: 'EDA',
                     rootTable: aiPanel.fields?.[0]?.table || '',
                     joinType: 'inner',
-                    queryLimit: 1000,
+                    queryLimit: aiPanel.queryLimit || 1000,
                     groupByEnabled: true,
                 },
-                output: { labels: fields.map((f: any) => f.column_name), data: [], config: null },
+                output: { labels: fields.map((f: any) => f.column_name), data: [] },
             },
             chart: chartType,
             edaChart: chartType,
