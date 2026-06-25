@@ -153,20 +153,22 @@ export class ClickHouseBuilderService extends QueryBuilderService {
   ) {
     let o = tables.filter(t => t.name === origin).map(t => t.query ? this.cleanViewString(t.query) : t.name)[0];
     let vista = tables.filter(table => table.name === origin).map(table => { return table.query ? true: false })[0];
-    let myQuery: string;
+    let myQuery = `SELECT ${columns.join(', ')} \n`;
 
-
-    if (forSelector === true) {
-      if(vista){
-        myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o} `;
-      }else if(_schema){
-          myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM \`${_schema}\`.\`${o}\` `;
-      }else{
-          myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM \`${o}\``;
-      }
+    if (vista) {
+      myQuery += `FROM ${o}`;
+    } else {
+      myQuery += `FROM \`${o}\``;
     }
 
-
+    /** SI ES UN SELECT PARA UN SELECTOR  VOLDRÉ VALORS ÚNICS */
+    if (forSelector === true) {
+      if (vista) {
+        myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
+      } else {
+        myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM \`${o}\``;
+      }
+    }
 
     // JOINS
     let joinString: any[];
