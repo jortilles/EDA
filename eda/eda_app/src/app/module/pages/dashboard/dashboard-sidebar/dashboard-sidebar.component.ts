@@ -500,7 +500,7 @@ export class DashboardSidebarComponent implements AfterViewInit {
     this.dashboard.dashboard.config.onlyIcanEdit = this.onlyIcanEdit;
     this.dashboard.dashboard.config.panelLockEnabled = this.clickPanelLockButton;
     // Update the author
-    this.dashboard.dashboard.config.author = JSON.parse(localStorage.getItem('user')).name;
+    this.dashboard.dashboard.config.author =  this.dashboard.dashboard.config.author?this.dashboard.dashboard.config.author:JSON.parse(localStorage.getItem('user')).name;
     // Save dashboard
     try {
       await this.dashboard.saveDashboard();
