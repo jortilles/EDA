@@ -393,10 +393,30 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
     if (response) {
       for (const item of response) {
-        this.dashboard.panels.push(item as EdaPanel);
+        const panel = item as EdaPanel;
+        if (this.importedPanelOverlaps(panel)) {
+          panel.x = 0;
+          panel.y = this.getImportBottomY();
+        }
+        this.dashboard.panels.push(panel);
       }
     }
+  }
 
+  private importedPanelOverlaps(panel: EdaPanel): boolean {
+    if (panel.x == null || panel.y == null || !panel.cols || !panel.rows) return true;
+    return this.dashboard.panels.some(existing => {
+      const hOverlap = panel.x < (existing.x + existing.cols) && (panel.x + panel.cols) > existing.x;
+      const vOverlap = panel.y < (existing.y + existing.rows) && (panel.y + panel.rows) > existing.y;
+      return hOverlap && vOverlap;
+    });
+  }
+
+  private getImportBottomY(): number {
+    return this.dashboard.panels.reduce((max, p) => {
+      const bottom = (p.y || 0) + (p.rows || 0);
+      return bottom > max ? bottom : max;
+    }, 0);
   }
 
   public closeDependentFilters(dependentFilterObject: any){
