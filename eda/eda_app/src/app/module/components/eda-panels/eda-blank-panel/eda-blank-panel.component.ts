@@ -525,11 +525,11 @@ public tableNodeExpand(event: any): void {
 
     isEditable() {
         const user = localStorage.getItem('user');
-        const userName = JSON.parse(user).name;
+        const userName = JSON.parse(user).id;
         const userRole = JSON.parse(user).role;
         const isAdmin = userRole.includes('135792467811111111111110');
-        const imProperty = userName === this.dashboard.dashboard.config.author;
-        return (userName !== 'edaanonim' && !this.inject.isObserver) && !this.readonly && (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty || isAdmin);
+        const imProperty = userName === this.dashboard.dashboard.user;
+        return (userName !== '135792467811111111111112' && !this.inject.isObserver) && !this.readonly && (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty || isAdmin);
     }
 
     isRemovable() {

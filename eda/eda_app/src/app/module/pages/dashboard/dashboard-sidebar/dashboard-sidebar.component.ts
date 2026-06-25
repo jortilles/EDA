@@ -995,19 +995,19 @@ export class DashboardSidebarComponent implements AfterViewInit {
 
  public isReadOnlyCheck() {
     const user = localStorage.getItem('user');
-    const userName = JSON.parse(user).name;
-    const imProperty = userName === this.dashboard.dashboard.config.author;
+    const userName = JSON.parse(user).id;
+    const imProperty = userName === this.dashboard.dashboard.user;
     const isObserver = JSON.parse(user).role.includes('135792467811111111111113');
     const onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ? this.dashboard.dashboard.config.onlyIcanEdit: true ;
-    return userName === 'edaanonim' || (!onlyIcanEdit && !imProperty) || isObserver;
+    return userName === '135792467811111111111112' || (!onlyIcanEdit && !imProperty) || isObserver;
   }
 
   public isEditableCheck() {
     const user = localStorage.getItem('user');
-    const userName = JSON.parse(user).name;
+    const userId = JSON.parse(user).id;
     const userRole = JSON.parse(user).role;
     const isAdmin = userRole.includes('135792467811111111111110');
-    const imProperty = userName === this.dashboard.dashboard.config.author
+    const imProperty = userId === this.dashboard.dashboard.user;
     return (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty || isAdmin );
   }
 

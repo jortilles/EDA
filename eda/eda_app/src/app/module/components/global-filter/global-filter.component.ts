@@ -119,8 +119,8 @@ export class GlobalFilterComponent implements OnInit {
 
     public async initGlobalFilters(filters: any[]): Promise<void> {
         this.globalFilters = _.cloneDeep(filters);
-        const userName = JSON.parse(localStorage.getItem('user'))?.name;
-        this.isDashboardCreator = userName === this.dashboard.dashboard?.config?.author;
+        const userName = JSON.parse(localStorage.getItem('user'))?.id;
+        this.isDashboardCreator = userName === this.dashboard.dashboard?.user;
         this.setFiltersVisibility();
         this.setFilterButtonVisibilty();
         await this.fillFiltersData();

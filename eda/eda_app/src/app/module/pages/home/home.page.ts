@@ -270,7 +270,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   public canEditReport(report: any): boolean {
     if (!report.onlyIcanEdit) return true;
-    return report.config.author === this.userService.user?.name || this.userService.isAdmin;
+    return report.user === this.userService.user?._id|| this.userService.isAdmin;
   }
 
   public filterByTags() {
