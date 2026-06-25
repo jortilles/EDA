@@ -157,5 +157,53 @@ router.get('/config', authGuard, AiController.aIgetConfig);
  */
 router.post('/config', authGuard, AiController.aIsaveConfig);
 
+/**
+ * @openapi
+ * /assistant/generate-dashboard:
+ *   post:
+ *     description: Generates a complete dashboard with panels using AI based on a natural language description. Supports standard mode (generic domain → 4 KPIs + 2 charts + 1 table) and explicit mode (specific request → 1-3 panels).
+ *     parameters:
+ *       - name: body
+ *         in: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           required:
+ *             - datasource_id
+ *             - description
+ *             - title
+ *           properties:
+ *             datasource_id:
+ *               type: string
+ *               description: ID of the datasource the dashboard will query
+ *             description:
+ *               type: string
+ *               description: Natural language description of the panels to generate
+ *             title:
+ *               type: string
+ *               description: Title for the new dashboard
+ *             visible:
+ *               type: string
+ *               description: Visibility setting (e.g. 'public', 'group', 'private')
+ *             group:
+ *               type: array
+ *               description: Group IDs if visible is set to 'group'
+ *     responses:
+ *       201:
+ *         description: Dashboard generated and saved successfully.
+ *       400:
+ *         description: Missing required fields or datasource not available for AI.
+ *       404:
+ *         description: Datasource not found.
+ *       429:
+ *         description: Daily or global AI usage limit reached.
+ *       503:
+ *         description: AI service is not available.
+ *       500:
+ *         description: Server error generating the dashboard.
+ *     tags:
+ *       - AI Assistant Routes
+ */
+router.post('/generate-dashboard', authGuard, AiController.aiGenerateDashboard);
 
 export default router;

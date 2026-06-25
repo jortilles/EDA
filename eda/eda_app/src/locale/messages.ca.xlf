@@ -7007,6 +7007,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Desactive esta opción para permitir la selección única.</source>
         <target>Desactiveu aquesta opció per permetre la selecció única.</target>
       </trans-unit>
+      <trans-unit id="aiDashboardDescription">
+        <source>(Opcional) Describe los paneles que quieres generar con IA. Ejemplo: ventas por mes en barras, top clientes por importe, KPI de facturación total.</source>
+        <target>(Opcional) Descriu els panells que vols generar amb IA. Exemple: vendes per mes en barres, top clients per import, KPI de facturació total.</target>
+      </trans-unit>
+      <trans-unit id="aiGeneratingDashboard">
+        <source>Generando dashboard con IA...</source>
+        <target>Generant dashboard amb IA...</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

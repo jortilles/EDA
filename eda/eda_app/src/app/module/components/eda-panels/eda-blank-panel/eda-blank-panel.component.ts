@@ -627,7 +627,17 @@ public tableNodeExpand(event: any): void {
             PanelInteractionUtils.handleFilters(this, panelContent.query.query); // 3. populate selectedFilters (reads dateNavState)
 
             const hasNavChildren = this.currentQuery.some((col: any) => col.downChild);
-            const queryToRun = hasNavChildren ? QueryUtils.initEdaQuery(this) : panelContent.query;
+            const baseQuery = panelContent.query;
+            const queryToRun = hasNavChildren
+                ? QueryUtils.initEdaQuery(this)
+                : {
+                    ...baseQuery,
+                    dashboard: baseQuery.dashboard ?? {
+                        dashboard_id: this.inject.dashboard_id,
+                        panel_id: this.panel.id,
+                        connectionProperties: this.connectionProperties
+                    }
+                };
             const response = await QueryUtils.switchAndRun(this, queryToRun);
             
             const [labels, values] = response;

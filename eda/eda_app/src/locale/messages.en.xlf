@@ -6700,6 +6700,14 @@ OR<ph id="5"/>
   <source>Desactive esta opción para permitir la selección única.</source>
   <target>Disable this option to allow single selection.</target>
 </trans-unit>
+<trans-unit id="aiDashboardDescription">
+  <source>(Opcional) Describe los paneles que quieres generar con IA. Ejemplo: ventas por mes en barras, top clientes por importe, KPI de facturación total.</source>
+  <target>(Optional) Describe the panels you want to generate with AI. Example: monthly sales as bars, top customers by amount, total billing KPI.</target>
+</trans-unit>
+<trans-unit id="aiGeneratingDashboard">
+  <source>Generando dashboard con IA...</source>
+  <target>Generating dashboard with AI...</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

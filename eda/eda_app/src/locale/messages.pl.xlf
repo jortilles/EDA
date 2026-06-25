@@ -6640,6 +6640,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Desactive esta opción para permitir la selección única.</source>
         <target>Wyłącz tę opcję, aby umożliwić wybór tylko jednej wartości.</target>
       </trans-unit>
+      <trans-unit id="aiDashboardDescription">
+        <source>(Opcional) Describe los paneles que quieres generar con IA. Ejemplo: ventas por mes en barras, top clientes por importe, KPI de facturación total.</source>
+        <target>(Opcjonalnie) Opisz panele, które chcesz wygenerować za pomocą AI. Przykład: sprzedaż miesięczna na wykresie słupkowym, top klientów według kwoty, KPI łącznej faktury.</target>
+      </trans-unit>
+      <trans-unit id="aiGeneratingDashboard">
+        <source>Generando dashboard con IA...</source>
+        <target>Generowanie dashboardu za pomocą AI...</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>
