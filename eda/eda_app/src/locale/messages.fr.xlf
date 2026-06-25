@@ -6672,12 +6672,16 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <target>Quels tableaux de bord ai-je ?</target>
       </trans-unit>
       <trans-unit id="chatSuggestion2" datatype="html">
-        <source>¿Qué datasources hay?</source>
-        <target>Quels datasources sont disponibles ?</target>
+        <source>¿Qué fuentes de datos hay?</source>
+        <target>Quelles sont les sources de données?</target>
       </trans-unit>
       <trans-unit id="chatSuggestion3" datatype="html">
         <source>Estado del servidor</source>
         <target>État du serveur</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion4" datatype="html">
+        <source>¿Qué informes tengo disponibles?</source>
+        <target>Quels rapports sont disponibles pour moi?</target>
       </trans-unit>
       <trans-unit id="chatInputPlaceholder" datatype="html">
         <source>Escribe un mensaje...</source>

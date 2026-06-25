@@ -55,7 +55,8 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   private shouldScrollChat = false;
   private chatInputListenerAdded = false;
 
-  public chatSuggestion2: string = $localize`:@@chatSuggestion2:¿Qué datasources hay?`;
+  public chatSuggestion2: string = $localize`:@@chatSuggestion2:¿Qué fuentes de datos hay?`;
+  public chatSuggestion4: string = $localize`:@@chatSuggestion4:¿Qué informes tengo disponibles?`;
   readonly chatFallbackYes: string = $localize`:@@chatFallbackYes:Sí`;
   readonly chatFallbackSearchIn: string = $localize`:@@chatFallbackSearchIn:Buscar en...`;
   readonly chatFallbackSearchInPrefix: string = $localize`:@@chatFallbackSearchInPrefix:Buscar en: `;
