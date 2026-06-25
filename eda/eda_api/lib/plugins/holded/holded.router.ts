@@ -39,6 +39,7 @@ const router = express.Router();
  *     tags:
  *       - Holded Routes
  */
+router.post('/add-data-source', authGuard, roleGuard, HoldedController.addDataSource);
 router.post('/download', authGuard, roleGuard, HoldedController.downloadData);
 
 export default router;

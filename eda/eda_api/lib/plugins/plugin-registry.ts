@@ -25,6 +25,11 @@ export class PluginRegistry {
         return this.getAll().filter((p): p is IFeaturePlugin => !isDatasourcePlugin(p));
     }
 
+    static getDatasource(type: string): IDatasourcePlugin | undefined {
+        const plugin = this.plugins.get(type);
+        return plugin && isDatasourcePlugin(plugin) ? plugin : undefined;
+    }
+
     static getConnection(type: string, config: any): AbstractConnection | null {
         const plugin = this.plugins.get(type);
         if (!plugin || !isDatasourcePlugin(plugin)) return null;

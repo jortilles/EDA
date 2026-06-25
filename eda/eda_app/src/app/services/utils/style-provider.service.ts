@@ -22,6 +22,7 @@ export interface DashboardStyles {
 	filters: StyleConfig;
 	panelTitle: StyleConfig;
 	panelContent: StyleConfig;
+	filterButtonPosition?: string;
 }
 
 

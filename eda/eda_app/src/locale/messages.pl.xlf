@@ -6640,6 +6640,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Desactive esta opción para permitir la selección única.</source>
         <target>Wyłącz tę opcję, aby umożliwić wybór tylko jednej wartości.</target>
       </trans-unit>
+      <trans-unit id="enablePanelLockButton">
+        <source>Bloquear los paneles</source>
+        <target>Zablokować panele</target>
+      </trans-unit>
+      <trans-unit id="disablePanelLockButton">
+        <source>Desbloquear los paneles</source>
+        <target>Odblokować panele</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

@@ -130,7 +130,12 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 tables.push(currTable);
 
                 // Column nodes
-                (table.columns ?? []).forEach((column: any) => {
+                const sortedColumns = (table.columns ?? []).slice().sort((a: any, b: any) => {
+                    const la = (a.display_name?.default ?? a.column_name ?? '').toLowerCase();
+                    const lb = (b.display_name?.default ?? b.column_name ?? '').toLowerCase();
+                    return la < lb ? -1 : la > lb ? 1 : 0;
+                });
+                sortedColumns.forEach((column: any) => {
                     const currCol: TreeNode = {};
                     currCol.label = column.display_name?.default ?? column.column_name;
                     currCol.data = 'columna';
@@ -730,24 +735,12 @@ export class DataSourceService extends ApiService implements OnDestroy {
         return this.get(`${this.globalDSRoute}/duckdb-folders`);
     }
 
-    addOdooDataSource(connection: any): Observable<any> {
-        return this.post(`${this.globalDSRoute}/add-odoo-data-source`, connection);
+    callPluginPost(apiBasePath: string, endpoint: string, body: any): Observable<any> {
+        return this.post(`${apiBasePath}${endpoint}`, body);
     }
 
-    addGoogleAnalyticsDataSource(connection: any): Observable<any> {
-        return this.post(`${this.globalDSRoute}/add-google-analytics-data-source`, connection);
-    }
-
-    getGA4AuthUrl(): Observable<any> {
-        return this.get(`/google-analytics/auth-url`);
-    }
-
-    pollGA4Token(state: string): Observable<any> {
-        return this.get(`/google-analytics/poll-token?state=${state}`);
-    }
-
-    addHoldedDataSource(connection: any): Observable<any> {
-        return this.post(`${this.globalDSRoute}/add-holded-data-source`, connection);
+    callPluginGet(apiBasePath: string, endpoint: string): Observable<any> {
+        return this.get(`${apiBasePath}${endpoint}`);
     }
 
     addShopifyDataSource(connection: any): Observable<any> {

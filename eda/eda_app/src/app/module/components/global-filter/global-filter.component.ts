@@ -6,6 +6,7 @@ import { EdaBlankPanelComponent } from "@eda/components/eda-panels/eda-blank-pan
 import { OverlayPanelModule } from "primeng/overlaypanel";
 import * as _ from 'lodash';
 import { DashboardPage } from "app/module/pages/dashboard/dashboard.page";
+import { GLOBAL_FILTER_BUTTON_POSITION } from '@eda/configs/personalitzacio/customizables';
 import { MultiSelectModule } from "primeng/multiselect";
 import { FormsModule } from "@angular/forms";
 import { StyleProviderService } from '@eda/services/service.index';
@@ -693,7 +694,7 @@ export class GlobalFilterComponent implements OnInit {
         this.removeMapFilter(filter);
 
         if (reload) {
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
     }
 
@@ -1089,5 +1090,9 @@ export class GlobalFilterComponent implements OnInit {
             op?.hide();
             this.tooltipHideTimeout = null;
         }, 150);
+    }
+
+    get filterButtonPosition(): string {
+        return this.dashboard?.dashboard?.config?.styles?.filterButtonPosition ?? GLOBAL_FILTER_BUTTON_POSITION;
     }
 }
