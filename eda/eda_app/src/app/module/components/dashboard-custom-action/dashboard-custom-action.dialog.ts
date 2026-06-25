@@ -98,8 +98,7 @@ export class DashboardCustomActionDialog{
 
         this.alertService.addSuccess($localize`:@@urlAddedSuccessfully:URL agregado correctamente`);
         // not saved alert message
-        this.dashboardService._notSaved.next(true);
-
+        this.dashboardService.setNotSaved(true);
 
         // Reset the add URL field values
         this.urlAdd=''

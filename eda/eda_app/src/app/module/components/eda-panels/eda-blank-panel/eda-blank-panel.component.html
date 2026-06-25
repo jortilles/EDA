@@ -30,7 +30,7 @@
     <i 
       [ngClass]="{'edit-blink': lodash.isEmpty(panel.content)}"
       class="pi pi-ellipsis-v cursor-pointer ml-2  w-[28px] h-[28px] flex items-center justify-center text-center rounded-full content-center"
-      (click)="contextMenu.showContextMenu($event)"
+      (click)="openContextMenu($event)"
     >
     </i>
   </div>

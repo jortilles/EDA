@@ -5,6 +5,8 @@ import { GoogleAnalyticsController } from './google-analytics.controller';
 
 const router = express.Router();
 
+router.post('/add-data-source', authGuard, roleGuard, GoogleAnalyticsController.addDataSource);
+
 /** Returns the Google OAuth2 authorization URL + a state token. */
 router.get('/auth-url', authGuard, roleGuard, GoogleAnalyticsController.getAuthUrl);
 

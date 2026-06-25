@@ -55,7 +55,8 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   private shouldScrollChat = false;
   private chatInputListenerAdded = false;
 
-  public chatSuggestion2: string = $localize`:@@chatSuggestion2:¿Qué datasources hay?`;
+  public chatSuggestion2: string = $localize`:@@chatSuggestion2:¿Qué fuentes de datos hay?`;
+  public chatSuggestion4: string = $localize`:@@chatSuggestion4:¿Qué informes tengo disponibles?`;
   readonly chatFallbackYes: string = $localize`:@@chatFallbackYes:Sí`;
   readonly chatFallbackSearchIn: string = $localize`:@@chatFallbackSearchIn:Buscar en...`;
   readonly chatFallbackSearchInPrefix: string = $localize`:@@chatFallbackSearchInPrefix:Buscar en: `;
@@ -326,6 +327,13 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     };
   }
 
+  private fixLocaleInUrl(url: string): string {
+    const knownLocales = ['es', 'ca', 'en', 'pl', 'fr'];
+    const currentLocale = window.location.pathname.split('/').filter(Boolean)[0];
+    if (!knownLocales.includes(currentLocale)) return url;
+    return url.replace(new RegExp(`/(${knownLocales.join('|')})/#/`), `/${currentLocale}/#/`);
+  }
+
   renderMarkdown(text: string): SafeHtml {
     if (this.markdownCache.has(text)) return this.markdownCache.get(text)!;
     if (this.markdownCache.size > 60) this.markdownCache.clear();
@@ -347,7 +355,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     const linkBlocks: string[] = [];
     html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (_, label, url) => {
       const idx = linkBlocks.push(
-        `<a href="${url}" target="_blank" rel="noopener noreferrer" class="chat-link">${label}</a>`
+        `<a href="${this.fixLocaleInUrl(url)}" target="_blank" rel="noopener noreferrer" class="chat-link">${label}</a>`
       ) - 1;
       return `\x00LINK${idx}\x00`;
     });
@@ -383,7 +391,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     html = html.replace(/(https?:\/\/[^\s<>")\]\n\x00]+)/g, (_, url) => {
       const display = url.length > 55 ? url.substring(0, 52) + '…' : url;
       const idx = linkBlocks.push(
-        `<a href="${url}" target="_blank" rel="noopener noreferrer" class="chat-link">${esc(display)}</a>`
+        `<a href="${this.fixLocaleInUrl(url)}" target="_blank" rel="noopener noreferrer" class="chat-link">${esc(display)}</a>`
       ) - 1;
       return `\x00LINK${idx}\x00`;
     });
