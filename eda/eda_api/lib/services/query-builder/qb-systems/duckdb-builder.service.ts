@@ -609,7 +609,10 @@ export class DuckDBBuilderService extends QueryBuilderService {
     public getHavingColname(column: any) {
         let colname: string;
         if (column.computed_column === 'no' || !column.hasOwnProperty('computed_column')) {
-            colname = `ROUND(${column.aggregation_type}("${column.table_id}"."${column.column_name}"::numeric), ${column.minimumFractionDigits})`;
+            const colExpr = column.aggregation_type === 'count'
+                ? `"${column.table_id}"."${column.column_name}"`
+                : `"${column.table_id}"."${column.column_name}"::numeric`;
+            colname = `ROUND(${column.aggregation_type}(${colExpr}), ${column.minimumFractionDigits})`;
         } else {
             if (column.column_type === 'numeric') {
                 colname = `cast(${column.SQLexpression} as numeric(32, ${column.minimumFractionDigits}))`;
@@ -910,8 +913,12 @@ export class DuckDBBuilderService extends QueryBuilderService {
                         // count returns BIGINT → postfix cast is safe here
                         columns.push(`ROUND(count(distinct ${table_column})::numeric ${whatIfExpression}, ${el.minimumFractionDigits}) as "${el.display_name}"`);
                     } else {
-                        // Cast inside the aggregation to avoid DuckDB's postfix-cast-after-agg limitation
-                        columns.push(`ROUND(${el.aggregation_type}(${table_column}::numeric) ${whatIfExpression}, ${el.minimumFractionDigits}) as "${el.display_name}"`);
+                        // Cast inside the aggregation to avoid DuckDB's postfix-cast-after-agg limitation.
+                        // count() works on any type — skip the ::numeric cast to avoid errors on text columns.
+                        const aggExpr = el.aggregation_type === 'count'
+                            ? `${table_column}`
+                            : `${table_column}::numeric`;
+                        columns.push(`ROUND(${el.aggregation_type}(${aggExpr}) ${whatIfExpression}, ${el.minimumFractionDigits}) as "${el.display_name}"`);
                     }
                 } else {
                     if (el.column_type === 'numeric') {
