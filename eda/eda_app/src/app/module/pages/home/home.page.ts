@@ -494,48 +494,25 @@ export class HomePage implements OnInit, OnDestroy {
 
   public cloneReport(report: any): void {
     this.dashboardService.cloneDashboard(report._id).subscribe(
-      response => {
+      async response => {
         if (response.ok && response.dashboard) {
-          const clonedReport = _.cloneDeep(report);
-          Object.assign(clonedReport, response.dashboard);
+          const newId = response.dashboard._id;
 
-          clonedReport.type = clonedReport.config.visible;
-          clonedReport.user = this.userService.user.name;
+          await this.loadReports();
 
-          const currentDate = new Date().toISOString().split('T')[0];
-          clonedReport.config.createdAt = currentDate;
-          clonedReport.config.modifiedAt = currentDate;
-
-          clonedReport.config.author = JSON.parse(localStorage.getItem('user')).name;
-
-          const targetArray = this.reportMap[clonedReport.type];
-          if (targetArray) {
-            const originalIndex = targetArray.findIndex(d => d._id === report._id);
-            if (originalIndex !== -1) {
-              targetArray.splice(originalIndex + 1, 0, clonedReport);
-            } else {
-              targetArray.push(clonedReport);
-            }
+          const allReports = [
+            ...this.privateReports, ...this.publicReports,
+            ...this.roleReports,    ...this.sharedReports
+          ];
+          const clonedReport = allReports.find(d => d._id === newId);
+          if (clonedReport) {
+            clonedReport.isNewlyCloned = true;
+            setTimeout(() => {
+              document.getElementById(`dashboard-${newId}`)
+                ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+            setTimeout(() => { clonedReport.isNewlyCloned = false; }, 5000);
           }
-
-          this.handleSorting();
-          this.reapplyFilters();
-
-          clonedReport.isNewlyCloned = true;
-
-          setTimeout(() => {
-            const element = document.getElementById(`dashboard-${clonedReport._id}`);
-            if (element) {
-              element.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
-              });
-            }
-          }, 500);
-
-          setTimeout(() => {
-            clonedReport.isNewlyCloned = false;
-          }, 5000);
 
           this.alertService.addSuccess($localize`:@@REPORTCloned:Informe clonado correctamente`);
         } else {
