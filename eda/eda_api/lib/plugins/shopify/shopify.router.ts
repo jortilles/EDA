@@ -5,6 +5,8 @@ import { ShopifyController } from './shopify.controller';
 
 const router = express.Router();
 
+router.post('/add-data-source', authGuard, roleGuard, ShopifyController.addDataSource);
+
 /** Returns the Shopify OAuth authorization URL + a state token. */
 router.get('/auth-url', authGuard, roleGuard, ShopifyController.getAuthUrl);
 

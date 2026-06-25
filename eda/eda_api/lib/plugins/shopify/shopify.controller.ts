@@ -1,8 +1,14 @@
 import { NextFunction, Request, Response } from 'express';
 import { HttpException } from '../../module/global/model/index';
 import { ShopifyApiService } from './shopify-api.service';
+import { EnCrypterService } from '../../services/encrypter/encrypter.service';
+import { DuckDBConnection } from '../../services/connection/db-systems/duckdb-connection';
+import { PluginRegistry } from '../plugin-registry';
+import DataSource, { IDataSource } from '../../module/datasource/model/datasource.model';
 import * as path from 'path';
 import * as crypto from 'crypto';
+
+const cache_config = require('../../../config/cache.config');
 
 // In-memory store for pending OAuth states { state → { shop, token, expiresAt } }
 const pendingTokens = new Map<string, { shop: string; clientId: string; clientSecret: string; token: string; expiresAt: number }>();
@@ -17,6 +23,65 @@ setInterval(() => {
 }, 60_000);
 
 export class ShopifyController {
+
+    // ── Datasource creation ───────────────────────────────────────────────────
+
+    static async addDataSource(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { name, description, shop, accessToken, folderName, optimize, allowCache } = req.body;
+
+            if (!name || !shop || !accessToken || !folderName) {
+                return next(new HttpException(400, 'Se requieren: name, shop, accessToken, folderName'));
+            }
+
+            const safeFolderName = folderName.replace(/[^a-zA-Z0-9_\-]/g, '_').toLowerCase();
+            const folderPath = path.join(process.cwd(), 'duckdb', safeFolderName);
+
+            const plugin = PluginRegistry.getDatasource('shopify');
+            await plugin.downloadData({ shop, accessToken }, folderPath);
+
+            const conn = new DuckDBConnection({ type: 'duckdb', database: safeFolderName, schema: 'main' });
+            const tables = await conn.generateDataModel(optimize ? 1 : 0, '');
+
+            plugin.addRelations(tables);
+            const locale = plugin.resolveLocale(req.body?.locale || req.headers?.['accept-language'] as string);
+            plugin.applyLabels(tables, locale);
+
+            const CC = allowCache ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
+
+            const datasource: IDataSource = new DataSource({
+                ds: {
+                    connection: {
+                        type: 'shopify',
+                        host: shop,
+                        port: null,
+                        database: safeFolderName,
+                        schema: 'main',
+                        user: null,
+                        password: EnCrypterService.encrypt(accessToken),
+                    },
+                    metadata: {
+                        model_name: name,
+                        model_description: description || '',
+                        model_id: '',
+                        model_granted_roles: [],
+                        optimized: !!optimize,
+                        cache_config: CC,
+                        model_owner: req.user._id,
+                        ia_visibility: 'FULL',
+                    },
+                    model: { tables }
+                }
+            });
+
+            const saved = await datasource.save();
+            return res.status(201).json({ ok: true, data_source_id: saved._id });
+
+        } catch (err: any) {
+            console.error('[Shopify] addDataSource error:', err.message);
+            return next(new HttpException(500, `Error creando datasource Shopify: ${err.message}`));
+        }
+    }
 
     // ── OAuth2 flow ───────────────────────────────────────────────────────────
 

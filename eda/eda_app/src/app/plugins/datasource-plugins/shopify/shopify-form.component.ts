@@ -14,6 +14,7 @@ import { PluginFormService } from '../plugin-form.service';
 })
 export class ShopifyFormComponent implements OnInit, OnDestroy {
     @Input() connectionForm!: FormGroup;
+    @Input() apiBasePath!: string;
 
     private dataSourceService = inject(DataSourceService);
     private spinnerService    = inject(SpinnerService);
@@ -54,8 +55,9 @@ export class ShopifyFormComponent implements OnInit, OnDestroy {
         }
 
         try {
+            const params = new URLSearchParams({ shop: this.shopUrl, clientId: this.clientId, clientSecret: this.clientSecret });
             const res: any = await lastValueFrom(
-                this.dataSourceService.getShopifyAuthUrl(this.shopUrl, this.clientId, this.clientSecret)
+                this.dataSourceService.callPluginGet(this.apiBasePath, `/auth-url?${params}`)
             );
             const { authUrl, state } = res;
             this.currentState = state;
@@ -65,7 +67,9 @@ export class ShopifyFormComponent implements OnInit, OnDestroy {
             this.shopAuthState = 'waiting';
             this.pollInterval = setInterval(async () => {
                 try {
-                    const poll: any = await lastValueFrom(this.dataSourceService.pollShopifyToken(this.currentState));
+                    const poll: any = await lastValueFrom(
+                        this.dataSourceService.callPluginGet(this.apiBasePath, `/poll-token?state=${this.currentState}`)
+                    );
                     if (poll?.ready && poll.accessToken) {
                         clearInterval(this.pollInterval);
                         this.pollInterval = null;
@@ -123,7 +127,7 @@ export class ShopifyFormComponent implements OnInit, OnDestroy {
                 locale:       this.localeId,
             };
 
-            const res: any = await lastValueFrom(this.dataSourceService.addShopifyDataSource(payload));
+            const res: any = await lastValueFrom(this.dataSourceService.callPluginPost(this.apiBasePath, '/add-data-source', payload));
             this.spinnerService.off();
             this.alertService.addSuccess($localize`:@@shopifyCreated:Fuente de datos Shopify creada correctamente`);
             this.router.navigate(['/data-source/', res.data_source_id]);
