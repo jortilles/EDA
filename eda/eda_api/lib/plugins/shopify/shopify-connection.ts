@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { DuckDBConnection } from './duckdb-connection';
-import { ShopifyApiService } from '../../shopify/shopify-api.service';
+import { DuckDBConnection } from '../../services/connection/db-systems/duckdb-connection';
+import { ShopifyApiService } from './shopify-api.service';
 
 export class ShopifyConnection extends DuckDBConnection {
 

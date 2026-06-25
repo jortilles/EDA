@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { HttpException } from '../global/model/index';
-import { ShopifyApiService } from '../../services/shopify/shopify-api.service';
+import { HttpException } from '../../module/global/model/index';
+import { ShopifyApiService } from './shopify-api.service';
 import * as path from 'path';
 import * as crypto from 'crypto';
 

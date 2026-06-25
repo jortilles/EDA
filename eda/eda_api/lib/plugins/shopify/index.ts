@@ -1,7 +1,7 @@
 import { IEDAPlugin } from '../plugin.interface';
-import { ShopifyConnection } from '../../services/connection/db-systems/shopify-connection';
-import ShopifyRouter from '../../module/shopify/shopify.router';
-import { ShopifySyncService } from '../../services/shopify/shopify-sync.service';
+import { ShopifyConnection } from './shopify-connection';
+import ShopifyRouter from './shopify.router';
+import { ShopifySyncService } from './shopify-sync.service';
 
 export const ShopifyPlugin: IEDAPlugin = {
     kind: 'datasource',
