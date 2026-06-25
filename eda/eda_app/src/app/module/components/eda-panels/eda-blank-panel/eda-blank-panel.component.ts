@@ -525,7 +525,7 @@ public tableNodeExpand(event: any): void {
 
     isEditable() {
         const user = localStorage.getItem('user');
-        const userName = JSON.parse(user).id;
+        const userName = JSON.parse(user)._id;
         const userRole = JSON.parse(user).role;
         const isAdmin = userRole.includes('135792467811111111111110');
         const imProperty = userName === this.dashboard.dashboard.user;
