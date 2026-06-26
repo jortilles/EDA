@@ -756,6 +756,7 @@ export class GlobalFilterComponent implements OnInit {
         }
 
         this.applyGlobalFilter(filter);
+        this.setGlobalFilterItems(filter);
         // filter = this.globalFilterService.formatGlobalFilter(filter);
         // this.applyGlobalFilter(filter);
     }
