@@ -27,12 +27,73 @@
     }
 
     <!-- Icon on the right -->
-    <i 
+    <i
       [ngClass]="{'edit-blink': lodash.isEmpty(panel.content)}"
       class="pi pi-ellipsis-v cursor-pointer ml-2  w-[28px] h-[28px] flex items-center justify-center text-center rounded-full content-center"
       (click)="openContextMenu($event)"
+      (mouseenter)="!lodash.isEmpty(panel.content) && showPanelInfoOverlay($event, panelInfoOverlay)"
+      (mouseleave)="hidePanelInfoOverlay(panelInfoOverlay)"
     >
     </i>
+
+    <!-- Panel info overlay (attributes + filters summary) -->
+    <p-overlayPanel #panelInfoOverlay appendTo="body" [style]="{'max-width': '35vw', 'min-width': '22vw'}">
+      <ng-template pTemplate>
+        <div class="max-h-[50vh] overflow-auto p-1">
+
+          <!-- Atributos -->
+          <div class="mb-3">
+            <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1" i18n="@@resumenAtrH6">Resumen de atributos</h4>
+            @if (currentQuery.length === 0) {
+              <span class="text-sm text-gray-400 italic" i18n="@@noAttributes">Sin atributos</span>
+            }
+            @for (column of currentQuery; track column.display_name.default) {
+              <div class="flex items-center gap-1 text-sm py-0.5">
+                <strong class="text-gray-400 text-xs" [innerHTML]="getColumnJoins(column)"></strong>
+                <span class="font-semibold text-gray-700">{{ getNiceTableName(column.table_id) }}</span>
+                <i class="pi pi-angle-right text-gray-400 text-xs"></i>
+                <span class="text-gray-700">{{ column.display_name.default }}</span>
+                @for (aggregation of column.aggregation_type; track aggregation.display_name) {
+                  @if (aggregation.selected && !['No', 'no'].includes(aggregation.display_name)) {
+                    <span class="text-gray-500 text-xs">({{ aggregation.display_name }})</span>
+                  }
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Filtros del panel -->
+          <div class="mb-3">
+            <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1" i18n="@@resumenFiltrosPanelH6">Filtros del panel</h4>
+            @if (selectedFilters.length === 0) {
+              <span class="text-sm text-gray-400 italic" i18n="@@noFilters">Sin filtros</span>
+            }
+            @for (filter of selectedFilters; track filter) {
+              <div class="text-sm py-0.5">
+                <span class="text-gray-400 text-xs" [innerHTML]="getFilterJoins(filter)"></span>
+                <span [innerHTML]="getDisplayFilterStr(filter)"></span>
+              </div>
+            }
+          </div>
+
+          <!-- Filtros del informe -->
+          <div>
+            <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1" i18n="@@resumenFiltrosInformeH6">Filtros del informe</h4>
+            @if (globalFilters.length === 0) {
+              <span class="text-sm text-gray-400 italic" i18n="@@noFilters">Sin filtros</span>
+            }
+            @for (filter of globalFilters; track filter) {
+              <div class="text-sm py-0.5">
+                <span class="text-gray-400 text-xs" [innerHTML]="getFilterJoins(filter)"></span>
+                <span [innerHTML]="getDisplayFilterStr(filter)"></span>
+              </div>
+            }
+          </div>
+
+        </div>
+      </ng-template>
+    </p-overlayPanel>
+
   </div>
 
 

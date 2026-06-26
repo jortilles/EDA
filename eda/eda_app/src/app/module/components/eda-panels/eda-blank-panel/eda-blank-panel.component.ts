@@ -53,6 +53,7 @@ import { DashboardPage } from 'app/module/pages/dashboard/dashboard.page';
 import { EdadynamicTextComponent } from '@eda/components/component.index';
 import { EdaTitlePanelComponent } from '@eda/components/component.index';
 import { PanelMenuModule } from 'primeng/panelmenu';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ChartTypeSelectorDialogComponent } from './chart-type-selector-dialog/chart-type-selector-dialog.component';
 import { PromptComponent } from '@eda/components/prompt/prompt.component';
 import { FilterAndOrDialogComponent } from './filter-and-or-dialog/filter-and-or-dialog.component';
@@ -106,7 +107,7 @@ const DIALOGS_COMPONENTS = [
     TableGradientDialogComponent, AlertDialogComponent, KpiEditDialogComponent
 ];
 const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass, CumSumAlertDialogComponent];
-const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule];
+const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule, OverlayPanelModule];
 const STANDALONE_COMPONENTS = [
     EdaDialog2Component, WhatIfDialogComponent, ChatEdaAIComponent, FilterMapperComponent, EdadynamicTextComponent, EdaTitlePanelComponent,
     PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
@@ -2199,6 +2200,20 @@ public tableNodeExpand(event: any): void {
     }
 
 
+    private _panelInfoOverlayTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    public showPanelInfoOverlay(event: Event, overlay: any): void {
+        this._panelInfoOverlayTimeout = setTimeout(() => overlay.show(event), 1000);
+    }
+
+    public hidePanelInfoOverlay(overlay: any): void {
+        if (this._panelInfoOverlayTimeout) {
+            clearTimeout(this._panelInfoOverlayTimeout);
+            this._panelInfoOverlayTimeout = null;
+        }
+        overlay.hide();
+    }
+
     /** This funciton return the display name for a given table. Its used for the query resumen      */
     public getNiceTableName(table: any) {
         return this.tables.find( t => t.table_name === table)?.display_name?.default;
@@ -2303,7 +2318,7 @@ public tableNodeExpand(event: any): void {
             let filterType = filter.filter_type
             if(filterType === 'between') filterType = this.textBetween;
 
-            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filterType}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp - ${this.aggregationText}: &nbsp<strong>${aggregationLabel}</strong>&nbsp`;
+            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filterType}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp${aggregationLabel ? ` - ${this.aggregationText}: &nbsp<strong>${aggregationLabel}</strong>` : ''}&nbsp`;
         }
 
         return str;
