@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { DuckDBConnection } from './duckdb-connection';
-import { GA4ApiService } from '../../google-analytics/ga4-api.service';
+import { DuckDBConnection } from '../../services/connection/db-systems/duckdb-connection';
+import { GA4ApiService } from './ga4-api.service';
 
 export class GoogleAnalyticsConnection extends DuckDBConnection {
 

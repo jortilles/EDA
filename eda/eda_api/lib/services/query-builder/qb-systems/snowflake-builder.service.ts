@@ -70,7 +70,19 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
     const addedToGrouping = new Set<string>();
 
     for (const col of sortingCols) {
-      const tc = `"${col.table_id}"."${col.column_name}"`;
+      const matchingField = this.queryTODO.fields.find(
+        (f: any) => f.table_id === col.table_id && f.column_name === col.column_name
+      );
+      if (matchingField?.aggregation_type && matchingField.aggregation_type !== 'none') continue;
+
+      let tc: string;
+      if (matchingField?.computed_column === 'computed') {
+        if (matchingField.column_type !== 'numeric') continue;
+        tc = `"${col.column_name}"`;
+      } else {
+        tc = `"${col.table_id}"."${col.column_name}"`;
+      }
+
       if (!addedToGrouping.has(tc)) {
         effectiveGrouping.push(tc);
         addedToGrouping.add(tc);

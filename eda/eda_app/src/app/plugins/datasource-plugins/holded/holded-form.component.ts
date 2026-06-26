@@ -14,6 +14,7 @@ import { PluginFormService } from '../plugin-form.service';
 })
 export class HoldedFormComponent implements OnInit, OnDestroy {
     @Input() connectionForm!: FormGroup;
+    @Input() apiBasePath!: string;
 
     private dataSourceService = inject(DataSourceService);
     private spinnerService    = inject(SpinnerService);
@@ -65,7 +66,7 @@ export class HoldedFormComponent implements OnInit, OnDestroy {
                 locale: this.localeId,
             };
 
-            const res = await lastValueFrom(this.dataSourceService.addHoldedDataSource(payload));
+            const res = await lastValueFrom(this.dataSourceService.callPluginPost(this.apiBasePath, '/add-data-source', payload));
             this.spinnerService.off();
             this.alertService.addSuccess($localize`:@@holdedCreated:Fuente de datos Holded creada correctamente`);
             this.router.navigate(['/data-source/', res.data_source_id]);

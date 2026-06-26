@@ -5,4 +5,5 @@ export interface IDatasourcePlugin {
     label: string;
     port: number | null;
     formComponent: Type<any>;
+    apiBasePath: string;
 }

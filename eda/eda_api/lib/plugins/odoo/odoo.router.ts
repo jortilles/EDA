@@ -7,13 +7,9 @@ const router = express.Router();
 
 /**
  * @openapi
- * /odoo/download-invoices:
+ * /odoo/download:
  *   post:
- *     description: Descarga facturas de Odoo y las guarda como CSV en duckdb/odoo/
- *     parameters:
- *       - name: token
- *         description: Authentication token
- *         type: string
+ *     description: Descarga facturas, pedidos, clientes, productos y vendedores de Odoo y los guarda como CSV en duckdb/{db}/
  *     requestBody:
  *       required: true
  *       content:
@@ -47,16 +43,15 @@ const router = express.Router();
  *                 example: ["out_invoice", "in_invoice", "out_refund", "in_refund"]
  *     responses:
  *       200:
- *         description: Facturas descargadas correctamente
+ *         description: Datos descargados correctamente
  *       400:
  *         description: Parámetros requeridos no proporcionados
- *       401:
- *         description: Autenticación fallida en Odoo
  *       500:
- *         description: Error descargando facturas de Odoo
+ *         description: Error descargando datos de Odoo
  *     tags:
  *       - Odoo Routes
  */
-router.post('/download-invoices', authGuard, roleGuard, OdooController.downloadInvoices);
+router.post('/add-data-source', authGuard, roleGuard, OdooController.addDataSource);
+router.post('/download', authGuard, roleGuard, OdooController.download);
 
 export default router;

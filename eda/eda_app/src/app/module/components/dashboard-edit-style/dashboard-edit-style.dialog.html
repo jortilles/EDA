@@ -52,6 +52,20 @@
           </div>
         </div>
 
+        <div>
+          <h6 class="text-base font-semibold mb-2">Botón de filtros globales:</h6>
+          <div class="flex items-center gap-2 mb-6">
+            <button *ngFor="let type of globalFilterButtonPosition"
+              (click)="onGlobalFilterButtonPositionChange(type)"
+              [ngClass]="{
+                'btn-panel-active': positionType === type.positionType,
+                'btn-panel-hover bg-white text-gray-600': positionType !== type.positionType
+              }"
+              class="px-4 py-2 text-base border rounded-md transition-all" [title]="type.label">
+              <i [class]="type.icon"></i>
+            </button>
+          </div>
+        </div>
 
       </div>
 
@@ -248,6 +262,12 @@
 
         <div class=" p-4 col-span-2">
           <h6 class="text-lg font-semibold mb-3">{{ samplePanelTitle }}</h6>
+          <div class="flex" [class.justify-end]="positionType === 'right'">
+            <button class="flex items-center gap-1 px-2 py-1 bg-gray-200 text-gray-700 rounded border text-xs pointer-events-none" [style]="sampleFiltersStyle">
+              <i class="pi pi-filter" style="font-size: 0.7rem;"></i>
+              <span i18n="@@filtrarH4">Filtrar</span>
+            </button>
+          </div>
           <div [style]="sampleGlobalStyle" class="div-card-body m-4 p-2">
             <h3 [style]="sampleTitleStyle">{{samplePanelDBName}}</h3>
             <div class="m-2>">
