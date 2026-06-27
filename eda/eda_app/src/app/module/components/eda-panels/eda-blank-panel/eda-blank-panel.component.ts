@@ -53,6 +53,7 @@ import { DashboardPage } from 'app/module/pages/dashboard/dashboard.page';
 import { EdadynamicTextComponent } from '@eda/components/component.index';
 import { EdaTitlePanelComponent } from '@eda/components/component.index';
 import { PanelMenuModule } from 'primeng/panelmenu';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ChartTypeSelectorDialogComponent } from './chart-type-selector-dialog/chart-type-selector-dialog.component';
 import { PromptComponent } from '@eda/components/prompt/prompt.component';
 import { FilterAndOrDialogComponent } from './filter-and-or-dialog/filter-and-or-dialog.component';
@@ -106,7 +107,7 @@ const DIALOGS_COMPONENTS = [
     TableGradientDialogComponent, AlertDialogComponent, KpiEditDialogComponent
 ];
 const ANGULAR_MODULES = [FormsModule, ReactiveFormsModule, CommonModule, NgClass, CumSumAlertDialogComponent];
-const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule];
+const PRIMENG_MODULES = [ ButtonModule, DragDropModule, DropdownModule, TooltipModule, SharedModule, TreeModule, ProgressSpinnerModule, PanelMenuModule, OverlayPanelModule];
 const STANDALONE_COMPONENTS = [
     EdaDialog2Component, WhatIfDialogComponent, ChatEdaAIComponent, FilterMapperComponent, EdadynamicTextComponent, EdaTitlePanelComponent,
     PanelChartComponent, EdaContextMenuComponent, FilterMapperDialog, ColumnDialogComponent, FilterDialogComponent, LinkDashboardsComponent,
@@ -425,6 +426,7 @@ export class EdaBlankPanelComponent implements OnInit {
             header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
             contextMenuItems: PanelOptions.generateMenu(this)
         });
+
         this.extraStyles =
             ['knob', 'radar'].includes(this.panel.content?.chart) ? { minHeight: '55vh', minWidth: '55vw', display: 'inline-block', alignItems: 'center' } :
             ['kpi'].includes(this.panel.content?.chart) ? {height: '100%', width: '100%', alignContent: 'center'} : 
@@ -435,6 +437,11 @@ export class EdaBlankPanelComponent implements OnInit {
 
     }
     
+    public openContextMenu(event: MouseEvent): void {
+        this.contextMenu.contextMenuItems = PanelOptions.generateMenu(this);
+        this.contextMenu.showContextMenu(event);
+    }
+
     /**
      * When selecting a node from the tree, it loads the columns to display.
      * @param event selected node. Can be rootNode (table_id) or childNode (child_id).
@@ -519,11 +526,11 @@ public tableNodeExpand(event: any): void {
 
     isEditable() {
         const user = localStorage.getItem('user');
-        const userName = JSON.parse(user).name;
+        const userName = JSON.parse(user)._id;
         const userRole = JSON.parse(user).role;
         const isAdmin = userRole.includes('135792467811111111111110');
-        const imProperty = userName === this.dashboard.dashboard.config.author;
-        return (userName !== 'edaanonim' && !this.inject.isObserver) && !this.readonly && (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty || isAdmin);
+        const imProperty = userName === this.dashboard.dashboard.user;
+        return (userName !== '135792467811111111111112' && !this.inject.isObserver) && !this.readonly && (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty || isAdmin);
     }
 
     isRemovable() {
@@ -782,7 +789,7 @@ public tableNodeExpand(event: any): void {
 
 
         //not saved alert message
-        this.dashboardService._notSaved.next(true);
+        this.dashboardService.setNotSaved(true);
 
         // Reset the prompt chat.
         this.promptMessages = [];
@@ -1524,7 +1531,7 @@ public tableNodeExpand(event: any): void {
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
             }
             //not saved alert message
-        this.dashboardService._notSaved.next(true);
+        this.dashboardService.setNotSaved(true);
     }
     this.chartController = undefined;
 }
@@ -1540,7 +1547,7 @@ public tableNodeExpand(event: any): void {
 
             }
             //not saved alert message
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
         this.tableController = undefined;
     }
@@ -1570,7 +1577,7 @@ public tableNodeExpand(event: any): void {
 
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart( this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
         this.mapController = undefined;
     }
@@ -1597,7 +1604,7 @@ public tableNodeExpand(event: any): void {
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, 
                 this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
         this.mapCoordController = undefined;
     }
@@ -1618,7 +1625,7 @@ public tableNodeExpand(event: any): void {
             this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
 
         }
         this.sankeyController = undefined;
@@ -1639,7 +1646,7 @@ public tableNodeExpand(event: any): void {
             this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
         this.treeMapController = undefined;
     }
@@ -1666,7 +1673,7 @@ public tableNodeExpand(event: any): void {
             
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
         this.funnelController = undefined;
     }
@@ -1687,7 +1694,7 @@ public tableNodeExpand(event: any): void {
             this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
         this.bubblechartController = undefined;
     }
@@ -1709,7 +1716,7 @@ public tableNodeExpand(event: any): void {
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
 
         }
         this.scatterPlotController = undefined;
@@ -1759,7 +1766,7 @@ public tableNodeExpand(event: any): void {
                 );
     
                 // We indicate that there are unsaved changes.
-                this.dashboardService._notSaved.next(true);
+                this.dashboardService.setNotSaved(true);
             }
         
         } else {
@@ -1778,7 +1785,7 @@ public tableNodeExpand(event: any): void {
                     const config = new ChartConfig(this.panel.content.query.output.config);
                     this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
-                    this.dashboardService._notSaved.next(true);
+                    this.dashboardService.setNotSaved(true);
                 }  
             } 
             // Close the dialog.
@@ -1791,7 +1798,7 @@ public tableNodeExpand(event: any): void {
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
 
         }
         this.knobController = undefined;
@@ -1809,7 +1816,7 @@ public tableNodeExpand(event: any): void {
             );
 
 
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
 
         this.linkDashboardController = undefined;
@@ -1835,7 +1842,7 @@ public tableNodeExpand(event: any): void {
                 alertLimits: response.alerts || [],
             }));
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, 'kpideviation', 'kpideviation', config);
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
             this.kpiController = undefined;
             return;
         }
@@ -1894,7 +1901,7 @@ public tableNodeExpand(event: any): void {
             response.chartSubType,
             config
         );
-        this.dashboardService._notSaved.next(true);
+        this.dashboardService.setNotSaved(true);
     }
     this.kpiController = undefined;
 }
@@ -1904,7 +1911,7 @@ public tableNodeExpand(event: any): void {
             const config = new ChartConfig(new DynamicTextConfig(response.color, response.modifiedFontPoints || 0));
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
-            this.dashboardService._notSaved.next(true);
+            this.dashboardService.setNotSaved(true);
         }
         this.dynamicTextController = undefined;
     }
@@ -2208,6 +2215,20 @@ public tableNodeExpand(event: any): void {
     }
 
 
+    private _panelInfoOverlayTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    public showPanelInfoOverlay(event: Event, overlay: any): void {
+        this._panelInfoOverlayTimeout = setTimeout(() => overlay.show(event), 1000);
+    }
+
+    public hidePanelInfoOverlay(overlay: any): void {
+        if (this._panelInfoOverlayTimeout) {
+            clearTimeout(this._panelInfoOverlayTimeout);
+            this._panelInfoOverlayTimeout = null;
+        }
+        overlay.hide();
+    }
+
     /** This funciton return the display name for a given table. Its used for the query resumen      */
     public getNiceTableName(table: any) {
         return this.tables.find( t => t.table_name === table)?.display_name?.default;
@@ -2312,7 +2333,7 @@ public tableNodeExpand(event: any): void {
             let filterType = filter.filter_type
             if(filterType === 'between') filterType = this.textBetween;
 
-            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filterType}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp - ${this.aggregationText}: &nbsp<strong>${aggregationLabel}</strong>&nbsp`;
+            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filterType}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp${aggregationLabel ? ` - ${this.aggregationText}: &nbsp<strong>${aggregationLabel}</strong>` : ''}&nbsp`;
         }
 
         return str;

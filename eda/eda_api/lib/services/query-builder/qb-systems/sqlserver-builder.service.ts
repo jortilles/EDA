@@ -64,16 +64,47 @@ export class SQLserviceBuilderService extends QueryBuilderService {
 
 
     
-    // GroupBy
-    if (grouping.length > 0 && ((groupByEnabled))) {
-      myQuery += '\ngroup by ' + grouping.join(', ');
+    // Compute resultSortingColumns before GROUP BY
+    const sortingCols: any[] = this.queryTODO.resultSortingColumns ?? [];
+
+    // GroupBy — sorting columns first, then regular grouping (no duplicates)
+    const effectiveGrouping: string[] = [];
+    const addedToGrouping = new Set<string>();
+
+    for (const col of sortingCols) {
+      const matchingField = this.queryTODO.fields.find(
+        (f: any) => f.table_id === col.table_id && f.column_name === col.column_name
+      );
+      if (matchingField?.aggregation_type && matchingField.aggregation_type !== 'none') continue;
+
+      let tc: string;
+      if (matchingField?.computed_column === 'computed') {
+        if (matchingField.column_type !== 'numeric') continue;
+        tc = `"${col.column_name}"`;
+      } else {
+        tc = `"${col.table_id}"."${col.column_name}"`;
+      }
+
+      if (!addedToGrouping.has(tc)) {
+        effectiveGrouping.push(tc);
+        addedToGrouping.add(tc);
+      }
+    }
+    for (const g of grouping) {
+      if (!addedToGrouping.has(g)) {
+        effectiveGrouping.push(g);
+        addedToGrouping.add(g);
+      }
     }
 
-    //HAVING 
+    if (effectiveGrouping.length > 0 && ((groupByEnabled))) {
+      myQuery += '\ngroup by ' + effectiveGrouping.join(', ');
+    }
+
+    //HAVING
     myQuery += this.getHavingFilters(havingFilters, 'having');
 
     // OrderBy
-    const sortingCols: any[] = this.queryTODO.resultSortingColumns ?? [];
     let orderColumns: string[];
 
     if (sortingCols.length > 0) {

@@ -1,21 +1,21 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import DataSource from '../../module/datasource/model/datasource.model';
-import CachedQuery from '../cache-service/cached-query.model';
-import { HoldedApiService } from './holded-api.service';
-import { SchedulerFunctions } from '../scheduler/schedulerFunctions';
-import { EnCrypterService } from '../encrypter/encrypter.service';
+import CachedQuery from '../../services/cache-service/cached-query.model';
+import { GA4ApiService } from './ga4-api.service';
+import { SchedulerFunctions } from '../../services/scheduler/schedulerFunctions';
+import { EnCrypterService } from '../../services/encrypter/encrypter.service';
 
-export class HoldedSyncService {
+export class GA4SyncService {
 
-    static readonly CONTROL_FILE = 'holded_sync_control.csv';
+    static readonly CONTROL_FILE = 'ga4_sync_control.csv';
 
     private static controlFilePath(db: string): string {
-        return path.join(process.cwd(), 'duckdb', db, HoldedSyncService.CONTROL_FILE);
+        return path.join(process.cwd(), 'duckdb', db, GA4SyncService.CONTROL_FILE);
     }
 
     static readLastUpdated(db: string): string | null {
-        const filePath = HoldedSyncService.controlFilePath(db);
+        const filePath = GA4SyncService.controlFilePath(db);
         if (!fs.existsSync(filePath)) return null;
         const lines = fs.readFileSync(filePath, 'utf8').trim().split('\n');
         const ts = lines[1]?.trim();
@@ -23,7 +23,7 @@ export class HoldedSyncService {
     }
 
     static writeLastUpdated(db: string, timestamp: string): void {
-        const filePath = HoldedSyncService.controlFilePath(db);
+        const filePath = GA4SyncService.controlFilePath(db);
         fs.writeFileSync(filePath, `last_updated\n${timestamp}`, 'utf8');
     }
 
@@ -32,7 +32,6 @@ export class HoldedSyncService {
         if (!lastUpdated) return true;
 
         const { units, quantity, hours, minutes } = cacheConfig;
-
         if (units === 'hours') {
             return SchedulerFunctions.checkScheduleHours(Number(quantity), lastUpdated);
         }
@@ -45,15 +44,15 @@ export class HoldedSyncService {
     static async syncAll(): Promise<void> {
         try {
             const datasources = await DataSource.find({
-                'ds.connection.type': 'holded',
+                'ds.connection.type': 'googleanalytics',
                 'ds.metadata.cache_config.enabled': true
             }).exec();
 
             for (const ds of datasources) {
-                await HoldedSyncService.syncOne(ds);
+                await GA4SyncService.syncOne(ds);
             }
         } catch (err: any) {
-            console.error('[HoldedSync] syncAll error:', err.message);
+            console.error('[GA4Sync] syncAll error:', err.message);
         }
     }
 
@@ -63,26 +62,31 @@ export class HoldedSyncService {
         const db: string = conn.database;
 
         try {
-            const lastUpdated = HoldedSyncService.readLastUpdated(db);
-
-            if (!HoldedSyncService.shouldSync(cacheConfig, lastUpdated)) return;
+            const lastUpdated = GA4SyncService.readLastUpdated(db);
+            if (!GA4SyncService.shouldSync(cacheConfig, lastUpdated)) return;
 
             const modelName: string = ds.ds.metadata.model_name;
-            console.log(`[HoldedSync] Starting sync "${modelName}" (folder: ${db})`);
+            console.log(`[GA4Sync] Starting sync "${modelName}" (db: ${db})`);
 
-            const apiKey = EnCrypterService.decode(conn.password || '');
+            const credentialsJson = EnCrypterService.decode(conn.password || '');
             const folderPath = path.join(process.cwd(), 'duckdb', db);
 
-            await HoldedApiService.downloadToFolder({ apiKey }, folderPath);
+            await GA4ApiService.downloadToFolder(
+                {
+                    propertyId: conn.host,
+                    credentialsJson
+                },
+                folderPath
+            );
 
             const timestamp = SchedulerFunctions.totLocalISOTime(new Date());
-            HoldedSyncService.writeLastUpdated(db, timestamp);
+            GA4SyncService.writeLastUpdated(db, timestamp);
 
             await CachedQuery.deleteMany({ 'cachedQuery.model_id': String(ds._id) });
 
-            console.log(`[HoldedSync] Completed sync "${modelName}" at ${timestamp}`);
+            console.log(`[GA4Sync] Completed sync "${modelName}" at ${timestamp}`);
         } catch (err: any) {
-            console.error(`[HoldedSync] Error syncing datasource ${ds._id} (${db}):`, err.message);
+            console.error(`[GA4Sync] Error syncing datasource ${ds._id} (${db}):`, err.message);
         }
     }
 }

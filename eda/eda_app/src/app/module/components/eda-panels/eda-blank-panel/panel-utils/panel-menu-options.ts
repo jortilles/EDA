@@ -367,6 +367,7 @@ export const PanelOptions = {
         setTimeout(() => {
           panelComponent.contextMenu.contextMenuItems = PanelOptions.generateMenu(panelComponent);
         }, 0);
+
       }
     });
   },

@@ -202,6 +202,7 @@ export const EMPTY_VALUE: string = ''; // $localize`:@@EmptyValueMessage:Sin Inf
 export const NULL_VALUE: string = '';// null Agregado de null_value en diferentes idiomas  if you want to leave the null you can put this value: LEAVE_THE_NULL . THIS LEAVE_THE_NULL will leave the null value as null
 export const DEFAULT_PALETTE_COLOR: any = ChartsPalettes.find(palette => palette.name === "Gradiente");
 export const FATHER_ID: number = 0; // Parent ID value for the Treetable component
+export const GLOBAL_FILTER_BUTTON_POSITION: string = 'left'; // By default the is left but you be modified to 'right' 
 
 export const UI_BEHAVIOR = {
   panel: {

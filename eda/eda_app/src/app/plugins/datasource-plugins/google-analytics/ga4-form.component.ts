@@ -14,6 +14,7 @@ import { PluginFormService } from '../plugin-form.service';
 })
 export class Ga4FormComponent implements OnInit, OnDestroy {
     @Input() connectionForm!: FormGroup;
+    @Input() apiBasePath!: string;
 
     private dataSourceService = inject(DataSourceService);
     private spinnerService    = inject(SpinnerService);
@@ -41,7 +42,7 @@ export class Ga4FormComponent implements OnInit, OnDestroy {
 
     async authorizeGA4(): Promise<void> {
         try {
-            const res = await lastValueFrom(this.dataSourceService.getGA4AuthUrl());
+            const res = await lastValueFrom(this.dataSourceService.callPluginGet(this.apiBasePath, '/auth-url'));
             const { authUrl, state } = res;
 
             const popup = window.open(authUrl, 'ga4-auth', 'width=520,height=640,resizable=yes');
@@ -49,7 +50,7 @@ export class Ga4FormComponent implements OnInit, OnDestroy {
             this.ga4AuthState = 'waiting';
             this.ga4PollInterval = setInterval(async () => {
                 try {
-                    const poll = await lastValueFrom(this.dataSourceService.pollGA4Token(state));
+                    const poll = await lastValueFrom(this.dataSourceService.callPluginGet(this.apiBasePath, `/poll-token?state=${state}`));
                     if (poll?.ready && poll.credentialsJson) {
                         clearInterval(this.ga4PollInterval);
                         this.ga4PollInterval = null;
@@ -111,7 +112,7 @@ export class Ga4FormComponent implements OnInit, OnDestroy {
                 locale: this.localeId,
             };
 
-            const res = await lastValueFrom(this.dataSourceService.addGoogleAnalyticsDataSource(payload));
+            const res = await lastValueFrom(this.dataSourceService.callPluginPost(this.apiBasePath, '/add-data-source', payload));
             this.spinnerService.off();
             this.alertService.addSuccess($localize`:@@ga4Created:Fuente de datos Google Analytics 4 creada correctamente`);
             this.router.navigate(['/data-source/', res.data_source_id]);

@@ -47,7 +47,7 @@ export class EdaTitlePanelComponent implements OnInit {
     public setTitle(): void {
         this.titleClick = !this.titleClick;
 
-        this.dashboardService._notSaved.next(true);
+        this.dashboardService.setNotSaved(true);
         if (this.titleClick) {
 
         }
@@ -76,7 +76,7 @@ export class EdaTitlePanelComponent implements OnInit {
                                 if(!_.isEqual(event, EdaDialogCloseEvent.NONE)){
                                     this.panel.title = response.title;
                                     this.setPanelSize()
-                                    this.dashboardService._notSaved.next(true);
+                                    this.dashboardService.setNotSaved(true);
                                 }
                                 this.editTittleController = null;
                                 // this.setPanelSize()
@@ -120,6 +120,17 @@ export class EdaTitlePanelComponent implements OnInit {
         return item;
     }
     
+    public openContextMenu(event: MouseEvent): void {
+        const lockIdx = this.contextMenu.contextMenuItems.findIndex(i =>
+            i.label === $localize`:@@panelOptionsLock:Bloquear panel` ||
+            i.label === $localize`:@@panelOptionsUnlock:Desbloquear panel`
+        );
+        if (lockIdx !== -1) {
+            this.contextMenu.contextMenuItems[lockIdx] = this._buildToggleLockItem();
+        }
+        this.contextMenu.showContextMenu(event);
+    }
+
     public removePanel(): void {
         this.remove.emit(this.panel.id);
     }

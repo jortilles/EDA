@@ -2,18 +2,18 @@ export type OdooLocale = 'en' | 'es';
 
 const TABLE_LABELS: Record<string, Record<OdooLocale, string>> = {
     invoices:      { en: 'Invoices',      es: 'Facturas' },
-    invoice_lines: { en: 'Invoice Lines', es: 'Líneas de Factura' },
+    orders:        { en: 'Orders',        es: 'Pedidos' },
     partners:      { en: 'Partners',      es: 'Clientes' },
     products:      { en: 'Products',      es: 'Productos' },
     users:         { en: 'Salespeople',   es: 'Vendedores' },
 };
 
 const TABLE_DESCRIPTIONS: Record<string, Record<OdooLocale, string>> = {
-    invoices:      { en: 'Posted invoices, bills and credit notes',   es: 'Facturas, gastos y abonos contabilizados' },
-    invoice_lines: { en: 'Detail lines of each invoice',              es: 'Líneas de detalle de cada factura' },
-    partners:      { en: 'Customers and suppliers',                   es: 'Clientes y proveedores' },
-    products:      { en: 'Product catalogue',                         es: 'Catálogo de productos' },
-    users:         { en: 'Odoo users (salespeople)',                  es: 'Usuarios de Odoo (vendedores)' },
+    invoices:      { en: 'Posted invoices, bills and credit notes — one row per line', es: 'Facturas contabilizadas — una fila por línea' },
+    orders:        { en: 'Confirmed sales orders — one row per line',                  es: 'Pedidos de venta — una fila por línea' },
+    partners:      { en: 'Customers and suppliers',                                    es: 'Clientes y proveedores' },
+    products:      { en: 'Product catalogue',                                          es: 'Catálogo de productos' },
+    users:         { en: 'Odoo users (salespeople)',                                   es: 'Usuarios de Odoo (vendedores)' },
 };
 
 const COLUMN_LABELS: Record<string, Record<OdooLocale, string>> = {
@@ -38,29 +38,41 @@ const COLUMN_LABELS: Record<string, Record<OdooLocale, string>> = {
     country_id:       { en: 'Country ID',          es: 'ID País' },
     city:             { en: 'City',                es: 'Ciudad' },
 
-    // invoices
-    number:           { en: 'Number',              es: 'Número' },
-    invoice_date:     { en: 'Invoice Date',        es: 'Fecha Factura' },
-    due_date:         { en: 'Due Date',            es: 'Fecha Vencimiento' },
+    // invoices / orders (shared)
+    line_id:          { en: 'Line ID',             es: 'ID Línea' },
+    invoice_number:   { en: 'Invoice Number',      es: 'Número de Factura' },
+    order_number:     { en: 'Order Number',        es: 'Número de Pedido' },
     partner_id:       { en: 'Partner ID',          es: 'ID Cliente' },
     partner:          { en: 'Partner',             es: 'Cliente' },
     salesperson_id:   { en: 'Salesperson ID',      es: 'ID Vendedor' },
     salesperson:      { en: 'Salesperson',         es: 'Vendedor' },
+    order_state:      { en: 'Order State',          es: 'Estado del Pedido' },
     tax_base:         { en: 'Tax Base',            es: 'Base Imponible' },
     taxes:            { en: 'Taxes',               es: 'Impuestos' },
-    journal:          { en: 'Journal',             es: 'Diario' },
+    product_id:       { en: 'Product ID',          es: 'ID Producto' },
+    product:          { en: 'Product',             es: 'Producto' },
+    quantity:         { en: 'Quantity',            es: 'Cantidad' },
+    unit_price:       { en: 'Unit Price',          es: 'Precio Unitario' },
+    subtotal:         { en: 'Subtotal',            es: 'Subtotal' },
+    total_with_taxes: { en: 'Total with Taxes',    es: 'Total con Impuestos' },
+    cost_total:       { en: 'Cost Total',          es: 'Coste Total' },
+    margin:           { en: 'Margin',              es: 'Margen Bruto' },
+    margin_pct:       { en: 'Margin %',            es: 'Margen %' },
 
-    // invoice_lines
-    invoice_id:         { en: 'Invoice ID',          es: 'ID Factura' },
-    invoice_number:     { en: 'Invoice Number',       es: 'Número Factura' },
-    product_id:         { en: 'Product ID',           es: 'ID Producto' },
-    product:            { en: 'Product',              es: 'Producto' },
-    quantity:           { en: 'Quantity',             es: 'Cantidad' },
-    unit_price:         { en: 'Unit Price',           es: 'Precio Unitario' },
-    subtotal:           { en: 'Subtotal',             es: 'Subtotal' },
-    total_with_taxes:   { en: 'Total with Taxes',     es: 'Total con Impuestos' },
-    account_id:         { en: 'Account ID',           es: 'ID Cuenta' },
-    account:            { en: 'Account',              es: 'Cuenta' },
+    // invoices only
+    invoice_id:       { en: 'Invoice ID',          es: 'ID Factura' },
+    invoice_date:     { en: 'Invoice Date',        es: 'Fecha Factura' },
+    due_date:         { en: 'Due Date',            es: 'Fecha Vencimiento' },
+    journal:          { en: 'Journal',             es: 'Diario' },
+    account_id:       { en: 'Account ID',          es: 'ID Cuenta' },
+    account:          { en: 'Account',             es: 'Cuenta' },
+
+    // orders only
+    order_id:         { en: 'Order ID',            es: 'ID Pedido' },
+    order_date:       { en: 'Order Date',          es: 'Fecha Pedido' },
+
+    // products
+    productname:      { en: 'Product Name',        es: 'Nombre de Producto' },
 
     // partners
     phone:          { en: 'Phone',             es: 'Teléfono' },
@@ -92,13 +104,14 @@ const COLUMN_LABELS: Record<string, Record<OdooLocale, string>> = {
 const COLUMN_DESCRIPTIONS: Record<string, Record<OdooLocale, string>> = {
     id:               { en: 'Odoo internal record identifier',           es: 'Identificador interno de registro en Odoo' },
     name:             { en: 'Display name',                              es: 'Nombre de visualización' },
-    number:           { en: 'Invoice or document number',                es: 'Número de factura o documento' },
-    invoice_date:     { en: 'Date the invoice was issued',               es: 'Fecha de emisión de la factura' },
-    due_date:         { en: 'Payment due date',                          es: 'Fecha límite de pago' },
+    line_id:          { en: 'Unique identifier of the document line',     es: 'Identificador único de la línea del documento' },
+    invoice_number:   { en: 'Invoice number',                            es: 'Número de factura' },
+    order_number:     { en: 'Order number',                              es: 'Número de pedido' },
     partner_id:       { en: 'Partner foreign key → partners.id',         es: 'Clave foránea de cliente → partners.id' },
     partner:          { en: 'Partner display name',                      es: 'Nombre del cliente' },
     salesperson_id:   { en: 'Salesperson foreign key → users.id',        es: 'Clave foránea de vendedor → users.id' },
     salesperson:      { en: 'Salesperson display name',                  es: 'Nombre del vendedor' },
+    order_state:      { en: 'Order state (draft, sale, done, cancel)',    es: 'Estado del pedido (draft, sale, done, cancel)' },
     type:             { en: 'Move type (out_invoice, in_invoice…)',       es: 'Tipo de movimiento (out_invoice, in_invoice…)' },
     status:           { en: 'Document state (posted, draft…)',           es: 'Estado del documento (posted, draft…)' },
     tax_base:         { en: 'Amount before taxes',                       es: 'Importe antes de impuestos' },
@@ -109,7 +122,10 @@ const COLUMN_DESCRIPTIONS: Record<string, Record<OdooLocale, string>> = {
     company:          { en: 'Company name',                              es: 'Nombre de la empresa' },
     reference:        { en: 'Vendor reference or purchase order number', es: 'Referencia del proveedor o número de pedido' },
     invoice_id:       { en: 'Invoice foreign key → invoices.id',         es: 'Clave foránea de factura → invoices.id' },
-    invoice_number:   { en: 'Invoice number (denormalised)',             es: 'Número de factura (desnormalizado)' },
+    invoice_date:     { en: 'Date the invoice was issued',               es: 'Fecha de emisión de la factura' },
+    due_date:         { en: 'Payment due date',                          es: 'Fecha límite de pago' },
+    order_id:         { en: 'Order foreign key → orders.id',             es: 'Clave foránea de pedido → orders.id' },
+    order_date:       { en: 'Date the order was confirmed',              es: 'Fecha de confirmación del pedido' },
     product_id:       { en: 'Product foreign key → products.id',         es: 'Clave foránea de producto → products.id' },
     product:          { en: 'Product display name',                      es: 'Nombre del producto' },
     description:      { en: 'Line description',                          es: 'Descripción de la línea' },
@@ -117,9 +133,13 @@ const COLUMN_DESCRIPTIONS: Record<string, Record<OdooLocale, string>> = {
     unit_price:       { en: 'Price per unit before discount',            es: 'Precio por unidad antes de descuento' },
     subtotal:         { en: 'Subtotal excluding taxes',                  es: 'Subtotal sin impuestos' },
     total_with_taxes: { en: 'Total including taxes',                     es: 'Total con impuestos' },
+    cost_total:       { en: 'Total cost (unit cost × quantity)',          es: 'Coste total (coste unitario × cantidad)' },
+    margin:           { en: 'Gross margin (subtotal − cost total)',       es: 'Margen bruto (subtotal − coste total)' },
+    margin_pct:       { en: 'Margin percentage over subtotal',           es: 'Porcentaje de margen sobre subtotal' },
     account_id:       { en: 'Accounting account ID',                     es: 'ID de la cuenta contable' },
     account:          { en: 'Accounting account name',                   es: 'Nombre de la cuenta contable' },
-    sequence:         { en: 'Display order within the invoice',          es: 'Orden de visualización dentro de la factura' },
+    sequence:         { en: 'Display order within the document',         es: 'Orden de visualización dentro del documento' },
+    productname:      { en: 'Product display name',                      es: 'Nombre del producto' },
     phone:            { en: 'Phone number',                              es: 'Número de teléfono' },
     mobile:           { en: 'Mobile phone number',                       es: 'Número de móvil' },
     street:           { en: 'Main address line',                         es: 'Línea principal de la dirección' },
@@ -203,6 +223,14 @@ export function applyOdooLabels(tables: any[], locale: OdooLocale): void {
                     .filter(l => l !== locale && COLUMN_DESCRIPTIONS[cKey]?.[l])
                     .map(l => ({ locale: l, value: COLUMN_DESCRIPTIONS[cKey][l] }))
             };
+
+            if (cKey === 'id' || cKey.endsWith('_id')) {
+                col.visible = false;
+            }
+
+            if (col.column_type === 'numeric') {
+                col.minimumFractionDigits = 2;
+            }
         }
     }
 }
