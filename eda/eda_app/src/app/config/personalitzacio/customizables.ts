@@ -206,6 +206,6 @@ export const GLOBAL_FILTER_BUTTON_POSITION: string = 'left'; // By default the i
 
 export const UI_BEHAVIOR = {
   panel: {
-    showLockInHeader: false, // true → lock button visible in panel header | false → lock in context menu
+    showLockInHeader: true, // true → lock button visible in panel header | false → lock in context menu
   }
 };
