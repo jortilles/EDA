@@ -551,7 +551,7 @@ public tableNodeExpand(event: any): void {
         panel.dragEnabled = locked;
         panel.resizeEnabled = locked;
         this.dashboard.gridsterOptions.api?.optionsChanged();
-        this.dashboardService._notSaved.next(true);
+        this.dashboardService.setNotSaved(true);
     }
 
     public showWhatIfSection(): boolean {
