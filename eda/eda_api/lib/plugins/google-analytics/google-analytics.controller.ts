@@ -93,9 +93,9 @@ export class GoogleAnalyticsController {
             }
 
             const token = crypto.randomBytes(16).toString('hex');
-            const instanceCallback = process.env.GA4_INSTANCE_CALLBACK;
+            const instanceCallback = process.env.GA4_REDIRECT_URI;
             if (!instanceCallback) {
-                return next(new HttpException(503, 'GA4_INSTANCE_CALLBACK no está configurado en el servidor'));
+                return next(new HttpException(503, 'GA4_REDIRECT_URI no está configurado en el servidor'));
             }
             const state = `${token}|${instanceCallback}`;
 
