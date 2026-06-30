@@ -24,16 +24,17 @@ Formato de cada panel:
 export function buildUserPrompt(
     modelName: string,
     schemaText: string,
-    sampleTableName: string,
-    sampleRows: Record<string, any>[],
+    sampleData: Record<string, Record<string, any>[]>,
     description: string,
 ): string {
-    const sampleText = formatSampleRows(sampleRows);
+    const sampleSections = Object.entries(sampleData)
+        .map(([tableName, rows]) => `Datos de "${tableName}" (${rows.length} filas):\n${formatSampleRows(rows)}`)
+        .join('\n\n');
+
     return `Schema del datasource "${modelName}":
 ${schemaText}
 
-Datos reales de la tabla principal "${sampleTableName}":
-${sampleText}
+${sampleSections}
 
 El usuario quiere: "${description}"
 
@@ -43,11 +44,11 @@ Devuelve el array JSON.`;
 }
 
 function formatSampleRows(rows: Record<string, any>[]): string {
-    if (!rows || rows.length === 0) return '(sin datos de muestra)';
+    if (!rows || rows.length === 0) return '(sin datos)';
     const keys = Object.keys(rows[0]).slice(0, 10);
     const header = keys.join(' | ');
     const sep = keys.map(() => '---').join(' | ');
-    const lines = rows.slice(0, 15).map(r =>
+    const lines = rows.slice(0, 10).map(r =>
         keys.map(k => String(r[k] ?? '')).join(' | ')
     );
     return [header, sep, ...lines].join('\n');

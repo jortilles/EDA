@@ -54,16 +54,40 @@ function findMainTable(simplifiedTables: any[]): any {
 
 // ── Sample data ───────────────────────────────────────────────────────────────
 
-async function getSampleData(datasource_id: string, tableName: string): Promise<Record<string, any>[]> {
+async function fetchTableSample(datasource_id: string, tableName: string): Promise<Record<string, any>[]> {
     try {
         const connection = await ManagerConnectionService.getConnection(datasource_id);
         connection.client = await connection.getclient();
-        const rows = await connection.execSqlQuery(`SELECT * FROM "${tableName}" LIMIT 30`);
-        return Array.isArray(rows) ? rows.slice(0, 30) : [];
+        const rows = await connection.execSqlQuery(`SELECT * FROM "${tableName}" LIMIT 10`);
+        return Array.isArray(rows) ? rows.slice(0, 10) : [];
     } catch (err: any) {
         console.warn(`[AI Dashboard] No se pudo obtener muestra de "${tableName}": ${err.message}`);
         return [];
     }
+}
+
+async function collectSampleData(
+    datasource_id: string,
+    mainTable: any,
+    allTables: any[],
+): Promise<Record<string, Record<string, any>[]>> {
+    // Main table first, then tables it joins with (up to 4 total)
+    const names: string[] = [mainTable.table_name];
+    for (const related of (mainTable.joins_with || [])) {
+        if (names.length >= 4) break;
+        if (allTables.find((t: any) => t.table_name === related)) {
+            names.push(related);
+        }
+    }
+
+    console.log(`[AI Dashboard] Muestreando tablas: ${names.join(', ')}`);
+
+    const result: Record<string, Record<string, any>[]> = {};
+    await Promise.all(names.map(async name => {
+        result[name] = await fetchTableSample(datasource_id, name);
+        console.log(`  - "${name}": ${result[name].length} filas`);
+    }));
+    return result;
 }
 
 // ── AI call ───────────────────────────────────────────────────────────────────
@@ -219,12 +243,11 @@ export async function generateDashboard(req: Request, res: Response, next: NextF
     const mainTable = findMainTable(simplifiedTables);
     console.log(`[AI Dashboard] Tabla principal: "${mainTable?.table_name}" (${mainTable?.columns.length} cols)`);
 
-    const sampleRows = mainTable
-        ? await getSampleData(datasource_id, mainTable.table_name)
-        : [];
-    console.log(`[AI Dashboard] Muestra: ${sampleRows.length} filas de "${mainTable?.table_name}"`);
+    const sampleData = mainTable
+        ? await collectSampleData(datasource_id, mainTable, simplifiedTables)
+        : {};
 
-    const userPrompt = buildUserPrompt(schema.model_name, schemaText, mainTable?.table_name ?? '', sampleRows, description);
+    const userPrompt = buildUserPrompt(schema.model_name, schemaText, sampleData, description);
 
     const panelsText = await callAI(config, DASHBOARD_SYSTEM_PROMPT, userPrompt);
     console.log(`[AI Dashboard] Respuesta IA raw:\n${panelsText}`);
