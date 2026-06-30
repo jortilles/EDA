@@ -34,14 +34,23 @@ function buildSimplifiedTables(schema: any): any[] {
                     display_name: c.display_name?.default || c.display_name || c.column_name || c.name,
                     column_type: c.column_type || c.type || 'text',
                 }));
-            const joins_with: string[] = (t.relations || []).map((r: any) => r.target_table).filter(Boolean);
-            return { table_name: tableName, columns: cols, joins_with };
+            const relations = (t.relations || [])
+                .filter((r: any) => r.target_table)
+                .map((r: any) => {
+                    const srcCol = Array.isArray(r.source_column) ? r.source_column[0] : r.source_column;
+                    const tgtCol = Array.isArray(r.target_column) ? r.target_column[0] : r.target_column;
+                    return {
+                        target_table: r.target_table,
+                        on: srcCol && tgtCol ? `${tableName}.${srcCol} = ${r.target_table}.${tgtCol}` : undefined,
+                    };
+                });
+            return { table_name: tableName, columns: cols, relations };
         })
         .filter((t: any) => t.columns.length > 0);
 
     console.log(`[AI Dashboard] Tablas enviadas al AI: ${simplified.length}`);
     simplified.forEach((t: any) =>
-        console.log(`  - ${t.table_name} (${t.columns.length} cols, joins: [${t.joins_with.join(', ')}])`));
+        console.log(`  - ${t.table_name} (${t.columns.length} cols, joins: [${t.relations.map((r: any) => `${r.target_table}(${r.on})`).join(', ')}])`));
 
     return simplified;
 }
@@ -71,12 +80,12 @@ async function collectSampleData(
     mainTable: any,
     allTables: any[],
 ): Promise<Record<string, Record<string, any>[]>> {
-    // Main table first, then tables it joins with (up to 4 total)
+    // Main table first, then tables it relates to (up to 4 total)
     const names: string[] = [mainTable.table_name];
-    for (const related of (mainTable.joins_with || [])) {
+    for (const rel of (mainTable.relations || [])) {
         if (names.length >= 4) break;
-        if (allTables.find((t: any) => t.table_name === related)) {
-            names.push(related);
+        if (allTables.find((t: any) => t.table_name === rel.target_table)) {
+            names.push(rel.target_table);
         }
     }
 

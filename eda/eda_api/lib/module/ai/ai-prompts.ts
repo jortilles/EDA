@@ -11,8 +11,10 @@ REGLAS DE AGREGACIÓN:
 
 REGLAS DE TABLAS:
 - Usa EXACTAMENTE los table_name y column_name del schema. No inventes nada.
-- JOINS: Solo combina dos tablas si una aparece en joins_with de la otra. Si no hay relación directa, usa una sola tabla por panel.
-- Cuando combines tablas, pon primero el campo de la tabla raíz (la que tiene la fecha o el ID principal).
+- JOINS: El schema incluye "relations" por tabla con el campo "on" que indica la clave exacta del join (ej. "v_orders.customernumber = customers.customernumber"). DEBES usar joins cuando el análisis lo requiera: si el usuario pide ventas por país, clientes con sus pedidos, etc., cruza las tablas necesarias. Solo puedes combinar tablas si existe una entrada en "relations" entre ellas.
+- En un panel con join, pon PRIMERO el campo de la tabla que tiene la dimensión principal (la que agrupa); el backend usa la tabla del primer campo como punto de partida del join.
+- Ejemplo de panel con join — "Ventas por país" (customers tiene relation con v_orders):
+  {"title":"Ventas por País","chart_type":"bar","edaChart":"bar","queryLimit":10,"fields":[{"table":"customers","column":"country","agg":"none","label":"País"},{"table":"v_orders","column":"priceeach","agg":"sum","label":"Ventas","sort":"Desc"}],"filters":[]}
 
 ORDENACIÓN Y LÍMITE:
 - En un campo puedes añadir "sort":"Desc" o "sort":"Asc" para ordenar por esa columna. Solo aplica a la métrica, nunca a la dimensión.
