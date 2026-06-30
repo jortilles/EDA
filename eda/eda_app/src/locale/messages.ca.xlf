@@ -7043,6 +7043,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Desbloquear los paneles</source>
         <target>Desbloquejar els panells</target>
       </trans-unit>
+      <trans-unit id="noAttributes">
+        <source>Sin atributos</source>
+        <target>Sense atributs</target>
+      </trans-unit>
+      <trans-unit id="noFilters">
+        <source>Sin filtros</source>
+        <target>Sense filtres</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

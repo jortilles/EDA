@@ -935,15 +935,25 @@ export class DashboardPage implements OnInit {
       try {        
         if (element.globalFilterMap) {
           const panelFilters = element.content.query.query.filters;
-  
           element.globalFilterMap.forEach(filterLinkId => {
             // Find the dashboard filter that targetId points to
             const dashboardFilterToApply = dashboard.config.filters.find(filter => filter.id === filterLinkId.targetId);
             const sourceFilter = panelFilters.find(f => f.filter_id === filterLinkId.sourceId);
             const valueToApply = dashboardFilterToApply.selectedItems;
-  
-            if(sourceFilter?.filter_elements)
-              sourceFilter.filter_elements[0].value1 = valueToApply;
+            const columnType = dashboardFilterToApply.column?.value?.column_type || dashboardFilterToApply.selectedColumn?.column_type;
+            const isDate = columnType === 'date';
+
+            if (sourceFilter?.filter_elements) {
+              if (isDate) {
+                if (!sourceFilter.filter_elements[1]) {
+                  sourceFilter.filter_elements[1] = { value2: [] };
+                }
+                sourceFilter.filter_elements[0].value1 = valueToApply[0] ? [valueToApply[0]] : [];
+                sourceFilter.filter_elements[1].value2 = valueToApply[1] ? [valueToApply[1]] : [];
+              } else {
+                sourceFilter.filter_elements[0].value1 = valueToApply;
+              }
+            }
           });
         }
       } catch (error) {

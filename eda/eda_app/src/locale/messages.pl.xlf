@@ -6676,6 +6676,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Desbloquear los paneles</source>
         <target>Odblokować panele</target>
       </trans-unit>
+      <trans-unit id="noAttributes">
+        <source>Sin atributos</source>
+        <target>Bez atrybutów</target>
+      </trans-unit>
+      <trans-unit id="noFilters">
+        <source>Sin filtros</source>
+        <target>Bez filtrów</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

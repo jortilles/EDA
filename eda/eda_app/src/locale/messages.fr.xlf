@@ -7011,6 +7011,14 @@ Une fois configurée, vous pouvez l'activer à tout moment à partir du bouton.<
         <source>Desbloquear los paneles</source>
         <target>Déverrouiller les panneaux</target>
       </trans-unit>
+      <trans-unit id="noAttributes">
+        <source>Sin atributos</source>
+        <target>Sans attributs</target>
+      </trans-unit>
+      <trans-unit id="noFilters">
+        <source>Sin filtros</source>
+        <target>Sans filtres</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

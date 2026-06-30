@@ -11,7 +11,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { DashboardService, FilterType, ChartUtilsService, AlertService, OrdenationType, ColumnUtilsService, FormatDates, QueryBuilderService} from '@eda/services/service.index';
 import { EdaDialog, EdaDialogCloseEvent, EdaDialog2Component, EdaDialogAbstract, EdaDatePickerComponent } from '@eda/shared/components/shared-components.index';
-import { aggTypes } from 'app/config/aggretation-types';
+import { AGG_TYPES } from '@eda/configs/customizable/customizable_default';
 import * as _ from 'lodash';
 import { firstValueFrom } from 'rxjs';
 import { InputTextModule } from 'primeng/inputtext';
@@ -777,11 +777,11 @@ export class ColumnDialogComponent {
 
 
     getAggName(value: string) {
-        return aggTypes.find(agg => agg.value === value)?.label;
+        return AGG_TYPES.find(agg => agg.value === value)?.label;
     }
 
     getAggregationText(value: any) {
-        const label = aggTypes.filter(agg => {
+        const label = AGG_TYPES.filter(agg => {
             return (agg.value === value.aggregation_type);
         })[0].label;
         return label;

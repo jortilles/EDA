@@ -15,7 +15,7 @@ import { MenubarModule } from 'primeng/menubar';
 import { TableGradientDialogComponent } from './gradient-dialog/gradient-dialog.component';
 import { PredictionDialogComponent, PredictionConfig, QueryColumn } from '../prediction-dialog/prediction-dialog.component';
 import { QueryUtils } from '../panel-utils/query-utils';
-import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '@eda/configs/personalitzacio/customizables';
+import { DEFAULT_TABLE_HEADER_COLOR, DEFAULT_TABLE_BANDING_COLOR } from '@eda/configs/customizable/customizable_default';
 import { ColorPickerModule } from 'primeng/colorpicker';
 
 @Component({
