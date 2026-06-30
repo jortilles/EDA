@@ -269,6 +269,7 @@ function buildPanel(
     return {
         id: uuidv4(),
         title: aiPanel.title || `Panel ${index + 1}`,
+        description: aiPanel.description || '',
         type: 0,
         w, h, x, y, cols: w, rows: h,
         content: {

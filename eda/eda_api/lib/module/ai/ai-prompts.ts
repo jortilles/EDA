@@ -40,7 +40,9 @@ Ejemplos de dashboard_filters:
 IMPORTANTE — valores de filtros: usa EXACTAMENTE los valores que aparecen en los datos de muestra, respetando mayúsculas, minúsculas y acentos. Nunca normalices ni inventes valores (ej. si en los datos aparece "twitter", no uses "Twitter").
 
 Formato de cada panel:
-{"title":"Título","chart_type":"bar","edaChart":"bar","queryLimit":1000,"fields":[{"table":"tabla","column":"columna","agg":"none","label":"Etiqueta","sort":"Desc"}],"filters":[]}`;
+{"title":"<panel title in user's language>","description":"<one sentence in user's language explaining what this panel shows and what insight can be drawn>","chart_type":"bar","edaChart":"bar","queryLimit":1000,"fields":[{"table":"tabla","column":"columna","agg":"none","label":"<label in user's language>","sort":"Desc"}],"filters":[]}
+
+IDIOMA: Detecta el idioma de la petición del usuario y usa ese mismo idioma para todos los títulos, etiquetas y textos del JSON. Si la petición está en inglés, escribe en inglés. Si está en catalán, escribe en catalán. Si está en español, escribe en español.`;
 
 export function buildUserPrompt(
     modelName: string,
