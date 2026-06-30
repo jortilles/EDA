@@ -92,7 +92,16 @@ export class GoogleAnalyticsController {
                 return next(new HttpException(503, 'GA4_CLIENT_ID y GA4_CLIENT_SECRET no están configurados en el servidor'));
             }
 
-            const state = crypto.randomBytes(16).toString('hex');
+            const token = crypto.randomBytes(16).toString('hex');
+            // Derive the instance callback URL so the proxy knows where to redirect.
+            // Uses GA4_INSTANCE_CALLBACK if set, otherwise builds it from the request.
+            const instanceCallback = process.env.GA4_INSTANCE_CALLBACK
+                || (() => {
+                    const apiPrefix = req.originalUrl.replace(/\/google-analytics\/auth-url.*$/, '');
+                    return `${req.protocol}://${req.get('host')}${apiPrefix}/google-analytics/oauth-callback`;
+                })();
+            const state = `${token}|${instanceCallback}`;
+
             const oauth2Client = GA4ApiService.buildOAuth2Client();
 
             const authUrl = oauth2Client.generateAuthUrl({
@@ -102,7 +111,8 @@ export class GoogleAnalyticsController {
                 state
             });
 
-            return res.json({ ok: true, authUrl, state });
+            // Frontend polls using only the token (proxy strips |instanceName)
+            return res.json({ ok: true, authUrl, state: token });
         } catch (err: any) {
             return next(new HttpException(500, err.message));
         }
