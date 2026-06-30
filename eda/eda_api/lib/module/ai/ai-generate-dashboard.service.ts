@@ -12,7 +12,7 @@ import AIUsage from './model/ai-usage.model';
 import { DASHBOARD_SYSTEM_PROMPT, buildUserPrompt } from './ai-prompts';
 
 const GRID_W = 40;
-const KPI_H = 8;
+const KPI_H = 4;
 const CHART_H = 12;
 const TABLE_H = 15;
 
