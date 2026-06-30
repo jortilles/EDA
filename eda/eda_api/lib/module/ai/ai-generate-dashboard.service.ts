@@ -127,6 +127,67 @@ async function callAI(config: any, systemPrompt: string, userPrompt: string): Pr
 
 // ── Panel builders ────────────────────────────────────────────────────────────
 
+function buildGlobalFilterConfig(aiFilters: any[], simplifiedTables: any[], panelIds: string[]): any[] {
+    return (aiFilters || []).map((f: any) => {
+        const tableSchema = simplifiedTables.find((t: any) => t.table_name === f.table);
+        const colSchema = tableSchema?.columns?.find((c: any) => c.column_name === f.column);
+        const columnType = mapColumnType(colSchema?.column_type || 'text');
+
+        let selectedItems: string[];
+        let filter_type: string;
+        let filter_elements: any[];
+
+        if (f.op === 'year_eq') {
+            const year = Number(f.value);
+            selectedItems = [`${year}-01-01`, `${year}-12-31`];
+            filter_type = 'between';
+            filter_elements = [{ value1: [`${year}-01-01`] }, { value2: [`${year}-12-31`] }];
+        } else if (f.op === 'between') {
+            const [v1, v2] = Array.isArray(f.value) ? f.value : [f.value, f.value];
+            selectedItems = [String(v1), String(v2)];
+            filter_type = 'between';
+            filter_elements = [{ value1: [String(v1)] }, { value2: [String(v2)] }];
+        } else if (f.op === 'in') {
+            const vals = Array.isArray(f.value) ? f.value : [f.value];
+            selectedItems = vals.map(String);
+            filter_type = 'in';
+            filter_elements = [{ value1: vals.map(String) }];
+        } else {
+            selectedItems = [String(f.value)];
+            filter_type = f.op;
+            filter_elements = [{ value1: [String(f.value)] }];
+        }
+
+        return {
+            id: uuidv4(),
+            isGlobal: true,
+            isAutocompleted: false,
+            isMandatory: false,
+            multipleSelection: true,
+            queryMode: 'EDA',
+            data: null,
+            selectedTable: {
+                table_name: f.table,
+                display_name: { default: tableSchema?.table_name || f.table, localized: [] },
+            },
+            selectedColumn: {
+                column_name: f.column,
+                column_type: columnType,
+                display_name: { default: colSchema?.display_name || f.column, localized: [] },
+            },
+            selectedItems,
+            filter_type,
+            filter_elements,
+            panelList: panelIds,
+            pathList: {},
+            type: columnType,
+            visible: 'public',
+            applyToAll: true,
+            filterBeforeGrouping: true,
+        };
+    });
+}
+
 function mapColumnType(raw: string): 'text' | 'numeric' | 'date' {
     if (['date', 'datetime', 'timestamp', 'timestamptz', 'time'].includes(raw)) return 'date';
     if (['numeric', 'integer', 'int2', 'int4', 'int8', 'float4', 'float8', 'decimal', 'number', 'double'].includes(raw)) return 'numeric';
@@ -341,6 +402,8 @@ export async function generateDashboard(req: Request, res: Response, next: NextF
     }
 
     const panels = layoutPanels(aiPanels, simplifiedTables, datasource_id, dashboardFilters);
+    const panelIds = panels.map((p: any) => p.id);
+    const globalFiltersConfig = buildGlobalFilterConfig(dashboardFilters, simplifiedTables, panelIds);
 
     const dashboard = new Dashboard({
         config: {
@@ -348,6 +411,7 @@ export async function generateDashboard(req: Request, res: Response, next: NextF
             title,
             visible,
             panel: panels,
+            filters: globalFiltersConfig,
             author: req.user.name,
             tag: null,
             refreshTime: null,
