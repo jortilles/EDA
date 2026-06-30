@@ -216,4 +216,4 @@ export const  AGG_TYPES  = [
 
 
 /** Feature flags variables  */ 
-export const SHOW_LOCK_IN_PANEL_HEADER: boolean = true; // true → lock button visible in panel header | false → lock in context menu
+export const SHOW_LOCK_IN_PANEL_HEADER: boolean = false; // true → lock button visible in panel header | false → lock in context menu
