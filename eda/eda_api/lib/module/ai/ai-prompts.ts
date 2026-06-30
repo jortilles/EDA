@@ -53,9 +53,10 @@ ${sampleSections}
 
 El usuario quiere: "${description}"
 
-Analiza los datos reales y el schema. Genera entre 5 y 9 paneles que aporten valor de negocio real para este dominio.
-Decide tú qué tipo de gráfico usar, qué campos incluir y cuántos paneles, basándote en lo que ves en los datos.
-Si el usuario menciona un año, periodo, ciudad u otra condición global, ponla en dashboard_filters (no en cada panel por separado).
+Analiza la petición del usuario:
+- Si pide paneles o visualizaciones concretas (ej. "un panel de X y otro de Y", "muéstrame X", "quiero ver X e Y") → genera SOLO lo que ha pedido explícitamente, sin añadir paneles extra.
+- Si pide un dashboard general o resumen (ej. "dashboard de ventas", "análisis de clientes", "resumen de negocio") → genera entre 5 y 9 paneles variados que aporten valor.
+Si el usuario menciona un año, periodo, ciudad u otra condición global, ponla en dashboard_filters.
 Devuelve el objeto JSON con dashboard_filters y panels.`;
 }
 
