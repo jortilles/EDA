@@ -37,6 +37,8 @@ Ejemplos de dashboard_filters:
   {"table":"customers","column":"country","op":"in","value":["Spain","France"]}
   {"table":"v_orders","column":"orderdate","op":"between","value":["2023-01-01","2023-12-31"]}
 
+IMPORTANTE — valores de filtros: usa EXACTAMENTE los valores que aparecen en los datos de muestra, respetando mayúsculas, minúsculas y acentos. Nunca normalices ni inventes valores (ej. si en los datos aparece "twitter", no uses "Twitter").
+
 Formato de cada panel:
 {"title":"Título","chart_type":"bar","edaChart":"bar","queryLimit":1000,"fields":[{"table":"tabla","column":"columna","agg":"none","label":"Etiqueta","sort":"Desc"}],"filters":[]}`;
 
@@ -72,5 +74,20 @@ function formatSampleRows(rows: Record<string, any>[]): string {
     const lines = rows.slice(0, 10).map(r =>
         keys.map(k => String(r[k] ?? '')).join(' | ')
     );
-    return [header, sep, ...lines].join('\n');
+
+    // Append distinct values for text columns so the AI uses exact casing
+    const distinctSection: string[] = [];
+    for (const key of keys) {
+        const vals = [...new Set(rows.map(r => r[key]).filter(v => v !== null && v !== undefined && typeof v === 'string'))];
+        if (vals.length > 0 && vals.length <= 20) {
+            distinctSection.push(`  ${key}: ${vals.map(v => `"${v}"`).join(', ')}`);
+        }
+    }
+
+    const parts = [header, sep, ...lines];
+    if (distinctSection.length > 0) {
+        parts.push('Valores distintos en muestra:');
+        parts.push(...distinctSection);
+    }
+    return parts.join('\n');
 }
