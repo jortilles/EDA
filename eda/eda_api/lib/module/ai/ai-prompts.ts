@@ -2,7 +2,6 @@ export const DASHBOARD_SYSTEM_PROMPT = `Eres un experto en Business Intelligence
 Responde ÚNICAMENTE con un array JSON válido de paneles. Sin markdown, sin texto adicional, solo el JSON puro.
 
 TIPOS DE GRÁFICO (usa el mismo valor en chart_type y edaChart): "table", "bar", "line", "doughnut", "kpi"
-DEFAULTS si el usuario no especifica: resumen numérico→"kpi", por fecha→"bar", por categoría→"bar", proporción→"doughnut", listado/ranking→"table"
 
 REGLAS DE AGREGACIÓN:
 - numeric: "sum","avg","max","min","count","count_distinct","none"
@@ -22,40 +21,34 @@ ORDENACIÓN Y LÍMITE:
 Formato de cada panel:
 {"title":"Título","chart_type":"bar","edaChart":"bar","queryLimit":1000,"fields":[{"table":"tabla","column":"columna","agg":"none","label":"Etiqueta","sort":"Desc"}]}`;
 
-export function buildStandardUserPrompt(modelName: string, schemaText: string, description: string): string {
+export function buildUserPrompt(
+    modelName: string,
+    schemaText: string,
+    sampleTableName: string,
+    sampleRows: Record<string, any>[],
+    description: string,
+): string {
+    const sampleText = formatSampleRows(sampleRows);
     return `Schema del datasource "${modelName}":
 ${schemaText}
 
-El usuario quiere un dashboard estándar de: "${description}"
-
-Genera EXACTAMENTE 7 paneles en este orden:
-
---- FILA 1: 4 KPIs ---
-1. KPI (chart_type "kpi"): métrica principal con agg "sum". Ej: "Total de Ventas".
-2. KPI (chart_type "kpi"): conteo de la entidad principal con agg "count". Ej: "Número de Pedidos".
-3. KPI (chart_type "kpi"): promedio de la métrica principal con agg "avg". Ej: "Importe Medio".
-4. KPI (chart_type "kpi"): otra métrica relevante con agg "count_distinct" o "max". Ej: "Clientes Únicos".
-   → Los 4 KPIs deben ser de UNA SOLA tabla. Sin combinar tablas.
-
---- FILA 2: 1 doughnut + 1 bar ---
-5. DOUGHNUT (chart_type "doughnut", edaChart "doughnut"): Top 10 de la entidad principal (clientes, proveedores, empleados…) por la métrica principal.
-   → Dimensión text (agg "none") + métrica (agg "sum"/"count", sort "Desc"). Añade "queryLimit":10 en el panel.
-   → Una sola tabla. El título debe empezar por "Top 10".
-6. BAR (chart_type "bar"): Métrica principal agrupada por línea de producto, categoría o familia del dominio.
-   → Dimensión text (agg "none") + métrica (agg "sum"/"count"). Una sola tabla.
-
---- FILA 3: tabla de detalle ---
-7. TABLE (chart_type "table"): 4-5 columnas relevantes del dominio. Incluye la fecha principal del dominio (ordenada Desc con sort "Desc") y los campos más identificativos (ID, nombre, importe…). Una sola tabla.
-
-Devuelve el array JSON con exactamente 7 paneles.`;
-}
-
-export function buildExplicitUserPrompt(modelName: string, schemaText: string, description: string): string {
-    return `Schema del datasource "${modelName}":
-${schemaText}
+Datos reales de la tabla principal "${sampleTableName}":
+${sampleText}
 
 El usuario quiere: "${description}"
 
-Genera los paneles necesarios para responder exactamente a lo pedido (1-3 paneles). No añadas paneles extra.
+Analiza los datos reales y el schema. Genera entre 5 y 9 paneles que aporten valor de negocio real para este dominio.
+Decide tú qué tipo de gráfico usar, qué campos incluir y cuántos paneles, basándote en lo que ves en los datos.
 Devuelve el array JSON.`;
+}
+
+function formatSampleRows(rows: Record<string, any>[]): string {
+    if (!rows || rows.length === 0) return '(sin datos de muestra)';
+    const keys = Object.keys(rows[0]).slice(0, 10);
+    const header = keys.join(' | ');
+    const sep = keys.map(() => '---').join(' | ');
+    const lines = rows.slice(0, 15).map(r =>
+        keys.map(k => String(r[k] ?? '')).join(' | ')
+    );
+    return [header, sep, ...lines].join('\n');
 }

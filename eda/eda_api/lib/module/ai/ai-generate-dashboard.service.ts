@@ -5,23 +5,16 @@ import { HttpException } from '../global/model/index';
 import { AIProviderFactory } from '../../services/prompt/providers/ai-provider.factory';
 import { NormalizedMessage } from '../../services/prompt/providers/ai-provider.interface';
 import { filterDatasourceForAI } from '../mcp/mcp.helpers';
+import { ManagerConnectionService } from '../../services/connection/manager-connection.service';
 import DataSource from '../datasource/model/datasource.model';
 import Dashboard from '../dashboard/model/dashboard.model';
 import AIUsage from './model/ai-usage.model';
-import {
-    DASHBOARD_SYSTEM_PROMPT,
-    buildStandardUserPrompt,
-    buildExplicitUserPrompt,
-} from './ai-prompts';
+import { DASHBOARD_SYSTEM_PROMPT, buildUserPrompt } from './ai-prompts';
 
-const STANDARD_MODE_PATTERN = /\b(registro|dashboard|informe|análisis|panel|resumen|reporte)\s+(de|del|de\s+los?|de\s+las?)\b/i;
-
-const GRID_W = 40;   // gridster minCols/maxCols = 40
+const GRID_W = 40;
 const KPI_H = 8;
 const CHART_H = 12;
 const TABLE_H = 15;
-const FALLBACK_H = 10;
-const FALLBACK_COLS = 2;
 
 // ── Schema helpers ────────────────────────────────────────────────────────────
 
@@ -53,6 +46,26 @@ function buildSimplifiedTables(schema: any): any[] {
     return simplified;
 }
 
+function findMainTable(simplifiedTables: any[]): any {
+    return simplifiedTables.reduce((best: any, t: any) =>
+        t.columns.length > (best?.columns.length ?? 0) ? t : best
+    , null);
+}
+
+// ── Sample data ───────────────────────────────────────────────────────────────
+
+async function getSampleData(datasource_id: string, tableName: string): Promise<Record<string, any>[]> {
+    try {
+        const connection = await ManagerConnectionService.getConnection(datasource_id);
+        connection.client = await connection.getclient();
+        const rows = await connection.execSqlQuery(`SELECT * FROM "${tableName}" LIMIT 30`);
+        return Array.isArray(rows) ? rows.slice(0, 30) : [];
+    } catch (err: any) {
+        console.warn(`[AI Dashboard] No se pudo obtener muestra de "${tableName}": ${err.message}`);
+        return [];
+    }
+}
+
 // ── AI call ───────────────────────────────────────────────────────────────────
 
 async function callAI(config: any, systemPrompt: string, userPrompt: string): Promise<string> {
@@ -81,7 +94,7 @@ async function callAI(config: any, systemPrompt: string, userPrompt: string): Pr
 
 // ── Panel builders ────────────────────────────────────────────────────────────
 
-function buildFields(aiPanel: any, simplifiedTables: any[], datasource_id: string): any[] {
+function buildFields(aiPanel: any, simplifiedTables: any[]): any[] {
     return (aiPanel.fields || []).map((f: any, fieldIndex: number) => {
         const tableSchema = simplifiedTables.find((t: any) => t.table_name === f.table);
         const colSchema = tableSchema?.columns?.find((c: any) => c.column_name === f.column);
@@ -111,7 +124,7 @@ function buildPanel(
     datasource_id: string,
 ): any {
     const chartType: string = aiPanel.edaChart || aiPanel.chart_type || 'table';
-    const fields = buildFields(aiPanel, simplifiedTables, datasource_id);
+    const fields = buildFields(aiPanel, simplifiedTables);
     return {
         id: uuidv4(),
         title: aiPanel.title || `Panel ${index + 1}`,
@@ -139,21 +152,9 @@ function buildPanel(
 
 // ── Layout ────────────────────────────────────────────────────────────────────
 
-function layoutPanels(
-    aiPanels: any[],
-    isStandardMode: boolean,
-    simplifiedTables: any[],
-    datasource_id: string,
-): any[] {
+function layoutPanels(aiPanels: any[], simplifiedTables: any[], datasource_id: string): any[] {
     const bp = (p: any, w: number, h: number, x: number, y: number, i: number) =>
         buildPanel(p, w, h, x, y, i, simplifiedTables, datasource_id);
-
-    if (!isStandardMode) {
-        return aiPanels.map((p, i) => {
-            const w = Math.floor(GRID_W / FALLBACK_COLS);
-            return bp(p, w, FALLBACK_H, (i % FALLBACK_COLS) * w, Math.floor(i / FALLBACK_COLS) * FALLBACK_H, i);
-        });
-    }
 
     const kpiPanels   = aiPanels.filter((p: any) => (p.edaChart || p.chart_type) === 'kpi');
     const chartPanels = aiPanels.filter((p: any) => ['bar', 'line', 'doughnut'].includes(p.edaChart || p.chart_type));
@@ -161,8 +162,8 @@ function layoutPanels(
 
     console.log(`[AI Dashboard] Layout — KPIs: ${kpiPanels.length} | Gráficos: ${chartPanels.length} | Tablas: ${tablePanels.length}`);
 
-    const kpiW   = kpiPanels.length   > 0 ? Math.floor(GRID_W / kpiPanels.length)   : GRID_W;
-    const chartW = chartPanels.length > 0 ? Math.floor(GRID_W / chartPanels.length) : GRID_W;
+    const kpiW    = kpiPanels.length   > 0 ? Math.floor(GRID_W / kpiPanels.length)   : GRID_W;
+    const chartW  = chartPanels.length > 0 ? Math.floor(GRID_W / chartPanels.length) : GRID_W;
     const kpiRowH   = kpiPanels.length   > 0 ? KPI_H   : 0;
     const chartRowH = chartPanels.length > 0 ? CHART_H : 0;
 
@@ -214,12 +215,16 @@ export async function generateDashboard(req: Request, res: Response, next: NextF
     const simplifiedTables = buildSimplifiedTables(schema);
     const schemaText = JSON.stringify(simplifiedTables, null, 2);
 
-    const isStandardMode = STANDARD_MODE_PATTERN.test(description);
-    console.log(`[AI Dashboard] Modo: ${isStandardMode ? 'ESTÁNDAR' : 'EXPLÍCITO'} | "${description}"`);
+    // Find the table with most columns (most likely the main/fact table)
+    const mainTable = findMainTable(simplifiedTables);
+    console.log(`[AI Dashboard] Tabla principal: "${mainTable?.table_name}" (${mainTable?.columns.length} cols)`);
 
-    const userPrompt = isStandardMode
-        ? buildStandardUserPrompt(schema.model_name, schemaText, description)
-        : buildExplicitUserPrompt(schema.model_name, schemaText, description);
+    const sampleRows = mainTable
+        ? await getSampleData(datasource_id, mainTable.table_name)
+        : [];
+    console.log(`[AI Dashboard] Muestra: ${sampleRows.length} filas de "${mainTable?.table_name}"`);
+
+    const userPrompt = buildUserPrompt(schema.model_name, schemaText, mainTable?.table_name ?? '', sampleRows, description);
 
     const panelsText = await callAI(config, DASHBOARD_SYSTEM_PROMPT, userPrompt);
     console.log(`[AI Dashboard] Respuesta IA raw:\n${panelsText}`);
@@ -238,7 +243,7 @@ export async function generateDashboard(req: Request, res: Response, next: NextF
         return next(new HttpException(500, `La IA no generó un formato válido: ${err.message}`));
     }
 
-    const panels = layoutPanels(aiPanels, isStandardMode, simplifiedTables, datasource_id);
+    const panels = layoutPanels(aiPanels, simplifiedTables, datasource_id);
 
     const dashboard = new Dashboard({
         config: {
