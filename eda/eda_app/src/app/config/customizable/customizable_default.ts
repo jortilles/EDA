@@ -186,10 +186,10 @@ export const TemaUrl = 'assets/css/colors/sass/default-dark.css';
 
 /** Application shell background color (home and admin pages) */
 export const DEFAULT_HOME_BACKGROUND_COLOR: string = '#F5F5F5';
-
 export const DEFAULT_BACKGROUND_COLOR: string = '#f1f0f0';
 export const DEFAULT_PANEL_COLOR: string = '#ffffff';
 export const DEFAULT_FONT_COLOR: string = '#000000'
+
 
 /** Table header background color (header: high opacity, banding: low opacity) */
 export const DEFAULT_TABLE_HEADER_COLOR: string = '#249daa';
@@ -203,3 +203,17 @@ export const NULL_VALUE: string = '';// null Agregado de null_value en diferente
 export const DEFAULT_PALETTE_COLOR: any = ChartsPalettes.find(palette => palette.name === "Gradiente");
 export const FATHER_ID: number = 0; // Parent ID value for the Treetable component
 export const GLOBAL_FILTER_BUTTON_POSITION: string = 'left'; // By default the is left but you be modified to 'right' 
+
+export const  AGG_TYPES  = [
+    { label: $localize`:@@aggTsum:Suma`, value: 'sum' },
+    { label: $localize`:@@aggTmean:Media`, value: 'avg' },
+    { label: $localize`:@@aggTmax:Máximo`, value: 'max' },
+    { label: $localize`:@@aggTmin:Mínimo`, value: 'min' },
+    { label: $localize`:@@aggTcount:Cuenta Valores`, value: 'count' },
+    { label: $localize`:@@aggTcountD:Valores Distintos`, value: 'count_distinct' },
+    { label: 'No', value: 'none' }
+];
+
+
+/** Feature flags variables  */ 
+export const SHOW_LOCK_IN_PANEL_HEADER: boolean = false; // true → lock button visible in panel header | false → lock in context menu

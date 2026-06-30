@@ -5,7 +5,7 @@ import { TreeNode } from 'primeng/api';
 import { ApiService } from './api.service';
 import { EditModelPanel, EditColumnPanel, EditTablePanel, Relation, ValueListSource } from '@eda/models/data-source-model/data-source-models';
 import { AlertService } from '../alerts/alert.service';
-import { aggTypes } from '../../config/aggretation-types';
+import { AGG_TYPES } from '../../config/customizable/customizable_default';
 import { map } from 'rxjs/internal/operators/map';
 import { catchError } from 'rxjs/internal/operators/catchError';
 
@@ -494,7 +494,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
             tmp_model[tableIndex].columns[columnindex].SQLexpression = panel.SQLexpression;
 
             tmp_model[tableIndex].columns[columnindex].aggregation_type = panel.aggregation_type.map((a: any) => {
-                let display_name = aggTypes.filter(tmp => tmp.value === a);
+                let display_name = AGG_TYPES.filter(tmp => tmp.value === a);
                 return { value: a, 'display_name': display_name[0] ? display_name[0].label : 'No' };
             });
 
