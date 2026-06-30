@@ -174,6 +174,8 @@ function buildGlobalFilterConfig(aiFilters: any[], simplifiedTables: any[], pane
                 column_name: f.column,
                 column_type: columnType,
                 display_name: { default: colSchema?.display_name || f.column, localized: [] },
+                aggregation_type: [],
+                ordenation_type: 'Asc',
             },
             selectedItems,
             filter_type,
