@@ -9,6 +9,7 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 
 const cache_config = require('../../../config/cache.config');
+const ga4Config = require('../../../config/google-analytics.config');
 
 // In-memory store for pending OAuth states (state → refresh_token).
 // Entries are cleaned up after retrieval or after 10 minutes.
@@ -93,10 +94,7 @@ export class GoogleAnalyticsController {
             }
 
             const token = crypto.randomBytes(16).toString('hex');
-            const instanceCallback = process.env.GA4_REDIRECT_URI;
-            if (!instanceCallback) {
-                return next(new HttpException(503, 'GA4_REDIRECT_URI no está configurado en el servidor'));
-            }
+            const instanceCallback = ga4Config.REDIRECT_URI;
             const state = `${token}|${instanceCallback}`;
 
             const oauth2Client = GA4ApiService.buildOAuth2Client();
