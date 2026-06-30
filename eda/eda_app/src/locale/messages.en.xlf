@@ -6397,12 +6397,16 @@ OR<ph id="5"/>
   <target>What dashboards do I have?</target>
 </trans-unit>
 <trans-unit id="chatSuggestion2" datatype="html">
-  <source>¿Qué datasources hay?</source>
-  <target>What datasources are available?</target>
+  <source>¿Qué fuentes de datos hay?</source>
+  <target>What data sources are there?</target>
 </trans-unit>
 <trans-unit id="chatSuggestion3" datatype="html">
   <source>Estado del servidor</source>
   <target>Server status</target>
+</trans-unit>
+<trans-unit id="chatSuggestion4" datatype="html">
+  <source>¿Qué informes tengo disponibles?</source>
+  <target>What reports do I have available?</target>
 </trans-unit>
 <trans-unit id="chatInputPlaceholder" datatype="html">
   <source>Escribe un mensaje...</source>
@@ -6699,6 +6703,22 @@ OR<ph id="5"/>
 <trans-unit id="multipleSelectionDescription">
   <source>Desactive esta opción para permitir la selección única.</source>
   <target>Disable this option to allow single selection.</target>
+</trans-unit>
+<trans-unit id="enablePanelLockButton">
+  <source>Bloquear los paneles</source>
+  <target>Lock the panels</target>
+</trans-unit>
+<trans-unit id="disablePanelLockButton">
+  <source>Desbloquear los paneles</source>
+  <target>Unlock the panels</target>
+</trans-unit>
+<trans-unit id="noAttributes">
+  <source>Sin atributos</source>
+  <target>Without attributes</target>
+</trans-unit>
+<trans-unit id="noFilters">
+  <source>Sin filtros</source>
+  <target>Without filters</target>
 </trans-unit>
 <trans-unit id="aiDashboardDescription">
   <source>(Opcional) Describe los paneles que quieres generar con IA. Ejemplo: ventas por mes en barras, top clientes por importe, KPI de facturación total.</source>

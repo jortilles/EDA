@@ -10,8 +10,12 @@ export class DashboardService extends ApiService {
     private route = '/dashboard/';
     private routeDataManager = '/database-manager';
 
-    public _notSaved = new BehaviorSubject<boolean>(false); // [{ display_name: { default: '' }, eda-columns: [] }] --> just in case
+    private _notSaved = new BehaviorSubject<boolean>(false); // [{ display_name: { default: '' }, eda-columns: [] }] --> just in case
     public notSaved = this._notSaved.asObservable();
+
+    setNotSaved(value: boolean): void {
+        this._notSaved.next(value);
+    }
 
     getDashboards(): Observable<any> {
         return this.get(this.route);

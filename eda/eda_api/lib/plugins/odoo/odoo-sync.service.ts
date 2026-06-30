@@ -1,10 +1,10 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import DataSource from '../../module/datasource/model/datasource.model';
-import CachedQuery from '../cache-service/cached-query.model';
+import CachedQuery from '../../services/cache-service/cached-query.model';
 import { OdooApiService } from './odoo-api.service';
-import { SchedulerFunctions } from '../scheduler/schedulerFunctions';
-import { EnCrypterService } from '../encrypter/encrypter.service';
+import { SchedulerFunctions } from '../../services/scheduler/schedulerFunctions';
+import { EnCrypterService } from '../../services/encrypter/encrypter.service';
 
 export class OdooSyncService {
 

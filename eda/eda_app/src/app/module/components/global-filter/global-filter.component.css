@@ -1,27 +1,39 @@
-.filter-label::after {
-  content: "\00a0"; /* 1 space */
+/* Filter button: less top margin on smaller screens, more on large */
+.filter-btn-responsive {
+  margin-top: 16px;
 }
 
-/* long filter name -> truncate with ... */
-.filter-label,
-.filter-row > span {
-  display: inline-block;
-  align-content: center;
-  text-align: end;
-  min-width: fit-content;
+@media (min-width: 1536px) {
+  .filter-btn-responsive {
+    margin-top: 20px;
+  }
+}
+
+/* label shown above the filter input */
+.filter-label-top {
+  display: block;
+  font-size: 0.75rem;  /* font-size filter tittle */
+  font-weight: 500; /* font-weight filter tittle */
+  color: #9ca3af;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Date picker input */
+/* Date picker - wrapper and input both constrained to same height as multiselect */
+::ng-deep eda-date-picker {
+  display: block;
+  height: 32px;
+}
+
 ::ng-deep eda-date-picker input {
-  height: 40px;
+  height: 32px;
   width: 100%;
-  padding: 0.5rem 1rem;
+  padding: 0.25rem 0.75rem;
   border-radius: 0.5rem;
   border: 1px solid #d1d5db;
   box-sizing: border-box;
+  font-size: 0.9rem;
 }
 
 /*****************/
@@ -30,11 +42,12 @@
 
 /* contains all filters */
 .filters-container {
-  display: ruby;
+  display: flex;
   max-width: 95vw;
   flex-wrap: wrap;
+  align-items: flex-start;
   align-content: flex-start;
-  gap: 1rem;
+  gap: 0.4rem; /* gap between elements */
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar-thumb) transparent;
 }
@@ -72,15 +85,21 @@
   transition: background-color 0.2s ease;
   background-color: rgba(var(--corporate-primary-rgb), 0.08);
 }
-/* individual filter */
+/* individual filter - uniform width */
 .filter-card {
   flex: 0 0 auto;
+  min-width: 115px;
+  width: 10.7vw;
+  max-width: 165px;
+  box-sizing: border-box;
 }
 
-/* filter without autocomplete (multiselect) */
+/* filter without autocomplete (multiselect) - fills the card */
 :host ::ng-deep .p-multiselect {
-  max-width: 10vw;
-  min-width: 10vw;
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  height: 32px;
 }
 
 /* filter tooltip arrow */
@@ -95,30 +114,38 @@
 /* AUTOCOMPLETE  */
 /*****************/
 
-/* Main autocomplete container */
+/* Autocomplete host element - constrain to card width */
+.modern-autocomplete ::ng-deep .p-autocomplete {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Main autocomplete container - fills the card */
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container {
   display: flex;
-  flex-direction: row-reverse; 
+  flex-direction: row-reverse;
   flex-wrap: nowrap;
   gap: 0.25rem;
   padding: 0.4rem 0.6rem;
   border: 1px solid #d1d5db;
   overflow-x: auto;
   scrollbar-width: thin;
-  height: auto; 
-  width: 10vw;
+  height: 32px;
+  width: 100%;
   box-shadow: none;
   border-radius: 10px;
+  box-sizing: border-box;
 }
 
 /* chips - the tokens */
 .modern-autocomplete ::ng-deep .p-autocomplete-multiple-container .p-autocomplete-token {
   border-radius: 9999px;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   font-weight: 500;
-  padding: 0.25rem 0.5rem;
+  padding: 0.12rem 0.45rem;
   display: inline-flex;
   align-items: center;
+  line-height: 1;
 }
 
 /* Input area */

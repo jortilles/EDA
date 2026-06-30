@@ -19,6 +19,12 @@ export interface OdooDownloadResult {
     users: number;
 }
 
+export interface OdooDownloadOrdersResult {
+    orders: number;
+    lines: number;
+    products: number;
+}
+
 export class OdooApiService {
 
     static async authenticate(baseUrl: string, db: string, username: string, password: string): Promise<string> {
@@ -203,38 +209,49 @@ export class OdooApiService {
         }
 
         const invoiceMap = new Map<number, any>(allInvoices.map((inv: any) => [inv.id, inv]));
+        const productCostMap = new Map<number, number>(allProducts.map((p: any) => [p.id, p.standard_price ?? 0]));
 
-        // invoices.csv
+        // invoices.csv — one row per invoice line (counterpart accounting lines excluded)
         OdooApiService.writeCsv(path.join(folderPath, 'invoices.csv'),
-            ['id', 'number', 'invoice_date', 'due_date', 'partner_id', 'partner',
-             'salesperson_id', 'salesperson', 'type', 'status', 'tax_base', 'taxes', 'total',
-             'currency', 'journal', 'company', 'reference'],
-            allInvoices.map((inv: any) => {
-                const [partnerId, partnerName]         = OdooApiService.resolveMany2one(inv.partner_id);
-                const [salespersonId, salespersonName] = OdooApiService.resolveMany2one(inv.invoice_user_id);
-                const [, currency] = OdooApiService.resolveMany2one(inv.currency_id);
-                const [, journal]  = OdooApiService.resolveMany2one(inv.journal_id);
-                const [, company]  = OdooApiService.resolveMany2one(inv.company_id);
-                return [inv.id, inv.name, inv.invoice_date || '', inv.invoice_date_due || '',
+            ['line_id', 'invoice_id', 'invoice_number', 'invoice_date', 'due_date',
+             'partner_id', 'partner', 'salesperson_id', 'salesperson',
+             'type', 'status', 'tax_base', 'taxes', 'total',
+             'currency', 'journal', 'company', 'reference',
+             'product_id', 'product', 'description',
+             'quantity', 'unit_price', 'subtotal', 'total_with_taxes',
+             'account_id', 'account',
+             'cost_price', 'cost_total', 'margin', 'margin_pct'],
+            allLines
+                .filter((line: any) => line.sequence < 10000)
+                .map((line: any) => {
+                    const moveId = Array.isArray(line.move_id) ? line.move_id[0] : line.move_id;
+                    const inv = invoiceMap.get(moveId);
+                    const [partnerId, partnerName]         = inv ? OdooApiService.resolveMany2one(inv.partner_id) : ['', ''];
+                    const [salespersonId, salespersonName] = inv ? OdooApiService.resolveMany2one(inv.invoice_user_id) : ['', ''];
+                    const [, currency] = inv ? OdooApiService.resolveMany2one(inv.currency_id) : ['', ''];
+                    const [, journal]  = inv ? OdooApiService.resolveMany2one(inv.journal_id)  : ['', ''];
+                    const [, company]  = inv ? OdooApiService.resolveMany2one(inv.company_id)  : ['', ''];
+                    const [productId, productName] = OdooApiService.resolveMany2one(line.product_id);
+                    const resolvedProduct = productName || line.name || '';
+                    const [accountId, accountName] = OdooApiService.resolveMany2one(line.account_id);
+                    const costPrice = productId ? (productCostMap.get(Number(productId)) ?? 0) : 0;
+                    const costTotal = Math.round(costPrice * line.quantity * 100) / 100;
+                    const margin    = Math.round((line.price_subtotal - costTotal) * 100) / 100;
+                    const marginPct = line.price_subtotal !== 0
+                        ? Math.round(margin / line.price_subtotal * 10000) / 100
+                        : 0;
+                    return [
+                        line.id, moveId, inv ? inv.name : '', inv ? inv.invoice_date || '' : '', inv ? inv.invoice_date_due || '' : '',
                         partnerId, partnerName, salespersonId, salespersonName,
-                        inv.move_type, inv.state, inv.amount_untaxed, inv.amount_tax, inv.amount_total,
-                        currency, journal, company, inv.ref || ''];
-            })
-        );
-
-        // invoice_lines.csv
-        OdooApiService.writeCsv(path.join(folderPath, 'invoice_lines.csv'),
-            ['id', 'invoice_id', 'invoice_number', 'product_id', 'product', 'description',
-             'quantity', 'unit_price', 'subtotal', 'total_with_taxes', 'account_id', 'account', 'sequence'],
-            allLines.map((line: any) => {
-                const moveId = Array.isArray(line.move_id) ? line.move_id[0] : line.move_id;
-                const inv = invoiceMap.get(moveId);
-                const [productId, productName] = OdooApiService.resolveMany2one(line.product_id);
-                const [accountId, accountName] = OdooApiService.resolveMany2one(line.account_id);
-                return [line.id, moveId, inv ? inv.name : '', productId, productName, line.name || '',
+                        inv ? inv.move_type : '', inv ? inv.state : '',
+                        inv ? inv.amount_untaxed : '', inv ? inv.amount_tax : '', inv ? inv.amount_total : '',
+                        currency, journal, company, inv ? inv.ref || '' : '',
+                        productId, resolvedProduct, line.name || '',
                         line.quantity, line.price_unit, line.price_subtotal, line.price_total,
-                        accountId, accountName, line.sequence];
-            })
+                        accountId, accountName,
+                        costPrice, costTotal, margin, marginPct
+                    ];
+                })
         );
 
         // partners.csv
@@ -256,7 +273,7 @@ export class OdooApiService {
 
         // products.csv
         OdooApiService.writeCsv(path.join(folderPath, 'products.csv'),
-            ['id', 'name', 'sale_description', 'sale_price', 'cost_price', 'type',
+            ['id', 'productname', 'sale_description', 'sale_price', 'cost_price', 'type',
              'category_id', 'category', 'uom_id', 'uom',
              'internal_ref', 'barcode', 'active', 'template_id'],
             allProducts.map((p: any) => {
@@ -271,7 +288,7 @@ export class OdooApiService {
 
         // users.csv
         OdooApiService.writeCsv(path.join(folderPath, 'users.csv'),
-            ['id', 'name', 'login', 'email', 'active', 'external_user'],
+            ['id', 'salesman', 'login', 'email', 'active', 'external_user'],
             allUsers.map((u: any) => [u.id, u.name, u.login, u.email || '', u.active ? 1 : 0, u.share ? 1 : 0])
         );
 
@@ -283,6 +300,106 @@ export class OdooApiService {
             partners: allPartners.length,
             products: allProducts.length,
             users:    allUsers.length
+        };
+    }
+
+    static async downloadOrdersToFolder(params: OdooDownloadParams, folderPath: string): Promise<OdooDownloadOrdersResult> {
+        const { url, db, username, password, dateFrom, dateTo } = params;
+        const baseUrl = url.replace(/\/$/, '');
+
+        console.log(`[Odoo] Connecting to ${baseUrl} (db: ${db})`);
+        const sessionId = await OdooApiService.authenticate(baseUrl, db, username, password);
+        if (!sessionId) throw new Error('Could not obtain Odoo session');
+        console.log(`[Odoo] Authentication successful`);
+
+        // 1. Pedidos
+        const domain: any[] = [];
+        if (dateFrom) domain.push(['date_order', '>=', dateFrom]);
+        if (dateTo)   domain.push(['date_order', '<=', dateTo]);
+
+        const BATCH = 200;
+        let offset = 0;
+        const allOrders: any[] = [];
+        while (true) {
+            const batch = await OdooApiService.callKw(baseUrl, sessionId, 'sale.order', 'search_read', [domain], {
+                fields: ['id', 'name', 'date_order', 'partner_id', 'user_id', 'state',
+                         'amount_untaxed', 'amount_tax', 'amount_total', 'currency_id', 'company_id'],
+                limit: BATCH, offset
+            });
+            if (!batch || batch.length === 0) break;
+            allOrders.push(...batch);
+            if (batch.length < BATCH) break;
+            offset += BATCH;
+        }
+        console.log(`[Odoo] orders: ${allOrders.length}`);
+
+        // 2. Líneas de pedido
+        const orderIds = allOrders.map((o: any) => o.id);
+        const allLines: any[] = [];
+        for (let i = 0; i < orderIds.length; i += 500) {
+            const lines = await OdooApiService.callKw(baseUrl, sessionId, 'sale.order.line', 'search_read',
+                [[['order_id', 'in', orderIds.slice(i, i + 500)], ['display_type', 'not in', ['line_section', 'line_note']]]],
+                { fields: ['id', 'order_id', 'product_id', 'name', 'product_uom_qty', 'price_unit', 'price_subtotal', 'price_total', 'sequence'], limit: 0 }
+            );
+            allLines.push(...(lines || []));
+        }
+        console.log(`[Odoo] order lines: ${allLines.length}`);
+
+        // 3. Productos (para coste)
+        const productIds = OdooApiService.uniqueIds(allLines, l => l.product_id);
+        const allProducts = await OdooApiService.fetchByIds(baseUrl, sessionId, 'product.product', productIds,
+            ['id', 'name', 'standard_price']);
+        console.log(`[Odoo] products: ${allProducts.length}`);
+
+        if (!fs.existsSync(folderPath)) {
+            fs.mkdirSync(folderPath, { recursive: true });
+        }
+
+        const orderMap = new Map<number, any>(allOrders.map((o: any) => [o.id, o]));
+        const productCostMap = new Map<number, number>(allProducts.map((p: any) => [p.id, p.standard_price ?? 0]));
+
+        // orders.csv — one row per order line
+        OdooApiService.writeCsv(path.join(folderPath, 'orders.csv'),
+            ['line_id', 'order_id', 'order_number', 'order_date',
+             'partner_id', 'partner', 'salesperson_id', 'salesperson',
+             'order_state', 'tax_base', 'taxes', 'total', 'currency', 'company',
+             'product_id', 'product', 'description',
+             'quantity', 'unit_price', 'subtotal', 'total_with_taxes',
+             'cost_price', 'cost_total', 'margin', 'margin_pct'],
+            allLines.map((line: any) => {
+                const orderId = Array.isArray(line.order_id) ? line.order_id[0] : line.order_id;
+                const order = orderMap.get(orderId);
+                const [partnerId, partnerName]         = order ? OdooApiService.resolveMany2one(order.partner_id) : ['', ''];
+                const [salespersonId, salespersonName] = order ? OdooApiService.resolveMany2one(order.user_id)    : ['', ''];
+                const [, currency] = order ? OdooApiService.resolveMany2one(order.currency_id) : ['', ''];
+                const [, company]  = order ? OdooApiService.resolveMany2one(order.company_id)  : ['', ''];
+                const [productId, productName] = OdooApiService.resolveMany2one(line.product_id);
+                const resolvedProduct = productName || line.name || '';
+                const costPrice = productId ? (productCostMap.get(Number(productId)) ?? 0) : 0;
+                const costTotal = Math.round(costPrice * line.product_uom_qty * 100) / 100;
+                const margin    = Math.round((line.price_subtotal - costTotal) * 100) / 100;
+                const marginPct = line.price_subtotal !== 0
+                    ? Math.round(margin / line.price_subtotal * 10000) / 100
+                    : 0;
+                return [
+                    line.id, orderId, order ? order.name : '', order ? order.date_order || '' : '',
+                    partnerId, partnerName, salespersonId, salespersonName,
+                    order ? order.state : '',
+                    order ? order.amount_untaxed : '', order ? order.amount_tax : '', order ? order.amount_total : '',
+                    currency, company,
+                    productId, resolvedProduct, line.name || '',
+                    line.product_uom_qty, line.price_unit, line.price_subtotal, line.price_total,
+                    costPrice, costTotal, margin, marginPct
+                ];
+            })
+        );
+
+        console.log(`[Odoo] orders.csv written to ${folderPath}`);
+
+        return {
+            orders:   allOrders.length,
+            lines:    allLines.length,
+            products: allProducts.length
         };
     }
 }

@@ -6704,12 +6704,16 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Quins dashboards tinc?</target>
       </trans-unit>
       <trans-unit id="chatSuggestion2" datatype="html">
-        <source>¿Qué datasources hay?</source>
-        <target>Quins datasources hi ha?</target>
+        <source>¿Qué fuentes de datos hay?</source>
+        <target>Quines fonts de dades hi ha?</target>
       </trans-unit>
       <trans-unit id="chatSuggestion3" datatype="html">
         <source>Estado del servidor</source>
         <target>Estat del servidor</target>
+      </trans-unit>
+      <trans-unit id="chatSuggestion4" datatype="html">
+        <source>¿Qué informes tengo disponibles?</source>
+        <target>Quins informes tinc disponibles?</target>
       </trans-unit>
       <trans-unit id="chatInputPlaceholder" datatype="html">
         <source>Escribe un mensaje...</source>
@@ -7006,6 +7010,22 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="multipleSelectionDescription">
         <source>Desactive esta opción para permitir la selección única.</source>
         <target>Desactiveu aquesta opció per permetre la selecció única.</target>
+      </trans-unit>
+      <trans-unit id="enablePanelLockButton">
+        <source>Bloquear los paneles</source>
+        <target>Bloquejar els panells</target>
+      </trans-unit>
+      <trans-unit id="disablePanelLockButton">
+        <source>Desbloquear los paneles</source>
+        <target>Desbloquejar els panells</target>
+      </trans-unit>
+      <trans-unit id="noAttributes">
+        <source>Sin atributos</source>
+        <target>Sense atributs</target>
+      </trans-unit>
+      <trans-unit id="noFilters">
+        <source>Sin filtros</source>
+        <target>Sense filtres</target>
       </trans-unit>
       <trans-unit id="aiDashboardDescription">
         <source>(Opcional) Describe los paneles que quieres generar con IA. Ejemplo: ventas por mes en barras, top clientes por importe, KPI de facturación total.</source>

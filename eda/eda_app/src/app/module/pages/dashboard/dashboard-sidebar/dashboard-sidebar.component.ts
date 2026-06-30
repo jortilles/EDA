@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, Output, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, EventEmitter, inject, Input, Output, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { OverlayModule } from "primeng/overlay";
 import { OverlayPanel, OverlayPanelModule } from "primeng/overlaypanel";
@@ -81,7 +81,7 @@ const ANGULAR_MODULES = [
     }
   `
 })
-export class DashboardSidebarComponent {
+export class DashboardSidebarComponent implements AfterViewInit {
   private sidebarService = inject(DashboardSidebarService)
   private dashboardService = inject(DashboardService);
   private fileUtils = inject(FileUtiles);
@@ -107,6 +107,7 @@ export class DashboardSidebarComponent {
   inputVisible: boolean = false;
   refreshTime: number = null;
   clickFiltersEnabled: boolean = true;
+  clickPanelLockButton: boolean = true;
   onlyIcanEdit: boolean = true; // Only I can edit, but I can save as
   isReadOnly: boolean = false; // this is a read-only dashboard
   isEditable: boolean = false; // can edit the dashboard
@@ -127,6 +128,7 @@ export class DashboardSidebarComponent {
     this.refreshTime = this.dashboard.dashboard.config.refreshTime || null;
     this.clickFiltersEnabled = this.dashboard.dashboard.config.clickFiltersEnabled ?? true;
     this.onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ?? true;
+    this.clickPanelLockButton = this.dashboard.dashboard.config.panelLockEnabled ?? true;
     this.isReadOnly = this.isReadOnlyCheck();
     this.isEditable = this.isEditableCheck();
     this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
@@ -148,6 +150,10 @@ export class DashboardSidebarComponent {
         console.warn(`Method '${method}' is not exposed on DashboardSidebarComponent`);
       }
     });
+  }
+
+  ngAfterViewInit(): void {
+    this.dashboard.gridsterOptions.api?.optionsChanged();
   }
 
   initSidebar() {
@@ -271,9 +277,18 @@ export class DashboardSidebarComponent {
         id: 'enableFilters',
         label: this.clickFiltersEnabled ? $localize`:@@enableFilters: Click en filtros habilitado`
           : $localize`:@@disableFilters:Click en filtros deshabilitado`,
-        icon: this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock",
+        icon: this.clickFiltersEnabled ? "pi pi-bolt" : "pi pi-ban",
         command: () => {
           this.toggleClickFilters();
+        }
+      },
+      {
+        id: 'enablePanelLock',
+        label: this.clickPanelLockButton ? $localize`:@@enablePanelLockButton: Bloquear los paneles`
+          : $localize`:@@disablePanelLockButton:Desbloquear los paneles`,
+        icon: this.clickPanelLockButton ? "pi pi-lock-open" : "pi pi-lock",
+        command: () => {
+          this.panelLockButton();
         }
       },
       {
@@ -378,10 +393,30 @@ export class DashboardSidebarComponent {
 
     if (response) {
       for (const item of response) {
-        this.dashboard.panels.push(item as EdaPanel);
+        const panel = item as EdaPanel;
+        if (this.importedPanelOverlaps(panel)) {
+          panel.x = 0;
+          panel.y = this.getImportBottomY();
+        }
+        this.dashboard.panels.push(panel);
       }
     }
+  }
 
+  private importedPanelOverlaps(panel: EdaPanel): boolean {
+    if (panel.x == null || panel.y == null || !panel.cols || !panel.rows) return true;
+    return this.dashboard.panels.some(existing => {
+      const hOverlap = panel.x < (existing.x + existing.cols) && (panel.x + panel.cols) > existing.x;
+      const vOverlap = panel.y < (existing.y + existing.rows) && (panel.y + panel.rows) > existing.y;
+      return hOverlap && vOverlap;
+    });
+  }
+
+  private getImportBottomY(): number {
+    return this.dashboard.panels.reduce((max, p) => {
+      const bottom = (p.y || 0) + (p.rows || 0);
+      return bottom > max ? bottom : max;
+    }, 0);
   }
 
   public closeDependentFilters(dependentFilterObject: any){
@@ -393,7 +428,7 @@ export class DashboardSidebarComponent {
       // Temporarily save the dependent filter structure
       this.dashboard.globalFilter.globalFilters = dependentFilterObject.globalFilters;
       this.dashboard.globalFilter.orderDependentFilters = dependentFilterObject.orderDependentFilters;
-      this.dashboardService._notSaved.next(true); // Mark dashboard as unsaved
+      this.dashboardService.setNotSaved(true); // Mark dashboard as unsaved
       // Update filter values when a new configuration is applied
       this.dashboard.globalFilter.initGlobalFilters(this.dashboard.globalFilter.globalFilters);
     } 
@@ -475,7 +510,7 @@ export class DashboardSidebarComponent {
     this.hidePopover();
 
     this.dashboard.loadDashboard();
-    this.dashboardService._notSaved.next(false);
+    this.dashboardService.setNotSaved(false);
   }
 
   private async saveDashboard() {
@@ -483,8 +518,9 @@ export class DashboardSidebarComponent {
     this.dashboard.dashboard.config.refreshTime = this.refreshTime || null;
     this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;
     this.dashboard.dashboard.config.onlyIcanEdit = this.onlyIcanEdit;
+    this.dashboard.dashboard.config.panelLockEnabled = this.clickPanelLockButton;
     // Update the author
-    this.dashboard.dashboard.config.author = JSON.parse(localStorage.getItem('user')).name;
+    this.dashboard.dashboard.config.author =  this.dashboard.dashboard.config.author?this.dashboard.dashboard.config.author:JSON.parse(localStorage.getItem('user')).name;
     // Save dashboard
     try {
       await this.dashboard.saveDashboard();
@@ -539,7 +575,7 @@ export class DashboardSidebarComponent {
       this.dashboard.edaPanels.forEach(panel => panel.savePanel());
 
       await lastValueFrom(this.dashboardService.updateDashboard(res.dashboard._id, body));
-      this.dashboardService._notSaved.next(false);
+      this.dashboardService.setNotSaved(false);
       this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
       this.router.navigate(['/dashboard/', res.dashboard._id]).then(() => {
         window.location.reload();
@@ -567,6 +603,7 @@ export class DashboardSidebarComponent {
   public saveStyles(newStyles: any) {
       this.isEditStyleDialogVisible = false;
       this.dashboard.dashboard.config.styles = newStyles;
+      this.dashboardService.setNotSaved(true);
       this.ChartUtilsService.MyPaletteColors = newStyles.palette?.paleta || this.ChartUtilsService.MyPaletteColors;
       this.dashboard.assignStyles();
       
@@ -947,7 +984,7 @@ export class DashboardSidebarComponent {
   public saveDashboardTitle() {
     if (this.editableTitle?.trim()) {
       this.dashboard.title = this.editableTitle.trim();
-      this.dashboardService._notSaved.next(true);
+      this.dashboardService.setNotSaved(true);
     }
     this.editingTitle = false;
   }
@@ -958,19 +995,19 @@ export class DashboardSidebarComponent {
 
  public isReadOnlyCheck() {
     const user = localStorage.getItem('user');
-    const userName = JSON.parse(user).name;
-    const imProperty = userName === this.dashboard.dashboard.config.author;
+    const userName = JSON.parse(user)._id;
+    const imProperty = userName === this.dashboard.dashboard.user;
     const isObserver = JSON.parse(user).role.includes('135792467811111111111113');
     const onlyIcanEdit = this.dashboard.dashboard.config.onlyIcanEdit ? this.dashboard.dashboard.config.onlyIcanEdit: true ;
-    return userName === 'edaanonim' || (!onlyIcanEdit && !imProperty) || isObserver;
+    return userName === '135792467811111111111112' || (!onlyIcanEdit && !imProperty) || isObserver;
   }
 
   public isEditableCheck() {
     const user = localStorage.getItem('user');
-    const userName = JSON.parse(user).name;
+    const userId = JSON.parse(user)._id;
     const userRole = JSON.parse(user).role;
     const isAdmin = userRole.includes('135792467811111111111110');
-    const imProperty = userName === this.dashboard.dashboard.config.author
+    const imProperty = userId === this.dashboard.dashboard.user;
     return (!this.dashboard.dashboard.config.onlyIcanEdit || imProperty || isAdmin );
   }
 
@@ -982,8 +1019,29 @@ export class DashboardSidebarComponent {
     this.clickFiltersEnabled = !this.clickFiltersEnabled;
     this.dashboard.dashboard.config.clickFiltersEnabled = this.clickFiltersEnabled;    // Update label and icon based on state
     clickItem.label = this.clickFiltersEnabled ? $localize`:@@enableFilters:Click en filtros habilitado` : $localize`:@@disableFilters:Click en filtros deshabilitado`;
-    clickItem.icon = this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock";
+    clickItem.icon = this.clickFiltersEnabled ? "pi pi-bolt" : "pi pi-ban";
 
+  }
+
+  panelLockButton() {
+    const lockItem = this.sidebarItems.find(item => item.id === 'enablePanelLock');
+
+    this.clickPanelLockButton = !this.clickPanelLockButton;
+    const locked = !this.clickPanelLockButton;
+
+    for (const panel of this.dashboard.panels) {
+      (panel as any).dragEnabled = !locked;
+      (panel as any).resizeEnabled = !locked;
+    }
+
+    this.dashboard.gridsterOptions.api?.optionsChanged();
+    this.dashboard.dashboard.config.panelLockEnabled = this.clickPanelLockButton;
+    this.dashboardService.setNotSaved(true);
+
+    lockItem.label = this.clickPanelLockButton
+      ? $localize`:@@enablePanelLockButton: Bloquear los paneles`
+      : $localize`:@@disablePanelLockButton:Desbloquear los paneles`;
+    lockItem.icon = this.clickPanelLockButton ? "pi pi-lock-open" : "pi pi-lock";
   }
   
   toggleEdit() {
@@ -1012,6 +1070,6 @@ export class DashboardSidebarComponent {
   // FILTER SORT
   onDrop(event: CdkDragDrop<any[]>) {
     moveItemInArray(this.dashboard.globalFilter.globalFilters, event.previousIndex, event.currentIndex);
-    this.dashboardService._notSaved.next(true);
+    this.dashboardService.setNotSaved(true);
   }
 }

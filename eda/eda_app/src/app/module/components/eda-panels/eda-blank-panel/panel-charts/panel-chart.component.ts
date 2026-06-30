@@ -1091,9 +1091,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     private _periodTitle(format: string): string {
         switch (format) {
             case 'year':  return $localize`:@@trendTitleYear:Año actual`;
-            case 'month': return $localize`:@@trendTitleMonth:Año actual`;
-            case 'week':  return $localize`:@@trendTitleWeek:Mes actual`;
-            case 'day':   return $localize`:@@trendTitleDay:Mes actual`;
+            case 'month': return $localize`:@@trendTitleMonth:Mes actual`;
+            case 'week':  return $localize`:@@trendTitleWeek:Semana actual`;
+            case 'day':   return $localize`:@@trendTitleDay:Hoy`;
             default:      return $localize`:@@trendTitlePeriod:Período actual`;
         }
     }

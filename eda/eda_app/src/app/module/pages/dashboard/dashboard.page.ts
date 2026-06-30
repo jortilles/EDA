@@ -562,7 +562,7 @@ export class DashboardPage implements OnInit {
 
   public reloadOnGlobalFilter(): void {
     //not saved alert message
-    this.dashboardService._notSaved.next(true);
+    this.dashboardService.setNotSaved(true);
 
     // Simulate a click on the btn
     const interval = setInterval(() => {
@@ -935,15 +935,25 @@ export class DashboardPage implements OnInit {
       try {        
         if (element.globalFilterMap) {
           const panelFilters = element.content.query.query.filters;
-  
           element.globalFilterMap.forEach(filterLinkId => {
             // Find the dashboard filter that targetId points to
             const dashboardFilterToApply = dashboard.config.filters.find(filter => filter.id === filterLinkId.targetId);
             const sourceFilter = panelFilters.find(f => f.filter_id === filterLinkId.sourceId);
             const valueToApply = dashboardFilterToApply.selectedItems;
-  
-            if(sourceFilter?.filter_elements)
-              sourceFilter.filter_elements[0].value1 = valueToApply;
+            const columnType = dashboardFilterToApply.column?.value?.column_type || dashboardFilterToApply.selectedColumn?.column_type;
+            const isDate = columnType === 'date';
+
+            if (sourceFilter?.filter_elements) {
+              if (isDate) {
+                if (!sourceFilter.filter_elements[1]) {
+                  sourceFilter.filter_elements[1] = { value2: [] };
+                }
+                sourceFilter.filter_elements[0].value1 = valueToApply[0] ? [valueToApply[0]] : [];
+                sourceFilter.filter_elements[1].value2 = valueToApply[1] ? [valueToApply[1]] : [];
+              } else {
+                sourceFilter.filter_elements[0].value1 = valueToApply;
+              }
+            }
           });
         }
       } catch (error) {
@@ -955,7 +965,7 @@ export class DashboardPage implements OnInit {
 
   public onDuplicatePanel(panel: any) {
     this.panels.push(panel);
-    this.dashboardService._notSaved.next(true);
+    this.dashboardService.setNotSaved(true);
     this.stylesProviderService.loadedPanels++;
   }
 
@@ -983,7 +993,7 @@ export class DashboardPage implements OnInit {
         await this.globalFilter.onGlobalFilter(true, globalFilter);
       
 
-        this.dashboardService._notSaved.next(true);
+        this.dashboardService.setNotSaved(true);
 
         // Simulate a click on the btn
         setTimeout(() => {
@@ -1079,6 +1089,7 @@ export class DashboardPage implements OnInit {
         tag: this.selectedTags,
         refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
         clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
+        panelLockEnabled: this.dashboard.config.panelLockEnabled,
         createdAt: this.dashboard.config.createdAt || new Date().toISOString(),
         modifiedAt: new Date().toISOString(),
         sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig,
@@ -1101,7 +1112,7 @@ export class DashboardPage implements OnInit {
     try {
       await lastValueFrom(this.dashboardService.updateDashboard(this.dashboardId, body));
       this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
-      this.dashboardService._notSaved.next(false);
+      this.dashboardService.setNotSaved(false);
     } catch (err) {
       this.alertService.addError(err);
       throw err;
@@ -1189,7 +1200,7 @@ public startCountdown(seconds: number) {
     this.dashboardService.cleanCache(body).subscribe(
         res => {
             this.loadDashboard();
-            this.dashboardService._notSaved.next(false);
+            this.dashboardService.setNotSaved(false);
         },
         err => console.log(err)
     )

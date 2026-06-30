@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { DuckDBConnection } from './duckdb-connection';
-import { HoldedApiService } from '../../holded/holded-api.service';
+import { DuckDBConnection } from '../../services/connection/db-systems/duckdb-connection';
+import { HoldedApiService } from './holded-api.service';
 
 export class HoldedConnection extends DuckDBConnection {
 
