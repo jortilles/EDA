@@ -15,8 +15,7 @@ import { ConfirmationService, SharedModule } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TreeModule } from 'primeng/tree';
 // Eda config
-import { NULL_VALUE, EMPTY_VALUE, UI_BEHAVIOR } from '../../../../config/personalitzacio/customizables';
-import { aggTypes } from 'app/config/aggretation-types';
+import { AGG_TYPES, NULL_VALUE, EMPTY_VALUE, SHOW_LOCK_IN_PANEL_HEADER } from '@eda/configs/customizable/customizable_default';
 import {Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 
 import { PanelChart } from './panel-charts/panel-chart';
@@ -539,7 +538,7 @@ public tableNodeExpand(event: any): void {
         return (userName !== 'edaanonim' && !this.inject.isObserver);
     }
 
-    readonly showLockInHeader = UI_BEHAVIOR.panel.showLockInHeader;
+    readonly showLockInHeader = SHOW_LOCK_IN_PANEL_HEADER;
 
     isPanelLocked(): boolean {
         return (this.panel as any).dragEnabled === false;
@@ -2282,7 +2281,7 @@ public tableNodeExpand(event: any): void {
 
     public getDisplayAggregation(aggregation: any) {
         let str = '';
-        const aggregationText = aggTypes.filter(agg => agg.value === aggregation.value)[0].label
+        const aggregationText = AGG_TYPES.filter(agg => agg.value === aggregation.value)[0].label
         str = `&nbsp<strong>( ${aggregationText} )</strong>&nbsp`;
         return str;
     }
@@ -2327,7 +2326,7 @@ public tableNodeExpand(event: any): void {
 
 
             let aggregationLabel = '';
-            if(aggTypes.filter(agg => agg.value === aggregation).length !== 0) aggregationLabel = aggTypes.filter(agg => agg.value === aggregation)[0].label;
+            if(AGG_TYPES.filter(agg => agg.value === aggregation).length !== 0) aggregationLabel = AGG_TYPES.filter(agg => agg.value === aggregation)[0].label;
 
             // Added internationalization for the “between” operator.
             let filterType = filter.filter_type
