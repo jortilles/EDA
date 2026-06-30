@@ -155,18 +155,18 @@ function buildFields(aiPanel: any, simplifiedTables: any[]): any[] {
     });
 }
 
-function buildPanelFilters(aiFilters: any[], simplifiedTables: any[], panelTitle: string): any[] {
+function buildPanelFilters(aiFilters: any[], simplifiedTables: any[], panelTitle: string, isGlobal = false): any[] {
     return (aiFilters || []).map((f: any) => {
         const tableSchema = simplifiedTables.find((t: any) => t.table_name === f.table);
         const colSchema = tableSchema?.columns?.find((c: any) => c.column_name === f.column);
-        if (!colSchema) console.warn(`[AI Dashboard] ⚠ Filtro panel "${panelTitle}": columna "${f.table}.${f.column}" NO encontrada — ignorado`);
+        if (!colSchema) console.warn(`[AI Dashboard] ⚠ Filtro${isGlobal ? ' global' : ''} "${panelTitle}": columna "${f.table}.${f.column}" NO encontrada`);
 
         const filter_column_type = mapColumnType(colSchema?.column_type || 'text');
         const base = {
             filter_table: f.table,
             filter_column: f.column,
             filter_column_type,
-            isGlobal: false,
+            isGlobal,
             filterBeforeGrouping: true,
         };
 
@@ -196,10 +196,13 @@ function buildPanel(
     index: number,
     simplifiedTables: any[],
     datasource_id: string,
+    dashboardFilters: any[] = [],
 ): any {
     const chartType: string = aiPanel.edaChart || aiPanel.chart_type || 'table';
     const fields = buildFields(aiPanel, simplifiedTables);
-    const filters = buildPanelFilters(aiPanel.filters, simplifiedTables, aiPanel.title);
+    const panelFilters = buildPanelFilters(aiPanel.filters, simplifiedTables, aiPanel.title, false);
+    const globalFilters = buildPanelFilters(dashboardFilters, simplifiedTables, 'dashboard', true);
+    const filters = [...globalFilters, ...panelFilters];
     return {
         id: uuidv4(),
         title: aiPanel.title || `Panel ${index + 1}`,
@@ -227,9 +230,9 @@ function buildPanel(
 
 // ── Layout ────────────────────────────────────────────────────────────────────
 
-function layoutPanels(aiPanels: any[], simplifiedTables: any[], datasource_id: string): any[] {
+function layoutPanels(aiPanels: any[], simplifiedTables: any[], datasource_id: string, dashboardFilters: any[] = []): any[] {
     const bp = (p: any, w: number, h: number, x: number, y: number, i: number) =>
-        buildPanel(p, w, h, x, y, i, simplifiedTables, datasource_id);
+        buildPanel(p, w, h, x, y, i, simplifiedTables, datasource_id, dashboardFilters);
 
     const kpiPanels   = aiPanels.filter((p: any) => (p.edaChart || p.chart_type) === 'kpi');
     const chartPanels = aiPanels.filter((p: any) => ['bar', 'line', 'doughnut'].includes(p.edaChart || p.chart_type));
@@ -304,12 +307,21 @@ export async function generateDashboard(req: Request, res: Response, next: NextF
     console.log(`[AI Dashboard] Respuesta IA raw:\n${panelsText}`);
 
     let aiPanels: any[];
+    let dashboardFilters: any[] = [];
     try {
-        const jsonMatch = panelsText.trim().match(/\[[\s\S]*\]/);
-        if (!jsonMatch) throw new Error('No se encontró array JSON en la respuesta');
-        aiPanels = JSON.parse(jsonMatch[0]);
+        const jsonMatch = panelsText.trim().match(/\{[\s\S]*\}|\[[\s\S]*\]/);
+        if (!jsonMatch) throw new Error('No se encontró JSON en la respuesta');
+        const parsed = JSON.parse(jsonMatch[0]);
+        if (Array.isArray(parsed)) {
+            // fallback: old array format
+            aiPanels = parsed;
+        } else {
+            aiPanels = parsed.panels || [];
+            dashboardFilters = parsed.dashboard_filters || [];
+        }
         if (!Array.isArray(aiPanels) || aiPanels.length === 0) throw new Error('El array de paneles está vacío');
-        console.log(`[AI Dashboard] Paneles: ${aiPanels.length}`);
+        console.log(`[AI Dashboard] Paneles: ${aiPanels.length} | Filtros dashboard: ${dashboardFilters.length}`);
+        if (dashboardFilters.length) console.log(`  Filtros globales: ${dashboardFilters.map((f: any) => `${f.table}.${f.column}(${f.op}:${f.value})`).join(', ')}`);
         aiPanels.forEach((p, i) =>
             console.log(`  ${i + 1}. "${p.title}" [${p.chart_type}] ${(p.fields || []).map((f: any) => `${f.table}.${f.column}(${f.agg})`).join(', ')}`));
     } catch (err: any) {
@@ -317,7 +329,7 @@ export async function generateDashboard(req: Request, res: Response, next: NextF
         return next(new HttpException(500, `La IA no generó un formato válido: ${err.message}`));
     }
 
-    const panels = layoutPanels(aiPanels, simplifiedTables, datasource_id);
+    const panels = layoutPanels(aiPanels, simplifiedTables, datasource_id, dashboardFilters);
 
     const dashboard = new Dashboard({
         config: {

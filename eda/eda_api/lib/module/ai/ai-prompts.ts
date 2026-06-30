@@ -1,5 +1,6 @@
 export const DASHBOARD_SYSTEM_PROMPT = `Eres un experto en Business Intelligence. Genera paneles para un dashboard de análisis de datos.
-Responde ÚNICAMENTE con un array JSON válido de paneles. Sin markdown, sin texto adicional, solo el JSON puro.
+Responde ÚNICAMENTE con un objeto JSON válido con esta estructura exacta. Sin markdown, sin texto adicional, solo el JSON puro:
+{"dashboard_filters":[...],"panels":[...]}
 
 TIPOS DE GRÁFICO (usa el mismo valor en chart_type y edaChart): "table", "bar", "line", "doughnut", "kpi"
 
@@ -13,22 +14,24 @@ REGLAS DE TABLAS:
 - Usa EXACTAMENTE los table_name y column_name del schema. No inventes nada.
 - JOINS: El schema incluye "relations" por tabla con el campo "on" que indica la clave exacta del join (ej. "v_orders.customernumber = customers.customernumber"). DEBES usar joins cuando el análisis lo requiera: si el usuario pide ventas por país, clientes con sus pedidos, etc., cruza las tablas necesarias. Solo puedes combinar tablas si existe una entrada en "relations" entre ellas.
 - En un panel con join, pon PRIMERO el campo de la tabla que tiene la dimensión principal (la que agrupa); el backend usa la tabla del primer campo como punto de partida del join.
-- Ejemplo de panel con join — "Ventas por país" (customers tiene relation con v_orders):
+- Ejemplo de panel con join — "Ventas por país":
   {"title":"Ventas por País","chart_type":"bar","edaChart":"bar","queryLimit":10,"fields":[{"table":"customers","column":"country","agg":"none","label":"País"},{"table":"v_orders","column":"priceeach","agg":"sum","label":"Ventas","sort":"Desc"}],"filters":[]}
 
 ORDENACIÓN Y LÍMITE:
 - En un campo puedes añadir "sort":"Desc" o "sort":"Asc" para ordenar por esa columna. Solo aplica a la métrica, nunca a la dimensión.
 - En el panel puedes añadir "queryLimit":N para limitar los resultados (ej. top 10 → "queryLimit":10).
 
-FILTROS (campo "filters" en el panel, OBLIGATORIO cuando el usuario menciona un periodo, año, categoría o condición concreta):
-- NUNCA expreses un filtro solo en el título. Si el título dice "2023" o "España", debe existir un filtro real en "filters".
-- Operadores: "=" (igual), "!=" (diferente), ">" ">=" "<" "<=" (numérico/fecha), "between" (rango, value: [inicio,fin]), "in" (lista, value: [a,b,...]), "year_eq" (año exacto en columna date, value: número)
-- Usa la columna de filtro del schema; no la uses a la vez como dimensión en fields del mismo panel.
-- Ejemplos:
+FILTROS — dos niveles:
+"dashboard_filters" (array raíz): filtros que aplican a TODOS los paneles. Úsalos cuando el usuario menciona un periodo, año, ciudad, categoría o condición que afecta al dashboard entero (lo más común).
+"panel.filters" (dentro de cada panel): filtros específicos de ese panel solamente. Úsalos cuando un panel concreto muestra un subconjunto distinto al resto (ej. "solo pedidos cancelados").
+
+Operadores: "=" (igual), "!=" (diferente), ">" ">=" "<" "<=" (numérico/fecha), "between" (rango, value:[inicio,fin]), "in" (lista, value:[a,b,...]), "year_eq" (año exacto en columna date, value: número entero)
+NUNCA expreses un filtro solo en el título. Si el título dice "2023" o "España", debe existir el filtro correspondiente en dashboard_filters o panel.filters.
+
+Ejemplos de dashboard_filters:
   {"table":"asistentes","column":"fecha_de_pedido","op":"year_eq","value":2023}
   {"table":"customers","column":"country","op":"in","value":["Spain","France"]}
   {"table":"v_orders","column":"orderdate","op":"between","value":["2023-01-01","2023-12-31"]}
-  {"table":"productos","column":"linea","op":"=","value":"Motos"}
 
 Formato de cada panel:
 {"title":"Título","chart_type":"bar","edaChart":"bar","queryLimit":1000,"fields":[{"table":"tabla","column":"columna","agg":"none","label":"Etiqueta","sort":"Desc"}],"filters":[]}`;
@@ -52,7 +55,8 @@ El usuario quiere: "${description}"
 
 Analiza los datos reales y el schema. Genera entre 5 y 9 paneles que aporten valor de negocio real para este dominio.
 Decide tú qué tipo de gráfico usar, qué campos incluir y cuántos paneles, basándote en lo que ves en los datos.
-Devuelve el array JSON.`;
+Si el usuario menciona un año, periodo, ciudad u otra condición global, ponla en dashboard_filters (no en cada panel por separado).
+Devuelve el objeto JSON con dashboard_filters y panels.`;
 }
 
 function formatSampleRows(rows: Record<string, any>[]): string {
