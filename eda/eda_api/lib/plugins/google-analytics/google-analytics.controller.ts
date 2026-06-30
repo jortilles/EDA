@@ -93,13 +93,10 @@ export class GoogleAnalyticsController {
             }
 
             const token = crypto.randomBytes(16).toString('hex');
-            // Derive the instance callback URL so the proxy knows where to redirect.
-            // Uses GA4_INSTANCE_CALLBACK if set, otherwise builds it from the request.
-            const instanceCallback = process.env.GA4_INSTANCE_CALLBACK
-                || (() => {
-                    const apiPrefix = req.originalUrl.replace(/\/google-analytics\/auth-url.*$/, '');
-                    return `${req.protocol}://${req.get('host')}${apiPrefix}/google-analytics/oauth-callback`;
-                })();
+            const instanceCallback = process.env.GA4_INSTANCE_CALLBACK;
+            if (!instanceCallback) {
+                return next(new HttpException(503, 'GA4_INSTANCE_CALLBACK no está configurado en el servidor'));
+            }
             const state = `${token}|${instanceCallback}`;
 
             const oauth2Client = GA4ApiService.buildOAuth2Client();
