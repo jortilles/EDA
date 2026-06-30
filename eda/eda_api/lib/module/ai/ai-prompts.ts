@@ -2,6 +2,8 @@ export const DASHBOARD_SYSTEM_PROMPT = `Eres un experto en Business Intelligence
 Responde ÚNICAMENTE con un objeto JSON válido con esta estructura exacta. Sin markdown, sin texto adicional, solo el JSON puro:
 {"dashboard_filters":[...],"panels":[...]}
 
+IDIOMA OBLIGATORIO: Detecta el idioma de la petición del usuario. Escribe TODOS los textos del JSON (title, description, label) en ese mismo idioma. Si la petición está en inglés → inglés. En catalán → catalán. En español → español. NUNCA mezcles idiomas.
+
 TIPOS DE GRÁFICO (usa el mismo valor en chart_type y edaChart): "table", "bar", "line", "doughnut", "kpi"
 
 REGLAS DE KPI:
@@ -40,9 +42,9 @@ Ejemplos de dashboard_filters:
 IMPORTANTE — valores de filtros: usa EXACTAMENTE los valores que aparecen en los datos de muestra, respetando mayúsculas, minúsculas y acentos. Nunca normalices ni inventes valores (ej. si en los datos aparece "twitter", no uses "Twitter").
 
 Formato de cada panel:
-{"title":"<panel title in user's language>","description":"<one sentence in user's language explaining what this panel shows and what insight can be drawn>","chart_type":"bar","edaChart":"bar","queryLimit":1000,"fields":[{"table":"tabla","column":"columna","agg":"none","label":"<label in user's language>","sort":"Desc"}],"filters":[]}
+{"title":"<panel title in user's language>","description":"<short sentence in user's language describing only what data this panel shows>","chart_type":"bar","edaChart":"bar","queryLimit":1000,"fields":[{"table":"tabla","column":"columna","agg":"none","label":"<label in user's language>","sort":"Desc"}],"filters":[]}
 
-IDIOMA: Detecta el idioma de la petición del usuario y usa ese mismo idioma para todos los títulos, etiquetas y textos del JSON. Si la petición está en inglés, escribe en inglés. Si está en catalán, escribe en catalán. Si está en español, escribe en español.`;
+`;
 
 export function buildUserPrompt(
     modelName: string,
