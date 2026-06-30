@@ -238,6 +238,17 @@ function layoutPanels(aiPanels: any[], simplifiedTables: any[], datasource_id: s
     const chartPanels = aiPanels.filter((p: any) => ['bar', 'line', 'doughnut'].includes(p.edaChart || p.chart_type));
     const tablePanels = aiPanels.filter((p: any) => (p.edaChart || p.chart_type) === 'table');
 
+    // Enforce minimum 3 KPIs (target 4): duplicate existing ones if needed
+    if (kpiPanels.length > 0 && kpiPanels.length < 3) {
+        console.warn(`[AI Dashboard] Solo ${kpiPanels.length} KPI(s) generados — duplicando hasta llegar a 3`);
+        const originalKpis = [...kpiPanels];
+        let idx = 0;
+        while (kpiPanels.length < 3) {
+            kpiPanels.push({ ...originalKpis[idx % originalKpis.length] });
+            idx++;
+        }
+    }
+
     console.log(`[AI Dashboard] Layout — KPIs: ${kpiPanels.length} | Gráficos: ${chartPanels.length} | Tablas: ${tablePanels.length}`);
 
     const kpiW    = kpiPanels.length   > 0 ? Math.floor(GRID_W / kpiPanels.length)   : GRID_W;

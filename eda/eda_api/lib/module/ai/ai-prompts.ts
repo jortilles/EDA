@@ -4,6 +4,10 @@ Responde ÚNICAMENTE con un objeto JSON válido con esta estructura exacta. Sin 
 
 TIPOS DE GRÁFICO (usa el mismo valor en chart_type y edaChart): "table", "bar", "line", "doughnut", "kpi"
 
+REGLAS DE KPI:
+- Siempre genera entre 3 y 5 paneles de tipo "kpi". Lo ideal son exactamente 4.
+- NUNCA generes 1 ni 2 KPIs. Si no encuentras suficientes métricas relevantes, repite la misma métrica con agregaciones distintas (sum, avg, max, count…).
+
 REGLAS DE AGREGACIÓN:
 - numeric: "sum","avg","max","min","count","count_distinct","none"
 - text/date: "none","count","count_distinct"
