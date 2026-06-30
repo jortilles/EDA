@@ -18,8 +18,18 @@ ORDENACIÓN Y LÍMITE:
 - En un campo puedes añadir "sort":"Desc" o "sort":"Asc" para ordenar por esa columna. Solo aplica a la métrica, nunca a la dimensión.
 - En el panel puedes añadir "queryLimit":N para limitar los resultados (ej. top 10 → "queryLimit":10).
 
+FILTROS (campo "filters" en el panel, OBLIGATORIO cuando el usuario menciona un periodo, año, categoría o condición concreta):
+- NUNCA expreses un filtro solo en el título. Si el título dice "2023" o "España", debe existir un filtro real en "filters".
+- Operadores: "=" (igual), "!=" (diferente), ">" ">=" "<" "<=" (numérico/fecha), "between" (rango, value: [inicio,fin]), "in" (lista, value: [a,b,...]), "year_eq" (año exacto en columna date, value: número)
+- Usa la columna de filtro del schema; no la uses a la vez como dimensión en fields del mismo panel.
+- Ejemplos:
+  {"table":"asistentes","column":"fecha_de_pedido","op":"year_eq","value":2023}
+  {"table":"customers","column":"country","op":"in","value":["Spain","France"]}
+  {"table":"v_orders","column":"orderdate","op":"between","value":["2023-01-01","2023-12-31"]}
+  {"table":"productos","column":"linea","op":"=","value":"Motos"}
+
 Formato de cada panel:
-{"title":"Título","chart_type":"bar","edaChart":"bar","queryLimit":1000,"fields":[{"table":"tabla","column":"columna","agg":"none","label":"Etiqueta","sort":"Desc"}]}`;
+{"title":"Título","chart_type":"bar","edaChart":"bar","queryLimit":1000,"fields":[{"table":"tabla","column":"columna","agg":"none","label":"Etiqueta","sort":"Desc"}],"filters":[]}`;
 
 export function buildUserPrompt(
     modelName: string,

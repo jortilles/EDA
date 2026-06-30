@@ -118,6 +118,12 @@ async function callAI(config: any, systemPrompt: string, userPrompt: string): Pr
 
 // ── Panel builders ────────────────────────────────────────────────────────────
 
+function mapColumnType(raw: string): 'text' | 'numeric' | 'date' {
+    if (['date', 'datetime', 'timestamp', 'timestamptz', 'time'].includes(raw)) return 'date';
+    if (['numeric', 'integer', 'int2', 'int4', 'int8', 'float4', 'float8', 'decimal', 'number', 'double'].includes(raw)) return 'numeric';
+    return 'text';
+}
+
 function buildFields(aiPanel: any, simplifiedTables: any[]): any[] {
     return (aiPanel.fields || []).map((f: any, fieldIndex: number) => {
         const tableSchema = simplifiedTables.find((t: any) => t.table_name === f.table);
@@ -140,6 +146,41 @@ function buildFields(aiPanel: any, simplifiedTables: any[]): any[] {
     });
 }
 
+function buildPanelFilters(aiFilters: any[], simplifiedTables: any[], panelTitle: string): any[] {
+    return (aiFilters || []).map((f: any) => {
+        const tableSchema = simplifiedTables.find((t: any) => t.table_name === f.table);
+        const colSchema = tableSchema?.columns?.find((c: any) => c.column_name === f.column);
+        if (!colSchema) console.warn(`[AI Dashboard] ⚠ Filtro panel "${panelTitle}": columna "${f.table}.${f.column}" NO encontrada — ignorado`);
+
+        const filter_column_type = mapColumnType(colSchema?.column_type || 'text');
+        const base = {
+            filter_table: f.table,
+            filter_column: f.column,
+            filter_column_type,
+            isGlobal: false,
+            filterBeforeGrouping: true,
+        };
+
+        if (f.op === 'year_eq') {
+            const year = Number(f.value);
+            return { ...base, filter_type: 'between', filter_elements: [{ value1: [`${year}-01-01`] }, { value2: [`${year}-12-31`] }] };
+        }
+        if (f.op === 'between') {
+            const [v1, v2] = Array.isArray(f.value) ? f.value : [f.value, f.value];
+            return { ...base, filter_type: 'between', filter_elements: [{ value1: [String(v1)] }, { value2: [String(v2)] }] };
+        }
+        if (f.op === 'in') {
+            const vals = Array.isArray(f.value) ? f.value : [f.value];
+            return { ...base, filter_type: 'in', filter_elements: [{ value1: vals.map(String) }] };
+        }
+        if (f.op === '!=' || f.op === 'neq') {
+            return { ...base, filter_type: 'not_in', filter_elements: [{ value1: [String(f.value)] }] };
+        }
+        // '=', '>', '>=', '<', '<='
+        return { ...base, filter_type: f.op, filter_elements: [{ value1: [String(f.value)] }] };
+    });
+}
+
 function buildPanel(
     aiPanel: any,
     w: number, h: number, x: number, y: number,
@@ -149,6 +190,7 @@ function buildPanel(
 ): any {
     const chartType: string = aiPanel.edaChart || aiPanel.chart_type || 'table';
     const fields = buildFields(aiPanel, simplifiedTables);
+    const filters = buildPanelFilters(aiPanel.filters, simplifiedTables, aiPanel.title);
     return {
         id: uuidv4(),
         title: aiPanel.title || `Panel ${index + 1}`,
@@ -159,7 +201,7 @@ function buildPanel(
                 model_id: datasource_id,
                 query: {
                     fields,
-                    filters: [],
+                    filters,
                     queryMode: 'EDA',
                     rootTable: aiPanel.fields?.[0]?.table || '',
                     joinType: 'inner',
