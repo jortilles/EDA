@@ -27,11 +27,27 @@ ORDENACIÓN Y LÍMITE:
 - En un campo puedes añadir "sort":"Desc" o "sort":"Asc" para ordenar por esa columna. Solo aplica a la métrica, nunca a la dimensión.
 - En el panel puedes añadir "queryLimit":N para limitar los resultados (ej. top 10 → "queryLimit":10).
 
+ADAPTACIÓN AL DOMINIO — omite un tipo de panel si no aporta valor real:
+- "line" (tendencia temporal): solo si existe una columna de fecha Y los datos de muestra muestran variedad de fechas distintas. Si solo hay 1 o 2 fechas distintas, omítelo o sustitúyelo por un "bar".
+- "bar" top N: solo si la dimensión tiene suficientes valores distintos en muestra (≥5). Si hay pocas categorías, un "doughnut" es más adecuado.
+- "doughnut": ideal para distribuciones con 2-8 categorías. Si la columna tiene >10 valores distintos, usa "bar" en su lugar.
+- "table": incluye siempre, es útil en cualquier dominio. Elige los campos más informativos (no pongas IDs sin su descripción correspondiente).
+- No generes paneles que ya están cubiertos por otro igual pero con distinto título. Cada panel debe aportar una perspectiva diferente.
+
 FILTROS — dos niveles:
 "dashboard_filters" (array raíz): filtros que aplican a TODOS los paneles. Úsalos cuando el usuario menciona un periodo, año, ciudad, categoría o condición que afecta al dashboard entero (lo más común).
 "panel.filters" (dentro de cada panel): filtros específicos de ese panel solamente. Úsalos cuando un panel concreto muestra un subconjunto distinto al resto (ej. "solo pedidos cancelados").
 
-Operadores: "=" (igual), "!=" (diferente), ">" ">=" "<" "<=" (numérico/fecha), "between" (rango, value:[inicio,fin]), "in" (lista, value:[a,b,...]), "year_eq" (año exacto en columna date, value: número entero)
+FILTROS IMPLÍCITOS — OBLIGATORIO: Si el usuario menciona valores concretos que reconoces en los datos de muestra (nombres de plataformas, países, ciudades, categorías, estados, etc.), SIEMPRE tradúcelos a dashboard_filters. No los uses solo como tema de los gráficos.
+- "resumen de instagram" → dashboard_filters: [{..., column:"platform", op:"=", value:"instagram"}]
+- "compara instagram y twitter" → dashboard_filters: [{..., column:"platform", op:"in", value:["instagram","twitter"]}]
+- "ventas en España y Francia" → dashboard_filters: [{..., column:"country", op:"in", value:["Spain","France"]}]
+- "pedidos cancelados" → panel.filters en el panel específico (no es global)
+Si el usuario NO menciona valores concretos (ej. "resumen general de ventas"), no inventes filtros.
+
+ANTI-DUPLICADO: Si un filtro ya está en dashboard_filters, NO lo repitas en panel.filters de ningún panel. Cada condición debe aparecer exactamente una vez.
+
+Operadores: "=" (igual, un único valor), "!=" (diferente), ">" ">=" "<" "<=" (numérico/fecha), "between" (rango, value:[inicio,fin]), "in" (lista de ≥2 valores, value:[a,b,...] — NUNCA uses "in" para un solo valor, usa "=" en su lugar), "year_eq" (año exacto en columna date, value: número entero)
 NUNCA expreses un filtro solo en el título. Si el título dice "2023" o "España", debe existir el filtro correspondiente en dashboard_filters o panel.filters.
 
 Ejemplos de dashboard_filters:
@@ -56,9 +72,14 @@ export function buildUserPrompt(
         .map(([tableName, rows]) => `Datos de "${tableName}" (${rows.length} filas):\n${formatSampleRows(rows)}`)
         .join('\n\n');
 
+    const tableCount = Object.keys(sampleData).length;
+    const singleTableWarning = tableCount <= 1
+        ? `\nATENCIÓN: Este datasource solo tiene UNA tabla disponible. NO intentes joins ni references tablas que no aparezcan en el schema. Todos los campos de todos los paneles deben pertenecer a esa única tabla.\n`
+        : '';
+
     return `Schema del datasource "${modelName}":
 ${schemaText}
-
+${singleTableWarning}
 ${sampleSections}
 
 El usuario quiere: "${description}"
