@@ -1265,7 +1265,37 @@ export function createMcpServer(requestUser?: any) {
         }
     );
     console.log('[MCP] createMcpServer - get_data_from_dashboard registrado');
-    console.log('[MCP] createMcpServer - server_status registrado. Total tools: 5');
+
+    // ── propose_dashboard ───────────────────────────────────────────────────
+    (server as any).registerTool(
+        'propose_dashboard',
+        {
+            description: 'Proposes a new dashboard to the user — shows a confirmation card with an editable title. Use this INSTEAD of generate_dashboard. Call list_datasources first to get the datasource_id. The user confirms (and can edit the title) in the UI; the frontend then generates the dashboard automatically.',
+            inputSchema: {
+                datasource_id:   z.string().describe('ID of the datasource to use (from list_datasources)'),
+                datasource_name: z.string().describe('Human-readable name of the datasource'),
+                title:           z.string().describe("Proposed dashboard title in the user's language, concise and descriptive"),
+                description:     z.string().describe("Description passed to the AI generator — reuse the user's original request"),
+            },
+        },
+        async (args: any) => {
+            const { datasource_id, datasource_name, title, description } = args;
+            console.log('[MCP] tool: propose_dashboard — datasource:', datasource_name, '| title:', title);
+            return {
+                content: [{
+                    type: 'text',
+                    text: JSON.stringify({
+                        type: 'dashboard_proposal',
+                        datasource_id,
+                        datasource_name,
+                        proposed_title: title,
+                        description,
+                    }),
+                }],
+            };
+        }
+    );
+    console.log('[MCP] createMcpServer - propose_dashboard registrado. Total tools: 6');
 
     return server;
 }

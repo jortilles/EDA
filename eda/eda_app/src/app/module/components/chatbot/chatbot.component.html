@@ -55,7 +55,7 @@
           </div>
         </div>
       }
-      @for (msg of chatHistory; track $index) {
+      @for (msg of chatHistory; track $index; let msgIdx = $index) {
         <div class="chat-msg-row group" [class.chat-msg-row--user]="msg.role === 'user'">
           @if (msg.role === 'assistant') {
             <div class="chat-msg-avatar">
@@ -109,6 +109,40 @@
                 <button class="chat-suggestion" (click)="selectOption(opt)">
                   {{ chatFallbackYes }}
                 </button>
+              } @else if (opt.type === 'generate_confirm') {
+                <div class="mt-2 rounded-xl border border-gray-200 bg-white shadow-sm p-4 flex flex-col gap-3 text-sm">
+                  <p class="font-semibold text-gray-700 text-xs uppercase tracking-wide" i18n="@@generateConfirmTitle">Resumen de generación</p>
+                  <div class="flex flex-col gap-1">
+                    <span class="text-xs text-gray-400" i18n="@@generateConfirmDatasource">Datasource</span>
+                    <span class="text-gray-700 font-medium">{{ opt.datasource_name }}</span>
+                  </div>
+                  <div class="flex flex-col gap-1">
+                    <label class="text-xs text-gray-400" i18n="@@generateConfirmTitleLabel">Título del dashboard</label>
+                    <input
+                      type="text"
+                      class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-corporate-primary/40 bg-gray-50"
+                      [value]="opt.proposed_title"
+                      (input)="opt.proposed_title = $any($event.target).value"
+                      [disabled]="generateConfirmLoading()"
+                    />
+                  </div>
+                  <div class="flex gap-2 justify-end">
+                    <button
+                      class="px-3 py-1.5 rounded-lg text-xs text-gray-500 hover:bg-gray-100 transition-colors"
+                      (click)="cancelGenerate(msgIdx)"
+                      [disabled]="generateConfirmLoading()"
+                      i18n="@@generateConfirmCancel">
+                      Cancelar
+                    </button>
+                    <button
+                      class="px-4 py-1.5 rounded-lg text-xs font-medium bg-corporate-primary text-white hover:opacity-90 transition-opacity disabled:opacity-50"
+                      (click)="confirmGenerate(opt, msgIdx)"
+                      [disabled]="generateConfirmLoading() || !opt.proposed_title?.trim()"
+                      i18n="@@generateConfirmBtn">
+                      Generar dashboard
+                    </button>
+                  </div>
+                </div>
               } @else {
                 <button class="chat-suggestion" (click)="selectOption(opt)">
                   {{ opt.num }}. {{ opt.panel_titulo || opt.label }}

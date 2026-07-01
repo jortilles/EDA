@@ -33,6 +33,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   streamingIndex = signal(-1);
   isAtBottom = signal(true);
   copiedIndex = signal(-1);
+  generateConfirmLoading = signal(false);
 
   private tokenQueue: string[] = [];
   private typewriterInterval: any = null;
@@ -243,6 +244,49 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     this.shouldScrollChat = true;
     this.resetTypewriter();
     this.chatSubscription = this.iaChatService.sendMessage(this.chatHistory).subscribe(this.chatHandlers());
+  }
+
+  cancelGenerate(msgIndex: number): void {
+    if (this.chatHistory[msgIndex]) {
+      this.chatHistory[msgIndex].options = [];
+      this.cdr.detectChanges();
+    }
+  }
+
+  async confirmGenerate(option: ChatOption, msgIndex: number): Promise<void> {
+    if (this.generateConfirmLoading()) return;
+    const title = option.proposed_title?.trim() || option.label;
+    this.generateConfirmLoading.set(true);
+    if (this.chatHistory[msgIndex]) this.chatHistory[msgIndex].options = [];
+    this.chatHistory.push({ role: 'user', content: title, displayContent: `Generando "${title}"...` });
+    this.chatHistory.push({ role: 'assistant', content: '' });
+    const botIndex = this.chatHistory.length - 1;
+    this.chatLoading.set(true);
+    this.shouldScrollChat = true;
+    this.cdr.detectChanges();
+    try {
+      const result: any = await this.iaChatService.generateDashboard({
+        datasource_id: option.datasource_id!,
+        description: option.description || title,
+        title,
+        visible: 'public',
+      }).toPromise();
+      const dashboardId: string = result?.dashboard?._id?.toString() ?? '';
+      const panelCount: number  = result?.dashboard?.config?.panel?.length ?? 0;
+      const dashboardUrl = dashboardId ? `${window.location.origin}/dashboard/${dashboardId}` : '';
+      this.chatHistory[botIndex].content = panelCount > 0
+        ? `Dashboard **${title}** creado con ${panelCount} paneles. [Abrir dashboard](${dashboardUrl})`
+        : `Dashboard **${title}** creado. [Abrir dashboard](${dashboardUrl})`;
+    } catch (err: any) {
+      const msg = err?.error?.response ?? err?.message ?? 'Error desconocido';
+      this.chatHistory[botIndex].content = `No se pudo generar el dashboard: ${msg}`;
+    } finally {
+      this.generateConfirmLoading.set(false);
+      this.chatLoading.set(false);
+      this.shouldScrollChat = true;
+      this.cdr.detectChanges();
+      setTimeout(() => this.chatInputEl?.nativeElement?.focus(), 50);
+    }
   }
 
   private resetTypewriter(): void {
