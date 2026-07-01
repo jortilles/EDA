@@ -7,7 +7,7 @@
                 <p-card *ngIf="formReady && !globalFilter.isdeleted" [header]="header3" id="anywhereClick">
                     <div class="row">
                         <div class="col-3">
-                            <p-dropdown id="selectFilerTable" [options]="tables"
+                            <!-- SDA CUSTOM --><p-dropdown id="selectFilerTable" [options]="tables"
                                 [(ngModel)]="globalFilter.selectedTable" filter="true"
                                 optionLabel="display_name.default" [style]="{'width': '100%'}"
                                 i18n-placeholder="@@placeholderTables" placeholder="Entidades"
@@ -15,7 +15,7 @@
                             </p-dropdown>
                         </div>
                         <div class="col-3">
-                            <p-dropdown id="selectFilterColumn" [options]="columns"
+                            <!-- SDA CUSTOM --><p-dropdown id="selectFilterColumn" [options]="columns"
                                 [(ngModel)]="globalFilter.selectedColumn" filter="true"
                                 optionLabel="display_name.default" [style]="{'width': '100%'}"
                                 i18n-placeholder="@@placeholderColumns" placeholder="Atributos"
@@ -30,21 +30,38 @@
                             i18n-placeholder="@@aliasValuePh">
                         </div>
                         <div class="col-3">
+                            <!-- SDA CUSTOM: non-date filter value selector -->
                             <p-multiSelect id="selectFilterValue" class='eda-filter-multiselect'
                                 *ngIf="globalFilter.selectedColumn?.column_type !== 'date'" [options]="columnValues"
                                 [(ngModel)]="globalFilter.selectedItems" [virtualScroll]="true" itemSize="30"
                                 [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '100%' }"
                                 [panelStyle]="{minWidth:'15em'}" maxSelectedLabels="1" defaultLabel="Valor por defecto"
-                                display="chip" appendTo="body"
-                                (ngModelChange)="onSelectedItemsChange($event)"
-                                >
+                                display="chip"
+                                (ngModelChange)="onSelectedItemsChange($event)">
                             </p-multiSelect>
-
-                            <eda-date-picker #myCalendar
-                                *ngIf="globalFilter.selectedColumn?.column_type === 'date'"
-                                [inject]="datePickerConfigs[selectedFilter?.id]"
-                                [autoClear]="true" (onDatesChanges)="processPickerEvent($event)">
-                            </eda-date-picker>
+                            <!-- SDA CUSTOM: inline date filter selectors -->
+                            <div *ngIf="globalFilter.selectedColumn?.column_type === 'date'" class="date-filter-controls">
+                                <p-dropdown [(ngModel)]="filterSelected"
+                                    [options]="dateFilterOperators" optionLabel="label" [style]="{'min-width': '130px'}"
+                                    placeholder="Operador" (onChange)="handleDateFilterOperatorChange($event.value)">
+                                </p-dropdown>
+                                <p-dropdown *ngIf="isDateFormatAvailable && showDateFormatSelecter" [(ngModel)]="dateFormatSelected"
+                                    [options]="rangeDateFormat" optionLabel="label" [style]="{'min-width': '130px'}"
+                                    placeholder="Rango" (onChange)="handleDateFilterFormatChange($event.value)">
+                                </p-dropdown>
+                                <!-- SDA CUSTOM --><eda-date-picker *ngIf="showEdaDatePicker" [inject]="datePickerConfigs[globalFilter.id]"
+                                    (onDatesChanges)="onApplyDateFilterFromPicker($event)" [filterSelected]="filterSelected"
+                                    [selectionMode]="'range'" [showSelector]="false">
+                                </eda-date-picker>
+                                <eda-date-picker *ngIf="showEdaDatePickerSingleSelection" [inject]="datePickerConfigs[globalFilter.id]"
+                                    (onDatesChanges)="onApplyDateFilterFromPicker($event)" [filterSelected]="filterSelected"
+                                    [selectionMode]="'single'" [showSelector]="false">
+                                </eda-date-picker>
+                                <!-- SDA CUSTOM --><eda-date-picker *ngIf="showEdaDatePickerMultipleSelection" [inject]="datePickerConfigs[globalFilter.id]"
+                                    (onDatesChanges)="onApplyDateFilterFromPicker($event)" [filterSelected]="filterSelected"
+                                    [selectionMode]="'multiple'" [showSelector]="false">
+                                </eda-date-picker>
+                            </div>
                         </div>
                     </div>
                 </p-card>
@@ -63,8 +80,6 @@
                 </p-card>
             </div>
         </div>
-
-
 
         <div class="row">
             <div *ngIf="!isEmpty(globalFilter.selectedTable) && !isEmpty(globalFilter.selectedColumn)" class="col-12">
@@ -89,7 +104,7 @@
              <ng-container *ngIf="globalFilter.pathList[panel.id] && panel.content?.query?.query?.queryMode === 'SQL'">
                  <span i18n="@@sqlModeFilterPathText" style="font-family: var(--DEFAULT_FONT_FAMILY); font-weight: bolder; font-size: 0.9rem; color: #495057;" [style.opacity]="!panel.active || !panel.avaliable ? 0.4 : 1">En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta</span>
              </ng-container>
-             <!-- SDA CUSTOM --><p-treeSelect *ngIf="globalFilter.pathList[panel.id] && panel.content?.query?.query?.queryMode !== 'SQL'" [(ngModel)]="globalFilter.pathList[panel.id].selectedTableNodes" [options]="panel.content.globalFilterPaths" (onNodeExpand)="onNodeExpand(panel, $event)" (onNodeSelect)="onNodeSelect(panel, $event)" appendTo="body" [disabled]="!panel.active || !panel.avaliable">
+             <!-- SDA CUSTOM --><p-treeSelect *ngIf="globalFilter.pathList[panel.id] && panel.content?.query?.query?.queryMode !== 'SQL'" [(ngModel)]="globalFilter.pathList[panel.id].selectedTableNodes" [options]="panel.content.globalFilterPaths" (onNodeExpand)="onNodeExpand(panel, $event)" (onNodeSelect)="onNodeSelect(panel, $event)" [disabled]="!panel.active || !panel.avaliable">
 
                                         <ng-template pTemplate="value">
                          <!-- SDA CUSTOM -->    <span class="d-flex align-items-center" [innerHTML]="getDisplayPathStr(globalFilter.pathList[panel.id].selectedTableNodes)"></span>
@@ -121,10 +136,7 @@
                         </div>
                     </div>
                 </p-card>
-
-                <!-- <div *ngIf="isEmpty(globalFilter.selectedTable) || isEmpty(globalFilter.selectedColumn)" class="disabled-div"></div> -->
             </div>
-
         </div>
 
         <div class="row">
@@ -135,9 +147,8 @@
                         <ng-container *ngFor="let filter of globalFilterList">
                             <div *ngIf="!filter.isdeleted" class="select-box col-3 col-md-2 p-1" cdkDrag>
                                 <span class="close-thin pointer" (click)="removeFilter(filter, 'select')"></span>
-                                <!-- [ngClass]="(selectedFilter.table==filter.table) && (selectedFilter.column.label==filter.column.label)?'edaEmfasis':''" -->
                                 <span class="text-center">
-                                    {{getFilterLabel(filter)}}
+                                    <!-- SDA CUSTOM --> {{filter.selectedColumn?.column_type === 'date' ? getDateFormatButtonLabel(filter) : getFilterLabel(filter)}}
                                 </span>
                             </div>
                         </ng-container>

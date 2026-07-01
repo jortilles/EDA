@@ -175,6 +175,9 @@ export const QueryUtils = {
     /* SDA CUSTOM*/     if (matchingGlobalFilter) {
     /* SDA CUSTOM*/       ebp.sortedFilters[i].filter_elements = matchingGlobalFilter.filter_elements;
     /* SDA CUSTOM*/       ebp.sortedFilters[i].filter_codes = matchingGlobalFilter.filter_codes;
+    /* SDA CUSTOM*/       ebp.sortedFilters[i].filter_type = matchingGlobalFilter.filter_type;
+    /* SDA CUSTOM*/       ebp.sortedFilters[i].filter_column_type = matchingGlobalFilter.filter_column_type;
+    /* SDA CUSTOM*/       ebp.sortedFilters[i].dynamicValue = matchingGlobalFilter.dynamicValue;
     /* SDA CUSTOM*/     } else {
     /* SDA CUSTOM*/       ebp.sortedFilters.splice(i, 1);
     /* SDA CUSTOM*/     }

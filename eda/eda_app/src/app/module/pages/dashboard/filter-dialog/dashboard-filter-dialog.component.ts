@@ -10,6 +10,9 @@ import { EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract, EdaDatePickerCompone
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/datePickerConfig';
 import * as _ from 'lodash';
+/* SDA CUSTOM */ import { ChartUtilsService } from '@eda/services/utils/chart-utils.service';
+/* SDA CUSTOM */ import { DateUtils } from '@eda/services/utils/date-utils.service';
+/* SDA CUSTOM */ import { rangeDateFormats } from '@eda/shared/components/date-dialog/date-format-dialog.index';
 @Component({
     selector: 'dashboard-filter-dialog',
     templateUrl: './dashboard-filter-dialog.component.html',
@@ -49,7 +52,17 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     public selectedFilter: any;
     public datePickerConfigs: any = {};
     public aliasValue : string = "";
-    
+
+    /* SDA CUSTOM */ public dateFilterOperators: any[] = [];
+    /* SDA CUSTOM */ public rangeDateFormat: any[] = [];
+    /* SDA CUSTOM */ public filterSelected: any = null;
+    /* SDA CUSTOM */ public dateFormatSelected: any = null;
+    /* SDA CUSTOM */ public showDateFormatSelecter: boolean = true;
+    /* SDA CUSTOM */ public showEdaDatePicker: boolean = false;
+    /* SDA CUSTOM */ public showEdaDatePickerSingleSelection: boolean = false;
+    /* SDA CUSTOM */ public showEdaDatePickerMultipleSelection: boolean = false;
+    /* SDA CUSTOM */ public isDateFormatAvailable: boolean = false;
+
     // Global filters vars
     public filtersList: Array<{ table, column, panelList, data, selectedItems, selectedRange, id, isGlobal, applyToAll, visible }> = [];
 
@@ -68,7 +81,9 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         private dashboardService: DashboardService,
         private queryBuilderService: QueryBuilderService,
         private fileUtils: FileUtiles,
-        private alertService: AlertService) {
+        private alertService: AlertService,
+        /* SDA CUSTOM */ private chartUtilsService: ChartUtilsService,
+        /* SDA CUSTOM */ private dateUtils: DateUtils) {
         super();
 
         this.dialog = new EdaDialog({
@@ -335,9 +350,160 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         this.selectedFilter = filter;
         this.publicRoHiddenOption = filter.visible;
         if (filter.column.value.column_type === 'date') {
-            this.loadDatesFromFilter(filter)
+            this.loadDatesFromFilter(filter);
+            /* SDA CUSTOM */ this.initDateFilterConfig();
         }
     }
+
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */ private initDateFilterConfig(): void {
+    /* SDA CUSTOM */     this.dateFilterOperators = this.chartUtilsService.filterTypes.filter((ft: any) => ft.value !== 'like' && ft.value !== 'not_like');
+    /* SDA CUSTOM */     this.rangeDateFormat = [...rangeDateFormats];
+    /* SDA CUSTOM */     this.resetDateFilterUI();
+    /* SDA CUSTOM */     this.loadExistingDateFilterValues();
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */ private resetDateFilterUI(): void {
+    /* SDA CUSTOM */     this.showDateFormatSelecter = true;
+    /* SDA CUSTOM */     this.showEdaDatePicker = false;
+    /* SDA CUSTOM */     this.showEdaDatePickerSingleSelection = false;
+    /* SDA CUSTOM */     this.showEdaDatePickerMultipleSelection = false;
+    /* SDA CUSTOM */     this.isDateFormatAvailable = false;
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */ private loadExistingDateFilterValues(): void {
+    /* SDA CUSTOM */     const gf = this.selectedFilter;
+    /* SDA CUSTOM */     if (!gf) return;
+
+    /* SDA CUSTOM */     // Try to find the filter type from various sources
+    /* SDA CUSTOM */     let dateFilterType = gf.dateFilterType;
+    /* SDA CUSTOM */     
+    /* SDA CUSTOM */     // If no dateFilterType, try to infer from selectedItems count
+    /* SDA CUSTOM */     if (!dateFilterType && gf.selectedItems?.length > 0) {
+    /* SDA CUSTOM */         // If 2 or more items, likely between/not_between or in/not_in
+    /* SDA CUSTOM */         dateFilterType = gf.selectedItems.length >= 2 ? 'between' : '=';
+    /* SDA CUSTOM */     }
+    /* SDA CUSTOM */     
+    /* SDA CUSTOM */     // If still no type but has selectedRange, default to between
+    /* SDA CUSTOM */     if (!dateFilterType && gf.selectedRange && gf.selectedRange !== 'customDate') {
+    /* SDA CUSTOM */         dateFilterType = 'between';
+    /* SDA CUSTOM */     }
+    /* SDA CUSTOM */     
+    /* SDA CUSTOM */     if (!dateFilterType && !gf.selectedItems?.length && !gf.selectedRange) return;
+
+    /* SDA CUSTOM */     this.filterSelected = this.dateFilterOperators.find(op => op.value === dateFilterType);
+
+    /* SDA CUSTOM */     // If still not found and we have selectedRange, try to infer from selectedItems
+    /* SDA CUSTOM */     if (!this.filterSelected && gf.selectedRange) {
+    /* SDA CUSTOM */         const hasMultipleItems = gf.selectedItems?.length > 1;
+    /* SDA CUSTOM */         this.filterSelected = hasMultipleItems
+    /* SDA CUSTOM */             ? this.dateFilterOperators.find(op => op.value === 'not_in')
+    /* SDA CUSTOM */             : this.dateFilterOperators.find(op => op.value === 'between');
+    /* SDA CUSTOM */     }
+    /* SDA CUSTOM */     this.isDateFormatAvailable = true;
+
+    /* SDA CUSTOM */     const noDateNeeded = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+    /* SDA CUSTOM */     if (noDateNeeded.includes(dateFilterType)) return;
+
+    /* SDA CUSTOM */     const dynamicValue = gf.dynamicValue || gf.selectedRange;
+    /* SDA CUSTOM */     if (dynamicValue && dynamicValue !== 'customDate') {
+    /* SDA CUSTOM */         this.dateFormatSelected = this.rangeDateFormat.find(r => r.value === dynamicValue);
+    /* SDA CUSTOM */         if (!this.dateFormatSelected) {
+    /* SDA CUSTOM */             this.dateFormatSelected = { label: this.getRangeLabel(dynamicValue), value: dynamicValue };
+    /* SDA CUSTOM */         }
+    /* SDA CUSTOM */         this.adjustRangeForOperator();
+    /* SDA CUSTOM */     } else if (dynamicValue === 'customDate' || gf.selectedItems?.length > 0) {
+    /* SDA CUSTOM */         this.dateFormatSelected = { label: $localize`:@@DatePickerCustomDate:Seleccionar fecha`, value: 'customDate' };
+    /* SDA CUSTOM */         this.adjustRangeForOperator();
+    /* SDA CUSTOM */     }
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */ private adjustRangeForOperator(): void {
+    /* SDA CUSTOM */     if (!this.filterSelected) return;
+
+    /* SDA CUSTOM */     const noDateNeeded = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+    /* SDA CUSTOM */     if (noDateNeeded.includes(this.filterSelected.value)) return;
+
+    /* SDA CUSTOM */     if(['=', '!=', '>', '<', '>=', '<='].includes(this.filterSelected.value)) {
+    /* SDA CUSTOM */         this.showDateFormatSelecter = true;
+    /* SDA CUSTOM */         this.showEdaDatePicker = false;
+    /* SDA CUSTOM */         this.showEdaDatePickerSingleSelection = false;
+    /* SDA CUSTOM */         this.showEdaDatePickerMultipleSelection = false;
+    /* SDA CUSTOM */         this.rangeDateFormat = rangeDateFormats.filter((ft: any, index: number) => index < 5);
+    /* SDA CUSTOM */         this.rangeDateFormat.push(rangeDateFormats[rangeDateFormats.length - 1]);
+    /* SDA CUSTOM */         if (this.dateFormatSelected?.value === 'customDate') {
+    /* SDA CUSTOM */             this.showEdaDatePickerSingleSelection = true;
+    /* SDA CUSTOM */         } else if (this.dateFormatSelected && !this.rangeDateFormat.find(r => r.value === this.dateFormatSelected.value)) {
+    /* SDA CUSTOM */             this.rangeDateFormat.unshift(this.dateFormatSelected);
+    /* SDA CUSTOM */         }
+    /* SDA CUSTOM */         return;
+    /* SDA CUSTOM */     }
+
+    /* SDA CUSTOM */     if(['in', 'not_in'].includes(this.filterSelected.value)) {
+    /* SDA CUSTOM */         this.showDateFormatSelecter = true;
+    /* SDA CUSTOM */         this.showEdaDatePicker = false;
+    /* SDA CUSTOM */         this.showEdaDatePickerSingleSelection = false;
+    /* SDA CUSTOM */         this.showEdaDatePickerMultipleSelection = false;
+    /* SDA CUSTOM */         this.rangeDateFormat = rangeDateFormats.filter((ft: any, index: number) => index >= 5);
+    /* SDA CUSTOM */         if (this.dateFormatSelected?.value === 'customDate') {
+    /* SDA CUSTOM */             this.showEdaDatePickerMultipleSelection = true;
+    /* SDA CUSTOM */         } else if (this.dateFormatSelected && !this.rangeDateFormat.find(r => r.value === this.dateFormatSelected.value)) {
+    /* SDA CUSTOM */             this.rangeDateFormat.unshift(this.dateFormatSelected);
+    /* SDA CUSTOM */         }
+    /* SDA CUSTOM */         return;
+    /* SDA CUSTOM */     }
+
+    /* SDA CUSTOM */     if(['between', 'not_between'].includes(this.filterSelected.value)) {
+    /* SDA CUSTOM */         this.showDateFormatSelecter = false;
+    /* SDA CUSTOM */         this.showEdaDatePicker = true;
+    /* SDA CUSTOM */         this.showEdaDatePickerSingleSelection = false;
+    /* SDA CUSTOM */         this.showEdaDatePickerMultipleSelection = false;
+    /* SDA CUSTOM */         return;
+    /* SDA CUSTOM */     }
+
+    /* SDA CUSTOM */     this.showDateFormatSelecter = true;
+    /* SDA CUSTOM */     this.showEdaDatePicker = false;
+    /* SDA CUSTOM */     this.showEdaDatePickerSingleSelection = false;
+    /* SDA CUSTOM */     this.showEdaDatePickerMultipleSelection = false;
+    /* SDA CUSTOM */     this.rangeDateFormat = [...rangeDateFormats];
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */ public handleDateFilterOperatorChange(operator: any): void {
+    /* SDA CUSTOM */     this.filterSelected = operator;
+    /* SDA CUSTOM */     this.adjustRangeForOperator();
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */ public handleDateFilterFormatChange(format: any): void {
+    /* SDA CUSTOM */     this.dateFormatSelected = format;
+    /* SDA CUSTOM */     if (!format) {
+    /* SDA CUSTOM */         this.selectedFilter.selectedRange = null;
+    /* SDA CUSTOM */         return;
+    /* SDA CUSTOM */     }
+
+    /* SDA CUSTOM */     if(['=', '!=', '>', '<', '>=', '<='].includes(this.filterSelected?.value) && format.value === 'customDate') {
+    /* SDA CUSTOM */         this.showEdaDatePickerSingleSelection = true;
+    /* SDA CUSTOM */         this.showEdaDatePickerMultipleSelection = false;
+    /* SDA CUSTOM */         this.showEdaDatePicker = false;
+    /* SDA CUSTOM */         return;
+    /* SDA CUSTOM */     }
+
+    /* SDA CUSTOM */     if(['in', 'not_in'].includes(this.filterSelected?.value) && format.value === 'customDate') {
+    /* SDA CUSTOM */         this.showEdaDatePickerMultipleSelection = true;
+    /* SDA CUSTOM */         this.showEdaDatePickerSingleSelection = false;
+    /* SDA CUSTOM */         this.showEdaDatePicker = false;
+    /* SDA CUSTOM */         return;
+    /* SDA CUSTOM */     }
+
+    /* SDA CUSTOM */     this.selectedFilter.selectedRange = format.value;
+    /* SDA CUSTOM */     this.showEdaDatePicker = this.filterSelected?.value === 'between' || this.filterSelected?.value === 'not_between';
+    /* SDA CUSTOM */     this.showEdaDatePickerSingleSelection = false;
+    /* SDA CUSTOM */     this.showEdaDatePickerMultipleSelection = false;
+    /* SDA CUSTOM */ }
 
     private loadDatesFromFilter(filter) {
         this.datePickerConfigs[filter.id] = new EdaDatePickerConfig();
@@ -362,5 +528,54 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     public onClose(event: EdaDialogCloseEvent, response?: any): void {
         return this.controller.close(event, response);
     }
+
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */ public getDateFilterDisplayLabel(filter: any): string {
+    /* SDA CUSTOM */     if (!filter) return '';
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */     const columnType = filter.selectedColumn?.column_type || filter.column?.value?.column_type;
+    /* SDA CUSTOM */     if (columnType !== 'date') return filter.column?.label || filter.selectedColumn?.display_name?.default || '';
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */     const op = filter.dateFilterType;
+    /* SDA CUSTOM */     if (!op) return filter.column?.label || '';
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */     const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+    /* SDA CUSTOM */     if (noValueTypes.includes(op)) return this.getOperatorLabel(op);
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */     const fmt = (s: string) => {
+    /* SDA CUSTOM */         if (!s) return '';
+    /* SDA CUSTOM */         const [ye, mo, da] = s.split('-');
+    /* SDA CUSTOM */         return `${da}-${mo}-${ye.slice(2)}`;
+    /* SDA CUSTOM */     };
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */     const dynamicValue = filter.dynamicValue || filter.selectedRange;
+    /* SDA CUSTOM */     if (dynamicValue && dynamicValue !== 'customDate') {
+    /* SDA CUSTOM */         return `${this.getOperatorLabel(op)} : ${this.getRangeLabel(dynamicValue)}`;
+    /* SDA CUSTOM */     }
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */     const items = filter.selectedItems;
+    /* SDA CUSTOM */     if (!items || items.length === 0) return filter.column?.label || '';
+    /* SDA CUSTOM */     if (Array.isArray(items[0])) return `${this.getOperatorLabel(op)} : ${(items[0] as string[]).map(fmt).join(', ')}`;
+    /* SDA CUSTOM */     if (items.length === 1 || !items[1]) return `${this.getOperatorLabel(op)} : ${fmt(items[0])}`;
+    /* SDA CUSTOM */     return `${this.getOperatorLabel(op)} : ${fmt(items[0])} - ${fmt(items[1])}`;
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */ private getRangeLabel(value: string): string {
+    /* SDA CUSTOM */     return rangeDateFormats.find((r: any) => r.value === value)?.label || value;
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */
+    /* SDA CUSTOM */ private getOperatorLabel(op: string): string {
+    /* SDA CUSTOM */     const labels: Record<string, string> = {
+    /* SDA CUSTOM */         'between':            this.chartUtilsService.filterTypesLabels.find((v: any) => v.value === 'between')?.label || 'between',
+    /* SDA CUSTOM */         'in':                 this.chartUtilsService.filterTypesLabels.find((v: any) => v.value === 'in')?.label || 'in',
+    /* SDA CUSTOM */         'not_in':             this.chartUtilsService.filterTypesLabels.find((v: any) => v.value === 'not_in')?.label || 'not_in',
+    /* SDA CUSTOM */         'not_null':           this.chartUtilsService.filterTypesLabels.find((v: any) => v.value === 'not_null')?.label || 'not_null',
+    /* SDA CUSTOM */         'not_null_nor_empty': this.chartUtilsService.filterTypesLabels.find((v: any) => v.value === 'not_null_nor_empty')?.label || 'not_null_nor_empty',
+    /* SDA CUSTOM */         'null_or_empty':      this.chartUtilsService.filterTypesLabels.find((v: any) => v.value === 'null_or_empty')?.label || 'null_or_empty',
+    /* SDA CUSTOM */     };
+    /* SDA CUSTOM */     return labels[op] || op;
+    /* SDA CUSTOM */ }
 
 }

@@ -24,8 +24,19 @@ export const locales = {
     dateFormat: 'dd/mm/yy',
     weekHeader: 'Setmana'
   },
+  gl: {
+    firstDayOfWeek: 1,
+    dayNames: ["Domingo", "Luns", "Martes", "Mércores", "Xoves", "Venres", "Sábado"],
+    dayNamesShort: ["Dom", "Lun", "Mar", "Mér", "Xov", "Ven", "Sáb"],
+    dayNamesMin: ["Do", "Lu", "Ma", "Me", "Xo", "Ve", "Sá"],
+    monthNames: ["Xaneiro", "Febreiro", "Marzo", "Abril", "Maio", "Xuño", "Xullo", "Agosto", "Setembro", "Outubro", "Novembro", "Decembro"],
+    monthNamesShort: ["Xan", "Feb", "Mar", "Abr", "Mai", "Xuñ", "Xul", "Ago", "Set", "Out", "Nov", "Dec"],
+    today: 'Hoxe',
+    clear: 'Limpar',
+    dateFormat: 'dd/mm/yy',
+    weekHeader: 'Semana'
+  },
   en: {
-
     firstDayOfWeek: 1,
     dayNames: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
     dayNamesShort: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],

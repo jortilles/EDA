@@ -9,3 +9,20 @@
     }
 
 }
+
+/* SDA CUSTOM */.date-picker-single {
+/* SDA CUSTOM */margin-top: 0.025em;
+/* SDA CUSTOM */}
+
+/* SDA CUSTOM */.date-picker-single ::ng-deep .p-calendar,
+/* SDA CUSTOM */.date-picker-single ::ng-deep .p-calendar .p-inputtext {
+/* SDA CUSTOM */    width: 100%;
+/* SDA CUSTOM */}
+
+/* SDA CUSTOM - Allow filter text to wrap properly */
+/* SDA CUSTOM */.filter-display-text {
+/* SDA CUSTOM */    white-space: normal;
+/* SDA CUSTOM */    word-wrap: break-word;
+/* SDA CUSTOM */    max-width: 250px;
+/* SDA CUSTOM */    display: inline-block;
+/* SDA CUSTOM */}

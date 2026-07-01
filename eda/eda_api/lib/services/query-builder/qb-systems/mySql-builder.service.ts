@@ -362,7 +362,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     sortedFilters.sort((a: any, b: any) => a.y - b.y); 
 
     // Calculating global filters and they are empty.
-    const nullSortedFilters  =  sortedFilters.filter((f: any) => ((f.isGlobal===true) && (f.filter_elements[0].value1.length === 0)));
+    const nullSortedFilters  =  sortedFilters.filter((f: any) => ((f.isGlobal===true) && (f.filter_elements?.length > 0 && f.filter_elements[0]?.value1?.length === 0)));
 
     // If we have empty values in the filters we define a new sortedFilters
     if(nullSortedFilters.length !==0){
@@ -382,7 +382,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       }  )
   
       // Order in the y axis
-      const newSortedFilters = sortedFilters.filter((f: any) => !((f.isGlobal===true) && (f.filter_elements[0].value1.length === 0)));
+      const newSortedFilters = sortedFilters.filter((f: any) => !((f.isGlobal===true) && (f.filter_elements?.length > 0 && f.filter_elements[0]?.value1?.length === 0)));
       newSortedFilters.forEach( (f,i) => f.y=i );
 
       sortedFilters = _.cloneDeep(newSortedFilters);
@@ -390,7 +390,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     // If we have a global filter with only one empty value selected
     filters.forEach(filter => {
-      if(filter.isGlobal && (filter.filter_type === 'null_or_empty') && (filter.filter_elements[0].value1[0]==='emptyString')) {
+      if(filter.isGlobal && (filter.filter_type === 'null_or_empty') && (filter.filter_elements?.length > 0 && filter.filter_elements[0]?.value1?.[0]==='emptyString')) {
         const selectedFilter = sortedFilters.find(sf => sf.filter_id === filter.filter_id);
 
         if(selectedFilter) {
@@ -437,12 +437,16 @@ export class MySqlBuilderService extends QueryBuilderService {
     // Recursive function for the necessary nesting according to the AND/OR filter graph.
     function cadenaRecursiva(item: any) {
       // recursive item
-      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, filter_codes, value, valueListSource, sqlOptional, computed_column, SQLexpression } = item;
+/* SDA CUSTOM */      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, filter_codes, value, valueListSource, sqlOptional, computed_column, SQLexpression, dynamicValue } = item;
 
-      ////////////////////////////////////////////////// filter_type ////////////////////////////////////////////////// 
+      ////////////////////////////////////////////////// filter_type //////////////////////////////////////////////////
       let filter_type_value = '';
-      if(filter_type === 'not_in'){
+      if(filter_type === 'not_in' && !dynamicValue){
         filter_type_value = 'not in';
+/* SDA CUSTOM */      } else if(filter_type === 'not_between' || (dynamicValue && filter_type === 'not_in')){
+/* SDA CUSTOM */        filter_type_value = 'not between';
+/* SDA CUSTOM */      } else if(dynamicValue && filter_type === 'in'){
+/* SDA CUSTOM */        filter_type_value = 'between';
       } else {
         if(filter_type === 'not_like') {
           filter_type_value = 'not like';
@@ -483,7 +487,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
           // Numeric type value
           if(filter_column_type === 'numeric'){
-            if(filter_type === 'between') {
+/* SDA CUSTOM */            if(filter_type === 'between' || filter_type === 'not_between' || (dynamicValue && (filter_type === 'in' || filter_type === 'not_in'))) {
               filter_elements_value = filter_elements_value + ` ${Number(filter_codes[0].value1[0])} and ${Number(filter_codes[1].value2[0])}`;
             } else {
               if(filter_type === 'in' || filter_type === 'not_in') {
@@ -496,7 +500,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
           // Date type value
           if(filter_column_type === 'date'){
-            if(filter_type === 'between'){
+/* SDA CUSTOM */            if(filter_type === 'between' || filter_type === 'not_between' || (dynamicValue && (filter_type === 'in' || filter_type === 'not_in'))){
               filter_elements_value = filter_elements_value + ` STR_TO_DATE(\'${filter_codes[0].value1[0]}\',\'%Y-%m-%d\')` + ' and ' + `STR_TO_DATE(\'${filter_codes[1].value2[0]} 23:59:59\',\'%Y-%m-%d %H:%i:%S\')`;
             } else {
               if(filter_type==='in' || filter_type==='not_in') {
@@ -559,7 +563,11 @@ export class MySqlBuilderService extends QueryBuilderService {
       if(computed_column==='computed') {
         resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} (${SQLexpression}) ${filter_type_value}${filter_elements_value}`;
       } else {
-        /* SDA CUSTOM */ resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} \`${ validador ? valueListSource.target_table : filter_table}\`.\`${valueListFilterColumn}\` ${filter_type_value}${filter_elements_value}`;
+        /* SDA CUSTOM */ const rawColRef = `\`${validador ? valueListSource.target_table : filter_table}\`.\`${valueListFilterColumn}\``;
+        /* SDA CUSTOM */ const dateFilterColRef = (filter_column_type === 'date' && !['between', 'not_between'].includes(filter_type) && !['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(filter_type) && !(dynamicValue && (filter_type === 'in' || filter_type === 'not_in')))
+        /* SDA CUSTOM */   ? `DATE_FORMAT(${rawColRef}, '%Y-%m-%d')`
+        /* SDA CUSTOM */   : rawColRef;
+        /* SDA CUSTOM */ resultado = `${['null_or_empty', 'not_null_nor_empty'].includes(filter_type) || (filter_type==='in' && sqlOptional !== undefined) ? ' (' : ''} ${sqlOptional !== undefined ? sqlOptional : ''} ${dateFilterColRef} ${filter_type_value}${filter_elements_value}`;
       }
 
 
@@ -1062,8 +1070,9 @@ export class MySqlBuilderService extends QueryBuilderService {
       column.joins = filterObject.joins || [];
       column.valueListSource = filterObject.valueListSource;
       const colname=this.getFilterColname(column, filterObject.filter_codes?.length !== undefined  ,  filterObject.valueListSource !== undefined );
-      
-      switch (this.setFilterType(filterObject.filter_type)) {
+        /* SDA CUSTOM */ const dateColname = colType === 'date' ? `DATE_FORMAT(${colname}, '%Y-%m-%d')` : colname;
+       
+/* SDA CUSTOM *//* SDA CUSTOM */      switch (this.setFilterType(filterObject.filter_type, filterObject.dynamicValue)) {
         case 0:
           if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
           if (filterObject.filter_type === 'like') {
@@ -1085,9 +1094,9 @@ export class MySqlBuilderService extends QueryBuilderService {
           }   
           /** if i have the lovely code i use the code */
           if( filterObject.filter_codes?.length !== undefined  &&  filterObject.valueListSource !== undefined ){
-              return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_codes[0].value1, colType)} `;
+              return `${dateColname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_codes[0].value1, colType)} `;
           }else{
-              return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
+              return `${dateColname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
           }
           
           // in values
@@ -1095,12 +1104,15 @@ export class MySqlBuilderService extends QueryBuilderService {
           if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
             /** if i have the lovely code i use the code */
             if( filterObject.filter_codes?.length !== undefined  &&  filterObject.valueListSource !== undefined ){
-                return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_codes[0].value1, colType)}) `;
+                return `${dateColname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_codes[0].value1, colType)}) `;
             }else{
-                return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
+                return `${dateColname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
             }
           
         case 2:
+/* SDA CUSTOM */          if (filterObject.filter_type === 'not_between') { filterObject.filter_type = 'not between'; }
+/* SDA CUSTOM */          else if (filterObject.dynamicValue && filterObject.filter_type === 'in') { filterObject.filter_type = 'between'; }
+/* SDA CUSTOM */          else if (filterObject.dynamicValue && filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not between'; }
             /** if i have the lovely code i use the code */
             if( filterObject.filter_codes?.length !== undefined  &&  filterObject.valueListSource !== undefined ){
                 return `${colname}  ${filterObject.filter_type} 
@@ -1250,7 +1262,7 @@ public getHavingColname(column: any){
     const  colname = this.getHavingColname(column) ;
     let colType = column.column_type;
     
-    switch (this.setFilterType(filterObject.filter_type)) {
+/* SDA CUSTOM */    switch (this.setFilterType(filterObject.filter_type, filterObject.dynamicValue)) {
       case 0:
         if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
         if (filterObject.filter_type === 'like') {
@@ -1265,6 +1277,9 @@ public getHavingColname(column: any){
         if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
         return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:
+/* SDA CUSTOM */          if (filterObject.filter_type === 'not_between') { filterObject.filter_type = 'not between'; }
+/* SDA CUSTOM */          else if (filterObject.dynamicValue && filterObject.filter_type === 'in') { filterObject.filter_type = 'between'; }
+/* SDA CUSTOM */          else if (filterObject.dynamicValue && filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not between'; }
         return `${colname}  ${filterObject.filter_type} 
                     ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
       case 3:

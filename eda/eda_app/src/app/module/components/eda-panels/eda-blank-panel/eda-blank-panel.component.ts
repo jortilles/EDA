@@ -18,6 +18,7 @@ import { EdaChartComponent } from '@eda/components/component.index';
 import { EdaFilterAndOrComponent } from '../../eda-filter-and-or/eda-filter-and-or.component';
 import { PanelChart } from './panel-charts/panel-chart';
 import * as _ from 'lodash';
+/* SDA CUSTOM */ import { rangeDateFormats } from '@eda/shared/components/date-dialog/date-format-dialog.index';
 import { ChartConfig } from './panel-charts/chart-configuration-models/chart-config';
 import { ChartJsConfig } from './panel-charts/chart-configuration-models/chart-js-config';
 import { EdaInputText } from '@eda/shared/components/eda-input/eda-input-text';
@@ -315,6 +316,7 @@ export class EdaBlankPanelComponent implements OnInit {
         });
 
         if(this.sortedFilters === undefined) this.sortedFilters = []; // if it is an old report, we define the report as empty
+        /* SDA CUSTOM */ this.normalizeLegacyDateFilters();
     }
 
 
@@ -570,6 +572,7 @@ export class EdaBlankPanelComponent implements OnInit {
         /*SDA CUSTOM*/ this.joinType = panelContent.query.query.joinType || 'inner';
         /* SDA CUSTOM */ this.groupByEnabled = groupByEnabled ?? true;
         PanelInteractionUtils.handleFilters(this, panelContent.query.query);
+        /* SDA CUSTOM */ this.normalizeLegacyDateFilters();
         PanelInteractionUtils.handleFilterColumns(this, panelContent.query.query.filters, panelContent.query.query.fields);
         this.chartForm.patchValue({chart: this.chartUtils.chartTypes.find(o => o.subValue === panelContent.edaChart)});
 
@@ -961,6 +964,7 @@ export class EdaBlankPanelComponent implements OnInit {
                             if (f.removed) {
                                 this.selectedFilters = _.filter(this.selectedFilters, o => o.filter_id !== f.filter_id);
                             }
+                            /* SDA CUSTOM */ this.updateSortedFilterFromFilter(f);
                         }
                         this.configController = undefined;
                     }
@@ -1009,6 +1013,7 @@ export class EdaBlankPanelComponent implements OnInit {
                             if (f.removed) {
                                 this.selectedFilters = _.filter(this.selectedFilters, o => o.filter_id !== f.filter_id);
                             }
+                            /* SDA CUSTOM */ this.updateSortedFilterFromFilter(f);
                         });
                     }
 
@@ -1110,9 +1115,10 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public rebootGlobalFilter(_filter: any){
 
-        /* SDA CUSTOM  */ const filterIndex = this.sortedFilters.findIndex((sortedFilter: any) => _filter.id === sortedFilter.filter_id);
-        /* SDA CUSTOM  */ if (filterIndex !== -1) {
-        /* SDA CUSTOM  */     this.sortedFilters.splice(filterIndex, 1);
+        // SDA CUSTOM - Consistent with updateSortedFiltersColumnDialogFunction/updateSortedFiltersFilterDialogFunction: removing a filter used in the and/or config resets it entirely
+        /* SDA CUSTOM  */ if (this.sortedFilters.some((sortedFilter: any) => _filter.id === sortedFilter.filter_id)) {
+        /* SDA CUSTOM  */     this.sortedFilters = [];
+        /* SDA CUSTOM  */     this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
         /* SDA CUSTOM  */ }
 
     }
@@ -1132,10 +1138,11 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public openEditarConsulta(): void {
-
-        // Only affected at the start of the dashboard
+        /* SDA CUSTOM  */const nullFilterTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
         if(this.variableTemporal.some(filter => {
-            return filter.filter_elements[0].value1.length === 0
+        /* SDA CUSTOM  */    if (nullFilterTypes.includes(filter.filter_type)) return false;
+        /* SDA CUSTOM  */    const val1 = filter.filter_elements?.[0]?.value1;
+        /* SDA CUSTOM  */    return val1 == null || val1.length === 0;
         }) && this.variableTemporal.length != 0) {
             this.globalFilters = _.cloneDeep(this.variableTemporal);
         }
@@ -1669,35 +1676,34 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table);
 
-/**SDA CUSTOM  */   public removeColumn = (c: Column, list?: string) => {
-/**SDA CUSTOM  */       // rootTableName To have the principal table => conditions to check if we can delete the column
-/**SDA CUSTOM  */       const rootTableName = this.rootTable?.table_name;
-/**SDA CUSTOM  */       // joins is reliable when interacting on the app; table_id comparison is the fallback after save and reload when joins may be empty
-/**SDA CUSTOM  */       const isNotRootColumn = !!c?.joins?.length || (!!rootTableName && c?.table_id !== rootTableName);
-/**SDA CUSTOM  */       const rootColumnElements = this.currentQuery.filter(col => !col?.joins?.length && (!rootTableName || col?.table_id === rootTableName)).length;
-/**SDA CUSTOM  */       const currentQueryLength = this.currentQuery.length;
+/* SDA CUSTOM */   public removeColumn = (c: Column, list?: string) => {
+/* SDA CUSTOM */       // rootTableName To have the principal table => conditions to check if we can delete the column
+/* SDA CUSTOM */       const rootTableName = this.rootTable?.table_name;
+/* SDA CUSTOM */       // joins is reliable when interacting on the app; table_id comparison is the fallback after save and reload when joins may be empty
+/* SDA CUSTOM */       const isNotRootColumn = !!c?.joins?.length || (!!rootTableName && c?.table_id !== rootTableName);
+/* SDA CUSTOM */       const rootColumnElements = this.currentQuery.filter(col => !col?.joins?.length && (!rootTableName || col?.table_id === rootTableName)).length;
+/* SDA CUSTOM */       const currentQueryLength = this.currentQuery.length;
 
-/**SDA CUSTOM  */       // We just proceed if it is not the last column of the root table
-/**SDA CUSTOM  */       if (isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
-/**SDA CUSTOM  */           // We check if when deleting a field it has a filter at selectedFilters
-/**SDA CUSTOM  */           if (this.selectedFilters.some((sf: any) => sf.filter_column === c.column_name && sf.filter_table === c.table_id)) {
-                                if (this.sortedFilters.length !== 0) {
-                                    this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
-                                }
-                                this.sortedFilters = []; // resets the values ​​because one or more filters were deleted
+/* SDA CUSTOM */       // We just proceed if it is not the last column of the root table
+/* SDA CUSTOM */       if (isNotRootColumn || rootColumnElements > 1 || currentQueryLength === 1) {
+/* SDA CUSTOM */           // We check if the removed column's filter is part of the advanced (and/or) filter configuration
+/* SDA CUSTOM */           if (this.sortedFilters.some((sf: any) => sf.filter_column === c.column_name && sf.filter_table === c.table_id)) {
+                                /* SDA CUSTOM */ // Consistent with updateSortedFiltersColumnDialogFunction/updateSortedFiltersFilterDialogFunction: removing a filter used in the and/or config resets it entirely
+                                /* SDA CUSTOM */ this.sortedFilters = [];
+                                /* SDA CUSTOM */ this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
                             }
-/**SDA CUSTOM  */           // Last column of a new panel (query never executed): reset global filter config before utils runs
-/**SDA CUSTOM  */           if (currentQueryLength === 1 && _.isNil(this.panel.content)) {
-/**SDA CUSTOM  */               this.rootTableCleared.emit();
-/**SDA CUSTOM  */               this.globalFilters = [];
-/**SDA CUSTOM  */           }
+/* SDA CUSTOM */           // Last column of a new panel (query never executed): reset global filter config before utils runs
+/* SDA CUSTOM */           if (currentQueryLength === 1 && _.isNil(this.panel.content)) {
+/* SDA CUSTOM */               this.rootTableCleared.emit();
+/* SDA CUSTOM */               this.globalFilters = [];
+/* SDA CUSTOM */           }
                             PanelInteractionUtils.removeColumn(this, c, list);
                         }
-/**SDA CUSTOM  */       else {
-/**SDA CUSTOM  */       // We stop the event propagation to not open the attribute panel
-/**SDA CUSTOM  */           event.stopPropagation();
-/**SDA CUSTOM  */           this.alertService.addError($localize`:@@cannotRemoveLastColumn:No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.`);
-/**SDA CUSTOM  */       }
+/* SDA CUSTOM */       else {
+/* SDA CUSTOM */       // We stop the event propagation to not open the attribute panel
+/* SDA CUSTOM */           event.stopPropagation();
+/* SDA CUSTOM */           this.alertService.addError($localize`:@@cannotRemoveLastColumn:No se puede eliminar todas las columnas de la tabla raíz sin eliminar las columnas dependientes.`);
+/* SDA CUSTOM */       }
 
 /* SDA CUSTOM  */       const currenQuery = this.currentQuery;
 /* SDA CUSTOM  */       this.atLeastThereIsOneWithAggregation = this.checkAtLeastOneWithAggregation(currenQuery);
@@ -1873,7 +1879,11 @@ export class EdaBlankPanelComponent implements OnInit {
 
             let valueStr = '';
 
-            if (values) {
+            /* SDA CUSTOM: if dynamicValue is set, show the human-readable label instead of resolved dates */
+/* SDA CUSTOM  */            if (filter.dynamicValue) {
+/* SDA CUSTOM  */                const label = rangeDateFormats.find((r: any) => r.value === filter.dynamicValue)?.label || filter.dynamicValue;
+/* SDA CUSTOM  */                valueStr = `"${label}"`;
+/* SDA CUSTOM  */            } else if (values) {
                 if (values.length == 1 && !['in', 'not_in'].includes(filter.filter_type)) {
                     valueStr = `"${values[0]}"`;
                 }  else if (values.length > 1 || ['in', 'not_in'].includes(filter.filter_type)) {
@@ -1896,7 +1906,13 @@ export class EdaBlankPanelComponent implements OnInit {
 
             // Aggregate of internationalisation of the between
             let filterType = filter.filter_type
-            if(filterType === 'between') filterType = this.textBetween;
+
+/* SDA CUSTOM */        if(filterType === 'between') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'between').label;
+/* SDA CUSTOM */        if(filterType === 'in') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'in').label;
+/* SDA CUSTOM */        if(filterType === 'not_in') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_in').label;
+/* SDA CUSTOM */        if(filterType === 'not_null') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_null').label;
+/* SDA CUSTOM */        if(filterType === 'not_null_nor_empty') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'not_null_nor_empty').label;
+/* SDA CUSTOM */        if(filterType === 'null_or_empty') filterType = this.chartUtils.filterTypesLabels.find((value: any) => value.value === 'null_or_empty').label;
 
             str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filterType}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp - ${this.aggregationText}: &nbsp<strong>${aggregationLabel}</strong>&nbsp`;
         }
@@ -2012,10 +2028,13 @@ export class EdaBlankPanelComponent implements OnInit {
 
         if(e.add){
 
-            if(this.sortedFilters.length !==0){
-                const lastElement = this.sortedFilters[this.sortedFilters.length-1];
+            // SDA CUSTOM - Only append to an already configured and/or setup; if empty (not configured yet),
+            // leave it empty so it gets fully rebuilt from selectedFilters/globalFilters next time the dialog opens
+            /* SDA CUSTOM */ if (this.sortedFilters.length !== 0) {
 
-                const newSortedFilter = {
+            /* SDA CUSTOM */     const lastElement = this.sortedFilters[this.sortedFilters.length-1];
+
+            /* SDA CUSTOM */     const newSortedFilter = {
                     cols: 3,
                     rows: 1,
                     y: lastElement.y+1,
@@ -2027,18 +2046,18 @@ export class EdaBlankPanelComponent implements OnInit {
                     filter_elements: e.filter.filter_elements,
                     filter_codes: e.filter.filter_codes,
                     filter_id: e.filter.filter_id,
+                    /* SDA CUSTOM */ selectedRange: e.filter.selectedRange,
+                    /* SDA CUSTOM */ dynamicValue: e.filter.dynamicValue,
                     value: "and",
                 }
 
-                this.sortedFilters.push(newSortedFilter);
-            }
+            /* SDA CUSTOM */     this.sortedFilters.push(newSortedFilter);
+            /* SDA CUSTOM */ }
 
         } else {
-
-            if(this.sortedFilters.length !==0) {
-                this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
-            }
-            this.sortedFilters = [];
+            // SDA CUSTOM - When deleting a filter, reset all advanced filters and show warning
+            /* SDA CUSTOM */ this.sortedFilters = [];
+            /* SDA CUSTOM */ this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
         }
     }
 
@@ -2046,10 +2065,13 @@ export class EdaBlankPanelComponent implements OnInit {
 
         if(e.add){
 
-            if(this.sortedFilters.length !==0){
-                const lastElement = this.sortedFilters[this.sortedFilters.length-1];
+            // SDA CUSTOM - Only append to an already configured and/or setup; if empty (not configured yet),
+            // leave it empty so it gets fully rebuilt from selectedFilters/globalFilters next time the dialog opens
+            /* SDA CUSTOM */ if (this.sortedFilters.length !== 0) {
 
-                const newSortedFilter = {
+            /* SDA CUSTOM */     const lastElement = this.sortedFilters[this.sortedFilters.length-1];
+
+            /* SDA CUSTOM */     const newSortedFilter = {
                     cols: 3,
                     rows: 1,
                     y: lastElement.y+1,
@@ -2061,19 +2083,43 @@ export class EdaBlankPanelComponent implements OnInit {
                     filter_elements: e.filter.filter_elements,
                     filter_codes: e.filter.filter_codes,
                     filter_id: e.filter.filter_id,
+                    /* SDA CUSTOM */ selectedRange: e.filter.selectedRange,
+                    /* SDA CUSTOM */ dynamicValue: e.filter.dynamicValue,
                     value: "and",
                 }
 
-                this.sortedFilters.push(newSortedFilter);
-            }
+            /* SDA CUSTOM */     this.sortedFilters.push(newSortedFilter);
+            /* SDA CUSTOM */ }
 
         } else {
-
-            if(this.sortedFilters.length !==0) {
-                this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
-            }
-            this.sortedFilters = [];
+            // SDA CUSTOM - When deleting a filter, reset all advanced filters and show warning
+            /* SDA CUSTOM */ this.sortedFilters = [];
+            /* SDA CUSTOM */ this.alertService.addWarning($localize`:@@filterSettingsReboot:La configuración de filtros se ha reiniciado`);
         }
     }
+
+    /* SDA CUSTOM */ private updateSortedFilterFromFilter(f: any): void {
+    /* SDA CUSTOM */     if (!f || f.removed) return;
+    /* SDA CUSTOM */     const existing = this.sortedFilters.find(sf => sf.filter_id === f.filter_id);
+    /* SDA CUSTOM */     if (!existing) return;
+    /* SDA CUSTOM */     existing.filter_elements = f.filter_elements;
+    /* SDA CUSTOM */     existing.filter_codes = f.filter_codes;
+    /* SDA CUSTOM */     existing.filter_type = f.filter_type;
+    /* SDA CUSTOM */     existing.filter_column_type = f.filter_column_type;
+    /* SDA CUSTOM */     existing.dynamicValue = f.dynamicValue;
+    /* SDA CUSTOM */     existing.selectedRange = f.selectedRange;
+    /* SDA CUSTOM */     this.sortedFilters = [...this.sortedFilters];
+    /* SDA CUSTOM */ }
+
+    /* SDA CUSTOM */ private normalizeLegacyDateFilters(): void {
+    /* SDA CUSTOM */     const normalize = (f: any) => {
+    /* SDA CUSTOM */         if (f.selectedRange && !f.dynamicValue) {
+    /* SDA CUSTOM */             f.dynamicValue = f.selectedRange;
+    /* SDA CUSTOM */         }
+    /* SDA CUSTOM */     };
+    /* SDA CUSTOM */     this.selectedFilters.forEach(normalize);
+    /* SDA CUSTOM */     this.globalFilters.forEach(normalize);
+    /* SDA CUSTOM */     this.sortedFilters.forEach(normalize);
+    /* SDA CUSTOM */ }
 
 }

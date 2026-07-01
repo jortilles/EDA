@@ -68,6 +68,7 @@ export class AppComponent implements OnInit {
         let lan_ca = new RegExp('\/ca\/', 'i');
         let lan_es = new RegExp('\/es\/', 'i');
         let lan_pl = new RegExp('\/pl\/', 'i');
+        /* SDA CUSTOM */ let lan_gl = new RegExp('\/gl\/', 'i');
 
         if (lan_ca.test(url)) {
             this.config.setTranslation(
@@ -115,6 +116,20 @@ export class AppComponent implements OnInit {
                 }
             )
         }
+        /* SDA CUSTOM */ else if (lan_gl.test(url)) {
+        /* SDA CUSTOM */     this.config.setTranslation(
+        /* SDA CUSTOM */         {
+        /* SDA CUSTOM */             dayNames: ["Luns", "Martes", "Mércores", "Xoves", "Venres", "Sábado", "Domingo"],
+        /* SDA CUSTOM */             dayNamesShort: ["Dom", "Lun", "Mar", "Mér", "Xov", "Ven", "Sáb"],
+        /* SDA CUSTOM */             dayNamesMin: ["Do", "Lu", "Ma", "Me", "Xo", "Ve", "Sá"],
+        /* SDA CUSTOM */             monthNames: ["Xaneiro", "Febreiro", "Marzo", "Abril", "Maio", "Xuño", "Xullo", "Agosto", "Setembro", "Outubro", "Novembro", "Decembro"],
+        /* SDA CUSTOM */             monthNamesShort: ["Xan", "Feb", "Mar", "Abr", "Mai", "Xuñ", "Xul", "Ago", "Set", "Out", "Nov", "Dec"],
+        /* SDA CUSTOM */             today: 'Hoxe',
+        /* SDA CUSTOM */             clear: 'Limpar',
+        /* SDA CUSTOM */             weekHeader: 'Semana'
+        /* SDA CUSTOM */         }
+        /* SDA CUSTOM */     )
+        /* SDA CUSTOM */ }
         else {
 
             this.config.setTranslation(

@@ -1,0 +1,78 @@
+<!-- SDA CUSTOM --> <eda-dialog2 [display]="display" [header]="dateFormatDialogTextHeader + ' ' + selectedColumn.display_name.default" i18n-label="@@dateFormatTitle" width="60vw" height="70vh" [disableApply]="isReadyForConfirmation" (apply)="onApplyDateFormatDialog()" (close)="oncloseDateFormatDialog()">
+<!-- SDA CUSTOM --> 
+<!-- SDA CUSTOM -->     <div content>
+<!-- SDA CUSTOM -->         <div class="date-format-card">
+<!-- SDA CUSTOM -->             
+<!-- SDA CUSTOM -->             <div class="date-format-col">
+<!-- SDA CUSTOM -->                 <h5>
+<!-- SDA CUSTOM -->                     <span i18n="@@filterOperatorSelectionText">Selección de operador del filtro:</span>
+<!-- SDA CUSTOM -->                 </h5>
+<!-- SDA CUSTOM -->                 
+<!-- SDA CUSTOM -->                 <div class="mt-5">
+<!-- SDA CUSTOM -->                     <span class="p-float-label">
+<!-- SDA CUSTOM -->                         <p-dropdown id="operatorTypes" [options]="filter.types" [(ngModel)]="filterTypeSelected" optionLabel="label"[autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true"(onChange)="handleFilterChange(filterTypeSelected)"></p-dropdown>
+<!-- SDA CUSTOM -->     
+<!-- SDA CUSTOM -->                         <label i18n="@@tiposFiltrosLabel" for="types">
+<!-- SDA CUSTOM -->                             Tipos de filtro
+<!-- SDA CUSTOM -->                         </label>
+<!-- SDA CUSTOM -->     
+<!-- SDA CUSTOM -->                     </span>
+<!-- SDA CUSTOM -->                 </div>
+<!-- SDA CUSTOM --> 
+<!-- SDA CUSTOM -->             </div>
+<!-- SDA CUSTOM -->             
+<!-- SDA CUSTOM -->             <div class="date-format-col">
+<!-- SDA CUSTOM -->                 <h5 *ngIf="filterTypeSelected?.value !== 'between' && filterTypeSelected?.value !== 'not_null' && filterTypeSelected?.value !== 'not_null_nor_empty' && filterTypeSelected?.value !== 'null_or_empty'">
+<!-- SDA CUSTOM -->                     <span i18n="@@dateSelectionText">Selección de fecha:</span> 
+<!-- SDA CUSTOM -->                 </h5>
+<!-- SDA CUSTOM --> 
+<!-- SDA CUSTOM -->                 <div *ngIf="showDateFormatSelecter" class="mt-5">
+<!-- SDA CUSTOM -->                     <span class="p-float-label">
+<!-- SDA CUSTOM -->                         <p-dropdown id="dateFormatSelection" [options]="rangeDateFormat.types" [(ngModel)]="dateFormatSelected" optionLabel="label"[autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true"[disabled]="!isDateFormatAvailable"(onChange)="handleDateFormatChange(dateFormatSelected)"></p-dropdown>
+<!-- SDA CUSTOM -->     
+<!-- SDA CUSTOM -->                         <label i18n="@@tiposFiltrosLabel" for="types">
+<!-- SDA CUSTOM -->                             Tipos de filtro
+<!-- SDA CUSTOM -->                         </label>
+<!-- SDA CUSTOM -->     
+<!-- SDA CUSTOM -->                     </span>
+<!-- SDA CUSTOM -->                 </div>
+<!-- SDA CUSTOM --> 
+<!-- SDA CUSTOM -->                 <h5 *ngIf="showEdaDatePicker">
+<!-- SDA CUSTOM -->                     <span i18n="@@calendarSelectionText">Selección en calendario:</span> 
+<!-- SDA CUSTOM -->                 </h5>
+<!-- SDA CUSTOM --> 
+<!-- SDA CUSTOM -->                 <div *ngIf="showEdaDatePicker" class="mt-5">
+<!-- SDA CUSTOM -->                     <div class="date-picker-single">
+<!-- SDA CUSTOM -->                         <eda-date-picker [inject]="datePickerConfig" (onDatesChanges)="processPickerEvent($event)" [filterSelected]="filterTypeSelected" [selectionMode]="'range'" [showSelector]="false"></eda-date-picker>
+<!-- SDA CUSTOM -->                     </div>
+<!-- SDA CUSTOM -->                 </div>
+<!-- SDA CUSTOM --> 
+<!-- SDA CUSTOM -->             </div>
+<!-- SDA CUSTOM -->             
+<!-- SDA CUSTOM -->             <div class="date-format-col">
+<!-- SDA CUSTOM -->                 <h5 *ngIf="showEdaDatePickerSingleSelection || showEdaDatePickerMultipleSelection">
+<!-- SDA CUSTOM -->                     <span i18n="@@calendarSelectionText">Selección en calendario:</span> 
+<!-- SDA CUSTOM -->                 </h5>
+<!-- SDA CUSTOM -->     
+<!-- SDA CUSTOM -->                 <div *ngIf="showEdaDatePickerSingleSelection" class="mt-5">
+<!-- SDA CUSTOM -->                     <div class="date-picker-single">
+<!-- SDA CUSTOM -->                         <eda-date-picker [inject]="datePickerConfig" (onDatesChanges)="processPickerEvent($event)" [filterSelected]="filterTypeSelected" [selectionMode]="'single'" [showSelector]="false"></eda-date-picker>
+<!-- SDA CUSTOM -->                     </div>
+<!-- SDA CUSTOM -->                 </div>
+<!-- SDA CUSTOM -->     
+<!-- SDA CUSTOM -->                 <div *ngIf="showEdaDatePickerMultipleSelection" class="mt-5">
+<!-- SDA CUSTOM -->                     <div class="date-picker-single">
+<!-- SDA CUSTOM -->                         <eda-date-picker [inject]="datePickerConfig" (onDatesChanges)="processPickerEvent($event)" [filterSelected]="filterTypeSelected" [selectionMode]="'multiple'" [showSelector]="false"></eda-date-picker>
+<!-- SDA CUSTOM -->                     </div>
+<!-- SDA CUSTOM -->                 </div>
+<!-- SDA CUSTOM --> 
+<!-- SDA CUSTOM -->             </div>
+<!-- SDA CUSTOM -->         </div>
+<!-- SDA CUSTOM -->     </div>
+<!-- SDA CUSTOM --> 
+<!-- SDA CUSTOM -->     <div footer style="margin-right: auto; display: flex; gap: 8px; align-items: center;">
+<!-- SDA CUSTOM -->         <ng-content select="[footer]"></ng-content>
+<!-- SDA CUSTOM -->         <button *ngIf="cleanButtonsAvailable" pButton pRipple type="button" label="Clean" icon="pi pi-undo" class="p-button-rounded p-button-outlined" (click)="onCleanDateFormatDialog()"></button>
+<!-- SDA CUSTOM -->     </div>
+<!-- SDA CUSTOM --> 
+<!-- SDA CUSTOM --> </eda-dialog2>

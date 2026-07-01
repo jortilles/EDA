@@ -28,3 +28,6 @@ export { NavbarComponent } from './navbar/navbar.component';
 export { SidebarComponent } from './sidebar/sidebar.component';
 
 export { CreateDashboardComponent } from './create-dashboard/create-dashboard.component';
+
+/* SDA CUSTOM */ // Date Format Dialog
+/* SDA CUSTOM */ export { DateFormatDialogComponent } from './date-dialog/date-format-dialog.component';

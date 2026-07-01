@@ -29,6 +29,10 @@ export interface FilterType {
     value: string;
     typeof: string[];
 }
+export interface FilterTypeLabels {
+    label: string;
+    value: string;
+}
 
 export interface OrdenationType {
     display_name: string;
@@ -79,8 +83,25 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypesRadar:Radar`, value: 'radar', subValue: 'radar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
     ];
 
-    public filterTypes: FilterType[] = [
-        { label: $localize`:@@filters1:IGUAL A (=)`, value: '=', typeof: ['numeric', 'date', 'text'] },
+/** SDA CUSTOM */    public filterTypesLabels: FilterTypeLabels[] = [
+/** SDA CUSTOM */        { label: $localize`:@@filtersLabel1:=`, value: '=' },
+/** SDA CUSTOM */        { label: $localize`:@@filtersLabel2:≠`, value: '!=' },
+/** SDA CUSTOM */        { label: $localize`:@@filtersLabel3:>`, value: '>' },
+/** SDA CUSTOM */        { label: $localize`:@@filtersLabel4:<`, value: '<' },
+/** SDA CUSTOM */        { label: $localize`:@@filtersLabel5:≥`, value: '>=' },
+/** SDA CUSTOM */        { label: $localize`:@@filtersLabel6:≤`, value: '<=' },
+/** SDA CUSTOM */        { label: $localize`:@@filtersLabel7:Entre`, value: 'between' },
+/** SDA CUSTOM */        { label: $localize`:@@filtersLabel8:Dentro de`, value: 'in' },
+/** SDA CUSTOM */        { label: $localize`:@@filtersLabel9:Fuera de`, value: 'not_in' },
+/** SDA CUSTOM */        { label: $localize`:@@filtersLabel10:Parecido a`, value: 'like' },
+/** SDA CUSTOM */        { label: $localize`:@@filtersLabel11:No parecido a`, value: 'not_like' },
+/** SDA CUSTOM */        { label: $localize`:@@filtersLabel12:No nulos`, value: 'not_null' },
+/** SDA CUSTOM */        { label: $localize`:@@filtersLabel13:No nulos ni vacíos`, value: 'not_null_nor_empty' },
+/** SDA CUSTOM */        { label: $localize`:@@filtersLabel14:Nulos o vacíos`, value: 'null_or_empty' },
+/** SDA CUSTOM */    ];
+
+    public filterTypes: any[] = [
+        { label: $localize`:@@filters1:IGUAL A (=)`, value: '='},
         { label: $localize`:@@filters2:NO IGUAL A (!=)`, value: '!=', typeof: ['numeric', 'date', 'text'] },
         { label: $localize`:@@filters3:MAYOR A (>)`, value: '>', typeof: ['numeric', 'date'] },
         { label: $localize`:@@filters4:MENOR A (<)`, value: '<', typeof: ['numeric', 'date'] },

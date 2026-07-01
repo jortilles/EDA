@@ -14,9 +14,9 @@ export class DateUtils {
 
             public getRange(range: any) {
                 switch (range) {
-/* SDA_CUSTOM*/     case 'beforeTodayIncluded':return this.beforeTodayIncluded();
-/* SDA_CUSTOM*/ //  case 'all': return this.allDates();
-/**SDA CUSTOM  */   case 'today': return this.setToday();
+/* SDA CUSTOM */     case 'beforeTodayIncluded':return this.beforeTodayIncluded();
+/* SDA CUSTOM */ //  case 'all': return this.allDates();
+/* SDA CUSTOM */   case 'today': return this.setToday();
                     case 'yesterday': return this.setYesterday();
                     case 'beforeYesterday': return this.setBeforeYesterday();
                     case 'weekStart': return this.setWeekStart();
@@ -24,14 +24,14 @@ export class DateUtils {
                     case 'pastWeek': return this.setPastWeek();
                     case 'pastWeekFull': return this.setPastWeekFull();
                     case 'monthStart': return this.setMonthStart();
-/**SDA CUSTOM  */   case 'monthStartFull': return this.setMonthStartFull();
+/* SDA CUSTOM */   case 'monthStartFull': return this.setMonthStartFull();
                     case 'pastMonth': return this.setPastMonth();
                     case 'pastMonthFull': return this.setPastMonthFull();
                     case 'monthStartPreviousYear': return this.setMonthStartPreviousYear();
                     case 'monthFullPreviousYear': return this.setMonthFullPreviousYear();
-/**SDA CUSTOM  */   case 'quarterStart': return this.setQuarterStart();
+/* SDA CUSTOM */   case 'quarterStart': return this.setQuarterStart();
                     case 'yearStart': return this.setYearStart();
-/**SDA CUSTOM  */   case 'yearStartFull': return this.setYearStartFull();
+/* SDA CUSTOM */   case 'yearStartFull': return this.setYearStartFull();
                     case 'yearStartPreviousYear': return this.setYearStartPreviousYear();
                     case 'yearStartPreviousYearFull': return this.setYearStartPreviousYearFull();
                     case 'last3': return this.setLast3();
@@ -70,10 +70,10 @@ export class DateUtils {
 /* SDA CUSTOM */        return [mostOldDate, today];
 /* SDA CUSTOM */    }
 
-/**SDA CUSTOM  */    public setToday(): Array<Date> {
-/**SDA CUSTOM  */        const today = moment().toDate();
-/**SDA CUSTOM  */        return [today, today];
-/**SDA CUSTOM  */    }
+/* SDA CUSTOM */    public setToday(): Array<Date> {
+/* SDA CUSTOM */        const today = moment().toDate();
+/* SDA CUSTOM */        return [today, today];
+/* SDA CUSTOM */    }
 
     public setYesterday(): Array<Date> {
         const yesterday = moment().subtract(1,'days').toDate()
@@ -85,11 +85,11 @@ export class DateUtils {
         return [beforeYesterday,beforeYesterday];
     }
 
-/**SDA CUSTOM  */   public setWeekStart(): Array<Date> {
-/**SDA CUSTOM  */       const startOnMonday = moment().startOf('isoWeek').toDate();
-/**SDA CUSTOM  */       let today = new Date();
-/**SDA CUSTOM  */       return [startOnMonday,today];
-/**SDA CUSTOM  */   }
+/* SDA CUSTOM */   public setWeekStart(): Array<Date> {
+/* SDA CUSTOM */       const startOnMonday = moment().startOf('isoWeek').toDate();
+/* SDA CUSTOM */       let today = new Date();
+/* SDA CUSTOM */       return [startOnMonday,today];
+/* SDA CUSTOM */   }
 
     /**
      * Establece el inicio y fin de la semana basado en la fecha actual de acuerdo al ISO 8601 que en todos
@@ -99,12 +99,12 @@ export class DateUtils {
      * y el segundo es el fin de la semana.
      *
     */
-/**SDA CUSTOM  */    public setWeekStartFull(): Array<Date> {
-/**SDA CUSTOM  */      let now = moment();
-/**SDA CUSTOM  */      let start = now.clone().startOf('isoWeek').toDate();
-/**SDA CUSTOM  */      let end = now.clone().endOf('isoWeek').toDate();
-/**SDA CUSTOM  */      return [start, end];
-/**SDA CUSTOM  */    }
+/* SDA CUSTOM */    public setWeekStartFull(): Array<Date> {
+/* SDA CUSTOM */      let now = moment();
+/* SDA CUSTOM */      let start = now.clone().startOf('isoWeek').toDate();
+/* SDA CUSTOM */      let end = now.clone().endOf('isoWeek').toDate();
+/* SDA CUSTOM */      return [start, end];
+/* SDA CUSTOM */    }
 
     public setPastWeek(): Array<Date> {
         const getMonday = (d: Date) => {
@@ -191,11 +191,11 @@ export class DateUtils {
         return [yearStart, today];
     }
 
-/**SDA CUSTOM  */    public setYearStartFull(): Array<Date> {
-/**SDA CUSTOM  */    const yearStart = moment().startOf('year').toDate();
-/**SDA CUSTOM  */        const yearEnd = moment().endOf('year').toDate();
-/**SDA CUSTOM  */        return [yearStart, yearEnd];
-/**SDA CUSTOM  */    }
+/* SDA CUSTOM */    public setYearStartFull(): Array<Date> {
+/* SDA CUSTOM */    const yearStart = moment().startOf('year').toDate();
+/* SDA CUSTOM */        const yearEnd = moment().endOf('year').toDate();
+/* SDA CUSTOM */        return [yearStart, yearEnd];
+/* SDA CUSTOM */    }
 
     public setYearStartPreviousYear(): Array<Date> {
         const pastYearStart = moment().subtract(1,'years').startOf('year').toDate();
@@ -304,7 +304,7 @@ export class DateUtils {
 
     public setNext120(): Array<Date> {
         const start = moment().add(1, 'day').startOf('day').toDate();
-        const end   = moment().add(90, 'day').endOf('day').toDate();
+        const end   = moment().add(120, 'day').endOf('day').toDate();
         return [start, end];
     }
 

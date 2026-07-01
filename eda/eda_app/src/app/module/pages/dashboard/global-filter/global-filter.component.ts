@@ -5,7 +5,9 @@ import { EdaDialogCloseEvent, EdaDialogController } from "@eda/shared/components
 import { DashboardComponent } from "../dashboard.component";
 import { EdaBlankPanelComponent } from "@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component";
 import * as _ from 'lodash';
-
+/* SDA CUSTOM */ import { DateUtils } from '@eda/services/utils/date-utils.service';
+/* SDA CUSTOM */ import { rangeDateFormats } from '@eda/shared/components/date-dialog/date-format-dialog.index';
+/* SDA CUSTOM */ import { ChartUtilsService } from '@eda/services/utils/chart-utils.service';
 @Component({
     selector: 'app-global-filter',
     templateUrl: './global-filter.component.html',
@@ -28,12 +30,14 @@ export class GlobalFilterComponent implements OnInit {
     // flag para ver ultimo panel
     private lastPanel: any;
 
+    /* SDA CUSTOM */ public displayDateFormatMap: { [filterId: string]: boolean } = {};
+
     // SDA CUSTOM - Replace eliminated duplicate ID filterButtonDashboard with canonical filtrarH4
 /* SDA CUSTOM */    public filtrar: string = $localize`:@@filtrarH4:Filtrar`;
     // END SDA CUSTOM
-    /*SDA CUSTOM*/ public resumen: string = $localize`:@@filterSummary:Resumen de filtros`;
+    /* SDA CUSTOM */ public resumen: string = $localize`:@@filterSummary:Resumen de filtros`;
 /* SDA CUSTOM */ public selectedItemsLabel: string = $localize`:@@globalFilterSelectedItemsLabel:elementos seleccionados`;
-/*SDA CUSTOM*/ private tooltipHideTimeout: any;
+/* SDA CUSTOM */ private tooltipHideTimeout: any;
 
 
     constructor(
@@ -41,7 +45,9 @@ export class GlobalFilterComponent implements OnInit {
         private dashboardService: DashboardService,
         private queryBuilderService: QueryBuilderService,
         private alertService: AlertService,
-        private userService: UserService) { }
+        private userService: UserService,
+        /* SDA CUSTOM */ private dateUtils: DateUtils,
+        /* SDA CUSTOM */ private chartUtilsService: ChartUtilsService) { }
 
 
     /**
@@ -214,10 +220,10 @@ export class GlobalFilterComponent implements OnInit {
     // Main Global Filter
     public onShowGlobalFilter(isnew: boolean, filter?: any): void {
         if (this.dashboard.validateDashboard('GLOBALFILTER')) {
-            /*SDA CUSTOM*/ // Always open the new dialog (app-global-filter-dialog) with route support.
-            /*SDA CUSTOM*/ // Previously this checked for 'EDA2' panels and fell back to the legacy
-            /*SDA CUSTOM*/ // dashboard-filter-dialog for SQL-only dashboards. Now SQL panels are fully
-            /*SDA CUSTOM*/ // integrated into the new dialog so the legacy path is never needed.
+            /* SDA CUSTOM */ // Always open the new dialog (app-global-filter-dialog) with route support.
+            /* SDA CUSTOM */ // Previously this checked for 'EDA2' panels and fell back to the legacy
+            /* SDA CUSTOM */ // dashboard-filter-dialog for SQL-only dashboards. Now SQL panels are fully
+            /* SDA CUSTOM */ // integrated into the new dialog so the legacy path is never needed.
             if (isnew) this.globalFilter = { isnew: true };
             else {
                 filter.isnew = false;
@@ -256,6 +262,8 @@ export class GlobalFilterComponent implements OnInit {
                     filter.type = this.globalFilter.type;
                     filter.isGlobal = this.globalFilter.isGlobal;
                     filter.visible = this.globalFilter.visible;
+                    /* SDA CUSTOM */ filter.dateFilterType = this.globalFilter.dateFilterType;
+                    /* SDA CUSTOM */ filter.dynamicValue = this.globalFilter.dynamicValue;
 
                     for (const key in filter.pathList) {
                         if (filter.pathList[key]?.selectedTableNodes) {
@@ -423,6 +431,7 @@ export class GlobalFilterComponent implements OnInit {
      * @param filter
      */
     public processPickerEvent(event: any, filter: any): void {
+
         if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
             if (!event.dates[1]) {
@@ -465,8 +474,12 @@ export class GlobalFilterComponent implements OnInit {
         config.filter = filter;
         if (filter.selectedItems.length > 0) {
             if (!filter.selectedRange) {
-                let firstDate = filter.selectedItems[0];
-                let lastDate = filter.selectedItems[filter.selectedItems.length - 1];
+                // For in/not_in discrete dates, selectedItems is [[date1, date2, ...]]
+                /* SDA CUSTOM */ const items: string[] = Array.isArray(filter.selectedItems[0])
+                /* SDA CUSTOM */     ? filter.selectedItems[0]
+                /* SDA CUSTOM */     : filter.selectedItems;
+                const firstDate = items[0];
+                const lastDate = items[items.length - 1];
                 config.dateRange.push(new Date(firstDate.replace(/-/g, '/')));
                 config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
             }
@@ -478,9 +491,9 @@ export class GlobalFilterComponent implements OnInit {
             globalFilter = this.globalFilter;
         }
 
-        /*SDA CUSTOM*/ if (!globalFilter || !this.globalFilters.find((gf: any) => gf.id == globalFilter.id)) {
-        /*SDA CUSTOM*/     return;
-        /*SDA CUSTOM*/ }
+        /* SDA CUSTOM */ if (!globalFilter || !this.globalFilters.find((gf: any) => gf.id == globalFilter.id)) {
+        /* SDA CUSTOM */     return;
+        /* SDA CUSTOM */ }
 
         let targetTable: string;
         let targetColumn: any;
@@ -555,7 +568,7 @@ export class GlobalFilterComponent implements OnInit {
 
                 globalFilter.selectedItems = globalFilter.selectedIdValues?.map(siv => {
                     const value = data.filter(d => d.id === siv);
-                /*SDA CUSTOM*/      return value[0]?.value ?? siv;
+                /* SDA CUSTOM */      return value[0]?.value ?? siv;
                 })
 
 
@@ -616,13 +629,13 @@ export class GlobalFilterComponent implements OnInit {
 
                     if (columnName === paramColumn) {
                         filter.selectedItems = _.split(urlParams[param], '|');
-/*SDA CUSTOM*/          if (filter.selectedColumn?.valueListSource) {
-/*SDA CUSTOM*/          // IDs differ from labels: set nulls so loadGlobalFiltersData resolves labels → ids
-/*SDA CUSTOM*/              filter.selectedIdValues = [... _.split(urlParams[param], '|')];
-/*SDA CUSTOM*/          } else {
-/*SDA CUSTOM*/              // No valueListSource: label and id are the same value
-/*SDA CUSTOM*/              filter.selectedIdValues = [...filter.selectedItems];
-/*SDA CUSTOM*/          }
+/* SDA CUSTOM */          if (filter.selectedColumn?.valueListSource) {
+/* SDA CUSTOM */          // IDs differ from labels: set nulls so loadGlobalFiltersData resolves labels → ids
+/* SDA CUSTOM */              filter.selectedIdValues = [... _.split(urlParams[param], '|')];
+/* SDA CUSTOM */          } else {
+/* SDA CUSTOM */              // No valueListSource: label and id are the same value
+/* SDA CUSTOM */              filter.selectedIdValues = [...filter.selectedItems];
+/* SDA CUSTOM */          }
 
                         filter.panelList
                             .map(id => this.dashboard.panels.find(p => p.id === id))
@@ -694,17 +707,17 @@ export class GlobalFilterComponent implements OnInit {
         }
     }
 
-/*SDA CUSTOM*/ // This method have the same functionality as the chip in global filter, but this one is for the tooltip
-/*SDA CUSTOM*/ public removeFilterItem(filter: any, item: any): void {
-/*SDA CUSTOM*/     filter.selectedItems = filter.selectedItems.filter((i: any) => i !== item);
-/*SDA CUSTOM*/     this.setGlobalFilterItems(filter);
-/*SDA CUSTOM*/ }
+/* SDA CUSTOM */ // This method have the same functionality as the chip in global filter, but this one is for the tooltip
+/* SDA CUSTOM */ public removeFilterItem(filter: any, item: any): void {
+/* SDA CUSTOM */     filter.selectedItems = filter.selectedItems.filter((i: any) => i !== item);
+/* SDA CUSTOM */     this.setGlobalFilterItems(filter);
+/* SDA CUSTOM */ }
 
-/*SDA CUSTOM*/ // Removes all selected items from a filter
-/*SDA CUSTOM*/ public removeAllFilterItems(filter: any): void {
-/*SDA CUSTOM*/     filter.selectedItems = [];
-/*SDA CUSTOM*/     this.setGlobalFilterItems(filter);
-/*SDA CUSTOM*/ }
+/* SDA CUSTOM */ // Removes all selected items from a filter
+/* SDA CUSTOM */ public removeAllFilterItems(filter: any): void {
+/* SDA CUSTOM */     filter.selectedItems = [];
+/* SDA CUSTOM */     this.setGlobalFilterItems(filter);
+/* SDA CUSTOM */ }
 
 /* SDA CUSTOM */ public filterHoverTooltipHtml: string =
 /* SDA CUSTOM */     `<span class="tooltip-green">${$localize`:@@filterHoverGreen:Verde`}</span>: ${$localize`:@@filterHoverAffected:Paneles afectados por este filtro`}<br>` +
@@ -749,29 +762,164 @@ export class GlobalFilterComponent implements OnInit {
         return disabled;
     }
 
-/*SDA CUSTOM*/ // Method to show the filter tooltip
-/*SDA CUSTOM*/  public showFilterTooltip(event: MouseEvent, op: any, filter?: any): void {
-/*SDA CUSTOM*/ // If the filter doesn't have selected values, the tooltip won't be shown
-/*SDA CUSTOM*/      if (filter && (!filter.selectedIdValues || filter.selectedIdValues.length === 0)) return;
-/*SDA CUSTOM*/ // If there is some active timeout to hide the tooltip, it will be cleared
-/*SDA CUSTOM*/      if (this.tooltipHideTimeout && this.lastPanel === filter.id) {
-/*SDA CUSTOM*/         clearTimeout(this.tooltipHideTimeout);
-/*SDA CUSTOM*/         this.tooltipHideTimeout = null;
-/*SDA CUSTOM*/      }
-/*SDA CUSTOM*/      this.lastPanel = filter.id;
-/*SDA CUSTOM*/      op?.show(event);
-/*SDA CUSTOM*/  }
-/*SDA CUSTOM*/ // Method to hide the filter tooltip
-/*SDA CUSTOM*/  public hideFilterTooltip(op: any): void {
-/*SDA CUSTOM*/ // A timeout is set to avoid the tooltip to be hidden when the user is moving the mouse from the filter item to the tooltip
-/*SDA CUSTOM*/      this.tooltipHideTimeout = setTimeout(() => {
-/*SDA CUSTOM*/          op?.hide();
-/*SDA CUSTOM*/          this.tooltipHideTimeout = null;
-/*SDA CUSTOM*/      }, 150);
-/*SDA CUSTOM*/  }
+/* SDA CUSTOM */ // Method to show the filter tooltip
+/* SDA CUSTOM */  public showFilterTooltip(event: MouseEvent, op: any, filter?: any): void {
+/* SDA CUSTOM */ // If the filter doesn't have selected values, the tooltip won't be shown
+/* SDA CUSTOM */      if (filter && (!filter.selectedIdValues || filter.selectedIdValues.length === 0)) return;
+/* SDA CUSTOM */ // If there is some active timeout to hide the tooltip, it will be cleared
+/* SDA CUSTOM */      if (this.tooltipHideTimeout && this.lastPanel === filter.id) {
+/* SDA CUSTOM */         clearTimeout(this.tooltipHideTimeout);
+/* SDA CUSTOM */         this.tooltipHideTimeout = null;
+/* SDA CUSTOM */      }
+/* SDA CUSTOM */      this.lastPanel = filter.id;
+/* SDA CUSTOM */      op?.show(event);
+/* SDA CUSTOM */  }
+/* SDA CUSTOM */ // Method to hide the filter tooltip
+/* SDA CUSTOM */  public hideFilterTooltip(op: any): void {
+/* SDA CUSTOM */ // A timeout is set to avoid the tooltip to be hidden when the user is moving the mouse from the filter item to the tooltip
+/* SDA CUSTOM */      this.tooltipHideTimeout = setTimeout(() => {
+/* SDA CUSTOM */          op?.hide();
+/* SDA CUSTOM */          this.tooltipHideTimeout = null;
+/* SDA CUSTOM */      }, 150);
+/* SDA CUSTOM */  }
 
-/*SDA CUSTOM*/ // Check if filter is read-only for current user
-/*SDA CUSTOM*/ public isFilterReadOnly(filter: any): boolean {
-/*SDA CUSTOM*/     return !this.isAdmin && !this.isDashboardCreator && filter.visible === 'readOnly';
-/*SDA CUSTOM*/ }
+    /* SDA CUSTOM */
+    public onOpenDateFormatDialog(filter: any): void {
+        this.displayDateFormatMap[filter.id] = true;
+    }
+
+    /* SDA CUSTOM */
+    public onCloseDateFormatDialog(event: any, filter: any): void {
+        this.displayDateFormatMap[filter.id] = false;
+        if (!event) return;
+
+/* SDA CUSTOM */if (event.clean) {
+/* SDA CUSTOM */    filter.dateFilterType = null;
+/* SDA CUSTOM */    filter.dynamicValue = null;
+/* SDA CUSTOM */    filter.selectedRange = null;
+/* SDA CUSTOM */    filter.selectedItems = [];
+/* SDA CUSTOM */    this.applyGlobalFilter(filter);
+/* SDA CUSTOM */    return;
+/* SDA CUSTOM */}
+
+        const { dateFormatSet, filterSelected } = event;
+        const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        const toStr = (d: Date): string => {
+            const [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(d);
+            return `${ye}-${mo}-${da}`;
+        };
+
+        filter.dateFilterType = filterSelected.value;
+
+        if (dateFormatSet.dynamic) {
+            const dates = this.dateUtils.getRange(dateFormatSet.dynamicValue);
+            filter.selectedRange = dateFormatSet.dynamicValue;
+            filter.dynamicValue = dateFormatSet.dynamicValue;
+            filter.selectedItems = [toStr(dates[0]), toStr(dates[1])];
+        } else {
+            filter.selectedRange = null;
+            filter.dynamicValue = null;
+            const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+            if (noValueTypes.includes(filterSelected.value)) {
+                filter.selectedItems = [];
+            } else {
+                const val = dateFormatSet.dateValue;
+                const isStaticInNotIn = (filterSelected.value === 'in' || filterSelected.value === 'not_in') && Array.isArray(val.value1);
+                if (isStaticInNotIn) {
+                    filter.selectedItems = [val.value1];
+                } else {
+                    filter.selectedItems = val.value2
+                        ? [val.value1, val.value2]
+                        : Array.isArray(val.value1) ? val.value1 : [val.value1];
+                }
+            }
+        }
+
+        this.loadDatesFromFilter(filter);
+        this.applyGlobalFilter(filter);
+    }
+
+/* SDA CUSTOM */    public getDateFilterLabel(filter: any): string {
+/* SDA CUSTOM */        const op = filter.dateFilterType;
+/* SDA CUSTOM */        if (!op) return '';
+/* SDA CUSTOM */
+/* SDA CUSTOM */        const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+/* SDA CUSTOM */        if (noValueTypes.includes(op)) return this.getOperatorLabel(op);
+/* SDA CUSTOM */
+/* SDA CUSTOM */        const fmt = (s: string) => {
+/* SDA CUSTOM */            if (!s) return '';
+/* SDA CUSTOM */            const [ye, mo, da] = s.split('-');
+/* SDA CUSTOM */            return `${da}-${mo}-${ye.slice(2)}`;
+/* SDA CUSTOM */        };
+/* SDA CUSTOM */
+/* SDA CUSTOM */        if (filter.dynamicValue) {
+/* SDA CUSTOM */            return `${this.getOperatorLabel(op)} : ${this.getRangeLabel(filter.dynamicValue)}`;
+/* SDA CUSTOM */        }
+/* SDA CUSTOM */
+/* SDA CUSTOM */        const items = filter.selectedItems;
+/* SDA CUSTOM */        if (!items || items.length === 0) return 'Fecha';
+/* SDA CUSTOM */        if (Array.isArray(items[0])) return `${this.getOperatorLabel(op)} : ${(items[0] as string[]).map(fmt).join(', ')}`;
+/* SDA CUSTOM */        if (items.length === 1 || !items[1]) return `${this.getOperatorLabel(op)} : ${fmt(items[0])}`;
+/* SDA CUSTOM */        return `${this.getOperatorLabel(op)} : ${fmt(items[0])} - ${fmt(items[1])}`;
+/* SDA CUSTOM */    }
+
+/* SDA CUSTOM */    public isDynamicDateRange(filter: any): boolean {
+/* SDA CUSTOM */        return !!(filter.dynamicValue);
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */    public getDateFilterOperatorText(filter: any): string {
+/* SDA CUSTOM */        const op = filter.dateFilterType;
+/* SDA CUSTOM */        if (!op) return '';
+/* SDA CUSTOM */        return this.getOperatorLabel(op);
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */    public getDateFilterValueText(filter: any): string {
+/* SDA CUSTOM */        const op = filter.dateFilterType;
+/* SDA CUSTOM */        if (!op) return '';
+/* SDA CUSTOM */
+/* SDA CUSTOM */        const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+/* SDA CUSTOM */        if (noValueTypes.includes(op)) return '';
+/* SDA CUSTOM */
+/* SDA CUSTOM */        const fmt = (s: string) => {
+/* SDA CUSTOM */            if (!s) return '';
+/* SDA CUSTOM */            const [ye, mo, da] = s.split('-');
+/* SDA CUSTOM */            return `${da}-${mo}-${ye.slice(2)}`;
+/* SDA CUSTOM */        };
+/* SDA CUSTOM */
+/* SDA CUSTOM */        if (filter.dynamicValue) {
+/* SDA CUSTOM */            return this.getRangeLabel(filter.dynamicValue);
+/* SDA CUSTOM */        }
+/* SDA CUSTOM */
+/* SDA CUSTOM */        const items = filter.selectedItems;
+/* SDA CUSTOM */        if (!items || items.length === 0) return $localize`:@@DateFilterPlaceholder:Fecha`;
+/* SDA CUSTOM */        if (Array.isArray(items[0])) return (items[0] as string[]).map(fmt).join(', ');
+/* SDA CUSTOM */        if (items.length === 1 || !items[1]) return fmt(items[0]);
+/* SDA CUSTOM */        return `${fmt(items[0])} - ${fmt(items[1])}`;
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */
+/* SDA CUSTOM */    private getRangeLabel(value: string): string {
+/* SDA CUSTOM */        return rangeDateFormats.find((r: any) => r.value === value)?.label || value;
+/* SDA CUSTOM */    }
+
+/* SDA CUSTOM */    private getOperatorLabel(op: string): string {
+/* SDA CUSTOM */        const labels: Record<string, string> = {
+/* SDA CUSTOM */            '=':                  this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === '=').label,
+/* SDA CUSTOM */            '!=':                 this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === '!=').label,
+/* SDA CUSTOM */            '>':                  this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === '>').label,
+/* SDA CUSTOM */            '<':                  this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === '<').label,
+/* SDA CUSTOM */            '>=':                 this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === '>=').label,
+/* SDA CUSTOM */            '<=':                 this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === '<=').label,
+/* SDA CUSTOM */            'between':            this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === 'between').label,
+/* SDA CUSTOM */            'in':                 this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === 'in').label,
+/* SDA CUSTOM */            'not_in':             this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === 'not_in').label,
+/* SDA CUSTOM */            'not_null':           this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === 'not_null').label,
+/* SDA CUSTOM */            'not_null_nor_empty': this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === 'not_null_nor_empty').label,
+/* SDA CUSTOM */            'null_or_empty':      this.chartUtilsService.filterTypesLabels.find((value: any) => value.value === 'null_or_empty').label,
+/* SDA CUSTOM */        };
+/* SDA CUSTOM */        return labels[op] || op;
+/* SDA CUSTOM */    }
+/* SDA CUSTOM */ // Check if filter is read-only for current user
+/* SDA CUSTOM */ public isFilterReadOnly(filter: any): boolean {
+/* SDA CUSTOM */     return !this.isAdmin && !this.isDashboardCreator && filter.visible === 'readOnly';
+/* SDA CUSTOM */ }
 }

@@ -1224,16 +1224,15 @@ pre {
 /*SDA CUSTOM*/     display: inline-flex;
 /*SDA CUSTOM*/     align-items: center;
 /*SDA CUSTOM*/     gap: 0.3rem;
-/*SDA CUSTOM*/     background-color: #f0f4ff;
-/*SDA CUSTOM*/     border: 1px solid #c8d3f5;
-/*SDA CUSTOM*/     border-radius: 1rem;
-/*SDA CUSTOM*/     padding: 0.2rem 0.4rem 0.2rem 0.65rem;
+/*SDA CUSTOM*/     background-color: #E8F5E9;
+/*SDA CUSTOM*/     border-radius: 3px;
+/*SDA CUSTOM*/     padding: 0.25rem 0.5rem;
 /*SDA CUSTOM*/     max-width: 100%;
 /*SDA CUSTOM*/     transition: background-color 0.2s;
 /*SDA CUSTOM*/ }
 
 /*SDA CUSTOM*/ .filter-tooltip-chip:hover {
-/*SDA CUSTOM*/     background-color: #dde5ff;
+/*SDA CUSTOM*/     background-color: #d4edda;
 /*SDA CUSTOM*/ }
 
 /*SDA CUSTOM*/ .filter-tooltip-chip-text {
@@ -1243,26 +1242,8 @@ pre {
 /*SDA CUSTOM*/     font-family: var(--eda-filters-font-family) !important;
 /*SDA CUSTOM*/ }
 
-/*SDA CUSTOM*/ .filter-tooltip-button {
-/*SDA CUSTOM*/     background: transparent;
-/*SDA CUSTOM*/     border: none;
-/*SDA CUSTOM*/     color: #7986cb;
-/*SDA CUSTOM*/     cursor: pointer;
-/*SDA CUSTOM*/     font-size: 0.7rem;
-/*SDA CUSTOM*/     padding: 0;
-/*SDA CUSTOM*/     border-radius: 50%;
-/*SDA CUSTOM*/     width: 1.1rem;
-/*SDA CUSTOM*/     height: 1.1rem;
-/*SDA CUSTOM*/     flex-shrink: 0;
-/*SDA CUSTOM*/     display: flex;
-/*SDA CUSTOM*/     align-items: center;
-/*SDA CUSTOM*/     justify-content: center;
-/*SDA CUSTOM*/     transition: color 0.2s, background-color 0.2s;
-/*SDA CUSTOM*/ }
-
-/*SDA CUSTOM*/ .filter-tooltip-button:hover {
-/*SDA CUSTOM*/     color: #c0392b;
-/*SDA CUSTOM*/     background-color: rgba(192, 57, 43, 0.15);
+/*SDA CUSTOM*/ .filter-tooltip-chip .p-multiselect-token-icon {
+/*SDA CUSTOM*/     margin-left: 0.5rem;
 /*SDA CUSTOM*/ }
 
 /* JJ Puesto para quitar el overlay que no se borra*/

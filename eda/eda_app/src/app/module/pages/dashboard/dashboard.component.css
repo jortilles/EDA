@@ -439,6 +439,53 @@ app-dashboard {
 /* SDA CUSTOM */     to   { opacity: 1; transform: translateY(0); }
 /* SDA CUSTOM */ }
 /* SDA CUSTOM */
+/* SDA CUSTOM */ .date-filter-btn {
+/* SDA CUSTOM */     display: flex !important;
+/* SDA CUSTOM */     align-items: center !important;
+/* SDA CUSTOM */     justify-content: flex-start !important;
+/* SDA CUSTOM */     padding: 0 10px !important;
+/* SDA CUSTOM */     min-height: 36px !important;
+/* SDA CUSTOM */     background: white !important;
+/* SDA CUSTOM */     color: #495057 !important;
+/* SDA CUSTOM */     border-color: #ced4da !important;
+/* SDA CUSTOM */     transition: background-color 0.15s ease !important;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ .date-filter-btn:hover {
+/* SDA CUSTOM */     background-color: #f8f9fa !important;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ .date-filter-operator {
+/* SDA CUSTOM */     font-family: 'Courier New', Courier, monospace;
+/* SDA CUSTOM */     font-size: 11px;
+/* SDA CUSTOM */     background-color: #f0f4ff;
+/* SDA CUSTOM */     color: #495057;
+/* SDA CUSTOM */     font-weight: 600;
+/* SDA CUSTOM */     padding: 2px 8px;
+/* SDA CUSTOM */     border: 1px solid #c8d3f5;
+/* SDA CUSTOM */     border-radius: 1rem;
+/* SDA CUSTOM */     white-space: nowrap;
+/* SDA CUSTOM */     flex-shrink: 0;
+/* SDA CUSTOM */     line-height: 1.4;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ .date-filter-value {
+/* SDA CUSTOM */     flex: 1;
+/* SDA CUSTOM */     text-align: center;
+/* SDA CUSTOM */     font-weight: 700;
+/* SDA CUSTOM */     font-size: 11px;
+/* SDA CUSTOM */     overflow: hidden;
+/* SDA CUSTOM */     text-overflow: ellipsis;
+/* SDA CUSTOM */     white-space: nowrap;
+/* SDA CUSTOM */     padding-left: 4px;
+/* SDA CUSTOM */     transition: color 0.15s ease;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
+/* SDA CUSTOM */ .date-filter-value--dynamic {
+/* SDA CUSTOM */     font-style: italic;
+/* SDA CUSTOM */     padding-right: 4px;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */
 /* SDA CUSTOM */ .filter-hover-active {
 /* SDA CUSTOM */     box-shadow: 0 0 12px rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(0, 0, 0, 0.08);
 /* SDA CUSTOM */     border-radius: 4px;
@@ -458,4 +505,36 @@ app-dashboard {
 /* SDA CUSTOM */
 /* SDA CUSTOM */ ::ng-deep ngx-gridster {
 /* SDA CUSTOM */     display: block;
+/* SDA CUSTOM */ }
+
+/* SDA CUSTOM - Date filter controls in global filter dialog */
+/* SDA CUSTOM */ .date-filter-controls {
+/* SDA CUSTOM */     display: flex;
+/* SDA CUSTOM */     align-items: center;
+/* SDA CUSTOM */     gap: 8px;
+/* SDA CUSTOM */     flex-wrap: wrap;
+/* SDA CUSTOM */     width: 100%;
+/* SDA CUSTOM */     overflow: visible;
+/* SDA CUSTOM */     position: relative;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ .date-filter-controls > p-dropdown,
+/* SDA CUSTOM */ .date-filter-controls > eda-date-picker,
+/* SDA CUSTOM */ .date-filter-controls > p-calendar {
+/* SDA CUSTOM */     flex-shrink: 0;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ .date-filter-controls > p-dropdown {
+/* SDA CUSTOM */     display: block;
+/* SDA CUSTOM */     width: 100%;
+/* SDA CUSTOM */     max-width: 100%;
+/* SDA CUSTOM */     min-width: 0;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ .date-filter-controls > p-dropdown ::ng-deep .p-dropdown {
+/* SDA CUSTOM */     width: 100%;
+/* SDA CUSTOM */     max-width: 100%;
+/* SDA CUSTOM */ }
+/* SDA CUSTOM */ .date-filter-controls > p-dropdown ::ng-deep .p-dropdown-label {
+/* SDA CUSTOM */     white-space: nowrap;
+/* SDA CUSTOM */     overflow: hidden;
+/* SDA CUSTOM */     text-overflow: ellipsis;
+/* SDA CUSTOM */     max-width: 100%;
 /* SDA CUSTOM */ }

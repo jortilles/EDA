@@ -2,6 +2,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
+  /* SDA CUSTOM */ OnChanges,
+  /* SDA CUSTOM */ SimpleChanges,
   ViewEncapsulation,
   Input,
   Output,
@@ -19,6 +21,7 @@ import {
 } from 'angular-gridster2';
 
 import _ from 'lodash';
+/* SDA CUSTOM */ import { rangeDateFormats } from '@eda/shared/components/date-dialog/date-format-dialog.index';
 
 
 @Component({
@@ -28,7 +31,7 @@ import _ from 'lodash';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })
-export class EdaFilterAndOrComponent implements OnInit {
+export class EdaFilterAndOrComponent implements OnInit, OnChanges {
 
   private static previousDashboard: GridsterItem[] | null = null;
 
@@ -135,29 +138,50 @@ export class EdaFilterAndOrComponent implements OnInit {
 
   }
 
+  /* SDA CUSTOM */ ngOnChanges(changes: SimpleChanges): void {
+  /* SDA CUSTOM */     if (!changes.sortedFilters || !this.dashboard) return;
+  /* SDA CUSTOM */     const updated = changes.sortedFilters.currentValue;
+  /* SDA CUSTOM */     if (!updated) return;
+  /* SDA CUSTOM */     for (const item of this.dashboard) {
+  /* SDA CUSTOM */         const match = updated.find((sf: any) => sf.filter_id === item.filter_id);
+  /* SDA CUSTOM */         if (!match) continue;
+  /* SDA CUSTOM */         item.filter_elements = match.filter_elements;
+  /* SDA CUSTOM */         item.filter_codes = match.filter_codes;
+  /* SDA CUSTOM */         item.filter_type = match.filter_type;
+  /* SDA CUSTOM */         item.filter_column_type = match.filter_column_type;
+  /* SDA CUSTOM */         item.dynamicValue = match.dynamicValue;
+  /* SDA CUSTOM */         item.selectedRange = match.selectedRange;
+  /* SDA CUSTOM */     }
+  /* SDA CUSTOM */     this.dashboardClone = _.cloneDeep(this.dashboard);
+  /* SDA CUSTOM */     this.creacionQueryFiltros(this.dashboard);
+  /* SDA CUSTOM */ }
+
   initAndOrFilters () {
 
     // Integration:
     this.dashboard = [];
     let k = 0; // y value, start
 
-    // Adding Panel Filters
-    this.selectedFilters.forEach((sf, j) => {
-      if(sf.filterBeforeGrouping) {
+    // SDA CUSTOM - Global filters go first so newly added panel filters land at the end
+    // Adding Global Filters
+    this.globalFilters.forEach((gf, i) => {
+      if(gf.filterBeforeGrouping) {
         this.dashboard.push(
           {
             cols: 3,
             rows:1,
             y: k,
-            x:0,
-            filter_table: sf.filter_table,
-            filter_column: sf.filter_column,
-            filter_type: sf.filter_type,
-            filter_column_type: sf.filter_column_type,
-            filter_elements: sf.filter_elements,
-/* SDA CUSTOM */            filter_codes: sf.filter_codes,
-            filter_id: sf.filter_id,
-            isGlobal: sf.isGlobal,
+            x: 0,
+            filter_table: gf.filter_table,
+            filter_column: gf.filter_column,
+            filter_type: gf.filter_type,
+            filter_column_type: gf.filter_column_type,
+            filter_elements: gf.filter_elements,
+/* SDA CUSTOM */            filter_codes: gf.filter_codes,
+            filter_id: gf.filter_id,
+            isGlobal: gf.isGlobal,
+            /* SDA CUSTOM */ dynamicValue: gf.dynamicValue,
+            /* SDA CUSTOM */ selectedRange: gf.selectedRange,
             value: "and"
           }
         );
@@ -168,23 +192,25 @@ export class EdaFilterAndOrComponent implements OnInit {
     const temporalLength = k;
     k = 0; // reset to zero
 
-    // Adding Global Filters
-    this.globalFilters.forEach((gf, i) => {
-      if(gf.filterBeforeGrouping) {
+    // Adding Panel Filters
+    this.selectedFilters.forEach((sf, j) => {
+      if(sf.filterBeforeGrouping) {
         this.dashboard.push(
           {
             cols: 3,
             rows:1,
             y: k + temporalLength,
-            x: 0,
-            filter_table: gf.filter_table,
-            filter_column: gf.filter_column,
-            filter_type: gf.filter_type,
-            filter_column_type: gf.filter_column_type,
-            filter_elements: gf.filter_elements,
-/* SDA CUSTOM */            filter_codes: gf.filter_codes,
-            filter_id: gf.filter_id,
-            isGlobal: gf.isGlobal,
+            x:0,
+            filter_table: sf.filter_table,
+            filter_column: sf.filter_column,
+            filter_type: sf.filter_type,
+            filter_column_type: sf.filter_column_type,
+            filter_elements: sf.filter_elements,
+/* SDA CUSTOM */            filter_codes: sf.filter_codes,
+            filter_id: sf.filter_id,
+            isGlobal: sf.isGlobal,
+            /* SDA CUSTOM */ dynamicValue: sf.dynamicValue,
+            /* SDA CUSTOM */ selectedRange: sf.selectedRange,
             value: "and"
           }
         );
@@ -515,10 +541,14 @@ export class EdaFilterAndOrComponent implements OnInit {
             const tableName = table.display_name?.default;
             const columnName = table.columns.find((c) => c.column_name == item.filter_column)?.display_name?.default;
 
-            const values = item.filter_elements[0]?.value1;
-            const values2 = item.filter_elements[1]?.value2;
-
             let valueStr = '';
+
+            /* SDA CUSTOM */ if (item.dynamicValue) {
+            /* SDA CUSTOM */     const rangeLabel = rangeDateFormats.find((r: any) => r.value === item.dynamicValue)?.label || item.dynamicValue;
+            /* SDA CUSTOM */     valueStr = `"${rangeLabel}"`;
+            /* SDA CUSTOM */ } else {
+                const values = item.filter_elements[0]?.value1;
+                const values2 = item.filter_elements[1]?.value2;
 
             if (values) {
                 if (values.length == 1 && !['in', 'not_in'].includes(item.filter_type)) {
@@ -535,13 +565,18 @@ export class EdaFilterAndOrComponent implements OnInit {
                     }
                 }
             }
+            /* SDA CUSTOM */ }
 
-            let filterType = item.filter_type
-            if(filterType === 'between') filterType = this.textBetween;
+            /* SDA CUSTOM */ let filterType = '';
+            /* SDA CUSTOM */ if (valueStr) {
+                filterType = item.filter_type;
+                if (filterType === 'between') filterType = this.textBetween;
+                filterType = ` ${filterType} `;
+            }
 
             let filterDescription = item.isGlobal ? 'Filtro Global' : 'Filtro Panel';
 
-            str = `${tableName} [${columnName}] ${filterType} ${valueStr} > ${filterDescription}`;
+            /* SDA CUSTOM */ str = `${tableName} [${columnName}]${filterType}${valueStr} > ${filterDescription}`;
         }
 
         return str;

@@ -496,6 +496,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         // Check url for filters in params
                         this.gFilter.findGlobalFilterByUrlParams(this.queryParams);
                         this.gFilter.fillFiltersData();
+                        /* SDA CUSTOM */ me.normalizeLegacyGlobalFilters();
 
                         me.dashboard = new Dashboard({
                             onlyIcanEdit: me.onlyIcanEdit, id: me.id, title: me.title, visible: config.visible, panel: me.panels, user: res.dashboard.user,
@@ -514,6 +515,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                             datasSource: me.dataSource, filters: config.filters, applytoAllFilter: me.applyToAllfilter, group: grp
                         });
                         /**To update panel filters with filters current data */
+                        /* SDA CUSTOM */ me.normalizeLegacyGlobalFilters();
                         me.updateFilterDatesInPanels();
                     }
 
@@ -580,6 +582,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             panel.content.query.query.filters = [];
 
             panelFilters.forEach(pFilter => {
+                /* SDA CUSTOM */ if (pFilter.selectedRange && !pFilter.dynamicValue) {
+                /* SDA CUSTOM */     pFilter.dynamicValue = pFilter.selectedRange;
+                /* SDA CUSTOM */ }
 
                 if (!!pFilter.selectedRange) {
 
@@ -625,6 +630,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         });
 
     }
+
+    /* SDA CUSTOM */ private normalizeLegacyGlobalFilters(): void {
+    /* SDA CUSTOM */     if (!this.gFilter?.globalFilters) return;
+    /* SDA CUSTOM */     this.gFilter.globalFilters.forEach((f: any) => {
+    /* SDA CUSTOM */         if (f.selectedRange && !f.dynamicValue) {
+    /* SDA CUSTOM */             f.dynamicValue = f.selectedRange;
+    /* SDA CUSTOM */         }
+    /* SDA CUSTOM */     });
+    /* SDA CUSTOM */ }
 
     private getUrlParams(): void {
         this.route.queryParams.subscribe(params => {

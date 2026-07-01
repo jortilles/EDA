@@ -1,0 +1,30 @@
+/* SDA CUSTOM */.date-format-card {
+/* SDA CUSTOM */    display: flex;
+/* SDA CUSTOM */    flex-direction: row;
+/* SDA CUSTOM */    align-items: flex-start;
+/* SDA CUSTOM */    height: 100%;
+/* SDA CUSTOM */}
+/* SDA CUSTOM */
+/* SDA CUSTOM */.date-format-col {
+/* SDA CUSTOM */    flex: 1;
+/* SDA CUSTOM */    padding: 1rem;
+/* SDA CUSTOM */}
+/* SDA CUSTOM */
+/* SDA CUSTOM */.date-picker-single {
+/* SDA CUSTOM */    width: 100%;
+/* SDA CUSTOM */}
+/* SDA CUSTOM */
+/* SDA CUSTOM */.date-picker-single eda-date-picker {
+/* SDA CUSTOM */    display: block;
+/* SDA CUSTOM */    width: 100%;
+/* SDA CUSTOM */}
+/* SDA CUSTOM */
+/* SDA CUSTOM */.date-picker-single ::ng-deep p-calendar,
+/* SDA CUSTOM */.date-picker-single ::ng-deep .ui-calendar,
+/* SDA CUSTOM */.date-picker-single ::ng-deep .p-calendar {
+/* SDA CUSTOM */    width: 100% !important;
+/* SDA CUSTOM */}
+/* SDA CUSTOM */
+/* SDA CUSTOM */.date-picker-single ::ng-deep p-calendar input {
+/* SDA CUSTOM */    width: 100% !important;
+/* SDA CUSTOM */}

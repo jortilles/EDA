@@ -356,10 +356,8 @@
     <target>Cerca un tipus</target>
   </trans-unit>
   <trans-unit id="modoEDAAlert" datatype="html">
-    <source>Este panel utiliza el modo EDA, que está obsoleto y dejará de funcionar futuras versiones de SinergiaDA. Por esa misma razón no se pueden hacer cambios sobre este informe. Para garantizar su funcionamiento se recomienda rehacerlo usando el <b>Modo Árbol</b>.
-    </source>
-    <target>Aquest panell utilitza el mode <b>EDA</b>, que està obsolet i deixarà de funcionar futures versions de SinergiaDA. Per aquesta mateixa raó no es poden fer canvis sobre aquest informe. Per garantir el seu funcionament es recomana refer-lo fent servir el <b>Mode Arbre</b>.
-    </target>
+    <source>Este panel utiliza el modo EDA, que está obsoleto y dejará de funcionar futuras versiones de SinergiaDA. Por esa misma razón no se pueden hacer cambios sobre este informe. Para garantizar su funcionamiento se recomienda rehacerlo usando el <b>Modo Árbol</b>.</source>
+    <target>Aquest panell utilitza el mode <b>EDA</b>, que està obsolet i deixarà de funcionar futures versions de SinergiaDA. Per aquesta mateixa raó no es poden fer canvis sobre aquest informe. Per garantir el seu funcionament es recomana refer-lo fent servir el <b>Mode Arbre</b>.</target>
   </trans-unit>
   <trans-unit id="clearAllFilters" datatype="html">
     <source>Eliminar todos los filtros</source>
@@ -513,7 +511,6 @@
     <source>Máximo de etiquetas</source>
     <target>Màxim d'etiquetes</target>
   </trans-unit>
-  <!-- SDA CUSTOM - KPI/chart option labels -->
   <trans-unit id="showChartLabels">
     <source>Mostrar etiquetas del gráfico</source>
     <target>Mostra les etiquetes del gràfic</target>
@@ -554,8 +551,6 @@
     <source>Fondo de etiquetas</source>
     <target>Fons de les etiquetes</target>
   </trans-unit>
-  <!-- END SDA CUSTOM -->
-  <!-- SDA CUSTOM - Logs viewer labels -->
   <trans-unit id="LogsViewer" datatype="html">
     <source>Visor de logs</source>
     <target>Visor de registres</target>
@@ -684,7 +679,6 @@
     <source>Mostrar accesos a informes</source>
     <target>Mostrar accessos als informes</target>
   </trans-unit>
-  <!-- SDA CUSTOM - Logs action labels i18n -->
   <trans-unit id="LogsActionAccess">
     <source>Access</source>
     <target>Accés</target>
@@ -797,7 +791,6 @@
     <source>Login</source>
     <target>Inici de sessió</target>
   </trans-unit>
-  <!-- SDA CUSTOM - Logs action column labels i18n -->
   <trans-unit id="LogsActionNewLogin">
     <source>Login</source>
     <target>Inici de sessió</target>
@@ -906,8 +899,6 @@
     <source>Update Model Failed</source>
     <target>Error en actualització del model</target>
   </trans-unit>
-<!-- END SDA CUSTOM -->
-  <!-- SDA CUSTOM - Download JSON title -->
   <trans-unit id="downloadJsonTitle">
     <source>Download JSON</source>
     <target>Descarregar JSON</target>
@@ -927,6 +918,86 @@
   <trans-unit id="filterHoverNotAffected">
     <source>Paneles no afectados por este filtro</source>
     <target>Panells no afectats per aquest filtre</target>
+  </trans-unit>
+  <trans-unit id="sqlModeFilterPathText">
+    <source>En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta</source>
+    <target>En mode SQL, si necessiteu modificar la ruta heu de fer-ho a la consulta.</target>
+  </trans-unit>
+  <trans-unit id="DatePickerCustomDate">
+    <source>Seleccionar fecha</source>
+    <target>Seleccioneu la data</target>
+  </trans-unit>
+  <trans-unit id="dateFormatDialogTextHeader">
+    <source>Filtro</source>
+    <target>Filtre</target>
+  </trans-unit>
+  <trans-unit id="filterOperatorSelectionText">
+    <source>Selección de operador del filtro:</source>
+    <target>Selecció d'operador del filtre:</target>
+  </trans-unit>
+  <trans-unit id="dateSelectionText">
+    <source>Selección de fecha:</source>
+    <target>Selecció de la data:</target>
+  </trans-unit>
+  <trans-unit id="calendarSelectionText">
+    <source>Selección en calendario:</source>
+    <target>Selecció al calendari:</target>
+  </trans-unit>
+  <trans-unit id="filters1">
+    <source>IGUAL A (=)</source>
+    <target>Igual a (=)</target>
+  </trans-unit>
+  <trans-unit id="filters2">
+    <source>NO IGUAL A (!=)</source>
+    <target>No igual a (≠)</target>
+  </trans-unit>
+  <trans-unit id="filters3">
+    <source>MAYOR A (&gt;)</source>
+    <target>Més gran que (&gt;)</target>
+  </trans-unit>
+  <trans-unit id="filters4">
+    <source>MENOR A (&lt;)</source>
+    <target>Més petit que (&lt;)</target>
+  </trans-unit>
+  <trans-unit id="filters5">
+    <source>MAYOR o IGUAL A (&gt;=)</source>
+    <target>Més gran o igual que (≥)</target>
+  </trans-unit>
+  <trans-unit id="filters6">
+    <source>MENOR o IGUAL A (&lt;=)</source>
+    <target>Més petit o igual que (≤)</target>
+  </trans-unit>
+  <trans-unit id="filters7">
+    <source>ENTRE (between)</source>
+    <target>Entre</target>
+  </trans-unit>
+  <trans-unit id="filters8">
+    <source>DENTRO DE (in)</source>
+    <target>Dins de</target>
+  </trans-unit>
+  <trans-unit id="filters9">
+    <source>FUERA DE (not in)</source>
+    <target>Fora de</target>
+  </trans-unit>
+  <trans-unit id="filters10">
+    <source>PARECIDO A (like)</source>
+    <target>Semblant a</target>
+  </trans-unit>
+  <trans-unit id="filters11">
+    <source>NO PARECIDO A (not like)</source>
+    <target>No semblant a</target>
+  </trans-unit>
+  <trans-unit id="filters12">
+    <source>VALORES NO NULOS (not null)</source>
+    <target>Valors no nuls</target>
+  </trans-unit>
+  <trans-unit id="filters13">
+    <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
+    <target>Valors no nuls ni buits (not null and ≠ '')</target>
+  </trans-unit>
+  <trans-unit id="filters14">
+    <source>VALORES NULOS O VACÍOS (null or = '')</source>
+    <target>Valors nuls o buits (null or = '')</target>
   </trans-unit>
 </body>
   </file>

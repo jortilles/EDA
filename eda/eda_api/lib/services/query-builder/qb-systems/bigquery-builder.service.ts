@@ -408,7 +408,7 @@ export class BigQueryBuilderService extends QueryBuilderService {
     const colname=this.getFilterColname(column);
     let colType = column.column_type;
 
-    switch (this.setFilterType(filterObject.filter_type)) {
+/* SDA CUSTOM */    switch (this.setFilterType(filterObject.filter_type, filterObject.dynamicValue)) {
       case 0:
         if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
         if (filterObject.filter_type === 'like') {
@@ -423,6 +423,9 @@ export class BigQueryBuilderService extends QueryBuilderService {
         if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
         return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:
+/* SDA CUSTOM */          if (filterObject.filter_type === 'not_between') { filterObject.filter_type = 'not between'; }
+/* SDA CUSTOM */          else if (filterObject.dynamicValue && filterObject.filter_type === 'in') { filterObject.filter_type = 'between'; }
+/* SDA CUSTOM */          else if (filterObject.dynamicValue && filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not between'; }
         return `${colname}  ${filterObject.filter_type} 
                         ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
       case 3:
@@ -525,7 +528,7 @@ public getHavingColname(column: any){
     
     let colType = column.column_type;
 
-    switch (this.setFilterType(filterObject.filter_type)) {
+/* SDA CUSTOM */    switch (this.setFilterType(filterObject.filter_type, filterObject.dynamicValue)) {
       case 0:
         if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
         if (filterObject.filter_type === 'like') {
@@ -540,6 +543,9 @@ public getHavingColname(column: any){
         if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
         return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:
+/* SDA CUSTOM */          if (filterObject.filter_type === 'not_between') { filterObject.filter_type = 'not between'; }
+/* SDA CUSTOM */          else if (filterObject.dynamicValue && filterObject.filter_type === 'in') { filterObject.filter_type = 'between'; }
+/* SDA CUSTOM */          else if (filterObject.dynamicValue && filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not between'; }
         return `${colname}  ${filterObject.filter_type} 
                         ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
       case 3:

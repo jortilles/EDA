@@ -71,7 +71,7 @@
 
             <div class="grid mt-2">
 
-                <div
+<!-- SDA CUSTOM --><div *ngIf="selectedColumn?.column_type && selectedColumn.column_type !== 'date'"
                     [ngClass]="{
                         'md:col-4': (!display.between && !display.calendar ) || (!!display.calendar ),
                         'md:col-8': !(!display.between && !display.calendar) || (!!display.calendar)
@@ -92,23 +92,47 @@
                 </div>
 
                 <ng-container *ngIf="!display.between">
+                    
+<!-- SDA CUSTOM --> <div class="ml-2" *ngIf="selectedColumn?.column_type === 'date'" class="d-flex align-items-center flex-wrap" style="gap: 10px;">
+<!-- SDA CUSTOM -->     <!-- Selector de Operador -->
+<!-- SDA CUSTOM -->     <span class="p-float-label" style="min-width: 180px;">
+<!-- SDA CUSTOM -->         <p-dropdown id="dateOperatorTypes" [options]="dateFilterOperators" [(ngModel)]="filterSelected" optionLabel="label" [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true" (onChange)="handleDateFilterOperatorChange($event.value)"></p-dropdown>
+<!-- SDA CUSTOM -->         <label i18n="@@tiposFiltrosLabel" for="dateOperatorTypes">Operador</label>
+<!-- SDA CUSTOM -->     </span>
+
+<!-- SDA CUSTOM -->     <!-- Selector de Rango (solo para algunos operadores) -->
+<!-- SDA CUSTOM -->     <span *ngIf="showDateFormatSelecter && isDateFormatAvailable" class="p-float-label" style="min-width: 180px;">
+<!-- SDA CUSTOM -->         <p-dropdown id="dateFormatSelection" [options]="rangeDateFormat" [(ngModel)]="dateFormatSelected" optionLabel="label" [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true" [disabled]="!isDateFormatAvailable" (onChange)="handleDateFilterFormatChange($event.value)"></p-dropdown>
+<!-- SDA CUSTOM -->         <label i18n="@@dateRangeLabel" for="dateFormatSelection">Rango</label>
+<!-- SDA CUSTOM -->     </span>
+
+<!-- SDA CUSTOM -->     <!-- Selector de Fecha con Calendario (para custom date) -->
+<!-- SDA CUSTOM -->     <div *ngIf="showEdaDatePicker" class="date-picker-single">
+<!-- SDA CUSTOM -->         <eda-date-picker [inject]="datePickerConfig" (onDatesChanges)="processInlineDatePickerEvent($event)" [filterSelected]="filterSelected" [selectionMode]="(filterSelected?.value === 'in' || filterSelected?.value === 'not_in') ? 'multiple' : ((filterSelected?.value === 'between' || filterSelected?.value === 'not_between') ? 'range' : 'single')" [showSelector]="false"></eda-date-picker>
+<!-- SDA CUSTOM -->     </div>
+
+<!-- SDA CUSTOM -->     <!-- Selector Single para operadores =, !=, >, <, >=, <= -->
+<!-- SDA CUSTOM -->     <div *ngIf="showEdaDatePickerSingleSelection" class="date-picker-single">
+<!-- SDA CUSTOM -->         <eda-date-picker [inject]="datePickerConfig" (onDatesChanges)="processInlineDatePickerEvent($event)" [filterSelected]="filterSelected" [selectionMode]="'single'" [showSelector]="false"></eda-date-picker>
+<!-- SDA CUSTOM -->     </div>
+
+<!-- SDA CUSTOM -->     <!-- Selector Multiple para operadores in, not_in -->
+<!-- SDA CUSTOM -->     <div *ngIf="showEdaDatePickerMultipleSelection" class="date-picker-single">
+<!-- SDA CUSTOM -->         <eda-date-picker [inject]="datePickerConfig" (onDatesChanges)="processInlineDatePickerEvent($event)" [filterSelected]="filterSelected" [selectionMode]="'multiple'" [showSelector]="false"></eda-date-picker>
+<!-- SDA CUSTOM -->     </div>
+
+<!-- SDA CUSTOM -->     <!-- Botón Añadir filtro -->
+<!-- SDA CUSTOM -->     <p-button (onClick)="addFilter()" [disabled]="display.filterButton || isReadyForDateFilter" label="Añadir filtro"></p-button>
+<!-- SDA CUSTOM --> </div>
+
 
                     <div class="col-12 md:col-4">
 
                         <ng-container *ngIf="!!display.calendar && !filter.switch">
-
-                            <div >
-
-                                <!-- <label i18n="@@fechaLabel" class="p-float-label" for="datepicker">
-                                    Fecha
-                                </label> -->
-
-                                <input id="datepicker" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value1"
-                                    (input)="handleValidForm({value1: $event.target.value})" pInputText required>
-
-
-                            </div>
-
+<!-- SDA CUSTOM -->       <div class="date-picker-single">
+<!-- SDA CUSTOM -->           <eda-date-picker (onDatesChanges)="processPickerEvent($event)" [filterSelected]="filterSelected" [selectionMode]="(filterSelected?.value === 'in' || filterSelected?.value === 'not_in') ? 'range' : 'single'">
+<!-- SDA CUSTOM -->           </eda-date-picker>
+<!-- SDA CUSTOM -->       </div>
                         </ng-container>
 
                         <ng-container *ngIf="!display.calendar && !filter.switch">
@@ -129,20 +153,24 @@
 
                         <ng-container *ngIf="filter.switch">
 
-                            <span class="p-float-label mt-1 edaColumnDialogFilter">
 
-                                <p-multiSelect id="float-input" [options]="dropDownFields"
-                                    [(ngModel)]="filterValue.value1" [virtualScroll]="true" [itemSize]="34"
-                                    [filter]="true" defaultLabel="Selecciona..." [style]="{width: '100%'}"
-                                    (onChange)="handleValidForm({value1: filterValue.value1})"
-                                    [selectionLimit]="limitSelectionFields">
-                                </p-multiSelect>
+<!-- SDA CUSTOM -->                            <span *ngIf="!(filterSelected?.value === 'in' || filterSelected?.value === 'not_in') || (selectedColumn.column_type === 'text' || selectedColumn.column_type === 'numeric')" class="p-float-label mt-1 edaColumnDialogFilter">
+<!-- SDA CUSTOM -->
+<!-- SDA CUSTOM -->                                <p-multiSelect id="float-input" [options]="dropDownFields" [(ngModel)]="filterValue.value1" [virtualScroll]="true" [itemSize]="34" [filter]="true" defaultLabel="Selecciona..." [style]="{width: '100%'}" (onChange)="handleValidForm({value1: filterValue.value1})" [selectionLimit]="limitSelectionFields">
+<!-- SDA CUSTOM -->                                </p-multiSelect>
+<!-- SDA CUSTOM -->
+<!-- SDA CUSTOM -->                                <label *ngIf="filterValue.value1" i18n="@@valorFiltrarLabel" for="float-input">
+<!-- SDA CUSTOM -->                                    Valor a filtrar
+<!-- SDA CUSTOM -->                                </label>
+<!-- SDA CUSTOM -->
+<!-- SDA CUSTOM -->                            </span>
 
-                                <label *ngIf="filterValue.value1" i18n="@@valorFiltrarLabel" for="float-input">
-                                    Valor a filtrar
-                                </label>
-
-                            </span>
+                            
+<!-- SDA CUSTOM -->         <div *ngIf="(filterSelected?.value === 'in' || filterSelected?.value === 'not_in') && selectedColumn.column_type === 'date'" class="date-picker-single">
+<!-- SDA CUSTOM -->             <eda-date-picker (onDatesChanges)="processPickerEvent($event)" [filterSelected]="filterSelected" [selectionMode]="(filterSelected?.value === 'in' || filterSelected?.value === 'not_in') ? 'range' : 'single'">
+<!-- SDA CUSTOM -->             </eda-date-picker>
+<!-- SDA CUSTOM -->         </div> 
+                           
 
                         </ng-container>
 
@@ -151,7 +179,7 @@
                 </ng-container>
 
 
-                <ng-container *ngIf="filterSelected!=undefined && selectedColumn.column_type ==='numeric'  && !display.switchButton && (aggregationSelected.display_name !== 'No')">
+<!-- SDA CUSTOM --><ng-container *ngIf="filterSelected!=undefined && selectedColumn.column_type ==='numeric'  && !display.switchButton && aggregationSelected && (aggregationSelected.display_name !== 'No')">
 
                     <div class="col-12 md:col-4">
 
@@ -172,122 +200,65 @@
                 </ng-container>
 
                 <ng-container *ngIf="!!display.between">
-                    <div class="grid col-12">
+<!-- SDA CUSTOM --> <div class="col-12 md:col-4">
                         <ng-container *ngIf="!!display.calendar && !filter.switch">
-
-                            <div class="col-6 mt-3">
-
-                                <div style="margin-top: -0.8em;">
-
-                                    <!-- <label i18n="@@DateSelectRange" class="p-float-label" for="datepicker1">
-                                        Selecciona un rango
-                                    </label> -->
-
-                                    <eda-date-picker #myCalendar (onDatesChanges)="processPickerEvent($event)">
-                                    </eda-date-picker>
-
-                                </div>
-
+                            <div>
+<!-- SDA CUSTOM -->             <div class="date-picker-single">
+<!-- SDA CUSTOM -->                 <eda-date-picker #myCalendar (onDatesChanges)="processPickerEvent($event)">
+<!-- SDA CUSTOM -->                 </eda-date-picker>
+<!-- SDA CUSTOM -->             </div>
                             </div>
-
-                            <!-- <div class="col-6 mt-3">
-
-                                <div class="form-group mb-0">
-
-                                    <label i18n="@@fechaFinalLabel" class="p-float-label" for="datepicker2">
-                                        Fecha final
-                                    </label>
-
-                                    <input id="datepicker2" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value2"
-                                        (input)="handleValidForm({value2: $event.target.value})" pInputText required>
-
-                                </div>
-
-                            </div> -->
-
-                        </ng-container>
-
-                        <ng-container *ngIf="!display.calendar && !filter.switch">
-
-                            <div class="col-6 mt-3">
-
-                                <span class="p-float-label">
-
-                                    <input id="float-input" [type]="inputType" class="w-100"
-                                        [(ngModel)]="filterValue.value1"
-                                        (input)="handleValidForm({value1: $event.target.value})" pInputText required>
-
-                                    <label i18n="@@valor1Label" for="float-input">
-                                        Valor 1
-                                    </label>
-
-                                </span>
-
-                            </div>
-
-                            <div class="col-6 mt-3">
-
-                                <span class="p-float-label">
-
-                                    <input id="float-input" [type]="inputType" class="w-100"
-                                        [(ngModel)]="filterValue.value2"
-                                        (input)="handleValidForm({value2: $event.target.value})" pInputText required>
-
-                                    <label i18n="@@valor2Label" for="float-input">
-                                        Valor 2
-                                    </label>
-
-                                </span>
-
-                            </div>
-
-                        </ng-container>
-
-                        <ng-container *ngIf="filter.switch">
-
-                            <div class="col-6 mt-3">
-
-                                <div class="form-group mb-0">
-
-                                    <!-- <label i18n="@@valor1Label" class="p-float-label" for="float-input1">
-                                        Valor 1
-                                    </label> -->
-
-                                    <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value1"
-                                        [virtualScroll]="true" [itemSize]="34" [filter]="false" [style]="{width: '100%'}"
-                                        [panelStyle]="{minWidth:'100%'}"
-                                        (onChange)="handleValidForm({value1: filterValue.value1})"
-                                        defaultLabel="Selecciona Valor 1" [selectionLimit]="limitSelectionFields"
-                                        id="float-input1">
-                                    </p-multiSelect>
-
-                                </div>
-
-                            </div>
-
-                            <div class="col-6 mt-3">
-
-                                <div class="form-group mb-0">
-
-                                    <!-- <label i18n="@@valor2Label" class="p-float-label" for="float-input2">
-                                        Valor 2
-                                    </label> -->
-
-                                    <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value2"
-                                        [virtualScroll]="true" [itemSize]="34" [filter]="false" [style]="{width: '100%'}"
-                                        [panelStyle]="{minWidth:'100%'}"
-                                        (onChange)="handleValidForm({value2: filterValue.value2})"
-                                        defaultLabel="Selecciona Valor 2" [selectionLimit]="limitSelectionFields"
-                                        id="float-input2">
-                                    </p-multiSelect>
-
-                                </div>
-
-                            </div>
-
                         </ng-container>
                     </div>
-                </ng-container>
+                    
+<!-- SDA CUSTOM -->                    <ng-container *ngIf="!display.calendar && !filter.switch">
+<!-- SDA CUSTOM -->                        <div class="col-12">
+<!-- SDA CUSTOM -->                             <div class="grid">
+
+                                                    <div class="col-6 mt-3">
+                                                        <span class="p-float-label">
+                                                            <input id="float-input" [type]="inputType" class="w-100"
+                                                                [(ngModel)]="filterValue.value1"
+                                                                (input)="handleValidForm({value1: $event.target.value})" pInputText required>
+                                                            <label i18n="@@valor1Label" for="float-input">Valor 1</label>
+                                                        </span>
+                                                    </div>
+
+                                                    <div class="col-6 mt-3">
+                                                        <span class="p-float-label">
+                                                            <input id="float-input" [type]="inputType" class="w-100"
+                                                                [(ngModel)]="filterValue.value2"
+                                                                (input)="handleValidForm({value2: $event.target.value})" pInputText required>
+                                                            <label i18n="@@valor2Label" for="float-input">Valor 2</label>
+                                                        </span>
+                                                    </div>
+
+                                                </div>
+<!-- SDA CUSTOM -->                         </div>
+<!-- SDA CUSTOM -->                     </ng-container>
+
+<!-- SDA CUSTOM -->                    <ng-container *ngIf="filter.switch">
+<!-- SDA CUSTOM -->                        <div class="col-12">
+<!-- SDA CUSTOM -->                            <div class="grid">
+<!-- SDA CUSTOM -->
+<!-- SDA CUSTOM -->                                <div class="col-6 mt-3">
+<!-- SDA CUSTOM -->                                    <div class="form-group mb-0">
+<!-- SDA CUSTOM -->                                        <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value1" [virtualScroll]="true" [itemSize]="34" [filter]="false" [style]="{width: '100%'}" [panelStyle]="{minWidth:'100%'}" (onChange)="handleValidForm({value1: filterValue.value1})" defaultLabel="Selecciona Valor 1" [selectionLimit]="limitSelectionFields" id="float-input1">
+<!-- SDA CUSTOM -->                                        </p-multiSelect>
+<!-- SDA CUSTOM -->                                    </div>
+<!-- SDA CUSTOM -->                                </div>
+<!-- SDA CUSTOM -->
+<!-- SDA CUSTOM -->                                <div class="col-6 mt-3">
+<!-- SDA CUSTOM -->                                    <div class="form-group mb-0">
+<!-- SDA CUSTOM -->                                        <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value2" [virtualScroll]="true" [itemSize]="34" [filter]="false" [style]="{width: '100%'}" [panelStyle]="{minWidth:'100%'}" (onChange)="handleValidForm({value2: filterValue.value2})" defaultLabel="Selecciona Valor 2" [selectionLimit]="limitSelectionFields" id="float-input2">
+<!-- SDA CUSTOM -->                                        </p-multiSelect>
+<!-- SDA CUSTOM -->                                    </div>
+<!-- SDA CUSTOM -->                                </div>
+<!-- SDA CUSTOM -->
+<!-- SDA CUSTOM -->                            </div>
+<!-- SDA CUSTOM -->                        </div>
+<!-- SDA CUSTOM -->                    </ng-container>
+<!-- SDA CUSTOM -->                </ng-container>
 
                 <ng-container>
                     <div class="col-12">
@@ -295,7 +266,7 @@
 
                         <div class="grid">
 
-                            <div class="col-1">
+<!-- SDA CUSTOM -->     <div class="col-1" *ngIf="selectedColumn?.column_type !== 'date'">
 
                                 <label i18n="@@optionsLabel" for="filter_options">
                                     Opciones
@@ -313,7 +284,7 @@
 
                             </div>
 
-                            <div class="col-3" style="margin-left: 25px; padding: 25px;">
+<!-- SDA CUSTOM -->         <div class="col-3" style="margin-left: 25px; padding: 25px;" *ngIf="selectedColumn?.column_type !== 'date'">
 
                                 <!--SDA CUSTOM--><p-button (onClick)="addFilter()" [disabled]="display.filterButton"
                                     i18n-label="@@addFilterBtn" label="Añadir filtro"></p-button>
@@ -458,13 +429,13 @@
 
                     <div *ngIf="filter.forDisplay.length !== 0" class="col-12 foot-card">
 
-                        <p-scrollPanel [style]="{width: '100%', height: '120px'}" styleClass="custombar1">
+                        <!-- SDA CUSTOM --><p-scrollPanel [style]="{width: '100%', height: '180px'}" styleClass="custombar1">
 
                             <ng-container *ngFor="let filtre of filter.forDisplay">
                                 <p *ngIf="filtre.filter_elements.length === 0" class="d-flex align-items-center">
-                                    <b class="mr-2" style="margin: 2px;">
+            <!-- SDA CUSTOM -->     <b class="mr-2 filter-display-text" style="margin: 2px;">
                                         * {{ selectedColumn.display_name.default }} is
-                                        {{ filtre.filter_type }}
+            <!-- SDA CUSTOM -->         {{ getFilterText(filtre) }}
                                     </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ] - <span i18n="@@AggregationText">Agregación</span>: {{getAggregationText(filtre)}}  &nbsp;</b></span>
 
                                     <i class="ui-dropdown-clear-icon pi pi-times pointer"
@@ -472,10 +443,11 @@
                                 </p>
 
                                 <p *ngIf="filtre.filter_elements.length === 1" class="d-flex align-items-center">
-                                    <b class="mr-2" style="margin: 2px;">
+            <!-- SDA CUSTOM -->     <b class="mr-2 filter-display-text" style="margin: 2px;">
                                         * {{ selectedColumn.display_name.default }}
-                                        {{ filtre.filter_type }}
-                                        "{{ filtre.filter_elements[0].value1 }}"
+            <!-- SDA CUSTOM -->         {{ getFilterText(filtre) }}
+                                        <!--SDA CUSTOM--> <span *ngIf="selectedColumn?.column_type === 'date'">"{{ getDateFilterDisplayLabel(filtre) }}"</span>
+                                        <!--SDA CUSTOM--> <span *ngIf="selectedColumn?.column_type !== 'date'">"{{ filtre.dynamicValue ? getRangeLabel(filtre.dynamicValue) : filtre.filter_elements[0].value1 }}"</span>
                                     </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ] - <span i18n="@@AggregationText">Agregación</span>: {{getAggregationText(filtre)}} &nbsp;</b></span>
 
                                     <i class="ui-dropdown-clear-icon pi pi-times pointer"
@@ -483,11 +455,11 @@
                                 </p>
 
                                 <p *ngIf="filtre.filter_elements.length === 2" class="d-flex align-items-center">
-                                    <b class="mr-2" style="margin: 2px;">
+            <!-- SDA CUSTOM -->     <b class="mr-2 filter-display-text" style="margin: 2px;">
                                         * {{ selectedColumn.display_name.default }}
                                         {{ getFilterText(filtre) }}
-                                        "{{ filtre.filter_elements[0].value1}}" - "{{ filtre.filter_elements[1].value2
-                                        }}"
+                                        <!--SDA CUSTOM--> <span *ngIf="selectedColumn?.column_type === 'date'">"{{ getDateFilterDisplayLabel(filtre) }}"</span>
+                                        <!--SDA CUSTOM--> <span *ngIf="selectedColumn?.column_type !== 'date'">"{{ filtre.dynamicValue ? getRangeLabel(filtre.dynamicValue) : filtre.filter_elements[0].value1 }}"<ng-container *ngIf="!filtre.dynamicValue"> - "{{ filtre.filter_elements[1].value2 }}"</ng-container></span>
                                     </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ] - <span i18n="@@AggregationText">Agregación</span>: {{getAggregationText(filtre)}} &nbsp;</b></span>
 
                                     <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
@@ -546,3 +518,5 @@
         </div>
     </div>
 </eda-dialog2>
+
+<!--SDA CUSTOM--> <date-format-dialog *ngIf="displayDateFormat" (close)="onCloseDateFormatDialog($event)" [selectedColumn]="selectedColumn"></date-format-dialog>

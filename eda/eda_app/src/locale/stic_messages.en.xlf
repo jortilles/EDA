@@ -511,7 +511,6 @@
     <source>Máximo de etiquetas</source>
     <target>Maximum labels</target>
   </trans-unit>
-  <!-- SDA CUSTOM - KPI/chart option labels -->
   <trans-unit id="showChartLabels">
     <source>Mostrar etiquetas del gráfico</source>
     <target>Show chart labels</target>
@@ -552,8 +551,6 @@
     <source>Fondo de etiquetas</source>
     <target>Label background</target>
   </trans-unit>
-  <!-- END SDA CUSTOM -->
-  <!-- SDA CUSTOM - Logs viewer labels -->
   <trans-unit id="LogsViewer" datatype="html">
     <source>Visor de logs</source>
     <target>Logs viewer</target>
@@ -682,7 +679,6 @@
     <source>Mostrar accesos a informes</source>
     <target>Show report accesses</target>
   </trans-unit>
-  <!-- SDA CUSTOM - Logs action labels i18n -->
   <trans-unit id="LogsActionAccess">
     <source>Access</source>
     <target>Access</target>
@@ -795,7 +791,6 @@
     <source>Login</source>
     <target>Login</target>
   </trans-unit>
-  <!-- SDA CUSTOM - Logs action column labels i18n -->
   <trans-unit id="LogsActionNewLogin">
     <source>Login</source>
     <target>Login</target>
@@ -904,8 +899,6 @@
     <source>Update Model Failed</source>
     <target>Model update failed</target>
   </trans-unit>
-<!-- END SDA CUSTOM -->
-  <!-- SDA CUSTOM - Download JSON title -->
   <trans-unit id="downloadJsonTitle">
     <source>Download JSON</source>
     <target>Download JSON</target>
@@ -925,6 +918,86 @@
   <trans-unit id="filterHoverNotAffected">
     <source>Paneles no afectados por este filtro</source>
     <target>Panels not affected by this filter</target>
+  </trans-unit>
+  <trans-unit id="sqlModeFilterPathText">
+    <source>En modo SQL, si necesita modificar la ruta, debe hacerlo en la consulta</source>
+    <target>In SQL mode, path modification must be done in the query.</target>
+  </trans-unit>
+  <trans-unit id="DatePickerCustomDate">
+    <source>Seleccionar fecha</source>
+    <target>Select date</target>
+  </trans-unit>
+  <trans-unit id="dateFormatDialogTextHeader">
+    <source>Filtro</source>
+    <target>Filter</target>
+  </trans-unit>
+  <trans-unit id="filterOperatorSelectionText">
+    <source>Selección de operador del filtro:</source>
+    <target>Filter operator selection:</target>
+  </trans-unit>
+  <trans-unit id="dateSelectionText">
+    <source>Selección de fecha:</source>
+    <target>Date selection:</target>
+  </trans-unit>
+  <trans-unit id="calendarSelectionText">
+    <source>Selección en calendario:</source>
+    <target>Calendar selection:</target>
+  </trans-unit>
+  <trans-unit id="filters1">
+    <source>IGUAL A (=)</source>
+    <target>Equal to (=)</target>
+  </trans-unit>
+  <trans-unit id="filters2">
+    <source>NO IGUAL A (!=)</source>
+    <target>Not equal to (≠)</target>
+  </trans-unit>
+  <trans-unit id="filters3">
+    <source>MAYOR A (&gt;)</source>
+    <target>Greater than (&gt;)</target>
+  </trans-unit>
+  <trans-unit id="filters4">
+    <source>MENOR A (&lt;)</source>
+    <target>Less than (&lt;)</target>
+  </trans-unit>
+  <trans-unit id="filters5">
+    <source>MAYOR o IGUAL A (&gt;=)</source>
+    <target>Greater than or equal (≥)</target>
+  </trans-unit>
+  <trans-unit id="filters6">
+    <source>MENOR o IGUAL A (&lt;=)</source>
+    <target>Less than or equal (≤)</target>
+  </trans-unit>
+  <trans-unit id="filters7">
+    <source>ENTRE (between)</source>
+    <target>Between</target>
+  </trans-unit>
+  <trans-unit id="filters8">
+    <source>DENTRO DE (in)</source>
+    <target>In</target>
+  </trans-unit>
+  <trans-unit id="filters9">
+    <source>FUERA DE (not in)</source>
+    <target>Not in</target>
+  </trans-unit>
+  <trans-unit id="filters10">
+    <source>PARECIDO A (like)</source>
+    <target>Like</target>
+  </trans-unit>
+  <trans-unit id="filters11">
+    <source>NO PARECIDO A (not like)</source>
+    <target>Not like</target>
+  </trans-unit>
+  <trans-unit id="filters12">
+    <source>VALORES NO NULOS (not null)</source>
+    <target>Not null</target>
+  </trans-unit>
+  <trans-unit id="filters13">
+    <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
+    <target>Neither null nor empty values (not null and ≠ '')</target>
+  </trans-unit>
+  <trans-unit id="filters14">
+    <source>VALORES NULOS O VACÍOS (null or = '')</source>
+    <target>Null or empty values (null or = '')</target>
   </trans-unit>
 </body>
   </file>

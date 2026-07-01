@@ -405,6 +405,8 @@ export class GlobalFiltersService {
      * @returns The formatted filter object.
      */
     public formatFilter(globalFilter: any) {
+        /* SDA CUSTOM */ this.normalizeLegacyFilter(globalFilter);
+
         let formatedFilter: any;
         if (globalFilter.pathList) {
             formatedFilter = this.formatGlobalFilterTree(globalFilter);
@@ -415,6 +417,21 @@ export class GlobalFiltersService {
         return formatedFilter;
     }
 
+    /* SDA CUSTOM */ private normalizeLegacyFilter(filter: any): void {
+    /* SDA CUSTOM */     if (filter.selectedRange && !filter.dynamicValue) {
+    /* SDA CUSTOM */         filter.dynamicValue = filter.selectedRange;
+    /* SDA CUSTOM */     }
+    /* SDA CUSTOM */     if (!filter.dateFilterType) {
+    /* SDA CUSTOM */         if (filter.selectedRange && filter.selectedRange !== 'customDate') {
+    /* SDA CUSTOM */             filter.dateFilterType = 'between';
+    /* SDA CUSTOM */         } else if (filter.selectedItems?.length >= 2) {
+    /* SDA CUSTOM */             filter.dateFilterType = 'between';
+    /* SDA CUSTOM */         } else if (filter.selectedItems?.length === 1) {
+    /* SDA CUSTOM */             filter.dateFilterType = '=';
+    /* SDA CUSTOM */         }
+    /* SDA CUSTOM */     }
+    /* SDA CUSTOM */ }
+
     /**
      * Formats a global filter object for simple (non-tree) filters.
      *
@@ -424,17 +441,30 @@ export class GlobalFiltersService {
     private formatGlobalFilter(globalFilter: any) {
         const isDate = globalFilter.column.value.column_type === 'date';
 
-        const formatedFilter = {
+        /* SDA CUSTOM */ const dateFilterType = isDate ? (globalFilter.dateFilterType || 'between') : 'in';
+
+        /* SDA CUSTOM */ const formatedFilter: any = {
             filter_id: globalFilter.id,
             filter_table: globalFilter.table.value,
             filter_column_type: globalFilter.column.value.column_type,
             filter_column: globalFilter.column.value.column_name,
-            filter_type: isDate ? 'between' : 'in',
-            filter_elements: this.assertGlobalFilterItems(globalFilter),
+            /* SDA CUSTOM */ filter_type: dateFilterType,
+            /* SDA CUSTOM */ filter_elements: this.assertGlobalFilterItems(globalFilter, dateFilterType),
+            /* SDA CUSTOM */ filter_codes: this.assertGlobalFilterCodes(globalFilter, dateFilterType),
             isGlobal: true,
             applyToAll: globalFilter.applyToAll,
-            valueListSource: globalFilter.column.value.valueListSource
-        }
+            valueListSource: globalFilter.column.value.valueListSource,
+            /* SDA CUSTOM */ selectedRange: globalFilter.selectedRange,
+            filterBeforeGrouping: true,
+            joins: globalFilter.joins,
+            computed_column: globalFilter.column?.value?.computed_column,
+            SQLexpression: globalFilter.column?.value?.SQLexpression,
+            autorelation: globalFilter.autorelation,
+        };
+
+        /* SDA CUSTOM */ if (globalFilter.dynamicValue) {
+        /* SDA CUSTOM */     formatedFilter.dynamicValue = globalFilter.dynamicValue;
+        /* SDA CUSTOM */ }
 
         return formatedFilter;
     }
@@ -448,28 +478,36 @@ export class GlobalFiltersService {
     private formatGlobalFilterTree(globalFilter: any) {
         const isDate = globalFilter.selectedColumn.column_type === 'date';
 
+        /* SDA CUSTOM: use dateFilterType if set (from date-format-dialog), otherwise default to 'between'/'in' */
+        /*SDA CUSTOM*/ const dateFilterType = isDate ? (globalFilter.dateFilterType || 'between') : 'in';
+
         const pathList = _.cloneDeep(globalFilter.pathList);
         for (const key in pathList) {
             delete (pathList[key].selectedTableNodes);
         }
 
-        const formatedFilter = {
+/*SDA CUSTOM*/        const formatedFilter: any = {
             filter_id: globalFilter.id,
             filter_table: globalFilter.table_id || globalFilter.selectedTable.table_name,
             filter_column: globalFilter.selectedColumn.column_name,
             filter_column_type: globalFilter.selectedColumn.column_type,
-            filter_type: isDate ? 'between' : 'in',
-            filter_elements: this.assertGlobalFilterItems(globalFilter),
-            filter_codes: this.assertGlobalFilterCodes(globalFilter),
+/*SDA CUSTOM*/            filter_type: dateFilterType,
+/*SDA CUSTOM*/            filter_elements: this.assertGlobalFilterItems(globalFilter, dateFilterType),
+/*SDA CUSTOM*/            filter_codes: this.assertGlobalFilterCodes(globalFilter, dateFilterType),
             pathList: pathList,
             isGlobal: true,
             applyToAll: globalFilter.applyToAll,
             autorelation: globalFilter.autorelation,
             valueListSource: globalFilter.selectedColumn.valueListSource,
-            filterBeforeGrouping: true, // For all global filters it is Where
+            filterBeforeGrouping: true,
             joins: globalFilter.joins,
             computed_column: globalFilter.selectedColumn.computed_column,
             SQLexpression: globalFilter.selectedColumn.SQLexpression,
+        };
+
+/* SDA CUSTOM: propagate dynamicValue so the backend generates BETWEEN instead of IN */
+/* SDA CUSTOM*/ if (globalFilter.dynamicValue) {
+/* SDA CUSTOM*/     formatedFilter.dynamicValue = globalFilter.dynamicValue;
         }
 
         return formatedFilter;
@@ -483,35 +521,49 @@ export class GlobalFiltersService {
      * @param globalFilter Object containing the global filter information and the selected items.
      * @returns An array of objects with the selected IDs, structured depending on whether it is a date filter or not.
      */
-    public assertGlobalFilterCodes(globalFilter: any) {
+/*SDA CUSTOM*/    public assertGlobalFilterCodes(globalFilter: any, dateFilterType?: string) {
         const columnType = globalFilter.column?.value?.column_type || globalFilter.selectedColumn?.column_type;
         const isDate = columnType === 'date';
-        const year_length = 4;
-        const year_month_length = 7;
 
+/*SDA CUSTOM*/        if (!isDate) return [{ value1: globalFilter.selectedIdValues }];
 
-        if (isDate && globalFilter.selectedItems[0] && !globalFilter.selectedItems[1]) {
-            const year = globalFilter.selectedItems[0];
-            if (globalFilter.selectedItems[0].length === year_length) {
-                globalFilter.selectedItems[0] = `${year}-01-01`;
-                globalFilter.selectedItems[1] = `${year}-12-31`;
-            }
-            else if (globalFilter.selectedItems[0].length === year_month_length) {
-                const year_month = globalFilter.selectedItems[0];
-                const year = parseInt(year_month.slice(0, 5))
-                const month = parseInt(year_month.slice(5, 7));
-                let days = new Date(year, month, 0).getDate();
-                let daysstr = days < 10 ? `0${days}` : `${days}`
-                globalFilter.selectedItems[0] = `${year_month}-01`;
-                globalFilter.selectedItems[1] = `${year_month}-${daysstr}`;
-            } else {
-                globalFilter.selectedItems[1] = globalFilter.selectedItems[0]
-            }
-        }
+/*SDA CUSTOM*/        /* SDA CUSTOM: handle all operator types */
+/*SDA CUSTOM*/        const filterType = dateFilterType || 'between';
+/*SDA CUSTOM*/        const noValueTypes = ['not_null', 'not_null_nor_empty', 'null_or_empty'];
+/*SDA CUSTOM*/        if (noValueTypes.includes(filterType)) return [];
 
-        return isDate
-            ? [{ value1: globalFilter.selectedItems[0] ? [globalFilter.selectedItems[0]] : [] }, { value2: globalFilter.selectedItems[1] ? [globalFilter.selectedItems[1]] : [] }]
-            : [{ value1: globalFilter.selectedIdValues }];
+/*SDA CUSTOM*/        const isTwoValue = filterType === 'between' ||
+/*SDA CUSTOM*/            (globalFilter.dynamicValue && (filterType === 'in' || filterType === 'not_in'));
+
+/*SDA CUSTOM*/        if (isTwoValue) {
+/*SDA CUSTOM*/            /* keep existing year/month expansion for backward compatibility */
+/*SDA CUSTOM*/            const year_length = 4;
+/*SDA CUSTOM*/            const year_month_length = 7;
+/*SDA CUSTOM*/            if (globalFilter.selectedItems[0] && !globalFilter.selectedItems[1]) {
+/*SDA CUSTOM*/                const val = globalFilter.selectedItems[0];
+/*SDA CUSTOM*/                if (val.length === year_length) {
+/*SDA CUSTOM*/                    globalFilter.selectedItems[0] = `${val}-01-01`;
+/*SDA CUSTOM*/                    globalFilter.selectedItems[1] = `${val}-12-31`;
+/*SDA CUSTOM*/                } else if (val.length === year_month_length) {
+/*SDA CUSTOM*/                    const yr = parseInt(val.slice(0, 4));
+/*SDA CUSTOM*/                    const mo = parseInt(val.slice(5, 7));
+/*SDA CUSTOM*/                    const days = new Date(yr, mo, 0).getDate();
+/*SDA CUSTOM*/                    const daysStr = days < 10 ? `0${days}` : `${days}`;
+/*SDA CUSTOM*/                    globalFilter.selectedItems[0] = `${val}-01`;
+/*SDA CUSTOM*/                    globalFilter.selectedItems[1] = `${val}-${daysStr}`;
+/*SDA CUSTOM*/                } else {
+/*SDA CUSTOM*/                    globalFilter.selectedItems[1] = globalFilter.selectedItems[0];
+/*SDA CUSTOM*/                }
+/*SDA CUSTOM*/            }
+/*SDA CUSTOM*/            return [
+/*SDA CUSTOM*/                { value1: globalFilter.selectedItems[0] ? [globalFilter.selectedItems[0]] : [] },
+/*SDA CUSTOM*/                { value2: globalFilter.selectedItems[1] ? [globalFilter.selectedItems[1]] : [] }
+/*SDA CUSTOM*/            ];
+/*SDA CUSTOM*/        }
+
+/*SDA CUSTOM*/        /* single-value operators (=, !=, >, <, >=, <=) or static in/not_in */
+/*SDA CUSTOM*/        const v1 = globalFilter.selectedItems[0];
+/*SDA CUSTOM*/        return [{ value1: v1 ? (Array.isArray(v1) ? v1 : [v1]) : [] }];
     }
 
 
@@ -522,35 +574,14 @@ export class GlobalFiltersService {
      * @param globalFilter Object containing the global filter information and the selected items.
      * @returns An array of objects with the selected values, structured depending on whether it is a date filter or not.
      */
-    public assertGlobalFilterItems(globalFilter: any) {
+/*SDA CUSTOM*/    public assertGlobalFilterItems(globalFilter: any, dateFilterType?: string) {
         const columnType = globalFilter.column?.value?.column_type || globalFilter.selectedColumn?.column_type;
         const isDate = columnType === 'date';
-        const year_length = 4;
-        const year_month_length = 7;
 
+/*SDA CUSTOM*/if (!isDate) return [{ value1: globalFilter.selectedItems }];
 
-        if (isDate && globalFilter.selectedItems[0] && !globalFilter.selectedItems[1]) {
-            const year = globalFilter.selectedItems[0];
-            if (globalFilter.selectedItems[0].length === year_length) {
-                globalFilter.selectedItems[0] = `${year}-01-01`;
-                globalFilter.selectedItems[1] = `${year}-12-31`;
-            }
-            else if (globalFilter.selectedItems[0].length === year_month_length) {
-                const year_month = globalFilter.selectedItems[0];
-                const year = parseInt(year_month.slice(0, 5))
-                const month = parseInt(year_month.slice(5, 7));
-                let days = new Date(year, month, 0).getDate();
-                let daysstr = days < 10 ? `0${days}` : `${days}`
-                globalFilter.selectedItems[0] = `${year_month}-01`;
-                globalFilter.selectedItems[1] = `${year_month}-${daysstr}`;
-            } else {
-                globalFilter.selectedItems[1] = globalFilter.selectedItems[0]
-            }
-        }
-
-        return isDate
-            ? [{ value1: globalFilter.selectedItems[0] ? [globalFilter.selectedItems[0]] : [] }, { value2: globalFilter.selectedItems[1] ? [globalFilter.selectedItems[1]] : [] }]
-            : [{ value1: globalFilter.selectedItems }];
+        /* SDA CUSTOM: delegate to assertGlobalFilterCodes — same structure for dates */
+/*SDA CUSTOM*/return this.assertGlobalFilterCodes(globalFilter, dateFilterType);
     }
 
 }
