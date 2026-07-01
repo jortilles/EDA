@@ -11,11 +11,11 @@ export const pagesV3Routes: Routes = [
     children: [
       {
         path: '',
-        loadComponent: () => import('./home/home.page').then(c => c.HomePage)
+        loadComponent: () => import('../../plugins/home/home.component').then(c => c.HomeSdaComponent)
       },
       {
         path: 'home',
-        loadComponent: () => import('./home/home.page').then(c => c.HomePage)
+        loadComponent: () => import('../../plugins/home/home.component').then(c => c.HomeSdaComponent)
       },
       {
         path: 'about',

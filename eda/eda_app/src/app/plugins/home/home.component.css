@@ -1,0 +1,108 @@
+/* ---- Corporate utility classes (component-scoped, mirrors home.page.css) ---- */
+.text-corporate-primary { color: var(--corporate-primary); }
+.btn-corporate-gradient {
+  background: linear-gradient(to right, var(--corporate-primary), var(--corporate-primary-gradient));
+}
+.filter-clear-btn { color: var(--corporate-primary); font-size: 0.75rem; font-weight: 500; }
+.filter-clear-btn:hover { opacity: 0.75; }
+
+/* ---- Filter dropdown counter badge ---- */
+.filter-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.1rem;
+  height: 1.1rem;
+  padding: 0 0.3rem;
+  border-radius: 9999px;
+  background-color: var(--corporate-primary);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+/* ---- Report table ---- */
+#report-table th { position: relative; cursor: pointer; }
+#report-table th:hover { background-color: hsl(var(--muted)); }
+#report-table th::after {
+  font-weight: 900;
+  margin-left: 4px;
+  opacity: 0.3;
+  color: var(--corporate-primary);
+}
+#report-table th.sort-asc::after { content: "▲"; opacity: 1; }
+#report-table th.sort-desc::after { content: "▼"; opacity: 1; }
+#report-table td:first-child:hover { text-decoration: underline; font-weight: 600; }
+
+/* ---- Report type indicator dot ---- */
+.type-indicator {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+/* ---- Title / inline editing ---- */
+.dashboard-title-container { position: relative; display: inline-block; }
+.report-name:hover { text-decoration: underline; }
+.edit-icon, .edit-type-icon {
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+#report-table tr:hover .edit-icon,
+#report-table tr:hover .edit-type-icon,
+.report-card:hover .edit-icon,
+.report-card:hover .edit-type-icon {
+  opacity: 0.5;
+}
+[contenteditable]:focus {
+  outline: none;
+  background-color: hsl(var(--muted));
+  border-radius: 0.25rem;
+  padding: 1px 3px;
+}
+
+/* ---- Tags / groups labels ---- */
+.tag-label, .group-label {
+  display: inline-block;
+  font-size: 0.7rem;
+  margin: 1px;
+  padding: 2px 6px;
+  border-radius: 0.25rem;
+  color: #000;
+}
+.tag-label { background-color: #b4bc32; }
+.group-label { background-color: #ffd971; }
+
+/* ---- Card view ---- */
+.report-card { border-left-width: 6px; transition: box-shadow 0.2s, transform 0.15s; }
+.report-card:hover { box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+.report-card:active { transform: scale(0.99); }
+.card-border-public  { border-left-color: #add8e7; }
+.card-border-shared  { border-left-color: #b4bc32; }
+.card-border-group   { border-left-color: #ffd971; }
+.card-border-private  { border-left-color: #ee4e36; }
+
+.datasource-name {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  color: hsl(var(--muted-foreground));
+  border: 1px solid hsl(var(--border));
+  border-top: none;
+  border-right: none;
+  border-radius: 0 0 0 0.375rem;
+}
+
+/* ---- Newly cloned highlight ---- */
+@keyframes shake-highlight {
+  0%, 100% { transform: translateX(0); opacity: 1; }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-15px); }
+  20%, 40%, 60%, 80% { transform: translateX(15px); }
+  50% { opacity: 0.7; }
+}
+.newly-cloned { animation: shake-highlight 5s ease-in-out; }
