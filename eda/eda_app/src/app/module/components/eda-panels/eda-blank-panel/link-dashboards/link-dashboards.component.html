@@ -95,7 +95,7 @@
       </div>
     }
 
-    @if (!noLink) {
+    @if (!noLink && oldLinked) {
       <div class="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5 mt-2">
         <i class="pi pi-link text-amber-500 text-base shrink-0"></i>
         <span class="text-base text-amber-800 flex-1">{{ unLinkString }} {{ oldLinked }}</span>

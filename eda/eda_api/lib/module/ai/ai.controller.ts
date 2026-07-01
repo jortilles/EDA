@@ -178,7 +178,8 @@ export class AiController {
             const finalMcpUrl = MCP_URL ?? currentConfig.MCP_URL ?? '';
             const finalMcpEmail = MCP_EMAIL ?? currentConfig.MCP_EMAIL ?? '';
             const finalMcpPassword = MCP_PASSWORD ?? currentConfig.MCP_PASSWORD ?? '';
-            const content = `module.exports = { \n    PROVIDER: '${finalProvider}',\n    API_KEY: '${finalApiKey}',\n    AWS_ACCESS_KEY: '${finalAwsAccessKey}',\n    AWS_SECRET_KEY: '${finalAwsSecretKey}',\n    AWS_REGION: '${finalAwsRegion}',\n    MODEL: '${MODEL}',\n    CONTEXT: '${CONTEXT}',\n    AVAILABLE: ${AVAILABLE},\n    LIMIT: ${LIMIT},\n    MAX_LIMIT: ${currentConfig.MAX_LIMIT},\n    MAX_TOKENS: ${finalMaxTokens},\n    EDA_APP_URL: '${finalEdaAppUrl}',\n    MCP_URL: '${finalMcpUrl}',\n    MCP_EMAIL: '${finalMcpEmail}',\n    MCP_PASSWORD: '${finalMcpPassword}',\n};\n`;
+            const safeContext = (CONTEXT || '').replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
+            const content = `module.exports = { \n    PROVIDER: '${finalProvider}',\n    API_KEY: '${finalApiKey}',\n    AWS_ACCESS_KEY: '${finalAwsAccessKey}',\n    AWS_SECRET_KEY: '${finalAwsSecretKey}',\n    AWS_REGION: '${finalAwsRegion}',\n    MODEL: '${MODEL}',\n    CONTEXT: \`${safeContext}\`,\n    AVAILABLE: ${AVAILABLE},\n    LIMIT: ${LIMIT},\n    MAX_LIMIT: ${currentConfig.MAX_LIMIT},\n    MAX_TOKENS: ${finalMaxTokens},\n    EDA_APP_URL: '${finalEdaAppUrl}',\n    MCP_URL: '${finalMcpUrl}',\n    MCP_EMAIL: '${finalMcpEmail}',\n    MCP_PASSWORD: '${finalMcpPassword}',\n};\n`;
             fs.writeFile(configPath, content, 'utf8', (err) => {
                 if (err) return next(new HttpException(500, 'Error saving the AI configuration'));
                 return res.status(200).json({ ok: true });

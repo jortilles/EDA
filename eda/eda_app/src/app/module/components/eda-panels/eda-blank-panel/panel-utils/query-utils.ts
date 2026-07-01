@@ -6,7 +6,7 @@ import { EdaBlankPanelComponent } from '../eda-blank-panel.component';
 import { ChartsConfigUtils } from './charts-config-utils';
 import { PanelInteractionUtils } from './panel-interaction-utils';
 
-import { NULL_VALUE, EMPTY_VALUE } from '../../../../../config/personalitzacio/customizables'
+import { NULL_VALUE, EMPTY_VALUE } from '../../../../../config/customizable/customizable_default'
 
 export const QueryUtils = {
 

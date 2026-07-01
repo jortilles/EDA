@@ -11,7 +11,7 @@ interface Column {
   header: string;
 }
 
-import { FATHER_ID } from './../../../config/personalitzacio/customizables'
+import { FATHER_ID } from '../../../config/customizable/customizable_default'
 
 @Component({
   selector: 'app-eda-treetable',

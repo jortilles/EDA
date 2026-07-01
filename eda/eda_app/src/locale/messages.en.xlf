@@ -6736,6 +6736,14 @@ OR<ph id="5"/>
   <source>Desbloquear los paneles</source>
   <target>Unlock the panels</target>
 </trans-unit>
+<trans-unit id="noAttributes">
+  <source>Sin atributos</source>
+  <target>Without attributes</target>
+</trans-unit>
+<trans-unit id="noFilters">
+  <source>Sin filtros</source>
+  <target>Without filters</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

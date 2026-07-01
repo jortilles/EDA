@@ -6,7 +6,7 @@ import { EdaBlankPanelComponent } from "@eda/components/eda-panels/eda-blank-pan
 import { OverlayPanelModule } from "primeng/overlaypanel";
 import * as _ from 'lodash';
 import { DashboardPage } from "app/module/pages/dashboard/dashboard.page";
-import { GLOBAL_FILTER_BUTTON_POSITION } from '@eda/configs/personalitzacio/customizables';
+import { GLOBAL_FILTER_BUTTON_POSITION } from '@eda/configs/customizable/customizable_default';
 import { MultiSelectModule } from "primeng/multiselect";
 import { FormsModule } from "@angular/forms";
 import { StyleProviderService } from '@eda/services/service.index';
@@ -119,8 +119,8 @@ export class GlobalFilterComponent implements OnInit {
 
     public async initGlobalFilters(filters: any[]): Promise<void> {
         this.globalFilters = _.cloneDeep(filters);
-        const userName = JSON.parse(localStorage.getItem('user'))?.name;
-        this.isDashboardCreator = userName === this.dashboard.dashboard?.config?.author;
+        const userName = JSON.parse(localStorage.getItem('user'))?.id;
+        this.isDashboardCreator = userName === this.dashboard.dashboard?.user;
         this.setFiltersVisibility();
         this.setFilterButtonVisibilty();
         await this.fillFiltersData();
@@ -756,6 +756,7 @@ export class GlobalFilterComponent implements OnInit {
         }
 
         this.applyGlobalFilter(filter);
+        this.setGlobalFilterItems(filter);
         // filter = this.globalFilterService.formatGlobalFilter(filter);
         // this.applyGlobalFilter(filter);
     }
