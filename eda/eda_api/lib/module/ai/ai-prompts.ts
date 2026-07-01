@@ -63,9 +63,14 @@ export function buildUserPrompt(
         .map(([tableName, rows]) => `Datos de "${tableName}" (${rows.length} filas):\n${formatSampleRows(rows)}`)
         .join('\n\n');
 
+    const tableCount = Object.keys(sampleData).length;
+    const singleTableWarning = tableCount <= 1
+        ? `\nATENCIÓN: Este datasource solo tiene UNA tabla disponible. NO intentes joins ni references tablas que no aparezcan en el schema. Todos los campos de todos los paneles deben pertenecer a esa única tabla.\n`
+        : '';
+
     return `Schema del datasource "${modelName}":
 ${schemaText}
-
+${singleTableWarning}
 ${sampleSections}
 
 El usuario quiere: "${description}"

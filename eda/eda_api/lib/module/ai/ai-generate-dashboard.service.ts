@@ -366,6 +366,9 @@ export async function generateDashboard(req: Request, res: Response, next: NextF
     console.log(`[AI Dashboard] Datasource: "${schema.model_name}"`);
 
     const simplifiedTables = buildSimplifiedTables(schema);
+    if (simplifiedTables.length === 0) {
+        return next(new HttpException(400, 'El datasource no tiene tablas visibles para la IA. Revisa la configuración de visibilidad (ia_visibility).'));
+    }
     const schemaText = JSON.stringify(simplifiedTables, null, 2);
 
     // Find the table with most columns (most likely the main/fact table)
