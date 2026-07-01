@@ -965,7 +965,7 @@ export class ChartUtilsService {
         let names = [];
         labels.forEach(label => {
             columns.forEach(column => {
-                if (column.column_name === label) {
+                if (column.column_name === label || column.display_name?.default === label) {
                     names.push(column.display_name.default);
                 }
             });
